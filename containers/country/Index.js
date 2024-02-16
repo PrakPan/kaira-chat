@@ -264,6 +264,7 @@ const Index = (props) => {
               </Button>
             </>
           ) : null}
+
           {props.continetCarousel.length ? (
             <>
               <Heading>Plan your trip to anywhere in the world</Heading>
@@ -294,14 +295,17 @@ const Index = (props) => {
             page_id={props.data.id}
             destination={props.data.name}
           />
+
           <Heading style={{ margin: "4rem 0 2.5rem 0" }}>
             Happy Community of The Tarzan Way
           </Heading>
           <Reviews></Reviews>
+
           <Heading style={{ margin: "4rem 0 2.5rem 0" }}>
             What they say?
           </Heading>
           <AsSeenIn />
+
           <ChatWithUs planner page_id={props.data.id}></ChatWithUs>
         </SetWidthContainer>
       </div>

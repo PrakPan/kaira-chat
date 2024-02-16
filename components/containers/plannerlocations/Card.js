@@ -1,9 +1,9 @@
-import React from 'react';
-import styled from 'styled-components';
-import media from '../../media';
-import ImageLoader from '../../ImageLoader';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
+import React from "react";
+import styled from "styled-components";
+import media from "../../media";
+import ImageLoader from "../../ImageLoader";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 const ImageFade = styled.div`
   width: 100%;
@@ -14,7 +14,7 @@ const ImageContainer = styled.div`
   position: relative;
   overflow: hidden;
   border-radius: 8px;
-  cursor : pointer;
+  cursor: pointer;
   &:hover {
     ${ImageFade} {
       transition: 0.2s all ease-in-out;
@@ -38,7 +38,7 @@ const BlackContainer = styled.div`
   justify-content: flex-end;
   padding: 0.5rem;
   // top: 0;
-  bottom : 0;
+  bottom: 0;
   flex-direction: column;
 `;
 const Heading = styled.p`
@@ -57,7 +57,7 @@ const Subheading = styled.p`
 `;
 
 const Experiences = (props) => {
-  let isPageWide = media('(min-width: 768px)');
+  let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   /*Require props: imgWidth*/
 
@@ -75,15 +75,15 @@ const Experiences = (props) => {
   //   if (props.path) window.location.href = '/' + props.path;
   // };
   const path = props.city
-    ? 'https://thetarzanway.com/travel-guide/city/'
-    : 'https://thetarzanway.com/travel-planner/';
+    ? "https://thetarzanway.com/travel-guide/city/"
+    : "https://thetarzanway.com/travel-planner/";
   return (
     <Link className="hover-pointer" href={"/" + props.path}>
       <ImageContainer>
         <ImageFade>
           <ImageLoader
             url={props.img}
-            dimensions={{ width: 500, height:500 }}
+            dimensions={{ width: 500, height: 500 }}
             dimensionsMobile={{ width: 800, height: 800 }}
             height="35vh"
             style={{ filter: "brightness(0.55)" }}

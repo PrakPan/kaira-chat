@@ -12,16 +12,16 @@ export default function PathNavigation(props) {
     setlink(props?.path?.split("/"));
   }, [props?.path]);
 
-  const pathHanlder = async (e, all_destinations = false) => {
-    if (all_destinations) {
-      await router.push("/destinations");
+  const pathHanlder = (e) => {
+    if (e.target.id === "destinations") {
+      router.push("/destinations");
     } else {
       let path = "";
       for (let i = 0; i <= e.target.id; i++) {
         path += "/" + link[i];
       }
 
-      await router.push(path);
+      router.push(path);
     }
   };
 
@@ -37,32 +37,33 @@ export default function PathNavigation(props) {
   return (
     <div className={`${!isPageWide && "ml-3"} mt-[3.5rem] text-sm text-blue`}>
       {link && link.length ? (
-        <span>
-          <span
-            id={"destination"}
-            onClick={(e) => pathHanlder(e, true)}
-            className="cursor-pointer hover:underline"
-          >
-            All Destinations
-          </span>
-          <IoMdArrowDropright className="inline" />
-        </span>
-      ) : null}
-      {link &&
-        link.map((value, index) => (
-          <span key={index}>
+        <>
+          <span>
             <span
-              id={index}
+              id={"destination"}
               onClick={pathHanlder}
               className="cursor-pointer hover:underline"
             >
-              {capitalizeFirstLetter(value)}
+              All Destinations
             </span>
-            {index < link.length - 1 && (
-              <IoMdArrowDropright className="inline" />
-            )}
+            <IoMdArrowDropright className="inline" />
           </span>
-        ))}
+          {link.map((value, index) => (
+            <span key={index}>
+              <span
+                id={index}
+                onClick={pathHanlder}
+                className="cursor-pointer hover:underline"
+              >
+                {capitalizeFirstLetter(value)}
+              </span>
+              {index < link.length - 1 && (
+                <IoMdArrowDropright className="inline" />
+              )}
+            </span>
+          ))}
+        </>
+      ) : null}
     </div>
   );
 }

@@ -149,21 +149,24 @@ const Index = (props) => {
                 viewall
                 country
               ></SwiperLocations>
+              <Button
+                onclick={() =>
+                  openTailoredModal(
+                    router,
+                    props.data.id,
+                    props.data.destination
+                  )
+                }
+                borderWidth="1px"
+                fontWeight="500"
+                borderRadius="6px"
+                margin="2rem auto"
+                padding="0.5rem 2rem"
+              >
+                Create your free itinerary
+              </Button>
             </>
           ) : null}
-
-          <Button
-            onclick={() =>
-              openTailoredModal(router, props.data.id, props.data.destination)
-            }
-            borderWidth="1px"
-            fontWeight="500"
-            borderRadius="6px"
-            margin="2rem auto"
-            padding="0.5rem 2rem"
-          >
-            Create your free itinerary
-          </Button>
 
           <MapGridContainer>
             <Overview

@@ -20,6 +20,7 @@ import { storeAndRetrieveValue } from "../../../helper/storeAndRetrieveValue";
 import Slide from "../../../Animation/framerAnimation/Slide";
 import { openNotification } from "../../../store/actions/notification";
 import Skeleton from "./Skeleton";
+import useDebounce from "../../../hooks/useDebounce";
 
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
@@ -94,6 +95,7 @@ const Booking = (props) => {
     ],
   });
   const [selectSearch, setSelectedSearch] = useState("");
+  const debouncedSearch = useDebounce(selectSearch);
 
   useEffect(() => {
     if (props?.showBookingModal) {
@@ -112,6 +114,7 @@ const Booking = (props) => {
     filtersState.star_category,
     filtersState.sort,
     props?.showBookingModal,
+    debouncedSearch,
   ]);
 
   useEffect(() => {
@@ -155,6 +158,10 @@ const Booking = (props) => {
       }
     setOptionsJSX(options);
   }, [props?.alternates, props?.bookings]);
+
+  useEffect(() => {
+    setSelectedSearch("");
+  }, [props?.showBookingModal]);
 
   const handleClearSearch = () => {
     setSelectedSearch("");
@@ -351,7 +358,7 @@ const Booking = (props) => {
         sort_by: filters.sort_by,
         sort_order: sort_order,
         live: true,
-        q: clearSearch ? "" : selectSearch,
+        q: clearSearch ? "" : debouncedSearch,
       })
       .then((res) => {
         setUpdateLoadingState(false);

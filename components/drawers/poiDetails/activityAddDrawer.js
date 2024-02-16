@@ -14,6 +14,8 @@ import { connect } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
 import { IoMdSearch } from "react-icons/io";
 import useMediaQuery from "../../../hooks/useMedia";
+import useDebounce from "../../../hooks/useDebounce";
+import Button from "../../ui/button/Index";
 
 const FiltersContainer = styled.div`
   display: flex;
@@ -39,10 +41,12 @@ const ActivityAddDrawer = (props) => {
   const [selectedExprience, setSelectedExprience] = useState(-1);
   const [elementType, setElementType] = useState("Activity");
   const [options, setOptions] = useState([]);
-  const [activityChangeData, setActivityChangeData] = useState(null);
+  const [totalResults, setTotalResults] = useState(null);
+  const [showMoreResults, setShowMoreResults] = useState(false);
   const [selectSearch, setSelectedSearch] = useState("");
+  const debouncedSearch = useDebounce(selectSearch);
   const [fetchingPoi, setFetchingPoi] = useState(true);
-
+  const [offSet, setOffSet] = useState(0);
   const isDesktop = useMediaQuery("(min-width:767px)");
 
   const setFocus = (dayIndex, elementIndex, activityId) => {
@@ -117,20 +121,20 @@ const ActivityAddDrawer = (props) => {
       });
   };
 
-  function fetchData(clearSearch = false) {
+  function fetchData(clearSearch = false, showMore = false) {
     axiosaxtivitiesinstance
-      .post("/", {
+      .post(`/?limit=30&offset=${offSet}`, {
         location: props?.cityID,
         duration: 10,
         element_type: elementType,
         experience_filters: EXPERIENCE_FILTERS_BOX[selectedExprience]
           ? EXPERIENCE_FILTERS_BOX[selectedExprience].actual
           : [],
-        search_query: clearSearch ? "" : selectSearch,
+        search_query: clearSearch ? "" : debouncedSearch,
       })
       .then((res) => {
         if (res.data.results.length) {
-          setActivityChangeData(res.data);
+          setTotalResults(res.data.count);
           let options = [];
 
           for (var i = 0; i < res.data.results.length; i++) {
@@ -148,9 +152,20 @@ const ActivityAddDrawer = (props) => {
               ></PoiList>
             );
           }
-          setOptions(options);
+
+          if (showMore) setOptions((prev) => [...prev, ...options]);
+          else setOptions(options);
+
+          if (res.data.next) {
+            setShowMoreResults(true);
+            setOffSet((prev) => prev + 30);
+          } else {
+            setShowMoreResults(false);
+            setOffSet(0);
+          }
         } else {
           setOptions([]);
+          setTotalResults(null);
         }
         setFetchingPoi(false);
       })
@@ -164,19 +179,19 @@ const ActivityAddDrawer = (props) => {
       setFetchingPoi(true);
       fetchData();
     }
+  }, [elementType, selectedExprience, props.showDrawer, debouncedSearch]);
 
-    return () => {
-      setSelectedSearch("");
-    };
-  }, [elementType, selectedExprience, props.showDrawer]);
+  useEffect(() => {
+    setSelectedSearch("");
+    setOptions([]);
+  }, [props.showDrawer]);
 
   const searchHandler = (e) => {
-    if (
-      (e.target.id === "icon" || e.key === "Enter") &&
-      selectSearch.trim().length > 0
-    ) {
+    if (e.target.id === "icon" && selectSearch.trim().length > 0) {
       fetchData();
-      // setSelectedSearch("");
+    } else {
+      setSelectedSearch(e.target.value);
+      setOffSet(0);
     }
   };
 
@@ -190,6 +205,13 @@ const ActivityAddDrawer = (props) => {
       setElementType("Activity");
     } else {
       setElementType("POI");
+    }
+  };
+
+  const handleScroll = (e) => {
+    const { offsetHeight, scrollTop, scrollHeight } = e.target;
+    if (offsetHeight + scrollTop >= scrollHeight) {
+      if (showMoreResults) fetchData(false, true);
     }
   };
 
@@ -254,8 +276,7 @@ const ActivityAddDrawer = (props) => {
             <input
               type="text"
               value={selectSearch}
-              onChange={(e) => setSelectedSearch(e.target.value)}
-              onKeyDown={searchHandler}
+              onChange={searchHandler}
               placeholder={`Search ${
                 elementType === "POI" ? "attractions" : "activities"
               }`}
@@ -268,9 +289,7 @@ const ActivityAddDrawer = (props) => {
           <div>
             Showing {options.length}
             {elementType === "POI" ? " attractions" : " activities"}
-            {activityChangeData?.count
-              ? ` out of ${activityChangeData?.count}`
-              : null}
+            {totalResults ? ` out of ${totalResults}` : null}
             {props?.cityName ? ` in ${props?.cityName}` : null}
           </div>
           {isDesktop && (
@@ -284,8 +303,7 @@ const ActivityAddDrawer = (props) => {
               <input
                 type="text"
                 value={selectSearch}
-                onChange={(e) => setSelectedSearch(e.target.value)}
-                onKeyDown={searchHandler}
+                onChange={searchHandler}
                 placeholder={`Search ${
                   elementType === "POI" ? "attractions" : "activities"
                 }`}
@@ -304,15 +322,23 @@ const ActivityAddDrawer = (props) => {
 
       {!fetchingPoi ? (
         options.length ? (
-          <div className="flex flex-col items-center mb-3">
+          <div
+            onScroll={handleScroll}
+            className="flex flex-col items-center mb-3 h-[100vh] overflow-y-scroll"
+          >
             {options}
             {selectSearch !== "" ? (
-              <button
-                onClick={handleClearSearch}
-                className="mt-3 border-1 border-black rounded-lg px-3 py-1 text-sm hover:text-white hover:bg-black transition duration-500 ease-in-out"
+              <Button
+                boxShadow
+                onclickparam={null}
+                onclick={handleClearSearch}
+                margin="0.25rem auto"
+                borderWidth="1px"
+                borderRadius="2rem"
+                padding="0.25rem 1rem"
               >
                 Show All
-              </button>
+              </Button>
             ) : null}
           </div>
         ) : (

@@ -33,6 +33,7 @@ import { openNotification } from "../../../store/actions/notification";
 import { BiErrorCircle } from "react-icons/bi";
 import { IoMdSearch } from "react-icons/io";
 import styled from "styled-components";
+import useDebounce from "../../../hooks/useDebounce";
 
 const Container = styled.div``;
 
@@ -151,18 +152,21 @@ const ItineraryPoiElementM = (props) => {
   const [showDrawerData, setShowDrawerData] = useState(false);
   const [fetchingPoi, setFetchingPoi] = useState(false);
   const [optionsJSX, setOptionsJSX] = useState([]);
-  const [activityChangeData, setActivityChangeData] = useState(null);
+  const [totalResults, setTotalResults] = useState(null);
+  const [showMoreResults, setShowMoreResults] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [SelectedExprience, SetSelectedExprience] = useState(-1);
   const [selectSearch, setSelectedSearch] = useState("");
+  const debouncedSearch = useDebounce(selectSearch);
   const [elementType, setElementType] = useState("POI");
   const items = [
     { id: 1, label: "Point of Interest", link: "POIS" },
     { id: 2, label: "Activities", link: "Activitiess" },
   ];
   const drawerRef = useRef(null);
+  const [offSet, setOffSet] = useState(0);
 
-  const fetchData = (clearSearch = false) => {
+  const fetchData = (clearSearch = false, showMore = false) => {
     let ticketsCount = 1;
     if (props.payment && props.payment.meta_info) {
       ticketsCount =
@@ -172,18 +176,18 @@ const ItineraryPoiElementM = (props) => {
     }
 
     axiosaxtivitiesinstance
-      .post("/", {
+      .post(`/?limit=30&offset=${offSet}`, {
         location: props?.city_id,
         duration: 10,
         element_type: elementType,
         experience_filters: EXPERIENCE_FILTERS_BOX[SelectedExprience]
           ? EXPERIENCE_FILTERS_BOX[SelectedExprience].actual
           : [],
-        search_query: clearSearch ? "" : selectSearch,
+        search_query: clearSearch ? "" : debouncedSearch,
       })
       .then((res) => {
         if (res.data.results.length) {
-          setActivityChangeData(res.data);
+          setTotalResults(res.data.count);
           let options = [];
 
           for (var i = 0; i < res.data.results.length; i++) {
@@ -201,10 +205,20 @@ const ItineraryPoiElementM = (props) => {
                 ></PoiList>
               );
           }
-          setOptionsJSX(options);
+
+          if (showMore) setOptionsJSX((prev) => [...prev, ...options]);
+          else setOptionsJSX(options);
+
+          if (res.data.next) {
+            setShowMoreResults(true);
+            setOffSet((prev) => prev + 30);
+          } else {
+            setShowMoreResults(false);
+            setOffSet(0);
+          }
         } else {
           setOptionsJSX([]);
-          setActivityChangeData(null);
+          setTotalResults(null);
         }
         setFetchingPoi(false);
       })
@@ -219,19 +233,19 @@ const ItineraryPoiElementM = (props) => {
       if (props.city_id) setShowDrawer(true);
       fetchData();
     }
+  }, [showDrawer, elementType, SelectedExprience, debouncedSearch]);
 
-    return () => {
-      setSelectedSearch("");
-    };
-  }, [showDrawer, elementType, SelectedExprience]);
+  useEffect(() => {
+    setSelectedSearch("");
+    setOptionsJSX([]);
+  }, [showDrawer]);
 
   const searchHandler = (e) => {
-    if (
-      (e.target.id === "icon" || e.key === "Enter") &&
-      selectSearch.trim().length > 0
-    ) {
+    if (e.target.id === "icon" && selectSearch.trim().length > 0) {
       fetchData();
-      // setSelectedSearch("");
+    } else {
+      setSelectedSearch(e.target.value);
+      setOffSet(0);
     }
   };
 
@@ -362,6 +376,13 @@ const ItineraryPoiElementM = (props) => {
         {stars}
       </div>
     );
+  };
+
+  const handleScroll = (e) => {
+    const { offsetHeight, scrollTop, scrollHeight } = e.target;
+    if (offsetHeight + scrollTop >= scrollHeight) {
+      if (showMoreResults) fetchData(false, true);
+    }
   };
 
   return (
@@ -587,8 +608,7 @@ const ItineraryPoiElementM = (props) => {
             <input
               type="text"
               value={selectSearch}
-              onChange={(e) => setSelectedSearch(e.target.value)}
-              onKeyDown={searchHandler}
+              onChange={searchHandler}
               placeholder={`Search ${
                 elementType === "POI" ? "attractions" : "activities"
               }`}
@@ -599,9 +619,7 @@ const ItineraryPoiElementM = (props) => {
           <div>
             Showing {optionsJSX.length}
             {elementType === "POI" ? " attractions" : " activities"}
-            {activityChangeData?.count
-              ? ` out of ${activityChangeData.count}`
-              : null}
+            {totalResults ? ` out of ${totalResults}` : null}
             {props?.data?.activity_data?.city?.name
               ? ` in ${props?.data?.activity_data?.city?.name}`
               : null}
@@ -619,15 +637,23 @@ const ItineraryPoiElementM = (props) => {
         {!fetchingPoi ? (
           // <POIDetails data={data} handleCloseDrawer={props.handleCloseDrawer} />
           optionsJSX.length ? (
-            <div className="flex flex-col items-center mb-3">
+            <div
+              onScroll={handleScroll}
+              className="flex flex-col items-center mb-3 h-[100vh] overflow-y-scroll"
+            >
               {optionsJSX}{" "}
               {selectSearch !== "" ? (
-                <button
-                  onClick={handleClearSearch}
-                  className="mt-3 border-1 border-black rounded-lg px-3 py-1 text-sm hover:text-white hover:bg-black transition duration-500 ease-in-out"
+                <Button
+                  boxShadow
+                  onclickparam={null}
+                  onclick={handleClearSearch}
+                  margin="0.25rem auto"
+                  borderWidth="1px"
+                  borderRadius="2rem"
+                  padding="0.25rem 1rem"
                 >
                   Show All
-                </button>
+                </Button>
               ) : null}
             </div>
           ) : (
