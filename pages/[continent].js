@@ -6,6 +6,7 @@ import axioscountrydetailsinstance from "../services/pages/country";
 import axiospagelistinstance from "../services/pages/list";
 import axiospagedetailsinstance from "../services/pages/pagedetails";
 import axios from "axios";
+
 const TravelPlanner = (props) => {
   const [data, setData] = useState({
     page_title: null,
@@ -42,7 +43,7 @@ export async function getStaticPaths() {
   // const res = await axios.get(
   //   "https://apis.tarzanway.com/page/list?page_type=Continent"
   // );
-  const res = await axiospagelistinstance("?page_type=Continent&fields=path");
+  const res = await axiospagelistinstance("/?page_type=Continent&fields=path");
   const data = res.data;
   let paths = [];
   for (var i = 0; i < data.length; i++) {
@@ -62,11 +63,11 @@ export async function getStaticPaths() {
 }
 export async function getStaticProps(context) {
   const res = await axiospagedetailsinstance(
-    "?link=" + context.params.continent
+    "/?link=" + context.params.continent
   );
   const data = res.data;
   const themeData = await axiospagelistinstance(
-    "?page_type=Continent&fields=destination,tagline,image,path"
+    "/?page_type=Continent&fields=destination,tagline,image,path"
   );
   const contientTheme = themeData.data;
 
@@ -75,7 +76,7 @@ export async function getStaticProps(context) {
   const continetCarousel = [];
   for (let i = 0; i < contientTheme.length; i++) {
     const hot_destinations = await axioscountrydetailsinstance(
-      `/all?continent=${contientTheme[i].destination}&hot_destinations=true&fields=id,name,path,tagline,image`
+      `/all/?continent=${contientTheme[i].destination}&hot_destinations=true&fields=id,name,path,tagline,image`
     );
     const hot_data = hot_destinations.data.filter((e, i) => {
       if (i < 6) return e;
@@ -84,7 +85,7 @@ export async function getStaticProps(context) {
   }
 
   const response = await axioscountrydetailsinstance(
-    "/all?continent=" + data.destination + "&fields=id,name,path,tagline,image"
+    "/all/?continent=" + data.destination + "&fields=id,name,path,tagline,image"
   );
   const locations = response.data;
   if (!data) {

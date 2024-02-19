@@ -67,7 +67,7 @@ export async function getStaticPaths() {
   //   "https://apis.tarzanway.com/search/all/?type=State"
   // );
 
-  const res = await axioscountrydetailsinstance.get("all?fields=path");
+  const res = await axioscountrydetailsinstance.get("all/?fields=path");
   const data = res.data;
   let paths = [];
   for (var i = 0; i < data.length; i++) {
@@ -94,7 +94,7 @@ export async function getStaticProps(context) {
   //   `/?link=${context.params.state}`
   // );
 
-  const res = await axioscountrydetailsinstance.get(context.params.country);
+  const res = await axioscountrydetailsinstance.get(`${context.params.country}/`);
   const data = res.data;
 
   const response = await axioscountrydetailsinstance.get(
@@ -105,12 +105,12 @@ export async function getStaticProps(context) {
   const locations = response.data;
 
   const continentData = await axiospagelistinstance(
-    "?page_type=Continent&fields=destination,tagline,image,path"
+    "/?page_type=Continent&fields=destination,tagline,image,path"
   );
   const continetCarousel = [];
   for (let i = 0; i < continentData.data.length; i++) {
     const hot_destinations = await axioscountrydetailsinstance(
-      `/all?continent=${continentData.data[i].destination}&hot_destinations=true&fields=id,name,path,tagline,image`
+      `/all/?continent=${continentData.data[i].destination}&hot_destinations=true&fields=id,name,path,tagline,image`
     );
     const hot_data = hot_destinations.data.filter((e, i) => {
       if (i < 6) return e;
@@ -121,23 +121,6 @@ export async function getStaticProps(context) {
     });
   }
 
-  // var locations = [];
-  // var country = "India";
-  // if (data.ancestors) {
-  //   if (
-  //     data.ancestors.length &&
-  //     data.ancestors[0].level == "Country" &&
-  //     data.ancestors[0].name
-  //   ) {
-  //     country = data.ancestors[0].name;
-  //   }
-  // }
-  // try {
-  //   const loc = await axiospagelistinstance.get(`/?country=${country}`);
-  //   locations = loc.data;
-  // } catch (e) {
-  //   locations = [];
-  // }
   if (!data) {
     return {
       notFound: true,

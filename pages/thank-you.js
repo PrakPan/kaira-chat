@@ -57,7 +57,7 @@ export async function getStaticProps() {
   var locations = [];
   try {
     const res = await axios.get(
-      `https://apis.tarzanway.com/page/list?country=India&page_type=Theme&fields=id,banner_heading,path,image,link`
+      `https://apis.tarzanway.com/page/list/?country=India&page_type=Theme&fields=id,banner_heading,path,image,link`
     );
     ThemeData = res.data;
   } catch (e) {
@@ -66,7 +66,7 @@ export async function getStaticProps() {
 
   try {
     const loc = await axiospagelistinstance.get(
-      `?country=india&fields=id,destination,tagline,image,link`
+      `/?country=india&fields=id,destination,tagline,image,link`
     );
     locations = loc.data;
   } catch (e) {

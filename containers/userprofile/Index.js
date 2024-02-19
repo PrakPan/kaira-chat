@@ -8,7 +8,6 @@ import Profile from "./Profile";
 import media from "../../components/media";
 import ImageLoader from "../../components/ImageLoader";
 import { useRouter } from "next/router";
-import Spinner from "../../components/Spinner";
 import openTailoredModal from "../../services/openTailoredModal";
 import ExperienceCard from "../../components/cards/newitinerarycard-main/ExperienceCard";
 import ExperienceCardSkeleton from "../../components/cards/newitinerarycard-main/ExperienceCardSkeleton";
@@ -80,7 +79,6 @@ const UserDashboard = (props) => {
           setOffSet((prev) => prev + 9);
         } else {
           setShowMoreResults(false);
-          setShowMoreLoading(false);
           setOffSet(0);
         }
         const plansarr = res.data.results;
@@ -120,16 +118,9 @@ const UserDashboard = (props) => {
         </ContentContainer>
         <ContentContainer className="border-thi mb-5">
           <div style={{ display: "flex" }}>
-            {myPlansArr.length ? (
-              <Heading align="left" margin="0 0 2rem 0" bold noline>
-                My Plans {totalPlans && `(${totalPlans})`}
-              </Heading>
-            ) : (
-              <Heading align="left" margin="0" bold noline>
-                My Plans
-              </Heading>
-            )}
-            {loading ? <Spinner></Spinner> : null}
+            <Heading align="left" margin="0 0 2rem 0" bold noline>
+              My Plans {totalPlans ? `(${totalPlans})` : null}
+            </Heading>
           </div>
 
           {isPageWide && !myPlansArr.length && !loading ? (

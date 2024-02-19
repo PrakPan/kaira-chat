@@ -70,7 +70,7 @@ var ThemeData = [];
   var europeLocations = []
   try{
     const res = await axios.get(
-      `https://apis.tarzanway.com/page/list?country=India&page_type=Theme&fields=id,banner_heading,path,image,link`
+      `https://apis.tarzanway.com/page/list/?country=India&page_type=Theme&fields=id,banner_heading,path,image,link`
     );
     ThemeData = res.data;
   }
@@ -79,16 +79,16 @@ var ThemeData = [];
   }
   try{
     const loc = await axiospagelistinstance.get(
-      `?country=india&fields=id,destination,tagline,image,link,path`
+      `/?country=india&fields=id,destination,tagline,image,link,path`
     );
     locations = loc.data;
 
   const response = await axioscountrydetailsinstance(
-    "/all?continent=asia&fields=id,name,path,tagline,image"
+    "/all/?continent=asia&fields=id,name,path,tagline,image"
   );
     asiaLocations = response.data;  
       const resp = await axioscountrydetailsinstance(
-        "/all?continent=europe&fields=id,name,path,tagline,image"
+        "/all/?continent=europe&fields=id,name,path,tagline,image"
       );
     europeLocations = resp.data;  
   }
@@ -99,12 +99,12 @@ catch(e){
   }
 // contient carousel :-
   const res = await axiospagelistinstance(
-    "?page_type=Continent&fields=destination,tagline,image,path"
+    "/?page_type=Continent&fields=destination,tagline,image,path"
   );
     const continetCarousel = [];
     for (let i = 0; i < res.data.length; i++) {
       const hot_destinations = await axioscountrydetailsinstance(
-        `/all?continent=${res.data[i].destination}&hot_destinations=true&fields=id,name,path,tagline,image`
+        `/all/?continent=${res.data[i].destination}&hot_destinations=true&fields=id,name,path,tagline,image`
       );
       const hot_data = hot_destinations.data.filter((e, i) => {
         if (i < 6) return e;
