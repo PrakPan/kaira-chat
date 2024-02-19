@@ -5,7 +5,7 @@ import axiossearchInstance from "../../../../services/search/all";
 import axiosPoiCityInstance from "../../../../services/poi/city";
 import axiosReccommendedCityInstance from "../../../../services/poi/reccommededcities";
 import Head from "next/head";
-import axios from "axios";
+
 const Experience = (props) => {
   const schemaData = {
     "@context": "https://schema.org/",
@@ -83,8 +83,21 @@ export async function getStaticPaths() {
   };
 }
 export async function getStaticProps(context) {
-  const res = await axiosPoiCityInstance.get(`/?slug=${context.params.city}`);
-  const data = res.data;
+  let reccomendedCitiesData = [];
+  let data;
+
+  try {
+    const res = await axiosPoiCityInstance.get(`/?slug=${context.params.city}`);
+    data = res.data;
+  } catch (err) {
+    console.error(err.message);
+  }
+
+  if (!data) {
+    return {
+      notFound: true,
+    };
+  }
 
   try {
     const resp = await axiosReccommendedCityInstance.get(
@@ -92,7 +105,7 @@ export async function getStaticProps(context) {
     );
 
     const reccoData = resp.data;
-    var reccomendedCitiesData = reccoData.map((e) => ({
+    reccomendedCitiesData = reccoData.map((e) => ({
       id: e.id,
       image: e.image,
       lat: e.lat,
@@ -101,15 +114,10 @@ export async function getStaticProps(context) {
       name: e.name,
       path: e.path,
     }));
-  } catch {
-    var reccomendedCitiesData = null;
+  } catch (err) {
+    console.error(err.message);
   }
 
-  if (!data) {
-    return {
-      notFound: true,
-    };
-  }
   return {
     props: {
       cityData: data,

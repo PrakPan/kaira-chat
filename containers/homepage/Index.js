@@ -2,34 +2,20 @@ import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useRouter } from "next/router";
 import "bootstrap/dist/css/bootstrap.min.css";
 import styled, { keyframes } from "styled-components";
-import FullImage from "../../components/FullImage";
-// import {connect} from 'react-redux';
 import DesktopBanner from "../../components/containers/Banner";
 import Experiences from "../../components/containers/Experiences";
 import axiomyplansinstance from "../../services/sales/MyPlans";
-
-//  import Chatbot from '../../components/chatbot/Homepage';
-// import ImageLoader from '../../components/ImageLoader';
-import AsSeenIn from "../../containers/testimonial/AsSeenIn";
-// import Heading from '../../components/newheading/heading/Index';
 import Heading from "../../components/newheading/heading/Index";
-import TravelStyles from "../../components/containers/TravelStyles";
-import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs";
 import HowItWorks from "../../components/containers/HowItWorksSlideshow";
 import SwiperLocations from "../../components/containers/SwiperLocations/Index";
 import Banner from "./banner/Mobile";
 import Locations from "../../components/containers/plannerlocations/Index";
-import FullImgContent from "./search/SearchFullImgContent";
-// import FullImgContentChristmas from './search/Christmas';
 import Button from "../../components/ui/button/Index";
 import media from "../../components/media";
-import * as ga from "../../services/ga/Index";
 import urls from "../../services/urls";
 import CaseStudies from "../travelplanner/CaseStudies/Index";
-import WhatsappFloating from "../../components/WhatsappFloating";
 import PlanAsPerTheme from "./PlanAsPerTheme";
 import PlanWithUs from "../../components/WhyPlanWithUs/Index";
-import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile";
 import HeroBanner from "../../components/containers/HeroBanner/HeroBanner";
 import openTailoredModal from "../../services/openTailoredModal";
 import Continentcarousel from "../../components/continentcarousel/continentcarousel";
@@ -37,6 +23,7 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import { changeUserLocation } from "../../store/actions/userLocation";
 import { connect } from "react-redux";
+
 const SetWidthContainer = styled.div`
   width: 100%;
   margin: auto;
@@ -65,6 +52,7 @@ const HowItWorksHeading = styled.p`
     margin: 1rem 0 0.5rem 0;
   }
 `;
+
 const HowItWorksContainer = styled.div`
   @media screen and (min-width: 768px) {
     margin: auto;
@@ -72,18 +60,21 @@ const HowItWorksContainer = styled.div`
 `;
 
 const Homepage = (props) => {
-
+  const router = useRouter();
+  const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
+  const [experienceMore, setExperieceMore] = useState(false);
   const [myPlansArr, setMyPlansArr] = useState([]);
   const [plansLoading, setPlansLoading] = useState(false);
   const [plansCount, setPlansCount] = useState(null);
   const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
+  const [escapeState, setEscapeState] = useState(false);
   let isPageWide = media("(min-width: 768px)");
 
   useLayoutEffect(() => {
     const userLocation = Cookies.get("userLocation");
     if (!userLocation) getUserIp();
     else {
-      props.changeUserLocation({location : JSON.parse(userLocation)});
+      props.changeUserLocation({ location: JSON.parse(userLocation) });
     }
 
     async function getUserIp() {
@@ -91,8 +82,7 @@ const Homepage = (props) => {
         const res = await axios.get("https://api.ipify.org?format=json");
         const IpAddress = res.data.ip;
         if (IpAddress) getUserLocation(IpAddress);
-      } catch (e) {
-      }
+      } catch (e) {}
     }
     async function getUserLocation(ip) {
       try {
@@ -101,11 +91,10 @@ const Homepage = (props) => {
         );
         const data = res.data;
         if (res.data) {
-          Cookies.set("userLocation", JSON.stringify(data), { expires: 3 })
-          props.changeUserLocation({location : data})
-        };
-      } catch (e) {
-      }
+          Cookies.set("userLocation", JSON.stringify(data), { expires: 3 });
+          props.changeUserLocation({ location: data });
+        }
+      } catch (e) {}
     }
   }, []);
 
@@ -146,7 +135,6 @@ const Homepage = (props) => {
           });
       }
       // for chatbot :-
-
     }
   }, [props.token]);
 
@@ -190,13 +178,10 @@ const Homepage = (props) => {
     "media/website/how4.png",
   ];
 
-  const router = useRouter();
-  const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
-  const [experienceMore, setExperieceMore] = useState(false);
-
   const _handleExperiencesRedirect = () => {
     router.push(urls.travel_experiences.BASE);
   };
+
   const _handleExperiencesClick = () => {
     //  setTimeout(_handleExperiencesRedirect, 1000);
 
@@ -207,22 +192,17 @@ const Homepage = (props) => {
     // })
     _handleExperiencesRedirect();
   };
-  const [escapeState, setEscapeState] = useState(false);
+
   useEffect(() => {
     setEscapeState(true);
   }, []);
+
   return (
     <div
       className={"Homepage font-lexend"}
       id="homepage-anchor"
       style={{ visibility: props.hidden ? "hidden" : "visible" }}
     >
-      {/* <Snowflakes></Snowflakes> */}
-
-      {/* <FullImage filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))" fit="contain" center url="media/website/Home (1).png" height="85vh" heightmobile="60vh" >
-       <FullImgContent _handleTailoredClick={_handleTailoredClick} tagline="Explore different realities." text="Find an immersive experience or craft one yourself."/>
-      </FullImage> */}
-
       <HeroBanner
         image={
           isPageWide
@@ -240,36 +220,34 @@ const Homepage = (props) => {
         _startPlanningFunction={() => openTailoredModal(router)}
       />
 
-      {/* <div
-        style={{ zIndex: "1", backgroundColor: "white", position: "relative" }}
-      > */}
-        <DesktopBanner
-          loading={desktopBannerLoading}
-          onclick={() => openTailoredModal(router)}
-          text="Want to personalize your own experience?"
-        ></DesktopBanner>
+      <DesktopBanner
+        loading={desktopBannerLoading}
+        onclick={() => openTailoredModal(router)}
+        text="Want to personalize your own experience?"
+      ></DesktopBanner>
 
-        <SetWidthContainer>
-          <Heading
-            textAlign="left"
-            bold
-            noline
-            fontSize={isPageWide ? "32px" : "24px"}
-            align="center"
-            aligndesktop="left"
-            margin={!isPageWide ? "2.5rem 0.5rem 0rem 0.5rem" : "3rem 0"}
-          >
-            How it works?
-          </Heading>
-          <HowItWorksContainer>
-            <HowItWorks
-              images={howitworksimgs}
-              content={HowitWorksContentsArr}
-              headings={HowitWorksHeadingsArr}
-            ></HowItWorks>
-          </HowItWorksContainer>
+      <SetWidthContainer>
+        <Heading
+          textAlign="left"
+          bold
+          noline
+          fontSize={isPageWide ? "32px" : "24px"}
+          align="center"
+          aligndesktop="left"
+          margin={!isPageWide ? "2.5rem 0.5rem 0rem 0.5rem" : "3rem 0"}
+        >
+          How it works?
+        </Heading>
+        <HowItWorksContainer>
+          <HowItWorks
+            images={howitworksimgs}
+            content={HowitWorksContentsArr}
+            headings={HowitWorksHeadingsArr}
+          ></HowItWorks>
+        </HowItWorksContainer>
 
-          {props.token && myPlansArr.length && plansCount ? (
+        {props.token && myPlansArr.length ? (
+          <>
             <Heading
               noline
               fontSize={isPageWide ? "32px" : "24px"}
@@ -281,123 +259,120 @@ const Homepage = (props) => {
               bold
               textAlign="left"
             >
-              {"My Trips (" + plansCount + ")"}
+              {"My Trips "} {plansCount ? `(plansCount)` : null}
             </Heading>
-          ) : null}
-          {props.token && myPlansArr.length ? (
-            <>
-              <Experiences
-                margin="2.5rem 0"
-                experiences={myPlansArr}
-              ></Experiences>
-              <Button
-                link="/dashboard"
-                onclickparams={null}
-                borderWidth="1px"
-                fontSizeDesktop="12px"
-                fontWeight="500"
-                borderRadius="6px"
-                margin="1.5rem auto"
-                padding="0.5rem 2rem"
-              >
-                View All
-              </Button>
-            </>
-          ) : null}
-        </SetWidthContainer>
+            <Experiences
+              margin="2.5rem 0"
+              experiences={myPlansArr}
+            ></Experiences>
+            <Button
+              link="/dashboard"
+              onclickparams={null}
+              borderWidth="1px"
+              fontSizeDesktop="12px"
+              fontWeight="500"
+              borderRadius="6px"
+              margin="1.5rem auto"
+              padding="0.5rem 2rem"
+            >
+              View All
+            </Button>
+          </>
+        ) : null}
+      </SetWidthContainer>
 
-        <SetWidthContainer style={{}}>
-          {props.locations && props.locations.length ? (
-            <>
-              <Heading
-                noline
-                textAlign="left"
-                fontSize={isPageWide ? "32px" : "24px"}
-                align="center"
-                aligndesktop="left"
-                margin={
-                  !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
-                }
-                bold
-              >
-                Plan as per the best destinations in India
-              </Heading>
-              <Locations locations={props.locations} viewall></Locations>
-            </>
-          ) : null}
+      <SetWidthContainer style={{}}>
+        {props.locations && props.locations.length ? (
+          <>
+            <Heading
+              noline
+              textAlign="left"
+              fontSize={isPageWide ? "32px" : "24px"}
+              align="center"
+              aligndesktop="left"
+              margin={
+                !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
+              }
+              bold
+            >
+              Plan as per the best destinations in India
+            </Heading>
+            <Locations locations={props.locations} viewall></Locations>
+          </>
+        ) : null}
 
-          {props.asiaLocations && props.asiaLocations.length ? (
-            <>
-              <Heading
-                noline
-                fontSize={isPageWide ? "32px" : "24px"}
-                align="center"
-                aligndesktop="left"
-                margin={
-                  !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
-                }
-                bold
-              >
-                Top countries to visit in Asia
-              </Heading>
-              <SwiperLocations
-                locations={props.asiaLocations}
-                country
-              ></SwiperLocations>
+        {props.europeLocations && props.europeLocations.length ? (
+          <>
+            <Heading
+              noline
+              fontSize={isPageWide ? "32px" : "24px"}
+              align="center"
+              aligndesktop="left"
+              margin={
+                !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
+              }
+              bold
+            >
+              Top countries to visit in Europe
+            </Heading>
+            <SwiperLocations
+              locations={props.europeLocations}
+              country
+            ></SwiperLocations>
 
+            <Button
+              link="/europe"
+              fontWeight="500"
+              boxShadow
+              borderRadius="8px"
+              bgColor="white"
+              margin="2.5rem auto"
+              // width="20rem"
+              padding="0.5rem 2rem"
+              borderWidth="1px"
+            >
+              {"Start your journey to Europe now!"}
+            </Button>
+          </>
+        ) : null}
 
-              <Button
-              link='/asia'
-                fontWeight="500"
-                boxShadow
-                borderRadius="8px"
-                bgColor="white"
-                margin="2.5rem auto"
-                // width="20rem"
-                padding="0.5rem 2rem"
-                borderWidth="1px"
-              >
-                {"Start your journey to Asia now!"}
-              </Button>
-            </>
-          ) : null}
+        {props.asiaLocations && props.asiaLocations.length ? (
+          <>
+            <Heading
+              noline
+              fontSize={isPageWide ? "32px" : "24px"}
+              align="center"
+              aligndesktop="left"
+              margin={
+                !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
+              }
+              bold
+            >
+              Top countries to visit in Asia
+            </Heading>
+            <SwiperLocations
+              locations={props.asiaLocations}
+              country
+            ></SwiperLocations>
 
-          {props.europeLocations && props.europeLocations.length ? (
-            <>
-              <Heading
-                noline
-                fontSize={isPageWide ? "32px" : "24px"}
-                align="center"
-                aligndesktop="left"
-                margin={
-                  !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
-                }
-                bold
-              >
-                Top countries to visit in Europe
-              </Heading>
-              <SwiperLocations
-                locations={props.europeLocations}
-                country
-              ></SwiperLocations>
+            <Button
+              link="/asia"
+              fontWeight="500"
+              boxShadow
+              borderRadius="8px"
+              bgColor="white"
+              margin="2.5rem auto"
+              // width="20rem"
+              padding="0.5rem 2rem"
+              borderWidth="1px"
+            >
+              {"Start your journey to Asia now!"}
+            </Button>
+          </>
+        ) : null}
 
-              <Button
-              link='/europe'
-                fontWeight="500"
-                boxShadow
-                borderRadius="8px"
-                bgColor="white"
-                margin="2.5rem auto"
-                // width="20rem"
-                padding="0.5rem 2rem"
-                borderWidth="1px"
-              >
-                {"Start your journey to Europe now!"}
-              </Button>
-            </>
-          ) : null}
-
-          {props.continetCarousel.length ? <>
+        {props.continetCarousel.length ? (
+          <>
             <Heading
               noline
               textAlign="left"
@@ -414,93 +389,83 @@ const Homepage = (props) => {
             <Continentcarousel
               data={props.continetCarousel}
             ></Continentcarousel>
-          </> : <></>}
-          {props.ThemeData && props.ThemeData.length ? (
-            <>
-              <Heading
-                noline
-                textAlign="left"
-                fontSize={isPageWide ? "32px" : "24px"}
-                align="center"
-                aligndesktop="left"
-                margin={
-                  !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
-                }
-                bold
-              >
-                Plan trip as per mood
-              </Heading>
-              <PlanAsPerTheme ThemeData={props.ThemeData} />
-            </>
-          ) : null}
-
-          <Heading
-            noline
-            textAlign="left"
-            fontSize={isPageWide ? "32px" : "24px"}
-            align="center"
-            aligndesktop="left"
-            margin={
-              !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
-            }
-            bold
-          >
-            Why plan with us?
-          </Heading>
-          <PlanWithUs />
-
-          <Heading
-            noline
-            textAlign="left"
-            fontSize={isPageWide ? "32px" : "24px"}
-            align="center"
-            aligndesktop="left"
-            margin={
-              !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
-            }
-            bold
-          >
-            Happy Community of The Tarzan Way
-          </Heading>
-          <CaseStudies></CaseStudies>
-        </SetWidthContainer>
-
-        <SetWidthContainer>
-          {/* <Heading    align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 5rem 0"}  bold>Travel with a purpose</Heading>         */}
-          {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : '5rem 0'} bold>Live a different lifestyle</Heading> */}
-        </SetWidthContainer>
-
-        <br></br>
-        {/* <PersonaliseModal showPersonaliseModal={showPersonaliseModal} handlePersonaliseClose={handlePersonaliseClose} handlePersonaliseShow={handlePersonaliseShow}></PersonaliseModal> */}
-        {!isPageWide && (
-          <div>
-            <Banner
-              onclick={() => openTailoredModal(router)}
-              text="Want to craft your own travel experience?"
-              buttontext="Start Now"
-              color="black"
-              buttonbgcolor="#f7e700"
-            ></Banner>
-          </div>
+          </>
+        ) : (
+          <></>
         )}
-        {/* <Chatbot history={props.history}/>     */}
-      {/* </div> */}
-      {/* <WhatsappFloating message="Hey, I need help planning my trip." /> */}
+
+        {props.ThemeData && props.ThemeData.length ? (
+          <>
+            <Heading
+              noline
+              textAlign="left"
+              fontSize={isPageWide ? "32px" : "24px"}
+              align="center"
+              aligndesktop="left"
+              margin={
+                !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
+              }
+              bold
+            >
+              Plan trip as per mood
+            </Heading>
+            <PlanAsPerTheme ThemeData={props.ThemeData} />
+          </>
+        ) : null}
+
+        <Heading
+          noline
+          textAlign="left"
+          fontSize={isPageWide ? "32px" : "24px"}
+          align="center"
+          aligndesktop="left"
+          margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}
+          bold
+        >
+          Why plan with us?
+        </Heading>
+        <PlanWithUs />
+
+        <Heading
+          noline
+          textAlign="left"
+          fontSize={isPageWide ? "32px" : "24px"}
+          align="center"
+          aligndesktop="left"
+          margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}
+          bold
+        >
+          Happy Community of The Tarzan Way
+        </Heading>
+        <CaseStudies></CaseStudies>
+      </SetWidthContainer>
+
+      <SetWidthContainer>
+        {/* <Heading    align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 5rem 0"}  bold>Travel with a purpose</Heading>         */}
+        {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : '5rem 0'} bold>Live a different lifestyle</Heading> */}
+      </SetWidthContainer>
+
+      <br></br>
+      {/* <PersonaliseModal showPersonaliseModal={showPersonaliseModal} handlePersonaliseClose={handlePersonaliseClose} handlePersonaliseShow={handlePersonaliseShow}></PersonaliseModal> */}
+      {!isPageWide && (
+        <div>
+          <Banner
+            onclick={() => openTailoredModal(router)}
+            text="Want to craft your own travel experience?"
+            buttontext="Start Now"
+            color="black"
+            buttonbgcolor="#f7e700"
+          ></Banner>
+        </div>
+      )}
     </div>
   );
 };
 
-// const mapStateToPros = (state) => {
-//   return{
-//     auth: state.auth.authentication,
-//     name: state.auth.userName
-//   }
-// }
-
-// export default connect(mapStateToPros)(Homepage);
 const mapStateToProps = (state) => {
   return {
-    userLocation: state.UserLocation.location  };
+    userLocation: state.UserLocation.location,
+  };
 };
 const mapDispatchToProps = (dispatch) => {
   return {

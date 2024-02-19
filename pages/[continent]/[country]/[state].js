@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import axiosTravelPlannerInstance from "../../../services/pages/travel-planner";
 import axiossearchallinstance from "../../../services/search/all";
 import axiospagelistinstance from "../../../services/pages/list";
-import axios from "axios";
+
 const TravelPlanner = (props) => {
   const [data, setData] = useState({
     page_title: null,
@@ -14,6 +14,7 @@ const TravelPlanner = (props) => {
     meta_keywords: null,
     social_share_title: null,
   });
+
   useEffect(() => {
     // setData(DATA);
   }, []);
@@ -22,7 +23,6 @@ const TravelPlanner = (props) => {
     <Layout page_id={props.Data.id} destination={props.Data.destination}>
       <Head>
         <title>
-          {/* {props.Data.page_title} */}
           Plan Your Trip to {props.Data.destination} | Trip Planner & Itinerary
           | The Tarzan Way
         </title>
@@ -52,15 +52,7 @@ const TravelPlanner = (props) => {
 };
 
 export async function getStaticPaths() {
-  //     const res = await fetch(`https://apis.tarzanway.com/page/list?country=india`)
-  //     const data = await res.json();
-  // const res = await axiosTravelPlannerInstance.get('/list')
-  // const data = res.data
-
   const res = await axiossearchallinstance.get("/?type=State&fields=path");
-  // const res = await axios.get(
-  //   "https://apis.tarzanway.com/search/all/?type=State"
-  // );
   const data = res.data;
   let paths = [];
   for (var i = 0; i < data.length; i++) {
@@ -81,32 +73,33 @@ export async function getStaticPaths() {
   };
 }
 export async function getStaticProps(context) {
-  //     const res = await fetch(`https://apis.tarzanway.com/page/?link=`+context.params.link)
-  //     const data = await res.json()
-  const res = await axiosTravelPlannerInstance.get(
-    `/?link=${context.params.state}`
-  );
-  const data = res.data;
   var locations = [];
-  // var country = 'India'
-  //       if(data.ancestors){
-  //         if(data.ancestors.length && data.ancestors[0].level == 'Country' && data.ancestors[0].name){
-  //           country = data.ancestors[0].name
-  //         }
-  //       }
+  let data;
+
   try {
-    const loc = await axiospagelistinstance.get(
-      `/?country=${context.params.country}&fields=id,ancestors,path,destination,name,tagline,image,link`
+    const res = await axiosTravelPlannerInstance.get(
+      `/?link=${context.params.state}`
     );
-    locations = loc.data;
-  } catch (e) {
-    locations = [];
+    data = res.data;
+  } catch (err) {
+    console.log(err.message);
   }
+
   if (!data) {
     return {
       notFound: true,
     };
   }
+
+  try {
+    const loc = await axiospagelistinstance.get(
+      `/?country=${context.params.country}&page_type=Destination&fields=id,ancestors,path,destination,name,tagline,image,link`
+    );
+    locations = loc.data;
+  } catch (err) {
+    console.log(err.message);
+  }
+
   return {
     props: {
       Data: data,

@@ -2,6 +2,7 @@ import CovidContainer from "../containers/corporates[dev]/Index";
 import Head from "next/head";
 import Layout from "../components/Layout";
 import itineraryplaninstance from "../services/itinerary/plan";
+
 const Covid = (props) => {
   return (
     <Layout>
@@ -37,41 +38,40 @@ export async function getStaticProps() {
     "a74a8d7f-6218-4a8f-943e-57c13b9e441f",
     "772e2aab-16f0-48d1-a485-23ca05c09a07",
   ];
-    let getaway_ids = [
-      "0c400b2c-031d-424b-877e-14009fd6f0b7",
-      "13a9bc8c-f5ae-4728-a2a3-60f3db170920",
-      "c11a421c-d60f-40b1-bfa4-ab87548f7bd3",
-    ];
+  let getaway_ids = [
+    "0c400b2c-031d-424b-877e-14009fd6f0b7",
+    "13a9bc8c-f5ae-4728-a2a3-60f3db170920",
+    "c11a421c-d60f-40b1-bfa4-ab87548f7bd3",
+  ];
   var workcation_experience = [];
   var offbeat_experiences = [];
   var getaway_experiences = [];
+  
   for (let i = 0; i < workcation_ids.length; i++) {
     try {
       const res = await itineraryplaninstance.get(
         "/?itinerary_id=" + workcation_ids[i]
       );
-      if (res.data.message !== "not found") workcation_experience.push(res.data);
-    } catch (e) {
-    }
+      if (res.data.message !== "not found")
+        workcation_experience.push(res.data);
+    } catch (e) {}
   }
   for (let i = 0; i < offbeat_ids.length; i++) {
     try {
       const res = await itineraryplaninstance.get(
         "/?itinerary_id=" + offbeat_ids[i]
       );
-      if(res.data.id) offbeat_experiences.push(res.data);
-    } catch (e) {
-    }
+      if (res.data.id) offbeat_experiences.push(res.data);
+    } catch (e) {}
   }
-    for (let i = 0; i < getaway_ids.length; i++) {
-      try {
-        const res = await itineraryplaninstance.get(
-          "/?itinerary_id=" + getaway_ids[i]
-        );
-        if(res.data.id)getaway_experiences.push(res.data);
-      } catch (e) {
-      }
-    }
+  for (let i = 0; i < getaway_ids.length; i++) {
+    try {
+      const res = await itineraryplaninstance.get(
+        "/?itinerary_id=" + getaway_ids[i]
+      );
+      if (res.data.id) getaway_experiences.push(res.data);
+    } catch (e) {}
+  }
   return {
     props: {
       workcation_experience,

@@ -5,7 +5,8 @@ import { connect } from "react-redux";
 import * as authaction from "../store/actions/auth";
 import { useEffect } from "react";
 import axiospagelistinstance from "../services/pages/list";
-import axios from "axios";
+import axioscountrydetailsinstance from "../services/pages/country";
+
 const Home = (props) => {
   useEffect(() => {
     props.checkAuthState();
@@ -34,6 +35,9 @@ const Home = (props) => {
         token={props.token}
         locations={props.locations}
         ThemeData={props.ThemeData}
+        asiaLocations={props.asiaLocations}
+        europeLocations={props.europeLocations}
+        continetCarousel={props.continetCarousel}
       ></ThankYouContainer>
     </Layout>
   );
@@ -55,27 +59,61 @@ const mapDispatchToProps = (dispatch) => {
 export async function getStaticProps() {
   var ThemeData = [];
   var locations = [];
-  try {
-    const res = await axios.get(
-      `https://apis.tarzanway.com/page/list/?country=India&page_type=Theme&fields=id,banner_heading,path,image,link`
-    );
-    ThemeData = res.data;
-  } catch (e) {
-    ThemeData = [];
-  }
+  var asiaLocations = [];
+  var europeLocations = [];
+  var continetCarousel = [];
 
   try {
-    const loc = await axiospagelistinstance.get(
-      `/?country=india&fields=id,destination,tagline,image,link`
+    const pageListResponse = await axiospagelistinstance.get(
+      `/?country=india&page_type=Theme,Continent,Destination&fields=id,destination,tagline,image,link,path,banner_heading,page_type`
     );
-    locations = loc.data;
-  } catch (e) {
-    locations = [];
+    ThemeData = pageListResponse.data.filter(
+      (data) => data.page_type === "Theme"
+    );
+
+    locations = pageListResponse.data.filter(
+      (data) => data.page_type === "Destination"
+    );
+
+    const continetCarouselResponse = pageListResponse.data.filter(
+      (data) => data.page_type === "Continent"
+    );
+
+    for (let i = 0; i < continetCarouselResponse.length; i++) {
+      const countrydetailsResponse = await axioscountrydetailsinstance(
+        `/all/?continent=${continetCarouselResponse[i].destination}&fields=id,name,path,tagline,image,is_hot_location`
+      );
+
+      if (continetCarouselResponse[i].destination.toLowerCase() === "asia") {
+        asiaLocations = countrydetailsResponse.data;
+      }
+
+      if (continetCarouselResponse[i].destination.toLowerCase() === "europe") {
+        europeLocations = countrydetailsResponse.data;
+      }
+
+      let hot_data = countrydetailsResponse.data.filter(
+        (country) => country.is_hot_location
+      );
+
+      hot_data = hot_data.slice(0, 6);
+
+      continetCarousel.push({
+        ...continetCarouselResponse[i],
+        hot_destinations: hot_data,
+      });
+    }
+  } catch (err) {
+    console.log("[ERROR][ThankyouPage:getStaticProps]: ", err.message);
   }
+
   return {
     props: {
       ThemeData,
       locations,
+      asiaLocations,
+      europeLocations,
+      continetCarousel,
     },
   };
 }

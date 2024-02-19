@@ -1,23 +1,25 @@
-import React from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import styled from 'styled-components';
-import DesktopBanner from '../../components/containers/Banner';
-import Experiences from '../../components/containers/Experiences';
-import Heading from '../../components/newheading/heading/Index';
-import axiomyplansinstance from '../../services/sales/MyPlans';
-import Button from '../../components/ui/button/Index';
-import HowItWorks from '../../components/containers/HowItWorksSlideshow';
-import Banner from '../homepage/banner/Mobile';
-import Locations from '../../components/containers/plannerlocations/Index';
-import media from '../../components/media';
-import CaseStudies from '../travelplanner/CaseStudies/Index';
-import WhatsappFloating from '../../components/WhatsappFloating';
-import PlanAsPerTheme from '../homepage/PlanAsPerTheme';
-import PlanWithUs from '../../components/WhyPlanWithUs/Index';
-import HeroBanner from '../../components/containers/HeroBanner/HeroBanner';
-import openTailoredModal from '../../services/openTailoredModal';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import React from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import styled from "styled-components";
+import DesktopBanner from "../../components/containers/Banner";
+import Experiences from "../../components/containers/Experiences";
+import Heading from "../../components/newheading/heading/Index";
+import axiomyplansinstance from "../../services/sales/MyPlans";
+import Button from "../../components/ui/button/Index";
+import HowItWorks from "../../components/containers/HowItWorksSlideshow";
+import Banner from "../homepage/banner/Mobile";
+import Locations from "../../components/containers/plannerlocations/Index";
+import media from "../../components/media";
+import CaseStudies from "../travelplanner/CaseStudies/Index";
+import PlanAsPerTheme from "../homepage/PlanAsPerTheme";
+import PlanWithUs from "../../components/WhyPlanWithUs/Index";
+import HeroBanner from "../../components/containers/HeroBanner/HeroBanner";
+import openTailoredModal from "../../services/openTailoredModal";
+import SwiperLocations from "../../components/containers/SwiperLocations/Index";
+import Continentcarousel from "../../components/continentcarousel/continentcarousel";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+
 const SetWidthContainer = styled.div`
   width: 100%;
   margin: auto;
@@ -52,21 +54,25 @@ const HowItWorksContainer = styled.div`
   }
 `;
 const Index = (props) => {
+  const router = useRouter();
+  const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
+  const [escapeState, setEscapeState] = useState(false);
   const [myPlansArr, setMyPlansArr] = useState([]);
   const [plansLoading, setPlansLoading] = useState(false);
   const [plansCount, setPlansCount] = useState(null);
 
-  let isPageWide = media('(min-width: 768px)');
+  let isPageWide = media("(min-width: 768px)");
+
   useEffect(() => {
     if (props.token) {
-      const MyPlans = JSON.parse(localStorage.getItem('MyPlans'));
+      const MyPlans = JSON.parse(localStorage.getItem("MyPlans"));
       if (MyPlans && MyPlans.access_token === props.token) {
         setMyPlansArr(MyPlans.plans);
         setPlansCount(MyPlans.count);
         setPlansLoading(false);
       } else {
         axiomyplansinstance
-          .get('?limit=3&offset=0', {
+          .get("?limit=3&offset=0", {
             headers: {
               Authorization: `Bearer ${props.token}`,
             },
@@ -79,7 +85,7 @@ const Index = (props) => {
             }
             setMyPlansArr(plansarr.slice());
             localStorage.setItem(
-              'MyPlans',
+              "MyPlans",
               JSON.stringify({
                 plans: plansarr,
                 count: res.data.count,
@@ -111,6 +117,7 @@ const Index = (props) => {
       No Commissions - Pay for what you get
     </HowItWorksHeading>,
   ];
+
   const HowitWorksContentsArr = [
     <HowItWorksText className="font-lexend">
       From solo travel to workcation, honeymoon to family travel, tell us about
@@ -130,19 +137,16 @@ const Index = (props) => {
   ];
 
   const howitworksimgs = [
-    'media/website/whyus-1.webp',
-    'media/website/whyus-2.webp',
-    'media/website/whyus-3.webp',
-    'media/website/how4.png',
+    "media/website/whyus-1.webp",
+    "media/website/whyus-2.webp",
+    "media/website/whyus-3.webp",
+    "media/website/how4.png",
   ];
 
-  const router = useRouter();
-  const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
-
-  const [escapeState, setEscapeState] = useState(false);
   useEffect(() => {
     setEscapeState(true);
   }, []);
+
   return (
     <div>
       <HeroBanner
@@ -198,23 +202,21 @@ const Index = (props) => {
             ></HowItWorks>
           </HowItWorksContainer>
 
-          {props.token && myPlansArr.length && plansCount ? (
-            <Heading
-              noline
-              fontSize={isPageWide ? "32px" : "24px"}
-              align="center"
-              aligndesktop="left"
-              margin={
-                !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
-              }
-              bold
-              textAlign="left"
-            >
-              {"My Trips (" + plansCount + ")"}
-            </Heading>
-          ) : null}
           {props.token && myPlansArr.length ? (
             <>
+              <Heading
+                noline
+                fontSize={isPageWide ? "32px" : "24px"}
+                align="center"
+                aligndesktop="left"
+                margin={
+                  !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
+                }
+                bold
+                textAlign="left"
+              >
+                {"My Trips "} {plansCount ? `(${plansCount})` : null}
+              </Heading>
               <Experiences
                 margin="2.5rem 0"
                 experiences={myPlansArr}
@@ -254,6 +256,99 @@ const Index = (props) => {
               <Locations locations={props.locations} viewall></Locations>
             </>
           ) : null}
+
+          {props.europeLocations && props.europeLocations.length ? (
+            <>
+              <Heading
+                noline
+                fontSize={isPageWide ? "32px" : "24px"}
+                align="center"
+                aligndesktop="left"
+                margin={
+                  !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
+                }
+                bold
+              >
+                Top countries to visit in Europe
+              </Heading>
+              <SwiperLocations
+                locations={props.europeLocations}
+                country
+              ></SwiperLocations>
+
+              <Button
+                link="/europe"
+                fontWeight="500"
+                boxShadow
+                borderRadius="8px"
+                bgColor="white"
+                margin="2.5rem auto"
+                // width="20rem"
+                padding="0.5rem 2rem"
+                borderWidth="1px"
+              >
+                {"Start your journey to Europe now!"}
+              </Button>
+            </>
+          ) : null}
+
+          {props.asiaLocations && props.asiaLocations.length ? (
+            <>
+              <Heading
+                noline
+                fontSize={isPageWide ? "32px" : "24px"}
+                align="center"
+                aligndesktop="left"
+                margin={
+                  !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
+                }
+                bold
+              >
+                Top countries to visit in Asia
+              </Heading>
+              <SwiperLocations
+                locations={props.asiaLocations}
+                country
+              ></SwiperLocations>
+
+              <Button
+                link="/asia"
+                fontWeight="500"
+                boxShadow
+                borderRadius="8px"
+                bgColor="white"
+                margin="2.5rem auto"
+                // width="20rem"
+                padding="0.5rem 2rem"
+                borderWidth="1px"
+              >
+                {"Start your journey to Asia now!"}
+              </Button>
+            </>
+          ) : null}
+
+          {props.continetCarousel && props.continetCarousel.length ? (
+            <>
+              <Heading
+                noline
+                textAlign="left"
+                fontSize={isPageWide ? "32px" : "24px"}
+                align="center"
+                aligndesktop="left"
+                margin={
+                  !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
+                }
+                bold
+              >
+                Plan your trip anywhere in the world
+              </Heading>
+              <Continentcarousel
+                data={props.continetCarousel}
+              ></Continentcarousel>
+            </>
+          ) : (
+            <></>
+          )}
 
           {props.ThemeData && props.ThemeData.length ? (
             <>
@@ -304,7 +399,9 @@ const Index = (props) => {
           </Heading>
           <CaseStudies></CaseStudies>
         </SetWidthContainer>
+
         <br></br>
+
         {!isPageWide && (
           <div>
             <Banner

@@ -1,18 +1,17 @@
-import Head from 'next/head'
-import HomepageContainer from '../containers/homepage/Index';
-import Layout from '../components/Layout';
-import { connect } from 'react-redux';
-import * as authaction from '../store/actions/auth';
-import { useEffect } from 'react';
-import axiospagelistinstance from '../services/pages/list'
+import Head from "next/head";
+import HomepageContainer from "../containers/homepage/Index";
+import Layout from "../components/Layout";
+import { connect } from "react-redux";
+import * as authaction from "../store/actions/auth";
+import { useEffect } from "react";
+import axiospagelistinstance from "../services/pages/list";
 import axioscountrydetailsinstance from "../services/pages/country";
-import axios from 'axios'
-import { useRouter } from 'next/router';
+import axios from "axios";
+import { useRouter } from "next/router";
 const Home = (props) => {
-  const router = useRouter()
+  const router = useRouter();
   useEffect(() => {
     props.checkAuthState();
- 
   }, []);
   return (
     <Layout>
@@ -47,8 +46,7 @@ const Home = (props) => {
       ></HomepageContainer>
     </Layout>
   );
- 
-}
+};
 
 const mapStateToPros = (state) => {
   return {
@@ -64,62 +62,65 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export async function getStaticProps() {
-var ThemeData = [];
-  var locations = []
-  var asiaLocations = []
-  var europeLocations = []
-  try{
-    const res = await axios.get(
-      `https://apis.tarzanway.com/page/list/?country=India&page_type=Theme&fields=id,banner_heading,path,image,link`
-    );
-    ThemeData = res.data;
-  }
-  catch(e){
-    ThemeData = [];
-  }
-  try{
-    const loc = await axiospagelistinstance.get(
-      `/?country=india&fields=id,destination,tagline,image,link,path`
-    );
-    locations = loc.data;
+  var ThemeData = [];
+  var locations = [];
+  var asiaLocations = [];
+  var europeLocations = [];
+  var continetCarousel = [];
 
-  const response = await axioscountrydetailsinstance(
-    "/all/?continent=asia&fields=id,name,path,tagline,image"
-  );
-    asiaLocations = response.data;  
-      const resp = await axioscountrydetailsinstance(
-        "/all/?continent=europe&fields=id,name,path,tagline,image"
+  try {
+    const pageListResponse = await axiospagelistinstance.get(
+      `/?country=india&page_type=Theme,Continent,Destination&fields=id,destination,tagline,image,link,path,banner_heading,page_type`
+    );
+    ThemeData = pageListResponse.data.filter(
+      (data) => data.page_type === "Theme"
+    );
+
+    locations = pageListResponse.data.filter(
+      (data) => data.page_type === "Destination"
+    );
+
+    const continetCarouselResponse = pageListResponse.data.filter(
+      (data) => data.page_type === "Continent"
+    );
+
+    for (let i = 0; i < continetCarouselResponse.length; i++) {
+      const countrydetailsResponse = await axioscountrydetailsinstance(
+        `/all/?continent=${continetCarouselResponse[i].destination}&fields=id,name,path,tagline,image,is_hot_location`
       );
-    europeLocations = resp.data;  
-  }
-catch(e){
-    locations = []
-    asiaLocations = []
-    europeLocations = []
-  }
-// contient carousel :-
-  const res = await axiospagelistinstance(
-    "/?page_type=Continent&fields=destination,tagline,image,path"
-  );
-    const continetCarousel = [];
-    for (let i = 0; i < res.data.length; i++) {
-      const hot_destinations = await axioscountrydetailsinstance(
-        `/all/?continent=${res.data[i].destination}&hot_destinations=true&fields=id,name,path,tagline,image`
+
+      if (continetCarouselResponse[i].destination.toLowerCase() === "asia") {
+        asiaLocations = countrydetailsResponse.data;
+      }
+
+      if (continetCarouselResponse[i].destination.toLowerCase() === "europe") {
+        europeLocations = countrydetailsResponse.data;
+      }
+
+      let hot_data = countrydetailsResponse.data.filter(
+        (country) => country.is_hot_location
       );
-      const hot_data = hot_destinations.data.filter((e, i) => {
-        if (i < 6) return e;
+
+      hot_data = hot_data.slice(0, 6);
+
+      continetCarousel.push({
+        ...continetCarouselResponse[i],
+        hot_destinations: hot_data,
       });
-      continetCarousel.push({ ...res.data[i], hot_destinations: hot_data });
     }
-      return {
-        props: {
-          ThemeData,
-          locations,
-          asiaLocations,
-          europeLocations,
-          continetCarousel,
-        },
-      };
+  } catch (err) {
+    console.log("[ERROR][HomePage:getStaticProps]: ", err.message);
   }
 
-export default  connect(mapStateToPros, mapDispatchToProps)(Home);
+  return {
+    props: {
+      ThemeData,
+      locations,
+      asiaLocations,
+      europeLocations,
+      continetCarousel,
+    },
+  };
+}
+
+export default connect(mapStateToPros, mapDispatchToProps)(Home);

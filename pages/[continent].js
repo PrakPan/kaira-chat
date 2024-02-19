@@ -5,7 +5,6 @@ import ContinentPage from "../containers/continent/Index";
 import axioscountrydetailsinstance from "../services/pages/country";
 import axiospagelistinstance from "../services/pages/list";
 import axiospagedetailsinstance from "../services/pages/pagedetails";
-import axios from "axios";
 
 const TravelPlanner = (props) => {
   const [data, setData] = useState({
@@ -40,15 +39,10 @@ const TravelPlanner = (props) => {
 };
 
 export async function getStaticPaths() {
-  // const res = await axios.get(
-  //   "https://apis.tarzanway.com/page/list?page_type=Continent"
-  // );
   const res = await axiospagelistinstance("/?page_type=Continent&fields=path");
   const data = res.data;
   let paths = [];
   for (var i = 0; i < data.length; i++) {
-    // const pathArr = data[i].path.split("/");
-    // var [continentSlug, countrySlug, stateSlug] = pathArr;
     paths.push({
       params: {
         continent: data[i].path,
@@ -62,37 +56,59 @@ export async function getStaticPaths() {
   };
 }
 export async function getStaticProps(context) {
-  const res = await axiospagedetailsinstance(
-    "/?link=" + context.params.continent
-  );
-  const data = res.data;
-  const themeData = await axiospagelistinstance(
-    "/?page_type=Continent&fields=destination,tagline,image,path"
-  );
-  const contientTheme = themeData.data;
-
-  // contient carousel :-
-  // const continentData = await axiospagelistinstance("?page_type=Continent");
+  let data;
+  let contientTheme = [];
+  let locations = [];
   const continetCarousel = [];
-  for (let i = 0; i < contientTheme.length; i++) {
-    const hot_destinations = await axioscountrydetailsinstance(
-      `/all/?continent=${contientTheme[i].destination}&hot_destinations=true&fields=id,name,path,tagline,image`
+
+  try {
+    const res = await axiospagedetailsinstance(
+      "/?link=" + context.params.continent
     );
-    const hot_data = hot_destinations.data.filter((e, i) => {
-      if (i < 6) return e;
-    });
-    continetCarousel.push({ ...contientTheme[i], hot_destinations: hot_data });
+    data = res.data;
+  } catch (err) {
+    console.error(err.message);
   }
 
-  const response = await axioscountrydetailsinstance(
-    "/all/?continent=" + data.destination + "&fields=id,name,path,tagline,image"
-  );
-  const locations = response.data;
   if (!data) {
     return {
       notFound: true,
     };
   }
+
+  try {
+    const themeData = await axiospagelistinstance(
+      "/?page_type=Continent&fields=destination,tagline,image,path"
+    );
+    contientTheme = themeData.data;
+  } catch (err) {
+    console.error(err.message);
+  }
+
+  try {
+    for (let i = 0; i < contientTheme.length; i++) {
+      const countrydetailsResponse = await axioscountrydetailsinstance(
+        `/all/?continent=${contientTheme[i].destination}&fields=id,name,path,tagline,image,is_hot_location`
+      );
+
+      if (contientTheme[i].destination === data.destination) {
+        locations = countrydetailsResponse.data;
+      }
+
+      let hot_data = countrydetailsResponse.data.filter(
+        (d) => d.is_hot_location
+      );
+      hot_data = hot_data.slice(0, 6);
+
+      continetCarousel.push({
+        ...contientTheme[i],
+        hot_destinations: hot_data,
+      });
+    }
+  } catch (err) {
+    console.error(err.message);
+  }
+
   return {
     props: {
       Data: data,
