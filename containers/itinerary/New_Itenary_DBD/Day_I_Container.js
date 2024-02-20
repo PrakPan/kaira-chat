@@ -1,18 +1,12 @@
 import styled from "styled-components";
-import { useState, useEffect, useRef, createRef } from "react";
-import ItineraryFlightElement from "../../newitinerary/itineraryelements/Flight";
-
+import { useState } from "react";
 import ItineraryFoodElement from "../../newitinerary/itineraryelements/ItineraryFoodElement";
-import { GrMapLocation } from "react-icons/gr";
-import { BiChevronRight } from "react-icons/bi";
 import TransferElements from "./TransferElements";
 import ItineraryElement from "../../newitinerary/itineraryelements/ItineraryElement";
 import ItineraryPoiElement from "../../newitinerary/itineraryelements/Poi";
 import { convertDateFormat } from "../../../helper/ConvertDateFormat";
 import RecomendationComponent from "../../newitinerary/itineraryelements/RecomendationComponent";
-import NewCity from "./NewCity";
 import { isJson } from "../../../services/isJSON";
-import { PopoverPaper } from "@mui/material";
 import ViewMoreButton from "../../../components/itinerary/daySummary/ViewMoreButton";
 import TransferElement from "../../../components/itinerary/daySummary/TransferElement";
 import AccommodationElement from "../../../components/itinerary/daySummary/AccommodationElement";
@@ -109,15 +103,6 @@ const InnerDayLocationRow = styled.div`
     padding-right: 1px;
     padding-left: 8px;
   }
-`;
-
-const Date = styled.div`
-  width: max-content;
-  border-radius: 2rem;
-  margin: 1rem auto;
-  padding: 0.25rem 1rem;
-  background-color: #f4f4f4;
-  font-weight: 300;
 `;
 
 const Day_I_Container = (props) => {
@@ -340,6 +325,7 @@ const Day_I_Container = (props) => {
                 props.getAccommodationAndActivitiesHandler
               }
               setShowLoginModal={props?.setShowLoginModal}
+              _GetInTouch={props._GetInTouch}
             ></ItineraryPoiElement>
           );
           break;
@@ -369,149 +355,15 @@ const Day_I_Container = (props) => {
                 : `${props.current_city.city_name ?? ""} Exploration`}
             </span>{" "}
           </div>
-
-          {/* {props.Days.slab_elements[0] !== undefined &&
-          props.Days.slab_elements[0].transfers !== undefined &&
-          props.Days.slab_elements[0].transfers.routes !== undefined ? (
-            <div style={{ fontWeight: '600' }}>
-              -{' '}
-              {
-                props.Days.slab_elements[0].transfers.routes[0]?.legs[0].origin
-                  .shortName
-              }{' '}
-              to{' '}
-              {
-                props.Days.slab_elements[0].transfers.routes[0]?.legs[0]
-                  .destination.shortName
-              }
-            </div>
-          ) : null} */}
         </InnerDayLocationRow>
 
         <ViewMoreButton
           text={viewMore ? "View less" : "View more"}
           handler={handleViewMoreButton}
         />
-
-        {/* <InnerDayLocationRow>
-          <GrMapLocation />
-          <div>
-            <a>View on Google Map</a>
-          </div>
-          <BiChevronRight />
-        </InnerDayLocationRow> */}
       </DivDayContainerRow>
       {viewMore ? (
         <DayContainerStyle>
-          {/* {Arslab_elements[0].data[0] === 'undefined' && <ItineraryFlightElement
-          time="9:00AM"
-          heading={Arslab_elements[0].data[0].heading}
-          text={props.Days.slab_elements[0].text}
-        ></ItineraryFlightElement>} */}
-          {/* {Arslab_elements[0].data[0].length != 0 ? (
-          <TransferElements
-            time="9:00AM"
-            modes={Arslab_elements[0].data[0][0].modes}
-            transfers={Arslab_elements[0].data[0][0].transfers}
-            meta={Arslab_elements[0].data[0][0].meta}
-            icon={Arslab_elements[0].data[0][0].icon}
-            heading={Arslab_elements[0].data[0][0].heading}
-            text={props.Days.slab_elements[0].text}
-            newcity={
-              Arslab_elements[1].data[0].length != 0
-                ? Arslab_elements[1].data[0][0]
-                : null
-            }
-          ></TransferElements>
-        ) : null}
-        {Arslab_elements[0].data[0][1] ? (
-          <TransferElements
-            time="9:00AM"
-            modes={Arslab_elements[0].data[0][1].modes}
-            transfers={Arslab_elements[0].data[0][1].transfers}
-            meta={Arslab_elements[0].data[0][1].meta}
-            icon={Arslab_elements[0].data[0][1].icon}
-            heading={Arslab_elements[0].data[0][1].heading}
-            text={props.Days.slab_elements[0].text}
-            newcity={
-              Arslab_elements[1].data[0][1]
-                ? Arslab_elements[1].data[0][1]
-                : null
-            }
-          ></TransferElements>
-        ) : null}
-
-        {Arslab_elements[2].data[0][0] ? (
-          <ItineraryElement
-            icon={Arslab_elements[2].data[0][0].icon}
-            time="9:00AM"
-            heading={Arslab_elements[2].data[0][0].heading}
-            text={Arslab_elements[2].data[0][0].text}
-          ></ItineraryElement>
-        ) : null}
-        {Arslab_elements[0].data[0][2] ? (
-          <TransferElements
-            time="9:00AM"
-            modes={Arslab_elements[0].data[0][2].modes}
-            transfers={Arslab_elements[0].data[0][2].transfers}
-            meta={Arslab_elements[0].data[0][2].meta}
-            icon={Arslab_elements[0].data[0][2].icon}
-            heading={Arslab_elements[0].data[0][2].heading}
-            text={props.Days.slab_elements[0].text}
-            newcity={null}
-          ></TransferElements>
-        ) : null}
-        {Arslab_elements[3].data[0][0] ? (
-          <ItineraryFoodElement
-            icon={Arslab_elements[3].data[0][0].icon}
-            time="12:00PM"
-            heading={Arslab_elements[3].data[0][0].heading}
-            text={Arslab_elements[3].data[0][0].text}
-            recomendation={
-              Arslab_elements[4].data[0][0]
-                ? Arslab_elements[4].data[0][0].text
-                : null
-            }
-          ></ItineraryFoodElement>
-        ) : null}
-        {Arslab_elements[4].data[0][0] && !Arslab_elements[3].data[0][0] ? (
-          <RecomendationComponent
-            recomendation={
-              Arslab_elements[4].data[0][0]
-                ? Arslab_elements[4].data[0][0].text
-                : null
-            }
-          ></RecomendationComponent>
-        ) : null}
-
-        {Arslab_elements[5].data[0]
-          ? Arslab_elements[5].data[0].map((element) => (
-              <ItineraryPoiElement
-                key={element.activity_data.id}
-                time="11:00AM"
-                image={element.icon !== undefined ? element.icon : null}
-                booking
-                heading={element.heading}
-                text={element.text}
-                poi={element.activity_data.poi}
-              ></ItineraryPoiElement>
-            ))
-          : NULL}
-
-        {Arslab_elements[3].data[0][1] ? (
-          <ItineraryFoodElement
-            icon={Arslab_elements[3].data[0][1].icon}
-            time="12:00PM"
-            heading={Arslab_elements[3].data[0][1].heading}
-            text={Arslab_elements[3].data[0][1].text}
-            recomendation={
-              Arslab_elements[4].data[0][1]
-                ? Arslab_elements[4].data[0][1].text
-                : null
-            }
-          ></ItineraryFoodElement>
-        ) : null} */}
-
           {dayIcontainer}
           <div className="flex w-full ml-3">
             {!props.LastElement && (
@@ -564,6 +416,7 @@ const Day_I_Container = (props) => {
         }
         setShowLoginModal={props?.setShowLoginModal}
         setItinerary={props?.setItinerary}
+        _GetInTouch={props._GetInTouch}
       ></ActivityAddDrawer>
     </Container>
   );

@@ -64,71 +64,74 @@ export default function ActivityElement(props) {
           <div className="font-medium text-sm">{data.heading}</div>
         </div>
 
-        <div className="w-full flex flex-row items-center">
+        <div className="w-full flex flex-col lg:flex-row md:flex-row items-start">
           <div className="lg:w-[11%] md:w-[21%]"></div>
-          <div
-            className={`flex items-center justify-center w-[3rem] h-[3rem] ${
-              !imageLoaded && "bg-gray-200 rounded-lg animate-pulse"
-            }`}
-          >
-            {selectedBooking?.images[0]?.image !==
-              "media/icons/default/activity.svg" && (
-              <div className={`${imageLoaded ? "visible" : "invisible"}`}>
-                <ImageLoader
-                  dimensions={{ width: 300, height: 300 }}
-                  dimensionsMobile={{ width: 300, height: 300 }}
-                  borderRadius="8px"
-                  hoverpointer
-                  onclick={handleActivity}
-                  width="3rem"
-                  height="3rem"
-                  leftalign
-                  widthmobile="3rem"
-                  url={
-                    !imageFailed
-                      ? selectedBooking?.images[0]?.image
-                      : "media/icons/general/dice.png"
-                  }
-                  noLazy
-                  onfail={handleImageFailed}
-                  onload={() => {
-                    setImageLoaded(true);
-                  }}
-                ></ImageLoader>
-              </div>
-            )}
-          </div>
-          <div className="flex flex-col ml-3">
-            <div className="font-normal text-xs leading-4 ml-2">
-              {selectedBooking?.ideal_duration_hours_text && (
-                <div className="flex flex-row gap-1 items-center">
-                  <BiTimeFive className="text-md font-[400] line-clamp-1 text-[#7A7A7A]" />
-                  <div>
-                    <div className="text-xs font-normal leading-4 line-clamp-1">
-                      {selectedBooking.ideal_duration_hours_text}
-                    </div>
-                  </div>
+          <div className="flex flex-row items-center">
+            <div
+              className={`flex items-center justify-center w-[4rem] h-[4rem] ${
+                !imageLoaded && "bg-gray-200 rounded-lg animate-pulse"
+              }`}
+            >
+              {selectedBooking?.images[0]?.image !==
+                "media/icons/default/activity.svg" && (
+                <div className={`${imageLoaded ? "visible" : "invisible"}`}>
+                  <ImageLoader
+                    dimensions={{ width: 300, height: 300 }}
+                    dimensionsMobile={{ width: 300, height: 300 }}
+                    borderRadius="8px"
+                    hoverpointer
+                    onclick={handleActivity}
+                    width="4rem"
+                    height="4rem"
+                    leftalign
+                    widthmobile="4rem"
+                    url={
+                      !imageFailed
+                        ? selectedBooking?.images[0]?.image
+                        : "media/icons/general/dice.png"
+                    }
+                    noLazy
+                    onfail={handleImageFailed}
+                    onload={() => {
+                      setImageLoaded(true);
+                    }}
+                  ></ImageLoader>
                 </div>
               )}
             </div>
-            <div className="flex flex-row space-x-5 text-xs font-normal leading-4 ml-2">
-              {selectedBooking?.costings_breakdown?.no_of_tickets && (
-                <div>
+            <div className="flex flex-col ml-3">
+              <div className="font-normal text-xs leading-4 ml-2">
+                {selectedBooking?.ideal_duration_hours_text && (
                   <div className="flex flex-row gap-1 items-center">
-                    <IoTicket className="text-sm font-[400] line-clamp-1 text-[#7A7A7A]" />
-                    <div className="text-xs font-normal leading-4 line-clamp-1">
-                      {selectedBooking?.costings_breakdown?.no_of_tickets}{" "}
-                      {selectedBooking?.costings_breakdown?.no_of_tickets <= "1"
-                        ? "Ticket"
-                        : "Tickets"}
+                    <BiTimeFive className="text-md font-[400] line-clamp-1 text-[#7A7A7A]" />
+                    <div>
+                      <div className="text-xs font-normal leading-4 line-clamp-1">
+                        {selectedBooking.ideal_duration_hours_text}
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
+              <div className="flex flex-row space-x-5 text-xs font-normal leading-4 ml-2">
+                {selectedBooking?.costings_breakdown?.no_of_tickets && (
+                  <div>
+                    <div className="flex flex-row gap-1 items-center">
+                      <IoTicket className="text-sm font-[400] line-clamp-1 text-[#7A7A7A]" />
+                      <div className="text-xs font-normal leading-4 line-clamp-1">
+                        {selectedBooking?.costings_breakdown?.no_of_tickets}{" "}
+                        {selectedBooking?.costings_breakdown?.no_of_tickets <=
+                        "1"
+                          ? "Ticket"
+                          : "Tickets"}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="ml-4">
+          <div className="lg:ml-4 md:ml-4">
             <Link
               to={selectedBooking ? `${selectedBooking.id}` : "Activities"}
               offset={-35}

@@ -80,64 +80,67 @@ export default function TransferElement(props) {
           <div className="font-medium text-sm">{heading}</div>
         </div>
 
-        <div className="w-full flex flex-row items-center">
+        <div className="w-full flex flex-col lg:flex-row md:flex-row items-start">
           <div className="lg:w-[11%] md:w-[21%]"></div>
-          <div
-            className={`flex items-center justify-center w-[3rem] h-[3rem] ${
-              !imageLoaded && "bg-gray-200 rounded-lg animate-pulse"
-            }`}
-          >
-            <div className={`${imageLoaded ? "visible" : "invisible"}`}>
-              {selectedBooking &&
-              selectedBooking?.images?.image !== "" &&
-              !imageFailed ? (
-                <ImageLoader
-                  is_url={selectedBooking?.images?.image.includes("gozo")}
-                  dimensions={{ width: 300, height: 300 }}
-                  dimensionsMobile={{ width: 300, height: 300 }}
-                  borderRadius="8px"
-                  hoverpointer
-                  // onclick={() => setShowDetails(true)}
-                  width="3rem"
-                  height="3rem"
-                  leftalign
-                  widthmobile="3rem"
-                  url={selectedBooking?.images?.image}
-                  noLazy
-                  onfail={handleImageError}
-                  onload={() => {
-                    setImageLoaded(true);
-                  }}
-                ></ImageLoader>
-              ) : modes ? (
-                <TransportIconFetcher
-                  TransportMode={modes}
-                  classname="text-black lg:text-[2.05rem] md:text-[2.05rem] text-[1.25rem]"
-                />
-              ) : (
-                <div className=""></div>
-              )}
+          <div className="flex flex-row items-center">
+            <div
+              className={`flex items-center justify-center w-[4rem] h-[4rem] ${
+                !imageLoaded && "bg-gray-200 rounded-lg animate-pulse"
+              }`}
+            >
+              <div className={`${imageLoaded ? "visible" : "invisible"}`}>
+                {selectedBooking &&
+                selectedBooking?.images?.image !== "" &&
+                !imageFailed ? (
+                  <ImageLoader
+                    is_url={selectedBooking?.images?.image.includes("gozo")}
+                    dimensions={{ width: 300, height: 300 }}
+                    dimensionsMobile={{ width: 300, height: 300 }}
+                    borderRadius="8px"
+                    hoverpointer
+                    // onclick={() => setShowDetails(true)}
+                    width="4rem"
+                    height="4rem"
+                    leftalign
+                    widthmobile="4rem"
+                    url={selectedBooking?.images?.image}
+                    noLazy
+                    onfail={handleImageError}
+                    onload={() => {
+                      setImageLoaded(true);
+                    }}
+                  ></ImageLoader>
+                ) : modes ? (
+                  <TransportIconFetcher
+                    TransportMode={modes}
+                    classname="text-black lg:text-[2.05rem] md:text-[2.05rem] text-[3rem] md:text-[4rem] lg:text-[4rem]"
+                  />
+                ) : (
+                  <div className=""></div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex flex-col ml-3">
+              <div className="text-xs leading-7 ml-2">
+                {isOriginDestination()
+                  ? selectedBooking.city +
+                    " - " +
+                    selectedBooking.destination.shortName
+                  : ""}
+              </div>
+
+              <div className="font-normal text-xs leading-4 ml-2">
+                {getFlightDuration() ? (
+                  `Duration:  ${getFlightDuration()}`
+                ) : (
+                  <></>
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="flex flex-col ml-3">
-            <div className="text-xs leading-7 ml-2">
-              {isOriginDestination()
-                ? selectedBooking.city +
-                  " - " +
-                  selectedBooking.destination.shortName
-                : ""}
-            </div>
-
-            <div className="font-normal text-xs leading-4 ml-2">
-              {getFlightDuration() ? (
-                `Duration:  ${getFlightDuration()}`
-              ) : (
-                <></>
-              )}
-            </div>
-          </div>
-          <div className="ml-4">
+          <div className="lg:ml-4 md:ml-4">
             {selectedBooking ? (
               <Link
                 to={

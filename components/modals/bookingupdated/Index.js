@@ -1,13 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Modal } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import media from "../../media";
-import Accommodation from "./accommodation/Index";
 import AccommodationSearched from "./new-accommodation-searched/Index";
 import AccommodationModal from "../accommodation/Index";
 import axiosaccommodationinstance from "../../../services/bookings/FetchAccommodations";
 import axiosagodaaccommodationionstance from "../../../services/bookings/FetchAccommodationsAgoda";
-import Spinner from "../../Spinner";
 import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
 import { connect } from "react-redux";
 import Button from "../../ui/button/Index";
@@ -21,6 +18,7 @@ import Slide from "../../../Animation/framerAnimation/Slide";
 import { openNotification } from "../../../store/actions/notification";
 import Skeleton from "./Skeleton";
 import useDebounce from "../../../hooks/useDebounce";
+import ImageLoader from "../../../components/ImageLoader";
 
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
@@ -50,6 +48,12 @@ const ContentContainer = styled.div`
   min-height: 65vh;
   @media screen and (min-width: 768px) {
     min-height: max-content;
+  }
+`;
+
+const GetInTouchContainer = styled.div`
+  &:hover img {
+    filter: invert(100%);
   }
 `;
 
@@ -240,49 +244,6 @@ const Booking = (props) => {
       price_lower_range: null;
       price_upper_range: null;
     }
-    //BUDGET FILTERS
-    // if (!budgetarr.length) {
-    //   price_lower_range = 0;
-    //   price_upper_range = 100000000;
-    // } else {
-    //   if (budgetarr.includes("Below ₹3,000")) {
-    //     price_lower_range = 1;
-    //     price_upper_range = 300000;
-    //     if (budgetarr.includes("Above ₹10,000")) {
-    //       price_upper_range = null;
-    //     } else if (budgetarr.includes("₹6,000 - ₹10,000")) {
-    //       price_upper_range = 1000000;
-    //     } else if (budgetarr.includes("₹3,000 - ₹6,000")) {
-    //       price_upper_range = 600000;
-    //     }
-    //     price_set = true;
-    //   }
-    //   if (budgetarr.includes("Above ₹10,000")) {
-    //     price_upper_range = 100000000;
-    //     price_lower_range = 1000000;
-    //     if (budgetarr.includes("Below ₹3,000")) {
-    //       price_lower_range = 1;
-    //     } else if (budgetarr.includes("₹3,000 - ₹6,000")) {
-    //       price_lower_range = 300000;
-    //     } else if (budgetarr.includes("₹6,000 - ₹10,000")) {
-    //       price_lower_range = 600000;
-    //     }
-    //     price_set = true;
-    //   }
-    //   if (!price_set) {
-    //     if (budgetarr.includes("₹3,000 - ₹6,000")) {
-    //       price_lower_range = 300000;
-    //       if (budgetarr.includes("₹6,000 - ₹10,000")) {
-    //         price_upper_range = 1000000;
-    //       } else price_upper_range = 600000;
-    //     } else if (budgetarr.includes("₹6,000 - ₹10,000")) {
-    //       price_lower_range = 600000;
-    //       if (budgetarr.includes("Above ₹10,000")) {
-    //         price_upper_range = 100000000;
-    //       } else price_upper_range = 1000000;
-    //     }
-    //   }
-    // }
     return {
       type: type,
       price_lower_range: price_lower_range,
@@ -434,7 +395,7 @@ const Booking = (props) => {
         setLoading(false);
       })
       .catch((err) => {
-        if (err.response.status === 400 && gear !== "second") {
+        if (err?.response?.status === 400 && gear !== "second") {
           setSourceChange(true);
           _updateOptionsHandlerWithFilter("second");
           return;
@@ -1064,8 +1025,44 @@ const Booking = (props) => {
                     ) : null}
 
                     {isFetchingError.error ? (
-                      <div className="flex flex-row items-center justify-center h-[80vh] text-center font-lexend">
-                        {isFetchingError.errorMsg}
+                      <div className="flex flex-col items-center justify-center h-[80vh] gap-3">
+                        <div className="flex flex-row items-center justify-center text-center font-lexend">
+                          {isFetchingError.errorMsg} hello
+                        </div>
+                        <GetInTouchContainer>
+                          <Button
+                            color="#111"
+                            fontWeight="500"
+                            fontSize="1rem"
+                            borderWidth="2px"
+                            width="100%"
+                            borderRadius="8px"
+                            bgColor="#f8e000"
+                            padding="12px"
+                            onclick={props._GetInTouch}
+                          >
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                gap: "0.5rem",
+                                alignItems: "center",
+                              }}
+                            >
+                              <ImageLoader
+                                dimensions={{ height: 50, width: 50 }}
+                                dimensionsMobile={{ height: 50, width: 50 }}
+                                height={"20px"}
+                                width={"20px"}
+                                leftalign
+                                url={
+                                  "media/icons/login/customer-service-black.png"
+                                }
+                              />{" "}
+                              <span>Get in touch!</span>
+                            </div>
+                          </Button>
+                        </GetInTouchContainer>
                       </div>
                     ) : !noResults && !updateBookingState ? (
                       <OptionsContainer id="options">
@@ -1114,13 +1111,13 @@ const Booking = (props) => {
                     ) : null}
 
                     {noResults ? (
-                      <OptionsContainer className="px-2 center-div">
+                      <OptionsContainer className="px-2 center-div space-y-5">
                         <div className="font-lexend center-div text-center">
                           Oops, we couldn't find what you were searching but we
                           are already adding new and approved accommodations to
                           our database everyday!
                         </div>
-                        {selectSearch !== "" ? (
+                        {debouncedSearch !== "" ? (
                           <Button
                             boxShadow
                             onclickparam={null}
@@ -1132,7 +1129,42 @@ const Booking = (props) => {
                           >
                             Show All
                           </Button>
-                        ) : null}
+                        ) : (
+                          <GetInTouchContainer>
+                            <Button
+                              color="#111"
+                              fontWeight="500"
+                              fontSize="1rem"
+                              borderWidth="2px"
+                              width="100%"
+                              borderRadius="8px"
+                              bgColor="#f8e000"
+                              padding="12px"
+                              onclick={props._GetInTouch}
+                            >
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  gap: "0.5rem",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <ImageLoader
+                                  dimensions={{ height: 50, width: 50 }}
+                                  dimensionsMobile={{ height: 50, width: 50 }}
+                                  height={"20px"}
+                                  width={"20px"}
+                                  leftalign
+                                  url={
+                                    "media/icons/login/customer-service-black.png"
+                                  }
+                                />{" "}
+                                <span>Get in touch!</span>
+                              </div>
+                            </Button>
+                          </GetInTouchContainer>
+                        )}
                       </OptionsContainer>
                     ) : null}
                   </ContentContainer>

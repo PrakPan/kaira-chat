@@ -10,6 +10,7 @@ import ImageLoader from "../../ImageLoader";
 import AccommodationModal from "../../../components/modals/accommodation/Index";
 import FullScreenGallery from "../../../components/fullscreengallery/Index";
 import { isDateOlderThanCurrent } from "../../../helper/isDateOlderThanCurrent";
+import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 
 export default function AccommodationElement(props) {
   const { heading, data, meta, city_id, booking } = props;
@@ -19,6 +20,7 @@ export default function AccommodationElement(props) {
   const [images, setImages] = useState(null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
+  const [stars, setStars] = useState(null);
   const isPageWide = media("(min-width: 768px)");
 
   useEffect(() => {
@@ -29,10 +31,27 @@ export default function AccommodationElement(props) {
       data?.bookings[0]?.id
     ) {
       for (let book of booking) {
-        if (book.id === data.bookings[0].id) setSelectedBooking(book);
+        if (book.id === data.bookings[0].id) {
+          setSelectedBooking(book);
+        }
       }
     }
   }, [booking]);
+
+  useEffect(() => {
+    if (selectedBooking && selectedBooking.user_rating) {
+      const stars = [];
+      for (let i = 0; i < Math.floor(selectedBooking.user_rating); i++) {
+        stars.push(<FaStar />);
+      }
+      if (
+        Math.floor(selectedBooking.user_rating) < selectedBooking.user_rating
+      ) {
+        stars.push(<FaStarHalfAlt />);
+      }
+      setStars(stars);
+    }
+  }, [selectedBooking]);
 
   const handleImageFailed = () => {
     setImageFailed(true);
@@ -55,7 +74,7 @@ export default function AccommodationElement(props) {
 
   return (
     <Container className="pt-0">
-      <div className="flex flex-col items-center justify-center w-full">
+      <div className="flex flex-col items-center justify-center w-full space-y-1">
         <div className="w-full flex flex-col space-y-2 md:space-y-0 lg:space-y-0 md:flex-row lg:flex-row items-start md:items-center lg:items-center">
           <div className="lg:w-[11%] md:w-[21%] flex flex-row justify-center">
             {meta?.day_timing ? (
@@ -80,53 +99,67 @@ export default function AccommodationElement(props) {
           <div className="font-medium text-sm">{heading}</div>
         </div>
 
-        <div className="w-full flex flex-row items-center">
+        <div className="w-full flex flex-col lg:flex-row md:flex-row items-start">
           <div className="lg:w-[11%] md:w-[21%]"></div>
-          <div
-            className={`flex items-center justify-center w-[3rem] h-[3rem] ${
-              !imageLoaded && "bg-gray-200 rounded-lg animate-pulse"
-            }`}
-          >
-            <div className={`${imageLoaded ? "visible" : "invisible"}`}>
-              {selectedBooking?.images[0]?.image !== "" && !imageFailed ? (
-                <ImageLoader
-                  dimensions={{ width: 300, height: 300 }}
-                  dimensionsMobile={{ width: 300, height: 300 }}
-                  borderRadius="8px"
-                  hoverpointer
-                  onclick={() => setShowDetails(true)}
-                  width="3rem"
-                  height="3rem"
-                  leftalign
-                  widthmobile="3rem"
-                  url={selectedBooking?.images[0]?.image}
-                  noLazy
-                  onfail={handleImageFailed}
-                  onload={() => {
-                    setImageLoaded(true);
-                  }}
-                ></ImageLoader>
-              ) : (
-                <FaBed className="text-black lg:text-[1.65rem] md:text-[1.65rem] text-[1.25rem]" />
-              )}
+          <div className="flex flex-row">
+            <div
+              className={`flex items-center justify-center w-[4rem] h-[4rem] ${
+                !imageLoaded && "bg-gray-200 rounded-lg animate-pulse"
+              }`}
+            >
+              <div className={`${imageLoaded ? "visible" : "invisible"}`}>
+                {selectedBooking?.images[0]?.image !== "" && !imageFailed ? (
+                  <ImageLoader
+                    dimensions={{ width: 300, height: 300 }}
+                    dimensionsMobile={{ width: 300, height: 300 }}
+                    borderRadius="8px"
+                    hoverpointer
+                    onclick={() => setShowDetails(true)}
+                    width="4rem"
+                    height="4rem"
+                    leftalign
+                    widthmobile="4rem"
+                    url={selectedBooking?.images[0]?.image}
+                    noLazy
+                    onfail={handleImageFailed}
+                    onload={() => {
+                      setImageLoaded(true);
+                    }}
+                  ></ImageLoader>
+                ) : (
+                  <FaBed className="text-black text-[3rem]" />
+                )}
+              </div>
             </div>
-          </div>
-          <div className="flex flex-col ml-3">
-            <div className="text-xs font-normal leading-4 ml-2">
-              {selectedBooking && selectedBooking.name}
-            </div>
-            <div className="font-normal text-xs leading-4 ml-2">
-              {selectedBooking &&
-                selectedBooking.duration &&
-                (selectedBooking.duration > 1
-                  ? selectedBooking.duration + " Nights"
-                  : selectedBooking.duration > 0
-                  ? selectedBooking.duration + " Night"
-                  : null)}
+
+            <div className="flex flex-col gap-0 ml-3">
+              <div className="text-sm font-bold leading-6 ml-2">
+                {selectedBooking && selectedBooking.name}
+              </div>
+              <div className="font-normal text-xs leading-4 ml-2">
+                {selectedBooking &&
+                  selectedBooking.duration &&
+                  (selectedBooking.duration > 1
+                    ? selectedBooking.duration + " Nights"
+                    : selectedBooking.duration > 0
+                    ? selectedBooking.duration + " Night"
+                    : null)}
+              </div>
+              {selectedBooking?.user_rating ? (
+                <span className="flex flex-row items-center gap-1 text-sm text-[#7a7a7a]">
+                  <span className="flex flex-row text-[#FFD201] ml-2">
+                    {stars}
+                  </span>
+                  <span className="">{selectedBooking?.user_rating} . </span>
+                  <span className="underline">
+                    {selectedBooking?.number_of_reviews} user reviews
+                  </span>
+                </span>
+              ) : null}
             </div>
           </div>
 
-          <div className="ml-4">
+          <div className="lg:ml-4 md:ml-4">
             <Link
               to={selectedBooking ? `${selectedBooking.id}` : "Stays"}
               offset={-35}

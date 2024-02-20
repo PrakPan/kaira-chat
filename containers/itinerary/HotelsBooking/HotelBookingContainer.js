@@ -1,28 +1,21 @@
 import React, { useEffect, useState } from "react";
 import ImageLoader from "../../../components/ImageLoader";
-import StarRating from "../../../components/StarRating";
 import { BsCalendar2, BsPeopleFill, BsPlus } from "react-icons/bs";
-import { FaBed, FaStar, FaStarHalfAlt } from "react-icons/fa";
+import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import { BiBed } from "react-icons/bi";
 import { ImSpoonKnife } from "react-icons/im";
 import Skeleton from "../../../components/ui/SkeletonCard";
-import {
-  getDate,
-  convertDateYearFormat,
-} from "../../../helper/ConvertDateFormat";
-import ButtonYellow from "../../../components/ButtonYellow";
+import { getDate } from "../../../helper/ConvertDateFormat";
 import Button from "../../../components/ui/button/Index";
 import media from "../../../components/media";
 import styled from "styled-components";
 import { getIndianPrice } from "../../../services/getIndianPrice";
-// import DropDown from '../../../components/modals/bookingupdated/new-accommodation-searched/Dropdown';
 import CheckboxFormComponent from "../../../components/FormComponents/CheckboxFormComponent";
 import useMediaQuery from "../../../hooks/useMedia";
 import { getHumanDate } from "../../../services/getHumanDate";
 import { ITINERARY_STATUSES } from "../../../services/constants";
-import { PulseLoader } from "react-spinners";
-import { MdHotel, MdWifi } from "react-icons/md";
-import { BiDollarCircle } from "react-icons/bi";
+import { MdWifi } from "react-icons/md";
+
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
     rgba(0, 0, 0, 0.05) 0px 5px 10px;
@@ -74,10 +67,12 @@ const HotelBookingContainer = ({
     booking?.user_selected ? false : true
   );
   const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     setisSelect(booking?.user_selected);
     setisSearchedBooking(booking?.user_selected ? false : true);
   }, [booking]);
+
   function Addons(Shorthand) {
     switch (Shorthand) {
       case "EP":
@@ -533,48 +528,6 @@ const HotelBookingContainer = ({
               </div>
             </div>
 
-            {/* {!currentBooking && (
-              <div>
-                {isSelect && payment?.user_allowed_to_pay && (
-                  <div
-                    className={`absolute  ${
-                      SelectedBookingin
-                        ? "lg:bottom-4 bottom-[1.5rem] "
-                        : `${
-                            payment?.paid_user || !payment?.user_allowed_to_pay
-                              ? "bottom-[2.2rem]"
-                              : "bottom-[2.2rem]"
-                          }`
-                    } right-6 -m-3`}
-                  >
-                    {loading && (
-                      <PulseLoader
-                        style={{
-                          position: "absolute",
-                          top: "-15%",
-                          left: "50%",
-                          transform: "translate(-50% , -50%)",
-                        }}
-                        size={12}
-                        speedMultiplier={0.6}
-                        color="#111"
-                      />
-                    )}
-                    <div
-                      onClick={(e) => {
-                        handleCheckboxChange(e);
-                      }}
-                      className="flex flex-row gap-1 items-center  cursor-pointer"
-                    >
-                      <CheckboxFormComponent checked={isSelect} />
-                      <label className="text-center">
-                        {isSelect ? "Added Booking" : "Add Booking"}
-                      </label>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )} */}
             {currentBooking && (
               <div className="absolute  bottom-[28px] right-8 -m-3">
                 {alternates ? (

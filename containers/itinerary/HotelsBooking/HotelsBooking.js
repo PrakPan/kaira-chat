@@ -372,7 +372,7 @@ const HotelsBooking = (props) => {
     setCurrentBooking(data);
     props.setShowBookingModal;
   }
-  
+
   function handleClick(i, id, data, city_id) {
     let check_in = props.stayBookings[i]["check_in"];
     let check_out = props.stayBookings[i]["check_out"];
@@ -393,7 +393,7 @@ const HotelsBooking = (props) => {
       return formattedDate;
     }
   }
-  
+
   const HotelArray = [];
   if (props.breif.city_slabs[1]?.hasOwnProperty("accommodation_booking")) {
     if (props.breif.city_slabs) {
@@ -606,6 +606,7 @@ const HotelsBooking = (props) => {
         showBookingModal={props.showBookingModal}
         setHideBookingModal={props.setHideBookingModal}
         AddHotel={AddHotel}
+        _GetInTouch={props._GetInTouch}
       ></BookingModal>
 
       {!isDesktop && props.showBookingModal && (

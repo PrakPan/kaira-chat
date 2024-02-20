@@ -136,6 +136,13 @@ const EmptyMsg = styled.div`
   align-items: center;
   gap: 0.25rem;
 `;
+
+const GetInTouchContainer = styled.div`
+  &:hover img {
+    filter: invert(100%);
+  }
+`;
+
 const ItineraryPoiElementM = (props) => {
   const [show, setShow] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
@@ -576,7 +583,7 @@ const ItineraryPoiElementM = (props) => {
               ) : null}
             </div>
           ) : (
-            <div className="flex flex-col">
+            <div className="flex flex-col items-center gap-3">
               <EmptyMsg className="flex flex-row items-start px-1">
                 <BiErrorCircle className="" />
                 <span className="">
@@ -585,7 +592,7 @@ const ItineraryPoiElementM = (props) => {
                   available.
                 </span>
               </EmptyMsg>
-              {selectSearch !== "" ? (
+              {debouncedSearch !== "" ? (
                 <Button
                   boxShadow
                   onclickparam={null}
@@ -597,7 +604,40 @@ const ItineraryPoiElementM = (props) => {
                 >
                   Show All
                 </Button>
-              ) : null}
+              ) : (
+                <GetInTouchContainer>
+                  <Button
+                    color="#111"
+                    fontWeight="500"
+                    fontSize="1rem"
+                    borderWidth="2px"
+                    width="100%"
+                    borderRadius="8px"
+                    bgColor="#f8e000"
+                    padding="12px"
+                    onclick={props._GetInTouch}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        gap: "0.5rem",
+                        alignItems: "center",
+                      }}
+                    >
+                      <ImageLoader
+                        dimensions={{ height: 50, width: 50 }}
+                        dimensionsMobile={{ height: 50, width: 50 }}
+                        height={"20px"}
+                        width={"20px"}
+                        leftalign
+                        url={"media/icons/login/customer-service-black.png"}
+                      />{" "}
+                      <span>Get in touch!</span>
+                    </div>
+                  </Button>
+                </GetInTouchContainer>
+              )}
             </div>
           )
         ) : (

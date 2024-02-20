@@ -203,6 +203,7 @@ const NewItenaryDBDMob = (props) => {
               getAccommodationAndActivitiesHandler={
                 props.getAccommodationAndActivitiesHandler
               }
+              _GetInTouch={props._GetInTouch}
             ></Day_I_ContainerM>
           </div>
         ))}

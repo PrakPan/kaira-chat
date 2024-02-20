@@ -33,7 +33,7 @@ export default function PoiElement(props) {
                     onClick={handleActivity}
                     key={index}
                     id={index}
-                    className="cursor-pointer hover:text-blue border-2 rounded-full px-3 py-1"
+                    className="cursor-pointer hover:text-blue border-2 rounded-full px-2 lg:px-3 md:px-3 py-1"
                   >
                     {poi.heading}
                   </span>
