@@ -1,42 +1,32 @@
-import React, { useEffect, useState } from "react";
-import ImageLoader from "../../../components/ImageLoader";
-import StarRating from "../../../components/StarRating";
-import { BsCalendar2, BsPeopleFill } from "react-icons/bs";
-import { FaBed, FaStar, FaStarHalfAlt } from "react-icons/fa";
-import { ImSpoonKnife } from "react-icons/im";
+import React, { useState } from "react";
+import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import FullScreenGallery from "../../../components/fullscreengallery/Index";
 import BookingModal from "../../../components/modals/bookingupdated/Index";
 import * as ga from "../../../services/ga/Index";
 import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
-
-import ButtonYellow from "../../../components/ButtonYellow";
 import AccommodationModal from "../../../components/modals/accommodation/Index";
 import styled from "styled-components";
 import { FaFilter } from "react-icons/fa";
-import {
-  getDate,
-  convertDateYearFormat,
-} from "../../../helper/ConvertDateFormat";
 import { connect } from "react-redux";
 import HotelBookingContainer from "./HotelBookingContainer";
 import LogInModal from "../../../components/modals/Login";
 import useMediaQuery from "../../../hooks/useMedia";
 import { TbArrowBack } from "react-icons/tb";
 import { isDateOlderThanCurrent } from "../../../helper/isDateOlderThanCurrent";
-import Modal from "../../../components/ui/Modal";
 import MakeYourPersonalised from "../../../components/MakeYourPersonalised";
-import { useRouter } from "next/router";
-import { format, isEqual, isSameDay, parse } from "date-fns";
+import { format, isSameDay, parse } from "date-fns";
 import Slide from "../../../Animation/framerAnimation/Slide";
-import { storeAndRetrieveValue } from "../../../helper/storeAndRetrieveValue";
 import { CONTENT_SERVER_HOST } from "../../../services/constants";
+
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
     rgba(0, 0, 0, 0.05) 0px 5px 10px;
 `;
+
 const ClippathComp = styled.div`
   clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
 `;
+
 const Floating = styled.div`
   position: fixed;
   bottom: 10px;
@@ -51,6 +41,7 @@ const Floating = styled.div`
 
   cursor: pointer;
 `;
+
 const FloatingView = styled.div`
   position: fixed;
   bottom: 68px;
@@ -64,6 +55,7 @@ const FloatingView = styled.div`
   right: 10px;
   cursor: pointer;
 `;
+
 const HotelsBooking = (props) => {
   const [selectedBooking, setSelectedBooking] = useState({
     id: null,
@@ -140,6 +132,7 @@ const HotelsBooking = (props) => {
     });
     props.setShowBookingModal();
   };
+
   let bookings_accommodations = [];
 
   let alternatesarr = [];
@@ -160,6 +153,7 @@ const HotelsBooking = (props) => {
         return null;
     }
   }
+
   const starRating = (rating) => {
     var stars = [];
     for (let i = 0; i < Math.floor(rating); i++) {
@@ -168,6 +162,7 @@ const HotelsBooking = (props) => {
     if (Math.floor(rating) < rating) stars.push(<FaStarHalfAlt />);
     return stars;
   };
+
   const noOfWords = (sentence, number) => {
     if (sentence) {
       const words = sentence.trim().split(/\s+/);
@@ -178,13 +173,16 @@ const HotelsBooking = (props) => {
       }
     }
   };
+
   const _setImagesHandler = (images) => {
     setImages(images);
   };
+
   const _handleLoginClose = () => {
     // props.getPaymentHandler();
     setShowLoginModal(false);
   };
+
   const _SelectedBookingHandler = ({
     itinerary_id,
     tailored_id,
@@ -260,6 +258,7 @@ const HotelsBooking = (props) => {
         });
     });
   };
+
   function compareDates(dateString1, dateString2) {
     if (dateString1 && dateString2) {
       const date1 = parse(dateString1, "yyyy-MM-dd", new Date());
@@ -269,8 +268,10 @@ const HotelsBooking = (props) => {
 
     return false;
   }
+
   const findObjectByDate = (array, date) =>
     array.find((obj) => obj.check_in === date);
+
   const isObjectByDate = (array, date) => {
     if (array) {
       const booking = findObjectByDate(array, date);
@@ -288,6 +289,7 @@ const HotelsBooking = (props) => {
     if (result_id === -1) return 0;
     else return result_id;
   };
+
   function handleClickAc(i, data, city_id) {
     let name = props.stayBookings[i]["name"];
     let costings_breakdown = props.stayBookings[i]["costings_breakdown"];
@@ -333,6 +335,7 @@ const HotelsBooking = (props) => {
     setCurrentBooking(data);
     props.setShowBookingModal;
   }
+
   const _changeBookingNewHandler = (check_in, check_out, pax, city, cityId) => {
     {
       process.env.NODE_ENV === "production" &&
@@ -352,6 +355,7 @@ const HotelsBooking = (props) => {
     });
     props.setShowBookingModal();
   };
+
   function handleClickNewAc(i, data, city_id) {
     let check_in = data.checkin_date;
     let check_out = data.checkout_date;
@@ -368,6 +372,7 @@ const HotelsBooking = (props) => {
     setCurrentBooking(data);
     props.setShowBookingModal;
   }
+  
   function handleClick(i, id, data, city_id) {
     let check_in = props.stayBookings[i]["check_in"];
     let check_out = props.stayBookings[i]["check_out"];
@@ -380,6 +385,7 @@ const HotelsBooking = (props) => {
     setBookingFunData({ index: i, booking: data, city_id: city_id });
     setShowDetails(true);
   }
+
   function convertDateFormat(dateString) {
     if (dateString) {
       const parsedDate = parse(dateString, "dd/MM/yyyy", new Date());
@@ -387,6 +393,7 @@ const HotelsBooking = (props) => {
       return formattedDate;
     }
   }
+  
   const HotelArray = [];
   if (props.breif.city_slabs[1]?.hasOwnProperty("accommodation_booking")) {
     if (props.breif.city_slabs) {
@@ -627,7 +634,7 @@ const HotelsBooking = (props) => {
           </FloatingView>
         </div>
       )}
-      
+
       {props.token && props.showBookingModal && (
         <MakeYourPersonalised
           date={props?.payment?.meta_info?.start_date}

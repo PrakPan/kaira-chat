@@ -1,37 +1,20 @@
 import styled from "styled-components";
-import {
-  useState,
-  forwardRef,
-  useImperativeHandle,
-  useEffect,
-  useRef,
-} from "react";
-import { AiFillCar } from "react-icons/ai";
+import { useState, useEffect } from "react";
 import ImageLoader from "../../../components/ImageLoader";
 import Button from "../../../components/ui/button/Index";
 import { ITINERARY_ELEMENT_TYPES } from "../../../services/constants";
-import { HiPencil } from "react-icons/hi";
-import Rating from "./Rating";
-import Tips from "./Tips";
-import {
-  HLine,
-  newDayContainerTextpadding,
-} from "../../itinerary/New_Itenary_DBD/New_itenaryStyled";
-import StarRating from "../../../components/StarRating";
+import { newDayContainerTextpadding } from "../../itinerary/New_Itenary_DBD/New_itenaryStyled";
 import { MdEdit, MdNavigateNext } from "react-icons/md";
 import Drawer from "../../../components/ui/Drawer";
-import { TbArrowBack } from "react-icons/tb";
 import { IoMdClose } from "react-icons/io";
 import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
 import axiosaxtivitiesinstance from "../../../services/poi/reccommendedactivities";
 import axiositineraryeditinstance from "../../../services/itinerary/edit";
-import POIDetailsSkeleton from "../../../components/drawers/poiDetails/POIDetailsSkeleton";
 import PoiList from "./PoiList";
 import PoiListSkeleton from "./PoiListSkeleton";
 import LogInModal from "../../../components/modals/Login";
 import { Navigation } from "../../../components/NewNavigation";
 import MakeYourPersonalised from "../../../components/MakeYourPersonalised";
-import NotificationPopup from "../../../components/ui/NotificationPopup";
 import { connect } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
@@ -43,6 +26,7 @@ import useDebounce from "../../../hooks/useDebounce";
 const padding = {
   initialLeft: "60px",
 };
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -54,6 +38,7 @@ const Container = styled.div`
   padding: 0px 0px 0px 0px;
   color: #01202b;
 `;
+
 export const TInfoContainer = styled.div`
   @media screen and (min-width: 768px) {
     display: flex;
@@ -65,9 +50,11 @@ export const TInfoContainer = styled.div`
     }
   }
 `;
+
 const TextContainer = styled.div`
   position: relative;
 `;
+
 const MoreIcon = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -84,6 +71,7 @@ const MoreIcon = styled.div`
     font-size: 0.875rem;
   }
 `;
+
 const EmptyMsg = styled.div`
   margin-top: 5rem;
   text-align: center;
@@ -92,6 +80,7 @@ const EmptyMsg = styled.div`
   align-items: center;
   gap: 0.25rem;
 `;
+
 const RatingContainer = styled.div`
   margin-top: 0.3rem;
   display: flex;
@@ -103,7 +92,9 @@ const RatingContainer = styled.div`
     color: #727272;
   }
 `;
+
 const SectionOneText = styled.span``;
+
 const GridContainer = styled.div`
   display: grid;
   width: 100%;
@@ -111,6 +102,7 @@ const GridContainer = styled.div`
 
   grid-column-gap: 0.5rem;
 `;
+
 const Text = styled.p`
   overflow: hidden;
   line-height: 1.5;
@@ -120,17 +112,20 @@ const Text = styled.p`
   -webkit-box-orient: vertical;
   font-size: 14px;
 `;
+
 const Heading = styled.span`
   margin-bottom: 0rem;
   margin-right: 0.25rem;
   font-weight: 500;
   line-height: 1;
 `;
+
 const Line = styled.div`
   border-style: none none solid none;
   border-color: #e4e4e4;
   border-width: 1px;
 `;
+
 const BoldTags = styled.p`
   font-weight: 600;
   font-size: 14px;
@@ -147,11 +142,13 @@ const ColorTags = styled.span`
   font-weight: 400;
   padding: 0.25rem 0.5rem;
 `;
+
 const FiltersContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 0.25rem;
 `;
+
 const ItineraryPoiElement = (props) => {
   const [show, setShow] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
@@ -164,18 +161,18 @@ const ItineraryPoiElement = (props) => {
   const [selectSearch, setSelectedSearch] = useState("");
   const debouncedSearch = useDebounce(selectSearch);
   const [elementType, setElementType] = useState("POI");
+  const [offSet, setOffSet] = useState(0);
   const items = [
     { id: 1, label: "Places To Visit", link: "" },
     { id: 2, label: "Things To Do", link: "" },
   ];
-  const [offSet, setOffSet] = useState(0);
 
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
     setShow(false);
   };
 
-  const fetchData = (clearSearch = false, showMore = false) => {
+  const fetchData = (showMore = false) => {
     let ticketsCount = 1;
     if (props.payment && props.payment.meta_info) {
       ticketsCount =
@@ -192,7 +189,7 @@ const ItineraryPoiElement = (props) => {
         experience_filters: EXPERIENCE_FILTERS_BOX[SelectedExprience]
           ? EXPERIENCE_FILTERS_BOX[SelectedExprience].actual
           : [],
-        search_query: clearSearch ? "" : debouncedSearch,
+        search_query: debouncedSearch,
       })
       .then((res) => {
         if (res.data.results.length) {
@@ -248,9 +245,6 @@ const ItineraryPoiElement = (props) => {
     setSelectedSearch("");
     setOptionsJSX([]);
   }, [showDrawer]);
-  // const _updateActivityBookingsHandler = (poi) {
-
-  // }
 
   const searchHandler = (e) => {
     if (e.target.id === "icon" && selectSearch.trim().length > 0) {
@@ -263,7 +257,6 @@ const ItineraryPoiElement = (props) => {
 
   const handleClearSearch = () => {
     setSelectedSearch("");
-    fetchData(true);
   };
 
   const setFocus = (dayIndex, elementIndex, activityId) => {
@@ -350,6 +343,7 @@ const ItineraryPoiElement = (props) => {
   };
 
   const ClickHandler = (child) => {
+    setOffSet(0);
     if (child === "Things To Do") {
       setElementType("Activity");
     } else {
@@ -378,7 +372,7 @@ const ItineraryPoiElement = (props) => {
   const handleScroll = (e) => {
     const { offsetHeight, scrollTop, scrollHeight } = e.target;
     if (offsetHeight + scrollTop >= scrollHeight) {
-      if (showMoreResults) fetchData(false, true);
+      if (showMoreResults) fetchData(true);
     }
   };
 
@@ -613,11 +607,29 @@ const ItineraryPoiElement = (props) => {
               ) : null}
             </div>
           ) : (
-            <EmptyMsg>
-              <BiErrorCircle /> Oops, it looks like there are no{" "}
-              {elementType === "POI" ? "places to visit" : "things to do"}{" "}
-              available.
-            </EmptyMsg>
+            <div className="flex flex-col">
+              <EmptyMsg className="flex flex-row items-start px-1">
+                <BiErrorCircle className="" />
+                <span className="">
+                  Oops, it looks like there are no{" "}
+                  {elementType === "POI" ? "places to visit" : "things to do"}{" "}
+                  available.
+                </span>
+              </EmptyMsg>
+              {selectSearch !== "" ? (
+                <Button
+                  boxShadow
+                  onclickparam={null}
+                  onclick={handleClearSearch}
+                  margin="0.25rem auto"
+                  borderWidth="1px"
+                  borderRadius="2rem"
+                  padding="0.25rem 1rem"
+                >
+                  Show All
+                </Button>
+              ) : null}
+            </div>
           )
         ) : (
           <PoiListSkeleton />

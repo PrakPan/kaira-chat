@@ -40,7 +40,7 @@ module.exports = {
   },
   experimental: {
     nextScriptWorkers: true,
-    // http2: true, // Enable HTTP/2 support
+    http2: true, // Enable HTTP/2 support
     push: true, // Enable server push
   },
   // images: {

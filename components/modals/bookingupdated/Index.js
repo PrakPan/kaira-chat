@@ -165,7 +165,6 @@ const Booking = (props) => {
 
   const handleClearSearch = () => {
     setSelectedSearch("");
-    _updateOptionsHandlerWithFilter("", true);
   };
 
   const _addFilterHandler = (filter, heading) => {
@@ -292,7 +291,7 @@ const Booking = (props) => {
     };
   };
 
-  const _updateOptionsHandlerWithFilter = (gear, clearSearch = false) => {
+  const _updateOptionsHandlerWithFilter = (gear) => {
     setLoading(true);
     setOffset(0);
     setUpdateLoadingState(true);
@@ -358,7 +357,7 @@ const Booking = (props) => {
         sort_by: filters.sort_by,
         sort_order: sort_order,
         live: true,
-        q: clearSearch ? "" : debouncedSearch,
+        q: debouncedSearch,
       })
       .then((res) => {
         setUpdateLoadingState(false);
@@ -1115,10 +1114,25 @@ const Booking = (props) => {
                     ) : null}
 
                     {noResults ? (
-                      <OptionsContainer className="font-lexend center-div text-center">
-                        Oops, we couldn't find what you were searching but we
-                        are already adding new and approved accommodations to
-                        our database everyday!
+                      <OptionsContainer className="px-2 center-div">
+                        <div className="font-lexend center-div text-center">
+                          Oops, we couldn't find what you were searching but we
+                          are already adding new and approved accommodations to
+                          our database everyday!
+                        </div>
+                        {selectSearch !== "" ? (
+                          <Button
+                            boxShadow
+                            onclickparam={null}
+                            onclick={handleClearSearch}
+                            margin="0.25rem auto"
+                            borderWidth="1px"
+                            borderRadius="2rem"
+                            padding="0.25rem 1rem"
+                          >
+                            Show All
+                          </Button>
+                        ) : null}
                       </OptionsContainer>
                     ) : null}
                   </ContentContainer>

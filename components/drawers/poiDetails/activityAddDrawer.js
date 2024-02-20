@@ -121,7 +121,7 @@ const ActivityAddDrawer = (props) => {
       });
   };
 
-  function fetchData(clearSearch = false, showMore = false) {
+  function fetchData(showMore = false) {
     axiosaxtivitiesinstance
       .post(`/?limit=30&offset=${offSet}`, {
         location: props?.cityID,
@@ -130,7 +130,7 @@ const ActivityAddDrawer = (props) => {
         experience_filters: EXPERIENCE_FILTERS_BOX[selectedExprience]
           ? EXPERIENCE_FILTERS_BOX[selectedExprience].actual
           : [],
-        search_query: clearSearch ? "" : debouncedSearch,
+        search_query: debouncedSearch,
       })
       .then((res) => {
         if (res.data.results.length) {
@@ -197,7 +197,6 @@ const ActivityAddDrawer = (props) => {
 
   const handleClearSearch = () => {
     setSelectedSearch("");
-    fetchData(true);
   };
 
   const navigationHandler = (child) => {
@@ -211,7 +210,7 @@ const ActivityAddDrawer = (props) => {
   const handleScroll = (e) => {
     const { offsetHeight, scrollTop, scrollHeight } = e.target;
     if (offsetHeight + scrollTop >= scrollHeight) {
-      if (showMoreResults) fetchData(false, true);
+      if (showMoreResults) fetchData(true);
     }
   };
 
@@ -342,11 +341,29 @@ const ActivityAddDrawer = (props) => {
             ) : null}
           </div>
         ) : (
-          <EmptyMsg>
-            <BiErrorCircle /> Oops, it looks like there are no{" "}
-            {elementType === "POI" ? "places to visit" : "things to do"}{" "}
-            available.
-          </EmptyMsg>
+          <div className="flex flex-col">
+            <EmptyMsg className="flex flex-row items-start px-1">
+              <BiErrorCircle className="" />
+              <span className="">
+                Oops, it looks like there are no{" "}
+                {elementType === "POI" ? "places to visit" : "things to do"}{" "}
+                available.
+              </span>
+            </EmptyMsg>
+            {selectSearch !== "" ? (
+              <Button
+                boxShadow
+                onclickparam={null}
+                onclick={handleClearSearch}
+                margin="0.25rem auto"
+                borderWidth="1px"
+                borderRadius="2rem"
+                padding="0.25rem 1rem"
+              >
+                Show All
+              </Button>
+            ) : null}
+          </div>
         )
       ) : (
         <PoiListSkeleton />

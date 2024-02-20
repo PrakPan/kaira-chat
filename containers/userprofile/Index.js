@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import openTailoredModal from "../../services/openTailoredModal";
 import ExperienceCard from "../../components/cards/newitinerarycard-main/ExperienceCard";
 import ExperienceCardSkeleton from "../../components/cards/newitinerarycard-main/ExperienceCardSkeleton";
+import Button from "../../components/ui/button/Index";
 
 const Container = styled.div`
   width: 100%;
@@ -73,7 +74,9 @@ const UserDashboard = (props) => {
         },
       })
       .then((res) => {
-        if (res.data.count) setTotalPlans(res.data.count);
+        if (res.data.count) {
+          setTotalPlans(res.data.count);
+        }
         if (res.data.next) {
           setShowMoreResults(true);
           setOffSet((prev) => prev + 9);
@@ -198,7 +201,18 @@ const UserDashboard = (props) => {
                   <ExperienceCardSkeleton />
                   <ExperienceCardSkeleton />
                 </div>
-              ) : null}
+              ) : (
+                <Button
+                  onclick={() => openTailoredModal(router)}
+                  borderWidth="1px"
+                  fontWeight="500"
+                  borderRadius="6px"
+                  margin="2rem auto"
+                  padding="0.5rem 2rem"
+                >
+                  Create your new travel plan now!
+                </Button>
+              )}
             </div>
           ) : (
             <ImageLoader

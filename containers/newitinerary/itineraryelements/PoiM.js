@@ -1,14 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { AiFillCar } from "react-icons/ai";
 import ImageLoader from "../../../components/ImageLoader";
 import Button from "../../../components/ui/button/Index";
 import {
   EXPERIENCE_FILTERS_BOX,
   ITINERARY_ELEMENT_TYPES,
 } from "../../../services/constants";
-import { HiPencil } from "react-icons/hi";
-import Rating from "./Rating";
-import Tips from "./Tips";
 import StarRating from "../../../components/StarRating";
 import { MdEdit, MdNavigateNext } from "react-icons/md";
 import Drawer from "../../../components/ui/Drawer";
@@ -16,7 +12,6 @@ import { TbArrowBack } from "react-icons/tb";
 import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
 import axiosaxtivitiesinstance from "../../../services/poi/reccommendedactivities";
 import axiositineraryeditinstance from "../../../services/itinerary/edit";
-import POIDetailsSkeleton from "../../../components/drawers/poiDetails/POIDetailsSkeleton";
 import PoiList from "./PoiList";
 import PoiListSkeleton from "./PoiListSkeleton";
 import LogInModal from "../../../components/modals/Login";
@@ -25,8 +20,6 @@ import { IoMdClose } from "react-icons/io";
 import { FaFilter, FaStar, FaStarHalfAlt } from "react-icons/fa";
 import ButtonYellow from "../../../components/ButtonYellow";
 import useMediaQuery from "../../../hooks/useMedia";
-import Slide from "../../../Animation/framerAnimation/Slide";
-import ScrollVisibleHOC from "../../../helper/withScrollVisibility";
 import MakeYourPersonalised from "../../../components/MakeYourPersonalised";
 import { connect } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
@@ -147,7 +140,6 @@ const ItineraryPoiElementM = (props) => {
   const [show, setShow] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
   const [showFilter, setshowFilter] = useState(false);
-
   const [showDrawerListData, setshowDrawerListData] = useState(false);
   const [showDrawerData, setShowDrawerData] = useState(false);
   const [fetchingPoi, setFetchingPoi] = useState(false);
@@ -159,14 +151,22 @@ const ItineraryPoiElementM = (props) => {
   const [selectSearch, setSelectedSearch] = useState("");
   const debouncedSearch = useDebounce(selectSearch);
   const [elementType, setElementType] = useState("POI");
+  const [offSet, setOffSet] = useState(0);
+  const drawerRef = useRef(null);
+  const isDesktop = useMediaQuery("(min-width:1148px)");
   const items = [
     { id: 1, label: "Point of Interest", link: "POIS" },
     { id: 2, label: "Activities", link: "Activitiess" },
   ];
-  const drawerRef = useRef(null);
-  const [offSet, setOffSet] = useState(0);
+  const Experiences = [
+    "Adventure",
+    "Heritage",
+    "Spiritual",
+    "Hidden Gem",
+    "Very popular",
+  ];
 
-  const fetchData = (clearSearch = false, showMore = false) => {
+  const fetchData = (showMore = false) => {
     let ticketsCount = 1;
     if (props.payment && props.payment.meta_info) {
       ticketsCount =
@@ -183,7 +183,7 @@ const ItineraryPoiElementM = (props) => {
         experience_filters: EXPERIENCE_FILTERS_BOX[SelectedExprience]
           ? EXPERIENCE_FILTERS_BOX[SelectedExprience].actual
           : [],
-        search_query: clearSearch ? "" : debouncedSearch,
+        search_query: debouncedSearch,
       })
       .then((res) => {
         if (res.data.results.length) {
@@ -275,8 +275,6 @@ const ItineraryPoiElementM = (props) => {
   };
 
   const _updatePoiHandler = (poi) => {
-    // setUpdateLoadingState(true);
-
     axiositineraryeditinstance
       .post(
         "/",
@@ -315,9 +313,6 @@ const ItineraryPoiElementM = (props) => {
         }, 1000);
       })
       .catch((err) => {
-        // setUpdateLoadingState(false);
-
-        // window.alert("There seems to be a problem, please try again!");
         props.openNotification({
           text: "There seems to be a problem, please try again!",
           heading: "Error!",
@@ -337,15 +332,8 @@ const ItineraryPoiElementM = (props) => {
     setElementType(activity.id ? "Activity" : "POI");
   }
 
-  const Experiences = [
-    "Adventure",
-    "Heritage",
-    "Spiritual",
-    "Hidden Gem",
-    "Very popular",
-  ];
-
   const ClickHandler = (child) => {
+    setOffSet(0);
     if (child == "Activities") {
       setElementType("Activity");
     } else {
@@ -355,10 +343,7 @@ const ItineraryPoiElementM = (props) => {
 
   const handleClearSearch = () => {
     setSelectedSearch("");
-    fetchData(true);
   };
-
-  const isDesktop = useMediaQuery("(min-width:1148px)");
 
   const _getStars = (rating) => {
     var stars = [];
@@ -381,7 +366,7 @@ const ItineraryPoiElementM = (props) => {
   const handleScroll = (e) => {
     const { offsetHeight, scrollTop, scrollHeight } = e.target;
     if (offsetHeight + scrollTop >= scrollHeight) {
-      if (showMoreResults) fetchData(false, true);
+      if (showMoreResults) fetchData(true);
     }
   };
 
@@ -390,34 +375,6 @@ const ItineraryPoiElementM = (props) => {
       id={`${props?.day_slab_index}-${props?.data?.element_index}-${props?.activity_data.id}`}
       className="font-lexend p-2"
     >
-      {/* <div style={{ display: 'flex', alignItems: 'center' }}>
-        <SectionOneText>{props.time}</SectionOneText>
-        <AiFillCar
-          className="text-xl"
-          style={{ margin: '-2px 0  0 0.5rem' }}
-        ></AiFillCar>
-        {props.booking ? (
-          <div
-            style={{
-              flexGrow: '1',
-              justifyContent: 'flex-end',
-              display: 'flex',
-            }}
-          >
-            <Button
-              borderRadius="8px"
-              fontWeight="700"
-              fontSize="12px"
-              borderWidth="1.5px"
-              padding="0.5rem 0.5rem"
-              onclick={() => console.log('')}
-            >
-              View Booking
-            </Button>
-          </div>
-        ) : null}
-      </div> */}
-
       <GridContainer
         image={
           props.image && props.image !== "media/icons/default/activity.svg"
@@ -506,44 +463,6 @@ const ItineraryPoiElementM = (props) => {
           </div>
 
           {props.poi ? <div></div> : null}
-          {/* <Rating margin="0.25rem 0"></Rating> */}
-
-          {/* {props.poi !== undefined ? (
-          //   props.poi.experience_filters ? (
-          //     <div
-          //       className={`grid grid-flow-col grid-rows-${Math.ceil(
-          //         props.poi.experience_filters.length / 2
-          //       )} gap-0`}
-          //     >
-          //       {props.poi.experience_filters.map((element, index) =>
-          //         element.toString() != 'Hidden Gem' ? (
-          //           <div className="flex flex-row items-end min-w-max">
-          //             <span className="font-bold text-xl pr-1">.</span>
-
-          //             <div
-          //               className="flex  items-center text-sm  font-bold"
-          //               key={index}
-          //             >
-          //               {' '}
-          //               {element.split(' ').length > 2
-          //                 ? element.split(' ')[0]
-          //                 : element}{' '}
-          //             </div>
-          //           </div>
-          //         ) : (
-          //           <div className="flex font-bold" key={index}>
-          //             <div
-          //               className="border-solid border-2 text-sm font-bold rounded-md px-2 border-[#9C54F6]"
-          //               style={{ color: index % 2 ? '#9C54F6' : '#5363F5' }}
-          //             >
-          //               {element}
-          //             </div>
-          //           </div>
-          //         )
-          //       )}
-          //     </div>
-          //   ) : null
-          // ) : null} */}
         </div>
       </GridContainer>
       <div className={`pt-2 text-sm font-[350] line-clamp-3`}>{props.text}</div>
@@ -657,11 +576,29 @@ const ItineraryPoiElementM = (props) => {
               ) : null}
             </div>
           ) : (
-            <EmptyMsg>
-              <BiErrorCircle /> Oops, it looks like there are no{" "}
-              {elementType === "POI" ? "places to visit" : "things to do"}{" "}
-              available.
-            </EmptyMsg>
+            <div className="flex flex-col">
+              <EmptyMsg className="flex flex-row items-start px-1">
+                <BiErrorCircle className="" />
+                <span className="">
+                  Oops, it looks like there are no{" "}
+                  {elementType === "POI" ? "places to visit" : "things to do"}{" "}
+                  available.
+                </span>
+              </EmptyMsg>
+              {selectSearch !== "" ? (
+                <Button
+                  boxShadow
+                  onclickparam={null}
+                  onclick={handleClearSearch}
+                  margin="0.25rem auto"
+                  borderWidth="1px"
+                  borderRadius="2rem"
+                  padding="0.25rem 1rem"
+                >
+                  Show All
+                </Button>
+              ) : null}
+            </div>
           )
         ) : (
           <PoiListSkeleton name={"Activity"} />

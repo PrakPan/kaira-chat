@@ -22,6 +22,7 @@ import PathNavigation from "../travelplanner/PathNavigation";
 import Experience from "../../components/containers/Experiences";
 import Locations from "../../components/containers/newplannerlocations/Index";
 import dynamic from "next/dynamic";
+
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
