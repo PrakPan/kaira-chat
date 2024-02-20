@@ -1,26 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Modal } from 'react-bootstrap';
 import Overview from './Overview/Overview';
 import styled from 'styled-components';
-import About from './aboutus/About';
-import GettingAround from './GettingAround';
-import Recommendations from './Recommendations';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import Tabs from './tabs/Index';
 import axiosaccommodationinstance from '../../../services/bookings/FetchAccommodation';
 import { connect } from 'react-redux';
 import { TbArrowBack } from 'react-icons/tb';
-import Spinner from '../../Spinner';
 import media from '../../media';
-import LoadingLottie from '../../ui/LoadingLottie';
 import Drawer from '../../ui/Drawer';
-import POIDetailsSkeleton from '../../drawers/poiDetails/POIDetailsSkeleton';
-import { CgClose } from 'react-icons/cg';
 import Skeleton from './Skeleton';
 import { IoMdClose } from 'react-icons/io';
-import dayjs from 'dayjs';
 import { openNotification } from '../../../store/actions/notification';
+
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   &:hover {
     cursor: pointer;

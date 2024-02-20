@@ -113,7 +113,7 @@ export default function TransferElement(props) {
                 ) : modes ? (
                   <TransportIconFetcher
                     TransportMode={modes}
-                    classname="text-black lg:text-[2.05rem] md:text-[2.05rem] text-[3rem] md:text-[4rem] lg:text-[4rem]"
+                    classname="text-black text-[3rem]"
                   />
                 ) : (
                   <div className=""></div>

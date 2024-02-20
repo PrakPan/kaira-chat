@@ -58,7 +58,7 @@ export default function ActivityElement(props) {
 
   return (
     <Container className="pt-0">
-      <div className="flex flex-col items-center justify-center w-full">
+      <div className="flex flex-col items-center justify-center w-full space-y-1">
         <div className="w-full flex flex-col space-y-2 md:space-y-0 lg:space-y-0 md:flex-row lg:flex-row items-start md:items-center lg:items-center">
           <div className="lg:w-[11%] md:w-[21%] flex flex-row justify-center"></div>
           <div className="font-medium text-sm">{data.heading}</div>

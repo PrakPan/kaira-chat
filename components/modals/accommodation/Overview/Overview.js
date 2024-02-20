@@ -2,13 +2,8 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import ImageLoader from "../../../ImageLoader";
 import Image from "../../../ImageLoader";
-import Filters from "./Filters";
-import Location from "../Location";
 import { getHumanTime } from "../../../../services/getHumanTime";
-import { getIndianPrice } from "../../../../services/getIndianPrice";
-
 import Rooms from "../roomtypes/Index";
-import Ammenities from "../Ammenities";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import useMediaQuery from "../../../media";
 import MoreText from "../../../ui/MoreText";
@@ -16,6 +11,7 @@ import { FiChevronRight } from "react-icons/fi";
 import Button from "../../../ui/button/Index";
 import SkeletonCard from "../../../ui/SkeletonCard";
 import { connect } from "react-redux";
+
 const starRating = (rating) => {
   var stars = [];
   for (let i = 0; i < Math.floor(rating); i++) {
@@ -73,19 +69,6 @@ const PhotosButton = styled.div`
   letterspacing: 1px;
   font-weight: 300;
 `;
-
-// const EditButton = styled.div`
-//   &:hover {
-//     cursor: pointer;
-//   }
-//   background-color: rgba(255, 255, 255, 0.8);
-//   color: black;
-//   border-radius: 2rem;
-//   padding: 0.35rem 1.5rem;
-//   font-size: 0.85rem;
-//   letterspacing: 1px;
-//   font-weight: 400;
-// `;
 
 const GridImage = styled.div`
   display: grid;
@@ -218,10 +201,10 @@ const Overview = (props) => {
               <div className="flex flex-row text-[#ffa500]">
                 {starRating(props?.currentBooking.user_rating)}
               </div>
-              <div>{props?.currentBooking.user_rating}</div>
-              {props?.currentBooking.number_of_reviews && (
+              <div>{props?.currentBooking?.user_rating}</div>
+              {props?.currentBooking?.number_of_reviews && (
                 <div className="text-sm text-[#7A7A7A] font-medium underline">
-                  {props?.currentBooking.number_of_reviews} Google reviews
+                  {props?.currentBooking?.number_of_reviews} {props?.currentBooking?.source === "Agoda" ? "user reviews" : "Google reviews"}
                 </div>
               )}
             </div>

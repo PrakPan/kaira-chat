@@ -290,7 +290,10 @@ const HotelBookingContainer = ({
                           <div>{booking?.user_rating}</div>
                           {booking.number_of_reviews && (
                             <div className="text-sm text-[#7A7A7A] font-[400] underline">
-                              {booking.number_of_reviews} Google reviews
+                              {booking.number_of_reviews}{" "}
+                              {booking?.source === "Agoda"
+                                ? "user reviews"
+                                : "Google reviews"}
                             </div>
                           )}
                         </div>
