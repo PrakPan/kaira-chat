@@ -45,7 +45,7 @@ const TransferEditDrawer = (props) => {
   const [selectLoading, setSelectLoading] = useState(false);
 
   const getSelectedTransfer = () => {
-    const route = alternateRoutes?.transfers?.find(
+    const route = alternateRoutes?.routes?.find(
       (route) => route.heading === selectedTransferHeading
     );
     return route;
@@ -53,7 +53,7 @@ const TransferEditDrawer = (props) => {
 
   const filterAlternateRoutes = () => {
     const filteredTransfers = [
-      ...alternateRoutes?.transfers?.sort(
+      ...alternateRoutes?.routes?.sort(
         (a, b) => a.inconvenience_score - b.inconvenience_score
       ),
     ];
@@ -76,7 +76,7 @@ const TransferEditDrawer = (props) => {
 
   const handleSelect = (routeIndex) => {
     const access_token = localStorage.getItem("access_token");
-    if (!access_token) {
+    if (!props.token) {
       setShowLoginModal(true);
       return;
     }
@@ -84,7 +84,7 @@ const TransferEditDrawer = (props) => {
     setSelectLoading(true);
     const data = {
       itinerary_id: itinerary_id,
-      route_id: alternateRoutes.route_id,
+      route_id: alternateRoutes.id,
       day_slab_index: day_slab_index,
       element_index: element_index,
       route: transfers[routeIndex],
@@ -249,7 +249,7 @@ const TransferEditDrawer = (props) => {
         ) : (
           <div className="w-full flex flex-col items-center gap-3">
             <div className="w-full flex justify-start">
-              {alternateRoutes.transfers.length} ways to travel from {origin} to{" "}
+              {alternateRoutes.routes.length} ways to travel from {origin} to{" "}
               {destination}
             </div>
 
@@ -292,17 +292,6 @@ const TransferEditDrawer = (props) => {
 
                     <div className="flex flex-row items-center justify-between pr-2">
                       <div>{transfer.meta.Time}</div>
-                      {/* <button
-                        disabled={index === 0}
-                        onClick={() => handleSelect(index)}
-                        className={`${
-                          index === 0
-                            ? "cursor-not-allowed bg-gray-100"
-                            : "bg-[#f7e700] hover:bg-black hover:text-white"
-                        } p-1 px-3 rounded-lg border-2 border-black`}
-                      >
-                        {index === 0 ? "Selected" : "Select"}
-                      </button> */}
                       <div
                         onClick={() => handleSelect(index)}
                         className="flex mt-2 mr-2 flex-row gap-1 items-end justify-start cursor-pointer"
@@ -330,6 +319,7 @@ const TransferEditDrawer = (props) => {
 const mapStateToPros = (state) => {
   return {
     notificationText: state.Notification.text,
+    token: state.auth.token,
   };
 };
 

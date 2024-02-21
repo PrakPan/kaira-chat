@@ -597,7 +597,7 @@ const TransfersContainer = (props) => {
         },
       })
       .then((response) => {
-        if (response.status === 200 && response.data.transfers.length > 0) {
+        if (response.status === 200 && response.data.routes.length > 0) {
           const data = response.data;
           setAlternateRoutes(data);
         } else {
@@ -609,13 +609,9 @@ const TransfersContainer = (props) => {
       })
       .catch((err) => {
         setLoadingAlternates(false);
-        if (err.response.status === 404) {
-          setAlternatesError("No Route Found, please try again!");
-        } else {
-          setAlternatesError(
-            "There seems to be problem, please try again! adsfasdf"
-          );
-        }
+        setAlternatesError(
+          "No Route Found, please get in touch with us to complete this booking!"
+        );
       });
   };
 
