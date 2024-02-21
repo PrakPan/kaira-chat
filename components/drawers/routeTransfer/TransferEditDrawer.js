@@ -9,9 +9,11 @@ import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";
 import styled from "styled-components";
 import Button from "../../../components/ui/button/Index";
 import ImageLoader from "../../../components/ImageLoader";
+import { IoMdArrowRoundBack } from "react-icons/io";
+import { PiCurrencyInrBold } from "react-icons/pi";
 
 const ClippathComp = styled.div`
-  clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
+  clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 95% 50%, 100% 0%);
 `;
 
 const GetInTouchContainer = styled.div`
@@ -141,15 +143,11 @@ const TransferEditDrawer = (props) => {
     >
       <div className="sticky px-2 top-0 bg-white z-[900] flex flex-col gap-5 py-4 pb-1 justify-start items-start mx-auto w-[98%]">
         <div className="flex flex-row gap-3 my-0 justify-start items-center">
-          <IoMdClose
+          <IoMdArrowRoundBack
             onClick={() => setShowDrawer(false)}
-            className="hover-pointer"
-            style={{
-              fontSize: "1.75rem",
-              textAlign: "right",
-            }}
-          ></IoMdClose>
-          <div className="text-2xl font-normal">
+            className="hover-pointer text-3xl font-semibold"
+          />
+          <div className="text-xl md:text-2xl lg:text-2xl font-semibold">
             {props.addOrEdit === "transferAdd" ? "Adding" : "Changing"} transfer
             from {origin} to {destination}{" "}
           </div>
@@ -249,8 +247,8 @@ const TransferEditDrawer = (props) => {
         ) : (
           <div className="w-full flex flex-col items-center gap-3">
             <div className="w-full flex justify-start">
-              {alternateRoutes.transfers.length} ways to travel from {origin} to{" "}
-              {destination}
+              Showing {alternateRoutes.transfers.length} travel ways from{" "}
+              {origin} to {destination}
             </div>
 
             <div className="w-full flex flex-col items-center gap-3">
@@ -265,55 +263,76 @@ const TransferEditDrawer = (props) => {
               {transfers.map((transfer, index) => (
                 <div
                   key={index}
-                  className={`w-full flex flex-row gap-3 rounded-lg py-2 pl-2 shadow-sm ${
+                  className={`w-full flex flex-col gap-3 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm ${
                     index === 0 ? "border-yellow-300" : ""
-                  } border-2`}
+                  } border-x-2 border-t-2 border-b-4`}
                 >
-                  <div className="w-[10%] flex items-center justify-center">
-                    <TransportIconFetcher
-                      TransportMode={transfer.modes[0]}
-                      Instyle={{
-                        fontSize:
-                          transfer.modes[0] === "Bus" ? "3.5rem" : "4rem",
-                        color: "#4d4d4d",
-                      }}
-                    />
-                  </div>
-
-                  <div className="w-full flex flex-col gap-4">
-                    <div className="flex flex-row items-start justify-between">
-                      <div className="text-lg">{transfer.heading}</div>
-                      {transfer.recommended && (
-                        <ClippathComp className="text-sm font-semibold bg-[#F7E700] text-#090909 pl-4 pr-2 py-1">
-                          Recommended
-                        </ClippathComp>
-                      )}
+                  {transfer.recommended && (
+                    <ClippathComp className="text-sm font-semibold bg-[#F7E700] text-#090909 pl-2 pr-2 py-1 -ml-4 -mt-4 rounded-tl-2xl">
+                      Recommended
+                    </ClippathComp>
+                  )}
+                  <div className="flex flex-row gap-2 w-full">
+                    <div className="w-[15%] bg-gray-100 rounded-xl flex items-center justify-center">
+                      <TransportIconFetcher
+                        TransportMode={transfer.modes[0]}
+                        Instyle={{
+                          fontSize:
+                            transfer.modes[0] === "Bus" ? "3.5rem" : "4rem",
+                          color: "#4d4d4d",
+                        }}
+                      />
                     </div>
 
-                    <div className="flex flex-row items-center justify-between pr-2">
-                      <div>{transfer.meta.Time}</div>
-                      {/* <button
-                        disabled={index === 0}
-                        onClick={() => handleSelect(index)}
-                        className={`${
-                          index === 0
-                            ? "cursor-not-allowed bg-gray-100"
-                            : "bg-[#f7e700] hover:bg-black hover:text-white"
-                        } p-1 px-3 rounded-lg border-2 border-black`}
-                      >
-                        {index === 0 ? "Selected" : "Select"}
-                      </button> */}
-                      <div
-                        onClick={() => handleSelect(index)}
-                        className="flex mt-2 mr-2 flex-row gap-1 items-end justify-start cursor-pointer"
-                      >
-                        <CheckboxFormComponent
-                          checked={index === 0}
-                          className="mb-1"
-                        />
-                        <label className="text-center">
-                          {index === 0 ? "Selected" : "Select"}
-                        </label>
+                    <div className="w-full flex flex-col gap-4">
+                      <div className="flex flex-row items-center justify-between">
+                        <div className="flex flex-col items-start gap-2">
+                          <div className="text-lg font-semibold leading-3">
+                            {transfer.modes[0]}
+                          </div>
+                          <div className="text-sm text-gray-400">
+                            {transfer?.legs[0]?.carrier &&
+                              `${transfer.legs[0].carrier} | `}
+                            {transfer.meta.Time} | {transfer.meta.Distance} Kms
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-2 items-end">
+                          <div className="text-lg font-semibold leading-3">
+                            Estimated cost
+                          </div>
+                          <div className="text-lg font-semibold leading-3">
+                            <PiCurrencyInrBold className="inline" />
+                            <span>{transfer?.meta?.estimated_cost}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-row items-center justify-between">
+                        <div className="text-sm">
+                          Facilities:{" "}
+                          {transfer?.legs[0]?.facilities.map(
+                            (facility, index) => (
+                              <span key={index}>
+                                <span key={index}>{facility}</span>
+                                {index <
+                                  transfer?.legs[0]?.facilities.length - 1 &&
+                                  " | "}
+                              </span>
+                            )
+                          )}
+                        </div>
+                        <div
+                          onClick={() => handleSelect(index)}
+                          className="flex mt-2 flex-row gap-2 items-end justify-start cursor-pointer"
+                        >
+                          <CheckboxFormComponent
+                            checked={index === 0}
+                            className="mb-1"
+                          />
+                          <label className="text-center">
+                            {index === 0 ? "Selected" : "Select"}
+                          </label>
+                        </div>
                       </div>
                     </div>
                   </div>
