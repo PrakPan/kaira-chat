@@ -208,14 +208,14 @@ const Index = (props) => {
           ) : null}
 
           {props.data.activities.length ? (
-            <MenuItem id="Activities">
+            <div id="Activities">
               <Heading>Things to do in {props.data.name}</Heading>
               <Activity
                 data={props.data}
                 activities={props.data.activities}
                 city={props.data.name}
               />
-            </MenuItem>
+            </div>
           ) : null}
 
           {props.data.pois.length ? (

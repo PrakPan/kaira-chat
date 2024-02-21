@@ -142,11 +142,9 @@ export default function PoiCard(props) {
         </Typography>
       )}
       <POIDetailsDrawer
-        // show={props.showDrawer.isOpen}
         show={show}
         iconId={props.data.id}
         ActivityiconId={props.isActivity ? props.data.id : null}
-        // handleCloseDrawer={props.handleCloseDrawer}
         handleCloseDrawer={handleCloseDrawer}
         name={props.data.name}
       />

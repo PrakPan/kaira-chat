@@ -109,13 +109,9 @@ const MidSection = (props) => {
       })
       .catch((err) => {
         setLoadingAlternates(false);
-        if (err.response.status === 404) {
-          setAlternatesError(
-            "No route found, please get in touch with us to complete this booking!"
-          );
-        } else {
-          setAlternatesError("There seems to be problem, please try again!");
-        }
+        setAlternatesError(
+          "No route found, please get in touch with us to complete this booking!"
+        );
       });
   };
 
