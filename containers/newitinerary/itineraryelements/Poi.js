@@ -463,10 +463,10 @@ const ItineraryPoiElement = (props) => {
                   <RatingContainer>
                     {/* <StarRating initialRating={4}></StarRating> */}
                     <div>{_getStars(props?.poi?.rating)}</div>
-                    <span>
-                      {props.poi.rating}{" "}
+                    <span>{props.poi.rating} .</span>
+                    <span className="underline">
                       {props.poi.user_ratings_total
-                        ? ` · ${props.poi.user_ratings_total} user reviews`
+                        ? `${props.poi.user_ratings_total} user reviews`
                         : ""}
                     </span>
                   </RatingContainer>
@@ -474,10 +474,10 @@ const ItineraryPoiElement = (props) => {
                   <RatingContainer>
                     {/* <StarRating initialRating={4}></StarRating> */}
                     <div>{_getStars(props?.activity?.rating)}</div>
-                    <span>
-                      {props.activity.rating}{" "}
+                    <span>{props.activity.rating} .</span>
+                    <span className="underline">
                       {props.activity.user_ratings_total
-                        ? ` · ${props.activity.user_ratings_total} user reviews`
+                        ? `${props.activity.user_ratings_total} user reviews`
                         : ""}
                     </span>
                   </RatingContainer>
