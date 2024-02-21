@@ -2,6 +2,7 @@ import styled from "styled-components";
 import Brief from "./MenuItems/Brief";
 import TopRecommendations from "./MenuItems/TopRecommendation";
 import Poi from "./pois/Index";
+import Activity from "./activities/Index";
 import FoodToEat from "./MenuItems/FoodToEat";
 import WhyPlanWithUs from "../../components/WhyPlanWithUs/PlanWithUsWithEnquiry";
 import Reviews from "../travelplanner/CaseStudies/Index";
@@ -59,6 +60,7 @@ const MenuItem = styled.div`
     margin-right: ${(props) => (props.single ? "29%" : "0")};
   }
 `;
+
 const Heading = styled.p`
   font-weight: 600;
   font-size: 32px;
@@ -68,6 +70,7 @@ const Heading = styled.p`
     margin-block: 3.5rem;
   }
 `;
+
 const P = styled.p`link
   font-weight: 300;
   text-align: left;
@@ -76,6 +79,7 @@ const P = styled.p`link
     font-size: 18px;
   }
 `;
+
 const Menu = (props) => {
   return (
     <MenuContainer thingsToDoPage={props.thingsToDoPage}>
@@ -87,7 +91,7 @@ const Menu = (props) => {
           <TopRecommendations itinerary_data={props.data.itinerary_data} />
         </MenuItem>
       )}
-      
+
       {props.data.short_description && !props.thingsToDoPage && (
         <MenuItem id="Brief">
           <Heading style={{ margin: "30px 0 30px 0" }}>
@@ -106,6 +110,17 @@ const Menu = (props) => {
           />
         </MenuItem>
       )}
+
+      {props.data.activities.length ? (
+        <MenuItem id="Activities">
+          <Heading>Things to do in {props.data.name}</Heading>
+          <Activity
+            data={props.data}
+            activities={props.data.activities}
+            city={props.data.name}
+          />
+        </MenuItem>
+      ) : null}
 
       {!!props.data.pois.length && (
         <MenuItem id="Places">

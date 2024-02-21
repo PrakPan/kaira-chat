@@ -1,12 +1,11 @@
 import styled from "styled-components";
-import PoiCard from "./PoiCard";
+import PoiCard from "../pois/PoiCard";
 import { useState } from "react";
 import media from "../../../components/media";
 import validateTextSize from "../../../services/textSizeValidator";
 import WeatherWidget from "../../../components/WeatherWidget/WeatherWidget";
 import openTailoredModal from "../../../services/openTailoredModal";
 import { useRouter } from "next/router";
-import Drawer from "../../../components/ui/Drawer";
 import SwiperCarousel from "../../../components/SwiperCarousel";
 import dynamic from "next/dynamic";
 const MapBox = dynamic(() => import("../../../components/Map.js"), {
@@ -16,7 +15,7 @@ const MapBox = dynamic(() => import("../../../components/Map.js"), {
 const GridContainer = styled.div`
   @media screen and (min-width: 768px) {
     display: grid;
-    grid-template-columns: 3fr 1.1fr;
+    grid-template-columns: 3fr;
     gap: 2.5rem;
   }
 `;
@@ -25,7 +24,7 @@ const Items = styled.div`
   gap: 22px;
 
   @media screen and (min-width: 768px) {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
   }
 `;
 const TextBold = styled.p`
@@ -61,10 +60,10 @@ const WeatherContainer = styled.div`
   margin-bottom: 1.7rem;
 `;
 
-const Poi = (props) => {
+const Activity = (props) => {
   const router = useRouter();
   const [more, setMore] = useState(4);
-  const drawerShowArr = props.pois?.map((e) => {
+  const drawerShowArr = props.activities?.map((e) => {
     return { ...e, isOpen: false };
   });
   const [showDrawer, setShowDrawer] = useState(drawerShowArr);
@@ -99,8 +98,9 @@ const Poi = (props) => {
     </MapInfo>
   );
 
-  const cards = props.pois?.map((e, i) => (
+  const cards = props.activities?.map((e, i) => (
     <PoiCard
+      isActivity
       key={e.id}
       data={e}
       showDrawer={showDrawer[i]}
@@ -111,13 +111,14 @@ const Poi = (props) => {
   ));
 
   return (
-    <GridContainer>
+    <GridContainer className="">
       <div className="hidden-mobile">
         <Items>
-          {props.pois
+          {props.activities
             .filter((e, i) => i < more)
             ?.map((e, i) => (
               <PoiCard
+                isActivity
                 key={e.id}
                 data={e}
                 showDrawer={showDrawer[i]}
@@ -129,14 +130,14 @@ const Poi = (props) => {
         </Items>
         <Button
           onClick={() => {
-            more < props.pois.length
+            more < props.activities.length
               ? setMore(more + 4)
               : props.data
               ? openTailoredModal(router, props.data.id, props.data.name)
-              : console.log("");
+              : null;
           }}
         >
-          {more < props.pois.length
+          {more < props.activities.length
             ? "View More"
             : validateTextSize(
                 `Craft a trip to ${props.city} now!`,
@@ -149,8 +150,9 @@ const Poi = (props) => {
       <div className="hidden-desktop">
         <SwiperCarousel slidesPerView={1} pageDots noPadding cards={cards} />
       </div>
-      <div>
-        {props.thingsToDoPage && (
+
+      {/* <div> */}
+      {/* {props.thingsToDoPage && (
           <WeatherContainer elevation={props.elevation}>
             <WeatherWidget
               city={props.data.name}
@@ -170,11 +172,11 @@ const Poi = (props) => {
                 </div>
               )}
           </WeatherContainer>
-        )}
+        )} */}
 
-        {props.pois && props.pois.length ? (
+      {/* {props.activities && props.activities.length ? (
           <MapBox
-            locations={props.pois}
+            locations={props.activities}
             defaultZoom={12}
             height={
               isPageWide ? (props.thingsToDoPage ? "320px" : "350px") : "230px"
@@ -183,10 +185,10 @@ const Poi = (props) => {
           />
         ) : (
           <div></div>
-        )}
-      </div>
+        )} */}
+      {/* </div> */}
     </GridContainer>
   );
 };
 
-export default Poi;
+export default Activity;

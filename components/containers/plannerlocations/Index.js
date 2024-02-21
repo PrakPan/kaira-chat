@@ -1,16 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import Card from './Card';
-import media from '../../media';
-import { useRouter } from 'next/router';
-import Button from '../../ui/button/Index';
-import DesktopSkeleton, { MobileSkeleton } from './LocationSkeleton';
-import * as ga from '../../../services/ga/Index';
-import openTailoredModal from '../../../services/openTailoredModal';
-import SwiperCarousel from '../../SwiperCarousel';
-/* Used to display grid (desktop) / carousel of location images 
-  inputs:locations (array of objects), viewall (guide page)
-*/
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import Card from "./Card";
+import media from "../../media";
+import { useRouter } from "next/router";
+import { MobileSkeleton } from "./LocationSkeleton";
+import SwiperCarousel from "../../SwiperCarousel";
 
 const MobileCardsContainer = styled.div`
   display: grid;
@@ -19,8 +13,7 @@ const MobileCardsContainer = styled.div`
 `;
 
 const LocationsBlog = (props) => {
-  let isPageWide = media('(min-width: 768px)');
-
+  let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [MobilecardsToShowJSX, setMobileCardsToShowJSX] = useState([]);
   const [cards, setCards] = useState([]);
@@ -86,7 +79,7 @@ const LocationsBlog = (props) => {
   else
     return (
       <div>
-        <div style={{ padding: '1rem 0' }}>
+        <div style={{ padding: "1rem 0" }}>
           {MobilecardsToShowJSX.length ? (
             <SwiperCarousel
               slidesPerView={1}

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import CountryPage from "../../containers/country/Index";
 import axioscountrydetailsinstance from "../../services/pages/country";
 import axiospagelistinstance from "../../services/pages/list";
-import axios from "axios";
+
 const TravelPlanner = (props) => {
   const [data, setData] = useState({
     page_title: null,
@@ -13,6 +13,7 @@ const TravelPlanner = (props) => {
     meta_keywords: null,
     social_share_title: null,
   });
+
   useEffect(() => {
     // setData(DATA);
   }, []);
@@ -43,10 +44,6 @@ const TravelPlanner = (props) => {
         <meta property="og:image" content="/logoblack.svg" />
         <meta property="keywords" content={props.Data.meta_keywords}></meta>
       </Head>
-      {/* <LadakhContainer
-        experienceData={props.Data}
-        locations={props.locations}
-      ></LadakhContainer> */}
       <CountryPage
         continetCarousel={props.continetCarousel}
         data={props.Data}

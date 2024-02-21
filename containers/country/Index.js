@@ -5,7 +5,6 @@ import MobileBanner from "../city/Banner/Mobile";
 import media from "../../components/media";
 import validateTextSize from "../../services/textSizeValidator";
 import styled from "styled-components";
-import WhatsappFloating from "../../components/WhatsappFloating";
 import Overview from "../travelplanner/Overview";
 import openTailoredModal from "../../services/openTailoredModal";
 import Button from "../../components/ui/button/Index";
@@ -22,7 +21,8 @@ import PathNavigation from "../travelplanner/PathNavigation";
 import Experience from "../../components/containers/Experiences";
 import Locations from "../../components/containers/newplannerlocations/Index";
 import dynamic from "next/dynamic";
-
+import Poi from "../../containers/newcityplanner/pois/Index";
+import Activity from "../../containers/newcityplanner/activities/Index";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -69,6 +69,12 @@ const Heading = styled.h2`
   @media screen and (min-width: 768px) {
     text-align: left;
     margin: 3.5rem 0rem;
+  }
+`;
+
+const MenuItem = styled.div`
+  @media screen and (min-width: 1400px) {
+    margin-right: ${(props) => (props.single ? "29%" : "0")};
   }
 `;
 
@@ -123,7 +129,7 @@ const Index = (props) => {
           }
         />
       )}
-      {/* <WhatsappFloating message="Hey, I need help planning my trip." /> */}
+
       <div>
         <HeroBanner
           image={props.data.image}
@@ -199,6 +205,30 @@ const Index = (props) => {
               </Heading>
               <Experience experiences={userItineraries} />
             </>
+          ) : null}
+
+          {props.data.activities.length ? (
+            <MenuItem id="Activities">
+              <Heading>Things to do in {props.data.name}</Heading>
+              <Activity
+                data={props.data}
+                activities={props.data.activities}
+                city={props.data.name}
+              />
+            </MenuItem>
+          ) : null}
+
+          {props.data.pois.length ? (
+            <MenuItem id="Places">
+              <Heading>Places to visit in {props.data.name}</Heading>
+              <Poi
+                // elevation={props.elevation}
+                data={props.data}
+                // thingsToDoPage={props.thingsToDoPage}
+                pois={props.data.pois}
+                city={props.data.name}
+              />
+            </MenuItem>
           ) : null}
 
           {props.data.states && props.data.states.length ? (

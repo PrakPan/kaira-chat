@@ -87,18 +87,21 @@ const SwiperCarousel = (props) => {
       </div>
     );
   });
+  
   const handleNextClick = (swiper) => {
     const currentIndex = swiper.activeIndex - 1;
     const slidesPerView = swiper.params.slidesPerView;
     const newIndex = currentIndex + slidesPerView;
     swiper.slideTo(newIndex);
   };
+
   const handlePrevClick = (swiper) => {
     const currentIndex = swiper.activeIndex + 1;
     const slidesPerView = swiper.params.slidesPerView;
     const newIndex = currentIndex - slidesPerView;
     swiper.slideTo(newIndex);
   };
+
   return (
     <SwiperContainer
       pageDots={props.pageDots}

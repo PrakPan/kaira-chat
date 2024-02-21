@@ -55,14 +55,14 @@ const Mapbox = React.memo((props) => {
         <ReactLeafletGoogleLayer apiKey="AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E" />
         <MarkerClusterGroup>
           <Marker
-            key={props.center.lat}
+            key={props?.center?.lat}
             animate
-            position={[props.center.lat, props.center.lng]}
+            position={[props?.center?.lat, props?.center?.lng]}
             draggable={false}
             icon={customIcon}
           >
             <Popup>
-              {props.InfoWindowContainer ? props.InfoWindowContainer : ''}
+              {props?.InfoWindowContainer ? props.InfoWindowContainer : ''}
             </Popup>
           </Marker>
         </MarkerClusterGroup>
@@ -71,9 +71,9 @@ const Mapbox = React.memo((props) => {
     );
   }
 
-  return props.locations ? (
+  return props?.locations ? (
     <MapContainer
-      center={{ lat: props.locations[0]?.lat, lng: props.locations[0]?.long }}
+      center={{ lat: props?.locations[0]?.lat, lng: props?.locations[0]?.long }}
       zoom={props.defaultZoom || 1}
       style={{
         height: props.height || '100%',
@@ -92,7 +92,7 @@ const Mapbox = React.memo((props) => {
           <Marker
             key={location.id}
             animate
-            position={[location.lat, location.long]}
+            position={[location?.lat, location?.long]}
             draggable={false}
             icon={customIcon}
           >
