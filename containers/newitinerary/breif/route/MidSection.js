@@ -90,12 +90,17 @@ const MidSection = (props) => {
     setShowDrawer(true);
     setAddOrEdit(e.target.id);
     routeAlternates
-      .get(`/?route_id=` + props?.route?.transfers?.id, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          "Content-Type": "application/json",
-        },
-      })
+      .get(
+        `/?route_id=${props?.route?.transfers?.id}&pax=${
+          props?.plan?.number_of_adults + props?.plan?.number_of_children
+        }`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            "Content-Type": "application/json",
+          },
+        }
+      )
       .then((response) => {
         if (response.status === 200 && response.data.routes.length > 0) {
           const data = response.data;

@@ -319,7 +319,11 @@ const RouteContainer = (props) => {
         </ClippathComp>
       )}
       <div className="flex flex-row gap-2 w-full">
-        <div className={`${transfer.modes[0] === "Bus" ? "px-4 py-0" : "px-3 py-0"} bg-gray-100 rounded-xl flex items-center justify-center`}>
+        <div
+          className={`${
+            transfer.modes[0] === "Bus" ? "px-4 py-0" : "px-3 py-0"
+          } bg-gray-100 rounded-xl flex items-center justify-center`}
+        >
           <TransportIconFetcher
             TransportMode={transfer.modes[0]}
             Instyle={{
@@ -333,7 +337,10 @@ const RouteContainer = (props) => {
           <div className="flex flex-row items-center justify-between">
             <div className="flex flex-col items-start gap-2">
               <div className="text-lg font-[500] leading-3">
-                {transfer.modes[0]}
+                {transfer.modes.map((mode, i) => {
+                  if (i < transfer.modes.length - 1) return `${mode}, `;
+                  return `${mode}`;
+                })}
               </div>
               <div className="text-sm text-gray-400">
                 {transfer?.legs[0]?.carrier && `${transfer.legs[0].carrier} | `}
@@ -341,7 +348,9 @@ const RouteContainer = (props) => {
               </div>
             </div>
             <div className="flex flex-col gap-2 items-end">
-              <div className="text-[13px] font-[300] leading-3">Estimated cost</div>
+              <div className="text-[13px] font-[300] leading-3">
+                Estimated cost
+              </div>
               <div className="text-[18px] font-[800] leading-3">
                 {/* <PiCurrencyInrBold className="inline" /> */}
                 <span>
@@ -351,19 +360,25 @@ const RouteContainer = (props) => {
             </div>
           </div>
 
-          <div className="flex flex-row items-center justify-between">
-            <div className="text-sm">
-              Facilities:{" "}
-              {transfer?.legs[0]?.facilities?.map((facility, index) => (
-                <span key={index}>
-                  <span key={index}>{facility}</span>
-                  {index < transfer?.legs[0]?.facilities?.length - 1 && " | "}
-                </span>
-              ))}
+          <div className="w-full flex flex-row items-center justify-between">
+            <div className="w-full">
+              {transfer?.legs[0]?.facilities?.length ? (
+                <div className="text-sm">
+                  Facilities:{" "}
+                  {transfer?.legs[0]?.facilities?.map((facility, index) => (
+                    <span key={index}>
+                      <span key={index}>{facility}</span>
+                      {index < transfer?.legs[0]?.facilities?.length - 1 &&
+                        " | "}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
             </div>
+
             <div
               onClick={() => handleSelect(index)}
-              className="flex mt-2 flex-row gap-2 items-end justify-start cursor-pointer"
+              className="flex mt-2 flex-row gap-2 items-end justify-end cursor-pointer"
             >
               <CheckboxFormComponent checked={index === 0} className="mb-1" />
               <label className="text-center cursor-pointer">
@@ -407,7 +422,7 @@ const MobileRouteContainer = (props) => {
           </div>
           <div className="flex flex-col items-start gap-2">
             <div className="text-[16px] font-[600] leading-3">
-              {transfer.modes[0]}
+              {transfer.heading}
             </div>
             <div className="text-sm text-gray-400">
               {transfer?.legs[0]?.carrier && `${transfer.legs[0].carrier} | `}
@@ -418,17 +433,17 @@ const MobileRouteContainer = (props) => {
 
         <div className="w-full flex flex-col gap-4">
           <div className="flex flex-row items-center justify-between">
-            {/* <div className="flex flex-col gap-2 items-end"> */}
-            <div className="text-sm">
-              Facilities:{" "}
-              {transfer?.legs[0]?.facilities?.map((facility, index) => (
-                <span key={index}>
-                  <span key={index}>{facility}</span>
-                  {index < transfer?.legs[0]?.facilities?.length - 1 && " | "}
-                </span>
-              ))}
-            </div>
-            {/* </div> */}
+            {transfer?.legs[0]?.facilities?.length ? (
+              <div className="text-sm">
+                Facilities:{" "}
+                {transfer?.legs[0]?.facilities?.map((facility, index) => (
+                  <span key={index}>
+                    <span key={index}>{facility}</span>
+                    {index < transfer?.legs[0]?.facilities?.length - 1 && " | "}
+                  </span>
+                ))}
+              </div>
+            ) : null}
           </div>
 
           <div className="flex flex-row items-end justify-between mb-2">
