@@ -287,7 +287,7 @@ const HotelBookingContainer = ({
                           <div className="flex flex-row text-[#FFD201]">
                             {starRating(booking?.user_rating)}
                           </div>
-                          <div>{booking?.user_rating}</div>
+                          <div>{booking?.user_rating}{" . "}</div>
                           {booking.number_of_reviews && (
                             <div className="text-sm text-[#7A7A7A] font-[400] underline">
                               {booking.number_of_reviews}{" "}

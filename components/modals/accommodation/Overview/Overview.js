@@ -201,7 +201,7 @@ const Overview = (props) => {
               <div className="flex flex-row text-[#ffa500]">
                 {starRating(props?.currentBooking.user_rating)}
               </div>
-              <div>{props?.currentBooking?.user_rating}</div>
+              <div>{props?.currentBooking?.user_rating}{" . "}</div>
               {props?.currentBooking?.number_of_reviews && (
                 <div className="text-sm text-[#7A7A7A] font-medium underline">
                   {props?.currentBooking?.number_of_reviews} {props?.currentBooking?.source === "Agoda" ? "user reviews" : "Google reviews"}
