@@ -319,12 +319,12 @@ const RouteContainer = (props) => {
         </ClippathComp>
       )}
       <div className="flex flex-row gap-2 w-full">
-        <div className="w-[15%] bg-gray-100 rounded-xl flex items-center justify-center">
+        <div className={`${transfer.modes[0] === "Bus" ? "px-4 py-0" : "px-3 py-0"} bg-gray-100 rounded-xl flex items-center justify-center`}>
           <TransportIconFetcher
             TransportMode={transfer.modes[0]}
             Instyle={{
-              fontSize: transfer.modes[0] === "Bus" ? "3.5rem" : "4rem",
-              color: "#4d4d4d",
+              fontSize: transfer.modes[0] === "Bus" ? "3.2rem" : "4rem",
+              color: "black",
             }}
           />
         </div>
@@ -401,7 +401,7 @@ const MobileRouteContainer = (props) => {
               TransportMode={transfer.modes[0]}
               Instyle={{
                 fontSize: transfer.modes[0] === "Bus" ? "2.4rem" : "3rem",
-                color: "#4d4d4d",
+                color: "black",
               }}
             />
           </div>
