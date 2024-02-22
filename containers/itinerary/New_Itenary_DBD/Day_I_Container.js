@@ -183,7 +183,7 @@ const Day_I_Container = (props) => {
           break;
         case "activity":
           if (
-            element.activity_data.activity &&
+            element?.activity_data?.activity &&
             Object.keys(element?.activity_data?.activity).length !== 0 &&
             element?.bookings &&
             element?.bookings.length
@@ -197,7 +197,7 @@ const Day_I_Container = (props) => {
               />
             );
           } else if (
-            element.activity_data.poi &&
+            element?.activity_data?.poi &&
             Object.keys(element?.activity_data?.poi).length !== 0
           ) {
             pois.push({

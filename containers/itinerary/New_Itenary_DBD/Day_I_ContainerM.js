@@ -114,7 +114,9 @@ const Day_I_ContainerM = (props) => {
         case "activity":
           if (
             element.activity_data.activity &&
-            Object.keys(element.activity_data.activity).length !== 0
+            Object.keys(element.activity_data.activity).length !== 0 &&
+            element?.bookings &&
+            element?.bookings.length
           ) {
             summaryIContainer.push(
               <ActivityElement
@@ -123,7 +125,10 @@ const Day_I_ContainerM = (props) => {
                 booking={props.activityBookings}
               />
             );
-          } else {
+          } else if (
+            element?.activity_data?.poi &&
+            Object.keys(element?.activity_data?.poi).length !== 0
+          ) {
             pois.push({
               heading: element.heading,
               text: element.text,
