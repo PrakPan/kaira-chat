@@ -8,18 +8,21 @@ import axiosPOIActivityInstance from "../../../services/poi/poiActivities";
 
 const POIDetailsDrawer = (props) => {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (props.show) fetchData();
   }, [props.show]);
 
   function fetchData() {
+    setLoading(true);
     if (props.ActivityiconId) {
       axiosPOIActivityInstance
         .get(`/?id=${props.ActivityiconId}`)
         .then((res) => {
           if (res.data.name) setData(res.data);
           else throw new Error(res.data?.message);
+          setLoading(false);
         })
         .catch((err) => {
           setData({
@@ -27,6 +30,7 @@ const POIDetailsDrawer = (props) => {
             short_description: props.text,
             image: props.image,
           });
+          setLoading(false);
         });
     } else {
       if (props.iconId) {
@@ -35,6 +39,7 @@ const POIDetailsDrawer = (props) => {
           .then((res) => {
             if (res.data.name) setData(res.data);
             else throw new Error(res.data?.message);
+            setLoading(false);
           })
           .catch((err) => {
             setData({
@@ -42,6 +47,7 @@ const POIDetailsDrawer = (props) => {
               short_description: props.text,
               image: props.image,
             });
+            setLoading(false);
           });
       } else {
         setData({
@@ -49,6 +55,7 @@ const POIDetailsDrawer = (props) => {
           short_description: props.text,
           image: props.image,
         });
+        setLoading(false);
       }
     }
   }
@@ -64,7 +71,7 @@ const POIDetailsDrawer = (props) => {
       onHide={props.handleCloseDrawer}
       // zIndex='1501'
     >
-      {data.name ? (
+      {!loading ? (
         <POIDetails
           itineraryDrawer={props.itineraryDrawer}
           data={data}
