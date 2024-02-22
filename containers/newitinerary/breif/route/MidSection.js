@@ -74,7 +74,7 @@ const Text = styled.div`
 
 const MidSection = (props) => {
   const [showDrawer, setShowDrawer] = useState(false);
-  const [alternateRoutes, setAlternateRoutes] = useState([]);
+  const [alternateRoutes, setAlternateRoutes] = useState({});
   const [loadingAlternates, setLoadingAlternates] = useState(true);
   const [alternatesError, setAlternatesError] = useState(null);
   const [addOrEdit, setAddOrEdit] = useState(null);
@@ -97,7 +97,7 @@ const MidSection = (props) => {
         },
       })
       .then((response) => {
-        if (response.status === 200 && response.data.transfers.length > 0) {
+        if (response.status === 200 && response.data.routes.length > 0) {
           const data = response.data;
           setAlternateRoutes(data);
         } else {
@@ -109,13 +109,9 @@ const MidSection = (props) => {
       })
       .catch((err) => {
         setLoadingAlternates(false);
-        if (err.response.status === 404) {
-          setAlternatesError(
-            "No route found, please get in touch with us to complete this booking!"
-          );
-        } else {
-          setAlternatesError("There seems to be problem, please try again!");
-        }
+        setAlternatesError(
+          "No route found, please get in touch with us to complete this booking!"
+        );
       });
   };
 

@@ -1,38 +1,12 @@
 import styled from "styled-components";
-import PoiCard from "../pois/PoiCard";
+import ActivityCard from "./ActivityCard.js";
 import { useState } from "react";
 import media from "../../../components/media";
 import validateTextSize from "../../../services/textSizeValidator";
-import WeatherWidget from "../../../components/WeatherWidget/WeatherWidget";
 import openTailoredModal from "../../../services/openTailoredModal";
 import { useRouter } from "next/router";
 import SwiperCarousel from "../../../components/SwiperCarousel";
-import dynamic from "next/dynamic";
-const MapBox = dynamic(() => import("../../../components/Map.js"), {
-  ssr: false,
-});
 
-const GridContainer = styled.div`
-  @media screen and (min-width: 768px) {
-    display: grid;
-    grid-template-columns: 3fr;
-    gap: 2.5rem;
-  }
-`;
-const Items = styled.div`
-  display: grid;
-  gap: 22px;
-
-  @media screen and (min-width: 768px) {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-`;
-const TextBold = styled.p`
-  line-height: 24px;
-  font-weight: 600;
-  margin: 0;
-  color: rgb(1, 32, 43);
-`;
 const Button = styled.button`
   background: white;
   color: #01202b;
@@ -40,29 +14,16 @@ const Button = styled.button`
   font-size: 1rem;
   padding: 0.5rem 2rem;
   display: block;
-  margin: 15px auto 0px auto;
+  margin: 80px auto 0px auto;
   border-radius: 8px;
   &:hover {
     color: white;
     background: black;
   }
 `;
-const MapInfo = styled.div`
-  b {
-    font-weight: 600;
-  }
-`;
-const WeatherContainer = styled.div`
-  border: 1px solid #eceaea;
-  border-radius: 10px;
-  padding: 25px;
-  height: max-content;
-  margin-bottom: 1.7rem;
-`;
 
 const Activity = (props) => {
   const router = useRouter();
-  const [more, setMore] = useState(4);
   const drawerShowArr = props.activities?.map((e) => {
     return { ...e, isOpen: false };
   });
@@ -84,25 +45,10 @@ const Activity = (props) => {
     setShowDrawer(drawerShowArr);
   };
 
-  const InfoWindowContainer = (location) => (
-    <MapInfo>
-      <b>{location.name}</b>
-      <div>
-        {location.experience_filters.map((e, i) =>
-          i != 0 ? <span key={i}>{", " + e}</span> : <span key={i}>{e}</span>
-        )}
-      </div>
-      {location.ideal_duration_hours && (
-        <p>Ideal duration : {location.ideal_duration_hours} hrs</p>
-      )}
-    </MapInfo>
-  );
-
-  const cards = props.activities?.map((e, i) => (
-    <PoiCard
-      isActivity
-      key={e.id}
-      data={e}
+  const cards = props.activities?.map((activity, i) => (
+    <ActivityCard
+      key={activity.id}
+      data={activity}
       showDrawer={showDrawer[i]}
       setShowDrawer={setShowDrawer}
       _handleOpen={_handleOpen}
@@ -111,83 +57,47 @@ const Activity = (props) => {
   ));
 
   return (
-    <GridContainer className="">
+    <div className="">
       <div className="hidden-mobile">
-        <Items>
-          {props.activities
-            .filter((e, i) => i < more)
-            ?.map((e, i) => (
-              <PoiCard
-                isActivity
-                key={e.id}
-                data={e}
-                showDrawer={showDrawer[i]}
-                setShowDrawer={setShowDrawer}
-                _handleOpen={_handleOpen}
-                handleCloseDrawer={handleCloseDrawer}
-              />
-            ))}
-        </Items>
+        <SwiperCarousel
+          navigationButtons={true}
+          slidesPerView={4}
+          cards={cards}
+          navButtonsTop={"50%"}
+        ></SwiperCarousel>
+
         <Button
           onClick={() => {
-            more < props.activities.length
-              ? setMore(more + 4)
-              : props.data
+            props?.data
               ? openTailoredModal(router, props.data.id, props.data.name)
               : null;
           }}
         >
-          {more < props.activities.length
-            ? "View More"
-            : validateTextSize(
-                `Craft a trip to ${props.city} now!`,
-                8,
-                "Craft a trip now!"
-              )}
+          {validateTextSize(
+            `Craft a trip to ${props.city} now!`,
+            8,
+            "Craft a trip now!"
+          )}
         </Button>
       </div>
 
       <div className="hidden-desktop">
         <SwiperCarousel slidesPerView={1} pageDots noPadding cards={cards} />
+        <Button
+          onClick={() => {
+            props?.data
+              ? openTailoredModal(router, props.data.id, props.data.name)
+              : null;
+          }}
+        >
+          {validateTextSize(
+            `Craft a trip to ${props.city} now!`,
+            8,
+            "Craft a trip now!"
+          )}
+        </Button>
       </div>
-
-      {/* <div> */}
-      {/* {props.thingsToDoPage && (
-          <WeatherContainer elevation={props.elevation}>
-            <WeatherWidget
-              city={props.data.name}
-              lat={props.data.lat}
-              lon={props.data.long}
-            />
-            {props.data.elevation &&
-              props.data.elevation.length &&
-              props.data.elevation[0]?.elevation && (
-                <div style={{ marginTop: "20px" }}>
-                  <TextBold>Altitude</TextBold>
-                  <p style={{ fontWeight: "300", marginBottom: "0" }}>
-                    {Math.floor(props.data.elevation[0]?.elevation)} metres (
-                    {Math.floor(props.data.elevation[0]?.elevation * 3.281)}{" "}
-                    feet) above sea level
-                  </p>
-                </div>
-              )}
-          </WeatherContainer>
-        )} */}
-
-      {/* {props.activities && props.activities.length ? (
-          <MapBox
-            locations={props.activities}
-            defaultZoom={12}
-            height={
-              isPageWide ? (props.thingsToDoPage ? "320px" : "350px") : "230px"
-            }
-            InfoWindowContainer={InfoWindowContainer}
-          />
-        ) : (
-          <div></div>
-        )} */}
-      {/* </div> */}
-    </GridContainer>
+    </div>
   );
 };
 

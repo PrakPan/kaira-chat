@@ -459,18 +459,29 @@ const ItineraryPoiElement = (props) => {
                     ? "ACTIVITY"
                     : "Self Exploration"}
                 </div>
-                {props?.poi?.rating && (
+                {props?.poi?.rating ? (
                   <RatingContainer>
                     {/* <StarRating initialRating={4}></StarRating> */}
                     <div>{_getStars(props?.poi?.rating)}</div>
-                    <span>
-                      {props.poi.rating}{" "}
+                    <span>{props.poi.rating} .</span>
+                    <span className="underline">
                       {props.poi.user_ratings_total
-                        ? ` · ${props.poi.user_ratings_total} Google reviews`
+                        ? `${props.poi.user_ratings_total} user reviews`
                         : ""}
                     </span>
                   </RatingContainer>
-                )}
+                ) : props?.activity?.rating ? (
+                  <RatingContainer>
+                    {/* <StarRating initialRating={4}></StarRating> */}
+                    <div>{_getStars(props?.activity?.rating)}</div>
+                    <span>{props.activity.rating} .</span>
+                    <span className="underline">
+                      {props.activity.user_ratings_total
+                        ? `${props.activity.user_ratings_total} user reviews`
+                        : ""}
+                    </span>
+                  </RatingContainer>
+                ) : null}
               </div>
             </div>
           </div>

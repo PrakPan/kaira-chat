@@ -3,13 +3,8 @@ import styled from "styled-components";
 import Card from "./Card";
 import media from "../../media";
 import { useRouter } from "next/router";
-import Button from "../../ui/button/Index";
-import urls from "../../../services/urls";
-import * as ga from "../../../services/ga/Index";
 import SwiperCarousel from "../../SwiperCarousel";
-/* Used to display grid (desktop) / carousel of location images 
-  inputs:locations (array of objects), viewall (guide page)
-*/
+
 const Container = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -31,15 +26,10 @@ const MobileCardsContainer = styled.div`
 
 const LocationsBlog = (props) => {
   let isPageWide = media("(min-width: 768px)");
-
   const router = useRouter();
-
-  // const _handleCityRedirect = (path) => {
-  //   // router.push(`/travel-guide/city/${name}`)
-  //   if (path) window.location.href = "/" + path;
-  // };
   const [cardsToShowJSX, setCardsToShowJSX] = useState([]);
   const [cardsToShowJSXmobile, setCardsToShowJSXmobile] = useState([]);
+  
   useEffect(() => {
     let cardsarr = [];
     let MobileCardsArr = [];

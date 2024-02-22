@@ -226,7 +226,7 @@ const POIDetails = (props) => {
             )}
 
             {props.data.user_ratings_total && (
-              <u> {props.data.user_ratings_total} Google reviews</u>
+              <u> {props.data.user_ratings_total} user reviews</u>
             )}
           </div>
         </Reviews>

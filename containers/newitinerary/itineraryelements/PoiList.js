@@ -1,21 +1,11 @@
 import React, { useEffect, useState } from "react";
 import ImageLoader from "../../../components/ImageLoader";
-import StarRating from "../../../components/StarRating";
-import { BsCalendar2, BsPeopleFill } from "react-icons/bs";
-import { FaBed, FaStar, FaStarHalfAlt } from "react-icons/fa";
-import { ImSpoonKnife } from "react-icons/im";
-import {
-  getDate,
-  convertDateYearFormat,
-} from "../../../helper/ConvertDateFormat";
-import Button from "../../../components/ui/button/Index";
+import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import styled from "styled-components";
 import { getIndianPrice } from "../../../services/getIndianPrice";
-// import DropDown from '../../../components/modals/bookingupdated/new-accommodation-searched/Dropdown';
 import CheckboxFormComponent from "../../../components/FormComponents/CheckboxFormComponent";
 import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
 import { connect } from "react-redux";
-import { BiMinus, BiPlus } from "react-icons/bi";
 import SkeletonCard from "../../../components/ui/SkeletonCard";
 
 const starHotel = styled.div`
@@ -65,14 +55,53 @@ const PoiList = (props) => {
   const [numberOfTickets, setNumberOfTickets] = useState(props.ticketsCount);
   const [imageFail, setImageFail] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [stars, setStars] = useState(null);
   const [showDetails, setShowDetails] = useState({
     show: false,
     data: {},
   });
+
+  useEffect(() => {
+    if (props?.data && props.data?.activity_data.activity?.rating) {
+      const stars = [];
+      for (
+        let i = 0;
+        i < Math.floor(props.data?.activity_data.activity.rating);
+        i++
+      ) {
+        stars.push(<FaStar />);
+      }
+      if (
+        Math.floor(props.data?.activity_data.activity.rating) <
+        props.data?.activity_data.activity.rating
+      ) {
+        stars.push(<FaStarHalfAlt />);
+      }
+      setStars(stars);
+    } else if (props?.data && props.data?.activity_data.poi?.rating) {
+      const stars = [];
+      for (
+        let i = 0;
+        i < Math.floor(props.data?.activity_data.poi.rating);
+        i++
+      ) {
+        stars.push(<FaStar />);
+      }
+      if (
+        Math.floor(props.data?.activity_data.poi.rating) <
+        props.data?.activity_data.poi.rating
+      ) {
+        stars.push(<FaStarHalfAlt />);
+      }
+      setStars(stars);
+    }
+  }, [props?.data]);
+
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
     setShowDetails({ show: false, data: {} });
   };
+
   function handleCheckboxChange(e, activityId) {
     if (props.token) {
       if (props.activityAddDrawer) {
@@ -88,6 +117,7 @@ const PoiList = (props) => {
       props.setLoginModal(!props.loginModal);
     }
   }
+
   return (
     <>
       <div
@@ -145,23 +175,45 @@ const PoiList = (props) => {
                   </div>
                 </div>
                 <div className="flex flex-col gap-2 text-[#01202B] lg:w-[67%] w-full justify-start">
-                  <div className="flex flex-row justify-between">
-                    <div className="text-2xl font-bold">
-                      {props.data.activity_data.activity.name}
-                    </div>
-                    {props.data.activity_data?.activity?.is_very_popular && (
-                      <div>
-                        <ClippathComp className="text-sm font-bold bg-[#F7E700] text-#090909 pl-4 pr-2 py-1 -mr-2">
-                          Recommended
-                        </ClippathComp>
+                  <div className="flex flex-col justify-between">
+                    <div className="flex flex-row justify-between">
+                      <div className="text-2xl font-bold">
+                        {props.data.activity_data.activity.name}
                       </div>
+                      {props.data.activity_data?.activity?.is_very_popular && (
+                        <div>
+                          <ClippathComp className="text-sm font-bold bg-[#F7E700] text-#090909 pl-4 pr-2 py-1 -mr-2">
+                            Recommended
+                          </ClippathComp>
+                        </div>
+                      )}
+                    </div>
+                    {stars && (
+                      <span className="flex flex-row items-center gap-1 text-sm text-[#7a7a7a]">
+                        <span className="flex flex-row text-[#FFD201]">
+                          {stars}
+                        </span>
+                        <span className="">
+                          {props.data.activity_data.activity?.rating} .{" "}
+                        </span>
+                        <span className="underline">
+                          {
+                            props.data.activity_data.activity
+                              ?.user_ratings_total
+                          }{" "}
+                          user reviews
+                        </span>
+                      </span>
                     )}
                   </div>
-                  <div className="font-light text-sm my-2 text-[#01202B] pr-2">
-                    {props.data.text.slice(0, 250)}
-                    <span className="font-bold text-gray-500"> ...more</span>
+
+                  <div className="my-2">
+                    <div className="font-light text-sm text-[#01202B] line-clamp-3">
+                      {props.data.text}
+                    </div>
+                    <div className="font-bold text-gray-500"> ...more</div>
                   </div>
-                  <div className="">
+                  <div className="flex flex-row items-center justify-between">
                     <div className="flex flex-row gap-1">
                       <div className="text-2xl font-bold">
                         <span>₹</span>
@@ -171,54 +223,23 @@ const PoiList = (props) => {
                         per person*
                       </div>
                     </div>
-                  </div>
-                  <div
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleCheckboxChange(e, props?.data?.activity_data?.id);
-                    }}
-                    className="flex mt-2 mr-2 mb-2 flex-row gap-1 items-end justify-end cursor-pointer"
-                  >
-                    <CheckboxFormComponent
-                      checked={isSelect}
-                      className="mb-1"
-                    />
-                    <label className="text-center">
-                      {isSelect ? "Selected" : "Select"}
-                    </label>
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCheckboxChange(e, props?.data?.activity_data?.id);
+                      }}
+                      className="flex mt-2 mr-2 mb-2 flex-row gap-1 items-end justify-end cursor-pointer"
+                    >
+                      <CheckboxFormComponent
+                        checked={isSelect}
+                        className="mb-1"
+                      />
+                      <label className="text-center">
+                        {isSelect ? "Selected" : "Select"}
+                      </label>
+                    </div>
                   </div>
                 </div>
-
-                {/* <SelectContainer>
-                  <CounterContainer>
-                    <CounterIcon
-                      onClick={() => {
-                        if (numberOfTickets > 1)
-                          setNumberOfTickets((prev) => prev - 1);
-                      }}
-                      disable={numberOfTickets == 1}
-                    >
-                      <BiMinus />
-                    </CounterIcon>
-                    <div style={{ fontSize: "1.2rem" }}>{numberOfTickets}</div>
-                    <CounterIcon
-                      onClick={() => {
-                        setNumberOfTickets((prev) => prev + 1);
-                      }}
-                      disable={numberOfTickets >= props.ticketsCount}
-                    >
-                      <BiPlus />
-                    </CounterIcon>
-                  </CounterContainer>
-                  <Button
-                    padding="0.3rem 1.5rem"
-                    borderRadius="8px"
-                    fontWeight="400"
-                    onclick={() => console.log("")}
-                  >
-                    Select
-                  </Button>
-                </SelectContainer> */}
               </div>
             </div>
           ) : null
@@ -280,24 +301,43 @@ const PoiList = (props) => {
 
               <div className="flex flex-col gap-2 text-[#01202B] lg:w-[90%] w-full justify-between">
                 <div>
-                  <div className="flex flex-row justify-between">
-                    <div className="text-2xl font-bold">
-                      {props.data.activity_data.poi.name}
-                    </div>
-                    {props.data.activity_data?.poi?.is_very_popular && (
-                      <div>
-                        <ClippathComp className="text-sm font-bold bg-[#F7E700] text-#090909 pl-4   pr-2 py-1 -mr-2">
-                          Recommended
-                        </ClippathComp>
+                  <div className="flex flex-col justify-between">
+                    <div className="flex flex-row justify-between">
+                      <div className="text-2xl font-bold">
+                        {props.data.activity_data.poi.name}
                       </div>
+                      {props.data.activity_data?.poi?.is_very_popular && (
+                        <div>
+                          <ClippathComp className="text-sm font-bold bg-[#F7E700] text-#090909 pl-4   pr-2 py-1 -mr-2">
+                            Recommended
+                          </ClippathComp>
+                        </div>
+                      )}
+                    </div>
+                    {stars && (
+                      <span className="flex flex-row items-center gap-1 text-sm text-[#7a7a7a]">
+                        <span className="flex flex-row text-[#FFD201]">
+                          {stars}
+                        </span>
+                        <span className="">
+                          {props.data.activity_data.poi?.rating} .{" "}
+                        </span>
+                        <span className="underline">
+                          {props.data.activity_data.poi?.user_ratings_total}{" "}
+                          Google reviews
+                        </span>
+                      </span>
                     )}
                   </div>
 
-                  <div className="text-sm font-light my-2 text-[#01202B] pr-2">
-                    {props.data.text.slice(0, 200)}
-                    <span className="font-bold text-gray-500"> ...more</span>
+                  <div className="my-2">
+                    <div className="text-sm font-light text-[#01202B] line-clamp-3">
+                      {props.data.text}
+                    </div>
+                    <div className="font-bold text-gray-500"> ...more</div>
                   </div>
-
+                </div>
+                <div className="flex flex-row gap-5 justify-between">
                   {props.data.activity_data.poi?.tips
                     ? props.data.activity_data.poi?.tips
                         .slice(0, 1)
@@ -312,18 +352,21 @@ const PoiList = (props) => {
                           </div>
                         ))
                     : null}
-                </div>
-                <div
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCheckboxChange(e);
-                  }}
-                  className="flex mt-2 mr-2 mb-2 flex-row gap-1 items-end justify-end cursor-pointer"
-                >
-                  <CheckboxFormComponent checked={isSelect} className="mb-1" />
-                  <label className="text-center">
-                    {isSelect ? "Selected" : "Select"}
-                  </label>
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCheckboxChange(e);
+                    }}
+                    className="flex mr-2 mb-2 flex-row gap-1 items-end justify-end cursor-pointer"
+                  >
+                    <CheckboxFormComponent
+                      checked={isSelect}
+                      className="mb-1"
+                    />
+                    <label className="text-center">
+                      {isSelect ? "Selected" : "Select"}
+                    </label>
+                  </div>
                 </div>
               </div>
             </div>
