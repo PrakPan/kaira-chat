@@ -250,7 +250,7 @@ const TransferEditDrawer = (props) => {
         ) : (
           <div className="w-full flex flex-col items-center gap-3">
             <div className="w-full flex justify-start">
-              Showing {alternateRoutes.routes.length} travel ways from {origin}{" "}
+              {alternateRoutes.routes.length} ways to travel from {origin}{" "}
               to {destination}
             </div>
 
