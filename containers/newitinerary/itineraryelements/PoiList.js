@@ -207,11 +207,13 @@ const PoiList = (props) => {
                     )}
                   </div>
 
-                  <div className="font-light text-sm my-2 text-[#01202B] pr-2">
-                    {props.data.text.slice(0, 250)}
-                    <span className="font-bold text-gray-500"> ...more</span>
+                  <div className="my-2">
+                    <div className="font-light text-sm text-[#01202B] line-clamp-3">
+                      {props.data.text}
+                    </div>
+                    <div className="font-bold text-gray-500"> ...more</div>
                   </div>
-                  <div className="">
+                  <div className="flex flex-row items-center justify-between">
                     <div className="flex flex-row gap-1">
                       <div className="text-2xl font-bold">
                         <span>₹</span>
@@ -221,21 +223,21 @@ const PoiList = (props) => {
                         per person*
                       </div>
                     </div>
-                  </div>
-                  <div
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleCheckboxChange(e, props?.data?.activity_data?.id);
-                    }}
-                    className="flex mt-2 mr-2 mb-2 flex-row gap-1 items-end justify-end cursor-pointer"
-                  >
-                    <CheckboxFormComponent
-                      checked={isSelect}
-                      className="mb-1"
-                    />
-                    <label className="text-center">
-                      {isSelect ? "Selected" : "Select"}
-                    </label>
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCheckboxChange(e, props?.data?.activity_data?.id);
+                      }}
+                      className="flex mt-2 mr-2 mb-2 flex-row gap-1 items-end justify-end cursor-pointer"
+                    >
+                      <CheckboxFormComponent
+                        checked={isSelect}
+                        className="mb-1"
+                      />
+                      <label className="text-center">
+                        {isSelect ? "Selected" : "Select"}
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -322,17 +324,20 @@ const PoiList = (props) => {
                         </span>
                         <span className="underline">
                           {props.data.activity_data.poi?.user_ratings_total}{" "}
-                          user reviews
+                          Google reviews
                         </span>
                       </span>
                     )}
                   </div>
 
-                  <div className="text-sm font-light my-2 text-[#01202B] pr-2">
-                    {props.data.text.slice(0, 200)}
-                    <span className="font-bold text-gray-500"> ...more</span>
+                  <div className="my-2">
+                    <div className="text-sm font-light text-[#01202B] line-clamp-3">
+                      {props.data.text}
+                    </div>
+                    <div className="font-bold text-gray-500"> ...more</div>
                   </div>
-
+                </div>
+                <div className="flex flex-row gap-5 justify-between">
                   {props.data.activity_data.poi?.tips
                     ? props.data.activity_data.poi?.tips
                         .slice(0, 1)
@@ -347,18 +352,21 @@ const PoiList = (props) => {
                           </div>
                         ))
                     : null}
-                </div>
-                <div
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCheckboxChange(e);
-                  }}
-                  className="flex mt-2 mr-2 mb-2 flex-row gap-1 items-end justify-end cursor-pointer"
-                >
-                  <CheckboxFormComponent checked={isSelect} className="mb-1" />
-                  <label className="text-center">
-                    {isSelect ? "Selected" : "Select"}
-                  </label>
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleCheckboxChange(e);
+                    }}
+                    className="flex mr-2 mb-2 flex-row gap-1 items-end justify-end cursor-pointer"
+                  >
+                    <CheckboxFormComponent
+                      checked={isSelect}
+                      className="mb-1"
+                    />
+                    <label className="text-center">
+                      {isSelect ? "Selected" : "Select"}
+                    </label>
+                  </div>
                 </div>
               </div>
             </div>

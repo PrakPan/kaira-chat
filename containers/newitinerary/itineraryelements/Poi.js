@@ -466,7 +466,7 @@ const ItineraryPoiElement = (props) => {
                     <span>{props.poi.rating} .</span>
                     <span className="underline">
                       {props.poi.user_ratings_total
-                        ? `${props.poi.user_ratings_total} user reviews`
+                        ? `${props.poi.user_ratings_total} Google reviews`
                         : ""}
                     </span>
                   </RatingContainer>

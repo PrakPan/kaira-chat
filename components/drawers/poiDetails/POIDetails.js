@@ -85,7 +85,7 @@ const ImageContainer = styled.div`
 const POIDetails = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [imageFail , setImageFail] = useState(false)
+  const [imageFail, setImageFail] = useState(false);
   var about = (
     <p>
       {props?.data?.short_description}{" "}
@@ -105,7 +105,7 @@ const POIDetails = (props) => {
   );
 
   var tips = (
-    <ul style={{paddingLeft : '0.5rem'}}>
+    <ul style={{ paddingLeft: "0.5rem" }}>
       {props.data.tips?.map((e, i) => (
         <li key={i}>- {e}</li>
       ))}
@@ -226,7 +226,11 @@ const POIDetails = (props) => {
             )}
 
             {props.data.user_ratings_total && (
-              <u> {props.data.user_ratings_total} user reviews</u>
+              <u>
+                {" "}
+                {props.data.user_ratings_total}{" "}
+                {props.data.activity_type ? "user reviews" : "Googel reviews"}
+              </u>
             )}
           </div>
         </Reviews>
@@ -270,12 +274,14 @@ const POIDetails = (props) => {
           </Text>
         </div>
       )}
-      {props.data.tips && props.data.tips.length ?  (
+      {props.data.tips && props.data.tips.length ? (
         <div>
           <Heading>Tips</Heading>
           <Text>{tips}</Text>
         </div>
-      ) : <></>}
+      ) : (
+        <></>
+      )}
     </Container>
   );
 };

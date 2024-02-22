@@ -23,13 +23,13 @@ const SwiperContainer = styled.div`
   .swiper-button-prev {
     left: -10px;
     @media screen and (min-width: 768px) {
-      left: -50px;
+      left: -20px;
     }
   }
   .swiper-button-next {
     right: -10px;
     @media screen and (min-width: 768px) {
-      right: -50px;
+      right: -20px;
     }
   }
   .swiper-button-next,
