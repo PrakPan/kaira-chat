@@ -196,7 +196,10 @@ const Day_I_Container = (props) => {
                 city_id={element?.current_city_id}
               />
             );
-          } else {
+          } else if (
+            element.activity_data.poi &&
+            Object.keys(element?.activity_data?.poi).length !== 0
+          ) {
             pois.push({
               heading: element.heading,
               text: element.text,
