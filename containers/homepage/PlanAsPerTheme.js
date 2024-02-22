@@ -197,7 +197,7 @@ const PlanAsPerTheme = (props) => {
             fit="cover"
             width="100%"
             height="100%"
-            style={{ filter: "brightness(0.70)" }}
+            style={{ filter: "brightness(0.9)" }}
             url={e.image}
           ></ImageLoader>
           {/* <BlackContainer/> */}

@@ -6,7 +6,7 @@ const HeroBanner = (props) => {
         heightmobile="30rem"
         height="37rem"
         url={props.image}
-        filter="brightness(0.65)"
+        filter="brightness(0.9)"
         padding='2rem 0'
         // filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"
       >

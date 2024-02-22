@@ -86,7 +86,7 @@ const Experiences = (props) => {
             dimensions={{ width: 500, height: 500 }}
             dimensionsMobile={{ width: 800, height: 800 }}
             height="35vh"
-            style={{ filter: "brightness(0.55)" }}
+            style={{ filter: "brightness(0.9)" }}
           ></ImageLoader>
         </ImageFade>
         <BlackContainer className="font-lexend">

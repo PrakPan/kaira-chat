@@ -83,7 +83,7 @@ const Experiences = (props) => {
     <Container onClick={props.onclick ? props.onclick : null}>
       <BackroundImageLoader
         // filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"
-        filter="brightness(0.65)"
+        filter="brightness(0.9)"
         padding="0"
         zoomonhover
         // center

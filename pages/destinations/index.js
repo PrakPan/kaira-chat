@@ -1,11 +1,16 @@
 import SwiperLocations from "../../components/containers/SwiperLocations/Index";
 import axiosAllDestinationsInstance from "../../services/pages/allDestinations";
+import axiospagelistinstance from "../../services/pages/list";
 import Layout from "../../components/Layout";
 import styled from "styled-components";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import HeroBanner from "../../components/containers/HeroBanner/HeroBanner";
 import Button from "../../components/ui/button/Index";
+import PlanAsPerTheme from "../../containers/homepage/PlanAsPerTheme";
+import media from "../../components/media";
+import PlanWithUs from "../../components/WhyPlanWithUs/Index";
+import CaseStudies from "../../containers/travelplanner/CaseStudies/Index";
 
 const Container = styled.div`
   width: 100%;
@@ -27,8 +32,9 @@ const Heading = styled.h2`
   }
 `;
 
-export default function AllDestinations({ allDestinations }) {
+export default function AllDestinations({ allDestinations, ThemeData }) {
   const router = useRouter();
+  let isPageWide = media("(min-width: 768px)");
 
   const handlePlanButton = async (continent) => {
     await router.push(`/${continent}`);
@@ -48,13 +54,15 @@ export default function AllDestinations({ allDestinations }) {
         <meta property="keywords" content={""}></meta>
       </Head>
       <HeroBanner
-        image={allDestinations[0].locations[0].image}
+        image={
+          allDestinations.length ? allDestinations[0].locations[0].image : ""
+        }
         // page_id={props.data.id}
         destination={""}
         title={`All Destinations Trip Planner`}
       />
 
-      <Container className="flex flex-col justify-center">
+      <Container className="flex flex-col justify-center mb-5">
         {allDestinations && allDestinations.length
           ? allDestinations.map((dest, index) => (
               <div key={index} className="">
@@ -83,6 +91,51 @@ export default function AllDestinations({ allDestinations }) {
               </div>
             ))
           : null}
+
+        {ThemeData && ThemeData.length ? (
+          <>
+            <Heading
+              noline
+              textAlign="left"
+              fontSize={isPageWide ? "32px" : "24px"}
+              align="center"
+              aligndesktop="left"
+              margin={
+                !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
+              }
+              bold
+            >
+              Plan trip as per mood
+            </Heading>
+            <PlanAsPerTheme ThemeData={ThemeData} />
+          </>
+        ) : null}
+
+        <Heading
+          noline
+          textAlign="left"
+          fontSize={isPageWide ? "32px" : "24px"}
+          align="center"
+          aligndesktop="left"
+          margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}
+          bold
+        >
+          Why plan with us?
+        </Heading>
+        <PlanWithUs />
+
+        <Heading
+          noline
+          textAlign="left"
+          fontSize={isPageWide ? "32px" : "24px"}
+          align="center"
+          aligndesktop="left"
+          margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}
+          bold
+        >
+          Happy Community of The Tarzan Way
+        </Heading>
+        <CaseStudies></CaseStudies>
       </Container>
     </Layout>
   );
@@ -98,8 +151,9 @@ export async function getStaticProps(context) {
     { slug: "north_america", title: "North America" },
     { slug: "south_america", title: "South America" },
   ];
+  let ThemeData = [];
+  const allDestinations = [];
   try {
-    const allDestinations = [];
     for (let i = 0; i < CONTINENTS.length; i++) {
       const response = await axiosAllDestinationsInstance(
         `/all/?continent=${CONTINENTS[i].slug}&fields=id,name,path,tagline,image`
@@ -110,17 +164,23 @@ export async function getStaticProps(context) {
         locations,
       });
     }
-    return {
-      props: {
-        allDestinations,
-      },
-    };
   } catch (err) {
     console.log("[Error][AllDestinationsPage]: ", err.message);
-    return {
-      props: {
-        allDestinations: [],
-      },
-    };
   }
+
+  try {
+    const pageListResponse = await axiospagelistinstance.get(
+      `/?page_type=Theme&fields=id,destination,tagline,image,link,path,banner_heading`
+    );
+    ThemeData = pageListResponse.data;
+  } catch (err) {
+    console.log("[Error][AllDestinationsPage]: ", err.message);
+  }
+
+  return {
+    props: {
+      allDestinations,
+      ThemeData,
+    },
+  };
 }
