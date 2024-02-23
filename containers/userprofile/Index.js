@@ -10,6 +10,7 @@ import ImageLoader from "../../components/ImageLoader";
 import { useRouter } from "next/router";
 import openTailoredModal from "../../services/openTailoredModal";
 import ExperienceCard from "../../components/cards/newitinerarycard-main/ExperienceCard";
+import Experiences from "../../components/containers/Experiences";
 import ExperienceCardSkeleton from "../../components/cards/newitinerarycard-main/ExperienceCardSkeleton";
 import Button from "../../components/ui/button/Index";
 
@@ -27,9 +28,10 @@ const Container = styled.div`
 const ContentContainer = styled.div`
   border-radius: 5px;
   padding: 0rem;
-  margin: 2rem 0;
+  margin: auto;
   @media screen and (min-width: 768px) {
     padding: 0;
+    width: 85%;
   }
 `;
 
@@ -110,126 +112,55 @@ const UserDashboard = (props) => {
     }
   };
 
+  useEffect(() => {
+    console.log("totalPlans >>>>>>", totalPlans);
+  }, [totalPlans]);
+
   return (
     <CheckAuthRedirect
       authRedirectPath="/"
       redirectOnFail={() => router.push("/")}
     >
-      <Container>
+      <Container className="">
         <ContentContainer>
           <Profile></Profile>
         </ContentContainer>
-        <ContentContainer className="border-thi mb-5">
-          <div style={{ display: "flex" }}>
-            <Heading align="left" margin="0 0 2rem 0" bold noline>
-              My Plans {totalPlans ? `(${totalPlans})` : null}
-            </Heading>
-          </div>
+      </Container>
+      <ContentContainer className="w-full mb-5">
+        <div style={{ display: "flex" }} className="">
+          <Heading
+            noline
+            bold
+            align="left"
+            textAlign="left"
+            aligndesktop="left"
+            fontSize={isPageWide ? "32px" : "24px"}
+            margin={
+              !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
+            }
+          >
+            {"My Trips "}
+            {totalPlans && `(${totalPlans})`}
+          </Heading>
+        </div>
 
-          {isPageWide && !myPlansArr.length && !loading ? (
-            <NoPlans className="font-lexend">
-              You don't have any plans yet.{" "}
-              <a
-                onClick={() => openTailoredModal(router)}
-                style={{ color: "black", textDecoration: "none !important" }}
-              >
-                Start Planning
-              </a>
-            </NoPlans>
-          ) : null}
+        {isPageWide && !myPlansArr.length && !loading ? (
+          <NoPlans className="font-lexend">
+            You don't have any plans yet.{" "}
+            <a
+              onClick={() => openTailoredModal(router)}
+              style={{ color: "black", textDecoration: "none !important" }}
+            >
+              Start Planning
+            </a>
+          </NoPlans>
+        ) : null}
 
-          {loading ? (
-            <div className="grid justify-items-center lg:grid-cols-3 md:grid-cols-3 gap-4 px-3 md:px-0 lg:px-0">
-              <ExperienceCardSkeleton />
-              <ExperienceCardSkeleton />
-              <ExperienceCardSkeleton />
-            </div>
-          ) : myPlansArr.length ? (
-            <div className="flex flex-col items-center gap-3 mb-5">
-              <div className="grid lg:grid-cols-3 md:grid-cols-3 gap-4 px-3 md:px-0 lg:px-0">
-                {myPlansArr.map((plan, i) => (
-                  <ExperienceCard
-                    key={plan?.short_text}
-                    data={plan}
-                    myplan={props?.myplan}
-                    hardcoded={plan?.payment_info ? true : false}
-                    filter={
-                      plan?.experience_filters
-                        ? plan?.experience_filters?.length
-                          ? plan?.experience_filters[0]
-                          : null
-                        : null
-                    }
-                    rating={plan?.rating}
-                    slug={plan?.slug}
-                    id={plan?.id}
-                    budget={plan?.budget}
-                    group_type={plan?.group_type}
-                    number_of_adults={plan?.number_of_adults}
-                    text={plan?.short_text}
-                    experience={plan?.name}
-                    duration={
-                      plan?.duration
-                        ? plan.duration
-                        : plan?.duration_number && plan?.duration_unit
-                        ? plan.duration_number + " " + plan.duration_unit
-                        : null
-                    }
-                    location={plan["experience_region"]}
-                    starting_cost={
-                      plan?.payment_info
-                        ? plan?.payment_info?.per_person_total_cost
-                          ? plan?.payment_info?.per_person_total_cost
-                          : plan?.starting_price
-                        : plan?.starting_price
-                    }
-                    images={plan?.images}
-                    locations={plan?.itinerary_locations}
-                  ></ExperienceCard>
-                ))}
-              </div>
-              {showMoreResults && !showMoreLoading ? (
-                <button
-                  onClick={handleShowMore}
-                  className="border-1 border-black rounded-lg py-2 px-5 text-sm hover:text-white hover:bg-black transition ease-in-out duration-500"
-                >
-                  Show More
-                </button>
-              ) : showMoreResults && showMoreLoading ? (
-                <div className="w-full grid justify-items-center lg:grid-cols-3 md:grid-cols-3 gap-4 px-3 md:px-0 lg:px-0">
-                  <ExperienceCardSkeleton />
-                  <ExperienceCardSkeleton />
-                  <ExperienceCardSkeleton />
-                </div>
-              ) : (
-                <Button
-                  onclick={() => openTailoredModal(router)}
-                  borderWidth="1px"
-                  fontWeight="500"
-                  borderRadius="6px"
-                  margin="2rem auto"
-                  padding="0.5rem 2rem"
-                >
-                  Create your new travel plan now!
-                </Button>
-              )}
-            </div>
-          ) : (
-            <ImageLoader
-              width="40%"
-              widthmobile="40%"
-              margin="7.5vh auto"
-              url={"media/website/noplans.svg"}
-            ></ImageLoader>
-          )}
-
-          {!isPageWide && !myPlansArr.length && !loading ? (
+        {!isPageWide && !myPlansArr.length && !loading ? (
+          <>
             <NoPlans className="font-lexend">
               You don't have any plans yet.{" "}
             </NoPlans>
-          ) : null}
-
-          {!isPageWide && !myPlansArr.length && !loading ? (
             <a
               onClick={() => openTailoredModal(router)}
               className="font-nunito"
@@ -246,9 +177,94 @@ const UserDashboard = (props) => {
             >
               Start Planning
             </a>
-          ) : null}
-        </ContentContainer>
-      </Container>
+          </>
+        ) : null}
+
+        {loading ? (
+          <div className="grid justify-items-center lg:grid-cols-3 md:grid-cols-3 gap-4 px-3 md:px-0 lg:px-0">
+            <ExperienceCardSkeleton />
+            <ExperienceCardSkeleton />
+            <ExperienceCardSkeleton />
+          </div>
+        ) : myPlansArr.length ? (
+          <div className="flex flex-col items-center gap-3 mb-5">
+            <div className="w-full grid lg:grid-cols-3 md:grid-cols-3 gap-4 px-3 md:px-0 lg:px-0">
+              {myPlansArr.map((plan, i) => (
+                <ExperienceCard
+                  key={i}
+                  data={plan}
+                  myplan={props?.myplan}
+                  hardcoded={plan?.payment_info ? true : false}
+                  filter={
+                    plan?.experience_filters
+                      ? plan?.experience_filters?.length
+                        ? plan?.experience_filters[0]
+                        : null
+                      : null
+                  }
+                  rating={plan?.rating}
+                  slug={plan?.slug}
+                  id={plan?.id}
+                  budget={plan?.budget}
+                  group_type={plan?.group_type}
+                  number_of_adults={plan?.number_of_adults}
+                  text={plan?.short_text}
+                  experience={plan?.name}
+                  duration={
+                    plan?.duration
+                      ? plan.duration
+                      : plan?.duration_number && plan?.duration_unit
+                      ? plan.duration_number + " " + plan.duration_unit
+                      : null
+                  }
+                  location={plan["experience_region"]}
+                  starting_cost={
+                    plan?.payment_info
+                      ? plan?.payment_info?.per_person_total_cost
+                        ? plan?.payment_info?.per_person_total_cost
+                        : plan?.starting_price
+                      : plan?.starting_price
+                  }
+                  images={plan?.images}
+                  locations={plan?.itinerary_locations}
+                ></ExperienceCard>
+              ))}
+            </div>
+            {showMoreResults && !showMoreLoading ? (
+              <button
+                onClick={handleShowMore}
+                className="border-1 border-black rounded-lg py-2 px-5 text-sm hover:text-white hover:bg-black transition ease-in-out duration-500"
+              >
+                Show More
+              </button>
+            ) : showMoreResults && showMoreLoading ? (
+              <div className="w-full grid justify-items-center lg:grid-cols-3 md:grid-cols-3 gap-4 px-3 md:px-0 lg:px-0">
+                <ExperienceCardSkeleton />
+                <ExperienceCardSkeleton />
+                <ExperienceCardSkeleton />
+              </div>
+            ) : (
+              <Button
+                onclick={() => openTailoredModal(router)}
+                borderWidth="1px"
+                fontWeight="500"
+                borderRadius="6px"
+                margin="2rem auto"
+                padding="0.5rem 2rem"
+              >
+                Create your new travel plan now!
+              </Button>
+            )}
+          </div>
+        ) : (
+          <ImageLoader
+            width="40%"
+            widthmobile="40%"
+            margin="7.5vh auto"
+            url={"media/website/noplans.svg"}
+          ></ImageLoader>
+        )}
+      </ContentContainer>
     </CheckAuthRedirect>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useRouter } from "next/router";
 import "bootstrap/dist/css/bootstrap.min.css";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import DesktopBanner from "../../components/containers/Banner";
 import Experiences from "../../components/containers/Experiences";
 import axiomyplansinstance from "../../services/sales/MyPlans";
@@ -259,7 +259,7 @@ const Homepage = (props) => {
               bold
               textAlign="left"
             >
-              {"My Trips "} {plansCount ? `(plansCount)` : null}
+              {"My Trips "} {plansCount ? `(${plansCount})` : null}
             </Heading>
             <Experiences
               margin="2.5rem 0"
