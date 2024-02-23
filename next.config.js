@@ -36,6 +36,10 @@ module.exports = {
         protocol: "https",
         hostname: "res.cloudinary.com",
       },
+      {
+        protocol: "https",
+        hostname: "thetarzanway-web.s3.us-west-2.amazonaws.com",
+      },
     ],
   },
   experimental: {
