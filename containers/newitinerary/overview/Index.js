@@ -1,10 +1,9 @@
-import styled from 'styled-components';
-import { useState, useEffect } from 'react';
-import Button from '../../../components/ui/button/Index';
-import Details from './Details';
-import ImagesMobile from './ImagesMobile';
-import { useLayoutEffect } from 'react';
+import styled from "styled-components";
+import Details from "./Details";
+import ImagesMobile from "./ImagesMobile";
+
 const Container = styled.div``;
+
 const GridContainer = styled.div`
   display: grid;
   grid-template-columns: auto max-content;
@@ -14,11 +13,13 @@ const GridContainer = styled.div`
     margin-top: 0rem;
   }
 `;
+
 const Heading = styled.h1`
   font-size: 34px;
   font-weight: 600;
   line-height: 34px;
 `;
+
 const Line = styled.div`
   border: 1px solid #f0f0f0;
   width: 100vw;
@@ -28,35 +29,26 @@ const Line = styled.div`
     visibility: hidden;
   }
 `;
+
 const toTitleCase = (str) => {
-  return str.replace(/\w\S*/g, function(txt) {
+  return str.replace(/\w\S*/g, function (txt) {
     return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
   });
 };
+
 const Overview = (props) => {
   // useEffect(() => {}, []);
-    // var Images = [];
+  // var Images = [];
 
-    // useLayoutEffect(() => {
-    //   for (let i = 0; i < props.images.length; i++) {
-    //     if (props.images[i]) Images.push(props.images[i]);
-    //   }
-    // }, []);
+  // useLayoutEffect(() => {
+  //   for (let i = 0; i < props.images.length; i++) {
+  //     if (props.images[i]) Images.push(props.images[i]);
+  //   }
+  // }, []);
   return (
     <Container>
       <GridContainer>
         <Heading className="font-lexend">{toTitleCase(props.title)}</Heading>
-        {/* <div className="center-div">
-          <div className="hidden-desktop">
-            <Button
-              borderRadius="6px"
-              borderWidth="1.5px"
-              onclick={() => console.log('')}
-            >
-              Trip Settings
-            </Button>
-          </div>
-        </div> */}
       </GridContainer>
       <div>
         <Details
@@ -67,10 +59,6 @@ const Overview = (props) => {
           end_date={props.end_date}
           duration={props.duration}
         ></Details>
-        {/* <div
-          className="border-b-[0.8px] border-slate-300 mt-2 -mx-5 block lg:hidden
-        "
-        ></div> */}
       </div>
 
       {/* <Line></Line> */}

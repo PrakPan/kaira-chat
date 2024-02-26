@@ -1,26 +1,19 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/router";
-
 import styled from "styled-components";
-import FullImg from "../fullimg/FullImg";
-import FullImgContainer from "../fullimg/FullImgContent";
-
 import Menu from "../MenuV2";
 import axios from "axios";
 import Spinner from "../../../containers/loaderbar/Index";
 import OldSpinner from "../../../components/LoadingPage";
-import defaultbreif from "../defaultbrief";
 import axiosdaybydayinstance from "../../../services/itinerary/daybyday/preview";
 import axiosbreifinstance from "../../../services/itinerary/brief/preview";
 import { MIS_SERVER_HOST } from "../../../services/constants";
-
 import * as authaction from "../../../store/actions/auth";
 import { connect, useDispatch } from "react-redux";
 import { ITINERARY_STATUSES } from "../../../services/constants";
 import { TRAVELER_ITINERARIES } from "../../../services/constants";
 import axiosPoiRoutes from "../../../services/itinerary/brief/route";
 import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
-import Landing from "../landing/Index";
 import Overview from "../../newitinerary/overview/Index";
 import { openNotification } from "../../../store/actions/notification";
 import { setItineraryStartDate } from "../../../store/actions/itineraryStartDate";
@@ -37,6 +30,7 @@ const Container = styled.div`
 const btoa = (text) => {
   return Buffer.from(text, "binary").toString("base64");
 };
+
 const Itinerary = (props) => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -726,14 +720,7 @@ const Itinerary = (props) => {
 
   if (breif && !itineraryLoading)
     return (
-      // <CheckAuthRedirect authRedirectPath="/" redirectOnFail={null}>
-
       <Container>
-        {/* <Header/> */}
-        {/* <FullImg url={itinerary.images ? itinerary.images.length ? itinerary.images[0] : 'media/website/grey.png': 'media/website/grey.png'} title={itinerary.name} duration={plan ? plan.duration_number+" "+plan.duration_unit : null}  >
-                 <FullImgContainer heading={itinerary.name} duration={plan ? plan.duration_number+" "+plan.duration_unit : null} plan={plan}></FullImgContainer>
-           </FullImg>  */}
-
         <Overview
           FONT_SIZES_MOBILE={FONT_SIZES_MOBILE}
           title={itinerary.name}
@@ -747,13 +734,6 @@ const Itinerary = (props) => {
             plan ? plan.duration_number + " " + plan.duration_unit : null
           }
         ></Overview>
-        {/* <Landing
-          title={itinerary.name}
-          images={itinerary.images}
-          duration={
-            plan ? plan.duration_number + ' ' + plan.duration_unit : null
-          }
-        ></Landing> */}
         <div id="itinerary-anchor">
           <Menu
             hasUserPaid={hasUserPaid}
@@ -817,12 +797,8 @@ const Itinerary = (props) => {
               getAccommodationAndActivitiesHandler
             }
           ></Menu>
-          {/* <ItineraryMobile></ItineraryMobile> */}
-          {/* <Cities></Cities> */}
         </div>
-        {/* <Footer></Footer> */}
       </Container>
-      // </CheckAuthRedirect>
     );
   else if (isPastTravelerItinerary)
     return (
@@ -852,6 +828,7 @@ const mapStateToPros = (state) => {
     otpSent: state.auth.otpSent,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     checkAuthState: () => dispatch(authaction.checkAuthState()),

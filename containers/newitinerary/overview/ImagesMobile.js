@@ -1,10 +1,9 @@
 import styled from "styled-components";
-import { useState, useEffect } from "react";
-// import Button from '../../../components/ui/button/Index';
+import { useState } from "react";
 import ImageLoader from "../../../components/ImageLoader";
-import { useLayoutEffect } from "react";
 import media from "../../../components/media";
 import SkeletonCard from "../../../components/ui/SkeletonCard";
+
 const Container = styled.div`
   display: grid;
   @media screen and (min-width: 768px) {
@@ -28,6 +27,7 @@ const GridContainer = styled.div`
 
   grid-gap: 0.5rem;
 `;
+
 const MoreContainer = styled.div`
   position: relative;
   height: 100%;
@@ -36,6 +36,7 @@ const MoreContainer = styled.div`
   z-index: 2;
   // background-color: rgba(84, 84, 84, 0.7);
 `;
+
 const MoreText = styled.div`
   font-size: 14px;
   font-weight: 600;
@@ -43,6 +44,7 @@ const MoreText = styled.div`
   position: absolute;
   margin: 0;
 `;
+
 const TwoImageContainer = styled.div`
   height: 400px;
   display: grid;
@@ -52,6 +54,7 @@ const TwoImageContainer = styled.div`
     grid-template-columns: 2fr 1fr;
   }
 `;
+
 const ImagesMobile = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [ImagesLoaded, setImagesLoaded] = useState({
@@ -59,6 +62,7 @@ const ImagesMobile = (props) => {
     1: false,
     2: false,
   });
+
   function OnImageLoad(i) {
     if (!ImagesLoaded[i]) {
       setTimeout(
@@ -141,14 +145,6 @@ const ImagesMobile = (props) => {
           >
             <SkeletonCard />
           </div>
-          {/* <div
-            className="center-div"
-            style={{ position: 'absolute', height: '100%', color: 'white' }}
-          >
-            View 10+ photos
-          </div> */}
-          {/* <MoreText className='font-lexend'>View 10+ photos</MoreText> */}
-          {/* </MoreContainer> */}
         </GridContainer>
       ) : null}
     </Container>

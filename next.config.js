@@ -1,5 +1,6 @@
 module.exports = {
   distDir: process.env.BUILD_DIR || ".next",
+  output: "export",
   async redirects() {
     return [
       {
@@ -35,10 +36,6 @@ module.exports = {
       {
         protocol: "https",
         hostname: "res.cloudinary.com",
-      },
-      {
-        protocol: "https",
-        hostname: "thetarzanway-web.s3.us-west-2.amazonaws.com",
       },
     ],
   },

@@ -49,11 +49,13 @@ const TrainIcon = ({ Instyle, classname }) => {
   }
   return (
     <Image
+    //   src="https://d31aoa0ehgvjdi.cloudfront.net/media/icons/transfers/train.svg"
       src="/assets/icons/transfers/train.svg"
       width={classname.width}
       height={classname.height}
       alt="icon"
       onError={() => setError(true)}
+      className="lg:p-3 md:p-3 p-2"
     />
   );
 };

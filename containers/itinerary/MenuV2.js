@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
-import styled, { keyframes } from "styled-components";
-import { Link as ScrollLink, scroller } from "react-scroll";
-
+import styled from "styled-components";
+import { Link as scroller } from "react-scroll";
 import { RxCross2 } from "react-icons/rx";
 import { Typography } from "@mui/material";
 import { Box } from "@mui/material";
@@ -22,7 +21,6 @@ import NewItenaryDBDMob from "./New_Itenary_DBD/NewItenaryDBDMob";
 import NewItenaryMain from "./New_Itenary_DBD/NewItenaryMain";
 import ScrollableMenuTabs from "../../components/ScrollableMenuTabs";
 import ActivityBookings from "./ActivityBookings/ActivitiesBookings";
-
 import HotelsBooking from "./HotelsBooking/HotelsBooking";
 import { SplitScreen } from "../../components/SplitScreen";
 import { Navigation } from "../../components/NewNavigation";
@@ -33,11 +31,11 @@ import {
   CONTENT_SERVER_HOST,
   ITINERARY_STATUSES,
 } from "../../services/constants";
-// import useInView from "../../hooks/useInView";
 import { getCityDetails } from "./getCityDetails";
 import ImageLoader from "../../components/ImageLoader";
 import { connect } from "react-redux";
 import { openNotification } from "../../store/actions/notification";
+
 const Container = styled.div`
   margin-top: 1rem;
   display: grid;
@@ -54,6 +52,7 @@ const Container = styled.div`
     top: 10vh;
   }
 `;
+
 const Location = styled.div`
   padding: 1rem;
   display: flex;
@@ -61,6 +60,7 @@ const Location = styled.div`
   justify-content: center;
   text-align: center;
 `;
+
 const LocationsContainer = styled.div`
   display: flex;
   position: fixed;
@@ -81,6 +81,7 @@ const CostContainer = styled.div`
     align-items: center;
   }
 `;
+
 const SelectedMenu = styled.div`
   font-size: 14px;
   font-weight: 600;
@@ -92,6 +93,7 @@ const SelectedMenu = styled.div`
   border-color: #f7e700;
   border-radius: 10px 10px 0 0;
 `;
+
 const NotSelectedMenu = styled.div`
   font-size: 14px;
   font-weight: 500;
@@ -100,6 +102,7 @@ const NotSelectedMenu = styled.div`
   background-color: transparent;
   padding: 0.75rem 1.5rem;
 `;
+
 const StrikedCost = styled.p`
   position: relative;
   width: max-content;
@@ -152,6 +155,7 @@ const Cost = styled.div`
     font-weight: 300;
   }
 `;
+
 const GITCost = styled.div`
   text-align: right;
   line-height: 1.5;
@@ -164,6 +168,7 @@ const GITCost = styled.div`
     font-weight: 300;
   }
 `;
+
 const DiscountContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -195,6 +200,7 @@ const useStyles = {
     flex-grow-1
     `,
 };
+
 const GetInTouchContainer = styled.div`
   &:hover img {
     filter: invert(100%);
@@ -203,25 +209,8 @@ const GetInTouchContainer = styled.div`
 
 const SimpleTabsV2 = (props) => {
   let isPageWide = media("(min-width: 768px)");
-
   const [isGroup, setIsGroup] = useState(false);
-
   const router = useRouter();
-
-  useEffect(() => {
-    if (router.query.payment_status) {
-      if (isPageWide) window.scrollTo(0, window.innerHeight);
-      else window.scrollTo(0, window.innerHeight / 2);
-      setValue(2);
-    }
-    // change after is_group field activated in itinerary APIs
-    // if(props.match.params.id === "LX1513cBeVVjRPY09EhI" || props.match.params.id === "AY2n7HcBeVVjRPY0MgwO"  || props.match.params.id==="9OjdZ3gBeVVjRPY01cew") setIsGroup(true);
-    if (props.showbooking) {
-      setValue(2);
-      window.scrollTo(0, window.innerHeight);
-    }
-  }, []);
-
   const classes = useStyles;
   const [value, setValue] = React.useState(0);
   const [show, setShow] = useState(true);
@@ -249,6 +238,20 @@ const SimpleTabsV2 = (props) => {
   const isDesktop = useMediaQuery("(min-width:1148px)");
   // const isInView = useInView("Booking_container");
 
+  useEffect(() => {
+    if (router.query.payment_status) {
+      if (isPageWide) window.scrollTo(0, window.innerHeight);
+      else window.scrollTo(0, window.innerHeight / 2);
+      setValue(2);
+    }
+    // change after is_group field activated in itinerary APIs
+    // if(props.match.params.id === "LX1513cBeVVjRPY09EhI" || props.match.params.id === "AY2n7HcBeVVjRPY0MgwO"  || props.match.params.id==="9OjdZ3gBeVVjRPY01cew") setIsGroup(true);
+    if (props.showbooking) {
+      setValue(2);
+      window.scrollTo(0, window.innerHeight);
+    }
+  }, []);
+
   const scrollToElement = (elementId) => {
     scroller.scrollTo(elementId, {
       duration: 500,
@@ -274,7 +277,6 @@ const SimpleTabsV2 = (props) => {
   };
 
   //Location tabs for mobile
-
   var RoutesData = [];
   var TransfersData = [];
   var CityDataTemp = [];
@@ -1281,11 +1283,13 @@ const mapStateToPros = (state) => {
     notificationText: state.Notification.text,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     openNotification: (payload) => dispatch(openNotification(payload)),
   };
 };
+
 export default connect(mapStateToPros, mapDispatchToProps)(SimpleTabsV2);
 function newFunction(
   props,
