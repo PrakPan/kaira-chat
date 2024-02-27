@@ -46,7 +46,7 @@ export async function getStaticProps() {
   var workcation_experience = [];
   var offbeat_experiences = [];
   var getaway_experiences = [];
-  
+
   for (let i = 0; i < workcation_ids.length; i++) {
     try {
       const res = await itineraryplaninstance.get(
@@ -54,7 +54,9 @@ export async function getStaticProps() {
       );
       if (res.data.message !== "not found")
         workcation_experience.push(res.data);
-    } catch (e) {}
+    } catch (e) {
+      console.log("[ERROR][corporatespage:getStaticProps]: ", e.message);
+    }
   }
   for (let i = 0; i < offbeat_ids.length; i++) {
     try {
@@ -62,7 +64,9 @@ export async function getStaticProps() {
         "/?itinerary_id=" + offbeat_ids[i]
       );
       if (res.data.id) offbeat_experiences.push(res.data);
-    } catch (e) {}
+    } catch (e) {
+      console.log("[ERROR][corporatespage:getStaticProps]: ", e.message);
+    }
   }
   for (let i = 0; i < getaway_ids.length; i++) {
     try {
@@ -70,7 +74,9 @@ export async function getStaticProps() {
         "/?itinerary_id=" + getaway_ids[i]
       );
       if (res.data.id) getaway_experiences.push(res.data);
-    } catch (e) {}
+    } catch (e) {
+      console.log("[ERROR][corporatespage:getStaticProps]: ", e.message);
+    }
   }
   return {
     props: {

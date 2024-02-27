@@ -165,7 +165,7 @@ export async function getStaticProps(context) {
       });
     }
   } catch (err) {
-    console.log("[Error][AllDestinationsPage]: ", err.message);
+    console.log("[Error][AllDestinationsPage:getStaticProps]: ", err.message);
   }
 
   try {
@@ -174,7 +174,7 @@ export async function getStaticProps(context) {
     );
     ThemeData = pageListResponse.data;
   } catch (err) {
-    console.log("[Error][AllDestinationsPage]: ", err.message);
+    console.log("[Error][AllDestinationsPage:getStaticProps]: ", err.message);
   }
 
   return {

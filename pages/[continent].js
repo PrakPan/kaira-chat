@@ -56,7 +56,7 @@ export async function getStaticPaths() {
   };
 }
 export async function getStaticProps(context) {
-  let data;
+  let data = null;
   let contientTheme = [];
   let locations = [];
   const continetCarousel = [];
@@ -67,7 +67,7 @@ export async function getStaticProps(context) {
     );
     data = res.data;
   } catch (err) {
-    console.error(err.message);
+    console.error('[ERROR][continentpage:getStaticProps]: ', err.message);
   }
 
   if (!data) {
@@ -106,7 +106,7 @@ export async function getStaticProps(context) {
       });
     }
   } catch (err) {
-    console.error(err.message);
+    console.error('[ERROR][continentpage:getStaticPaths]: ', err.message);
   }
 
   return {

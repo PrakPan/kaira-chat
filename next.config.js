@@ -1,21 +1,22 @@
 module.exports = {
   distDir: process.env.BUILD_DIR || ".next",
   output: "export",
-  async redirects() {
-    return [
-      {
-        source: "/sitemap",
-        destination: "/sitemap.xml",
-        permanent: true,
-      },
-      {
-        source: "/itinerary/preview/:id",
-        destination: "/itinerary/:id",
-        permanent: true,
-      },
-    ];
-  },
+  // async redirects() {
+  //   return [
+  //     {
+  //       source: "/sitemap",
+  //       destination: "/sitemap.xml",
+  //       permanent: true,
+  //     },
+  //     {
+  //       source: "/itinerary/preview/:id",
+  //       destination: "/itinerary/:id",
+  //       permanent: true,
+  //     },
+  //   ];
+  // },
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",

@@ -35,7 +35,7 @@ export async function getStaticProps(context) {
     const res = await travelGuideInstance.get("/");
     data = res.data;
   } catch (err) {
-    console.error(err.message);
+    console.error('[ERROR][travleguidepage:getStaticProps]: ', err.message);
   }
 
   if (!data) {

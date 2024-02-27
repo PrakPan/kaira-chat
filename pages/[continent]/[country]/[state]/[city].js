@@ -58,25 +58,32 @@ const Experience = (props) => {
 };
 
 export async function getStaticPaths() {
-  const res = await axiossearchInstance.get("/?type=Location&fields=path,cta");
-
-  const data = res.data;
-
   let paths = [];
-  for (var i = 0; i < data.length; i++) {
-    const pathArr = data[i].path.split("/");
-    var [continentSlug, countrySlug, stateSlug, citySlug] = pathArr;
-    if (data[i].cta) {
-      paths.push({
-        params: {
-          continent: continentSlug,
-          country: countrySlug,
-          state: stateSlug,
-          city: citySlug,
-        },
-      });
+  try {
+    const res = await axiossearchInstance.get(
+      "/?type=Location&fields=path,cta"
+    );
+
+    const data = res.data;
+
+    for (var i = 0; i < data.length; i++) {
+      const pathArr = data[i].path.split("/");
+      var [continentSlug, countrySlug, stateSlug, citySlug] = pathArr;
+      if (data[i].cta) {
+        paths.push({
+          params: {
+            continent: continentSlug,
+            country: countrySlug,
+            state: stateSlug,
+            city: citySlug,
+          },
+        });
+      }
     }
+  } catch (err) {
+    console.log("[ERROR][citypage:getStaticPaths]: ", err.message);
   }
+
   return {
     paths: paths,
     fallback: "blocking",
@@ -84,13 +91,13 @@ export async function getStaticPaths() {
 }
 export async function getStaticProps(context) {
   let reccomendedCitiesData = [];
-  let data;
+  let data = null;
 
   try {
     const res = await axiosPoiCityInstance.get(`/?slug=${context.params.city}`);
     data = res.data;
   } catch (err) {
-    console.error(err.message);
+    console.error("[ERROR][citypage:getStaticProps]: ", err.message);
   }
 
   if (!data) {
@@ -115,7 +122,7 @@ export async function getStaticProps(context) {
       path: e.path,
     }));
   } catch (err) {
-    console.error(err.message);
+    console.error("[ERROR][citypage:getStaticProps]: ", err.message);
   }
 
   return {

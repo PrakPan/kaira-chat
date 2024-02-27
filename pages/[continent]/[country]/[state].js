@@ -52,19 +52,23 @@ const TravelPlanner = (props) => {
 };
 
 export async function getStaticPaths() {
-  const res = await axiossearchallinstance.get("/?type=State&fields=path");
-  const data = res.data;
   let paths = [];
-  for (var i = 0; i < data.length; i++) {
-    const pathArr = data[i].path.split("/");
-    var [continentSlug, countrySlug, stateSlug] = pathArr;
-    paths.push({
-      params: {
-        continent: continentSlug,
-        country: countrySlug,
-        state: stateSlug,
-      },
-    });
+  try {
+    const res = await axiossearchallinstance.get("/?type=State&fields=path");
+    const data = res.data;
+    for (var i = 0; i < data.length; i++) {
+      const pathArr = data[i].path.split("/");
+      var [continentSlug, countrySlug, stateSlug] = pathArr;
+      paths.push({
+        params: {
+          continent: continentSlug,
+          country: countrySlug,
+          state: stateSlug,
+        },
+      });
+    }
+  } catch (err) {
+    console.error("[ERROR][statepage:getStaticPaths]: ", err.message);
   }
 
   return {
@@ -74,7 +78,7 @@ export async function getStaticPaths() {
 }
 export async function getStaticProps(context) {
   var locations = [];
-  let data;
+  let data = null;
 
   try {
     const res = await axiosTravelPlannerInstance.get(
@@ -82,7 +86,7 @@ export async function getStaticProps(context) {
     );
     data = res.data;
   } catch (err) {
-    console.log(err.message);
+    console.log("[ERROR][statepage:getStaticProps]: ", err.message);
   }
 
   if (!data) {
@@ -97,7 +101,7 @@ export async function getStaticProps(context) {
     );
     locations = loc.data;
   } catch (err) {
-    console.log(err.message);
+    console.log("[ERROR][statepage:getStaticProps]: ", err.message);
   }
 
   return {

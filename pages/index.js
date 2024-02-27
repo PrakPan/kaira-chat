@@ -6,8 +6,8 @@ import * as authaction from "../store/actions/auth";
 import { useEffect } from "react";
 import axiospagelistinstance from "../services/pages/list";
 import axioscountrydetailsinstance from "../services/pages/country";
-import axios from "axios";
 import { useRouter } from "next/router";
+
 const Home = (props) => {
   const router = useRouter();
   useEffect(() => {
