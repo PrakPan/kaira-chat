@@ -1,10 +1,10 @@
 import Head from "next/head";
-import Layout from "../components/Layout";
+import Layout from "../../components/Layout";
 import { useState, useEffect } from "react";
-import ContinentPage from "../containers/continent/Index";
-import axioscountrydetailsinstance from "../services/pages/country";
-import axiospagelistinstance from "../services/pages/list";
-import axiospagedetailsinstance from "../services/pages/pagedetails";
+import ContinentPage from "../../containers/continent/Index";
+import axioscountrydetailsinstance from "../../services/pages/country";
+import axiospagelistinstance from "../../services/pages/list";
+import axiospagedetailsinstance from "../../services/pages/pagedetails";
 
 const TravelPlanner = (props) => {
   const [data, setData] = useState({

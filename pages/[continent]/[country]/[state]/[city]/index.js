@@ -1,9 +1,9 @@
-import ExperienceContainer from "../../../../containers/city/Index";
-import Layout from "../../../../components/Layout";
+import ExperienceContainer from "../../../../../containers/city/Index";
+import Layout from "../../../../../components/Layout";
 import { useRouter } from "next/router";
-import axiossearchInstance from "../../../../services/search/all";
-import axiosPoiCityInstance from "../../../../services/poi/city";
-import axiosReccommendedCityInstance from "../../../../services/poi/reccommededcities";
+import axiossearchInstance from "../../../../../services/search/all";
+import axiosPoiCityInstance from "../../../../../services/poi/city";
+import axiosReccommendedCityInstance from "../../../../../services/poi/reccommededcities";
 import Head from "next/head";
 
 const Experience = (props) => {

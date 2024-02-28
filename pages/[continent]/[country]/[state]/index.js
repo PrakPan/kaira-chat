@@ -1,10 +1,10 @@
-import LadakhContainer from "../../../containers/travelplanner/Index";
+import LadakhContainer from "../../../../containers/travelplanner/Index";
 import Head from "next/head";
-import Layout from "../../../components/Layout";
+import Layout from "../../../../components/Layout";
 import { useState, useEffect } from "react";
-import axiosTravelPlannerInstance from "../../../services/pages/travel-planner";
-import axiossearchallinstance from "../../../services/search/all";
-import axiospagelistinstance from "../../../services/pages/list";
+import axiosTravelPlannerInstance from "../../../../services/pages/travel-planner";
+import axiossearchallinstance from "../../../../services/search/all";
+import axiospagelistinstance from "../../../../services/pages/list";
 
 const TravelPlanner = (props) => {
   const [data, setData] = useState({
