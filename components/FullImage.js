@@ -59,13 +59,27 @@ const fullimage = (props) => {
           padding={props.padding}
           filter={props.filter}
           url={props.url}
-          dimensions={{ width: 2240, height: 840 }}
-          dimensionsMobile={{ width: 607, height: 810 }}
+          dimensions={
+            props?.resizeMode === "fill" ? {} : { width: 2240, height: 840 }
+          }
+          dimensionsMobile={
+            props?.resizeMode === "fill" ? {} : { width: 607, height: 810 }
+          }
           style={{ position: "absolute" }}
           className="center-dv"
+          resizeMode={props.resizeMode}
         >
           {/* {props.children} */}
-          <div style={{ position : 'absolute' , zIndex : '5' , width : '100%' , height : '100%' }}>{props.children}</div>
+          <div
+            style={{
+              position: "absolute",
+              zIndex: "5",
+              width: "100%",
+              height: "100%",
+            }}
+          >
+            {props.children}
+          </div>
         </BackgroundImageLoader>
       </Container>
     );

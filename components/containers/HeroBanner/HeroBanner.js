@@ -8,6 +8,7 @@ const HeroBanner = (props) => {
         url={props.image}
         filter="brightness(0.9)"
         padding='2rem 0'
+        resizeMode={props.resizeMode}
         // filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"
       >
         <FullImgContent

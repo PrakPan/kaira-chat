@@ -355,6 +355,7 @@ const SaifBackgroundImageLoader = (props) => {
           dimensionsMobile={props.dimensionsMobile}
           borderRadius={props.borderRadius ? props.borderRadius : "0"}
           noPlaceholder={props.noPlaceholder}
+          resizeMode={props.resizeMode}
         />
       </div>
       <div

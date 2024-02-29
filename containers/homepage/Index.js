@@ -218,6 +218,7 @@ const Homepage = (props) => {
           </p>
         }
         _startPlanningFunction={() => openTailoredModal(router)}
+        resizeMode={"fill"}
       />
 
       <DesktopBanner
