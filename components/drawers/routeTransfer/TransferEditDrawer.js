@@ -269,7 +269,7 @@ const TransferEditDrawer = (props) => {
                   return (
                     <RouteContainer
                       key={index}
-                      index={index}
+                      transferIndex={index}
                       transfer={transfer}
                       handleSelect={handleSelect}
                     />
@@ -277,7 +277,7 @@ const TransferEditDrawer = (props) => {
                 return (
                   <MobileRouteContainer
                     key={index}
-                    index={index}
+                    transferIndex={index}
                     transfer={transfer}
                     handleSelect={handleSelect}
                   />
@@ -307,11 +307,11 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(mapStateToPros, mapDispatchToProps)(TransferEditDrawer);
 
 const RouteContainer = (props) => {
-  const { index, transfer, handleSelect } = props;
+  const { transferIndex, transfer, handleSelect } = props;
   return (
     <div
       className={`w-full flex flex-col gap-0 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm ${
-        index === 0 ? "border-yellow-300" : ""
+        transferIndex === 0 ? "border-yellow-300" : ""
       } border-x-2 border-t-2 border-b-4`}
     >
       {transfer.recommended && (
@@ -319,49 +319,140 @@ const RouteContainer = (props) => {
           Recommended
         </ClippathComp>
       )}
-      <div className="flex flex-row gap-2 w-full">
-        <div
-          className={`w-[130px] h-[110px] bg-gray-100 rounded-xl flex items-center justify-center`}
-        >
-          <TransfersIcon
-            TransportMode={transfer.modes[0]}
-            Instyle={{
-              fontSize: transfer.modes[0] === "Bus" ? "3rem" : "3.5rem",
-              color: "black",
-            }}
-            classname={{ width: 110, height: 110 }}
-          />
-        </div>
+      {transfer.modes && transfer.modes.length > 1 ? (
+        <MultiModeContainer
+          transferIndex={transferIndex}
+          transfer={transfer}
+          handleSelect={handleSelect}
+        />
+      ) : (
+        <div className="flex flex-row gap-2 w-full">
+          <div
+            className={`w-[130px] h-[110px] bg-gray-100 rounded-xl flex items-center justify-center`}
+          >
+            <TransfersIcon
+              TransportMode={transfer.modes[0]}
+              Instyle={{
+                fontSize: transfer.modes[0] === "Bus" ? "3rem" : "3.5rem",
+                color: "black",
+              }}
+              classname={{ width: 110, height: 110 }}
+            />
+          </div>
 
-        <div className="w-full flex flex-col gap-4">
-          <div className="flex flex-row items-center justify-between">
+          <div className="w-full flex flex-col gap-4">
+            <div className="flex flex-row items-center justify-between">
+              <div className="flex flex-col items-start gap-2">
+                <div className="text-lg font-[500] leading-3">
+                  {transfer?.legs[0]?.carrier
+                    ? transfer?.legs[0]?.carrier
+                    : transfer.modes[0]}
+                </div>
+                <div className="text-sm text-gray-400">
+                  {transfer?.legs[0]?.carrier &&
+                    `${transfer.legs[0].carrier} | `}
+                  {transfer.meta.Time} | {transfer.meta.Distance} Kms
+                </div>
+              </div>
+              <div className="flex flex-col gap-2 items-end">
+                <div className="text-[13px] font-[300] leading-3">
+                  Estimated cost
+                </div>
+                <div className="text-[18px] font-[800] leading-3">
+                  {/* <PiCurrencyInrBold className="inline" /> */}
+                  <span>
+                    ₹
+                    {getIndianPrice(Math.floor(transfer?.meta?.estimated_cost))}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full flex flex-row items-center justify-between">
+              <div className="w-full">
+                {transfer?.legs[0]?.facilities?.length ? (
+                  <div className="text-sm">
+                    Facilities:{" "}
+                    {transfer?.legs[0]?.facilities?.map((facility, ind) => (
+                      <span key={ind}>
+                        <span>{facility}</span>
+                        {ind < transfer?.legs[0]?.facilities?.length - 1 &&
+                          " | "}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+
+              <div
+                onClick={() => handleSelect(transferIndex)}
+                className="flex mt-2 flex-row gap-2 items-end justify-end cursor-pointer"
+              >
+                <CheckboxFormComponent
+                  checked={transferIndex === 0}
+                  className="mb-1"
+                />
+                <label className="text-center cursor-pointer">
+                  {transferIndex === 0 ? "Selected" : "Select"}
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const MobileRouteContainer = (props) => {
+  const { transferIndex, transfer, handleSelect } = props;
+  return (
+    <div
+      className={`w-full flex flex-col gap-3 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm ${
+        transferIndex === 0 ? "border-yellow-300" : ""
+      } border-x-2 border-t-2 border-b-4`}
+    >
+      {transfer.recommended && (
+        <ClippathComp className="text-sm font-semibold bg-[#F7E700] text-#090909 pl-2 pr-2 py-1 -ml-4 -mt-4 rounded-tl-2xl">
+          Recommended
+        </ClippathComp>
+      )}
+      {transfer.modes && transfer.modes.length > 1 ? (
+        <MultiModeContainer
+          transferIndex={transferIndex}
+          transfer={transfer}
+          handleSelect={handleSelect}
+        />
+      ) : (
+        <div className="flex flex-col gap-4 w-full">
+          <div className="flex flex-row items-center gap-2">
+            <div
+              className={`w-[60px] h-[60px] bg-gray-100 rounded-xl flex items-center justify-center`}
+            >
+              <TransfersIcon
+                TransportMode={transfer.modes[0]}
+                Instyle={{
+                  fontSize: transfer.modes[0] === "Bus" ? "2rem" : "2.5rem",
+                  color: "black",
+                }}
+                classname={{ width: 60, height: 60 }}
+              />
+            </div>
             <div className="flex flex-col items-start gap-2">
-              <div className="text-lg font-[500] leading-3">
-                {transfer.modes.map((mode, i) => {
-                  if (i < transfer.modes.length - 1) return `${mode}, `;
-                  return `${mode}`;
-                })}
+              <div className="text-[16px] font-[600] leading-3">
+                {transfer?.legs[0]?.carrier
+                  ? transfer?.legs[0]?.carrier
+                  : transfer.modes[0]}
               </div>
               <div className="text-sm text-gray-400">
                 {transfer?.legs[0]?.carrier && `${transfer.legs[0].carrier} | `}
                 {transfer.meta.Time} | {transfer.meta.Distance} Kms
               </div>
             </div>
-            <div className="flex flex-col gap-2 items-end">
-              <div className="text-[13px] font-[300] leading-3">
-                Estimated cost
-              </div>
-              <div className="text-[18px] font-[800] leading-3">
-                {/* <PiCurrencyInrBold className="inline" /> */}
-                <span>
-                  ₹{getIndianPrice(Math.floor(transfer?.meta?.estimated_cost))}
-                </span>
-              </div>
-            </div>
           </div>
 
-          <div className="w-full flex flex-row items-center justify-between">
-            <div className="w-full">
+          <div className="w-full flex flex-col gap-4">
+            <div className="flex flex-row items-center justify-between">
               {transfer?.legs[0]?.facilities?.length ? (
                 <div className="text-sm">
                   Facilities:{" "}
@@ -376,102 +467,239 @@ const RouteContainer = (props) => {
               ) : null}
             </div>
 
-            <div
-              onClick={() => handleSelect(index)}
-              className="flex mt-2 flex-row gap-2 items-end justify-end cursor-pointer"
-            >
-              <CheckboxFormComponent checked={index === 0} className="mb-1" />
-              <label className="text-center cursor-pointer">
-                {index === 0 ? "Selected" : "Select"}
-              </label>
+            <div className="flex flex-row items-end justify-between mb-2">
+              <div className="flex flex-col gap-2 items-start">
+                <div className="text-[13px] font-[300] leading-3">
+                  Estimated cost
+                </div>
+                <div className="text-[18px] font-[800] leading-3">
+                  {/* <PiCurrencyInrBold className="inline" /> */}
+                  <span>
+                    ₹
+                    {getIndianPrice(Math.floor(transfer?.meta?.estimated_cost))}
+                  </span>
+                </div>
+              </div>
+              <div
+                onClick={() => handleSelect(transferIndex)}
+                className="flex flex-row gap-2 items-end justify-start cursor-pointer"
+              >
+                <CheckboxFormComponent
+                  checked={transferIndex === 0}
+                  className="mb-1"
+                />
+                <label className="text-center cursor-pointer">
+                  {transferIndex === 0 ? "Selected" : "Select"}
+                </label>
+              </div>
             </div>
           </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const MultiModeContainer = ({ transferIndex, transfer, handleSelect }) => {
+  return (
+    <div className="w-full flex flex-col gap-0">
+      {transfer.modes.map((mode, index) => (
+        <div className="flex flex-col gap-0 w-full">
+          <div className={`flex flex-row gap-3 items-center justify-start`}>
+            <div className="w-[50px] flex items-center justify-center">
+              <TransfersIcon
+                TransportMode={transfer?.modes[index]}
+                Instyle={{
+                  fontSize:
+                    transfer?.modes[index] === "Bus" ? "3rem" : "3.5rem",
+                  color: "black",
+                }}
+                classname={{ width: 50, height: 50 }}
+              />
+            </div>
+            <div className="text-[16px] md:text-lg lg:text-lg font-semibold">
+              {transfer?.legs[index]?.origin?.shortName}
+            </div>
+          </div>
+
+          <div className="w-full flex flex-row gap-3 items-center justify-start">
+            <div className="w-[55px] flex flex-col gap-1 items-center justify-center">
+              <div className="w-1 h-3 rounded-full bg-teal-100"></div>
+              <div className="w-1 h-3 rounded-full bg-teal-200"></div>
+              <div className="w-1 h-3 rounded-full bg-teal-300"></div>
+              <div className="w-1 h-3 rounded-full bg-teal-400"></div>
+              <div className="w-1 h-3 rounded-full bg-teal-500"></div>
+              <div className="w-1 h-3 rounded-full bg-teal-600"></div>
+              <div className="w-1 h-3 rounded-full bg-teal-700"></div>
+            </div>
+            <div className="w-full flex flex-col gap-4 items-center justify-start">
+              <div className="w-full flex flex-col items-start justify-start gap-2">
+                <div className="text-[16px] md:text-lg lg:text-lg font-medium leading-3">
+                  {transfer?.legs[index]?.carrier
+                    ? transfer?.legs[index]?.carrier
+                    : transfer.modes[index]}
+                </div>
+                <div className="text-sm text-gray-400">
+                  {transfer?.legs[index]?.carrier &&
+                    `${transfer.legs[index].carrier} | `}
+                  {transfer.meta.Time} | {transfer.meta.Distance} Kms
+                </div>
+              </div>
+
+              <div className="w-full flex flex-row items-center justify-between">
+                <div className="w-full">
+                  {transfer?.legs[index]?.facilities?.length ? (
+                    <div className="text-sm">
+                      Facilities:{" "}
+                      {transfer?.legs[index]?.facilities?.map(
+                        (facility, ind) => (
+                          <span key={ind}>
+                            <span>{facility}</span>
+                            {ind < transfer?.legs[0]?.facilities?.length - 1 &&
+                              " | "}
+                          </span>
+                        )
+                      )}
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className={`flex flex-row gap-3 items-center justify-start`}>
+            <div className="w-[50px] flex items-center justify-center">
+              <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center">
+                <div className="w-2 h-2 bg-yellow rounded-full"></div>
+              </div>
+            </div>
+            <div className="text-[16px] md:text-lg lg:text-lg font-semibold">
+              {transfer?.legs[index]?.destination?.shortName}
+            </div>
+          </div>
+
+          {index < transfer.modes.length - 1 && (
+            <div
+              className={`flex flex-row gap-3 items-center justify-start py-2`}
+            >
+              <div className="w-[50px] flex flex-col gap-1 items-center justify-center">
+                <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+                <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+                <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+              </div>
+              <div className="text-sm text-[#01202B]">Change / Transfer</div>
+            </div>
+          )}
+        </div>
+      ))}
+      <div className="flex flex-row items-center justify-between py-3">
+        <div className="flex flex-col gap-2 items-start">
+          <div className="text-[13px] font-[300] leading-3">Estimated cost</div>
+          <div className="text-[18px] font-[800] leading-3">
+            {/* <PiCurrencyInrBold className="inline" /> */}
+            <span>
+              ₹{getIndianPrice(Math.floor(transfer?.meta?.estimated_cost))}
+            </span>
+          </div>
+        </div>
+        <div
+          onClick={() => handleSelect(transferIndex)}
+          className="flex mt-2 flex-row gap-2 items-end justify-end cursor-pointer"
+        >
+          <CheckboxFormComponent
+            checked={transferIndex === 0}
+            className="mb-1"
+          />
+          <label className="text-center cursor-pointer">
+            {transferIndex === 0 ? "Selected" : "Select"}
+          </label>
         </div>
       </div>
     </div>
   );
 };
 
-const MobileRouteContainer = (props) => {
-  const { index, transfer, handleSelect } = props;
+const MobileMultiModeContainer = ({
+  transferIndex,
+  transfer,
+  handleSelect,
+}) => {
   return (
-    <div
-      className={`w-full flex flex-col gap-3 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm ${
-        index === 0 ? "border-yellow-300" : ""
-      } border-x-2 border-t-2 border-b-4`}
-    >
-      {transfer.recommended && (
-        <ClippathComp className="text-sm font-semibold bg-[#F7E700] text-#090909 pl-2 pr-2 py-1 -ml-4 -mt-4 rounded-tl-2xl">
-          Recommended
-        </ClippathComp>
-      )}
-      <div className="flex flex-col gap-4 w-full">
-        <div className="flex flex-row items-center gap-2">
-          <div
-            className={`w-[60px] h-[60px] bg-gray-100 rounded-xl flex items-center justify-center`}
-          >
-            <TransfersIcon
-              TransportMode={transfer.modes[0]}
-              Instyle={{
-                fontSize: transfer.modes[0] === "Bus" ? "2rem" : "2.5rem",
-                color: "black",
-              }}
-              classname={{ width: 60, height: 60 }}
-            />
-          </div>
-          <div className="flex flex-col items-start gap-2">
-            <div className="text-[16px] font-[600] leading-3">
-              {transfer.modes.map((mode, i) => {
-                if (i < transfer.modes.length - 1) return `${mode}, `;
-                return `${mode}`;
-              })}
-            </div>
-            <div className="text-sm text-gray-400">
-              {transfer?.legs[0]?.carrier && `${transfer.legs[0].carrier} | `}
-              {transfer.meta.Time} | {transfer.meta.Distance} Kms
-            </div>
-          </div>
-        </div>
-
-        <div className="w-full flex flex-col gap-4">
-          <div className="flex flex-row items-center justify-between">
-            {transfer?.legs[0]?.facilities?.length ? (
-              <div className="text-sm">
-                Facilities:{" "}
-                {transfer?.legs[0]?.facilities?.map((facility, index) => (
-                  <span key={index}>
-                    <span key={index}>{facility}</span>
-                    {index < transfer?.legs[0]?.facilities?.length - 1 && " | "}
-                  </span>
-                ))}
-              </div>
-            ) : null}
-          </div>
-
-          <div className="flex flex-row items-end justify-between mb-2">
-            <div className="flex flex-col gap-2 items-start">
-              <div className="text-[13px] font-[300] leading-3">
-                Estimated cost
-              </div>
-              <div className="text-[18px] font-[800] leading-3">
-                {/* <PiCurrencyInrBold className="inline" /> */}
-                <span>
-                  ₹{getIndianPrice(Math.floor(transfer?.meta?.estimated_cost))}
-                </span>
-              </div>
-            </div>
+    <div className="w-full flex flex-col gap-0">
+      {transfer.modes.map((mode, index) => (
+        <div className="flex flex-col gap-4 w-full">
+          <div className="flex flex-row items-center gap-2">
             <div
-              onClick={() => handleSelect(index)}
-              className="flex flex-row gap-2 items-end justify-start cursor-pointer"
+              className={`w-[60px] h-[60px] bg-gray-100 rounded-xl flex items-center justify-center`}
             >
-              <CheckboxFormComponent checked={index === 0} className="mb-1" />
-              <label className="text-center cursor-pointer">
-                {index === 0 ? "Selected" : "Select"}
-              </label>
+              <TransfersIcon
+                TransportMode={transfer.modes[index]}
+                Instyle={{
+                  fontSize: transfer.modes[index] === "Bus" ? "2rem" : "2.5rem",
+                  color: "black",
+                }}
+                classname={{ width: 60, height: 60 }}
+              />
+            </div>
+            <div className="flex flex-col items-start gap-2">
+              <div className="text-[16px] font-[600] leading-3">
+                {transfer?.modes[index] === "Flight"
+                  ? transfer.modes[index]
+                  : transfer?.legs[index]?.carrier}
+              </div>
+              <div className="text-sm text-gray-400">
+                {transfer?.legs[index]?.carrier &&
+                  `${transfer.legs[index].carrier} | `}
+                {transfer.meta.Time} | {transfer.meta.Distance} Kms
+              </div>
+            </div>
+          </div>
+
+          <div className="w-full flex flex-col gap-4">
+            <div className="flex flex-row items-center justify-between">
+              {transfer?.legs[index]?.facilities?.length ? (
+                <div className="text-sm">
+                  Facilities:{" "}
+                  {transfer?.legs[index]?.facilities?.map((facility, index) => (
+                    <span key={index}>
+                      <span key={index}>{facility}</span>
+                      {index < transfer?.legs[index]?.facilities?.length - 1 &&
+                        " | "}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+
+            <div className="flex flex-row items-end justify-between mb-2">
+              <div className="flex flex-col gap-2 items-start">
+                <div className="text-[13px] font-[300] leading-3">
+                  Estimated cost
+                </div>
+                <div className="text-[18px] font-[800] leading-3">
+                  {/* <PiCurrencyInrBold className="inline" /> */}
+                  <span>
+                    ₹
+                    {getIndianPrice(Math.floor(transfer?.meta?.estimated_cost))}
+                  </span>
+                </div>
+              </div>
+              <div
+                onClick={() => handleSelect(transferIndex)}
+                className="flex flex-row gap-2 items-end justify-start cursor-pointer"
+              >
+                <CheckboxFormComponent
+                  checked={transferIndex === 0}
+                  className="mb-1"
+                />
+                <label className="text-center cursor-pointer">
+                  {transferIndex === 0 ? "Selected" : "Select"}
+                </label>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      ))}
     </div>
   );
 };

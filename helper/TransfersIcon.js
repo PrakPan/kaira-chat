@@ -37,7 +37,7 @@ const TaxiIcon = ({ Instyle, classname }) => {
       height={classname.height}
       alt="icon"
       onError={() => setError(true)}
-      className="bg-red-200"
+      className=""
     />
   );
 };
