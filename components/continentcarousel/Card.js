@@ -5,12 +5,14 @@ import ImageLoader from "../ImageLoader";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import Link from "next/link";
+import { logEvent } from "../../services/ga/Index";
 
 const ImageFade = styled.div`
   width: 100%;
   height: auto;
   transition: 0.2s all ease-in-out;
 `;
+
 const ImageContainer = styled.div`
   position: relative;
   overflow: hidden;
@@ -34,12 +36,13 @@ const BlackContainer = styled.div`
   position: absolute;
   color: white;
   left: 50%;
-  top : 50%;
+  top: 50%;
   @media screen and (min-width: 768px) {
     ${(props) => (props.continent ? "top : 50%" : "top : unset ; bottom: 0%")};
   }
   transform: translate(-50%, -50%);
 `;
+
 const Heading = styled.p`
   font-size: ${(props) => (props.continent ? "3rem" : "1.25rem")};
   font-weight: 700;
@@ -51,12 +54,13 @@ const Heading = styled.p`
     margin-bottom: 0.5rem;
   }
 `;
+
 const Subheading = styled.p`
   font-size: ${(props) => (props.continent ? "1.5rem" : "1rem")};
 
   line-height: 1;
   text-align: center;
-margin : 0;
+  margin: 0;
   font-weight: 200;
 `;
 
@@ -66,14 +70,26 @@ const Experiences = (props) => {
   const [ImageLoaded, setImageLoaded] = useState(false);
 
   const _handleRedirect = (e) => {
+    logEvent({
+      action: "View Destination",
+      params: {
+        page: props?.page ? props.page : "",
+        event_category: "Click",
+        event_label: "View Destination",
+        event_value: props?.location,
+        event_action: `Plan your trip anywhere in the world`,
+      },
+    });
     e.preventDefault();
     if (props.path) window.location.href = "/" + props.path;
   };
+
   const path = props.city
     ? "https://thetarzanway.com/travel-guide/city/"
     : "https://thetarzanway.com/travel-planner/";
+
   return (
-    <Link href={'/' + props.path} >
+    <Link href={"/" + props.path}>
       <ImageContainer
         className="hover-pointer"
         onClick={(e) => _handleRedirect(e)}

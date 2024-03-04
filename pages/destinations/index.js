@@ -11,6 +11,7 @@ import PlanAsPerTheme from "../../containers/homepage/PlanAsPerTheme";
 import media from "../../components/media";
 import PlanWithUs from "../../components/WhyPlanWithUs/Index";
 import CaseStudies from "../../containers/travelplanner/CaseStudies/Index";
+import { logEvent } from "../../services/ga/Index";
 
 const Container = styled.div`
   width: 100%;
@@ -36,12 +37,22 @@ export default function AllDestinations({ allDestinations, ThemeData }) {
   const router = useRouter();
   let isPageWide = media("(min-width: 768px)");
 
-  const handlePlanButton = async (continent) => {
-    await router.push(`/${continent}`);
+  const handlePlanButton = async (slug, continent) => {
+    logEvent({
+      action: "View Destination",
+      params: {
+        page: "Destinations Page",
+        event_category: "Button Click",
+        event_label: "View Destination",
+        event_value: continent,
+        event_action: `Top countries to visit${" in " + continent}`,
+      },
+    });
+    await router.push(`/${slug}`);
   };
 
   return (
-    <Layout destination={"All Destinations"} id={""}>
+    <Layout destination={"All Destinations"} id={""} page={"Destinations page"}>
       <Head>
         <title>Travel Company | India | The Tarzan Way</title>
         <meta name="description" content={""}></meta>
@@ -60,6 +71,7 @@ export default function AllDestinations({ allDestinations, ThemeData }) {
         // page_id={props.data.id}
         destination={""}
         title={`All Destinations Trip Planner`}
+        page={"Destinations Page"}
       />
 
       <Container className="flex flex-col justify-center mb-5">
@@ -73,12 +85,19 @@ export default function AllDestinations({ allDestinations, ThemeData }) {
                   locations={dest.locations}
                   // page_id={props.data.id}
                   destination={dest.continent.title}
-                  viewall
+                  continent={dest.continent.title}
+                  page={"Destinations Page"}
                   country
+                  viewall
                 ></SwiperLocations>
                 <div className="w-full flex items-center justify-center mt-5">
                   <Button
-                    onclick={() => handlePlanButton(dest.continent.slug)}
+                    onclick={() =>
+                      handlePlanButton(
+                        dest.continent.slug,
+                        dest.continent.title
+                      )
+                    }
                     borderWidth="1px"
                     fontWeight="500"
                     borderRadius="6px"
@@ -107,7 +126,7 @@ export default function AllDestinations({ allDestinations, ThemeData }) {
             >
               Plan trip as per mood
             </Heading>
-            <PlanAsPerTheme ThemeData={ThemeData} />
+            <PlanAsPerTheme ThemeData={ThemeData} page={"Destinations Page"} />
           </>
         ) : null}
 

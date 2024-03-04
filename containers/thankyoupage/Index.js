@@ -48,11 +48,13 @@ const HowItWorksHeading = styled.p`
     margin: 1rem 0 0.5rem 0;
   }
 `;
+
 const HowItWorksContainer = styled.div`
   @media screen and (min-width: 768px) {
     margin: auto;
   }
 `;
+
 const Index = (props) => {
   const router = useRouter();
   const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
@@ -171,6 +173,7 @@ const Index = (props) => {
           </p>
         }
         _startPlanningFunction={() => openTailoredModal(router)}
+        page={"Thank you Page"}
       />
 
       <div
@@ -199,6 +202,7 @@ const Index = (props) => {
               images={howitworksimgs}
               content={HowitWorksContentsArr}
               headings={HowitWorksHeadingsArr}
+              page={"Thank you Page"}
             ></HowItWorks>
           </HowItWorksContainer>
 
@@ -220,6 +224,7 @@ const Index = (props) => {
               <Experiences
                 margin="2.5rem 0"
                 experiences={myPlansArr}
+                page={"Thank you Page"}
               ></Experiences>
               <Button
                 link="/dashboard"
@@ -253,7 +258,11 @@ const Index = (props) => {
               >
                 Plan as per the best destinations in India
               </Heading>
-              <Locations locations={props.locations} viewall></Locations>
+              <Locations
+                locations={props.locations}
+                page={"Thank you Page"}
+                viewall
+              ></Locations>
             </>
           ) : null}
 
@@ -274,6 +283,8 @@ const Index = (props) => {
               <SwiperLocations
                 locations={props.europeLocations}
                 country
+                page={"Thank you Page"}
+                continent={"Europe"}
               ></SwiperLocations>
 
               <Button
@@ -309,6 +320,8 @@ const Index = (props) => {
               <SwiperLocations
                 locations={props.asiaLocations}
                 country
+                page={"Thank you Page"}
+                continent={"Asia"}
               ></SwiperLocations>
 
               <Button
@@ -344,6 +357,7 @@ const Index = (props) => {
               </Heading>
               <Continentcarousel
                 data={props.continetCarousel}
+                page={"Thank you Page"}
               ></Continentcarousel>
             </>
           ) : (
@@ -365,7 +379,10 @@ const Index = (props) => {
               >
                 Plan trip as per mood
               </Heading>
-              <PlanAsPerTheme ThemeData={props.ThemeData} />
+              <PlanAsPerTheme
+                ThemeData={props.ThemeData}
+                page={"Thank you Page"}
+              />
             </>
           ) : null}
 

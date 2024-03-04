@@ -12,7 +12,7 @@ const Home = (props) => {
     props.checkAuthState();
   }, []);
   return (
-    <Layout>
+    <Layout page={'Thank you Page'}>
       <Head>
         <title>Travel Company | India | The Tarzan Way</title>
         <meta

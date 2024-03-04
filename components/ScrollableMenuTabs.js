@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import useMediaQuery from "../hooks/useMedia";
 import { useSticky } from "../hooks/useSticky";
-import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import CustomMenu from "../containers/itinerary/CustomMenu";
 import { useDebounce } from "../hooks/debounce";
 import { useIsComponentInView } from "../hooks/useComponentInView";
@@ -10,11 +9,9 @@ import {
   NavigationMarker,
   useNavigationMarker,
 } from "../hooks/useNavigationMarker";
-import useHorizontalScroll from "../hooks/useHorizontalScroll";
 import useFieldOfView from "../hooks/useFieldOfView";
 import { useSelector } from "react-redux";
-
-///////// Style
+import { logEvent } from "../services/ga/Index";
 
 const Navbar = styled.div`
   /* position: ${({ sticky }) => (sticky ? "sticky" : "inherit")}; */
@@ -37,6 +34,7 @@ const Navbar = styled.div`
   position: ${({ Isvertical }) => (Isvertical ? "absolute" : "inherit")};
   background-color: white;
 `;
+
 const NavbarContainer = styled.div`
   position: sticky !important;
   z-index: 1;
@@ -63,8 +61,6 @@ const NavbarContainer = styled.div`
   background-color: white;
 `;
 
-///// Implementation
-
 const ScrollableMenuTabs = ({
   icons = true,
   offset,
@@ -80,18 +76,22 @@ const ScrollableMenuTabs = ({
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [activeTabPosition, setActiveTabPosition] = useState(0);
   const startDate = useSelector((state) => state.itineraryStartDate.startDate);
-  /// hooks
 
   const { ref, isSticky } = useSticky(90);
   const isDesktop = useMediaQuery("(min-width:1148px)");
   const isInView = useFieldOfView("Stays-Head");
-  /////// functionality
-  //////////////////////////
 
-  ////////////////////////
-
-  const handleSelect = (itemId) => {
+  const handleSelect = (index, itemId) => {
     setActiveItem(itemId);
+    logEvent({
+      action: "Navigation",
+      params: {
+        page: "Itinerary Page ",
+        event_category: "Button Click",
+        event_label: items[index]?.label,
+        event_action: "Navigation Bar",
+      },
+    });
   };
 
   const handleScrollLeft = () => {
@@ -114,9 +114,11 @@ const ScrollableMenuTabs = ({
     });
     setCanScrollLeft(true);
   };
+
   function isActive(link) {
     return link.classList.contains("active");
   }
+
   const handleScroll = () => {
     const tabContainer = ref.current;
     const tabsContainer = ref.current?.querySelectorAll("a") && [];
@@ -175,6 +177,7 @@ const ScrollableMenuTabs = ({
   const debounceFun = useDebounce(handleScroll, 500);
 
   const { markerPos, ...markerHandlers } = useNavigationMarker();
+
   return (
     <NavbarContainer
       style={{ top: offset, marginLeft: icons ? "0px" : "0px" }}
@@ -182,21 +185,6 @@ const ScrollableMenuTabs = ({
       className={classStyle}
       isInView={isInView}
     >
-      {/* {icons ? (
-        <IoIosArrowBack
-          style={{
-            color: 'black',
-            textAlign: 'center',
-            width: 'max-content',
-            fontSize: `${!isDesktop ? '40px' : '20px'}`,
-            height: 'auto',
-            marginRight: '20px',
-            contentVisibility: `${canScrollLeft ? 'auto' : 'hidden'}`,
-          }}
-          onClick={handleScrollLeft}
-        />
-      ) : null} */}
-
       <Navbar ref={ref} onScroll={debounceFun} Isvertical={vertical}>
         {vertical ? (
           <div className="font-bold">{new Date(startDate).getFullYear()}</div>
@@ -206,6 +194,7 @@ const ScrollableMenuTabs = ({
             <CustomMenu
               {...markerHandlers}
               key={index}
+              index={index}
               Isvertical={vertical}
               Iterable={Iterable}
               BarName={BarName}
@@ -217,23 +206,8 @@ const ScrollableMenuTabs = ({
             />
           </>
         ))}
-        {/* {vertical ? <div className="font-bold">Scroll down</div> : null} */}
         <NavigationMarker x={markerPos.x} width={markerPos.width} />
       </Navbar>
-
-      {/* {icons ? (
-        <IoIosArrowForward
-          style={{
-            color: 'black',
-            textAlign: 'center',
-            width: 'max-content',
-            fontSize: `${!isDesktop ? '40px' : '20px'}`,
-            height: 'auto',
-            marginLeft: '20px',
-          }}
-          onClick={handleScrollRight}
-        />
-      ) : null} */}
     </NavbarContainer>
   );
 };

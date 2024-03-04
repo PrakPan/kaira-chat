@@ -23,6 +23,7 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import { changeUserLocation } from "../../store/actions/userLocation";
 import { connect } from "react-redux";
+import { logEvent } from "../../services/ga/Index";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -138,6 +139,23 @@ const Homepage = (props) => {
     }
   }, [props.token]);
 
+  useEffect(() => {
+    setEscapeState(true);
+  }, []);
+
+  const handleButtonClick = (location) => {
+    logEvent({
+      action: "View Destination",
+      params: {
+        page: "Home Page",
+        event_category: "Button Click",
+        event_label: "View Destination",
+        event_value: location,
+        event_action: `Top countries to visit${" in " + location}`,
+      },
+    });
+  };
+
   //JSX for How it works
   const HowitWorksHeadingsArr = [
     <HowItWorksHeading className="font-lexend">
@@ -153,6 +171,7 @@ const Homepage = (props) => {
       No Commissions - Pay for what you get
     </HowItWorksHeading>,
   ];
+
   const HowitWorksContentsArr = [
     <HowItWorksText className="font-lexend">
       From solo travel to workcation, honeymoon to family travel, tell us about
@@ -193,9 +212,7 @@ const Homepage = (props) => {
     _handleExperiencesRedirect();
   };
 
-  useEffect(() => {
-    setEscapeState(true);
-  }, []);
+  const handleViewAllTrips = () => {};
 
   return (
     <div
@@ -219,6 +236,7 @@ const Homepage = (props) => {
         }
         _startPlanningFunction={() => openTailoredModal(router)}
         resizeMode={"fill"}
+        page={"Home Page"}
       />
 
       <DesktopBanner
@@ -244,6 +262,7 @@ const Homepage = (props) => {
             images={howitworksimgs}
             content={HowitWorksContentsArr}
             headings={HowitWorksHeadingsArr}
+            page={"Home Page"}
           ></HowItWorks>
         </HowItWorksContainer>
 
@@ -265,9 +284,11 @@ const Homepage = (props) => {
             <Experiences
               margin="2.5rem 0"
               experiences={myPlansArr}
+              page={"Home Page"}
             ></Experiences>
             <Button
               link="/dashboard"
+              onclick={handleViewAllTrips}
               onclickparams={null}
               borderWidth="1px"
               fontSizeDesktop="12px"
@@ -298,7 +319,11 @@ const Homepage = (props) => {
             >
               Plan as per the best destinations in India
             </Heading>
-            <Locations locations={props.locations} viewall></Locations>
+            <Locations
+              locations={props.locations}
+              page={"Home Page"}
+              viewall
+            ></Locations>
           </>
         ) : null}
 
@@ -319,10 +344,14 @@ const Homepage = (props) => {
             <SwiperLocations
               locations={props.europeLocations}
               country
+              page={"Home Page"}
+              continent={"Europe"}
             ></SwiperLocations>
 
             <Button
               link="/europe"
+              onclick={handleButtonClick}
+              onclickparam={"Europe"}
               fontWeight="500"
               boxShadow
               borderRadius="8px"
@@ -354,10 +383,14 @@ const Homepage = (props) => {
             <SwiperLocations
               locations={props.asiaLocations}
               country
+              page={"Home Page"}
+              continent={"Asia"}
             ></SwiperLocations>
 
             <Button
               link="/asia"
+              onclick={handleButtonClick}
+              onclickparam={"Asia"}
               fontWeight="500"
               boxShadow
               borderRadius="8px"
@@ -389,6 +422,7 @@ const Homepage = (props) => {
             </Heading>
             <Continentcarousel
               data={props.continetCarousel}
+              page={"Home Page"}
             ></Continentcarousel>
           </>
         ) : (
@@ -410,7 +444,7 @@ const Homepage = (props) => {
             >
               Plan trip as per mood
             </Heading>
-            <PlanAsPerTheme ThemeData={props.ThemeData} />
+            <PlanAsPerTheme ThemeData={props.ThemeData} page={"Home Page"} />
           </>
         ) : null}
 

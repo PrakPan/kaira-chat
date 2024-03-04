@@ -2,21 +2,23 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import media from "../../components/media";
 import Button from "../ui/button/Index";
-import * as ga from "../../services/ga/Index";
 import { useRouter } from "next/router";
 import ImageLoader from "../ImageLoader";
 import openTailoredModal from "../../services/openTailoredModal";
 import SwiperCarousel from "../SwiperCarousel";
+import { logEvent } from "../../services/ga/Index";
+
 const Container = styled.div`
   margin-top: -50px;
   @media screen and (min-width: 768px) {
     width: 100%;
     margin: auto;
     display: grid;
-    grid-template-columns: ${props=>`repeat(${props.length} , 1fr)`};
+    grid-template-columns: ${(props) => `repeat(${props.length} , 1fr)`};
     gap: 4rem;
   }
 `;
+
 const Arrow = styled.img`
   width: 1.5rem;
   margin: auto 0.5rem;
@@ -45,23 +47,40 @@ const GridContainer = styled.div`
 const HowItWorksSlideshow = (props) => {
   const router = useRouter();
   const [slideSelected, setSlideSelected] = useState(0);
-
   let isPageWide = media("(min-width: 768px)");
   let isTablet = media("(min-width: 500px)");
   let touchstart = null;
+
   const _prevSlideHandler = (val) => {
     if (!(slideSelected === 0)) setSlideSelected(slideSelected - 1);
   };
+
   const _nextSlideHandler = (val) => {
     if (!(slideSelected === 2)) setSlideSelected(slideSelected + 1);
   };
+
   const _handleDragStart = (event) => {
     touchstart = event.clientX;
   };
+
   const _handleDragEnd = (event) => {
     if (touchstart > event.clientX) _nextSlideHandler();
     else _prevSlideHandler();
   };
+
+  const handlePlanButtonClick = () => {
+    logEvent({
+      action: "Plan Itinerary",
+      params: {
+        page: props.page ? props.page : "Home Page",
+        event_category: "Button Click",
+        event_label: "Plan Itinerary For Free",
+        event_action: "How it works?",
+      },
+    });
+    openTailoredModal(router, props.page_id, props.destination);
+  };
+
   const slidesmobile = [
     <GridContainer style={{}}>
       <ImageContainer className="center-div">
@@ -69,7 +88,6 @@ const HowItWorksSlideshow = (props) => {
           url={props.images[0]}
           width="40%"
           margin="auto"
-          
           widthmobile={props.vertical ? "40%" : "60%"}
         />
       </ImageContainer>
@@ -116,6 +134,7 @@ const HowItWorksSlideshow = (props) => {
       </TextContainer>
     </GridContainer>,
   ];
+
   const slidesdesktop = [
     <GridContainer key={0} style={{}}>
       <ImageContainer>
@@ -180,39 +199,32 @@ const HowItWorksSlideshow = (props) => {
       </TextContainer>
     </GridContainer>,
   ];
-if(props.images[3]) slidesdesktop.push(
-  <GridContainer key={3} style={{}}>
-    <ImageContainer>
-      <ImageLoader
-        url={props.images[3]}
-        width="80%"
-        resizeMode="contain"
-        height="auto"
-        dimensions={
-          props.dimensions ? props.dimensions : { width: 500, height: 500 }
-        }
-        dimensionsMobile={props.dimensionsMobile || null}
-        widthmobile={props.vertical ? "40%" : props.corporates ? "100%" : "60%"}
-        noLazy
-      />
-    </ImageContainer>
-    <TextContainer>
-      {props.headings[3]}
-      {props.content[3]}
-    </TextContainer>
-  </GridContainer>
-);
-  // if (!isPageWide) return (
-  //   <div>
-  //     <div>
-  //       <SwiperCarousel
-  //         slidesPerView={isTablet ? 2 : 1}
-  //         cards={slidesdesktop}
-  //         pageDots
-  //       ></SwiperCarousel>
-  //     </div>
-  //   </div>
-  // );
+
+  if (props.images[3])
+    slidesdesktop.push(
+      <GridContainer key={3} style={{}}>
+        <ImageContainer>
+          <ImageLoader
+            url={props.images[3]}
+            width="80%"
+            resizeMode="contain"
+            height="auto"
+            dimensions={
+              props.dimensions ? props.dimensions : { width: 500, height: 500 }
+            }
+            dimensionsMobile={props.dimensionsMobile || null}
+            widthmobile={
+              props.vertical ? "40%" : props.corporates ? "100%" : "60%"
+            }
+            noLazy
+          />
+        </ImageContainer>
+        <TextContainer>
+          {props.headings[3]}
+          {props.content[3]}
+        </TextContainer>
+      </GridContainer>
+    );
 
   return (
     <div>
@@ -234,9 +246,7 @@ if(props.images[3]) slidesdesktop.push(
       )}
       {!props.nostart ? (
         <Button
-          onclick={() =>
-            openTailoredModal(router, props.page_id, props.destination)
-          }
+          onclick={handlePlanButtonClick}
           fontWeight="500"
           boxShadow
           borderRadius="8px"

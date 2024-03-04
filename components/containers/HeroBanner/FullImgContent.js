@@ -8,6 +8,8 @@ import openTailoredModal from "../../../services/openTailoredModal";
 import { useRouter } from "next/router";
 import TailoredFormMobileModal from "../../modals/TailoredFomrMobile";
 import { useState } from "react";
+import { logEvent } from "../../../services/ga/Index";
+
 const Container = styled.div`
   color: white;
   width: 100%;
@@ -20,9 +22,9 @@ const Container = styled.div`
     margin: auto;
     grid-template-columns: auto 400px;
     margin-top: 2vh;
-    
   }
 `;
+
 const Heading = styled.h1`
   color: white;
 
@@ -35,6 +37,7 @@ const Heading = styled.h1`
     font-weight: 700;
   }
 `;
+
 const SubText = styled.h3`
   color: white;
   font-weight: 100;
@@ -75,6 +78,7 @@ const SubHeading = styled.div`
     line-height: 35px;
   }
 `;
+
 const IconsContainer = styled.div`
   display: flex;
   filter: invert(100%);
@@ -89,10 +93,29 @@ const IconsContainer = styled.div`
     // bottom : -20%;
   }
 `;
+
 const FullImgContent = (props) => {
   let isPageWide = media("(min-width: 768px)");
-  const [showTailoredModal, setShowTailoredModal] = useState(false)
+  const [showTailoredModal, setShowTailoredModal] = useState(false);
   const router = useRouter();
+
+  const handlePlanButton = () => {
+    logEvent({
+      action: "Plan Itinerary",
+      params: {
+        page: props.page ? props.page : "",
+        event_category: "Button Click",
+        event_label: "Plan Itinerary For Free!",
+        event_action: "Banner",
+      },
+    });
+    if (isPageWide) {
+      setShowTailoredModal(true);
+    } else {
+      openTailoredModal(router, props.page_id, props.destination);
+    }
+  };
+
   return (
     <Container className="font-lexend center-di text-cente">
       <PaddingContianer>
@@ -122,10 +145,7 @@ const FullImgContent = (props) => {
               borderRadius="7px"
               color="black"
               borderWidth="1px"
-              onclick={() =>
-                // openTailoredModal(router, props.page_id, props.destination)
-                setShowTailoredModal(true)
-              }
+              onclick={handlePlanButton}
               margin="3vh 0 1vh 0"
             >
               Plan Itinerary For Free!
@@ -142,9 +162,7 @@ const FullImgContent = (props) => {
               borderRadius="10px"
               color="black"
               borderWidth="1px"
-              onclick={() =>
-                openTailoredModal(router, props.page_id, props.destination)
-              }
+              onclick={handlePlanButton}
               margin="1rem auto 1rem auto"
             >
               Start Planning
@@ -211,7 +229,7 @@ const FullImgContent = (props) => {
         destination={props.destination}
         cities={props.cities}
         onHide={() => {
-          setShowTailoredModal(false)
+          setShowTailoredModal(false);
         }}
         show={showTailoredModal}
       />

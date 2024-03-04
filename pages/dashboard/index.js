@@ -9,7 +9,7 @@ const Dashboard = (props) => {
 
   if (isPageLoaded) {
     return (
-      <Layout>
+      <Layout page={"Dashboard Page"}>
         <Head>
           <title>Dashboard | The Tarzan Way</title>
           <meta property="og:title" content="Dahsboard | The Tarzan Way" />

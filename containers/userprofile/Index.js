@@ -10,9 +10,9 @@ import ImageLoader from "../../components/ImageLoader";
 import { useRouter } from "next/router";
 import openTailoredModal from "../../services/openTailoredModal";
 import ExperienceCard from "../../components/cards/newitinerarycard-main/ExperienceCard";
-import Experiences from "../../components/containers/Experiences";
 import ExperienceCardSkeleton from "../../components/cards/newitinerarycard-main/ExperienceCardSkeleton";
 import Button from "../../components/ui/button/Index";
+import { logEvent } from "../../services/ga/Index";
 
 const Container = styled.div`
   width: 100%;
@@ -32,15 +32,6 @@ const ContentContainer = styled.div`
   @media screen and (min-width: 768px) {
     padding: 0;
     width: 85%;
-  }
-`;
-
-const Illustration = styled.img`
-  width: 40%;
-  margin: 7.5vh auto;
-  display: block;
-
-  @media screen and (min-width: 768px) {
   }
 `;
 
@@ -112,9 +103,18 @@ const UserDashboard = (props) => {
     }
   };
 
-  useEffect(() => {
-    console.log("totalPlans >>>>>>", totalPlans);
-  }, [totalPlans]);
+  const handleButtonClick = () => {
+    logEvent({
+      action: "Plan Itinerary",
+      params: {
+        page: "Dashboard Page",
+        event_category: "Button Click",
+        event_label: "Create your new travel plan now!",
+        event_action: "My Trips",
+      },
+    });
+    openTailoredModal(router);
+  };
 
   return (
     <CheckAuthRedirect
@@ -227,6 +227,7 @@ const UserDashboard = (props) => {
                   }
                   images={plan?.images}
                   locations={plan?.itinerary_locations}
+                  page={"Dashboard Page"}
                 ></ExperienceCard>
               ))}
             </div>
@@ -245,7 +246,7 @@ const UserDashboard = (props) => {
               </div>
             ) : (
               <Button
-                onclick={() => openTailoredModal(router)}
+                onclick={handleButtonClick}
                 borderWidth="1px"
                 fontWeight="500"
                 borderRadius="6px"

@@ -1,7 +1,5 @@
 import React from 'react';
 import { useRef } from 'react';
-import { useEffect } from 'react';
-import { useState } from 'react';
 import { Link } from 'react-scroll';
 import styled, { css, keyframes } from 'styled-components';
 
@@ -40,6 +38,7 @@ const MenuItem = styled.div`
     border-bottom: '2px solid #F7E700';
   }
 `;
+
 const RoundMenuItem = styled.div`
   padding: ${({ Isvertical }) =>
     Isvertical ? '4px 9px 6px 9px' : '4px 20px 8px 20px'};
@@ -65,6 +64,7 @@ const RoundMenuItem = styled.div`
     color: white;
   }
 `;
+
 const Label = styled.div`
   transition: all ease 0.3s;
   color: ${({ isActive }) => (isActive ? '#fff' : '#3d3c3b')};
@@ -74,11 +74,13 @@ const Label = styled.div`
     color: ${({ isActive }) => (isActive ? '#fff' : '#010700')};
   }
 `;
+
 const AnimatedMenuItem = styled(MenuItem)`
   animation: ${slideIn} 0.5s ease;
 `;
 
 const CustomMenu = ({
+  index,
   Isvertical,
   Iterable,
   BarName,
@@ -89,34 +91,11 @@ const CustomMenu = ({
   offSet,
   ...restProps
 }) => {
-  // const [activeTabPosition, setActiveTabPosition] = useState(0);
-
-  // const isActiveTabInView = useIsComponentInView(
-  //   activeItem.id,
-  //   { threshold: 0.5 },
-  //   (isInView) => {
-  //     if (!isInView) {
-  //       const containerElement = navref.current;
-  //       if (containerElement) {
-  //         containerElement.scrollTo({
-  //           left: activeTabPosition,
-  //           behavior: 'smooth',
-  //         });
-  //       }
-  //     }
-  //   }
-  // );
-  // useEffect(() => {
-  //   const activeTabElement = document.getElementById(activeItem.id);
-  //   if (activeTabElement) {
-  //     setActiveTabPosition(activeTabElement.offsetLeft);
-  //   }
-  // }, [activeItem,isActiveTabInView]);
   const ref = useRef(null);
 
   const handleClick = () => {
     onClick();
-    onSelect({ ref });
+    onSelect(index, { ref });
   };
 
   return (
@@ -128,7 +107,7 @@ const CustomMenu = ({
       spy={true}
       // duration={500}
       offset={offSet ? offSet : -90}
-      onSetActive={() => onSelect(item.id)}
+      onSetActive={() => onSelect(index, item.id)}
       {...restProps}
     >
       {Mstyle == 'round' ? (
@@ -136,14 +115,14 @@ const CustomMenu = ({
           {...restProps}
           Isvertical={Isvertical}
           isActive={activeItem === item.id}
-          onClick={() => onSelect(item.id)}
+          onClick={() => onSelect(index, item.id)}
         >
           {item[Iterable]}
         </RoundMenuItem>
       ) : (
         <MenuItem
           isActive={activeItem === item.id}
-          onClick={() => onSelect(item.id)}
+          onClick={() => onSelect(index, item.id)}
         >
           <Label isActive={activeItem === item.id}> {item[Iterable]}</Label>
         </MenuItem>

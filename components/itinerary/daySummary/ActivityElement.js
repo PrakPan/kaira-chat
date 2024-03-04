@@ -8,7 +8,7 @@ import { BiTimeFive } from "react-icons/bi";
 import { IoTicket } from "react-icons/io5";
 import { TransparentButton } from "../../../containers/itinerary/New_Itenary_DBD/New_itenaryStyled";
 import media from "../../media";
-import { TbSunset2 } from "react-icons/tb";
+import { logEvent } from "../../../services/ga/Index";
 
 export default function ActivityElement(props) {
   const { data, booking, city_id } = props;
@@ -44,6 +44,30 @@ export default function ActivityElement(props) {
 
   const handleActivity = (e) => {
     setShowDrawer(true);
+    logEvent({
+      action: "Details View",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Click",
+        event_value: data?.heading,
+        event_action: "Day by Day Itinerary",
+      },
+    });
+  };
+
+  const handleActivityButtonClick = () => {
+    logEvent({
+      action: "Details View",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: `${
+          selectedBooking?.user_selected ? "Activity Added" : "Add Activity"
+        }`,
+        event_value: data?.heading,
+        event_action: "Day by Day Itinerary",
+      },
+    });
   };
 
   const hoverFunction = () => {
@@ -135,6 +159,7 @@ export default function ActivityElement(props) {
             <Link
               to={selectedBooking ? `${selectedBooking.id}` : "Activities"}
               offset={-35}
+              onClick={handleActivityButtonClick}
             >
               {selectedBooking ? (
                 <>

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-
 import * as logout from "../../store/actions/logout";
 import * as authaction from "../../store/actions/auth";
 import { connect } from "react-redux";
@@ -21,37 +20,39 @@ const Navbar = React.memo((props) => {
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [headerColor, setHeaderColor] = useState("black");
   const [notOpenCount, setNotOpenCount] = useState();
-  const [showLoginModal , setShowLoginModal] = useState(false)
+  const [showLoginModal, setShowLoginModal] = useState(false);
   let notopencount = 0;
   let [notifications, setNotifications] = useState([]);
   const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
   const router = useRouter();
-    useEffect(() => {
-      if (router.isReady) {
-        const queries = router.query;
-        if (queries["tailored-travel"]) {
-          setShowMobilePlanner(true);
-        } else setShowMobilePlanner(false);
-      }
-    }, [router.isReady, router.asPath]);
-    const options = {
-      overflow: {
-        y : props.overflow
-      },
-      scrollbars: {
-        autoHide: "scroll",
-      },
-    };
-    useEffect(() => {
-     if (scrollbarInstance) {
-       scrollbarInstance.destroy();
-      }
-     const scrollPosition = window.scrollY;
-      const newScrollbarInstance = OverlayScrollbars(document.body, options);
-       window.scrollTo(0, scrollPosition);
-     setScrollbarInstance(newScrollbarInstance);
-    }, [isPageWide, props.overflow]);
-  
+
+  useEffect(() => {
+    if (router.isReady) {
+      const queries = router.query;
+      if (queries["tailored-travel"]) {
+        setShowMobilePlanner(true);
+      } else setShowMobilePlanner(false);
+    }
+  }, [router.isReady, router.asPath]);
+
+  const options = {
+    overflow: {
+      y: props.overflow,
+    },
+    scrollbars: {
+      autoHide: "scroll",
+    },
+  };
+
+  useEffect(() => {
+    if (scrollbarInstance) {
+      scrollbarInstance.destroy();
+    }
+    const scrollPosition = window.scrollY;
+    const newScrollbarInstance = OverlayScrollbars(document.body, options);
+    window.scrollTo(0, scrollPosition);
+    setScrollbarInstance(newScrollbarInstance);
+  }, [isPageWide, props.overflow]);
 
   useEffect(() => {
     if (props.token)
@@ -114,6 +115,7 @@ const Navbar = React.memo((props) => {
         })
         .catch((err) => {});
   };
+
   const _openAllNotificationsHandler = () => {
     if (props.token)
       axiosnotificationsinstance
@@ -131,6 +133,7 @@ const Navbar = React.memo((props) => {
         })
         .catch((err) => {});
   };
+
   return (
     <div className="font-lexend">
       <div className="hidden-desktop">
@@ -175,6 +178,7 @@ const Navbar = React.memo((props) => {
             notifications={notifications}
             token={props.token}
             setShowLoginModal={setShowLoginModal}
+            page={props.page}
           ></IndexDesktop>
         )}
         {/* </div> */}
@@ -195,12 +199,13 @@ const Navbar = React.memo((props) => {
     </div>
   );
 });
+
 const mapStateToProps = (state) => {
   return {
     token: state.auth.token,
     name: state.auth.name,
     image: state.auth.image,
-    overflow: state.scroll.overflow
+    overflow: state.scroll.overflow,
     // showLogin: state.auth.showLogin,
   };
 };

@@ -1,12 +1,12 @@
 import styled from "styled-components";
 import { useState, useEffect } from "react";
-// import Pin from './Pin';
 import { MdOutlineFlightTakeoff } from "react-icons/md";
 import { TransportIconFetcher } from "../../../../helper/TransportIconFetcher";
 import ImageLoader from "../../../../components/ImageLoader";
 import { MdEdit } from "react-icons/md";
 import TransferEditDrawer from "../../../../components/drawers/routeTransfer/TransferEditDrawer";
 import routeAlternates from "../../../../services/itinerary/brief/routeAlternates";
+import { logEvent } from "../../../../services/ga/Index";
 
 const Container = styled.div`
   display: grid;
@@ -16,13 +16,7 @@ const Container = styled.div`
     min-height: ${(props) => (props.hidemidsection ? "4.5rem" : "8rem")};
   }
 `;
-// const Heading = styled.div`
-//     font-weight: 600;
-//     margin: 0 0 0 0.75rem;
-//     line-height: 24px;
-//     display: flex;
-//     align-items: center;
-// `;
+
 const Line = styled.hr`
   /* background-image: linear-gradient(90deg,transparent,transparent 20%,#fff 50%,#fff 100%),linear-gradient(87deg,#0d6efd,#00fff0,#d4ff00,#ff7000,#ff0000); */
   background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
@@ -54,13 +48,14 @@ const Line = styled.hr`
   border-width: 1.4px;
   position: absolute;
   left: 50%;
-  
+
 
   border-color: ${(props) => (props.pinColour ? props.pinColour : "black")};
   min-height: 10vw;
   height: 100%;
   margin: 0rem 0 0rem 0rem; */
 `;
+
 const Text = styled.div`
   color: #4d4d4d;
   font-style: normal;
@@ -86,7 +81,7 @@ const MidSection = (props) => {
   else if (props?.route && props?.route?.transfers) hidemidsection = false;
   else hidemidsection = true;
 
-  const handleTransferEdit = (e) => {
+  const handleTransferEdit = (e, label) => {
     setShowDrawer(true);
     setAddOrEdit(e.target.id);
     routeAlternates
@@ -118,6 +113,16 @@ const MidSection = (props) => {
           "No route found, please get in touch with us to complete this booking!"
         );
       });
+
+    logEvent({
+      action: "Transfer Add/Change",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: label,
+        event_action: "Route",
+      },
+    });
   };
 
   return (
@@ -136,7 +141,7 @@ const MidSection = (props) => {
                 {" "}
                 <button
                   id="transferAdd"
-                  onClick={handleTransferEdit}
+                  onClick={(e) => handleTransferEdit(e, "Add Transfer")}
                   className="text-blue hover:underline"
                 >
                   + Add Transfer
@@ -219,7 +224,7 @@ const MidSection = (props) => {
                     (props?.bookings && props?.bookings?.length)) && (
                     <div
                       id="transferEdit"
-                      onClick={handleTransferEdit}
+                      onClick={(e) => handleTransferEdit(e, "Edit Transfer")}
                       className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
                     >
                       <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />

@@ -16,6 +16,7 @@ import { getYear } from "../../../helper/DateUtils";
 import ViewMoreButton from "../../../components/itinerary/daySummary/ViewMoreButton";
 import { DaySummaryContainerStyle } from "./Day_I_Container";
 import ActivityAddDrawer from "../../../components/drawers/poiDetails/activityAddDrawer";
+import { logEvent } from "../../../services/ga/Index";
 
 const Container = styled.div`
   background: #ffffff;
@@ -69,6 +70,30 @@ const Day_I_ContainerM = (props) => {
 
   const handleViewMoreButton = () => {
     setViewMore((prev) => !prev);
+
+    logEvent({
+      action: "Navigation",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: `${viewMore ? "View less" : "View more"}`,
+        event_action: "Day by Day Itinerary",
+      },
+    });
+  };
+
+  const handleAddActivity = (label) => {
+    logEvent({
+      action: "Add Activity",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: label,
+        event_action: "Day by Day Itinerary",
+      },
+    });
+
+    setShowAddDrawer(true);
   };
 
   let summaryIContainer = [];
@@ -296,7 +321,11 @@ const Day_I_ContainerM = (props) => {
             <div className="flex w-full">
               {!props.LastElement && (
                 <button
-                  onClick={() => setShowAddDrawer(true)}
+                  onClick={() =>
+                    handleAddActivity(
+                      `Add Activity on ${convertDateFormat(props?.Days?.date)}`
+                    )
+                  }
                   className="text-lg font-normal text-blue hover:underline"
                 >
                   +Add Activity{" "}
@@ -315,7 +344,11 @@ const Day_I_ContainerM = (props) => {
             <div className="flex w-full">
               {!props.LastElement && (
                 <button
-                  onClick={() => setShowAddDrawer(true)}
+                  onClick={() =>
+                    handleAddActivity(
+                      `Add Activity on ${convertDateFormat(props?.Days?.date)}`
+                    )
+                  }
                   className="text-sm font-normal text-blue hover:underline"
                 >
                   +Add Activity{" "}

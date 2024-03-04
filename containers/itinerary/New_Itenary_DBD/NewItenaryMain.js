@@ -1,13 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import Day_I_Container from "./Day_I_Container";
-
-import { getHumanDate } from "../../../services/getHumanDate";
-import { Navbar } from "./New_itenaryStyled";
-import CustomMenu from "../CustomMenu";
-import { useSticky } from "../../../hooks/useSticky";
-import useMediaQuery, { useMedia } from "../../../hooks/useMedia";
-import ScrollableTabs from "../../../components/ScrollableTabs";
+import useMediaQuery from "../../../hooks/useMedia";
 import ScrollableMenuTabs from "../../../components/ScrollableMenuTabs";
 import { convertDateFormat } from "../../../helper/ConvertDateFormat";
 
@@ -18,6 +12,7 @@ const NewItenaryMain = (props) => {
     margin: 0 -2rem 0 0;
     flex-direction: column;
   `;
+
   const CitiesContainer = styled.div`
     width: calc(100vw-32px);
     overflow: hidden;
@@ -30,6 +25,7 @@ const NewItenaryMain = (props) => {
     z-index: 10;
     background-color: white;
   `;
+
   const City = styled.div`
     border-radius: 8px;
     padding: 0.5rem;
@@ -54,26 +50,7 @@ const NewItenaryMain = (props) => {
 
   const items = [];
   const itemsDays = [];
-  // function makeCounter(initialCount = 0, initialDate = 1) {
-  //   let date = initialDate;
-  //   let count = initialCount;
 
-  //   return function() {
-  //     if (count === initialCount) {
-  //       initialDate++;
-  //       count--;
-  //       return 0;
-  //     } else {
-  //       initialDate++;
-  //       count--;
-  //       return count;
-  //     }
-  //   };
-  // }
-  // const counter1 = makeCounter(
-  //   props.city_slabs[1].duration,
-  //   props.itinerary.day_slabs[i].slab.split('/')[0]
-  // );
   function extractId(location, arr) {
     if (arr.length <= location) return arr[arr.length - 1].slab_id;
     return arr[location].slab_id;
@@ -156,6 +133,7 @@ const NewItenaryMain = (props) => {
       return year1;
     }
   };
+
   const IdPauser = (duration = 1) => {
     let counter = duration - 1;
 
@@ -172,6 +150,7 @@ const NewItenaryMain = (props) => {
       }
     };
   };
+
   function extractCityName(arr) {
     const cityObject = arr.find((obj) => obj.element_type === "newcity");
 
@@ -181,6 +160,7 @@ const NewItenaryMain = (props) => {
 
     return null;
   }
+
   return (
     <Wrapper>
       <div className="text-3xl font-bold mb-8 mt-4"> Day By Day Itinerary</div>

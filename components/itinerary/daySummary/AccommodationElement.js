@@ -11,6 +11,7 @@ import AccommodationModal from "../../../components/modals/accommodation/Index";
 import FullScreenGallery from "../../../components/fullscreengallery/Index";
 import { isDateOlderThanCurrent } from "../../../helper/isDateOlderThanCurrent";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
+import { logEvent } from "../../../services/ga/Index";
 
 export default function AccommodationElement(props) {
   const { heading, data, meta, city_id, booking } = props;
@@ -60,6 +61,35 @@ export default function AccommodationElement(props) {
 
   const _setImagesHandler = (images) => {
     setImages(images);
+  };
+
+  const handleClick = () => {
+    () => setShowDetails(true);
+
+    logEvent({
+      action: "Details View",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Click",
+        event_value: heading,
+        event_action: "Day by Day Itinerary",
+      },
+    });
+  };
+
+  const handleStayButtonClick = () => {
+    logEvent({
+      action: "Details View",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: `${
+          selectedBooking?.user_selected ? "Stay Added" : "Add Stay"
+        }`,
+        event_value: heading,
+        event_action: "Day by Day Itinerary",
+      },
+    });
   };
 
   const hoverFunction = () => {
@@ -114,7 +144,7 @@ export default function AccommodationElement(props) {
                     dimensionsMobile={{ width: 300, height: 300 }}
                     borderRadius="8px"
                     hoverpointer
-                    onclick={() => setShowDetails(true)}
+                    onclick={handleClick}
                     width="4rem"
                     height="4rem"
                     leftalign
@@ -163,6 +193,7 @@ export default function AccommodationElement(props) {
             <Link
               to={selectedBooking ? `${selectedBooking.id}` : "Stays"}
               offset={-35}
+              onClick={handleStayButtonClick}
             >
               {selectedBooking ? (
                 <>

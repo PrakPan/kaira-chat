@@ -15,14 +15,17 @@ import useMediaQuery from "../../../hooks/useMedia";
 import { getHumanDate } from "../../../services/getHumanDate";
 import { ITINERARY_STATUSES } from "../../../services/constants";
 import { MdWifi } from "react-icons/md";
+import { logEvent } from "../../../services/ga/Index";
 
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
     rgba(0, 0, 0, 0.05) 0px 5px 10px;
 `;
+
 const ClippathComp = styled.div`
   clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
 `;
+
 const RoomTypeGrid = styled.div`
   display: grid;
   grid-template-columns: 1rem auto 5.5rem;
@@ -89,6 +92,7 @@ const HotelBookingContainer = ({
         return null;
     }
   }
+
   const starRating = (rating) => {
     var stars = [];
     for (let i = 0; i < Math.floor(rating); i++) {
@@ -97,6 +101,7 @@ const HotelBookingContainer = ({
     if (Math.floor(rating) < rating) stars.push(<FaStarHalfAlt />);
     return stars;
   };
+
   const noOfWords = (sentence, number) => {
     if (sentence) {
       const words = sentence.toString().trim().split(/\s+/);
@@ -107,14 +112,8 @@ const HotelBookingContainer = ({
       }
     }
   };
+
   let room = [];
-  // if (booking) {
-  //   for (var i = 0; i < booking.rooms_available.length; i++) {
-  //     if (booking.rooms_available[i].prices.min_price) {
-  //       room.push(booking.rooms_available[i].room_type);
-  //     }
-  //   }
-  // }
   function handleCheckboxChange(e) {
     if (!payment?.is_registration_needed) {
       if (token) {
@@ -148,9 +147,11 @@ const HotelBookingContainer = ({
       }
     }
   }
+
   function handleSelectChange() {
     setisSelect(!isSelect);
   }
+
   function _handleUpdateChange(e) {
     e.stopPropagation();
     handleSelectChange();
@@ -165,6 +166,55 @@ const HotelBookingContainer = ({
       source: booking?.source,
     });
   }
+
+  const handleViewDetails = (value) => {
+    logEvent({
+      action: "Hotel Details",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: "View Details",
+        event_value: value,
+        event_action: "Stays",
+      },
+    });
+
+    handleClick(index, booking.accommodation, booking);
+  };
+
+  const handleChageHotel = (e, label, value) => {
+    e.stopPropagation();
+
+    logEvent({
+      action: "Hotel Add/Change",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: label,
+        event_value: value,
+        event_action: "Stays",
+      },
+    });
+
+    if (token) handleClickAc(index, booking, city_id);
+    else setShowLoginModal(true);
+  };
+
+  const handleAddStay = (label, value) => {
+    logEvent({
+      action: "Hotel Add/Change",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: label,
+        event_value: value,
+        event_action: "Stays",
+      },
+    });
+
+    handleClickAc(index, cityData, city_id);
+  };
+
   const isMobile = useMediaQuery("(min-width:768px)");
   let img = "";
   if (banner_image) img = banner_image;
@@ -287,7 +337,10 @@ const HotelBookingContainer = ({
                           <div className="flex flex-row text-[#FFD201]">
                             {starRating(booking?.user_rating)}
                           </div>
-                          <div>{booking?.user_rating}{" . "}</div>
+                          <div>
+                            {booking?.user_rating}
+                            {" . "}
+                          </div>
                           {booking.number_of_reviews && (
                             <div className="text-sm text-[#7A7A7A] font-[400] underline">
                               {booking.number_of_reviews}{" "}
@@ -376,8 +429,6 @@ const HotelBookingContainer = ({
 
                   {booking.costings_breakdown ? (
                     <>
-                      {/* <div className={`flex ${"flex-row"} gap-3 lg:mt-2 mt-0`}> */}
-                      {/* <div className="text-sm font-[400] gap-2 flex flex-row items-center"> */}
                       <RoomTypeGrid>
                         <BiBed className="text-sm text-[#7A7A7A]" />
                         <div className="text-sm font-[400] line-clamp-1">
@@ -393,8 +444,6 @@ const HotelBookingContainer = ({
                         </div>
                       </RoomTypeGrid>
 
-                      {/* </div> */}
-                      {/* </div> */}
                       {booking.costings_breakdown[0].number_of_extra_beds &&
                       booking.costings_breakdown[0].number_of_extra_beds > 0 ? (
                         <div className="flex flex-row items-center my-0">
@@ -498,9 +547,7 @@ const HotelBookingContainer = ({
                         borderRadius="8px"
                         hoverColor="white"
                         fontWeight="400"
-                        onclick={() =>
-                          handleClick(index, booking.accommodation, booking)
-                        }
+                        onclick={() => handleViewDetails(booking.name)}
                       >
                         View Detail
                       </Button>
@@ -509,11 +556,13 @@ const HotelBookingContainer = ({
                     {payment?.is_registration_needed ? null : payment?.paid_user ||
                       !payment?.user_allowed_to_pay ? null : (
                       <div
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (token) handleClickAc(index, booking, city_id);
-                          else setShowLoginModal(true);
-                        }}
+                        onClick={(e) =>
+                          handleChageHotel(
+                            e,
+                            `${!isSelect ? "Add Hotel" : "Change"}`,
+                            booking.name
+                          )
+                        }
                       >
                         <Button
                           padding="0.6rem 2.2rem"
@@ -607,9 +656,7 @@ const HotelBookingContainer = ({
               padding="0.6rem 2.2rem"
               hoverColor="white"
               margin={!isPageWide ? "0.75rem 0 0 0" : "0"}
-              onclick={() => {
-                handleClickAc(index, cityData, city_id);
-              }}
+              onclick={() => handleAddStay(`Add Stay in ${cityName}`, cityName)}
             >
               Add Stay in {cityName}
             </Button>

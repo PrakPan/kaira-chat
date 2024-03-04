@@ -1,53 +1,24 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import Heading from "../../../components/newheading/heading/Index";
-import Option from "../../../components/forms/Option";
-import Dropdown from "../../../components/forms/Dropdown";
 import { RiArrowDropDownLine, RiWhatsappFill } from "react-icons/ri";
 import Button from "../../../components/ui/button/Index";
-import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { connect } from "react-redux";
 import * as orderaction from "../../../store/actions/order";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { MdEdit } from "react-icons/md";
-import moment from "moment";
-import {
-  faRupeeSign,
-  faTimes,
-  faMale,
-  faChild,
-  faBaby,
-} from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/router";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import { getHumanDateWithYear } from "../../../services/getHumanDateWithYear";
 import urls from "../../../services/urls";
-import {
-  ITINERARY_STATUSES,
-  MIS_SERVER_HOST,
-} from "../../../services/constants";
+import { ITINERARY_STATUSES } from "../../../services/constants";
 import axiossalecreateinstance from "../../../services/sales/itinerary/SaleCreate";
 import axios from "axios";
 import Accordion from "./Accordion";
-import Spinner from "../../../components/Spinner";
-import ButtonYellow from "../../../components/ButtonYellow";
 import { BsCalendar2, BsPeopleFill } from "react-icons/bs";
-import Slide from "../../../Animation/framerAnimation/Slide";
-import {
-  add,
-  addDays,
-  format,
-  isBefore,
-  isPast,
-  parseISO,
-  startOfDay,
-} from "date-fns";
+import { add, addDays, format, isBefore, startOfDay } from "date-fns";
 import MakeYourPersonalised from "../../../components/MakeYourPersonalised";
 import { scroller } from "react-scroll";
 import { pluralDetector } from "../../../helper/shortHelpers";
 import SelectDate from "./gittailored/SelectDate";
-import SelectPax from "./gittailored/SelectPax";
-import dayjs from "dayjs";
 import RegistrationModal from "../../../components/modals/gitregistrationform/Index";
 import VerificationModal from "../../../components/modals/verify/Index";
 import RegisteredUsersModal from "../../../components/modals/registeredusers/Index";
@@ -55,6 +26,7 @@ import TermsModal from "../../../components/modals/terms/PW";
 import UiDropdown from "../../../components/UiDropdown";
 import Link from "next/link";
 import ImageLoader from "../../../components/ImageLoader";
+import { logEvent } from "../../../services/ga/Index";
 
 const INR = styled.div`
   font-weight: 500;
@@ -67,6 +39,7 @@ const INR = styled.div`
     font-weight: 800;
   }
 `;
+
 const BookingListCostContainer = styled.div`
   border-style: none none solid none;
   border-width: 1px;
@@ -76,20 +49,23 @@ const BookingListCostContainer = styled.div`
     overflow-y: auto;
   }
 `;
+
 const GetInTouchContainer = styled.div`
   &:hover img {
     filter: invert(100%);
   }
 `;
+
 const CouponsOption = styled.div`
   color: #0a5edc;
   font-size: 13px;
   text-decoration: underline;
   font-weight: 400;
-  cursor : pointer;
+  cursor: pointer;
   text-align: end;
-  margin-top : 0.25rem;
+  margin-top: 0.25rem;
 `;
+
 const Details = (props) => {
   const getCurrentDateIfOlder = (dateString) => {
     const currentDate = startOfDay(new Date()); // Get the current date at the start of the day
@@ -104,6 +80,7 @@ const Details = (props) => {
 
     return dateString;
   };
+
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [Newitinerary, setNewitinerary] = useState(false);
   const [acoordianceOpen, setAcordianOpen] = useState(false);
@@ -113,21 +90,23 @@ const Details = (props) => {
   const [date, setDate] = useState(
     getCurrentDateIfOlder(props?.plan?.start_date)
   );
+
   const _handleVerificationSuccess = () => {
     props.getPaymentHandler();
     setShowVerification(false);
   };
+
   const handleSelectOption = (option) => {
     // Perform additional actions with the selected option
     setDropdownOpen(false);
     setPax(option);
   };
+
   const [focus, setFocus] = useState(false);
   const [DropdownOpen, setDropdownOpen] = useState(false);
   const router = useRouter();
   const [showTerms, setShowTerms] = useState(false);
   const [showRegisteredUsers, setShowRegisteredUsers] = useState(false);
- 
 
   const addDaysToDate = (dateString, numberOfDays) => {
     const date = new Date(dateString);
@@ -142,6 +121,7 @@ const Details = (props) => {
     script.async = true;
     document.body.appendChild(script);
   }, []);
+
   const scrollToElement = (elementId) => {
     scroller.scrollTo(elementId, {
       duration: 500,
@@ -151,6 +131,7 @@ const Details = (props) => {
       offset: -150,
     });
   };
+
   const setBookingSummary = () => {
     try {
       if (props.payment) {
@@ -300,7 +281,6 @@ const Details = (props) => {
                           )
                         )}
                     </p>
-                    {/* <div></div> */}
                   </div>
                 );
               }
@@ -318,6 +298,7 @@ const Details = (props) => {
   if (props.traveleritinerary) oldaccommodation = true;
 
   setBookingSummary();
+
   let message =
     "Hey TTW! I need some help with my tailored experience - https://thetarzanway.com/" +
     router.asPath;
@@ -347,20 +328,9 @@ const Details = (props) => {
           .then((res) => {
             setPaymentLoading(false);
             props.getPaymentHandler();
-            //  router.push('/itinerary/'+data.itinerary+"?payment_status=success")
-            // window.location.href =
-            //   'https://dev.thetarzanway.com/itinerary/' +
-            //   data.itinerary +
-            //   '?payment_status=success';
           })
           .catch((err) => {
             setPaymentLoading(false);
-
-            // router.push('/itinerary/'+data.itinerary+"?payment_status=fail")
-            // window.location.href =
-            //   'https://dev.thetarzanway.com/itinerary/' +
-            //   data.itinerary +
-            //   '?payment_status=fail';
           });
       },
       //User details will be present as user is logged in
@@ -379,6 +349,7 @@ const Details = (props) => {
       rzp1.open();
     } catch (error) {}
   };
+
   const _saleCreateHandler = (id) => {
     setPaymentLoading(true);
     axiossalecreateinstance
@@ -396,18 +367,116 @@ const Details = (props) => {
       .then((res) => {
         setPaymentLoading(false);
 
-        // window.location.href = 'https://www.thetarzanway.com/itinerary/'+res.data.itinerary.id
         _startRazorpayHandler(res.data);
       })
       .catch((err) => {
-        // window.location.href = 'https://www.thetarzanway.com/itinerary/'+res.data.itinerary.id
         setPaymentLoading(false);
       });
   };
+
   let optionsJSX = [];
   for (var i = props.number_of_adults; i <= 20; i++) {
     optionsJSX.push({ i });
   }
+
+  const handleLoginButton = () => {
+    logEvent({
+      action: "Login",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: "Log in to proceed",
+        event_action: "Booking Slide",
+      },
+    });
+
+    props.setShowLoginModal(true);
+  };
+
+  const handleGetInTouch = () => {
+    logEvent({
+      action: "Button Click",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: "Get in touch!",
+        event_action: "Booking Slide",
+      },
+    });
+    props._GetInTouch()();
+  };
+
+  const handleViewBooking = (label) => {
+    logEvent({
+      action: "Button Click",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: label,
+        event_action: "Booking Slide",
+      },
+    });
+    scrollToElement("Stays");
+  };
+
+  const handlePayNow = (label) => {
+    logEvent({
+      action: "Button Click",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: "Pay Now & Book",
+        event_action: "Booking Slide",
+      },
+    });
+
+    if (label === "_saleCreateHandler") {
+      _saleCreateHandler(props.id);
+    } else {
+      setShowVerification(true);
+    }
+  };
+
+  const handleTravellersDetails = () => {
+    logEvent({
+      action: "Button Click",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: "Add Travellers Details",
+        event_action: "Booking Slide",
+      },
+    });
+
+    setShowRegistartion(true);
+  };
+
+  const handleWhatsappChat = () => {
+    logEvent({
+      action: "Button Click",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: "Chat on Whatsapp",
+        event_action: "Booking Slide",
+      },
+    });
+
+    window.location.href = urls.WHATSAPP + "?text=" + message;
+  };
+
+  const handleTermsConditions = () => {
+    logEvent({
+      action: "Button Click",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: "Terms & Conditions",
+        event_action: "Booking Slide",
+      },
+    });
+  };
+
   return (
     <>
       <div
@@ -473,25 +542,8 @@ const Details = (props) => {
                           )
                         )}
                     {"/-"}
-                    {/* {!props.payment.show_per_person_cost
-                      ? ' ' +
-                        getIndianPrice(
-                          Math.round(props.payment.total_cost / 100)
-                        )
-                      : ' ' +
-                        getIndianPrice(
-                          Math.round(Math.round(props.payment.total_cost) / 100)
-                        )} */}
                   </div>
                 </div>
-                {/* <div className="flex flex-row items-center text-black font-bold text-2xl">
-              <span>₹</span>
-              <div>
-                {getIndianPrice(
-                  Math.round(Math.round(props?.payment.total_cost) / 100)
-                )}
-              </div>
-            </div> */}
 
                 {props.payment.paid_user ? (
                   <div className="font-[400] pl-2 text-base self-end">PAID</div>
@@ -517,6 +569,7 @@ const Details = (props) => {
             </div>
           </div>
         </div>
+
         {!oldaccommodation ? (
           <div
             className="px-2 pt-2"
@@ -537,37 +590,9 @@ const Details = (props) => {
             props.plan.featured ? null : (
               <div></div>
             )}
-            {/* {props.payment.itinerary_status ===
-              ITINERARY_STATUSES.itinerary_finalized ||
-            props?.payment?.paid_user ? null : (
-              <SelectDate
-                date={date}
-                setDate={setDate}
-                setFocus={setFocus}
-                focus={focus}
-                token={props.token}
-              ></SelectDate>
-            )} */}
-            {/* <p style={{fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px", marginBottom: '0'}}  className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>{props.payment.number_of_people}</p> */}
-            {/* {props.payment.meta_info &&
-            (props.payment.itinerary_status ===
-              ITINERARY_STATUSES.itinerary_finalized ||
-              props?.payment?.paid_user) ? null : (
-              <SelectPax
-                number_of_adults={
-                  props.payment
-                    ? props.payment.meta_info
-                      ? props.payment.meta_info.number_of_adults
-                      : 5
-                    : 5
-                }
-                setPax={setPax}
-                token={props.token}
-                setShowLoginModal={props.setShowLoginModal}
-              ></SelectPax>
-            )} */}
           </div>
         ) : null}
+
         <div
           className="mx-[1rem]  font-medium text-sm flex gap-0 flex-row cursor-pointer"
           onClick={() => setAcordianOpen(!acoordianceOpen)}
@@ -583,6 +608,7 @@ const Details = (props) => {
             }`}
           ></RiArrowDropDownLine>
         </div>
+
         <div
           className={`mb-[0.8rem] mx-[1rem] Transition-Height-${
             acoordianceOpen ? "in" : "out"
@@ -590,10 +616,6 @@ const Details = (props) => {
         >
           {acoordianceOpen && (
             <div className="">
-              {/* <p style={{fontSize: "0.75rem", fontWeight: "600", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>WHAT'S INCLUDED?</p> */}
-              {/* <BookingListCostContainer>
-           {oldaccommodation || props.payment.are_prices_hidden ? bookingslist : bookinglistwithcost}
-           </BookingListCostContainer> */}
               <Accordion
                 stayBookings={props.stayBookings}
                 flightBookings={props.flightBookings}
@@ -705,102 +727,23 @@ const Details = (props) => {
                         ) : (
                           <div></div>
                         )}
-
-                        {/* <div className="flex flex-row">
-                            <div className="flex flex-row">
-                              <div className="font-normal pr-1">(-)</div>
-                              <span>₹</span>
-                            </div>
-                            {getIndianPrice(
-                              Math.round(
-                                (props.payment.total_cost / 100) *
-                                  (props.payment.coupon.discount_value / 100)
-                              )
-                            )}
-                          </div> */}
                       </div>
                     </div>
-                  ) : // <div
-                  //   className="text-center font-lexend"
-                  //   style={{ marginBottom: '1rem' }}
-                  // >
-                  //   {'Coupon Applied: ' + props.payment.coupon.code}
-                  // </div>
-                  null
+                  ) : null
                 ) : null
               ) : null}
-              {/* <div style={{display: 'grid', gridTemplateColumns: '3fr 1fr', margin: '0.5rem 0', gridGap: '1rem'}}>
-                  <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem'}} className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>{'GST'}</p>
-                  <p style={{fontSize: "0.75rem", fontWeight: "300", letterSpacing: "1px", marginBottom: '0.25rem'}}  className={props.blur ? "font-lexend text-enter blurry-text" : "font-lexend text-enter"}>{"Rs 1000 /-"}</p>
-        </div> */}
-              {/* {props.payment.show_per_person_cost ? (
-                <div
-                  style={{
-                    borderWidth: '1px',
-                    borderColor: 'hsl(0,0%,95%)',
-                    borderStyle: 'solid none none none ',
-                    display: 'grid',
-                    gridTemplateColumns: '3fr 1fr',
-                    padding: '0.5rem 0',
-                    gridGap: '1rem',
-                  }}
-                >
-                  <p
-                    style={{
-                      fontSize: '0.75rem',
-                      fontWeight: '300',
-                      letterSpacing: '1px',
-                      marginBottom: '0.25rem',
-                    }}
-                    className={
-                      props.blur
-                        ? 'font-lexend text-enter blurry-text'
-                        : 'font-lexend text-enter'
-                    }
-                  >
-                    {'Total cost'}
-                  </p>
-                  <p
-                    style={{
-                      fontSize: '0.75rem',
-                      fontWeight: '300',
-                      letterSpacing: '1px',
-                      marginBottom: '0.25rem',
-                    }}
-                    className={
-                      props.blur
-                        ? 'font-lexend text-enter blurry-text'
-                        : 'font-lexend text-enter'
-                    }
-                  >
-                    {'₹ ' +
-                      getIndianPrice(
-                        Math.round(props.payment.total_cost / 100)
-                      )}
-                  </p>
-                </div>
-              ) : null} */}
             </div>
           )}
         </div>
       </div>
 
-      <div>
-        {/* <p style={{fontSize: "0.75rem", fontWeight: "400", letterSpacing: "1px"}} className="font-lexend text-enter">29th July 2021</p> */}
-        {/* <Datepicker handleDateChange={handleDateChange} selectedDate={details.date}/> */}
-      </div>
-
       <div className="px-0 pb-4">
         {props.couponJSX}
-        {/* <CouponsOption onClick={() => props.openCouponSlide()}>
-          View Applicable Offers
-        </CouponsOption> */}
         <div className=" border-y border-[#F0F0F0] mb-3 mt-2 ml-1">
           <div className=" group flex flex-row gap-3 items-center py-[1rem]">
             <BsCalendar2 className="text-md text-[#7A7A7A]" />
             <div className="text-md font-medium text-black flex flex-row items-center gap-2">
               <div>
-                {/* {getDate(booking.check_in)}-{getDate(booking.check_out)} */}
                 {props.plan
                   ? props.plan
                     ? getHumanDateWithYear(
@@ -852,6 +795,7 @@ const Details = (props) => {
             </div>
           </div>
         </div>
+
         <div className="group text-md font-medium gap-3 flex flex-row items-center mb-2 ml-1">
           <BsPeopleFill className="text-md text-[#7A7A7A]" />
           <div className=" flex flex-row items-center text-md font-medium text-black">
@@ -896,13 +840,6 @@ const Details = (props) => {
           </div>
         </div>
       </div>
-      {/* <Button blur={props.blur} width="100%" bgColor="#F7e700" borderRadius="5px" borderWidth="0px" margin="0 0 0.5rem 0" onclick={_startCheckoutHandler} ><p style={{margin: '0'}} className={props.blur ? "blurry-text" : ''}>Proceed</p></Button> */}
-      {/* <Button width="100%" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#e4e4e4" >
-          <FontAwesomeIcon icon={faWhatsapp} style={{marginRight: "0.5rem"}}/>
-          Connect on WhatsApp</Button> */}
-      {/* <Button onclick={()=> window.location.href="https://wa.me/919625509382?text="+message} hoverColor="white" hoverBgColor="black"  onclickparam={null} width="100%" bgColor="#f7e700" borderRadius="5px" borderWidth="0px" borderColor="#e4e4e4"   margin="0 0 0.5rem 0" >
-       Proceed to Payment</Button> */}
-      {/* <Accordion></Accordion> */}
 
       {props.payment && props.token ? (
         props.payment.itinerary_status ===
@@ -919,7 +856,7 @@ const Details = (props) => {
               borderRadius="8px"
               bgColor="#f8e000"
               padding="12px"
-              onclick={() => _saleCreateHandler(props.id)}
+              onclick={() => handlePayNow("_saleCreateHandler")}
               loading={paymentLoading}
             >
               Pay Now & Book
@@ -934,7 +871,7 @@ const Details = (props) => {
               borderRadius="8px"
               bgColor="#f8e000"
               padding="12px"
-              onclick={() => scrollToElement("Stays")}
+              onclick={() => handleViewBooking("Add Hotels")}
             >
               Add Hotels
             </Button>
@@ -950,7 +887,7 @@ const Details = (props) => {
               borderRadius="8px"
               bgColor="#f8e000"
               padding="12px"
-              onclick={() => setShowVerification(true)}
+              onclick={() => handlePayNow("setShowVerification")}
             >
               Pay Now & Book
             </Button>
@@ -964,7 +901,7 @@ const Details = (props) => {
               borderRadius="8px"
               bgColor="#f8e000"
               padding="12px"
-              onclick={() => scrollToElement("Stays")}
+              onclick={() => handleViewBooking("View Bookings")}
             >
               View Bookings
             </Button>
@@ -978,7 +915,7 @@ const Details = (props) => {
               borderRadius="8px"
               bgColor="#f8e000"
               padding="12px"
-              onclick={() => setShowRegistartion(true)}
+              onclick={handleTravellersDetails}
             >
               Add Travellers Details
             </Button>
@@ -996,7 +933,7 @@ const Details = (props) => {
                 bgColor="#f8e000"
                 // loading={loading}
                 padding="12px"
-                onclick={() => props._GetInTouch()}
+                onclick={handleGetInTouch}
                 // height='2rem'
               >
                 <div
@@ -1022,11 +959,7 @@ const Details = (props) => {
           )
         )
       ) : null}
-      {props.payment && props.token
-        ? props.payment.paid_user
-          ? null
-          : null
-        : null}
+
       {!props.token ? (
         <Button
           color="#111"
@@ -1037,11 +970,12 @@ const Details = (props) => {
           borderRadius="8px"
           bgColor="#f8e000"
           padding="12px"
-          onclick={() => props.setShowLoginModal(true)}
+          onclick={handleLoginButton}
         >
           Log in to proceed
         </Button>
       ) : null}
+
       <Button
         width="100%"
         margin="0.5rem 0 0 0"
@@ -1049,20 +983,24 @@ const Details = (props) => {
         hoverColor="white"
         fontWeight="400"
         padding="12px"
-        onclick={() =>
-          (window.location.href = urls.WHATSAPP + "?text=" + message)
-        }
+        onclick={handleWhatsappChat}
       >
         <div className="flex flex-row justify-center items-center">
           <RiWhatsappFill className="text-[#4da750] mr-2 text-xl" />
           <div>Chat on Whatsapp</div>
         </div>
       </Button>
+
       <div className="flex flex-row justify-center items-center text-[#01202B] mt-2">
-        <Link href="/terms-conditions" target="_blank">
+        <Link
+          href="/terms-conditions"
+          target="_blank"
+          onClick={handleTermsConditions}
+        >
           <div>Terms & Conditions</div>
         </Link>
       </div>
+
       <RegistrationModal
         number_of_adults={
           props.payment
@@ -1079,6 +1017,7 @@ const Details = (props) => {
         hide={() => setShowRegistartion(false)}
         pax={pax}
       ></RegistrationModal>
+
       <VerificationModal
         date={date}
         pax={pax}
@@ -1086,15 +1025,18 @@ const Details = (props) => {
         show={showVerification}
         hide={() => setShowVerification(false)}
       ></VerificationModal>
+
       <RegisteredUsersModal
         registered_users={props.payment ? props.payment.registered_users : null}
         show={showRegisteredUsers}
         hide={() => setShowRegisteredUsers(false)}
       ></RegisteredUsersModal>
+
       <TermsModal
         show={showTerms}
         hide={() => setShowTerms(false)}
       ></TermsModal>
+
       {props.token && Newitinerary && (
         <MakeYourPersonalised
           date={props?.payment?.meta_info?.start_date}

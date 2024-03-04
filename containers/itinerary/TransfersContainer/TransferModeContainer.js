@@ -3,11 +3,7 @@ import styled from "styled-components";
 import { TransportIconFetcher } from "../../../helper/TransportIconFetcher";
 import ImageLoader from "../../../components/ImageLoader";
 import { differenceInMinutes, format, parseISO } from "date-fns";
-import * as ga from "../../../services/ga/Index";
 import { FaPlane } from "react-icons/fa";
-import { IoCheckmark, IoClose } from "react-icons/io5";
-import { LivelyButton } from "../../../components/LiveleyButton";
-import { MdEdit } from "react-icons/md";
 import useMediaQuery from "../../../components/media";
 import media from "../../../components/media";
 import { ITINERARY_STATUSES } from "../../../services/constants";
@@ -15,13 +11,13 @@ import CheckboxFormComponent from "../../../components/FormComponents/CheckboxFo
 import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
 import { PulseLoader } from "react-spinners";
 import EllipsisTruncation from "../../EllipsisTruncate";
-import { checkNestedProperties } from "../../../helper/shortHelpers";
 import { connect } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import Button from "../../../components/ui/button/Index";
 import TransferEditDrawer from "../../../components/drawers/routeTransfer/TransferEditDrawer";
 import routeAlternates from "../../../services/itinerary/brief/routeAlternates";
+import { logEvent } from "../../../services/ga/Index";
 
 const Plan = styled.div`
   position: absolute;
@@ -29,6 +25,7 @@ const Plan = styled.div`
   top: 0%;
   transform: translate(-50%, -45%);
 `;
+
 const Circle = styled.div`
   border: 1px solid #7a7a7a;
   height: 10px;
@@ -40,6 +37,7 @@ const Circle = styled.div`
   top: 50%;
   transform: translateY(-38%);
 `;
+
 const DottedLine = styled.div`
   position: relative;
   height: 2px;
@@ -56,6 +54,7 @@ const DottedLine = styled.div`
     background-size: 9px 100%; /* Adjust this value to change the spacing between the dots */
   }
 `;
+
 const LogoContainer = styled.div`
   display: flex;
   align-items: center;
@@ -94,6 +93,7 @@ const GridContainer = styled.div`
     overflow: none;
   }
 `;
+
 const InfoContainer = styled.div`
   width: 100%;
   margin-block: auto;
@@ -109,7 +109,7 @@ const InfoContainer = styled.div`
     }
   }
 `;
-//
+
 const ImageContainer = styled.div`
   width: 4rem;
   height: 4rem;
@@ -129,6 +129,7 @@ const ImageContainer = styled.div`
     transform: scale(1.05);
   }
 `;
+
 const PriceContainer = styled.div`
   display: flex;
   justify-content: space-between;
@@ -171,19 +172,21 @@ const Line = styled.hr`
   border-width: 1.4px;
   position: absolute;
   left: 50%;
-  
+
 
   border-color: ${(props) => (props.pinColour ? props.pinColour : "black")};
   min-height: 10vw;
   height: 100%;
   margin: 0rem 0 0rem 0rem; */
 `;
+
 const Cost = styled.p`
   font-size: 16px;
   font-weight: 600;
   margin: 0;
   text-align: center;
 `;
+
 const Text = styled.p`
   font-size: 12px;
   font-weight: 300;
@@ -193,6 +196,7 @@ const Text = styled.p`
     text-align: center;
   }
 `;
+
 const FlexBox = styled.div`
   display: flex;
   align-items: center;
@@ -263,7 +267,7 @@ const TransferModeContainer = (props) => {
     setTransferImageFailed(true);
   };
 
-  function handleCheckboxChange(e) {
+  function handleCheckboxChange(e, label) {
     if (!props.payment?.is_registration_needed) {
       if (props.token && props.payment?.user_allowed_to_pay) {
         _updateSelectedTransfer();
@@ -278,10 +282,22 @@ const TransferModeContainer = (props) => {
         e.stopPropagation();
       }
     }
+
+    logEvent({
+      action: "Transfer Change/Add",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: label,
+        event_value: props?.heading,
+        event_action: "Transfers",
+      },
+    });
   }
+
   const isDesktop = useMediaQuery("(min-width:1024px)");
 
-  function HandleFlights(i) {
+  function HandleFlights(i, label) {
     if (!props.token) {
       return props.setShowLoginModal(true);
     }
@@ -332,9 +348,20 @@ const TransferModeContainer = (props) => {
       transfer_type,
       user_selected
     );
+
+    logEvent({
+      action: "Transfer Change/Add",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: label,
+        event_value: props.heading,
+        event_action: "Transfers",
+      },
+    });
   }
 
-  function HandleTransport(i) {
+  function HandleTransport(i, label) {
     if (!props.token) {
       return props.setShowLoginModal(true);
     }
@@ -382,6 +409,17 @@ const TransferModeContainer = (props) => {
       taxi_type,
       transfer_type
     );
+
+    logEvent({
+      action: "Transfer Change/Add",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: label,
+        event_value: props.heading,
+        event_action: "Transfers",
+      },
+    });
   }
 
   const Facilities = [
@@ -507,6 +545,17 @@ const TransferModeContainer = (props) => {
           );
         }
       });
+
+    logEvent({
+      action: "Transfer Change/Add",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: "Add Transfer",
+        event_value: props?.heading,
+        event_action: "Transfers",
+      },
+    });
   };
 
   var adult;
@@ -796,7 +845,9 @@ const TransferModeContainer = (props) => {
 
                             {!props?.payment?.paid_user && (
                               <div
-                                onClick={() => HandleFlights(props.index)}
+                                onClick={() =>
+                                  HandleFlights(props.index, "Change Flight")
+                                }
                                 className="px-[1.6rem] min-w-fit bg-[#F7E700] py-[8px] lg:px-4 inline-block cursor-pointer rounded-lg shadow-sm ml-2 lg:border-2  border-[1px] border-black  text-black font-medium text-sm"
                               >
                                 Change Flight
@@ -813,7 +864,7 @@ const TransferModeContainer = (props) => {
                               hoverColor="white"
                               margin="auto 0px"
                               onclick={() => {
-                                HandleFlights(props.index);
+                                HandleFlights(props.index, "Add Flight");
                               }}
                             >
                               Add Flight
@@ -960,7 +1011,9 @@ const TransferModeContainer = (props) => {
                           <div>
                             {!props?.payment?.paid_user && (
                               <div
-                                onClick={() => HandleFlights(props.index)}
+                                onClick={() =>
+                                  HandleFlights(props.index, "Change")
+                                }
                                 className="px-[1.6rem] min-w-fit bg-[#F7E700] py-[8px] lg:px-4   inline-block cursor-pointer rounded-lg shadow-sm lg:border-2  border-[1px] border-black  text-black font-medium text-sm"
                               >
                                 Change
@@ -971,7 +1024,9 @@ const TransferModeContainer = (props) => {
                           !props?.payment?.paid_user && (
                             <div>
                               <div
-                                onClick={() => HandleFlights(props.index)}
+                                onClick={() =>
+                                  HandleFlights(props.index, "Add Flight")
+                                }
                                 className="px-[1.8rem] bg-[#F7E700] py-[8px] inline-block cursor-pointer rounded-lg shadow-sm  border-2 border-black  text-black font-medium text-sm"
                               >
                                 Add Flight
@@ -997,7 +1052,10 @@ const TransferModeContainer = (props) => {
                         : "lg:bottom-[3.6rem] hidden"
                     } `}
                     onClick={(e) => {
-                      handleCheckboxChange(e);
+                      handleCheckboxChange(
+                        e,
+                        `${addbooking ? "Added Booking" : "Add Booking"}`
+                      );
                     }}
                   >
                     <CheckboxFormComponent checked={addbooking} />{" "}
@@ -1115,14 +1173,16 @@ const TransferModeContainer = (props) => {
                   <div className="w-full flex flex-row items-center justify-end cursor-pointer pr-2">
                     {addbooking ? (
                       <button
-                        onClick={() => HandleTransport(props.index)}
+                        onClick={() =>
+                          HandleTransport(props.index, "Change Taxi")
+                        }
                         className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
                       >
                         {isDesktop ? "Change Taxi" : "Change"}
                       </button>
                     ) : (
                       <button
-                        onClick={() => HandleTransport(props.index)}
+                        onClick={() => HandleTransport(props.index, "Add Taxi")}
                         className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
                       >
                         Add Taxi
@@ -1162,7 +1222,10 @@ const TransferModeContainer = (props) => {
                       )}
                       <div
                         onClick={(e) => {
-                          handleCheckboxChange(e);
+                          handleCheckboxChange(
+                            e,
+                            `${addbooking ? "Added Booking" : "Add Booking"}`
+                          );
                         }}
                         className="flex flex-row gap-1 items-center  cursor-pointer"
                       >

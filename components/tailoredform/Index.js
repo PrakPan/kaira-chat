@@ -1,45 +1,44 @@
-import React, { useState, useEffect } from 'react';
-import styled, { keyframes } from 'styled-components';
-import Button from '../ui/button/Index';
-
-import * as ga from '../../services/ga/Index';
-import { format } from 'date-fns';
-import media from '../media';
-import axiostailoredinstance from '../../services/leads/tailored';
-import Spinner from '../Spinner';
-import LoadingLottie from '../ui/LoadingLottie';
-import { useRouter } from 'next/router';
-import { connect } from 'react-redux';
-import { BiArrowBack } from 'react-icons/bi';
-import Flickity from './Flickity';
-import { EXPERIENCE_FILTERS_BOX } from '../../services/constants';
-import { fadeIn } from 'react-animations';
-import Popup from '../ErrorPopup';
-import { RxCross2 } from 'react-icons/rx';
-import Cookies from 'js-cookie';
-import usePageLoaded from '../custom hooks/usePageLoaded';
+import React, { useState, useEffect } from "react";
+import styled, { keyframes } from "styled-components";
+import Button from "../ui/button/Index";
+import * as ga from "../../services/ga/Index";
+import { format } from "date-fns";
+import media from "../media";
+import axiostailoredinstance from "../../services/leads/tailored";
+import LoadingLottie from "../ui/LoadingLottie";
+import { useRouter } from "next/router";
+import { connect } from "react-redux";
+import { BiArrowBack } from "react-icons/bi";
+import Flickity from "./Flickity";
+import { EXPERIENCE_FILTERS_BOX } from "../../services/constants";
+import { fadeIn } from "react-animations";
+import Popup from "../ErrorPopup";
+import { RxCross2 } from "react-icons/rx";
+import usePageLoaded from "../custom hooks/usePageLoaded";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
+
 const Container = styled.div`
   height: max-content;
   color: black;
-  z-index: ${(props) => (props.showBlack ? '1006' : '2')};
+  z-index: ${(props) => (props.showBlack ? "1006" : "2")};
   position: relative;
   background-color: ${(props) =>
     props.slideIndex || props.tailoredFormModal
-      ? 'white'
-      : 'rgba(255,255,255,0.9)'};
+      ? "white"
+      : "rgba(255,255,255,0.9)"};
   width: 100%;
   border: none !important;
   border-radius: ${(props) =>
-    props.tailoredFormModal ? '12px !important' : '8px !important'};
+    props.tailoredFormModal ? "12px !important" : "8px !important"};
   @media screen and (min-width: 768px) {
-    ${(props) => props.tailoredFormModal && 'height : 100%'};
+    ${(props) => props.tailoredFormModal && "height : 100%"};
     margin: auto 0;
 
     min-height: 400px;
   }
 `;
+
 const CloseIcon = styled.div`
   display: flex;
   justify-content: space-between;
@@ -47,10 +46,11 @@ const CloseIcon = styled.div`
   border-bottom: 1px solid #0000004a;
   padding-block: 1rem;
 `;
+
 const Heading = styled.p`
   font-size: 1.35rem;
   margin: 0.5rem 0 0.5rem 0;
-  ${(props) => props.tailoredFormModal && 'margin : 1rem 0'};
+  ${(props) => props.tailoredFormModal && "margin : 1rem 0"};
   text-align: left;
   font-weight: 600;
   color: black;
@@ -59,12 +59,13 @@ const Heading = styled.p`
   @media screen and (min-width: 815px) {
     font-size: 1.5rem;
     margin: 0.25rem 0 0.25rem 0;
-    ${(props) => props.tailoredFormModal && 'margin : 1rem 0'};
+    ${(props) => props.tailoredFormModal && "margin : 1rem 0"};
 
     height: 1.8rem;
     overflow: hidden;
   }
 `;
+
 const CountryCodeOption = styled.div`
   &:hover {
     cursor: pointer;
@@ -77,10 +78,12 @@ const CountryCodeOption = styled.div`
 const CountryImg = styled.img`
   height: 100%;
 `;
+
 const Card = styled.div`
   width: 80%;
   margin: 2px 1rem;
 `;
+
 const BlackContainer = styled.div`
   background-color: rgba(0, 0, 0, 0.4);
   position: fixed;
@@ -95,12 +98,14 @@ const BlackContainer = styled.div`
     display: initial;
   }
 `;
+
 const LoadingText = styled.div`
   font-size: 1.2rem;
   position: absolute;
   bottom: 30%;
   opacity: 0.8;
 `;
+
 const Enquiry = (props) => {
   const router = useRouter();
   const routerquery = router.query;
@@ -114,7 +119,7 @@ const Enquiry = (props) => {
   const [numberOfAdults, setNumberOfAdults] = useState(2);
   const [numberOfChildren, setNumberOfChildren] = useState(0);
   const [numberOfInfants, setNumberOfInfants] = useState(0);
-  const [budget, setBudget] = useState('Affordable');
+  const [budget, setBudget] = useState("Affordable");
   const [selectedPreferences, setSelectedPreferences] = useState([]);
   const [showCities, setShowCities] = useState(false);
   const [showSearchStarting, setShowSearchStarting] = useState(false);
@@ -134,30 +139,30 @@ const Enquiry = (props) => {
   const [showPopup, setShowPopup] = useState(popupObj);
   const [showBlack, setShowBlack] = useState(false);
   const [submitSecondSlide, setSubmitSecondSlide] = useState(false);
+  let isPageWide = media("(min-width: 768px)");
+
   useEffect(() => {
-    if (slideIndex === 2 && props.token && props.phone !== 'null') _submitDataHandler();
+    if (slideIndex === 2 && props.token && props.phone !== "null") {
+      _submitDataHandler();
+    }
     setShowPopup(popupObj);
   }, [slideIndex, props.token, props.phone]);
+
   const _handleHideBlack = () => {
     setShowBlack(false);
     setShowCities(false);
     setShowSearchStarting(false);
   };
-  let isPageWide = media('(min-width: 768px)');
-  // const LocationCookie = Cookies.get('userLocation');
 
   useEffect(() => {
-    // if (!startingLocation) {
-    
-      if (props.userLocation) {
-        const userLocation = props.userLocation;
-        if (userLocation.text && userLocation.place_id)
-          setStartingLocation({
-            name: userLocation.text,
-            place_id: userLocation.place_id,
-          });
-      }
-    // }
+    if (props.userLocation) {
+      const userLocation = props.userLocation;
+      if (userLocation.text && userLocation.place_id)
+        setStartingLocation({
+          name: userLocation.text,
+          place_id: userLocation.place_id,
+        });
+    }
   }, [props.userLocation]);
 
   var selectedObj;
@@ -176,7 +181,7 @@ const Enquiry = (props) => {
         id: routerquery.page_id || props.page_id,
         name: routerquery.destination || props.destination,
         input_id: initialInputId,
-        type: 'Country',
+        type: "Country",
       },
     ];
   else
@@ -189,6 +194,7 @@ const Enquiry = (props) => {
     ];
 
   const [selectedCities, setSelectedCities] = useState(selectedObj);
+
   useEffect(() => {
     setShowPopup(popupObj);
   }, [
@@ -203,8 +209,6 @@ const Enquiry = (props) => {
     slideIndex,
   ]);
 
-  // const ContainerRef = useRef()
-
   const _submitDataHandler = () => {
     const value_start = new Date(valueStart);
     const value_end = new Date(valueEnd);
@@ -213,8 +217,8 @@ const Enquiry = (props) => {
     let locations = [];
     let stateIds = [];
     let countryIds = [];
-    // let starting_location = null;
     let preferences = [];
+
     for (var i = 0; i < selectedPreferences.length; i++) {
       for (var j = 0; j < EXPERIENCE_FILTERS_BOX.length; j++) {
         if (selectedPreferences[i] === EXPERIENCE_FILTERS_BOX[j].display) {
@@ -225,15 +229,16 @@ const Enquiry = (props) => {
         }
       }
     }
+
     try {
       for (var i = 0; i < selectedCities.length; i++) {
         if (
           cityids.indexOf(selectedCities[i].id) == -1 &&
           selectedCities[i].id
         ) {
-          if (selectedCities[i].type == 'State')
+          if (selectedCities[i].type == "State")
             stateIds.push(selectedCities[i].id);
-          else if (selectedCities[i].type == 'Country')
+          else if (selectedCities[i].type == "Country")
             countryIds.push(selectedCities[i].id);
           else {
             cityids.push(selectedCities[i].id);
@@ -243,23 +248,31 @@ const Enquiry = (props) => {
       }
     } catch {}
 
-    const start_date = format(value_start, 'yyyy-MM-dd');
-    const end_date = format(value_end, 'yyyy-MM-dd');
+    const start_date = format(value_start, "yyyy-MM-dd");
+    const end_date = format(value_end, "yyyy-MM-dd");
 
     let number_of_adults = 2,
       number_of_children = 0,
       number_of_infants = 0;
-    if (groupType === 'Solo') {
+
+    if (groupType === "Solo") {
       number_of_adults = 1;
-    } else if (groupType === 'Couple') {
+    } else if (groupType === "Couple") {
       number_of_adults = 2;
     } else {
       number_of_adults = numberOfAdults;
       number_of_children = numberOfChildren;
       number_of_infants = numberOfInfants;
     }
+
+    const source = {
+      path: router.asPath,
+      ...routerquery,
+    };
+
     let data = null;
     data = {
+      source,
       // "locations": locations,
       experience_filters_selected: preferences,
       budget: budget,
@@ -274,7 +287,7 @@ const Enquiry = (props) => {
       user_location: {
         place_id: startingLocation
           ? startingLocation.place_id
-          : 'ChIJLbZ-NFv9DDkRzk0gTkm3wlI',
+          : "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
       },
     };
 
@@ -284,15 +297,15 @@ const Enquiry = (props) => {
     if (countryIds.length) data.country_id = countryIds;
     if (cityids.length) data.city_id = cityids;
     if (locations.length) data.locations = locations;
-    if (start_date === '1970-01-01') data.start_date = '';
-    if (end_date === '1970-01-01') data.end_date = '';
+    if (start_date === "1970-01-01") data.start_date = "";
+    if (end_date === "1970-01-01") data.end_date = "";
     if (startingLocation) data;
 
     setLoading(true);
-    localStorage.removeItem('MyPlans');
+    localStorage.removeItem("MyPlans");
 
     axiostailoredinstance
-      .post('', data, {
+      .post("", data, {
         headers: {
           Authorization: `Bearer ${props.token}`,
         },
@@ -302,7 +315,7 @@ const Enquiry = (props) => {
         if (!response.data.auto_itinerary_created) {
           // window.location.href =
           //   "https://www.blog.thetarzanway.com/thank-you-page-enquiry";
-          router.push('/thank-you');
+          router.push("/thank-you");
         } else {
           // ga.event({action: 'C-Andaman-Form-success', params: {key : ''}})
 
@@ -314,15 +327,16 @@ const Enquiry = (props) => {
             //     "?t=" +
             //     response.data.loader_time
             // );
-           
-            window.location.href = "/itinerary/" +
+
+            window.location.href =
+              "/itinerary/" +
               response.data.itinerary.itinerary_id +
               "?t=" +
-              response.data.loader_time
+              response.data.loader_time;
+          // router.push(
+          //   "/itinerary/" + response.data.itinerary.itinerary_id
+          // );
           else
-            // router.push(
-            //   "/itinerary/" + response.data.itinerary.itinerary_id
-            // );
             window.location.href =
               "/itinerary/" + response.data.itinerary.itinerary_id;
           // }, 10000);
@@ -333,24 +347,24 @@ const Enquiry = (props) => {
         setLoading(false);
         // window.location.href =
         //   "https://www.blog.thetarzanway.com/thank-you-page-enquiry";
-        router.push('/thank-you');
+        router.push("/thank-you");
 
         if (err.response.data.email) {
         }
       });
   };
+
   const _prevSlideHandler = () => {
     if (slideIndex) setSlideIndex(slideIndex - 1);
   };
-  // const [valueStart, setValueStart] =useState((moment().add(5, 'day')));
-  // const [valueEnd, setValueEnd] =useState((moment().add(10,'day')));
 
   const getHeading = () => {
     if (props.tailoredFormModal && focusedDate) {
-      if (focusedDate == 'startDate') return 'Please select start date.';
-      if (focusedDate == 'endDate') return 'Please select end date.';
-    } else return 'Get your free travel plan now';
+      if (focusedDate == "startDate") return "Please select start date.";
+      if (focusedDate == "endDate") return "Please select end date.";
+    } else return "Get your free travel plan now";
   };
+
   const _SlideOneSubmitHandler = () => {
     if (!selectedCities[0].destination_id && !selectedCities[0].id) {
       return setShowPopup({ ...showPopup, InputOne: true });
@@ -364,13 +378,15 @@ const Enquiry = (props) => {
     // window.scrollBy(0, -200 , 'smooth');
     // ContainerRef.current.scrollIntoView(0,-150)
     if (props.HeroBanner && isPageWide)
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
   const _SlideTwoSubmitHandler = () => {
     if (!submitSecondSlide) return setShowPopup({ ...showPopup, group: true });
     setShowPopup(popupObj);
     setSlideIndex(slideIndex + 1);
   };
+
   if (!loading && !submitted)
     return (
       <>
@@ -627,8 +643,8 @@ const Enquiry = (props) => {
               //   </div>
               // )
 
-//new code without login:-
-              (!props.token || props.phone === 'null' ) ? (
+              //new code without login:-
+              !props.token || props.phone === "null" ? (
                 <div style={{ display: "flex", justifyContent: "flex-end" }}>
                   <Button
                     fontSize="1rem"

@@ -1,19 +1,14 @@
-import React, { Component, useEffect } from 'react';
-import Header from './navbar/Index';
-import Footer from './newfooter/Index';
-import LogInModal from '../components/modals/Login';
-import { connect } from 'react-redux';
-import * as authaction from '../store/actions/auth';
-// import {openNotification} from '../store/actions/notification'
-import TailoredFormMobileModal from './modals/TailoredFomrMobile';
-import { useState } from 'react';
-import { useRouter } from 'next/router';
-import { closeTailoredModal } from '../services/openTailoredModal';
-import media from './media'
-import NotificationPopup from './ui/NotificationPopup';
+import React, { useEffect } from "react";
+import Header from "./navbar/Index";
+import Footer from "./newfooter/Index";
+import { connect } from "react-redux";
+import * as authaction from "../store/actions/auth";
+import { useRouter } from "next/router";
+import media from "./media";
+import NotificationPopup from "./ui/NotificationPopup";
+
 const Layout = React.memo((props) => {
   let isPageWide = media("(min-width: 768px)");
-  // const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
 
   useEffect(() => {
     props.checkAuthState();
@@ -21,51 +16,23 @@ const Layout = React.memo((props) => {
   }, []);
   const router = useRouter();
 
-  // useEffect(() => {
-  //   if (router.isReady) {
-  //     const queries = router.query;
-  //     if (queries['tailored-travel']) {
-  //       setShowMobilePlanner(true);
-  //     } else setShowMobilePlanner(false);
-  //   }
-  // }, [router.isReady, router.asPath]);
-
-  // Freshchat bot :-
-
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     props.openNotification({
-  //       type: "error",
-  //       text: "this is error",
-  //       heading: "error",
-  //       duration : 20
-  //     });
-  //   },5000)
-    
-  // },[])
-
   useEffect(() => {
-
-   
-
-      var name;
-      if (localStorage.getItem("name"))
-        name = localStorage.getItem("name").split(" ");
-      var email = localStorage.getItem("email");
+    var name;
+    if (localStorage.getItem("name"))
+      name = localStorage.getItem("name").split(" ");
+    var email = localStorage.getItem("email");
 
     function handleWidgetLoaded() {
       if (name?.length && email) {
         window.fcWidget.user.setFirstName(name[0]);
         window.fcWidget.user.setEmail(email);
       }
-       
     }
     if (window.fcWidget) {
-          if (!props.token) {
-          window.fcWidget.user.clear();
-          }
-          else {
-            window.fcWidget.on("widget:loaded", handleWidgetLoaded());
+      if (!props.token) {
+        window.fcWidget.user.clear();
+      } else {
+        window.fcWidget.on("widget:loaded", handleWidgetLoaded());
       }
     } else {
       setTimeout(() => {
@@ -95,6 +62,7 @@ const Layout = React.memo((props) => {
         hidehomecta={props.hidehomecta}
         id={props.id}
         destination={props.destination}
+        page={props.page}
       />
       <div
         style={{ marginTop: props.staticnav && !isPageWide ? "0px" : "72px" }}
@@ -102,23 +70,12 @@ const Layout = React.memo((props) => {
         {props.children}
       </div>
 
-      {/* <LogInModal
-        show={props.showLogin}
-        onhide={props.token && !props.phone ? null : props.authCloseLogin}
-      ></LogInModal> */}
-      {/* <TailoredFormMobileModal
-        destinationType={"city-planner"}
-        onHide={() => {
-          setShowMobilePlanner(false);
-          closeTailoredModal(router);
-        }}
-        show={showMoiblePlanner}
-      /> */}
-<NotificationPopup />
+      <NotificationPopup />
       {!props.itinerary ? <Footer></Footer> : null}
     </div>
   );
 });
+
 const mapStateToPros = (state) => {
   return {
     token: state.auth.token,

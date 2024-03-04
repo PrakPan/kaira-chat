@@ -55,6 +55,21 @@ export default function TransferElement(props) {
     return null;
   };
 
+  const handleTransferButtonClick = () => {
+    logEvent({
+      action: "Details View",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: `${
+          selectedBooking?.user_selected ? modes + " added" : "Add " + modes
+        }`,
+        event_value: heading,
+        event_action: "Day by Day Itinerary",
+      },
+    });
+  };
+
   return (
     <Container className="pt-0">
       <div className="flex flex-col items-center justify-center w-full">
@@ -149,6 +164,7 @@ export default function TransferElement(props) {
                     : "Transfer_Container"
                 }
                 offset={-90}
+                onClick={handleTransferButtonClick}
               >
                 <TransparentButton>
                   {selectedBooking && selectedBooking.user_selected ? (

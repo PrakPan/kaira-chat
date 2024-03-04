@@ -35,6 +35,7 @@ import { getCityDetails } from "./getCityDetails";
 import ImageLoader from "../../components/ImageLoader";
 import { connect } from "react-redux";
 import { openNotification } from "../../store/actions/notification";
+import { logEvent } from "../../services/ga/Index";
 
 const Container = styled.div`
   margin-top: 1rem;
@@ -475,9 +476,66 @@ const SimpleTabsV2 = (props) => {
     font-family: sans-serif;
   `;
 
+  const handleLoginButton = () => {
+    logEvent({
+      action: "Login",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: "Log in to proceed",
+        event_action: "Navigation Bar",
+      },
+    });
+
+    setShowLoginModal(true);
+  };
+
+  const handleButtonClick = (label) => {
+    logEvent({
+      action: "Button Click",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: label,
+        event_action: "Navigation Bar",
+      },
+    });
+    scrollToElement("Stays");
+  };
+
+  const handleFooterBannerMobile = (lebel) => {
+    logEvent({
+      action: "Button Click",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: lebel,
+        event_action: "Navigation Bar",
+      },
+    });
+
+    setShowFooterBannerMobile(!showFooterBannerMobile);
+  };
+
+  const handleGetInTouch = () => {
+    logEvent({
+      action: "Button Click",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: "Get in touch!",
+        event_action: "Navigation Bar",
+      },
+    });
+    _GetInTouch();
+  };
+
   return (
-    <div className={classes.root} style={{ paddingTop: "20px" }}>
-      <div className="  z-10 sticky z-2 md:top-[0px] top-[1px]">
+    <div
+      className={classes.root}
+      style={{ paddingTop: "20px", paddingBottom: "20px" }}
+    >
+      <div className="z-10 sticky z-2 md:top-[0px] top-[1px]">
         {isPageWide ? (
           <Navigation
             items={items}
@@ -550,7 +608,7 @@ const SimpleTabsV2 = (props) => {
                     width="12rem"
                     borderRadius="10px"
                     bgColor="#F7E700"
-                    onclick={() => setShowLoginModal(true)}
+                    onclick={handleLoginButton}
                   >
                     Log in to proceed
                   </Button>
@@ -572,7 +630,7 @@ const SimpleTabsV2 = (props) => {
                         width="13rem"
                         borderRadius="10px"
                         bgColor="#F7E700"
-                        onclick={() => scrollToElement("Stays")}
+                        onclick={() => handleButtonClick("View Inclusions")}
                         onclickparams={null}
                       >
                         View Inclusions
@@ -588,7 +646,7 @@ const SimpleTabsV2 = (props) => {
                         width="9rem"
                         borderRadius="10px"
                         bgColor="#F7E700"
-                        onclick={() => scrollToElement("Stays")}
+                        onclick={() => handleButtonClick("Add Hotels")}
                       >
                         Add Hotels
                       </Button>
@@ -605,7 +663,7 @@ const SimpleTabsV2 = (props) => {
                         width="11rem"
                         borderRadius="8px"
                         bgColor="#f8e000"
-                        onclick={() => scrollToElement("Stays")}
+                        onclick={() => handleButtonClick("View Inclusions")}
                       >
                         View Inclusions
                       </Button>
@@ -620,7 +678,7 @@ const SimpleTabsV2 = (props) => {
                         width="12rem"
                         borderRadius="10px"
                         bgColor="#F7E700"
-                        onclick={() => _GetInTouch()}
+                        onclick={handleGetInTouch}
                         loading={loading}
                       >
                         <div
@@ -653,7 +711,7 @@ const SimpleTabsV2 = (props) => {
                     width="9rem"
                     borderRadius="10px"
                     bgColor="#F7E700"
-                    onclick={() => scrollToElement("Stays")}
+                    onclick={() => handleButtonClick("View Bookings")}
                   >
                     View Bookings
                   </Button>
@@ -1089,6 +1147,7 @@ const SimpleTabsV2 = (props) => {
           ) : null}
         </SplitScreen>
       ) : null}
+
       <div className="  z-10 sticky shadow-lg z-2 bottom-[0px] bg-white px-1 py-2 md:hidden -mx-5">
         <div className="flex flex-row justify-between items-center mx-3">
           <div className="flex flex-col">
@@ -1137,7 +1196,7 @@ const SimpleTabsV2 = (props) => {
                 width="10rem"
                 borderRadius="8px"
                 bgColor="#f8e000"
-                onclick={() => setShowLoginModal(true)}
+                onclick={handleLoginButton}
               >
                 Log in to proceed
               </Button>
@@ -1159,9 +1218,7 @@ const SimpleTabsV2 = (props) => {
                     width="10rem"
                     borderRadius="8px"
                     bgColor="#f8e000"
-                    onclick={() =>
-                      setShowFooterBannerMobile(!showFooterBannerMobile)
-                    }
+                    onclick={() => handleFooterBannerMobile("View Inclusions")}
                   >
                     View Inclusions
                   </Button>
@@ -1176,7 +1233,7 @@ const SimpleTabsV2 = (props) => {
                     width="10rem"
                     borderRadius="8px"
                     bgColor="#f8e000"
-                    onclick={() => scrollToElement("Stays")}
+                    onclick={() => handleButtonClick("Add Hotels")}
                   >
                     Add Hotels
                   </Button>
@@ -1193,9 +1250,7 @@ const SimpleTabsV2 = (props) => {
                     width="10rem"
                     borderRadius="8px"
                     bgColor="#f8e000"
-                    onclick={() =>
-                      setShowFooterBannerMobile(!showFooterBannerMobile)
-                    }
+                    onclick={() => handleFooterBannerMobile("View Inclusions")}
                   >
                     View Inclusions
                   </Button>
@@ -1211,7 +1266,7 @@ const SimpleTabsV2 = (props) => {
                     borderRadius="8px"
                     bgColor="#f8e000"
                     loading={loading}
-                    onclick={() => _GetInTouch()}
+                    onclick={handleGetInTouch}
                   >
                     <div
                       style={{
@@ -1244,7 +1299,7 @@ const SimpleTabsV2 = (props) => {
                 width="10rem"
                 borderRadius="8px"
                 bgColor="#f8e000"
-                onclick={() => scrollToElement("Stays")}
+                onclick={() => handleButtonClick("View Bookingstays")}
               >
                 View Bookings
               </Button>
@@ -1252,6 +1307,7 @@ const SimpleTabsV2 = (props) => {
           ) : null}
         </div>
       </div>
+
       {!props.preview ? (
         <PoiEditModal
           setItinerary={props.setItinerary}

@@ -22,6 +22,7 @@ import { EXPERIENCE_FILTERS_BOX } from "../../../services/constants";
 import { BiErrorCircle } from "react-icons/bi";
 import { IoMdSearch } from "react-icons/io";
 import useDebounce from "../../../hooks/useDebounce";
+import { logEvent } from "../../../services/ga/Index";
 
 const padding = {
   initialLeft: "60px",
@@ -382,6 +383,20 @@ const ItineraryPoiElement = (props) => {
     }
   };
 
+  const handleEditActivity = (label, isEdit) => {
+    logEvent({
+      action: "Change Activity",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: label,
+        event_action: "Day by Day Itinerary",
+      },
+    });
+    if (isEdit) setShowDrawer(true);
+    else setShow(true);
+  };
+
   return (
     <Container>
       {/* <div>{props.time}</div> */}
@@ -389,7 +404,10 @@ const ItineraryPoiElement = (props) => {
         id={`${props?.day_slab_index}-${props?.data?.element_index}-${props?.activity_data.id}`}
         className="group flex flex-row items-center p-2"
       >
-        <div className="bg-white w-[6rem]" onClick={() => setShow(true)}>
+        <div
+          className="bg-white w-[6rem]"
+          onClick={() => handleEditActivity(props?.heading, false)}
+        >
           {props.image && props.image !== "media/icons/default/activity.svg" ? (
             <ImageLoader
               dimensions={{ width: 300, height: 300 }}
@@ -437,12 +455,12 @@ const ItineraryPoiElement = (props) => {
               >
                 <div
                   className="text-xl font-normal cursor-pointer"
-                  onClick={() => setShow(true)}
+                  onClick={() => handleEditActivity(props?.heading, false)}
                 >
                   {props.heading}
                 </div>
                 <div
-                  onClick={() => setShowDrawer(true)}
+                  onClick={() => handleEditActivity(props?.heading, true)}
                   className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
                 >
                   <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />

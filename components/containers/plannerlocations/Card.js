@@ -4,12 +4,14 @@ import media from "../../media";
 import ImageLoader from "../../ImageLoader";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { logEvent } from "../../../services/ga/Index";
 
 const ImageFade = styled.div`
   width: 100%;
   height: auto;
   transition: 0.2s all ease-in-out;
 `;
+
 const ImageContainer = styled.div`
   position: relative;
   overflow: hidden;
@@ -41,6 +43,7 @@ const BlackContainer = styled.div`
   bottom: 0;
   flex-direction: column;
 `;
+
 const Heading = styled.p`
   font-size: 1.25rem;
   font-weight: 700;
@@ -48,6 +51,7 @@ const Heading = styled.p`
   text-align: center;
   margin-bottom: 0.5rem;
 `;
+
 const Subheading = styled.p`
   font-size: 1rem;
   line-height: 1;
@@ -59,27 +63,28 @@ const Subheading = styled.p`
 const Experiences = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
-  /*Require props: imgWidth*/
-
-  //     return(
-  //       <Container onClick={props.onclick ? props.onclick : null} >
-  //           <BackroundImageLoader filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"   padding="0.25rem" zoomonhover center dimensions={{width: 900, height: 900}} height={isPageWide ? "40vh" : '60vh'} filters="linear-gradient(rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.9))"  url={props.img}>
-  //               <Name className="font-lexend">{props.heading}</Name>
-  //               <Name className="font-lexend" style={{fontSize: '36px', fontWeight: '700', letterSpacing: '0'}}>{props.location}</Name>
-  //           </BackroundImageLoader>
-  //       </Container>
-  //   );
-
-  // const _handleRedirect = (e) => {
-  //   e.preventDefault();
-  //   if (props.path) window.location.href = '/' + props.path;
-  // };
   const path = props.city
     ? "https://thetarzanway.com/travel-guide/city/"
     : "https://thetarzanway.com/travel-planner/";
+
+  const handleImageClick = (e) => {
+    logEvent({
+      action: "View Destination",
+      params: {
+        page: props?.page ? props.page : "",
+        event_category: "Click",
+        event_label: "View Destination",
+        event_value: props?.location ? props.location : "",
+        event_action: `Plan as per the best destinations${
+          props.country && " in " + props.country
+        }`,
+      },
+    });
+  };
+
   return (
     <Link className="hover-pointer" href={"/" + props.path}>
-      <ImageContainer>
+      <ImageContainer onClick={handleImageClick}>
         <ImageFade>
           <ImageLoader
             url={props.img}

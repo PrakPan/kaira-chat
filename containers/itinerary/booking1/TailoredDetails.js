@@ -6,13 +6,13 @@ import { MIS_SERVER_HOST } from "../../../services/constants";
 import { connect } from "react-redux";
 import { isPast, parseISO } from "date-fns";
 import axios from "axios";
-import PulseLoader from 'react-spinners/PulseLoader';
+import PulseLoader from "react-spinners/PulseLoader";
 import Slide from "../../../Animation/framerAnimation/Slide";
 
 const SummaryContainer = styled.div`
   height: max-content;
   border-radius: 10px;
-  padding: ${props=> props.couponSlide ? '0' : '1rem'};
+  padding: ${(props) => (props.couponSlide ? "0" : "1rem")};
   margin: 0rem 0;
   @media screen and (min-width: 768px) {
     margin: 0;
@@ -31,18 +31,16 @@ const Details = (props) => {
   const [inputValue, setInputValue] = useState(
     props.payment?.coupon ? props.payment?.coupon?.code : ""
   );
-  const [couponLoading , setCouponLoading] = useState(false)
-    const [isSucess, setIsSucess] = useState({
-      value: false,
-      errorMsg: "",
-    });
-    const [isError, setIsError] = useState({
-      error: false,
-      errorMsg: "",
-    });
-  // useEffect(() => {
-    
-  // },[inputValue])
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [isSucess, setIsSucess] = useState({
+    value: false,
+    errorMsg: "",
+  });
+  const [isError, setIsError] = useState({
+    error: false,
+    errorMsg: "",
+  });
+ 
   useEffect(() => {
     if (props.plan?.start_date) {
       if (isPast(parseISO(props.plan?.start_date))) {
@@ -58,6 +56,7 @@ const Details = (props) => {
   function handleSubmitRemove(e) {
     RemoveCoupon();
   }
+
   const RemoveCoupon = () => {
     setCouponLoading(true);
     axios
@@ -74,7 +73,7 @@ const Details = (props) => {
         }
       )
       .then((res) => {
-    setCouponLoading(false);
+        setCouponLoading(false);
         setIsSucess({
           value: true,
           Msg: "Coupon Removed Successfully",
@@ -86,7 +85,7 @@ const Details = (props) => {
         props.getPaymentHandler();
       })
       .catch((error) => {
-    setCouponLoading(false);
+        setCouponLoading(false);
         setIsDisabled(true);
         setIsError({
           error: true,
@@ -95,73 +94,73 @@ const Details = (props) => {
       });
   };
 
-    function handleSubmit(e) {
-      if (props.token) {
-        if (inputValue !== "") {
-          getCouponHandler(inputValue);
+  function handleSubmit(e) {
+    if (props.token) {
+      if (inputValue !== "") {
+        getCouponHandler(inputValue);
+      } else {
+        setIsError({
+          error: true,
+          errorMsg: "Please Enter Something",
+        });
+      }
+    } else {
+      props.setShowLoginModal(true);
+    }
+  }
+
+  const getCouponHandler = (coupon) => {
+    setCouponLoading(true);
+    axios
+      .post(
+        MIS_SERVER_HOST + "/payment/coupon/apply/",
+        {
+          itinerary_id: props.id,
+          coupon: coupon,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${props.token}`,
+          },
+        }
+      )
+      .then((res) => {
+        setCouponLoading(false);
+
+        setIsSucess({
+          value: true,
+          Msg: res.data.coupon_usage.message,
+        });
+        setIsDisabled(true);
+        setiscouponApplied(true);
+
+        setIsError({
+          error: false,
+          errorMsg: "",
+        });
+
+        props.getPaymentHandler();
+      })
+      .catch((error) => {
+        setCouponLoading(false);
+        setIsDisabled(false);
+        setiscouponApplied(false);
+
+        if (error.response && error.response.status === 400) {
+          const errorMessage = error.response.data.message;
+          setIsError({
+            error: true,
+            errorMsg: errorMessage,
+          });
         } else {
           setIsError({
             error: true,
-            errorMsg: "Please Enter Something",
+            errorMsg: "Invalid Coupon Or Coupon Expired",
           });
         }
-      } else {
-        props.setShowLoginModal(true);
-      }
-  }
-  
-  const getCouponHandler = (coupon) => {
-    setCouponLoading(true);
-     axios
-       .post(
-         MIS_SERVER_HOST + "/payment/coupon/apply/",
-         {
-           itinerary_id: props.id,
-           coupon: coupon,
-         },
-         {
-           headers: {
-             Authorization: `Bearer ${props.token}`,
-           },
-         }
-       )
-       .then((res) => {
-    setCouponLoading(false);
-         
-         setIsSucess({
-           value: true,
-           Msg: res.data.coupon_usage.message,
-         });
-         setIsDisabled(true);
-         setiscouponApplied(true);
-
-         setIsError({
-           error: false,
-           errorMsg: "",
-         });
-
-         props.getPaymentHandler();
-       })
-       .catch((error) => {
-    setCouponLoading(false);
-         setIsDisabled(false);
-         setiscouponApplied(false);
-
-         if (error.response && error.response.status === 400) {
-           const errorMessage = error.response.data.message;
-           setIsError({
-             error: true,
-             errorMsg: errorMessage,
-           });
-         } else {
-           setIsError({
-             error: true,
-             errorMsg: "Invalid Coupon Or Coupon Expired",
-           });
-         }
-         setInputValue("");
-       });
-   };
+        setInputValue("");
+      });
+  };
 
   const couponJSX = (
     <div>
@@ -261,6 +260,7 @@ const Details = (props) => {
       ) : null}
     </div>
   );
+
   return (
     <SummaryContainer
       className="font-lexend ml-4 flex flex-col rounded-xl shadow-md  border-2 border-[#ECEAEA] shadow-[#ECEAEA]"
@@ -285,11 +285,6 @@ const Details = (props) => {
           couponJSX={couponJSX}
         />
       )}
-
-      {/* <CouponSlide
-        closeCouponSlide={() => setCouponSlide(false)}
-        couponJSX={couponJSX}
-      ></CouponSlide> */}
     </SummaryContainer>
   );
 };

@@ -1,24 +1,24 @@
-import { useRouter } from 'next/router';
-import React, { useState } from 'react';
-import styled, { keyframes } from 'styled-components';
-import media from '../../components/media';
-import * as ga from '../../services/ga/Index';
-import Button from '../../components/ui/button/Index';
-import ImageLoader from '../../components/ImageLoader';
-import SkeletonCard from '../../components/ui/SkeletonCard';
-import openTailoredModal from '../../services/openTailoredModal';
-import TripsCounter from './TripsCounter';
-import Link from 'next/link';
+import { useRouter } from "next/router";
+import React, { useState } from "react";
+import styled, { keyframes } from "styled-components";
+import media from "../../components/media";
+import Button from "../../components/ui/button/Index";
+import ImageLoader from "../../components/ImageLoader";
+import openTailoredModal from "../../services/openTailoredModal";
+import TripsCounter from "./TripsCounter";
+import Link from "next/link";
+import { logEvent } from "../../services/ga/Index";
+
 const Container = styled.div`
   height: 430px;
   display: grid;
   gap: 0.2rem;
   grid-template-areas:
-    'a a a b b b b b'
-    'a a a b b b b b'
-    'd d e e e e e e'
-    'c c c c c c c c'
-    'c c c c c c c c';
+    "a a a b b b b b"
+    "a a a b b b b b"
+    "d d e e e e e e"
+    "c c c c c c c c"
+    "c c c c c c c c";
 
   padding: 10px;
 
@@ -26,13 +26,13 @@ const Container = styled.div`
     height: 600px;
     gap: 0.5rem;
     grid-template-areas:
-      'a a a a b b b b b'
-      'a a a a b b b b b'
+      "a a a a b b b b b"
+      "a a a a b b b b b"
       // 'a a a a b b b b b'
-      'a a a a b b b b b'
-      'a a a a e e e e e'
-      'c c c d e e e e e'
-      'c c c d e e e e e';
+      "a a a a b b b b b"
+      "a a a a e e e e e"
+      "c c c d e e e e e"
+      "c c c d e e e e e";
   }
 
   & > .d {
@@ -57,21 +57,21 @@ const Container = styled.div`
 `;
 
 const TopSlideIn = keyframes`
-from { 
+from {
   transform: translateY(0%);
 }
-to { 
+to {
   transform: translateY(30%);
-} 
+}
 `;
 
 const TopSlideOut = keyframes`
-from { 
+from {
   transform: translateY(30%);
 }
-to { 
+to {
   transform: translateY(0%);
-} 
+}
 
 `;
 
@@ -166,45 +166,66 @@ const BlackContainer = styled.div`
 `;
 
 const PlanAsPerTheme = (props) => {
-  let isPageWide = media('(min-width: 768px)');
+  let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  // const [ImgLoading, setImgLoading] = useState(true);
-  // const _handleTripRedirect = (path) => {
-  //   if (path) window.location.href = '/asia/india/' + path;
-  // };
 
-    const order = ['e','b','c','a']
-    const ThemeContainer = props.ThemeData?.slice(0, 4).map((e, i) => (
-      <GridItem
-        className={order[i]}
-        key={i}
-        // onClick={() => _handleTripRedirect(e.path)}
+  const _handleTripRedirect = (banner_heading) => {
+    logEvent({
+      action: "View Destination",
+      params: {
+        page: props?.page ? props.page : "",
+        event_category: "Click",
+        event_label: "View Destination",
+        event_value: banner_heading,
+        event_action: `Plan trip as per mood`,
+      },
+    });
+  };
+
+  const handleItineraryButton = () => {
+    logEvent({
+      action: "Plan Itinerary",
+      params: {
+        page: props?.page ? props.page : "",
+        event_category: "Button Click",
+        event_label: "Create your free Itinerary",
+        event_action: "Plan trip as per mood",
+      },
+    });
+    openTailoredModal(router, props.page_id, props.destination);
+  };
+
+  const order = ["e", "b", "c", "a"];
+  const ThemeContainer = props.ThemeData?.slice(0, 4).map((e, i) => (
+    <GridItem
+      className={order[i]}
+      key={i}
+      onClick={() => _handleTripRedirect(e.banner_heading)}
+    >
+      {/* {ImgLoading && <SkeletonCard />} */}
+      <ImageContainer
+        // style={ImgLoading ? { display: "none" } : { display: "initial" }}
+        bg="road-trip.png"
+        href={"/asia/india/" + e.path}
       >
-        {/* {ImgLoading && <SkeletonCard />} */}
-        <ImageContainer
-          // style={ImgLoading ? { display: "none" } : { display: "initial" }}
-          bg="road-trip.png"
-          href={"/asia/india/" + e.path}
-        >
-          <TextContainer className="AnimateTop">
-            <Heading>{e.banner_heading}</Heading>
-            {isPageWide && <div className="StartNow">Explore!</div>}
-          </TextContainer>
-          <ImageLoader
-            noLazy
-            // onload={() => setImgLoading(false)}
-            fit="cover"
-            width="100%"
-            height="100%"
-            style={{ filter: "brightness(0.9)" }}
-            url={e.image}
-          ></ImageLoader>
-          {/* <BlackContainer/> */}
-        </ImageContainer>
-      </GridItem>
-    ));
-    
+        <TextContainer className="AnimateTop">
+          <Heading>{e.banner_heading}</Heading>
+          {isPageWide && <div className="StartNow">Explore!</div>}
+        </TextContainer>
+        <ImageLoader
+          noLazy
+          // onload={() => setImgLoading(false)}
+          fit="cover"
+          width="100%"
+          height="100%"
+          style={{ filter: "brightness(0.9)" }}
+          url={e.image}
+        ></ImageLoader>
+        {/* <BlackContainer/> */}
+      </ImageContainer>
+    </GridItem>
+  ));
 
   return (
     <>
@@ -214,7 +235,7 @@ const PlanAsPerTheme = (props) => {
           <TripsCounter />
           <p
             style={
-              isPageWide ? {} : { marginTop: '-10px', marginBottom: '0px' }
+              isPageWide ? {} : { marginTop: "-10px", marginBottom: "0px" }
             }
           >
             Trips Planned
@@ -222,8 +243,8 @@ const PlanAsPerTheme = (props) => {
           <p
             style={
               isPageWide
-                ? { marginTop: '-15px' }
-                : { marginTop: '-5px', marginBottom: '0px' }
+                ? { marginTop: "-15px" }
+                : { marginTop: "-5px", marginBottom: "0px" }
             }
           >
             so far.
@@ -233,9 +254,7 @@ const PlanAsPerTheme = (props) => {
 
       {!props.nostart ? (
         <Button
-          onclick={() =>
-            openTailoredModal(router, props.page_id, props.destination)
-          }
+          onclick={handleItineraryButton}
           fontWeight="500"
           boxShadow
           borderRadius="8px"
@@ -245,8 +264,8 @@ const PlanAsPerTheme = (props) => {
           borderWidth="1px"
         >
           {isPageWide
-            ? 'Create your free itinerary'
-            : 'Create your personalised Itinerary'}
+            ? "Create your free itinerary"
+            : "Create your personalised Itinerary"}
           {/* {loading ? <Spinner size={16}></Spinner> : null} */}
         </Button>
       ) : null}
@@ -254,5 +273,4 @@ const PlanAsPerTheme = (props) => {
   );
 };
 
-
-export default React.memo(PlanAsPerTheme)
+export default React.memo(PlanAsPerTheme);

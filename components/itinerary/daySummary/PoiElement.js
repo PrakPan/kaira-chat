@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Container } from "../../../containers/itinerary/New_Itenary_DBD/New_itenaryStyled";
 import POIDetailsDrawer from "../../drawers/poiDetails/POIDetailsDrawer";
+import { logEvent } from "../../../services/ga/Index";
 
 export default function PoiElement(props) {
   const { pois, setViewMore } = props;
@@ -15,6 +16,16 @@ export default function PoiElement(props) {
   const handleActivity = (e) => {
     setPoi(e.target.id);
     setShowDrawer(true);
+
+    logEvent({
+      action: "Details View",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Click",
+        event_value: pois[e.target.id].heading,
+        event_action: "Day by Day Itinerary",
+      },
+    });
   };
 
   return (

@@ -14,6 +14,7 @@ import ActivityElement from "../../../components/itinerary/daySummary/ActivityEl
 import PoiElement from "../../../components/itinerary/daySummary/PoiElement";
 import { getYear } from "../../../helper/DateUtils";
 import ActivityAddDrawer from "../../../components/drawers/poiDetails/activityAddDrawer";
+import { logEvent } from "../../../services/ga/Index";
 
 export const DayContainerStyle = styled.div`
   display: flex;
@@ -138,6 +139,16 @@ const Day_I_Container = (props) => {
 
   const handleViewMoreButton = () => {
     setViewMore((prev) => !prev);
+
+    logEvent({
+      action: "Navigation",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: `${viewMore ? "View less" : "View more"}`,
+        event_action: "Day by Day Itinerary",
+      },
+    });
   };
 
   let summaryIContainer = [];
@@ -338,6 +349,20 @@ const Day_I_Container = (props) => {
   }
   divide(props.Days.slab_elements, Arslab_elements, props.Days?.slab);
 
+  const handleAddActivity = (label) => {
+    logEvent({
+      action: "Add Activity",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: label,
+        event_action: "Day by Day Itinerary",
+      },
+    });
+
+    setShowAddDrawer(true);
+  };
+
   return (
     <Container className="font-lexend">
       <DivDayContainerRow>
@@ -371,7 +396,11 @@ const Day_I_Container = (props) => {
           <div className="flex w-full ml-3">
             {!props.LastElement && (
               <button
-                onClick={() => setShowAddDrawer(true)}
+                onClick={() =>
+                  handleAddActivity(
+                    `Add Activity on ${convertDateFormat(props?.Days?.date)}`
+                  )
+                }
                 className="text-lg font-normal text-blue hover:underline"
               >
                 +Add Activity{" "}
@@ -390,7 +419,11 @@ const Day_I_Container = (props) => {
           <div className="flex ml-[10.50%]">
             {!props.LastElement && (
               <button
-                onClick={() => setShowAddDrawer(true)}
+                onClick={() =>
+                  handleAddActivity(
+                    `Add Activity on ${convertDateFormat(props?.Days?.date)}`
+                  )
+                }
                 className="text-[14px] font-[600] leading-[22px] text-blue hover:underline"
               >
                 +Add Activity{" "}

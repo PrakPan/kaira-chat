@@ -46,6 +46,7 @@ const LocationsBlog = (props) => {
             slug={props.locations[i].link}
             link={props.locations[i].link}
             country={props.country}
+            page={props.page}
           ></Card>
         );
       }

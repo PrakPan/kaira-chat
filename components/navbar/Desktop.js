@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
-
 import ProfilDropDown from "./ProfileDropDown";
 import ProfileDropDownLoggedOut from "./ProfileDropDownLoggedOut";
 import Link from "next/link";
@@ -16,6 +15,8 @@ import DesktopSearch from "../search/header/desktop/Index";
 import { ImSearch } from "react-icons/im";
 import media from "../media";
 import openTailoredModal from "../../services/openTailoredModal";
+import { logEvent } from "../../services/ga/Index";
+
 const NavItemsContainer = styled.div`
   display: none;
 
@@ -44,7 +45,7 @@ const NavbarContainer = styled.div`
 
 const CenterNav = styled.div`
   width: 85%;
-  // ${props=>props.staticnav && 'padding-right : 2%'};
+  // ${(props) => props.staticnav && "padding-right : 2%"};
   margin: auto;
   height: 100%;
   display: grid;
@@ -94,6 +95,7 @@ const Header = styled.div`
     // height: 10vh;
   }
 `;
+
 const CompanyName = styled.p`
 position: absolute;
     left: 30px;
@@ -125,6 +127,7 @@ const StyledLink = styled.a`
     border-width: 1px;
   }
 `;
+
 const TopContainer = styled.div`
   border-style: solid;
   border-width: 1px;
@@ -136,11 +139,13 @@ const TopContainer = styled.div`
   // display: grid;
   // grid-template-columns: max-content auto;
 `;
+
 const SearchContainer = styled.div`
   width: 100%;
   margin-block: auto;
   position: absolute;
 `;
+
 const Search = styled.input`
   border: none !important;
   width: 80%;
@@ -150,6 +155,7 @@ const Search = styled.input`
     outline: none;
   }
 `;
+
 const Navbar = (props) => {
   const router = useRouter();
   const isTablet = media("(min-width: 950px)");
@@ -159,11 +165,14 @@ const Navbar = (props) => {
   {
     /* toggle hamburger */
   }
+
   const [showDropDownProfileListMobile, setShowDropDownProfileListMobile] =
     useState(false);
+
   {
     /* toggle mobile profilelist */
   }
+
   const [showDropDownProfileList, setShowDropDownProfileList] = useState(false);
 
   const [Height, setHeight] = useState(false);
@@ -190,18 +199,34 @@ const Navbar = (props) => {
   };
 
   const [showNotifications, setShowNotifications] = useState(false);
+
   const _handleNotifications = () => {
     setShowNotifications(true);
   };
-  // const router  = useRouter();
+
   const _handleHomepageRedirect = () => {
     router.push("/");
   };
+
   const _handlePWRedirect = () => {
     router.push("/corporates/physicswallah");
   };
 
+  const handleCreateTripButton = () => {
+    logEvent({
+      action: "Plan Itinerary",
+      params: {
+        page: props.page ? props.page : "Home Page",
+        event_category: "Button Click",
+        event_label: "Create a Trip",
+        event_action: "Navbar",
+      },
+    });
+    openTailoredModal(router, props.id, props.destination);
+  };
+
   const [toggleSearch, setToggleSearch] = useState(false);
+
   return (
     <div>
       <Header staticnav={props.staticnav} changeHeight={Height}>
@@ -297,7 +322,7 @@ const Navbar = (props) => {
                   </Link>
                 )}
                 {/* {
-       props.PW ?  
+       props.PW ?
        <Link href={'/corporates/physicswallah'}><CompanyName style={{color: props.headerColor === 'black' ? 'white': 'black', margin: "0.5vh 0 0 0.25rem", fontSize: "1.75vh", fontWeight: '300', lineHeight: '1.2', display: !props.PW ? 'inline' : 'block', letterSpacing: '0'}} >{'Physics Wallah Holidays'}</CompanyName></Link>
 : null
       } */}
@@ -305,7 +330,6 @@ const Navbar = (props) => {
               {/* </Link> */}
             </TTWLogoContainer>
 
-            {/* <input /> */}
             {!props.hidecta && !props.staticnav && (
               <div
                 style={{
@@ -340,23 +364,10 @@ const Navbar = (props) => {
             ) : (
               <div></div>
             )}
-            {/* <SearchBar />  */}
             <NavItemsContainer
               style={{ marginRight: props.token ? "0rem" : "0" }}
             >
-              {/* <NavItem>
-              <Link href={urls.travel_experiences.BASE} className="next-link" passHref={true}>
-               {router.pathname === '/travel-experiences' ? <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black', borderColor:  '#f7e700'}}>Experiences</StyledLink> : <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black'}}>Experiences</StyledLink>}
-              </Link>
-            </NavItem> */}
-              {/* <NavItem>
-                <StyledLink href="http://blog.thetarzanway.com/" style={{color: props.headerColor === 'black' ? 'white' : 'black'}}>Feed</StyledLink>
-            </NavItem> */}
-              <NavItem style={{ paddingInline: "1.5rem" }}>
-                {/* <Link href={urls.CONTACT} passHref={true}>
-              {  router.pathname === '/contact' ?<StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black', borderColor: '#f7e700' , fontWeight : '500'}}>Contact</StyledLink> : <StyledLink style={{color: props.headerColor === 'black' ? 'white' : 'black'}}>Contact</StyledLink>}
-              </Link> */}
-              </NavItem>
+              <NavItem style={{ paddingInline: "1.5rem" }}></NavItem>
 
               {!props.hidecta ? (
                 <Button
@@ -370,10 +381,7 @@ const Navbar = (props) => {
                   margin="0 1.5rem 0 0"
                   padding="0.5rem 0.75rem"
                   onclick={
-                    props.ctaonclick
-                      ? props.ctaonclick
-                      : () =>
-                          openTailoredModal(router, props.id, props.destination)
+                    props.ctaonclick ? props.ctaonclick : handleCreateTripButton
                   }
                 >
                   Create a Trip
@@ -411,7 +419,6 @@ const Navbar = (props) => {
               )}
             </NavItemsContainer>
           </CenterNav>
-          {/* } */}
         </NavbarContainer>
         <Notifications
           _deleteNotificationHandler={props._deleteNotificationHandler}
