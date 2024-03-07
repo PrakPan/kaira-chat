@@ -60,10 +60,14 @@ const fullimage = (props) => {
           filter={props.filter}
           url={props.url}
           dimensions={
-            props?.resizeMode === "fill" ? {} : { width: 2240, height: 840 }
+            props?.resizeMode === "fill"
+              ? { width: 2240, height: 840 }
+              : { width: 2240, height: 840 }
           }
           dimensionsMobile={
-            props?.resizeMode === "fill" ? {} : { width: 607, height: 810 }
+            props?.resizeMode === "fill"
+              ? { width: 607, height: 810 }
+              : { width: 607, height: 810 }
           }
           style={{ position: "absolute" }}
           className="center-dv"
