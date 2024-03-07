@@ -31,6 +31,7 @@ import useDebounce from "../../../hooks/useDebounce";
 const Container = styled.div``;
 
 const SectionOneText = styled.span``;
+
 const GridContainer = styled.div`
   display: grid;
 
@@ -38,6 +39,7 @@ const GridContainer = styled.div`
     props.image ? "1.6fr 2.5fr" : "44px auto"};
   grid-column-gap: ${(props) => (props.image ? "0.5rem" : "0")};
 `;
+
 const Text = styled.p`
   overflow: hidden;
   line-height: 1.5;
@@ -48,17 +50,20 @@ const Text = styled.p`
   font-size: 14px;
   font-weight: 500;
 `;
+
 const Heading = styled.span`
   margin-bottom: 0rem;
   margin-right: 0.25rem;
   font-weight: 400;
   line-height: 1;
 `;
+
 const Line = styled.div`
   border-style: none none solid none;
   border-color: #e4e4e4;
   border-width: 1px;
 `;
+
 const BoldTags = styled.p`
   font-weight: 600;
   font-size: 14px;
@@ -75,6 +80,7 @@ const ColorTags = styled.span`
   font-weight: 400;
   padding: 0.25rem 0.5rem;
 `;
+
 const Floating = styled.div`
   position: fixed;
 
@@ -90,6 +96,7 @@ const Floating = styled.div`
 
   cursor: pointer;
 `;
+
 const FloatingView = styled.div`
   position: fixed;
 
@@ -105,6 +112,7 @@ const FloatingView = styled.div`
 
   cursor: pointer;
 `;
+
 const GridResponsive = styled.div`
   display: grid;
   width: 100%;
@@ -112,11 +120,13 @@ const GridResponsive = styled.div`
   grid-column-gap: 0.5rem;
   grid-row-gap: 0.5rem;
 `;
+
 const MoreIcon = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: center;
 `;
+
 const RatingContainer = styled.div`
   margin-top: 0.4rem;
   // display: flex;
@@ -128,6 +138,7 @@ const RatingContainer = styled.div`
     color: #727272;
   }
 `;
+
 const EmptyMsg = styled.div`
   margin-top: 5rem;
   text-align: center;
@@ -377,6 +388,20 @@ const ItineraryPoiElementM = (props) => {
     }
   };
 
+  const handleEditActivity = (label, isEdit) => {
+    logEvent({
+      action: "Change/View Activity",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: label,
+        event_action: "Day by Day Itinerary",
+      },
+    });
+    if (isEdit) Poi_activities(props.activity);
+    else setShow(true);
+  };
+
   return (
     <Container
       id={`${props?.day_slab_index}-${props?.data?.element_index}-${props?.activity_data.id}`}
@@ -387,7 +412,7 @@ const ItineraryPoiElementM = (props) => {
           props.image && props.image !== "media/icons/default/activity.svg"
         }
       >
-        <div onClick={() => setShow(true)}>
+        <div onClick={() => handleEditActivity(props?.heading, false)}>
           {props.image && props.image !== "media/icons/default/activity.svg" ? (
             <ImageLoader
               dimensions={{ width: 300, height: 300 }}
@@ -422,7 +447,7 @@ const ItineraryPoiElementM = (props) => {
           <div className=" " style={{ lineHeight: "1" }}>
             <span className="inline text-[1.2rem]">
               <span
-                onClick={() => setShow(true)}
+                onClick={() => handleEditActivity(props?.heading, false)}
                 className="inline cursor-pointer"
               >
                 {props.heading}
@@ -431,7 +456,7 @@ const ItineraryPoiElementM = (props) => {
               <div
                 onClick={(e) => {
                   e.stopPropagation();
-                  Poi_activities(props.activity);
+                  handleEditActivity(props?.heading, true);
                 }}
                 className="inline-block  cursor-pointer min-w-max text-lg w-4 h-4 pl-2 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
               >

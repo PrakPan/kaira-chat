@@ -151,7 +151,7 @@ const TransferEditDrawer = (props) => {
             onClick={() => setShowDrawer(false)}
             className="hover-pointer text-3xl font-semibold"
           />
-          <div className="text-xl md:text-2xl lg:text-2xl font-semibold">
+          <div className="text-lg md:text-2xl lg:text-2xl font-semibold">
             {props.addOrEdit === "transferAdd" ? "Adding" : "Changing"} transfer
             from {origin} to {destination}{" "}
           </div>

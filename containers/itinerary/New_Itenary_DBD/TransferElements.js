@@ -1,23 +1,14 @@
 import React from "react";
-import ImageLoader from "../../../components/ImageLoader";
 import {
-  ArriveContainer,
   Container,
-  Line,
-  Timecontainer,
-  SubTimecontainer,
   TInfoContainer,
-  TransferInfo,
   TransparentButton,
   TransportContainer,
-  HLine,
 } from "./New_itenaryStyled";
-import { convertNumToTime } from "../../../helper/convertNumToTime";
-import { formatNumber } from "../../../helper/formatNumber";
-import { Text } from "../../newitinerary/itineraryelements/ItineraryFoodElement";
 import { TransportIconFetcher } from "../../../helper/TransportIconFetcher";
 import { Link } from "react-scroll";
 import { MdDoneAll } from "react-icons/md";
+
 const TransferElements = ({
   time,
   heading,
@@ -44,6 +35,28 @@ const TransferElements = ({
   function isValueUndefined(value) {
     return value === undefined;
   }
+
+  const handleTransferButtonClick = () => {
+    logEvent({
+      action: "Details View",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: `${
+          getUserSelectedByBookings(
+            data?.bookings && data?.bookings?.length && data?.bookings[0]?.id
+              ? data.bookings[0].id
+              : null
+          )
+            ? modes + " added"
+            : "Add " + modes
+        }`,
+        event_value: heading,
+        event_action: "Day by Day Itinerary",
+      },
+    });
+  };
+
   return (
     <>
       <Container className="pt-3  ">
@@ -59,17 +72,8 @@ const TransferElements = ({
             ) : (
               <div className="w-[3.05rem]"></div>
             )}
-            {/* <ImageLoader
-            url={icon}
-            leftalign
-            dimensions={{ width: 200, height: 200 }}
-            width="4.05rem"
-            widthmobile="1.25rem"
-          ></ImageLoader> */}
           </div>
           <TInfoContainer>
-            {/* <HLine style={{ width: '2rem' }}></HLine> */}
-
             <div>
               <div>
                 <div className="text-xl font-normal pr-2 ">{heading}</div>
@@ -82,6 +86,7 @@ const TransferElements = ({
                         : "Transfer_Container"
                     }
                     offset={-90}
+                    onClick={handleTransferButtonClick}
                   >
                     <TransparentButton>
                       {getUserSelectedByBookings(
@@ -110,36 +115,7 @@ const TransferElements = ({
               </div>
               {transfers !== undefined ? (
                 <TransportContainer>
-                  <div>
-                    {/* {modes && (
-                    <TransportIconFetcher
-                      TransportMode={modes}
-                      Instyle={{
-                        fontSize: '1.75rem',
-                        marginRight: '0.8rem',
-                        color: 'black',
-                      }}
-                    />
-                  )} */}
-                    {/* <ImageLoader
-                    url={icon}
-                    leftalign
-                    dimensions={{ width: 200, height: 200 }}
-                    width="1.25rem"
-                    widthmobile="1.25rem"
-                  ></ImageLoader> */}
-                  </div>
-                  {/* {transfers.routes[0]?.legs[0].origin.shortName ? (
-                    <div
-                      style={{ display: "flex", flexDirection: "column" }}
-                      className="text-md font-medium"
-                    >
-                      <div>
-                        {transfers.routes[0]?.legs[0].origin.shortName} -{" "}
-                        {transfers.routes[0]?.legs[0].destination.shortName}
-                      </div>
-                    </div>
-                  ) : null} */}
+                  <div></div>
                 </TransportContainer>
               ) : null}
 

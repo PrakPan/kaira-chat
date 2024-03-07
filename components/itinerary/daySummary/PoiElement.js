@@ -28,6 +28,20 @@ export default function PoiElement(props) {
     });
   };
 
+  const hanldeSeeMore = () => {
+    setViewMore(true);
+
+    logEvent({
+      action: "Navigation",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: "see more",
+        event_action: "Day by Day Itinerary",
+      },
+    });
+  };
+
   return (
     <Container className="pt-0">
       <div className="flex flex-col space-y-3 items-start w-full md:pl-2 lg:pl-2">
@@ -51,7 +65,7 @@ export default function PoiElement(props) {
                 )
             )}
             <span
-              onClick={() => setViewMore(true)}
+              onClick={hanldeSeeMore}
               className="ml-2 text-blue hover:underline font-[600] text-[12px] leading-[22px] cursor-pointer"
             >
               {pois.length > 3 ? "1+ more" : "see more"}

@@ -1,27 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import Overview from './Overview/Overview';
-import styled from 'styled-components';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import axiosaccommodationinstance from '../../../services/bookings/FetchAccommodation';
-import { connect } from 'react-redux';
-import { TbArrowBack } from 'react-icons/tb';
-import media from '../../media';
-import Drawer from '../../ui/Drawer';
-import Skeleton from './Skeleton';
-import { IoMdClose } from 'react-icons/io';
-import { openNotification } from '../../../store/actions/notification';
+import React, { useEffect, useState } from "react";
+import Overview from "./Overview/Overview";
+import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axiosaccommodationinstance from "../../../services/bookings/FetchAccommodation";
+import { connect } from "react-redux";
+import { TbArrowBack } from "react-icons/tb";
+import media from "../../media";
+import Drawer from "../../ui/Drawer";
+import Skeleton from "./Skeleton";
+import { IoMdClose } from "react-icons/io";
+import { openNotification } from "../../../store/actions/notification";
 
 const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
   &:hover {
     cursor: pointer;
   }
 `;
+
 const Container = styled.div`
   padding: 0 0.75rem 0.75rem 0.75rem;
   @media screen and (min-width: 768px) {
     padding: 0 1.25rem 1.25rem 1.25rem;
   }
 `;
+
 const BackContainer = styled.div`
   margin: 0;
   display: flex;
@@ -36,10 +38,12 @@ const BackContainer = styled.div`
     padding-block: 1rem;
   }
 `;
+
 const BackText = styled.div`
   font-size: 1.5rem;
   line-height: 2rem;
 `;
+
 const FloatingView = styled.div`
   position: sticky;
   bottom: 10px;
@@ -54,6 +58,7 @@ const FloatingView = styled.div`
   z-index: 2;
   cursor: pointer;
 `;
+
 const ErrorContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -63,50 +68,58 @@ const ErrorContainer = styled.div`
   margin: auto;
   text-align: center;
 `;
+
 const POI = (props) => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
-  const [error  ,setError] = useState(false)
+  const [error, setError] = useState(false);
+
   useEffect(() => {
     if (props.show) {
       setLoading(true);
-      setError(false)
-      let check_in = props.check_in
-      let check_out = props.check_out
-      if (props.check_in.includes('/')) {
+      setError(false);
+      let check_in = props.check_in;
+      let check_out = props.check_out;
+      if (props.check_in.includes("/")) {
         check_in = props.check_in.split("/").reverse().join("-");
         check_out = props.check_out.split("/").reverse().join("-");
       }
       let paramsObj = {
-        accommodation_id : props.id,
+        accommodation_id: props.id,
         show_rooms: true,
-      }
-      if (props.currentBooking && props.currentBooking.source && props.currentBooking.source == 'Agoda') {
+      };
+      if (
+        props.currentBooking &&
+        props.currentBooking.source &&
+        props.currentBooking.source == "Agoda"
+      ) {
         paramsObj.check_in = check_in;
         paramsObj.check_out = check_out;
-        paramsObj.source = 'Agoda'
+        paramsObj.source = "Agoda";
       }
       // change after is_group field activated in itinerary APIs
       // if(props.match.params.id === "LX1513cBeVVjRPY09EhI" || props.match.params.id === "AY2n7HcBeVVjRPY0MgwO"  || props.match.params.id==="9OjdZ3gBeVVjRPY01cew") setIsGroup(true);
       axiosaccommodationinstance
-        .get('' , {params : paramsObj})
+        .get("", { params: paramsObj })
         .then((res) => {
           setLoading(false);
           setData(res.data);
         })
         .catch((error) => {
           setLoading(false);
-          setError(true)
-           props.openNotification({
-             type: "error",
-             text: "There seems to be a problem, please try again!",
-             heading: "Error!",
-           });
+          setError(true);
+          props.openNotification({
+            type: "error",
+            text: "There seems to be a problem, please try again!",
+            heading: "Error!",
+          });
           // window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
         });
     }
   }, [props.id, props.show]);
-  let isPageWide = media('(min-width: 768px)');
+
+  let isPageWide = media("(min-width: 768px)");
+  
   return (
     <Drawer
       show={props.show}
@@ -149,7 +162,9 @@ const POI = (props) => {
               ></Overview>
             </div>
           ) : (
-            <ErrorContainer>Oops! There seems to be a problem, please try again later!</ErrorContainer>
+            <ErrorContainer>
+              Oops! There seems to be a problem, please try again later!
+            </ErrorContainer>
           )}
           {!isPageWide && (
             <FloatingView>

@@ -1,22 +1,18 @@
 import styled from "styled-components";
-import { useState, useEffect } from "react";
-import { AiFillCar } from "react-icons/ai";
-import ImageLoader from "../../../components/ImageLoader";
-import Button from "../../../components/ui/button/Index";
-import { ITINERARY_ELEMENT_TYPES } from "../../../services/constants";
 import { FaHome } from "react-icons/fa";
 import { Link } from "react-scroll";
 import {
-  HLine,
   TransparentButton,
   newDayContainerTextpadding,
 } from "../../itinerary/New_Itenary_DBD/New_itenaryStyled";
 import isSameDay from "date-fns/isSameDay";
 import { parse } from "date-fns";
 import { MdDoneAll } from "react-icons/md";
+
 const padding = {
   initialLeft: "60px",
 };
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -30,12 +26,14 @@ const Container = styled.div`
 `;
 
 const SectionOneText = styled.span``;
+
 const GridContainer = styled.div`
   display: grid;
   margin-top: 1rem;
   grid-template-columns: ${(props) => (props.image ? "1fr 2fr" : "1fr")};
   grid-column-gap: 0.5rem;
 `;
+
 const Text = styled.p`
   overflow: hidden;
   line-height: 1.5;
@@ -46,17 +44,20 @@ const Text = styled.p`
   font-size: 14px;
   font-weight: 400;
 `;
+
 const Heading = styled.p`
   margin-bottom: 0.5rem;
   font-weight: 500;
   font-size: 18px;
   line-height: 1;
 `;
+
 const Line = styled.div`
   border-style: none none solid none;
   border-color: #f0f0f0;
   border-width: 1px;
 `;
+
 export const TInfoContainer = styled.div`
   @media screen and (min-width: 768px) {
     display: flex;
@@ -68,6 +69,7 @@ export const TInfoContainer = styled.div`
     }
   }
 `;
+
 function compareDates(dateString1, dateString2) {
   if (dateString1 && dateString2) {
     const date1 = parse(dateString1, "dd/MM/yyyy", new Date());
@@ -78,6 +80,7 @@ function compareDates(dateString1, dateString2) {
 
   return false;
 }
+
 const ItineraryElement = (props) => {
   function getUserSelectedByBookings(id) {
     if (props.booking && props.booking.length && id)
@@ -88,25 +91,37 @@ const ItineraryElement = (props) => {
       }
     return null;
   }
+
+  const handleStayButtonClick = () => {
+    logEvent({
+      action: "Details View",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: `${
+          getUserSelectedByBookings(
+            props?.data?.bookings &&
+              props?.data?.bookings?.length &&
+              props?.data?.bookings[0]?.id
+              ? props.data.bookings[0].id
+              : null
+          )
+            ? "Stay Added"
+            : "Add Stay"
+        }`,
+        event_value: heading,
+        event_action: "Day by Day Itinerary",
+      },
+    });
+  };
+
   return (
     <Container className="pt-3">
-      {/* <div>{props.time}</div> */}
-      {/* <SectionOneText>{props.time}</SectionOneText> */}
-      {/* <HLine style={{ width: '2rem' }}></HLine> */}
-
       <div className="flex flex-row ">
         <div className=" flex justify-center items-center ">
           <div className="w-[6.15rem] grid place-items-center">
             <FaHome className="text-black lg:text-[3.05rem]   text-[1.25rem]" />
           </div>
-
-          {/* <ImageLoader
-            url={props.icon}
-            leftalign
-            dimensions={{ width: 200, height: 200 }}
-            width="4.05rem"
-            widthmobile="1.25rem"
-          ></ImageLoader> */}
         </div>
         <div
           style={{
@@ -129,6 +144,7 @@ const ItineraryElement = (props) => {
                   : "Stays"
               }
               offset={-35}
+              onClick={handleStayButtonClick}
             >
               {props?.data &&
               props?.data?.bookings &&
@@ -168,37 +184,6 @@ const ItineraryElement = (props) => {
           </div>
         </div>
       </div>
-      {/* <div style={{ marginLeft: '0px' }}>
-        <ImageLoader
-          url={props.icon}
-          leftalign
-          dimensions={{ width: 200, height: 200 }}
-          width="3.25rem"
-          widthmobile="1.25rem"
-        ></ImageLoader>
-      </div> */}
-
-      {/* <AiFillCar style={{ margin: "-2px 0  0 0.5rem" }}></AiFillCar>
-        {props.booking ? (
-          <div
-            style={{
-              flexGrow: "1",
-              justifyContent: "flex-end",
-              display: "flex",
-            }}
-          >
-            <Button
-              borderRadius="8px"
-              fontWeight="700"
-              fontSize="12px"
-              borderWidth="1.5px"
-              padding="0.5rem 0.5rem"
-              onclick={() => console.log("")}
-            >
-              View Booking
-            </Button>
-          </div>
-        ) : null} */}
     </Container>
   );
 };

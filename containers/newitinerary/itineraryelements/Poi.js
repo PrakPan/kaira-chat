@@ -385,7 +385,7 @@ const ItineraryPoiElement = (props) => {
 
   const handleEditActivity = (label, isEdit) => {
     logEvent({
-      action: "Change Activity",
+      action: "Change/View Activity",
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",

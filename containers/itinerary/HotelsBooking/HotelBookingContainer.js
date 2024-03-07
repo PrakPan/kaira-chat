@@ -215,6 +215,20 @@ const HotelBookingContainer = ({
     handleClickAc(index, cityData, city_id);
   };
 
+  const handleViewHotel = () => {
+    openDetails();
+
+    logEvent({
+      action: "Details View",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Click",
+        event_value: booking?.name,
+        event_action: "Stays",
+      },
+    });
+  };
+
   const isMobile = useMediaQuery("(min-width:768px)");
   let img = "";
   if (banner_image) img = banner_image;
@@ -246,7 +260,7 @@ const HotelBookingContainer = ({
             <div
               onClick={() => {
                 currentBooking || SelectedBookingin
-                  ? openDetails()
+                  ? handleViewHotel()
                   : handleClick(index, booking.accommodation, booking, city_id);
               }}
               className={`relative flex lg:flex-row w-full flex-col gap-4  ${
