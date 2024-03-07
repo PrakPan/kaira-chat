@@ -17,6 +17,7 @@ import useMediaQuery from "../../../hooks/useMedia";
 import useDebounce from "../../../hooks/useDebounce";
 import Button from "../../ui/button/Index";
 import ImageLoader from "../../../components/ImageLoader";
+import { logEvent } from "../../../services/ga/Index";
 
 const FiltersContainer = styled.div`
   display: flex;
@@ -126,6 +127,16 @@ const ActivityAddDrawer = (props) => {
           });
         }
       });
+
+    logEvent({
+      action: "Activity Add",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: "Select",
+        event_action: "Add Activity",
+      },
+    });
   };
 
   function fetchData(showMore = false) {

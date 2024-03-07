@@ -63,8 +63,8 @@ export default function AccommodationElement(props) {
     setImages(images);
   };
 
-  const handleClick = () => {
-    () => setShowDetails(true);
+  const handleImageClick = () => {
+    setShowDetails(true);
 
     logEvent({
       action: "Details View",
@@ -144,7 +144,7 @@ export default function AccommodationElement(props) {
                     dimensionsMobile={{ width: 300, height: 300 }}
                     borderRadius="8px"
                     hoverpointer
-                    onclick={handleClick}
+                    onclick={handleImageClick}
                     width="4rem"
                     height="4rem"
                     leftalign

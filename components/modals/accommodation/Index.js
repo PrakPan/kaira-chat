@@ -119,7 +119,7 @@ const POI = (props) => {
   }, [props.id, props.show]);
 
   let isPageWide = media("(min-width: 768px)");
-  
+
   return (
     <Drawer
       show={props.show}

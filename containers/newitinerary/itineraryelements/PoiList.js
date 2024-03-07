@@ -12,9 +12,11 @@ const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
     rgba(0, 0, 0, 0.05) 0px 5px 10px;
 `;
+
 const ClippathComp = styled.div`
   clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
 `;
+
 const SelectContainer = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -22,6 +24,7 @@ const SelectContainer = styled.div`
   flex-direction: column;
   gap: 0.5rem;
 `;
+
 const CounterContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -30,6 +33,7 @@ const CounterContainer = styled.div`
   width: 100%;
   gap: 0.5rem;
 `;
+
 const CounterIcon = styled.div`
   border-radius: 50%;
   padding: 0.1rem;

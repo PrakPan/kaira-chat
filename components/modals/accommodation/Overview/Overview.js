@@ -20,6 +20,7 @@ const starRating = (rating) => {
   if (Math.floor(rating) < rating) stars.push(<FaStarHalfAlt />);
   return stars;
 };
+
 const Container = styled.div`
   font-size: 14px;
   @media screen and (min-width: 768px) {
@@ -34,6 +35,7 @@ const Name = styled.h2`
   font-size: 20px;
   font-weight: 600;
 `;
+
 const DetailsContainer = styled.div`
   display: flex;
   flex-direction: row;
@@ -78,6 +80,7 @@ const GridImage = styled.div`
   grid-row-gap: 6px;
   height: 19rem;
 `;
+
 const MGridImage = styled.div`
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -86,6 +89,7 @@ const MGridImage = styled.div`
   grid-row-gap: 7px;
   height: 15rem;
 `;
+
 const Child = styled.div`
   border-radius: 8px;
   position: relative;
@@ -114,19 +118,22 @@ const CheckInText = styled.div`
   gap: 5rem;
   margin-block: 1rem;
 `;
+
 const FlexBox = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 0.5rem;
 `;
+
 const DescriptionText = styled.div`
 p{
   margin-bottom : 12px;
 }
 `
+
 const Overview = (props) => {
- 
+
   const [ImagesLoaded, setImagesLoaded] = useState({
     0: false,
     1: false,
@@ -192,7 +199,7 @@ const Overview = (props) => {
           )
         ) : (
           <></>
-        )} 
+        )}
       </FlexBox>
       {props?.currentBooking.user_rating && (
         <div className="flex flex-col gap-1">
@@ -749,7 +756,7 @@ const Overview = (props) => {
           <Heading>About</Heading>
           <MoreText>
             <DescriptionText
-              dangerouslySetInnerHTML={{ __html: props.data.description }} 
+              dangerouslySetInnerHTML={{ __html: props.data.description }}
             ></DescriptionText>
           </MoreText>
         </>
@@ -879,9 +886,9 @@ const mapStateToPros = (state) => {
     token: state.auth.token,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {};
 };
 
 export default connect(mapStateToPros, mapDispatchToProps)(Overview);
-

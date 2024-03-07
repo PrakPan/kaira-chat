@@ -342,6 +342,16 @@ const ItineraryPoiElement = (props) => {
           });
         }
       });
+
+    logEvent({
+      action: "Change Activity",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: "Select",
+        event_action: "",
+      },
+    });
   };
 
   const _handleLoginClose = () => {

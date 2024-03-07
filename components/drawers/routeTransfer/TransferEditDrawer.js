@@ -1,6 +1,4 @@
-import { IoMdClose } from "react-icons/io";
 import Drawer from "../../ui/Drawer";
-import { TransportIconFetcher } from "../../../helper/TransportIconFetcher";
 import { useEffect, useState } from "react";
 import transferEdit from "../../../services/itinerary/brief/transferEdit";
 import { connect } from "react-redux";
@@ -10,10 +8,10 @@ import styled from "styled-components";
 import Button from "../../../components/ui/button/Index";
 import ImageLoader from "../../../components/ImageLoader";
 import { IoMdArrowRoundBack } from "react-icons/io";
-import { PiCurrencyInrBold } from "react-icons/pi";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import useMediaQuery from "../../media";
 import TransfersIcon from "../../../helper/TransfersIcon";
+import { logEvent } from "../../../services/ga/Index";
 
 const ClippathComp = styled.div`
   clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 95% 50%, 100% 0%);
@@ -88,12 +86,13 @@ const TransferEditDrawer = (props) => {
     }
 
     setSelectLoading(true);
+    const selectedRoute = transfers[routeIndex];
     const data = {
       itinerary_id: itinerary_id,
       route_id: alternateRoutes.id,
       day_slab_index: day_slab_index,
       element_index: element_index,
-      route: transfers[routeIndex],
+      route: selectedRoute,
       check_in: check_in,
     };
     transferEdit
@@ -132,6 +131,19 @@ const TransferEditDrawer = (props) => {
           });
         }
       });
+
+    logEvent({
+      action: "Transfer Add/Change",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: `Select`,
+        evemt_value: selectedRoute?.legs[0]?.carrier
+          ? selectedRoute?.legs[0]?.carrier
+          : selectedRoute?.modes[0],
+        event_action: "Transfer Add/Change Drawer",
+      },
+    });
   };
 
   return (
