@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, createRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import "bootstrap/dist/css/bootstrap.min.css";
 import styled from "styled-components";
@@ -17,7 +17,6 @@ import Locations from "../../components/containers/newplannerlocations/Index";
 import OldLocations from "../../components/containers/plannerlocations/Index";
 import MobileBanner from "./MobileBanner";
 import WhyPlanWithUs from "../../components/WhyPlanWithUs/PlanWithUsWithEnquiry";
-import WhatsappFloating from "../../components/WhatsappFloating";
 import HeroBanner from "../../components/containers/HeroBanner/HeroBanner";
 import openTailoredModal from "../../services/openTailoredModal";
 import dynamic from "next/dynamic";
@@ -26,10 +25,9 @@ const MapBox = dynamic(() => import("../../components/Map.js"), {
 });
 import usePageLoaded from "../../components/custom hooks/usePageLoaded";
 import AsSeenIn from "../testimonial/AsSeenIn";
-// import Experiences from '../../components/containers/Experiences';
-// import qs from qs;
 var qs = require("qs");
 import PathNavigation from "./PathNavigation.js";
+import { logEvent } from "../../services/ga/Index";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -38,6 +36,7 @@ const SetWidthContainer = styled.div`
     width: 85%;
   }
 `;
+
 const MapInfo = styled.div`
   b {
     font-weight: 600;
@@ -56,6 +55,7 @@ const MapGridContainer = styled.div`
     margin: 0 auto 0 auto;
   }
 `;
+
 const MapContainer = styled.div`
   @media screen and (min-width: 768px) {
     padding-top: 116px;
@@ -82,6 +82,7 @@ const GridContainer = styled.div`
     grid-template-columns: 1fr 1fr 1fr;
   }
 `;
+
 const MinHeightContainer = styled.div`
   min-height: 40vh;
 
@@ -89,6 +90,7 @@ const MinHeightContainer = styled.div`
     min-height: 40vh;
   }
 `;
+
 const Heading = styled.h2`
   font-size: 32px;
   font-weight: 700;
@@ -100,16 +102,14 @@ const Heading = styled.h2`
     margin: 3.5rem 0rem;
   }
 `;
+
 const Homepage = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const isPageLoaded = usePageLoaded();
-
-  // const [loading, setLoading] = useState(true);
   const [itinerariesExclusiveJSX, setItinerariesExclusiveJSX] = useState([]);
   const [userItineraries, setUserItineraries] = useState([]);
   const [TTWItineraries, setTTWItineraries] = useState([]);
   const [showMore, setShowMore] = useState(false);
-
   const [filters, setFilters] = useState({
     Trek: true,
     "Road Trip": true,
@@ -119,6 +119,7 @@ const Homepage = (props) => {
   const [itinerariesToIndexCustomer, setItinerariesToIndexCusstomer] = useState(
     []
   );
+
   useEffect(() => {
     let iti_exclusive = [];
     let iti_customer = [];
@@ -231,8 +232,6 @@ const Homepage = (props) => {
       }
       setItinerariesToIndexExclusive(iti_exclusive.slice());
       setItinerariesToIndexCusstomer(iti_customer.slice());
-
-      // setOffsetExclusive(iti.length);
     } catch {}
 
     return () => {
@@ -245,14 +244,6 @@ const Homepage = (props) => {
   const [offsetCustomer, setOffsetCustomer] = useState(0);
 
   const _showMoreExclusiveItineraries = () => {
-    // if(offsetExclusive > itinerariesExclusiveJSX.length) return 0 ;
-    // else {
-    // let itineraries = itinerariesExclusiveJSX.slice();
-    //  for(var i = offsetExclusive; i < offsetExclusive + 9 ; i++ ){
-    //   itineraries.push(itinerariesExclusiveJSX[i]);
-    // }
-    // setOffsetExclusive(offsetExclusive+9);
-    // setItinerariesToShowExclusiveJSX(itineraries)
     let itineraries = itinerariesExclusiveJSX.slice();
     setLoading(true);
     let locations = [];
@@ -326,7 +317,6 @@ const Homepage = (props) => {
     const ttw = [];
     if (props.experienceData.itinerary_data) {
       props.experienceData.itinerary_data.map((e) => {
-        // if (e.user_name !== 'TTW Exclusive' &&  e.user_name !== '' && e.user_name !== 'TTW') user.push(e)
         if (e.owner !== "TTW") user.push(e);
         else ttw.push(e);
       });
@@ -338,7 +328,6 @@ const Homepage = (props) => {
   //JSX for How it works
 
   const router = useRouter();
-
   const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
   const [overviewHeading, setOverviewHeading] = useState(null);
 
@@ -370,6 +359,24 @@ const Homepage = (props) => {
     </MapInfo>
   );
 
+  const handlePlanButtonClick = (location) => {
+    openTailoredModal(
+      router,
+      props.experienceData.id,
+      props.experienceData.destination
+    );
+
+    logEvent({
+      action: "Plan_Itinerary",
+      params: {
+        page: "State Page",
+        event_category: "Button Click",
+        event_label: "Create your travel plan now!",
+        event_action: location,
+      },
+    });
+  };
+
   return (
     <div
       className={"Homepage"}
@@ -383,6 +390,7 @@ const Homepage = (props) => {
         cities={props.experienceData.locations}
         children_cities={props.experienceData.children}
         title={props.experienceData.banner_heading}
+        page={"State Page"}
       />
       <SetWidthContainer>
         <PathNavigation path={props.experienceData.path} />
@@ -427,6 +435,8 @@ const Homepage = (props) => {
             <Locations
               locations={props.experienceData.locations}
               viewall
+              page={"State Page"}
+              state={props?.experienceData?.destination}
             ></Locations>
           </>
         ) : null}
@@ -445,7 +455,10 @@ const Homepage = (props) => {
             >
               Trips by our users
             </Heading>
-            <Experiences experiences={userItineraries}></Experiences>
+            <Experiences
+              experiences={userItineraries}
+              page={"State Page"}
+            ></Experiences>
           </>
         ) : null}
 
@@ -473,10 +486,8 @@ const Homepage = (props) => {
 
         <Button
           onclick={() =>
-            openTailoredModal(
-              router,
-              props.experienceData.id,
-              props.experienceData.destination
+            handlePlanButtonClick(
+              `A little about ${props?.experienceData?.destination}`
             )
           }
           borderWidth="1px"
@@ -507,35 +518,35 @@ const Homepage = (props) => {
         </div>
 
         {TTWItineraries.length ? (
-          <Heading
-            align="center"
-            aligndesktop="left"
-            margin={
-              !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "2.5rem 0 2.5rem 0"
-            }
-            bold
-          >
-            Tarzan Way Community Top Picks
-          </Heading>
+          <>
+            <Heading
+              align="center"
+              aligndesktop="left"
+              margin={
+                !isPageWide
+                  ? "2.5rem 0.5rem 1.5rem 0.5rem"
+                  : "2.5rem 0 2.5rem 0"
+              }
+              bold
+            >
+              Tarzan Way Community Top Picks
+            </Heading>
+            <Experiences
+              mobileGrid
+              experiences={
+                showMore ? TTWItineraries : TTWItineraries.slice(0, 4)
+              }
+              page={"State Page"}
+            ></Experiences>
+          </>
         ) : null}
-        {TTWItineraries.length ? (
-          <Experiences
-            mobileGrid
-            experiences={showMore ? TTWItineraries : TTWItineraries.slice(0, 4)}
-          ></Experiences>
-        ) : null}
-        {/* <button onClick={()=>setShowMore(true)}>more</button> */}
 
         {!TTWItineraries.length || isPageWide ? (
           <></>
         ) : showMore ? (
           <Button
             onclick={() =>
-              openTailoredModal(
-                router,
-                props.experienceData.id,
-                props.experienceData.destination
-              )
+              handlePlanButtonClick(`Tarzan Way Community Top Picks`)
             }
             borderWidth="1px"
             fontWeight="500"
@@ -560,13 +571,7 @@ const Homepage = (props) => {
 
         {userItineraries.length ? (
           <Button
-            onclick={() =>
-              openTailoredModal(
-                router,
-                props.experienceData.id,
-                props.experienceData.destination
-              )
-            }
+            onclick={() => handlePlanButtonClick(`Unlock your adventure`)}
             borderWidth="1px"
             fontWeight="500"
             borderRadius="6px"
@@ -578,10 +583,7 @@ const Homepage = (props) => {
         ) : (
           <></>
         )}
-
-        {/* <Carousel cards={props.experienceData.locations} /> */}
       </SetWidthContainer>
-      {/* <Map locations={props.experienceData.locations}></Map> */}
       <DesktopBanner
         loading={desktopBannerLoading}
         onclick={() =>
@@ -623,9 +625,6 @@ const Homepage = (props) => {
             ></OldLocations>
           </>
         ) : null}
-
-        {/* <Heading align="center" aligndesktop="center" margin={!isPageWide  ? "2.5rem 0.5rem" : "4rem"} thincaps >HOW IT WORKS?</Heading> */}
-        {/* <HowItWorks onclick={_handleTailoredRedirect} images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks> */}
 
         <Heading style={{ margin: "3.5rem 0 3.5rem 0" }}>
           Why plan with us?

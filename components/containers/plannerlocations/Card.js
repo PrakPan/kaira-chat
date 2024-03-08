@@ -69,7 +69,7 @@ const Experiences = (props) => {
 
   const handleImageClick = (e) => {
     logEvent({
-      action: "View Destination",
+      action: "View_Destination",
       params: {
         page: props?.page ? props.page : "",
         event_category: "Click",

@@ -284,7 +284,7 @@ const TransferModeContainer = (props) => {
     }
 
     logEvent({
-      action: "Transfer Change/Add",
+      action: "Transfer_Add_Change",
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",
@@ -350,7 +350,7 @@ const TransferModeContainer = (props) => {
     );
 
     logEvent({
-      action: "Transfer Change/Add",
+      action: "Transfer_Add_Change",
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",
@@ -411,7 +411,7 @@ const TransferModeContainer = (props) => {
     );
 
     logEvent({
-      action: "Transfer Change/Add",
+      action: "Transfer_Add_Change",
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",
@@ -547,7 +547,7 @@ const TransferModeContainer = (props) => {
       });
 
     logEvent({
-      action: "Transfer Change/Add",
+      action: "Transfer_Add_Change",
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",

@@ -115,7 +115,7 @@ const MidSection = (props) => {
       });
 
     logEvent({
-      action: "Transfer Add/Change",
+      action: "Transfer_Add_Change",
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",

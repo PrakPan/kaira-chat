@@ -53,6 +53,8 @@ const Activity = (props) => {
       setShowDrawer={setShowDrawer}
       _handleOpen={_handleOpen}
       handleCloseDrawer={handleCloseDrawer}
+      page={props?.page}
+      city={props?.city}
     />
   ));
 
@@ -69,7 +71,9 @@ const Activity = (props) => {
         <Button
           onClick={() => {
             props?.data
-              ? openTailoredModal(router, props.data.id, props.data.name)
+              ? props.handlePlanButtonClick(
+                  `Things to do in ${props.data.name}`
+                )
               : null;
           }}
         >

@@ -13,7 +13,7 @@ const LocationsBlog = (props) => {
 
   const _handleRedirect = (path, location) => {
     logEvent({
-      action: "View Destination",
+      action: "View_Destination",
       params: {
         page: props?.page ? props.page : "",
         event_category: "Click",

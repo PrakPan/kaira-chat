@@ -69,8 +69,10 @@ const HowItWorksSlideshow = (props) => {
   };
 
   const handlePlanButtonClick = () => {
+    openTailoredModal(router, props.page_id, props.destination);
+
     logEvent({
-      action: "Plan Itinerary",
+      action: "Plan_Itinerary",
       params: {
         page: props.page ? props.page : "Home Page",
         event_category: "Button Click",
@@ -78,7 +80,6 @@ const HowItWorksSlideshow = (props) => {
         event_action: "How it works?",
       },
     });
-    openTailoredModal(router, props.page_id, props.destination);
   };
 
   const slidesmobile = [

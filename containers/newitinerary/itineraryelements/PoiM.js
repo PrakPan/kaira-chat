@@ -389,8 +389,11 @@ const ItineraryPoiElementM = (props) => {
   };
 
   const handleEditActivity = (label, isEdit) => {
+    if (isEdit) Poi_activities(props.activity);
+    else setShow(true);
+
     logEvent({
-      action: "Change/View Activity",
+      action: "View_Activity",
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",
@@ -398,8 +401,6 @@ const ItineraryPoiElementM = (props) => {
         event_action: "Day by Day Itinerary",
       },
     });
-    if (isEdit) Poi_activities(props.activity);
-    else setShow(true);
   };
 
   return (

@@ -6,24 +6,21 @@ import MobileBanner from "../city/Banner/Mobile";
 import media from "../../components/media";
 import validateTextSize from "../../services/textSizeValidator";
 import styled from "styled-components";
-import WhatsappFloating from "../../components/WhatsappFloating";
 import Overview from "../travelplanner/Overview";
 import openTailoredModal from "../../services/openTailoredModal";
 import Button from "../../components/ui/button/Index";
 import BannerTwo from "../travelplanner/BannerTwo";
-import OldLocations from "../../components/containers/plannerlocations/Index";
 import WhyPlanWithUs from "../../components/WhyPlanWithUs/PlanWithUsWithEnquiry";
 import Reviews from "../travelplanner/CaseStudies/Index";
 import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs";
 import SwiperLocations from "../../components/containers/SwiperLocations/Index";
 import Continentcarousel from "../../components/continentcarousel/continentcarousel";
-import PlanAsPerContinent from "../../containers/homepage/PlanAsPerContinent";
-import CountryCarousel from "./CountryCarousel";
 import AsSeenIn from "../testimonial/AsSeenIn";
 import PathNavigation from "../travelplanner/PathNavigation";
 import Experience from "../../components/containers/Experiences";
 import Locations from "../../components/containers/newplannerlocations/Index";
 import dynamic from "next/dynamic";
+import { logEvent } from "../../services/ga/Index.js";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -104,6 +101,20 @@ const Index = (props) => {
     </MapInfo>
   );
 
+  const handlePlanButtonClick = (location) => {
+    openTailoredModal(router, props.data.id, props.data.destination);
+
+    logEvent({
+      action: "Plan_Itinerary",
+      params: {
+        page: "Continent Page",
+        event_category: "Button Click",
+        event_label: "Create your free Itinerary",
+        event_action: location,
+      },
+    });
+  };
+
   return (
     <div>
       {isPageWide ? (
@@ -125,7 +136,6 @@ const Index = (props) => {
           }
         />
       )}
-      {/* <WhatsappFloating message="Hey, I need help planning my trip." /> */}
       <div>
         <HeroBanner
           image={props.data.image}
@@ -133,6 +143,7 @@ const Index = (props) => {
           // destination={props.data.destination}
           // cities={props.reccomendedCitiesData}
           title={`${props.data.destination} Trip Planner`}
+          page={"Continent Page"}
         />
         <SetWidthContainer>
           <PathNavigation path={props.data.path} />
@@ -148,13 +159,13 @@ const Index = (props) => {
                 destination={props.data.destination}
                 viewall
                 country
+                page={"Continent Page"}
+                continent={props?.data?.destination}
               ></SwiperLocations>
               <Button
                 onclick={() =>
-                  openTailoredModal(
-                    router,
-                    props.data.id,
-                    props.data.destination
+                  handlePlanButtonClick(
+                    `Top countries to visit in ${props?.data?.destination}`
                   )
                 }
                 borderWidth="1px"
@@ -186,7 +197,9 @@ const Index = (props) => {
 
           <Button
             onclick={() =>
-              openTailoredModal(router, props.data.id, props.data.destination)
+              handlePlanButtonClick(
+                `A little about ${props?.data?.destination}`
+              )
             }
             borderWidth="1px"
             fontWeight="500"
@@ -211,7 +224,10 @@ const Index = (props) => {
               >
                 Trips by our users
               </Heading>
-              <Experience experiences={userItineraries} />
+              <Experience
+                experiences={userItineraries}
+                page={"Continent Page"}
+              />
             </>
           ) : null}
 
@@ -231,7 +247,11 @@ const Index = (props) => {
                   ? "Popular locations to visit in " + props.data.destination
                   : "Popular Locations"}
               </Heading>
-              <Locations locations={hotLocations} viewall></Locations>
+              <Locations
+                locations={hotLocations}
+                page={"Continent Page"}
+                viewall
+              ></Locations>
             </>
           ) : null}
 
@@ -245,24 +265,16 @@ const Index = (props) => {
             ></BannerTwo>
           </div>
 
-          {/* <CountryCarousel
-            destination={props.data.destination}
-            slug={props.data.link}
-          /> */}
-
           {props.continetCarousel.length ? (
             <>
               <Heading>Plan your trip anywhere in the world</Heading>
               <Continentcarousel
                 data={props.continetCarousel}
+                page={"Continent Page"}
               ></Continentcarousel>
               <Button
                 onclick={() =>
-                  openTailoredModal(
-                    router,
-                    props.data.id,
-                    props.data.destination
-                  )
+                  handlePlanButtonClick("Plan your trip anywhere in the world")
                 }
                 borderWidth="1px"
                 fontWeight="500"
@@ -276,13 +288,6 @@ const Index = (props) => {
           ) : (
             <></>
           )}
-
-          {/* {props.contientTheme ? (
-            <>
-              <Heading>Plan as per continents across the world</Heading>
-              <PlanAsPerContinent data={props.contientTheme} />
-            </>
-          ) : null} */}
 
           <Heading style={{ margin: "3.5rem 0 3.5rem 0" }}>
             Why plan with us?

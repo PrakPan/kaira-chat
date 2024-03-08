@@ -83,8 +83,10 @@ const Day_I_ContainerM = (props) => {
   };
 
   const handleAddActivity = (label) => {
+    setShowAddDrawer(true);
+
     logEvent({
-      action: "Add Activity",
+      action: "Add_Activity",
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",
@@ -92,8 +94,6 @@ const Day_I_ContainerM = (props) => {
         event_action: "Day by Day Itinerary",
       },
     });
-
-    setShowAddDrawer(true);
   };
 
   let summaryIContainer = [];

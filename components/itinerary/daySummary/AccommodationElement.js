@@ -67,7 +67,7 @@ export default function AccommodationElement(props) {
     setShowDetails(true);
 
     logEvent({
-      action: "Details View",
+      action: "Details_View",
       params: {
         page: "Itinerary Page",
         event_category: "Click",
@@ -79,7 +79,7 @@ export default function AccommodationElement(props) {
 
   const handleStayButtonClick = () => {
     logEvent({
-      action: "Details View",
+      action: "Details_View",
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",

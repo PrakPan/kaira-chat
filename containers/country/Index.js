@@ -23,6 +23,7 @@ import Locations from "../../components/containers/newplannerlocations/Index";
 import dynamic from "next/dynamic";
 import Poi from "../../containers/newcityplanner/pois/Index";
 import Activity from "../../containers/newcityplanner/activities/Index";
+import { logEvent } from "../../services/ga/Index.js";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -108,6 +109,20 @@ const Index = (props) => {
     </MapInfo>
   );
 
+  const handlePlanButtonClick = (location) => {
+    openTailoredModal(router, props.data.id, props.data.name);
+
+    logEvent({
+      action: "Plan_Itinerary",
+      params: {
+        page: "Country Page",
+        event_category: "Button Click",
+        event_label: "Create your travel plan now!",
+        event_action: location,
+      },
+    });
+  };
+
   return (
     <div>
       {isPageWide ? (
@@ -137,6 +152,7 @@ const Index = (props) => {
           destination={props.data.name}
           // cities={props.reccomendedCitiesData}
           title={`${props.data.name} Trip Planner`}
+          page={"Country Page"}
         />
         <SetWidthContainer>
           <PathNavigation path={props.data.path} />
@@ -157,7 +173,12 @@ const Index = (props) => {
                   ? "Popular locations to visit in " + props.data.name
                   : "Popular Locations"}
               </Heading>
-              <Locations locations={hotLocations} viewall></Locations>
+              <Locations
+                locations={hotLocations}
+                page={"Country Page"}
+                state={props.data.name}
+                viewall
+              ></Locations>
             </>
           ) : null}
 
@@ -178,7 +199,7 @@ const Index = (props) => {
           </MapGridContainer>
           <Button
             onclick={() =>
-              openTailoredModal(router, props.data.id, props.data.name)
+              handlePlanButtonClick(`A little about ${props?.data?.name}`)
             }
             borderWidth="1px"
             fontWeight="500"
@@ -203,7 +224,7 @@ const Index = (props) => {
               >
                 Trips by our users
               </Heading>
-              <Experience experiences={userItineraries} />
+              <Experience experiences={userItineraries} page={"Country Page"} />
             </>
           ) : null}
 
@@ -213,7 +234,9 @@ const Index = (props) => {
               <Activity
                 data={props.data}
                 activities={props.data.activities}
-                city={props.data.name}
+                city={props?.data?.name}
+                handlePlanButtonClick={handlePlanButtonClick}
+                page={"Country Page"}
               />
             </div>
           ) : null}
@@ -227,6 +250,8 @@ const Index = (props) => {
                 // thingsToDoPage={props.thingsToDoPage}
                 pois={props.data.pois}
                 city={props.data.name}
+                handlePlanButtonClick={handlePlanButtonClick}
+                page={"Country Page"}
               />
             </MenuItem>
           ) : null}
@@ -239,12 +264,15 @@ const Index = (props) => {
                 page_id={props.data.id}
                 destination={props.data.name}
                 viewall
-                // country={country}
+                country={props.data.name}
                 planner
+                page={"Country Page"}
               ></OldLocations>
               <Button
                 onclick={() =>
-                  openTailoredModal(router, props.data.id, props.data.name)
+                  handlePlanButtonClick(
+                    `Trending destinations across ${props.data.name}`
+                  )
                 }
                 borderWidth="1px"
                 fontWeight="500"
@@ -280,10 +308,14 @@ const Index = (props) => {
                 viewall
                 // country={country}
                 country
+                page={"Country Page"}
+                continent={props.data.continent}
               ></SwiperLocations>
               <Button
                 onclick={() =>
-                  openTailoredModal(router, props.data.id, props.data.name)
+                  handlePlanButtonClick(
+                    `Other destinations to explore in ${props.data.continent}`
+                  )
                 }
                 borderWidth="1px"
                 fontWeight="500"
@@ -301,10 +333,13 @@ const Index = (props) => {
               <Heading>Plan your trip to anywhere in the world</Heading>
               <Continentcarousel
                 data={props.continetCarousel}
+                page={"Country Page"}
               ></Continentcarousel>
               <Button
                 onclick={() =>
-                  openTailoredModal(router, props.data.id, props.data.name)
+                  handlePlanButtonClick(
+                    `Plan your trip to anywhere in the world`
+                  )
                 }
                 borderWidth="1px"
                 fontWeight="500"

@@ -94,7 +94,7 @@ const ItineraryElement = (props) => {
 
   const handleStayButtonClick = () => {
     logEvent({
-      action: "Details View",
+      action: "Details_View",
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",
@@ -109,7 +109,7 @@ const ItineraryElement = (props) => {
             ? "Stay Added"
             : "Add Stay"
         }`,
-        event_value: heading,
+        event_value: props?.heading,
         event_action: "Day by Day Itinerary",
       },
     });

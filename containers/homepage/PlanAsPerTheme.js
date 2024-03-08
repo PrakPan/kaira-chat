@@ -172,7 +172,7 @@ const PlanAsPerTheme = (props) => {
 
   const _handleTripRedirect = (banner_heading) => {
     logEvent({
-      action: "View Destination",
+      action: "View_Destination",
       params: {
         page: props?.page ? props.page : "",
         event_category: "Click",
@@ -184,8 +184,10 @@ const PlanAsPerTheme = (props) => {
   };
 
   const handleItineraryButton = () => {
+    openTailoredModal(router, props.page_id, props.destination);
+
     logEvent({
-      action: "Plan Itinerary",
+      action: "Plan_Itinerary",
       params: {
         page: props?.page ? props.page : "",
         event_category: "Button Click",
@@ -193,7 +195,6 @@ const PlanAsPerTheme = (props) => {
         event_action: "Plan trip as per mood",
       },
     });
-    openTailoredModal(router, props.page_id, props.destination);
   };
 
   const order = ["e", "b", "c", "a"];

@@ -5,39 +5,39 @@ import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsD
 import { useState } from "react";
 
 const LeftSlideIn = keyframes`
-  from { 
+  from {
     transform: translateX(0%);
-  } 
-  to { 
+  }
+  to {
     transform: translateX(25px);
-  } 
+  }
 `;
 
 const LeftSlideOut = keyframes`
-  from { 
+  from {
     transform: translateX(25px);
   }
-  to { 
+  to {
     transform: translateX(0%);
-  } 
+  }
 `;
 
 const RightSlideIn = keyframes`
-  from { 
+  from {
     transform: translateX(0px);
-  } 
-  to { 
+  }
+  to {
     transform: translateX(-25px);
-  } 
+  }
 `;
 
 const RightSlideOut = keyframes`
-  from { 
+  from {
     transform: translateX(-25px);
   }
-  to { 
+  to {
     transform: translateX(0px);
-  } 
+  }
 `;
 
 const Container = styled.div`
@@ -115,12 +115,22 @@ export default function PoiCard(props) {
     if (e) e.stopPropagation(e);
     setShow(false);
   };
+
+  const handlePOIClick = (e) => {
+    setShow(true);
+    logEvent({
+      action: "Details_View",
+      params: {
+        page: props?.page ? props.page : "",
+        event_category: "Click",
+        event_value: props?.data?.name,
+        event_action: `Things to do in ${props?.city}`,
+      },
+    });
+  };
+
   return (
-    <Container
-      onClick={() => {
-        setShow(true);
-      }}
-    >
+    <Container onClick={handlePOIClick}>
       <ImageContainer>
         <ImageLoader
           url={props.data.image}

@@ -145,7 +145,7 @@ const Homepage = (props) => {
 
   const handleButtonClick = (location) => {
     logEvent({
-      action: "View Destination",
+      action: "View_Destination",
       params: {
         page: "Home Page",
         event_category: "Button Click",

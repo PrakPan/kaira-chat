@@ -70,8 +70,10 @@ const Experiences = (props) => {
   const [ImageLoaded, setImageLoaded] = useState(false);
 
   const _handleRedirect = (e) => {
+    e.preventDefault();
+
     logEvent({
-      action: "View Destination",
+      action: "View_Destination",
       params: {
         page: props?.page ? props.page : "",
         event_category: "Click",
@@ -80,7 +82,6 @@ const Experiences = (props) => {
         event_action: `Plan your trip anywhere in the world`,
       },
     });
-    e.preventDefault();
     if (props.path) window.location.href = "/" + props.path;
   };
 

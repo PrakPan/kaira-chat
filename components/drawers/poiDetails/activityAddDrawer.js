@@ -129,7 +129,7 @@ const ActivityAddDrawer = (props) => {
       });
 
     logEvent({
-      action: "Activity Add",
+      action: "Add_Activity",
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",

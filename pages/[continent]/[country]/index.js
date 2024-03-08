@@ -19,7 +19,11 @@ const TravelPlanner = (props) => {
   }, []);
 
   return (
-    <Layout destination={props.Data.name} id={props.Data.id}>
+    <Layout
+      destination={props.Data.name}
+      id={props.Data.id}
+      page={"Country Page"}
+    >
       <Head>
         <title>
           {/* {props.Data.name + " | Travel Guide |  The Tarzan Way"} */}

@@ -18,7 +18,7 @@ export default function PoiElement(props) {
     setShowDrawer(true);
 
     logEvent({
-      action: "Details View",
+      action: "Details_View",
       params: {
         page: "Itinerary Page",
         event_category: "Click",

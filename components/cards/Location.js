@@ -3,6 +3,7 @@ import styled from "styled-components";
 import BackroundImageLoader from "../UpdatedBackgroundImageLoader";
 import media from "../media";
 import Button from "../ui/button/Index";
+
 const Container = styled.div`
   width: 100%;
   margin-bottom: 1rem;
@@ -33,6 +34,7 @@ const Container = styled.div`
     }
   }
 `;
+
 const TextContainer = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -46,6 +48,7 @@ const TextContainer = styled.div`
 
   transition: bottom 0.3s ease;
 `;
+
 const CtaContainer = styled.div`
 position absolute;
 color : white;
@@ -74,10 +77,10 @@ const Name = styled.p`
   @media screen and (min-width: 768px) {
   }
 `;
+
 const Experiences = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [loading , setLoading] = useState(false)
-  /*Require props: imgWidth*/
 
   return (
     <Container onClick={props.onclick ? props.onclick : null}>

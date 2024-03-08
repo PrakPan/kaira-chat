@@ -38,7 +38,7 @@ const TransferElements = ({
 
   const handleTransferButtonClick = () => {
     logEvent({
-      action: "Details View",
+      action: "Details_View",
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",

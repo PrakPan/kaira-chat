@@ -477,6 +477,8 @@ const SimpleTabsV2 = (props) => {
   `;
 
   const handleLoginButton = () => {
+    setShowLoginModal(true);
+
     logEvent({
       action: "Login",
       params: {
@@ -486,13 +488,13 @@ const SimpleTabsV2 = (props) => {
         event_action: "Navigation Bar",
       },
     });
-
-    setShowLoginModal(true);
   };
 
   const handleButtonClick = (label) => {
+    scrollToElement("Stays");
+
     logEvent({
-      action: "Button Click",
+      action: "Button_Click",
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",
@@ -500,12 +502,13 @@ const SimpleTabsV2 = (props) => {
         event_action: "Navigation Bar",
       },
     });
-    scrollToElement("Stays");
   };
 
   const handleFooterBannerMobile = (lebel) => {
+    setShowFooterBannerMobile(!showFooterBannerMobile);
+
     logEvent({
-      action: "Button Click",
+      action: "Button_Click",
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",
@@ -513,13 +516,13 @@ const SimpleTabsV2 = (props) => {
         event_action: "Navigation Bar",
       },
     });
-
-    setShowFooterBannerMobile(!showFooterBannerMobile);
   };
 
   const handleGetInTouch = () => {
+    _GetInTouch();
+
     logEvent({
-      action: "Button Click",
+      action: "Button_Click",
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",
@@ -527,7 +530,6 @@ const SimpleTabsV2 = (props) => {
         event_action: "Navigation Bar",
       },
     });
-    _GetInTouch();
   };
 
   return (

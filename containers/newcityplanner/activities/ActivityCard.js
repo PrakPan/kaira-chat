@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import ImageLoader from "../../../components/ImageLoader";
 import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
-import { PiCurrencyInrBold } from "react-icons/pi";
 import { getIndianPrice } from "../../../services/getIndianPrice";
+import { logEvent } from "../../../services/ga/Index";
 
 export default function ActivityCard(props) {
   const [show, setShow] = useState(false);
@@ -27,9 +27,22 @@ export default function ActivityCard(props) {
     setShow(false);
   };
 
+  const handleActivityClick = (e) => {
+    setShow(true);
+    logEvent({
+      action: "Details_View",
+      params: {
+        page: props?.page ? props.page : "",
+        event_category: "Click",
+        event_value: props?.data?.name,
+        event_action: `Things to do in ${props?.city}`,
+      },
+    });
+  };
+
   return (
     <div
-      onClick={() => setShow(true)}
+      onClick={handleActivityClick}
       className="cursor-pointer p-2 border-2 rounded-xl gap-3 flex flex-col mx-1 hover:border-yellow-300"
     >
       <div className="">
@@ -63,8 +76,8 @@ export default function ActivityCard(props) {
       {props?.data?.cost ? (
         <div className="flex flex-col">
           <div className="flex flex-row items-center text-[20px] font-bold">
-            {/* <PiCurrencyInrBold className="inline" /> */}
-            ₹{getIndianPrice(props.data.cost)}
+            {/* <PiCurrencyInrBold className="inline" /> */}₹
+            {getIndianPrice(props.data.cost)}
             <span className="text-[12px] font-[400] ml-2">per person*</span>
           </div>
           <div className="text-sm font-light text-gray-600">

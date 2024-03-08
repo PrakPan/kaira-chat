@@ -70,7 +70,7 @@ const ExperienceCard = (props) => {
 
   const _handleRedirect = () => {
     logEvent({
-      action: "View Itinerary",
+      action: "View_Itinerary",
       params: {
         page: props?.page ? props.page : "",
         event_category: "Click",
@@ -81,7 +81,7 @@ const ExperienceCard = (props) => {
             props.page === "Thank you Page" ||
             props.page === "Dashboard Page")
             ? "My Trips"
-            : "Trips",
+            : "Trips by our users",
       },
     });
     if (props.PW) router.push("/itinerary/physicswallah/" + props.id);

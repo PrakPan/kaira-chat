@@ -39,7 +39,7 @@ export default function AllDestinations({ allDestinations, ThemeData }) {
 
   const handlePlanButton = async (slug, continent) => {
     logEvent({
-      action: "View Destination",
+      action: "View_Destination",
       params: {
         page: "Destinations Page",
         event_category: "Button Click",

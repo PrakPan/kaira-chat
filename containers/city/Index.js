@@ -21,7 +21,6 @@ const Experience = (props) => {
     setEscapeState(true);
   }, []);
 
-  
   const closeGalleryHandler = () => {
     let images = [];
     for (var i = 0; i < props.cityData.images.length; i++) {
@@ -70,6 +69,7 @@ const Experience = (props) => {
             destination={props.cityData.name}
             cities={props.reccomendedCitiesData}
             title={`${props.cityData.name} Trip Planner`}
+            page={"City Page"}
           />
 
           <NewMenu

@@ -6,7 +6,6 @@ import validateTextSize from "../../../services/textSizeValidator";
 import WeatherWidget from "../../../components/WeatherWidget/WeatherWidget";
 import openTailoredModal from "../../../services/openTailoredModal";
 import { useRouter } from "next/router";
-import Drawer from "../../../components/ui/Drawer";
 import SwiperCarousel from "../../../components/SwiperCarousel";
 import dynamic from "next/dynamic";
 const MapBox = dynamic(() => import("../../../components/Map.js"), {
@@ -20,6 +19,7 @@ const GridContainer = styled.div`
     gap: 2.5rem;
   }
 `;
+
 const Items = styled.div`
   display: grid;
   gap: 22px;
@@ -28,12 +28,14 @@ const Items = styled.div`
     grid-template-columns: 1fr 1fr;
   }
 `;
+
 const TextBold = styled.p`
   line-height: 24px;
   font-weight: 600;
   margin: 0;
   color: rgb(1, 32, 43);
 `;
+
 const Button = styled.button`
   background: white;
   color: #01202b;
@@ -48,11 +50,13 @@ const Button = styled.button`
     background: black;
   }
 `;
+
 const MapInfo = styled.div`
   b {
     font-weight: 600;
   }
 `;
+
 const WeatherContainer = styled.div`
   border: 1px solid #eceaea;
   border-radius: 10px;
@@ -107,6 +111,8 @@ const Poi = (props) => {
       setShowDrawer={setShowDrawer}
       _handleOpen={_handleOpen}
       handleCloseDrawer={handleCloseDrawer}
+      page={props?.page}
+      city={props?.city}
     />
   ));
 
@@ -132,7 +138,7 @@ const Poi = (props) => {
             more < props.pois.length
               ? setMore(more + 4)
               : props.data
-              ? openTailoredModal(router, props.data.id, props.data.name)
+              ? props.handlePlanButtonClick(`Places to visit in ${props.city}`)
               : console.log("");
           }}
         >

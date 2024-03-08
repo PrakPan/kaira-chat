@@ -45,7 +45,7 @@ export default function ActivityElement(props) {
   const handleActivity = (e) => {
     setShowDrawer(true);
     logEvent({
-      action: "Details View",
+      action: "Details_View",
       params: {
         page: "Itinerary Page",
         event_category: "Click",
@@ -57,7 +57,7 @@ export default function ActivityElement(props) {
 
   const handleActivityButtonClick = () => {
     logEvent({
-      action: "Details View",
+      action: "Details_View",
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",

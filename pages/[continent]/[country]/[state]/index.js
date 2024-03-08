@@ -20,7 +20,7 @@ const TravelPlanner = (props) => {
   }, []);
 
   return (
-    <Layout page_id={props.Data.id} destination={props.Data.destination}>
+    <Layout page_id={props.Data.id} destination={props.Data.destination} page={"State Page"}>
       <Head>
         <title>
           Plan Your Trip to {props.Data.destination} | Trip Planner & Itinerary

@@ -213,8 +213,10 @@ const Navbar = (props) => {
   };
 
   const handleCreateTripButton = () => {
+    openTailoredModal(router, props.id, props.destination);
+
     logEvent({
-      action: "Plan Itinerary",
+      action: "Plan_Itinerary",
       params: {
         page: props.page ? props.page : "Home Page",
         event_category: "Button Click",
@@ -222,7 +224,6 @@ const Navbar = (props) => {
         event_action: "Navbar",
       },
     });
-    openTailoredModal(router, props.id, props.destination);
   };
 
   const [toggleSearch, setToggleSearch] = useState(false);

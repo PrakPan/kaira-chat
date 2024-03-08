@@ -104,8 +104,10 @@ const UserDashboard = (props) => {
   };
 
   const handleButtonClick = () => {
+    openTailoredModal(router);
+
     logEvent({
-      action: "Plan Itinerary",
+      action: "Plan_Itinerary",
       params: {
         page: "Dashboard Page",
         event_category: "Button Click",
@@ -113,7 +115,6 @@ const UserDashboard = (props) => {
         event_action: "My Trips",
       },
     });
-    openTailoredModal(router);
   };
 
   return (

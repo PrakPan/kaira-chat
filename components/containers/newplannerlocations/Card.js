@@ -1,11 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 import media from "../../media";
-import { useState } from "react";
-// import ImageLoader from "../../UpdatedBackgroundImageLoader";
 import ImageLoader from "../../ImageLoader";
 import Link from "next/link";
-
+import { logEvent } from "../../../services/ga/Index";
 
 const Container = styled.div`
   width: 100%;
@@ -34,7 +32,6 @@ const Name = styled.p`
   }
 `;
 
-
 const Subtext = styled.p`
   font-weight: 400;
   font-size: 12px;
@@ -52,11 +49,26 @@ const Experiences = (props) => {
       else filters_to_show = filters_to_show + props.filters[i] + ", ";
     }
   } catch {}
+
+  const handleImageClick = (e) => {
+    logEvent({
+      action: "View_Destination",
+      params: {
+        page: props?.page ? props.page : "",
+        event_category: "Click",
+        event_label: "View Destination",
+        event_value: props?.location ? props.location : "",
+        event_action: `Top locations across ${props?.state && props.state}`,
+      },
+    });
+  };
+
   return (
     <Link
       className="hover-pointer"
       href={"/" + props.path}
       style={{ textDecoration: "none", color: "black", cursor: "pointer" }}
+      onClick={handleImageClick}
     >
       <div>
         <ImageLoader
@@ -67,10 +79,9 @@ const Experiences = (props) => {
           borderRadius="10px"
           dimensionsMobile={{ width: 300, height: 300 }}
           // onload={() => setImageLoaded(true)}
-          style={{cursor: "pointer" }}
+          style={{ cursor: "pointer" }}
           filter="brightness(0.80)"
-        >
-        </ImageLoader>
+        ></ImageLoader>
       </div>
       <div style={{ padding: "0.5rem 0" }} className="hover-pointer">
         <>

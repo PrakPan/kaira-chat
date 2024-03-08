@@ -9,5 +9,5 @@ export const callback_event = ({ action, callback }) => {
 };
 
 export const logEvent = ({ action, params }) => {
-  event({ action, params });
+  window.gtag("event", action, params);
 };

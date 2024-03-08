@@ -133,7 +133,7 @@ const TransferEditDrawer = (props) => {
       });
 
     logEvent({
-      action: "Transfer Add/Change",
+      action: "Transfer_Add_Change",
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",
@@ -516,7 +516,7 @@ const MultiModeContainer = ({ transferIndex, transfer, handleSelect }) => {
   return (
     <div className="w-full flex flex-col gap-0">
       {transfer.modes.map((mode, index) => (
-        <div className="flex flex-col gap-0 w-full">
+        <div key={index} className="flex flex-col gap-0 w-full">
           <div className="flex flex-row items-center justify-between">
             <div className={`flex flex-row gap-3 items-center justify-start`}>
               <div className="w-[50px] flex items-center justify-center">

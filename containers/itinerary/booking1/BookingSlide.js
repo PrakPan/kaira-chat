@@ -380,6 +380,8 @@ const Details = (props) => {
   }
 
   const handleLoginButton = () => {
+    props.setShowLoginModal(true);
+
     logEvent({
       action: "Login",
       params: {
@@ -389,13 +391,13 @@ const Details = (props) => {
         event_action: "Booking Slide",
       },
     });
-
-    props.setShowLoginModal(true);
   };
 
   const handleGetInTouch = () => {
+    props._GetInTouch()();
+
     logEvent({
-      action: "Button Click",
+      action: "Button_Click",
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",
@@ -403,12 +405,13 @@ const Details = (props) => {
         event_action: "Booking Slide",
       },
     });
-    props._GetInTouch()();
   };
 
   const handleViewBooking = (label) => {
+    scrollToElement("Stays");
+
     logEvent({
-      action: "Button Click",
+      action: "Button_Click",
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",
@@ -416,12 +419,17 @@ const Details = (props) => {
         event_action: "Booking Slide",
       },
     });
-    scrollToElement("Stays");
   };
 
   const handlePayNow = (label) => {
+    if (label === "_saleCreateHandler") {
+      _saleCreateHandler(props.id);
+    } else {
+      setShowVerification(true);
+    }
+
     logEvent({
-      action: "Button Click",
+      action: "Button_Click",
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",
@@ -429,17 +437,13 @@ const Details = (props) => {
         event_action: "Booking Slide",
       },
     });
-
-    if (label === "_saleCreateHandler") {
-      _saleCreateHandler(props.id);
-    } else {
-      setShowVerification(true);
-    }
   };
 
   const handleTravellersDetails = () => {
+    setShowRegistartion(true);
+
     logEvent({
-      action: "Button Click",
+      action: "Button_Click",
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",
@@ -447,13 +451,11 @@ const Details = (props) => {
         event_action: "Booking Slide",
       },
     });
-
-    setShowRegistartion(true);
   };
 
   const handleWhatsappChat = () => {
     logEvent({
-      action: "Button Click",
+      action: "Button_Click",
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",
@@ -467,7 +469,7 @@ const Details = (props) => {
 
   const handleTermsConditions = () => {
     logEvent({
-      action: "Button Click",
+      action: "Button_Click",
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",

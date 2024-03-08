@@ -168,8 +168,10 @@ const HotelBookingContainer = ({
   }
 
   const handleViewDetails = (value) => {
+    handleClick(index, booking.accommodation, booking);
+
     logEvent({
-      action: "Hotel Details",
+      action: "Hotel_Details",
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",
@@ -178,15 +180,15 @@ const HotelBookingContainer = ({
         event_action: "Stays",
       },
     });
-
-    handleClick(index, booking.accommodation, booking);
   };
 
   const handleChageHotel = (e, label, value) => {
     e.stopPropagation();
+    if (token) handleClickAc(index, booking, city_id);
+    else setShowLoginModal(true);
 
     logEvent({
-      action: "Hotel Add/Change",
+      action: "Hotel_Add_Change",
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",
@@ -195,14 +197,13 @@ const HotelBookingContainer = ({
         event_action: "Stays",
       },
     });
-
-    if (token) handleClickAc(index, booking, city_id);
-    else setShowLoginModal(true);
   };
 
   const handleAddStay = (label, value) => {
+    handleClickAc(index, cityData, city_id);
+
     logEvent({
-      action: "Hotel Add/Change",
+      action: "Hotel_Add_Change",
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",
@@ -211,15 +212,13 @@ const HotelBookingContainer = ({
         event_action: "Stays",
       },
     });
-
-    handleClickAc(index, cityData, city_id);
   };
 
   const handleViewHotel = () => {
     openDetails();
 
     logEvent({
-      action: "Details View",
+      action: "Details_View",
       params: {
         page: "Itinerary Page",
         event_category: "Click",

@@ -100,8 +100,14 @@ const FullImgContent = (props) => {
   const router = useRouter();
 
   const handlePlanButton = () => {
+    if (isPageWide) {
+      setShowTailoredModal(true);
+    } else {
+      openTailoredModal(router, props.page_id, props.destination);
+    }
+
     logEvent({
-      action: "Plan Itinerary",
+      action: "Plan_Itinerary",
       params: {
         page: props.page ? props.page : "",
         event_category: "Button Click",
@@ -109,11 +115,6 @@ const FullImgContent = (props) => {
         event_action: "Banner",
       },
     });
-    if (isPageWide) {
-      setShowTailoredModal(true);
-    } else {
-      openTailoredModal(router, props.page_id, props.destination);
-    }
   };
 
   return (

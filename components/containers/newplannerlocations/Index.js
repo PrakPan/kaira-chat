@@ -29,7 +29,7 @@ const LocationsBlog = (props) => {
   const router = useRouter();
   const [cardsToShowJSX, setCardsToShowJSX] = useState([]);
   const [cardsToShowJSXmobile, setCardsToShowJSXmobile] = useState([]);
-  
+
   useEffect(() => {
     let cardsarr = [];
     let MobileCardsArr = [];
@@ -63,9 +63,8 @@ const LocationsBlog = (props) => {
                   img={props.locations[i].image}
                   path={props.locations[i].path}
                   filters={props.locations[i].most_popular_for}
-                  // _handleCityRedirect={_handleCityRedirect}
-
-                  // onclick={! props.planner ? () => _handlePlanning(props.locations[i].id, props.locations[i].name, props.locations[i].state.name) : () => _handlePlannerPage(props.locations[i].id, props.locations[i].slug, props.locations[i].state.name)}
+                  page={props?.page}
+                  state={props?.state}
                 ></Card>
               </>
             );
@@ -90,7 +89,7 @@ const LocationsBlog = (props) => {
   return (
     <>
       <div className="hidden-mobile new-planner-location">
-        {/* <Container >  
+        {/* <Container >
                {cardsToShowJSX}
       </Container> */}
         <SwiperCarousel
