@@ -1,6 +1,6 @@
 module.exports = {
   distDir: process.env.BUILD_DIR || ".next",
-  // output: "export",
+  output: "export",
   // async redirects() {
   //   return [
   //     {

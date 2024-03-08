@@ -77,7 +77,7 @@ export default class MyDocument extends Document {
             }}
           ></script>
 
-          {process.env.NEXT_PUBLIC_NODE_ENV === "production" &&
+          {process.env.NODE_ENV === "production" &&
             !CONTENT_SERVER_HOST.includes("dev") && (
               <script
                 async
@@ -88,7 +88,7 @@ export default class MyDocument extends Document {
               />
             )}
 
-          {process.env.NEXT_PUBLIC_NODE_ENV === "production" &&
+          {process.env.NODE_ENV === "production" &&
             !CONTENT_SERVER_HOST.includes("dev") && (
               <script
                 dangerouslySetInnerHTML={{
