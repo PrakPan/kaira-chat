@@ -223,8 +223,8 @@ const Homepage = (props) => {
       <HeroBanner
         image={
           isPageWide
-            ? "media/website/banners/holi-banner-xlarge.png"
-            : "media/website/banners/holi-banner.png"
+            ? "media/website/homepage-herobanner.jpg"
+            : "media/website/homepage-banner-mobile.png"
         }
         destinationType={"city-planner"}
         title={

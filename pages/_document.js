@@ -38,7 +38,7 @@ export default class MyDocument extends Document {
           ></meta>
           <script
             async
-            src="https://www.googletagmanager.com/gtag/js?id=G-EV1KHKN8VV"
+            src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ANALTICS_ID}`}
           ></script>
           <script
             dangerouslySetInnerHTML={{
@@ -46,7 +46,7 @@ export default class MyDocument extends Document {
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-EV1KHKN8VV');
+  gtag('config', '${GOOGLE_ANALTICS_ID}');
   `,
             }}
           />
