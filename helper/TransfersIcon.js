@@ -6,24 +6,80 @@ import { MdTransferWithinAStation } from "react-icons/md";
 import Image from "next/image";
 import { useState } from "react";
 
-export default function TransfersIcon({ TransportMode, Instyle, classname }) {
+export default function TransfersIcon({
+  TransportMode,
+  Instyle,
+  classname,
+  Multimode,
+}) {
   switch (TransportMode) {
     case "Flight":
-      return <MdOutlineFlightTakeoff style={Instyle} className={classname} />;
+      return (
+        <FlightIcon
+          Instyle={Instyle}
+          classname={classname}
+          Multimode={Multimode}
+        />
+      );
     case "Taxi":
-      return <TaxiIcon Instyle={Instyle} classname={classname} />;
+      return (
+        <TaxiIcon
+          Instyle={Instyle}
+          classname={classname}
+          Multimode={Multimode}
+        />
+      );
     case "Car":
       return <IoCar style={Instyle} className={classname} />;
     case "Train":
-      return <TrainIcon Instyle={Instyle} classname={classname} />;
+      return (
+        <TrainIcon
+          Instyle={Instyle}
+          classname={classname}
+          Multimode={Multimode}
+        />
+      );
     case "Ferry":
-      return <FerryIcon Instyle={Instyle} classname={classname} />;
+      return (
+        <FerryIcon
+          Instyle={Instyle}
+          classname={classname}
+          Multimode={Multimode}
+        />
+      );
     case "Bus":
-      return <BusIcon Instyle={Instyle} classname={classname} />;
+      return (
+        <BusIcon
+          Instyle={Instyle}
+          classname={classname}
+          Multimode={Multimode}
+        />
+      );
     default:
       return <MdTransferWithinAStation style={Instyle} className={classname} />;
   }
 }
+
+const FlightIcon = ({ Instyle, classname, Multimode }) => {
+  const [error, setError] = useState(false);
+  if (error) {
+    return <MdOutlineFlightTakeoff style={Instyle} />;
+  }
+  return (
+    <Image
+      src={`${
+        Multimode
+          ? "https://images.thetarzanway.com/media/icons/transfers/multi-mode/Vector.png"
+          : "https://images.thetarzanway.com/media/icons/transfers/flight.png"
+      } `}
+      width={classname.width}
+      height={classname.height}
+      alt="icon"
+      onError={() => setError(true)}
+      className=""
+    />
+  );
+};
 
 const TaxiIcon = ({ Instyle, classname }) => {
   const [error, setError] = useState(false);
@@ -32,7 +88,7 @@ const TaxiIcon = ({ Instyle, classname }) => {
   }
   return (
     <Image
-      src="/assets/icons/transfers/car.svg"
+      src="https://images.thetarzanway.com/media/icons/transfers/sedan-car.png"
       width={classname.width}
       height={classname.height}
       alt="icon"
@@ -49,8 +105,7 @@ const TrainIcon = ({ Instyle, classname }) => {
   }
   return (
     <Image
-    //   src="https://d31aoa0ehgvjdi.cloudfront.net/media/icons/transfers/train.svg"
-      src="/assets/icons/transfers/train.svg"
+      src="https://images.thetarzanway.com/media/icons/transfers/train.png"
       width={classname.width}
       height={classname.height}
       alt="icon"
@@ -83,7 +138,7 @@ const BusIcon = ({ Instyle, classname }) => {
   }
   return (
     <Image
-      src="/assets/icons/transfers/bus.svg"
+      src="https://images.thetarzanway.com/media/icons/transfers/bus.png"
       width={classname.width}
       height={classname.height}
       alt="icon"
