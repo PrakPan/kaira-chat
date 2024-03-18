@@ -264,8 +264,10 @@ const TransferEditDrawer = (props) => {
         ) : (
           <div className="w-full flex flex-col items-center gap-3">
             <div className="w-full flex justify-start">
-              {alternateRoutes.routes.length} ways to travel from {origin} to{" "}
-              {destination}
+              {transfers.length < 2
+                ? `${transfers.length} way`
+                : `${transfers.length} ways`}{" "}
+              to travel from {origin} to {destination}
             </div>
 
             <div className="w-full flex flex-col items-center gap-3">
@@ -383,9 +385,7 @@ const RouteContainer = (props) => {
             <div className="flex flex-row items-center justify-between">
               <div className="flex flex-col items-start gap-2">
                 <div className="text-lg font-[500] leading-3">
-                  {transfer?.legs[0]?.carrier
-                    ? transfer?.legs[0]?.carrier
-                    : transfer.modes[0]}
+                  {transfer.modes[0]}
                 </div>
                 <div className="text-sm text-gray-400">
                   {transfer?.legs[0]?.carrier &&
@@ -583,7 +583,7 @@ const MobileRouteContainer = (props) => {
         <div className="flex flex-col gap-2 w-full">
           <div className="flex flex-row items-center gap-2">
             <div
-              className={`w-[50px] h-[50px] bg-gray-100 rounded-xl flex items-center justify-center`}
+              className={`w-[50px] h-[50px] px-2 bg-gray-100 rounded-xl flex items-center justify-center`}
             >
               <TransfersIcon
                 TransportMode={transfer.modes[0]}
@@ -596,9 +596,7 @@ const MobileRouteContainer = (props) => {
             </div>
             <div className="flex flex-col items-start gap-2">
               <div className="text-[16px] font-[600] leading-3">
-                {transfer?.legs[0]?.carrier
-                  ? transfer?.legs[0]?.carrier
-                  : transfer.modes[0]}
+                {transfer.modes[0]}
               </div>
               <div className="text-sm text-gray-400">
                 {transfer?.legs[0]?.carrier && `${transfer.legs[0].carrier} | `}
@@ -668,7 +666,7 @@ const MobileMultiRoute = (props) => {
     <div className="flex flex-col gap-2 w-full">
       <div className="flex flex-row items-center gap-2">
         <div
-          className={`w-[50px] h-[50px] bg-gray-100 rounded-xl flex items-center justify-center`}
+          className={`w-[50px] h-[50px] px-2 bg-gray-100 rounded-xl flex items-center justify-center`}
         >
           <TransfersIcon
             TransportMode={transfer.modes[0]}
@@ -809,9 +807,7 @@ const MultiModeContainer = ({ transferIndex, transfer, handleSelect }) => {
             <div className="w-full flex flex-col gap-2 items-center justify-center">
               <div className="w-full flex flex-col items-start justify-start gap-0">
                 <div className="text-[16px] md:text-lg lg:text-lg font-medium leading-3">
-                  {transfer?.legs[index]?.carrier
-                    ? transfer?.legs[index]?.carrier
-                    : transfer.modes[index]}
+                  {transfer.modes[index]}
                 </div>
                 <div className="text-sm text-gray-400">
                   {transfer?.legs[index]?.carrier &&
@@ -912,6 +908,7 @@ const MobileMultiModeContainer = ({
                     color: "black",
                   }}
                   classname={{ width: 40, height: 40 }}
+                  Multimode
                 />
               </div>
               <div className="w-[2px] h-3 rounded-full bg-teal-500"></div>
@@ -921,9 +918,7 @@ const MobileMultiModeContainer = ({
             <div className="w-full flex flex-col gap-2 items-center justify-center">
               <div className="w-full flex flex-col items-start justify-start gap-0">
                 <div className="text-[16px] md:text-lg lg:text-lg font-medium leading-3">
-                  {transfer?.legs[index]?.carrier
-                    ? transfer?.legs[index]?.carrier
-                    : transfer.modes[index]}
+                  {transfer.modes[index]}
                 </div>
                 <div className="text-sm text-gray-400">
                   {transfer?.legs[index]?.carrier &&
