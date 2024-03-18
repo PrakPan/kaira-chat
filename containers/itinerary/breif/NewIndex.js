@@ -8,6 +8,7 @@ import Route from "../../newitinerary/breif/route/Index";
 import dynamic from "next/dynamic";
 import Drawer from "../../../components/drawers/cityDetails/CityDetailsDrawer";
 import SkeletonCard from "../../../components/ui/SkeletonCard";
+import RouteEditSection from "../../newitinerary/breif/route/RouteEditSection.js";
 const LeafMap = dynamic(() => import("../../../components/mapbox.js"), {
   ssr: false,
 });
@@ -56,6 +57,7 @@ const Details = (props) => {
   const [showDrawerData, setShowDrawerData] = useState(false);
   const [currentPopup, setCurrentPopup] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [edit, setEdit] = useState(false);
 
   const router = useRouter();
 
@@ -211,10 +213,44 @@ const Details = (props) => {
               getPaymentHandler={props.getPaymentHandler}
               setShowLoginModal={props.setShowLoginModal}
               _GetInTouch={props._GetInTouch}
+              setEdit={setEdit}
             />
           </div>
         </RouteComponent>
       </DetailsContainer>
+
+      {edit && (
+        <RouteEditSection setEdit={setEdit} routes={props.routes}>
+          <div
+            className="sticky lg:w-[50vw] lg:h-[70vh] w-[88vw] h-[23rem] rounded-xl"
+            id="MapcontainerRoute"
+          >
+            <div
+              className="absolute w-[100%] h-[100%] rounded-xl"
+              style={{ overflow: "hidden" }}
+            >
+              {Locationlatlong.length >= 1 ? (
+                <>
+                  <div style={{ display: mapLoaded ? "initial" : "none" }}>
+                    <MapWithNoSSR
+                      locations={Locationlatlong}
+                      currentPopup={currentPopup}
+                      setCurrentPopup={setCurrentPopup}
+                      setShowDrawer={setShowDrawer}
+                      setShowDrawerData={setShowDrawerData}
+                    />
+                  </div>
+                  <div>
+                    <SkeletonCard />
+                  </div>
+                </>
+              ) : (
+                <div></div>
+              )}
+            </div>
+          </div>
+        </RouteEditSection>
+      )}
 
       <Drawer
         show={showDrawer}

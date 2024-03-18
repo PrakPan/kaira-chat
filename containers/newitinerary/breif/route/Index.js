@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import PinSection from "./PinSection";
 import MidSection from "./MidSection";
 import { ITINERARY_VERSION } from "../../../../services/constants";
-import RouteEditSection from "./RouteEditSection.js";
 
 const Container = styled.div`
   @media screen and (min-width: 768px) {
@@ -29,8 +28,6 @@ const Route = (props) => {
   };
   let locationsArr = [];
   const [order, setOrder] = useState(initialorder);
-  const [edit, setEdit] = useState(false);
-  const [editDestination, setEditDestination] = useState(true);
 
   const _moveDownHandler = (index) => {
     if (index === 3) {
@@ -95,8 +92,7 @@ const Route = (props) => {
   }
 
   const handleEditRoute = () => {
-    setEdit(true);
-    console.log('here >>>>>>>>>>>>>')
+    props.setEdit(true);
   };
 
   let startingcity = null;
@@ -304,13 +300,6 @@ const Route = (props) => {
       </div>
 
       {locationsArr}
-
-      {edit && (
-        <RouteEditSection
-          editDestination={editDestination}
-          setEditDestination={setEditDestination}
-        />
-      )}
     </Container>
   );
 };
