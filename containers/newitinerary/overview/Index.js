@@ -37,14 +37,6 @@ const toTitleCase = (str) => {
 };
 
 const Overview = (props) => {
-  // useEffect(() => {}, []);
-  // var Images = [];
-
-  // useLayoutEffect(() => {
-  //   for (let i = 0; i < props.images.length; i++) {
-  //     if (props.images[i]) Images.push(props.images[i]);
-  //   }
-  // }, []);
   return (
     <Container>
       <GridContainer>

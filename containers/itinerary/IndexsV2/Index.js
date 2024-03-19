@@ -796,6 +796,9 @@ const Itinerary = (props) => {
             getAccommodationAndActivitiesHandler={
               getAccommodationAndActivitiesHandler
             }
+            group_type={group_type}
+            duration_time={duration_time}
+            travellerType={travellerType}
           ></Menu>
         </div>
       </Container>

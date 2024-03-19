@@ -220,9 +220,17 @@ const Details = (props) => {
       </DetailsContainer>
 
       {edit && (
-        <RouteEditSection setEdit={setEdit} routes={props.routes}>
+        <RouteEditSection
+          setEdit={setEdit}
+          routes={props.routes}
+          itinerary={props.itinerary}
+          plan={props.plan}
+          group_type={props.group_type}
+          duration_time={props.duration_time}
+          travellerType={props.travellerType}
+        >
           <div
-            className="sticky lg:w-[50vw] lg:h-[70vh] w-[88vw] h-[23rem] rounded-xl"
+            className="sticky lg:w-full lg:h-[50vh] rounded-xl"
             id="MapcontainerRoute"
           >
             <div
