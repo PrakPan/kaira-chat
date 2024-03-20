@@ -49,14 +49,14 @@ const Home = (props) => {
           <df-messenger-chat-bubble chat-title="Travel Experience Captain"></df-messenger-chat-bubble>
         </df-messenger>
         <style>
-          {`
-          df-messenger {
-            z-index: 999;
-            position: fixed;
-            bottom: 16px;
-            right: 16px;
-          }
-          `}
+          {{
+            "df-messenger": {
+              "z-index": 999,
+              position: "fixed",
+              bottom: "160px",
+              right: "160px",
+            },
+          }}
         </style>
       </Head>
 

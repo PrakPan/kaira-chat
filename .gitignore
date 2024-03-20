@@ -94,4 +94,8 @@ Dockerfile
 nextjs-pm2-deploy.sh
 ecosystem.config.js
 services/dump.rdb
+<<<<<<< Updated upstream
 deploy-to-s3.sh
+=======
+deploy-to-s3.sh
+>>>>>>> Stashed changes
