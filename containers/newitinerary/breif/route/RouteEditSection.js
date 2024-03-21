@@ -7,8 +7,21 @@ import { IoLocationSharp } from "react-icons/io5";
 import { BiSolidPencil } from "react-icons/bi";
 import { FaTrashAlt } from "react-icons/fa";
 import { RxCrossCircled } from "react-icons/rx";
-import { format, parseISO } from "date-fns";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import { getDate } from "../../../../helper/DateUtils";
+import { DateRange } from "react-date-range";
+import "react-date-range/dist/styles.css";
+import "react-date-range/dist/theme/default.css";
+import {
+  startOfMonth,
+  endOfMonth,
+  startOfWeek,
+  endOfWeek,
+  eachDayOfInterval,
+  format,
+  parseISO,
+  addMonths,
+} from "date-fns";
 
 const RouteEditSection = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
@@ -46,6 +59,10 @@ const RouteEditSection = (props) => {
     });
   };
 
+  const handleSaveButton = () => {
+    props.setEdit(false);
+  };
+
   return (
     <div className="fixed inset-0 flex flex-col items-center bg-white z-50">
       <Header
@@ -63,7 +80,7 @@ const RouteEditSection = (props) => {
         }
       />
       <EditPanel editDestination={editDestination} />
-      <div className="w-full md:w-[85%] lg:w-[85%] flex flex-col md:flex-row lg:flex-row items-start justify-between overflow-y-auto px-2 py-5 gap-5">
+      <div className="w-full md:w-[85%] lg:w-[85%] flex flex-col md:flex-row lg:flex-row items-start justify-between hide-scrollbar overflow-y-auto px-2 py-5 gap-5">
         {editDestination ? (
           <>
             <EditDestinations
@@ -76,7 +93,8 @@ const RouteEditSection = (props) => {
         ) : (
           <EditDates
             destinations={destinations}
-            handleAddDestinationButton={handleAddDestinationButton}
+            start_date={props?.plan ? props?.plan.start_date : null}
+            end_date={props?.plan ? props?.plan.end_date : null}
           />
         )}
       </div>
@@ -84,6 +102,7 @@ const RouteEditSection = (props) => {
         setEdit={props.setEdit}
         editDestination={editDestination}
         setEditDestination={setEditDestination}
+        handleSaveButton={handleSaveButton}
       />
     </div>
   );
@@ -180,7 +199,7 @@ export const EditDestinations = (props) => {
             startingCity={dest.startingCity}
             endingCity={dest.endingCity}
             cityData={dest.cityData}
-            pinColour={dest.cityData.color}
+            pinColour={dest?.cityData?.color}
             setDestinations={props.setDestinations}
             destinations={props.destinations}
             isNewDestination={dest.isNewDestination}
@@ -191,31 +210,110 @@ export const EditDestinations = (props) => {
   );
 };
 
-export const EditDates = (props) => {
-  const { destinations } = props;
+export const EditDates = ({ destinations, start_date, end_date }) => {
+  const isDesktop = useMediaQuery("(min-width:768px)");
+  const [startDate, setStartDate] = useState(getDate(start_date));
+  const [endDate, setEndDate] = useState(getDate(end_date));
+  const [calendarMonths, setCalenderMonths] = useState(null);
+  const [dateRanges, setDateRanges] = useState([]);
+
+  useEffect(() => {
+    const startMonth = new Date(startDate).getMonth();
+    const endMonth = new Date(endDate).getMonth();
+    setCalenderMonths(endMonth - startMonth + 1);
+  }, [startDate, endDate]);
+
+  useEffect(() => {
+    const ranges = [];
+
+    for (let i = 0; i < destinations.length; i++) {
+      if (destinations[i].startingCity) {
+        ranges.push({
+          startDate: new Date("2023-08-22"),
+          endDate: new Date("2023-08-22"),
+          key: "selection",
+          color: "#F7E700",
+        });
+      } else if (destinations[i].endingCity) {
+        ranges.push({
+          startDate: new Date("'2023-08-31'"),
+          endDate: new Date("'2023-08-31'"),
+          key: "selection",
+          color: "#F7E700",
+        });
+      } else {
+        ranges.push({
+          startDate: new Date(getDate(destinations[i].cityData.checkin_date)),
+          endDate: new Date(getDate(destinations[i].cityData.checkout_date)),
+          key: "selection",
+          color: "#D1CECE",
+        });
+      }
+    }
+
+    setDateRanges(ranges);
+  }, [destinations, startDate, endDate]);
+
+  const onDatesChange = (ranges) => {
+    console.log("date changed>>>>>>", ranges);
+  };
 
   return (
-    <div className="w-full mg:w-[50%] lg:w-[50%] flex flex-col items-center justify-center pb-5 gap-3">
-      <div className="w-full flex flex-row items-center justify-between">
-        <div className="text-[24px] font-semibold leading-6">
-          Route Date & Time
+    <div className="w-full flex flex-row relative">
+      <div className="w-[60%] flex flex-col items-center justify-center pb-5 gap-3">
+        <div className="w-full flex flex-row items-center justify-between">
+          <div className="text-[24px] font-semibold leading-6">
+            Route Date & Time
+          </div>
+        </div>
+        <div className="w-full flex flex-col">
+          {destinations.map((dest, index) => (
+            <DestinationDates
+              key={index}
+              index={index}
+              startingCity={dest.startingCity}
+              endingCity={dest.endingCity}
+              cityData={dest.cityData}
+              pinColour={dest.cityData.color}
+              destinations={destinations}
+              startDate={startDate}
+              endDate={endDate}
+            />
+          ))}
         </div>
       </div>
-      <div className="w-full flex flex-col">
-        {destinations.map((dest, index) => (
-          <DestinationDates
-            key={index}
-            index={index}
-            startingCity={dest.startingCity}
-            endingCity={dest.endingCity}
-            cityData={dest.cityData}
-            pinColour={dest.cityData.color}
-            setDestinations={props.setDestinations}
-            destinations={props.destinations}
+      {isDesktop && (
+        <div
+          style={{ pointerEvents: "none" }}
+          className="w-[40%] flex flex-col gap-3 fixed  right-[5%]"
+        >
+          <div className="text-[24px] font-semibold">Trip Dates</div>
+
+          <CustomCalendar
+            startDate={new Date(startDate)}
+            dateRanges={dateRanges}
+            calendarMonths={calendarMonths}
           />
-        ))}
-      </div>
+        </div>
+      )}
     </div>
+  );
+};
+
+const DateCalendar = ({ value, onChange, calendarMonths }) => {
+  return (
+    <DateRange
+      // rangeColors={["#D1CECE"]}
+      ranges={value}
+      date={new Date()}
+      onChange={onChange}
+      direction="vertical"
+      months={calendarMonths}
+      showMonthArrow={false}
+      showMonthAndYearPickers={false}
+      // scroll={{ enabled: true }}
+      className="flex items-center justify-center"
+    />
   );
 };
 
@@ -226,9 +324,17 @@ export const DestinationDates = (props) => {
     endingCity,
     cityData,
     pinColour,
-    setDestinations,
     destinations,
+    startDate,
+    endDate,
   } = props;
+
+  const [checkinDate, setCheckinDate] = useState(
+    getDate(cityData.checkin_date)
+  );
+  const [checkoutDate, setCheckoutDate] = useState(
+    getDate(cityData.checkout_date)
+  );
 
   return (
     <div className="w-full flex flex-col items-start">
@@ -243,7 +349,7 @@ export const DestinationDates = (props) => {
             } rounded-full`}
           ></div>
         </div>
-        <div className="text-[16px] font-semibold">Bangaluru</div>
+        <div className="text-[16px] font-semibold">{cityData.city_name}</div>
       </div>
       <div className="flex flex-row items-center gap-3">
         {!endingCity ? (
@@ -284,10 +390,14 @@ export const DestinationDates = (props) => {
                 ? "Start Date"
                 : endingCity
                 ? "End Date"
-                : "Arrive Date"}
+                : "Arrival Date"}
             </div>
             <div>
               <input
+                value={
+                  startingCity ? startDate : endingCity ? endDate : checkinDate
+                }
+                onChange={(e) => setCheckinDate(e.target.value)}
                 type="Date"
                 className="w-52 border-2 border-gray-200 rounded-lg p-2"
               />
@@ -295,9 +405,11 @@ export const DestinationDates = (props) => {
           </div>
           {!(startingCity || endingCity) && (
             <div className="flex flex-col gap-1">
-              <div>Depart Date</div>
+              <div>Departure Date</div>
               <div>
                 <input
+                  value={checkoutDate}
+                  onChange={(e) => setCheckoutDate(e.target.value)}
                   type="Date"
                   className="w-52 border-2 border-gray-200 rounded-lg p-2"
                 />
@@ -476,7 +588,8 @@ export const NewDestination = (props) => {
 };
 
 export const ActionPanel = (props) => {
-  const { setEdit, setEditDestination, editDestination } = props;
+  const { setEdit, setEditDestination, editDestination, handleSaveButton } =
+    props;
 
   return (
     <div className="w-full fixed bottom-0 bg-white py-2 md:py-3 lg:py-3 flex items-center justify-center border-t-2 shadow-lg px-2">
@@ -488,11 +601,100 @@ export const ActionPanel = (props) => {
           Cancel
         </button>
         <button
-          onClick={() => setEditDestination((prev) => !prev)}
+          onClick={
+            editDestination
+              ? () => setEditDestination((prev) => !prev)
+              : handleSaveButton
+          }
           className="bg-[#F7E700] px-5 py-2 rounded-lg border-2 border-black"
         >
           {editDestination ? "Next" : "Save"}
         </button>
+      </div>
+    </div>
+  );
+};
+
+export const CustomCalendar = ({ startDate, dateRanges, calendarMonths }) => {
+  const [months, setMonths] = useState([]);
+
+  useEffect(() => {
+    const ranges = [...dateRanges];
+    const month = [];
+    for (let i = 0; i < calendarMonths; i++) {
+      const firstDayOfMonth = startOfMonth(addMonths(startDate, i));
+      const lastDayOfMonth = endOfMonth(addMonths(startDate, i));
+      let monthDays = eachDayOfInterval({
+        start: firstDayOfMonth,
+        end: lastDayOfMonth,
+      });
+      for (let range of ranges) {
+        if (range.start >= monthDays[0])
+        monthDays = getDayColors(range, monthDays);
+        if (range.end > monthDays[monthDays.length - 1]) break;
+        else {
+          ranges.shift();
+          break;
+        }
+      }
+      month.push({ days: monthDays });
+    }
+
+    setMonths(month);
+  }, [startDate, dateRanges, calendarMonths]);
+
+  const getDayColors = (range, days) => {
+    return days.map((day) => {
+      // Check if the current day is within the range
+      if (
+        isSameDay(day, range.start) ||
+        isSameDay(day, range.end) ||
+        (day > range.start && day < range.end)
+      ) {
+        return { date: day, color: range.color }; // Return the day and its color
+      }
+      return { date: day, color: "" }; // Return an empty color for days outside the range
+    });
+  };
+
+  useEffect(() => {}, [months, dateRanges]);
+
+  return (
+    <div className="w-[50%] flex flex-col gap-3">
+      {months.map((month, i) => (
+        <Month key={i} days={month.days} ranges={dateRanges} />
+      ))}
+    </div>
+  );
+};
+
+export const Month = ({ days, ranges }) => {
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="text-sm">{format(days[0], "MMMM yyyy")}</div>
+      <div className="flex flex-row border-b-2 pb-2">
+        {days.map((day, index) => {
+          if (index < 7)
+            return (
+              <div
+                key={index}
+                style={{ flex: 1, textAlign: "center" }}
+                className="text-sm text-[#7C7C7C]"
+              >
+                {format(day, "EEE")}
+              </div>
+            );
+        })}
+      </div>
+      <div className="grid grid-cols-7 text-xl">
+        {days.map((day, index) => (
+          <div
+            key={index}
+            className="flex items-center justify-center bg-gray-100 p-1"
+          >
+            {format(day, "dd")}
+          </div>
+        ))}
       </div>
     </div>
   );
