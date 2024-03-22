@@ -7,6 +7,7 @@ import { IoLocationSharp } from "react-icons/io5";
 import { BiSolidPencil } from "react-icons/bi";
 import { FaTrashAlt } from "react-icons/fa";
 import { RxCrossCircled } from "react-icons/rx";
+import { MdDone } from "react-icons/md";
 import { getDate } from "../../../../helper/DateUtils";
 import {
   startOfMonth,
@@ -41,17 +42,24 @@ const RouteEditSection = (props) => {
 
   const handleAddDestinationButton = () => {
     setDestinations((prev) => {
+      let flag = true;
       let curDestinations = [...prev];
       curDestinations = curDestinations.map((dest) => {
-        dest.isNewDestination = false;
+        if (dest.isNewDestination) {
+          flag = false;
+          return dest;
+        }
+        dest.isEditDestination = false;
         return dest;
       });
-      curDestinations.splice(curDestinations.length - 1, 0, {
-        startingCity: false,
-        endingCity: false,
-        isNewDestination: true,
-        cityData: {},
-      });
+      if (flag) {
+        curDestinations.splice(curDestinations.length - 1, 0, {
+          startingCity: false,
+          endingCity: false,
+          isNewDestination: true,
+          cityData: {},
+        });
+      }
       return curDestinations;
     });
   };
@@ -265,14 +273,13 @@ export const Destination = (props) => {
       let destinations = [...prev];
       destinations = destinations.map((dest) => {
         dest.isNewDestination = false;
-        dest.isEditDestination = true;
+        dest.isEditDestination = false;
         return dest;
       });
       const curDestination = destinations[index];
       destinations[index] = {
         startingCity: curDestination.startingCity,
         endingCity: curDestination.endingCity,
-        // isNewDestination: true,
         isEditDestination: true,
         cityData: { ...curDestination.cityData },
       };
@@ -450,7 +457,7 @@ export const EditDates = ({ destinations, start_date, end_date }) => {
       {isDesktop && (
         <div
           style={{ pointerEvents: "none" }}
-          className="w-[40%] flex flex-col gap-3 fixed  right-[5%]"
+          className="w-[40%] flex flex-col gap-3 right-[5%]"
         >
           <div className="text-[24px] font-semibold">Trip Dates</div>
 
@@ -460,6 +467,12 @@ export const EditDates = ({ destinations, start_date, end_date }) => {
             dateRanges={dateRanges}
             calendarMonths={calendarMonths}
           />
+          <div className="flex flex-row gap-1 items-center">
+            <MdDone className="text-sm text-white bg-[#0F9E03] rounded-full" />
+            <span className="text-sm">
+              Dates in destinations match trip dates
+            </span>
+          </div>
         </div>
       )}
     </div>
