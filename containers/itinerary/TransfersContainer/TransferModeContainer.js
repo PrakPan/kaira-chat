@@ -959,7 +959,7 @@ const TransferModeContainer = (props) => {
                                 )}
                             </div>
                             {ITINERARY_STATUSES.itinerary_prepared !==
-                              props.plan.itinerary_status && (
+                              props?.plan?.itinerary_status && (
                               <div className="min-w-max text-[0.8rem] -mt-1">
                                 {formatDate(props.booking.check_out)}
                               </div>

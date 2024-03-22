@@ -7,11 +7,7 @@ import { IoLocationSharp } from "react-icons/io5";
 import { BiSolidPencil } from "react-icons/bi";
 import { FaTrashAlt } from "react-icons/fa";
 import { RxCrossCircled } from "react-icons/rx";
-import { IoMdArrowRoundBack } from "react-icons/io";
 import { getDate } from "../../../../helper/DateUtils";
-import { DateRange } from "react-date-range";
-import "react-date-range/dist/styles.css";
-import "react-date-range/dist/theme/default.css";
 import {
   startOfMonth,
   endOfMonth,
@@ -21,6 +17,7 @@ import {
   format,
   parseISO,
   addMonths,
+  isSameDay,
 } from "date-fns";
 
 const RouteEditSection = (props) => {
@@ -79,7 +76,11 @@ const RouteEditSection = (props) => {
             : null
         }
       />
-      <EditPanel editDestination={editDestination} />
+
+      <EditPanel
+        editDestination={editDestination}
+        setEditDestination={setEditDestination}
+      />
       <div className="w-full md:w-[85%] lg:w-[85%] flex flex-col md:flex-row lg:flex-row items-start justify-between hide-scrollbar overflow-y-auto px-2 py-5 gap-5">
         {editDestination ? (
           <>
@@ -148,14 +149,13 @@ const Header = (props) => {
   );
 };
 
-export const EditPanel = (props) => {
-  const { editDestination } = props;
-
+export const EditPanel = ({ editDestination, setEditDestination }) => {
   return (
     <div className="w-full pt-3 flex items-center justify-center border-b-2 px-2 text-sm md:text-lg lg:text-lg">
       <div className="flex flex-row gap-4">
         <div
-          className={`${
+          onClick={() => setEditDestination((prev) => !prev)}
+          className={`cursor-pointer ${
             editDestination
               ? "bg-black border-b-2 border-b-[#F7E700] text-[#F7E700] px-3 py-2 rounded-t-lg"
               : "text-gray-500 px-3 py-2"
@@ -164,7 +164,8 @@ export const EditPanel = (props) => {
           Edit/Remove Destination
         </div>
         <div
-          className={`${
+          onClick={() => setEditDestination((prev) => !prev)}
+          className={`cursor-pointer ${
             !editDestination
               ? "bg-black border-b-2 border-b-[#F7E700] text-[#F7E700] px-3 py-2 rounded-t-lg"
               : "text-gray-500 px-3 py-2"
@@ -198,13 +199,181 @@ export const EditDestinations = (props) => {
             index={ind}
             startingCity={dest.startingCity}
             endingCity={dest.endingCity}
-            cityData={dest.cityData}
+            cityData={dest?.cityData}
             pinColour={dest?.cityData?.color}
             setDestinations={props.setDestinations}
             destinations={props.destinations}
             isNewDestination={dest.isNewDestination}
+            isEditDestination={dest.isEditDestination}
           />
         ))}
+      </div>
+    </div>
+  );
+};
+
+export const Destination = (props) => {
+  const {
+    startingCity,
+    endingCity,
+    isNewDestination,
+    isEditDestination,
+    cityData,
+    pinColour,
+    index,
+    setDestinations,
+    destinations,
+  } = props;
+
+  const [draggedItem, setDraggedItem] = useState(null);
+
+  const handleDragStart = (e, item) => {
+    e.dataTransfer.setData("destId", index);
+    // setDraggedItem({ index });
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e, targetIndex) => {
+    e.preventDefault();
+    const draggedIndex = e.dataTransfer.getData("destId");
+
+    if (targetIndex > 0 && targetIndex < destinations.length - 1) {
+      const items = [...destinations];
+      // const temp = items[targetIndex];
+      // items[targetIndex] = items[draggedIndex];
+      // items[draggedIndex] = temp;
+
+      const [reorderedItem] = items.splice(draggedIndex, 1);
+      items.splice(targetIndex, 0, reorderedItem);
+
+      setDestinations(items);
+      setDraggedItem(null);
+    }
+  };
+
+  const handleRemoveDestination = () => {
+    setDestinations((prev) => {
+      return prev.filter((dest, i) => i !== index);
+    });
+  };
+
+  const handleEditDestination = () => {
+    setDestinations((prev) => {
+      let destinations = [...prev];
+      destinations = destinations.map((dest) => {
+        dest.isNewDestination = false;
+        dest.isEditDestination = true;
+        return dest;
+      });
+      const curDestination = destinations[index];
+      destinations[index] = {
+        startingCity: curDestination.startingCity,
+        endingCity: curDestination.endingCity,
+        // isNewDestination: true,
+        isEditDestination: true,
+        cityData: { ...curDestination.cityData },
+      };
+      return destinations;
+    });
+  };
+
+  if (isNewDestination || isEditDestination) {
+    return (
+      <NewDestination
+        cityData={cityData}
+        handleRemoveDestination={handleRemoveDestination}
+        startingCity={startingCity}
+        endingCity={endingCity}
+      />
+    );
+  }
+
+  return (
+    <div
+      draggable={!(startingCity || endingCity)}
+      onDragStart={(e) => handleDragStart(e, { index })}
+      onDragOver={(e) => handleDragOver(e)}
+      onDrop={(e) => handleDrop(e, index)}
+      className={`w-full flex border-1 border-gray-200 shadow-sm rounded-lg px-3 py-2 ${
+        draggedItem && draggedItem.index === index ? "opacity-50" : ""
+      }`}
+    >
+      <div className="w-full flex flex-row items-center justify-between">
+        <div className="flex flex-row items-center gap-3">
+          <IoMenu
+            className={`text-3xl ${
+              !(startingCity || endingCity)
+                ? "cursor-grab active:cursor-grabbing"
+                : "text-gray-300"
+            } `}
+          />
+          {startingCity ? (
+            <FaLocationCrosshairs className="text-xl" />
+          ) : (
+            <IoLocationSharp
+              className={`text-xl`}
+              style={{ color: pinColour }}
+            />
+          )}
+
+          <div className="text-lg font-semibold">{cityData.city_name}</div>
+        </div>
+        <div className="flex flex-row items-center gap-3">
+          <BiSolidPencil
+            onClick={handleEditDestination}
+            className="text-xl cursor-pointer"
+          />
+          {!startingCity && !endingCity && (
+            <FaTrashAlt
+              onClick={handleRemoveDestination}
+              className="text-xl cursor-pointer"
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const NewDestination = (props) => {
+  const { handleRemoveDestination, cityData, startingCity, endingCity } = props;
+  const [search, setSearch] = useState(cityData.city_name);
+
+  const clearSearch = () => {
+    setSearch("");
+  };
+
+  return (
+    <div className="w-full flex border-1 border-black shadow-sm rounded-lg px-3 py-2">
+      <div className="w-full flex flex-row gap-2 items-center justify-between">
+        <div className="w-full flex flex-row items-center gap-3">
+          <IoLocationSharp
+            className={`text-xl`}
+            style={{ color: cityData.color }}
+          />
+
+          <div className="w-full text-lg font-semibold">
+            <input
+              type="text"
+              autoFocus
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search Destination"
+              className="focus:outline-none w-full"
+            ></input>
+          </div>
+        </div>
+        <div className="flex flex-row items-center gap-3">
+          {!(startingCity || endingCity) && (
+            <RxCrossCircled
+              onClick={handleRemoveDestination}
+              className="text-2xl cursor-pointer"
+            />
+          )}
+        </div>
       </div>
     </div>
   );
@@ -229,34 +398,30 @@ export const EditDates = ({ destinations, start_date, end_date }) => {
     for (let i = 0; i < destinations.length; i++) {
       if (destinations[i].startingCity) {
         ranges.push({
-          startDate: new Date("2023-08-22"),
-          endDate: new Date("2023-08-22"),
+          startDate: new Date(startDate),
+          endDate: new Date(startDate),
           key: "selection",
-          color: "#F7E700",
+          color: "#01202B",
         });
       } else if (destinations[i].endingCity) {
         ranges.push({
-          startDate: new Date("'2023-08-31'"),
-          endDate: new Date("'2023-08-31'"),
+          startDate: new Date(endDate),
+          endDate: new Date(endDate),
           key: "selection",
-          color: "#F7E700",
+          color: "#01202B",
         });
       } else {
         ranges.push({
           startDate: new Date(getDate(destinations[i].cityData.checkin_date)),
           endDate: new Date(getDate(destinations[i].cityData.checkout_date)),
           key: "selection",
-          color: "#D1CECE",
+          color: destinations[i].cityData.color,
         });
       }
     }
 
     setDateRanges(ranges);
   }, [destinations, startDate, endDate]);
-
-  const onDatesChange = (ranges) => {
-    console.log("date changed>>>>>>", ranges);
-  };
 
   return (
     <div className="w-full flex flex-row relative">
@@ -291,29 +456,13 @@ export const EditDates = ({ destinations, start_date, end_date }) => {
 
           <CustomCalendar
             startDate={new Date(startDate)}
+            endDate={new Date(endDate)}
             dateRanges={dateRanges}
             calendarMonths={calendarMonths}
           />
         </div>
       )}
     </div>
-  );
-};
-
-const DateCalendar = ({ value, onChange, calendarMonths }) => {
-  return (
-    <DateRange
-      // rangeColors={["#D1CECE"]}
-      ranges={value}
-      date={new Date()}
-      onChange={onChange}
-      direction="vertical"
-      months={calendarMonths}
-      showMonthArrow={false}
-      showMonthAndYearPickers={false}
-      // scroll={{ enabled: true }}
-      className="flex items-center justify-center"
-    />
   );
 };
 
@@ -423,165 +572,119 @@ export const DestinationDates = (props) => {
   );
 };
 
-export const Destination = (props) => {
-  const {
-    startingCity,
-    endingCity,
-    isNewDestination,
-    cityData,
-    pinColour,
-    index,
-    setDestinations,
-    destinations,
-  } = props;
+export const CustomCalendar = ({
+  startDate,
+  endDate,
+  dateRanges,
+  calendarMonths,
+}) => {
+  const [months, setMonths] = useState([]);
 
-  const [draggedItem, setDraggedItem] = useState(null);
-
-  const handleDragStart = (e, item) => {
-    e.dataTransfer.setData("destId", index);
-    // setDraggedItem({ index });
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (e, targetIndex) => {
-    e.preventDefault();
-    const draggedIndex = e.dataTransfer.getData("destId");
-
-    if (targetIndex > 0 && targetIndex < destinations.length - 1) {
-      const items = [...destinations];
-      // const temp = items[targetIndex];
-      // items[targetIndex] = items[draggedIndex];
-      // items[draggedIndex] = temp;
-
-      const [reorderedItem] = items.splice(draggedIndex, 1);
-      items.splice(targetIndex, 0, reorderedItem);
-
-      setDestinations(items);
-      setDraggedItem(null);
-    }
-  };
-
-  const handleRemoveDestination = () => {
-    setDestinations((prev) => {
-      return prev.filter((dest, i) => i !== index);
-    });
-  };
-
-  const handleEditDestination = () => {
-    setDestinations((prev) => {
-      let destinations = [...prev];
-      destinations = destinations.map((dest) => {
-        dest.isNewDestination = false;
-        return dest;
+  useEffect(() => {
+    const temp_months = [];
+    for (let i = 0; i < calendarMonths; i++) {
+      const firstDayOfMonth = startOfMonth(addMonths(startDate, i));
+      const lastDayOfMonth = endOfMonth(addMonths(startDate, i));
+      const startDay = startOfWeek(firstDayOfMonth);
+      const endDay = endOfWeek(lastDayOfMonth);
+      let monthDays = eachDayOfInterval({
+        start: startDay,
+        end: endDay,
       });
-      const curDestination = destinations[index];
-      destinations[index] = {
-        startingCity: curDestination.startingCity,
-        endingCity: curDestination.endingCity,
-        isNewDestination: true,
-        cityData: { ...curDestination.cityData },
-      };
-      return destinations;
+
+      monthDays = monthDays.map((day) => {
+        return { date: day, color: "" };
+      });
+
+      for (let i = 1; i < dateRanges.length - 1; i++) {
+        monthDays = getDayColors(dateRanges[i], monthDays);
+        if (dateRanges[i].endDate > lastDayOfMonth) break;
+        else {
+          continue;
+        }
+      }
+
+      monthDays = getDayColors(dateRanges[0], monthDays);
+      monthDays = getDayColors(dateRanges[dateRanges.length - 1], monthDays);
+      temp_months.push({ firstDay: firstDayOfMonth, days: monthDays });
+    }
+
+    setMonths(temp_months);
+  }, [startDate, dateRanges, calendarMonths]);
+
+  const getDayColors = (range, days) => {
+    return days.map((day) => {
+      // Check if the current day is within the range
+      if (
+        isSameDay(day.date, range.startDate) ||
+        (day.date > range.startDate && day.date < range.endDate)
+      ) {
+        return { date: day.date, color: range.color }; // Return the day and its color
+      } else {
+        return day;
+      }
     });
   };
-
-  if (isNewDestination) {
-    return (
-      <NewDestination
-        cityData={cityData}
-        handleRemoveDestination={handleRemoveDestination}
-        startingCity={startingCity}
-        endingCity={endingCity}
-      />
-    );
-  }
 
   return (
-    <div
-      draggable={!(startingCity || endingCity)}
-      onDragStart={(e) => handleDragStart(e, { index })}
-      onDragOver={(e) => handleDragOver(e)}
-      onDrop={(e) => handleDrop(e, index)}
-      className={`w-full flex border-1 border-gray-200 shadow-sm rounded-lg px-3 py-2 ${
-        draggedItem && draggedItem.index === index ? "opacity-50" : ""
-      }`}
-    >
-      <div className="w-full flex flex-row items-center justify-between">
-        <div className="flex flex-row items-center gap-3">
-          <IoMenu
-            className={`text-3xl ${
-              !(startingCity || endingCity)
-                ? "cursor-grab active:cursor-grabbing"
-                : "text-gray-300"
-            } `}
-          />
-          {startingCity ? (
-            <FaLocationCrosshairs className="text-xl" />
-          ) : (
-            <IoLocationSharp
-              className={`text-xl`}
-              style={{ color: pinColour }}
-            />
-          )}
-
-          <div className="text-lg font-semibold">{cityData.city_name}</div>
-        </div>
-        <div className="flex flex-row items-center gap-3">
-          <BiSolidPencil
-            onClick={handleEditDestination}
-            className="text-xl cursor-pointer"
-          />
-          {!startingCity && !endingCity && (
-            <FaTrashAlt
-              onClick={handleRemoveDestination}
-              className="text-xl cursor-pointer"
-            />
-          )}
-        </div>
-      </div>
+    <div className="w-[50%] flex flex-col gap-3">
+      {months.map((month, i) => (
+        <Month
+          key={i}
+          firstDay={month.firstDay}
+          days={month.days}
+          startDate={startDate}
+          endDate={endDate}
+        />
+      ))}
     </div>
   );
 };
 
-export const NewDestination = (props) => {
-  const { handleRemoveDestination, cityData, startingCity, endingCity } = props;
-  const [search, setSearch] = useState(cityData.city_name);
-
-  const clearSearch = () => {
-    setSearch("");
-  };
-
+export const Month = ({ firstDay, days, startDate, endDate }) => {
   return (
-    <div className="w-full flex border-1 border-black shadow-sm rounded-lg px-3 py-2">
-      <div className="w-full flex flex-row gap-2 items-center justify-between">
-        <div className="w-full flex flex-row items-center gap-3">
-          <IoLocationSharp
-            className={`text-xl`}
-            style={{ color: cityData.color }}
-          />
-
-          <div className="w-full text-lg font-semibold">
-            <input
-              type="text"
-              autoFocus
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search Destination"
-              className="focus:outline-none w-full"
-            ></input>
-          </div>
-        </div>
-        <div className="flex flex-row items-center gap-3">
-          {!(startingCity || endingCity) && (
-            <RxCrossCircled
-              onClick={handleRemoveDestination}
-              className="text-2xl cursor-pointer"
-            />
-          )}
-        </div>
+    <div className="flex flex-col gap-2">
+      <div className="text-sm">{format(firstDay, "MMMM yyyy")}</div>
+      <div className="flex flex-row border-b-2 pb-2">
+        {days.map((day, index) => {
+          if (index < 7)
+            return (
+              <div
+                key={index}
+                style={{ flex: 1, textAlign: "center" }}
+                className="text-sm text-[#7C7C7C]"
+              >
+                {format(day.date, "EEE")}
+              </div>
+            );
+        })}
+      </div>
+      <div className="grid grid-cols-7 text-lg">
+        {days.map((day, index) => {
+          if (day.date.getMonth() !== firstDay.getMonth()) {
+            return <div className=""></div>;
+          }
+          return (
+            <div
+              key={index}
+              style={{
+                backgroundColor:
+                  isSameDay(day.date, startDate) || isSameDay(day.date, endDate)
+                    ? day.color
+                    : "",
+                color:
+                  isSameDay(day.date, startDate) || isSameDay(day.date, endDate)
+                    ? "#F7E700"
+                    : "#01202B",
+              }}
+              className={`flex items-center justify-center p-2 ${
+                day.color !== "" ? `bg-gray-200` : ""
+              }`}
+            >
+              {format(day.date, "dd")}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -610,91 +713,6 @@ export const ActionPanel = (props) => {
         >
           {editDestination ? "Next" : "Save"}
         </button>
-      </div>
-    </div>
-  );
-};
-
-export const CustomCalendar = ({ startDate, dateRanges, calendarMonths }) => {
-  const [months, setMonths] = useState([]);
-
-  useEffect(() => {
-    const ranges = [...dateRanges];
-    const month = [];
-    for (let i = 0; i < calendarMonths; i++) {
-      const firstDayOfMonth = startOfMonth(addMonths(startDate, i));
-      const lastDayOfMonth = endOfMonth(addMonths(startDate, i));
-      let monthDays = eachDayOfInterval({
-        start: firstDayOfMonth,
-        end: lastDayOfMonth,
-      });
-      for (let range of ranges) {
-        if (range.start >= monthDays[0])
-        monthDays = getDayColors(range, monthDays);
-        if (range.end > monthDays[monthDays.length - 1]) break;
-        else {
-          ranges.shift();
-          break;
-        }
-      }
-      month.push({ days: monthDays });
-    }
-
-    setMonths(month);
-  }, [startDate, dateRanges, calendarMonths]);
-
-  const getDayColors = (range, days) => {
-    return days.map((day) => {
-      // Check if the current day is within the range
-      if (
-        isSameDay(day, range.start) ||
-        isSameDay(day, range.end) ||
-        (day > range.start && day < range.end)
-      ) {
-        return { date: day, color: range.color }; // Return the day and its color
-      }
-      return { date: day, color: "" }; // Return an empty color for days outside the range
-    });
-  };
-
-  useEffect(() => {}, [months, dateRanges]);
-
-  return (
-    <div className="w-[50%] flex flex-col gap-3">
-      {months.map((month, i) => (
-        <Month key={i} days={month.days} ranges={dateRanges} />
-      ))}
-    </div>
-  );
-};
-
-export const Month = ({ days, ranges }) => {
-  return (
-    <div className="flex flex-col gap-2">
-      <div className="text-sm">{format(days[0], "MMMM yyyy")}</div>
-      <div className="flex flex-row border-b-2 pb-2">
-        {days.map((day, index) => {
-          if (index < 7)
-            return (
-              <div
-                key={index}
-                style={{ flex: 1, textAlign: "center" }}
-                className="text-sm text-[#7C7C7C]"
-              >
-                {format(day, "EEE")}
-              </div>
-            );
-        })}
-      </div>
-      <div className="grid grid-cols-7 text-xl">
-        {days.map((day, index) => (
-          <div
-            key={index}
-            className="flex items-center justify-center bg-gray-100 p-1"
-          >
-            {format(day, "dd")}
-          </div>
-        ))}
       </div>
     </div>
   );
