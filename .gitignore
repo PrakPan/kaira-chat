@@ -86,12 +86,12 @@ docker-compose.yml
 Dockerfile
 
 # Sentry
- 
+
 *.swp
- 
+
 .sentryclirc
 
 nextjs-pm2-deploy.sh
 ecosystem.config.js
 services/dump.rdb
- 
+deploy-to-s3.sh
