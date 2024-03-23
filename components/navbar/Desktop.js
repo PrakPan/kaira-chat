@@ -278,15 +278,15 @@ const Navbar = (props) => {
                       !props.PW ? _handleHomepageRedirect : _handlePWRedirect
                     }
                     leftalign
-                    width="55px"
+                    width="140px"
                     widthmobile="55px"
                     margin="0.5rem 0.5rem 0.5rem 2rem"
-                    url={"media/website/logo-only.svg"}
+                    url={"media/website/holi-logo.png"}
                     noPlaceholder={true}
                   ></ImageLoader>
                 </Link>
               )}{" "}
-              <div>
+              {/* <div>
                 {props.hidehomecta ? (
                   <CompanyName
                     style={{
@@ -322,13 +322,7 @@ const Navbar = (props) => {
                     </CompanyName>
                   </Link>
                 )}
-                {/* {
-       props.PW ?
-       <Link href={'/corporates/physicswallah'}><CompanyName style={{color: props.headerColor === 'black' ? 'white': 'black', margin: "0.5vh 0 0 0.25rem", fontSize: "1.75vh", fontWeight: '300', lineHeight: '1.2', display: !props.PW ? 'inline' : 'block', letterSpacing: '0'}} >{'Physics Wallah Holidays'}</CompanyName></Link>
-: null
-      } */}
-              </div>
-              {/* </Link> */}
+              </div> */}
             </TTWLogoContainer>
 
             {!props.hidecta && !props.staticnav && (
