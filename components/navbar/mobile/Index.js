@@ -311,7 +311,7 @@ const Mobile = (props) => {
           <div
             style={{
               position: "relative",
-              marginLeft: "-20%",
+              marginLeft: "0%",
               marginBlock: "auto",
             }}
             onClick={_handleHomepageRedirect}
