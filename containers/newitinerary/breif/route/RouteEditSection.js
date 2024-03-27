@@ -89,7 +89,7 @@ const RouteEditSection = (props) => {
         editDestination={editDestination}
         setEditDestination={setEditDestination}
       />
-      <div className="w-full md:w-[85%] lg:w-[85%] flex flex-col md:flex-row lg:flex-row items-start justify-between hide-scrollbar overflow-y-auto px-2 py-5 gap-5">
+      <div className="w-full h-fit md:w-[85%] lg:w-[85%] flex flex-col md:flex-row lg:flex-row items-start justify-between hide-scrollbar overflow-y-auto px-2 py-5 gap-5">
         {editDestination ? (
           <>
             <EditDestinations
@@ -432,10 +432,10 @@ export const EditDates = ({ destinations, start_date, end_date }) => {
 
   return (
     <div className="w-full flex flex-row relative">
-      <div className="w-[60%] flex flex-col items-center justify-center pb-5 gap-3">
+      <div className="w-[60%] flex flex-col items-start justify-start pb-5 gap-3">
         <div className="w-full flex flex-row items-center justify-between">
           <div className="text-[24px] font-semibold leading-6">
-            Route Date & Time
+            City Departures
           </div>
         </div>
         <div className="w-full flex flex-col">
@@ -447,18 +447,22 @@ export const EditDates = ({ destinations, start_date, end_date }) => {
               endingCity={dest.endingCity}
               cityData={dest.cityData}
               pinColour={dest.cityData.color}
-              destinations={destinations}
               startDate={startDate}
+              setStartDate={setStartDate}
               endDate={endDate}
+              setEndDate={setEndDate}
+              previousDate={
+                index === 1
+                  ? startDate
+                  : index > 1 &&
+                    getDate(destinations[index - 1].cityData.checkout_date)
+              }
             />
           ))}
         </div>
       </div>
       {isDesktop && (
-        <div
-          style={{ pointerEvents: "none" }}
-          className="w-[40%] flex flex-col gap-3 right-[5%]"
-        >
+        <div className="w-[40%] flex flex-col gap-5 right-[5%] pb-5">
           <div className="text-[24px] font-semibold">Trip Dates</div>
 
           <CustomCalendar
@@ -486,10 +490,14 @@ export const DestinationDates = (props) => {
     endingCity,
     cityData,
     pinColour,
-    destinations,
     startDate,
+    setStartDate,
     endDate,
+    setEndDate,
+    previousDate,
   } = props;
+
+  console.log("prev >>>>", previousDate);
 
   const [checkinDate, setCheckinDate] = useState(
     getDate(cityData.checkin_date)
@@ -497,6 +505,16 @@ export const DestinationDates = (props) => {
   const [checkoutDate, setCheckoutDate] = useState(
     getDate(cityData.checkout_date)
   );
+
+  const handleDateChange = (e) => {
+    if (e.target.name === "Arrival Date") {
+      setCheckinDate(e.target.value);
+    } else if (e.target.name === "Start Date") {
+      setStartDate(e.target.value);
+    } else if (e.target.name === "End Date") {
+      setEndDate(e.target.value);
+    }
+  };
 
   return (
     <div className="w-full flex flex-col items-start">
@@ -556,10 +574,20 @@ export const DestinationDates = (props) => {
             </div>
             <div>
               <input
+                name={
+                  startingCity
+                    ? "Start Date"
+                    : endingCity
+                    ? "End Date"
+                    : "Arrival Date"
+                }
                 value={
                   startingCity ? startDate : endingCity ? endDate : checkinDate
                 }
-                onChange={(e) => setCheckinDate(e.target.value)}
+                min={
+                  startingCity ? format(new Date(), "yyyy-MM-dd") : previousDate
+                }
+                onChange={(e) => handleDateChange(e)}
                 type="Date"
                 className="w-52 border-2 border-gray-200 rounded-lg p-2"
               />
@@ -570,7 +598,9 @@ export const DestinationDates = (props) => {
               <div>Departure Date</div>
               <div>
                 <input
+                  name={"Departure Date"}
                   value={checkoutDate}
+                  min={checkinDate}
                   onChange={(e) => setCheckoutDate(e.target.value)}
                   type="Date"
                   className="w-52 border-2 border-gray-200 rounded-lg p-2"
@@ -623,7 +653,7 @@ export const CustomCalendar = ({
     }
 
     setMonths(temp_months);
-  }, [startDate, dateRanges, calendarMonths]);
+  }, [startDate, endDate, dateRanges, calendarMonths]);
 
   const getDayColors = (range, days) => {
     return days.map((day) => {
@@ -640,7 +670,7 @@ export const CustomCalendar = ({
   };
 
   return (
-    <div className="w-[50%] flex flex-col gap-3">
+    <div className="w-[50%] flex flex-col gap-5">
       {months.map((month, i) => (
         <Month
           key={i}
