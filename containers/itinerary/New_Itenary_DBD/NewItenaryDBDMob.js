@@ -1,19 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import Day_I_ContainerM from "./Day_I_ContainerM";
-import HorizontalBar from "./Menubar";
-import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
-
-import { getHumanDate } from "../../../services/getHumanDate";
-import { isJson } from "../../../services/isJSON";
-import { Navbar, NavbarContainer } from "./New_itenaryStyled";
-import CustomMenu from "../CustomMenu";
-import { useSticky } from "../../../hooks/useSticky";
-import useMediaQuery, { useMedia } from "../../../hooks/useMedia";
-import ScrollableTabs from "../../../components/ScrollableTabs";
+import useMediaQuery from "../../../hooks/useMedia";
 import ScrollableMenuTabs from "../../../components/ScrollableMenuTabs";
 import { convertDateFormat } from "../../../helper/ConvertDateFormat";
-import DropdownWrapper from "../../../components/DropDownWrapper";
 
 const NewItenaryDBDMob = (props) => {
   const Wrapper = styled.div`

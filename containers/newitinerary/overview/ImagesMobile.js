@@ -102,7 +102,7 @@ const ImagesMobile = (props) => {
       </>
       {props.images[1] ? (
         <GridContainer>
-          <div style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
+          <div style={{ display: ImagesLoaded[1] ? "initial" : "none" }} className="h-[50%]">
             <ImageLoader
               borderRadius="12px"
               url={props.images[1]}
@@ -124,7 +124,7 @@ const ImagesMobile = (props) => {
             <SkeletonCard />
           </div>
           {/* <MoreContainer> */}
-          <div style={{ display: ImagesLoaded[2] ? "initial" : "none" }}>
+          <div style={{ display: ImagesLoaded[2] ? "initial" : "none" }} className="">
             <ImageLoader
               borderRadius="12px"
               url={props.images[2]}
@@ -218,31 +218,6 @@ const ImagesMobile = (props) => {
       >
         <SkeletonCard />
       </div>
-      {/* {props.images[1] ? (
-        <GridContainer>
-          <div style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
-            <ImageLoader
-              borderRadius="12px"
-              url={props.images[1]}
-              dimensions={{ width: 436, height: 150 }}
-              height="400px"
-              heightMobile="auto"
-              dimensionsMobile={{ width: 160, height: 90 }}
-              onload={() => OnImageLoad(1)}
-              noLazy
-            ></ImageLoader>
-          </div>
-          <div
-            style={{
-              display: !ImagesLoaded[1] ? "initial" : "none",
-              borderRadius: "12px",
-              overflow: "hidden",
-            }}
-          >
-            <SkeletonCard />
-          </div>
-        </GridContainer>
-      ) : null} */}
     </Container>
   );
 };

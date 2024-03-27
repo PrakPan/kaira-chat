@@ -2,8 +2,8 @@ import styled from "styled-components";
 import React, { useState, useEffect } from "react";
 import PinSection from "./PinSection";
 import MidSection from "./MidSection";
-import { TaxiAlert } from "@mui/icons-material";
 import { ITINERARY_VERSION } from "../../../../services/constants";
+
 const Container = styled.div`
   @media screen and (min-width: 768px) {
     width: 30vw;
@@ -12,7 +12,6 @@ const Container = styled.div`
 `;
 
 const Route = (props) => {
-  //Stores initial order of locations
   const initialorder = {
     0: {
       location: "Jodhpur",
@@ -29,9 +28,9 @@ const Route = (props) => {
   };
   let locationsArr = [];
   const [order, setOrder] = useState(initialorder);
+
   const _moveDownHandler = (index) => {
     if (index === 3) {
-      //Last Item, disbale button
     } else
       setOrder({
         ...order,
@@ -39,12 +38,8 @@ const Route = (props) => {
         [index + 1]: order[index],
       });
   };
+
   function scrollToTargetAdjusted() {
-    // if (window.location.pathname === '/') {
-    //   router.push({ pathname: '/locations', query: { scroll: target } });
-    //   return;
-    // }
-    // console.log(`lool${target}`);
     const element = document.getElementById("MapcontainerRoute");
     const headerOffset = 117;
     const elementPosition = element.getBoundingClientRect().top;
@@ -55,6 +50,7 @@ const Route = (props) => {
       behavior: "smooth",
     });
   }
+
   function handlemap(MapId) {
     props.setPlaceID(MapId);
     scrollToTargetAdjusted();
@@ -71,6 +67,7 @@ const Route = (props) => {
       });
     }
   };
+
   function getTransportationType(url) {
     if (url) {
       const fileName = url.substring(
@@ -85,6 +82,7 @@ const Route = (props) => {
       return url;
     }
   }
+
   function NoOfNights(days) {
     if (days > 1) {
       return " Nights";
@@ -92,6 +90,11 @@ const Route = (props) => {
       return " Night";
     }
   }
+
+  const handleEditRoute = () => {
+    props.setEdit(true);
+  };
+
   let startingcity = null;
   let endingcity = null;
   if (props?.plan?.version == ITINERARY_VERSION.version_2) {
@@ -103,9 +106,6 @@ const Route = (props) => {
             endingCity={i === props.routes.length - 1}
             setCurrentPopup={props.setCurrentPopup}
             handlemap={handlemap}
-            // dayId={
-            //   props.breif.city_slabs[i].day_slab_location.start_day_slab_index
-            // }
             setShowDrawer={props.setShowDrawer}
             setShowDrawerData={props.setShowDrawerData}
             cityData={props.routes[i]}
@@ -287,16 +287,19 @@ const Route = (props) => {
 
   return (
     <Container>
-      <div className="font-lexend mb-4 lg:mb-10  lg:mt-[4rem] mt-[2rem] font-bold text-4xl">
-        Route
+      <div className="flex flex-row justify-between items-end">
+        <div className="font-lexend mb-4 lg:mb-10  lg:mt-[4rem] mt-[2rem] font-bold text-4xl">
+          Route
+        </div>
+        <button
+          onClick={handleEditRoute}
+          className="mb-4 lg:mb-10  lg:mt-[4rem] mt-[2rem] font-semibold text-sm px-3 py-1 border-2 border-black rounded-lg hover:text-white hover:bg-black transform ease-in-out duration-300"
+        >
+          Edit
+        </button>
       </div>
 
       {locationsArr}
-      {/* <MidSection></MidSection>
-             <PinSection location="Jaisalmer" duration="4 Nights"></PinSection>
-             <MidSection></MidSection>
-             <PinSection location="Jodhour" duration="3 Nights"></PinSection>
-             <MidSection></MidSection> */}
     </Container>
   );
 };
