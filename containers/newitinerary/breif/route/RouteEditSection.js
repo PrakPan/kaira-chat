@@ -102,6 +102,7 @@ const RouteEditSection = (props) => {
         ) : (
           <EditDates
             destinations={destinations}
+            setDestinations={setDestinations}
             start_date={props?.plan ? props?.plan.start_date : null}
             end_date={props?.plan ? props?.plan.end_date : null}
           />
@@ -386,7 +387,12 @@ export const NewDestination = (props) => {
   );
 };
 
-export const EditDates = ({ destinations, start_date, end_date }) => {
+export const EditDates = ({
+  destinations,
+  setDestinations,
+  start_date,
+  end_date,
+}) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [startDate, setStartDate] = useState(getDate(start_date));
   const [endDate, setEndDate] = useState(getDate(end_date));
@@ -443,6 +449,7 @@ export const EditDates = ({ destinations, start_date, end_date }) => {
             <DestinationDates
               key={index}
               index={index}
+              setDestinations={setDestinations}
               startingCity={dest.startingCity}
               endingCity={dest.endingCity}
               cityData={dest.cityData}
@@ -486,6 +493,7 @@ export const EditDates = ({ destinations, start_date, end_date }) => {
 export const DestinationDates = (props) => {
   const {
     index,
+    setDestinations,
     startingCity,
     endingCity,
     cityData,
@@ -497,14 +505,31 @@ export const DestinationDates = (props) => {
     previousDate,
   } = props;
 
-  console.log("prev >>>>", previousDate);
-
   const [checkinDate, setCheckinDate] = useState(
     getDate(cityData.checkin_date)
   );
   const [checkoutDate, setCheckoutDate] = useState(
     getDate(cityData.checkout_date)
   );
+
+  useEffect(() => {
+    setDestinations((prev) => {
+      return prev.map((dest, i) => {
+        if (i === index) {
+          return {
+            ...dest,
+            cityData: {
+              ...dest.cityData,
+              checkin_date: checkinDate,
+              checkout_date: checkoutDate,
+            },
+          };
+        } else {
+          return dest;
+        }
+      });
+    });
+  }, [checkinDate, checkoutDate]);
 
   const handleDateChange = (e) => {
     if (e.target.name === "Arrival Date") {
