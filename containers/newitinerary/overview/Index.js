@@ -50,6 +50,10 @@ const Overview = (props) => {
           start_date={props.start_date}
           end_date={props.end_date}
           duration={props.duration}
+          budget={props?.budget}
+          number_of_adults={props?.number_of_adults}
+          number_of_children={props?.number_of_children}
+          number_of_infants={props?.number_of_infants}
         ></Details>
       </div>
 

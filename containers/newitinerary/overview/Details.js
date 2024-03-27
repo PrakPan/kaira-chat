@@ -1,8 +1,8 @@
-import styled from 'styled-components';
-import { useState, useEffect } from 'react';
-import Button from '../../../components/ui/button/Index';
-import { convertDateFormat } from '../../../helper/ConvertDateFormat';
-import { format, parseISO } from 'date-fns';
+import styled from "styled-components";
+import { useState, useEffect } from "react";
+import Button from "../../../components/ui/button/Index";
+import { convertDateFormat } from "../../../helper/ConvertDateFormat";
+import { format, parseISO } from "date-fns";
 const Container = styled.div`
   display: grid;
   grid-template-columns: auto auto auto auto auto;
@@ -21,7 +21,7 @@ const Container = styled.div`
 `;
 const convertDFormat = (dt) => {
   const date = parseISO(dt);
-  const formattedDate = format(date, 'MMMM do');
+  const formattedDate = format(date, "MMMM do");
   return formattedDate;
 };
 const Heading = styled.p`
@@ -40,62 +40,69 @@ const Details = (props) => {
 
   return (
     <Container className="font-lexend">
-      {/* {props?.travellerType[0] && (
-        <div style={{ width: 'max-content' }}>
-          <Heading>Type of Travel</Heading>
-          <Text>
-            {props.travellerType[0]}{' '}
-            {props.travellerType.length - 1 <= 0
-              ? null
-              : `+${props.travellerType.length - 1}`}
-          </Text>
-        </div>
-      ) : null} */}
-      {props?.group_type !== null ? (
-        <div style={{ width: 'max-content' }}>
-          <Heading>Group Type</Heading>
-          <Text>{props.group_type}</Text>
-        </div>
-      ) : null}
-
-      {props?.duration_time != null ? (
-        <div style={{ width: 'max-content' }}>
-          <Heading>Duration</Heading>
-          <Text>{props.duration_time} Nights</Text>
-        </div>
-      ) : null}
-      {/* {props.duration_time != null ? (
-        <div style={{ width: 'max-content' }}>
-          <Heading>Duration</Heading>
-          <Text>{props.duration_time} Nights</Text>
-        </div>
-      ) : null} */}
-
       {props.travellerType != null ? (
-        <div style={{ width: 'max-content' }}>
-          <Heading>Dates ({props.duration})</Heading>
+        <div style={{ width: "max-content" }}>
+          <Heading className="flex flex-row gap-2 items-center">
+            Dates ({props.duration})
+            {/* <button
+              onClick={() => props.setEditDestination(false)}
+              className="text-sm border-2 border-black rounded-lg px-3 py-1 hover:bg-black hover:text-white transition ease-in-out duration-500"
+            >
+              Edit Dates
+            </button> */}
+          </Heading>
           {props.start_date && (
             <Text>
-              {convertDFormat(props.start_date)} -{' '}
+              {convertDFormat(props.start_date)} -{" "}
               {convertDFormat(props.end_date)}
             </Text>
           )}
         </div>
       ) : null}
 
-      {/* <div style={{ width: 'max-content' }}>
-        <Heading>Destination</Heading>
-        <Text>Rajasthan</Text>
-      </div> */}
-      {/* <div className="hidden-mobile">
-        <Button
-          borderRadius="6px"
-          borderWidth="1.5px"
-          onclick={() => console.log('')}
-        >
-          Trip Settings
-        </Button>
-      </div> */}
+      {props?.group_type !== null ? (
+        <div style={{ width: "max-content" }}>
+          <Heading>Group Type</Heading>
+          <Text className="flex flex-row gap-2">
+            {props.group_type}
+            {props.number_of_adults ||
+            props.number_of_children ||
+            props.number_of_infants ? (
+              <span>
+                (
+                {props.number_of_adults
+                  ? props.number_of_adults > 1
+                    ? props.number_of_adults + " Adults"
+                    : props.number_of_adults + " Adult"
+                  : null}
+                {props.number_of_children
+                  ? `, ${props.number_of_children} Children`
+                  : null}
+                {props.number_of_infants
+                  ? props.number_of_infants > 1
+                    ? `, ${props.number_of_infants} Infants`
+                    : `, ${props.number_of_infants} Infant`
+                  : null}
+                )
+              </span>
+            ) : null}
+          </Text>
+        </div>
+      ) : null}
+
+      {props?.budget ? (
+        <div style={{ width: "max-content" }}>
+          <Heading>Budget</Heading>
+          <Text>{props.budget}</Text>
+        </div>
+      ) : null}
+
+      {/* {props?.duration_time != null ? (
+        <div style={{ width: "max-content" }}>
+          <Heading>Duration</Heading>
+          <Text>{props.duration_time} Nights</Text>
+        </div>
+      ) : null} */}
     </Container>
   );
 };

@@ -293,9 +293,9 @@ const Route = (props) => {
         </div>
         <button
           onClick={handleEditRoute}
-          className="mb-4 lg:mb-10  lg:mt-[4rem] mt-[2rem] font-semibold text-sm px-3 py-1 border-2 border-black rounded-lg hover:text-white hover:bg-black transform ease-in-out duration-300"
+          className="mb-4 lg:mb-10  lg:mt-[4rem] mt-[2rem] font-semibold text-sm px-3 py-2 border-2 border-black rounded-lg hover:text-white hover:bg-black transform ease-in-out duration-300"
         >
-          Edit
+          Edit Route
         </button>
       </div>
 

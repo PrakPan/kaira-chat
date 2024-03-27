@@ -733,6 +733,10 @@ const Itinerary = (props) => {
           duration={
             plan ? plan.duration_number + " " + plan.duration_unit : null
           }
+          budget={plan ? plan?.budget : null}
+          number_of_adults={plan ? plan?.number_of_adults : null}
+          number_of_children={plan ? plan?.number_of_children : null}
+          number_of_infants={plan ? plan?.number_of_infants : null}
         ></Overview>
         <div id="itinerary-anchor">
           <Menu

@@ -1,13 +1,12 @@
-import React from "react";
+import React, { useRef } from "react";
 import useMediaQuery from "../../../../components/media";
 import { useState, useEffect } from "react";
-import { IoMenu } from "react-icons/io5";
+import { IoMenu, IoLocationSharp } from "react-icons/io5";
 import { FaLocationCrosshairs } from "react-icons/fa6";
-import { IoLocationSharp } from "react-icons/io5";
 import { BiSolidPencil } from "react-icons/bi";
 import { FaTrashAlt } from "react-icons/fa";
 import { RxCrossCircled } from "react-icons/rx";
-import { MdDone } from "react-icons/md";
+import { MdDone, MdModeEdit } from "react-icons/md";
 import { getDate } from "../../../../helper/DateUtils";
 import {
   startOfMonth,
@@ -20,6 +19,8 @@ import {
   addMonths,
   isSameDay,
 } from "date-fns";
+import axiossearchstartinginstance from "../../../../services/search/startinglocation";
+import axiossearchinstance from "../../../../services/search/searchsuggest";
 
 const RouteEditSection = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
@@ -68,6 +69,8 @@ const RouteEditSection = (props) => {
     props.setEdit(false);
   };
 
+  const handleOutsideClid = (event) => {};
+
   return (
     <div className="fixed inset-0 flex flex-col items-center bg-white z-50">
       <Header
@@ -83,6 +86,13 @@ const RouteEditSection = (props) => {
             ? props?.plan.duration_number + " " + props?.plan.duration_unit
             : null
         }
+        budget={props?.plan ? props?.plan?.budget : null}
+        number_of_adults={props?.plan ? props?.plan?.number_of_adults : null}
+        number_of_children={
+          props?.plan ? props?.plan?.number_of_children : null
+        }
+        number_of_infants={props?.plan ? props?.plan?.number_of_infants : null}
+        setEditDestination={setEditDestination}
       />
 
       <EditPanel
@@ -119,6 +129,8 @@ const RouteEditSection = (props) => {
 };
 
 const Header = (props) => {
+  const isDesktop = useMediaQuery("(min-width:768px)");
+
   const convertDFormat = (dt) => {
     try {
       const date = parseISO(dt);
@@ -136,22 +148,58 @@ const Header = (props) => {
       </h1>
       <div className="flex flex-row pb-3 gap-5 text-sm items-center justify-start overflow-x-auto text-nowrap">
         <div className="flex flex-col gap-1">
-          <div className="text-sm text-gray-500">Group Type</div>
-          <div>{props?.group_type}</div>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <div className="text-sm text-gray-500">Duration</div>
-          <div>{props?.duration_time} Nights</div>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <div className="text-sm text-gray-500">Dates ({props?.duration})</div>
+          <div className="flex flex-row gap-2 items-center">
+            <div className="text-sm text-gray-500">
+              Dates ({props?.duration})
+            </div>
+            {isDesktop ? (
+              <button
+                onClick={() => props.setEditDestination(false)}
+                className="text-sm border-2 border-black rounded-lg px-3 py-1 hover:bg-black hover:text-white transition ease-in-out duration-500"
+              >
+                Edit Dates
+              </button>
+            ) : (
+              <MdModeEdit
+                onClick={() => props.setEditDestination(false)}
+                className="text-lg cursor-pointer hover:text-yellow-400"
+              />
+            )}
+          </div>
           <div>
             {convertDFormat(props.start_date)}
             {" - "}
             {convertDFormat(props.end_date)}
           </div>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <div className="text-sm text-gray-500">Group Type</div>
+          <div className="flex flex-row gap-2">
+            {props?.group_type}
+            <sapn>
+              (
+              {props.number_of_adults
+                ? props.number_of_adults > 1
+                  ? props.number_of_adults + " Adults"
+                  : props.number_of_adults + " Adult"
+                : null}
+              {props.number_of_children
+                ? `, ${props.number_of_children} Children`
+                : null}
+              {props.number_of_infants
+                ? props.number_of_infants > 1
+                  ? `, ${props.number_of_infants} Infants`
+                  : `, ${props.number_of_infants} Infant`
+                : null}
+              )
+            </sapn>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <div className="text-sm text-gray-500">Budget</div>
+          <div>{props?.budget}</div>
         </div>
       </div>
     </div>
@@ -163,7 +211,7 @@ export const EditPanel = ({ editDestination, setEditDestination }) => {
     <div className="w-full pt-3 flex items-center justify-center border-b-2 px-2 text-sm md:text-lg lg:text-lg">
       <div className="flex flex-row gap-4">
         <div
-          onClick={() => setEditDestination((prev) => !prev)}
+          onClick={() => setEditDestination(true)}
           className={`cursor-pointer ${
             editDestination
               ? "bg-black border-b-2 border-b-[#F7E700] text-[#F7E700] px-3 py-2 rounded-t-lg"
@@ -173,7 +221,7 @@ export const EditPanel = ({ editDestination, setEditDestination }) => {
           Edit/Remove Destination
         </div>
         <div
-          onClick={() => setEditDestination((prev) => !prev)}
+          onClick={() => setEditDestination(false)}
           className={`cursor-pointer ${
             !editDestination
               ? "bg-black border-b-2 border-b-[#F7E700] text-[#F7E700] px-3 py-2 rounded-t-lg"
@@ -195,7 +243,7 @@ export const EditDestinations = (props) => {
         <div>
           <button
             onClick={props.handleAddDestinationButton}
-            className="border-2 border-black rounded-lg px-3 py-1"
+            className="border-2 border-black rounded-lg px-3 py-2 hover:bg-black hover:text-white transition ease-in-out duration-500"
           >
             Add Destination
           </button>
@@ -291,10 +339,12 @@ export const Destination = (props) => {
   if (isNewDestination || isEditDestination) {
     return (
       <NewDestination
+        index={index}
         cityData={cityData}
         handleRemoveDestination={handleRemoveDestination}
         startingCity={startingCity}
         endingCity={endingCity}
+        setDestinations={setDestinations}
       />
     );
   }
@@ -327,7 +377,12 @@ export const Destination = (props) => {
             />
           )}
 
-          <div className="text-lg font-semibold">{cityData.city_name}</div>
+          <div
+            onClick={handleEditDestination}
+            className="text-lg font-semibold cursor-pointer"
+          >
+            {cityData.city_name}
+          </div>
         </div>
         <div className="flex flex-row items-center gap-3">
           <BiSolidPencil
@@ -347,15 +402,67 @@ export const Destination = (props) => {
 };
 
 export const NewDestination = (props) => {
-  const { handleRemoveDestination, cityData, startingCity, endingCity } = props;
+  const {
+    index,
+    handleRemoveDestination,
+    cityData,
+    startingCity,
+    endingCity,
+    setDestinations,
+  } = props;
   const [search, setSearch] = useState(cityData.city_name);
+  const [searchResults, setSearchResults] = useState(null);
+
+  useEffect(() => {
+    handleDestinationSeach();
+  }, [search]);
 
   const clearSearch = () => {
     setSearch("");
   };
 
+  const handleCloseEdit = () => {
+    setDestinations((prev) => {
+      let destinations = [...prev];
+      destinations = destinations.map((dest) => {
+        if (dest.isNewDestination || dest.isEditDestination) {
+          dest.isNewDestination = false;
+          dest.isEditDestination = false;
+        }
+        return dest;
+      });
+
+      return destinations;
+    });
+  };
+
+  const handleDestinationSeach = () => {
+    if (startingCity || endingCity) {
+      axiossearchstartinginstance
+        .get(`?q=${search}`)
+        .then((results) => {
+          setSearchResults(results.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      axiossearchinstance
+        .get(`?q=${search}`)
+        .then((results) => {
+          setSearchResults(results.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+
   return (
-    <div className="w-full flex border-1 border-black shadow-sm rounded-lg px-3 py-2">
+    <div
+      onBlur={handleCloseEdit}
+      className="relative w-full flex border-1 border-black shadow-sm rounded-lg px-3 py-2"
+    >
       <div className="w-full flex flex-row gap-2 items-center justify-between">
         <div className="w-full flex flex-row items-center gap-3">
           <IoLocationSharp
@@ -375,14 +482,29 @@ export const NewDestination = (props) => {
           </div>
         </div>
         <div className="flex flex-row items-center gap-3">
-          {!(startingCity || endingCity) && (
+          {
             <RxCrossCircled
-              onClick={handleRemoveDestination}
+              onClick={() => clearSearch()}
               className="text-2xl cursor-pointer"
             />
-          )}
+          }
         </div>
       </div>
+
+      {searchResults && (
+        <div className="absolute fixed top-10 left-[5%] w-[90%] max-h-64 overflow-y-auto border-2 rounded-lg bg-white p-2 flex flex-col gap-3">
+          {searchResults.map((res, index) => (
+            <div className="cursor-pointer flex flex-row items-center gap-3 hover:bg-gray-100 rounded-full">
+              <div className="w-8 h-8 bg-gray-200 rounded-full p-2 flex items-center justify-center">
+                <IoLocationSharp />
+              </div>
+              <div className="text-sm font-bold">
+                {startingCity || endingCity ? res.text : res.name}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -745,7 +867,7 @@ export const Month = ({ firstDay, days, startDate, endDate }) => {
                     ? "#F7E700"
                     : "#01202B",
               }}
-              className={`flex items-center justify-center p-2 ${
+              className={`flex items-center justify-center p-2 font-normal ${
                 day.color !== "" ? `bg-gray-200` : ""
               }`}
             >
