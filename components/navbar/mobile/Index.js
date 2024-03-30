@@ -311,7 +311,7 @@ const Mobile = (props) => {
           <div
             style={{
               position: "relative",
-              marginLeft: "0%",
+              marginLeft: "-20%",
               marginBlock: "auto",
             }}
             onClick={_handleHomepageRedirect}
@@ -322,17 +322,17 @@ const Mobile = (props) => {
             >
               <ImageLoader
                 dimensions={{ width: 122, height: 100 }}
-                dimensionsMobile={{ width: 250, height: 100 }}
+                dimensionsMobile={{ width: 122, height: 100 }}
                 hoverpointer
                 onclick={_handleHomepageRedirect}
                 width="3rem"
                 leftalign
-                widthmobile="100px"
-                url={"media/website/holi-logo.png"}
+                widthmobile="52px"
+                url={"media/website/logo-only.svg"}
                 noPlaceholder={true}
               ></ImageLoader>
             </StyledLink>
-            {/* {!props.hidecta && <CompanyName>thetarzanway</CompanyName>} */}
+            {!props.hidecta && <CompanyName>thetarzanway</CompanyName>}
           </div>
         ) : (
           <div></div>

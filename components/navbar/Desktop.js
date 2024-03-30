@@ -278,15 +278,15 @@ const Navbar = (props) => {
                       !props.PW ? _handleHomepageRedirect : _handlePWRedirect
                     }
                     leftalign
-                    width="140px"
+                    width="55px"
                     widthmobile="55px"
                     margin="0.5rem 0.5rem 0.5rem 2rem"
-                    url={"media/website/holi-logo.png"}
+                    url={"media/website/logo-only.svg"}
                     noPlaceholder={true}
                   ></ImageLoader>
                 </Link>
               )}{" "}
-              {/* <div>
+              <div>
                 {props.hidehomecta ? (
                   <CompanyName
                     style={{
@@ -322,7 +322,7 @@ const Navbar = (props) => {
                     </CompanyName>
                   </Link>
                 )}
-              </div> */}
+              </div>
             </TTWLogoContainer>
 
             {!props.hidecta && !props.staticnav && (
