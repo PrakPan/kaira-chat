@@ -1,4 +1,6 @@
 import React, { useRef } from "react";
+import { connect } from "react-redux";
+import { openNotification } from "../../../../store/actions/notification";
 import useMediaQuery from "../../../../components/media";
 import { useState, useEffect } from "react";
 import { IoMenu, IoLocationSharp } from "react-icons/io5";
@@ -21,11 +23,23 @@ import {
 } from "date-fns";
 import axiossearchstartinginstance from "../../../../services/search/startinglocation";
 import axiossearchinstance from "../../../../services/search/searchsuggest";
+import axiosItineraryUpdateInstance from "../../../../services/itinerary/update";
 
 const RouteEditSection = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
+  const [startDate, setStartDate] = useState(
+    getDate(props?.plan ? props?.plan.start_date : null)
+  );
+  const [endDate, setEndDate] = useState(
+    getDate(props?.plan ? props?.plan.end_date : null)
+  );
   const [destinations, setDestinations] = useState([]);
-  const [editDestination, setEditDestination] = useState(true);
+  const [editDestination, setEditDestination] = useState(
+    props.editRoute === "editDates" ? false : true
+  );
+  const [isValidDates, setIsValidDates] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const destinationRef = useRef(null);
 
   useEffect(() => {
     const cities = [];
@@ -39,7 +53,15 @@ const RouteEditSection = (props) => {
       }
       setDestinations(cities);
     }
-  }, []);
+  }, [props.routes]);
+
+  useEffect(() => {
+    if (validateDates()) {
+      setIsValidDates(true);
+    } else {
+      setIsValidDates(false);
+    }
+  }, [destinations, startDate, endDate]);
 
   const handleAddDestinationButton = () => {
     setDestinations((prev) => {
@@ -65,14 +87,142 @@ const RouteEditSection = (props) => {
     });
   };
 
-  const handleSaveButton = () => {
-    props.setEdit(false);
+  const validateDates = () => {
+    const today = new Date();
+
+    if (
+      !new Date(startDate) ||
+      isNaN(Date.parse(startDate)) ||
+      new Date(startDate) < today
+    ) {
+      return false;
+    }
+
+    let prevDate = new Date(startDate);
+    for (let i = 1; i < destinations.length - 1; i++) {
+      const checkin_date = destinations[i].cityData.checkin_date;
+      const checkout_date = destinations[i].cityData.checkout_date;
+      if (
+        !new Date(checkin_date) ||
+        isNaN(Date.parse(checkin_date)) ||
+        new Date(checkin_date) < prevDate
+      ) {
+        return false;
+      }
+
+      if (
+        !new Date(checkout_date) ||
+        isNaN(Date.parse(checkout_date)) ||
+        new Date(checkout_date) < new Date(checkin_date)
+      ) {
+        return false;
+      }
+      prevDate = new Date(checkout_date);
+    }
+
+    if (
+      !new Date(endDate) ||
+      isNaN(Date.parse(endDate) || new Date(endDate) < prevDate)
+    ) {
+      return false;
+    }
+
+    return true;
   };
 
-  const handleOutsideClid = (event) => {};
+  const submitData = () => {
+    const data = {
+      itinerary_id: props.plan.id || props.itinerary.tailor_made_id,
+      start_date: startDate,
+      basic_route: destinations
+        .map((dest) => {
+          return {
+            name:
+              dest.cityData.city_name ||
+              dest.cityData.name ||
+              dest.cityData.text,
+            city_id: dest.cityData.city_id || dest.cityData.resource_id,
+            check_in: dest.cityData.checkin_date,
+            check_out: dest.cityData.checkout_date,
+          };
+        })
+        .filter(
+          (dest, index) => index !== 0 && index !== destinations.length - 1
+        ),
+      user_location: {
+        place_id: destinations[0].cityData.place_id,
+      },
+    };
+
+    axiosItineraryUpdateInstance
+      .post("", data)
+      .then((response) => {
+        props.fetchData();
+        setLoading(false);
+        props.openNotification({
+          text: "Your Itinerary is updated successfully!",
+          heading: "Success!",
+          type: "success",
+        });
+        props.setEdit(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        if (err?.response?.status === 403) {
+          props.openNotification({
+            text: "You are not allowed to make changes to this itinerary",
+            heading: "Error!",
+            type: "error",
+          });
+        } else {
+          props.openNotification({
+            text: "There seems to be a problem, please try again!",
+            heading: "Error!",
+            type: "error",
+          });
+        }
+        console.log("[ERROR][Route Edit]: ", err.message);
+      });
+  };
+
+  const handleSaveButton = () => {
+    if (!props.token) {
+      props.setShowLoginModal(true);
+      return;
+    }
+
+    if (validateDates()) {
+      setLoading(true);
+      submitData();
+    } else {
+      setIsValidDates(false);
+    }
+  };
+
+  const handleOutsideClick = (event) => {
+    if (
+      destinationRef.current &&
+      !destinationRef.current.contains(event.target)
+    ) {
+      setDestinations((prev) => {
+        let destinations = [...prev];
+        destinations = destinations.filter((dest) => !dest.isNewDestination);
+        destinations = destinations.map((dest) => {
+          dest.isEditDestination = false;
+          return dest;
+        });
+
+        return destinations;
+      });
+    }
+  };
 
   return (
-    <div className="fixed inset-0 flex flex-col items-center bg-white z-50">
+    <div
+      onClick={(e) => handleOutsideClick(e)}
+      className="fixed inset-0 flex flex-col items-center bg-white z-40"
+    >
+      {loading && <Loader />}
       <Header
         setEdit={props.setEdit}
         title={props?.itinerary.name}
@@ -106,6 +256,7 @@ const RouteEditSection = (props) => {
               destinations={destinations}
               handleAddDestinationButton={handleAddDestinationButton}
               setDestinations={setDestinations}
+              destinationRef={destinationRef}
             />
             {isDesktop && <div className="w-[50%]">{props.children}</div>}
           </>
@@ -113,8 +264,11 @@ const RouteEditSection = (props) => {
           <EditDates
             destinations={destinations}
             setDestinations={setDestinations}
-            start_date={props?.plan ? props?.plan.start_date : null}
-            end_date={props?.plan ? props?.plan.end_date : null}
+            startDate={startDate}
+            setStartDate={setStartDate}
+            endDate={endDate}
+            setEndDate={setEndDate}
+            isValidDates={isValidDates}
           />
         )}
       </div>
@@ -142,42 +296,16 @@ const Header = (props) => {
   };
 
   return (
-    <div className="w-full p-3 border-b-2 border-b-gray-200">
+    <div className="w-full p-3 border-b-2 border-b-gray-200 space-y-5">
       <h1 className="text-2xl md:text-3xl lg:text-3xl font-semibold">
         {props?.title}
       </h1>
       <div className="flex flex-row pb-3 gap-5 text-sm items-center justify-start overflow-x-auto text-nowrap">
         <div className="flex flex-col gap-1">
-          <div className="flex flex-row gap-2 items-center">
-            <div className="text-sm text-gray-500">
-              Dates ({props?.duration})
-            </div>
-            {isDesktop ? (
-              <button
-                onClick={() => props.setEditDestination(false)}
-                className="text-sm border-2 border-black rounded-lg px-3 py-1 hover:bg-black hover:text-white transition ease-in-out duration-500"
-              >
-                Edit Dates
-              </button>
-            ) : (
-              <MdModeEdit
-                onClick={() => props.setEditDestination(false)}
-                className="text-lg cursor-pointer hover:text-yellow-400"
-              />
-            )}
-          </div>
-          <div>
-            {convertDFormat(props.start_date)}
-            {" - "}
-            {convertDFormat(props.end_date)}
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-1">
           <div className="text-sm text-gray-500">Group Type</div>
           <div className="flex flex-row gap-2">
             {props?.group_type}
-            <sapn>
+            <span>
               (
               {props.number_of_adults
                 ? props.number_of_adults > 1
@@ -193,13 +321,41 @@ const Header = (props) => {
                   : `, ${props.number_of_infants} Infant`
                 : null}
               )
-            </sapn>
+            </span>
           </div>
         </div>
 
         <div className="flex flex-col gap-1">
           <div className="text-sm text-gray-500">Budget</div>
           <div>{props?.budget}</div>
+        </div>
+
+        <div className="flex flex-row gap-4 items-center">
+          <div className="flex flex-col gap-1">
+            <div className="flex flex-row gap-2 items-center">
+              <div className="text-sm text-gray-500">
+                Dates ({props?.duration})
+              </div>
+            </div>
+            <div>
+              {convertDFormat(props.start_date)}
+              {" - "}
+              {convertDFormat(props.end_date)}
+            </div>
+          </div>
+          {isDesktop ? (
+            <button
+              onClick={() => props.setEditDestination(false)}
+              className="text-sm border-2 border-black rounded-lg px-4 py-2 hover:bg-black hover:text-white transition ease-in-out duration-500"
+            >
+              Edit Dates
+            </button>
+          ) : (
+            <MdModeEdit
+              onClick={() => props.setEditDestination(false)}
+              className="text-lg cursor-pointer hover:text-yellow-400"
+            />
+          )}
         </div>
       </div>
     </div>
@@ -237,13 +393,16 @@ export const EditPanel = ({ editDestination, setEditDestination }) => {
 
 export const EditDestinations = (props) => {
   return (
-    <div className="w-full mg:w-[50%] lg:w-[50%] flex flex-col items-center justify-center pb-5 gap-3">
+    <div
+      ref={props.destinationRef}
+      className="w-full mg:w-[50%] lg:w-[50%] flex flex-col items-center justify-center pb-5 gap-3"
+    >
       <div className="w-full flex flex-row items-center justify-between">
         <div className="text-[24px] font-semibold leading-6">Route</div>
         <div>
           <button
             onClick={props.handleAddDestinationButton}
-            className="border-2 border-black rounded-lg px-3 py-2 hover:bg-black hover:text-white transition ease-in-out duration-500"
+            className="border-2 border-black rounded-lg px-4 py-2 hover:bg-black hover:text-white transition ease-in-out duration-500"
           >
             Add Destination
           </button>
@@ -262,6 +421,7 @@ export const EditDestinations = (props) => {
             destinations={props.destinations}
             isNewDestination={dest.isNewDestination}
             isEditDestination={dest.isEditDestination}
+            destinationRef={props.destinationRef}
           />
         ))}
       </div>
@@ -320,8 +480,8 @@ export const Destination = (props) => {
   const handleEditDestination = () => {
     setDestinations((prev) => {
       let destinations = [...prev];
+      destinations = destinations.filter((dest) => !dest.isNewDestination);
       destinations = destinations.map((dest) => {
-        dest.isNewDestination = false;
         dest.isEditDestination = false;
         return dest;
       });
@@ -381,7 +541,7 @@ export const Destination = (props) => {
             onClick={handleEditDestination}
             className="text-lg font-semibold cursor-pointer"
           >
-            {cityData.city_name}
+            {cityData.city_name || cityData.name || cityData.text}
           </div>
         </div>
         <div className="flex flex-row items-center gap-3">
@@ -410,11 +570,17 @@ export const NewDestination = (props) => {
     endingCity,
     setDestinations,
   } = props;
-  const [search, setSearch] = useState(cityData.city_name);
+  const [search, setSearch] = useState(
+    cityData.city_name || cityData.name || cityData.text
+  );
   const [searchResults, setSearchResults] = useState(null);
 
   useEffect(() => {
     handleDestinationSeach();
+
+    return () => {
+      setSearchResults(null);
+    };
   }, [search]);
 
   const clearSearch = () => {
@@ -448,7 +614,7 @@ export const NewDestination = (props) => {
         });
     } else {
       axiossearchinstance
-        .get(`?q=${search}`)
+        .get(`?type=Location&q=${search}`)
         .then((results) => {
           setSearchResults(results.data);
         })
@@ -458,9 +624,25 @@ export const NewDestination = (props) => {
     }
   };
 
+  const handleSetDestination = (i) => {
+    setDestinations((prev) => {
+      let destinations = [...prev];
+
+      const curDestination = destinations[index];
+      destinations[index] = {
+        startingCity: curDestination.startingCity,
+        endingCity: curDestination.endingCity,
+        isNewDestination: false,
+        isEditDestination: false,
+        cityData: { ...searchResults[i] },
+      };
+      return destinations;
+    });
+  };
+
   return (
     <div
-      onBlur={handleCloseEdit}
+      // onBlur={handleCloseEdit}
       className="relative w-full flex border-1 border-black shadow-sm rounded-lg px-3 py-2"
     >
       <div className="w-full flex flex-row gap-2 items-center justify-between">
@@ -491,10 +673,14 @@ export const NewDestination = (props) => {
         </div>
       </div>
 
-      {searchResults && (
-        <div className="absolute fixed top-10 left-[5%] w-[90%] max-h-64 overflow-y-auto border-2 rounded-lg bg-white p-2 flex flex-col gap-3">
-          {searchResults.map((res, index) => (
-            <div className="cursor-pointer flex flex-row items-center gap-3 hover:bg-gray-100 rounded-full">
+      {searchResults && searchResults.length && (
+        <div className="absolute fixed top-10 left-[0%] w-[100%] max-h-64 overflow-y-auto border-2 rounded-lg bg-white p-2 flex flex-col gap-3">
+          {searchResults.map((res, ind) => (
+            <div
+              key={ind}
+              onClick={() => handleSetDestination(ind)}
+              className="cursor-pointer flex flex-row items-center gap-3 hover:bg-gray-100 rounded-full"
+            >
               <div className="w-8 h-8 bg-gray-200 rounded-full p-2 flex items-center justify-center">
                 <IoLocationSharp />
               </div>
@@ -512,12 +698,13 @@ export const NewDestination = (props) => {
 export const EditDates = ({
   destinations,
   setDestinations,
-  start_date,
-  end_date,
+  startDate,
+  setStartDate,
+  setEndDate,
+  endDate,
+  isValidDates,
 }) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
-  const [startDate, setStartDate] = useState(getDate(start_date));
-  const [endDate, setEndDate] = useState(getDate(end_date));
   const [calendarMonths, setCalenderMonths] = useState(null);
   const [dateRanges, setDateRanges] = useState([]);
 
@@ -525,11 +712,8 @@ export const EditDates = ({
     const startMonth = new Date(startDate).getMonth();
     const endMonth = new Date(endDate).getMonth();
     setCalenderMonths(endMonth - startMonth + 1);
-  }, [startDate, endDate]);
 
-  useEffect(() => {
     const ranges = [];
-
     for (let i = 0; i < destinations.length; i++) {
       if (destinations[i].startingCity) {
         ranges.push({
@@ -560,17 +744,18 @@ export const EditDates = ({
 
   return (
     <div className="w-full flex flex-row relative">
-      <div className="w-[60%] flex flex-col items-start justify-start pb-5 gap-3">
-        <div className="w-full flex flex-row items-center justify-between">
-          <div className="text-[24px] font-semibold leading-6">
-            City Departures
+      <div className="w-full mg:w-[50%] lg:w-[50%] flex flex-col items-center pb-5 gap-3">
+        <div className="flex flex-col">
+          <div className="flex flex-row items-start justify-between mb-5">
+            <div className="text-[24px] font-semibold leading-6">
+              City Departures
+            </div>
           </div>
-        </div>
-        <div className="w-full flex flex-col">
           {destinations.map((dest, index) => (
             <DestinationDates
               key={index}
               index={index}
+              destinations={destinations}
               setDestinations={setDestinations}
               startingCity={dest.startingCity}
               endingCity={dest.endingCity}
@@ -586,12 +771,13 @@ export const EditDates = ({
                   : index > 1 &&
                     getDate(destinations[index - 1].cityData.checkout_date)
               }
+              isValidDates={isValidDates}
             />
           ))}
         </div>
       </div>
       {isDesktop && (
-        <div className="w-[40%] flex flex-col gap-5 right-[5%] pb-5">
+        <div className="fixed w-[40%] flex flex-col gap-5 right-[5%] pb-5">
           <div className="text-[24px] font-semibold">Trip Dates</div>
 
           <CustomCalendar
@@ -601,10 +787,23 @@ export const EditDates = ({
             calendarMonths={calendarMonths}
           />
           <div className="flex flex-row gap-1 items-center">
-            <MdDone className="text-sm text-white bg-[#0F9E03] rounded-full" />
-            <span className="text-sm">
-              Dates in destinations match trip dates
-            </span>
+            {!isValidDates ? (
+              <>
+                <>
+                  <RxCrossCircled className="text-sm text-white bg-red-500 rounded-full" />
+                  <span className="text-sm">
+                    Invalid dates selected on the left!
+                  </span>
+                </>
+              </>
+            ) : (
+              <>
+                <MdDone className="text-sm text-white bg-[#0F9E03] rounded-full" />
+                <span className="text-sm">
+                  Dates in individual cities match with itinerary dates
+                </span>
+              </>
+            )}
           </div>
         </div>
       )}
@@ -615,6 +814,7 @@ export const EditDates = ({
 export const DestinationDates = (props) => {
   const {
     index,
+    destinations,
     setDestinations,
     startingCity,
     endingCity,
@@ -625,6 +825,7 @@ export const DestinationDates = (props) => {
     endDate,
     setEndDate,
     previousDate,
+    isValidDates,
   } = props;
 
   const [checkinDate, setCheckinDate] = useState(
@@ -637,7 +838,7 @@ export const DestinationDates = (props) => {
   useEffect(() => {
     setDestinations((prev) => {
       return prev.map((dest, i) => {
-        if (i === index) {
+        if (i === index && !(startingCity || endingCity)) {
           return {
             ...dest,
             cityData: {
@@ -663,6 +864,104 @@ export const DestinationDates = (props) => {
     }
   };
 
+  const isInvalidDate = (date, is_departure = false) => {
+    const date_obj = new Date(date);
+    const prevDate = new Date(previousDate);
+    const checkin_date = new Date(checkinDate);
+
+    switch (startingCity || endingCity || is_departure || true) {
+      case startingCity:
+        const today = new Date();
+        if (!date_obj || isNaN(Date.parse(date))) {
+          return {
+            error: true,
+            invalid: false,
+            message: `Add your dates in ${
+              cityData.city_name || cityData.name || cityData.text
+            }`,
+          };
+        } else if (date_obj < today) {
+          return {
+            error: true,
+            invalid: true,
+            message: `Start Date should be greater than or equal to ${format(
+              today,
+              "dd/MM/yyyy"
+            )}`,
+          };
+        } else
+          return {
+            error: false,
+          };
+      case endingCity:
+        if (!date_obj || isNaN(Date.parse(date))) {
+          return {
+            error: true,
+            invalid: false,
+            message: `Add your dates in ${
+              cityData.city_name || cityData.name || cityData.text
+            }`,
+          };
+        } else if (date_obj < prevDate) {
+          return {
+            error: true,
+            invalid: true,
+            message: `End Date should be greater than or equal to ${format(
+              prevDate,
+              "dd/MM/yyyy"
+            )}`,
+          };
+        } else
+          return {
+            error: false,
+          };
+      case is_departure:
+        if (!date_obj || isNaN(Date.parse(date))) {
+          return {
+            error: true,
+            invalid: false,
+            message: `Add your dates in ${
+              cityData.city_name || cityData.name || cityData.text
+            }`,
+          };
+        } else if (date_obj < checkin_date) {
+          return {
+            error: true,
+            invalid: true,
+            message: `Departure Date should be greater than or equal to ${format(
+              checkin_date,
+              "dd/MM/yyyy"
+            )}`,
+          };
+        } else
+          return {
+            error: false,
+          };
+      default:
+        if (!date_obj || isNaN(Date.parse(date))) {
+          return {
+            error: true,
+            invalid: false,
+            message: `Add your dates in ${
+              cityData.city_name || cityData.name || cityData.text
+            }`,
+          };
+        } else if (date_obj < prevDate) {
+          return {
+            error: true,
+            invalid: true,
+            message: `Arrival Date should be greater than or equal to ${format(
+              prevDate,
+              "dd/MM/yyyy"
+            )}`,
+          };
+        } else
+          return {
+            error: false,
+          };
+    }
+  };
+
   return (
     <div className="w-full flex flex-col items-start">
       <div className="flex flex-row gap-3 items-center">
@@ -676,7 +975,9 @@ export const DestinationDates = (props) => {
             } rounded-full`}
           ></div>
         </div>
-        <div className="text-[16px] font-semibold">{cityData.city_name}</div>
+        <div className="text-[16px] font-semibold">
+          {cityData.city_name || cityData.name || cityData.text}
+        </div>
       </div>
       <div className="flex flex-row items-center gap-3">
         {!endingCity ? (
@@ -711,49 +1012,104 @@ export const DestinationDates = (props) => {
           <div className="w-6"></div>
         )}
         <div className="flex flex-col gap-2 py-3">
-          <div className="flex flex-col gap-1">
-            <div>
-              {startingCity
-                ? "Start Date"
-                : endingCity
-                ? "End Date"
-                : "Arrival Date"}
-            </div>
-            <div>
-              <input
-                name={
-                  startingCity
-                    ? "Start Date"
-                    : endingCity
-                    ? "End Date"
-                    : "Arrival Date"
-                }
-                value={
-                  startingCity ? startDate : endingCity ? endDate : checkinDate
-                }
-                min={
-                  startingCity ? format(new Date(), "yyyy-MM-dd") : previousDate
-                }
-                onChange={(e) => handleDateChange(e)}
-                type="Date"
-                className="w-52 border-2 border-gray-200 rounded-lg p-2"
-              />
-            </div>
-          </div>
-          {!(startingCity || endingCity) && (
+          <div className="flex flex-row items-center gap-3">
             <div className="flex flex-col gap-1">
-              <div>Departure Date</div>
               <div>
+                {startingCity
+                  ? "Start Date"
+                  : endingCity
+                  ? "End Date"
+                  : "Arrival Date"}
+              </div>
+              <div className="flex flex-row items-center gap-3">
                 <input
-                  name={"Departure Date"}
-                  value={checkoutDate}
-                  min={checkinDate}
-                  onChange={(e) => setCheckoutDate(e.target.value)}
+                  required
+                  name={
+                    startingCity
+                      ? "Start Date"
+                      : endingCity
+                      ? "End Date"
+                      : "Arrival Date"
+                  }
+                  value={
+                    startingCity
+                      ? startDate
+                      : endingCity
+                      ? endDate
+                      : checkinDate
+                  }
+                  min={
+                    startingCity
+                      ? format(new Date(), "yyyy-MM-dd")
+                      : previousDate
+                  }
+                  onChange={(e) => handleDateChange(e)}
                   type="Date"
                   className="w-52 border-2 border-gray-200 rounded-lg p-2"
                 />
+                {!isValidDates &&
+                  isInvalidDate(
+                    startingCity
+                      ? startDate
+                      : endingCity
+                      ? endDate
+                      : checkinDate
+                  ).error && (
+                    <div
+                      className={`text-xs lg:text-sm text-white text-center ${
+                        isInvalidDate(
+                          startingCity
+                            ? startDate
+                            : endingCity
+                            ? endDate
+                            : checkinDate
+                        ).invalid
+                          ? "bg-red-500"
+                          : "bg-[#ffbb33]"
+                      }  p-2 rounded-full rounded-bl-none animate-popOut shadow-2xl shadow-gray-900`}
+                    >
+                      {
+                        isInvalidDate(
+                          startingCity
+                            ? startDate
+                            : endingCity
+                            ? endDate
+                            : checkinDate
+                        ).message
+                      }
+                    </div>
+                  )}
               </div>
-              <div></div>
+            </div>
+          </div>
+          {!(startingCity || endingCity) && (
+            <div className="flex flex-row items-center gap-3">
+              <div className="flex flex-col gap-1">
+                <div>Departure Date</div>
+                <div className="flex flex-row items-center gap-3">
+                  <input
+                    required
+                    name={"Departure Date"}
+                    value={checkoutDate}
+                    min={checkinDate}
+                    onChange={(e) => setCheckoutDate(e.target.value)}
+                    type="Date"
+                    className="w-52 border-2 border-gray-200 rounded-lg p-2"
+                  />
+
+                  {!isValidDates && isInvalidDate(checkoutDate, true).error && (
+                    <div
+                      className={`text-xs lg:text-sm text-white ${
+                        isInvalidDate(checkoutDate, true).invalid
+                          ? "bg-red-500"
+                          : "bg-[#ffbb33]"
+                      } p-2 rounded-full rounded-bl-none animate-popOut shadow-2xl shadow-gray-900`}
+                    >
+                      {isInvalidDate(checkoutDate, true).message}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -772,6 +1128,24 @@ export const CustomCalendar = ({
 
   useEffect(() => {
     const temp_months = [];
+    if (calendarMonths < 1) {
+      const firstDayOfMonth = startOfMonth(addMonths(startDate, 0));
+      const lastDayOfMonth = endOfMonth(addMonths(startDate, 0));
+      const startDay = startOfWeek(firstDayOfMonth);
+      const endDay = endOfWeek(lastDayOfMonth);
+      let monthDays = eachDayOfInterval({
+        start: startDay,
+        end: endDay,
+      });
+
+      monthDays = monthDays.map((day) => {
+        return { date: day, color: "" };
+      });
+      monthDays = getDayColors(dateRanges[0], monthDays);
+
+      temp_months.push({ firstDay: firstDayOfMonth, days: monthDays });
+    }
+
     for (let i = 0; i < calendarMonths; i++) {
       const firstDayOfMonth = startOfMonth(addMonths(startDate, i));
       const lastDayOfMonth = endOfMonth(addMonths(startDate, i));
@@ -806,8 +1180,8 @@ export const CustomCalendar = ({
     return days.map((day) => {
       // Check if the current day is within the range
       if (
-        isSameDay(day.date, range.startDate) ||
-        (day.date > range.startDate && day.date < range.endDate)
+        (range && isSameDay(day.date, range.startDate)) ||
+        (range && day.date > range.startDate && day.date < range.endDate)
       ) {
         return { date: day.date, color: range.color }; // Return the day and its color
       } else {
@@ -852,7 +1226,7 @@ export const Month = ({ firstDay, days, startDate, endDate }) => {
       <div className="grid grid-cols-7 text-lg">
         {days.map((day, index) => {
           if (day.date.getMonth() !== firstDay.getMonth()) {
-            return <div className=""></div>;
+            return <div key={index} className="p-2"></div>;
           }
           return (
             <div
@@ -888,16 +1262,18 @@ export const ActionPanel = (props) => {
     <div className="w-full fixed bottom-0 bg-white py-2 md:py-3 lg:py-3 flex items-center justify-center border-t-2 shadow-lg px-2">
       <div className="flex flex-row gap-4">
         <button
-          onClick={() => setEdit(false)}
+          onClick={
+            editDestination
+              ? () => setEdit(false)
+              : () => setEditDestination(true)
+          }
           className="px-5 py-2 rounded-lg border-2 border-black"
         >
-          Cancel
+          {editDestination ? "Cancel" : "Back"}
         </button>
         <button
           onClick={
-            editDestination
-              ? () => setEditDestination((prev) => !prev)
-              : handleSaveButton
+            editDestination ? () => setEditDestination(false) : handleSaveButton
           }
           className="bg-[#F7E700] px-5 py-2 rounded-lg border-2 border-black"
         >
@@ -908,4 +1284,42 @@ export const ActionPanel = (props) => {
   );
 };
 
-export default RouteEditSection;
+export const ErrorMessage = ({ error, setError }) => {
+  return (
+    <div
+      id="err_message"
+      className="animate-slideDown fixed mx-2 top-5 md:right-5 lg:right-5 bg-red-500 rounded-lg text-white p-3 flex flex-row items-center gap-3"
+    >
+      <div className="text-sm md:text-lg lg:text-lg">{error}</div>
+      <RxCrossCircled
+        onClick={() => setError(false)}
+        className="text-2xl cursor-pointer"
+      />
+    </div>
+  );
+};
+
+export const Loader = (props) => {
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+      <div className="mb-96">
+        <div className="animate-spin loader ease-linear rounded-full border-4 border-t-4 border-t-yellow-500 h-14 w-14"></div>
+      </div>
+    </div>
+  );
+};
+
+const mapStateToPros = (state) => {
+  return {
+    notificationText: state.Notification.text,
+    token: state.auth.token,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    openNotification: (payload) => dispatch(openNotification(payload)),
+  };
+};
+
+export default connect(mapStateToPros, mapDispatchToProps)(RouteEditSection);

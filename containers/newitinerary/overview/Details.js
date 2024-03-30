@@ -3,6 +3,9 @@ import { useState, useEffect } from "react";
 import Button from "../../../components/ui/button/Index";
 import { convertDateFormat } from "../../../helper/ConvertDateFormat";
 import { format, parseISO } from "date-fns";
+import { MdModeEdit } from "react-icons/md";
+import useMediaQuery from "../../../components/media";
+
 const Container = styled.div`
   display: grid;
   grid-template-columns: auto auto auto auto auto;
@@ -36,30 +39,12 @@ const Text = styled.p`
   margin: 0;
 `;
 const Details = (props) => {
+  const isDesktop = useMediaQuery("(min-width:768px)");
+
   useEffect(() => {}, []);
 
   return (
     <Container className="font-lexend">
-      {props.travellerType != null ? (
-        <div style={{ width: "max-content" }}>
-          <Heading className="flex flex-row gap-2 items-center">
-            Dates ({props.duration})
-            {/* <button
-              onClick={() => props.setEditDestination(false)}
-              className="text-sm border-2 border-black rounded-lg px-3 py-1 hover:bg-black hover:text-white transition ease-in-out duration-500"
-            >
-              Edit Dates
-            </button> */}
-          </Heading>
-          {props.start_date && (
-            <Text>
-              {convertDFormat(props.start_date)} -{" "}
-              {convertDFormat(props.end_date)}
-            </Text>
-          )}
-        </div>
-      ) : null}
-
       {props?.group_type !== null ? (
         <div style={{ width: "max-content" }}>
           <Heading>Group Type</Heading>
@@ -94,6 +79,38 @@ const Details = (props) => {
         <div style={{ width: "max-content" }}>
           <Heading>Budget</Heading>
           <Text>{props.budget}</Text>
+        </div>
+      ) : null}
+
+      {props.travellerType != null ? (
+        <div
+          style={{ width: "max-content" }}
+          className="flex flex-row items-center gap-4"
+        >
+          <div>
+            <Heading className="flex flex-row gap-2 items-center">
+              Dates ({props.duration})
+            </Heading>
+            {props.start_date && (
+              <Text>
+                {convertDFormat(props.start_date)} -{" "}
+                {convertDFormat(props.end_date)}
+              </Text>
+            )}
+          </div>
+          {isDesktop ? (
+            <button
+              onClick={() => props.setEditRoute("editDates")}
+              className="text-sm border-2 border-black rounded-lg px-4 py-2 hover:bg-black hover:text-white transition ease-in-out duration-500"
+            >
+              Edit Dates
+            </button>
+          ) : (
+            <MdModeEdit
+              onClick={() => props.setEditRoute("editDates")}
+              className="text-lg cursor-pointer hover:text-yellow-400"
+            />
+          )}
         </div>
       ) : null}
 

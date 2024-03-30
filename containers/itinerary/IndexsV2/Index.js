@@ -96,13 +96,13 @@ const Itinerary = (props) => {
   const [userEmail, setUserEmail] = useState(null);
   const [group_type, setgroup_type] = useState(null);
   const [duration_time, setduration_time] = useState(null);
-
   const [hasUserPaid, setHasUserPaid] = useState(false);
-
   const [isPastTravelerItinerary, setIsPastTravelerItinerary] = useState(false);
   const [is_stock, setIsStock] = useState(false);
   const hasRendered = useRef(false);
   const dispatch = useDispatch();
+  const [editRoute, setEditRoute] = useState(false);
+
   // const closeGalleryHandler = () => {
   //   setImages(null);
   //   setShowbooking(true);
@@ -737,6 +737,7 @@ const Itinerary = (props) => {
           number_of_adults={plan ? plan?.number_of_adults : null}
           number_of_children={plan ? plan?.number_of_children : null}
           number_of_infants={plan ? plan?.number_of_infants : null}
+          setEditRoute={setEditRoute}
         ></Overview>
         <div id="itinerary-anchor">
           <Menu
@@ -803,6 +804,8 @@ const Itinerary = (props) => {
             group_type={group_type}
             duration_time={duration_time}
             travellerType={travellerType}
+            editRoute={editRoute}
+            setEditRoute={setEditRoute}
           ></Menu>
         </div>
       </Container>

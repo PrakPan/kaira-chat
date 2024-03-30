@@ -743,6 +743,8 @@ const SimpleTabsV2 = (props) => {
             group_type={props.group_type}
             duration_time={props.duration_time}
             travellerType={props.travellerType}
+            editRoute={props.editRoute}
+            setEditRoute={props.setEditRoute}
           ></Breif>
         )}
       </div>

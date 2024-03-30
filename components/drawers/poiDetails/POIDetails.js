@@ -229,7 +229,7 @@ const POIDetails = (props) => {
               <u>
                 {" "}
                 {props.data.user_ratings_total}{" "}
-                {props.data.activity_type ? "user reviews" : "Googel reviews"}
+                {props.data.activity_type ? "user reviews" : "Google reviews"}
               </u>
             )}
           </div>

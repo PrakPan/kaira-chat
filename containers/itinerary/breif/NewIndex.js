@@ -213,21 +213,24 @@ const Details = (props) => {
               getPaymentHandler={props.getPaymentHandler}
               setShowLoginModal={props.setShowLoginModal}
               _GetInTouch={props._GetInTouch}
-              setEdit={setEdit}
+              setEdit={props.setEditRoute}
             />
           </div>
         </RouteComponent>
       </DetailsContainer>
 
-      {edit && (
+      {props.editRoute && (
         <RouteEditSection
-          setEdit={setEdit}
+          editRoute={props.editRoute}
+          setEdit={props.setEditRoute}
           routes={props.routes}
           itinerary={props.itinerary}
           plan={props.plan}
           group_type={props.group_type}
           duration_time={props.duration_time}
           travellerType={props.travellerType}
+          fetchData={props.fetchData}
+          setShowLoginModal={props.setShowLoginModal}
         >
           <div
             className="sticky lg:w-full lg:h-[50vh] rounded-xl"

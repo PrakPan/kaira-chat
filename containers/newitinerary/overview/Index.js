@@ -54,6 +54,7 @@ const Overview = (props) => {
           number_of_adults={props?.number_of_adults}
           number_of_children={props?.number_of_children}
           number_of_infants={props?.number_of_infants}
+          setEditRoute={props.setEditRoute}
         ></Details>
       </div>
 
