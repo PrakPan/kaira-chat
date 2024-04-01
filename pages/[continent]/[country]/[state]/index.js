@@ -65,14 +65,11 @@ export async function getStaticPaths() {
     );
     let themePages = themeRes.data;
     themePages = themePages.map((page) => {
-      // page.path = "asia/India/" + page.path;
       return {
         path: "asia/India/" + page.path,
       };
     });
     const allPaths = [...data, ...themePages];
-    console.log("all paths >>>", allPaths);
-    console.log("theme paths >>>", themePages);
     for (var i = 0; i < allPaths.length; i++) {
       const pathArr = allPaths[i].path.split("/");
       var [continentSlug, countrySlug, stateSlug] = pathArr;
@@ -88,7 +85,7 @@ export async function getStaticPaths() {
     console.error("[ERROR][statepage:getStaticPaths]: ", err.message);
   }
 
-  console.log('paths >>>>>', paths);
+  console.log("paths >>>>>", paths);
 
   return {
     paths: paths,
