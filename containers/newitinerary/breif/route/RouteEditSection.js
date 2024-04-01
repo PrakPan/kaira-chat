@@ -93,7 +93,7 @@ const RouteEditSection = (props) => {
     if (
       !new Date(startDate) ||
       isNaN(Date.parse(startDate)) ||
-      new Date(startDate) < today
+      (!isSameDay(new Date(startDate), today) && new Date(startDate) < today)
     ) {
       return false;
     }
@@ -105,7 +105,8 @@ const RouteEditSection = (props) => {
       if (
         !new Date(checkin_date) ||
         isNaN(Date.parse(checkin_date)) ||
-        new Date(checkin_date) < prevDate
+        (!isSameDay(new Date(checkin_date), prevDate) &&
+          new Date(checkin_date) < prevDate)
       ) {
         return false;
       }
@@ -113,7 +114,8 @@ const RouteEditSection = (props) => {
       if (
         !new Date(checkout_date) ||
         isNaN(Date.parse(checkout_date)) ||
-        new Date(checkout_date) < new Date(checkin_date)
+        (!isSameDay(new Date(checkout_date), new Date(checkin_date)) &&
+          new Date(checkout_date) < new Date(checkin_date))
       ) {
         return false;
       }
@@ -122,7 +124,11 @@ const RouteEditSection = (props) => {
 
     if (
       !new Date(endDate) ||
-      isNaN(Date.parse(endDate) || new Date(endDate) < prevDate)
+      isNaN(
+        Date.parse(endDate) ||
+          (!isSameDay(new Date(endDate), prevDate) &&
+            new Date(endDate) < prevDate)
+      )
     ) {
       return false;
     }
@@ -880,7 +886,7 @@ export const DestinationDates = (props) => {
               cityData.city_name || cityData.name || cityData.text
             }`,
           };
-        } else if (date_obj < today) {
+        } else if (!isSameDay(date_obj, today) && date_obj < today) {
           return {
             error: true,
             invalid: true,
@@ -902,7 +908,7 @@ export const DestinationDates = (props) => {
               cityData.city_name || cityData.name || cityData.text
             }`,
           };
-        } else if (date_obj < prevDate) {
+        } else if (!isSameDay(date_obj, prevDate) && date_obj < prevDate) {
           return {
             error: true,
             invalid: true,
@@ -924,7 +930,10 @@ export const DestinationDates = (props) => {
               cityData.city_name || cityData.name || cityData.text
             }`,
           };
-        } else if (date_obj < checkin_date) {
+        } else if (
+          !isSameDay(date_obj, checkin_date) &&
+          date_obj < checkin_date
+        ) {
           return {
             error: true,
             invalid: true,
@@ -946,7 +955,7 @@ export const DestinationDates = (props) => {
               cityData.city_name || cityData.name || cityData.text
             }`,
           };
-        } else if (date_obj < prevDate) {
+        } else if (!isSameDay(date_obj, prevDate) && date_obj < prevDate) {
           return {
             error: true,
             invalid: true,
@@ -1021,7 +1030,7 @@ export const DestinationDates = (props) => {
                   ? "End Date"
                   : "Arrival Date"}
               </div>
-              <div className="flex flex-row items-center gap-3">
+              <div className="flex flex-row items-center gap-1">
                 <input
                   required
                   name={
@@ -1066,7 +1075,7 @@ export const DestinationDates = (props) => {
                         ).invalid
                           ? "bg-red-500"
                           : "bg-[#ffbb33]"
-                      }  p-2 rounded-full rounded-bl-none animate-popOut shadow-2xl shadow-gray-900`}
+                      }  p-2 rounded-full rounded-tl-none animate-popOut shadow-2xl shadow-gray-900`}
                     >
                       {
                         isInvalidDate(
@@ -1086,7 +1095,7 @@ export const DestinationDates = (props) => {
             <div className="flex flex-row items-center gap-3">
               <div className="flex flex-col gap-1">
                 <div>Departure Date</div>
-                <div className="flex flex-row items-center gap-3">
+                <div className="flex flex-row items-center gap-1">
                   <input
                     required
                     name={"Departure Date"}
@@ -1103,7 +1112,7 @@ export const DestinationDates = (props) => {
                         isInvalidDate(checkoutDate, true).invalid
                           ? "bg-red-500"
                           : "bg-[#ffbb33]"
-                      } p-2 rounded-full rounded-bl-none animate-popOut shadow-2xl shadow-gray-900`}
+                      } p-2 rounded-full rounded-tl-none animate-popOut shadow-2xl shadow-gray-900`}
                     >
                       {isInvalidDate(checkoutDate, true).message}
                     </div>
