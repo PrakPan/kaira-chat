@@ -20,7 +20,11 @@ const TravelPlanner = (props) => {
   }, []);
 
   return (
-    <Layout page_id={props.Data.id} destination={props.Data.destination} page={"State Page"}>
+    <Layout
+      page_id={props.Data.id}
+      destination={props.Data.destination}
+      page={"State Page"}
+    >
       <Head>
         <title>
           Plan Your Trip to {props.Data.destination} | Trip Planner & Itinerary
@@ -56,13 +60,26 @@ export async function getStaticPaths() {
   try {
     const res = await axiossearchallinstance.get("/?type=State&fields=path");
     const data = res.data;
-    for (var i = 0; i < data.length; i++) {
-      const pathArr = data[i].path.split("/");
+    const themeRes = await axiospagelistinstance.get(
+      "/?fields=path&page_type=Theme"
+    );
+    let themePages = themeRes.data;
+    themePages = themePages.map((page) => {
+      // page.path = "asia/India/" + page.path;
+      return {
+        path: "asia/India/" + page.path,
+      };
+    });
+    const allPaths = [...data, ...themePages];
+    console.log("all paths >>>", allPaths);
+    console.log("theme paths >>>", themePages);
+    for (var i = 0; i < allPaths.length; i++) {
+      const pathArr = allPaths[i].path.split("/");
       var [continentSlug, countrySlug, stateSlug] = pathArr;
       paths.push({
         params: {
           continent: continentSlug,
-          country: countrySlug,
+          country: countrySlug.toLowerCase().replace(/ /g, "_"),
           state: stateSlug,
         },
       });
@@ -70,6 +87,8 @@ export async function getStaticPaths() {
   } catch (err) {
     console.error("[ERROR][statepage:getStaticPaths]: ", err.message);
   }
+
+  console.log('paths >>>>>', paths);
 
   return {
     paths: paths,
