@@ -1,14 +1,14 @@
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import React, { useEffect } from 'react';
-import leaflet from 'leaflet';
-import ReactLeafletGoogleLayer from 'react-leaflet-google-layer';
-import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
-import '@changey/react-leaflet-markercluster/dist/styles.min.css';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import React, { useEffect } from "react";
+import leaflet from "leaflet";
+import ReactLeafletGoogleLayer from "react-leaflet-google-layer";
+import MarkerClusterGroup from "@changey/react-leaflet-markercluster";
+import "@changey/react-leaflet-markercluster/dist/styles.min.css";
 
 const customIcon = leaflet.icon({
   iconUrl:
-    'https://d31aoa0ehgvjdi.cloudfront.net/media/icons/general/black-marker.png',
+    "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/general/black-marker.png",
   iconSize: [28, 32],
   iconAnchor: [14, 32],
 });
@@ -42,9 +42,9 @@ const Mapbox = React.memo((props) => {
         center={props.center}
         zoom={props.defaultZoom || 1}
         style={{
-          height: props.height || '100%',
-          width: '100%',
-          borderRadius: '1rem',
+          height: props.height || "100%",
+          width: "100%",
+          borderRadius: "1rem",
         }}
       >
         <TileLayer
@@ -62,7 +62,7 @@ const Mapbox = React.memo((props) => {
             icon={customIcon}
           >
             <Popup>
-              {props?.InfoWindowContainer ? props.InfoWindowContainer : ''}
+              {props?.InfoWindowContainer ? props.InfoWindowContainer : ""}
             </Popup>
           </Marker>
         </MarkerClusterGroup>
@@ -76,9 +76,9 @@ const Mapbox = React.memo((props) => {
       center={{ lat: props?.locations[0]?.lat, lng: props?.locations[0]?.long }}
       zoom={props.defaultZoom || 1}
       style={{
-        height: props.height || '100%',
-        width: '100%',
-        borderRadius: '1rem',
+        height: props.height || "100%",
+        width: "100%",
+        borderRadius: "1rem",
       }}
     >
       <TileLayer
@@ -92,7 +92,10 @@ const Mapbox = React.memo((props) => {
           <Marker
             key={location.id}
             animate
-            position={[location?.lat, location?.long]}
+            position={[
+              location?.lat ? location.lat : "",
+              location?.long ? location.long : "",
+            ]}
             draggable={false}
             icon={customIcon}
           >
