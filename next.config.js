@@ -1,6 +1,8 @@
 module.exports = {
   distDir: process.env.BUILD_DIR || ".next",
   output: "export",
+  // trailingSlash: true,
+
   // async redirects() {
   //   return [
   //     {
@@ -15,6 +17,7 @@ module.exports = {
   //     },
   //   ];
   // },
+
   images: {
     unoptimized: true,
     remotePatterns: [
@@ -40,14 +43,12 @@ module.exports = {
       },
     ],
   },
+
   experimental: {
     nextScriptWorkers: true,
     http2: true, // Enable HTTP/2 support
     push: true, // Enable server push
   },
-  // images: {
-  //   disableStaticImages: true,
-  // },
   swcMinify: true,
   eslint: {
     // Warning: This allows production builds to successfully complete even if

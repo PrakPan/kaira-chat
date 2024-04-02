@@ -40,6 +40,20 @@ module.exports = {
       colors: {
         blue: "#0000EE",
       },
+      keyframes: {
+        slideDown: {
+          "0%": { transform: "translateY(-100%)" },
+          "100%": { transform: "translateY(0%)" },
+        },
+        popOut: {
+          "0%": { transform: "scale(0)" },
+          "100%": { transform: "scale(1)" },
+        },
+      },
+      animation: {
+        slideDown: "slideDown 0.2s ease-in-out",
+        popOut: "popOut 0.2s ease-in-out",
+      },
     },
   },
   plugins: [],
