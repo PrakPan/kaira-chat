@@ -102,7 +102,7 @@ const ImagesMobile = (props) => {
       </>
       {props.images[1] ? (
         <GridContainer>
-          <div style={{ display: ImagesLoaded[1] ? "initial" : "none" }} className="h-[50%]">
+          <div style={{ display: ImagesLoaded[1] ? "initial" : "none" }} className="">
             <ImageLoader
               borderRadius="12px"
               url={props.images[1]}

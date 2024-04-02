@@ -1075,7 +1075,7 @@ export const DestinationDates = (props) => {
                         ).invalid
                           ? "bg-red-500"
                           : "bg-[#ffbb33]"
-                      }  p-2 rounded-full rounded-tl-none animate-popOut shadow-2xl shadow-gray-900`}
+                      }  p-2 rounded-full rounded-tl-none animate-popOut`}
                     >
                       {
                         isInvalidDate(
@@ -1112,7 +1112,7 @@ export const DestinationDates = (props) => {
                         isInvalidDate(checkoutDate, true).invalid
                           ? "bg-red-500"
                           : "bg-[#ffbb33]"
-                      } p-2 rounded-full rounded-tl-none animate-popOut shadow-2xl shadow-gray-900`}
+                      } p-2 rounded-full rounded-tl-none animate-popOut`}
                     >
                       {isInvalidDate(checkoutDate, true).message}
                     </div>
