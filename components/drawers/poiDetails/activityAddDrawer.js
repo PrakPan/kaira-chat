@@ -5,7 +5,7 @@ import { EXPERIENCE_FILTERS_BOX } from "../../../services/constants";
 import styled from "styled-components";
 import { Navigation } from "../../NewNavigation";
 import axiosaxtivitiesinstance from "../../../services/poi/reccommendedactivities";
-import addActivity from "../../../services/poi/addActivities";
+import axiosaddActivityinstance from "../../../services/poi/addActivities";
 import PoiList from "../../../containers/newitinerary/itineraryelements/PoiList";
 import { BiErrorCircle } from "react-icons/bi";
 import PoiListSkeleton from "../../../containers/newitinerary/itineraryelements/PoiListSkeleton";
@@ -82,7 +82,7 @@ const ActivityAddDrawer = (props) => {
   };
 
   const _addActivityHandler = (activityID) => {
-    addActivity
+    axiosaddActivityinstance
       .post(
         "/",
         {
