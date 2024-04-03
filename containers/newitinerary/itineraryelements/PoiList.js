@@ -250,7 +250,7 @@ const PoiList = (props) => {
                   </div>
                   <div className="flex flex-row pb-2">
                     {props?.data?.added_in_itinerary?.selected ? (
-                      <div className="whitespace-nowrap">
+                      <div className="whitespace-nowrap font-semibold">
                         Added
                         {props?.data?.added_in_itinerary?.added_on
                           ? ` on ${props?.data?.added_in_itinerary?.added_on}`
@@ -393,7 +393,7 @@ const PoiList = (props) => {
                   </div>
                   <div className="flex flex-row py-1 justify-end">
                     {props?.data?.added_in_itinerary?.selected ? (
-                      <div className="whitespace-nowrap">
+                      <div className="whitespace-nowrap font-semibold">
                         Added
                         {props?.data?.added_in_itinerary?.added_on
                           ? ` on ${props?.data?.added_in_itinerary?.added_on}`

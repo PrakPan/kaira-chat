@@ -26,7 +26,7 @@ const NewItenaryMain = (props) => {
     props.itinerary.day_slabs.map((day_slab, index) => {
       day_slab.slab_elements.map((element, index) => {
         if (element.element_type === "activity") {
-          itenaryActivities.push({ activity: element, date: day_slab.date });
+          itenaryActivities.push({ activity: element, date: day_slab.slab });
         }
       });
     });

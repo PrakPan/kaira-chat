@@ -174,20 +174,18 @@ const ItineraryPoiElement = (props) => {
     { id: 2, label: "Things To Do", link: "" },
   ];
 
-  console.log("here in poi >>>>", props.itineraryActivities);
-
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
     setShow(false);
   };
 
   const fetchData = (showMore = false) => {
-    const added_activities = props.itineraryActivities.map((el, index) => {
+    const added_activities = props.itineraryActivities.map((element, index) => {
       return {
         id:
-          el.activity?.activity_data?.activity?.id ||
-          el.activity?.activity_data?.poi?.id,
-        date: el.date,
+          element.activity?.activity_data?.activity?.id ||
+          element.activity?.activity_data?.poi?.id,
+        date: element.date,
       };
     });
     let ticketsCount = 1;
