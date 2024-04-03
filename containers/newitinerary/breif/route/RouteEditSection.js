@@ -160,8 +160,12 @@ const RouteEditSection = (props) => {
       },
     };
 
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${props.token}`,
+    };
     axiosItineraryUpdateInstance
-      .post("", data)
+      .post("", data, { headers })
       .then((response) => {
         props.fetchData();
         setLoading(false);
@@ -1276,7 +1280,7 @@ export const ActionPanel = (props) => {
               ? () => setEdit(false)
               : () => setEditDestination(true)
           }
-          className="px-5 py-2 rounded-lg border-2 border-black"
+          className="px-5 py-2 rounded-lg border-2 border-black hover:text-white hover:bg-black transition ease-in-out duration-500"
         >
           {editDestination ? "Cancel" : "Back"}
         </button>
@@ -1284,7 +1288,7 @@ export const ActionPanel = (props) => {
           onClick={
             editDestination ? () => setEditDestination(false) : handleSaveButton
           }
-          className="bg-[#F7E700] px-5 py-2 rounded-lg border-2 border-black"
+          className="bg-[#F7E700] px-5 py-2 rounded-lg border-2 border-black hover:text-white hover:bg-black transition ease-in-out duration-500"
         >
           {editDestination ? "Next" : "Save"}
         </button>
