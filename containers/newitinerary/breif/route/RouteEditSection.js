@@ -683,7 +683,7 @@ export const NewDestination = (props) => {
         </div>
       </div>
 
-      {searchResults && searchResults.length && (
+      {searchResults && searchResults.length ? (
         <div className="absolute fixed top-10 left-[0%] w-[100%] max-h-64 overflow-y-auto border-2 rounded-lg bg-white p-2 flex flex-col gap-3">
           {searchResults.map((res, ind) => (
             <div
@@ -700,7 +700,7 @@ export const NewDestination = (props) => {
             </div>
           ))}
         </div>
-      )}
+      ) : null}
     </div>
   );
 };
