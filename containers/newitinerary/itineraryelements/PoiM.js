@@ -27,6 +27,7 @@ import { BiErrorCircle } from "react-icons/bi";
 import { IoMdSearch } from "react-icons/io";
 import styled from "styled-components";
 import useDebounce from "../../../hooks/useDebounce";
+import { logEvent } from "../../../services/ga/Index";
 
 const Container = styled.div``;
 
@@ -185,6 +186,14 @@ const ItineraryPoiElementM = (props) => {
   ];
 
   const fetchData = (showMore = false) => {
+    const added_activities = props.itineraryActivities.map((el, index) => {
+      return {
+        id:
+          el.activity?.activity_data?.activity?.id ||
+          el.activity?.activity_data?.poi?.id,
+        date: el.date,
+      };
+    });
     let ticketsCount = 1;
     if (props.payment && props.payment.meta_info) {
       ticketsCount =
@@ -202,6 +211,7 @@ const ItineraryPoiElementM = (props) => {
           ? EXPERIENCE_FILTERS_BOX[SelectedExprience].actual
           : [],
         search_query: debouncedSearch,
+        added_activities,
       })
       .then((res) => {
         if (res.data.results.length) {
@@ -789,7 +799,9 @@ const ItineraryPoiElementM = (props) => {
 
 // export default ItineraryPoiElementM;
 const mapStateToPros = (state) => {
-  return {};
+  return {
+    itineraryActivities: state.itineraryActivities.activities,
+  };
 };
 const mapDispatchToProps = (dispatch) => {
   return {

@@ -7,6 +7,9 @@ import CheckboxFormComponent from "../../../components/FormComponents/CheckboxFo
 import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
 import { connect } from "react-redux";
 import SkeletonCard from "../../../components/ui/SkeletonCard";
+import { TransparentButton } from "../../../containers/itinerary/New_Itenary_DBD/New_itenaryStyled";
+import { MdDoneAll } from "react-icons/md";
+import { convertDateFormat } from "../../../helper/ConvertDateFormat";
 
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
@@ -227,21 +230,44 @@ const PoiList = (props) => {
                         per person*
                       </div>
                     </div>
-                    <div
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleCheckboxChange(e, props?.data?.activity_data?.id);
-                      }}
-                      className="flex mt-2 mr-2 mb-2 flex-row gap-1 items-end justify-end cursor-pointer"
-                    >
-                      <CheckboxFormComponent
-                        checked={isSelect}
-                        className="mb-1"
-                      />
-                      <label className="text-center">
-                        {isSelect ? "Selected" : "Select"}
-                      </label>
-                    </div>
+                    {props?.data?.added_in_itinerary?.selected ? null : (
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCheckboxChange(
+                            e,
+                            props?.data?.activity_data?.id
+                          );
+                        }}
+                        className="flex mt-2 mr-2 mb-2 flex-row gap-1 items-end justify-end cursor-pointer"
+                      >
+                        <CheckboxFormComponent
+                          checked={isSelect}
+                          className="mb-1"
+                        />
+                        <label className="text-center">
+                          {isSelect ? "Selected" : "Select"}
+                        </label>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-row pb-2">
+                    {props?.data?.added_in_itinerary?.selected ? (
+                      <div className="whitespace-nowrap font-semibold">
+                        <TransparentButton>
+                          <MdDoneAll
+                            style={{
+                              display: "inline",
+                              marginRight: "0.35rem",
+                            }}
+                          />
+                          Activity added
+                          {props?.data?.added_in_itinerary?.added_on
+                            ? ` on ${props?.data?.added_in_itinerary?.added_on}`
+                            : null}
+                        </TransparentButton>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               </div>
@@ -254,7 +280,7 @@ const PoiList = (props) => {
                 setShowDetails({ show: true, data: props.data });
               }}
               id="POI"
-              className={`relative flex lg:flex-row w-full flex-col gap-4 `}
+              className={`relative flex lg:flex-row w-full flex-col gap-4`}
             >
               <div className="flex flex-col lg:w-[50%] w-full">
                 {" "}
@@ -341,46 +367,64 @@ const PoiList = (props) => {
                     <div className="font-bold text-gray-500"> ...more</div>
                   </div>
                 </div>
-                <div className="flex flex-row gap-5 justify-between">
-                  {props.data.activity_data.poi?.tips
-                    ? props.data.activity_data.poi?.tips
-                        .slice(0, 1)
-                        .map((tip, index) => (
-                          <div>
-                            <div className='text-[13px]  font-normal text-[#01202B] line-clamp-2"'>
-                              <div className="font-bold inline pr-1">
-                                Tips & Tricks:
+                <div className="flex flex-col">
+                  <div className="w-full flex flex-row gap-5 justify-between">
+                    {props.data.activity_data.poi?.tips
+                      ? props.data.activity_data.poi?.tips
+                          .slice(0, 1)
+                          .map((tip, index) => (
+                            <div>
+                              <div className='text-[13px]  font-normal text-[#01202B] line-clamp-2"'>
+                                <div className="font-bold inline pr-1">
+                                  Tips & Tricks:
+                                </div>
+                                {tip}
                               </div>
-                              {tip}
                             </div>
-                          </div>
-                        ))
-                    : null}
-                  <div
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleCheckboxChange(e);
-                    }}
-                    className="flex mr-2 mb-2 flex-row gap-1 items-end justify-end cursor-pointer"
-                  >
-                    <CheckboxFormComponent
-                      checked={isSelect}
-                      className="mb-1"
-                    />
-                    <label className="text-center">
-                      {isSelect ? "Selected" : "Select"}
-                    </label>
+                          ))
+                      : null}
+
+                    {props?.data?.added_in_itinerary?.selected ? null : (
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCheckboxChange(e);
+                        }}
+                        className="flex mr-2 mb-2 flex-row gap-1 items-end justify-end cursor-pointer"
+                      >
+                        <CheckboxFormComponent
+                          checked={isSelect}
+                          className="mb-1"
+                        />
+                        <label className="text-center">
+                          {isSelect ? "Selected" : "Select"}
+                        </label>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-row py-1 justify-end">
+                    {props?.data?.added_in_itinerary?.selected ? (
+                      <div className="whitespace-nowrap font-semibold">
+                        <TransparentButton>
+                          <MdDoneAll
+                            style={{
+                              display: "inline",
+                              marginRight: "0.35rem",
+                            }}
+                          />
+                          Activity added
+                          {props?.data?.added_in_itinerary?.added_on
+                            ? ` on ${convertDateFormat(props?.data?.added_in_itinerary?.added_on)}`
+                            : null}
+                        </TransparentButton>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               </div>
             </div>
           </div>
         )}
-        {/* {data.activity_data?.poi?.experience_filters[0] && (
-          <ClippathComp className="absolute text-md font-bold bg-yellow-400 text-#090909 pl-12   pr-4 py-1 top-6 right-3 -m-3">
-            {data.activity_data?.poi?.experience_filters[0]}
-          </ClippathComp>
-        )} */}
       </div>
       <POIDetailsDrawer
         // show={props.showDrawer.isOpen}

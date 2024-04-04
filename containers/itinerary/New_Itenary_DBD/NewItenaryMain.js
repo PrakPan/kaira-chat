@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import Day_I_Container from "./Day_I_Container";
-import useMediaQuery from "../../../hooks/useMedia";
 import ScrollableMenuTabs from "../../../components/ScrollableMenuTabs";
 import { convertDateFormat } from "../../../helper/ConvertDateFormat";
+import { connect } from "react-redux";
+import { setItineraryActivities } from "../../../store/actions/itineraryActivities";
 
 const NewItenaryMain = (props) => {
   const Wrapper = styled.div`
@@ -13,27 +14,24 @@ const NewItenaryMain = (props) => {
     flex-direction: column;
   `;
 
-  const CitiesContainer = styled.div`
-    width: calc(100vw-32px);
-    overflow: hidden;
-    display: grid;
-    grid-template-columns: max-content max-content max-content;
-    grid-gap: 0.75rem;
-    height: max-content;
-    position: sticky;
-    top: 31vw;
-    z-index: 10;
-    background-color: white;
-  `;
-
-  const City = styled.div`
-    border-radius: 8px;
-    padding: 0.5rem;
-  `;
-
-  const isDesktop = useMediaQuery("(min-width:1148px)");
+  useEffect(() => {
+    const activities = getItineraryActivities();
+    props.setItineraryActivities({ activities });
+  }, [props?.itinerary]);
 
   let currentCity = props.itinerary.starting_city.city_name;
+
+  const getItineraryActivities = () => {
+    let itenaryActivities = [];
+    props.itinerary.day_slabs.map((day_slab, index) => {
+      day_slab.slab_elements.map((element, index) => {
+        if (element.element_type === "activity") {
+          itenaryActivities.push({ activity: element, date: day_slab.slab });
+        }
+      });
+    });
+    return itenaryActivities;
+  };
 
   const getCurrentCity = () => {
     props.itinerary.day_slabs.map((day_slab, index) => {
@@ -114,52 +112,12 @@ const NewItenaryMain = (props) => {
     }
   }
 
-  function memoize(fn) {
-    const cache = {};
-    return function (...args) {
-      const key = JSON.stringify(args);
-      if (cache[key]) {
-        return cache[key];
-      }
-      const result = fn.apply(this, args);
-      cache[key] = result;
-      return result;
-    };
-  }
-
   const yearCalc = (days) => {
     if (days[0]) {
       var year1 = days[0]?.date?.split("/")[2];
       return year1;
     }
   };
-
-  const IdPauser = (duration = 1) => {
-    let counter = duration - 1;
-
-    return function () {
-      if (counter === duration - 1) {
-        counter--;
-        return true;
-      } else if (counter === 0) {
-        counter = duration;
-        return true;
-      } else {
-        counter--;
-        return false;
-      }
-    };
-  };
-
-  function extractCityName(arr) {
-    const cityObject = arr.find((obj) => obj.element_type === "newcity");
-
-    if (cityObject && cityObject.city_name) {
-      return cityObject.city_name;
-    }
-
-    return null;
-  }
 
   return (
     <Wrapper>
@@ -219,4 +177,20 @@ const NewItenaryMain = (props) => {
   );
 };
 
-export default React.memo(NewItenaryMain);
+const mapStateToPros = (state) => {
+  return {
+    itineraryActivities: state.itineraryActivities.activities,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setItineraryActivities: (payload) =>
+      dispatch(setItineraryActivities(payload)),
+  };
+};
+
+export default connect(
+  mapStateToPros,
+  mapDispatchToProps
+)(React.memo(NewItenaryMain));
