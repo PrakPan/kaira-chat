@@ -33,6 +33,7 @@ export function convertDateFormat(dateString) {
 
   return `${monthName} ${Number(day)}`;
 }
+
 export const getDate = (date) => {
   let year = date.substring(0, 4);
   let month = date.substring(5, 7);

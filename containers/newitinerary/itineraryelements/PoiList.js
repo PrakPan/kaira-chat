@@ -7,6 +7,9 @@ import CheckboxFormComponent from "../../../components/FormComponents/CheckboxFo
 import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
 import { connect } from "react-redux";
 import SkeletonCard from "../../../components/ui/SkeletonCard";
+import { TransparentButton } from "../../../containers/itinerary/New_Itenary_DBD/New_itenaryStyled";
+import { MdDoneAll } from "react-icons/md";
+import { convertDateFormat } from "../../../helper/ConvertDateFormat";
 
 const starHotel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
@@ -251,10 +254,18 @@ const PoiList = (props) => {
                   <div className="flex flex-row pb-2">
                     {props?.data?.added_in_itinerary?.selected ? (
                       <div className="whitespace-nowrap font-semibold">
-                        Added
-                        {props?.data?.added_in_itinerary?.added_on
-                          ? ` on ${props?.data?.added_in_itinerary?.added_on}`
-                          : null}
+                        <TransparentButton>
+                          <MdDoneAll
+                            style={{
+                              display: "inline",
+                              marginRight: "0.35rem",
+                            }}
+                          />
+                          Activity added
+                          {props?.data?.added_in_itinerary?.added_on
+                            ? ` on ${props?.data?.added_in_itinerary?.added_on}`
+                            : null}
+                        </TransparentButton>
                       </div>
                     ) : null}
                   </div>
@@ -394,10 +405,18 @@ const PoiList = (props) => {
                   <div className="flex flex-row py-1 justify-end">
                     {props?.data?.added_in_itinerary?.selected ? (
                       <div className="whitespace-nowrap font-semibold">
-                        Added
-                        {props?.data?.added_in_itinerary?.added_on
-                          ? ` on ${props?.data?.added_in_itinerary?.added_on}`
-                          : null}
+                        <TransparentButton>
+                          <MdDoneAll
+                            style={{
+                              display: "inline",
+                              marginRight: "0.35rem",
+                            }}
+                          />
+                          Activity added
+                          {props?.data?.added_in_itinerary?.added_on
+                            ? ` on ${convertDateFormat(props?.data?.added_in_itinerary?.added_on)}`
+                            : null}
+                        </TransparentButton>
                       </div>
                     ) : null}
                   </div>
