@@ -24,6 +24,7 @@ import {
 import axiossearchstartinginstance from "../../../../services/search/startinglocation";
 import axiossearchinstance from "../../../../services/search/searchsuggest";
 import axiosItineraryUpdateInstance from "../../../../services/itinerary/update";
+import { convertDateFormat } from "../../../../helper/ConvertDateFormat";
 
 const RouteEditSection = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
@@ -124,11 +125,8 @@ const RouteEditSection = (props) => {
 
     if (
       !new Date(endDate) ||
-      isNaN(
-        Date.parse(endDate) ||
-          (!isSameDay(new Date(endDate), prevDate) &&
-            new Date(endDate) < prevDate)
-      )
+      isNaN(Date.parse(endDate)) ||
+      (!isSameDay(new Date(endDate), prevDate) && new Date(endDate) < prevDate)
     ) {
       return false;
     }
@@ -894,9 +892,8 @@ export const DestinationDates = (props) => {
           return {
             error: true,
             invalid: true,
-            message: `Start Date should be greater than or equal to ${format(
-              today,
-              "dd/MM/yyyy"
+            message: `Start Date should be greater than or equal to ${convertDateFormat(
+              format(today, "dd/MM/yyyy")
             )}`,
           };
         } else
@@ -916,9 +913,8 @@ export const DestinationDates = (props) => {
           return {
             error: true,
             invalid: true,
-            message: `End Date should be greater than or equal to ${format(
-              prevDate,
-              "dd/MM/yyyy"
+            message: `End Date should be greater than or equal to ${convertDateFormat(
+              format(prevDate, "dd/MM/yyyy")
             )}`,
           };
         } else
@@ -941,9 +937,8 @@ export const DestinationDates = (props) => {
           return {
             error: true,
             invalid: true,
-            message: `Departure Date should be greater than or equal to ${format(
-              checkin_date,
-              "dd/MM/yyyy"
+            message: `Departure Date should be greater than or equal to ${convertDateFormat(
+              format(checkin_date, "dd/MM/yyyy")
             )}`,
           };
         } else
@@ -963,9 +958,8 @@ export const DestinationDates = (props) => {
           return {
             error: true,
             invalid: true,
-            message: `Arrival Date should be greater than or equal to ${format(
-              prevDate,
-              "dd/MM/yyyy"
+            message: `Arrival Date should be greater than or equal to ${convertDateFormat(
+              format(prevDate, "dd/MM/yyyy")
             )}`,
           };
         } else
