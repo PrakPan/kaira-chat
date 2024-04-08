@@ -250,24 +250,27 @@ const PoiList = (props) => {
                         </label>
                       </div>
                     )}
-                  </div>
-                  <div className="flex flex-row pb-2">
-                    {props?.data?.added_in_itinerary?.selected ? (
-                      <div className="whitespace-nowrap font-semibold">
-                        <TransparentButton>
-                          <MdDoneAll
-                            style={{
-                              display: "inline",
-                              marginRight: "0.35rem",
-                            }}
-                          />
-                          Activity added
-                          {props?.data?.added_in_itinerary?.added_on
-                            ? ` on ${props?.data?.added_in_itinerary?.added_on}`
-                            : null}
-                        </TransparentButton>
-                      </div>
-                    ) : null}
+
+                    <div className="flex flex-row pb-2">
+                      {props?.data?.added_in_itinerary?.selected ? (
+                        <div className="whitespace-nowrap font-semibold">
+                          <TransparentButton>
+                            <MdDoneAll
+                              style={{
+                                display: "inline",
+                                marginRight: "0.35rem",
+                              }}
+                            />
+                            Added
+                            {props?.data?.added_in_itinerary?.added_on
+                              ? ` on ${convertDateFormat(
+                                  props?.data?.added_in_itinerary?.added_on
+                                )}`
+                              : null}
+                          </TransparentButton>
+                        </div>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -368,22 +371,7 @@ const PoiList = (props) => {
                   </div>
                 </div>
                 <div className="flex flex-col">
-                  <div className="w-full flex flex-row gap-5 justify-between">
-                    {props.data.activity_data.poi?.tips
-                      ? props.data.activity_data.poi?.tips
-                          .slice(0, 1)
-                          .map((tip, index) => (
-                            <div>
-                              <div className='text-[13px]  font-normal text-[#01202B] line-clamp-2"'>
-                                <div className="font-bold inline pr-1">
-                                  Tips & Tricks:
-                                </div>
-                                {tip}
-                              </div>
-                            </div>
-                          ))
-                      : null}
-
+                  <div className="w-full flex flex-row justify-end">
                     {props?.data?.added_in_itinerary?.selected ? null : (
                       <div
                         onClick={(e) => {
@@ -402,7 +390,7 @@ const PoiList = (props) => {
                       </div>
                     )}
                   </div>
-                  <div className="flex flex-row py-1 justify-end">
+                  <div className="flex flex-row justify-end">
                     {props?.data?.added_in_itinerary?.selected ? (
                       <div className="whitespace-nowrap font-semibold">
                         <TransparentButton>
@@ -412,9 +400,11 @@ const PoiList = (props) => {
                               marginRight: "0.35rem",
                             }}
                           />
-                          Activity added
+                          Added
                           {props?.data?.added_in_itinerary?.added_on
-                            ? ` on ${convertDateFormat(props?.data?.added_in_itinerary?.added_on)}`
+                            ? ` on ${convertDateFormat(
+                                props?.data?.added_in_itinerary?.added_on
+                              )}`
                             : null}
                         </TransparentButton>
                       </div>
