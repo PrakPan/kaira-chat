@@ -140,6 +140,14 @@ const ActivityAddDrawer = (props) => {
   };
 
   function fetchData(showMore = false) {
+    const added_activities = props.itineraryActivities.map((element, index) => {
+      return {
+        id:
+          element.activity?.activity_data?.activity?.id ||
+          element.activity?.activity_data?.poi?.id,
+        date: element.date,
+      };
+    });
     axiosaxtivitiesinstance
       .post(`/?limit=30&offset=${offSet}`, {
         location: props?.cityID,
@@ -149,6 +157,7 @@ const ActivityAddDrawer = (props) => {
           ? EXPERIENCE_FILTERS_BOX[selectedExprience].actual
           : [],
         search_query: debouncedSearch,
+        added_activities,
       })
       .then((res) => {
         if (res.data.results.length) {
@@ -426,6 +435,7 @@ const ActivityAddDrawer = (props) => {
 const mapStateToPros = (state) => {
   return {
     notificationText: state.Notification.text,
+    itineraryActivities: state.itineraryActivities.activities,
   };
 };
 const mapDispatchToProps = (dispatch) => {
