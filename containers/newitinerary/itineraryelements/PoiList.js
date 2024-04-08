@@ -230,7 +230,24 @@ const PoiList = (props) => {
                         per person*
                       </div>
                     </div>
-                    {props?.data?.added_in_itinerary?.selected ? null : (
+                    {props?.data?.added_in_itinerary?.selected ? (
+                      <div className="whitespace-nowrap font-semibold">
+                        <TransparentButton>
+                          <MdDoneAll
+                            style={{
+                              display: "inline",
+                              marginRight: "0.35rem",
+                            }}
+                          />
+                          Added
+                          {props?.data?.added_in_itinerary?.added_on
+                            ? ` on ${convertDateFormat(
+                                props?.data?.added_in_itinerary?.added_on
+                              )}`
+                            : null}
+                        </TransparentButton>
+                      </div>
+                    ) : (
                       <div
                         onClick={(e) => {
                           e.stopPropagation();
@@ -251,7 +268,7 @@ const PoiList = (props) => {
                       </div>
                     )}
 
-                    <div className="flex flex-row pb-2">
+                    {/* <div className="flex flex-row pb-2">
                       {props?.data?.added_in_itinerary?.selected ? (
                         <div className="whitespace-nowrap font-semibold">
                           <TransparentButton>
@@ -270,7 +287,7 @@ const PoiList = (props) => {
                           </TransparentButton>
                         </div>
                       ) : null}
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>
