@@ -155,7 +155,7 @@ const NewItenaryMain = (props) => {
                 payment={props.payment}
                 plan={props.plan}
                 getPaymentHandler={props.getPaymentHandler}
-                itinerary_id={props.plan.id || props.itinerary.tailor_made_id}
+                itinerary_id={props?.plan?.id || props?.itinerary?.tailor_made_id}
                 setItinerary={props.setItinerary}
                 token={props.token}
                 LastElement={props.itinerary.day_slabs.length === index + 1}

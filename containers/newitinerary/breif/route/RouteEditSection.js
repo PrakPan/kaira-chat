@@ -9,7 +9,7 @@ import { BiSolidPencil } from "react-icons/bi";
 import { FaTrashAlt } from "react-icons/fa";
 import { RxCrossCircled } from "react-icons/rx";
 import { MdDone, MdModeEdit } from "react-icons/md";
-import { getDate } from "../../../../helper/DateUtils";
+import { getDate, getDateString } from "../../../../helper/DateUtils";
 import {
   startOfMonth,
   endOfMonth,
@@ -20,6 +20,8 @@ import {
   parseISO,
   addMonths,
   isSameDay,
+  addDays,
+  differenceInDays,
 } from "date-fns";
 import axiossearchstartinginstance from "../../../../services/search/startinglocation";
 import axiossearchinstance from "../../../../services/search/searchsuggest";
@@ -752,6 +754,58 @@ export const EditDates = ({
     setDateRanges(ranges);
   }, [destinations, startDate, endDate]);
 
+  const handleDates = (
+    offSet,
+    index,
+    checkinDate,
+    checkoutDate,
+    isArrival = false
+  ) => {
+    setDestinations((prev) => {
+      return prev.map((dest, ind) => {
+        if (ind === index && !(dest.startingCity || dest.endingCity)) {
+          if (isArrival) {
+            return {
+              ...dest,
+              cityData: {
+                ...dest.cityData,
+                checkin_date: checkinDate,
+                checkout_date: getDateString(
+                  addDays(new Date(getDate(checkoutDate)), offSet)
+                ),
+              },
+            };
+          }
+          return {
+            ...dest,
+            cityData: {
+              ...dest.cityData,
+              checkin_date: checkinDate,
+              checkout_date: checkoutDate,
+            },
+          };
+        } else if (ind > index && ind < destinations.length - 1) {
+          return {
+            ...dest,
+            cityData: {
+              ...dest.cityData,
+              checkin_date: getDateString(
+                addDays(new Date(getDate(dest.cityData.checkin_date)), offSet)
+              ),
+              checkout_date: getDateString(
+                addDays(new Date(getDate(dest.cityData.checkout_date)), offSet)
+              ),
+            },
+          };
+        } else {
+          return dest;
+        }
+      });
+    });
+
+    setEndDate((prev) => getDateString(addDays(new Date(prev), offSet)));
+  };
+
   return (
     <div className="w-full flex flex-row relative">
       <div className="w-full mg:w-[50%] lg:w-[50%] flex flex-col items-center pb-5 gap-3">
@@ -782,6 +836,7 @@ export const EditDates = ({
                     getDate(destinations[index - 1].cityData.checkout_date)
               }
               isValidDates={isValidDates}
+              handleDates={handleDates}
             />
           ))}
         </div>
@@ -836,6 +891,7 @@ export const DestinationDates = (props) => {
     setEndDate,
     previousDate,
     isValidDates,
+    handleDates,
   } = props;
 
   const [checkinDate, setCheckinDate] = useState(
@@ -846,31 +902,58 @@ export const DestinationDates = (props) => {
   );
 
   useEffect(() => {
-    setDestinations((prev) => {
-      return prev.map((dest, i) => {
-        if (i === index && !(startingCity || endingCity)) {
-          return {
-            ...dest,
-            cityData: {
-              ...dest.cityData,
-              checkin_date: checkinDate,
-              checkout_date: checkoutDate,
-            },
-          };
-        } else {
-          return dest;
-        }
-      });
-    });
-  }, [checkinDate, checkoutDate]);
+    setCheckinDate(getDate(cityData.checkin_date));
+    setCheckoutDate(getDate(cityData.checkout_date));
+  }, [destinations]);
+
+  // useEffect(() => {
+  //   setDestinations((prev) => {
+  //     return prev.map((dest, i) => {
+  //       if (i === index && !(startingCity || endingCity)) {
+  //         return {
+  //           ...dest,
+  //           cityData: {
+  //             ...dest.cityData,
+  //             checkin_date: checkinDate,
+  //             checkout_date: checkoutDate,
+  //           },
+  //         };
+  //       } else {
+  //         return dest;
+  //       }
+  //     });
+  //   });
+  // }, [checkinDate, checkoutDate]);
 
   const handleDateChange = (e) => {
     if (e.target.name === "Arrival Date") {
-      setCheckinDate(e.target.value);
+      const offSet = differenceInDays(
+        new Date(e.target.value),
+        new Date(checkinDate)
+      );
+      handleDates(offSet, index, e.target.value, checkoutDate, true);
+      // setCheckinDate(e.target.value);
+    } else if (e.target.name === "Departure Date") {
+      const offSet = differenceInDays(
+        new Date(e.target.value),
+        new Date(checkoutDate)
+      );
+      handleDates(offSet, index, checkinDate, e.target.value);
+      // setCheckoutDate(e.target.value);
     } else if (e.target.name === "Start Date") {
+      const offSet = differenceInDays(
+        new Date(e.target.value),
+        new Date(startDate)
+      );
+      handleDates(offSet, index, null, null);
       setStartDate(e.target.value);
     } else if (e.target.name === "End Date") {
-      setEndDate(e.target.value);
+      const offSet = differenceInDays(
+        new Date(e.target.value),
+        new Date(endDate)
+      );
+      handleDates(offSet, index, null, null);
+      // setEndDate(e.target.value);
     }
   };
 
@@ -1105,7 +1188,7 @@ export const DestinationDates = (props) => {
                     name={"Departure Date"}
                     value={checkoutDate}
                     min={checkinDate}
-                    onChange={(e) => setCheckoutDate(e.target.value)}
+                    onChange={(e) => handleDateChange(e)}
                     type="Date"
                     className="w-52 border-2 border-gray-200 rounded-lg p-2"
                   />
