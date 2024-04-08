@@ -388,10 +388,9 @@ const RouteContainer = (props) => {
                   {transfer.modes[0]}
                 </div>
                 <div className="text-sm text-gray-400">
-                  {transfer?.legs[0]?.carrier &&
-                    `${transfer.legs[0].carrier} | `}
-                  {transfer.meta.Time && `${transfer.meta.Time} | `}
-                  {transfer.meta.Distance && `${transfer.meta.Distance} Kms`}
+                  {transfer?.legs[0]?.carrier && `${transfer.legs[0].carrier}`}
+                  {transfer.meta.Time && ` | ${transfer.meta.Time}`}
+                  {transfer.meta.Distance && ` | ${transfer.meta.Distance} Kms`}
                 </div>
               </div>
               <div className="flex flex-col gap-2 items-end">
@@ -481,8 +480,9 @@ const MultiRoute = (props) => {
               })}
             </div>
             <div className="text-sm text-gray-400">
-              {/* {transfer?.legs[0]?.carrier && `${transfer.legs[0].carrier} | `} */}
-              {transfer.meta.Time} | {transfer.meta.Distance} Kms
+              {transfer?.legs[0]?.carrier && `${transfer.legs[0].carrier}`}
+              {transfer?.meta?.Time && ` | ${transfer.meta.Time}`}
+              {transfer?.meta?.Distance && ` | ${transfer.meta.Distance} Kms`}
             </div>
           </div>
           <div className="flex flex-col gap-2 items-end">
@@ -599,8 +599,9 @@ const MobileRouteContainer = (props) => {
                 {transfer.modes[0]}
               </div>
               <div className="text-sm text-gray-400">
-                {transfer?.legs[0]?.carrier && `${transfer.legs[0].carrier} | `}
-                {transfer.meta.Time} | {transfer.meta.Distance} Kms
+                {transfer?.legs[0]?.carrier && `${transfer.legs[0].carrier}`}
+                {transfer?.meta?.Time && ` | ${transfer.meta.Time}`}
+                {transfer?.meta?.Distance && ` | ${transfer.meta.Distance} Kms`}
               </div>
             </div>
           </div>
@@ -689,9 +690,9 @@ const MobileMultiRoute = (props) => {
             })}
           </div>
           <div className="text-sm text-gray-400">
-            {/* {transfer?.legs[0]?.carrier && `${transfer.legs[0].carrier} | `} */}
-            {transfer.meta.Time && `${transfer.meta.Time} | `}
-            {transfer.meta.Distance && `${transfer.meta.Distance} Kms`}
+            {transfer?.legs[0]?.carrier && `${transfer.legs[0].carrier}`}
+            {transfer.meta.Time && ` | ${transfer.meta.Time}`}
+            {transfer.meta.Distance && ` | ${transfer.meta.Distance} Kms`}
           </div>
         </div>
       </div>
@@ -811,8 +812,10 @@ const MultiModeContainer = ({ transferIndex, transfer, handleSelect }) => {
                 </div>
                 <div className="text-sm text-gray-400">
                   {transfer?.legs[index]?.carrier &&
-                    `${transfer.legs[index].carrier} | `}
-                  {transfer.meta.Time} | {transfer.meta.Distance} Kms
+                    `${transfer.legs[index].carrier}`}
+                  {transfer?.meta?.Time && ` | ${transfer.meta.Time}`}
+                  {transfer?.meta?.Distance &&
+                    ` | ${transfer.meta.Distance} Kms`}
                 </div>
               </div>
 
@@ -922,8 +925,9 @@ const MobileMultiModeContainer = ({
                 </div>
                 <div className="text-sm text-gray-400">
                   {transfer?.legs[index]?.carrier &&
-                    `${transfer.legs[index].carrier} | `}
-                  {transfer.meta.Time} | {transfer.meta.Distance} Kms
+                    `${transfer.legs[index].carrier}`}
+                  {transfer?.meta?.Time && ` | ${transfer.meta.Time}`}
+                  {transfer.meta.Distance && ` | ${transfer.meta.Distance} Kms`}
                 </div>
               </div>
 
