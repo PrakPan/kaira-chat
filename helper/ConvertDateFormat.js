@@ -31,7 +31,7 @@ export function convertDateFormat(dateString) {
 
   const monthName = months[Number(monthIndex) - 1];
 
-  return `${monthName} ${Number(day)}, ${year}`;
+  return `${monthName} ${Number(day)}`;
 }
 
 export const getDate = (date) => {

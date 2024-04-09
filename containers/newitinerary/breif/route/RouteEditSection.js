@@ -25,6 +25,7 @@ import axiossearchstartinginstance from "../../../../services/search/startingloc
 import axiossearchinstance from "../../../../services/search/searchsuggest";
 import axiosItineraryUpdateInstance from "../../../../services/itinerary/update";
 import { convertDateFormat } from "../../../../helper/ConvertDateFormat";
+import { dateFormat } from "../../../../helper/DateUtils";
 
 const RouteEditSection = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
@@ -892,7 +893,7 @@ export const DestinationDates = (props) => {
           return {
             error: true,
             invalid: true,
-            message: `Start Date should be greater than or equal to ${convertDateFormat(
+            message: `Start Date should be greater than or equal to ${dateFormat(
               format(today, "dd/MM/yyyy")
             )}`,
           };
@@ -913,7 +914,7 @@ export const DestinationDates = (props) => {
           return {
             error: true,
             invalid: true,
-            message: `End Date should be greater than or equal to ${convertDateFormat(
+            message: `End Date should be greater than or equal to ${dateFormat(
               format(prevDate, "dd/MM/yyyy")
             )}`,
           };
@@ -937,7 +938,7 @@ export const DestinationDates = (props) => {
           return {
             error: true,
             invalid: true,
-            message: `Departure Date should be greater than or equal to ${convertDateFormat(
+            message: `Departure Date should be greater than or equal to ${dateFormat(
               format(checkin_date, "dd/MM/yyyy")
             )}`,
           };
@@ -958,7 +959,7 @@ export const DestinationDates = (props) => {
           return {
             error: true,
             invalid: true,
-            message: `Arrival Date should be greater than or equal to ${convertDateFormat(
+            message: `Arrival Date should be greater than or equal to ${dateFormat(
               format(prevDate, "dd/MM/yyyy")
             )}`,
           };
