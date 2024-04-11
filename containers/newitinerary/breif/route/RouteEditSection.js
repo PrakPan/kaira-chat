@@ -183,6 +183,12 @@ const RouteEditSection = (props) => {
             heading: "Error!",
             type: "error",
           });
+        } else if (err?.response?.status === 400) {
+          props.openNotification({
+            text: err?.response?.data?.messages[0],
+            heading: "Error!",
+            type: "error",
+          });
         } else {
           props.openNotification({
             text: "There seems to be a problem, please try again!",
@@ -837,12 +843,31 @@ export const DestinationDates = (props) => {
     isValidDates,
   } = props;
 
+  const cityRef = useRef(null);
+  const [divCount, setDivCount] = useState(0);
   const [checkinDate, setCheckinDate] = useState(
     getDate(cityData.checkin_date)
   );
   const [checkoutDate, setCheckoutDate] = useState(
     getDate(cityData.checkout_date)
   );
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (cityRef.current) {
+        const containerHeight = cityRef.current.clientHeight;
+        const divHeight = 14;
+        const newDivCount = Math.floor(containerHeight / divHeight);
+        setDivCount(newDivCount);
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [cityRef]);
 
   useEffect(() => {
     setDestinations((prev) => {
@@ -988,6 +1013,15 @@ export const DestinationDates = (props) => {
         </div>
       </div>
       <div className="w-full flex flex-row items-center gap-3">
+        {/* <div className="w-6 flex flex-col gap-1 items-center justify-center">
+          {!endingCity &&
+            [...Array(divCount)].map((_, index) => (
+              <div
+                key={index}
+                className="w-[2px] h-3 rounded-full bg-green-200"
+              ></div>
+            ))}
+        </div> */}
         {!endingCity ? (
           startingCity ? (
             <div className="w-6 flex flex-col gap-1 items-center justify-center">
@@ -1019,7 +1053,10 @@ export const DestinationDates = (props) => {
         ) : (
           <div className="w-6"></div>
         )}
-        <div className="w-full flex flex-col gap-2 py-3">
+        <div
+          ref={cityRef}
+          className="w-full flex flex-col gap-2 py-3"
+        >
           <div className="w-full flex flex-row items-center gap-3">
             <div className="w-full flex flex-col gap-1">
               <div>
