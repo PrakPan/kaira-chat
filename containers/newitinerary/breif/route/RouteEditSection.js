@@ -1131,7 +1131,7 @@ export const DestinationDates = (props) => {
             <div className="flex flex-row items-center gap-3">
               <div className="flex flex-col gap-1">
                 <div>Departure Date</div>
-                <div className="flex flex-row items-center gap-1">
+                <div className="flex flex-col items-start gap-1">
                   <input
                     required
                     name={"Departure Date"}
@@ -1144,7 +1144,7 @@ export const DestinationDates = (props) => {
 
                   {!isValidDates && isInvalidDate(checkoutDate, true).error && (
                     <div
-                      className={`text-xs lg:text-sm text-white ${
+                      className={`text-xs lg:text-sm text-white text-center ${
                         isInvalidDate(checkoutDate, true).invalid
                           ? "bg-red-500"
                           : "bg-[#ffbb33]"
