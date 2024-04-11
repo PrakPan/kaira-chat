@@ -754,8 +754,8 @@ export const EditDates = ({
   return (
     <div className="w-full flex flex-row relative">
       <div className="w-full mg:w-[50%] lg:w-[50%] flex flex-col items-center pb-5 gap-3">
-        <div className="flex flex-col">
-          <div className="flex flex-row items-start justify-between mb-5">
+        <div className="w-full flex flex-col items-end">
+          <div className="w-full md:w-[50%] ld:w-[50%] flex flex-row justify-start mb-5">
             <div className="text-[24px] font-semibold leading-6">
               City Departures
             </div>
@@ -971,7 +971,7 @@ export const DestinationDates = (props) => {
   };
 
   return (
-    <div className="w-full flex flex-col items-start">
+    <div className="w-full md:w-[50%] lg:w-[50%] flex flex-col items-start">
       <div className="flex flex-row gap-3 items-center">
         <div
           style={{ backgroundColor: pinColour ? pinColour : "black" }}
@@ -987,7 +987,7 @@ export const DestinationDates = (props) => {
           {cityData.city_name || cityData.name || cityData.text}
         </div>
       </div>
-      <div className="flex flex-row items-center gap-3">
+      <div className="w-full flex flex-row items-center gap-3">
         {!endingCity ? (
           startingCity ? (
             <div className="w-6 flex flex-col gap-1 items-center justify-center">
@@ -1019,9 +1019,9 @@ export const DestinationDates = (props) => {
         ) : (
           <div className="w-6"></div>
         )}
-        <div className="flex flex-col gap-2 py-3">
-          <div className="flex flex-row items-center gap-3">
-            <div className="flex flex-col gap-1">
+        <div className="w-full flex flex-col gap-2 py-3">
+          <div className="w-full flex flex-row items-center gap-3">
+            <div className="w-full flex flex-col gap-1">
               <div>
                 {startingCity
                   ? "Start Date"
@@ -1029,7 +1029,7 @@ export const DestinationDates = (props) => {
                   ? "End Date"
                   : "Arrival Date"}
               </div>
-              <div className="flex flex-row items-center gap-1">
+              <div className="w-full flex flex-col items-start gap-1">
                 <input
                   required
                   name={
