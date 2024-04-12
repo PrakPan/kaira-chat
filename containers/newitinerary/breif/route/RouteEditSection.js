@@ -126,11 +126,8 @@ const RouteEditSection = (props) => {
 
     if (
       !new Date(endDate) ||
-      isNaN(
-        Date.parse(endDate) ||
-          (!isSameDay(new Date(endDate), prevDate) &&
-            new Date(endDate) < prevDate)
-      )
+      isNaN(Date.parse(endDate)) ||
+      (!isSameDay(new Date(endDate), prevDate) && new Date(endDate) < prevDate)
     ) {
       return false;
     }
@@ -931,29 +928,45 @@ export const DestinationDates = (props) => {
         new Date(e.target.value),
         new Date(checkinDate)
       );
-      handleDates(offSet, index, e.target.value, checkoutDate, true);
-      // setCheckinDate(e.target.value);
+      if (isNaN(Date.parse(checkinDate))) {
+        setCheckinDate(e.target.value);
+      } else {
+        handleDates(offSet, index, e.target.value, checkoutDate, true);
+      }
     } else if (e.target.name === "Departure Date") {
       const offSet = differenceInDays(
         new Date(e.target.value),
         new Date(checkoutDate)
       );
-      handleDates(offSet, index, checkinDate, e.target.value);
-      // setCheckoutDate(e.target.value);
+      if (isNaN(Date.parse(checkoutDate))) {
+        setCheckoutDate(e.target.value);
+      } else {
+        handleDates(offSet, index, checkinDate, e.target.value);
+      }
     } else if (e.target.name === "Start Date") {
       const offSet = differenceInDays(
         new Date(e.target.value),
         new Date(startDate)
       );
-      handleDates(offSet, index, null, null);
-      setStartDate(e.target.value);
+      if (isNaN(Date.parse(startDate))) {
+        setStartDate(e.target.value);
+      } else {
+        handleDates(offSet, index, null, null);
+        setStartDate(e.target.value);
+      }
     } else if (e.target.name === "End Date") {
-      const offSet = differenceInDays(
-        new Date(e.target.value),
-        new Date(endDate)
-      );
-      handleDates(offSet, index, null, null);
-      // setEndDate(e.target.value);
+      setEndDate(e.target.value);
+
+      // const offSet = differenceInDays(
+      //   new Date(e.target.value),
+      //   new Date(endDate)
+      // );
+
+      // if (isNaN(Date.parse(endDate))) {
+      //   setEndDate(e.target.value);
+      // } else {
+      //   handleDates(offSet, index, null, null);
+      // }
     }
   };
 
@@ -1132,14 +1145,14 @@ export const DestinationDates = (props) => {
                       ? startDate
                       : endingCity
                       ? endDate
-                      : checkinDate
+                      : getDate(cityData.checkin_date)
                   }
                   min={
                     startingCity
                       ? format(new Date(), "yyyy-MM-dd")
                       : previousDate
                   }
-                  onChange={(e) => handleDateChange(e)}
+                  onChange={handleDateChange}
                   type="Date"
                   className="w-52 border-2 border-gray-200 rounded-lg p-2"
                 />
@@ -1186,9 +1199,9 @@ export const DestinationDates = (props) => {
                   <input
                     required
                     name={"Departure Date"}
-                    value={checkoutDate}
+                    value={getDate(cityData.checkout_date)}
                     min={checkinDate}
-                    onChange={(e) => handleDateChange(e)}
+                    onChange={handleDateChange}
                     type="Date"
                     className="w-52 border-2 border-gray-200 rounded-lg p-2"
                   />
