@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+
 export const getDate = (dateString) => {
   if (!dateString) return "";
   const [day, month, year] = dateString.split("/");
@@ -39,3 +41,7 @@ export function dateFormat(dateString) {
 
   return `${monthName} ${Number(day)}, ${year}`;
 }
+export const getDateString = (date) => {
+  if (!date || isNaN(date)) return "";
+  return format(date, "yyyy-MM-dd");
+};

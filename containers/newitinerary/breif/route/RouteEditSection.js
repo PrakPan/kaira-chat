@@ -9,7 +9,7 @@ import { BiSolidPencil } from "react-icons/bi";
 import { FaTrashAlt } from "react-icons/fa";
 import { RxCrossCircled } from "react-icons/rx";
 import { MdDone, MdModeEdit } from "react-icons/md";
-import { getDate } from "../../../../helper/DateUtils";
+import { getDate, getDateString } from "../../../../helper/DateUtils";
 import {
   startOfMonth,
   endOfMonth,
@@ -20,6 +20,8 @@ import {
   parseISO,
   addMonths,
   isSameDay,
+  addDays,
+  differenceInDays,
 } from "date-fns";
 import axiossearchstartinginstance from "../../../../services/search/startinglocation";
 import axiossearchinstance from "../../../../services/search/searchsuggest";
@@ -757,6 +759,58 @@ export const EditDates = ({
     setDateRanges(ranges);
   }, [destinations, startDate, endDate]);
 
+  const handleDates = (
+    offSet,
+    index,
+    checkinDate,
+    checkoutDate,
+    isArrival = false
+  ) => {
+    setDestinations((prev) => {
+      return prev.map((dest, ind) => {
+        if (ind === index && !(dest.startingCity || dest.endingCity)) {
+          if (isArrival) {
+            return {
+              ...dest,
+              cityData: {
+                ...dest.cityData,
+                checkin_date: checkinDate,
+                checkout_date: getDateString(
+                  addDays(new Date(getDate(checkoutDate)), offSet)
+                ),
+              },
+            };
+          }
+          return {
+            ...dest,
+            cityData: {
+              ...dest.cityData,
+              checkin_date: checkinDate,
+              checkout_date: checkoutDate,
+            },
+          };
+        } else if (ind > index && ind < destinations.length - 1) {
+          return {
+            ...dest,
+            cityData: {
+              ...dest.cityData,
+              checkin_date: getDateString(
+                addDays(new Date(getDate(dest.cityData.checkin_date)), offSet)
+              ),
+              checkout_date: getDateString(
+                addDays(new Date(getDate(dest.cityData.checkout_date)), offSet)
+              ),
+            },
+          };
+        } else {
+          return dest;
+        }
+      });
+    });
+
+    setEndDate((prev) => getDateString(addDays(new Date(prev), offSet)));
+  };
+
   return (
     <div className="w-full flex flex-row relative">
       <div className="w-full mg:w-[50%] lg:w-[50%] flex flex-col items-center pb-5 gap-3">
@@ -787,6 +841,7 @@ export const EditDates = ({
                     getDate(destinations[index - 1].cityData.checkout_date)
               }
               isValidDates={isValidDates}
+              handleDates={handleDates}
             />
           ))}
         </div>
@@ -841,6 +896,7 @@ export const DestinationDates = (props) => {
     setEndDate,
     previousDate,
     isValidDates,
+    handleDates,
   } = props;
 
   const cityRef = useRef(null);
@@ -870,31 +926,74 @@ export const DestinationDates = (props) => {
   }, [cityRef]);
 
   useEffect(() => {
-    setDestinations((prev) => {
-      return prev.map((dest, i) => {
-        if (i === index && !(startingCity || endingCity)) {
-          return {
-            ...dest,
-            cityData: {
-              ...dest.cityData,
-              checkin_date: checkinDate,
-              checkout_date: checkoutDate,
-            },
-          };
-        } else {
-          return dest;
-        }
-      });
-    });
-  }, [checkinDate, checkoutDate]);
+    setCheckinDate(getDate(cityData.checkin_date));
+    setCheckoutDate(getDate(cityData.checkout_date));
+  }, [destinations]);
+
+  // useEffect(() => {
+  //   setDestinations((prev) => {
+  //     return prev.map((dest, i) => {
+  //       if (i === index && !(startingCity || endingCity)) {
+  //         return {
+  //           ...dest,
+  //           cityData: {
+  //             ...dest.cityData,
+  //             checkin_date: checkinDate,
+  //             checkout_date: checkoutDate,
+  //           },
+  //         };
+  //       } else {
+  //         return dest;
+  //       }
+  //     });
+  //   });
+  // }, [checkinDate, checkoutDate]);
 
   const handleDateChange = (e) => {
     if (e.target.name === "Arrival Date") {
-      setCheckinDate(e.target.value);
+      const offSet = differenceInDays(
+        new Date(e.target.value),
+        new Date(checkinDate)
+      );
+      if (isNaN(Date.parse(checkinDate))) {
+        setCheckinDate(e.target.value);
+      } else {
+        handleDates(offSet, index, e.target.value, checkoutDate, true);
+      }
+    } else if (e.target.name === "Departure Date") {
+      const offSet = differenceInDays(
+        new Date(e.target.value),
+        new Date(checkoutDate)
+      );
+      if (isNaN(Date.parse(checkoutDate))) {
+        setCheckoutDate(e.target.value);
+      } else {
+        handleDates(offSet, index, checkinDate, e.target.value);
+      }
     } else if (e.target.name === "Start Date") {
-      setStartDate(e.target.value);
+      const offSet = differenceInDays(
+        new Date(e.target.value),
+        new Date(startDate)
+      );
+      if (isNaN(Date.parse(startDate))) {
+        setStartDate(e.target.value);
+      } else {
+        handleDates(offSet, index, null, null);
+        setStartDate(e.target.value);
+      }
     } else if (e.target.name === "End Date") {
       setEndDate(e.target.value);
+
+      // const offSet = differenceInDays(
+      //   new Date(e.target.value),
+      //   new Date(endDate)
+      // );
+
+      // if (isNaN(Date.parse(endDate))) {
+      //   setEndDate(e.target.value);
+      // } else {
+      //   handleDates(offSet, index, null, null);
+      // }
     }
   };
 
@@ -1053,10 +1152,7 @@ export const DestinationDates = (props) => {
         ) : (
           <div className="w-6"></div>
         )}
-        <div
-          ref={cityRef}
-          className="w-full flex flex-col gap-2 py-3"
-        >
+        <div ref={cityRef} className="w-full flex flex-col gap-2 py-3">
           <div className="w-full flex flex-row items-center gap-3">
             <div className="w-full flex flex-col gap-1">
               <div>
@@ -1081,14 +1177,14 @@ export const DestinationDates = (props) => {
                       ? startDate
                       : endingCity
                       ? endDate
-                      : checkinDate
+                      : getDate(cityData.checkin_date)
                   }
                   min={
                     startingCity
                       ? format(new Date(), "yyyy-MM-dd")
                       : previousDate
                   }
-                  onChange={(e) => handleDateChange(e)}
+                  onChange={handleDateChange}
                   type="Date"
                   className="w-52 border-2 border-gray-200 rounded-lg p-2"
                 />
@@ -1135,9 +1231,9 @@ export const DestinationDates = (props) => {
                   <input
                     required
                     name={"Departure Date"}
-                    value={checkoutDate}
+                    value={getDate(cityData.checkout_date)}
                     min={checkinDate}
-                    onChange={(e) => setCheckoutDate(e.target.value)}
+                    onChange={handleDateChange}
                     type="Date"
                     className="w-52 border-2 border-gray-200 rounded-lg p-2"
                   />
