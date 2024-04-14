@@ -232,8 +232,8 @@ const RouteEditSection = (props) => {
 
     let prevDate = new Date(startDate);
     for (let i = 1; i < destinations.length - 1; i++) {
-      const checkin_date = destinations[i].cityData.checkin_date;
-      const checkout_date = destinations[i].cityData.checkout_date;
+      const checkin_date = getDate(destinations[i].cityData.checkin_date);
+      const checkout_date = getDate(destinations[i].cityData.checkout_date);
       if (
         !new Date(checkin_date) ||
         isNaN(Date.parse(checkin_date)) ||
