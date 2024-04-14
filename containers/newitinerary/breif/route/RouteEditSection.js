@@ -31,7 +31,7 @@ import "react-dates/lib/css/_datepicker.css";
 import { BiCalendarAlt } from "react-icons/bi";
 import moment from "moment";
 import media from "../../../../components/media";
-import { DateRangePicker, SingleDatePicker } from "react-dates";
+import { SingleDatePicker } from "react-dates";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -1057,25 +1057,6 @@ export const DestinationDates = (props) => {
     setCheckinDate(getDate(cityData.checkin_date));
     setCheckoutDate(getDate(cityData.checkout_date));
   }, [destinations]);
-
-  // useEffect(() => {
-  //   setDestinations((prev) => {
-  //     return prev.map((dest, i) => {
-  //       if (i === index && !(startingCity || endingCity)) {
-  //         return {
-  //           ...dest,
-  //           cityData: {
-  //             ...dest.cityData,
-  //             checkin_date: checkinDate,
-  //             checkout_date: checkoutDate,
-  //           },
-  //         };
-  //       } else {
-  //         return dest;
-  //       }
-  //     });
-  //   });
-  // }, [checkinDate, checkoutDate]);
 
   const handleDateChange = (e) => {
     console.log(e);
