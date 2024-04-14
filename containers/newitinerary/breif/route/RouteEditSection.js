@@ -37,14 +37,10 @@ import styled from "styled-components";
 const Container = styled.div`
   position: relative;
 
-  .DateRangePickerInput {
-  display: flex;
-  flex-direction: column;
-}
-  .DateRangePicker {
+  .SingleDatePicker {
     width: 100%;
   }
-  .DateRangePickerInput_1 {
+  .SingleDatePickerInput_1 {
     border: none;
     display: flex;
     gap: 22px;
@@ -71,12 +67,12 @@ const Container = styled.div`
       margin: auto;
     }
   }
-  .DateRangePickerInput_arrow,
+  .SingleDatePickerInput_arrow,
   .DayPickerKeyboardShortcuts_buttonReset {
     display: none !important;
   }
 
-  .DateRangePicker_picker_1 {
+  .SingleDatePicker_picker_1 {
     left: 0px;
     top: 48px !important;
     @media screen and (min-width: 768px) {
@@ -128,26 +124,11 @@ const CalenderIcons = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 100% !important;
-  height: 7.5rem;
-`;
-
-const TextContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  font-weight: 400;
-  font-size: 14px;
-  height: 25px;
-  width: 100%;
-`;
-
-const Text = styled.p`
-  width: 100%;
+  // width: 100% !important;
+  // height: 7.5rem;
 `;
 
 const Icon = styled.div`
-  width: 100%;
-  text-align: right;
   width: 100%;
   text-align: right;
   display: flex;
@@ -1059,55 +1040,48 @@ export const DestinationDates = (props) => {
   }, [destinations]);
 
   const handleDateChange = (e) => {
-    console.log(e);
-    if (e) {
-      if (e.target.name === "Arrival Date") {
+    e.target.value = getDateString(e.target.value);
+    if (e.target.name === "Arrival Date") {
+      if (isNaN(Date.parse(checkinDate))) {
+        setCheckinDate(e.target.value);
+      } else {
         const offSet = differenceInDays(
           new Date(e.target.value),
           new Date(checkinDate)
         );
-        if (isNaN(Date.parse(checkinDate))) {
-          setCheckinDate(e.target.value);
-        } else {
-          handleDates(offSet, index, e.target.value, checkoutDate, true);
-        }
-      } else if (e.target.name === "Departure Date") {
+        handleDates(offSet, index, e.target.value, checkoutDate, true);
+      }
+    } else if (e.target.name === "Departure Date") {
+      if (isNaN(Date.parse(checkoutDate))) {
+        setCheckoutDate(e.target.value);
+      } else {
         const offSet = differenceInDays(
           new Date(e.target.value),
           new Date(checkoutDate)
         );
-        if (isNaN(Date.parse(checkoutDate))) {
-          setCheckoutDate(e.target.value);
-        } else {
-          handleDates(offSet, index, checkinDate, e.target.value);
-        }
-      } else if (e.target.name === "Start Date") {
+        handleDates(offSet, index, checkinDate, e.target.value);
+      }
+    } else if (e.target.name === "Start Date") {
+      if (!isNaN(Date.parse(startDate))) {
         const offSet = differenceInDays(
           new Date(e.target.value),
           new Date(startDate)
         );
-        if (isNaN(Date.parse(startDate))) {
-          setStartDate(e.target.value);
-        } else {
-          handleDates(offSet, index, null, null);
-          setStartDate(e.target.value);
-        }
-      } else if (e.target.name === "End Date") {
-        setEndDate(e.target.value);
-
-        // const offSet = differenceInDays(
-        //   new Date(e.target.value),
-        //   new Date(endDate)
-        // );
-
-        // if (isNaN(Date.parse(endDate))) {
-        //   setEndDate(e.target.value);
-        // } else {
-        //   handleDates(offSet, index, null, null);
-        // }
+        handleDates(offSet, index, null, null);
       }
-    } else {
-      console.log("here >>>", date);
+      setStartDate(e.target.value);
+    } else if (e.target.name === "End Date") {
+      setEndDate(e.target.value);
+
+      // if (isNaN(Date.parse(endDate))) {
+      //   setEndDate(e.target.value);
+      // } else {
+      // const offSet = differenceInDays(
+      //   new Date(e.target.value),
+      //   new Date(endDate)
+      // );
+      //   handleDates(offSet, index, null, null);
+      // }
     }
   };
 
@@ -1267,8 +1241,8 @@ export const DestinationDates = (props) => {
           <div className="w-6"></div>
         )}
         <div ref={cityRef} className="w-full flex flex-col gap-2 py-3">
-          <div className="w-full flex flex-row items-center gap-3">
-            <div className="w-full flex flex-col gap-1">
+          <div className="flex flex-row items-center gap-3">
+            <div className="flex flex-col gap-1">
               <label>
                 {startingCity
                   ? "Start Date"
@@ -1293,6 +1267,34 @@ export const DestinationDates = (props) => {
                     : "Arrival Date"
                 }
               />
+              {!isValidDates &&
+                isInvalidDate(
+                  startingCity ? startDate : endingCity ? endDate : checkinDate
+                ).error && (
+                  <div
+                    className={`text-xs lg:text-sm text-white text-center ${
+                      isInvalidDate(
+                        startingCity
+                          ? startDate
+                          : endingCity
+                          ? endDate
+                          : checkinDate
+                      ).invalid
+                        ? "bg-red-500"
+                        : "bg-[#ffbb33]"
+                    }  p-2 rounded-full rounded-tl-none animate-popOut`}
+                  >
+                    {
+                      isInvalidDate(
+                        startingCity
+                          ? startDate
+                          : endingCity
+                          ? endDate
+                          : checkinDate
+                      ).message
+                    }
+                  </div>
+                )}
 
               {/* <div className="flex flex-row items-center gap-1">
                 <input
@@ -1364,6 +1366,19 @@ export const DestinationDates = (props) => {
                   onDateChange={handleDateChange}
                   id={"Departure Date"}
                 />
+
+                {!isValidDates && isInvalidDate(checkoutDate, true).error && (
+                  <div
+                    className={`text-xs lg:text-sm text-white text-center ${
+                      isInvalidDate(checkoutDate, true).invalid
+                        ? "bg-red-500"
+                        : "bg-[#ffbb33]"
+                    } p-2 rounded-full rounded-tl-none animate-popOut`}
+                  >
+                    {isInvalidDate(checkoutDate, true).message}
+                  </div>
+                )}
+
                 {/* <div className="flex flex-row items-center gap-1">
                   <input
                     required
@@ -1419,7 +1434,8 @@ export const CustomCalendar = ({
       monthDays = monthDays.map((day) => {
         return { date: day, color: "" };
       });
-      monthDays = getDayColors(dateRanges[0], monthDays);
+      // monthDays = getDayColors(dateRanges[0], monthDays);
+      monthDays = dayColor(monthDays);
 
       temp_months.push({ firstDay: firstDayOfMonth, days: monthDays });
     }
@@ -1439,15 +1455,18 @@ export const CustomCalendar = ({
       });
 
       for (let i = 1; i < dateRanges.length - 1; i++) {
-        monthDays = getDayColors(dateRanges[i], monthDays);
+        // monthDays = getDayColors(dateRanges[i], monthDays);
+        monthDays = dayColor(monthDays);
+
         if (dateRanges[i].endDate > lastDayOfMonth) break;
         else {
           continue;
         }
       }
 
-      monthDays = getDayColors(dateRanges[0], monthDays);
-      monthDays = getDayColors(dateRanges[dateRanges.length - 1], monthDays);
+      // monthDays = getDayColors(dateRanges[0], monthDays);
+      // monthDays = getDayColors(dateRanges[dateRanges.length - 1], monthDays);
+
       temp_months.push({ firstDay: firstDayOfMonth, days: monthDays });
     }
 
@@ -1462,6 +1481,18 @@ export const CustomCalendar = ({
         (range && day.date > range.startDate && day.date < range.endDate)
       ) {
         return { date: day.date, color: range.color }; // Return the day and its color
+      } else {
+        return day;
+      }
+    });
+  };
+
+  const dayColor = (days) => {
+    return days.map((day) => {
+      if (isSameDay(day.date, startDate) || isSameDay(day.date, endDate)) {
+        return { date: day.date, color: "#01202B" };
+      } else if (day.date > startDate && day.date < endDate) {
+        return { date: day.date, color: "#e5e7eb" };
       } else {
         return day;
       }
@@ -1513,15 +1544,13 @@ export const Month = ({ firstDay, days, startDate, endDate }) => {
                 backgroundColor:
                   isSameDay(day.date, startDate) || isSameDay(day.date, endDate)
                     ? day.color
-                    : "",
+                    : day.color,
                 color:
                   isSameDay(day.date, startDate) || isSameDay(day.date, endDate)
                     ? "#F7E700"
                     : "#01202B",
               }}
-              className={`flex items-center justify-center p-2 font-normal ${
-                day.color !== "" ? `bg-gray-200` : ""
-              }`}
+              className={`flex items-center justify-center p-2 font-normal`}
             >
               {format(day.date, "dd")}
             </div>
@@ -1533,77 +1562,41 @@ export const Month = ({ firstDay, days, startDate, endDate }) => {
 };
 
 export const DatePicker = (props) => {
-  const [focusedInput, setFocusedInput] = useState(props.focusedDate || null);
-
-  useEffect(() => {
-    if (props.setFocusedDate) {
-      if (focusedInput) props.setFocusedDate(focusedInput);
-      else props.setFocusedDate(undefined);
-    }
-  }, [focusedInput]);
-
-  useEffect(() => {
-    if (props.setFocusedDate) setFocusedInput(props.inputDate);
-  }, [props.inputDate]);
+  const [focusedInput, setFocusedInput] = useState(false);
 
   let isPageWide = media("(min-width: 768px)");
 
+  function handleFocus() {
+    setFocusedInput(true);
+  }
+
   return (
-    <div className="">
-      <Container className="flex flex-col">
-        {/* <DateRangePicker
-          readOnly={true}
-          displayFormat="DD/MM/YYYY"
-          startDate={props.valueStart}
-          startDateId="startDate"
-          startDatePlaceholderText="DD/MM/YYYY"
-          startDateTitleText="Start Date"
-          endDate={props.valueEnd}
-          endDateId="endDate"
-          endDatePlaceholderText="DD/MM/YYYY"
-          endDateTitleText="End Date"
-          onDatesChange={({ startDate, endDate }) => {
-            console.log("end >>>>", endDate?._d);
-            props.setValueStart(startDate?._d);
-            props.setValueStart(endDate?._d);
-          }}
-          focusedInput={focusedInput}
-          onFocusChange={setFocusedInput}
-          isOutsideRange={(day) =>
-            day.startOf("day").isBefore(moment().add(-1, "day"))
-          }
-          initialVisibleMonth={() => moment().subtract(0, "month")}
-          numberOfMonths={1}
-          orientation={"horizontal"}
-          noBorder={true}
-        /> */}
-        <SingleDatePicker
-          date={moment(props.date)} // momentPropTypes.momentObj or null
-          onDateChange={(date) =>
-            props.onDateChange({
-              target: {
-                name: props.id,
-                value: date,
-              },
-            })
-          } // PropTypes.func.isRequired
-          focused={false} // PropTypes.bool
-          onFocusChange={({ focused }) => focused} // PropTypes.func.isRequired
-          id={props.id} // PropTypes.string.isRequired,
-          noBorder={true}
-          placeholder={"DD/MM/YYYY"}
-          numberOfMonths={1}
-        />
-        <CalenderIcons className="p-2 py-3">
-          <Icon>
-            <BiCalendarAlt />
-          </Icon>
-          {/* <Icon>
-            <BiCalendarAlt />
-          </Icon> */}
-        </CalenderIcons>
-      </Container>
-    </div>
+    <Container onClick={handleFocus} className="flex flex-col">
+      <SingleDatePicker
+        readOnly={true}
+        date={moment(props.date)}
+        onDateChange={(date) =>
+          props.onDateChange({
+            target: {
+              name: props.id,
+              value: date._d,
+            },
+          })
+        }
+        focused={focusedInput}
+        onFocusChange={({ focused }) => setFocusedInput(false)}
+        id={props.id}
+        noBorder={true}
+        placeholder={"DD/MM/YYYY"}
+        numberOfMonths={1}
+        displayFormat={"DD/MM/YYYY"}
+      />
+      <CalenderIcons className="p-2 py-3">
+        <Icon>
+          <BiCalendarAlt />
+        </Icon>
+      </CalenderIcons>
+    </Container>
   );
 };
 

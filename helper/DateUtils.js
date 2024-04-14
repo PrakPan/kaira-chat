@@ -41,7 +41,8 @@ export function dateFormat(dateString) {
 
   return `${monthName} ${Number(day)}, ${year}`;
 }
+
 export const getDateString = (date) => {
-  if (!date || isNaN(date)) return "";
+  if (!date || isNaN(Date.parse(date))) return date;
   return format(date, "yyyy-MM-dd");
 };
