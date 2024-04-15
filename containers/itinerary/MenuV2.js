@@ -740,6 +740,11 @@ const SimpleTabsV2 = (props) => {
             getPaymentHandler={props.getPaymentHandler}
             setShowLoginModal={setShowLoginModal}
             _GetInTouch={_GetInTouch}
+            group_type={props.group_type}
+            duration_time={props.duration_time}
+            travellerType={props.travellerType}
+            editRoute={props.editRoute}
+            setEditRoute={props.setEditRoute}
           ></Breif>
         )}
       </div>

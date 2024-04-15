@@ -14,16 +14,16 @@ width: 100%;
 margin: 0;
 animation: 1s ${fadeInAnimation};
 
-  
+
 `;
 
 
 const FlickityComp = (props) => {
- 
-   
+
+
   // props.setStartingLocation(true)
 
-  
+
       return (
         <div style={{ width: "100%" }}>
           {!props.slideIndex ? (
@@ -81,7 +81,7 @@ const FlickityComp = (props) => {
           {/* <div  style={{backgroundColor: 'black', width: '100%'}} className="text-center font-lexend" onClick={() => this.flkty.next()}>next button</div> */}
         </div>
       );
-    
+
   }
 
   export default FlickityComp;

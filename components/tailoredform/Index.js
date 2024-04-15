@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import Button from "../ui/button/Index";
-import * as ga from "../../services/ga/Index";
 import { format } from "date-fns";
 import media from "../media";
 import axiostailoredinstance from "../../services/leads/tailored";
@@ -64,24 +63,6 @@ const Heading = styled.p`
     height: 1.8rem;
     overflow: hidden;
   }
-`;
-
-const CountryCodeOption = styled.div`
-  &:hover {
-    cursor: pointer;
-  }
-  text-align: center;
-  height: 2rem !important;
-  margin: 0.5rem;
-`;
-
-const CountryImg = styled.img`
-  height: 100%;
-`;
-
-const Card = styled.div`
-  width: 80%;
-  margin: 2px 1rem;
 `;
 
 const BlackContainer = styled.div`
@@ -402,7 +383,6 @@ const Enquiry = (props) => {
           onClick={() => {
             setShowBlack(true);
           }}
-          //  ref={ContainerRef}
         >
           {showPopup.InputOne && (
             <Popup
@@ -492,7 +472,6 @@ const Enquiry = (props) => {
               </Heading>
             </div>
           </div>
-          {/* <div key={index}  style={{width: '80%', margin: props.experience ? "2px 1rem" : '2px 0.5rem'}} ><div>{card}</div></div> */}
           <div style={{ padding: "0 1rem 1rem 1rem", width: "100%" }}>
             <div
               style={{
@@ -545,11 +524,6 @@ const Enquiry = (props) => {
               setSelectedPreferences={setSelectedPreferences}
               setSubmitSecondSlide={setSubmitSecondSlide}
             ></Flickity>
-            {/* {slideIndex !==2 ? <Button margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700" width="100%" onclick={() => setSlideIndex(slideIndex+1)}>
-            Continue
-            </Button> : <Button margin="1rem 0" borderRadius="10px" borderWidth="0" bgColor="#f7e700" width="100%" onclick={_submitDataHandler}>
-            Submit
-            </Button> } */}
 
             {slideIndex === 0 ? (
               <div

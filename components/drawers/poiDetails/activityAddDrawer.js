@@ -5,7 +5,7 @@ import { EXPERIENCE_FILTERS_BOX } from "../../../services/constants";
 import styled from "styled-components";
 import { Navigation } from "../../NewNavigation";
 import axiosaxtivitiesinstance from "../../../services/poi/reccommendedactivities";
-import addActivity from "../../../services/poi/addActivities";
+import axiosaddActivityinstance from "../../../services/poi/addActivities";
 import PoiList from "../../../containers/newitinerary/itineraryelements/PoiList";
 import { BiErrorCircle } from "react-icons/bi";
 import PoiListSkeleton from "../../../containers/newitinerary/itineraryelements/PoiListSkeleton";
@@ -82,7 +82,7 @@ const ActivityAddDrawer = (props) => {
   };
 
   const _addActivityHandler = (activityID) => {
-    addActivity
+    axiosaddActivityinstance
       .post(
         "/",
         {
@@ -140,6 +140,14 @@ const ActivityAddDrawer = (props) => {
   };
 
   function fetchData(showMore = false) {
+    const added_activities = props.itineraryActivities.map((element, index) => {
+      return {
+        id:
+          element.activity?.activity_data?.activity?.id ||
+          element.activity?.activity_data?.poi?.id,
+        date: element.date,
+      };
+    });
     axiosaxtivitiesinstance
       .post(`/?limit=30&offset=${offSet}`, {
         location: props?.cityID,
@@ -149,6 +157,7 @@ const ActivityAddDrawer = (props) => {
           ? EXPERIENCE_FILTERS_BOX[selectedExprience].actual
           : [],
         search_query: debouncedSearch,
+        added_activities,
       })
       .then((res) => {
         if (res.data.results.length) {
@@ -426,6 +435,7 @@ const ActivityAddDrawer = (props) => {
 const mapStateToPros = (state) => {
   return {
     notificationText: state.Notification.text,
+    itineraryActivities: state.itineraryActivities.activities,
   };
 };
 const mapDispatchToProps = (dispatch) => {

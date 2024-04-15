@@ -8,7 +8,7 @@ import { MdEdit, MdNavigateNext } from "react-icons/md";
 import Drawer from "../../../components/ui/Drawer";
 import { IoMdClose } from "react-icons/io";
 import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
-import axiosaxtivitiesinstance from "../../../services/poi/reccommendedactivities";
+import axiosactivitiesinstance from "../../../services/poi/reccommendedactivities";
 import axiositineraryeditinstance from "../../../services/itinerary/edit";
 import PoiList from "./PoiList";
 import PoiListSkeleton from "./PoiListSkeleton";
@@ -180,6 +180,14 @@ const ItineraryPoiElement = (props) => {
   };
 
   const fetchData = (showMore = false) => {
+    const added_activities = props.itineraryActivities.map((element, index) => {
+      return {
+        id:
+          element.activity?.activity_data?.activity?.id ||
+          element.activity?.activity_data?.poi?.id,
+        date: element.date,
+      };
+    });
     let ticketsCount = 1;
     if (props.payment && props.payment.meta_info) {
       ticketsCount =
@@ -188,7 +196,7 @@ const ItineraryPoiElement = (props) => {
         props.payment.meta_info.number_of_infants;
     }
 
-    axiosaxtivitiesinstance
+    axiosactivitiesinstance
       .post(`/?limit=30&offset=${offSet}`, {
         location: props?.city_id,
         duration: 10,
@@ -197,6 +205,7 @@ const ItineraryPoiElement = (props) => {
           ? EXPERIENCE_FILTERS_BOX[SelectedExprience].actual
           : [],
         search_query: debouncedSearch,
+        added_activities,
       })
       .then((res) => {
         if (res.data.results.length) {
@@ -726,6 +735,7 @@ const ItineraryPoiElement = (props) => {
 const mapStateToPros = (state) => {
   return {
     notificationText: state.Notification.text,
+    itineraryActivities: state.itineraryActivities.activities,
   };
 };
 const mapDispatchToProps = (dispatch) => {

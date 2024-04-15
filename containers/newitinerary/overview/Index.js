@@ -37,14 +37,6 @@ const toTitleCase = (str) => {
 };
 
 const Overview = (props) => {
-  // useEffect(() => {}, []);
-  // var Images = [];
-
-  // useLayoutEffect(() => {
-  //   for (let i = 0; i < props.images.length; i++) {
-  //     if (props.images[i]) Images.push(props.images[i]);
-  //   }
-  // }, []);
   return (
     <Container>
       <GridContainer>
@@ -58,6 +50,11 @@ const Overview = (props) => {
           start_date={props.start_date}
           end_date={props.end_date}
           duration={props.duration}
+          budget={props?.budget}
+          number_of_adults={props?.number_of_adults}
+          number_of_children={props?.number_of_children}
+          number_of_infants={props?.number_of_infants}
+          setEditRoute={props.setEditRoute}
         ></Details>
       </div>
 

@@ -4,9 +4,8 @@ import 'react-dates/lib/css/_datepicker.css';
 import { BiCalendarAlt } from 'react-icons/bi';
 import moment from 'moment';
 import media from '../../media';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import Button from '../../ui/button/Index';
-import { DateRangePicker, isInclusivelyBeforeDay } from 'react-dates';
+import { DateRangePicker } from 'react-dates';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -115,6 +114,7 @@ const CalenderIcons = styled.div`
   height: 3rem;
   gap: ${(props) => (props.tailoredFormModal ? '10px' : '22px')};
 `;
+
 const TextContainer = styled.div`
   display: flex;
   justify-content: space-between;
@@ -126,9 +126,11 @@ const TextContainer = styled.div`
   gap: 22px;
   ${(props) => props.tailoredFormModal && 'gap : 10px'};
 `;
+
 const Text = styled.p`
   width: 100%;
 `;
+
 const Icon = styled.div`
   width: 100%;
   text-align: right;
@@ -140,6 +142,7 @@ const Icon = styled.div`
   margin-right: 5px;
   margin-top: -5px;
 `;
+
 const ButtonContainer = styled.div`
   z-index: 2;
   position: fixed;
@@ -153,6 +156,7 @@ const ButtonContainer = styled.div`
     // left : 50%;
   }
 `;
+
 const DatePicker = (props) => {
   const [focusedInput, setFocusedInput] = useState(props.focusedDate || null);
 

@@ -7,6 +7,7 @@ import { TransparentButton } from "../../../containers/itinerary/New_Itenary_DBD
 import media from "../../media";
 import { useState, useEffect, use } from "react";
 import ImageLoader from "../../ImageLoader";
+import { logEvent } from "../../../services/ga/Index";
 
 export default function TransferElement(props) {
   const { modes, heading, meta, booking, data, transfers } = props;

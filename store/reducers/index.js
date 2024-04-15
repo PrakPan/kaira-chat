@@ -7,6 +7,7 @@ import Notification from "./Notification";
 import Scroll from "./Scroll";
 import UserLocation from "./UserLocation";
 import ItineraryStartDate from "./ItineraryStartDate";
+import ItineraryActivities from "./ItineraryActivities";
 import { HYDRATE } from "next-redux-wrapper";
 
 const rootReducer = combineReducers({
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
   scroll: Scroll,
   UserLocation: UserLocation,
   itineraryStartDate: ItineraryStartDate,
+  itineraryActivities: ItineraryActivities,
 });
 
 export default rootReducer;
