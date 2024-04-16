@@ -6,6 +6,7 @@ import ImageLoader from "../../../../components/ImageLoader";
 import { MdEdit } from "react-icons/md";
 import TransferEditDrawer from "../../../../components/drawers/routeTransfer/TransferEditDrawer";
 import routeAlternates from "../../../../services/itinerary/brief/routeAlternates";
+import axiosRoundTripInstance from "../../../../services/itinerary/brief/roundTripSuggestion";
 import { logEvent } from "../../../../services/ga/Index";
 
 const Container = styled.div`
@@ -70,6 +71,8 @@ const Text = styled.div`
 const MidSection = (props) => {
   const [showDrawer, setShowDrawer] = useState(false);
   const [alternateRoutes, setAlternateRoutes] = useState({});
+  const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
+  const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
   const [loadingAlternates, setLoadingAlternates] = useState(true);
   const [alternatesError, setAlternatesError] = useState(null);
   const [addOrEdit, setAddOrEdit] = useState(null);
@@ -81,9 +84,38 @@ const MidSection = (props) => {
   else if (props?.route && props?.route?.transfers) hidemidsection = false;
   else hidemidsection = true;
 
+  const roundTripSuggestion = () => {
+    setLoadingAlternates(true);
+    axiosRoundTripInstance
+      .get(`?itinerary_id=${props?.itinerary_id}`)
+      .then((response) => {
+        const results = response.data;
+
+        for (let i = 0; i < results.length; i++) {
+          if (
+            results[i].success &&
+            results[i].transfer_type === "Intercity round-trip"
+          ) {
+            setRoundTripSuggestions(results[i]);
+          } else if (
+            results[i].success &&
+            results[i].transfer_type === "Multicity"
+          ) {
+            setMultiCitySuggestions(results[i]);
+          }
+        }
+        setLoadingAlternates(false);
+      })
+      .catch((err) => {
+        console.log("[ERROR][TransferEdit]: ", err);
+        setLoadingAlternates(false);
+      });
+  };
+
   const handleTransferEdit = (e, label) => {
     setShowDrawer(true);
     setAddOrEdit(e.target.id);
+    roundTripSuggestion();
     routeAlternates
       .get(
         `/?route_id=${props?.route?.transfers?.id}&pax=${
@@ -259,13 +291,13 @@ const MidSection = (props) => {
         origin={props.originCity}
         destination={props.destinationCity}
         alternateRoutes={alternateRoutes}
+        roundTripSuggestions={roundTripSuggestions}
+        multiCitySuggestions={multiCitySuggestions}
         loadingAlternates={loadingAlternates}
         alternatesError={alternatesError}
         day_slab_index={props?.route?.element_location?.day_slab_index}
         element_index={props?.route?.element_index}
         fetchData={props?.fetchData}
-        getPaymentHandler={props?.getPaymentHandler}
-        payment={props?.payment}
         setShowLoginModal={props?.setShowLoginModal}
         check_in={props?.route?.check_in}
         _GetInTouch={props._GetInTouch}

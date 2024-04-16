@@ -1,6 +1,7 @@
 import Drawer from "../../ui/Drawer";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import transferEdit from "../../../services/itinerary/brief/transferEdit";
+import axiosRoundTripInstance from "../../../services/itinerary/brief/roundTripSuggestion";
 import { connect } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
 import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";
@@ -24,6 +25,21 @@ const GetInTouchContainer = styled.div`
   }
 `;
 
+const TRANSFER_TYPES = {
+  ONEWAYTRIP: {
+    name: "one-way-trip",
+    label: "One-way Trip",
+  },
+  ROUNDTRIP: {
+    name: "round-trip",
+    label: "Round Trip",
+  },
+  MULTICITYTRIP: {
+    name: "multi-city-trip",
+    label: "Multi-city Trip",
+  },
+};
+
 const TransferEditDrawer = (props) => {
   const {
     itinerary_id,
@@ -33,20 +49,23 @@ const TransferEditDrawer = (props) => {
     origin,
     destination,
     alternateRoutes,
+    roundTripSuggestions,
+    multiCitySuggestions,
     loadingAlternates,
     alternatesError,
     day_slab_index,
     element_index,
     openNotification,
     fetchData,
-    getPaymentHandler,
-    payment,
     setShowLoginModal,
     check_in,
   } = props;
 
   const [transfers, setTransfers] = useState([]);
   const [selectLoading, setSelectLoading] = useState(false);
+  const [transferType, setTransferType] = useState(
+    TRANSFER_TYPES.ONEWAYTRIP.name
+  );
   const isDesktop = useMediaQuery("(min-width:768px)");
 
   const getSelectedTransfer = () => {
@@ -68,7 +87,8 @@ const TransferEditDrawer = (props) => {
       (route, index) => route.heading !== selectedTransferHeading
     );
     const selectedTransfer = getSelectedTransfer();
-    if (selectedTransfer) newTransfers.unshift(selectedTransfer);
+    if (selectedTransfer)
+      newTransfers.unshift({ ...selectedTransfer, isSelected: true });
     return newTransfers;
   };
 
@@ -147,6 +167,10 @@ const TransferEditDrawer = (props) => {
     });
   };
 
+  const handleTransferType = (e) => {
+    setTransferType(e.target.id);
+  };
+
   return (
     <Drawer
       show={showDrawer}
@@ -158,7 +182,7 @@ const TransferEditDrawer = (props) => {
       mobileWidth={"100vw"}
       width="50vw"
     >
-      <div className="sticky px-2 top-0 bg-white z-[900] flex flex-col gap-5 py-4 pb-1 justify-start items-start mx-auto w-[98%]">
+      <div className="sticky px-2 top-0 bg-white z-[900] flex flex-col gap-4 py-4 pb-1 justify-start items-start mx-auto w-[98%]">
         <div className="flex flex-row gap-3 my-0 justify-start items-center">
           <IoMdArrowRoundBack
             onClick={() => setShowDrawer(false)}
@@ -263,42 +287,78 @@ const TransferEditDrawer = (props) => {
           </div>
         ) : (
           <div className="w-full flex flex-col items-center gap-3">
-            <div className="w-full flex justify-start">
-              {transfers.length < 2
-                ? `${transfers.length} way`
-                : `${transfers.length} ways`}{" "}
-              to travel from {origin} to {destination}
-            </div>
-
-            <div className="w-full flex flex-col items-center gap-3">
-              {selectLoading && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                  <div className="mb-96">
-                    <div className="animate-spin loader ease-linear rounded-full border-4 border-t-4 border-t-yellow-500 h-14 w-14"></div>
-                  </div>
-                </div>
+            <div className="w-full flex flex-row gap-4 px-2 whitespace-nowrap overflow-x-auto hide-scrollbar">
+              <RadioButton
+                name={TRANSFER_TYPES.ONEWAYTRIP.name}
+                label={TRANSFER_TYPES.ONEWAYTRIP.label}
+                transferType={transferType}
+                handleTransferType={handleTransferType}
+              />
+              {roundTripSuggestions && (
+                <RadioButton
+                  name={TRANSFER_TYPES.ROUNDTRIP.name}
+                  label={TRANSFER_TYPES.ROUNDTRIP.label}
+                  transferType={transferType}
+                  handleTransferType={handleTransferType}
+                />
               )}
-
-              {transfers.map((transfer, index) => {
-                if (isDesktop)
-                  return (
-                    <RouteContainer
-                      key={index}
-                      transferIndex={index}
-                      transfer={transfer}
-                      handleSelect={handleSelect}
-                    />
-                  );
-                return (
-                  <MobileRouteContainer
-                    key={index}
-                    transferIndex={index}
-                    transfer={transfer}
-                    handleSelect={handleSelect}
-                  />
-                );
-              })}
+              {multiCitySuggestions && (
+                <RadioButton
+                  name={TRANSFER_TYPES.MULTICITYTRIP.name}
+                  label={TRANSFER_TYPES.MULTICITYTRIP.label}
+                  transferType={transferType}
+                  handleTransferType={handleTransferType}
+                />
+              )}
             </div>
+            {selectLoading && (
+              <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                <div className="mb-96">
+                  <div className="animate-spin loader ease-linear rounded-full border-4 border-t-4 border-t-yellow-500 h-14 w-14"></div>
+                </div>
+              </div>
+            )}
+            {transferType === TRANSFER_TYPES.ONEWAYTRIP.name ? (
+              <>
+                <div className="w-full flex justify-start">
+                  {transfers.length < 2
+                    ? `${transfers.length} way`
+                    : `${transfers.length} ways`}{" "}
+                  to travel from {origin} to {destination}
+                </div>
+                <div className="w-full flex flex-col items-center gap-3">
+                  {transfers.map((transfer, index) => {
+                    if (isDesktop)
+                      return (
+                        <RouteContainer
+                          key={index}
+                          transferIndex={index}
+                          transfer={transfer}
+                          handleSelect={handleSelect}
+                        />
+                      );
+                    return (
+                      <MobileRouteContainer
+                        key={index}
+                        transferIndex={index}
+                        transfer={transfer}
+                        handleSelect={handleSelect}
+                      />
+                    );
+                  })}
+                </div>
+              </>
+            ) : transferType === TRANSFER_TYPES.ROUNDTRIP.name ? (
+              <RoundTripSuggestion
+                handleSelect={handleSelect}
+                roundTripSuggestions={roundTripSuggestions}
+              />
+            ) : transferType === TRANSFER_TYPES.MULTICITYTRIP.name ? (
+              <MultiCityTripSuggestion
+                handleSelect={handleSelect}
+                multiCitySuggestions={multiCitySuggestions}
+              />
+            ) : null}
           </div>
         )}
       </div>
@@ -332,7 +392,7 @@ const RouteContainer = (props) => {
   return (
     <div
       className={`w-full flex flex-col gap-0 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm ${
-        transferIndex === 0 ? "border-yellow-300" : ""
+        transferIndex === 0 && transfer.isSelected ? "border-yellow-300" : ""
       } border-x-2 border-t-2 border-b-4`}
     >
       {transfer.recommended && (
@@ -433,11 +493,13 @@ const RouteContainer = (props) => {
                 className="flex mt-2 flex-row gap-2 items-end justify-end cursor-pointer"
               >
                 <CheckboxFormComponent
-                  checked={transferIndex === 0}
+                  checked={transferIndex === 0 && transfer.isSelected}
                   className="mb-1"
                 />
                 <label className="text-center cursor-pointer">
-                  {transferIndex === 0 ? "Selected" : "Select"}
+                  {transferIndex === 0 && transfer.isSelected
+                    ? "Selected"
+                    : "Select"}
                 </label>
               </div>
             </div>
@@ -520,11 +582,13 @@ const MultiRoute = (props) => {
             className="flex mt-2 flex-row gap-2 items-end justify-end cursor-pointer"
           >
             <CheckboxFormComponent
-              checked={transferIndex === 0}
+              checked={transferIndex === 0 && transfer.isSelected}
               className="mb-1"
             />
             <label className="text-center cursor-pointer">
-              {transferIndex === 0 ? "Selected" : "Select"}
+              {transferIndex === 0 && transfer.isSelected
+                ? "Selected"
+                : "Select"}
             </label>
           </div>
         </div>
@@ -645,11 +709,13 @@ const MobileRouteContainer = (props) => {
                 className="flex flex-row gap-2 items-end justify-start cursor-pointer"
               >
                 <CheckboxFormComponent
-                  checked={transferIndex === 0}
+                  checked={transferIndex === 0 && transfer.isSelected}
                   className="mb-1"
                 />
                 <label className="text-center cursor-pointer">
-                  {transferIndex === 0 ? "Selected" : "Select"}
+                  {transferIndex === 0 && transfer.isSelected
+                    ? "Selected"
+                    : "Select"}
                 </label>
               </div>
             </div>
@@ -731,11 +797,13 @@ const MobileMultiRoute = (props) => {
             className="flex flex-row gap-2 items-end justify-start cursor-pointer"
           >
             <CheckboxFormComponent
-              checked={transferIndex === 0}
+              checked={transferIndex === 0 && transfer.isSelected}
               className="mb-1"
             />
             <label className="text-center cursor-pointer">
-              {transferIndex === 0 ? "Selected" : "Select"}
+              {transferIndex === 0 && transfer.isSelected
+                ? "Selected"
+                : "Select"}
             </label>
           </div>
         </div>
@@ -857,11 +925,13 @@ const MultiModeContainer = ({ transferIndex, transfer, handleSelect }) => {
                 className="flex mt-2 flex-row gap-2 items-end justify-end cursor-pointer"
               >
                 <CheckboxFormComponent
-                  checked={transferIndex === 0}
+                  checked={transferIndex === 0 && transferIndex.isSelected}
                   className="mb-1"
                 />
                 <label className="text-center cursor-pointer">
-                  {transferIndex === 0 ? "Selected" : "Select"}
+                  {transferIndex === 0 && transfer.isSelected
+                    ? "Selected"
+                    : "Select"}
                 </label>
               </div>
             )}
@@ -982,11 +1052,11 @@ const MobileMultiModeContainer = ({
           className="flex flex-row gap-2 items-end justify-end cursor-pointer"
         >
           <CheckboxFormComponent
-            checked={transferIndex === 0}
+            checked={transferIndex === 0 && transfer.isSelected}
             className="mb-1"
           />
           <label className="text-center cursor-pointer">
-            {transferIndex === 0 ? "Selected" : "Select"}
+            {transferIndex === 0 && transfer.isSelected ? "Selected" : "Select"}
           </label>
         </div>
       </div>
@@ -1010,5 +1080,286 @@ const ViewMoreButton = ({ viewMore, handleViewMore }) => {
         </>
       )}
     </button>
+  );
+};
+
+const RadioButton = ({ name, label, transferType, handleTransferType }) => {
+  return (
+    <div className="flex flex-row items-center gap-2">
+      <div
+        onClick={handleTransferType}
+        id={name}
+        className={`flex items-center justify-center w-5 h-5 border-2 ${
+          transferType === name ? "border-black" : "border-[#636366]"
+        } rounded-full cursor-pointer`}
+      >
+        {transferType === name && (
+          <div className="p-1 w-3 h-3 rounded-full bg-black"></div>
+        )}
+      </div>
+      <label htmlFor={name} className="text-sm font-normal">
+        {label}
+      </label>
+    </div>
+  );
+};
+
+const RoundTripSuggestion = ({ roundTripSuggestions, handleSelect }) => {
+  const [selectedCab, setSelectedCab] = useState(null);
+  const [routes, setRoutes] = useState([]);
+  const [pricing, setPricing] = useState([]);
+  const isDesktop = useMediaQuery("(min-width:768px)");
+
+  useEffect(() => {
+    const routes = [];
+    const pricing = [];
+    roundTripSuggestions?.routes?.forEach((route) => {
+      routes.push(route);
+    });
+    setRoutes(routes);
+    roundTripSuggestions?.data?.cabRate.forEach((route) => {
+      pricing.push(route);
+    });
+    setPricing(pricing);
+  }, [roundTripSuggestions]);
+
+  const handleSelectCab = (e) => {
+    setSelectedCab(e.target.id);
+  };
+  return (
+    <div
+      className={`w-full flex flex-row gap-2 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm border-x-2 border-t-2 border-b-4`}
+    >
+      {isDesktop && (
+        <div
+          className={`w-[80px] h-[70px] px-2 bg-gray-100 rounded-xl flex items-center justify-center`}
+        >
+          <TransfersIcon
+            TransportMode={"Taxi"}
+            Instyle={{
+              fontSize: "3rem",
+              color: "black",
+            }}
+            classname={{ width: 80, height: 75 }}
+          />
+        </div>
+      )}
+
+      <div className="w-full flex flex-col gap-3">
+        <div className="flex flex-row gap-2">
+          {!isDesktop && (
+            <div
+              className={`w-[60px] h-[60px] px-2 bg-gray-100 rounded-xl flex items-center justify-center`}
+            >
+              <TransfersIcon
+                TransportMode={"Taxi"}
+                Instyle={{
+                  fontSize: "3rem",
+                  color: "black",
+                }}
+                classname={{ width: 80, height: 75 }}
+              />
+            </div>
+          )}
+          <div className="flex flex-col gap-1">
+            <div className="text-[16px] font-medium">
+              Intercity Round Trip {isDesktop && "(Home to Home)"}
+            </div>
+            <div className="text-[#7A7A7A] text-[14px] font-normal">
+              Distance: {roundTripSuggestions?.data?.quotedDistance} Kms
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <div className="text-[14px] font-semibold">Routes</div>
+          <div className="flex flex-col gap-1">
+            {routes.map((route, i) => (
+              <div
+                key={`route-${i}`}
+                className="flex flex-row items-center gap-2"
+              >
+                <div className="w-1 h-1 bg-black rounded-full"></div>
+                <div className="text-[14px] font-normal">
+                  {route?.source?.shortName} to {route?.destination?.shortName}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <div className="text-[14px] font-semibold">Pricing</div>
+          <div className="flex flex-col gap-1">
+            {pricing.map((price, i) => (
+              <div
+                key={`price-${i}`}
+                className="flex flex-row items-center gap-2"
+              >
+                <div
+                  id={price?.cab?.id}
+                  onClick={handleSelectCab}
+                  className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${
+                    selectedCab == price?.cab?.id
+                      ? "border-black"
+                      : "border-[#636366]"
+                  } `}
+                >
+                  {selectedCab == price?.cab?.id && (
+                    <div className="w-3 h-3 bg-black rounded-full"></div>
+                  )}
+                </div>
+                <div className="text-[#636366] text-[14px] font-normal">
+                  {price.cab.type}:{" "}
+                  <span className="text-black font-bold">
+                    ₹{getIndianPrice(Math.floor(price?.fare?.totalAmount))}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div
+          onClick={() => console.log(selectedCab)}
+          className="flex mt-2 flex-row gap-2 items-end justify-end cursor-pointer place-self-end"
+        >
+          <CheckboxFormComponent checked={selectedCab} className="mb-1" />
+          <label className="text-center cursor-pointer">
+            {selectedCab ? "Selected" : "Select"}
+          </label>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const MultiCityTripSuggestion = ({ multiCitySuggestions }) => {
+  const [selectedCab, setSelectedCab] = useState(null);
+  const [routes, setRoutes] = useState([]);
+  const [pricing, setPricing] = useState([]);
+  const isDesktop = useMediaQuery("(min-width:768px)");
+
+  useEffect(() => {
+    const routes = [];
+    const pricing = [];
+    multiCitySuggestions?.routes?.forEach((route) => {
+      routes.push(route);
+    });
+    setRoutes(routes);
+    multiCitySuggestions?.data?.cabRate.forEach((route) => {
+      pricing.push(route);
+    });
+    setPricing(pricing);
+  }, [multiCitySuggestions]);
+
+  const handleSelectCab = (e) => {
+    setSelectedCab(e.target.id);
+  };
+  return (
+    <div
+      className={`w-full flex flex-row gap-2 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm border-x-2 border-t-2 border-b-4`}
+    >
+      {isDesktop && (
+        <div
+          className={`w-[80px] h-[70px] px-2 bg-gray-100 rounded-xl flex items-center justify-center`}
+        >
+          <TransfersIcon
+            TransportMode={"Taxi"}
+            Instyle={{
+              fontSize: "3rem",
+              color: "black",
+            }}
+            classname={{ width: 80, height: 75 }}
+          />
+        </div>
+      )}
+
+      <div className="w-full flex flex-col gap-3">
+        <div className="flex flex-row gap-2">
+          {!isDesktop && (
+            <div
+              className={`w-[60px] h-[60px] px-2 bg-gray-100 rounded-xl flex items-center justify-center`}
+            >
+              <TransfersIcon
+                TransportMode={"Taxi"}
+                Instyle={{
+                  fontSize: "3rem",
+                  color: "black",
+                }}
+                classname={{ width: 80, height: 75 }}
+              />
+            </div>
+          )}
+          <div className="flex flex-col gap-1">
+            <div className="text-[16px] font-medium">
+              Destination Taxi Only {isDesktop && "(Multicity)"}
+            </div>
+            <div className="text-[#7A7A7A] text-[14px] font-normal">
+              Distance: {multiCitySuggestions?.data?.quotedDistance} Kms
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <div className="text-[14px] font-semibold">Routes</div>
+          <div className="flex flex-col gap-1">
+            {routes.map((route, i) => (
+              <div
+                key={`route-${i}`}
+                className="flex flex-row items-center gap-2"
+              >
+                <div className="w-1 h-1 bg-black rounded-full"></div>
+                <div className="text-[14px] font-normal">
+                  {route?.source?.shortName} to {route?.destination?.shortName}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <div className="text-[14px] font-semibold">Pricing</div>
+          <div className="flex flex-col gap-1">
+            {pricing.map((price, i) => (
+              <div
+                key={`price-${i}`}
+                className="flex flex-row items-center gap-2"
+              >
+                <div
+                  id={price?.cab?.id}
+                  onClick={handleSelectCab}
+                  className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${
+                    selectedCab == price?.cab?.id
+                      ? "border-black"
+                      : "border-[#636366]"
+                  } `}
+                >
+                  {selectedCab == price?.cab?.id && (
+                    <div className="w-3 h-3 bg-black rounded-full"></div>
+                  )}
+                </div>
+                <div className="text-[#636366] text-[14px] font-normal">
+                  {price.cab.type}:{" "}
+                  <span className="text-black font-bold">
+                    ₹{getIndianPrice(Math.floor(price?.fare?.totalAmount))}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div
+          onClick={() => console.log(selectedCab)}
+          className="flex mt-2 flex-row gap-2 items-end justify-end cursor-pointer place-self-end"
+        >
+          <CheckboxFormComponent checked={selectedCab} className="mb-1" />
+          <label className="text-center cursor-pointer">
+            {selectedCab ? "Selected" : "Select"}
+          </label>
+        </div>
+      </div>
+    </div>
   );
 };

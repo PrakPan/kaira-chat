@@ -250,6 +250,8 @@ const TransferModeContainer = (props) => {
   const [UpdateBookingState, setUpdateBookingState] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
   const [alternateRoutes, setAlternateRoutes] = useState(null);
+  const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
+  const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
   const [loadingAlternates, setLoadingAlternates] = useState(true);
   const [alternatesError, setAlternatesError] = useState(null);
   const [flightImageFailed, setFlightImageFailed] = useState(null);
@@ -517,8 +519,37 @@ const TransferModeContainer = (props) => {
       });
   };
 
+  const roundTripSuggestion = () => {
+    setLoadingAlternates(true);
+    axiosRoundTripInstance
+      .get(`?itinerary_id=${props?.itinerary_id}`)
+      .then((response) => {
+        const results = response.data;
+
+        for (let i = 0; i < results.length; i++) {
+          if (
+            results[i].success &&
+            results[i].transfer_type === "Intercity round-trip"
+          ) {
+            setRoundTripSuggestions(results[i]);
+          } else if (
+            results[i].success &&
+            results[i].transfer_type === "Multicity"
+          ) {
+            setMultiCitySuggestions(results[i]);
+          }
+        }
+        setLoadingAlternates(false);
+      })
+      .catch((err) => {
+        console.log("[ERROR][TransferEdit]: ", err);
+        setLoadingAlternates(false);
+      });
+  };
+
   const handleTransferEdit = () => {
     setShowDrawer(true);
+    roundTripSuggestion();
     routeAlternates
       .get(`/?route_id=` + props?.route?.transfers?.id, {
         headers: {
@@ -1261,13 +1292,14 @@ const TransferModeContainer = (props) => {
         origin={props.originCity}
         destination={props.destinationCity}
         alternateRoutes={alternateRoutes}
+        roundTripSuggestions={roundTripSuggestions}
+        multiCitySuggestions={multiCitySuggestions}
         loadingAlternates={loadingAlternates}
+        setLoadingAlternates={setLoadingAlternates}
         alternatesError={alternatesError}
         day_slab_index={props?.route?.element_location?.day_slab_index}
         element_index={props?.route?.element_index}
         fetchData={props?.fetchData}
-        getPaymentHandler={props?.getPaymentHandler}
-        payment={props?.payment}
         setShowLoginModal={props?.setShowLoginModal}
         check_in={props?.route?.check_in}
       />
