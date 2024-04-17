@@ -204,12 +204,7 @@ const PlanAsPerTheme = (props) => {
       key={i}
       onClick={() => _handleTripRedirect(e.banner_heading)}
     >
-      {/* {ImgLoading && <SkeletonCard />} */}
-      <ImageContainer
-        // style={ImgLoading ? { display: "none" } : { display: "initial" }}
-        bg="road-trip.png"
-        href={"/asia/india/" + e.path}
-      >
+      <ImageContainer bg="road-trip.png" href={"/asia/india/" + e.path}>
         <TextContainer className="AnimateTop">
           <Heading>{e.banner_heading}</Heading>
           {isPageWide && <div className="StartNow">Explore!</div>}
@@ -223,7 +218,6 @@ const PlanAsPerTheme = (props) => {
           style={{ filter: "brightness(0.9)" }}
           url={e.image}
         ></ImageLoader>
-        {/* <BlackContainer/> */}
       </ImageContainer>
     </GridItem>
   ));
@@ -233,7 +227,7 @@ const PlanAsPerTheme = (props) => {
       <Container>
         {ThemeContainer}
         <GridItem className="d">
-          <TripsCounter />
+          <TripsCounter Count={props.Count} />
           <p
             style={
               isPageWide ? {} : { marginTop: "-10px", marginBottom: "0px" }
@@ -267,7 +261,6 @@ const PlanAsPerTheme = (props) => {
           {isPageWide
             ? "Create your free itinerary"
             : "Create your personalised Itinerary"}
-          {/* {loading ? <Spinner size={16}></Spinner> : null} */}
         </Button>
       ) : null}
     </>

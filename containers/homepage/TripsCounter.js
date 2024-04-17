@@ -1,39 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
 import useInViewport from "../../components/custom hooks/useInViewport";
-import axiosCountInstance from "../../services/itinerary/count";
 import media from "../../components/media";
 
-function TripsCounter() {
-    const [count, setCount] = useState(null);
+function TripsCounter(props) {
   const [ref, inViewport] = useInViewport();
-  const [countToShow, setCountShow] = useState(0);
-    let isPageWide = media("(min-width: 768px)");
-    
-useEffect(() => {
-  axiosCountInstance.get("").then((res) => {
-    let count = res.data.user.toString().split("");
-    if (count.length > 3) {
-      for (let i = 1; i < 4; i++){
-      count.pop();        
-      }
-      setCount(count.join('') + 'k')
-    }
-    else setCount(+count.join(''))
-  });
-}, []);
-// useEffect(() => {
-//   if (countToShow != count) {
-//     setTimeout(() => {
-//       if (countToShow < count) setCountShow((prev) => prev + 9);
-//       else setCountShow(count);
-//     }, [2]);
-//   }
-// }, [countToShow, inViewport]);
+  let isPageWide = media("(min-width: 768px)");
+
   return (
-    <div
-      ref={ref}
-      style={{ display: "flex", alignItems: "center" }}
-    >
+    <div ref={ref} style={{ display: "flex", alignItems: "center" }}>
       <h2
         style={
           isPageWide
@@ -41,8 +15,7 @@ useEffect(() => {
             : { fontSize: "18px", fontWeight: 700 }
         }
       >
-        {/* {countToShow} */}
-        {count}
+        {props?.Count}
       </h2>
       <h2
         style={
@@ -50,7 +23,6 @@ useEffect(() => {
             ? { fontSize: "45px", fontWeight: 700, marginBottom: "0.7rem" }
             : { fontSize: "18px", fontWeight: 700, marginBottom: "0.7rem" }
         }
-        // style={{ marginBottom: "0.7rem" }}
       >
         +
       </h2>
@@ -58,4 +30,4 @@ useEffect(() => {
   );
 }
 
-export default React.memo(TripsCounter)
+export default React.memo(TripsCounter);

@@ -1,7 +1,7 @@
 import Drawer from "../../ui/Drawer";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import transferEdit from "../../../services/itinerary/brief/transferEdit";
-import axiosRoundTripInstance from "../../../services/itinerary/brief/roundTripSuggestion";
+import axiosRoundTripEditInstance from "../../../services/itinerary/brief/roudTripEdit";
 import { connect } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
 import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";
@@ -162,6 +162,69 @@ const TransferEditDrawer = (props) => {
         evemt_value: selectedRoute?.legs[0]?.carrier
           ? selectedRoute?.legs[0]?.carrier
           : selectedRoute?.modes[0],
+        event_action: "Transfer Add/Change Drawer",
+      },
+    });
+  };
+
+  const handleRoundTripSelect = (trace_id, cab_id) => {
+    console.log(trace_id);
+    const access_token = localStorage.getItem("access_token");
+    if (!props.token) {
+      setShowLoginModal(true);
+      return;
+    }
+    setSelectLoading(true);
+
+    const data = {
+      itinerary_id,
+      trace_id,
+      cab_id,
+    };
+    axiosRoundTripEditInstance
+      .post("", data, {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        if (response.status === 201) {
+          fetchData((scroll = false));
+          openNotification({
+            text: "Your Transfer updated successfully!",
+            heading: "Success!",
+            type: "success",
+          });
+        }
+        setSelectLoading(false);
+        setShowDrawer(false);
+      })
+      .catch((err) => {
+        setSelectLoading(false);
+        setShowDrawer(false);
+        if (err.response.status === 403) {
+          props.openNotification({
+            text: "You are not allowed to make changes to this itinerary",
+            heading: "Error!",
+            type: "error",
+          });
+        } else {
+          props.openNotification({
+            text: "There seems to be a problem, please try again!",
+            heading: "Error!",
+            type: "error",
+          });
+        }
+      });
+
+    logEvent({
+      action: "Transfer_Add_Change",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: `Select`,
+        evemt_value: trace_id,
         event_action: "Transfer Add/Change Drawer",
       },
     });
@@ -350,12 +413,12 @@ const TransferEditDrawer = (props) => {
               </>
             ) : transferType === TRANSFER_TYPES.ROUNDTRIP.name ? (
               <RoundTripSuggestion
-                handleSelect={handleSelect}
+                handleRoundTripSelect={handleRoundTripSelect}
                 roundTripSuggestions={roundTripSuggestions}
               />
             ) : transferType === TRANSFER_TYPES.MULTICITYTRIP.name ? (
               <MultiCityTripSuggestion
-                handleSelect={handleSelect}
+                handleRoundTripSelect={handleRoundTripSelect}
                 multiCitySuggestions={multiCitySuggestions}
               />
             ) : null}
@@ -1094,7 +1157,7 @@ const RadioButton = ({ name, label, transferType, handleTransferType }) => {
         } rounded-full cursor-pointer`}
       >
         {transferType === name && (
-          <div className="p-1 w-3 h-3 rounded-full bg-black"></div>
+          <div id={name} className="p-1 w-3 h-3 rounded-full bg-black"></div>
         )}
       </div>
       <label htmlFor={name} className="text-sm font-normal">
@@ -1104,10 +1167,17 @@ const RadioButton = ({ name, label, transferType, handleTransferType }) => {
   );
 };
 
-const RoundTripSuggestion = ({ roundTripSuggestions, handleSelect }) => {
+const RoundTripSuggestion = ({
+  roundTripSuggestions,
+  handleRoundTripSelect,
+}) => {
   const [selectedCab, setSelectedCab] = useState(null);
+  const [selectError, setSelectError] = useState(null);
   const [routes, setRoutes] = useState([]);
   const [pricing, setPricing] = useState([]);
+  const [viewDetails, setViewDetails] = useState([
+    ...Array(roundTripSuggestions.length).fill(false),
+  ]);
   const isDesktop = useMediaQuery("(min-width:768px)");
 
   useEffect(() => {
@@ -1124,7 +1194,16 @@ const RoundTripSuggestion = ({ roundTripSuggestions, handleSelect }) => {
   }, [roundTripSuggestions]);
 
   const handleSelectCab = (e) => {
+    setSelectError(false);
     setSelectedCab(e.target.id);
+  };
+
+  const handleSelect = () => {
+    if (selectedCab) {
+      handleRoundTripSelect(roundTripSuggestions?.trace_id, +selectedCab);
+    } else {
+      setSelectError(true);
+    }
   };
   return (
     <div
@@ -1163,7 +1242,11 @@ const RoundTripSuggestion = ({ roundTripSuggestions, handleSelect }) => {
           )}
           <div className="flex flex-col gap-1">
             <div className="text-[16px] font-medium">
-              Intercity Round Trip {isDesktop && "(Home to Home)"}
+              Intercity Round Trip{" "}
+              {isDesktop &&
+                `(${routes[0]?.source?.shortName} to ${
+                  routes[routes.length - 1]?.destination?.shortName
+                })`}
             </div>
             <div className="text-[#7A7A7A] text-[14px] font-normal">
               Distance: {roundTripSuggestions?.data?.quotedDistance} Kms
@@ -1189,31 +1272,83 @@ const RoundTripSuggestion = ({ roundTripSuggestions, handleSelect }) => {
         </div>
 
         <div className="flex flex-col gap-2">
-          <div className="text-[14px] font-semibold">Pricing</div>
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-row items-center gap-2">
+            <div className="text-[14px] font-semibold">Pricing</div>
+            {selectError && (
+              <div className="bg-red-500 text-xs md:text-sm lg:text-sm text-white py-1 px-2 rounded-lg text-center animate-popOut">
+                Please chose one pricing
+              </div>
+            )}
+          </div>
+          <div className="flex flex-col gap-2">
             {pricing.map((price, i) => (
               <div
                 key={`price-${i}`}
-                className="flex flex-row items-center gap-2"
+                className="w-full flex flex-row items-start gap-2"
               >
-                <div
-                  id={price?.cab?.id}
-                  onClick={handleSelectCab}
-                  className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${
-                    selectedCab == price?.cab?.id
-                      ? "border-black"
-                      : "border-[#636366]"
-                  } `}
-                >
-                  {selectedCab == price?.cab?.id && (
-                    <div className="w-3 h-3 bg-black rounded-full"></div>
-                  )}
+                <div>
+                  <div
+                    id={price?.cab?.id}
+                    onClick={handleSelectCab}
+                    className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${
+                      selectedCab == price?.cab?.id
+                        ? "border-black"
+                        : "border-[#636366]"
+                    } `}
+                  >
+                    {selectedCab == price?.cab?.id && (
+                      <div
+                        id={price?.cab?.id}
+                        className="w-3 h-3 bg-black rounded-full"
+                      ></div>
+                    )}
+                  </div>
                 </div>
-                <div className="text-[#636366] text-[14px] font-normal">
-                  {price.cab.type}:{" "}
-                  <span className="text-black font-bold">
-                    ₹{getIndianPrice(Math.floor(price?.fare?.totalAmount))}
-                  </span>
+
+                <div className="flex flex-col items-start gap-1">
+                  <div className="text-[#636366] text-[14px] font-normal">
+                    {price.cab.type}:{" "}
+                    <span className="text-black font-bold">
+                      ₹{getIndianPrice(Math.floor(price?.fare?.totalAmount))}
+                    </span>
+                  </div>
+                  {viewDetails[i] && (
+                    <div className="text-sm">
+                      <span className="font-semibold">Facilities: </span>
+                      {price?.cab?.seatingCapacity
+                        ? `${price.cab.seatingCapacity} Seating Capacity | `
+                        : null}
+                      {price?.cab?.bagCapacity
+                        ? `${price.cab.bagCapacity} Bag Capacity | `
+                        : null}
+                      {price?.cab?.bigBagCapaCity
+                        ? `${price.cab.bigBagCapaCity} Big Bag Capacity | `
+                        : null}
+                      {price?.cab?.fuelType
+                        ? ` Fuel Type ${price.cab?.fuelType}`
+                        : null}
+                    </div>
+                  )}
+                  <button
+                    onClick={() =>
+                      setViewDetails((prev) => {
+                        let state = [...prev];
+                        state[i] = !state[i];
+                        return state;
+                      })
+                    }
+                    className="flex flex-row items-center gap-1 text-xs py-[3px] px-2 rounded-lg hover:text-white hover:bg-black transition duration-300 ease-in-out"
+                  >
+                    {viewDetails[i] ? (
+                      <>
+                        Hide Details <IoIosArrowUp />
+                      </>
+                    ) : (
+                      <>
+                        View Details <IoIosArrowDown />
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
             ))}
@@ -1221,23 +1356,28 @@ const RoundTripSuggestion = ({ roundTripSuggestions, handleSelect }) => {
         </div>
 
         <div
-          onClick={() => console.log(selectedCab)}
+          onClick={handleSelect}
           className="flex mt-2 flex-row gap-2 items-end justify-end cursor-pointer place-self-end"
         >
-          <CheckboxFormComponent checked={selectedCab} className="mb-1" />
-          <label className="text-center cursor-pointer">
-            {selectedCab ? "Selected" : "Select"}
-          </label>
+          <CheckboxFormComponent checked={false} className="mb-1" />
+          <label className="text-center cursor-pointer">{"Select"}</label>
         </div>
       </div>
     </div>
   );
 };
 
-const MultiCityTripSuggestion = ({ multiCitySuggestions }) => {
+const MultiCityTripSuggestion = ({
+  multiCitySuggestions,
+  handleRoundTripSelect,
+}) => {
   const [selectedCab, setSelectedCab] = useState(null);
+  const [selectError, setSelectError] = useState(null);
   const [routes, setRoutes] = useState([]);
   const [pricing, setPricing] = useState([]);
+  const [viewDetails, setViewDetails] = useState([
+    ...Array(multiCitySuggestions.length).fill(false),
+  ]);
   const isDesktop = useMediaQuery("(min-width:768px)");
 
   useEffect(() => {
@@ -1254,8 +1394,18 @@ const MultiCityTripSuggestion = ({ multiCitySuggestions }) => {
   }, [multiCitySuggestions]);
 
   const handleSelectCab = (e) => {
+    setSelectError(false);
     setSelectedCab(e.target.id);
   };
+
+  const handleSelect = () => {
+    if (selectedCab) {
+      handleRoundTripSelect(multiCitySuggestions?.trace_id, +selectedCab);
+    } else {
+      setSelectError(true);
+    }
+  };
+
   return (
     <div
       className={`w-full flex flex-row gap-2 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm border-x-2 border-t-2 border-b-4`}
@@ -1319,31 +1469,83 @@ const MultiCityTripSuggestion = ({ multiCitySuggestions }) => {
         </div>
 
         <div className="flex flex-col gap-2">
-          <div className="text-[14px] font-semibold">Pricing</div>
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-row items-center gap-2">
+            <div className="text-[14px] font-semibold">Pricing</div>
+            {selectError && (
+              <div className="bg-red-500 text-xs md:text-sm lg:text-sm text-white py-1 px-2 rounded-lg text-center animate-popOut">
+                Please chose one pricing
+              </div>
+            )}
+          </div>
+          <div className="flex flex-col gap-2">
             {pricing.map((price, i) => (
               <div
                 key={`price-${i}`}
-                className="flex flex-row items-center gap-2"
+                className="w-full flex flex-row items-start gap-2"
               >
-                <div
-                  id={price?.cab?.id}
-                  onClick={handleSelectCab}
-                  className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${
-                    selectedCab == price?.cab?.id
-                      ? "border-black"
-                      : "border-[#636366]"
-                  } `}
-                >
-                  {selectedCab == price?.cab?.id && (
-                    <div className="w-3 h-3 bg-black rounded-full"></div>
-                  )}
+                <div>
+                  <div
+                    id={price?.cab?.id}
+                    onClick={handleSelectCab}
+                    className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${
+                      selectedCab == price?.cab?.id
+                        ? "border-black"
+                        : "border-[#636366]"
+                    } `}
+                  >
+                    {selectedCab == price?.cab?.id && (
+                      <div
+                        id={price?.cab?.id}
+                        className="w-3 h-3 bg-black rounded-full"
+                      ></div>
+                    )}
+                  </div>
                 </div>
-                <div className="text-[#636366] text-[14px] font-normal">
-                  {price.cab.type}:{" "}
-                  <span className="text-black font-bold">
-                    ₹{getIndianPrice(Math.floor(price?.fare?.totalAmount))}
-                  </span>
+
+                <div className="flex flex-col items-start gap-1">
+                  <div className="text-[#636366] text-[14px] font-normal">
+                    {price.cab.type}:{" "}
+                    <span className="text-black font-bold">
+                      ₹{getIndianPrice(Math.floor(price?.fare?.totalAmount))}
+                    </span>
+                  </div>
+                  {viewDetails[i] && (
+                    <div className="text-sm">
+                      <span className="font-semibold">Facilities: </span>
+                      {price?.cab?.seatingCapacity
+                        ? `${price.cab.seatingCapacity} Seating Capacity | `
+                        : null}
+                      {price?.cab?.bagCapacity
+                        ? `${price.cab.bagCapacity} Bag Capacity | `
+                        : null}
+                      {price?.cab?.bigBagCapaCity
+                        ? `${price.cab.bigBagCapaCity} Big Bag Capacity | `
+                        : null}
+                      {price?.cab?.fuelType
+                        ? ` Fuel Type ${price.cab?.fuelType}`
+                        : null}
+                    </div>
+                  )}
+                  <button
+                    onClick={() =>
+                      setViewDetails((prev) => {
+                        let state = [...prev];
+                        state[i] = !state[i];
+                        return state;
+                      })
+                    }
+                    className="flex flex-row items-center gap-1 text-xs py-[3px] px-2 rounded-lg hover:text-white hover:bg-black transition duration-300 ease-in-out"
+                  >
+                    {viewDetails[i] ? (
+                      <>
+                        Hide Details <IoIosArrowUp />
+                      </>
+                    ) : (
+                      <>
+                        View Details <IoIosArrowDown />
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
             ))}
@@ -1351,7 +1553,7 @@ const MultiCityTripSuggestion = ({ multiCitySuggestions }) => {
         </div>
 
         <div
-          onClick={() => console.log(selectedCab)}
+          onClick={handleSelect}
           className="flex mt-2 flex-row gap-2 items-end justify-end cursor-pointer place-self-end"
         >
           <CheckboxFormComponent checked={selectedCab} className="mb-1" />

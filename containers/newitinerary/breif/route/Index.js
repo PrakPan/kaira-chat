@@ -127,7 +127,7 @@ const Route = (props) => {
         if (i < props.routes.length - 1) {
           locationsArr.push(
             <MidSection
-              itinerary_id={props.itinerary_id}
+              itinerary_id={props?.itinerary_id}
               pinColour={props.routes[i].color}
               modes={props.routes[i + 1]?.modes}
               route={props.routes[i + 1]}

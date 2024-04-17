@@ -6,6 +6,8 @@ import * as authaction from "../store/actions/auth";
 import { useEffect } from "react";
 import axiospagelistinstance from "../services/pages/list";
 import axioscountrydetailsinstance from "../services/pages/country";
+import axiosCountInstance from "../services/itinerary/count";
+
 import { useRouter } from "next/router";
 
 const Home = (props) => {
@@ -43,6 +45,7 @@ const Home = (props) => {
         locations={props.locations}
         ThemeData={props.ThemeData}
         continetCarousel={props.continetCarousel}
+        Count={props.Count}
       ></HomepageContainer>
     </Layout>
   );
@@ -67,6 +70,7 @@ export async function getStaticProps() {
   var asiaLocations = [];
   var europeLocations = [];
   var continetCarousel = [];
+  let Count = null;
 
   try {
     const pageListResponse = await axiospagelistinstance.get(
@@ -108,6 +112,15 @@ export async function getStaticProps() {
         hot_destinations: hot_data,
       });
     }
+
+    const countResponse = await axiosCountInstance.get("");
+    let count = countResponse.data.user.toString().split("");
+    if (count.length > 3) {
+      for (let i = 1; i < 4; i++) {
+        count.pop();
+      }
+      Count = count.join("") + "k";
+    } else Count = +count.join("");
   } catch (err) {
     console.log("[ERROR][HomePage:getStaticProps]: ", err.message);
   }
@@ -119,6 +132,7 @@ export async function getStaticProps() {
       asiaLocations,
       europeLocations,
       continetCarousel,
+      Count,
     },
   };
 }

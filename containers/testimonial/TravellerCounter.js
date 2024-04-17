@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import ImageLoader from '../../components/ImageLoader';
-import TripsCounter from '../homepage/TripsCounter';
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import ImageLoader from "../../components/ImageLoader";
+import TripsCounter from "../homepage/TripsCounter";
 import axiosCountInstance from "../../services/itinerary/count";
 
 const Text = styled.h1`
@@ -59,11 +59,12 @@ const StoriesHeading = styled.span`
   }
 `;
 
-const TravellerCounter = () => {
-    const [count, setCount] = useState(null);
+const TravellerCounter = (props) => {
+  const [count, setCount] = useState(null);
   useEffect(() => {
     axiosCountInstance.get("").then((res) => setCount(res.data.user));
   }, []);
+
   return (
     <div className="font-lexend center-div text-center">
       <Container>
@@ -71,23 +72,20 @@ const TravellerCounter = () => {
           <ImageLoader
             dimensions={{ height: 500, width: 300 }}
             dimensionsMobile={{ height: 500, width: 270 }}
-            height={'8rem'}
-            url={'media/testimonials/leaf.svg'}
+            height={"8rem"}
+            url={"media/testimonials/leaf.svg"}
             // widthmobile='2rem'
           />
         </LeafContainer>
         <LeafContainer>
           <ImageLoader
-            height={'8rem'}
+            height={"8rem"}
             dimensions={{ height: 500, width: 300 }}
             dimensionsMobile={{ height: 500, width: 270 }}
-            url={'media/testimonials/leaf.svg'}
+            url={"media/testimonials/leaf.svg"}
           />
         </LeafContainer>
-        <Text>
-
-          {count}
-        </Text>
+        <Text>{count}</Text>
         <Text>Travellers and Counting</Text>
       </Container>
     </div>

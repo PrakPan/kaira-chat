@@ -202,13 +202,6 @@ const Homepage = (props) => {
   };
 
   const _handleExperiencesClick = () => {
-    //  setTimeout(_handleExperiencesRedirect, 1000);
-
-    // ga.callback_event({
-    //   action: 'TE-Travelstyles',
-
-    //   callback: _handleTailoredRedirect,
-    // })
     _handleExperiencesRedirect();
   };
 
@@ -444,7 +437,11 @@ const Homepage = (props) => {
             >
               Plan trip as per mood
             </Heading>
-            <PlanAsPerTheme ThemeData={props.ThemeData} page={"Home Page"} />
+            <PlanAsPerTheme
+              ThemeData={props.ThemeData}
+              Count={props.Count}
+              page={"Home Page"}
+            />
           </>
         ) : null}
 
@@ -475,13 +472,9 @@ const Homepage = (props) => {
         <CaseStudies></CaseStudies>
       </SetWidthContainer>
 
-      <SetWidthContainer>
-        {/* <Heading    align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 5rem 0"}  bold>Travel with a purpose</Heading>         */}
-        {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : '5rem 0'} bold>Live a different lifestyle</Heading> */}
-      </SetWidthContainer>
+      <SetWidthContainer></SetWidthContainer>
 
       <br></br>
-      {/* <PersonaliseModal showPersonaliseModal={showPersonaliseModal} handlePersonaliseClose={handlePersonaliseClose} handlePersonaliseShow={handlePersonaliseShow}></PersonaliseModal> */}
       {!isPageWide && (
         <div>
           <Banner

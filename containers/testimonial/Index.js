@@ -7,6 +7,7 @@ import TravellerCounter from "./TravellerCounter";
 import WhyTarzan from "./whyttw/Index";
 import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs";
 import usePageLoaded from "../../components/custom hooks/usePageLoaded";
+
 const HeadingContainer = styled.div`
   border-style: solid none none none;
   border-color: #f7e700;
@@ -17,6 +18,7 @@ const HeadingContainer = styled.div`
     border-width: 2px;
   }
 `;
+
 const HeadingNew = styled.p`
   text-align: center;
   font-size: 2.5rem;
@@ -27,6 +29,7 @@ const HeadingNew = styled.p`
     margin: ${(props) => (props.margin ? props.margin : "0")};
   }
 `;
+
 const SetWidthContainer = styled.div`
   width: 100%;
   margin: auto;
@@ -34,6 +37,7 @@ const SetWidthContainer = styled.div`
     width: 85%;
   }
 `;
+
 const Testimonial = (props) => {
   const isPageLoaded = usePageLoaded();
 

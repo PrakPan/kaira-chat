@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
 import * as ga from "../../../services/ga/Index";
 import TransferModeContainer from "./TransferModeContainer";
@@ -101,6 +101,8 @@ const TransfersContainer = (props) => {
   const [showDrawer, setShowDrawer] = useState(false);
   const [alternateRoutes, setAlternateRoutes] = useState(null);
   const [loadingAlternates, setLoadingAlternates] = useState(true);
+  const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
+  const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
   const [alternatesError, setAlternatesError] = useState(null);
   const [originCity, setOriginCity] = useState(null);
   const [destinationCity, setDestinationCity] = useState(null);
@@ -294,6 +296,34 @@ const TransfersContainer = (props) => {
     scrollToTargetAdjusted();
   }
 
+  const roundTripSuggestion = () => {
+    setLoadingAlternates(true);
+    axiosRoundTripInstance
+      .get(`?itinerary_id=${props?.itinerary_id}`)
+      .then((response) => {
+        const results = response.data;
+
+        for (let i = 0; i < results.length; i++) {
+          if (
+            results[i].success &&
+            results[i].transfer_type === "Intercity round-trip"
+          ) {
+            setRoundTripSuggestions(results[i]);
+          } else if (
+            results[i].success &&
+            results[i].transfer_type === "Multicity"
+          ) {
+            setMultiCitySuggestions(results[i]);
+          }
+        }
+        setLoadingAlternates(false);
+      })
+      .catch((err) => {
+        console.log("[ERROR][TransferEdit]: ", err);
+        setLoadingAlternates(false);
+      });
+  };
+
   const handleTransferEdit = (e) => {
     setOriginCity(props?.routes[+e.target.id - 1]?.city_name);
     setDestinationCity(props?.routes[+e.target.id + 1]?.city_name);
@@ -303,6 +333,7 @@ const TransfersContainer = (props) => {
     setElementIndex(props?.routes[+e.target.id]?.element_index);
     setCheckIn(props?.routes[+e.target.id]?.check_in);
     setShowDrawer(true);
+    roundTripSuggestion();
     routeAlternates
       .get(`/?route_id=` + props?.routes[+e.target.id]?.transfers?.id, {
         headers: {
@@ -583,7 +614,7 @@ const TransfersContainer = (props) => {
                 props?.transferBookings && (
                   <TransferModeContainer
                     setShowLoginModal={props?.setShowLoginModal}
-                    routes={false}
+                    routes={props?.routes}
                     plan={props.plan}
                     getPaymentHandler={props.getPaymentHandler}
                     _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
@@ -694,10 +725,7 @@ const TransfersContainer = (props) => {
 
           {props?.routes &&
             props?.routes.length > 1 &&
-            !(
-              props?.plan?.is_released_for_customer ||
-              props?.plan?.round_trip_taxi_added
-            ) && (
+            !props?.plan?.is_released_for_customer && (
               <PinSection
                 transfersPin
                 setCurrentPopup={false}
@@ -733,15 +761,15 @@ const TransfersContainer = (props) => {
         origin={originCity}
         destination={destinationCity}
         alternateRoutes={alternateRoutes}
+        roundTripSuggestions={roundTripSuggestions}
+        multiCitySuggestions={multiCitySuggestions}
         loadingAlternates={loadingAlternates}
         alternatesError={alternatesError}
         day_slab_index={daySlabIndex}
         element_index={elementIndex}
-        check_in={checkIn}
         fetchData={props?.fetchData}
-        getPaymentHandler={props?.getPaymentHandler}
-        payment={props?.payment}
         setShowLoginModal={props?.setShowLoginModal}
+        check_in={props?.route?.check_in}
         _GetInTouch={props._GetInTouch}
       />
     </Container>
