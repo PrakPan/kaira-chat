@@ -42,7 +42,7 @@ const TRANSFER_TYPES = {
 
 const TransferEditDrawer = (props) => {
   const {
-    itinerary_id,
+    ItineraryId,
     showDrawer,
     setShowDrawer,
     selectedTransferHeading,
@@ -109,7 +109,7 @@ const TransferEditDrawer = (props) => {
     setSelectLoading(true);
     const selectedRoute = transfers[routeIndex];
     const data = {
-      itinerary_id: itinerary_id,
+      itinerary_id: ItineraryId,
       route_id: alternateRoutes.id,
       day_slab_index: day_slab_index,
       element_index: element_index,
@@ -177,7 +177,7 @@ const TransferEditDrawer = (props) => {
     setSelectLoading(true);
 
     const data = {
-      itinerary_id,
+      itinerary_id: ItineraryId,
       trace_id,
       cab_id,
     };
@@ -433,6 +433,7 @@ const mapStateToPros = (state) => {
   return {
     notificationText: state.Notification.text,
     token: state.auth.token,
+    ItineraryId: state.ItineraryId,
   };
 };
 

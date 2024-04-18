@@ -8,7 +8,7 @@ import Scroll from "./Scroll";
 import UserLocation from "./UserLocation";
 import ItineraryStartDate from "./ItineraryStartDate";
 import ItineraryActivities from "./ItineraryActivities";
-import { HYDRATE } from "next-redux-wrapper";
+import ItineraryId from "./ItineraryId";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -20,6 +20,7 @@ const rootReducer = combineReducers({
   UserLocation: UserLocation,
   itineraryStartDate: ItineraryStartDate,
   itineraryActivities: ItineraryActivities,
+  ItineraryId: ItineraryId,
 });
 
 export default rootReducer;

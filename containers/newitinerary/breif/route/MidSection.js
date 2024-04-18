@@ -1,13 +1,12 @@
 import styled from "styled-components";
-import { useState, useEffect } from "react";
-import { MdOutlineFlightTakeoff } from "react-icons/md";
+import { useState } from "react";
 import { TransportIconFetcher } from "../../../../helper/TransportIconFetcher";
-import ImageLoader from "../../../../components/ImageLoader";
 import { MdEdit } from "react-icons/md";
 import TransferEditDrawer from "../../../../components/drawers/routeTransfer/TransferEditDrawer";
 import routeAlternates from "../../../../services/itinerary/brief/routeAlternates";
 import axiosRoundTripInstance from "../../../../services/itinerary/brief/roundTripSuggestion";
 import { logEvent } from "../../../../services/ga/Index";
+import { connect } from "react-redux";
 
 const Container = styled.div`
   display: grid;
@@ -87,7 +86,7 @@ const MidSection = (props) => {
   const roundTripSuggestion = () => {
     setLoadingAlternates(true);
     axiosRoundTripInstance
-      .get(`?itinerary_id=${props?.itinerary_id}`)
+      .get(`?itinerary_id=${props?.ItineraryId}`)
       .then((response) => {
         const results = response.data;
 
@@ -284,7 +283,6 @@ const MidSection = (props) => {
 
       <TransferEditDrawer
         addOrEdit={addOrEdit}
-        itinerary_id={props?.itinerary_id}
         showDrawer={showDrawer}
         setShowDrawer={setShowDrawer}
         selectedTransferHeading={props?.route?.heading}
@@ -306,4 +304,10 @@ const MidSection = (props) => {
   );
 };
 
-export default MidSection;
+const mapStateToPros = (state) => {
+  return {
+    ItineraryId: state.ItineraryId,
+  };
+};
+
+export default connect(mapStateToPros)(MidSection);
