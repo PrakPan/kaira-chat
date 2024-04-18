@@ -252,7 +252,7 @@ const RouteEditSection = (props) => {
 
   const submitData = () => {
     const data = {
-      itinerary_id: props.plan.id || props.itinerary.tailor_made_id,
+      itinerary_id: props.ItineraryId,
       start_date: startDate,
       basic_route: destinations
         .map((dest) => {
@@ -411,6 +411,22 @@ const RouteEditSection = (props) => {
     </div>
   );
 };
+
+const mapStateToPros = (state) => {
+  return {
+    notificationText: state.Notification.text,
+    token: state.auth.token,
+    ItineraryId: state.ItineraryId,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    openNotification: (payload) => dispatch(openNotification(payload)),
+  };
+};
+
+export default connect(mapStateToPros, mapDispatchToProps)(RouteEditSection);
 
 const Header = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
@@ -871,7 +887,6 @@ export const EditDates = ({
 
     setDateRanges(ranges);
   }, [destinations, startDate, endDate]);
-
 
   const handleDates = (
     offSet,
@@ -1676,18 +1691,3 @@ export const Loader = (props) => {
     </div>
   );
 };
-
-const mapStateToPros = (state) => {
-  return {
-    notificationText: state.Notification.text,
-    token: state.auth.token,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    openNotification: (payload) => dispatch(openNotification(payload)),
-  };
-};
-
-export default connect(mapStateToPros, mapDispatchToProps)(RouteEditSection);
