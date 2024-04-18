@@ -17,6 +17,7 @@ import axiosbookingupdateinstance from "../../../services/bookings/UpdateBooking
 import Overview from "../../newitinerary/overview/Index";
 import { openNotification } from "../../../store/actions/notification";
 import { setItineraryStartDate } from "../../../store/actions/itineraryStartDate";
+import { setItineraryRoutes } from "../../../store/actions/itineraryRoutes";
 
 const Container = styled.div`
   width: 90%;
@@ -102,16 +103,6 @@ const Itinerary = (props) => {
   const hasRendered = useRef(false);
   const dispatch = useDispatch();
   const [editRoute, setEditRoute] = useState(false);
-
-  // const closeGalleryHandler = () => {
-  //   setImages(null);
-  //   setShowbooking(true);
-  // }
-  //   var script = document.createElement('script');
-  // script.onload = function () {
-  //     //do stuff with the script
-  // };
-  // script.src =`(function (d, w, c) { if(!d.getElementById("spd-busns-spt")) { var n = d.getElementsByTagName('script')[0], s = d.createElement('script'); var loaded = false; s.id = "spd-busns-spt"; s.async = "async"; s.setAttribute("data-self-init", "false"); s.setAttribute("data-init-type", "opt"); s.src = 'https://cdn.in-freshbots.ai/assets/share/js/freshbots.min.js'; s.setAttribute("data-client", "3225c221f3048e75e5a6ef1d6a5227c59290c8f1"); s.setAttribute("data-bot-hash", "74b6cd8cbe305eba5699361061f2c6fc1ec8607b"); s.setAttribute("data-env", "prod"); s.setAttribute("data-region", "in"); if (c) { s.onreadystatechange = s.onload = function () { if (!loaded) { c(); } loaded = true; }; } n.parentNode.insertBefore(s, n); } }) (document, window, function () { Freshbots.initiateWidget({ autoInitChat: false, getClientParams: function () { return {"cstmr::eml":"","cstmr::phn":"","cstmr::nm":""}; } }, function(successResponse) { }, function(errorResponse) { }); });`;
 
   useEffect(() => {
     if (hasRendered.current) {
@@ -308,6 +299,7 @@ const Itinerary = (props) => {
     getRoutes(props.id)
       .then((res) => {
         setRoutes(res);
+        props.setItineraryRoutes({ routes: res });
       })
       .catch((err) => {});
     axios
@@ -843,6 +835,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     checkAuthState: () => dispatch(authaction.checkAuthState()),
     openNotification: (payload) => dispatch(openNotification(payload)),
+    setItineraryRoutes: (payload) => dispatch(setItineraryRoutes(payload)),
   };
 };
 

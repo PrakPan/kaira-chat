@@ -52,11 +52,12 @@ const mapStateToPros = (state) => {
     showLogin: state.auth.showLogin,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     checkAuthState: () => dispatch(authaction.checkAuthState()),
     authCloseLogin: () => dispatch(authaction.authCloseLogin()),
-    setItineraryId: (data) => dispatch(setItineraryId(data)),
+    setItineraryId: (payload) => dispatch(setItineraryId(payload)),
   };
 };
 

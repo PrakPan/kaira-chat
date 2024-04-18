@@ -9,6 +9,7 @@ import UserLocation from "./UserLocation";
 import ItineraryStartDate from "./ItineraryStartDate";
 import ItineraryActivities from "./ItineraryActivities";
 import ItineraryId from "./ItineraryId";
+import ItineraryRoutes from "./ItineraryRoutes";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -20,7 +21,8 @@ const rootReducer = combineReducers({
   UserLocation: UserLocation,
   itineraryStartDate: ItineraryStartDate,
   itineraryActivities: ItineraryActivities,
-  ItineraryId: ItineraryId,
+  ItineraryId,
+  ItineraryRoutes,
 });
 
 export default rootReducer;

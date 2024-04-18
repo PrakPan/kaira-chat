@@ -1,10 +1,9 @@
 import styled from "styled-components";
-import { useState, useEffect } from "react";
-import Button from "../../../components/ui/button/Index";
-import { convertDateFormat } from "../../../helper/ConvertDateFormat";
+import { useEffect } from "react";
 import { format, parseISO } from "date-fns";
 import { MdModeEdit } from "react-icons/md";
 import useMediaQuery from "../../../components/media";
+import { connect } from "react-redux";
 
 const Container = styled.div`
   display: grid;
@@ -98,30 +97,31 @@ const Details = (props) => {
               </Text>
             )}
           </div>
-          {isDesktop ? (
-            <button
-              onClick={() => props.setEditRoute("editDates")}
-              className="text-sm border-2 border-black rounded-lg px-4 py-2 hover:bg-black hover:text-white transition ease-in-out duration-500"
-            >
-              Edit Dates
-            </button>
-          ) : (
-            <MdModeEdit
-              onClick={() => props.setEditRoute("editDates")}
-              className="text-lg cursor-pointer hover:text-yellow-400"
-            />
-          )}
+          {props.itineraryRoutes.routes.length > 0 ? (
+            isDesktop ? (
+              <button
+                onClick={() => props.setEditRoute("editDates")}
+                className="text-sm border-2 border-black rounded-lg px-4 py-2 hover:bg-black hover:text-white transition ease-in-out duration-500"
+              >
+                Edit Dates
+              </button>
+            ) : (
+              <MdModeEdit
+                onClick={() => props.setEditRoute("editDates")}
+                className="text-lg cursor-pointer hover:text-yellow-400"
+              />
+            )
+          ) : null}
         </div>
       ) : null}
-
-      {/* {props?.duration_time != null ? (
-        <div style={{ width: "max-content" }}>
-          <Heading>Duration</Heading>
-          <Text>{props.duration_time} Nights</Text>
-        </div>
-      ) : null} */}
     </Container>
   );
 };
 
-export default Details;
+const mapStateToPros = (state) => {
+  return {
+    itineraryRoutes: state.ItineraryRoutes,
+  };
+};
+
+export default connect(mapStateToPros)(Details);
