@@ -97,7 +97,7 @@ const Details = (props) => {
               </Text>
             )}
           </div>
-          {props.itineraryRoutes.routes.length > 0 ? (
+          {props.itineraryRoutes && props.itineraryRoutes.length > 0 ? (
             isDesktop ? (
               <button
                 onClick={() => props.setEditRoute("editDates")}
@@ -120,7 +120,7 @@ const Details = (props) => {
 
 const mapStateToPros = (state) => {
   return {
-    itineraryRoutes: state.ItineraryRoutes,
+    itineraryRoutes: state.ItineraryRoutes.routes,
   };
 };
 
