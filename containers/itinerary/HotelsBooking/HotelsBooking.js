@@ -62,13 +62,8 @@ const HotelsBooking = (props) => {
     name: null,
   });
   const isDesktop = useMediaQuery("(min-width:1148px)");
-  const [bookingsAccommodationsDesktopJSX, setBookingAccommodationsDesktopJSX] =
-    useState([]);
   const [showFilter, setshowFilter] = useState(false);
   const [updateBookingState, setUpdateBookingState] = useState(false);
-  const [updateLoadingState, setUpdateLoadingState] = useState(false);
-  const [bookingsAccommodationsMobileJSX, setBookingAccommodationsMobileJSX] =
-    useState([]);
   const [showDetails, setShowDetails] = useState(false);
   const [AddHotel, setAddHotel] = useState(false);
   const [isError, setIsError] = useState({
@@ -132,10 +127,6 @@ const HotelsBooking = (props) => {
     });
     props.setShowBookingModal();
   };
-
-  let bookings_accommodations = [];
-
-  let alternatesarr = [];
 
   function Addons(Shorthand) {
     switch (Shorthand) {
@@ -333,7 +324,7 @@ const HotelsBooking = (props) => {
       itinerary_name
     );
     setCurrentBooking(data);
-    props.setShowBookingModal;
+    props.setShowBookingModal();
   }
 
   const _changeBookingNewHandler = (check_in, check_out, pax, city, cityId) => {
@@ -652,6 +643,7 @@ const HotelsBooking = (props) => {
     </div>
   );
 };
+
 const mapStateToPros = (state) => {
   return {
     name: state.auth.name,
@@ -666,6 +658,7 @@ const mapStateToPros = (state) => {
     hideloginclose: state.auth.hideloginclose,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {};
 };
