@@ -1471,14 +1471,14 @@ const MultiCityTripSuggestion = ({
 
         <div className="flex flex-col gap-2">
           <div className="flex flex-row items-center gap-2">
-            <div className="text-[14px] font-semibold">Pricing</div>
+            <div className="text-[14px] font-semibold">Available Cabs</div>
             {selectError && (
               <div className="bg-red-500 text-xs md:text-sm lg:text-sm text-white py-1 px-2 rounded-lg text-center animate-popOut">
-                Please chose one pricing
+                Please choose one cab
               </div>
             )}
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-4">
             {pricing.map((price, i) => (
               <div
                 key={`price-${i}`}
@@ -1510,7 +1510,7 @@ const MultiCityTripSuggestion = ({
                       ₹{getIndianPrice(Math.floor(price?.fare?.totalAmount))}
                     </span>
                   </div>
-                  {viewDetails[i] && (
+                  {(viewDetails[i] || true) && (
                     <div className="text-sm">
                       <span className="font-semibold">Facilities: </span>
                       {price?.cab?.seatingCapacity
@@ -1527,7 +1527,7 @@ const MultiCityTripSuggestion = ({
                         : null}
                     </div>
                   )}
-                  <button
+                  {/* <button
                     onClick={() =>
                       setViewDetails((prev) => {
                         let state = [...prev];
@@ -1546,7 +1546,7 @@ const MultiCityTripSuggestion = ({
                         View Details <IoIosArrowDown />
                       </>
                     )}
-                  </button>
+                  </button> */}
                 </div>
               </div>
             ))}
