@@ -8,6 +8,7 @@ import Scroll from "./Scroll";
 import UserLocation from "./UserLocation";
 import ItineraryStartDate from "./ItineraryStartDate";
 import ItineraryActivities from "./ItineraryActivities";
+import Itinerary from "./Itinerary";
 import ItineraryId from "./ItineraryId";
 import ItineraryRoutes from "./ItineraryRoutes";
 
@@ -21,6 +22,7 @@ const rootReducer = combineReducers({
   UserLocation: UserLocation,
   itineraryStartDate: ItineraryStartDate,
   itineraryActivities: ItineraryActivities,
+  Itinerary,
   ItineraryId,
   ItineraryRoutes,
 });

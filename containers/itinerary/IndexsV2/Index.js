@@ -18,6 +18,7 @@ import Overview from "../../newitinerary/overview/Index";
 import { openNotification } from "../../../store/actions/notification";
 import { setItineraryStartDate } from "../../../store/actions/itineraryStartDate";
 import { setItineraryRoutes } from "../../../store/actions/itineraryRoutes";
+import setItinerary from "../../../store/actions/itinerary";
 
 const Container = styled.div`
   width: 90%;
@@ -36,59 +37,35 @@ const Itinerary = (props) => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [totalduration, setTotalduration] = useState(0);
-  // let totalduration = 0;
   const [plan, setPlan] = useState(null);
   const [itineraryNotCreated, setItineraryNotCreated] = useState(false);
-  //states required for timer
   const [itineraryReleased, setItineraryReleased] = useState(false);
   const [itineraryDate, setItineraryDate] = useState("2021-09-20 18:05:48");
   const [timeRequired, setTimeRequired] = useState();
-
-  //for itinerary and bookings
-  const [itinerary, setItinerary] = useState({
-    name: "Loading Itinerary",
-    images: ["null"],
-  });
   const [breif, setBreif] = useState();
   const [routes, setRoutes] = useState();
-
   const [booking, setBooking] = useState(null);
-
   const [itineraryLoading, setItineraryLoading] = useState(true);
   const [briefLoading, setBreifLoading] = useState(true);
   const [stayLoading, setStayLoading] = useState(true);
-  const [activityLoading, setActivityLoading] = useState(true);
-  const [transferLoading, setTransferLoading] = useState(true);
   const [paymentLoading, setPaymentLoading] = useState(true);
   const [flightLoading, setFlightLoading] = useState(true);
-
   const [cardUpdateLoading, setCardUpdateLoading] = useState(null);
-
   const [stayBookings, setStayBookings] = useState(null);
   const [transferBookings, setTransferBookings] = useState(null);
   const [activityBookings, setActivityBookings] = useState(null);
   const [flightBookings, setFlightBookings] = useState(null);
-
   const [selectingBooking, setSelectingBooking] = useState(null);
   const [stayFlickityIndex, setStayFlickityIndex] = useState(0);
   const [transferFlickityIndex, setTransferFlickityIndex] = useState(0);
   const [flightFlickityIndex, setFlightFlickityIndex] = useState(0);
   const [activityFlickityIndex, setActivityFlickityIndex] = useState(0);
-
   const [payment, setPayment] = useState(null);
   const [noBookings, setNoBookings] = useState(false);
-
   const [noStayBookings, setNoStayBookings] = useState(false);
-  const [noActivityBookings, setNoActivityBookings] = useState(false);
-  const [noTransferBookings, setNoTransferBookings] = useState(false);
   const [noFlightBookings, setNoFlightBookings] = useState(true);
-
-  // const [images, setImages] = useState(null);
   const [showbooking, setShowbooking] = useState(false);
-
-  const [reloadBookings, setReloadBookings] = useState(true);
   const [showBookingModal, setShowBookingModal] = useState(false);
-
   const [isDatePresent, setIsDatePresent] = useState(false);
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showTaxiModal, setShowTaxiModal] = useState(false);
@@ -101,8 +78,8 @@ const Itinerary = (props) => {
   const [isPastTravelerItinerary, setIsPastTravelerItinerary] = useState(false);
   const [is_stock, setIsStock] = useState(false);
   const hasRendered = useRef(false);
-  const dispatch = useDispatch();
   const [editRoute, setEditRoute] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (hasRendered.current) {
@@ -279,10 +256,12 @@ const Itinerary = (props) => {
       .then((res) => {
         if (res.data.day_slabs.length) {
           if (res.data.is_stock) setIsStock(true);
-          setItinerary({
+
+          props.setItinerary({
             ...res.data,
             images: res.data.images.filter((value) => value),
           });
+
           setItineraryLoading(false);
         } else {
           // window.location.href =
@@ -373,6 +352,7 @@ const Itinerary = (props) => {
     setShowFlightModal(false);
     setBooking(json);
   };
+
   const _updateStayBookingHandler = (json) => {
     setShowBookingModal(false);
     setShowFlightModal(false);
@@ -382,6 +362,7 @@ const Itinerary = (props) => {
   const _updateActivityBookingHandler = (json) => {
     setActivityBookings(json);
   };
+
   const _updateTransferBookingHandler = (json) => {
     setShowBookingModal(false);
     setShowFlightModal(false);
@@ -393,6 +374,7 @@ const Itinerary = (props) => {
 
     setTransferBookings(_updateTransferBooking(transferBookings, json));
   };
+
   const _selectTaxiHandler = (
     bookings,
     booking_id,
@@ -524,6 +506,7 @@ const Itinerary = (props) => {
         );
       });
   };
+
   const _deselectFlightBookingHandler = (booking, user_selected) => {
     for (var i = 0; i < flightBookings.length; i++) {
       if (flightBookings[i].id === booking.id) {
@@ -576,6 +559,7 @@ const Itinerary = (props) => {
         );
       });
   };
+
   const _deselectTransferBookingHandler = (booking, user_selected) => {
     for (var i = 0; i < transferBookings.length; i++) {
       if (transferBookings[i].id === booking.id) {
@@ -634,6 +618,7 @@ const Itinerary = (props) => {
         });
       });
   };
+
   const _deselectActivityBookingHandler = (booking, user_selected) => {
     for (var i = 0; i < activityBookings.length; i++) {
       if (activityBookings[i].id === booking.id) {
@@ -699,12 +684,15 @@ const Itinerary = (props) => {
   const _updatePaymentHandler = (json) => {
     setPayment(json);
   };
+
   const setHideBookingModal = () => {
     setShowBookingModal(false);
   };
+
   const setHidePoiModal = () => {
     setShowPoiModal(false);
   };
+
   const FONT_SIZES_MOBILE = {
     heading: [],
     text: [],
@@ -715,10 +703,10 @@ const Itinerary = (props) => {
       <Container>
         <Overview
           FONT_SIZES_MOBILE={FONT_SIZES_MOBILE}
-          title={itinerary.name}
+          title={props.itinerary.name}
           group_type={group_type}
           duration_time={duration_time}
-          images={itinerary.images}
+          images={props.itinerary.images}
           travellerType={travellerType}
           start_date={plan ? plan.start_date : null}
           end_date={plan ? plan.end_date : null}
@@ -764,7 +752,7 @@ const Itinerary = (props) => {
             stayBookings={stayBookings}
             user_email={userEmail}
             no_bookings={noBookings}
-            setItinerary={setItinerary}
+            setItinerary={props.setItinerary}
             traveleritinerary={isPastTravelerItinerary}
             id={props.id}
             is_stock={is_stock}
@@ -785,7 +773,7 @@ const Itinerary = (props) => {
             showbooking={showbooking}
             payment={payment}
             routes={routes}
-            itinerary={itinerary}
+            itinerary={props.itinerary}
             breif={breif}
             booking={booking}
             token={props.token}
@@ -805,7 +793,6 @@ const Itinerary = (props) => {
   else if (isPastTravelerItinerary)
     return (
       <div>
-        {" "}
         <OldSpinner></OldSpinner>{" "}
       </div>
     );
@@ -828,6 +815,7 @@ const mapStateToPros = (state) => {
     token: state.auth.token,
     email: state.auth.email,
     otpSent: state.auth.otpSent,
+    itinerary: state.Itinerary,
   };
 };
 
@@ -836,6 +824,7 @@ const mapDispatchToProps = (dispatch) => {
     checkAuthState: () => dispatch(authaction.checkAuthState()),
     openNotification: (payload) => dispatch(openNotification(payload)),
     setItineraryRoutes: (payload) => dispatch(setItineraryRoutes(payload)),
+    setItinerary: (payload) => dispatch(setItinerary(payload)),
   };
 };
 

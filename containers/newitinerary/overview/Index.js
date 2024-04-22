@@ -58,7 +58,6 @@ const Overview = (props) => {
         ></Details>
       </div>
 
-      {/* <Line></Line> */}
       <div className="pt-3 pb-1">
         <ImagesMobile images={props.images}></ImagesMobile>
       </div>

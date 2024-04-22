@@ -21,22 +21,26 @@ const Container = styled.div`
     grid-column-gap: 2.5rem;
   }
 `;
-const convertDFormat = (dt) => {
-  const date = parseISO(dt);
-  const formattedDate = format(date, "MMMM do");
-  return formattedDate;
-};
+
 const Heading = styled.p`
   font-size: 15px;
   font-weight: 400;
   color: #7a7a7a;
   margin: 0;
 `;
+
 const Text = styled.p`
   font-size: 15px;
   font-weight: 500;
   margin: 0;
 `;
+
+const convertDFormat = (dt) => {
+  const date = parseISO(dt);
+  const formattedDate = format(date, "MMMM do");
+  return formattedDate;
+};
+
 const Details = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
 

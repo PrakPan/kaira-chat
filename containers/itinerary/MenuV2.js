@@ -176,26 +176,6 @@ const DiscountContainer = styled.div`
   margin-right: 0.5rem;
 `;
 
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
-
 const useStyles = {
   root: `
     flex-grow-1
@@ -214,30 +194,14 @@ const SimpleTabsV2 = (props) => {
   const router = useRouter();
   const classes = useStyles;
   const [value, setValue] = React.useState(0);
-  const [show, setShow] = useState(true);
-  const [location, setLocation] = useState(0);
-  const [hours, setHours] = useState("-");
-  const [minutes, setMinutes] = useState("-");
-  const [seconds, setSeconds] = useState("-");
-  const [showBookingModal, setShowBookingModal] = useState(false);
-  const [blurItinerary, setBlurItinerary] = useState(true);
-  const [showItineraryTimer, setShowItineraryTimer] = useState(true);
-  const [minimiseTimer, setMinimiseTimer] = useState(false);
   const [minimseBookingTimer, setMinimiseBookingTimer] = useState(false);
-  const [Newitinerary, setNewitinerary] = useState(false);
-  const [blurBooking, setBlurBooking] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showBookingTimer, setShowBookingTimer] = useState(true);
   const [showFooterBannerMobile, setShowFooterBannerMobile] = useState(false);
   const [citydatadone, setcitydatadone] = useState(false);
   const [CityData, setCityData] = useState();
-  const [timerValid, setTimerValid] = useState(false);
-  const [mapArray, setmapArray] = useState(false);
   const [selectedPoi, setSelectedPoi] = useState({ name: "Kasol" });
   const [loading, setLoading] = useState(false);
-  const { ref, isSticky } = useSticky(90);
   const isDesktop = useMediaQuery("(min-width:1148px)");
-  // const isInView = useInView("Booking_container");
 
   useEffect(() => {
     if (router.query.payment_status) {
@@ -277,7 +241,6 @@ const SimpleTabsV2 = (props) => {
     setShowpayment(false);
   };
 
-  //Location tabs for mobile
   var RoutesData = [];
   var TransfersData = [];
   var CityDataTemp = [];
@@ -296,34 +259,6 @@ const SimpleTabsV2 = (props) => {
       TransfersData
     );
   }, []);
-
-  // useLayoutEffect(() => {
-  //   const handleScroll = () => {
-  //     const currentPos = window.scrollY;
-  //     items.forEach((item) => {
-  //       const element = document.getElementById(item.link);
-  //       if (
-  //         element.offsetTop - 100 <= currentPos &&
-  //         element.offsetTop + element.offsetHeight > currentPos
-  //       ) {
-  //         setActiveItem(item.id);
-  //       }
-  //     });
-  //   };
-
-  //   window.addEventListener("scroll", handleScroll);
-
-  //   return () => {
-  //     window.removeEventListener("scroll", handleScroll);
-  //   };
-  // }, [items]);
-  // if (
-  //   props.token &&
-  //   !props.payment.user_allowed_to_pay &&
-  //   props.payment.itinerary_status == ITINERARY_STATUSES.itinerary_unclaimed
-  // ) {
-  //   ClaimItinary(props.id, props.token);
-  // }
 
   const _GetInTouch = () => {
     setLoading(true);
@@ -376,16 +311,18 @@ const SimpleTabsV2 = (props) => {
     // props.getPaymentHandler();
     setShowLoginModal(false);
   };
-  // const [activeItem, setActiveItem] = useState(1);
+
   const items = [
     { id: 1, label: "Brief", link: "Brief" },
     { id: 2, label: "Itinerary", link: "Itenary" },
 
     { id: 3, label: "Stays", link: "Stays" },
   ];
+
   if (props.transferBookings || props?.routes?.length) {
     items.push({ id: 4, label: "Transfers", link: "Transfers" });
   }
+
   if (props.activityBookings) {
     items.push({
       id: 5,
@@ -393,19 +330,6 @@ const SimpleTabsV2 = (props) => {
       link: "Activities",
     });
   }
-
-  const handleSelect = (itemId) => {
-    setActiveItem(itemId);
-  };
-
-  // const _minimiseTimerHandler = () => {
-  //   setBlurItinerary(false);
-  //   setMinimiseTimer(true);
-  // };
-
-  const _minimiseBookingTimerHandler = () => {
-    setMinimiseBookingTimer(true);
-  };
 
   const _handlePoiEditModalOpen = (poi) => {
     {
@@ -428,12 +352,15 @@ const SimpleTabsV2 = (props) => {
     });
     props.setShowPoiModal(true);
   };
+
   const _handleFlighModalShow = () => {
     props.setShowFlightModal(true);
   };
+
   const _handleFlightModalClose = () => {
     props.setShowFlightModal(false);
   };
+
   const _handleMenuTabsChange = (tabName) => {
     if (
       process.env.NODE_ENV === "production" &&
@@ -444,37 +371,6 @@ const SimpleTabsV2 = (props) => {
       });
     }
   };
-  const Navbar = styled.div`
-    position: ${({ sticky }) => (sticky ? "sticky" : "inherit")};
-    z-index: ${({ sticky }) => (sticky ? "1000" : "997")};
-    top: 15px;
-    display: flex;
-    ::-webkit-scrollbar {
-      display: none;
-    }
-    background-color: white;
-    height: 50px;
-    margin: 0px -20px 0px -20px;
-    overflow-x: scroll;
-    align-items: center;
-
-    background-color: white;
-  `;
-  const MenuContainer = styled.div`
-    border-bottom: 1px solid #f0f0f0;
-    width: 100vw;
-    margin-left: -1rem;
-    margin-bottom: 1rem;
-    > div {
-      margin: 0px 0px 0px -50px;
-    }
-  `;
-  const AppContainer = styled.div`
-    width: 100vw;
-    height: 100vh;
-    overflow: scroll;
-    font-family: sans-serif;
-  `;
 
   const handleLoginButton = () => {
     setShowLoginModal(true);
@@ -531,6 +427,40 @@ const SimpleTabsV2 = (props) => {
       },
     });
   };
+
+  const Navbar = styled.div`
+    position: ${({ sticky }) => (sticky ? "sticky" : "inherit")};
+    z-index: ${({ sticky }) => (sticky ? "1000" : "997")};
+    top: 15px;
+    display: flex;
+    ::-webkit-scrollbar {
+      display: none;
+    }
+    background-color: white;
+    height: 50px;
+    margin: 0px -20px 0px -20px;
+    overflow-x: scroll;
+    align-items: center;
+
+    background-color: white;
+  `;
+
+  const MenuContainer = styled.div`
+    border-bottom: 1px solid #f0f0f0;
+    width: 100vw;
+    margin-left: -1rem;
+    margin-bottom: 1rem;
+    > div {
+      margin: 0px 0px 0px -50px;
+    }
+  `;
+
+  const AppContainer = styled.div`
+    width: 100vw;
+    height: 100vh;
+    overflow: scroll;
+    font-family: sans-serif;
+  `;
 
   return (
     <div
@@ -1438,4 +1368,24 @@ function newFunction(
     processRoutes(props);
   }
   return totalcityslabs;
+}
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box p={3}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
 }
