@@ -99,7 +99,7 @@ const TransfersContainer = (props) => {
     name: null,
   });
   const [showDrawer, setShowDrawer] = useState(false);
-  const [alternateRoutes, setAlternateRoutes] = useState(null);
+  const [alternateRoutes, setAlternateRoutes] = useState({});
   const [loadingAlternates, setLoadingAlternates] = useState(true);
   const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
   const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);

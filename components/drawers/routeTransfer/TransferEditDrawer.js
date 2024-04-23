@@ -529,7 +529,11 @@ const RouteContainer = (props) => {
                       ₹
                       {getIndianPrice(
                         Math.floor(transfer?.meta?.estimated_cost)
-                      )}
+                      ) > 0
+                        ? getIndianPrice(
+                            Math.floor(transfer?.meta?.estimated_cost)
+                          )
+                        : " -"}
                     </span>
                   )}
                 </div>
@@ -619,7 +623,11 @@ const MultiRoute = (props) => {
               {getIndianPrice(Math.floor(transfer?.meta?.estimated_cost)) !==
                 "NaN" && (
                 <span>
-                  ₹{getIndianPrice(Math.floor(transfer?.meta?.estimated_cost))}
+                  ₹
+                  {getIndianPrice(Math.floor(transfer?.meta?.estimated_cost)) >
+                  0
+                    ? getIndianPrice(Math.floor(transfer?.meta?.estimated_cost))
+                    : " -"}
                 </span>
               )}
             </div>
@@ -763,7 +771,11 @@ const MobileRouteContainer = (props) => {
                       ₹
                       {getIndianPrice(
                         Math.floor(transfer?.meta?.estimated_cost)
-                      )}
+                      ) > 0
+                        ? getIndianPrice(
+                            Math.floor(transfer?.meta?.estimated_cost)
+                          )
+                        : " -"}
                     </span>
                   )}
                 </div>
@@ -851,7 +863,11 @@ const MobileMultiRoute = (props) => {
               {getIndianPrice(Math.floor(transfer?.meta?.estimated_cost)) !==
                 "NaN" && (
                 <span>
-                  ₹{getIndianPrice(Math.floor(transfer?.meta?.estimated_cost))}
+                  ₹
+                  {getIndianPrice(Math.floor(transfer?.meta?.estimated_cost)) >
+                  0
+                    ? getIndianPrice(Math.floor(transfer?.meta?.estimated_cost))
+                    : " -"}
                 </span>
               )}
             </div>
@@ -907,7 +923,11 @@ const MultiModeContainer = ({ transferIndex, transfer, handleSelect }) => {
                         ₹
                         {getIndianPrice(
                           Math.floor(transfer?.meta?.estimated_cost)
-                        )}
+                        ) > 0
+                          ? getIndianPrice(
+                              Math.floor(transfer?.meta?.estimated_cost)
+                            )
+                          : " -"}
                       </span>
                     )}
                   </div>
@@ -1106,7 +1126,10 @@ const MobileMultiModeContainer = ({
             {getIndianPrice(Math.floor(transfer?.meta?.estimated_cost)) !==
               "NaN" && (
               <span>
-                ₹{getIndianPrice(Math.floor(transfer?.meta?.estimated_cost))}
+                ₹
+                {getIndianPrice(Math.floor(transfer?.meta?.estimated_cost)) > 0
+                  ? getIndianPrice(Math.floor(transfer?.meta?.estimated_cost))
+                  : " -"}
               </span>
             )}
           </div>
