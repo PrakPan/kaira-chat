@@ -19,6 +19,7 @@ import { openNotification } from "../../../store/actions/notification";
 import { setItineraryStartDate } from "../../../store/actions/itineraryStartDate";
 import { setItineraryRoutes } from "../../../store/actions/itineraryRoutes";
 import setItinerary from "../../../store/actions/itinerary";
+import setPlan from "../../../store/actions/plan";
 
 const Container = styled.div`
   width: 90%;
@@ -37,7 +38,6 @@ const Itinerary = (props) => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [totalduration, setTotalduration] = useState(0);
-  const [plan, setPlan] = useState(null);
   const [itineraryNotCreated, setItineraryNotCreated] = useState(false);
   const [itineraryReleased, setItineraryReleased] = useState(false);
   const [itineraryDate, setItineraryDate] = useState("2021-09-20 18:05:48");
@@ -284,7 +284,7 @@ const Itinerary = (props) => {
     axios
       .get(MIS_SERVER_HOST + "/sales/plan/?itinerary_id=" + props.id)
       .then((res) => {
-        setPlan(res.data);
+        props.setPlan(res.data);
         dispatch(setItineraryStartDate({ date: res.data.start_date }));
         if (
           res.data.itinerary_status === ITINERARY_STATUSES.itinerary_not_created
@@ -510,7 +510,6 @@ const Itinerary = (props) => {
   const _deselectFlightBookingHandler = (booking, user_selected) => {
     for (var i = 0; i < flightBookings.length; i++) {
       if (flightBookings[i].id === booking.id) {
-        // flickity_index=i;
         setFlightFlickityIndex(i);
         break;
       }
@@ -527,10 +526,7 @@ const Itinerary = (props) => {
       user_selected: user_selected,
       itinerary_id: booking.itinerary_id,
     });
-    // else data.push(bookings[i]);
-    // }
 
-    // const token = localStorage.getItem('access_token')
     axiosbookingupdateinstance
       .post(
         "/?booking_type=Flight&itinerary_id=" + booking.itinerary_id,
@@ -563,7 +559,6 @@ const Itinerary = (props) => {
   const _deselectTransferBookingHandler = (booking, user_selected) => {
     for (var i = 0; i < transferBookings.length; i++) {
       if (transferBookings[i].id === booking.id) {
-        // flickity_index=i;
         setTransferFlickityIndex(i);
         break;
       }
@@ -583,10 +578,6 @@ const Itinerary = (props) => {
       costings_breakdown: booking.costings_breakdown,
     });
 
-    // else data.push(bookings[i]);
-    // }
-
-    // const token = localStorage.getItem('access_token')
     axiosbookingupdateinstance
       .post(
         "/?booking_type=Taxi,Bus,Ferry&itinerary_id=" + booking.itinerary_id,
@@ -622,7 +613,6 @@ const Itinerary = (props) => {
   const _deselectActivityBookingHandler = (booking, user_selected) => {
     for (var i = 0; i < activityBookings.length; i++) {
       if (activityBookings[i].id === booking.id) {
-        // flickity_index=i;
         setActivityFlickityIndex(i);
         break;
       }
@@ -648,10 +638,7 @@ const Itinerary = (props) => {
       accommodation: booking.accommodation,
       is_estimated_price: booking.is_estimated_price,
     });
-    // else data.push(bookings[i]);
-    // }
 
-    // const token = localStorage.getItem('access_token')
     axiosbookingupdateinstance
       .post(
         "/?booking_type=Activity&itinerary_id=" + booking.itinerary_id,
@@ -708,27 +695,31 @@ const Itinerary = (props) => {
           duration_time={duration_time}
           images={props.itinerary.images}
           travellerType={travellerType}
-          start_date={plan ? plan.start_date : null}
-          end_date={plan ? plan.end_date : null}
+          start_date={props?.plan ? props.plan.start_date : null}
+          end_date={props?.plan ? props.plan.end_date : null}
           duration={
-            plan ? plan.duration_number + " " + plan.duration_unit : null
+            props?.plan
+              ? props.plan.duration_number + " " + props.plan.duration_unit
+              : null
           }
-          budget={plan ? plan?.budget : null}
-          number_of_adults={plan ? plan?.number_of_adults : null}
-          number_of_children={plan ? plan?.number_of_children : null}
-          number_of_infants={plan ? plan?.number_of_infants : null}
+          budget={props?.plan ? props.plan?.budget : null}
+          number_of_adults={props?.plan ? props.plan?.number_of_adults : null}
+          number_of_children={
+            props?.plan ? props.plan?.number_of_children : null
+          }
+          number_of_infants={props?.plan ? props.plan?.number_of_infants : null}
           setEditRoute={setEditRoute}
         ></Overview>
         <div id="itinerary-anchor">
           <Menu
             hasUserPaid={hasUserPaid}
-            plan={plan}
+            plan={props.plan}
             isDatePresent={isDatePresent}
             _updateTaxiBookingHandler={_updateTaxiBookingHandler}
             showTaxiModal={showTaxiModal}
             setShowTaxiModal={setShowTaxiModal}
             paymentLoading={paymentLoading}
-            budget={plan ? plan.budget : null}
+            budget={props?.plan ? props.plan.budget : null}
             _deselectActivityBookingHandler={_deselectActivityBookingHandler}
             activityFlickityIndex={activityFlickityIndex}
             transferFlickityIndex={transferFlickityIndex}
@@ -816,6 +807,7 @@ const mapStateToPros = (state) => {
     email: state.auth.email,
     otpSent: state.auth.otpSent,
     itinerary: state.Itinerary,
+    plan: state.Plan,
   };
 };
 
@@ -825,6 +817,7 @@ const mapDispatchToProps = (dispatch) => {
     openNotification: (payload) => dispatch(openNotification(payload)),
     setItineraryRoutes: (payload) => dispatch(setItineraryRoutes(payload)),
     setItinerary: (payload) => dispatch(setItinerary(payload)),
+    setPlan: (payload) => dispatch(setPlan(payload)),
   };
 };
 

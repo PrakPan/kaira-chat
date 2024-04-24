@@ -11,6 +11,7 @@ import ItineraryActivities from "./ItineraryActivities";
 import Itinerary from "./Itinerary";
 import ItineraryId from "./ItineraryId";
 import ItineraryRoutes from "./ItineraryRoutes";
+import Plan from "./Plan";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -25,6 +26,7 @@ const rootReducer = combineReducers({
   Itinerary,
   ItineraryId,
   ItineraryRoutes,
+  Plan,
 });
 
 export default rootReducer;
