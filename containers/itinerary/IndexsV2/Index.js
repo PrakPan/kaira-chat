@@ -20,6 +20,7 @@ import { setItineraryStartDate } from "../../../store/actions/itineraryStartDate
 import { setItineraryRoutes } from "../../../store/actions/itineraryRoutes";
 import setItinerary from "../../../store/actions/itinerary";
 import setPlan from "../../../store/actions/plan";
+import { setBookings } from "../../../store/actions/bookings";
 
 const Container = styled.div`
   width: 90%;
@@ -43,7 +44,6 @@ const Itinerary = (props) => {
   const [itineraryDate, setItineraryDate] = useState("2021-09-20 18:05:48");
   const [timeRequired, setTimeRequired] = useState();
   const [breif, setBreif] = useState();
-  const [routes, setRoutes] = useState();
   const [booking, setBooking] = useState(null);
   const [itineraryLoading, setItineraryLoading] = useState(true);
   const [briefLoading, setBreifLoading] = useState(true);
@@ -197,6 +197,17 @@ const Itinerary = (props) => {
               }
             }
 
+            props.setBookings({
+              stayBookings: stay_bookings,
+              activityBookings: activity_bookings.length
+                ? activity_bookings
+                : null,
+              flightBookings: flight_bookings.length ? flight_bookings : null,
+              transferBookings: transfer_bookings.length
+                ? transfer_bookings
+                : null,
+            });
+
             setStayBookings(stay_bookings);
             if (activity_bookings.length) {
               setActivityBookings(activity_bookings);
@@ -258,8 +269,7 @@ const Itinerary = (props) => {
 
     getRoutes(props.id)
       .then((res) => {
-        setRoutes(res);
-        props.setItineraryRoutes({ routes: res });
+        props.setItineraryRoutes(res);
       })
       .catch((err) => {});
     axios
@@ -734,7 +744,7 @@ const Itinerary = (props) => {
             itineraryDate={itineraryDate}
             showbooking={showbooking}
             payment={payment}
-            routes={routes}
+            routes={props.routes}
             itinerary={props.itinerary}
             breif={breif}
             booking={booking}
@@ -779,6 +789,7 @@ const mapStateToPros = (state) => {
     otpSent: state.auth.otpSent,
     itinerary: state.Itinerary,
     plan: state.Plan,
+    routes: state.ItineraryRoutes,
   };
 };
 
@@ -789,6 +800,7 @@ const mapDispatchToProps = (dispatch) => {
     setItineraryRoutes: (payload) => dispatch(setItineraryRoutes(payload)),
     setItinerary: (payload) => dispatch(setItinerary(payload)),
     setPlan: (payload) => dispatch(setPlan(payload)),
+    setBookings: (payload) => dispatch(setBookings(payload)),
   };
 };
 

@@ -124,7 +124,7 @@ const Details = (props) => {
 
 const mapStateToPros = (state) => {
   return {
-    itineraryRoutes: state.ItineraryRoutes.routes,
+    itineraryRoutes: state.ItineraryRoutes,
   };
 };
 

@@ -1,17 +1,20 @@
 import * as actionTypes from "../actions/actionsTypes";
 
 // Define initial state
-const initialState = null;
+const initialState = {
+  stayBookings: null,
+  activityBookings: null,
+  transferBookings: null,
+  flightBookings: null,
+};
 
 // Define reducer
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case actionTypes.SET_ITINERARY_ROUTES:
-      return [...action.payload];
-
-    default: {
+    case actionTypes.SET_BOOKINGS:
+      return action.payload;
+    default:
       return state;
-    }
   }
 };
 
