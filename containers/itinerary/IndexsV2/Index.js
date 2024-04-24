@@ -102,17 +102,8 @@ const Itinerary = (props) => {
                     totalduration + parseInt(res.data.city_slabs[i].duration)
                   );
               }
-            // else
-            //   window.location.href =
-            //     'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
           }
-          // else
-          //   window.location.href =
-          //     'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
         }
-        // else
-        //   window.location.href =
-        //     'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
         if (res.data.city_slabs)
           if (!res.data.city_slabs.length)
             if (!breif.city_slabs)
@@ -127,7 +118,6 @@ const Itinerary = (props) => {
 
   const getPaymentHandler = () => {
     setPaymentLoading(true);
-    //  props.checkAuthState();
 
     axios
       .post(
@@ -159,8 +149,6 @@ const Itinerary = (props) => {
           setPayment(res.data);
           setPaymentLoading(false);
         }
-        //check if user has already paid
-        // try{
         let email = localStorage.getItem("email");
         if (props.token)
           for (var i = 0; i < res.data.registered_users.length; i++) {
@@ -171,9 +159,6 @@ const Itinerary = (props) => {
               break;
             }
           }
-        // }catch{
-
-        // }
       })
       .catch((error) => {
         setPaymentLoading(false);
@@ -264,14 +249,10 @@ const Itinerary = (props) => {
 
           setItineraryLoading(false);
         } else {
-          // window.location.href =
-          //   'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
         }
       })
       .catch((error) => {
         setItineraryLoading(false);
-        // window.location.href =
-        //   'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
       });
     getBreifHandler();
 
@@ -392,8 +373,6 @@ const Itinerary = (props) => {
   ) => {
     let data = [];
     setCardUpdateLoading(booking_id);
-    // for(var i = 0 ; i<bookings.length; i++){
-    // if(bookings[i].id === booking_id)
     data.push({
       id: booking_id,
       booking_type: booking_type,
@@ -410,10 +389,7 @@ const Itinerary = (props) => {
       duration: duration,
       check_in: check_in,
     });
-    // else data.push(bookings[i]);
-    // }
 
-    // const token = localStorage.getItem('access_token')
     axiosbookingupdateinstance
       .post("/?booking_type=Taxi,Bus,Ferry", data, {
         headers: {
@@ -439,7 +415,6 @@ const Itinerary = (props) => {
   const _deselectStayBookingHandler = (booking, user_selected) => {
     for (var i = 0; i < stayBookings.length; i++) {
       if (stayBookings[i].id === booking.id) {
-        // flickity_index=i;
         setStayFlickityIndex(i);
         break;
       }
@@ -474,10 +449,7 @@ const Itinerary = (props) => {
       is_estimated_price: booking.is_estimated_price,
       itinerary_type: "Tailored",
     });
-    // else data.push(bookings[i]);
-    // }
 
-    // const token = localStorage.getItem('access_token')
     axiosbookingupdateinstance
       .post(
         "/?booking_type=Accommodation&itinerary_id=" + booking.itinerary_id,
@@ -601,7 +573,6 @@ const Itinerary = (props) => {
 
         setCardUpdateLoading(null);
 
-        // window.alert('There seems to be a problem, please try again!');
         props.openNotification({
           type: "error",
           text: "There seems to be a problem, please try again!",
