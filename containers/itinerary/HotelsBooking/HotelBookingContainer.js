@@ -200,7 +200,6 @@ const HotelBookingContainer = ({
   };
 
   const handleAddStay = (label, value) => {
-    console.log("here >>>>>>>>>>..")
     handleClickAc(index, cityData, city_id);
 
     logEvent({

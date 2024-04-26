@@ -83,7 +83,6 @@ const Booking = (props) => {
   const [updateBookingState, setUpdateBookingState] = useState(false);
   const [updateLoadingState, setUpdateLoadingState] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
-  const [moreLoadingState, setMoreLoadingState] = useState(false);
   const [unauthorized, setUnauthorized] = useState(false);
   const [sourceChange, setSourceChange] = useState(false);
   const [noResults, setNoResults] = useState(false);
@@ -521,6 +520,7 @@ const Booking = (props) => {
     source,
   }) => {
     setUpdateBookingState(true);
+
     let updated_bookings_arr = [
       {
         id: SelectedBookingId,
@@ -534,9 +534,7 @@ const Booking = (props) => {
         check_in: check_in,
         check_out: check_out,
         source: source,
-        trace: traceId
-          ? traceId
-          : storeAndRetrieveValue(props?.selectedBooking?.city),
+        trace: traceId ? traceId : storeAndRetrieveValue(),
       },
     ];
     {
@@ -698,7 +696,6 @@ const Booking = (props) => {
               // window.alert("There seems to be a problem, please try again!")
             });
     }
-    // const token = localStorage.getItem('access_token');
   };
 
   const _loadAccommodationsHandler = () => {
@@ -712,34 +709,6 @@ const Booking = (props) => {
     let filters = _generateFilterKeys(filtersState);
     let limit = 10;
     var agodaAccomodation = axiosagodaaccommodationionstance;
-
-    // if (props.currentBooking && props.currentBooking.source) {
-    //   if (props.currentBooking.source === "Agoda") {
-    //     if (sourceChange) {
-    //       agodaAccomodation = axiosaccommodationinstance;
-    //       limit = 10;
-    //     } else {
-    //       agodaAccomodation = axiosagodaaccommodationionstance;
-    //       limit = 30;
-    //     }
-    //   } else {
-    //     if (sourceChange) {
-    //       agodaAccomodation = axiosagodaaccommodationionstance;
-    //       limit = 30;
-    //     } else {
-    //       agodaAccomodation = axiosaccommodationinstance;
-    //       limit = 10;
-    //     }
-    //   }
-    // } else {
-    //   if (sourceChange) {
-    //     agodaAccomodation = axiosagodaaccommodationionstance;
-    //     limit = 30;
-    //   } else {
-    //     agodaAccomodation = axiosaccommodationinstance;
-    //     limit = 10;
-    //   }
-    // }
 
     agodaAccomodation
       .post("/?limit=" + limit + "&offset=" + offset, {
@@ -761,8 +730,6 @@ const Booking = (props) => {
         q: selectSearch,
       })
       .then((res) => {
-        // let oldoptions = optionsJSX;
-
         if (res.data.results.length) {
           setNoResults(false);
           if (res.data.results.length) {
@@ -1178,7 +1145,7 @@ const Booking = (props) => {
                 id={props?.currentBooking?.agoda_accommodation}
                 currentBooking={props?.currentBooking}
                 show={showDetails}
-              ></AccommodationModal>{" "}
+              ></AccommodationModal>
             </>
           ) : (
             <></>

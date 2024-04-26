@@ -348,6 +348,10 @@ const Itinerary = (props) => {
     setShowBookingModal(false);
     setShowFlightModal(false);
     setStayBookings(_updateTransferBooking(stayBookings, json));
+    props.setBookings({
+      ...props.bookings,
+      stayBookings: _updateTransferBooking(props.bookings.stayBookings, json),
+    });
   };
 
   const _updateActivityBookingHandler = (json) => {
@@ -790,6 +794,7 @@ const mapStateToPros = (state) => {
     itinerary: state.Itinerary,
     plan: state.Plan,
     routes: state.ItineraryRoutes,
+    bookings: state.Bookings,
   };
 };
 
