@@ -249,7 +249,7 @@ const TransferModeContainer = (props) => {
   const [loading, setLoading] = useState(false);
   const [UpdateBookingState, setUpdateBookingState] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
-  const [alternateRoutes, setAlternateRoutes] = useState(null);
+  const [alternateRoutes, setAlternateRoutes] = useState({});
   const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
   const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
   const [loadingAlternates, setLoadingAlternates] = useState(true);
