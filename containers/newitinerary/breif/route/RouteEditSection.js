@@ -1288,6 +1288,7 @@ export const DestinationDates = (props) => {
                   : "Arrival Date"}
               </label>
               <DatePicker
+                defaultDate={getDate(previousDate)}
                 date={
                   startingCity
                     ? startDate
@@ -1332,66 +1333,6 @@ export const DestinationDates = (props) => {
                     }
                   </div>
                 )}
-
-              {/* <div className="flex flex-row items-center gap-1">
-                <input
-                  required
-                  name={
-                    startingCity
-                      ? "Start Date"
-                      : endingCity
-                      ? "End Date"
-                      : "Arrival Date"
-                  }
-                  value={
-                    startingCity
-                      ? startDate
-                      : endingCity
-                      ? endDate
-                      : getDate(cityData.checkin_date)
-                  }
-                  min={
-                    startingCity
-                      ? format(new Date(), "yyyy-MM-dd")
-                      : previousDate
-                  }
-                  onChange={handleDateChange}
-                  type="Date"
-                  className="w-52 border-2 border-gray-200 rounded-lg p-2"
-                />
-                {!isValidDates &&
-                  isInvalidDate(
-                    startingCity
-                      ? startDate
-                      : endingCity
-                      ? endDate
-                      : checkinDate
-                  ).error && (
-                    <div
-                      className={`text-xs lg:text-sm text-white text-center ${
-                        isInvalidDate(
-                          startingCity
-                            ? startDate
-                            : endingCity
-                            ? endDate
-                            : checkinDate
-                        ).invalid
-                          ? "bg-red-500"
-                          : "bg-[#ffbb33]"
-                      }  p-2 rounded-full rounded-tl-none animate-popOut`}
-                    >
-                      {
-                        isInvalidDate(
-                          startingCity
-                            ? startDate
-                            : endingCity
-                            ? endDate
-                            : checkinDate
-                        ).message
-                      }
-                    </div>
-                  )}
-              </div> */}
             </div>
           </div>
           {!(startingCity || endingCity) && (
@@ -1399,6 +1340,7 @@ export const DestinationDates = (props) => {
               <div className="flex flex-col gap-1">
                 <label htmlFor="endDate">Departure Date</label>
                 <DatePicker
+                  defaultDate={getDate(previousDate)}
                   date={getDate(cityData.checkout_date)}
                   onDateChange={handleDateChange}
                   id={"Departure Date"}
@@ -1415,30 +1357,6 @@ export const DestinationDates = (props) => {
                     {isInvalidDate(checkoutDate, true).message}
                   </div>
                 )}
-
-                {/* <div className="flex flex-row items-center gap-1">
-                  <input
-                    required
-                    name={"Departure Date"}
-                    value={getDate(cityData.checkout_date)}
-                    min={checkinDate}
-                    onChange={handleDateChange}
-                    type="Date"
-                    className="w-52 border-2 border-gray-200 rounded-lg p-2"
-                  />
-
-                  {!isValidDates && isInvalidDate(checkoutDate, true).error && (
-                    <div
-                      className={`text-xs lg:text-sm text-white text-center ${
-                        isInvalidDate(checkoutDate, true).invalid
-                          ? "bg-red-500"
-                          : "bg-[#ffbb33]"
-                      } p-2 rounded-full rounded-tl-none animate-popOut`}
-                    >
-                      {isInvalidDate(checkoutDate, true).message}
-                    </div>
-                  )}
-                </div> */}
               </div>
             </div>
           )}
@@ -1607,10 +1525,18 @@ export const DatePicker = (props) => {
     setFocusedInput(true);
   }
 
+  const initialMonth = () => {
+    if (isNaN(Date.parse(props.date))) {
+      return moment().month(new Date(props.defaultDate).getMonth());
+    }
+    return moment().month(new Date(props.date).getMonth());
+  };
+
   return (
     <Container onClick={handleFocus} className="flex flex-col">
       <SingleDatePicker
         readOnly={true}
+        initialVisibleMonth={initialMonth}
         date={isNaN(Date.parse(props.date)) ? null : moment(props.date)}
         onDateChange={(date) =>
           props.onDateChange({

@@ -581,7 +581,7 @@ const TransfersContainer = (props) => {
                 <div className="flex flex-col gap-1">
                   <TransferModeContainer
                     setShowLoginModal={props?.setShowLoginModal}
-                    routes={false}
+                    routes={props?.routes}
                     plan={props.plan}
                     getPaymentHandler={props.getPaymentHandler}
                     _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
