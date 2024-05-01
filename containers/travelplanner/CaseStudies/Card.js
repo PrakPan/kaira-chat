@@ -1,12 +1,12 @@
-import React from 'react';
-import styled from 'styled-components';
-import Button from '../../../components/ui/button/Index';
-import media from '../../../components/media'
-import { useRouter } from 'next/router';
-import { AiFillStar } from 'react-icons/ai';
+import React from "react";
+import styled from "styled-components";
+import Button from "../../../components/ui/button/Index";
+import media from "../../../components/media";
+import { useRouter } from "next/router";
+import { AiFillStar } from "react-icons/ai";
 // import ImageLoader from "../../../components/UpdatedBackgroundImageLoader";
 import ImageLoader from "../../../components/ImageLoader";
-import Link from 'next/link';
+import Link from "next/link";
 const Card = styled.div`
   padding: 0rem;
   @media screen and (min-width: 768px) {
@@ -50,13 +50,13 @@ const RatingContainer = styled.div`
   }
 `;
 const FlexBox = styled.div`
-display : flex;
-justify-content : space-between;
-flex-direction : column;
-`
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+`;
 const CardContainer = (props) => {
   const router = useRouter();
-    let isPageWide = media("(min-width: 768px)");
+  let isPageWide = media("(min-width: 768px)");
 
   if (isPageWide)
     return (
@@ -69,16 +69,6 @@ const CardContainer = (props) => {
               justifyContent: "space-between",
             }}
           >
-            {/* <ImageLoader
-              borderRadius="8px"
-              width="100%"
-              height="100%"
-              widthMobile="100%"
-              url={props.image}
-              dimensionsMobile={{ width: 600, height: 600 }}
-              dimensions={{ width: 900, height: 900 }}
-              style={{ paddingTop: "100%", borderRadius: "10px" }}
-            ></ImageLoader> */}
             <ImageLoader
               borderRadius="8px"
               width="100%"
@@ -89,9 +79,6 @@ const CardContainer = (props) => {
             ></ImageLoader>
           </div>
           <FlexBox>
-            {/* <CardHeading className='font-lexend'>{props.heading}</CardHeading> */}
-
-            {/* <ImQuotesLeft style={{fontSize: '1.25rem', marginLeft: '-0rem'}}></ImQuotesLeft> */}
             <CardListItem className="font-lexend">{props.text}</CardListItem>
             <FlexBox>
               <CardHeading className="font-lexend">{props.heading}</CardHeading>
@@ -136,7 +123,10 @@ const CardContainer = (props) => {
                   </CardSubHeading>
                 </div>
               </RatingContainer>
-              <Link href={"/itinerary/" + props.id} style={{textDecoration : 'none'}}>
+              <Link
+                href={"/itinerary/" + props.id}
+                style={{ textDecoration: "none" }}
+              >
                 <Button
                   fontWeight="500"
                   borderRadius="6px"
@@ -154,8 +144,6 @@ const CardContainer = (props) => {
         </GridContainer>
       </Card>
     );
-
-
 
   return (
     <Card className="">

@@ -1,11 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
-import styled from 'styled-components';
-import ReactCardFlip from 'react-card-flip';
-import ImageLoader from '../../components/ImageLoader';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMapMarker, faQuoteRight } from '@fortawesome/free-solid-svg-icons';
-import media from '../../components/media';
-import usePageLoaded from '../../components/custom hooks/usePageLoaded';
+import React, { useState, useRef, useEffect } from "react";
+import styled from "styled-components";
+import ReactCardFlip from "react-card-flip";
+import ImageLoader from "../../components/ImageLoader";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faQuoteRight } from "@fortawesome/free-solid-svg-icons";
+import media from "../../components/media";
+import usePageLoaded from "../../components/custom hooks/usePageLoaded";
+
 const Icon = styled.img`
   margin: -1rem 0.2rem 0rem -1rem;
   height: 1.5rem;
@@ -55,11 +56,13 @@ const UserIcon = styled.img`
   width: 17rem;
   border-radius: 50%;
 `;
+
 const Name = styled.h2`
   font-size: 1.25rem;
   font-weight: 800;
   margin: 1.5rem 0 1rem 0;
 `;
+
 const Location = styled.p`
   margin: 0 0 1rem 0;
   font-weight: 300;
@@ -76,6 +79,7 @@ const ReadMore = styled.p`
     height: auto;
   }
 `;
+
 const ReviewBack = styled.p`
   font-weight: 200;
   letter-spacing: 1px;
@@ -86,16 +90,19 @@ const ReviewBack = styled.p`
     height: auto;
   }
 `;
+
 const ReviewContainer = styled.div`
   @media screen and (min-width: 768px) {
     width: 85%;
     margin: auto;
   }
 `;
+
 const Country = styled.img`
   width: 1.5rem;
   margin: 0 1rem 1.5rem 1rem;
 `;
+
 const ReviewFront = styled.p`
   font-weight: 200;
   letter-spacing: 1px;
@@ -108,7 +115,7 @@ const ReviewFront = styled.p`
   }
   &:before {
     content: open-quote;
-    font-family: 'Font Awesome 5 Free';
+    font-family: "Font Awesome 5 Free";
     font-size: 2.5rem;
     /* font-size: ${(props) =>
       props.theme.fontsizes.mobile.headings.one
@@ -121,7 +128,7 @@ const ReviewFront = styled.p`
   }
   &:after {
     content: close-quote;
-    font-family: 'Font Awesome 5 Free';
+    font-family: "Font Awesome 5 Free";
     font-size: 2.5rem;
     /* font-size: ${(props) =>
       props.theme.fontsizes.mobile.headings.one
@@ -136,19 +143,17 @@ const ReviewFront = styled.p`
 
 const TestimonialCard = (props) => {
   const isPageLoaded = usePageLoaded();
-
-  let isPageWide = media('(min-width: 768px)');
-
+  let isPageWide = media("(min-width: 768px)");
   const [isFlipped, setIsFlipped] = useState(false);
   const _flipHandler = (e, val) => {
     e.preventDefault();
     setIsFlipped(val);
   };
-
   const [Card1Height, setCard1Height] = useState(0);
   const [Card2Height, setCard2Height] = useState(0);
   const Card1Ref = useRef();
   const Card2Ref = useRef();
+
   useEffect(() => {
     if (Card2Ref.current.offsetHeight < Card1Ref.current.offsetHeight) {
       setCard2Height(Card1Ref.current.offsetHeight);
@@ -156,6 +161,7 @@ const TestimonialCard = (props) => {
       setCard1Height(Card2Ref.current.offsetHeight);
     }
   });
+
   const [stringlength, setStringlength] = useState();
   if (isPageLoaded && !stringlength) {
     if (window.innerWidth <= 380 && window.innerHeight < 700)
@@ -168,18 +174,19 @@ const TestimonialCard = (props) => {
   }
 
   const countryicons = {
-    germany: 'media/icons/countries/germany.png',
-    mexico: 'media/icons/countries/mexico.svg',
-    india: 'media/icons/countries/india.svg',
-    turkey: 'media/icons/countries/turkey.svg',
-    us: 'media/icons/countries/us.svg',
-    france: 'media/icons/countries/france.svg',
-    indonesia: 'media/icons/countries/indonesia.svg',
+    germany: "media/icons/countries/germany.png",
+    mexico: "media/icons/countries/mexico.svg",
+    india: "media/icons/countries/india.svg",
+    turkey: "media/icons/countries/turkey.svg",
+    us: "media/icons/countries/us.svg",
+    france: "media/icons/countries/france.svg",
+    indonesia: "media/icons/countries/indonesia.svg",
   };
+
   return (
     <ReactCardFlip isFlipped={isFlipped} flipDirection="horizontal">
       <Card
-        style={{ minHeight: Card1Height + 'px' }}
+        style={{ minHeight: Card1Height + "px" }}
         ref={Card1Ref}
         onClick={(event) => _flipHandler(event, true)}
         onMouseEnter={(event) => _flipHandler(event, true)}
@@ -203,21 +210,20 @@ const TestimonialCard = (props) => {
           widthmobile="2rem"
           url={countryicons[props.location]}
         ></ImageLoader>
-        <ReviewContainer style={{ position: 'relative' }}>
-          <ReviewFront className="font-nunito">
-            <em>{props.text}</em>{' '}
+        <ReviewContainer style={{ position: "relative" }}>
+          <ReviewFront className="font-lexend">
+            <em>{props.text}</em>{" "}
           </ReviewFront>
-          {/* <FontAwesomeIcon icon={faQuoteRight} style={{position: 'absolute', right: '-5px', top: '-1rem'}}></FontAwesomeIcon> */}
           {!isPageWide ? (
             <ReadMore
               style={{
-                borderStyle: 'none none solid none',
-                borderWidth: '1px',
-                width: 'max-content',
-                margin: '2rem auto 0 auto',
-                display: 'block',
+                borderStyle: "none none solid none",
+                borderWidth: "1px",
+                width: "max-content",
+                margin: "2rem auto 0 auto",
+                display: "block",
               }}
-              className="font-nunito"
+              className="font-lexend"
             >
               Read More
             </ReadMore>
@@ -225,23 +231,23 @@ const TestimonialCard = (props) => {
         </ReviewContainer>
       </Card>
       <Card2
-        style={{ minHeight: Card2Height + 'px' }}
+        style={{ minHeight: Card2Height + "px" }}
         ref={Card2Ref}
         onClick={(event) => _flipHandler(event, false)}
         onMouseLeave={(event) => _flipHandler(event, false)}
       >
         <Name className="font-lexend">{props.name + "'s story"}</Name>
         <ReviewContainer
-          style={{ position: 'relative', maxHeight: Card1Height - 50 + 'px' }}
+          style={{ position: "relative", maxHeight: Card1Height - 50 + "px" }}
         >
-          <ReviewBack className="font-nunito">
+          <ReviewBack className="font-lexend">
             {props.review.length < stringlength
               ? props.review
-              : props.review.substring(0, stringlength) + '...'}
+              : props.review.substring(0, stringlength) + "..."}
           </ReviewBack>
           <FontAwesomeIcon
             icon={faQuoteRight}
-            style={{ position: 'absolute', right: '-5px', top: '-1rem' }}
+            style={{ position: "absolute", right: "-5px", top: "-1rem" }}
           ></FontAwesomeIcon>
         </ReviewContainer>
       </Card2>
