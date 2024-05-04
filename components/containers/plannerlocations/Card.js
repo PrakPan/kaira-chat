@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import media from "../../media";
 import ImageLoader from "../../ImageLoader";
@@ -61,12 +61,7 @@ const Subheading = styled.p`
 `;
 
 const Experiences = (props) => {
-  let isPageWide = media("(min-width: 768px)");
-  const router = useRouter();
-  const path = props.city
-    ? "https://thetarzanway.com/travel-guide/city/"
-    : "https://thetarzanway.com/travel-planner/";
-
+  const [loading, setLoading] = useState(true);
   const handleImageClick = (e) => {
     logEvent({
       action: "View_Destination",
@@ -84,7 +79,10 @@ const Experiences = (props) => {
 
   return (
     <Link className="hover-pointer" href={"/" + props.path}>
-      <ImageContainer onClick={handleImageClick}>
+      <ImageContainer
+        className={`w-full ${loading ? "bg-gray-200 animate-pulse" : ""}`}
+        onClick={handleImageClick}
+      >
         <ImageFade>
           <ImageLoader
             url={props.img}
@@ -92,11 +90,23 @@ const Experiences = (props) => {
             dimensionsMobile={{ width: 800, height: 800 }}
             height="35vh"
             style={{ filter: "brightness(0.9)" }}
+            onload={() => {
+              setLoading(false);
+            }}
           ></ImageLoader>
         </ImageFade>
-        <BlackContainer className="font-lexend">
-          <Heading>{props.location}</Heading>
-          <Subheading>{props.heading}</Subheading>
+        <BlackContainer className="font-lexend w-full">
+          {loading ? (
+            <div className="w-full flex flex-col items-center gap-2">
+              <div className="w-[80%] h-10 bg-gray-300 w-20 rounded-lg"></div>
+              <div className="w-[60%] h-8 bg-gray-300 rounded-lg"></div>
+            </div>
+          ) : (
+            <>
+              <Heading>{props.location}</Heading>
+              <Subheading>{props.heading}</Subheading>
+            </>
+          )}
         </BlackContainer>
       </ImageContainer>
     </Link>

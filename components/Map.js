@@ -5,6 +5,7 @@ import leaflet from "leaflet";
 import ReactLeafletGoogleLayer from "react-leaflet-google-layer";
 import MarkerClusterGroup from "@changey/react-leaflet-markercluster";
 import "@changey/react-leaflet-markercluster/dist/styles.min.css";
+import { MAPBOX_ACCESS_TOKEN } from "../services/constants";
 
 const customIcon = leaflet.icon({
   iconUrl:
@@ -12,6 +13,7 @@ const customIcon = leaflet.icon({
   iconSize: [28, 32],
   iconAnchor: [14, 32],
 });
+
 const Mapbox = React.memo((props) => {
   const FitBoundsOnMount = () => {
     const map = useMap();
@@ -36,7 +38,6 @@ const Mapbox = React.memo((props) => {
   };
 
   if (props.center) {
-    // props.center ? props.center :
     return (
       <MapContainer
         center={props.center}
@@ -49,8 +50,7 @@ const Mapbox = React.memo((props) => {
       >
         <TileLayer
           url={`
-       https://api.mapbox.com/styles/v1/shivaank/clhpyxasr01ud01qu4n3e7x80/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic2hpdmFhbmsiLCJhIjoiY2xob3Vjbnd6MDBsNjNkbXNkanp2Nzd5dyJ9.Nikg8Qt4OOYGthgMQ5zH1w`}
-          // attribution="The Tarzan Way"
+       https://api.mapbox.com/styles/v1/shivaank/clhpyxasr01ud01qu4n3e7x80/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_ACCESS_TOKEN}`}
         />
         <ReactLeafletGoogleLayer apiKey="AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E" />
         <MarkerClusterGroup>
@@ -66,7 +66,6 @@ const Mapbox = React.memo((props) => {
             </Popup>
           </Marker>
         </MarkerClusterGroup>
-        {/* <FitBoundsOnMount /> */}
       </MapContainer>
     );
   }
@@ -83,8 +82,7 @@ const Mapbox = React.memo((props) => {
     >
       <TileLayer
         url={`
-       https://api.mapbox.com/styles/v1/shivaank/clhpyxasr01ud01qu4n3e7x80/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic2hpdmFhbmsiLCJhIjoiY2xob3Vjbnd6MDBsNjNkbXNkanp2Nzd5dyJ9.Nikg8Qt4OOYGthgMQ5zH1w`}
-        // attribution="The Tarzan Way"
+       https://api.mapbox.com/styles/v1/shivaank/clhpyxasr01ud01qu4n3e7x80/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_ACCESS_TOKEN}`}
       />
       <ReactLeafletGoogleLayer apiKey="AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E" />
       <MarkerClusterGroup>

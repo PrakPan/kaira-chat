@@ -9,16 +9,14 @@ import {
 import leaflet, { divIcon } from "leaflet";
 import { format, parseISO } from "date-fns";
 import "leaflet/dist/leaflet.css";
-
 import React, { useEffect } from "react";
 import { useState } from "react";
-import ReactLeafletGoogleLayer from "react-leaflet-google-layer";
 import ImageLoader from "./ImageLoader";
-import { ITbutton } from "../containers/newitinerary/breif/cities/City";
 import WeatherWidget from "./WeatherWidget/WeatherWidget";
-import DistanceBetweenCoords from "../helper/DistanceBetweenCoords";
 import { getHumanDate } from "../services/getHumanDate";
 import useMediaQuery from "./media";
+import { MAPBOX_ACCESS_TOKEN } from "../services/constants";
+
 const MyIcon = ({ color }) => {
   const iconMarkup = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <circle cx="10" cy="10" r="8" stroke="${color}" stroke-width="2" fill="transparent"/>
@@ -33,11 +31,13 @@ const MyIcon = ({ color }) => {
   const customIcon = new DivIcon(iconOptions);
   return customIcon;
 };
+
 const limeOptions = {
   color: "#004d6994",
   dashArray: "10, 5", // Defines the pattern of the dashed line (10 units of solid line, 5 units of blank space)
   dashOffset: "15",
 };
+
 const Mapbox = React.memo(
   ({
     locations,
@@ -45,9 +45,10 @@ const Mapbox = React.memo(
     setCurrentPopup,
     setShowDrawer,
     setShowDrawerData,
-    onload
+    onload,
   }) => {
     const isDesktop = useMediaQuery("(min-width:768px)");
+
     function sortWholeNumbersDescending(arr) {
       // Convert decimal numbers to whole numbers using Math.floor()
       const wholeNumbers = arr.map((num) => Math.floor(num));
@@ -57,6 +58,7 @@ const Mapbox = React.memo(
 
       return wholeNumbers;
     }
+
     const FitBoundsOnMount = () => {
       const map = useMap();
 
@@ -103,19 +105,21 @@ const Mapbox = React.memo(
     }
 
     const [polylines, setPolylines] = useState();
+
     const convertDFormat = (dt) => {
       const date = parseISO(dt);
       const formattedDate = format(date, "MMMM do");
       return formattedDate;
     };
+
     useEffect(() => {
-      // NearestLocation();
       const updatedPolylines = locations.map((element) => [
         element.lat,
         element.long,
       ]);
       setPolylines(updatedPolylines);
     }, [locations]);
+
     function scrollToTargetAdjusted(id) {
       const element = document.getElementById(id);
       const headerOffset = 117;
@@ -128,21 +132,21 @@ const Mapbox = React.memo(
         behavior: "smooth",
       });
     }
+
     return locations ? (
       <MapContainer
         scrollWheelZoom={false}
         dragging={!isDesktop}
         style={{ height: "100%", width: "100%", borderRadius: "1rem" }}
         whenReady={() => {
-          if(onload) onload()
+          if (onload) onload();
         }}
       >
         <TileLayer
           url={`
-       https://api.mapbox.com/styles/v1/shivaank/clhpyxasr01ud01qu4n3e7x80/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic2hpdmFhbmsiLCJhIjoiY2xob3Vjbnd6MDBsNjNkbXNkanp2Nzd5dyJ9.Nikg8Qt4OOYGthgMQ5zH1w`}
+       https://api.mapbox.com/styles/v1/shivaank/clhpyxasr01ud01qu4n3e7x80/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_ACCESS_TOKEN}`}
         />
 
-        {/* <ReactLeafletGoogleLayer apiKey="AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E" /> */}
         {polylines ? (
           <Polyline pathOptions={limeOptions} positions={polylines} />
         ) : null}
@@ -151,7 +155,7 @@ const Mapbox = React.memo(
           <Marker
             key={location.id}
             animate
-            position={[location.lat, location.long]}
+            position={[location?.lat, location?.long]}
             draggable={false}
             icon={divIcon({
               className: "icon",
@@ -163,7 +167,7 @@ const Mapbox = React.memo(
             <span class="text-white text-xs font-bold  ">  ${index + 1}</span>
          </div>
             </div>
-            
+
           `,
               iconSize: 20,
             })}

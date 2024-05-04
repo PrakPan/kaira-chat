@@ -127,8 +127,6 @@ const ImageLoader = (props) => {
       });
   }
 
-  const smallurl = imgUrlEndPoint + "40x30/" + props.url;
-
   const Container = styled(props.noLazy ? "div" : LazyLoad)`
     @media screen and (min-width: 768px) {
       width: ${props.width ? props.width : "100%"};
@@ -244,6 +242,7 @@ const ImageLoader = (props) => {
             margin: props.leftalign ? "0" : "0 auto",
             filter: props.blur ? "blur(0.5rem)" : "blur(0)",
             borderRadius: props.borderRadius ? props.borderRadius : "0",
+            // backgroundColor: !fullLoaded ? "rgb(229 231 235)" : "",
           }}
         >
           <SmallImage
@@ -262,7 +261,6 @@ const ImageLoader = (props) => {
             }}
           ></SmallImage>
           <FullImage
-            // loading="lazy"
             src={
               !is_url
                 ? error

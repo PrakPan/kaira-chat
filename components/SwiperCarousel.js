@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper";
 import "swiper/css";
@@ -87,7 +87,7 @@ const SwiperCarousel = (props) => {
       </div>
     );
   });
-  
+
   const handleNextClick = (swiper) => {
     const currentIndex = swiper.activeIndex - 1;
     const slidesPerView = swiper.params.slidesPerView;

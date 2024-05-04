@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import media from "../../../components/media";
 import { useRouter } from "next/router";
 import DesktopBanner from "../../../components/containers/Banner";
 import Banner from "../../homepage/banner/Mobile";
@@ -37,12 +36,6 @@ const RouteComponent = styled.div`
   }
 `;
 
-const ContainerBt = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: center;
-`;
-
 const MapInfo = styled.div`
   b {
     font-weight: 600;
@@ -50,18 +43,13 @@ const MapInfo = styled.div`
 `;
 
 const Details = (props) => {
-  let offsets = {};
-  const [offset, setOffset] = useState(null);
   const [active, setActive] = useState(null);
   const [showDrawer, setShowDrawer] = useState(false);
   const [showDrawerData, setShowDrawerData] = useState(false);
   const [currentPopup, setCurrentPopup] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
-  const [edit, setEdit] = useState(false);
 
   const router = useRouter();
-
-  let isPageWide = media("(min-width: 768px)");
 
   const _handleTailoredRedirect = (e) => {
     router.push("/tailored-travel");
@@ -136,13 +124,6 @@ const Details = (props) => {
     }
     return null; // Return null if city_id is not found in the array
   }
-
-  const InfoWindowContainer = (location) => (
-    <MapInfo>
-      <b>{location.name}</b>
-      {location.duration && <p>Ideal duration : {location.duration} days</p>}
-    </MapInfo>
-  );
 
   const MapWithNoSSR = ({
     locations,

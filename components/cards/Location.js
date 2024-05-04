@@ -59,7 +59,7 @@ bottom : 0;
 left : 0;
 right : 0;
 height : 0%;
-${props => props.loading && 'height : 20%'};
+${(props) => props.loading && "height : 20%"};
    transition : height 0.3s ease;
 `;
 
@@ -80,33 +80,47 @@ const Name = styled.p`
 
 const Experiences = (props) => {
   let isPageWide = media("(min-width: 768px)");
-  const [loading , setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
 
   return (
-    <Container onClick={props.onclick ? props.onclick : null}>
+    <Container
+      className={`${imageLoading ? "bg-gray-200 animate-pulse" : ""}`}
+      onClick={props.onclick ? props.onclick : null}
+    >
       <BackroundImageLoader
-        // filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"
         filter="brightness(0.9)"
         padding="0"
         zoomonhover
-        // center
         dimensions={{ width: 900, height: 1800 }}
         height={isPageWide ? "50vh" : "60vh"}
         url={props.img}
+        onload={() => {
+          setImageLoading(false);
+        }}
       >
-        <TextContainer loading={loading} className="TextContainer">
-          <Name className="font-lexend">{props.heading}</Name>
-          <Name
-            className="font-lexend"
-            style={{
-              fontSize: "28px",
-              fontWeight: "700",
-              letterSpacing: "0",
-              marginTop: "0.5rem",
-            }}
-          >
-            {props.location}
-          </Name>
+        <TextContainer loading={loading} className="w-full TextContainer">
+          {imageLoading ? (
+            <div className="w-full flex flex-col gap-3 items-center">
+              <div className="w-[80%] h-10 bg-gray-300 rounded-lg"></div>
+              <div className="w-[60%] h-8 bg-gray-300 rounded-lg"></div>
+            </div>
+          ) : (
+            <>
+              <Name className="font-lexend">{props.heading}</Name>
+              <Name
+                className="font-lexend"
+                style={{
+                  fontSize: "28px",
+                  fontWeight: "700",
+                  letterSpacing: "0",
+                  marginTop: "0.5rem",
+                }}
+              >
+                {props.location}
+              </Name>
+            </>
+          )}
         </TextContainer>
       </BackroundImageLoader>
       <CtaContainer loading={loading} className="CtaContainer">

@@ -1,33 +1,7 @@
 import React from "react";
-import styled from "styled-components";
 import ImageLoader from "./ImageLoader";
 
 const SaifBackgroundImageLoader = (props) => {
-  const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
-  const FullContainer = styled("div")`
-    margin: 0 auto;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    height: 30rem;
-    padding: ${(props) => (props.padding ? props.padding : "2rem 0 0 0")};
-
-    @media screen and (min-width: 768px) {
-      height: 37rem;
-      padding: ${(props) => (props.padding ? props.padding : "2rem 0 0 0")};
-    }
-  `;
-  const imageRequest = JSON.stringify({
-    bucket: "thetarzanway-web",
-    key: props.url,
-    edits: {
-      resize: {
-        width: 1,
-        height: 1,
-        fit: "cover",
-      },
-    },
-  });
   return (
     <>
       <div
@@ -41,10 +15,7 @@ const SaifBackgroundImageLoader = (props) => {
           width: "100%",
           borderRadius: props.borderRadius ? props.borderRadius : "0",
           filter: props.filter,
-          backgroundColor: "rgb(230 230 230)",
-          // backgroundImage: `url(${`${imgUrlEndPoint}/${Buffer.from(
-          //   imageRequest
-          // ).toString("base64")}`})`,
+          // backgroundColor: "rgb(230 230 230)",
           ...props.style,
         }}
       >
@@ -59,12 +30,11 @@ const SaifBackgroundImageLoader = (props) => {
           borderRadius={props.borderRadius ? props.borderRadius : "0"}
           noPlaceholder={props.noPlaceholder}
           resizeMode={props.resizeMode}
+          onload={props.onload}
         />
       </div>
       <div
         style={{
-          // position: "relative",
-          // zIndex: "2",
           width: "100%",
           height: "100%",
           padding: props.padding,
