@@ -61,9 +61,8 @@ Thumbs.db
 # production
 
 # misc
-.DS_Store
-._.DS_Store
-
+*.DS_Store
+*._.DS_Store
 *.pem
 
 # debug
