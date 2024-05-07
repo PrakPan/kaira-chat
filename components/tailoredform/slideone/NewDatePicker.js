@@ -183,6 +183,7 @@ const DatePicker = (props) => {
         <Text>Start Date</Text>
         <Text>End Date</Text>
       </TextContainer>
+
       <Container tailoredFormModal={props.tailoredFormModal}>
         <DateRangePicker
           displayFormat="DD/MM/YYYY"
@@ -206,9 +207,8 @@ const DatePicker = (props) => {
           numberOfMonths={isPageWide && !props.tailoredFormModal ? 2 : 1}
           orientation={'horizontal'}
           noBorder={true}
-          // navPrev={<FaChevronLeft />}
-          // navNext={<FaChevronRight />}
         />
+        
         <CalenderIcons
           tailoredFormModal={props.tailoredFormModal}
           className="CalentderIcons"

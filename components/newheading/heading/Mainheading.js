@@ -1,5 +1,3 @@
-// import { red } from "@mui/material/colors";
-import React, { useState } from "react";
 import styled from "styled-components";
 
 const Mainheadingstyle = styled.div`
@@ -75,31 +73,5 @@ const Mainheading = (props) => {
     </Mainheadingstyle>
   );
 };
+
 export default Mainheading;
-
-//  max-width: 100%;
-//  width: max-content;
-//  border-width: 2px;
-//  border-color: #F7e700;
-
-//  fontWeight: '700',
-//  fontSize: props.noline? '2.5rem ': '3rem',
-//  textAlign: props.aligndesktop ? props.aligndesktop : props.align,
-//  borderStyle: props.noline ? 'none' : 'none none solid none',
-//  margin: props.aligndesktop  === "center" && props.margin ? props.margin+" auto" : props.margin,
-
-/* : ${(props)=>(props. ? props. :)}; */
-/* max-width: 100%;
-        width: max-content;
-        border-width: 2px;
-        border-color: #F7e700; */
-/* fontWeight= '700'
-      borderStyle= {props.noline ? 'none' : 'none none solid none'}
-      fontSize= '2rem'
-      margin= {props.noline? '0' : '0 auto 0.5rem auto'}
-      padding={ props.padding ? props.padding : '5px'}
-      color={ props.color ? props.color : "black" }
-      width= {props.noline ? '100%' : 'max-content'}
-      borderColor= '#f7e700'
-      maxWidth= {props.noline ? '100%' : '85%'}
-      letterSpacing= '1' */

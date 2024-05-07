@@ -15,7 +15,7 @@ const Container = styled.div`
 
   position: relative;
 `;
-const fullimage = (props) => {
+const FullImage = (props) => {
   if (props.center) {
     return (
       <Container height={props.height} heightmobile={props.heightmobile}>
@@ -42,7 +42,6 @@ const fullimage = (props) => {
             dimensionsMobile={{ width: 607, height: 810 }}
             style={{ position: "absolute", zIndex: props.zIndex }}
           >
-            {/* {props.children} */}
             <div>{props.children}</div>
           </BackgroundImageLoader>
         )}
@@ -73,7 +72,6 @@ const fullimage = (props) => {
           className="center-dv"
           resizeMode={props.resizeMode}
         >
-          {/* {props.children} */}
           <div
             style={{
               position: "absolute",
@@ -90,4 +88,4 @@ const fullimage = (props) => {
   }
 };
 
-export default fullimage;
+export default FullImage;

@@ -1,42 +1,35 @@
-import React, {useState, useEffect } from 'react';
-  
-import media from '../../media';
- 
-import styled  from 'styled-components';
- import Pax from './pax/Index';
- import GroupType from './GroupType';
- import Question from '../Question';
- import Budget from './Budget';
- import {AiFillCaretDown} from 'react-icons/ai'
- import Preferences from './preferences/Index';
+import React, { useState } from "react";
+import styled from "styled-components";
+import Pax from "./pax/Index";
+import GroupType from "./GroupType";
+import Question from "../Question";
+import Budget from "./Budget";
+import { AiFillCaretDown } from "react-icons/ai";
+import Preferences from "./preferences/Index";
 
 const Container = styled.div`
-color: black;
-width: 100%;
-  @media screen and (min-width: 768px){
- 
-}
-
+  color: black;
+  width: 100%;
+  @media screen and (min-width: 768px) {
+  }
 `;
 
 const Section = styled.div`
   margin-bottom: 1.5rem;
 `;
- 
-const SlideTwo = (props) =>{
-    const [showPax, setShowPax] = useState(false);
-    const [showPreferences, setShowPreferences] = useState(false);
-    // const [selectedPreferences, setSelectedPreferences] = useState([]);
-  let isPageWide = media('(min-width: 768px)');
+
+const SlideTwo = (props) => {
+  const [showPax, setShowPax] = useState(false);
+  const [showPreferences, setShowPreferences] = useState(false);
+
   const _handleShowPax = (grouptype) => {
     props.setGroupType(grouptype);
-    props.setSubmitSecondSlide(true)
-    if(grouptype === 'Friends' || grouptype === 'Family'){
-      // props.setNumberOfAdults(2);
-    setShowPax(true);
-      
+    props.setSubmitSecondSlide(true);
+    if (grouptype === "Friends" || grouptype === "Family") {
+      setShowPax(true);
     }
-  }
+  };
+
   return (
     <Container>
       <Section style={{ marginBottom: "1.5rem" }}>
@@ -58,10 +51,12 @@ const SlideTwo = (props) =>{
           ></GroupType>
         )}
       </Section>
+
       <Section>
         <Question className="font-lexend">Budget per person?</Question>
         <Budget setShowPax={setShowPax} setBudget={props.setBudget}></Budget>
       </Section>
+
       <div
         style={{ display: "flex" }}
         onClick={() => setShowPreferences(!showPreferences)}
@@ -76,7 +71,8 @@ const SlideTwo = (props) =>{
           </AiFillCaretDown>
         </div>
       </div>
-      {(showPreferences || props.tailoredFormModal) ? (
+      
+      {showPreferences || props.tailoredFormModal ? (
         <Preferences
           tailoredFormModal={props.tailoredFormModal}
           selectedPreferences={props.selectedPreferences}
@@ -85,8 +81,6 @@ const SlideTwo = (props) =>{
       ) : null}
     </Container>
   );
-}
-
+};
 
 export default SlideTwo;
-

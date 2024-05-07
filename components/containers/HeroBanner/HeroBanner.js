@@ -1,5 +1,6 @@
 import FullImgContent from "./FullImgContent";
 import FullImage from "../../FullImage";
+
 const HeroBanner = (props) => {
   return (
     <FullImage
@@ -9,7 +10,6 @@ const HeroBanner = (props) => {
       filter="brightness(0.9)"
       padding="2rem 0"
       resizeMode={props.resizeMode}
-      // filter="linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.6))"
     >
       <FullImgContent
         page_id={props.page_id}

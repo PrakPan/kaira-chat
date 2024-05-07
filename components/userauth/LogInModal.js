@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Button from "../ui/button/Index";
 import { connect } from "react-redux";
 import * as authaction from "../../store/actions/auth";
@@ -8,7 +8,6 @@ import Spinner from "../Spinner";
 import styled from "styled-components";
 import extensions from "../../public/content/extensionsdata";
 import Link from "next/link";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import CountryCodeDropdown from "./CountryDropdown";
 import { FiChevronDown } from "react-icons/fi";
 import { ImCheckboxUnchecked, ImCheckboxChecked } from "react-icons/im";
@@ -19,14 +18,14 @@ import LoginLoadingIcon from "../ui/LoadingLottie";
 import Image from "next/image";
 import ImageLoader from "../ImageLoader";
 import media from "../media";
-import { GOOGLE_CLIENT_ID } from "../../services/constants";
-// import { OAuthButton } from "@react-oauth/google";
 import { useGoogleLogin } from "@react-oauth/google";
+
 const MobileNumberContainer = styled.div`
   display: grid;
   grid-template-columns: 90px 1fr;
   gap: 0.5rem;
 `;
+
 const WhatsappCheckBox = styled.div`
   cursor: pointer;
   font-weight: 400;
@@ -64,6 +63,7 @@ const CountryCodeContainer = styled.div`
     margin-left: -5px;
   }
 `;
+
 const ErrorText = styled.div`
   color: red;
   font-size: 13px;
@@ -73,6 +73,7 @@ const ErrorText = styled.div`
   display: flex;
   align-items: center;
 `;
+
 const OtpContainer = styled.div`
   div {
     display: grid !important;
@@ -88,21 +89,17 @@ const OtpContainer = styled.div`
   }
 `;
 
-var userDetails = {
-  firstName: "",
-  lastName: "",
-  userName: "",
-  email: "",
-};
 const CountryImg = styled(Image)`
   height: 1.5rem;
 `;
+
 const UpdatePhone = styled.p`
   padding: 0 8px;
   &:hover {
     cursor: pointer;
   }
 `;
+
 const ResendOtp = styled.p`
   float: right;
   &:hover {
@@ -127,6 +124,13 @@ const CountryCodeOption = styled.div`
   }
 `;
 
+var userDetails = {
+  firstName: "",
+  lastName: "",
+  userName: "",
+  email: "",
+};
+
 const LogIn = React.memo((props) => {
   if (props.loadingsocial)
     return (
@@ -143,13 +147,10 @@ const LogIn = React.memo((props) => {
   const [openCountryCodeOption, setOpenCountryCodeOption] = useState(false);
   const [otp, setOtp] = useState("");
   const [userNameError, setUserNameError] = useState(false);
-  let firstname = null; //JSX for first name
-  let lastname = null; //JSX for last name
   let email = null; //JSX for email
   let password = null; //JSX for OTP
   let mobileInput = null; //JSX for mobile input field
   let ExtensionOptions = [];
-  let mobilevariable = "";
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -157,6 +158,7 @@ const LogIn = React.memo((props) => {
     script.async = true;
     document.body.appendChild(script);
   }, []);
+
   useEffect(() => {
     if (
       props.token &&
@@ -175,6 +177,7 @@ const LogIn = React.memo((props) => {
   const handleExtensionChangeOption = (country) => {
     setExtension(country);
   };
+
   for (const country in extensions) {
     ExtensionOptions.push(
       <CountryCodeOption
@@ -195,6 +198,7 @@ const LogIn = React.memo((props) => {
       </CountryCodeOption>
     );
   }
+
   //Change user details on key press
   const _userDetailsOnChangeHandler = (event, target) => {
     userDetails = {
@@ -203,19 +207,16 @@ const LogIn = React.memo((props) => {
     };
   };
 
-  //Change extension on click
-  const handleExtensionChange = (event) => {
-    setExtension(event.target.value);
-  };
   const handleMobileBlur = (event) => {
     setMobile(mobileRef.current.value);
   };
+
   const checkNewUserData = () => {
     return 1;
   };
+
   //Submit OTP
   const submitOtpHandler = (event) => {
-    // event.preventDefault();
     setUserNameError(false);
 
     if (props.newUser) {
@@ -270,10 +271,12 @@ const LogIn = React.memo((props) => {
       );
     }
   };
+
   //Store OTP
   const handleOtpChange = (OTP) => {
     setOtp(OTP);
   };
+
   //Set Mobile
   const handleMobileChange = (event) => {
     mobilevariable = event.target.value;
@@ -281,12 +284,9 @@ const LogIn = React.memo((props) => {
 
   //Dispatch Action
   const otpHandler = () => {
-    // if (!userDetails.userName) setUserNameError(true);
-    // else {
-    // setUserNameError(false);
     props.onOtp(extensions[extension].label + mobileRef.current.value);
-    // }
   };
+
   //TEST
   const resetOtpHandler = () => {
     const authData = {
@@ -297,6 +297,7 @@ const LogIn = React.memo((props) => {
       .then((response) => {});
     setOtpResent(true);
   };
+
   //Update phone
   const _updatePhoneHandler = () => {
     props.onUpdate({
@@ -304,6 +305,7 @@ const LogIn = React.memo((props) => {
       whatsapp_opt_in: whatsapp,
     });
   };
+
   //Mobile, name, email, password, JSX
   mobileInput = (
     <div>
@@ -344,6 +346,7 @@ const LogIn = React.memo((props) => {
       />
     </>
   );
+
   password = (
     <>
       <OtpContainer>
@@ -353,7 +356,6 @@ const LogIn = React.memo((props) => {
           numInputs={4}
           inputType="tel"
           inputStyle="otpBox"
-          // renderSeparator={<span> </span>}
           renderInput={(props) => <input {...props} />}
         />
       </OtpContainer>
@@ -373,15 +375,10 @@ const LogIn = React.memo((props) => {
     mobileRef.current.focus();
   };
 
-  const googleResponse = (response) => {
-  };
-
   const _handleGoogleLogin = useGoogleLogin({
     onSuccess: (tokenResponse) => props.onGoogleAuth(tokenResponse),
-    onError : (response) =>googleResponse(response)
   });
 
-  // if(!props.loadingsocial)
   let isPageWide = media("(min-width: 768px)");
 
   return (
@@ -420,7 +417,6 @@ const LogIn = React.memo((props) => {
                 className="CountryInput"
                 onClick={() => setOpenCountryCodeOption(true)}
               >
-                {/* {extension} */}
                 <CountryImg
                   height="29"
                   width="29"
@@ -464,27 +460,12 @@ const LogIn = React.memo((props) => {
         </form>
       ) : (
         <form noValidate>
-          {/* <FloatingInput
-            style={{ marginBottom: "0.7rem" }}
-            error={userNameError}
-            helperText={"Please enter valid username"}
-            placeholder={"Enter Your Full Name"}
-            key="userName"
-            required
-            id="userName"
-            label="Enter Your Full Name"
-            onChange={(event) => {
-              _userDetailsOnChangeHandler(event, "userName");
-            }}
-            margin="0.7rem 0rem"
-          /> */}
           <MobileNumberContainer>
             <CountryCodeContainer>
               <div
                 className="CountryInput"
                 onClick={() => setOpenCountryCodeOption(true)}
               >
-                {/* {extension} */}
                 <CountryImg
                   height="29"
                   width="29"
@@ -598,7 +579,8 @@ const LogIn = React.memo((props) => {
             >
               Login
             </Button>
-          )}
+            )}
+            
           <div
             style={{
               position: "relative",
@@ -621,79 +603,53 @@ const LogIn = React.memo((props) => {
             </p>
           </div>
 
-          <>
-            <>
-              <Button
-                onclick={() => _handleGoogleLogin()}
-                margin={"0"}
-                width="100%"
-                bgColor="#F9F9F9"
-                fontWeight="500"
-                fontSize="16px"
-                borderWidth="0px"
-                hoverColor="white"
-                hoverBgColor="black"
-                boxShadow="0px 2px 0px #ECEAEA"
-                borderRadius="8px"
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <div
-                    style={{
-                      height: "1.5rem",
-                      width: "1.5rem",
-                      margin: "0 0.5rem",
-                    }}
-                  >
-                    <ImageLoader
-                      dimensions={{ height: 100, width: 100 }}
-                      url={"media/icons/login/google.svg"}
-                      height="1.5rem"
-                      width="1.5rem"
-                    />
-                  </div>
-                  <p
-                    style={{
-                      margin: "0",
-                      fontWeight: "500",
-                      fontSize: "1rem",
-                      display: "inline",
-                    }}
-                    className="font-lexend"
-                  >
-                    Sign in with Google
-                  </p>
-                </div>
-              </Button>
-            </>
-            {/* <Grid item xs={6}>
-        <FacebookLogin
-          appId= "189892422091317"
-          fields="name,email,picture"
-          callback={props.onFbAuth}
-          className="google-login-button border"
-          textButton = "&nbsp;&nbsp;"
-            icon={          <img src={facebook} style={{height: '1.5rem'}}></img>
-          }
-          render={renderProps => (
-            <Button
-            fullWidth
-            variant="contained"
-            color="primary"
-            className={classes.google}
-            onClick={renderProps.onClick}handleExtensionChange
-            
+          <Button
+            onclick={() => _handleGoogleLogin()}
+            margin={"0"}
+            width="100%"
+            bgColor="#F9F9F9"
+            fontWeight="500"
+            fontSize="16px"
+            borderWidth="0px"
+            hoverColor="white"
+            hoverBgColor="black"
+            boxShadow="0px 2px 0px #ECEAEA"
+            borderRadius="8px"
           >
-          <img src={facebook} style={{height: '1.5rem', margin: "0 0.5rem"}}></img>
-        </Button>          )}
-        />
-        </Grid> */}
-          </>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <div
+                style={{
+                  height: "1.5rem",
+                  width: "1.5rem",
+                  margin: "0 0.5rem",
+                }}
+              >
+                <ImageLoader
+                  dimensions={{ height: 100, width: 100 }}
+                  url={"media/icons/login/google.svg"}
+                  height="1.5rem"
+                  width="1.5rem"
+                />
+              </div>
+              <p
+                style={{
+                  margin: "0",
+                  fontWeight: "500",
+                  fontSize: "1rem",
+                  display: "inline",
+                }}
+                className="font-lexend"
+              >
+                Sign in with Google
+              </p>
+            </div>
+          </Button>
           <div
             className="text-center font-lexend"
             style={{ fontSize: "12px", fontWeight: "300", margin: "1.5rem 0" }}
@@ -704,12 +660,12 @@ const LogIn = React.memo((props) => {
               style={{ textDecoration: "none" }}
               target="_blank"
             >
-              {/* <a style={{ color: "black" }} target="_blank"> */}
               T&Cs and privacy policy {/* </a> */}
             </Link>
           </div>
         </form>
       )}
+
       {props.loadingsocial ? (
         <div
           style={{
@@ -725,11 +681,10 @@ const LogIn = React.memo((props) => {
           <Spinner></Spinner>
         </div>
       ) : null}
-      {/* {props.token !== null ? <Redirect to={props.authRedirectPath}></Redirect>: null} */}
     </div>
   );
-  // else return <Spinner></Spinner>
 });
+
 const mapStateToPros = (state) => {
   return {
     otpFail: state.auth.otpFail,
@@ -751,6 +706,7 @@ const mapStateToPros = (state) => {
     hideloginclose: state.auth.hideloginclose,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     onAuth: (mobile, password, name, email, whatsapp, itinary_id) =>
@@ -766,4 +722,5 @@ const mapDispatchToProps = (dispatch) => {
     authCloseLogin: () => dispatch(authaction.authCloseLogin()),
   };
 };
+
 export default connect(mapStateToPros, mapDispatchToProps)(LogIn);

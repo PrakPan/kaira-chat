@@ -12,7 +12,6 @@ import Banner from "./banner/Mobile";
 import Locations from "../../components/containers/plannerlocations/Index";
 import Button from "../../components/ui/button/Index";
 import media from "../../components/media";
-import urls from "../../services/urls";
 import CaseStudies from "../travelplanner/CaseStudies/Index";
 import PlanAsPerTheme from "./PlanAsPerTheme";
 import PlanWithUs from "../../components/WhyPlanWithUs/Index";
@@ -62,17 +61,13 @@ const HowItWorksContainer = styled.div`
 
 const Homepage = (props) => {
   const router = useRouter();
-  const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
-  const [experienceMore, setExperieceMore] = useState(false);
   const [myPlansArr, setMyPlansArr] = useState([]);
-  const [plansLoading, setPlansLoading] = useState(false);
   const [plansCount, setPlansCount] = useState(null);
-  const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
-  const [escapeState, setEscapeState] = useState(false);
   let isPageWide = media("(min-width: 768px)");
 
   useLayoutEffect(() => {
     const userLocation = Cookies.get("userLocation");
+
     if (!userLocation) getUserIp();
     else {
       props.changeUserLocation({ location: JSON.parse(userLocation) });
@@ -85,11 +80,13 @@ const Homepage = (props) => {
         if (IpAddress) getUserLocation(IpAddress);
       } catch (e) {}
     }
+
     async function getUserLocation(ip) {
       try {
         const res = await axios.get(
           `https://apis.tarzanway.com/search/user_location/?ip=${ip}`
         );
+
         const data = res.data;
         if (res.data) {
           Cookies.set("userLocation", JSON.stringify(data), { expires: 3 });
@@ -102,10 +99,10 @@ const Homepage = (props) => {
   useEffect(() => {
     if (props.token) {
       const MyPlans = JSON.parse(localStorage.getItem("MyPlans"));
+
       if (MyPlans && MyPlans.access_token === props.token) {
         setMyPlansArr(MyPlans.plans);
         setPlansCount(MyPlans.count);
-        setPlansLoading(false);
       } else {
         axiomyplansinstance
           .get("?limit=3&offset=0", {
@@ -129,19 +126,11 @@ const Homepage = (props) => {
               })
             );
             setPlansCount(res.data.count);
-            setPlansLoading(false);
           })
-          .catch((err) => {
-            setPlansLoading(false);
-          });
+          .catch((err) => {});
       }
-      // for chatbot :-
     }
   }, [props.token]);
-
-  useEffect(() => {
-    setEscapeState(true);
-  }, []);
 
   const handleButtonClick = (location) => {
     logEvent({
@@ -197,16 +186,6 @@ const Homepage = (props) => {
     "media/website/how4.png",
   ];
 
-  const _handleExperiencesRedirect = () => {
-    router.push(urls.travel_experiences.BASE);
-  };
-
-  const _handleExperiencesClick = () => {
-    _handleExperiencesRedirect();
-  };
-
-  const handleViewAllTrips = () => {};
-
   return (
     <div
       className={"Homepage font-lexend"}
@@ -233,7 +212,6 @@ const Homepage = (props) => {
       />
 
       <DesktopBanner
-        loading={desktopBannerLoading}
         onclick={() => openTailoredModal(router)}
         text="Want to personalize your own experience?"
       ></DesktopBanner>
@@ -281,7 +259,6 @@ const Homepage = (props) => {
             ></Experiences>
             <Button
               link="/dashboard"
-              onclick={handleViewAllTrips}
               onclickparams={null}
               borderWidth="1px"
               fontSizeDesktop="12px"

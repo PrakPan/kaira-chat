@@ -1,98 +1,79 @@
- 
-import React, {useState, useEffect } from 'react';
-  
-import media from '../../../../media';
- 
-import styled from 'styled-components';
-//  import LocationsContainer from './LocationsContainer'
-import SearchInput from './Input';
-import SearchResults from './results/Index';
-import HotLocations from './results/HotLocations';
-import axios from 'axios';
-import Spinner from '../../../../Spinner';
-import axioslocationsinstance from '../../../../../services/search/search'
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import SearchInput from "./Input";
+import SearchResults from "./results/Index";
+import axioslocationsinstance from "../../../../../services/search/search";
 import axiossearchsuggestinstance from "../../../../../services/search/searchsuggest";
+import { useRouter } from "next/router";
 
-import { useRouter } from 'next/router';
 const Container = styled.div`
- 
-width: 100%;
- 
-  @media screen and (min-width: 768px){
- 
-}
+  width: 100%;
 
+  @media screen and (min-width: 768px) {
+  }
 `;
 
- 
 const Search = (props) => {
-
-  let isPageWide = media('(min-width: 768px)');
   const [showResults, setShowResults] = useState(false);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hotLocationsData, setHotLocationsData] = useState([]);
-  const [showHotLocations, setShowHotLocations] = useState(false)
-  const {query} = useRouter()
-  // const [selectedCities, setSelectedCities] = useState([]);
-  const _handleKey = (e) => {
-    
-    if(e.target.value === '') setShowHotLocations(true);
-    if(e.target.value)
-    if(e.target.value.length > 1)
-    {
-    setShowHotLocations(false);
-    setShowResults(true);
-      setLoading(true)
-     axiossearchsuggestinstance.get(`?q=` + event.target.value)
-        .then((res) => {
-          setLoading(false);
-          if (res.data.length) {
-            // const resultsData = res.data.map((e) => e["_source"]);
-            setResults(res.data.slice(0, 5));
-          } else {
-            setShowResults(false);
-            setShowHotLocations(true);
-          }
+  const [showHotLocations, setShowHotLocations] = useState(false);
+  const { query } = useRouter();
 
-          // else props._showSearchedLocations([]);
-        })
-        .catch((error) => {
-          setLoading(false);
-          setShowResults(true);
-          setResults({
-            type: "error",
-            data: (
-              <div style={{ margin: "1rem" }}>
-                Something went wrong! Please try again later.
-              </div>
-            ),
+  const _handleKey = (e) => {
+    if (e.target.value === "") setShowHotLocations(true);
+    if (e.target.value)
+      if (e.target.value.length > 1) {
+        setShowHotLocations(false);
+        setShowResults(true);
+        setLoading(true);
+        axiossearchsuggestinstance
+          .get(`?q=` + event.target.value)
+          .then((res) => {
+            setLoading(false);
+            if (res.data.length) {
+              // const resultsData = res.data.map((e) => e["_source"]);
+              setResults(res.data.slice(0, 5));
+            } else {
+              setShowResults(false);
+              setShowHotLocations(true);
+            }
+
+            // else props._showSearchedLocations([]);
+          })
+          .catch((error) => {
+            setLoading(false);
+            setShowResults(true);
+            setResults({
+              type: "error",
+              data: (
+                <div style={{ margin: "1rem" }}>
+                  Something went wrong! Please try again later.
+                </div>
+              ),
+            });
           });
-        });
-}
-  }
+      }
+  };
+
   useEffect(() => {
-    var params = ''
+    var params = "";
     if (query.state) params = `?state=${query.state}`;
     else if (query.country) params = `?country=${query.country}`;
     else if (query.continent) params = `?continent=${query.continent}`;
-    
-      axioslocationsinstance
-        .get("hot_destinations" + params)
-        .then((response) => {
-          if (response.data.length) setHotLocationsData(response.data);
-          else setShowHotLocations(false);
-        })
-        .catch((e) => {
-          setShowHotLocations(false);
-        });
 
-    
-     }, []);
-  // useEffect(() => {
-  //   if (showResults) setShowHotLocations(false)
-  //   else setShowHotLocations(true)
-  // },[showResults])
+    axioslocationsinstance
+      .get("hot_destinations" + params)
+      .then((response) => {
+        if (response.data.length) setHotLocationsData(response.data);
+        else setShowHotLocations(false);
+      })
+      .catch((e) => {
+        setShowHotLocations(false);
+      });
+  }, []);
+
   return (
     <Container>
       <div style={{ display: "flex" }}>
@@ -103,8 +84,8 @@ const Search = (props) => {
           onfocus={() => {
             props.onfocus();
             setTimeout(() => {
-            setShowHotLocations(true);
-            },500)
+              setShowHotLocations(true);
+            }, 500);
           }}
           onblur={props.onblur}
           searchFinalized={props.searchFinalized}
@@ -117,9 +98,8 @@ const Search = (props) => {
           setShowResults={setShowResults}
           autofocus={props.autofocus}
         ></SearchInput>
-
-        {/* {loading ? <Spinner size={16} margin="0"></Spinner> : null} */}
       </div>
+
       {showResults && (
         <SearchResults
           _updateDestinationHandler={props._updateDestinationHandler}
@@ -135,6 +115,7 @@ const Search = (props) => {
           selectedCities={props.selectedCities}
         ></SearchResults>
       )}
+      
       {showHotLocations && (
         <SearchResults
           hotLocations
@@ -150,12 +131,9 @@ const Search = (props) => {
           setSelectedCities={props.setSelectedCities}
           selectedCities={props.selectedCities}
         ></SearchResults>
-      
-      )} 
+      )}
     </Container>
   );
-}
-
+};
 
 export default Search;
- 

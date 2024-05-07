@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import media from "../../../media";
 import styled from "styled-components";
 import SelectedDestination from "./selecteddestination/Index";
 import { useRouter } from "next/router";
@@ -13,7 +12,6 @@ const Container = styled.div`
 `;
 
 const Destinations = (props) => {
-  let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [deletedId, setDeletedId] = useState(null);
   const [isCountryId, setIsCountryId] = useState(false);
@@ -111,7 +109,6 @@ const Destinations = (props) => {
 
   return (
     <Container>
-      {/* <p className="font-lexend">Where do  you want to go?</p> */}
       <SelectedDestination
         startingLocation={props.startingLocation}
         setStartingLocation={props.setStartingLocation}
@@ -129,7 +126,6 @@ const Destinations = (props) => {
       {destinations.map((e, i) => (
         <div key={i}>{e}</div>
       ))}
-      {/* <SelectedDestination selectedCities={props.selectedCities} destination={props.destination} CITIES={props.CITIES} openCities={() => props.setShowCities(true)} ></SelectedDestination> */}
 
       <div
         style={{

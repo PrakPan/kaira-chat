@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from "react";
 import NewDatePicker from "./NewDatePicker";
-import media from "../../media";
 import styled from "styled-components";
 import Destinations from "./destinations/Index";
 import Question from "../Question";
@@ -24,14 +22,13 @@ const SlideOne = (props) => {
       if (props.focusedDate == "endDate") return "Please select end date.";
     } else return "What do you want to explore?";
   };
-  let isPageWide = media("(min-width: 768px)");
+
   const CITIES = null;
 
   return (
     <Container>
       <Section>
         <Question>{getHeading()}</Question>
-
         <Destinations
           startingLocation={props.startingLocation}
           tailoredFormModal={props.tailoredFormModal}
@@ -49,6 +46,7 @@ const SlideOne = (props) => {
           setSelectedCities={props.setSelectedCities}
         ></Destinations>
       </Section>
+
       <Section>
         <Question
           style={{ visibility: props.showCities ? "hidden" : "visible" }}
@@ -104,9 +102,7 @@ const SlideOne = (props) => {
           </div>
         </div>
       </Section>
-      <Section style={{ marginBottom: "0.5rem" }}>
-        {/* <StartingLocation></StartingLocation> */}
-      </Section>
+      <Section style={{ marginBottom: "0.5rem" }}></Section>
     </Container>
   );
 };

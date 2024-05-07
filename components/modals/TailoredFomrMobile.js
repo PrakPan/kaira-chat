@@ -2,6 +2,7 @@ import React from 'react';
 import Modal from '../ui/Modal';
 import media from '../media';
 import TailoredForm from '../tailoredform/Index';
+
 const TailoredFormMobileModal = (props) => {
   let isPageWide = media('(min-width: 768px)');
 
@@ -29,7 +30,7 @@ const TailoredFormMobileModal = (props) => {
       ></TailoredForm>
     </Modal>
   );
-  
+
 };
 
 export default TailoredFormMobileModal;

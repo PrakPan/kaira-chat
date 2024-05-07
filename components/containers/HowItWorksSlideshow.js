@@ -19,11 +19,6 @@ const Container = styled.div`
   }
 `;
 
-const Arrow = styled.img`
-  width: 1.5rem;
-  margin: auto 0.5rem;
-`;
-
 const TextContainer = styled.div`
   font-size: 16px;
   text-align: center;
@@ -46,27 +41,8 @@ const GridContainer = styled.div`
 
 const HowItWorksSlideshow = (props) => {
   const router = useRouter();
-  const [slideSelected, setSlideSelected] = useState(0);
   let isPageWide = media("(min-width: 768px)");
   let isTablet = media("(min-width: 500px)");
-  let touchstart = null;
-
-  const _prevSlideHandler = (val) => {
-    if (!(slideSelected === 0)) setSlideSelected(slideSelected - 1);
-  };
-
-  const _nextSlideHandler = (val) => {
-    if (!(slideSelected === 2)) setSlideSelected(slideSelected + 1);
-  };
-
-  const _handleDragStart = (event) => {
-    touchstart = event.clientX;
-  };
-
-  const _handleDragEnd = (event) => {
-    if (touchstart > event.clientX) _nextSlideHandler();
-    else _prevSlideHandler();
-  };
 
   const handlePlanButtonClick = () => {
     openTailoredModal(router, props.page_id, props.destination);
@@ -81,60 +57,6 @@ const HowItWorksSlideshow = (props) => {
       },
     });
   };
-
-  const slidesmobile = [
-    <GridContainer style={{}}>
-      <ImageContainer className="center-div">
-        <ImageLoader
-          url={props.images[0]}
-          width="40%"
-          margin="auto"
-          widthmobile={props.vertical ? "40%" : "60%"}
-        />
-      </ImageContainer>
-      <TextContainer className="center-div">
-        {props.headings[0]}
-        {props.content[0]}
-      </TextContainer>
-    </GridContainer>,
-    <GridContainer style={{}}>
-      <ImageContainer className="center-div">
-        <ImageLoader
-          url={props.images[1]}
-          width="50%"
-          margin="auto"
-          dimensions={{ width: 500, height: 500 }}
-          widthmobile={props.vertical ? "40%" : "60%"}
-          dimensionsMobile={
-            props.dimensionsMobile || { height: 350, width: 350 }
-          }
-        />
-      </ImageContainer>
-      <TextContainer className="center-div">
-        {props.headings[1]}
-
-        {props.content[1]}
-      </TextContainer>
-    </GridContainer>,
-    <GridContainer style={{}}>
-      <ImageContainer className="center-div">
-        <ImageLoader
-          url={props.images[2]}
-          width="50%"
-          margin="auto"
-          dimensions={{ width: 500, height: 500 }}
-          widthmobile={props.vertical ? "40%" : "60%"}
-          dimensionsMobile={
-            props.dimensionsMobile || { height: 350, width: 350 }
-          }
-        />
-      </ImageContainer>
-      <TextContainer className="center-div">
-        {props.headings[2]}
-        {props.content[2]}
-      </TextContainer>
-    </GridContainer>,
-  ];
 
   const slidesdesktop = [
     <GridContainer key={0} style={{}}>
@@ -178,6 +100,7 @@ const HowItWorksSlideshow = (props) => {
         {props.content[1]}
       </TextContainer>
     </GridContainer>,
+
     <GridContainer key={2} style={{}}>
       <ImageContainer>
         <ImageLoader

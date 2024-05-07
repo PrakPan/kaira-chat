@@ -11,6 +11,7 @@ const Container = styled.div`
     max-width: 100%;
   }
 `;
+
 const Container2 = styled.div`
   /* color: white;
   padding: 2rem 0 2.5rem 0; */
@@ -23,9 +24,7 @@ const Index = (props) => {
       setJSX(
         <Container style={{ margin: props.margin ? props.margin : "0" }}>
           <Mainheading
-            className={
-              props.blur ? "blurry-text font-lexend" : "font-lexend"
-            }
+            className={props.blur ? "blurry-text font-lexend" : "font-lexend"}
             color={props.color}
             fontWeight={props.fontWeight}
             borderColor={props.borderColor}
@@ -52,26 +51,23 @@ const Index = (props) => {
       setJSX(
         <Container style={{ margin: props.margin ? props.margin : "0" }}>
           <Simpleheading
-            className={
-              props.blur ? "blurry-text font-lexend" : "font-lexend"
-            }
+            className={props.blur ? "blurry-text font-lexend" : "font-lexend"}
             color={props.color}
-            fontWeight={props.fontWeight}//
+            fontWeight={props.fontWeight} //
             borderColor={props.borderColor}
-            noline={props.noline}//
-            letterSpacing={props.letterSpacing}//
+            noline={props.noline} //
+            letterSpacing={props.letterSpacing} //
             fontSize={props.fontSize}
             padding={props.padding}
             margin={props.margin}
             textAlign={props.textAlign}
             width={props.width}
             borderWidth={props.borderWidth}
-            aligndesktop={props.aligndesktop}//
-            align={props.align}//
+            aligndesktop={props.aligndesktop} //
+            align={props.align} //
             borderStyle={props.borderStyle}
             maxWidth={props.maxWidth}
             margindesktop={props.marginDesktop}
-           
           >
             {props.children}
           </Simpleheading>
@@ -81,9 +77,7 @@ const Index = (props) => {
       setJSX(
         <Container2>
           <Bannerheading
-            className={
-              props.blur ? "blurry-text font-lexend" : "font-lexend"
-            }
+            className={props.blur ? "blurry-text font-lexend" : "font-lexend"}
             fontSize={props.fontSize}
             fontWeight={props.fontWeight}
             textAlign={props.textAlign}
@@ -98,9 +92,7 @@ const Index = (props) => {
       setJSX(
         <Container style={{ margin: props.margin ? props.margin : "0" }}>
           <Defaultheading
-            className={
-              props.blur ? "blurry-text font-lexend" : "font-lexend"
-            }
+            className={props.blur ? "blurry-text font-lexend" : "font-lexend"}
             fontSize={props.fontSize}
             padding={props.padding}
             color={props.color}
@@ -111,7 +103,6 @@ const Index = (props) => {
             borderColor={props.borderColor}
             borderStyle={props.borderStyle}
             margin={props.margin}
-            // fontWeight={props.fontWeight}
             noline={props.noline}
             aligndesktop={props.aligndesktop}
             align={props.align}
@@ -122,7 +113,15 @@ const Index = (props) => {
         </Container>
       );
     }
-  }, [props.bold, props.thincaps, props.bannerheading,props.margin,props.align,props.noline,props.aligndesktop]);
+  }, [
+    props.bold,
+    props.thincaps,
+    props.bannerheading,
+    props.margin,
+    props.align,
+    props.noline,
+    props.aligndesktop,
+  ]);
 
   return <>{JSX}</>;
 };

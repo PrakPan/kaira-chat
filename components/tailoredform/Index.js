@@ -148,7 +148,7 @@ const Enquiry = (props) => {
 
   var selectedObj;
 
-  if (routerquery.state && !routerquery.city)
+  if (routerquery.state && !routerquery.city) {
     selectedObj = [
       {
         destination_id: routerquery.page_id || props.page_id,
@@ -156,7 +156,7 @@ const Enquiry = (props) => {
         input_id: initialInputId,
       },
     ];
-  else if (routerquery.country)
+  } else if (routerquery.country) {
     selectedObj = [
       {
         id: routerquery.page_id || props.page_id,
@@ -165,7 +165,7 @@ const Enquiry = (props) => {
         type: "Country",
       },
     ];
-  else
+  } else {
     selectedObj = [
       {
         id: routerquery.page_id || props.page_id,
@@ -173,6 +173,7 @@ const Enquiry = (props) => {
         input_id: initialInputId,
       },
     ];
+  }
 
   const [selectedCities, setSelectedCities] = useState(selectedObj);
 
@@ -193,7 +194,9 @@ const Enquiry = (props) => {
   const _submitDataHandler = () => {
     const value_start = new Date(valueStart);
     const value_end = new Date(valueEnd);
+
     setLoading(true);
+
     let cityids = [];
     let locations = [];
     let stateIds = [];
@@ -254,12 +257,10 @@ const Enquiry = (props) => {
     let data = null;
     data = {
       source,
-      // "locations": locations,
       experience_filters_selected: preferences,
       budget: budget,
       start_date: start_date,
       end_date: end_date,
-      // "city_id": cityids,
       group_type: groupType,
       number_of_adults: number_of_adults,
       number_of_children: number_of_children,
@@ -294,40 +295,22 @@ const Enquiry = (props) => {
       .then((response) => {
         setSubmitted(true);
         if (!response.data.auto_itinerary_created) {
-          // window.location.href =
-          //   "https://www.blog.thetarzanway.com/thank-you-page-enquiry";
           router.push("/thank-you");
         } else {
-          // ga.event({action: 'C-Andaman-Form-success', params: {key : ''}})
-
-          // setTimeout(function () {
           if (response.data.loader_time)
-            // router.push(
-            //   "/itinerary/" +
-            //     response.data.itinerary.itinerary_id +
-            //     "?t=" +
-            //     response.data.loader_time
-            // );
-
             window.location.href =
               "/itinerary/" +
               response.data.itinerary.itinerary_id +
               "?t=" +
               response.data.loader_time;
-          // router.push(
-          //   "/itinerary/" + response.data.itinerary.itinerary_id
-          // );
           else
             window.location.href =
               "/itinerary/" + response.data.itinerary.itinerary_id;
-          // }, 10000);
           setLoading(false);
         }
       })
       .catch((err) => {
         setLoading(false);
-        // window.location.href =
-        //   "https://www.blog.thetarzanway.com/thank-you-page-enquiry";
         router.push("/thank-you");
 
         if (err.response.data.email) {
@@ -356,8 +339,6 @@ const Enquiry = (props) => {
       return setShowPopup({ ...showPopup, dateEnd: true });
     setShowPopup(popupObj);
     setSlideIndex(slideIndex + 1);
-    // window.scrollBy(0, -200 , 'smooth');
-    // ContainerRef.current.scrollIntoView(0,-150)
     if (props.HeroBanner && isPageWide)
       window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -393,6 +374,7 @@ const Enquiry = (props) => {
               text="Please select your destination!"
             />
           )}
+
           {showPopup.dateStart && !flexible && (
             <Popup
               setShowPopup={setShowPopup}
@@ -401,6 +383,7 @@ const Enquiry = (props) => {
               text="Please select starting date!"
             />
           )}
+
           {showPopup.dateEnd && !flexible && (
             <Popup
               setShowPopup={setShowPopup}
@@ -410,6 +393,7 @@ const Enquiry = (props) => {
               text="Please select ending date!"
             />
           )}
+
           {showPopup.group && (
             <Popup
               setShowPopup={setShowPopup}
@@ -419,6 +403,7 @@ const Enquiry = (props) => {
               text="Please select your group type!"
             />
           )}
+
           <div
             style={{
               padding: props.tailoredFormModal ? "0rem 1rem" : "0.5rem 1rem",
@@ -472,6 +457,7 @@ const Enquiry = (props) => {
               </Heading>
             </div>
           </div>
+
           <div style={{ padding: "0 1rem 1rem 1rem", width: "100%" }}>
             <div
               style={{
@@ -502,7 +488,6 @@ const Enquiry = (props) => {
               setDestination={setDestination}
               token={props.token}
               phone={props.phone}
-              // _handlePrev={_prevSlideHandler}
               slideIndex={slideIndex}
               cities={props.cities}
               selectedCities={selectedCities}
@@ -530,9 +515,6 @@ const Enquiry = (props) => {
                 style={{
                   display: "flex",
                   justifyContent: "flex-end",
-                  //  visibility:
-                  //  showCities &&
-                  //  props.cities ? "hidden" : "visible",
                 }}
               >
                 <Button
@@ -560,64 +542,8 @@ const Enquiry = (props) => {
                 </Button>
               </div>
             ) : null}
+            
             {slideIndex === 1 ? (
-              // old code - with login :-
-              // !props.token ? (
-              //   <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              //     <Button
-              //       fontSize="1rem"
-              //       width={!isPageWide ? "auto" : "100%"}
-              //       style={
-              //         !isPageWide
-              //           ? {
-              //               position: "fixed",
-              //               left: "1rem",
-              //               right: "1rem",
-              //               bottom: "0",
-              //             }
-              //           : {}
-              //       }
-              //       padding="0.5rem 2rem"
-              //       fontWeight="500"
-              //       margin="1rem 0"
-              //       borderRadius="5px"
-              //       borderWidth="1px"
-              //       bgColor="#f7e700"
-              //       onclick={_SlideTwoSubmitHandler}
-              //     >
-              //       Continue
-              //     </Button>
-              //   </div>
-              // ) : (
-              //   <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              //     <Button
-              //       fontSize="1rem"
-              //       width={!isPageWide ? "auto" : "100%"}
-              //       style={
-              //         !isPageWide
-              //           ? {
-              //               position: "fixed",
-              //               left: "1rem",
-              //               right: "1rem",
-              //               bottom: "0",
-              //             }
-              //           : {}
-              //       }
-              //       padding="0.5rem 2rem"
-              //       fontWeight="500"
-              //       margin="1rem 0"
-              //       borderRadius="5px"
-              //       borderWidth="1px"
-              //       bgColor="#f7e700"
-              //       loading={loading}
-              //       onclick={_submitDataHandler}
-              //     >
-              //       Get Itinerary!
-              //     </Button>
-              //   </div>
-              // )
-
-              //new code without login:-
               !props.token || props.phone === "null" ? (
                 <div style={{ display: "flex", justifyContent: "flex-end" }}>
                   <Button
@@ -702,6 +628,7 @@ const mapStateToPros = (state) => {
     userLocation: state.UserLocation.location,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {};
 };

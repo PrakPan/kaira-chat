@@ -6,6 +6,7 @@ import PulseLoader from "react-spinners/PulseLoader";
 
 const Index = (props) => {
   const [JSX, setJSX] = useState("");
+
   useEffect(() => {
     if (props.onclick) {
       setJSX(
@@ -164,4 +165,5 @@ const Index = (props) => {
 
   return <>{JSX}</>;
 };
+
 export default Index;

@@ -1,5 +1,3 @@
-// import { red } from "@mui/material/colors";
-import React, { useState } from "react";
 import styled from "styled-components";
 
 const Defaultheadingstyle = styled.div`
@@ -38,38 +36,12 @@ const Defaultheadingstyle = styled.div`
       props.borderColor ? props.borderColor : "#F7E700"};
   }
 `;
-//   fontSize: '3rem',
-//   textAlign: props.aligndesktop ? props.aligndesktop : props.align,
-//   borderStyle: props.noline ? 'none' : 'none none solid none',
-//   margin: props.aligndesktop  === "center" && props.margin ? props.margin+" auto" : props.margin,
-//    fontSize: '2rem',
-//    marginBottom: props.noline? '0' : '0.5rem',
-//    padding: props.padding ? props.padding : '5px',
-//    color: props.color ? props.color : "black" ,
-
-/* font-weight: ${(props) => (props.fontWeight ? props.fontWeight : "700")}; */
-/* border-style: ${(props) => (props.noline ? "none" : "none none solid none")}; */
-/* width: ${(props) => (props.noline ? "100%" : "max-content")}; */
-/* border-color: ${(props) => (props.borderColor ? props.borderColor : "#F7E700")}; */
-/* max-width: ${(props) => (props.noline ? "100%" : "85%")}; */
-/* letter-spacing: ${(props) => (props.letterSpacing ? props.letterSpacing : "1")}; */
-/* fontWeight= '700'
-      borderStyle= {props.noline ? 'none' : 'none none solid none'}
-      fontSize= '2rem'
-      margin= {props.noline? '0' : '0 auto 0.5rem auto'}
-      padding={ props.padding ? props.padding : '5px'}
-      color={ props.color ? props.color : "black" }
-      width= {props.noline ? '100%' : 'max-content'}
-      borderColor= '#f7e700'
-      maxWidth= {props.noline ? '100%' : '85%'}
-      letterSpacing= '1' */
 
 const Defaultheading = (props) => {
   return (
     <Defaultheadingstyle
       className="font-lexend"
       fontSize={props.fontSize} //1
-      //   marginBottom={marginBottom}//2
       padding={props.padding} //3
       color={props.color} //4
       textAlign={props.textAlign} //5
@@ -79,7 +51,6 @@ const Defaultheading = (props) => {
       borderColor={props.borderColor} //10
       borderStyle={props.borderStyle} //8
       margin={props.margin} //9
-      // fontWeight={props.fontWeight}
       noline={props.noline}
       aligndesktop={props.aligndesktop}
       align={props.align}
@@ -88,4 +59,5 @@ const Defaultheading = (props) => {
     </Defaultheadingstyle>
   );
 };
+
 export default Defaultheading;

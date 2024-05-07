@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import styled from "styled-components";
 
 const Simpleheadingstyle = styled.div`
@@ -12,9 +11,9 @@ const Simpleheadingstyle = styled.div`
   font-size: ${(props) => (props.fontSize ? props.fontSize : "1.5rem")};
   /* margin: ${(props) =>
     props.margin ? props.margin :( props.noline ? "0" : "0 auto 0.5rem auto")}; */
-  
+
   padding: ${(props) => (props.padding ? props.padding : "0 0 0.25rem 0")};
-  
+
   width: ${(props) =>
     props.width ? props.width : props.noline ? "100%" : "max-content"};
   border-color: ${(props) =>
@@ -26,7 +25,7 @@ const Simpleheadingstyle = styled.div`
 
   text-align: ${(props) => (props.textAlign ? props.textAlign : "center")};
   @media screen and (max-width:768px) {
-    color: ${(props) => (props.color ? props.color : "black")}; 
+    color: ${(props) => (props.color ? props.color : "black")};
     margin: ${(props)=>(props.noline ? "0" :"0 auto 0.5rem auto") };
   }
   @media screen and (min-width: 768px) {
@@ -48,10 +47,10 @@ const Simpleheadingstyle = styled.div`
 
    /* margin: ${(props) => props.aligndesktop === "center" && props.margin ? (props.margin,"auto") : props.margin}; */
    /* margin: ${(props) => props.aligndesktop === "center" && props.margin ? (props.margin + "auto") : props.margin}; */
-   
-  
-  
-      
+
+
+
+
   }
 `;
 
@@ -79,32 +78,5 @@ const Simpleheading = (props) => {
     </Simpleheadingstyle>
   );
 };
+
 export default Simpleheading;
-
-//  max-width: 100%;
-//  width: max-content;
-//  border-width: 2px;
-//  border-color: #F7e700;
-
-// width: ${(props)=>(props.width ? props.width :"max-content")};
-// border-width:${(props)=>(props.borderWidth ? props.borderWidth : "2px")};
-// font-size :${(props)=>(props.fontSize ? props.fontSize : (props.noline ? "2.5rem": "3rem"))};
-
-// fontWeight: '100',
-// letterSpacing: '3px !important',
-// fontSize: '1.5rem',
-// padding:"0 0 0.25rem 0",
-// textAlign: props.aligndesktop ? props.aligndesktop : props.align,
-// borderStyle: props.noline ? 'none' : 'none none solid none',
-// margin: props.aligndesktop  === "center" && props.margin ? props.margin+" auto" : props.margin,
-
-/* fontWeight= '700'
-      borderStyle= {props.noline ? 'none' : 'none none solid none'}
-      fontSize= '2rem'
-      margin= {props.noline? '0' : '0 auto 0.5rem auto'}
-      padding={ props.padding ? props.padding : '5px'}
-      color={ props.color ? props.color : "black" }
-      width= {props.noline ? '100%' : 'max-content'}
-      borderColor= '#f7e700'
-      maxWidth= {props.noline ? '100%' : '85%'}
-      letterSpacing= '1' */
