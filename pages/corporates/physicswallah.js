@@ -1,13 +1,8 @@
 import PWContainer from "../../containers/PW/Index";
-import { useRouter } from "next/router";
 import Layout from "../../components/Layout";
 import Head from "next/head";
-import { useEffect } from "react";
 
 const Itinerary = () => {
-  const router = useRouter();
-  useEffect(() => {}, []);
-
   return (
     <Layout hidehomecta hidecta PW>
       <Head>

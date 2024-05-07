@@ -40,11 +40,6 @@ const content = [
         text: "Remaining payment is expected 5 days before the start of the experience.",
       },
       {
-        //     text: `Cancellation fees -
-        // a. 0% of the total experience fees if canceled 10 days before the experience.
-        // b. 25% of the total experience fees is canceled 7 days before the experience.
-        // c. 50% of the total experience fees 3 days before the experience.
-        // d. 100% of the total experience fees if canceled 1 day before the experience.`,
         subheading: "Cancellation fees -",
         content: [
           {
@@ -88,7 +83,7 @@ const content = [
     subheading: "Payment Terms",
 
     content: [
-     
+
       {
         subheading: 'All amounts are payable to "TARZAN WAY TRAVELS PVT LTD".',
         content: [

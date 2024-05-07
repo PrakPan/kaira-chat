@@ -381,6 +381,7 @@ const Index = (props) => {
               </Heading>
               <PlanAsPerTheme
                 ThemeData={props.ThemeData}
+                Count={props.Count}
                 page={"Thank you Page"}
               />
             </>
@@ -431,7 +432,6 @@ const Index = (props) => {
           </div>
         )}
       </div>
-      {/* <WhatsappFloating message="Hey, I need help planning my trip." /> */}
     </div>
   );
 };

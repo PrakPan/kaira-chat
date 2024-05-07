@@ -1,22 +1,28 @@
-import Head from 'next/head';
-import NotFoundContainer from '../containers/notfound/Index';
-import Layout from '../components/Layout'
-import usePageLoaded from '../components/custom hooks/usePageLoaded';
+import Head from "next/head";
+import NotFoundContainer from "../containers/notfound/Index";
+import Layout from "../components/Layout";
+import usePageLoaded from "../components/custom hooks/usePageLoaded";
 
 const Error = () => {
   const isPageLoaded = usePageLoaded();
 
-  if(isPageLoaded)
+  if (isPageLoaded)
     return (
-    <Layout>
+      <Layout>
         <Head>
-      <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet"></link>
-      <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet"></link>
-      </Head>
-    <NotFoundContainer></NotFoundContainer>
-    </Layout>
+          <link
+            href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap"
+            rel="stylesheet"
+          ></link>
+          <link
+            href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap"
+            rel="stylesheet"
+          ></link>
+        </Head>
+        <NotFoundContainer></NotFoundContainer>
+      </Layout>
     );
-    else return <div></div>
-}
+  else return <div></div>;
+};
 
-export default Error
+export default Error;

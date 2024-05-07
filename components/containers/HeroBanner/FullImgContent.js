@@ -38,16 +38,6 @@ const Heading = styled.h1`
   }
 `;
 
-const SubText = styled.h3`
-  color: white;
-  font-weight: 100;
-  width: 99%;
-  font-size: 1.2rem;
-  @media screen and (min-width: 768px) {
-    font-size: 2rem;
-  }
-`;
-
 const PaddingContianer = styled.div`
   padding: 5rem 0 2rem 0;
   flex-grow: 1;
@@ -136,7 +126,8 @@ const FullImgContent = (props) => {
             Get Your AI-Personalised Itineraries
           </SubHeading>
         )}
-        {isPageWide && (
+
+        {isPageWide ? (
           <div>
             <Button
               padding="0.75rem 1rem"
@@ -152,8 +143,7 @@ const FullImgContent = (props) => {
               Plan Itinerary For Free!
             </Button>
           </div>
-        )}
-        {!isPageWide && (
+        ) : (
           <div>
             <Button
               padding="0.75rem 1rem"
@@ -171,6 +161,7 @@ const FullImgContent = (props) => {
           </div>
         )}
       </PaddingContianer>
+
       {isPageWide && (
         <div style={{ marginTop: "1.2rem" }}>
           <TailoredForm

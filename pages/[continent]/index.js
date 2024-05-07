@@ -1,25 +1,17 @@
 import Head from "next/head";
 import Layout from "../../components/Layout";
-import { useState, useEffect } from "react";
 import ContinentPage from "../../containers/continent/Index";
 import axioscountrydetailsinstance from "../../services/pages/country";
 import axiospagelistinstance from "../../services/pages/list";
 import axiospagedetailsinstance from "../../services/pages/pagedetails";
 
 const TravelPlanner = (props) => {
-  const [data, setData] = useState({
-    page_title: null,
-    meta_description: null,
-    social_media_description: null,
-    meta_keywords: null,
-    social_share_title: null,
-  });
-  useEffect(() => {
-    // setData(DATA);
-  }, []);
-
   return (
-    <Layout destination={props.Data.destination} id={props.Data.id} page='Continent Page'>
+    <Layout
+      destination={props.Data.destination}
+      id={props.Data.id}
+      page="Continent Page"
+    >
       <Head>
         <title>{props.Data.page_title}</title>
         <meta name="description" content={props.Data.short_description}></meta>
@@ -39,15 +31,22 @@ const TravelPlanner = (props) => {
 };
 
 export async function getStaticPaths() {
-  const res = await axiospagelistinstance("/?page_type=Continent&fields=path");
-  const data = res.data;
   let paths = [];
-  for (var i = 0; i < data.length; i++) {
-    paths.push({
-      params: {
-        continent: data[i].path,
-      },
-    });
+  try {
+    const res = await axiospagelistinstance(
+      "/?page_type=Continent&fields=path"
+    );
+    const data = res.data;
+
+    for (var i = 0; i < data.length; i++) {
+      paths.push({
+        params: {
+          continent: data[i].path,
+        },
+      });
+    }
+  } catch (err) {
+    console.log("[ERROR][continentPage:getStaticPaths]: ", err.message);
   }
 
   return {
@@ -67,7 +66,7 @@ export async function getStaticProps(context) {
     );
     data = res.data;
   } catch (err) {
-    console.error('[ERROR][continentpage:getStaticProps]: ', err.message);
+    console.error("[ERROR][continentPage:getStaticProps]: ", err.message);
   }
 
   if (!data) {
@@ -106,7 +105,7 @@ export async function getStaticProps(context) {
       });
     }
   } catch (err) {
-    console.error('[ERROR][continentpage:getStaticPaths]: ', err.message);
+    console.error("[ERROR][continentPage:getStaticPaths]: ", err.message);
   }
 
   return {

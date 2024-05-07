@@ -1,7 +1,6 @@
 import DashboardContainer from "../../containers/userprofile/Index";
 import Layout from "../../components/Layout";
 import Head from "next/head";
-import { useEffect } from "react";
 import usePageLoaded from "../../components/custom hooks/usePageLoaded";
 
 const Dashboard = (props) => {

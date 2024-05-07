@@ -1,21 +1,17 @@
-import Head from 'next/head';
-import Layout from '../components/Layout';
-// import { ScrollBar } from '../components/ScrollBar';
-import PrivacyContainer from '../containers/privacy/index';
+import Head from "next/head";
+import Layout from "../components/Layout";
+import PrivacyContainer from "../containers/privacy/index";
 
 const Privacy = () => {
-     return  <Layout>  <Head>
-    <title>Privacy-Policy | The Tarzan Way | Travel India</title>
-    <meta name="robots" content="noindex"></meta>
-{/* 
-    <meta name="description" content="You can find our privacy policy  here for travel enquiries, applications, and partnerships"></meta>
-    <meta property="og:title" content="Privacy-Policy | The Tarzan Way | India" /> 
-    <meta property="og:description" content="You can find our privacy policy  here for travel enquiries, applications, and partnerships" />
-    <meta property="og:image" content="/logoblack.svg" /> */}
+  return (
+    <Layout>
+      <Head>
+        <title>Privacy-Policy | The Tarzan Way | Travel India</title>
+        <meta name="robots" content="noindex"></meta>
+      </Head>
+      <PrivacyContainer></PrivacyContainer>
+    </Layout>
+  );
+};
 
-</Head>  <PrivacyContainer></PrivacyContainer></Layout>
- 
-
-}
-
-export default Privacy
+export default Privacy;

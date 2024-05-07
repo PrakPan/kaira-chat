@@ -33,16 +33,19 @@ export async function getStaticProps() {
     "ae7a290c-d77b-483f-9da0-07b1e5ff238c",
     "18db9b62-b8d4-4a6a-8600-b9ca4df389f9",
   ];
+
   let offbeat_ids = [
     "553f6a52-40af-40b9-bc18-10121194026d",
     "a74a8d7f-6218-4a8f-943e-57c13b9e441f",
     "772e2aab-16f0-48d1-a485-23ca05c09a07",
   ];
+
   let getaway_ids = [
     "0c400b2c-031d-424b-877e-14009fd6f0b7",
     "13a9bc8c-f5ae-4728-a2a3-60f3db170920",
     "c11a421c-d60f-40b1-bfa4-ab87548f7bd3",
   ];
+
   var workcation_experience = [];
   var offbeat_experiences = [];
   var getaway_experiences = [];
@@ -58,6 +61,7 @@ export async function getStaticProps() {
       console.log("[ERROR][corporatespage:getStaticProps]: ", e.message);
     }
   }
+
   for (let i = 0; i < offbeat_ids.length; i++) {
     try {
       const res = await itineraryplaninstance.get(
@@ -68,6 +72,7 @@ export async function getStaticProps() {
       console.log("[ERROR][corporatespage:getStaticProps]: ", e.message);
     }
   }
+
   for (let i = 0; i < getaway_ids.length; i++) {
     try {
       const res = await itineraryplaninstance.get(
@@ -78,6 +83,7 @@ export async function getStaticProps() {
       console.log("[ERROR][corporatespage:getStaticProps]: ", e.message);
     }
   }
+  
   return {
     props: {
       workcation_experience,

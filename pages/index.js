@@ -8,13 +8,11 @@ import axiospagelistinstance from "../services/pages/list";
 import axioscountrydetailsinstance from "../services/pages/country";
 import axiosCountInstance from "../services/itinerary/count";
 
-import { useRouter } from "next/router";
-
 const Home = (props) => {
-  const router = useRouter();
   useEffect(() => {
     props.checkAuthState();
   }, []);
+
   return (
     <Layout>
       <Head>
@@ -57,6 +55,7 @@ const mapStateToPros = (state) => {
     showLogin: state.auth.showLogin,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     checkAuthState: () => dispatch(authaction.checkAuthState()),
@@ -76,6 +75,7 @@ export async function getStaticProps() {
     const pageListResponse = await axiospagelistinstance.get(
       `/?country=india&page_type=Theme,Continent,Destination&fields=id,destination,tagline,image,link,path,banner_heading,page_type`
     );
+
     ThemeData = pageListResponse.data.filter(
       (data) => data.page_type === "Theme"
     );
@@ -115,6 +115,7 @@ export async function getStaticProps() {
 
     const countResponse = await axiosCountInstance.get("");
     let count = countResponse.data.user.toString().split("");
+
     if (count.length > 3) {
       for (let i = 1; i < 4; i++) {
         count.pop();

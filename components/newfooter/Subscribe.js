@@ -1,12 +1,12 @@
 import { useState } from "react";
-import styled from "styled-components"
-import axios from 'axios';
-import axiosSubscribeInstance from '../../services/subscribe/subscribe'
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import styled from "styled-components";
+import axiosSubscribeInstance from "../../services/subscribe/subscribe";
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import media from '../media'
+import media from "../media";
+
 const Container = styled.div`
-    height: 375px;
+  height: 375px;
   width: 93%;
   margin: auto;
   background: #f7e700;
@@ -39,6 +39,7 @@ const Heading = styled.h1`
     margin-block: 5rem 0rem;
   }
 `;
+
 const SubHeading = styled.div`
   font-weight: 200;
   font-size: 16px;
@@ -50,6 +51,7 @@ const SubHeading = styled.div`
     margin-block: 0.5rem 3.5rem;
   }
 `;
+
 const Form = styled.form`
   display: flex;
   flex-direction: column;
@@ -62,6 +64,7 @@ const Form = styled.form`
     width: 60%;
   }
 `;
+
 const Input = styled.input`
   padding: 15px 17px;
   border-radius: 5px;
@@ -75,6 +78,7 @@ const Input = styled.input`
     color: #01202b;
   }
 `;
+
 const Button = styled.button`
   background: #090914;
   border: 0px;
@@ -83,6 +87,7 @@ const Button = styled.button`
   padding: 15px;
   width: 100%;
 `;
+
 const Circle = styled.div`
   border: 5px solid white;
   height: 200px;
@@ -95,69 +100,66 @@ const Circle = styled.div`
 `;
 
 const Subscribe = (props) => {
-  const [formData, setFormData] = useState({ name: '', email: '' })
-     const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({ name: "", email: "" });
+  const [loading, setLoading] = useState(false);
   const [subscribe, setSubscribe] = useState(false);
-    let isPageWide = media("(min-width: 768px)");
-  
-  
+  let isPageWide = media("(min-width: 768px)");
+
   function _handleChange(e) {
-    setFormData({...formData,[e.target.name] : e.target.value})
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   }
+
   function _handleSubmit(e) {
-    e.preventDefault()
-     setLoading(true);
-        axiosSubscribeInstance
-          .post("", formData)
-          .then((res) => {
-            setSubscribe(true);
-            setLoading(false);
-          })
-          .catch((error) => {
-            alert("There was a problem, please refresh and try again.");
-            setLoading(false);
-          });
-        }
+    e.preventDefault();
+    setLoading(true);
+    axiosSubscribeInstance
+      .post("", formData)
+      .then((res) => {
+        setSubscribe(true);
+        setLoading(false);
+      })
+      .catch((error) => {
+        alert("There was a problem, please refresh and try again.");
+        setLoading(false);
+      });
+  }
 
-    return (
-      <Container shadow={props.shadow}>
-        <Heading>Join The Tarzan Way Community</Heading>
-        <SubHeading>
-          Get Early Bird Deals, Extra Discounts & Priority Customer Support.
-        </SubHeading>
-        <Form onSubmit={_handleSubmit}>
-          <Input
-            required
-            type="text"
-            name="name"
-            onChange={_handleChange}
-            value={formData.name}
-            placeholder="First name"
-          />
-          <Input
-            required
-            type="email"
-            name="email"
-            placeholder="Email address"
-            value={formData.email}
-            onChange={_handleChange}
-          />
-          <Button type="submit" loading={loading}>
-            Subscribe Now{" "}
-            {subscribe && (
-              <FontAwesomeIcon
-                style={{ marginLeft: "0.5rem" }}
-                icon={faCheck}
-              />
-            )}
-          </Button>
-        </Form>
-        {isPageWide && (
-          <Circle top={"-30%"} left={"-10%"} opacity={"0.5"}></Circle>
-        )}
-        {isPageWide && <Circle top={"65%"} left={"90%"}></Circle>}
-      </Container>
-    );
-}
+  return (
+    <Container shadow={props.shadow}>
+      <Heading>Join The Tarzan Way Community</Heading>
+      <SubHeading>
+        Get Early Bird Deals, Extra Discounts & Priority Customer Support.
+      </SubHeading>
+      <Form onSubmit={_handleSubmit}>
+        <Input
+          required
+          type="text"
+          name="name"
+          onChange={_handleChange}
+          value={formData.name}
+          placeholder="First name"
+        />
+        <Input
+          required
+          type="email"
+          name="email"
+          placeholder="Email address"
+          value={formData.email}
+          onChange={_handleChange}
+        />
+        <Button type="submit" loading={loading ? "true" : undefined}>
+          Subscribe Now{" "}
+          {subscribe && (
+            <FontAwesomeIcon style={{ marginLeft: "0.5rem" }} icon={faCheck} />
+          )}
+        </Button>
+      </Form>
+      {isPageWide && (
+        <Circle top={"-30%"} left={"-10%"} opacity={"0.5"}></Circle>
+      )}
+      {isPageWide && <Circle top={"65%"} left={"90%"}></Circle>}
+    </Container>
+  );
+};
 
-export default Subscribe
+export default Subscribe;

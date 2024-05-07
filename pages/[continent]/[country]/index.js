@@ -1,23 +1,10 @@
 import Head from "next/head";
 import Layout from "../../../components/Layout";
-import { useState, useEffect } from "react";
 import CountryPage from "../../../containers/country/Index";
 import axioscountrydetailsinstance from "../../../services/pages/country";
 import axiospagelistinstance from "../../../services/pages/list";
 
 const TravelPlanner = (props) => {
-  const [data, setData] = useState({
-    page_title: null,
-    meta_description: null,
-    social_media_description: null,
-    meta_keywords: null,
-    social_share_title: null,
-  });
-
-  useEffect(() => {
-    // setData(DATA);
-  }, []);
-
   return (
     <Layout
       destination={props?.Data?.name}
@@ -26,12 +13,10 @@ const TravelPlanner = (props) => {
     >
       <Head>
         <title>
-          {/* {props.Data.name + " | Travel Guide |  The Tarzan Way"} */}
           {props?.Data?.name} | Trip Planner & Itinerary | The Tarzan Way
         </title>
         <meta
           name="description"
-          // content={props.Data.short_description}
           content={`Discover ${props?.Data?.name} with The Tarzan Way's AI Trip Planner. Book your flights, accommodations, and transfers all in one go and discover must-visit destinations for an extraordinary journey.`}
         ></meta>
         <meta
@@ -42,12 +27,12 @@ const TravelPlanner = (props) => {
         />
         <meta
           property="og:description"
-          // content={props.Data.short_description}
           content={`Discover ${props?.Data?.name} with The Tarzan Way's AI Trip Planner. Book your flights, accommodations, and transfers all in one go and discover must-visit destinations for an extraordinary journey.`}
         />
         <meta property="og:image" content="/logoblack.svg" />
         <meta property="keywords" content={props?.Data?.meta_keywords}></meta>
       </Head>
+
       <CountryPage
         continetCarousel={props?.continetCarousel}
         data={props?.Data}
@@ -69,12 +54,11 @@ export async function getStaticPaths() {
         params: {
           continent: continentSlug,
           country: countrySlug,
-          // state: stateSlug,
         },
       });
     }
   } catch (err) {
-    console.error("[ERROR][country:getStaticPaths]: ", err.message);
+    console.error("[ERROR][countryPage:getStaticPaths]: ", err.message);
   }
 
   return {
@@ -86,6 +70,7 @@ export async function getStaticProps(context) {
   let data = null;
   let locations = [];
   const continetCarousel = [];
+
   try {
     const res = await axioscountrydetailsinstance.get(
       `${context.params.country}/`
@@ -121,7 +106,7 @@ export async function getStaticProps(context) {
       });
     }
   } catch (err) {
-    console.error("[ERROR][countrypage:getStaticProps]: ", err.message);
+    console.error("[ERROR][countryPage:getStaticProps]: ", err.message);
   }
 
   return {

@@ -1,7 +1,8 @@
 module.exports = {
   distDir: process.env.BUILD_DIR || ".next",
   output: "export",
-  // trailingSlash: true,
+  trailingSlash: true,
+  skipTrailingSlashRedirect: true,
 
   images: {
     unoptimized: true,
@@ -31,18 +32,21 @@ module.exports = {
 
   experimental: {
     nextScriptWorkers: true,
-    http2: true, // Enable HTTP/2 support
-    push: true, // Enable server push
+    forceSwcTransforms: true,
   },
+
   swcMinify: true,
+
   eslint: {
     // Warning: This allows production builds to successfully complete even if
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
+
   typescript: {
     ignoreBuildErrors: true,
   },
+  
   compiler: {
     // ssr and displayName are configured by default
     styledComponents: true,

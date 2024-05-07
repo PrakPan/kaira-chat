@@ -1,5 +1,6 @@
-import React from 'react';
-import styled, { css, keyframes } from 'styled-components';
+import React from "react";
+import styled, { css, keyframes } from "styled-components";
+
 const pulse = keyframes`
   0% {
     transform: scale(1);
@@ -29,7 +30,6 @@ const Button = styled.button`
     css`
       animation: ${pulse} 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     `};
-  /* ${(props) => animate} */
 `;
 
 export function LivelyButton({ children, className, onClick }) {

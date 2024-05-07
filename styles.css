@@ -9,10 +9,12 @@
 
   }
 }
+
 #fc_frame.fc-open {
   /* CSS when the modal is open */
   z-index: 50000 !important;
 }
+
 .h-btn {
   height: 80px !important;
 }
@@ -24,6 +26,7 @@
   text-shadow: 0 0 1px #000;
   z-index: 2;
 }
+
 @-webkit-keyframes snowflakes-fall {
   0% {
     top: -10%;
@@ -32,6 +35,7 @@
     top: 100%;
   }
 }
+
 @-webkit-keyframes snowflakes-shake {
   0% {
     -webkit-transform: translateX(0px);
@@ -46,6 +50,7 @@
     transform: translateX(0px);
   }
 }
+
 @keyframes snowflakes-fall {
   0% {
     top: -10%;
@@ -54,6 +59,7 @@
     top: 100%;
   }
 }
+
 @keyframes snowflakes-shake {
   0% {
     transform: translateX(0px);
@@ -65,6 +71,7 @@
     transform: translateX(0px);
   }
 }
+
 .snowflake {
   position: fixed;
   top: -10%;
@@ -85,77 +92,84 @@
   animation-iteration-count: infinite, infinite;
   animation-play-state: running, running;
 }
+
 .snowflake:nth-of-type(0) {
   left: 1%;
   -webkit-animation-delay: 0s, 0s;
   animation-delay: 0s, 0s;
 }
+
 .snowflake:nth-of-type(1) {
   left: 10%;
   -webkit-animation-delay: 1s, 1s;
   animation-delay: 1s, 1s;
 }
+
 .snowflake:nth-of-type(2) {
   left: 20%;
   -webkit-animation-delay: 6s, 0.5s;
   animation-delay: 6s, 0.5s;
 }
+
 .snowflake:nth-of-type(3) {
   left: 30%;
   -webkit-animation-delay: 4s, 2s;
   animation-delay: 4s, 2s;
 }
+
 .snowflake:nth-of-type(4) {
   left: 40%;
   -webkit-animation-delay: 2s, 2s;
   animation-delay: 2s, 2s;
 }
+
 .snowflake:nth-of-type(5) {
   left: 50%;
   -webkit-animation-delay: 8s, 3s;
   animation-delay: 8s, 3s;
 }
+
 .snowflake:nth-of-type(6) {
   left: 60%;
   -webkit-animation-delay: 6s, 2s;
   animation-delay: 6s, 2s;
 }
+
 .snowflake:nth-of-type(7) {
   left: 70%;
   -webkit-animation-delay: 2.5s, 1s;
   animation-delay: 2.5s, 1s;
 }
+
 .snowflake:nth-of-type(8) {
   left: 80%;
   -webkit-animation-delay: 1s, 0s;
   animation-delay: 1s, 0s;
 }
+
 .snowflake:nth-of-type(9) {
   left: 90%;
   -webkit-animation-delay: 3s, 1.5s;
   animation-delay: 3s, 1.5s;
 }
-/* ::-webkit-scrollbar {
-  width: 0.6rem;
-  height: 0.6rem;
-} */
+
 #bookingsummary-pax {
   height: 4rem;
 }
+
 #bookingsummary-date-container .MuiFormControl-root .MuiOutlinedInput-root {
   height: 4.15rem;
   margin-top: -4.5px;
 }
+
 #bookingsummary-date-container .MuiInputLabel-root {
   margin-top: -4.5px;
 }
+
 #planner-filter-checkbox {
   background-color: white;
 }
-#planner-filter-checkbox:checked {
-}
-#planner-filter-checkbox:focus {
-}
+
 #itinerary-booking-summary-accordion {
   padding: 0 !important;
   display: flex !important;
@@ -164,13 +178,16 @@
 .MuiAccordionSummary-content {
   margin: 0 !important;
 }
+
 .MuiAccordion-root::before {
   display: none !important;
 }
+
 .MuiIconButton-root {
   padding: 0 !important;
   margin: 0 !important;
 }
+
 .dropdown-toggle::after {
   display: none !important;
 }
@@ -179,12 +196,10 @@
   width: '100% important';
 }
 
-
-
-
 .hidden {
   display: none !important;
 }
+
 .black-mui-navbar {
   background-color: black !important;
   color: white !important;
@@ -195,54 +210,62 @@
   border-width: 1px !important;
   top: 0 !important;
 }
+
 .hover-pointer:hover {
   cursor: pointer;
 }
+
 .citymenu-active {
   text-decoration: none !important;
 }
+
 .rdrDefinedRangesWrapper {
   display: none;
 }
+
 .rdrDateDisplayWrapper {
   display: none;
 }
+
 .rdrDayNumber span {
   color: black !important;
 }
+
 .MuiPickersDay-hiddenDaySpacingFiller {
   background-color: transparent !important;
 }
+
 .MuiDateRangePickerDay-rangeIntervalDayPreview {
   background-color: rgba(247, 231, 0, 0.4) !important;
 }
+
 .MuiPickersDay-root {
   margin: 0 !important;
 }
-.modal-backdrop {
-  /* background-color: transparent !important; */
-  /* backdrop-filter: blur(2px) !important; */
-}
+
 .modal-backdrop.in {
   opacity: 0.9 !important;
 }
+
 .modal {
   --bs-modal-zindex: 1500 !important ;
 }
+
 .css-1tape97 {
   padding: 0rem;
   border: 1px solid rgba(0, 0, 0, 0.3);
   box-sizing: border-box;
   border-radius: 5px;
 }
-.css-170k9md {
-}
+
 .css-1tape97:nth-of-type(1) {
   margin-right: 2rem;
 }
+
 .overflow-hidden {
   overflow: hidden;
 }
+
 #day-tab {
   position: sticky !important;
   top: 66px !important;
@@ -250,9 +273,11 @@
   z-index: 100;
   padding: 0.5rem 0;
 }
+
 #day-tab .MuiTabs-scrollButtons {
   border-style: none !important;
 }
+
 .itinerary-mobile-day-tab {
   text-transform: none !important;
   color: black !important;
@@ -263,14 +288,17 @@
   line-height: 1 !important;
   height: max-content !important;
 }
+
 .itinerary-mobile-tabs {
   min-height: auto !important;
   height: max-content !important;
 }
+
 .itinerary-mobile-day-tab span {
   padding: 0 !important;
   height: max-content !important;
 }
+
 .citymenu-active p {
   color: black;
   text-decoration: none !important;
@@ -284,10 +312,12 @@
   top: 0;
   height: 80px !important;
 }
+
 #poi-modal .modal-content {
   background-color: transparent !important;
   border: none !important;
 }
+
 .booking-modal {
   padding: 0 !important;
   background-color: white !important;
@@ -295,6 +325,7 @@
 
   margin-top: 5px !important;
 }
+
 #taxi-dropdown {
   background-color: transparent !important;
   color: black !important;
@@ -306,6 +337,7 @@
   color: black !important;
   border-style: none !important;
 }
+
 #stayroom-dropdown {
   background-color: #f7e700 !important;
   font-size: 0.85rem;
@@ -317,9 +349,11 @@
   width: 100%;
   margin-top: 0.25rem !important;
 }
+
 #stayroom-dropdown.dropdown-toggle {
   padding: 0.5rem;
 }
+
 #stayroom-dropdown-menu {
   width: max-content !important;
   padding: 0 !important;
@@ -329,6 +363,7 @@
   border-radius: 10px !important;
   box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 70px 500px !important;
 }
+
 #stayroom-dropdown-menu .dropdown-item {
   padding: 0.25rem;
   border-style: none none solid none;
@@ -337,6 +372,7 @@
   padding: 0.5rem;
   text-align: right;
 }
+
 #staylisting-dropdown {
   background-color: #f7e700 !important;
   font-size: 0.85rem;
@@ -347,9 +383,11 @@
   font-family: 'Open Sans', sans-serif !important;
   width: 100%;
 }
+
 #staylisting-dropdown.dropdown-toggle {
   padding: 0.5rem;
 }
+
 #staylisting-dropdown-menu {
   width: 100%;
   padding: 0;
@@ -359,6 +397,7 @@
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 70px 500px;
 }
+
 #staylisting-dropdown-menu .dropdown-item {
   padding: 0.25rem;
   border-style: none none solid none;
@@ -383,6 +422,7 @@
 #taxilisting-dropdown.dropdown-toggle {
   padding: 0.5rem;
 }
+
 #taxilisting-dropdown-menu {
   width: 100%;
   padding: 0;
@@ -391,10 +431,12 @@
   border-radius: 10px 10px 0 0;
   box-shadow: rgba(0, 0, 0, 0.56) 0px 22px 70px 500px;
 }
+
 #taxilisting-dropdown-menu {
   border-radius: 10px;
   margin-bottom: 0.5rem;
 }
+
 #taxilisting-dropdown-menu .dropdown-item {
   padding: 0.25rem;
   border-style: none none solid none;
@@ -411,13 +453,16 @@
   border-style: none !important;
   box-shadow: none !important;
 }
+
 .booking-modal .modal-dialog {
   margin: 0 !important;
   max-width: 100% !important;
 }
+
 .booking-modal .modal-dialog .modal-content {
   border: none !important;
 }
+
 #bookingedit-modal .modal-content {
   background-color: transparent !important;
   border: none !important;
@@ -430,22 +475,28 @@
 .experience-enquiry-input .MuiInputBase-root textarea {
   min-height: 8rem;
 }
+
 #itinerary-modal {
   border: none;
   margin: 0;
 }
+
 .MuiBox-root {
   padding: 0 !important;
 }
+
 .MuiDrawer-root {
   z-index: 1501 !important;
 }
+
 .mobile-header-menu {
   z-index: 1200 !important;
 }
+
 .MuiTabs-flexContainer {
   z-index: 2 !important;
 }
+
 #itinerary-modal .modal-body {
   min-height: 100vh;
 }
@@ -458,14 +509,17 @@
   border-width: 1px;
   border-color: #e4e4e4;
 }
+
 .nav-tabs-itinerary-booking .nav-link {
   border: none;
 }
+
 .nav-tabs-itinerary-booking .nav-link.active {
   border-style: none none solid none;
   border-width: 1px;
   border-color: #f7e700;
 }
+
 .nav-tabs-itinerary-booking .nav-item {
   margin: 0.5rem 0;
 }
@@ -486,44 +540,51 @@
 
   font-family: 'Open Sans', sans-serif !important;
 }
+
 .experience-headings {
   z-index: 2;
 }
+
 .MuiTab-wrapper {
   font-size: 1.25rem;
   text-transform: none;
 }
+
 .backtotop-active {
   color: black;
   text-decoration: none;
 }
+
 .google-login-button {
   width: 100% !important;
 }
+
 .google-login-button div {
   width: max-content !important;
   margin: 0 auto !important;
 }
+
 .google-login-button span {
   display: none !important;
-}
-body.modal-open {
 }
 
 .carousel {
   position: static !important;
 }
-.flickity-viewport {
-}
+
+
 .flickity-enabled:focus {
   outline: none;
 }
+
 .rsc-os-option-element {
   background-color: rgba(247, 231, 0, 0.6) !important;
 }
+
 b {
   font-weight: 600;
 }
+
 /*Experinece, poi and itinerary menu CSS, do not remove*/
 .experience-tab {
   opacity: 0.7 !important;
@@ -532,9 +593,11 @@ b {
   margin: 0 0.5rem !important;
   color: white !important;
 }
+
 .experience-tab.Mui-selected {
   opacity: 1 !important;
 }
+
 .poi-tab {
   text-transform: none !important;
   color: black !important;
@@ -544,10 +607,12 @@ b {
   font-size: 0.75rem !important;
   min-width: 33vw !important;
 }
+
 .poi-tab.Mui-selected {
   color: black !important;
   background-color: #f7e700 !important;
 }
+
 .accommodationdetail-tab {
   text-transform: none !important;
   color: black !important;
@@ -565,15 +630,18 @@ b {
   font-weight: 400 !important;
   font-family: 'Open Sans', sans-serif !important;
 }
+
 .accommodationdetail-tab.Mui-selected .MuiTab-wrapper {
   border-style: none none solid none !important;
   border-width: 2px !important;
   border-color: #f7e700;
   font-family: 'Open Sans', sans-serif !important;
 }
+
 .accommodationdetail-tab .MuiTab-wrapper {
   font-family: 'Open Sans', sans-serif !important;
 }
+
 .bookingdetail-tab {
   text-transform: none !important;
   color: black !important;
@@ -584,9 +652,11 @@ b {
   font-size: 0.85rem !important;
   width: max-content !important;
 }
+
 .bookingdetail-tab .MuiTab-wrapper {
   font-size: 0.85rem !important;
 }
+
 .bookingdetail-tab.Mui-selected {
   color: black !important;
   border-style: solid solid solid solid !important;
@@ -594,15 +664,17 @@ b {
   border-width: 0px 0px 3px 0px !important;
   font-weight: 800 !important;
 }
+
 .MuiTabs-scrollButtons {
   border-style: none none solid none !important;
   border-width: 1px !important;
   border-color: #e4e4e4 !important;
 }
+
 .MuiTabs-scrollButtons:nth-of-type(1) {
   display: none !important;
 }
-/* -- */
+
 .MuiAppBar-root {
   z-index: 1000 !important;
 }
@@ -610,55 +682,68 @@ b {
 .progress-bar {
   background-color: #f7e700;
 }
+
 .progress {
   transition: all 0.3s ease !important;
 }
-.personalise-modal {
-}
+
 .MuiFormLabel-root {
   background-color: white !important ;
 }
+
 .border-thin {
   border-style: solid;
   border-width: 1px;
   border-color: #e4e4e4;
 }
+
 .full-height {
   height: 100% !important;
 }
+
 .display-inline {
   display: inline;
 }
+
 .color-white {
   color: white;
 }
+
 .color-black {
   color: black;
 }
+
 .full-width {
   width: 100%;
 }
+
 .width-80 {
   width: 80%;
 }
+
 .text-center {
   text-align: center;
 }
+
 .margin-auto {
   margin: auto;
 }
+
 .no-border {
   border: none !important;
 }
+
 .display-inline {
   display: inline !important;
 }
+
 .center-div {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
+
 .vertical-center-div {
   display: flex;
   flex-direction: row;
@@ -669,6 +754,7 @@ b {
 .font-quote {
   font-family: 'Spirax', cursive;
 }
+
 .kep-login-facebook {
   margin: 1rem 0;
   background-color: white !important;
@@ -681,37 +767,47 @@ b {
   border-radius: 2rem !important;
   border-color: transparent !important;
 }
+
 .border {
   border: 1px solid rgba(0, 0, 0, 0.3);
   box-sizing: border-box;
   border-radius: 5px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 }
+
 .full-width {
   width: 100%;
 }
+
 .locationimg-container {
   position: relative;
 }
+
 .font-nunito {
   font-family: 'Nunito Sans', sans-serif !important;
   letter-spacing: 1px;
 }
+
 .font-opensans {
   font-family: 'Open Sans', sans-serif !important;
 }
+
 .font-poppins {
   font-family: 'Poppins', sans-serif !important;
 }
+
 .font-lexend {
   font-family: 'Lexend', sans-serif !important;
 }
+
 .font-montserrat {
   font-family: 'Montserrat', sans-serif;
 }
+
 .font-marker {
   font-family: 'Lexend Deca', sans-serif;
 }
+
 .text-center {
   text-align: center !important;
 }
@@ -722,6 +818,7 @@ b {
   margin: auto;
   max-width: 90% !important;
 }
+
 .bg-grey {
   background-color: hsl(0, 0%, 95%);
 }
@@ -730,6 +827,7 @@ b {
 .fa-angle-right:hover {
   cursor: pointer;
 }
+
 .country-code-field .MuiInputBase-root {
   text-align: center;
   height: max-content !important;
@@ -750,6 +848,7 @@ b {
 a {
   color: black;
 }
+
 img {
   image-orientation: from-image;
 }
@@ -758,27 +857,34 @@ img {
   background-color: white;
   animation: fadeIn ease 0.5s;
 }
+
 .bg-yellow {
   background-color: #f7e700;
   animation: fadeIn ease 0.5s;
 }
+
 .no-outline {
   outline: none !important;
 }
+
 .bg-black {
   background-color: rgba(0, 0, 0, 0.6);
   animation: fadeIn ease 0.5s;
 }
+
 .bg-transparentt {
   background-color: transparent;
   animation: fadeIn ease 0.5s;
 }
+
 .opacity-one {
   opacity: 1;
 }
+
 .opacity-zero {
   opacity: 0;
 }
+
 .hide-scroll {
   -ms-overflow-style: none;
 }
@@ -787,9 +893,11 @@ img {
   background-color: white;
   border: none;
 }
+
 .nav-tabs-profile-main {
   padding: 0.5rem;
 }
+
 .nav-tabs-profile-main .nav-link {
   border: none !important;
   width: 20%;
@@ -799,24 +907,29 @@ img {
   display: inline-block;
   width: max-content;
 }
+
 .nav-tabs-profile-main .nav-link.active {
   border-style: none none solid none !important;
   border-color: #f7e700 !important;
   border-width: 2px !important;
 }
+
 .PrivateValueLabel-label-11 {
   color: black !important;
 
   font-size: 16px !important;
 }
+
 .nav-link.active:focus {
   outline: none !important;
 }
+
 #day-tabs {
   max-width: 100% !important;
   top: 10vh !important;
   position: sticky !important;
 }
+
 #day-tabs .MuiTabs-flexContainer {
   display: grid !important;
   grid-template-columns: 1fr 1fr 1fr;
@@ -824,10 +937,12 @@ img {
   grid-gap: 1rem;
   box-sizing: border-box;
 }
+
 #day-tabs .MuiTabs-flexContainer .MuiButtonBase-root {
   box-sizing: border-box;
   margin: 0;
 }
+
 .nav-tabs-itinerary-days .nav-link {
   border: 1px solid rgba(0, 0, 0, 0.3);
   box-sizing: border-box;
@@ -836,37 +951,44 @@ img {
   padding: 0.25rem 1rem;
   margin-right: 1rem;
 }
+
 .nav-item-itinerary-experience-location {
   width: 100%;
   text-align: center;
 }
+
 .nav-item-itinerary-experience-location .nav-link.active {
   background-color: #f7e700;
 }
+
 .nav-tabs-itinerary-days .nav-link.active {
   background-color: black;
   border-color: black;
 }
-.edit-modal .modal-dialog {
-}
+
 .bookings-edit-filters {
   margin: 0 0 0.25rem 0 !important;
 }
+
 .bookings-edit-filters .MuiCheckbox-root {
   padding: 0 !important;
 }
+
 #day-tab {
   min-height: max-content !important;
   z-index: 1000 !important;
 }
+
 #day-tab .MuiTabs-scroller {
   align-items: center !important;
   justify-content: center !important;
   height: 32px !important;
 }
+
 #city-tab .MuiTabs-scroller {
   height: 60px;
 }
+
 .itinerary-day-tab:nth-child(n) {
   font-size: 1rem;
   border-style: solid;
@@ -880,6 +1002,7 @@ img {
   min-height: 0 !important;
   min-width: 0 !important;
 }
+
 .itinerary-day-tab span {
   font-size: 1rem;
   font-family: 'Open Sans', sans-serif !important;
@@ -889,6 +1012,7 @@ img {
   background-color: black;
   color: white !important;
 }
+
 .booking-filter-tab:nth-child(n) {
   font-size: 0.75rem !important;
   border-style: solid;
@@ -904,16 +1028,19 @@ img {
   min-height: 0 !important;
   min-width: 0 !important;
 }
+
 .booking-filter-tab:nth-child(n) span {
   font-size: 0.75rem !important;
   font-weight: 400 !important;
 }
+
 #filter-tab .MuiTabs-scroller {
   align-items: center !important;
   display: flex !important;
   width: 100% !important;
   margin: 0 !important;
 }
+
 .itinerary-city-tab:nth-child(n) {
   font-size: 1rem;
   border-style: solid solid none none;
@@ -928,10 +1055,12 @@ img {
   min-height: 0 !important;
   min-width: 0 !important;
 }
+
 .itinerary-city-tab.Mui-selected {
   background-color: #f7e700 !important;
   color: black !important;
 }
+
 #location-tab {
   position: fixed !important;
   bottom: 0 !important;
@@ -939,9 +1068,11 @@ img {
   z-index: 1000 !important;
   width: 100vw !important;
 }
+
 .MuiTab-wrapper {
   font-size: 1rem;
 }
+
 .city-active {
   color: white;
   font-weight: 700;
@@ -955,12 +1086,15 @@ img {
   font-size: 1rem;
   background-color: white;
 }
+
 .city-active:hover {
   cursor: pointer;
 }
+
 .city-inactive:hover {
   cursor: pointer;
 }
+
 .rsc-float-button {
   width: 4rem;
   height: 4rem;
@@ -970,10 +1104,12 @@ img {
   right: 1rem !important;
   transform: none !important;
 }
+
 .blurry-text {
   color: transparent !important;
   text-shadow: 0 0 5px rgba(0, 0, 0, 0.5) !important;
 }
+
 @media only screen and (max-width: 768px) {
   .hidden-mobile {
     display: none !important;
@@ -1051,43 +1187,43 @@ img {
     background-color: white;
   }
 }
+
 .netflix-item {
   transition: transform 200ms;
 }
+
 .netflix-container:focus-within .netflix-item,
 .netflix-container:hover .netflix-item {
   transform: translateX(-5%);
 }
+
 .netflix-item:focus ~ .netflix-item,
 .netflix-item:hover ~ .netflix-item {
   transform: translateX(5%);
 }
+
 .netflix-container .netflix-item:focus,
 .netflix-container .netflix-item:hover {
   transform: scale(1.1);
   z-index: 1;
 }
+
 .MuiMenu-list {
   padding: 0 !important;
 }
-/* locks background scroll for modal*/
-body.modal-open {
-}
-.carousel {
-}
-.flickity-viewport {
-}
+
 .carousel > ol {
   display: flex;
   gap: 2px;
   justify-content: center;
   flex-direction: row-reverse;
 }
+
 .carousel > ol > li {
   display: inline;
-  /* color: #000; */
   margin-left: -25px;
 }
+
 .flickity-enabled {
   overflow: hidden;
 
@@ -1105,33 +1241,31 @@ body.modal-open {
   position: relative;
 }
 
-.flickity-page-dots {
-  /* display:none; */
-}
-
 .flickity-page-dots .dot {
   width: 9px;
   height: 9px;
-  /* opacity: 1; */
   background: transparent;
   border-radius: 100%;
   background: rgba(1, 32, 43, 0.2);
 }
+
 .flickity-page-dots .dot.is-selected {
   background: #f7e700;
   border: 2px solid black;
 }
 
-/* button */
 .flickity-button {
   display: none;
 }
+
 .rsc-os-option-element {
   background-color: rgba(247, 231, 0, 0.6) !important;
 }
+
 b {
   font-weight: 600;
 }
+
 .MuiAppBar-root {
   z-index: 1000 !important;
 }
@@ -1139,52 +1273,64 @@ b {
 .progress-bar {
   background-color: #f7e700;
 }
+
 .progress {
   transition: all 0.3s ease !important;
 }
-.personalise-modal {
-}
+
 .border-thin {
   border-style: solid;
   border-width: 1px;
   border-color: #e4e4e4;
 }
+
 .full-height {
   height: 100% !important;
 }
+
 .display-inline {
   display: inline;
 }
+
 .color-white {
   color: white;
 }
+
 .color-black {
   color: black;
 }
+
 .full-width {
   width: 100%;
 }
+
 .width-80 {
   width: 80%;
 }
+
 .text-center {
   text-align: center;
 }
+
 .margin-auto {
   margin: auto;
 }
+
 .no-border {
   border: none !important;
 }
+
 .display-inline {
   display: inline !important;
 }
+
 .center-div {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
+
 .vertical-center-div {
   display: flex;
   flex-direction: row;
@@ -1198,12 +1344,15 @@ b {
   border-radius: 5px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 }
+
 .full-width {
   width: 100%;
 }
+
 .locationimg-container {
   position: relative;
 }
+
 .font-nunito {
   font-family: 'Nunito Sans', sans-serif !important;
   letter-spacing: 1px;
@@ -1417,12 +1566,6 @@ a {
   }
 }
 
-body {
-  /* overflow: overlay; */
-  /* scrollbar-width: thin; */
-  /* scrollbar-color: #ccc #fff; */
-}
-
 .css-3dah0e-MuiModal-root-MuiDialog-root {
-  z-index: 1602 !important; 
+  z-index: 1602 !important;
 }

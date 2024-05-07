@@ -1,4 +1,4 @@
-import ExperienceContainer from "../../../../../containers/city/Index";
+import CityPage from "../../../../../containers/city/Index";
 import Layout from "../../../../../components/Layout";
 import { useRouter } from "next/router";
 import axiossearchInstance from "../../../../../services/search/all";
@@ -7,13 +7,14 @@ import axiosReccommendedCityInstance from "../../../../../services/poi/reccommed
 import Head from "next/head";
 
 const Experience = (props) => {
+  const router = useRouter();
+
   const schemaData = {
     "@context": "https://schema.org/",
     "@type": "item",
     name: props.cityData.name,
     description: props.cityData.short_description,
   };
-  const router = useRouter();
 
   return (
     <Layout
@@ -28,22 +29,18 @@ const Experience = (props) => {
       <Head>
         <meta
           name="description"
-          // content={props.cityData.short_description}
           content={`Explore ${props.cityData.name} with The Tarzan Way's AI travel itinerary. Immerse yourself in iconic landmarks, hidden treasures of ${props.cityData.name}, and book your flights, accommodations, and transfers all in one go.`}
         />
         <meta
           property="og:title"
-          // content={props.cityData.name + " | Travel Guide |  The Tarzan Way"}
           content={`Plan Your Trip to ${props.cityData.name} | Trip Planner & Itinerary | The Tarzan Way`}
         />
         <meta
           property="og:description"
-          // content={props.cityData.short_description}
           content={`Explore ${props.cityData.name} with The Tarzan Way's AI travel itinerary. Immerse yourself in iconic landmarks, hidden treasures of ${props.cityData.name}, and book your flights, accommodations, and transfers all in one go.`}
         />
         <meta property="og:image" content="/logoblack.svg" />
         <title>
-          {/* {props.cityData.name + " | Travel Guide |  The Tarzan Way"} */}
           Plan Your Trip to {props.cityData.name} | Trip Planner & Itinerary |
           The Tarzan Way
         </title>
@@ -52,17 +49,19 @@ const Experience = (props) => {
           content="best places to visit in india, best places to visit in kasol, best places to visit in ladakh, best places to visit in andaman, best places to visit in manali, best places to visit in delhi, best places to visit in rajasthan, package for ladakh, package for manali, package for delhi, package for andaman, package for kashmir"
         ></meta>
       </Head>
-      <ExperienceContainer
+
+      <CityPage
         reccomendedCitiesData={props.reccomendedCitiesData}
         cityData={props.cityData}
         id={router.query.city}
-      ></ExperienceContainer>
+      ></CityPage>
     </Layout>
   );
 };
 
 export async function getStaticPaths() {
   let paths = [];
+
   try {
     const res = await axiossearchInstance.get(
       "/?type=Location&fields=path,cta"
@@ -85,7 +84,7 @@ export async function getStaticPaths() {
       }
     }
   } catch (err) {
-    console.log("[ERROR][citypage:getStaticPaths]: ", err.message);
+    console.log("[ERROR][cityPage:getStaticPaths]: ", err.message);
   }
 
   return {
@@ -93,6 +92,7 @@ export async function getStaticPaths() {
     fallback: false,
   };
 }
+
 export async function getStaticProps(context) {
   let reccomendedCitiesData = [];
   let data = null;
@@ -101,7 +101,7 @@ export async function getStaticProps(context) {
     const res = await axiosPoiCityInstance.get(`/?slug=${context.params.city}`);
     data = res.data;
   } catch (err) {
-    console.error("[ERROR][citypage:getStaticProps]: ", err.message);
+    console.error("[ERROR][cityPage:getStaticProps]: ", err.message);
   }
 
   if (!data) {
@@ -126,7 +126,7 @@ export async function getStaticProps(context) {
       path: e.path,
     }));
   } catch (err) {
-    console.error("[ERROR][citypage:getStaticProps]: ", err.message);
+    console.error("[ERROR][cityPage:getStaticProps]: ", err.message);
   }
 
   return {

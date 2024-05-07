@@ -6,17 +6,16 @@ import { store } from "../store/store";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "overlayscrollbars/overlayscrollbars.css";
 import { useRouter } from "next/router";
-import * as ga from "../lib/ga/Index";
+import * as ga from "../services/ga/Index";
 import { FACEBOOK_PIXEL_ID } from "../services/constants";
-import dynamic from "next/dynamic";
-import media from "../components/media";
-import { GoogleOAuthProvider } from "@react-oauth/google";
 import { GOOGLE_CLIENT_ID } from "../services/constants";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import dynamic from "next/dynamic";
+import Head from "next/head";
 
 function MyApp({ Component, pageProps, store }) {
   const router = useRouter();
   const ref = useRef();
-  let isPageWide = media("(min-width: 768px)");
 
   useEffect(() => {
     const jssStyles = document.querySelector("#jss-server-side");
@@ -24,7 +23,6 @@ function MyApp({ Component, pageProps, store }) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
   }, []);
-
 
   useEffect(() => {
     const handleRouteChange = (url) => {
@@ -52,13 +50,21 @@ function MyApp({ Component, pageProps, store }) {
   }, [router.events]);
 
   return (
-    <div ref={ref}>
-      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-        <Theme>
-          <Component {...pageProps} />
-        </Theme>
-      </GoogleOAuthProvider>
-    </div>
+    <>
+      <Head>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5"
+        ></meta>
+      </Head>
+      <div ref={ref}>
+        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+          <Theme>
+            <Component {...pageProps} />
+          </Theme>
+        </GoogleOAuthProvider>
+      </div>
+    </>
   );
 }
 MyApp.getInitialProps = async ({ Component, ctx }) => {

@@ -1,26 +1,25 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { Modal } from 'react-bootstrap';
-import styled from 'styled-components';
-import media from '../../media';
-import LeftSideBar from './leftsidebar/Index';
-import Accommodation from './accommodation/Index';
+import React, { useRef, useEffect, useState } from "react";
+import { Modal } from "react-bootstrap";
+import styled from "styled-components";
+import media from "../../media";
+import LeftSideBar from "./leftsidebar/Index";
+import Accommodation from "./accommodation/Index";
 
-import FullScreenGallery from '../../fullscreengallery/Index';
-import axiosaccommodationinstance from '../../../services/bookings/FetchAccommodations';
-import MobileFilters from './filtersmobile/Index';
-import Spinner from '../../Spinner';
+import FullScreenGallery from "../../fullscreengallery/Index";
+import axiosaccommodationinstance from "../../../services/bookings/FetchAccommodations";
+import MobileFilters from "./filtersmobile/Index";
+import Spinner from "../../Spinner";
 
-import cross from '../../../public/assets/icons/navigation/close.svg';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronUp, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import { Link, animateScroll as scroll } from 'react-scroll';
-import CurrentlyReplacing from './leftsidebar/CurrentlyReplacing';
-import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
-import { connect } from 'react-redux';
-import InfiniteScroller from './InfniteScroller';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronUp, faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import { Link, animateScroll as scroll } from "react-scroll";
+import CurrentlyReplacing from "./leftsidebar/CurrentlyReplacing";
+import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
+import { connect } from "react-redux";
+import InfiniteScroller from "./InfniteScroller";
 // import Button from '../../Button';
-import Button from '../../ui/button/Index';
-import { openNotification } from '../../../store/actions/notification';
+import Button from "../../ui/button/Index";
+import { openNotification } from "../../../store/actions/notification";
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 
@@ -28,7 +27,7 @@ const GridContainer = styled.div`
     grid-template-columns: 1fr 3fr;
     grid-gap: 1rem;
     @media screen and (min-width: 768px) {
-    
+
     }
 `;
 
@@ -74,7 +73,7 @@ const StyledLink = styled(Link)`
 `;
 
 const Booking = (props) => {
-  let isPageWide = media('(min-width: 768px)');
+  let isPageWide = media("(min-width: 768px)");
 
   let OptionsJSX = [];
   const [optionsJSX, setOptionsJSX] = useState([]);
@@ -97,37 +96,37 @@ const Booking = (props) => {
 
   const filters = {
     budget: [
-      'Below ₹3,000',
-      '₹3,000 - ₹6,000',
-      '₹6,000 - ₹10,000',
-      'Above ₹10,000',
+      "Below ₹3,000",
+      "₹3,000 - ₹6,000",
+      "₹6,000 - ₹10,000",
+      "Above ₹10,000",
     ],
     type: [
-      'Hotel',
-      'Homestay',
-      'Camp',
-      'Guest House',
-      'Cottage',
-      'Villa',
-      'Resort',
-      'Lodge',
-      'Service Appartment',
-      'Bed and Breakfast',
-      'Farmstay',
+      "Hotel",
+      "Homestay",
+      "Camp",
+      "Guest House",
+      "Cottage",
+      "Villa",
+      "Resort",
+      "Lodge",
+      "Service Appartment",
+      "Bed and Breakfast",
+      "Farmstay",
       // "Speciality Lodging",
       // "Boat / Cruise",
       // "Holiday Park / Caravan Park",
       // "Country House",
-      'Entire House',
+      "Entire House",
       // "Capsule Hotel",
-      'Unique',
+      "Unique",
     ],
-    star_category: ['1 star', '2 star', '3 star', '4 star', '5 star', 'All'],
+    star_category: ["1 star", "2 star", "3 star", "4 star", "5 star", "All"],
   };
 
   useEffect(() => {
     axiosaccommodationinstance
-      .post('/?limit=20&offset=0', {
+      .post("/?limit=20&offset=0", {
         cities: props.selectedBooking.city,
 
         check_in: props.selectedBooking.check_in,
@@ -193,13 +192,13 @@ const Booking = (props) => {
       //send empty type
     } else {
       for (var i = 0; i < typearr.length; i++) {
-        if (typearr[i] === 'All') null;
+        if (typearr[i] === "All") null;
         else {
-          if (typearr[i] === 'Unique') {
-            type.push('Speciality Lodging');
-            type.push('Boat / Cruise');
-            type.push('Holiday Park / Caravan Park');
-            type.push('Capsule Hotel');
+          if (typearr[i] === "Unique") {
+            type.push("Speciality Lodging");
+            type.push("Boat / Cruise");
+            type.push("Holiday Park / Caravan Park");
+            type.push("Capsule Hotel");
           } else type.push(typearr[i]);
         }
       }
@@ -214,39 +213,39 @@ const Booking = (props) => {
       // for(var i = 0 ; i < budgetarr.length; i++){
       // }
 
-      if (budgetarr.includes('Below ₹3,000')) {
+      if (budgetarr.includes("Below ₹3,000")) {
         price_lower_range = 0;
         price_upper_range = 300000;
-        if (budgetarr.includes('Above ₹10,000')) {
+        if (budgetarr.includes("Above ₹10,000")) {
           price_upper_range = null;
-        } else if (budgetarr.includes('₹6,000 - ₹10,000')) {
+        } else if (budgetarr.includes("₹6,000 - ₹10,000")) {
           price_upper_range = 1000000;
-        } else if (budgetarr.includes('₹3,000 - ₹6,000')) {
+        } else if (budgetarr.includes("₹3,000 - ₹6,000")) {
           price_upper_range = 600000;
         }
         price_set = true;
       }
-      if (budgetarr.includes('Above ₹10,000')) {
+      if (budgetarr.includes("Above ₹10,000")) {
         price_upper_range = 100000000;
         price_lower_range = 1000000;
-        if (budgetarr.includes('Below ₹3,000')) {
+        if (budgetarr.includes("Below ₹3,000")) {
           price_lower_range = 0;
-        } else if (budgetarr.includes('₹3,000 - ₹6,000')) {
+        } else if (budgetarr.includes("₹3,000 - ₹6,000")) {
           price_lower_range = 300000;
-        } else if (budgetarr.includes('₹6,000 - ₹10,000')) {
+        } else if (budgetarr.includes("₹6,000 - ₹10,000")) {
           price_lower_range = 600000;
         }
         price_set = true;
       }
       if (!price_set) {
-        if (budgetarr.includes('₹3,000 - ₹6,000')) {
+        if (budgetarr.includes("₹3,000 - ₹6,000")) {
           price_lower_range = 300000;
-          if (budgetarr.includes('₹6,000 - ₹10,000')) {
+          if (budgetarr.includes("₹6,000 - ₹10,000")) {
             price_upper_range = 1000000;
           } else price_upper_range = 600000;
-        } else if (budgetarr.includes('₹6,000 - ₹10,000')) {
+        } else if (budgetarr.includes("₹6,000 - ₹10,000")) {
           price_lower_range = 600000;
-          if (budgetarr.includes('Above ₹10,000')) {
+          if (budgetarr.includes("Above ₹10,000")) {
             price_upper_range = 100000000;
           } else price_upper_range = 1000000;
         }
@@ -255,7 +254,7 @@ const Booking = (props) => {
 
     setViewMoreStatus(false);
     axiosaccommodationinstance
-      .post('/?limit=' + limit + '&offset=0', {
+      .post("/?limit=" + limit + "&offset=0", {
         cities: [props.selectedBooking.city],
         // "check_in": "2022-02-01",
         // "check_out": "2022-02-04",
@@ -289,8 +288,8 @@ const Booking = (props) => {
                     room_type={res.data.results[i].live_data.roomtypeName}
                     pricing_type={
                       res.data.results[i].live_data.includeBreakfast
-                        ? 'CP'
-                        : 'EP'
+                        ? "CP"
+                        : "EP"
                     }
                     _updateBookingHandler={_updateBookingHandler}
                     type={res.data.results[i].accommodation_type}
@@ -380,12 +379,12 @@ const Booking = (props) => {
     setUpdateBookingState(true);
     axiosbookingupdateinstance
       .post(
-        '/',
+        "/",
         [
           {
             id: booking_id,
-            booking_type: 'Accommodation',
-            itinerary_type: 'Tailored',
+            booking_type: "Accommodation",
+            itinerary_type: "Tailored",
             city: props.selectedBooking.city,
             user_selected: true,
             accommodation: accommodation_id,
@@ -413,11 +412,11 @@ const Booking = (props) => {
         setUpdateBookingState(false);
 
         // window.alert('There seems to be a problem, please try again!');
-          props.openNotification({
-            type: "error",
-            text: "There seems to be a problem, please try again!",
-            heading: "Error!",
-          });
+        props.openNotification({
+          type: "error",
+          text: "There seems to be a problem, please try again!",
+          heading: "Error!",
+        });
       });
   };
   const _loadAccommodationsHandler = () => {
@@ -426,7 +425,7 @@ const Booking = (props) => {
     setMoreLoadingState(true);
 
     axiosaccommodationinstance
-      .post('/?limit=' + limit + '&offset=' + offset, {
+      .post("/?limit=" + limit + "&offset=" + offset, {
         cities: [props.selectedBooking.city],
         // "check_in": "2022-02-01",
         // "check_out": "2022-02-04",
@@ -463,8 +462,8 @@ const Booking = (props) => {
                     room_type={res.data.results[i].live_data.roomtypeName}
                     pricing_type={
                       res.data.results[i].live_data.includeBreakfast
-                        ? 'CP'
-                        : 'EP'
+                        ? "CP"
+                        : "EP"
                     }
                     _updateBookingHandler={_updateBookingHandler}
                     type={res.data.results[i].accommodation_type}
@@ -514,26 +513,26 @@ const Booking = (props) => {
         show={props.showBookingModal}
         size="xl"
         onHide={props.setHideBookingModal}
-        style={{ padding: '0' }}
+        style={{ padding: "0" }}
       >
         {/* <Modal.Header>2</Modal.Header> */}
         <Modal.Body
           style={{
-            padding: '0.5rem',
-            borderStyle: 'solid',
-            borderColor: '#F7e700',
-            borderWidth: '0.5rem',
-            borderRadius: '16px',
-            backgroundColor: 'white',
+            padding: "0.5rem",
+            borderStyle: "solid",
+            borderColor: "#F7e700",
+            borderWidth: "0.5rem",
+            borderRadius: "16px",
+            backgroundColor: "white",
           }}
         >
           <FontAwesomeIcon
             className="hover-pointer"
             icon={faChevronLeft}
             onClick={props.setHideBookingModal}
-            style={{ margin: '0.5rem', position: 'sticky', top: '0' }}
+            style={{ margin: "0.5rem", position: "sticky", top: "0" }}
           ></FontAwesomeIcon>
-          <GridContainer style={{ clear: 'right' }}>
+          <GridContainer style={{ clear: "right" }}>
             <LeftSideBar
               selectedBooking={props.selectedBooking}
               filtersState={filtersState}
@@ -552,28 +551,28 @@ const Booking = (props) => {
                 filters={filters}
               ></MobileFilters>
             ) : null}
-            <ContentContainer style={{ position: 'relative' }}>
+            <ContentContainer style={{ position: "relative" }}>
               {updateLoadingState ? (
                 <div
                   className="center-div"
-                  style={{ width: 'max-content', margin: 'auto' }}
+                  style={{ width: "max-content", margin: "auto" }}
                 >
                   <Spinner></Spinner>Fetching accommodations for you
                 </div>
               ) : null}
               {updateBookingState ? (
-                <div style={{ width: 'max-content', margin: 'auto' }}>
+                <div style={{ width: "max-content", margin: "auto" }}>
                   <Spinner></Spinner>
                 </div>
               ) : null}
               {!noResults && !updateLoadingState ? (
                 <OptionsContainer id="options">
-                  <div style={{ clear: 'right' }}>
+                  <div style={{ clear: "right" }}>
                     {optionsJSX.length ? optionsJSX : null}
                     {/* {loading ? <div style={{width: 'max-content', margin: 'auto'}}><Spinner/></div> : null} */}
                   </div>
                   {moreLoadingState ? (
-                    <div style={{ width: 'max-content', margin: 'auto' }}>
+                    <div style={{ width: "max-content", margin: "auto" }}>
                       <Spinner></Spinner>
                     </div>
                   ) : null}
@@ -603,7 +602,7 @@ const Booking = (props) => {
               {/* <Button onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">More</Button> */}
               {/* {
                    !updateLoadingState ? <InfiniteOptionsContainer><InfiniteScroller next={_loadAccommodationsHandler} hasMore={true} dataLength={optionsJSX.length} jsx={optionsJSX}></InfiniteScroller>{optionsJSX}</InfiniteOptionsContainer> : null
-                   } 
+                   }
              */}
               {/* <ButtonToTop className='center-div'>
                    <FontAwesomeIcon icon={faChevronUp} style={{color: 'white', margin: '0'}}/>

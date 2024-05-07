@@ -1,7 +1,7 @@
-import ItineraryContainer from '../../../containers/itinerary/Indexs/Stock';
-import { useRouter } from 'next/router';
-import LayoutV2 from '../../../components/LayoutV2';
-import Head from 'next/head';
+import ItineraryContainer from "../../../containers/itinerary/Indexs/Stock";
+import { useRouter } from "next/router";
+import LayoutV2 from "../../../components/LayoutV2";
+import Head from "next/head";
 
 const Itinerary = () => {
   const router = useRouter();
@@ -16,6 +16,7 @@ const Itinerary = () => {
         />
         <meta property="og:image" content="/logoblack.svg" />
       </Head>
+
       <ItineraryContainer id={router.query.id}></ItineraryContainer>
     </LayoutV2>
   );

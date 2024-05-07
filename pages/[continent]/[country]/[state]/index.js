@@ -1,24 +1,11 @@
-import LadakhContainer from "../../../../containers/travelplanner/Index";
+import StatePage from "../../../../containers/travelplanner/Index";
 import Head from "next/head";
 import Layout from "../../../../components/Layout";
-import { useState, useEffect } from "react";
 import axiosTravelPlannerInstance from "../../../../services/pages/travel-planner";
 import axiossearchallinstance from "../../../../services/search/all";
 import axiospagelistinstance from "../../../../services/pages/list";
 
 const TravelPlanner = (props) => {
-  const [data, setData] = useState({
-    page_title: null,
-    meta_description: null,
-    social_media_description: null,
-    meta_keywords: null,
-    social_share_title: null,
-  });
-
-  useEffect(() => {
-    // setData(DATA);
-  }, []);
-
   return (
     <Layout
       page_id={props.Data.id}
@@ -32,12 +19,10 @@ const TravelPlanner = (props) => {
         </title>
         <meta
           name="description"
-          // content={props.Data.meta_description}
           content={`Plan your dream trip to ${props.Data.destination} with The Tarzan Way's AI itinerary. Explore top attractions, local cuisine, and book your flights, accommodations, and transfers all in one go ${props.Data.destination}.`}
         ></meta>
         <meta
           property="og:title"
-          // content={props.Data.social_share_title}
           content={`Plan Your Trip to ${props.Data.destination} | Trip Planner & Itinerary | The Tarzan Way`}
         />
         <meta
@@ -47,29 +32,35 @@ const TravelPlanner = (props) => {
         <meta property="og:image" content="/logoblack.svg" />
         <meta property="keywords" content={props.Data.meta_keywords}></meta>
       </Head>
-      <LadakhContainer
+
+      <StatePage
         experienceData={props.Data}
         locations={props.locations}
-      ></LadakhContainer>
+      ></StatePage>
     </Layout>
   );
 };
 
 export async function getStaticPaths() {
   let paths = [];
+
   try {
     const res = await axiossearchallinstance.get("/?type=State&fields=path");
     const data = res.data;
+
     const themeRes = await axiospagelistinstance.get(
       "/?fields=path&page_type=Theme"
     );
+
     let themePages = themeRes.data;
     themePages = themePages.map((page) => {
       return {
         path: "asia/India/" + page.path,
       };
     });
+
     const allPaths = [...data, ...themePages];
+
     for (var i = 0; i < allPaths.length; i++) {
       const pathArr = allPaths[i].path.split("/");
       var [continentSlug, countrySlug, stateSlug] = pathArr;
@@ -82,10 +73,8 @@ export async function getStaticPaths() {
       });
     }
   } catch (err) {
-    console.error("[ERROR][statepage:getStaticPaths]: ", err.message);
+    console.error("[ERROR][statePage:getStaticPaths]: ", err.message);
   }
-
-  console.log("paths >>>>>", paths);
 
   return {
     paths: paths,
@@ -102,7 +91,7 @@ export async function getStaticProps(context) {
     );
     data = res.data;
   } catch (err) {
-    console.log("[ERROR][statepage:getStaticProps]: ", err.message);
+    console.log("[ERROR][statePage:getStaticProps]: ", err.message);
   }
 
   if (!data) {
@@ -117,7 +106,7 @@ export async function getStaticProps(context) {
     );
     locations = loc.data;
   } catch (err) {
-    console.log("[ERROR][statepage:getStaticProps]: ", err.message);
+    console.log("[ERROR][statePage:getStaticProps]: ", err.message);
   }
 
   return {

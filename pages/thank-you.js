@@ -6,13 +6,15 @@ import * as authaction from "../store/actions/auth";
 import { useEffect } from "react";
 import axiospagelistinstance from "../services/pages/list";
 import axioscountrydetailsinstance from "../services/pages/country";
+import axiosCountInstance from "../services/itinerary/count";
 
 const Home = (props) => {
   useEffect(() => {
     props.checkAuthState();
   }, []);
+
   return (
-    <Layout page={'Thank you Page'}>
+    <Layout page={"Thank you Page"}>
       <Head>
         <title>Travel Company | India | The Tarzan Way</title>
         <meta
@@ -38,6 +40,7 @@ const Home = (props) => {
         asiaLocations={props.asiaLocations}
         europeLocations={props.europeLocations}
         continetCarousel={props.continetCarousel}
+        Count={props.Count}
       ></ThankYouContainer>
     </Layout>
   );
@@ -49,6 +52,7 @@ const mapStateToPros = (state) => {
     showLogin: state.auth.showLogin,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     checkAuthState: () => dispatch(authaction.checkAuthState()),
@@ -62,11 +66,13 @@ export async function getStaticProps() {
   var asiaLocations = [];
   var europeLocations = [];
   var continetCarousel = [];
+  let Count = null;
 
   try {
     const pageListResponse = await axiospagelistinstance.get(
       `/?country=india&page_type=Theme,Continent,Destination&fields=id,destination,tagline,image,link,path,banner_heading,page_type`
     );
+
     ThemeData = pageListResponse.data.filter(
       (data) => data.page_type === "Theme"
     );
@@ -103,6 +109,16 @@ export async function getStaticProps() {
         hot_destinations: hot_data,
       });
     }
+
+    const countResponse = await axiosCountInstance.get("");
+    let count = countResponse.data.user.toString().split("");
+
+    if (count.length > 3) {
+      for (let i = 1; i < 4; i++) {
+        count.pop();
+      }
+      Count = count.join("") + "k";
+    } else Count = +count.join("");
   } catch (err) {
     console.log("[ERROR][ThankyouPage:getStaticProps]: ", err.message);
   }
@@ -114,6 +130,7 @@ export async function getStaticProps() {
       asiaLocations,
       europeLocations,
       continetCarousel,
+      Count,
     },
   };
 }
