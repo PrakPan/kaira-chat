@@ -1,10 +1,7 @@
 import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import ImageGallery from "./slider/ImageSlider";
-import media from "../../media";
 import { useRouter } from "next/router";
-import urls from "../../../services/urls";
-import * as ga from "../../../services/ga/Index";
 import { logEvent } from "../../../services/ga/Index";
 import Info from "./info/Index";
 import { fadeIn } from "react-animations";
@@ -46,27 +43,7 @@ const ContentContainer = styled.div`
 `;
 
 const ExperienceCard = (props) => {
-  let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
-
-  const redirect = () => {
-    setLoading(true);
-    router.push(urls.travel_experiences.BASE + props.slug);
-    // setLoading(false)
-  };
-
-  const _handleClick = () => {
-    setLoading(true);
-
-    setTimeout(redirect, 1000);
-
-    ga.callback_event({
-      action: "CC-" + props.experience,
-
-      callback: redirect,
-    });
-  };
 
   const _handleRedirect = () => {
     logEvent({
@@ -99,6 +76,7 @@ const ExperienceCard = (props) => {
           images={props.images}
         ></ImageGallery>
       </ImageContainer>
+
       <ContentContainer className="text-cente">
         <Info
           PW={props.PW}
@@ -112,6 +90,7 @@ const ExperienceCard = (props) => {
           starting_cost={props.starting_cost}
         ></Info>
       </ContentContainer>
+
       {props.data ? (
         props.data.payment_info ? (
           props.data.payment_info.summary ? (
@@ -120,11 +99,6 @@ const ExperienceCard = (props) => {
         ) : null
       ) : null}
 
-      {/*
-       <div className='font-lexend text-center' style={{background: 'white' , borderWidth: '1px',  fontWeight: '400', borderColor: '#e4e4e4', borderStyle: 'solid none none none', color: 'black', padding: '0.4rem', letterSpacing: '0.2em', fontSize: '12px', borderRadius: '0px 0px 8px 8px' , boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'}}>
-        {props.PW ? 'PW EXCLUSIVE - 50% OFF' : !props.myplan ? props.data ? props.data.user_name && props.data.user_name !== 'Physics wallah' && props.data.user_name!=='TTW' && props.data.user_name!=="TTW Exclusive" ? 'Created by ' + props.data.user_name :  'TTW EXCLUSIVE' : 'TTW EXCLUSIVE' : 'ITINERARY STATUS'}
-
-        </div> */}
       <ContentContainer
         style={{
           display: "flex",

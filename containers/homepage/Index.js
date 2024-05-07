@@ -217,18 +217,18 @@ const Homepage = (props) => {
       ></DesktopBanner>
 
       <SetWidthContainer>
-        <Heading
-          textAlign="left"
-          bold
-          noline
-          fontSize={isPageWide ? "32px" : "24px"}
-          align="center"
-          aligndesktop="left"
-          margin={!isPageWide ? "2.5rem 0.5rem 0rem 0.5rem" : "3rem 0"}
-        >
-          How it works?
-        </Heading>
         <HowItWorksContainer>
+          <Heading
+            textAlign="left"
+            bold
+            noline
+            fontSize={isPageWide ? "32px" : "24px"}
+            align="center"
+            aligndesktop="left"
+            margin={!isPageWide ? "2.5rem 0.5rem 0rem 0.5rem" : "3rem 0"}
+          >
+            How it works?
+          </Heading>
           <HowItWorks
             images={howitworksimgs}
             content={HowitWorksContentsArr}
@@ -271,6 +271,7 @@ const Homepage = (props) => {
             </Button>
           </>
         ) : null}
+        
       </SetWidthContainer>
 
       <SetWidthContainer style={{}}>
