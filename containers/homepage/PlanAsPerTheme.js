@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React from "react";
 import styled, { keyframes } from "styled-components";
 import media from "../../components/media";
 import Button from "../../components/ui/button/Index";
@@ -28,7 +28,6 @@ const Container = styled.div`
     grid-template-areas:
       "a a a a b b b b b"
       "a a a a b b b b b"
-      // 'a a a a b b b b b'
       "a a a a b b b b b"
       "a a a a e e e e e"
       "c c c d e e e e e"
@@ -103,7 +102,6 @@ const TextContainer = styled.div`
 const Heading = styled.div`
   font-size: 16px;
   font-weight: 700;
-
   @media screen and (min-width: 768px) {
     font-size: 25px;
   }
@@ -117,6 +115,7 @@ const GridItem = styled.div`
   height: 100%;
   width: 100%;
 `;
+
 const ImageContainer = styled(Link)`
   cursor: pointer;
   height: 100%;
@@ -143,32 +142,9 @@ const ImageContainer = styled(Link)`
   }
 `;
 
-const BlackContainer = styled.div`
-  background: linear-gradient(
-    0deg,
-    rgba(2, 0, 36, 1) 0%,
-    rgba(0, 0, 0, 1) 0%,
-    rgba(255, 255, 255, 0) 40%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  &:hover {
-    background: linear-gradient(
-      0deg,
-      rgba(0, 0, 0, 1) 0%,
-      rgba(255, 255, 255, 0) 58%
-    );
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#000000",endColorstr="#ffffff",GradientType=1);
-  }
-`;
-
 const PlanAsPerTheme = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
 
   const _handleTripRedirect = (banner_heading) => {
     logEvent({

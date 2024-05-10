@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import useInViewport from "../../components/custom hooks/useInViewport";
 import media from "../../components/media";
 

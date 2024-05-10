@@ -22,8 +22,8 @@ function useInViewport() {
     };
   }, []);
 
-    const isElementInViewport = (element) => {
-      if (!element) return false;
+  const isElementInViewport = (element) => {
+    if (!element) return false;
     const rect = element.getBoundingClientRect();
     return (
       rect.top >= 0 &&

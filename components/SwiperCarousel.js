@@ -80,6 +80,7 @@ const SwiperContainer = styled.div`
 
 const SwiperCarousel = (props) => {
   let cards = [];
+  
   props.cards.map((card, index) => {
     cards.push(
       <div key={index}>

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Card from "./Card";
 import media from "../../media";
-import { useRouter } from "next/router";
 import { MobileSkeleton } from "./LocationSkeleton";
 import SwiperCarousel from "../../SwiperCarousel";
 
@@ -14,7 +13,6 @@ const MobileCardsContainer = styled.div`
 
 const LocationsBlog = (props) => {
   let isPageWide = media("(min-width: 768px)");
-  const router = useRouter();
   const [MobilecardsToShowJSX, setMobileCardsToShowJSX] = useState([]);
   const [cards, setCards] = useState([]);
 

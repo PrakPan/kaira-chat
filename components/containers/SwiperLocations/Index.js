@@ -1,14 +1,12 @@
 import React from "react";
 import Card from "../../cards/Location";
 import media from "../../media";
-import { useRouter } from "next/router";
 import SwiperCarousel from "../../SwiperCarousel";
 import Link from "next/link";
 import { logEvent } from "../../../services/ga/Index";
 
 const LocationsBlog = (props) => {
   let isPageWide = media("(min-width: 768px)");
-  const router = useRouter();
   let cardsarr = [];
 
   const _handleRedirect = (path, location) => {

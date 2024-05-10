@@ -271,7 +271,6 @@ const Homepage = (props) => {
             </Button>
           </>
         ) : null}
-        
       </SetWidthContainer>
 
       <SetWidthContainer style={{}}>
@@ -312,6 +311,7 @@ const Homepage = (props) => {
             >
               Top countries to visit in Europe
             </Heading>
+
             <SwiperLocations
               locations={props.europeLocations}
               country
@@ -328,7 +328,6 @@ const Homepage = (props) => {
               borderRadius="8px"
               bgColor="white"
               margin="2.5rem auto"
-              // width="20rem"
               padding="0.5rem 2rem"
               borderWidth="1px"
             >
@@ -351,6 +350,7 @@ const Homepage = (props) => {
             >
               Top countries to visit in Asia
             </Heading>
+
             <SwiperLocations
               locations={props.asiaLocations}
               country
@@ -367,7 +367,6 @@ const Homepage = (props) => {
               borderRadius="8px"
               bgColor="white"
               margin="2.5rem auto"
-              // width="20rem"
               padding="0.5rem 2rem"
               borderWidth="1px"
             >
@@ -391,14 +390,13 @@ const Homepage = (props) => {
             >
               Plan your trip anywhere in the world
             </Heading>
+
             <Continentcarousel
               data={props.continetCarousel}
               page={"Home Page"}
             ></Continentcarousel>
           </>
-        ) : (
-          <></>
-        )}
+        ) : null}
 
         {props.ThemeData && props.ThemeData.length ? (
           <>
@@ -415,6 +413,7 @@ const Homepage = (props) => {
             >
               Plan trip as per mood
             </Heading>
+
             <PlanAsPerTheme
               ThemeData={props.ThemeData}
               Count={props.Count}
@@ -450,9 +449,6 @@ const Homepage = (props) => {
         <CaseStudies></CaseStudies>
       </SetWidthContainer>
 
-      <SetWidthContainer></SetWidthContainer>
-
-      <br></br>
       {!isPageWide && (
         <div>
           <Banner
@@ -473,9 +469,11 @@ const mapStateToProps = (state) => {
     userLocation: state.UserLocation.location,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     changeUserLocation: (payload) => dispatch(changeUserLocation(payload)),
   };
 };
+
 export default connect(mapStateToProps, mapDispatchToProps)(Homepage);

@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import media from "../../media";
 import ImageLoader from "../../ImageLoader";
-import { useRouter } from "next/router";
 import Link from "next/link";
 import { logEvent } from "../../../services/ga/Index";
 
@@ -29,10 +27,7 @@ const ImageContainer = styled.div`
 `;
 
 const BlackContainer = styled.div`
-  // background-color: rgba(0, 0, 0, 0.4);
   width: 100%;
-  // height: 0%;
-  // border : 1px solid red;
   position: absolute;
   color: white;
   display: flex;
@@ -56,12 +51,12 @@ const Subheading = styled.p`
   font-size: 1rem;
   line-height: 1;
   text-align: center;
-
   font-weight: 300;
 `;
 
 const Experiences = (props) => {
   const [loading, setLoading] = useState(true);
+  
   const handleImageClick = (e) => {
     logEvent({
       action: "View_Destination",

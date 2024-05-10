@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components";
 import media from "../media";
 import ImageLoader from "../ImageLoader";
-import { useRouter } from "next/router";
 import { useState } from "react";
 import Link from "next/link";
 import { logEvent } from "../../services/ga/Index";
@@ -57,7 +56,6 @@ const Heading = styled.p`
 
 const Subheading = styled.p`
   font-size: ${(props) => (props.continent ? "1.5rem" : "1rem")};
-
   line-height: 1;
   text-align: center;
   margin: 0;
@@ -66,7 +64,6 @@ const Subheading = styled.p`
 
 const Experiences = (props) => {
   let isPageWide = media("(min-width: 768px)");
-  const router = useRouter();
   const [ImageLoaded, setImageLoaded] = useState(false);
 
   const _handleRedirect = (e) => {
@@ -84,10 +81,6 @@ const Experiences = (props) => {
     });
     if (props.path) window.location.href = "/" + props.path;
   };
-
-  const path = props.city
-    ? "https://thetarzanway.com/travel-guide/city/"
-    : "https://thetarzanway.com/travel-planner/";
 
   return (
     <Link href={"/" + props.path}>
@@ -114,6 +107,7 @@ const Experiences = (props) => {
             style={{ filter: "brightness(0.75)" }}
           ></ImageLoader>
         </ImageFade>
+        
         <BlackContainer continent={props.continent} className="font-lexend">
           {ImageLoaded && (
             <>

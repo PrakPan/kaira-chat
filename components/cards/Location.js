@@ -41,7 +41,6 @@ const TextContainer = styled.div`
   align-items: center;
   width: 100%;
   flex-direction: column;
-  // margin-bottom: 2rem;
   position: absolute;
   bottom: 8%;
   ${(props) => props.loading && "bottom : 23%"};
@@ -123,6 +122,7 @@ const Experiences = (props) => {
           )}
         </TextContainer>
       </BackroundImageLoader>
+
       <CtaContainer loading={loading} className="CtaContainer">
         <Button
           margin="1.5rem auto"
