@@ -8,7 +8,7 @@ export default function SkeletonCard(props) {
     width: ${(props) => props.width || "100%"};
     margin: ${(props) => props.margin || "auto"};
   `;
-  
+
   const defaultOptions = {
     loop: true,
     autoplay: true,

@@ -1,15 +1,8 @@
-import React, { Component, useEffect, useState } from 'react';
-import content from '../../../public/content/termsconditions';
-
-import styled from 'styled-components';
-
-import { Link, animateScroll as scroll } from 'react-scroll';
+import React, { useEffect, useState } from "react";
+import content from "../../../public/content/termsconditions";
+import { Link, animateScroll as scroll } from "react-scroll";
 
 const Term2 = () => {
-  const handleSetActive = (activeClass) => {
-    setHeadingCont(activeClass);
-  };
-
   let card = [];
   const [headingText, setHeadingText] = useState(false);
   const [headingCont, setHeadingCont] = useState(false);
@@ -23,10 +16,10 @@ const Term2 = () => {
             style={{
               backgroundColor:
                 headingCont === content[i].subheading
-                  ? '#f7e700'
-                  : 'transparent',
-              padding: '0.5rem',
-              fontWeight: headingCont === content[i].subheading ? '600' : '400',
+                  ? "#f7e700"
+                  : "transparent",
+              padding: "0.5rem",
+              fontWeight: headingCont === content[i].subheading ? "600" : "400",
             }}
           >
             <Link
@@ -38,7 +31,7 @@ const Term2 = () => {
               duration={500}
               onSetActive={handleSetActive}
             >
-              {content[i].subheading}{' '}
+              {content[i].subheading}{" "}
             </Link>
           </li>
         );
@@ -47,15 +40,14 @@ const Term2 = () => {
     setHeadingText(card);
   }, [headingCont]);
 
+  const handleSetActive = (activeClass) => {
+    setHeadingCont(activeClass);
+  };
+
   return (
     <nav className="nav" id="navbar">
       <div className="nav-content">
-        <div
-          //  className="border-thin"
-          style={{ fontSize: '1rem' }}
-        >
-          {headingText}
-        </div>
+        <div style={{ fontSize: "1rem" }}>{headingText}</div>
       </div>
     </nav>
   );

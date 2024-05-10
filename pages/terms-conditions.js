@@ -9,9 +9,8 @@ const Terms = () => {
         <title>Terms-Conditions | The Tarzan Way | Travel India</title>
         <meta name="robots" content="noindex"></meta>
       </Head>
-      <div>
-        <TermsContainer />
-      </div>
+
+      <TermsContainer />
     </Layout>
   );
 };

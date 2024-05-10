@@ -17,6 +17,7 @@ const Container = styled.div`
     gap: 10px;
   }
 `;
+
 const Heading = styled.p`
   font-size: 3.25rem;
   font-weight: 700;
@@ -38,6 +39,7 @@ const Linkcardstyle = styled.div`
   top: 15vh;
   box-shadow: yellow;
 `;
+
 const Cardstyle = styled.div`
   font-weight: 300;
   font-size: 1rem;
@@ -45,6 +47,7 @@ const Cardstyle = styled.div`
 `;
 
 const Terms = () => {
+  let isPageWide = media("(min-width: 768px)");
   let textfield = [];
   const [textfieldText, settextfieldText] = useState(false);
 
@@ -70,14 +73,11 @@ const Terms = () => {
           ))}
         </ul>
       );
-      //   for(var j=0;j<content[i].content.length;j++){
 
-      // }
       textfield.push(
         <Section
           key={content[i].subheading}
           title={content[i].subheading}
-          // subtitle={content[i].content[j].text}
           subtitle={text}
           dark={true}
           id={content[i].subheading}
@@ -88,23 +88,17 @@ const Terms = () => {
     settextfieldText(textfield);
   }, []);
 
-  let isPageWide = media("(min-width: 768px)");
-
   return (
     <>
       <Heading className="font-lexend">Terms And Conditions</Heading>
 
       <Container className="font-lexend">
         {isPageWide && (
-          <Linkcardstyle
-          // className='border-thin'
-          >
+          <Linkcardstyle>
             <Navbar />
           </Linkcardstyle>
         )}
-        <Cardstyle
-        //  className='border-thin'
-        >
+        <Cardstyle>
           {" "}
           <div> {textfieldText} </div>{" "}
         </Cardstyle>

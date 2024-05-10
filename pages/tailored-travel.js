@@ -14,6 +14,7 @@ const Contact = (props) => {
         />
         <meta property="og:image" content="/logoblack.svg" />
       </Head>
+
       <TailoredContainer referer={props.referer}></TailoredContainer>
     </Layout>
   );
