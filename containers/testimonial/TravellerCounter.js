@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import ImageLoader from "../../components/ImageLoader";
-import TripsCounter from "../homepage/TripsCounter";
 import axiosCountInstance from "../../services/itinerary/count";
 
 const Text = styled.h1`
@@ -45,22 +44,9 @@ const LeafContainer = styled.div`
   }
 `;
 
-const Leaf = styled.div`
-  height: 8rem;
-`;
-
-const StoriesHeading = styled.span`
-  width: 100%;
-  padding: 0rem 1rem 3rem 1rem;
-  font-weight: 200;
-  font-size: 1.2rem;
-  @media screen and (min-width: 768px) {
-    font-size: 2rem;
-  }
-`;
-
 const TravellerCounter = (props) => {
   const [count, setCount] = useState(null);
+
   useEffect(() => {
     axiosCountInstance.get("").then((res) => setCount(res.data.user));
   }, []);
@@ -74,7 +60,6 @@ const TravellerCounter = (props) => {
             dimensionsMobile={{ height: 500, width: 270 }}
             height={"8rem"}
             url={"media/testimonials/leaf.svg"}
-            // widthmobile='2rem'
           />
         </LeafContainer>
         <LeafContainer>

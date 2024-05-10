@@ -23,6 +23,7 @@ const Testimonials = () => {
         />
         <meta property="og:image" content="/logoblack.svg" />
       </Head>
+
       <TestimonialsContainer></TestimonialsContainer>
     </Layout>
   );

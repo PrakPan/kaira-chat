@@ -7,12 +7,6 @@ import { faQuoteRight } from "@fortawesome/free-solid-svg-icons";
 import media from "../../components/media";
 import usePageLoaded from "../../components/custom hooks/usePageLoaded";
 
-const Icon = styled.img`
-  margin: -1rem 0.2rem 0rem -1rem;
-  height: 1.5rem;
-  width: 1.5rem;
-`;
-
 const Card = styled.div`
   padding: 1rem;
 
@@ -47,25 +41,10 @@ const Card2 = styled.div`
   }
 `;
 
-const UserIcon = styled.img`
-  @media screen and (min-width: 768px) {
-    height: 20rem;
-    width: 20rem;
-  }
-  height: 17rem;
-  width: 17rem;
-  border-radius: 50%;
-`;
-
 const Name = styled.h2`
   font-size: 1.25rem;
   font-weight: 800;
   margin: 1.5rem 0 1rem 0;
-`;
-
-const Location = styled.p`
-  margin: 0 0 1rem 0;
-  font-weight: 300;
 `;
 
 const ReadMore = styled.p`
@@ -96,11 +75,6 @@ const ReviewContainer = styled.div`
     width: 85%;
     margin: auto;
   }
-`;
-
-const Country = styled.img`
-  width: 1.5rem;
-  margin: 0 1rem 1.5rem 1rem;
 `;
 
 const ReviewFront = styled.p`
@@ -145,12 +119,9 @@ const TestimonialCard = (props) => {
   const isPageLoaded = usePageLoaded();
   let isPageWide = media("(min-width: 768px)");
   const [isFlipped, setIsFlipped] = useState(false);
-  const _flipHandler = (e, val) => {
-    e.preventDefault();
-    setIsFlipped(val);
-  };
   const [Card1Height, setCard1Height] = useState(0);
   const [Card2Height, setCard2Height] = useState(0);
+  const [stringlength, setStringlength] = useState();
   const Card1Ref = useRef();
   const Card2Ref = useRef();
 
@@ -162,7 +133,11 @@ const TestimonialCard = (props) => {
     }
   });
 
-  const [stringlength, setStringlength] = useState();
+  const _flipHandler = (e, val) => {
+    e.preventDefault();
+    setIsFlipped(val);
+  };
+
   if (isPageLoaded && !stringlength) {
     if (window.innerWidth <= 380 && window.innerHeight < 700)
       setStringlength(380); // Moto g4
@@ -202,7 +177,9 @@ const TestimonialCard = (props) => {
           borderRadius="50%"
           width="50%"
         />
+        
         <Name className="font-lexend">{props.name}</Name>
+
         <ImageLoader
           dimensions={{ height: 100, width: 180 }}
           height="1.5rem"
@@ -210,10 +187,12 @@ const TestimonialCard = (props) => {
           widthmobile="2rem"
           url={countryicons[props.location]}
         ></ImageLoader>
+
         <ReviewContainer style={{ position: "relative" }}>
           <ReviewFront className="font-lexend">
             <em>{props.text}</em>{" "}
           </ReviewFront>
+
           {!isPageWide ? (
             <ReadMore
               style={{
@@ -228,8 +207,10 @@ const TestimonialCard = (props) => {
               Read More
             </ReadMore>
           ) : null}
+
         </ReviewContainer>
       </Card>
+
       <Card2
         style={{ minHeight: Card2Height + "px" }}
         ref={Card2Ref}

@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import styled, { keyframes } from 'styled-components';
-import Tooltip from 'react-bootstrap/Tooltip';
-import media from '../../components/media';
-import ImageLoader from '../../components/ImageLoader';
-import usePageLoaded from '../../components/custom hooks/usePageLoaded';
+import styled, { keyframes } from "styled-components";
+import media from "../../components/media";
+import ImageLoader from "../../components/ImageLoader";
+import usePageLoaded from "../../components/custom hooks/usePageLoaded";
+
 const MapSlide = keyframes`
 0% {
     margin-left: -30rem;
     }
     100% {
-    margin-left: 0rem;  
+    margin-left: 0rem;
     }
 
 `;
@@ -175,65 +174,10 @@ const MapContainer = styled.div`
   and (max-device-width : 1024px) {
   }
 `;
-const reveiws = [
-  {
-    name: 'Dieter Arnold',
-    image: 'media/website/Dieter.png',
-    review:
-      'Soulful experience! I had my yoga trip in India and these guys saved me tons of money. Will be back soon haha!',
-  },
-  {
-    name: 'Damla Gürsoy',
-    review:
-      'Spent the best time volunteering in India with these guys! The Customer Support team is the very helpful. Wish you luck!',
-    image: 'media/website/Damla.png',
-  },
-  {
-    name: 'Arnab Roy',
-    review:
-      'The travel itineraries are beyond imagination with the most local and cultural places covered. Good going guys!',
-    image: 'media/website/Arnab.png',
-  },
-  {
-    name: 'Maria Carolina',
-    review:
-      'The only travel company in India I can trust! Will visit again for one of their mindblowing experiences. Lots of love!',
-    image: 'media/website/Maria Carolina.png',
-  },
-  {
-    name: 'Raghav Bansal',
-    review:
-      'The staff was very supportive. We got exactly what we needed, and it was so flexible!! 100% recommended!',
-    image: 'media/website/Raghav-min.png',
-  },
-  {
-    name: 'Mohamed Zaghloul',
-    review:
-      'My best friends in India!!! I spent 6 months with them, and before you go anywhere in India, just call them once. :D',
-    image: 'media/website/Mohamed.png',
-  },
-  {
-    name: 'Shivam Sachdev',
-    review:
-      'It was a great experience from the planning to booking. The team is really polite and helpful with all your requests',
-    image: 'media/website/Shivam.jpeg',
-  },
-];
-
-const TooltipContainer = styled.div`
-  width: 60vw;
-  background-color: rgba(0, 0, 0, 0.9);
-  color: white;
-  border-radius: 5px;
-  padding: 0.5rem 1rem 1rem 1rem;
-  @media screen and (min-width: 768px) {
-    width: 30vw;
-  }
-`;
 
 const StoriesMap = () => {
   const isPageLoaded = usePageLoaded();
-  let isPageWide = media('(min-width: 768px)');
+  let isPageWide = media("(min-width: 768px)");
 
   if (!isPageLoaded) return null;
   else {
@@ -243,9 +187,9 @@ const StoriesMap = () => {
           <StoriesHeading className="font-lexend">Our Stories</StoriesHeading>
 
           <Container>
-            <PinIcon style={{ left: '86%', top: '78.9%' }}>
+            <PinIcon style={{ left: "86%", top: "78.9%" }}>
               <ImageLoader
-                url={'media/icons/map-pin-yellow.svg'}
+                url={"media/icons/map-pin-yellow.svg"}
                 dimensions={{ height: 100, width: 100 }}
                 height="72px"
                 width="72px"
@@ -253,9 +197,9 @@ const StoriesMap = () => {
               />
             </PinIcon>
 
-            <UserIcon style={{ left: '85.8%', top: '76.5%' }}>
+            <UserIcon style={{ left: "85.8%", top: "76.5%" }}>
               <ImageLoader
-                url={'media/testimonials/Dieter.webp'}
+                url={"media/testimonials/Dieter.webp"}
                 dimensions={{ height: 100, width: 100 }}
                 height="40px"
                 width="40px"
@@ -263,18 +207,18 @@ const StoriesMap = () => {
                 borderRadius="50%"
               />
             </UserIcon>
-            <PinIcon style={{ left: '59%', top: '35.9%' }}>
+            <PinIcon style={{ left: "59%", top: "35.9%" }}>
               <ImageLoader
-                url={'media/icons/map-pin-yellow.svg'}
+                url={"media/icons/map-pin-yellow.svg"}
                 dimensions={{ height: 100, width: 100 }}
                 height="72px"
                 width="72px"
                 widthmobile="72px"
               />
             </PinIcon>
-            <UserIcon style={{ left: '58.8%', top: '33.5%' }}>
+            <UserIcon style={{ left: "58.8%", top: "33.5%" }}>
               <ImageLoader
-                url={'media/testimonials/Damla.webp'}
+                url={"media/testimonials/Damla.webp"}
                 dimensions={{ height: 100, width: 100 }}
                 height="40px"
                 width="40px"
@@ -282,18 +226,18 @@ const StoriesMap = () => {
                 borderRadius="50%"
               />
             </UserIcon>
-            <PinIcon style={{ left: '72.5%', top: '46.9%' }}>
+            <PinIcon style={{ left: "72.5%", top: "46.9%" }}>
               <ImageLoader
-                url={'media/icons/map-pin-yellow.svg'}
+                url={"media/icons/map-pin-yellow.svg"}
                 dimensions={{ height: 100, width: 100 }}
                 height="72px"
                 width="72px"
                 widthmobile="72px"
               />
             </PinIcon>
-            <UserIcon style={{ left: '72.3%', top: '44.5%' }}>
+            <UserIcon style={{ left: "72.3%", top: "44.5%" }}>
               <ImageLoader
-                url={'media/testimonials/Arnab.webp'}
+                url={"media/testimonials/Arnab.webp"}
                 dimensions={{ height: 100, width: 100 }}
                 height="40px"
                 width="40px"
@@ -301,18 +245,18 @@ const StoriesMap = () => {
                 borderRadius="50%"
               />
             </UserIcon>
-            <PinIcon style={{ left: '46%', top: '40.9%' }}>
+            <PinIcon style={{ left: "46%", top: "40.9%" }}>
               <ImageLoader
-                url={'media/icons/map-pin-yellow.svg'}
+                url={"media/icons/map-pin-yellow.svg"}
                 dimensions={{ height: 100, width: 100 }}
                 height="72px"
                 width="72px"
                 widthmobile="72px"
               />
             </PinIcon>
-            <UserIcon style={{ left: '45.8%', top: '38.5%' }}>
+            <UserIcon style={{ left: "45.8%", top: "38.5%" }}>
               <ImageLoader
-                url={'media/testimonials/Maria-Carolina.webp'}
+                url={"media/testimonials/Maria-Carolina.webp"}
                 dimensions={{ height: 100, width: 100 }}
                 height="40px"
                 width="40px"
@@ -320,18 +264,18 @@ const StoriesMap = () => {
                 borderRadius="50%"
               />
             </UserIcon>
-            <PinIcon style={{ left: '70%', top: '45.9%' }}>
+            <PinIcon style={{ left: "70%", top: "45.9%" }}>
               <ImageLoader
-                url={'media/icons/map-pin-yellow.svg'}
+                url={"media/icons/map-pin-yellow.svg"}
                 dimensions={{ height: 100, width: 100 }}
                 height="72px"
                 width="72px"
                 widthmobile="72px"
               />
             </PinIcon>
-            <UserIcon style={{ left: '69.8%', top: '43.5%' }}>
+            <UserIcon style={{ left: "69.8%", top: "43.5%" }}>
               <ImageLoader
-                url={'media/testimonials/Raghav.webp'}
+                url={"media/testimonials/Raghav.webp"}
                 dimensions={{ height: 100, width: 100 }}
                 height="40px"
                 width="40px"
@@ -340,18 +284,18 @@ const StoriesMap = () => {
               />
             </UserIcon>
 
-            <PinIcon style={{ left: '50%', top: '39.9%' }}>
+            <PinIcon style={{ left: "50%", top: "39.9%" }}>
               <ImageLoader
-                url={'media/icons/map-pin-yellow.svg'}
+                url={"media/icons/map-pin-yellow.svg"}
                 dimensions={{ height: 100, width: 100 }}
                 height="72px"
                 width="72px"
                 widthmobile="72px"
               />
             </PinIcon>
-            <UserIcon style={{ left: '49.8%', top: '37.5%' }}>
+            <UserIcon style={{ left: "49.8%", top: "37.5%" }}>
               <ImageLoader
-                url={'media/testimonials/Mohamed.webp'}
+                url={"media/testimonials/Mohamed.webp"}
                 dimensions={{ height: 100, width: 100 }}
                 height="40px"
                 width="40px"
@@ -359,9 +303,9 @@ const StoriesMap = () => {
                 borderRadius="50%"
               />
             </UserIcon>
-            <PinIcon style={{ left: '25%', top: '39.9%' }}>
+            <PinIcon style={{ left: "25%", top: "39.9%" }}>
               <ImageLoader
-                url={'media/icons/map-pin-yellow.svg'}
+                url={"media/icons/map-pin-yellow.svg"}
                 dimensions={{ height: 100, width: 100 }}
                 height="72px"
                 width="72px"
@@ -369,9 +313,9 @@ const StoriesMap = () => {
               />
             </PinIcon>
 
-            <UserIcon style={{ left: '24.8%', top: '37.5%' }}>
+            <UserIcon style={{ left: "24.8%", top: "37.5%" }}>
               <ImageLoader
-                url={'media/testimonials/Shivam.jpg'}
+                url={"media/testimonials/Shivam.jpg"}
                 dimensions={{ height: 100, width: 100 }}
                 height="40px"
                 width="40px"
@@ -391,18 +335,18 @@ const StoriesMap = () => {
           <StoriesHeading className="font-lexend">Our Stories</StoriesHeading>
 
           <Container>
-            <PinIcon style={{ left: '47.3rem', top: '40.9%' }}>
+            <PinIcon style={{ left: "47.3rem", top: "40.9%" }}>
               <ImageLoader
-                url={'media/icons/map-pin-yellow.svg'}
+                url={"media/icons/map-pin-yellow.svg"}
                 dimensions={{ height: 100, width: 100 }}
                 height="72px"
                 width="72px"
                 widthmobile="72px"
               />
             </PinIcon>
-            <UserIcon style={{ left: '47.1rem', top: '38.5%' }}>
+            <UserIcon style={{ left: "47.1rem", top: "38.5%" }}>
               <ImageLoader
-                url={'media/testimonials/Dieter.webp'}
+                url={"media/testimonials/Dieter.webp"}
                 dimensions={{ height: 100, width: 100 }}
                 height="40px"
                 width="40px"
@@ -410,18 +354,18 @@ const StoriesMap = () => {
                 borderRadius="50%"
               />
             </UserIcon>
-            <PinIcon style={{ left: '30rem', top: '42.9%' }}>
+            <PinIcon style={{ left: "30rem", top: "42.9%" }}>
               <ImageLoader
-                url={'media/icons/map-pin-yellow.svg'}
+                url={"media/icons/map-pin-yellow.svg"}
                 dimensions={{ height: 100, width: 100 }}
                 height="72px"
                 width="72px"
                 widthmobile="72px"
               />
             </PinIcon>
-            <UserIcon style={{ left: '29.8rem', top: '40.5%' }}>
+            <UserIcon style={{ left: "29.8rem", top: "40.5%" }}>
               <ImageLoader
-                url={'media/testimonials/Damla.webp'}
+                url={"media/testimonials/Damla.webp"}
                 dimensions={{ height: 100, width: 100 }}
                 height="40px"
                 width="40px"
@@ -429,18 +373,18 @@ const StoriesMap = () => {
                 borderRadius="50%"
               />
             </UserIcon>
-            <PinIcon style={{ left: '35.3rem', top: '59.9%' }}>
+            <PinIcon style={{ left: "35.3rem", top: "59.9%" }}>
               <ImageLoader
-                url={'media/icons/map-pin-yellow.svg'}
+                url={"media/icons/map-pin-yellow.svg"}
                 dimensions={{ height: 100, width: 100 }}
                 height="72px"
                 width="72px"
                 widthmobile="72px"
               />
             </PinIcon>
-            <UserIcon style={{ left: '35.1rem', top: '57.5%' }}>
+            <UserIcon style={{ left: "35.1rem", top: "57.5%" }}>
               <ImageLoader
-                url={'media/testimonials/Arnab.webp'}
+                url={"media/testimonials/Arnab.webp"}
                 dimensions={{ height: 100, width: 100 }}
                 height="40px"
                 width="40px"
@@ -448,18 +392,18 @@ const StoriesMap = () => {
                 borderRadius="50%"
               />
             </UserIcon>
-            <PinIcon style={{ left: '5rem', top: '35.9%' }}>
+            <PinIcon style={{ left: "5rem", top: "35.9%" }}>
               <ImageLoader
-                url={'media/icons/map-pin-yellow.svg'}
+                url={"media/icons/map-pin-yellow.svg"}
                 dimensions={{ height: 100, width: 100 }}
                 height="72px"
                 width="72px"
                 widthmobile="72px"
               />
             </PinIcon>
-            <UserIcon style={{ left: '4.8rem', top: '33.5%' }}>
+            <UserIcon style={{ left: "4.8rem", top: "33.5%" }}>
               <ImageLoader
-                url={'media/testimonials/Maria-Carolina.webp'}
+                url={"media/testimonials/Maria-Carolina.webp"}
                 dimensions={{ height: 100, width: 100 }}
                 height="40px"
                 width="40px"
@@ -467,18 +411,18 @@ const StoriesMap = () => {
                 borderRadius="50%"
               />
             </UserIcon>
-            <PinIcon style={{ left: '13.7rem', top: '57.9%' }}>
+            <PinIcon style={{ left: "13.7rem", top: "57.9%" }}>
               <ImageLoader
-                url={'media/icons/map-pin-yellow.svg'}
+                url={"media/icons/map-pin-yellow.svg"}
                 dimensions={{ height: 100, width: 100 }}
                 height="72px"
                 width="72px"
                 widthmobile="72px"
               />
             </PinIcon>
-            <UserIcon style={{ left: '13.5rem', top: '55.5%' }}>
+            <UserIcon style={{ left: "13.5rem", top: "55.5%" }}>
               <ImageLoader
-                url={'media/testimonials/Raghav.webp'}
+                url={"media/testimonials/Raghav.webp"}
                 dimensions={{ height: 100, width: 100 }}
                 height="40px"
                 width="40px"
@@ -486,18 +430,18 @@ const StoriesMap = () => {
                 borderRadius="50%"
               />
             </UserIcon>
-            <PinIcon style={{ left: '16.8rem', top: '65.9%' }}>
+            <PinIcon style={{ left: "16.8rem", top: "65.9%" }}>
               <ImageLoader
-                url={'media/icons/map-pin-yellow.svg'}
+                url={"media/icons/map-pin-yellow.svg"}
                 dimensions={{ height: 100, width: 100 }}
                 height="72px"
                 width="72px"
                 widthmobile="72px"
               />
             </PinIcon>
-            <UserIcon style={{ left: '16.6rem', top: '63.5%' }}>
+            <UserIcon style={{ left: "16.6rem", top: "63.5%" }}>
               <ImageLoader
-                url={'media/testimonials/Mohamed.webp'}
+                url={"media/testimonials/Mohamed.webp"}
                 dimensions={{ height: 100, width: 100 }}
                 height="40px"
                 width="40px"

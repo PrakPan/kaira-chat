@@ -100,15 +100,18 @@ const ChatWithUs = (props) => {
             margin="auto"
           ></ImageLoader>
         )}
+
         <div className="center-div">
           <Heading fontSize="32px" margin="1rem" align="center" bold noline>
             {props.heading ? props.heading : "Come On! Talk to Us."}
           </Heading>
+
           <Text className="font-nunito">
             {props.text
               ? props.text
               : "We’ve a large community of bloggers, influencers, travelers and of course travel experts to help you out."}
           </Text>
+
           <Button
             boxShadow
             fontSizeDesktop={"16px"}
@@ -135,15 +138,18 @@ const ChatWithUs = (props) => {
           width="90%"
           margin="auto"
         ></ImageLoader>
+
         <div className="center-div">
           <Heading fontSize="32px" margin="1rem" align="center" bold noline>
             {props.heading ? props.heading : "Come On! Talk to Us."}
           </Heading>
+
           <Text className="font-nunito">
             {props.text
               ? props.text
               : "We’ve a large community of bloggers, influencers, travelers and of course travel experts to help you out."}
           </Text>
+
           <Button
             boxShadow
             fontSizeDesktop={"16px"}

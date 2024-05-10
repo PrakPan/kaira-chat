@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import media from "../../components/media";
 import SwiperCarousel from "../../components/SwiperCarousel";
+
 const Heading = styled.p`
     font-size: 1.5rem
     padding: 1rem 0;
@@ -17,6 +18,7 @@ const Heading = styled.p`
 
     }
 `;
+
 const ReviewContainer = styled.div`
   display: block;
   @media screen and (min-width: 768px) {
@@ -50,6 +52,7 @@ const ReviewGridContainer = styled.div`
     padding-bottom: 3rem;
   }
 `;
+
 const ReviewLogo = styled.img`
   width: 80%;
   margin: auto;
@@ -58,6 +61,7 @@ const ReviewLogo = styled.img`
     width: 40%;
   }
 `;
+
 const TestimonialReviews = () => {
   let isPageWide = media("(min-width: 768px)");
 
@@ -165,17 +169,7 @@ const TestimonialReviews = () => {
         "My friends and I planned a week long road trip from Delhi to many cities in Uttarakhand during the pandemic. It was a great experience...",
     },
   ];
-  const mobilereviews = [
-    {
-      name: "Uzay",
-      image: "media/website/Uzay.png",
-      location: "turkey",
-      review:
-        "A perfect company for your dreams, travel and volunteering Project. They are the best traveling company ın new Delhi. As a senior student in university I wanted to discover the most exotic part of the World, India .fter 2 weeks of web research and with luck, I was able to find Aryen, Shikhar, and Vaibhav in Tarzan Way Company. I know that it is difficult to find a trustworthy company in these days but you can trust TTW company in any terms. Don't miss that dream journey. Make your dreams to become real.",
-      summary:
-        "A perfect company for your dreams, travel and volunteering Project. They are the best traveling company ın new Delhi...",
-    },
-  ];
+
   let FlickityCards = [];
   for (var i = 0; i < reviews.length; i++) {
     FlickityCards.push(
@@ -188,9 +182,9 @@ const TestimonialReviews = () => {
       ></ReviewCard>
     );
   }
+
   if (isPageWide) {
     if (!isPageWide)
-      //chage to ipdad
       return (
         <div style={{ background: "#F7e700", padding: "1rem 0" }}>
           <div className="center-div">
