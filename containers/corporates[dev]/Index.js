@@ -1,29 +1,25 @@
-import React, {useState} from 'react';
-import styled from 'styled-components';
- 
-import FullImg from '../../components/FullImage';
-import Heading from '../../components/newheading/heading/Index';
-import FullImgContent from './FullImgContent';
+import React, { useState } from "react";
+import styled from "styled-components";
+import FullImg from "../../components/FullImage";
+import Heading from "../../components/newheading/heading/Index";
+import FullImgContent from "./FullImgContent";
 import HowItWorks from "../../components/containers/HowItWorksSlideshow";
- 
-import media from '../../components/media';
-  import travelsupportcontent from '../../public/content/travelsupport';
-import Logos from './Logos';
-import Benefits from './Benefits';
- import CaseStudies from './CaseStudies/Index';
-import Enquiry from './enquiry/Index';
-import NewCaseStudies from './NewCaseStudies/Index';
-import BannerMobile from './banner/Mobile';
-import Experiences from '../../components/containers/Experiences';
+import media from "../../components/media";
+import travelsupportcontent from "../../public/content/travelsupport";
+import Logos from "./Logos";
+import Enquiry from "./enquiry/Index";
+import NewCaseStudies from "./NewCaseStudies/Index";
+import BannerMobile from "./banner/Mobile";
+import Experiences from "../../components/containers/Experiences";
 
- 
 const SetWidthContainer = styled.div`
-    width: 100%;
-    margin: auto;
-    @media screen and (min-width: 768px){
-      width: 80%;
-    }
-  `;
+  width: 100%;
+  margin: auto;
+  @media screen and (min-width: 768px) {
+    width: 80%;
+  }
+`;
+
 const HowItWorksText = styled.div`
   font-size: 1rem;
   width: 100%;
@@ -36,6 +32,7 @@ const HowItWorksText = styled.div`
     font-weight: 300;
   }
 `;
+
 const HowItWorksHeading = styled.p`
   font-weight: 600;
   margin: 1rem 0 0.5rem 0;
@@ -44,21 +41,23 @@ const HowItWorksHeading = styled.p`
     margin: 1rem 0 0.5rem 0;
   }
 `;
+
 const HowItWorksContainer = styled.div`
   @media screen and (min-width: 768px) {
     margin: auto;
   }
 `;
+
 const CardListItem = styled.li`
   font-size: 0.9rem;
   font-weight: 300;
   margin-bottom: 0.9rem;
   line-height: 1.3;
   @media screen and (min-width: 768px) {
-
-  text-align : left;
+    text-align: left;
   }
-  `;
+`;
+
 const HowitWorksHeadingsArr = [
   <HowItWorksHeading className="font-lexend">
     Leisure Travel
@@ -75,6 +74,7 @@ const HowitWorksHeadingsArr = [
     {/* : Company travel excursions and conferences */}
   </HowItWorksHeading>,
 ];
+
 const HowitWorksContentsArr = [
   <HowItWorksText>
     <CardListItem>
@@ -110,22 +110,19 @@ const HowitWorksContentsArr = [
     </CardListItem>
   </HowItWorksText>,
 ];
-const AffiliatePage = (props)=> {
+
+const AffiliatePage = (props) => {
   const [enquiryOpen, setEnquiryOpen] = useState(false);
+  let isPageWide = media("(min-width: 768px)");
 
-  let isPageWide = media('(min-width: 768px)');
-
- 
   return (
     <>
       <FullImg
-        // style={isPageWide ? {} : { height: "30rem" }}
         heightmobile={"30rem"}
         height={"37rem"}
         filter={"brightness(0.7)"}
         zIndex={-1}
         center={isPageWide ? false : true}
-        // url="media/website/duy-pham-Cecb0_8Hx-o-unsplash-min.jpeg"
         url={
           isPageWide
             ? "media/page/helena-lopes-UZe35tk5UoA-unsplash.jpg"
@@ -137,8 +134,10 @@ const AffiliatePage = (props)=> {
           subheading={travelsupportcontent["subheading"]}
         ></FullImgContent>
       </FullImg>
+
       <SetWidthContainer>
         <Logos></Logos>
+
         <Heading
           noline
           textAlign="left"
@@ -150,7 +149,7 @@ const AffiliatePage = (props)=> {
         >
           Catered to every organisation's need
         </Heading>
-        {/* <Benefits></Benefits> */}
+
         <HowItWorksContainer>
           <HowItWorks
             nostart
@@ -166,6 +165,7 @@ const AffiliatePage = (props)=> {
             dimensionsMobile={{ width: 1200, height: 700 }}
           ></HowItWorks>
         </HowItWorksContainer>
+
         {props.workcation_experience.length ? (
           <>
             <Heading
@@ -181,14 +181,15 @@ const AffiliatePage = (props)=> {
             >
               Workcation Itineraries for Corporates
             </Heading>
+
             <Experiences
-              // mobileGrid
               experiences={props.workcation_experience}
             ></Experiences>
           </>
         ) : (
           <></>
         )}
+
         {props.getaway_experiences.length ? (
           <>
             <Heading
@@ -204,10 +205,8 @@ const AffiliatePage = (props)=> {
             >
               Corporate getaways
             </Heading>
-            <Experiences
-              // mobileGrid
-              experiences={props.getaway_experiences}
-            ></Experiences>
+
+            <Experiences experiences={props.getaway_experiences}></Experiences>
           </>
         ) : (
           <></>
@@ -228,14 +227,13 @@ const AffiliatePage = (props)=> {
             >
               Offbeat getaways
             </Heading>
-            <Experiences
-              // mobileGrid
-              experiences={props.offbeat_experiences}
-            ></Experiences>
+
+            <Experiences experiences={props.offbeat_experiences}></Experiences>
           </>
         ) : (
           <></>
         )}
+
         <Heading
           noline
           textAlign="left"
@@ -247,16 +245,17 @@ const AffiliatePage = (props)=> {
         >
           Happy Community of The Tarzan Way
         </Heading>
-        {/* <CaseStudies></CaseStudies> */}
+
         <NewCaseStudies setEnquiryOpen={() => setEnquiryOpen(true)} />
-        {/* <WhyUs></WhyUs> */}
-        {/* <HowItWorks images={howitworksimgs} content={HowitWorksContentsArr} headings={HowitWorksHeadingsArr}></HowItWorks> */}
       </SetWidthContainer>
+
       <br></br>
+
       <Enquiry
         show={enquiryOpen}
         onhide={() => setEnquiryOpen(false)}
       ></Enquiry>
+
       {!isPageWide && (
         <div>
           <BannerMobile
@@ -270,6 +269,6 @@ const AffiliatePage = (props)=> {
       )}
     </>
   );
-}
+};
 
 export default AffiliatePage;

@@ -20,9 +20,9 @@ const Container = styled.div`
     justify-content: center;
   }
 `;
+
 const Heading = styled.h1`
   color: white;
-
   width: 99%;
   font-weight: 700;
   margin-bottom: 1rem;
@@ -32,6 +32,7 @@ const Heading = styled.h1`
     font-weight: 700;
   }
 `;
+
 const SubText = styled.h3`
   color: white;
   font-weight: 100;
@@ -41,6 +42,7 @@ const SubText = styled.h3`
     font-size: 2rem;
   }
 `;
+
 const CompanyName = styled.h4`
   color: white;
   font-weight: 800;
@@ -50,42 +52,44 @@ const CompanyName = styled.h4`
     font-size: 1.75rem;
   }
 `;
+
 const FullImgContent = (props) => {
   let isPageWide = media("(min-width: 768px)");
 
-    return (
-      <>
-        <Container className="font-lexend">
-          {isPageWide ? (
-            <CompanyName className="font-lexend">
-              TheTarzanWay
-              <span style={{ fontWeight: "100" }}> For Business</span>
-            </CompanyName>
-          ) : null}
-          <Heading>Hassle-Free Business Travel Partner</Heading>
-          <SubText>
-            Workcations, Retreats, Conferences, Weekend Getaways and more
-          </SubText>
-        </Container>
-        {/* <div style={{paddingLeft : '12vh'}}> */}
-          <Button
-            onclick={props.setEnquiryOpen}
-            onclickparams={null}
-            link="/"
-            padding="0.75rem 1rem"
-            fontSize="18px"
-            fontWeight="500"
-            bgColor="#f7e700"
-            borderRadius="7px"
-            color="black"
-            borderWidth="1px"
-          margin={isPageWide ? "1rem 11vh" : "1rem auto 1rem auto"}
-                    >
-            Schedule Callback
-          </Button>
-        {/* </div> */}
-      </>
-    );
+  return (
+    <>
+      <Container className="font-lexend">
+        {isPageWide ? (
+          <CompanyName className="font-lexend">
+            TheTarzanWay
+            <span style={{ fontWeight: "100" }}> For Business</span>
+          </CompanyName>
+        ) : null}
+
+        <Heading>Hassle-Free Business Travel Partner</Heading>
+
+        <SubText>
+          Workcations, Retreats, Conferences, Weekend Getaways and more
+        </SubText>
+      </Container>
+
+      <Button
+        onclick={props.setEnquiryOpen}
+        onclickparams={null}
+        link="/"
+        padding="0.75rem 1rem"
+        fontSize="18px"
+        fontWeight="500"
+        bgColor="#f7e700"
+        borderRadius="7px"
+        color="black"
+        borderWidth="1px"
+        margin={isPageWide ? "1rem 11vh" : "1rem auto 1rem auto"}
+      >
+        Schedule Callback
+      </Button>
+    </>
+  );
 };
 
 export default FullImgContent;

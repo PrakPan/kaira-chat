@@ -22,6 +22,7 @@ const Covid = (props) => {
         />
         <meta property="og:image" content="/logoblack.svg" />
       </Head>
+
       <CovidContainer {...props}></CovidContainer>
     </Layout>
   );
@@ -83,7 +84,7 @@ export async function getStaticProps() {
       console.log("[ERROR][corporatespage:getStaticProps]: ", e.message);
     }
   }
-  
+
   return {
     props: {
       workcation_experience,

@@ -168,6 +168,7 @@ const HowItWorksSlideshow = (props) => {
           ></SwiperCarousel>
         </div>
       )}
+      
       {!props.nostart ? (
         <Button
           onclick={handlePlanButtonClick}

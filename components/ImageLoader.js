@@ -3,7 +3,6 @@ import styled from "styled-components";
 import media from "./media";
 import usePageLoaded from "./custom hooks/usePageLoaded";
 import LazyLoad from "react-lazyload";
-import Image from "next/image";
 
 const ImageLoader = (props) => {
   const Container = styled(props.noLazy ? "div" : LazyLoad)`

@@ -1,10 +1,7 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import { makeStyles } from '@mui/styles';
-import usePageLoaded from '../../../components/custom hooks/usePageLoaded';
+import styled from "styled-components";
+import FormControl from "@mui/material/FormControl";
+import { makeStyles } from "@mui/styles";
+import usePageLoaded from "../../../components/custom hooks/usePageLoaded";
 import DropDown from "../../../components/ui/DropDown";
 
 const useStyles = makeStyles((theme) => ({
@@ -12,13 +9,14 @@ const useStyles = makeStyles((theme) => ({
     padding: 0,
   },
   fullWidth: {
-    width: '100%',
+    width: "100%",
     padding: 0,
   },
   relative: {
-    position: 'relative',
+    position: "relative",
   },
 }));
+
 const Option = styled.option`
   padding: 0.75rem;
   background-color: white;
@@ -30,21 +28,26 @@ const Option = styled.option`
     cursor: pointer;
   }
 `;
+
 const QueryType = (props) => {
   const isPageLoaded = usePageLoaded();
   const classes = useStyles();
 
   if (isPageLoaded) {
     const queries = [
-      'Conferences or offsites',
-      'Workcations or retreats',
-      'Central Booking platform',
-      'Partnerships',
-      'Others',
+      "Conferences or offsites",
+      "Workcations or retreats",
+      "Central Booking platform",
+      "Partnerships",
+      "Others",
     ];
+
     const _handleQueryTypeChange = (event) => {
-     if (props.setQueryType){ props.setQueryType(event.target.value);}
+      if (props.setQueryType) {
+        props.setQueryType(event.target.value);
+      }
     };
+
     return (
       <FormControl className={classes.fullWidth} variant="outlined">
         <DropDown
