@@ -32,6 +32,7 @@ const SaifBackgroundImageLoader = (props) => {
           onload={props.onload}
         />
       </div>
+
       <div
         style={{
           width: "100%",

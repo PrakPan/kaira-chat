@@ -3,6 +3,7 @@ import {Modal} from 'react-bootstrap';
 import Heading from '../heading/Heading';
 import styled from 'styled-components';
 import ImageLoader from '../ImageLoader';
+
 const P = styled.p`
     font-weight: 300;
     font-size: 1.25rem;
@@ -13,6 +14,7 @@ const P = styled.p`
         width: 80%;
     }
 `
+
 const PersonaliseModal = (props) => {
   return(
       <div>

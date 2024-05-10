@@ -7,6 +7,7 @@ import dynamic from "next/dynamic";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
+
 const Contact = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -17,7 +18,9 @@ const Contact = () => {
       <Image></Image>
       <YellowContainer desktopWidth="70%" mobileWidth="95%">
         <ContactForm></ContactForm>
+
         <ContactInfo></ContactInfo>
+
         <MapBox
           center={{ lat: 28.5779959, lng: 77.343917 }}
           defaultZoom={14}
@@ -26,11 +29,7 @@ const Contact = () => {
           }
           height={"500px"}
         />
-
-        {/* <SubscribePannel/> */}
       </YellowContainer>
-
-      {/* <Footer></Footer> */}
     </div>
   );
 };

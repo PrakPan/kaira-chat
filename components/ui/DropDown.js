@@ -2,12 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { BsCaretDownFill } from "react-icons/bs";
 import { BiError } from "react-icons/bi";
+
 const Container = styled.div`
   background: white;
   width: ${(props) => props.width || "100%"};
   position: relative;
   z-index: ${(props) => props.zIndex || "5"};
 `;
+
 const SelectBox = styled.div`
   border: ${(props) =>
     props.error
@@ -21,8 +23,9 @@ const SelectBox = styled.div`
   justify-content: ${(props) => (props.labelCenter ? "center" : "left")};
   height: ${(props) => props.height || "3rem"};
   width: ${(props) => props.width || "100%"};
-  cursor : pointer;
+  cursor: pointer;
 `;
+
 const DropDownIcon = styled.div`
   position: absolute;
   height: 1rem;
@@ -30,8 +33,9 @@ const DropDownIcon = styled.div`
   top: 50;
   transform: rotate(0deg);
   transition: all 0.3s ease-out;
-  transform: ${(props) => props.rotate ? `rotate(180deg)` : ""};
+  transform: ${(props) => (props.rotate ? `rotate(180deg)` : "")};
 `;
+
 const Children = styled.div`
   position: absolute;
   top: ${(props) => props.top || "3rem"};
@@ -52,12 +56,14 @@ const Children = styled.div`
     }
   }
 `;
+
 const Error = styled.div`
   color: red;
   font-size: 13px;
   margin-left: 5px;
   display: flex;
 `;
+
 const Label = styled.label`
   position: absolute;
   pointer-events: none;
@@ -72,10 +78,12 @@ const Label = styled.label`
     props.selected &&
     "top: 0;left: 10%;font-size: 11px;padding-inline: 5px;background: white;transform: translate(-50%, -50%);"}
 `;
+
 const CountryCodeDropdown = (props) => {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   const ref = useRef();
+
   useEffect(() => {
     const checkIfClickedOutside = (e) => {
       if (ref.current && !ref.current.contains(e.target)) {
@@ -88,6 +96,7 @@ const CountryCodeDropdown = (props) => {
       document.removeEventListener("mousedown", checkIfClickedOutside);
     };
   }, []);
+
   return (
     <Container
       ref={ref}
@@ -110,11 +119,14 @@ const CountryCodeDropdown = (props) => {
         >
           {props.label}
         </Label>
+
         <Label optionLabel>{selected}</Label>
+
         <DropDownIcon rotate={open}>
           <BsCaretDownFill />
         </DropDownIcon>
       </SelectBox>
+
       {open && (
         <Children
           top={props.height}
@@ -129,6 +141,7 @@ const CountryCodeDropdown = (props) => {
           {props.children}
         </Children>
       )}
+
       {props.error && props.helperText && (
         <Error>
           <BiError style={{ fontSize: "1rem", marginTop: "2px" }} />

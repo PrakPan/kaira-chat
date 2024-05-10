@@ -9,6 +9,7 @@ import SuccessModal from "../../../components/modals/Success";
 import FloatingInput from "../../../components/ui/input/FloatingInput";
 import DropDown from "../../../components/ui/DropDown";
 import usePageLoaded from "../../../components/custom hooks/usePageLoaded";
+
 const Container1 = styled.div`
   background-color: white;
   width: 100%;
@@ -62,7 +63,6 @@ export default function SignUp() {
     { text: "I have a complaint", value: "Complaint" },
     { text: "Others", value: "Other" },
   ];
-
   const myref = useRef();
   const [userDetails, setUserDetails] = useState({
     fname: "",
@@ -70,50 +70,49 @@ export default function SignUp() {
     country: "",
     mobile: "",
     email: "",
-    query_type : "",
+    query_type: "",
     message: "",
   });
   const [emailFail, setEmailFail] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [checkEmpty, setCheckEmpty] = useState(null);
+
   const submitHandler = (token) => {
-    if (false) {
-      setEmailFail(true);
-    } else {
-      setLoading(true);
-      axios
-        .post("https://suppliers.tarzanway.com/lead/contact-us/", {
-          "g-recaptcha-response": token,
-          email: userDetails.email,
-          first_name: userDetails.fname,
-          last_name: userDetails.lname,
-          phone: userDetails.mobile,
-          query_type: userDetails.query_type,
-          country: userDetails.country,
-          query_message: userDetails.message,
-        })
-        .then((res) => {
-          setLoading(false);
-          setSubmitted(true);
-        })
-        .catch((error) => {
-          alert("There was a problem, please refresh and try again.");
-          setLoading(false);
-        });
-    }
+    setLoading(true);
+    axios
+      .post("https://suppliers.tarzanway.com/lead/contact-us/", {
+        "g-recaptcha-response": token,
+        email: userDetails.email,
+        first_name: userDetails.fname,
+        last_name: userDetails.lname,
+        phone: userDetails.mobile,
+        query_type: userDetails.query_type,
+        country: userDetails.country,
+        query_message: userDetails.message,
+      })
+      .then((res) => {
+        setLoading(false);
+        setSubmitted(true);
+      })
+      .catch((error) => {
+        alert("There was a problem, please refresh and try again.");
+        setLoading(false);
+      });
   };
+
   const _changeDetailsHandler = (event, key) => {
     setUserDetails({
       ...userDetails,
       [key]: event.target.value,
     });
   };
+
   const onRecaptchaChange = (value) => {
     if (!submitted) submitHandler(value);
   };
+
   const verifyHandler = () => {
-    // check email first
     for (let key in userDetails) {
       if (userDetails[key] === "") return setCheckEmpty(key);
     }
@@ -128,6 +127,7 @@ export default function SignUp() {
       <Heading align="center" aligndesktop="center" margin="1.5rem">
         Contact Us
       </Heading>
+
       <FormContainer>
         <GridContainer>
           {isPageLoaded ? (
@@ -163,6 +163,7 @@ export default function SignUp() {
             />
           ) : null}
         </GridContainer>
+
         <GridContainer>
           {isPageLoaded ? (
             <FloatingInput
@@ -179,6 +180,7 @@ export default function SignUp() {
               onChange={(event) => _changeDetailsHandler(event, "country")}
             />
           ) : null}
+
           {isPageLoaded ? (
             <FloatingInput
               height="60px"
@@ -195,6 +197,7 @@ export default function SignUp() {
             />
           ) : null}
         </GridContainer>
+
         {isPageLoaded ? (
           <FloatingInput
             height="60px"
@@ -210,12 +213,12 @@ export default function SignUp() {
             onChange={(event) => _changeDetailsHandler(event, "email")}
           />
         ) : null}
+
         {isPageLoaded && (
           <div>
             <DropDown
               onChange={(e) => _changeDetailsHandler(e, "query_type")}
               label="Topic of interest"
-              // labelStyle={{ paddingLeft: "20px" }}
               height="60px"
               error={checkEmpty == "query_type"}
               helperText={"Please Select Your Interest"}
@@ -232,6 +235,7 @@ export default function SignUp() {
             </DropDown>
           </div>
         )}
+
         {isPageLoaded ? (
           <FloatingInput
             height="60px"
@@ -250,13 +254,14 @@ export default function SignUp() {
             onChange={(event) => _changeDetailsHandler(event, "message")}
           />
         ) : null}
-        {/* <div class="g-recaptcha" data-sitekey="6Lf4gqoZAAAAAAgeKAxQk5djc7DtaX-dRvUzvMs6"></div> */}
+
         <ReCAPTCHA
           size="invisible"
           sitekey="6LdcwZ8aAAAAAKzA37MqrCMV5epZ9jltfjKXQyZ_"
           ref={myref}
           onChange={onRecaptchaChange}
         />
+
         <Button
           boxShadow
           margin="1rem auto 0.5rem auto"
@@ -270,9 +275,6 @@ export default function SignUp() {
           Submit
         </Button>
 
-        {/* <div style={{ width: "max-content", margin: "auto" }}> */}
-        {/* {loading ? <Spinner size={20}></Spinner> : null} */}
-        {/* </div> */}
         <SuccessModal
           show={submitted}
           hide={() => setSubmitted(false)}
