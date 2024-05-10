@@ -1,10 +1,10 @@
-import React from 'react';
-import styled from 'styled-components';
-import Slideshow from '../../../components/containers/HowItWorksSlideshow';
-import Heading from '../../../components/newheading/heading/Index';
-import media from '../../../components/media';
-import classes from './Values.module.css';
-import ImageLoader from '../../../components/ImageLoader';
+import React from "react";
+import styled from "styled-components";
+import Slideshow from "../../../components/containers/HowItWorksSlideshow";
+import Heading from "../../../components/newheading/heading/Index";
+import media from "../../../components/media";
+import classes from "./Values.module.css";
+import ImageLoader from "../../../components/ImageLoader";
 
 const HowItWorksText = styled.p`
   font-size: 1rem;
@@ -27,6 +27,7 @@ const HowItWorksHeading = styled.p`
     margin: 1rem 0 0.5rem 0;
   }
 `;
+
 const HowItWorksContainer = styled.div`
   @media screen and (min-width: 768px) {
     margin: auto;
@@ -39,9 +40,8 @@ const HowitWorksHeadingsArr = [
   <HowItWorksHeading className="font-lexend">Improve</HowItWorksHeading>,
 
   <HowItWorksHeading className="font-lexend">Interact</HowItWorksHeading>,
-
 ];
- 
+
 const HowitWorksContentsArr = [
   <HowItWorksText className="font-lexend">
     We aim to create a highly intelligent and user-friendly platform that helps
@@ -60,9 +60,11 @@ const HowitWorksContentsArr = [
     conditions, or disabilities.
   </HowItWorksText>,
 ];
-const Values=()=>{
-    let isPageWide = media('(min-width: 768px)')
-    if(isPageWide)
+
+const Values = () => {
+  let isPageWide = media("(min-width: 768px)");
+  
+  if (isPageWide)
     return (
       <>
         <Heading
@@ -132,7 +134,8 @@ const Values=()=>{
         </div>
       </>
     );
-    else return (
+  else
+    return (
       <div>
         <Heading
           className="font-lexend text-center"
@@ -145,7 +148,7 @@ const Values=()=>{
         <div style={{ padding: "1.5rem 0 0 0" }}>
           <HowItWorksContainer>
             <Slideshow
-            //   vertical
+              //   vertical
               images={[
                 "media/icons/values/Innovate.svg",
                 "media/icons/values/improve.svg",
@@ -158,7 +161,6 @@ const Values=()=>{
         </div>
       </div>
     );
-
-}
+};
 
 export default Values;

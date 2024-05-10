@@ -25,6 +25,7 @@ const Container = styled.div`
     padding: 9.5rem 5rem 1.5rem 5rem;
   }
 `;
+
 const SubContainer = styled.div`
   @media screen and (min-width: 768px) {
     display: grid;
@@ -33,10 +34,12 @@ const SubContainer = styled.div`
     margin: 2% 0% 2% 7%;
   }
 `;
+
 const Box = styled.div`
   &.linkContainer {
   }
 `;
+
 const LogoContainer = styled.div`
   position: relative;
   top: -5px;
@@ -49,12 +52,14 @@ const LogoContainer = styled.div`
     left: 40px;
   }
 `;
+
 const CompanyName = styled.div`
   display: flex;
   align-items: flex-end;
   font-size: 16px;
   font-weight: 700;
 `;
+
 const CompanyText = styled.div`
   font-size: 14px;
   margin: 1.5rem 0;
@@ -75,6 +80,7 @@ const CopyWrite = styled.div`
   font-size: 10px;
   margin: 1.5rem 0 0 0;
 `;
+
 const Links = styled.div`
   font-size: 14px;
   margin: 0 0 1rem 0;
@@ -102,6 +108,7 @@ const Heading = styled.p`
     margin: -0.3rem 0rem 1.85rem 0rem;
   }
 `;
+
 const SubscribeBox = styled.div`
   position: relative;
   z-index: 1001;
@@ -115,16 +122,18 @@ const SubscribeBox = styled.div`
 `;
 
 const NewFooter = (props) => {
+  const router = useRouter();
   const [shadow, setShadow] = useState(false);
   const [showLogo, setShowLogo] = useState(false);
+
   useEffect(() => {
     setShowLogo(true);
   }, []);
-  const router = useRouter();
-  const LinksComponent = linksArr.map((e,i) => (
+
+  const LinksComponent = linksArr.map((e, i) => (
     <div key={i}>
       <Heading>{e.heading}</Heading>
-      {e.data.map((data , i) => (
+      {e.data.map((data, i) => (
         <Links key={i}>
           {typeof data.link != "string" ? (
             <a href={data.link[0]} target="_blank">
@@ -135,7 +144,10 @@ const NewFooter = (props) => {
           ) : data.title == "Subscribe" ? (
             <p onClick={() => setShadow(!shadow)}>{data.title}</p>
           ) : (
-            <Link href={data.link} onClick={() => (window.location.href = data.link)}>
+            <Link
+              href={data.link}
+              onClick={() => (window.location.href = data.link)}
+            >
               {data.title}
             </Link>
           )}
@@ -143,6 +155,7 @@ const NewFooter = (props) => {
       ))}
     </div>
   ));
+
   return (
     <>
       <SubscribeBox className="font-lexend" onClick={() => setShadow(false)}>
@@ -198,6 +211,7 @@ const NewFooter = (props) => {
           </Box>
           <LinksContainer>{LinksComponent}</LinksContainer>
         </SubContainer>
+
         <div
           style={{
             borderBottom: "1px solid rgba(255, 255, 255, 0.5)",
@@ -205,6 +219,7 @@ const NewFooter = (props) => {
             margin: "auto",
           }}
         ></div>
+        
         <CopyWrite className="text-center">
           Copyright © 2018 - {new Date().getFullYear()} Tarzan Way Travels
           Private Limited ® - All Rights Reserved

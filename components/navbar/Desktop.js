@@ -45,7 +45,6 @@ const NavbarContainer = styled.div`
 
 const CenterNav = styled.div`
   width: 85%;
-  // ${(props) => props.staticnav && "padding-right : 2%"};
   margin: auto;
   height: 100%;
   display: grid;
@@ -92,7 +91,6 @@ const Header = styled.div`
 
   box-shadow: 0px 1px 1px 0px rgb(0 0 0 / 14%);
   @media screen and (min-width: 768px) {
-    // height: 10vh;
   }
 `;
 
@@ -108,26 +106,6 @@ position: absolute;
   margin-left: 0.5rem;
 `;
 
-const StyledLink = styled.a`
-  text-decoration: none;
-  display: block;
-  margin: auto;
-  width: max-content;
-  padding: 0.5rem 0;
-  border-style: none none solid none;
-  border-color: transparent;
-  border-width: 1px;
-  font-weight: 600;
-
-  &:hover {
-    color: black;
-    text-decoration: none;
-    border-style: none none solid none;
-    border-color: #f7e700;
-    border-width: 1px;
-  }
-`;
-
 const TopContainer = styled.div`
   border-style: solid;
   border-width: 1px;
@@ -136,8 +114,6 @@ const TopContainer = styled.div`
   width: 100%;
   margin: auto;
   height: 50px;
-  // display: grid;
-  // grid-template-columns: max-content auto;
 `;
 
 const SearchContainer = styled.div`
@@ -159,33 +135,13 @@ const Search = styled.input`
 const Navbar = (props) => {
   const router = useRouter();
   const isTablet = media("(min-width: 950px)");
-
   const [showMobileNavItems, setShowMobileNavItems] = useState(false);
-
-  {
-    /* toggle hamburger */
-  }
-
   const [showDropDownProfileListMobile, setShowDropDownProfileListMobile] =
     useState(false);
-
-  {
-    /* toggle mobile profilelist */
-  }
-
   const [showDropDownProfileList, setShowDropDownProfileList] = useState(false);
-
   const [Height, setHeight] = useState(false);
-
-  const toggleMobileNavItems = () => {
-    setShowMobileNavItems(!showMobileNavItems);
-    if (showDropDownProfileListMobile == true) {
-      setShowDropDownProfileListMobile(false);
-    }
-    if (showDropDownProfileListMobile == false) {
-      setHeight(!Height);
-    }
-  };
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [toggleSearch, setToggleSearch] = useState(false);
 
   const toggleProfileList = () => {
     setShowDropDownProfileList(!showDropDownProfileList);
@@ -197,8 +153,6 @@ const Navbar = (props) => {
       setHeight(!Height);
     }
   };
-
-  const [showNotifications, setShowNotifications] = useState(false);
 
   const _handleNotifications = () => {
     setShowNotifications(true);
@@ -225,8 +179,6 @@ const Navbar = (props) => {
       },
     });
   };
-
-  const [toggleSearch, setToggleSearch] = useState(false);
 
   return (
     <div>
@@ -434,10 +386,12 @@ const mapStateToProps = (state) => {
     image: state.auth.image,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     onLogout: () => dispatch(logout.logout()),
     authShowLogin: () => dispatch(authaction.authShowLogin()),
   };
 };
+
 export default connect(mapStateToProps, mapDispatchToProps)(Navbar);

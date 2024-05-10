@@ -1,15 +1,14 @@
-import React, { useEffect, useRef } from 'react';
-import styled from 'styled-components';
-
-import Link from 'next/link';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
-import ImageLoader from '../ImageLoader';
-import { getFirstName } from '../../services/getfirstname';
-import urls from '../../services/urls';
-import { FaBell, FaRegListAlt, FaUser } from 'react-icons/fa';
-import { MdOutlineLogout, MdAssignment } from 'react-icons/md';
-import usePageLoaded from '../custom hooks/usePageLoaded';
+import React, { useEffect, useRef } from "react";
+import styled from "styled-components";
+import Link from "next/link";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import ImageLoader from "../ImageLoader";
+import { getFirstName } from "../../services/getfirstname";
+import urls from "../../services/urls";
+import { FaBell, FaUser } from "react-icons/fa";
+import { MdOutlineLogout, MdAssignment } from "react-icons/md";
+import usePageLoaded from "../custom hooks/usePageLoaded";
 
 const CenterNav = styled.div`
   width: 100%;
@@ -19,7 +18,6 @@ const CenterNav = styled.div`
 `;
 
 const ProfileList = styled.span`
-  // font-family: 'Open Sans';
   font-weight: 500;
   text-align: center;
   padding: 1rem 0rem 0.5rem 0rem;
@@ -47,6 +45,7 @@ const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
     }
   }
 `;
+
 const RedDot = styled.div`
   width: 1rem;
   height: 1rem;
@@ -58,6 +57,7 @@ const RedDot = styled.div`
   z-index: 1000;
   font-size: 0.75rem;
 `;
+
 const ProfileContainer = styled.div`
   border-top: none;
   position: absolute;
@@ -67,8 +67,8 @@ const ProfileContainer = styled.div`
   left: auto;
   transition: opacity 0.2s linear;
   height: auto;
-  margin-top: ${(props) => (props.showProfileList ? `0` : '-40rem')};
-  opacity: ${(props) => (props.showProfileList ? `1` : '0')};
+  margin-top: ${(props) => (props.showProfileList ? `0` : "-40rem")};
+  opacity: ${(props) => (props.showProfileList ? `1` : "0")};
 
   @media screen and (min-width: 768px) {
     border-top: none;
@@ -81,19 +81,21 @@ const ProfileContainer = styled.div`
     border-radius: 0.5rem;
     z-index: 80;
     height: auto;
-    margin-top: ${(props) => (props.showProfileList ? `0.2rem` : '-50rem')};
-    opacity: ${(props) => (props.showProfileList ? `1` : '0')};
+    margin-top: ${(props) => (props.showProfileList ? `0.2rem` : "-50rem")};
+    opacity: ${(props) => (props.showProfileList ? `1` : "0")};
     transition: opacity 0.2s linear;
   }
 `;
+
 const ProfileDropDown = (props) => {
   const isPageLoaded = usePageLoaded();
+  let profileRef = useRef();
 
   let firstname;
+
   if (props.name) {
     firstname = getFirstName(props.name);
-  } else firstname = 'Traveler';
-  let profileRef = useRef();
+  } else firstname = "Traveler";
 
   useEffect(() => {
     let handler = (event) => {
@@ -101,19 +103,19 @@ const ProfileDropDown = (props) => {
         props.setShowDropDownProfileList(false);
       }
     };
-    document.addEventListener('mousedown', handler);
+    document.addEventListener("mousedown", handler);
     return () => {
-      document.removeEventListener('mousedown', handler);
+      document.removeEventListener("mousedown", handler);
     };
   });
 
   let AuthMenu = (
     <ProfileContainer
-      className={props.headerColor === 'white' ? 'border' : ''}
+      className={props.headerColor === "white" ? "border" : ""}
       style={{
         backgroundColor:
-          props.headerColor === 'black' ? 'rgba(0,0,0,0.7)' : 'white',
-        color: 'rgba(0,0,0,0.7)',
+          props.headerColor === "black" ? "rgba(0,0,0,0.7)" : "white",
+        color: "rgba(0,0,0,0.7)",
       }}
       showProfileList={props.showDropDownProfileList}
       showProfileListMobile={props.showDropDownProfileListMobile}
@@ -127,19 +129,19 @@ const ProfileDropDown = (props) => {
   if (props.token)
     AuthMenu = (
       <ProfileContainer
-        className={props.headerColor === 'white' ? 'border' : ''}
+        className={props.headerColor === "white" ? "border" : ""}
         style={{
           backgroundColor:
-            props.headerColor === 'black' ? 'rgba(0,0,0,0.7)' : 'white',
-          color: 'rgba(0,0,0,0.7)',
+            props.headerColor === "black" ? "rgba(0,0,0,0.7)" : "white",
+          color: "rgba(0,0,0,0.7)",
         }}
         showProfileList={props.showDropDownProfileList}
       >
-        <ProfileList style={{ borderStyle: 'none' }}>
-          <FaUser /> <div>{'Hi ' + firstname}</div>
+        <ProfileList style={{ borderStyle: "none" }}>
+          <FaUser /> <div>{"Hi " + firstname}</div>
         </ProfileList>
         <ProfileList
-          style={{ display: 'grid', gridTemplateColumns: 'auto max-content' }}
+          style={{ display: "grid", gridTemplateColumns: "auto max-content" }}
           onClick={props._handleNotifications}
         >
           <FaBell />
@@ -147,14 +149,14 @@ const ProfileDropDown = (props) => {
           {props.notOpenedCount ? (
             <div
               style={{
-                fontWeight: '700',
-                fontSize: '0.75rem',
-                backgroundColor: '#f7e700',
-                width: '1.25rem',
-                height: '1.25rem',
-                marginLeft: '0.5rem',
-                color: 'black',
-                borderRadius: '50%',
+                fontWeight: "700",
+                fontSize: "0.75rem",
+                backgroundColor: "#f7e700",
+                width: "1.25rem",
+                height: "1.25rem",
+                marginLeft: "0.5rem",
+                color: "black",
+                borderRadius: "50%",
               }}
               className="center-div"
             >
@@ -168,7 +170,7 @@ const ProfileDropDown = (props) => {
         {/* <Link to='/profile/messages' style={{ textDecoration: 'none'}}   className="font-nunito"> <ProfileList>Messages</ProfileList></Link> */}
 
         <Link
-          style={{ textDecoration: 'none', color: 'rgba(0,0,0,0.7)' }}
+          style={{ textDecoration: "none", color: "rgba(0,0,0,0.7)" }}
           href={urls.DASHBOARD}
           className="next-link"
           passHref={true}
@@ -183,6 +185,7 @@ const ProfileDropDown = (props) => {
         </ProfileList>
       </ProfileContainer>
     );
+
   return (
     <div
       ref={profileRef}
@@ -191,7 +194,7 @@ const ProfileDropDown = (props) => {
       {props.notifications.length && props.notOpenedCount ? (
         <RedDot className="center-div">1</RedDot>
       ) : null}
-      {/* <RedDot/> */}
+
       <CenterNav className="">
         <ImageLoader
           borderRadius="50%"
@@ -206,7 +209,6 @@ const ProfileDropDown = (props) => {
           onclick={props.toggleProfileList}
           noPlaceholder={true}
         />
-        {/* <ExpandProfile src={props.headerColor==="black" ? ExpandProfileIcon : null} onClick={props.toggleProfileList}/>    */}
         {isPageLoaded ? (
           <StyledFontAwesomeIcon
             icon={faChevronDown}
@@ -215,6 +217,7 @@ const ProfileDropDown = (props) => {
           ></StyledFontAwesomeIcon>
         ) : null}
       </CenterNav>
+
       {AuthMenu}
     </div>
   );

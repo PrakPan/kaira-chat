@@ -18,7 +18,6 @@ const Navbar = React.memo((props) => {
   let isPageWide = media("(min-width: 768px)");
   const [hideNav, setHideNav] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
-  const [headerColor, setHeaderColor] = useState("black");
   const [notOpenCount, setNotOpenCount] = useState();
   const [showLoginModal, setShowLoginModal] = useState(false);
   let notopencount = 0;
@@ -79,8 +78,8 @@ const Navbar = React.memo((props) => {
     let scrollhandler = () => {
       if (window.pageYOffset < 10) {
         setHideNav(false);
-        setHeaderColor("black");
-      } else setHeaderColor("white");
+      } else {
+      }
       let currentScroll = window.pageYOffset;
       //sfroll up
       if (prevScroll >= currentScroll) {
@@ -88,9 +87,9 @@ const Navbar = React.memo((props) => {
       }
       //scroll down
       else {
-        if (window.pageYOffset < 10) setHeaderColor("black");
-        else setHideNav(true);
-        // else setHeaderColor('black');
+        if (!window.pageYOffset < 10) {
+          setHideNav(true);
+        }
       }
       prevScroll = currentScroll;
     };
@@ -157,12 +156,8 @@ const Navbar = React.memo((props) => {
           ></NewMobile>
         )}
       </div>
+
       <div className="hidden-mobile">
-        {/* <div
-            style={{
-              display: hideNav ? "none !important" : "initial !important",
-            }}
-          > */}
         {!hideNav && (
           <IndexDesktop
             staticnav={props.staticnav}
@@ -181,13 +176,13 @@ const Navbar = React.memo((props) => {
             page={props.page}
           ></IndexDesktop>
         )}
-        {/* </div> */}
       </div>
+
       <LogInModal
         show={showLoginModal}
-        // onhide={props.token && !props.phone ? null : props.authCloseLogin}
         onhide={() => setShowLoginModal(false)}
       ></LogInModal>
+
       <TailoredFormMobileModal
         destinationType={"city-planner"}
         onHide={() => {
@@ -206,13 +201,14 @@ const mapStateToProps = (state) => {
     name: state.auth.name,
     image: state.auth.image,
     overflow: state.scroll.overflow,
-    // showLogin: state.auth.showLogin,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     onLogout: () => dispatch(logout.logout()),
     authShowLogin: () => dispatch(authaction.authShowLogin()),
   };
 };
+
 export default connect(mapStateToProps, mapDispatchToProps)(React.memo(Navbar));

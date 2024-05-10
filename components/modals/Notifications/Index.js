@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import Modal from '../../ui/Modal'
-import styled from 'styled-components';
-import Notification from './Notification';
-import Heading from '../../newheading/heading/Index';
-import media from '../../media';
-import axiosnotificationsinstance from '../../../services/user/notifications/notifications';
-import { connect } from 'react-redux';
-import ImageLoader from '../../ImageLoader';
+import React, { useEffect, useState } from "react";
+import Modal from "../../ui/Modal";
+import styled from "styled-components";
+import Notification from "./Notification";
+import Heading from "../../newheading/heading/Index";
+import media from "../../media";
+import axiosnotificationsinstance from "../../../services/user/notifications/notifications";
+import { connect } from "react-redux";
+import ImageLoader from "../../ImageLoader";
+
 const ClearAll = styled.div`
   width: max-content;
   margin: 2rem auto;
@@ -17,18 +18,11 @@ const ClearAll = styled.div`
     cursor: pointer;
   }
 `;
-const Illustration = styled.img`
-  width: 70%;
-  margin: auto;
-  display: block;
-  margin-top: 10vh;
-  @media screen and (min-width: 768px) {
-    width: 60%;
-  }
-`;
+
 const Enquiry = (props) => {
-  let isPageWide = media('(min-width: 768px)');
+  let isPageWide = media("(min-width: 768px)");
   let [notificationsArr, setNotificationsArr] = useState([]);
+
   useEffect(() => {
     if (props.token) {
       let notificationsarr = [];
@@ -54,7 +48,7 @@ const Enquiry = (props) => {
   const _clearAllHandler = () => {
     setNotificationsArr([]);
     axiosnotificationsinstance
-      .delete('', {
+      .delete("", {
         headers: {
           Authorization: `Bearer ${props.token}`,
         },
@@ -67,13 +61,14 @@ const Enquiry = (props) => {
     props._openAllNotificationsHandler();
     props.handleClose();
   };
+
   return (
     <div>
       <Modal
         show={props.show}
         onHide={_handleClose}
         width="31.5rem"
-        mobilewidth='95%'
+        mobilewidth="95%"
         closeIcon
         style={{
           borderStyle: "solid",
@@ -118,7 +113,9 @@ const mapStateToPros = (state) => {
     token: state.auth.token,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {};
 };
+
 export default connect(mapStateToPros, mapDispatchToProps)(Enquiry);

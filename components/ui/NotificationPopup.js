@@ -1,9 +1,10 @@
 import styled from "styled-components";
 import { MdClose } from "react-icons/md";
-import ReactDOM from 'react-dom';
+import ReactDOM from "react-dom";
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { closeNotification } from "../../store/actions/notification";
+
 const Container = styled.div`
   position: fixed;
   right: 1rem;
@@ -14,6 +15,7 @@ const Container = styled.div`
     top: ${(props) => (props.show ? "5%" : "-100%")};
   }
 `;
+
 const PopupContainer = styled.div`
   position: relative;
   padding: 1rem;
@@ -21,25 +23,29 @@ const PopupContainer = styled.div`
   color: white;
   border-radius: 0.5rem;
   text-align: left;
-  width : 94vw;
+  width: 94vw;
   border-left: ${(props) => `10px solid ${props.bg}`};
   @media screen and (min-width: 768px) {
     width: 32rem;
   }
 `;
+
 const Heading = styled.h3`
   margin-block: 0 10px;
-  font-size : 1.2rem;
+  font-size: 1.2rem;
 `;
+
 const Text = styled.div`
   margin-top: 0;
   font-size: 14px;
   margin-top: -6px;
 `;
+
 const CloseIcon = styled(MdClose)`
   font-size: 1.2rem;
   cursor: pointer;
 `;
+
 const OuterCircle = styled.div`
   position: absolute;
   display: flex;
@@ -51,6 +57,7 @@ const OuterCircle = styled.div`
   right: 10px;
   top: 10px;
 `;
+
 const InnerCircle = styled.div`
   background: ${(props) => props.color};
   width: 20px;
@@ -64,11 +71,13 @@ function NotificationPopup(props) {
     color: "mediumseagreen",
     bg: "darkgreen",
   });
+  const [progress, setProgress] = useState(100);
+
   var duration = 50;
   if (props.duration) {
     duration = +props.duration * 10;
   }
-  const [progress, setProgress] = useState(100);
+
   useEffect(() => {
     set_document(document);
   }, []);
@@ -90,6 +99,7 @@ function NotificationPopup(props) {
       }, 1000);
     }
   }, [props.show]);
+
   useEffect(() => {
     if (props.type === "error") {
       setColor({
@@ -107,6 +117,7 @@ function NotificationPopup(props) {
         bg: "darkgreen",
       });
   }, [props.show, props.type]);
+
   return _document
     ? ReactDOM.createPortal(
         <Container zIndex={props.zIndex || "5000"} show={props.show}>
@@ -131,16 +142,16 @@ function NotificationPopup(props) {
     : null;
 }
 
-
 const mapStateToPros = (state) => {
   return {
     text: state.Notification.text,
     type: state.Notification.type,
     heading: state.Notification.heading,
-    duration : state.Notification.duration,
+    duration: state.Notification.duration,
     show: state.Notification.show,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     checkAuthState: () => dispatch(authaction.checkAuthState()),

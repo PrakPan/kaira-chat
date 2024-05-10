@@ -3,6 +3,7 @@ import styled from "styled-components";
 import media from "./media";
 import usePageLoaded from "./custom hooks/usePageLoaded";
 import LazyLoad from "react-lazyload";
+import Image from "next/image";
 
 const ImageLoader = (props) => {
   const Container = styled(props.noLazy ? "div" : LazyLoad)`
@@ -171,10 +172,10 @@ const ImageLoader = (props) => {
   };
 
   const fullImageLoadedHandler = () => {
+    setFullLoaded(true);
     if (props.onload) {
       props.onload();
     }
-    setFullLoaded(true);
   };
 
   if (props.dimensionsMobile) {
@@ -192,6 +193,7 @@ const ImageLoader = (props) => {
           }}
         >
           <SmallImage
+            alt=""
             src={
               !is_url
                 ? isPageLoaded
@@ -206,7 +208,9 @@ const ImageLoader = (props) => {
               ...props.style,
             }}
           ></SmallImage>
+
           <FullImage
+            alt=""
             src={
               !is_url
                 ? error
@@ -245,6 +249,7 @@ const ImageLoader = (props) => {
           }}
         >
           <SmallImage
+            alt=""
             src={
               !is_url
                 ? isPageLoaded
@@ -259,7 +264,9 @@ const ImageLoader = (props) => {
               ...props.style,
             }}
           ></SmallImage>
+
           <FullImage
+            alt=""
             src={
               !is_url
                 ? error
@@ -299,6 +306,7 @@ const ImageLoader = (props) => {
           }}
         >
           <SmallImage
+            alt=""
             src={
               !is_url
                 ? isPageLoaded
@@ -314,7 +322,9 @@ const ImageLoader = (props) => {
               ...props.style,
             }}
           ></SmallImage>
+
           <FullImage
+            alt=""
             src={
               !is_url
                 ? error
@@ -351,6 +361,7 @@ const ImageLoader = (props) => {
           }}
         >
           <SmallImage
+            alt=""
             src={
               !is_url
                 ? isPageLoaded
@@ -358,6 +369,7 @@ const ImageLoader = (props) => {
                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
+            onLoad={fullImageLoadedHandler}
             style={{
               height: props.height ? props.height : "auto",
               display: !fullLoaded ? "initial" : "none",
@@ -366,6 +378,7 @@ const ImageLoader = (props) => {
             }}
           ></SmallImage>
           <FullImage
+            alt=""
             src={
               !is_url
                 ? error

@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper";
 import "swiper/css";
@@ -80,7 +79,7 @@ const SwiperContainer = styled.div`
 
 const SwiperCarousel = (props) => {
   let cards = [];
-  
+
   props.cards.map((card, index) => {
     cards.push(
       <div key={index}>

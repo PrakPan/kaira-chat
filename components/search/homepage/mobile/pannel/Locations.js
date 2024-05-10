@@ -5,19 +5,17 @@ import SkeletonCard from "../../../../ui/SkeletonCard";
 import Link from "next/link";
 
 const Container = styled.div`
-  // display: grid;
-  // grid-template-columns: 1fr 1fr;
-  // grid-gap: 1rem;
   margin: 1rem;
 `;
+
 const MarkerContainer = styled.div`
   background: #dfdfdf;
   border-radius: 100%;
   padding: 14px 14px;
 `;
+
 const Text = styled.div`
   font-weight: 500;
-  // margin-block : 5px;
   p {
     font-weight: 400;
     margin-bottom: 0rem;
@@ -44,6 +42,7 @@ const LocationContainer = styled(Link)`
     cursor: pointer;
   }
 `;
+
 const SkeletonContainer = styled.div`
   padding: 0.5rem;
   max-width: 100%;
@@ -65,19 +64,8 @@ const Heading = styled.p`
 `;
 
 const Locations = (props) => {
-  // const _handleLocationClick = (data) => {
-  //   if (data.path) window.location.href = "/" + data.path;
-
-  //   //     if(data.cta) {
-  //   //      props.setPannelClose()
-  //   //      router.push('/travel-guide/city/'+slug)
-  //   //      if(data.type === 'Location') window.location.href='https://thetarzanway.com/travel-guide/city/'+data.cta
-  //   //      if(data.type === 'State') window.location.href='https://thetarzanway.com/travel-planner/'+data.cta
-
-  //   //  }
-  // };
-
   let locations = [];
+
   if (props.hotlocations) {
     for (var i = 0; i < 5; i++) {
       const data = props.hotlocations[i];
@@ -121,6 +109,7 @@ const Locations = (props) => {
       );
     }
   }
+
   return (
     <div>
       <Heading className="font-lexend">POPULAR DESTINATIONS</Heading>

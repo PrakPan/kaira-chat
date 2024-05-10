@@ -1,10 +1,9 @@
 import React from "react";
 import styled from "styled-components";
-import media from "../../../../media";
-import { useRouter } from "next/router";
 import { ImSearch } from "react-icons/im";
 import SkeletonCard from "../../../../ui/SkeletonCard";
 import Link from "next/link";
+
 const Container = styled.div`
   margin: 1rem;
 
@@ -14,46 +13,10 @@ const Container = styled.div`
     grid-gap: 0.5rem;
   }
 `;
-const Heading = styled.p`
-  font-weight: 500;
-  font-style: normal;
-  font-size: 12px;
-  line-height: 16px;
-  display: flex;
-  align-items: center;
-  text-align: center;
-  text-transform: uppercase;
-  margin: 1rem;
-  color: #7a7a7a;
-`;
-const ImageContainer = styled.div`
-  position: relative;
-  text-align: center;
-  color: white;
-  margin: auto;
-  border-radius: 50%;
-  width: 100%;
-  min-height: 16vw;
-  background: white;
-
-  &:hover {
-    cursor: pointer;
-    background: #f7e700;
-  }
-  @media screen and (min-width: 768px) {
-    min-height: 6.5vw;
-  }
-`;
-const ImageText = styled.div`
-  font-weight: 400;
-  margin: 0;
-  padding: 0;
-  font-size: 0.75rem;
-`;
 
 const LocationContainer = styled(Link)`
-color : black;
-text-decoration : none;
+  color: black;
+  text-decoration: none;
   padding: 0.3rem;
   max-width: 100%;
   display: flex;
@@ -71,6 +34,7 @@ const MarkerContainer = styled.div`
   border-radius: 100%;
   padding: 14px;
 `;
+
 const Text = styled.div`
   font-weight: 500;
   p {
@@ -81,6 +45,7 @@ const Text = styled.div`
     color: #7e7e7e;
   }
 `;
+
 const SkeletonContainer = styled.div`
   margin: 1rem;
   @media screen and (min-width: 768px) {
@@ -91,16 +56,6 @@ const SkeletonContainer = styled.div`
 `;
 
 const NewResults = (props) => {
-  const router = useRouter();
-  let isPageWide = media("(min-width: 768px)");
-  // const _handleLocationClick = (data) => {
-  //   if (data.path) window.location.href = "/" + data.path;
-  //   // if(data.cta){
-  //   //     if(data.type == 'Location') window.location.href='https://thetarzanway.com/travel-guide/city/' + data.cta
-  //   //     else window.location.href='https://thetarzanway.com/travel-planner/'+ data.cta
-  //   // }
-  // };
-
   const skeleton = (
     <div
       style={{

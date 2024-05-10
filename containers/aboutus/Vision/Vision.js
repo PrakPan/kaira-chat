@@ -3,8 +3,8 @@ import Heading from '../../../components/newheading/heading/Index';
 import classes from './Vision.module.css';
 
 const Vision = (props) => {
- 
-    
+
+
     return (
       <div className={classes.Container}>
         <div className={classes.ImageContainer}>
@@ -14,6 +14,7 @@ const Vision = (props) => {
             dimensions={{ width: 1600, height: 900 }}
           ></ImageLoader>
         </div>
+        
         <div
           className={classes.TextContainer}
           style={{
@@ -77,5 +78,5 @@ const Vision = (props) => {
       </div>
     );
 }
- 
+
 export default Vision;

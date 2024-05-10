@@ -1,11 +1,11 @@
-import React, { useRef, useEffect, useState } from 'react';
-// import {Modal} from 'react-bootstrap';
-import Modal from '../ui/Modal';
-import Login from '../userauth/LogInModal';
-import styled from 'styled-components';
-import { connect } from 'react-redux';
-import ImageLoader from '../ImageLoader';
-import media from '../media';
+import React, { useRef, useEffect, useState } from "react";
+import Modal from "../ui/Modal";
+import Login from "../userauth/LogInModal";
+import styled from "styled-components";
+import { connect } from "react-redux";
+import ImageLoader from "../ImageLoader";
+import media from "../media";
+
 const ImgContainer = styled.div`
   height: 100%;
   position: relative;
@@ -23,6 +23,7 @@ const ImgTagsContainer = styled.div`
     filter: brightness(1);
   }
 `;
+
 const TagItem = styled.div`
   display: grid;
   grid-template-columns: 40px 2fr;
@@ -39,34 +40,35 @@ const TagItem = styled.div`
 
 const TagsContent = [
   {
-    icon: 'media/icons/login/free-travel.png',
-    text: 'Unlimited travel plans for free!',
+    icon: "media/icons/login/free-travel.png",
+    text: "Unlimited travel plans for free!",
   },
   {
-    icon: 'media/icons/login/discount.png',
-    text: 'Exclusive deals: Upto 70% off!',
+    icon: "media/icons/login/discount.png",
+    text: "Exclusive deals: Upto 70% off!",
   },
-  { icon: 'media/icons/login/officer.png', text: 'Expert support, 24x7!' },
+  { icon: "media/icons/login/officer.png", text: "Expert support, 24x7!" },
   {
-    icon: 'media/icons/login/night-stay.png',
-    text: 'Free night stay on selected properties!',
+    icon: "media/icons/login/night-stay.png",
+    text: "Free night stay on selected properties!",
   },
 ];
 
 const Enquiry = (props) => {
-  let isPageWide = media('(min-width: 768px)');
+  let isPageWide = media("(min-width: 768px)");
   const [modalWidth, setModalWidth] = useState(!isPageWide ? 90 : 50);
   let myref = useRef(null);
   const [showImage, setShowImage] = useState(false);
-  let height = '100px';
+
   useEffect(() => {
     if (myref.current) {
       height = myref.current.offsetHeight;
     }
   }, [myref]);
+
   useEffect(() => {
     if (props.token && props.phone) if (props.onhide) props.onhide();
-  }, [props.token, props.onhide , props.phone]);
+  }, [props.token, props.onhide, props.phone]);
 
   useEffect(() => {
     function findModalWidth() {
@@ -78,9 +80,9 @@ const Enquiry = (props) => {
       else if (window.innerWidth >= 400) setModalWidth(80);
       else setModalWidth(90);
     }
-    window.addEventListener('resize', findModalWidth);
+    window.addEventListener("resize", findModalWidth);
     findModalWidth();
-    return () => window.removeEventListener('resize', findModalWidth);
+    return () => window.removeEventListener("resize", findModalWidth);
   }, []);
 
   if (isPageWide)
@@ -101,10 +103,11 @@ const Enquiry = (props) => {
                 backgroundColor: "#2C2C2C",
                 height: "100%",
                 width: "100%",
-                borderRadius : "20px 0 0 20px",
+                borderRadius: "20px 0 0 20px",
                 display: showImage ? "none" : "block",
               }}
             ></div>
+
             <ImgContainer style={{ display: showImage ? "block" : "none" }}>
               <ImageLoader
                 noLazy
@@ -130,6 +133,7 @@ const Enquiry = (props) => {
                 ))}
               </ImgTagsContainer>
             </ImgContainer>
+
             <div style={{ padding: "20px" }}>
               <Login
                 ref={myref}
@@ -146,21 +150,22 @@ const Enquiry = (props) => {
       <div>
         <Modal
           centered
-          backdrop={props.hideloginclose ? 'static' : true}
+          backdrop={props.hideloginclose ? "static" : true}
           show={props.show}
           onHide={props.hideloginclose ? null : props.onhide}
-          width={modalWidth + '%'}
-          borderRadius={'12px'}
+          width={modalWidth + "%"}
+          borderRadius={"12px"}
           token={props.token}
           itinary_id={props.itinary_id}
         >
-          <div style={{ padding: '20px' }}>
+          <div style={{ padding: "20px" }}>
             <Login onhide={props.onhide} itinary_id={props.itinary_id}></Login>
           </div>
         </Modal>
       </div>
     );
 };
+
 const mapStateToPros = (state) => {
   return {
     hideloginclose: state.auth.hideloginclose,
@@ -168,7 +173,9 @@ const mapStateToPros = (state) => {
     phone: state.auth.phone,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {};
 };
+
 export default connect(mapStateToPros, mapDispatchToProps)(Enquiry);

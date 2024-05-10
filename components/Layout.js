@@ -3,7 +3,6 @@ import Header from "./navbar/Index";
 import Footer from "./newfooter/Index";
 import { connect } from "react-redux";
 import * as authaction from "../store/actions/auth";
-import { useRouter } from "next/router";
 import media from "./media";
 import NotificationPopup from "./ui/NotificationPopup";
 
@@ -14,7 +13,6 @@ const Layout = React.memo((props) => {
     props.checkAuthState();
     window.scrollTo(0, 0);
   }, []);
-  const router = useRouter();
 
   useEffect(() => {
     var name;
@@ -64,6 +62,7 @@ const Layout = React.memo((props) => {
         destination={props.destination}
         page={props.page}
       />
+
       <div
         style={{ marginTop: props.staticnav && !isPageWide ? "0px" : "72px" }}
       >
@@ -83,11 +82,12 @@ const mapStateToPros = (state) => {
     showLogin: state.auth.showLogin,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     checkAuthState: () => dispatch(authaction.checkAuthState()),
     authCloseLogin: () => dispatch(authaction.authCloseLogin()),
-    // openNotification: (payload) => dispatch(openNotification(payload)),
   };
 };
+
 export default connect(mapStateToPros, mapDispatchToProps)(Layout);

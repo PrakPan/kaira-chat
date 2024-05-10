@@ -13,6 +13,7 @@ import SearchMobile from "../../search/homepage/mobile/Index";
 import { FaSearch } from "react-icons/fa";
 import openTailoredModal from "../../../services/openTailoredModal";
 import usePageLoaded from "../../custom hooks/usePageLoaded";
+
 const Container = styled.div`
   background-color: white;
   padding: 0 5vw;
@@ -21,10 +22,6 @@ const Container = styled.div`
   width: 100vw;
   height: 72px;
   z-index: 1500;
-  // display: grid;
-  // grid-template-columns: ${(props) =>
-    props.hidecta ? "0.1fr 1fr 0.1fr" : "0.3fr 1fr 1.5fr"} ;
-
   display: flex;
   justify-content: space-between;
   box-shadow: 0px 1px 1px 0px rgb(0 0 0 / 14%);
@@ -36,11 +33,12 @@ const DrawerContainer = styled.div`
   height: 100vh;
   padding-top: 65px;
 `;
+
 const ListContainer = styled.div`
   padding-block: 0.5rem;
 `;
+
 const ListItem = styled.div`
-  // text-align: right;
   padding-block: 1rem;
   padding-inline: 15px;
   display: flex;
@@ -48,6 +46,7 @@ const ListItem = styled.div`
   align-items: center;
   font-family: Poppins;
 `;
+
 const StyledLink = styled(Link)`
   text-decoration: none;
   font-style: normal;
@@ -56,19 +55,7 @@ const StyledLink = styled(Link)`
   line-height: 16px;
   color: #01202b;
 `;
-const TTWLogo = styled.img`
-  width: 15vw;
-  height: auto;
-`;
-const Segregtation = styled.div`
-  height: 2px;
-  margin: 2rem 0 1rem 15%;
-  background-color: #f7e700;
-`;
-const Cross = styled.img`
-  width: 1.5rem;
-  margin: 1rem;
-`;
+
 const RedDot = styled.div`
   width: 1rem;
   padding: 0.15rem 0.25rem;
@@ -96,8 +83,8 @@ const CompanyName = styled.div`
     top: 23px;
   }
 `;
+
 const Heading = styled.p`
-  // font-family: 'Poppins';
   font-style: normal;
   font-weight: 500;
   font-size: 14px;
@@ -129,10 +116,12 @@ const HamburgerIcon = (
 );
 
 const Mobile = (props) => {
+  const router = useRouter();
   const isPageLoaded = usePageLoaded();
   const [toggleMenu, setToggleMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showLogo, setShowLogo] = useState(false);
+
   const _handleNotifications = () => {
     setToggleMenu(false);
     setShowNotifications(true);
@@ -141,12 +130,12 @@ const Mobile = (props) => {
   useEffect(() => {
     setShowLogo(true);
   }, []);
-  const router = useRouter();
+
   const _handleLogin = () => {
     setToggleMenu(false);
-    // props.authShowLogin();
-    props.setShowLoginModal(true)
+    props.setShowLoginModal(true);
   };
+
   useEffect(() => {}, [props.notOpenCount]);
 
   const _handleHomepageRedirect = () => {
@@ -173,7 +162,6 @@ const Mobile = (props) => {
       text: "Notifications",
       icon: "media/icons/navigation/bell.png",
     },
-    // {type : 'main' ,link : '/travel-guide' , text : 'Travel Guide' },
     {
       type: "main",
       link: "http://blog.thetarzanway.com/",
@@ -205,8 +193,10 @@ const Mobile = (props) => {
       icon: "media/icons/navigation/health-insurance.png",
     },
   ];
+
   if (!props.token) LinksArr = LinksArr.filter((e) => e.link != "/dashboard");
-  const MainLinksDiv = LinksArr.map((e,i) => {
+
+  const MainLinksDiv = LinksArr.map((e, i) => {
     if (e.type === "main")
       return (
         <ListItem
@@ -243,7 +233,7 @@ const Mobile = (props) => {
       );
   });
 
-  const OtherLinksDiv = LinksArr.map((e,i) => {
+  const OtherLinksDiv = LinksArr.map((e, i) => {
     if (e.type == "others")
       return (
         <ListItem
@@ -297,9 +287,11 @@ const Mobile = (props) => {
             marginRight: "-10px",
           }}
         >
+          
           {props.notifications.length && props.notOpenCount ? (
             <RedDot className="center-div ">{props.notOpenCount}</RedDot>
           ) : null}
+
           {isPageLoaded ? (
             <div onClick={() => setToggleMenu(!toggleMenu)}>
               {HamburgerIcon}
@@ -332,11 +324,14 @@ const Mobile = (props) => {
                 noPlaceholder={true}
               ></ImageLoader>
             </StyledLink>
+
             {!props.hidecta && <CompanyName>thetarzanway</CompanyName>}
+
           </div>
         ) : (
           <div></div>
         )}
+
         {!props.hidecta ? (
           <div
             style={{
@@ -379,8 +374,11 @@ const Mobile = (props) => {
                   name={props.name}
                 />
               </ListItem>
+
               {MainLinksDiv}
+
               <Heading>OTHERS</Heading>
+
               {OtherLinksDiv}
 
               {props.token && (
@@ -400,10 +398,13 @@ const Mobile = (props) => {
                   <div>Logout</div>
                 </ListItem>
               )}
+
             </ListContainer>
           </DrawerContainer>
+
         </Drawer>
       </Container>
+
       {props.showMobileSearch ? (
         <div className="hidden-desktop" style={{ width: "100%" }}>
           <SearchMobile
@@ -431,6 +432,7 @@ const mapStateToProps = (state) => {
     image: state.auth.image,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     authShowLogin: () => dispatch(authaction.authShowLogin()),

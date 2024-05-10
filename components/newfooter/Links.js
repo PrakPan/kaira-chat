@@ -1,4 +1,5 @@
 import urls from "../../services/urls";
+
 const linksArr = [
   {
     heading: "Travel Destinations",
@@ -18,7 +19,6 @@ const linksArr = [
       { title: "Personalise", link: "" },
       { title: "Workcation", link: urls.travel_planner.WORKCATION },
       { title: "Volunteer", link: urls.travel_planner.VOLUNTEER },
-      // { title: "Treks", link: urls.travel_planner.TREKS },
       { title: "Road Trips", link: urls.travel_planner.ROADTRIPS },
       { title: "Unique", link: urls.travel_planner.OFFBEAT },
     ],
@@ -40,7 +40,6 @@ const linksArr = [
       { title: "Privacy Policy", link: urls.PRIVACY_POLICY },
       { title: "COVID-19 Safety", link: urls.COVID_19_SAFE_TRAVEL_INDIA },
       { title: "Subscribe", link: "" },
-      // { title: "Sitemap", link: "" },
     ],
   },
 ];

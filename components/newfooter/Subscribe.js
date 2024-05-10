@@ -127,9 +127,11 @@ const Subscribe = (props) => {
   return (
     <Container shadow={props.shadow}>
       <Heading>Join The Tarzan Way Community</Heading>
+
       <SubHeading>
         Get Early Bird Deals, Extra Discounts & Priority Customer Support.
       </SubHeading>
+
       <Form onSubmit={_handleSubmit}>
         <Input
           required
@@ -154,9 +156,11 @@ const Subscribe = (props) => {
           )}
         </Button>
       </Form>
+
       {isPageWide && (
         <Circle top={"-30%"} left={"-10%"} opacity={"0.5"}></Circle>
       )}
+
       {isPageWide && <Circle top={"65%"} left={"90%"}></Circle>}
     </Container>
   );

@@ -1,17 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import media from '../../../../media';
-import axios from 'axios';
-import Locations from './Locations';
-import * as ga from '../../../../../services/ga/Index';
-import axioslocationsinstance from '../../../../../services/search/search';
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import Locations from "./Locations";
+import * as ga from "../../../../../services/ga/Index";
+import axioslocationsinstance from "../../../../../services/search/search";
 import axiossearchsuggestinstance from "../../../../../services/search/searchsuggest";
-
-import NewResults from './NewResults';
-import { ImSearch } from 'react-icons/im';
-import { MdCancel } from 'react-icons/md';
-import { RxCross2 } from 'react-icons/rx';
-import { CONTENT_SERVER_HOST } from '../../../../../services/constants';
+import NewResults from "./NewResults";
+import { ImSearch } from "react-icons/im";
+import { MdCancel } from "react-icons/md";
+import { RxCross2 } from "react-icons/rx";
+import { CONTENT_SERVER_HOST } from "../../../../../services/constants";
 
 const Container = styled.div`
   background-color: white;
@@ -41,9 +38,11 @@ const TopContainer = styled.div`
   display: grid;
   grid-template-columns: max-content auto;
 `;
+
 const SearchContainer = styled.div`
   margin-block: auto;
 `;
+
 const Search = styled.input`
   border: 1px solid #dde2e4;
   padding: 10px;
@@ -58,6 +57,7 @@ const Search = styled.input`
     color: black;
   }
 `;
+
 const Text = styled.div`
   font-weight: 400;
   margin: 1.5rem;
@@ -65,16 +65,17 @@ const Text = styled.div`
   color: #7e7e7e;
   font-size: 1rem;
 `;
+
 const SearchPannel = (props) => {
   const [showResults, setShowResults] = useState(false);
-  let [inputValue, setInputValue] = useState('');
+  let [inputValue, setInputValue] = useState("");
   const [results, setResults] = useState(null);
   const [hotLocationsData, setHotLocationsData] = useState();
   const [showP, setShowP] = useState(false);
+
   const _onChangeHandler = (event) => {
     setInputValue(event.target.value);
-    if (event.target.value.length % 3 === 0)
-    {
+    if (event.target.value.length % 3 === 0) {
       process.env.NODE_ENV === "production" &&
         !CONTENT_SERVER_HOST.includes("dev") &&
         ga.event({
@@ -87,20 +88,20 @@ const SearchPannel = (props) => {
     setShowP(false);
     setShowResults(true);
     setResults(null);
-   axiossearchsuggestinstance.get(`?q=` + event.target.value).then((res) => {
-     if (res.data.length) {
-       setResults(res.data.slice(0, 10));
-       setShowResults(true);
-       setShowP(false);
-     } else {
-       setShowP(true);
-       setShowResults(false);
-     }
-   });
+    axiossearchsuggestinstance.get(`?q=` + event.target.value).then((res) => {
+      if (res.data.length) {
+        setResults(res.data.slice(0, 10));
+        setShowResults(true);
+        setShowP(false);
+      } else {
+        setShowP(true);
+        setShowResults(false);
+      }
+    });
   };
 
   useEffect(() => {
-    axioslocationsinstance.get('hot_destinations').then((response) => {
+    axioslocationsinstance.get("hot_destinations").then((response) => {
       setHotLocationsData(response.data);
     });
   }, []);
@@ -116,14 +117,15 @@ const SearchPannel = (props) => {
           }
         `}
       </style>
+
       <TopContainer>
         <RxCross2
           onClick={props.setPannelClose}
           style={{
-            fontSize: '1.8rem',
-            textAlign: 'left',
-            fontWeight: '500',
-            margin: 'auto 0.7rem',
+            fontSize: "1.8rem",
+            textAlign: "left",
+            fontWeight: "500",
+            margin: "auto 0.7rem",
           }}
         />
         <SearchContainer>
@@ -136,32 +138,33 @@ const SearchPannel = (props) => {
           ></Search>
           <ImSearch
             style={{
-              position: 'absolute',
-              top: '27px',
-              left: '73px',
-              color: '#B0BABF',
-              pointerEvents: 'none',
+              position: "absolute",
+              top: "27px",
+              left: "73px",
+              color: "#B0BABF",
+              pointerEvents: "none",
             }}
           />
-          {inputValue !== '' && (
+          {inputValue !== "" && (
             <MdCancel
               onClick={() => {
-                setInputValue('');
+                setInputValue("");
                 setShowResults(false);
               }}
               style={{
-                position: 'absolute',
-                top: '25px',
-                right: '25px',
-                fontSize: '1.1rem',
-                color: '#7A7A7A',
+                position: "absolute",
+                top: "25px",
+                right: "25px",
+                fontSize: "1.1rem",
+                color: "#7A7A7A",
               }}
             />
           )}
         </SearchContainer>
       </TopContainer>
-      <div style={{ marginTop: '85px' }}>
-        {showP && inputValue != '' && (
+
+      <div style={{ marginTop: "85px" }}>
+        {showP && inputValue != "" && (
           <Text>We couldn't find anything for '{inputValue}'</Text>
         )}
 
