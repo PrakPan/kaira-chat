@@ -25,6 +25,7 @@ const Covid = () => {
           content="best places to visit in india, best places to visit in kasol, best places to visit in ladakh, best places to visit in andaman, best places to visit in manali, best places to visit in delhi, best places to visit in rajasthan, package for ladakh, package for manali, package for delhi, package for andaman, package for kashmir"
         ></meta>
       </Head>
+      
       <CovidContainer></CovidContainer>
     </Layout>
   );

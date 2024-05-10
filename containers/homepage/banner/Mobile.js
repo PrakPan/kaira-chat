@@ -7,7 +7,6 @@ const Container = styled.div`
   bottom: 0;
   width: 100vw;
   padding: 1rem;
-  // background-color: white;
   z-index: 1000;
   left: 0;
 `;

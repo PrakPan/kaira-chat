@@ -1,55 +1,52 @@
-import React from 'react';
-import styled from 'styled-components';
- import TravelerExperience from './travelerexperience/Index';
- import KeyBenefits from '../../components/containers/WhyUs';
- 
-// import WhoAffiliate from './WhoAffiliate';
- import FullImg from '../../components/FullImage';
- 
-// import Heading from '../../components/heading/Heading';
-import Heading from '../../components/newheading/heading/Index';
-import FullImgContent from './FullImgContent';
-import HowItWorks  from './Howitworks';
-
-import media from '../../components/media';
-import AsSeenIn from '../testimonial/AsSeenIn';
-import ChatWithUs from '../../components/containers/ChatWithUs/ChatWithUs';
-import Locations from '../../components/containers/Locations';
-import travelsupportcontent from '../../public/content/travelsupport';
-import DesktopBanner from '../../components/containers/Banner';
-import Banner from '../homepage/banner/Mobile';
-import { useRouter } from 'next/router';
-import usePageLoaded from '../../components/custom hooks/usePageLoaded';
-
+import React from "react";
+import styled from "styled-components";
+import TravelerExperience from "./travelerexperience/Index";
+import KeyBenefits from "../../components/containers/WhyUs";
+import FullImg from "../../components/FullImage";
+import Heading from "../../components/newheading/heading/Index";
+import FullImgContent from "./FullImgContent";
+import HowItWorks from "./Howitworks";
+import media from "../../components/media";
+import AsSeenIn from "../testimonial/AsSeenIn";
+import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs";
+import Locations from "../../components/containers/Locations";
+import travelsupportcontent from "../../public/content/travelsupport";
+import DesktopBanner from "../../components/containers/Banner";
+import Banner from "../homepage/banner/Mobile";
+import { useRouter } from "next/router";
+import usePageLoaded from "../../components/custom hooks/usePageLoaded";
 
 const SetWidthContainer = styled.div`
-    width: 100%;
-    margin: auto;
-    @media screen and (min-width: 768px){
-      width: 80%;
-    }
-  `;
+  width: 100%;
+  margin: auto;
+  @media screen and (min-width: 768px) {
+    width: 80%;
+  }
+`;
 
 const AffiliatePage = () => {
-  const isPageLoaded = usePageLoaded();
-  
   const router = useRouter();
-  let isPageWide = media('(min-width: 768px)');
-  
-  
-  const HowitWorksHeadingsArr=[
-     "You select",
+  const isPageLoaded = usePageLoaded();
+  let isPageWide = media("(min-width: 768px)");
+
+  const HowitWorksHeadingsArr = [
+    "You select",
     "We prepare",
     "You make memories",
   ];
+
   const HowitWorksContentsArr = [
     "A short trek, a long honeymoon, a workcation, or personalize your own",
     "A completely personalized plan by our travel experts and software",
-    "Enough planning, time to travel and make unforgettable memories"
-  
-  ]
-  const howitworksimgs=["media/website/travelsupport-1.png", "media/website/travelsupport-2.png", "media/website/travelsupport-3.png"]
-  
+    "Enough planning, time to travel and make unforgettable memories",
+  ];
+
+  const howitworksimgs = [
+    "media/website/travelsupport-1.png",
+    "media/website/travelsupport-2.png",
+    "media/website/travelsupport-3.png",
+  ];
+
   return (
     <div>
       <FullImg
@@ -63,6 +60,7 @@ const AffiliatePage = () => {
           ></FullImgContent>
         ) : null}
       </FullImg>
+
       <SetWidthContainer>
         <Heading
           align="center"
@@ -72,22 +70,23 @@ const AffiliatePage = () => {
         >
           HOW IT WORKS?
         </Heading>
+
         <HowItWorks
           images={howitworksimgs}
           content={HowitWorksContentsArr}
           headings={HowitWorksHeadingsArr}
         ></HowItWorks>
 
-        {/* <WhoAffiliate width={1200} height={900}/> */}
-
         <Heading bold margin="2.5rem auto" align="center">
           How our community travels
         </Heading>
+
         <TravelerExperience
           width={1200}
           height={900}
           content={travelsupportcontent.travellerexperience}
         />
+
         <Heading
           align="center"
           aligndesktop="left"
@@ -96,33 +95,27 @@ const AffiliatePage = () => {
         >
           Locations for you
         </Heading>
+
         <Locations
           locations={travelsupportcontent["Top Locations"]}
           viewall
         ></Locations>
-        {/* <Statistic/> */}
+
         <Heading margin="5rem auto" align="center" bold>
           Key Benefits
         </Heading>
+
         <KeyBenefits width={1200} height={900} />
+
         <Heading margin="3.5rem auto" align="center" bold>
           What they say?
         </Heading>
+
         <AsSeenIn></AsSeenIn>
+
         <ChatWithUs link="/contact"></ChatWithUs>
       </SetWidthContainer>
 
-      {/* <Heading margin="1.5rem" align="center"><b>What do we look for</b></Heading>
-      <LookFor width={1200} height={900}/> */}
-
-      {/* <ReviewYellow/> */}
-
-      {/* <WaitingFor width={1200} height={900}/> */}
-
-      {/* <TypesOfGroups/> */}
-
-      {/* <WaitingForBanner></WaitingForBanner> */}
-      {/* <TypesOfGroupsDropdown></TypesOfGroupsDropdown> */}
       <div className="hidden-desktop">
         <Banner
           link="tailored-travel"
@@ -132,12 +125,13 @@ const AffiliatePage = () => {
           buttonbgcolor="#f7e700"
         ></Banner>
       </div>
+      
       <DesktopBanner
         onclick={() => openTailoredModal(router)}
         text="Want to personalize your own experience?"
       ></DesktopBanner>
     </div>
   );
-}
+};
 
 export default AffiliatePage;
