@@ -9,6 +9,7 @@ const Privacy = () => {
         <title>Privacy-Policy | The Tarzan Way | Travel India</title>
         <meta name="robots" content="noindex"></meta>
       </Head>
+      
       <PrivacyContainer></PrivacyContainer>
     </Layout>
   );

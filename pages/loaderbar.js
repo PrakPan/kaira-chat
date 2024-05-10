@@ -13,6 +13,7 @@ const Loader = () => {
           crossOrigin="anonymous"
         ></script>
       </Head>
+      
       <LoaderContainer></LoaderContainer>
     </Layout>
   );

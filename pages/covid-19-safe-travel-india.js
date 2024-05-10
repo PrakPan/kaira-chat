@@ -25,6 +25,7 @@ const Covid = () => {
           content="safe travel during covid india, safe travel destinations covid, safe travel destinations after covid, safe travel india destinations, safe travel locations 2020, safe travel india, safe travel india post covid, safe travel recommendations, safe travel recommendations india, safety during travel, travel safety india, travel safety post covid, travel safety coronavirus, safety travel india, safe travel meaning, safety, travel packages india, can you travel safely during covid, how do you travel safely india, how to travel safe india, travel safe india, is travel safe in india, travel safety india post covid "
         ></meta>
       </Head>
+      
       <CovidContainer></CovidContainer>
     </Layout>
   );

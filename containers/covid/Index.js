@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-// import Heading from '../../components/heading/Heading';
 import Heading from "../../components/newheading/heading/Index";
 import ImageLoader from "../../components/ImageLoader";
-import media from "../../components/media";
+
 const Container = styled.div`
   height: max-content;
   width: 100vw;
@@ -22,12 +20,14 @@ const WhiteContainer = styled.div`
     padding: 7.5vh;
   }
 `;
+
 const ParagraphWidthContainer = styled.div`
   margin: auto;
   @media screen and (min-width: 768px) {
     width: 80%;
   }
 `;
+
 const IconListWidthContainer = styled.div`
   margin: 0 auto 3rem auto;
   @media screen and (min-width: 768px) {
@@ -38,6 +38,7 @@ const IconListWidthContainer = styled.div`
     margin: 7.5vh auto;
   }
 `;
+
 const Text = styled.p`
   font-weight: 300;
   font-size: 18px;
@@ -56,14 +57,15 @@ const Icon = styled.div`
     margin: auto;
   }
 `;
+
 const Covid = () => {
-  const isPageWide = media("(min-width: 768px)");
   return (
     <Container>
       <WhiteContainer>
         <Heading bold align="center" margin="0 auto 7.5vh auto">
           TTW's COVID-19 Safety Measures
         </Heading>
+
         <ParagraphWidthContainer>
           <Text className="font-nunito">
             We are closely monitoring the Centers for Disease Control and
@@ -81,6 +83,7 @@ const Covid = () => {
             </b>
           </Text>
         </ParagraphWidthContainer>
+
         <IconListWidthContainer>
           <Icon>
             <ImageLoader
@@ -188,6 +191,7 @@ const Covid = () => {
             </Text>
           </div>
         </IconListWidthContainer>
+
         <ParagraphWidthContainer>
           <Text className="font-nunito">
             The well being of our travelers is of utmost importance to us and

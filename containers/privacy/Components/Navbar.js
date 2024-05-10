@@ -1,8 +1,5 @@
-import React, { Component, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import content from "../../../public/content/privacypolicy";
-
-import styled from "styled-components";
-
 import { Link, animateScroll as scroll } from "react-scroll";
 
 const Term2 = () => {
@@ -50,12 +47,7 @@ const Term2 = () => {
   return (
     <nav className="nav" id="navbar">
       <div className="nav-content">
-        <div
-          //  className="border-thin"
-          style={{ fontSize: "1rem" }}
-        >
-          {headingText}
-        </div>
+        <div style={{ fontSize: "1rem" }}>{headingText}</div>
       </div>
     </nav>
   );

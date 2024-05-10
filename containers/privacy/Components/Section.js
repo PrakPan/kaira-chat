@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+
 const SubHeadingterms = styled.p`
   font-size: 2rem;
   font-weight: 600;

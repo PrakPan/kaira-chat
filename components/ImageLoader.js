@@ -34,7 +34,6 @@ const ImageLoader = (props) => {
   const [error, setError] = useState(false);
   const isPageLoaded = usePageLoaded();
   const [fullLoaded, setFullLoaded] = useState(false);
-
   const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
 
   let smallImageRequest = JSON.stringify({

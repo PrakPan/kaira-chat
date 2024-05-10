@@ -19,6 +19,7 @@ const Container2 = styled.div`
 
 const Index = (props) => {
   const [JSX, setJSX] = useState("");
+
   useEffect(() => {
     if (props.bold) {
       setJSX(
