@@ -58,9 +58,7 @@ const HowItWorksContainer = styled.div`
 const Index = (props) => {
   const router = useRouter();
   const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
-  const [escapeState, setEscapeState] = useState(false);
   const [myPlansArr, setMyPlansArr] = useState([]);
-  const [plansLoading, setPlansLoading] = useState(false);
   const [plansCount, setPlansCount] = useState(null);
 
   let isPageWide = media("(min-width: 768px)");
@@ -71,7 +69,6 @@ const Index = (props) => {
       if (MyPlans && MyPlans.access_token === props.token) {
         setMyPlansArr(MyPlans.plans);
         setPlansCount(MyPlans.count);
-        setPlansLoading(false);
       } else {
         axiomyplansinstance
           .get("?limit=3&offset=0", {
@@ -95,11 +92,8 @@ const Index = (props) => {
               })
             );
             setPlansCount(res.data.count);
-            setPlansLoading(false);
           })
-          .catch((err) => {
-            setPlansLoading(false);
-          });
+          .catch((err) => {});
       }
     }
   }, [props.token]);
@@ -144,10 +138,6 @@ const Index = (props) => {
     "media/website/whyus-3.webp",
     "media/website/how4.png",
   ];
-
-  useEffect(() => {
-    setEscapeState(true);
-  }, []);
 
   return (
     <div>
