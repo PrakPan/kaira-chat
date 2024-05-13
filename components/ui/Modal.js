@@ -110,6 +110,7 @@ export default function Modal(props) {
                 onClick={props.backdrop && onCLose}
                 zIndex={props.zIndex ? props.zIndex - 1 : 1599}
               ></BlackContainer>
+
               <ModalContainer
                 fade={fade}
                 className="modalContainer"
