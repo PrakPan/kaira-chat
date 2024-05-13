@@ -71,7 +71,7 @@ const SlideTwo = (props) => {
           </AiFillCaretDown>
         </div>
       </div>
-      
+
       {showPreferences || props.tailoredFormModal ? (
         <Preferences
           tailoredFormModal={props.tailoredFormModal}

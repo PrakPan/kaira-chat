@@ -80,7 +80,6 @@ function valuetext(value) {
 }
 
 function valueLabelFormat(value) {
-  // return marks.findIndex((mark) => mark.value === value) + 1;
   switch (value) {
     case 0:
       return "₹3,000";

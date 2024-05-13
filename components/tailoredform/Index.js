@@ -123,17 +123,25 @@ const Enquiry = (props) => {
   let isPageWide = media("(min-width: 768px)");
 
   useEffect(() => {
+    setShowPopup(popupObj);
+  }, [
+    valueStart,
+    valueEnd,
+    startingLocation,
+    destination,
+    showSearchStarting,
+    showCities,
+    groupType,
+    selectedCities.length,
+    slideIndex,
+  ]);
+
+  useEffect(() => {
     if (slideIndex === 2 && props.token && props.phone !== "null") {
       _submitDataHandler();
     }
     setShowPopup(popupObj);
   }, [slideIndex, props.token, props.phone]);
-
-  const _handleHideBlack = () => {
-    setShowBlack(false);
-    setShowCities(false);
-    setShowSearchStarting(false);
-  };
 
   useEffect(() => {
     if (props.userLocation) {
@@ -177,19 +185,11 @@ const Enquiry = (props) => {
 
   const [selectedCities, setSelectedCities] = useState(selectedObj);
 
-  useEffect(() => {
-    setShowPopup(popupObj);
-  }, [
-    valueStart,
-    valueEnd,
-    startingLocation,
-    destination,
-    showSearchStarting,
-    showCities,
-    groupType,
-    selectedCities.length,
-    slideIndex,
-  ]);
+  const _handleHideBlack = () => {
+    setShowBlack(false);
+    setShowCities(false);
+    setShowSearchStarting(false);
+  };
 
   const _submitDataHandler = () => {
     const value_start = new Date(valueStart);
@@ -273,8 +273,9 @@ const Enquiry = (props) => {
       },
     };
 
-    if (selectedCities[0].destination_id)
+    if (selectedCities[0].destination_id) {
       data.destination_id = [selectedCities[0].destination_id];
+    }
     if (stateIds.length) data.state_id = stateIds;
     if (countryIds.length) data.country_id = countryIds;
     if (cityids.length) data.city_id = cityids;
@@ -424,6 +425,7 @@ const Enquiry = (props) => {
             ) : (
               <></>
             )}
+
             <div style={{ width: "100%" }}>
               {props.tailoredFormModal && (
                 <CloseIcon>
@@ -542,7 +544,7 @@ const Enquiry = (props) => {
                 </Button>
               </div>
             ) : null}
-            
+
             {slideIndex === 1 ? (
               !props.token || props.phone === "null" ? (
                 <div style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -629,8 +631,4 @@ const mapStateToPros = (state) => {
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return {};
-};
-
-export default connect(mapStateToPros, mapDispatchToProps)(Enquiry);
+export default connect(mapStateToPros)(Enquiry);

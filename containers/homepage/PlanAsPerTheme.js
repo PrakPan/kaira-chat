@@ -187,7 +187,6 @@ const PlanAsPerTheme = (props) => {
         </TextContainer>
         <ImageLoader
           noLazy
-          // onload={() => setImgLoading(false)}
           fit="cover"
           width="100%"
           height="100%"

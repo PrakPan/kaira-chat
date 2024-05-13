@@ -2,14 +2,11 @@ import axiosAllDestinationsInstance from "../../services/pages/allDestinations";
 import axiospagelistinstance from "../../services/pages/list";
 import axiosCountInstance from "../../services/itinerary/count";
 import Layout from "../../components/Layout";
-import { useRouter } from "next/router";
 import Head from "next/head";
-import media from "../../components/media";
-import { logEvent } from "../../services/ga/Index";
 import DestinationsPageContainer from "../../containers/destinationspage/Index";
 
 export default function AllDestinations(props) {
-  
+
 
   return (
     <Layout destination={"All Destinations"} id={""} page={"Destinations page"}>
@@ -24,6 +21,7 @@ export default function AllDestinations(props) {
         <meta property="og:image" content="/logoblack.svg" />
         <meta property="keywords" content={""}></meta>
       </Head>
+
       <DestinationsPageContainer
         allDestinations={props.allDestinations}
         ThemeData={props.ThemeData}
@@ -43,6 +41,7 @@ export async function getStaticProps(context) {
     { slug: "north_america", title: "North America" },
     { slug: "south_america", title: "South America" },
   ];
+  
   let ThemeData = [];
   const allDestinations = [];
   let Count = null;

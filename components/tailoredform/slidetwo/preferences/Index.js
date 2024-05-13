@@ -62,7 +62,7 @@ const GroupType = (props) => {
 
     return false;
   };
-  
+
   const _handleClick = (preference) => {
     let is_preference_added = _isPreferenceAdded(preference);
     if (!is_preference_added) {

@@ -69,6 +69,7 @@ export default function DestinationsPageContainer({
                 <Heading>
                   Top countries to visit in {dest.continent.title}
                 </Heading>
+
                 <SwiperLocations
                   locations={dest.locations}
                   destination={dest.continent.title}
@@ -77,6 +78,7 @@ export default function DestinationsPageContainer({
                   country
                   viewall
                 ></SwiperLocations>
+
                 <div className="w-full flex items-center justify-center mt-5">
                   <Button
                     onclick={() =>
