@@ -58,6 +58,13 @@ const UserDashboard = (props) => {
   let isPageWide = media("(min-width: 768px)");
   let router = useRouter();
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    if (props.token) {
+      fetchData();
+    }
+  }, [props.token]);
+
   const fetchData = (showMore = false) => {
     if (showMore) setShowMoreLoading(true);
     axiomyplansinstance
@@ -90,13 +97,6 @@ const UserDashboard = (props) => {
       });
   };
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    if (props.token) {
-      fetchData();
-    }
-  }, [props.token]);
-
   const handleShowMore = () => {
     if (props.token) {
       fetchData(true);
@@ -127,6 +127,7 @@ const UserDashboard = (props) => {
           <Profile></Profile>
         </ContentContainer>
       </Container>
+      
       <ContentContainer className="w-full mb-5">
         <div style={{ display: "flex" }} className="">
           <Heading
@@ -276,4 +277,5 @@ const mapStateToPros = (state) => {
     token: state.auth.token,
   };
 };
+
 export default connect(mapStateToPros)(UserDashboard);

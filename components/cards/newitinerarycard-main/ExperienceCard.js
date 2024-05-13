@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import ImageGallery from "./slider/ImageSlider";
 import { useRouter } from "next/router";

@@ -14,6 +14,7 @@ const Container = styled.div`
     width: 100%;
   }
 `;
+
 const OverviewContainer = styled.div`
   @media screen and (min-width: 768px) {
     display: grid;
@@ -21,24 +22,14 @@ const OverviewContainer = styled.div`
     width: 100%;
   }
 `;
-const CountContainer = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-gap: 0.5rem;
-`;
-const DP = styled.img`
-  border-radius: 50%;
-  width: 60%;
-  @media screen and (min-width: 768px) {
-    width: 40%;
-  }
-`;
+
 const ImageNameContainer = styled.div`
   padding: 2rem 0;
   @media screen and (min-width: 768px) {
     padding: 0;
   }
 `;
+
 const Profile = (props) => {
   let isPageWide = media("(min-width: 768px)");
 
@@ -51,6 +42,7 @@ const Profile = (props) => {
       margin: 1rem;
     }
   `;
+
   const DetailsContainer = styled.div`
     text-align: center;
     padding: 2rem 0;
@@ -58,12 +50,14 @@ const Profile = (props) => {
       text-align: left;
     }
   `;
+
   const SectionHeading = styled.p`
     font-size: ${(props) => props.theme.fontsizes.mobile.text.two};
     @media screen and (min-width: 768px) {
       font-size: ${(props) => props.theme.fontsizes.desktop.text.one};
     }
   `;
+
   const DetailHeading = styled.p`
     font-size: ${(props) => props.theme.fontsizes.mobile.text.two};
     font-weight: 500;
@@ -74,6 +68,7 @@ const Profile = (props) => {
       margin-bottom: 0.5rem;
     }
   `;
+
   const DetailText = styled.p`
     font-size: ${(props) => props.theme.fontsizes.mobile.text.three};
     font-weight: 300;
@@ -84,7 +79,6 @@ const Profile = (props) => {
       display: inline;
     }
   `;
-
 
   return (
     <Container className="border-thin">
@@ -104,7 +98,9 @@ const Profile = (props) => {
           ></ImageLoader>
           <Name className="font-lexend">{props.name}</Name>
         </ImageNameContainer>
+
         {!isPageWide ? <hr style={{ margin: "0" }} /> : null}
+
         <DetailsContainer>
           {isPageWide ? (
             <SectionHeading
@@ -137,9 +133,11 @@ const mapStateToPros = (state) => {
     image: state.auth.image,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     onSetProfilePic: (image) => dispatch(authaction.uploadProfilePic(image)),
   };
 };
+
 export default connect(mapStateToPros, mapDispatchToProps)(Profile);

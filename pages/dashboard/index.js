@@ -18,6 +18,7 @@ const Dashboard = (props) => {
           />
           <meta property="og:image" content="/logoblack.svg" />
         </Head>
+        
         <DashboardContainer></DashboardContainer>
       </Layout>
     );

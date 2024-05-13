@@ -1,5 +1,3 @@
-// import { red } from "@mui/material/colors";
-import React, { useState } from "react";
 import styled from "styled-components";
 
 const Generalbuttonstyle = styled.div`

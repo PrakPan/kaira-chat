@@ -62,7 +62,7 @@ const Summary = (props) => {
         ></MdOutlineFlight>
         {props.summary.Flights.count + " Flights"}
       </IconContainer>
-      
+
       <IconContainer
         className="font-lexend text-center"
         color={props.summary.Activities.count ? "black" : "#b5b3b3"}
