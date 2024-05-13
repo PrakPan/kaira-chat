@@ -1,4 +1,3 @@
-import React from "react";
 import styled from "styled-components";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import SkeletonCard from "../../../../ui/SkeletonCard";

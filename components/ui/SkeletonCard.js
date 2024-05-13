@@ -34,7 +34,7 @@ export default function SkeletonCard({
   };
 
   const greater = lottieDimension || Math.max(width, height) || "auto";
-  
+
   return (
     <LoadingBox
       width={width}

@@ -46,26 +46,6 @@ const SearchPannel = (props) => {
   let [inputValue, setInputValue] = useState("");
   const [results, setResults] = useState(null);
   const [hotLocationsData, setHotLocationsData] = useState();
-
-  const _onChangeHandler = (event) => {
-    if (event.target.value.length % 3 === 0) {
-      process.env.NODE_ENV === "production" &&
-        !CONTENT_SERVER_HOST.includes("dev") &&
-        ga.event({
-          action: "HS-locationssearched",
-          params: {
-            search_text: event.target.value,
-          },
-        });
-    }
-    setInputValue(event.target.value);
-    axiossearchsuggestinstance.get(`?q=` + event.target.value).then((res) => {
-      if (res.data.length) {
-        setResults(res.data.slice(0, 10));
-        setShowResults(true);
-      } else setShowResults(false);
-    });
-  };
   const ref = useRef();
 
   useEffect(() => {
@@ -87,6 +67,26 @@ const SearchPannel = (props) => {
     });
   }, []);
 
+  const _onChangeHandler = (event) => {
+    if (event.target.value.length % 3 === 0) {
+      process.env.NODE_ENV === "production" &&
+        !CONTENT_SERVER_HOST.includes("dev") &&
+        ga.event({
+          action: "HS-locationssearched",
+          params: {
+            search_text: event.target.value,
+          },
+        });
+    }
+    setInputValue(event.target.value);
+    axiossearchsuggestinstance.get(`?q=` + event.target.value).then((res) => {
+      if (res.data.length) {
+        setResults(res.data.slice(0, 10));
+        setShowResults(true);
+      } else setShowResults(false);
+    });
+  };
+
   return (
     <Container className="border" ref={ref}>
       <TopContainer>
@@ -100,6 +100,7 @@ const SearchPannel = (props) => {
             margin: "1.5rem",
           }}
         ></FontAwesomeIcon>
+
         <SearchContainer>
           <Search
             autoFocus
@@ -110,6 +111,7 @@ const SearchPannel = (props) => {
           ></Search>
         </SearchContainer>
       </TopContainer>
+
       {!showResults ? (
         <Locations hotlocations={hotLocationsData}></Locations>
       ) : (

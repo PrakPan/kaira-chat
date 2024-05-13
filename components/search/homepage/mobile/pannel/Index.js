@@ -73,6 +73,12 @@ const SearchPannel = (props) => {
   const [hotLocationsData, setHotLocationsData] = useState();
   const [showP, setShowP] = useState(false);
 
+  useEffect(() => {
+    axioslocationsinstance.get("hot_destinations").then((response) => {
+      setHotLocationsData(response.data);
+    });
+  }, []);
+
   const _onChangeHandler = (event) => {
     setInputValue(event.target.value);
     if (event.target.value.length % 3 === 0) {
@@ -100,12 +106,6 @@ const SearchPannel = (props) => {
     });
   };
 
-  useEffect(() => {
-    axioslocationsinstance.get("hot_destinations").then((response) => {
-      setHotLocationsData(response.data);
-    });
-  }, []);
-
   return (
     <Container className="">
       <style jsx global>
@@ -128,6 +128,7 @@ const SearchPannel = (props) => {
             margin: "auto 0.7rem",
           }}
         />
+
         <SearchContainer>
           <Search
             autoFocus
@@ -136,6 +137,7 @@ const SearchPannel = (props) => {
             className="font-lexend"
             placeholder="Search Locations"
           ></Search>
+
           <ImSearch
             style={{
               position: "absolute",
@@ -145,6 +147,7 @@ const SearchPannel = (props) => {
               pointerEvents: "none",
             }}
           />
+
           {inputValue !== "" && (
             <MdCancel
               onClick={() => {
