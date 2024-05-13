@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { AiOutlineInfoCircle } from 'react-icons/ai';
-import styled from 'styled-components';
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { AiOutlineInfoCircle } from "react-icons/ai";
+import styled from "styled-components";
 
 // Tooltip component with animation using Framer Motion
 const Tooltip = ({ text }) => {
@@ -37,7 +37,6 @@ const EllipsisTruncation = ({
   text,
   maxCharacters = 20,
   tooltipText,
-  tooltipPosition = 'top',
 }) => {
   const [isOverflowed, setIsOverflowed] = useState(false);
 

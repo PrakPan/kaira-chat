@@ -1,4 +1,4 @@
-import { Children } from 'react';
+import { Children } from "react";
 
 export const SplitScreen = ({
   isPageWide,
@@ -19,7 +19,7 @@ export const SplitScreen = ({
 };
 
 SplitScreen.defaultProps = {
-  className: '',
+  className: "",
   leftWidth: 6,
   rightWidth: 6,
 };

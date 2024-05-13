@@ -11,21 +11,25 @@ import { Link } from "react-scroll";
 const MapBox = dynamic(() => import("../../Map.js"), {
   ssr: false,
 });
+
 const Title = styled.p`
   font-weight: 600;
   font-size: 20px;
   margin-block: 1rem 0rem;
 `;
+
 const MapInfo = styled.div`
   b {
     font-weight: 600;
   }
 `;
+
 const Heading = styled.p`
   font-size: 18px;
   font-weight: 600;
   margin-block: 0rem;
 `;
+
 const WeatherContainer = styled.div`
   border: 1px solid #eceaea;
   border-radius: 10px;
@@ -40,12 +44,14 @@ const WeatherContainer = styled.div`
     margin-top: 0rem;
   }
 `;
+
 const TextBold = styled.p`
   line-height: 24px;
   font-weight: 600;
   margin: 0;
   color: rgb(1, 32, 43);
 `;
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -56,6 +62,7 @@ const Container = styled.div`
     width: 500px;
   }
 `;
+
 const TimeStamp = styled.p`
   height: 31px;
   padding: 4px 8px;
@@ -68,6 +75,7 @@ const TimeStamp = styled.p`
   bottom: 0px;
   right: 20px;
 `;
+
 const CityDetails = (props) => {
   const [imageLoading, setImageLoading] = useState(true);
   let isPageWide = media("(min-width: 768px)");
@@ -176,7 +184,6 @@ const CityDetails = (props) => {
         <>
           <Heading>How to reach</Heading>
           <Text text={props.data.conveyance_available} />
-          {/* <div>{ props.data.conveyance_available}</div> */}
         </>
       )}
     </Container>

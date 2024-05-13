@@ -104,7 +104,6 @@ const Container = styled.div`
 const CalenderIcons = styled.div`
   position: absolute;
   top: 0;
-  // right: 2%;
   pointer-events: none;
   font-size: 20px;
   z-index: 0;
@@ -152,9 +151,6 @@ const ButtonContainer = styled.div`
   margin: auto;
   left: 0;
   right: 0;
-  @media screen and (min-width: 768px) {
-    // left : 50%;
-  }
 `;
 
 const DatePicker = (props) => {

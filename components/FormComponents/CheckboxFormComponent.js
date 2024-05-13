@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
+import styled from "styled-components";
 
 // Styled Components
 const CheckboxContainer = styled.div`
@@ -7,7 +6,7 @@ const CheckboxContainer = styled.div`
   vertical-align: middle;
 `;
 
-const HiddenCheckbox = styled.input.attrs({ type: 'checkbox' })`
+const HiddenCheckbox = styled.input.attrs({ type: "checkbox" })`
   position: absolute;
   opacity: 0;
   height: 0;
@@ -18,7 +17,7 @@ const StyledCheckbox = styled.div`
   display: inline-block;
   width: 16px;
   height: 16px;
-  background: ${(props) => (props.checked ? 'black' : 'white')};
+  background: ${(props) => (props.checked ? "black" : "white")};
   border-radius: 3px;
 
   border: solid 2px #01202b;
@@ -29,7 +28,7 @@ const StyledCheckbox = styled.div`
   }
 
   &:hover {
-    background: ${(props) => (props.checked ? 'tomato' : 'peachpuff')};
+    background: ${(props) => (props.checked ? "tomato" : "peachpuff")};
   }
 `;
 

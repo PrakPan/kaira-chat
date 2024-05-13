@@ -1,99 +1,78 @@
-import React, {useState} from 'react';
-import styled from 'styled-components';
-import { getHumanDate } from '../../../../../services/getHumanDate'; 
-import ImageLoader from '../../../../ImageLoader';
-import { getIndianPrice } from '../../../../../services/getIndianPrice';
-import dayjs from 'dayjs';
-import { BsFillCalendarEventFill } from 'react-icons/bs';
+import styled from "styled-components";
+import { getHumanDate } from "../../../../../services/getHumanDate";
+import ImageLoader from "../../../../ImageLoader";
+import { getIndianPrice } from "../../../../../services/getIndianPrice";
+import dayjs from "dayjs";
+import { BsFillCalendarEventFill } from "react-icons/bs";
 
- const Container = styled.div`
-    padding: 0 0.5rem;
-    @media screen and (min-width: 768px){
-        padding: 0 1rem;
-    }
- `;
-const Heading = styled.p`
-    font-weight: 600;
-    margin-bottom: 4px;
-    line-height: 1.2;
-
-`
-const Duration = styled.p`
-    font-weight: 400;
-    color: black;
-     margin-bottom: 1rem;
-font-size: 13px;
-line-height: 1;
-
-
+const Container = styled.div`
+  padding: 0 0.5rem;
+  @media screen and (min-width: 768px) {
+    padding: 0 1rem;
+  }
 `;
-const HeadingTwo = styled.p`
-font-weight: 600;
-    margin-bottom: 6px;
-    font-size: 14px;
- 
 
-`;
 const OuterGridContainer = styled.div`
-    display: grid;
-    grid-row-gap: 2.5rem;
+  display: grid;
+  grid-row-gap: 2.5rem;
 `;
+
 const GridContainer = styled.div`
-    display: grid;
-    grid-template-columns: auto max-content;
-    grid-row-gap: 1rem;
- `;
+  display: grid;
+  grid-template-columns: auto max-content;
+  grid-row-gap: 1rem;
+`;
 
- const FlexContainer = styled.div`
-    display: flex;
-    gap: 0.5rem;
- `
-const HeadingThree =  styled.p`
-font-weight: 500;
-    margin-bottom: 2px;
-    font-size: 13px;
-    line-height: 1;
-    @media screen and (min-width: 768px){
-        font-size: 16px;
+const FlexContainer = styled.div`
+  display: flex;
+  gap: 0.5rem;
+`;
 
-    }
-
-`
-const Subheading = styled.p`
-font-weight: 300;
-color:  rgba(91, 89, 89, 1);
-margin-bottom: 0px;
-line-height: 1;
-font-size: 13px;
-@media screen and (min-width: 768px){
+const HeadingThree = styled.p`
+  font-weight: 500;
+  margin-bottom: 2px;
+  font-size: 13px;
+  line-height: 1;
+  @media screen and (min-width: 768px) {
     font-size: 16px;
+  }
+`;
 
-}
-`
+const Subheading = styled.p`
+  font-weight: 300;
+  color: rgba(91, 89, 89, 1);
+  margin-bottom: 0px;
+  line-height: 1;
+  font-size: 13px;
+  @media screen and (min-width: 768px) {
+    font-size: 16px;
+  }
+`;
+
 const Subheading2 = styled.p`
-font-weight: 300;
-color:  rgba(91, 89, 89, 1);
-margin-bottom: 0px;
-line-height: 1;
-font-size: 10px;
-color: blue;
-@media screen and (min-width: 768px){
+  font-weight: 300;
+  color: rgba(91, 89, 89, 1);
+  margin-bottom: 0px;
+  line-height: 1;
+  font-size: 10px;
+  color: blue;
+  @media screen and (min-width: 768px) {
     font-size: 13px;
-
-}`;
+  }
+`;
 
 const StrikedCost = styled.p`
-position: relative;
- width: max-content;  
- margin-bottom: 0;
- margin-right: 8px;
+  position: relative;
+  width: max-content;
+  margin-bottom: 0;
+  margin-right: 8px;
   font-weight: 400;
-    font-size: 13px;
-    line-height: 1;
-    text-align: center;
+  font-size: 13px;
+  line-height: 1;
+  text-align: center;
   &:before {
     position: absolute;
-    content: '';
+    content: "";
     left: 0;
     top: 45%;
     right: 0;
@@ -104,30 +83,26 @@ position: relative;
     transform: skewY(-10deg);
   }
 
-  @media screen and (min-width: 768px){
+  @media screen and (min-width: 768px) {
     font-size: 16px;
-
-}
+  }
 `;
+
 const Cart = (props) => {
-    const getDate = (date) => {
-        let year = date.substring(0,4)
-        let month = date.substring(5,7);
-        let day = date.substring(8,10);
-       
-        return(getHumanDate(day+"/"+month+"/"+year) );
-    
-    }
-  
+  const getDate = (date) => {
+    let year = date.substring(0, 4);
+    let month = date.substring(5, 7);
+    let day = date.substring(8, 10);
+
+    return getHumanDate(day + "/" + month + "/" + year);
+  };
+
   return (
     <Container className="">
-      {/* <Heading className='font-lexend'>{props.plan ? props.plan.name ? props.plan.name : null : null}</Heading> */}
-      {/* <Duration className='font-lexend' >{props.plan ? props.plan.duration_number ? props.plan.duration_number + " " + props.plan.duration_unit : null : null}</Duration > */}
       <OuterGridContainer>
         <GridContainer>
-          <FlexContainer style={{alignItems : 'center' , gap : '0.75rem'}}>
-            {/* <ImageLoader url="media/icons/bookings/stays/check-in.svg" height="1.5rem" width="1.5rem" widthmobile="1.5rem" dimensions={{width: 100, height: 100}} margin="0" leftalign></ImageLoader> */}
-            <BsFillCalendarEventFill style={{ fontSize : '1.5rem' }} />
+          <FlexContainer style={{ alignItems: "center", gap: "0.75rem" }}>
+            <BsFillCalendarEventFill style={{ fontSize: "1.5rem" }} />
             <div>
               <HeadingThree>Start Date</HeadingThree>
               <Subheading>
@@ -156,10 +131,7 @@ const Cart = (props) => {
         </GridContainer>
 
         <GridContainer>
-          <div>
-            {/* <HeadingThree>Total Cost</HeadingThree> */}
-            {/* <Subheading>{'₹ 8320 /-'}</Subheading> */}
-          </div>
+          <div></div>
           <div style={{ textAlign: "right" }}>
             <div style={{ display: "flex" }}>
               <StrikedCost>
@@ -190,11 +162,8 @@ const Cart = (props) => {
           marginTop: "1rem",
         }}
       >
+        <div></div>
         <div>
-          {/* <Subheading2 className="hover-pointer" onClick={() => props.setShowTermsModal(true)} style={{color: 'blue', fontSize: '10px'}}>{'Terms & Conditions'}</Subheading2> */}
-        </div>
-        <div>
-          {/* <Subheading2 style={{color: 'blue', fontSize: '10px', textAlign: 'right'}}>{'Payment Policy'}</Subheading2> */}
           <Subheading2
             className="hover-pointer"
             onClick={() => props.setShowTermsModal(true)}
@@ -206,7 +175,6 @@ const Cart = (props) => {
       </div>
     </Container>
   );
-
-}
+};
 
 export default Cart;

@@ -66,7 +66,7 @@ const Socials = (props) => {
       >
         <FaLinkedinIn />
       </IconContainer>
-      
+
       <IconContainer
         hoverbg={"#E60023"}
         href="https://www.pinterest.com/thetarzanway/"

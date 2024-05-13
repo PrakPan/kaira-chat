@@ -1,25 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Row from "../../../components/experiencecity/info/Row";
 import Route from "./route/Index";
 import Overview from "./overview/Index";
-
-// import InformationTextContainer from '../../components/experiencecity/info/InformationTextContainer';
-// import RouteData from './Locations';
-
-// import InclusionsData from './Inclusions';
-
 import styled from "styled-components";
-import { Element } from "react-scroll";
-//  import Faqs from '../../components/experiencecity/info/faqs/Index';
-// import Banner from './Banner/Index';
-import { useRef } from "react";
-import media from "../../../components/media";
 import { useRouter } from "next/router";
-// import DesktopPersonaliseBanner from '../../components/containers/Banner' ;
 import DesktopBanner from "../../../components/containers/Banner";
 import Banner from "../../homepage/banner/Mobile";
 import openTailoredModal from "../../../services/openTailoredModal";
-import usePageLoaded from "../../../components/custom hooks/usePageLoaded";
+
 const DetailsContainer = styled.div`
   width: 100%;
   margin: 0 auto 10vh auto;
@@ -32,46 +20,10 @@ const DetailsContainer = styled.div`
 `;
 
 const Details = (props) => {
-  const isPageLoaded = usePageLoaded();
   const router = useRouter();
-
-  let offsets = {};
-  const [offset, setOffset] = useState(null);
-
-  // useEffect(()=> {
-
-  //         window.addEventListener('scroll', _handleScroll);
-  //          return () => {
-  //         window.removeEventListener('scroll', _handleScroll);
-  //       }
-  // })
-  //   const overviewRef = useRef();
-  //   const routeRef = useRef();
-  //   const locationsRef=useRef();
-  //   const howtoreachRef = useRef();
-  //   const inclusionsRef = useRef();
-  //   const exclusionsRef = useRef();
-  //   const faqsRef = useRef();
-
-  //   const _handleScroll = () => {
-  //     if(overviewRef && routeRef && howtoreachRef && exclusionsRef && inclusionsRef && faqsRef)
-  //     offsets={
-  //             'Overview': overviewRef.current.offsetTop,
-  //             'Route':  routeRef.current.offsetTop,
-  //             'How to reach': howtoreachRef.current.offsetTop,
-  //             'Inclusions' : inclusionsRef.current.offsetTop,
-  //             'Exclusions': exclusionsRef.current.offsetTop,
-  //             'FAQ/s':  faqsRef.current.offsetTop
-  //           }
-  //           if(isPageLoaded)
-  //       if(window.pageYOffset > 300 && !offset) setOffset(offsets);
-  //   }
 
   return (
     <div>
-      {/* <YellowNavbar   price={props.data.payment_info[0].total_cost}></YellowNavbar> */}
-      {/* <PageNavigation price={props.data.payment_info[0].total_cost} /> */}
-      {/* <HeaderExtraPadding></HeaderExtraPadding> */}
       <DetailsContainer>
         <div>
           <div id="route">

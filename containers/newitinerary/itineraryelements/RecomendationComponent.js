@@ -1,22 +1,17 @@
-import React, { useState } from 'react';
-import FoodItem from './FoodItem';
+import React, { useState } from "react";
+import FoodItem from "./FoodItem";
 import {
   RecommendationGridContainer,
-  TInfoContainer,
-  Text,
-} from './ItineraryFoodElement';
-import { isJson } from '../../../services/isJSON';
+} from "./ItineraryFoodElement";
+import { isJson } from "../../../services/isJSON";
 import {
-  HLine,
-  Line,
   Timecontainer,
-} from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
-import styled from 'styled-components';
-import { LivelyButton } from '../../../components/LiveleyButton';
-import useMediaQuery from '../../../hooks/useMedia';
-import { AiOutlineDown } from 'react-icons/ai';
-import ImageLoader from '../../../components/ImageLoader';
-import media from '../../../components/media'
+} from "../../itinerary/New_Itenary_DBD/New_itenaryStyled";
+import styled from "styled-components";
+import { LivelyButton } from "../../../components/LiveleyButton";
+import { AiOutlineDown } from "react-icons/ai";
+import ImageLoader from "../../../components/ImageLoader";
+import media from "../../../components/media";
 
 const GridContainer = styled.div`
   @media screen and (min-width: 768px) {
@@ -25,6 +20,7 @@ const GridContainer = styled.div`
     grid-column-gap: 0rem;
   }
 `;
+
 const GridContainerMobile = styled.div`
   display: grid;
   grid-template-columns: 44px auto;
@@ -33,6 +29,7 @@ const GridContainerMobile = styled.div`
     grid-column-gap: 0.5rem;
   }
 `;
+
 const ReccoIcon = styled.div`
   width: 100%;
   display: flex;
@@ -50,14 +47,11 @@ const RecomendationComponent = (props) => {
   const [viewMore, setViewMore] = useState(false);
   const isPageWide = media("(min-width: 768px)");
 
-
   return props.recomendation || props.recomendation.length < 1 ? (
     <div>
       <Timecontainer>
-        {/* <div style={{ width: '3.7rem' }}>{time}</div> */}
       </Timecontainer>
 
-      {/* <TInfoContainer> */}
       <GridContainer>
         {isPageWide ? (
           props.icon !== "media/icons/default/recommendation.svg" ? (
@@ -86,8 +80,6 @@ const RecomendationComponent = (props) => {
         ) : (
           <></>
         )}
-        {/* <HLine style={{ width: '2rem' }}></HLine> */}
-        {/* <Line></Line> */}
         <div className={`${!isJson(props.recomendation) ? "pt-0" : "pt-0"}`}>
           {!isPageWide ? (
             <GridContainerMobile
@@ -183,7 +175,6 @@ const RecomendationComponent = (props) => {
           ) : null}
         </div>
       </GridContainer>
-      {/* </TInfoContainer> */}
     </div>
   ) : null;
 };

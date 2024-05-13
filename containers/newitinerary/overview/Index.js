@@ -2,8 +2,6 @@ import styled from "styled-components";
 import Details from "./Details";
 import ImagesMobile from "./ImagesMobile";
 
-const Container = styled.div``;
-
 const GridContainer = styled.div`
   display: grid;
   grid-template-columns: auto max-content;
@@ -20,16 +18,6 @@ const Heading = styled.h1`
   line-height: 34px;
 `;
 
-const Line = styled.div`
-  border: 1px solid #f0f0f0;
-  width: 100vw;
-  margin-left: -1rem;
-  margin-bottom: 1rem;
-  @media screen and (min-width: 768px) {
-    visibility: hidden;
-  }
-`;
-
 const toTitleCase = (str) => {
   return str.replace(/\w\S*/g, function (txt) {
     return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
@@ -38,7 +26,7 @@ const toTitleCase = (str) => {
 
 const Overview = (props) => {
   return (
-    <Container>
+    <div>
       <GridContainer>
         <Heading className="font-lexend">{toTitleCase(props.title)}</Heading>
       </GridContainer>
@@ -61,7 +49,7 @@ const Overview = (props) => {
       <div className="pt-3 pb-1">
         <ImagesMobile images={props.images}></ImagesMobile>
       </div>
-    </Container>
+    </div>
   );
 };
 

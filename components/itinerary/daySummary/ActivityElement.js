@@ -7,17 +7,14 @@ import { MdDoneAll } from "react-icons/md";
 import { BiTimeFive } from "react-icons/bi";
 import { IoTicket } from "react-icons/io5";
 import { TransparentButton } from "../../../containers/itinerary/New_Itenary_DBD/New_itenaryStyled";
-import media from "../../media";
 import { logEvent } from "../../../services/ga/Index";
 
 export default function ActivityElement(props) {
-  const { data, booking, city_id } = props;
+  const { data, booking } = props;
   const [showDrawer, setShowDrawer] = useState(false);
-  const [visible, setVisible] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
-  const isPageWide = media("(min-width: 768px)");
 
   useEffect(() => {
     if (
@@ -68,16 +65,6 @@ export default function ActivityElement(props) {
         event_action: "Day by Day Itinerary",
       },
     });
-  };
-
-  const hoverFunction = () => {
-    setVisible(true);
-    console.log("Hovered!");
-  };
-
-  const outFunction = () => {
-    setVisible(false);
-    console.log("Mouse left!");
   };
 
   return (

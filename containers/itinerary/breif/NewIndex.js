@@ -36,12 +36,6 @@ const RouteComponent = styled.div`
   }
 `;
 
-const MapInfo = styled.div`
-  b {
-    font-weight: 600;
-  }
-`;
-
 const Details = (props) => {
   const [active, setActive] = useState(null);
   const [showDrawer, setShowDrawer] = useState(false);

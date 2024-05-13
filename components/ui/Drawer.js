@@ -120,24 +120,9 @@ export default function Drawer(props) {
   const [fade, setFade] = useState("out");
   let zIndex = 1250;
 
-  if (props.style && props.style.zIndex) {
-    zIndex = props.style.zIndex;
-  } else if (props.zIndex) {
-    zIndex = props.zIndex;
-  }
-
   useEffect(() => {
     set_document(document);
   }, []);
-
-  function onCLose() {
-    document.body.style.overflow = "initial";
-    setFade("out");
-    setTimeout(() => {
-      setOpen(false);
-      if (props.onHide) props.onHide();
-    }, 100);
-  }
 
   useEffect(() => {
     if (props.show === true) {
@@ -147,6 +132,21 @@ export default function Drawer(props) {
       setFade("in");
     } else onCLose();
   }, [props.show]);
+
+  if (props.style && props.style.zIndex) {
+    zIndex = props.style.zIndex;
+  } else if (props.zIndex) {
+    zIndex = props.zIndex;
+  }
+
+  function onCLose() {
+    document.body.style.overflow = "initial";
+    setFade("out");
+    setTimeout(() => {
+      setOpen(false);
+      if (props.onHide) props.onHide();
+    }, 100);
+  }
 
   return _document
     ? ReactDOM.createPortal(

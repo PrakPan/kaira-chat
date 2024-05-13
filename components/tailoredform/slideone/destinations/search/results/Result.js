@@ -22,7 +22,6 @@ const MarkerContainer = styled.div`
 
 const Text = styled.div`
   font-weight: 500;
-  // margin-block : 5px;
   p {
     font-weight: 400;
     margin-bottom: 0rem;

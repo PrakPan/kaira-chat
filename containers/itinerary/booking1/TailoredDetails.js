@@ -21,13 +21,13 @@ const SummaryContainer = styled.div`
     top: 11vh;
   }
 `;
+
 const Details = (props) => {
   const [couponSlide, setCouponSlide] = useState(false);
   const [isDatePast, setIsDatePast] = useState(false);
   const [iscouponApplied, setiscouponApplied] = useState(
     props.payment?.coupon ? true : false
   );
-  const [isDisabled, setIsDisabled] = useState(false);
   const [inputValue, setInputValue] = useState(
     props.payment?.coupon ? props.payment?.coupon?.code : ""
   );
@@ -40,7 +40,7 @@ const Details = (props) => {
     error: false,
     errorMsg: "",
   });
- 
+
   useEffect(() => {
     if (props.plan?.start_date) {
       if (isPast(parseISO(props.plan?.start_date))) {
@@ -78,7 +78,6 @@ const Details = (props) => {
           value: true,
           Msg: "Coupon Removed Successfully",
         });
-        setIsDisabled(false);
         setiscouponApplied(false);
         setInputValue("");
 
@@ -86,7 +85,6 @@ const Details = (props) => {
       })
       .catch((error) => {
         setCouponLoading(false);
-        setIsDisabled(true);
         setIsError({
           error: true,
           errorMsg: "Coupon Removed Failed",
@@ -131,7 +129,6 @@ const Details = (props) => {
           value: true,
           Msg: res.data.coupon_usage.message,
         });
-        setIsDisabled(true);
         setiscouponApplied(true);
 
         setIsError({
@@ -143,7 +140,6 @@ const Details = (props) => {
       })
       .catch((error) => {
         setCouponLoading(false);
-        setIsDisabled(false);
         setiscouponApplied(false);
 
         if (error.response && error.response.status === 400) {
@@ -288,6 +284,7 @@ const Details = (props) => {
     </SummaryContainer>
   );
 };
+
 const mapStateToProps = (state) => {
   return {
     experience: state.experience.experience,
@@ -307,10 +304,12 @@ const mapStateToProps = (state) => {
     couponInvalid: state.experience.couponInvalid,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     setOrderDetails: (details) =>
       dispatch(orderaction.setOrderDetails(details)),
   };
 };
+
 export default connect(mapStateToProps, mapDispatchToProps)(Details);

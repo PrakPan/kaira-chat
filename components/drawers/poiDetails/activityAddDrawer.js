@@ -42,7 +42,6 @@ const GetInTouchContainer = styled.div`
 
 const items = [
   { id: 1, label: "Things To Do", link: "Activities" },
-  //   { id: 2, label: "Places To Visit", link: "POI" },
 ];
 
 const ActivityAddDrawer = (props) => {
@@ -170,12 +169,9 @@ const ActivityAddDrawer = (props) => {
                 key={i}
                 activityAddDrawer
                 _updatePoiHandler={_addActivityHandler}
-                // selectedData={props.data}
                 setShowDrawer={props?.setShowDrawer}
                 data={res.data.results[i]}
-                // loginModal={showLoginModal}
                 setLoginModal={props.setShowLoginModal}
-                // ticketsCount={ticketsCount}
               ></PoiList>
             );
           }
@@ -438,9 +434,11 @@ const mapStateToPros = (state) => {
     itineraryActivities: state.itineraryActivities.activities,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     openNotification: (payload) => dispatch(openNotification(payload)),
   };
 };
+
 export default connect(mapStateToPros, mapDispatchToProps)(ActivityAddDrawer);

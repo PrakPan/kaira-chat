@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
-import useOnWindowResize from '../../hooks/useOnWindowResize';
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import styled from "styled-components";
+import useOnWindowResize from "../../hooks/useOnWindowResize";
 
 interface Props {
   x: number;

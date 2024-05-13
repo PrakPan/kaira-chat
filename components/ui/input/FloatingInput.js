@@ -37,7 +37,6 @@ const Label = styled.label`
   left: 20px;
   top: 30%;
   white-space: nowrap;
-  // overflow: hidden;
   transition: 0.3s ease all;
   color: ${(props) => (props.error ? "red !important" : "black")};
   ${Input}:focus ~ & {

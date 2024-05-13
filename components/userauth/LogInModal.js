@@ -579,8 +579,8 @@ const LogIn = React.memo((props) => {
             >
               Login
             </Button>
-            )}
-            
+          )}
+
           <div
             style={{
               position: "relative",
@@ -660,7 +660,7 @@ const LogIn = React.memo((props) => {
               style={{ textDecoration: "none" }}
               target="_blank"
             >
-              T&Cs and privacy policy {/* </a> */}
+              T&Cs and privacy policy
             </Link>
           </div>
         </form>

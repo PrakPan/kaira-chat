@@ -123,20 +123,6 @@ const Enquiry = (props) => {
   let isPageWide = media("(min-width: 768px)");
 
   useEffect(() => {
-    setShowPopup(popupObj);
-  }, [
-    valueStart,
-    valueEnd,
-    startingLocation,
-    destination,
-    showSearchStarting,
-    showCities,
-    groupType,
-    selectedCities.length,
-    slideIndex,
-  ]);
-
-  useEffect(() => {
     if (slideIndex === 2 && props.token && props.phone !== "null") {
       _submitDataHandler();
     }
@@ -182,8 +168,6 @@ const Enquiry = (props) => {
       },
     ];
   }
-
-  const [selectedCities, setSelectedCities] = useState(selectedObj);
 
   const _handleHideBlack = () => {
     setShowBlack(false);
@@ -329,6 +313,22 @@ const Enquiry = (props) => {
       if (focusedDate == "endDate") return "Please select end date.";
     } else return "Get your free travel plan now";
   };
+
+  const [selectedCities, setSelectedCities] = useState(selectedObj);
+
+  useEffect(() => {
+    setShowPopup(popupObj);
+  }, [
+    valueStart,
+    valueEnd,
+    startingLocation,
+    destination,
+    showSearchStarting,
+    showCities,
+    groupType,
+    selectedCities.length,
+    slideIndex,
+  ]);
 
   const _SlideOneSubmitHandler = () => {
     if (!selectedCities[0].destination_id && !selectedCities[0].id) {

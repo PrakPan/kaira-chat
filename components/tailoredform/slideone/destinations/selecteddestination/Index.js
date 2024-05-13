@@ -27,6 +27,7 @@ const LeftContent = styled.div`
   grid-template-columns: 1fr max-content;
   align-items: center;
 `;
+
 const RightContainer = styled.div`
   line-height: 1;
   font-size: 0.85rem;

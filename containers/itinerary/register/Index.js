@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import PersonalDetails from './PersonalDetails';
-import axios from 'axios';
+import React, { useState } from "react";
+import styled from "styled-components";
+import PersonalDetails from "./PersonalDetails";
+import axios from "axios";
 
 const Container = styled.div`
   padding: 1rem;
   min-height: 40vh;
 `;
+
 const DescriptionContainer = styled.div`
   padding: 1rem;
   margin: 1rem auto;
@@ -16,11 +17,13 @@ const DescriptionContainer = styled.div`
     width: 60%;
   }
 `;
+
 const Description = styled.p`
   margin: 0;
   font-weight: 300;
   line-height: 1.75;
 `;
+
 const Register = (props) => {
   const [details, setDetails] = useState({
     fname: null,
@@ -47,21 +50,21 @@ const Register = (props) => {
   };
   const _submitHandler = () => {
     axios
-      .post('https://suppliers.tarzanway.com/campaign/response/', {
+      .post("https://suppliers.tarzanway.com/campaign/response/", {
         first_name: details.fname,
         last_name: details.lname,
         email: details.email,
         phone: details.mobile,
-        campaign: 'Rotaract - Holi Experience (Jodhpur)',
+        campaign: "Rotaract - Holi Experience (Jodhpur)",
         form_response: {
           emergency_contact_number: details.emergencycontact,
         },
       })
       .then((res) => {
-        props.history.push('/thank-you');
+        props.history.push("/thank-you");
       })
       .catch((error) => {
-        alert('There was a problem, please refresh and try again.');
+        alert("There was a problem, please refresh and try again.");
       });
   };
   return (

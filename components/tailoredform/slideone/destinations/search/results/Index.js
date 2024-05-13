@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import SkeletonCard from "../../../../../ui/SkeletonCard";
 import styled from "styled-components";
 import Result from "./Result";
@@ -63,7 +63,7 @@ const SearchResults = (props) => {
       );
     };
   }, []);
-  
+
   if (props.loading)
     return (
       <AbsoluteContainer className="border" top={props.top}>

@@ -35,7 +35,6 @@ const TransContainer = styled.div`
 `;
 
 const Line = styled.hr`
-  /* background-image: linear-gradient(90deg,transparent,transparent 20%,#fff 50%,#fff 100%),linear-gradient(87deg,#0d6efd,#00fff0,#d4ff00,#ff7000,#ff0000); */
   background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
     ${(props) =>
       props.pinColour
@@ -64,16 +63,6 @@ const Line = styled.hr`
     top: 40px;
     right: -50px;
   }
-  /* border-style: dashed;
-  border-width: 1.4px;
-  position: absolute;
-  left: 50%;
-
-
-  border-color: ${(props) => (props.pinColour ? props.pinColour : "black")};
-  min-height: 10vw;
-  height: 100%;
-  margin: 0rem 0 0rem 0rem; */
 `;
 
 const TransfersContainer = (props) => {
@@ -109,61 +98,6 @@ const TransfersContainer = (props) => {
   const [destinationCity, setDestinationCity] = useState(null);
   const [daySlabIndex, setDaySlabIndex] = useState(null);
   const [elementIndex, setElementIndex] = useState(null);
-  const [checkIn, setCheckIn] = useState(null);
-
-  const _moveDownHandler = (index) => {
-    if (index === 3) {
-      //Last Item, disbale button
-    } else
-      setOrder({
-        ...order,
-        [index]: order[index + 1],
-        [index + 1]: order[index],
-      });
-  };
-
-  const _changeBookingHandler = (
-    name,
-    itinerary_id,
-    tailored_id,
-    accommodation,
-    id,
-    check_in,
-    check_out,
-    pax,
-    city,
-    room_type,
-    number_of_rooms,
-    itinerary_name,
-    cost,
-    costings_breakdown,
-    images
-  ) => {
-    ga.event({
-      action: "Itinerary-bookings-acc_change",
-      params: { name: name },
-    });
-
-    setSelectedBooking({
-      ...selectedBooking,
-      name: name,
-      itinerary_id: itinerary_id,
-      accommodation: accommodation,
-      id: id,
-      tailored_id: tailored_id,
-      check_in: check_in,
-      check_out: check_out,
-      pax: pax,
-      city: city,
-      room_type: room_type,
-      number_of_rooms: number_of_rooms,
-      itinerary_name: itinerary_name,
-      cost: Math.round(cost / 100),
-      costings_breakdown: costings_breakdown,
-      images: images,
-    });
-    props.setShowBookingModal();
-  };
 
   const _changeFlightHandler = (
     name,
@@ -280,23 +214,6 @@ const TransfersContainer = (props) => {
     }
   }
 
-  function scrollToTargetAdjusted() {
-    const element = document.getElementById("MapcontainerRoute");
-    const headerOffset = 117;
-    const elementPosition = element.getBoundingClientRect().top;
-    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
-    window.scrollTo({
-      top: offsetPosition,
-      behavior: "smooth",
-    });
-  }
-
-  function handlemap(MapId) {
-    props.setPlaceID(MapId);
-    scrollToTargetAdjusted();
-  }
-
   const roundTripSuggestion = () => {
     setLoadingAlternates(true);
     axiosRoundTripInstance
@@ -332,7 +249,6 @@ const TransfersContainer = (props) => {
       props?.routes[+e.target.id]?.element_location?.day_slab_index
     );
     setElementIndex(props?.routes[+e.target.id]?.element_index);
-    setCheckIn(props?.routes[+e.target.id]?.check_in);
     setShowDrawer(true);
     roundTripSuggestion();
     routeAlternates
@@ -377,8 +293,6 @@ const TransfersContainer = (props) => {
     }
   };
 
-  let startingcity = null;
-  let endingcity = null;
   if (
     props?.plan?.version == ITINERARY_VERSION.version_2 &&
     !(
@@ -776,6 +690,7 @@ const TransfersContainer = (props) => {
     </Container>
   );
 };
+
 const mapStateToPros = (state) => {
   return {
     name: state.auth.name,
@@ -790,7 +705,5 @@ const mapStateToPros = (state) => {
     hideloginclose: state.auth.hideloginclose,
   };
 };
-const mapDispatchToProps = (dispatch) => {
-  return {};
-};
-export default connect(mapStateToPros, mapDispatchToProps)(TransfersContainer);
+
+export default connect(mapStateToPros)(TransfersContainer);

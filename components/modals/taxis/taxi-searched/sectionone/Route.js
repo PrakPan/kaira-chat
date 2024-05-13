@@ -1,71 +1,62 @@
-import React from 'react';
-import styled from 'styled-components';
-import media from '../../../../media';
-import ImageLoader from '../../../../ImageLoader';
-import { getHumanDate } from '../../../../../services/getHumanDate';
-import SectionFour from '../SectionFour';
+import React from "react";
+import styled from "styled-components";
+import media from "../../../../media";
+import ImageLoader from "../../../../ImageLoader";
+import SectionFour from "../SectionFour";
 
 const Container = styled.div`
-padding: 0.75rem 0.5rem;
-display: flex;
-flex-direction: column;
-max-width: 100%;
-  `;
+  padding: 0.75rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+`;
+
 const RouteContainer = styled.div`
-display: flex;
- 
-@media screen and (min-width: 768px){
-   
-    
-}
+  display: flex;
 
-
+  @media screen and (min-width: 768px) {
+  }
 `;
+
 const Heading = styled.p`
-font-size: 15px;
-    font-weight: 700;
-    margin: 0 0 0.2rem 0;
-    line-height: 1;
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 0.2rem 0;
+  line-height: 1;
 `;
+
 const Location = styled.p`
-    font-size: 13px;
-    font-weight: 400;
-    margin: 0;
-
+  font-size: 13px;
+  font-weight: 400;
+  margin: 0;
 `;
- 
-const IconHeading  = styled.p`
-font-size: 13px;
-font-weight: 700;
-margin:0;
-line-height: 1;
 
+const IconHeading = styled.p`
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1;
 `;
+
 const Text = styled.p`
-font-size: 13px;
-font-weight: 300;
-margin:0;
-letter-spacing: 1px;
-color: rgba(91, 89, 89, 1);
+  font-size: 13px;
+  font-weight: 300;
+  margin: 0;
+  letter-spacing: 1px;
+  color: rgba(91, 89, 89, 1);
 `;
+
 const ModelText = styled.div`
   font-size: 0.8rem;
   color: #888080;
   font-weight: 300;
   margin: 0 0 0.5rem 0;
 `;
-const Section= (props) => {
-    let isPageWide = media('(min-width: 768px)')
-    const getDate = (date) => {
-      if(date){
-      let year = date.substring(0,4)
-      let month = date.substring(5,7);
-      let day = date.substring(8,10);
-      return(getHumanDate(day+"/"+month+"/"+year) );
-      }
-  
-  }
-    if(props.data)
+
+const Section = (props) => {
+  let isPageWide = media("(min-width: 768px)");
+
+  if (props.data)
     return (
       <Container>
         <Heading>
@@ -155,8 +146,8 @@ const Section= (props) => {
           setShowTaxiModal={props.setShowTaxiModal}
         ></SectionFour>
       </Container>
-    ); 
+    );
   else return null;
-}
+};
 
 export default Section;

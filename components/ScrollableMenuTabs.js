@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import styled from "styled-components";
-import useMediaQuery from "../hooks/useMedia";
 import { useSticky } from "../hooks/useSticky";
 import CustomMenu from "../containers/itinerary/CustomMenu";
 import { useDebounce } from "../hooks/debounce";
-import { useIsComponentInView } from "../hooks/useComponentInView";
 import {
   NavigationMarker,
   useNavigationMarker,
@@ -73,12 +71,8 @@ const ScrollableMenuTabs = ({
   scrollOffSet,
 }) => {
   const [activeItem, setActiveItem] = useState(0);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [activeTabPosition, setActiveTabPosition] = useState(0);
   const startDate = useSelector((state) => state.itineraryStartDate.startDate);
-
   const { ref, isSticky } = useSticky(90);
-  const isDesktop = useMediaQuery("(min-width:1148px)");
   const isInView = useFieldOfView("Stays-Head");
 
   const handleSelect = (index, itemId) => {
@@ -94,85 +88,17 @@ const ScrollableMenuTabs = ({
     });
   };
 
-  const handleScrollLeft = () => {
-    const tabsContainer = ref.current;
-    const scrollDistance = Math.floor(tabsContainer.offsetWidth / 2);
-    tabsContainer.scrollBy({
-      left: -scrollDistance,
-      behavior: "smooth",
-    });
-  };
-
-  const handleScrollRight = () => {
-    const tabsContainer = ref.current;
-
-    const scrollDistance = Math.floor(tabsContainer.offsetWidth / 2);
-
-    tabsContainer.scrollBy({
-      left: scrollDistance,
-      behavior: "smooth",
-    });
-    setCanScrollLeft(true);
-  };
-
   function isActive(link) {
     return link.classList.contains("active");
   }
 
   const handleScroll = () => {
-    const tabContainer = ref.current;
     const tabsContainer = ref.current?.querySelectorAll("a") && [];
     for (let i = 0; i < tabsContainer.length; i++) {
       if (isActive(tabsContainer[i])) {
       }
     }
-
-    setCanScrollLeft(tabContainer.scrollLeft > 10);
   };
-
-  useEffect(() => {
-    const tabContainer = ref.current;
-    const activeTabElement = document.getElementById(
-      `${BarName} ${activeItem}`
-    );
-    if (activeTabElement) {
-      if (vertical) {
-        const containerTop = tabContainer.getBoundingClientRect().top;
-        const activeTabTop = activeTabElement.getBoundingClientRect().top;
-        const containerHeight = tabContainer.offsetHeight;
-        const activeTabHeight = activeTabElement.offsetHeight;
-        const scrollDistance = activeTabTop - containerTop;
-        setActiveTabPosition(scrollDistance);
-      } else {
-        setActiveTabPosition(activeTabElement.offsetLeft);
-      }
-    }
-  }, [activeItem]);
-
-  const isActiveTabInView = useIsComponentInView(
-    `${BarName} ${activeItem}`,
-    { threshold: 0.5 },
-    (isInView) => {
-      if (!isInView) {
-        const containerElement = ref.current;
-        if (vertical) {
-          if (containerElement) {
-            containerElement.scrollTo({
-              top: activeTabPosition,
-              behavior: "smooth",
-            });
-          }
-        } else {
-          if (containerElement) {
-            containerElement.scrollTo({
-              left: activeTabPosition,
-              behavior: "smooth",
-            });
-          }
-        }
-      }
-    }
-  );
 
   const debounceFun = useDebounce(handleScroll, 500);
 

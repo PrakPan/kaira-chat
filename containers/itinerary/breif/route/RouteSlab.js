@@ -1,7 +1,7 @@
-import React, {useEffect} from 'react';
-import styled from 'styled-components';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMapMarkerAlt, faEdit, faCircle, faArrowCircleUp, faChevronUp, faChevronDown} from '@fortawesome/free-solid-svg-icons';
+import React from "react";
+import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMapMarkerAlt, faCircle } from "@fortawesome/free-solid-svg-icons";
 
 const Container = styled.div`
   display: grid;
@@ -12,28 +12,63 @@ const Container = styled.div`
   margin: 1rem 0;
 `;
 const IconContainer = styled.div`
-  background-color: #F7e700;
+  background-color: #f7e700;
   width: 3rem;
   height: 3rem;
   border-radius: 50%;
 `;
 
 const RouteSlab = (props) => {
-
-  return(
-   <Container>
+  return (
+    <Container>
       <IconContainer className="center-div">
-        <FontAwesomeIcon icon={faMapMarkerAlt} style={{width: "1rem", height: "1rem", margin: "0", color: 'black'}}  />
+        <FontAwesomeIcon
+          icon={faMapMarkerAlt}
+          style={{ width: "1rem", height: "1rem", margin: "0", color: "black" }}
+        />
       </IconContainer>
       <div className="center-div">{props.city}</div>
-      <div className="center-div" ><div style={{height: "1px",backgroundColor: "rgba(0,0,0,1)", width: "100%"}}></div></div>
-      <div className="center-di" style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
-        <p className="" style={{margin: "0"}}>{props.duration}</p>
+      <div className="center-div">
+        <div
+          style={{
+            height: "1px",
+            backgroundColor: "rgba(0,0,0,1)",
+            width: "100%",
+          }}
+        ></div>
       </div>
-      <div className="center-div" ><div style={{height: "1px", backgroundColor: "rgba(0,0,0,1)", width: "100%"}}></div></div>
-      <div className="center-div"><FontAwesomeIcon  className="" icon={faCircle} style={{color: "rgba(0,0,0,1)"}} onClick={ () => props._moveUpHandler(props.index)}/></div>
-   </Container>
+      <div
+        className="center-di"
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <p className="" style={{ margin: "0" }}>
+          {props.duration}
+        </p>
+      </div>
+      <div className="center-div">
+        <div
+          style={{
+            height: "1px",
+            backgroundColor: "rgba(0,0,0,1)",
+            width: "100%",
+          }}
+        ></div>
+      </div>
+      <div className="center-div">
+        <FontAwesomeIcon
+          className=""
+          icon={faCircle}
+          style={{ color: "rgba(0,0,0,1)" }}
+          onClick={() => props._moveUpHandler(props.index)}
+        />
+      </div>
+    </Container>
   );
-}
+};
 
 export default React.memo(RouteSlab);

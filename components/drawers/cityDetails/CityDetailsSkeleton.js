@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import media from "../../../components/media";
 import SkeletonCard from "../../ui/SkeletonCard";
-import { TbArrowBack } from "react-icons/tb";
+
 const CityDetailsSkeleton = (props) => {
   const Container = styled.div`
     display: flex;

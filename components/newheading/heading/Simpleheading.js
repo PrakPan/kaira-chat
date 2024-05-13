@@ -9,8 +9,6 @@ const Simpleheadingstyle = styled.div`
       ? "none"
       : "none none solid none"};
   font-size: ${(props) => (props.fontSize ? props.fontSize : "1.5rem")};
-  /* margin: ${(props) =>
-    props.margin ? props.margin :( props.noline ? "0" : "0 auto 0.5rem auto")}; */
 
   padding: ${(props) => (props.padding ? props.padding : "0 0 0.25rem 0")};
 
@@ -24,9 +22,9 @@ const Simpleheadingstyle = styled.div`
     props.letterSpacing ? props.letterSpacing : "3px "};
 
   text-align: ${(props) => (props.textAlign ? props.textAlign : "center")};
-  @media screen and (max-width:768px) {
+  @media screen and (max-width: 768px) {
     color: ${(props) => (props.color ? props.color : "black")};
-    margin: ${(props)=>(props.noline ? "0" :"0 auto 0.5rem auto") };
+    margin: ${(props) => (props.noline ? "0" : "0 auto 0.5rem auto")};
   }
   @media screen and (min-width: 768px) {
     max-width: ${(props) => (props.maxWidth ? props.maxWidth : "100%")};
@@ -40,17 +38,8 @@ const Simpleheadingstyle = styled.div`
         : props.align};
     margin: ${(props) =>
       props.aligndesktop === "center" && props.margin
-        ? props.margin +" auto"
+        ? props.margin + " auto"
         : props.margin};
-
-
-
-   /* margin: ${(props) => props.aligndesktop === "center" && props.margin ? (props.margin,"auto") : props.margin}; */
-   /* margin: ${(props) => props.aligndesktop === "center" && props.margin ? (props.margin + "auto") : props.margin}; */
-
-
-
-
   }
 `;
 

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import FullScreenGallery from "../../../components/fullscreengallery/Index";
 import BookingModal from "../../../components/modals/bookingupdated/Index";
 import * as ga from "../../../services/ga/Index";
@@ -14,18 +13,9 @@ import useMediaQuery from "../../../hooks/useMedia";
 import { TbArrowBack } from "react-icons/tb";
 import { isDateOlderThanCurrent } from "../../../helper/isDateOlderThanCurrent";
 import MakeYourPersonalised from "../../../components/MakeYourPersonalised";
-import { format, isSameDay, parse } from "date-fns";
+import { format, parse } from "date-fns";
 import Slide from "../../../Animation/framerAnimation/Slide";
 import { CONTENT_SERVER_HOST } from "../../../services/constants";
-
-const starHotel = styled.div`
-  box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
-    rgba(0, 0, 0, 0.05) 0px 5px 10px;
-`;
-
-const ClippathComp = styled.div`
-  clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
-`;
 
 const Floating = styled.div`
   position: fixed;
@@ -63,7 +53,6 @@ const HotelsBooking = (props) => {
   });
   const isDesktop = useMediaQuery("(min-width:1148px)");
   const [showFilter, setshowFilter] = useState(false);
-  const [updateBookingState, setUpdateBookingState] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [AddHotel, setAddHotel] = useState(false);
   const [isError, setIsError] = useState({
@@ -74,7 +63,6 @@ const HotelsBooking = (props) => {
   const [bookingId, setBookingId] = useState(null);
   const [images, setImages] = useState(null);
   const [currentBooking, setCurrentBooking] = useState(null);
-  const [unauthorized, setUnauthorized] = useState(false);
   const [alternates, setAlternates] = useState(null);
   const [bookingFunData, setBookingFunData] = useState(null);
   const [dates, setDates] = useState({ check_in: "", check_out: "" });
@@ -91,7 +79,6 @@ const HotelsBooking = (props) => {
     city,
     cityId,
     room_type,
-    number_of_rooms,
     itinerary_name,
     cost,
     costings_breakdown,
@@ -128,62 +115,16 @@ const HotelsBooking = (props) => {
     props.setShowBookingModal();
   };
 
-  function Addons(Shorthand) {
-    switch (Shorthand) {
-      case "EP":
-        return "Room Only";
-      case "CP":
-        return "Complementary Breakfast Included";
-      case "MAP":
-        return "Breakfast/Lunch Included";
-      case "AP":
-        return "All Meals Included";
-      case "TBO":
-        return null;
-      default:
-        return null;
-    }
-  }
-
-  const starRating = (rating) => {
-    var stars = [];
-    for (let i = 0; i < Math.floor(rating); i++) {
-      stars.push(<FaStar />);
-    }
-    if (Math.floor(rating) < rating) stars.push(<FaStarHalfAlt />);
-    return stars;
-  };
-
-  const noOfWords = (sentence, number) => {
-    if (sentence) {
-      const words = sentence.trim().split(/\s+/);
-      if (words.length > number) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-  };
-
   const _setImagesHandler = (images) => {
     setImages(images);
   };
 
   const _handleLoginClose = () => {
-    // props.getPaymentHandler();
     setShowLoginModal(false);
   };
 
-  const _SelectedBookingHandler = ({
-    itinerary_id,
-    tailored_id,
-    itinerary_name,
-    user_selected,
-    index,
-  }) => {
+  const _SelectedBookingHandler = ({ index }) => {
     return new Promise((resolve, reject) => {
-      setUpdateBookingState(true);
-      // const token = localStorage.getItem('access_token');
       let updated_bookings_arr = [
         {
           id: props.stayBookings[index]["id"],
@@ -198,18 +139,7 @@ const HotelsBooking = (props) => {
         },
       ];
 
-      // const token = localStorage.getItem('access_token');
       axiosbookingupdateinstance
-        // .patch(
-        //   `update/?booking_type=Accommodation&itinerary_id=${props.stayBookings[index]['itinerary_id']}`,
-        //   props.stayBookings[index]['itinerary_id'],
-        //   updated_bookings_arr[0],
-        //   {
-        //     headers: {
-        //       Authorization: `Bearer ${props.token}`,
-        //     },
-        //   }
-        // )
         .patch(
           "update/?booking_type=Accommodation&itinerary_id=" +
             props.stayBookings[index]["itinerary_id"],
@@ -225,17 +155,10 @@ const HotelsBooking = (props) => {
           setTimeout(function () {
             props.getPaymentHandler();
           }, 1000);
-          // props._updatePaymentHandler(res.data.payment_info);
-          setUpdateBookingState(false);
           resolve(res.data); // Resolve the promise with the response data
         })
         .catch((err) => {
-          // setUpdateLoadingState(false);
           if (err.response) {
-            // The request was made and the server responded with a status code
-            // that falls out of the range of 2xx
-
-            // The response headers
             if (err.response.status === 400) {
               setIsError({
                 error: true,
@@ -243,22 +166,10 @@ const HotelsBooking = (props) => {
               });
             }
           }
-          setUpdateBookingState(false);
-          setUnauthorized(true);
           reject(err); // Reject the promise with the error object
         });
     });
   };
-
-  function compareDates(dateString1, dateString2) {
-    if (dateString1 && dateString2) {
-      const date1 = parse(dateString1, "yyyy-MM-dd", new Date());
-      const date2 = parse(dateString2, "dd/MM/yyyy", new Date());
-      return isSameDay(date1, date2);
-    }
-
-    return false;
-  }
 
   const findObjectByDate = (array, date) =>
     array.find((obj) => obj.check_in === date);
@@ -283,11 +194,8 @@ const HotelsBooking = (props) => {
 
   function handleClickAc(i, data, city_id) {
     let name = props.stayBookings[i]["name"];
-    let costings_breakdown = props.stayBookings[i]["costings_breakdown"];
-    let cost = props.stayBookings[i]["booking_cost"];
     let itinerary_id = props.stayBookings[i]["itinerary_id"];
     let itinerary_name = props.stayBookings[i]["itinerary_name"];
-    let booking_type = props.stayBookings[i]["booking_type"];
     let accommodation = props.stayBookings[i]["accommodation"];
     let tailored_id = props.stayBookings[i]["tailored_itinerary"];
     let user_rating = props.stayBookings[i].user_rating;
@@ -659,8 +567,4 @@ const mapStateToPros = (state) => {
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return {};
-};
-
-export default connect(mapStateToPros, mapDispatchToProps)(HotelsBooking);
+export default connect(mapStateToPros)(HotelsBooking);

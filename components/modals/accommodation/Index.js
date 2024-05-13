@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Overview from "./Overview/Overview";
 import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axiosaccommodationinstance from "../../../services/bookings/FetchAccommodation";
 import { connect } from "react-redux";
 import { TbArrowBack } from "react-icons/tb";
@@ -10,12 +9,6 @@ import Drawer from "../../ui/Drawer";
 import Skeleton from "./Skeleton";
 import { IoMdClose } from "react-icons/io";
 import { openNotification } from "../../../store/actions/notification";
-
-const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
-  &:hover {
-    cursor: pointer;
-  }
-`;
 
 const Container = styled.div`
   padding: 0 0.75rem 0.75rem 0.75rem;
@@ -97,8 +90,6 @@ const POI = (props) => {
         paramsObj.check_out = check_out;
         paramsObj.source = "Agoda";
       }
-      // change after is_group field activated in itinerary APIs
-      // if(props.match.params.id === "LX1513cBeVVjRPY09EhI" || props.match.params.id === "AY2n7HcBeVVjRPY0MgwO"  || props.match.params.id==="9OjdZ3gBeVVjRPY01cew") setIsGroup(true);
       axiosaccommodationinstance
         .get("", { params: paramsObj })
         .then((res) => {
@@ -113,7 +104,6 @@ const POI = (props) => {
             text: "There seems to be a problem, please try again!",
             heading: "Error!",
           });
-          // window.location.href = 'https://www.blog.thetarzanway.com/thank-you-page-enquiry';
         });
     }
   }, [props.id, props.show]);
@@ -125,12 +115,10 @@ const POI = (props) => {
       show={props.show}
       anchor={"right"}
       backdrop
-      // style={{ zIndex: 1525 }}
       className="font-lexend"
       onHide={props.onHide}
       mobileWidth={"100%"}
       width="50%"
-      // zIndex="1501"
     >
       {!loading ? (
         <Container>
@@ -188,6 +176,7 @@ const mapStateToPros = (state) => {
     token: state.auth.token,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     openNotification: (payload) => dispatch(openNotification(payload)),

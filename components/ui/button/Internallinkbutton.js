@@ -50,7 +50,6 @@ const Internalbuttonstyle = styled.p`
   &:focus {
     outline: none;
   }
-  /* box-shadow: 0 3px #dcdcdc; */
 
   &:hover {
     color: ${(props) => (props.hoverColor ? props.hoverColor : "white")};
@@ -106,4 +105,5 @@ const Internallinkbutton = (props) => {
     </Link>
   );
 };
+
 export default Internallinkbutton;

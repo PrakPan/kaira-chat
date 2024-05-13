@@ -5,8 +5,6 @@ import Spinner from "../../../../Spinner";
 import axiossearchstartinginstance from "../../../../../services/search/startinglocation";
 import SkeletonCard from "../../../../ui/SkeletonCard";
 
-const Container = styled.div``;
-
 const ResultsContainer = styled.div`
   position: absolute;
   width: 100%;
@@ -105,7 +103,7 @@ const SearchInput = (props) => {
   };
 
   return (
-    <Container>
+    <div>
       {props.showSearchStarting ? (
         <div style={{ display: "flex" }}>
           <InputContainer
@@ -131,7 +129,7 @@ const SearchInput = (props) => {
             : resultsJSX}
         </ResultsContainer>
       ) : null}
-    </Container>
+    </div>
   );
 };
 

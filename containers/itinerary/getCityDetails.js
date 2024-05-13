@@ -1,4 +1,4 @@
-import axiosPoiCityInstance from '../../services/poi/city';
+import axiosPoiCityInstance from "../../services/poi/city";
 export const getCityDetails = (() => {
   // Define the cache object
   const cache = {};
@@ -8,12 +8,12 @@ export const getCityDetails = (() => {
     if (cache[city_id]) {
       return cache[city_id];
     }
-      const res = await axiosPoiCityInstance.get(
+    const res = await axiosPoiCityInstance.get(
       `/?city_id=${city_id}&fields=lat,long`
-      );
-      const data = res.data;
-      // Cache the city details for future use
-      cache[city_id] = data;
-      return data;
+    );
+    const data = res.data;
+    // Cache the city details for future use
+    cache[city_id] = data;
+    return data;
   };
 })();

@@ -181,6 +181,7 @@ const NewFooter = (props) => {
             ) : (
               <div></div>
             )}
+
             <CompanyText>
               The Tarzan Way is a travel based startup with the vision to
               simplify travel and build immersive travel programs across India.
@@ -188,6 +189,7 @@ const NewFooter = (props) => {
             <Socials></Socials>
 
             <CompanyName style={{ margin: "1rem 0" }}>Contact Us</CompanyName>
+
             <CompanyText style={{ display: "flex", margin: "0" }}>
               <div style={{ display: "flex" }}>
                 <FiPhoneCall
@@ -196,6 +198,7 @@ const NewFooter = (props) => {
                 +91 95821 25476
               </div>
             </CompanyText>
+
             <CompanyText style={{ display: "flex", margin: "0.25rem 0 0 0" }}>
               <div style={{ display: "flex" }}>
                 <HiOutlineMail
@@ -219,7 +222,7 @@ const NewFooter = (props) => {
             margin: "auto",
           }}
         ></div>
-        
+
         <CopyWrite className="text-center">
           Copyright © 2018 - {new Date().getFullYear()} Tarzan Way Travels
           Private Limited ® - All Rights Reserved

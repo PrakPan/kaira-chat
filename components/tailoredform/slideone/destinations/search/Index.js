@@ -33,14 +33,11 @@ const Search = (props) => {
           .then((res) => {
             setLoading(false);
             if (res.data.length) {
-              // const resultsData = res.data.map((e) => e["_source"]);
               setResults(res.data.slice(0, 5));
             } else {
               setShowResults(false);
               setShowHotLocations(true);
             }
-
-            // else props._showSearchedLocations([]);
           })
           .catch((error) => {
             setLoading(false);
@@ -115,7 +112,7 @@ const Search = (props) => {
           selectedCities={props.selectedCities}
         ></SearchResults>
       )}
-      
+
       {showHotLocations && (
         <SearchResults
           hotLocations

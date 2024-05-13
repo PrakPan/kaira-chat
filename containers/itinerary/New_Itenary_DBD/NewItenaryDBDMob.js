@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import Day_I_ContainerM from "./Day_I_ContainerM";
-import useMediaQuery from "../../../hooks/useMedia";
 import ScrollableMenuTabs from "../../../components/ScrollableMenuTabs";
 import { convertDateFormat } from "../../../helper/ConvertDateFormat";
 
@@ -10,35 +9,6 @@ const NewItenaryDBDMob = (props) => {
     display: flex;
     flex-direction: column;
   `;
-  const CitiesContainer = styled.div`
-    width: calc(100vw-32px);
-    overflow: hidden;
-    display: grid;
-    grid-template-columns: max-content max-content max-content;
-    grid-gap: 0.75rem;
-    height: max-content;
-    position: sticky;
-    top: 31vw;
-    z-index: 10;
-    background-color: white;
-  `;
-  const City = styled.div`
-    border-radius: 8px;
-    padding: 0.5rem;
-  `;
-
-  const [activeItem, setActiveItem] = useState(0);
-
-  const isDesktop = useMediaQuery("(min-width:1148px)");
-  function extractCityName(arr) {
-    const cityObject = arr.find((obj) => obj.element_type === "newcity");
-
-    if (cityObject && cityObject.city_name) {
-      return cityObject.city_name;
-    }
-
-    return null;
-  }
 
   let currentCity = props.itinerary.starting_city.city_name;
 
@@ -97,8 +67,6 @@ const NewItenaryDBDMob = (props) => {
 
   if (props.itinerary.day_slabs) {
     for (var i = 0; i < props.itinerary.day_slabs.length; i++) {
-      const index = i;
-
       const itenaryId = props.itinerary.day_slabs[i];
 
       itemsDays.push({
@@ -115,10 +83,6 @@ const NewItenaryDBDMob = (props) => {
     }
   }
 
-  const handleActiveSelect = (itemId) => {
-    setActiveItem(itemsDays[itemId].date);
-  };
-
   return (
     <Wrapper>
       {" "}
@@ -133,21 +97,6 @@ const NewItenaryDBDMob = (props) => {
         BarName="CityName"
         Mstyle={"round"}
       />
-      {/* <div className="sticky pl-2" style={{ zIndex: '100', top: 86 }}>
-        <DropdownWrapper Dhead={activeItem}>
-          {itemsDays.map((item, index) => (
-            <CustomMenu
-              key={index}
-              item={item}
-              BarName="CityName"
-              year={'2023'}
-              Mstyle={'round'}
-              Iterable="date"
-              onSelect={handleActiveSelect}
-            />
-          ))}
-        </DropdownWrapper>
-      </div> */}
       <ScrollableMenuTabs
         icons={false}
         offset={items.length ? "89px" : "50px"}
@@ -157,21 +106,6 @@ const NewItenaryDBDMob = (props) => {
         Mstyle={"round"}
         Iterable="date"
       />
-      {/* <HorizontalBar
-        width={'100%'}
-        height={'40px'}
-        content={dates}
-      ></HorizontalBar> */}
-      {/* <CitiesContainer>
-        <City
-          className="border-thin"
-          style={{ backgroundColor: "black", color: "white" }}
-        >
-          Jaipur (2N)
-        </City>
-        <City className="border-thin">Jodhpur (2N)</City>
-        <City className="border-thin">Jaisalmer (2N)</City>
-      </CitiesContainer> */}
       <div className="itenaryContainer">
         {props?.itinerary?.day_slabs?.map((element, index) => (
           <div key={element.slab_id} id={element.slab_id}>

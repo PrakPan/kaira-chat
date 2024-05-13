@@ -237,7 +237,8 @@ const Navbar = (props) => {
                     noPlaceholder={true}
                   ></ImageLoader>
                 </Link>
-              )}{" "}
+              )}
+
               <div>
                 {props.hidehomecta ? (
                   <CompanyName
@@ -304,6 +305,7 @@ const Navbar = (props) => {
                 </TopContainer>
               </div>
             )}
+
             {toggleSearch ? (
               <DesktopSearch
                 onclose={() => setToggleSearch(false)}
@@ -311,6 +313,7 @@ const Navbar = (props) => {
             ) : (
               <div></div>
             )}
+
             <NavItemsContainer
               style={{ marginRight: props.token ? "0rem" : "0" }}
             >
@@ -334,6 +337,7 @@ const Navbar = (props) => {
                   Create a Trip
                 </Button>
               ) : null}
+
               {props.token ? (
                 <ProfilDropDown
                   setShowDropDownProfileList={setShowDropDownProfileList}
@@ -341,8 +345,6 @@ const Navbar = (props) => {
                   showDropDownProfileListMobile={showDropDownProfileListMobile}
                   toggleProfileList={toggleProfileList}
                   onLogout={props.onLogout}
-                  // authShowLogin={props.authShowLogin}
-                  // setShowLoginModal={props.setShowLoginModal}
                   token={props.token}
                   headerColor={props.headerColor}
                   name={props.name}
@@ -358,7 +360,6 @@ const Navbar = (props) => {
                   showDropDownProfileListMobile={showDropDownProfileListMobile}
                   toggleProfileList={toggleProfileList}
                   onLogout={props.onLogout}
-                  // authShowLogin={props.authShowLogin}
                   setShowLoginModal={props.setShowLoginModal}
                   token={props.token}
                   headerColor={props.headerColor}
@@ -367,6 +368,7 @@ const Navbar = (props) => {
             </NavItemsContainer>
           </CenterNav>
         </NavbarContainer>
+
         <Notifications
           _deleteNotificationHandler={props._deleteNotificationHandler}
           _openAllNotificationsHandler={props._openAllNotificationsHandler}

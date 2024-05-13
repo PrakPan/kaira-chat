@@ -2,9 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { getHumanTime } from "../../../../../services/getHumanTime";
 import { getHumanDate } from "../../../../../services/getHumanDate";
-import ImageLoader from "../../../../ImageLoader";
 import { differenceInMinutes, format } from "date-fns";
-
 import { FaPlane } from "react-icons/fa";
 import media from "../../../../media";
 
@@ -49,6 +47,7 @@ const DetailsGridContainer = styled.div`
   margin-block: auto;
   height: max-content;
 `;
+
 const DottedLine = styled.div`
   position: relative;
   height: 2px;
@@ -65,6 +64,7 @@ const DottedLine = styled.div`
     background-size: 9px 100%; /* Adjust this value to change the spacing between the dots */
   }
 `;
+
 const GridContainer = styled.div`
   padding: 0.75rem;
 
@@ -75,12 +75,14 @@ const GridContainer = styled.div`
     padding: 1rem 0.5rem;
   }
 `;
+
 const Plan = styled.div`
   position: absolute;
   left: 50%;
   top: 0%;
   transform: translate(-50%, -45%);
 `;
+
 const LogoContainer = styled.div`
   width: 50px;
   height: 50px;
@@ -95,10 +97,12 @@ const LogoContainer = styled.div`
     height: 80px;
   }
 `;
+
 const Image = styled.img`
   object-fit: contain;
   transform: scale(1.05);
 `;
+
 const Text = styled.div`
   font-weight: 400;
   text-align: center;
@@ -111,6 +115,7 @@ const Text = styled.div`
     font-size: 15px;
   }
 `;
+
 const Circle = styled.div`
   border: 1px solid #7a7a7a;
   height: 10px;
@@ -122,6 +127,7 @@ const Circle = styled.div`
   top: 50%;
   transform: translateY(-38%);
 `;
+
 const FlexBox = styled.div`
   margin-bottom: 0rem;
   @media screen and (max-width: 768px) {
@@ -131,14 +137,14 @@ const FlexBox = styled.div`
     margin-bottom: 1rem;
   }
 `;
+
 const Booking = (props) => {
   let isPageWide = media("(min-width: 768px)");
-
   const [url, setUrl] = useState("media/website/grey.png");
   const [airLineName, setAirLineName] = useState("");
+
   useEffect(() => {
     if (props.data) {
-     
       if (
         props.isSelected &&
         props.data.costings_breakdown &&
@@ -159,9 +165,11 @@ const Booking = (props) => {
         setUrl("https://d31aoa0ehgvjdi.cloudfront.net/media/website/grey.png");
     }
   }, [props.data]);
+
   const getTime = (datetime) => {
     return getHumanTime(datetime.substring(11, 16));
   };
+
   const getDate = (datetime) => {
     let date = datetime.substring(0, 10);
     let year = date.substring(0, 4);
@@ -169,6 +177,7 @@ const Booking = (props) => {
     let day = date.substring(8, 10);
     return getHumanDate(day + "/" + month + "/" + year) + " " + year;
   };
+
   return (
     <GridContainer>
       <FlexBox>
@@ -378,7 +387,6 @@ const Booking = (props) => {
                     style={{
                       fontSize: "0.70rem",
                       fontWeight: "400",
-                      // color: "rgba(91, 89, 89, 1)",
                       marginTop: "0px",
                     }}
                   >
@@ -412,8 +420,6 @@ const Booking = (props) => {
                     style={{
                       fontSize: "0.70rem",
                       fontWeight: "400",
-                      // color: "rgba(91, 89, 89, 1)",
-                      // marginTop: "-4px",
                       marginTop: !isPageWide ? "-4px" : "0px",
                     }}
                   >
@@ -468,7 +474,6 @@ const Booking = (props) => {
             <div></div>
           )}
         </div>
-        
       </DetailsGridContainer>
     </GridContainer>
   );

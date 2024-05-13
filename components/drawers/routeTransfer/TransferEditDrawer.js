@@ -321,10 +321,8 @@ const TransferEditDrawer = (props) => {
                   width="100%"
                   borderRadius="8px"
                   bgColor="#f8e000"
-                  // loading={loading}
                   padding="12px"
                   onclick={props._GetInTouch}
-                  // height='2rem'
                 >
                   <div
                     style={{
@@ -1353,26 +1351,6 @@ const RoundTripSuggestion = ({
                         : null}
                     </div>
                   )}
-                  {/* <button
-                    onClick={() =>
-                      setViewDetails((prev) => {
-                        let state = [...prev];
-                        state[i] = !state[i];
-                        return state;
-                      })
-                    }
-                    className="flex flex-row items-center gap-1 text-xs py-[3px] px-2 rounded-lg hover:text-white hover:bg-black transition duration-300 ease-in-out"
-                  >
-                    {viewDetails[i] ? (
-                      <>
-                        Hide Details <IoIosArrowUp />
-                      </>
-                    ) : (
-                      <>
-                        View Details <IoIosArrowDown />
-                      </>
-                    )}
-                  </button> */}
                 </div>
               </div>
             ))}
@@ -1550,26 +1528,6 @@ const MultiCityTripSuggestion = ({
                         : null}
                     </div>
                   )}
-                  {/* <button
-                    onClick={() =>
-                      setViewDetails((prev) => {
-                        let state = [...prev];
-                        state[i] = !state[i];
-                        return state;
-                      })
-                    }
-                    className="flex flex-row items-center gap-1 text-xs py-[3px] px-2 rounded-lg hover:text-white hover:bg-black transition duration-300 ease-in-out"
-                  >
-                    {viewDetails[i] ? (
-                      <>
-                        Hide Details <IoIosArrowUp />
-                      </>
-                    ) : (
-                      <>
-                        View Details <IoIosArrowDown />
-                      </>
-                    )}
-                  </button> */}
                 </div>
               </div>
             ))}

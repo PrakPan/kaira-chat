@@ -62,19 +62,6 @@ export const DaySummaryContainerStyle = styled.div`
   }
 `;
 
-const ReccoIcon = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  padding-bottom: 1rem;
-  @media screen and (min-width: 768px) {
-    width: 6.15rem;
-    justify-content: start;
-    padding-bottom: 0rem;
-  }
-`;
-
 const Container = styled.div`
   background: #ffffff;
   border: 1.5px solid #eceaea;
@@ -117,14 +104,6 @@ const Day_I_Container = (props) => {
     { name: "recommendation", data: [] },
     { name: "activity", data: [] },
   ];
-
-  function filter(JsonArray, Arslab_element_name, Arslab_element_data) {
-    Arslab_element_data.push(
-      JsonArray.filter(
-        (JSElement) => JSElement.element_type == Arslab_element_name
-      )
-    );
-  }
 
   function getTransportationType(url) {
     const fileName = url.substring(
@@ -247,25 +226,16 @@ const Day_I_Container = (props) => {
               time="9:00AM"
               booking={props.transferBookings}
               modes={getTransportationType(element.icon)}
-              // modes={element?.modes[1] ? element?.modes[1] : element?.modes[0]}
               data={element}
-              //To-do Read From Booking
               transfers={element.transfers}
               meta={element.meta}
               icon={element.icon}
               heading={element.heading}
               text={element.text}
-              LastTransfer={props.LastElement}
-              // newcity={
-              //   Arslab_elements[1].data[0].length != 0
-              //     ? Arslab_elements[1].data[0][0]
-              //     : null
-              // }
             ></TransferElements>
           );
           break;
         case "newcity":
-          // dayIcontainer.push(<NewCity newcity={element}></NewCity>);
 
           break;
         case "accommodation":

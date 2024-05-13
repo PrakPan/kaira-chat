@@ -1,9 +1,8 @@
-import React from 'react';
-import styled from 'styled-components';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import Gallery from './Gallery';
-import SwiperGallery from '../Swiper/SwiperGallery';
+import React from "react";
+import styled from "styled-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import SwiperGallery from "../Swiper/SwiperGallery";
 
 const Container = styled.div`
   height: 100vh;
@@ -15,6 +14,7 @@ const Container = styled.div`
   top: 0;
   left: 0;
 `;
+
 const Cross = styled.p`
   color: white;
   text-align: right;
@@ -25,7 +25,7 @@ const Cross = styled.p`
 
 const FullScreenGallery = (props) => {
   return (
-    <Container style={{ zIndex: '2000' }}>
+    <Container style={{ zIndex: "2000" }}>
       <Cross>
         <FontAwesomeIcon
           icon={faTimes}
@@ -33,8 +33,6 @@ const FullScreenGallery = (props) => {
         ></FontAwesomeIcon>
       </Cross>
 
-      {/* <Gallery images={props.images}>
-            </Gallery>   */}
       <SwiperGallery images={props.images}></SwiperGallery>
     </Container>
   );

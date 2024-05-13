@@ -1,32 +1,11 @@
-import React, { useState } from 'react';
-// import ImageLoader from '../../../components/ImageLoader';
-import moment from 'moment';
-import dayjs from 'dayjs';
-import 'react-dates/initialize';
-import 'react-dates/lib/css/_datepicker.css';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import TextField from '@mui/material/TextField';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import Select from '@mui/material/Select';
-import LogInModal from '../../../../components/modals/Login';
-import { SingleDatePicker } from 'react-dates';
-import styled from 'styled-components';
-import { BiCalendarAlt } from 'react-icons/bi';
+import React, { useState } from "react";
+import moment from "moment";
+import "react-dates/initialize";
+import "react-dates/lib/css/_datepicker.css";
+import LogInModal from "../../../../components/modals/Login";
+import { SingleDatePicker } from "react-dates";
+import styled from "styled-components";
 
-const CalenderIcons = styled.div`
-  position: absolute;
-  top: 0;
-  // right: 2%;
-  pointer-events: none;
-  font-size: 20px;
-  z-index: 0;
-  display: flex;
-  justify-content: space-between;
-  width: 100% !important;
-  height: 3rem;
-  gap: ${(props) => (props.tailoredFormModal ? '10px' : '22px')};
-`;
 const Container = styled.div`
   position: relative;
 
@@ -42,7 +21,7 @@ const Container = styled.div`
     border: none;
     display: flex;
     gap: 22px;
-    ${(props) => props.tailoredFormModal && 'gap : 10px'};
+    ${(props) => props.tailoredFormModal && "gap : 10px"};
     background: initial;
   }
   .DateInput {
@@ -63,7 +42,7 @@ const Container = styled.div`
   .DayPicker__withBorder {
     ${(props) =>
       props.tailoredFormModal &&
-      'border : none;-webkit-box-shadow : none;box-shadow :none;'};
+      "border : none;-webkit-box-shadow : none;box-shadow :none;"};
 
     @media screen and (max-width: 768px) {
       border: none;
@@ -87,11 +66,11 @@ const Container = styled.div`
       top: 55px !important;
       ${(props) =>
         props.tailoredFormModal &&
-        'position : fixed ; top : 125px !important ; left : 0 !important; right : 0; bottom : 0px !important; display : flex; justify-content: center; z-index : 10 ; border-radius : 1rem'};
+        "position : fixed ; top : 125px !important ; left : 0 !important; right : 0; bottom : 0px !important; display : flex; justify-content: center; z-index : 10 ; border-radius : 1rem"};
     }
     ${(props) =>
       props.tailoredFormModal &&
-      'position : fixed ; top : 120px !important; left : 0 !important; right : 0; bottom : 0px !important ; z-index : 10'};
+      "position : fixed ; top : 120px !important; left : 0 !important; right : 0; bottom : 0px !important ; z-index : 10"};
   }
   .CalendarDay {
     border: 0px;
@@ -126,36 +105,11 @@ const Container = styled.div`
     display: none;
   }
 `;
-const Icon = styled.div`
-  width: 100%;
-  text-align: right;
-  width: 100%;
-  text-align: right;
-  display: flex;
-  align-items: center;
-  justify-content: end;
-  margin-right: 14px;
-  margin-top: -0px;
-`;
 
 const SelectDate = (props) => {
-  const [open, setOpen] = useState(false);
-  const initialDate = moment(props.date, 'YYYY-MM-DD');
+  const initialDate = moment(props.date, "YYYY-MM-DD");
   const [showLoginModal, setShowLoginModal] = useState(false);
 
-  const _handleOpen = () => {
-    if (props.token) {
-      setOpen(true);
-    } else {
-      // setOpen(false)
-      setShowLoginModal(true);
-    }
-  };
-
-  const onKeyDown = (e) => {
-    e.preventDefault();
-  };
-  const _handleFocus = () => {};
   return (
     <div id="bookingsummary-date-container">
       <Container tailoredFormModal={true}>
@@ -168,32 +122,6 @@ const SelectDate = (props) => {
           id="your_unique_id" // PropTypes.string.isRequired,
           initialDate={initialDate}
         />
-        {/* <CalenderIcons className="CalentderIcons">
-          <Icon>
-            <BiCalendarAlt />
-          </Icon>
-          <Icon>
-            <BiCalendarAlt />
-          </Icon>
-        </CalenderIcons> */}
-        {/* <DatePicker
-          onOpen={_handleOpen}
-          label="Start Date"
-          value={props.date}
-          onClose={() => setOpen(false)}
-          open={open}
-          onChange={(newValue) => {
-            props.setDate(newValue);
-          }}
-          renderInput={(params) => (
-            <TextField
-              onKeyDown={onKeyDown}
-              id="bookingsummary-pax"
-              {...params}
-              fullWidth
-            />
-          )}
-        /> */}
       </Container>
       <LogInModal
         show={showLoginModal}

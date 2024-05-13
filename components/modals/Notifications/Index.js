@@ -87,6 +87,7 @@ const Enquiry = (props) => {
           >
             Notifications
           </Heading>
+
           {notificationsArr.length ? (
             notificationsArr
           ) : (
@@ -97,6 +98,7 @@ const Enquiry = (props) => {
               url={"media/website/nonotifications.svg"}
             />
           )}
+
           {notificationsArr.length > 1 ? (
             <ClearAll className="font-lexend" onClick={_clearAllHandler}>
               Clear All
@@ -114,8 +116,4 @@ const mapStateToPros = (state) => {
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return {};
-};
-
-export default connect(mapStateToPros, mapDispatchToProps)(Enquiry);
+export default connect(mapStateToPros)(Enquiry);

@@ -31,7 +31,6 @@ import { logEvent } from "../../../services/ga/Index";
 
 const Container = styled.div``;
 
-const SectionOneText = styled.span``;
 
 const GridContainer = styled.div`
   display: grid;
@@ -39,47 +38,6 @@ const GridContainer = styled.div`
   grid-template-columns: ${(props) =>
     props.image ? "1.6fr 2.5fr" : "44px auto"};
   grid-column-gap: ${(props) => (props.image ? "0.5rem" : "0")};
-`;
-
-const Text = styled.p`
-  overflow: hidden;
-  line-height: 1.5;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  font-size: 14px;
-  font-weight: 500;
-`;
-
-const Heading = styled.span`
-  margin-bottom: 0rem;
-  margin-right: 0.25rem;
-  font-weight: 400;
-  line-height: 1;
-`;
-
-const Line = styled.div`
-  border-style: none none solid none;
-  border-color: #e4e4e4;
-  border-width: 1px;
-`;
-
-const BoldTags = styled.p`
-  font-weight: 600;
-  font-size: 14px;
-  margin-bottom: 0.25rem;
-`;
-
-const ColorTags = styled.span`
-  border-style: solid;
-  border-radius: 6px;
-  font-size: 12px;
-  line-height: 1;
-  letter-spacing: 1px;
-
-  font-weight: 400;
-  padding: 0.25rem 0.5rem;
 `;
 
 const Floating = styled.div`
@@ -130,9 +88,6 @@ const MoreIcon = styled.div`
 
 const RatingContainer = styled.div`
   margin-top: 0.4rem;
-  // display: flex;
-  // gap: 0.5rem;
-  // align-items: center;
   span {
     font-size: 0.75rem;
     font-weight: 300;
@@ -159,8 +114,6 @@ const ItineraryPoiElementM = (props) => {
   const [show, setShow] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
   const [showFilter, setshowFilter] = useState(false);
-  const [showDrawerListData, setshowDrawerListData] = useState(false);
-  const [showDrawerData, setShowDrawerData] = useState(false);
   const [fetchingPoi, setFetchingPoi] = useState(false);
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [totalResults, setTotalResults] = useState(null);
@@ -176,13 +129,6 @@ const ItineraryPoiElementM = (props) => {
   const items = [
     { id: 1, label: "Point of Interest", link: "POIS" },
     { id: 2, label: "Activities", link: "Activitiess" },
-  ];
-  const Experiences = [
-    "Adventure",
-    "Heritage",
-    "Spiritual",
-    "Hidden Gem",
-    "Very popular",
   ];
 
   const fetchData = (showMore = false) => {
@@ -227,7 +173,6 @@ const ItineraryPoiElementM = (props) => {
                   selectedData={props.data}
                   setShowDrawer={setShowDrawer}
                   data={res.data.results[i]}
-                  // loginModal={showLoginModal}
                   ticketsCount={ticketsCount}
                   setLoginModal={props.setShowLoginModal}
                 ></PoiList>
@@ -350,7 +295,6 @@ const ItineraryPoiElementM = (props) => {
   };
 
   const _handleLoginClose = () => {
-    // props.getPaymentHandler();
     setShowLoginModal(false);
   };
 
@@ -473,15 +417,12 @@ const ItineraryPoiElementM = (props) => {
               >
                 <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
               </div>
-
-              {/* <HiPencil className="text-lg min-w-max"></HiPencil> */}
             </span>
           </div>
 
           {props?.rating && <StarRating initialRating={4}></StarRating>}
           {props?.poi?.rating && (
             <RatingContainer>
-              {/* <StarRating initialRating={4}></StarRating> */}
               <div style={{ display: "flex", gap: "0.3rem" }}>
                 {_getStars(props.poi.rating)}{" "}
                 <span style={{ marginBlock: "-0.15rem -0.3rem" }}>
@@ -519,13 +460,11 @@ const ItineraryPoiElementM = (props) => {
         </div>
       )}
       <POIDetailsDrawer
-        // show={props.showDrawer.isOpen}
         itineraryDrawer
         width={"100%"}
         show={show}
         iconId={props?.poi?.id ? props?.poi?.id : props?.activity_data?.id}
         ActivityiconId={props?.activity?.id}
-        // handleCloseDrawer={props.handleCloseDrawer}
         handleCloseDrawer={handleCloseDrawer}
         name={props.heading}
         image={props.image}
@@ -541,7 +480,6 @@ const ItineraryPoiElementM = (props) => {
         style={{ zIndex: 1501 }}
         className="font-lexend"
         onHide={() => setShowDrawer(false)}
-        // zIndex='1501'
       >
         <div className=" sticky px-2 top-0 bg-white z-[900] flex flex-col gap-3 my-4 justify-start items-start mx-auto w-[95%]">
           <div className="flex flex-row gap-3 my-0 justify-start items-center">
@@ -595,9 +533,7 @@ const ItineraryPoiElementM = (props) => {
             }
           />
         </div>
-        {/* <PoiListSkeleton /> */}
         {!fetchingPoi ? (
-          // <POIDetails data={data} handleCloseDrawer={props.handleCloseDrawer} />
           optionsJSX.length ? (
             <div
               onScroll={handleScroll}
@@ -755,14 +691,6 @@ const ItineraryPoiElementM = (props) => {
       </Drawer>
       {!isDesktop && showDrawer && (
         <div className="absolute bottom-0 right-10 z-[1510]">
-          {/* <Slide
-              hideTime={4}
-              onUnmount={() => setFloatingButtonView(!floatingButtonView)}
-              isActive={floatingButtonView}
-              direction={5}
-              duration={2}
-              xdistance={-50}
-            > */}
           <FloatingView>
             <TbArrowBack
               style={{ height: "28px", width: "28px" }}
@@ -770,7 +698,6 @@ const ItineraryPoiElementM = (props) => {
               onClick={() => setShowDrawer(false)}
             />
           </FloatingView>
-          {/* </Slide> */}
         </div>
       )}
       {!isDesktop && showDrawer && (
@@ -787,17 +714,10 @@ const ItineraryPoiElementM = (props) => {
           </Floating>
         </div>
       )}
-
-      {/* {!ErrorNotDef(props.poi) ? (
-        !ErrorNotDef(props.poi.tips) ? (
-          <Tips tips={props.poi.tips}></Tips>
-        ) : null
-      ) : null} */}
     </Container>
   );
 };
 
-// export default ItineraryPoiElementM;
 const mapStateToPros = (state) => {
   return {
     itineraryActivities: state.itineraryActivities.activities,

@@ -31,23 +31,15 @@ const Container = styled.div`
   }
 `;
 
-const btoa = (text) => {
-  return Buffer.from(text, "binary").toString("base64");
-};
-
 const Itinerary = (props) => {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
   const [totalduration, setTotalduration] = useState(0);
-  const [itineraryNotCreated, setItineraryNotCreated] = useState(false);
   const [itineraryReleased, setItineraryReleased] = useState(false);
   const [itineraryDate, setItineraryDate] = useState("2021-09-20 18:05:48");
   const [timeRequired, setTimeRequired] = useState();
   const [breif, setBreif] = useState();
   const [booking, setBooking] = useState(null);
   const [itineraryLoading, setItineraryLoading] = useState(true);
-  const [briefLoading, setBreifLoading] = useState(true);
-  const [stayLoading, setStayLoading] = useState(true);
   const [paymentLoading, setPaymentLoading] = useState(true);
   const [flightLoading, setFlightLoading] = useState(true);
   const [cardUpdateLoading, setCardUpdateLoading] = useState(null);
@@ -62,7 +54,6 @@ const Itinerary = (props) => {
   const [activityFlickityIndex, setActivityFlickityIndex] = useState(0);
   const [payment, setPayment] = useState(null);
   const [noBookings, setNoBookings] = useState(false);
-  const [noStayBookings, setNoStayBookings] = useState(false);
   const [noFlightBookings, setNoFlightBookings] = useState(true);
   const [showbooking, setShowbooking] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
@@ -92,7 +83,6 @@ const Itinerary = (props) => {
       .get(`/?itinerary_id=` + props.id)
       .then((res) => {
         setBreif(res.data);
-        setBreifLoading(false);
         if (res.data) {
           if (res.data.city_slabs) {
             if (res.data.city_slabs.length)
@@ -110,8 +100,6 @@ const Itinerary = (props) => {
               if (!breif.city_slabs.length) setTimeout(getBreifHandler, 3000);
       })
       .catch((error) => {
-        setBreifLoading(false);
-
         window.location.href = "/thank-you";
       });
   };
@@ -180,7 +168,6 @@ const Itinerary = (props) => {
       },
     })
       .then((response) => {
-        setStayLoading(false);
         getPaymentHandler();
         if (response.status === 200) {
           response.json().then((json) => {
@@ -228,13 +215,9 @@ const Itinerary = (props) => {
             }
           });
         } else if (response.status === 404) {
-          setLoading(false);
-          setNoStayBookings(true);
         }
       })
-      .catch((err) => {
-        setStayLoading(false);
-      });
+      .catch((err) => {});
   };
 
   async function getRoutes(itinaryId) {
@@ -280,7 +263,6 @@ const Itinerary = (props) => {
         if (
           res.data.itinerary_status === ITINERARY_STATUSES.itinerary_not_created
         ) {
-          setItineraryNotCreated(false);
           alert(
             "Looks like the response took too long, please refresh and try again."
           );

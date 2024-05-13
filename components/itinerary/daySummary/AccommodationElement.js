@@ -92,16 +92,6 @@ export default function AccommodationElement(props) {
     });
   };
 
-  const hoverFunction = () => {
-    setVisible(true);
-    console.log("Hovered!");
-  };
-
-  const outFunction = () => {
-    setVisible(false);
-    console.log("Mouse left!");
-  };
-
   return (
     <Container className="pt-0">
       <div className="flex flex-col items-center justify-center w-full space-y-1">

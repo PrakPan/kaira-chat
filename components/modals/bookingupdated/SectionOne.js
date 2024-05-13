@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components";
 import { IoMdSearch } from "react-icons/io";
 import { IoMdClose } from "react-icons/io";
-import media from "../../media";
 
 const Container = styled.div`
   margin: 0;
@@ -19,8 +18,6 @@ const Text = styled.div`
 `;
 
 const Section = (props) => {
-  let isPageWide = media("(min-width: 768px)");
-
   const searchHandler = (e) => {
     if (props.selectSearch.trim().length > 0) {
       props._updateOptionsHandlerWithFilter();

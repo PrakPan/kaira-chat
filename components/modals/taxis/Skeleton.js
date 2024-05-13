@@ -1,16 +1,16 @@
 import React from "react";
 import styled from "styled-components";
 import SkeletonCard from "../../ui/SkeletonCard";
-import media from '../../media'
+import media from "../../media";
+
 const Container = styled.div`
   overflow-x: hidden;
-  // width: 97%;
   position: relative;
   margin: auto;
   @media screen and (min-width: 768px) {
-    // width: 90%;
   }
 `;
+
 const SkeletonContainer = styled.div`
   border-radius: 10px;
   margin-bottom: 0.5rem;
@@ -20,6 +20,7 @@ const SkeletonContainer = styled.div`
     grid-template-columns: 8.5rem auto;
   }
 `;
+
 const DetailsContainer = styled.div`
   padding: 0.75rem 0.5rem;
 `;
@@ -106,7 +107,7 @@ function Skeleton() {
   );
   return (
     <Container>
-      {[SkeletonItem , SkeletonItem , SkeletonItem , SkeletonItem , SkeletonItem]}
+      {[SkeletonItem, SkeletonItem, SkeletonItem, SkeletonItem, SkeletonItem]}
     </Container>
   );
 }

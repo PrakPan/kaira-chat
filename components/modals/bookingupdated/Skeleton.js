@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import media from "../../../components/media";
 import SkeletonCard from "../../ui/SkeletonCard";
+
 const POIDetailsSkeleton = (props) => {
   const Container = styled.div`
     margin-top: 24px;
@@ -39,10 +40,6 @@ const POIDetailsSkeleton = (props) => {
       left: 0;
       right: 0;
     }
-  `;
-  const Title = styled.p`
-    font-weight: 800;
-    font-size: 20px;
   `;
   let isPageWide = media("(min-width: 768px)");
 
@@ -157,7 +154,6 @@ const POIDetailsSkeleton = (props) => {
             MobileSkeleton,
             MobileSkeleton,
           ]}
-      {/* {} */}
     </>
   );
 };

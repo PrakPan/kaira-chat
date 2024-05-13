@@ -1,41 +1,26 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { Modal } from 'react-bootstrap';
-import styled from 'styled-components';
-import media from '../../media';
-// import LeftSideBar from './leftsidebar/Index';
-// import Accommodation from './accommodation/Index';
-// import AccommodationSearched from './new-accommodation-searched/Index';
-// import AccommodationModal from '../accommodation/Index';
-import axiosaccommodationinstance from '../../../services/bookings/FetchAccommodations';
-import axiostaxiinstance from '../../../services/bookings/FetchTaxiRecommendations';
-import axiostaxigozoinstance from '../../../services/bookings/FetchTaxiRecommendationsGozo'
-import Spinner from '../../Spinner';
-
-//  import CurrentlyReplacing from './leftsidebar/CurrentlyReplacing';
-import axiosbookingupdateinstance from '../../../services/bookings/UpdateBookings';
-import { connect } from 'react-redux';
-// import Button from '../../Button';
-import Button from '../../ui/button/Index';
-import LogInModal from '../Login';
-// import AccommodationSelected from './new-accommodation-selected/Index';
-import SectionOne from './SectionOne';
-import SectionTwo from './SectionTwo';
-import LoadingLottie from '../../ui/LoadingLottie';
-import TaxiSelected from './taxi-selected/Index';
-import TaxiSearched from './taxi-searched/Index';
-import Drawer from '../../ui/Drawer';
-import { setUpdateLoading } from '../../../store/actions/auth';
-import { openNotification } from '../../../store/actions/notification';
-import Skeleton from './Skeleton';
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import media from "../../media";
+import axiostaxigozoinstance from "../../../services/bookings/FetchTaxiRecommendationsGozo";
+import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
+import { connect } from "react-redux";
+import Button from "../../ui/button/Index";
+import LogInModal from "../Login";
+import SectionOne from "./SectionOne";
+import LoadingLottie from "../../ui/LoadingLottie";
+import TaxiSearched from "./taxi-searched/Index";
+import Drawer from "../../ui/Drawer";
+import { openNotification } from "../../../store/actions/notification";
+import Skeleton from "./Skeleton";
 
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 
     display: grid;
     grid-template-columns: 1fr;
- 
+
     @media screen and (min-width: 768px) {
-    
+
     }
 `;
 
@@ -60,78 +45,27 @@ const ContentContainer = styled.div`
 `;
 
 const Booking = (props) => {
-  let isPageWide = media('(min-width: 768px)');
-  let OptionsJSX = [];
+  let isPageWide = media("(min-width: 768px)");
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [moreOptionsJSX, setMoreOptionsJSX] = useState([]);
-  const [error , setError] = useState(false)
+  const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [filtersState, setFiltersState] = useState({
-    budget: [],
-    type: [],
-    star_category: [],
-  });
-  const [limit, setLimit] = useState(20);
-  const [offset, setOffset] = useState(0);
   const [viewMoreStatus, setViewMoreStatus] = useState(false);
-
   const [updateBookingState, setUpdateBookingState] = useState(false);
   const [updateLoadingState, setUpdateLoadingState] = useState(false);
-
-  const [moreLoadingState, setMoreLoadingState] = useState(false);
-
   const [noResults, setNoResults] = useState(false);
 
-  const filters = {
-    budget: [
-      'Below ₹3,000',
-      '₹3,000 - ₹6,000',
-      '₹6,000 - ₹10,000',
-      'Above ₹10,000',
-    ],
-    type: [
-      'Hotel',
-      'Homestay',
-      'Camp',
-      'Guest House',
-      'Cottage',
-      'Villa',
-      'Resort',
-      'Lodge',
-      'Service Appartment',
-      'Bed and Breakfast',
-      'Farmstay',
-      // "Speciality Lodging",
-      // "Boat / Cruise",
-      // "Holiday Park / Caravan Park",
-      // "Country House",
-      'Entire House',
-      // "Capsule Hotel",
-      'Unique',
-    ],
-    star_category: ['1 star', '2 star', '3 star', '4 star', '5 star', 'All'],
-  };
   useEffect(() => {
-    // let options = [];
-    //  if(props.alternates)
-    // for(var i=0; i<props.alternates.length; i++){
-    //     options.push(<Accommodation  _setImagesHandler={props._setImagesHandler} alternates={props.alternates} bookings={props.bookings} selectedBooking={props.selectedBooking} tailored_id={props.tailored_id} updateLoadingState={updateLoadingState} itinerary_id={props.selectedBooking.itinerary_id}  accommodation={props.alternates[i]}   _updateBookingHandler={_newUpdateBookingHandler} key={i} ></Accommodation>)
-    // }
-    //                 setOptionsJSX(options)
-  }, [props.alternates, props.bookings]);
-
-  useEffect(() => {
-          setError(false);
+    setError(false);
     if (!props.alternates && props.showTaxiModal) {
-      let params = null;
       try {
-        if (props.selectedBooking.transfer_type === 'Intercity one-way') {
+        if (props.selectedBooking.transfer_type === "Intercity one-way") {
           params = {
-            transfer_type: 'Intercity one-way',
-            search_by: 'name',
+            transfer_type: "Intercity one-way",
+            search_by: "name",
             locations:
               props.selectedBooking.city +
-              ',' +
+              "," +
               props.selectedBooking.destination_city,
             distance: Math.trunc(
               props.selectedBooking.costings_breakdown.distance.value
@@ -139,7 +73,7 @@ const Booking = (props) => {
           };
         } else
           params = {
-            transfer_type: 'Intercity round-trip',
+            transfer_type: "Intercity round-trip",
             duration: props.selectedBooking.costings_breakdown.duration.value,
             distance: Math.trunc(
               props.selectedBooking.costings_breakdown.distance.value
@@ -147,56 +81,16 @@ const Booking = (props) => {
           };
       } catch {
         params = {
-          transfer_type: 'Intercity one-way',
-          search_by: 'name',
+          transfer_type: "Intercity one-way",
+          search_by: "name",
 
-          locations: 'Munnar,Kochi',
+          locations: "Munnar,Kochi",
         };
       }
-      // axiostaxiinstance
-      //   .get('/', {
-      //     params: {
-      //       ...params,
-      //     },
-      //   })
-      //   .then((res) => {
-      //     setLoading(false);
-      //     setUpdateLoadingState(false);
-      //     if (res.data[0].choices.length) {
-      //       setNoResults(false);
-      //       let is_min_price_present = false;
-      //       let options = [];
-      //       for (var i = 0; i < res.data[0].choices.length; i++) {
-      //         options.push(
-      //           <TaxiSearched
-      //             _updateSearchedTaxi={_updateSearchedTaxi}
-      //             selectedBooking={props.selectedBooking}
-      //             data={res.data[0].choices[i]}
-      //           ></TaxiSearched>
-      //         );
-      //       }
-      //       if (!options.length) setNoResults(true);
-      //       setMoreOptionsJSX(options);
-      //       if (res.data.next) {
-      //         setViewMoreStatus(true);
-      //         setOffset(offset + 20);
-      //       } else {
-      //         setViewMoreStatus(false);
-      //         setOffset(0);
-      //       }
-      //     } else {
-      //       setNoResults(true);
-      //       setOffset(0);
-      //       setViewMoreStatus(false);
-      //       setMoreOptionsJSX([]);
-      //     }
-      //     setLoading(false);
-      //   })
-      //   .catch((err) => { });
-       setLoading(true);
+      setLoading(true);
       setUpdateLoadingState(false);
-            setMoreOptionsJSX([]);
-      
+      setMoreOptionsJSX([]);
+
       axiostaxigozoinstance
         .post("/", {
           booking_id: props.selectedBooking.id,
@@ -205,7 +99,6 @@ const Booking = (props) => {
           startDate: props.selectedBooking.check_in,
         })
         .then((res) => {
-         
           if (
             res.data.data &&
             res.data.data.cabRate &&
@@ -232,23 +125,22 @@ const Booking = (props) => {
             setMoreOptionsJSX(options);
           } else {
             setNoResults(true);
-            setOffset(0);
             setViewMoreStatus(false);
             setMoreOptionsJSX([]);
           }
           setLoading(false);
-        }).catch((err) => {
-          setLoading(false)
-          setError(true)
+        })
+        .catch((err) => {
+          setLoading(false);
+          setError(true);
           props.openNotification({
             type: "error",
             text: "There seems to be a problem, please try again later!",
             heading: "Error!",
           });
         });
-      
     }
-  }, [props.alternates, props.budget , props.showTaxiModal]);
+  }, [props.alternates, props.budget, props.showTaxiModal]);
 
   const _updateSearchedTaxi = ({
     itinerary_id,
@@ -262,8 +154,8 @@ const Booking = (props) => {
     let updated_bookings_arr = [
       {
         id: props.selectedBooking.id,
-        booking_type: 'Taxi',
-        itinerary_type: 'Tailored',
+        booking_type: "Taxi",
+        itinerary_type: "Tailored",
         user_selected: true,
         itinerary_id: itinerary_id,
         taxi_type: taxi_type,
@@ -276,8 +168,8 @@ const Booking = (props) => {
         },
       },
     ];
-     axiosbookingupdateinstance
-      .post('?booking_type=Taxi,Bus,Ferry', updated_bookings_arr, {
+    axiosbookingupdateinstance
+      .post("?booking_type=Taxi,Bus,Ferry", updated_bookings_arr, {
         headers: {
           Authorization: `Bearer ${props.token}`,
         },
@@ -291,11 +183,11 @@ const Booking = (props) => {
       })
       .catch((err) => {
         setUpdateBookingState(false);
-         props.openNotification({
-           type: "error",
-           text: "There seems to be a problem, please try again!",
-           heading: "Error!",
-         });
+        props.openNotification({
+          type: "error",
+          text: "There seems to be a problem, please try again!",
+          heading: "Error!",
+        });
       });
   };
 
@@ -332,7 +224,6 @@ const Booking = (props) => {
                     Please wait while we update your bookings
                   </div>
                 ) : null}
-                {/* <Skeleton /> */}
                 {!noResults && !error && !updateBookingState ? (
                   <OptionsContainer id="options">
                     <div style={{ clear: "right" }}>
@@ -341,20 +232,7 @@ const Booking = (props) => {
                         : moreOptionsJSX.length
                         ? moreOptionsJSX
                         : null}
-                      {loading && !optionsJSX.length ? (
-                        // <div
-                        //   className="center-div"
-                        //   style={{ height: isPageWide ? "80vh" : "40vh" }}
-                        // >
-                        //   <LoadingLottie
-                        //     height="5rem"
-                        //     width="5rem"
-                        //     margin="none"
-                        //   />
-                        //   Fetching recommendations for you
-                        // </div>
-                        <Skeleton />
-                      ) : null}
+                      {loading && !optionsJSX.length ? <Skeleton /> : null}
                     </div>
                     {updateLoadingState ? (
                       <div className="center-div" style={{}}>

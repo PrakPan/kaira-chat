@@ -1,21 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { Modal } from 'react-bootstrap';
-import styled from 'styled-components';
-import media from '../../media';
-import LeftSideBar from './leftsidebar/Index';
-import Poi from './poi/Index';
+import React, { useEffect, useState } from "react";
+import { Modal } from "react-bootstrap";
+import styled from "styled-components";
+import media from "../../media";
+import LeftSideBar from "./leftsidebar/Index";
+import Poi from "./poi/Index";
+import Spinner from "../../Spinner";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import CurrentlyReplacing from "./leftsidebar/CurrentlyReplacing";
+import { connect } from "react-redux";
+import PoiDetails from "./poidetails/Index";
+import axiosaxtivitiesinstance from "../../../services/poi/reccommendedactivities";
+import axiositineraryeditinstance from "../../../services/itinerary/edit";
+import { ITINERARY_ELEMENT_TYPES } from "../../../services/constants";
+import { openNotification } from "../../../store/actions/notification";
 
-import Spinner from '../../Spinner';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import CurrentlyReplacing from './leftsidebar/CurrentlyReplacing';
-import { connect } from 'react-redux';
-import PoiDetails from './poidetails/Index';
-import axiosaxtivitiesinstance from '../../../services/poi/reccommendedactivities';
-import axiositineraryeditinstance from '../../../services/itinerary/edit';
-import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
-import { EXPERIENCE_FILTERS_BOX } from '../../../services/constants';
-import { openNotification } from '../../../store/actions/notification';
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 
@@ -23,7 +22,7 @@ const GridContainer = styled.div`
     grid-template-columns: 1fr 3fr;
     grid-gap: 1rem;
     @media screen and (min-width: 768px) {
-    
+
     }
 `;
 
@@ -39,17 +38,20 @@ const OptionsContainer = styled.div`
 
     }
 `;
+
 const ContentContainer = styled.div`
   min-height: 65vh;
   @media screen and (min-width: 768px) {
     min-height: max-content;
   }
 `;
+
 const PoiDetailsContainer = styled.div`
   border-radius: 5px;
   max-height: 80vh;
   overflow-y: scroll;
 `;
+
 const BackToResults = styled.div`
   &:hover {
     cursor: pointer;
@@ -60,6 +62,7 @@ const BackToResults = styled.div`
     width: max-content;
   }
 `;
+
 const HeightContainer = styled.div`
   min-height: 65vh;
   @media screen and (min-width: 768px) {
@@ -68,18 +71,13 @@ const HeightContainer = styled.div`
 `;
 
 const Booking = (props) => {
-  let isPageWide = media('(min-width: 768px)');
-
+  let isPageWide = media("(min-width: 768px)");
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [updatePoiState, setUpdatePoiState] = useState(false);
   const [updateLoadingState, setUpdateLoadingState] = useState(true);
-
   const [noResults, setNoResults] = useState(false);
-
   const [showPoiDetails, setShowPoiDetails] = useState(false);
-
   const [poiDetails, setPoiDetails] = useState({});
 
   useEffect(() => {
@@ -88,7 +86,7 @@ const Booking = (props) => {
     setNoResults(false);
     if (props.selectedPoi.city_id)
       axiosaxtivitiesinstance
-        .post('/', {
+        .post("/", {
           location: props.selectedPoi.city_id,
           duration: 10,
         })
@@ -100,7 +98,6 @@ const Booking = (props) => {
 
             for (var i = 0; i < res.data.length; i++) {
               if (res.data[i].heading !== props.selectedPoi.name)
-                // if(res.data.results[i].name !== props.selectedBooking.name)
                 options.push(
                   <Poi
                     _updatePoiHandler={_updatePoiHandler}
@@ -111,7 +108,7 @@ const Booking = (props) => {
                     itinerary_id={
                       props.selectedBooking
                         ? props.selectedBooking.itinerary_id
-                        : ''
+                        : ""
                     }
                   ></Poi>
                 );
@@ -128,12 +125,10 @@ const Booking = (props) => {
   }, [props.selectedPoi]);
 
   const _updatePoiHandler = (poi) => {
-    // setUpdateLoadingState(true);
-
     setUpdatePoiState(true);
     axiositineraryeditinstance
       .post(
-        '/',
+        "/",
         {
           itinerary_id: props.itinerary_id,
           day_slab_index: props.selectedPoi.day_slab_index,
@@ -142,13 +137,13 @@ const Booking = (props) => {
           element_data: {
             ...poi,
             element_index: props.selectedPoi.element_index,
-            keys: ['icon', 'heading', 'text', 'activity_data', 'meta'],
+            keys: ["icon", "heading", "text", "activity_data", "meta"],
             element_type: ITINERARY_ELEMENT_TYPES.activity,
           },
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
         }
       )
@@ -158,14 +153,12 @@ const Booking = (props) => {
         props.setHidePoiModal();
       })
       .catch((err) => {
-        // setUpdateLoadingState(false);
         setUpdatePoiState(false);
-        // window.alert('There seems to be a problem, please try again!');
-         props.openNotification({
-           type: "error",
-           text: "There seems to be a problem, please try again!",
-           heading: "Error!",
-         });
+        props.openNotification({
+          type: "error",
+          text: "There seems to be a problem, please try again!",
+          heading: "Error!",
+        });
       });
   };
 
@@ -181,26 +174,25 @@ const Booking = (props) => {
         show={props.showPoiModal}
         size="xl"
         onHide={props.setHidePoiModal}
-        style={{ padding: '0' }}
+        style={{ padding: "0" }}
       >
-        {/* <Modal.Header>2</Modal.Header> */}
         <Modal.Body
           style={{
-            padding: '0rem 0',
-            borderStyle: 'solid',
-            borderColor: '#F7e700',
-            borderWidth: '0.5rem',
-            borderRadius: '16px',
-            backgroundColor: 'white',
+            padding: "0rem 0",
+            borderStyle: "solid",
+            borderColor: "#F7e700",
+            borderWidth: "0.5rem",
+            borderRadius: "16px",
+            backgroundColor: "white",
           }}
         >
-          <div style={{ padding: '0.25rem' }}>
+          <div style={{ padding: "0.25rem" }}>
             {!isPageWide ? (
               <div
                 style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
                 }}
               >
                 {showPoiDetails ? (
@@ -208,14 +200,14 @@ const Booking = (props) => {
                     className="hover-pointer"
                     icon={faChevronLeft}
                     onClick={() => setShowPoiDetails(false)}
-                    style={{ margin: '0.5rem', position: 'sticky', top: '0' }}
+                    style={{ margin: "0.5rem", position: "sticky", top: "0" }}
                   ></FontAwesomeIcon>
                 ) : (
                   <FontAwesomeIcon
                     className="hover-pointer"
                     icon={faChevronLeft}
                     onClick={props.setHidePoiModal}
-                    style={{ margin: '0.5rem', position: 'sticky', top: '0' }}
+                    style={{ margin: "0.5rem", position: "sticky", top: "0" }}
                   ></FontAwesomeIcon>
                 )}
                 {showPoiDetails ? (
@@ -232,23 +224,22 @@ const Booking = (props) => {
                 className="hover-pointer"
                 icon={faChevronLeft}
                 onClick={props.setHidePoiModal}
-                style={{ margin: '0.5rem', position: 'sticky', top: '0' }}
+                style={{ margin: "0.5rem", position: "sticky", top: "0" }}
               ></FontAwesomeIcon>
             )}
-            <GridContainer style={{ clear: 'right' }}>
+            <GridContainer style={{ clear: "right" }}>
               <LeftSideBar
                 selectedPoi={props.selectedPoi}
-                replacing={props.selectedPoi ? props.selectedPoi.name : ''}
+                replacing={props.selectedPoi ? props.selectedPoi.name : ""}
                 setHideBookingModal={props.setHidePoiModal}
               ></LeftSideBar>
-              {/* {!isPageWide && !showPoiDetails ? <MobileFilters></MobileFilters> : null} */}
-              <div style={{ display: showPoiDetails ? 'none' : 'block' }}>
-                <ContentContainer style={{ position: 'relative' }}>
+              <div style={{ display: showPoiDetails ? "none" : "block" }}>
+                <ContentContainer style={{ position: "relative" }}>
                   {loading ? (
                     <HeightContainer className="center-div">
                       <div
                         className="center-div"
-                        style={{ width: 'max-content', margin: 'auto' }}
+                        style={{ width: "max-content", margin: "auto" }}
                       >
                         <Spinner></Spinner>Fetching activity recommendations for
                         you
@@ -258,9 +249,9 @@ const Booking = (props) => {
                   {updatePoiState ? (
                     <div
                       style={{
-                        width: 'max-content',
-                        margin: 'auto',
-                        height: isPageWide ? '80vh' : '40vh',
+                        width: "max-content",
+                        margin: "auto",
+                        height: isPageWide ? "80vh" : "40vh",
                       }}
                       className="text-center font-lexend center-div"
                     >
@@ -269,7 +260,7 @@ const Booking = (props) => {
                   ) : null}
                   {!noResults && !loading && !updatePoiState ? (
                     <OptionsContainer id="options">
-                      <div style={{ clear: 'right' }}>
+                      <div style={{ clear: "right" }}>
                         {optionsJSX.length ? optionsJSX : null}
                       </div>
                     </OptionsContainer>
@@ -284,7 +275,7 @@ const Booking = (props) => {
               </div>
               {showPoiDetails ? (
                 <PoiDetailsContainer
-                  style={{ display: showPoiDetails ? 'block' : 'none' }}
+                  style={{ display: showPoiDetails ? "block" : "none" }}
                 >
                   {isPageWide ? (
                     <BackToResults
@@ -292,7 +283,7 @@ const Booking = (props) => {
                       className="font-lexend"
                     >
                       <FontAwesomeIcon
-                        style={{ marginRight: '0.5rem' }}
+                        style={{ marginRight: "0.5rem" }}
                         icon={faChevronLeft}
                       ></FontAwesomeIcon>
                       Back to results
@@ -305,7 +296,7 @@ const Booking = (props) => {
             {!isPageWide ? (
               <CurrentlyReplacing
                 selectedPoi={props.selectedPoi}
-                replacing={props.selectedPoi ? props.selectedPoi.name : ''}
+                replacing={props.selectedPoi ? props.selectedPoi.name : ""}
               ></CurrentlyReplacing>
             ) : null}
           </div>
@@ -329,6 +320,7 @@ const mapStateToPros = (state) => {
     hideloginclose: state.auth.hideloginclose,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     openNotification: (payload) => dispatch(openNotification(payload)),

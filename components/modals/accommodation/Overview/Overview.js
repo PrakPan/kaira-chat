@@ -127,12 +127,13 @@ const FlexBox = styled.div`
 `;
 
 const DescriptionText = styled.div`
-p{
-  margin-bottom : 12px;
-}
-`
+  p {
+    margin-bottom: 12px;
+  }
+`;
 
 const Overview = (props) => {
+  const isDesktop = useMediaQuery("(min-width:1148px)");
 
   const [ImagesLoaded, setImagesLoaded] = useState({
     0: false,
@@ -158,6 +159,7 @@ const Overview = (props) => {
       );
     }
   }
+
   function OnImageError(i) {
     if (!ImagesError[i]) {
       setImagesError((prev) => {
@@ -166,7 +168,6 @@ const Overview = (props) => {
     }
   }
 
-  const isDesktop = useMediaQuery("(min-width:1148px)");
   let images = [];
   try {
     for (var i = 0; i < props.images.length; i++) {
@@ -185,10 +186,9 @@ const Overview = (props) => {
             {props.data.city ? props.data.city : ""}
           </Address>
         </div>
-        {/* Temporary removed */}
         {props.payment && props.token ? (
-          props.payment?.is_registration_needed ? null : props.payment?.paid_user ||
-            !props.payment?.user_allowed_to_pay ? null : (
+          props.payment?.is_registration_needed ? null : props.payment
+              ?.paid_user || !props.payment?.user_allowed_to_pay ? null : (
             <Button
               padding="7px 25px"
               borderRadius="7px"
@@ -208,10 +208,16 @@ const Overview = (props) => {
               <div className="flex flex-row text-[#ffa500]">
                 {starRating(props?.currentBooking.user_rating)}
               </div>
-              <div>{props?.currentBooking?.user_rating}{" . "}</div>
+              <div>
+                {props?.currentBooking?.user_rating}
+                {" . "}
+              </div>
               {props?.currentBooking?.number_of_reviews && (
                 <div className="text-sm text-[#7A7A7A] font-medium underline">
-                  {props?.currentBooking?.number_of_reviews} {props?.currentBooking?.source === "Agoda" ? "user reviews" : "Google reviews"}
+                  {props?.currentBooking?.number_of_reviews}{" "}
+                  {props?.currentBooking?.source === "Agoda"
+                    ? "user reviews"
+                    : "Google reviews"}
                 </div>
               )}
             </div>
@@ -720,17 +726,7 @@ const Overview = (props) => {
               right: "0.25rem",
               display: "flex",
             }}
-          >
-            {/* {props.data.accommodation_type ? (
-              <EditButton
-                className="font-lexend"
-                style={{ marginRight: "0.5rem" }}
-              >
-                {props.data.accommodation_type}
-              </EditButton>
-            ) : null} */}
-            {/* <EditButton className="font-lexend">5 star</EditButton> */}
-          </div>
+          ></div>
           {props.tag ? (
             <Tag star_category={props.star_category} tag={props.tag}></Tag>
           ) : null}
@@ -880,15 +876,10 @@ const Overview = (props) => {
   );
 };
 
-
 const mapStateToPros = (state) => {
   return {
     token: state.auth.token,
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return {};
-};
-
-export default connect(mapStateToPros, mapDispatchToProps)(Overview);
+export default connect(mapStateToPros)(Overview);

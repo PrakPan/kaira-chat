@@ -1,7 +1,7 @@
 import * as actionTypes from "./actionsTypes";
 import axios from "axios";
-import axiosauthinstance from "../../services/user/auth";
 import { CONTENT_SERVER_HOST } from "../../services/constants";
+
 export const authLogout = () => {
   return {
     type: actionTypes.AUTH_LOGOUT,
@@ -39,15 +39,7 @@ export const logout = () => {
         localStorage.removeItem("user_image");
 
         dispatch(authLogout());
-        // window.location.reload();
       })
-      .catch((err) => {
-        // localStorage.setItem('auth', false);
-        // localStorage.setItem('userID',null);
-        // dispatch(authMobileFail());
-        // localStorage.setItem('auth', false);
-        // localStorage.setItem('userID',null);
-        // localStorage.setItem('token',null);
-      });
+      .catch((err) => {});
   };
 };

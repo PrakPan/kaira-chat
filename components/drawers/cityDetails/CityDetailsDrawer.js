@@ -1,35 +1,28 @@
-import React from 'react'
-import CityDetails from './CityDetails';
-import Drawer from '../../ui/Drawer';
+import React from "react";
+import CityDetails from "./CityDetails";
+import Drawer from "../../ui/Drawer";
 import { TbArrowBack } from "react-icons/tb";
 import axioscitydatainstance from "../../../services/poi/city";
 import { useEffect } from "react";
 import { useState } from "react";
-// import data from './Data'
 import CityDetailsSkeleton from "./CityDetailsSkeleton";
 
 const CityDetailsDrawer = (props) => {
-
   const [data, setData] = useState(null);
 
-   
-
-const getCityData = async () => {
-  const res = await axioscitydatainstance.get("?city_id=" + props.city_id);
-  setData(res.data);
-};
+  const getCityData = async () => {
+    const res = await axioscitydatainstance.get("?city_id=" + props.city_id);
+    setData(res.data);
+  };
   useEffect(() => {
-    if(props.show){
-      getCityData()
-    }
-    else setData(null)
+    if (props.show) {
+      getCityData();
+    } else setData(null);
   }, [props.show]);
-  
 
   return (
     <Drawer
       show={props.show}
-      // show={true}
       anchor={"right"}
       backdrop
       style={{ zIndex: 1501 }}
@@ -64,6 +57,6 @@ const getCityData = async () => {
       </div>
     </Drawer>
   );
-}
+};
 
-export default CityDetailsDrawer
+export default CityDetailsDrawer;

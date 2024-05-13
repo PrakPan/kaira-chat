@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRef } from "react";
 import { useEffect } from "react";
 import { BiChevronDown, BiChevronUp } from "react-icons/bi";
+
 const P = styled.div`
   font-weight: 300;
   text-align: left;
@@ -29,14 +30,17 @@ const Heading = styled.p`
   font-weight: 600;
   margin-block: 1rem;
 `;
+
 const Text = (props) => {
   const isPageWide = media("(min-width: 768px)");
   const [more, setMore] = useState(false);
   const [clientHeight, setClientHeight] = useState(false);
   const ref = useRef();
+
   useEffect(() => {
     setClientHeight(ref.current.offsetHeight);
   }, [isPageWide]);
+
   return (
     <>
       {props.heading && <Heading>{props.heading}</Heading>}

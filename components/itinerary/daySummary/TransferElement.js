@@ -5,7 +5,7 @@ import { MdDoneAll } from "react-icons/md";
 import { WiSunrise } from "react-icons/wi";
 import { TransparentButton } from "../../../containers/itinerary/New_Itenary_DBD/New_itenaryStyled";
 import media from "../../media";
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import ImageLoader from "../../ImageLoader";
 import { logEvent } from "../../../services/ga/Index";
 
@@ -114,7 +114,6 @@ export default function TransferElement(props) {
                     dimensionsMobile={{ width: 300, height: 300 }}
                     borderRadius="8px"
                     hoverpointer
-                    // onclick={() => setShowDetails(true)}
                     width="4rem"
                     height="4rem"
                     leftalign

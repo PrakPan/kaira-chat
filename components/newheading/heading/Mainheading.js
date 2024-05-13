@@ -9,8 +9,6 @@ const Mainheadingstyle = styled.div`
       ? "none"
       : "none none solid none"};
   font-size: ${(props) => (props.fontSize ? props.fontSize : "2rem")};
-  /* margin: ${(props) =>
-    props.margin ? props.margin : props.noline ? "0" : "0 auto 0.5rem auto"}; */
   padding: ${(props) => (props.padding ? props.padding : "5px")};
 
   width: ${(props) =>
@@ -45,7 +43,6 @@ const Mainheadingstyle = styled.div`
         : props.margin};
     max-width: ${(props) => (props.maxWidth ? props.maxWidth : "100%")};
     width: ${(props) => (props.width ? props.width : "max-content")};
-    //
   }
 `;
 

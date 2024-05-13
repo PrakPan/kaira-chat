@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Slide = ({
   children,
@@ -13,6 +13,7 @@ const Slide = ({
   onUnmount,
 }) => {
   const [isMounted, setIsMounted] = React.useState(true);
+
   useEffect(() => {
     if (hideTime !== null && onUnmount !== null && isActive === true) {
       const timeout = setTimeout(() => {
@@ -22,12 +23,14 @@ const Slide = ({
       return () => clearTimeout(timeout);
     }
   }, [hideTime, onUnmount]);
+
   const onUnmountComponent = () => {
     const timeout = setTimeout(() => {
       onUnmount();
     }, 1000);
     return () => clearTimeout(timeout);
   };
+
   return (
     <AnimatePresence>
       {isMounted && isActive && (

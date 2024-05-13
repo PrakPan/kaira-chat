@@ -1,32 +1,33 @@
-import React from 'react';
-import { IoMdClose } from 'react-icons/io';
-import styled from 'styled-components';
-import DropDown from '../../ui/DropDown'
-import { useState } from 'react';
-import { ImCheckboxChecked, ImCheckboxUnchecked } from 'react-icons/im';
-import media from '../../media'
-import { FaFilter } from 'react-icons/fa';
-import { TbArrowBack } from 'react-icons/tb';
-import Drawer from '../../ui/Drawer';
-import Button from '../../ui/button/Index'
-import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import React from "react";
+import { IoMdClose } from "react-icons/io";
+import styled from "styled-components";
+import DropDown from "../../ui/DropDown";
+import { useState } from "react";
+import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im";
+import media from "../../media";
+import { TbArrowBack } from "react-icons/tb";
+import Drawer from "../../ui/Drawer";
+import Button from "../../ui/button/Index";
+import { FiChevronDown, FiChevronUp } from "react-icons/fi";
+
 const Heading = styled.div`
   margin: 0;
   display: flex;
-  gap : 0.5rem;
+  gap: 0.5rem;
   margin: 1rem;
   @media screen and (min-width: 768px) {
   }
 `;
+
 const Text = styled.div`
   font-size: 1.5rem;
   line-height: 2rem;
 `;
+
 const Container = styled.div`
-margin-bottom : 10px;
-`
-const FiltersContainer = styled.div`
-`
+  margin-bottom: 10px;
+`;
+
 const FlexBox = styled.div`
   width: 95%;
   margin-inline: auto;
@@ -38,20 +39,23 @@ const FlexBox = styled.div`
     grid-template-columns: 1fr 1fr;
   }
 `;
+
 const DropDownContainer = styled.div`
   display: flex;
   gap: 2%;
   width: 95%;
-  align-items : center;
+  align-items: center;
   margin-inline: auto;
 `;
+
 const ItemContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
   grid-auto-columns: auto;
   gap: 5px;
-  grid-row-gap : 5px;
+  grid-row-gap: 5px;
 `;
+
 const P = styled.div`
   margin-top: 1rem;
   margin-bottom: 0.3rem;
@@ -62,12 +66,14 @@ const P = styled.div`
     font-weight: 400;
   }
 `;
+
 const TextContainer = styled.div`
   font-size: 0.875rem;
   font-weight: 400;
   margin: 0.5rem auto;
   width: 95%;
 `;
+
 const Item = styled.div`
   font-size: 14px;
   cursor: pointer;
@@ -86,6 +92,7 @@ const Item = styled.div`
   }
   cursor: pointer;
 `;
+
 const ButtonContainer = styled.div`
   display: flex;
   justify-content: space-around;
@@ -93,6 +100,7 @@ const ButtonContainer = styled.div`
   width: 100%;
   bottom: 1.2rem;
 `;
+
 const FloatingView = styled.div`
   position: fixed;
   bottom: 75px;
@@ -107,6 +115,7 @@ const FloatingView = styled.div`
   z-index: 2;
   cursor: pointer;
 `;
+
 const SortContainer = styled.div`
   position: absolute;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
@@ -114,8 +123,9 @@ const SortContainer = styled.div`
   border-radius: 0.5rem;
   left: 0;
   padding: 0.5rem;
-  z-index : 2;
+  z-index: 2;
 `;
+
 const SortItem = styled.div`
   text-align: center;
   padding: 0.2rem 0.5rem;
@@ -126,15 +136,17 @@ const SortItem = styled.div`
     background: #f7f3f3;
   }
 `;
-const ItemArr = ['Morning', 'Afternoon', 'Evening', 'Night']
-const sortItems = ['Price' , 'Duration']
+
+const ItemArr = ["Morning", "Afternoon", "Evening", "Night"];
+
+const sortItems = ["Price", "Duration"];
+
 const Section = (props) => {
+  let isPageWide = media("(min-width: 768px)");
   const [sortShow, setSortShow] = useState(false);
   const [SelectedSort, setSelectedSort] = useState(props.filtersState.sort_by);
 
-  let isPageWide = media("(min-width: 768px)");
-    const _handleFilterChange = (key, value) => {
-
+  const _handleFilterChange = (key, value) => {
     const obj = {
       order: "asc",
       non_stop_flights: false,
@@ -144,12 +156,18 @@ const Section = (props) => {
       sort_by: "price",
     };
 
-    if(props.filtersState[key] === value) props.setFiltersState(prev=>{return {...prev , [key] : obj[key]}})
-    else props.setFiltersState(prev=>{return {...prev , [key] : value}})
-  }
+    if (props.filtersState[key] === value)
+      props.setFiltersState((prev) => {
+        return { ...prev, [key]: obj[key] };
+      });
+    else
+      props.setFiltersState((prev) => {
+        return { ...prev, [key]: value };
+      });
+  };
 
   const FiltersSection = (
-    <FiltersContainer>
+    <div>
       <FlexBox>
         <div>
           <P>Departure in</P>
@@ -224,10 +242,8 @@ const Section = (props) => {
           </div>
         )}
       </DropDownContainer>
-    </FiltersContainer>
+    </div>
   );
-
-
 
   return (
     <Container>
@@ -243,7 +259,8 @@ const Section = (props) => {
       {isPageWide ? FiltersSection : <></>}
 
       <TextContainer>
-        Showing {props.flightCount} {props.text} {isPageWide ? '|' : <br/>} Sort by:{" "}
+        Showing {props.flightCount} {props.text} {isPageWide ? "|" : <br />}{" "}
+        Sort by:{" "}
         <div
           style={{
             display: "inline",

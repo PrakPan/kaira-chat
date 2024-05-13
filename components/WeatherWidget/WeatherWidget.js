@@ -1,8 +1,8 @@
-import styled from 'styled-components';
-import { useState, useEffect } from 'react';
-import IconsFetcher from './IconsFetcher';
-import SkeletonCard from '../ui/SkeletonCard';
-import { format, addDays, isWithinInterval } from 'date-fns';
+import styled from "styled-components";
+import { useState, useEffect } from "react";
+import IconsFetcher from "./IconsFetcher";
+import SkeletonCard from "../ui/SkeletonCard";
+
 const WeatherGrid = styled.div`
   display: grid;
 
@@ -25,23 +25,9 @@ const WeatherWidget = ({
   setShowDrawer,
   setShowDrawerData,
   cnt = 7,
-  apiKey = 'e2fe4bf0d3954e25a493b899a559f43d',
-  noSkeleton
+  apiKey = "e2fe4bf0d3954e25a493b899a559f43d",
+  noSkeleton,
 }) => {
-  // const [showWidget, setShowWidget] = useState(false);
-  // const currentDate = new Date();
-  // const travelDateRange = new Date(travelDate);
-  // travelDateRange.setDate(travelDateRange.getDate() - 7);
-  // const travelDateEndRange = new Date(travelDate);
-  // travelDateEndRange.setDate(travelDateEndRange.getDate() + 7);
-
-  // if (currentDate >= travelDateRange && currentDate <= travelDateEndRange) {
-  //   setShowWidget(true);
-  // } else {
-  //   setShowWidget(false);
-  // }
-  // console.log('showWidget');
-  // console.log(showWidget);
   const [weather, setWeather] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [weatherText, setWeatherText] = useState(null);
@@ -71,11 +57,11 @@ const WeatherWidget = ({
     const today = new Date();
     const post = new Date(new Date().setDate(new Date().getDate() + 7));
 
-    const [, todayMonth, todayDate, todayYear] = today.toString().split(' ');
-    const [, postMonth, postDate, postYear] = post.toString().split(' ');
+    const [, todayMonth, todayDate, todayYear] = today.toString().split(" ");
+    const [, postMonth, postDate, postYear] = post.toString().split(" ");
     setWeatherText(
       `Weather (${todayDate} ${todayMonth} ${
-        postYear != todayYear ? todayYear : ''
+        postYear != todayYear ? todayYear : ""
       } - ${postDate} ${postMonth} ${postYear})`
     );
   }, [city, apiKey]);
@@ -121,7 +107,7 @@ const WeatherWidget = ({
             </div>
           )}
           {weather.description && (
-            <p style={{ fontWeight: '500' }}>{weather.description}</p>
+            <p style={{ fontWeight: "500" }}>{weather.description}</p>
           )}
         </div>
       </WeatherGrid>

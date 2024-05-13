@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
-import styled from 'styled-components';
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import styled from "styled-components";
 
 const DropdownContainer = styled.div`
   position: relative;
@@ -28,8 +28,8 @@ const DropdownHeader = styled(motion.div)`
 const DropdownOptions = styled(motion.ul)`
   position: absolute;
   top: calc(100% + 5px);
-  height: ${({ scrollable }) => (scrollable ? '10rem' : 'auto')};
-  overflow-y: ${({ scrollable }) => (scrollable ? 'auto' : 'hidden')};
+  height: ${({ scrollable }) => (scrollable ? "10rem" : "auto")};
+  overflow-y: ${({ scrollable }) => (scrollable ? "auto" : "hidden")};
   left: 0;
   width: 100%;
   background-color: #f5f5f5;
@@ -55,11 +55,10 @@ const UiDropdown = ({
   options,
   onSelect,
   DropdownOpen = false,
-
   scrollable = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState('');
+  const [selectedOption, setSelectedOption] = useState("");
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
@@ -76,7 +75,7 @@ const UiDropdown = ({
     <DropdownContainer>
       {!hideSelector && (
         <DropdownHeader onClick={handleToggle}>
-          <span>{selectedOption || 'Select an option'}</span>
+          <span>{selectedOption || "Select an option"}</span>
           {isOpen ? (
             <FaChevronUp className="font-thin text-sm" />
           ) : (

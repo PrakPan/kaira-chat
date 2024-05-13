@@ -122,21 +122,19 @@ const Mobile = (props) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showLogo, setShowLogo] = useState(false);
 
+  useEffect(() => {
+    setShowLogo(true);
+  }, []);
+
   const _handleNotifications = () => {
     setToggleMenu(false);
     setShowNotifications(true);
   };
 
-  useEffect(() => {
-    setShowLogo(true);
-  }, []);
-
   const _handleLogin = () => {
     setToggleMenu(false);
     props.setShowLoginModal(true);
   };
-
-  useEffect(() => {}, [props.notOpenCount]);
 
   const _handleHomepageRedirect = () => {
     if (props.PW) router.push("/corporates/physicswallah");
@@ -287,7 +285,6 @@ const Mobile = (props) => {
             marginRight: "-10px",
           }}
         >
-          
           {props.notifications.length && props.notOpenCount ? (
             <RedDot className="center-div ">{props.notOpenCount}</RedDot>
           ) : null}
@@ -326,7 +323,6 @@ const Mobile = (props) => {
             </StyledLink>
 
             {!props.hidecta && <CompanyName>thetarzanway</CompanyName>}
-
           </div>
         ) : (
           <div></div>
@@ -398,10 +394,8 @@ const Mobile = (props) => {
                   <div>Logout</div>
                 </ListItem>
               )}
-
             </ListContainer>
           </DrawerContainer>
-
         </Drawer>
       </Container>
 

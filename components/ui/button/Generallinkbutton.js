@@ -62,7 +62,6 @@ const Generalbuttonstyle = styled.div`
   &:focus {
     outline: none;
   }
-  /* box-shadow: 0 5px red; */
 
   &:active {
     transform: translateY(2px);
@@ -105,4 +104,5 @@ const Generalbutton = (props) => {
     </Generalbuttonstyle>
   );
 };
+
 export default Generalbutton;

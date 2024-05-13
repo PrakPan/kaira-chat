@@ -25,39 +25,6 @@ const Container = styled.div`
   color: #01202b;
 `;
 
-const SectionOneText = styled.span``;
-
-const GridContainer = styled.div`
-  display: grid;
-  margin-top: 1rem;
-  grid-template-columns: ${(props) => (props.image ? "1fr 2fr" : "1fr")};
-  grid-column-gap: 0.5rem;
-`;
-
-const Text = styled.p`
-  overflow: hidden;
-  line-height: 1.5;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  font-size: 14px;
-  font-weight: 400;
-`;
-
-const Heading = styled.p`
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  font-size: 18px;
-  line-height: 1;
-`;
-
-const Line = styled.div`
-  border-style: none none solid none;
-  border-color: #f0f0f0;
-  border-width: 1px;
-`;
-
 export const TInfoContainer = styled.div`
   @media screen and (min-width: 768px) {
     display: flex;
@@ -69,17 +36,6 @@ export const TInfoContainer = styled.div`
     }
   }
 `;
-
-function compareDates(dateString1, dateString2) {
-  if (dateString1 && dateString2) {
-    const date1 = parse(dateString1, "dd/MM/yyyy", new Date());
-    const date2 = parse(dateString2, "yyyy-MM-dd", new Date());
-
-    return isSameDay(date1, date2);
-  }
-
-  return false;
-}
 
 const ItineraryElement = (props) => {
   function getUserSelectedByBookings(id) {

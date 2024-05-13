@@ -1,16 +1,18 @@
 import styled from "styled-components";
 import media from "../../../components/media";
 import SkeletonCard from "../../ui/SkeletonCard";
-import { TbArrowBack } from "react-icons/tb";
-import { CgClose } from "react-icons/cg";
 import { FaPlane } from "react-icons/fa";
+
 const POIDetailsSkeleton = (props) => {
-    const Container = styled.div`
-      @media screen and (max-width: 768px) {
-        width: 95%;
-        margin: auto;
-      }
-    `;
+  let isPageWide = media("(min-width: 768px)");
+
+  const Container = styled.div`
+    @media screen and (max-width: 768px) {
+      width: 95%;
+      margin: auto;
+    }
+  `;
+
   const SkeletonContainer = styled.div`
     margin-bottom: 0.5rem;
     width: 100%;
@@ -24,14 +26,16 @@ const POIDetailsSkeleton = (props) => {
       grid-template-columns: 1fr 8.5rem;
     }
   `;
+
   const DetailsContainer = styled.div`
     @media screen and (min-width: 768px) {
-    display: grid;
-    grid-template-columns: auto 6fr;
-    gap: 1.2rem;
-    padding: 1rem 0rem 1rem 0.5rem;
+      display: grid;
+      grid-template-columns: auto 6fr;
+      gap: 1.2rem;
+      padding: 1rem 0rem 1rem 0.5rem;
     }
   `;
+
   const LogoContainer = styled.div`
     width: 100%;
     display: grid;
@@ -45,10 +49,7 @@ const POIDetailsSkeleton = (props) => {
       display: initial;
     }
   `;
-  const Title = styled.p`
-    font-weight: 800;
-    font-size: 20px;
-  `;
+
   const DetailsGridContainer = styled.div`
     display: grid;
     grid-template-columns: 105px auto 105px;
@@ -61,6 +62,7 @@ const POIDetailsSkeleton = (props) => {
       grid-template-columns: 140px auto 140px;
     }
   `;
+
   const DottedLine = styled.div`
     position: relative;
     height: 2px;
@@ -77,12 +79,14 @@ const POIDetailsSkeleton = (props) => {
       background-size: 9px 100%; /* Adjust this value to change the spacing between the dots */
     }
   `;
+
   const Plan = styled.div`
     position: absolute;
     left: 50%;
     top: 0%;
     transform: translate(-50%, -45%);
   `;
+
   const Circle = styled.div`
     border: 1px solid #7a7a7a;
     height: 10px;
@@ -94,6 +98,7 @@ const POIDetailsSkeleton = (props) => {
     top: 50%;
     transform: translateY(-38%);
   `;
+
   const PriceContainer = styled.div`
     display: flex;
     justify-content: space-between;
@@ -107,7 +112,6 @@ const POIDetailsSkeleton = (props) => {
       align-items: center;
     }
   `;
-  let isPageWide = media("(min-width: 768px)");
 
   const DesktopSkeleton = (
     <SkeletonContainer className="border">
@@ -195,19 +199,11 @@ const POIDetailsSkeleton = (props) => {
     <SkeletonContainer className="border">
       <DetailsContainer>
         <LogoContainer>
-          <SkeletonCard
-            width={"50px"}
-            height={"50px"}
-            borderRadius={"50%"}
-          />
+          <SkeletonCard width={"50px"} height={"50px"} borderRadius={"50%"} />
           <div>
+            <SkeletonCard width={"30%"} height={"15px"} borderRadius={"3px"} />
             <SkeletonCard
-              width={'30%'}
-              height={"15px"}
-              borderRadius={"3px"}
-            />
-            <SkeletonCard
-              width={'50%'}
+              width={"50%"}
               height={"15px"}
               borderRadius={"3px"}
               mt="0.25rem"
@@ -261,16 +257,8 @@ const POIDetailsSkeleton = (props) => {
         </DetailsGridContainer>
       </DetailsContainer>
       <PriceContainer>
-        <SkeletonCard
-          borderRadius={"3px"}
-          width={"50%"}
-          height="24px"
-        />
-        <SkeletonCard
-          borderRadius={"3px"}
-          width={"30%"}
-          height="24px"
-        />
+        <SkeletonCard borderRadius={"3px"} width={"50%"} height="24px" />
+        <SkeletonCard borderRadius={"3px"} width={"30%"} height="24px" />
       </PriceContainer>
     </SkeletonContainer>
   );

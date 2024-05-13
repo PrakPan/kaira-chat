@@ -28,23 +28,6 @@ const GridContainer = styled.div`
   grid-gap: 0.5rem;
 `;
 
-const MoreContainer = styled.div`
-  position: relative;
-  height: 100%;
-  width: 100%;
-  border-radius: 12px;
-  z-index: 2;
-  // background-color: rgba(84, 84, 84, 0.7);
-`;
-
-const MoreText = styled.div`
-  font-size: 14px;
-  font-weight: 600;
-  color: black;
-  position: absolute;
-  margin: 0;
-`;
-
 const TwoImageContainer = styled.div`
   height: 400px;
   display: grid;
@@ -102,7 +85,10 @@ const ImagesMobile = (props) => {
       </>
       {props.images[1] ? (
         <GridContainer>
-          <div style={{ display: ImagesLoaded[1] ? "initial" : "none" }} className="">
+          <div
+            style={{ display: ImagesLoaded[1] ? "initial" : "none" }}
+            className=""
+          >
             <ImageLoader
               borderRadius="12px"
               url={props.images[1]}
@@ -123,8 +109,10 @@ const ImagesMobile = (props) => {
           >
             <SkeletonCard />
           </div>
-          {/* <MoreContainer> */}
-          <div style={{ display: ImagesLoaded[2] ? "initial" : "none" }} className="">
+          <div
+            style={{ display: ImagesLoaded[2] ? "initial" : "none" }}
+            className=""
+          >
             <ImageLoader
               borderRadius="12px"
               url={props.images[2]}
@@ -157,7 +145,6 @@ const ImagesMobile = (props) => {
             dimensions={{ width: 1071, height: 400 }}
             url={props.images[0]}
             height={isPageWide ? "400px" : "190px"}
-            // heightMobile="200px"
             dimensionsMobile={{ width: 328, height: 141 }}
             onload={() => OnImageLoad(0)}
             noLazy

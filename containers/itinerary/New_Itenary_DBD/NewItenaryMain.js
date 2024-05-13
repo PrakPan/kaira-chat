@@ -93,8 +93,6 @@ const NewItenaryMain = (props) => {
 
   if (props.itinerary.day_slabs) {
     for (var i = 0; i < props.itinerary.day_slabs.length; i++) {
-      const index = i;
-      //Don't do anything if ending city
 
       const itenaryId = props.itinerary.day_slabs[i];
 

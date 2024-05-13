@@ -90,7 +90,6 @@ const ProfileContainer = styled.div`
 const ProfileDropDown = (props) => {
   const isPageLoaded = usePageLoaded();
   let profileRef = useRef();
-
   let firstname;
 
   if (props.name) {
@@ -164,10 +163,6 @@ const ProfileDropDown = (props) => {
             </div>
           ) : null}
         </ProfileList>
-        {/* <Link to='/profile/profile' style={{ textDecoration: 'none'}}  className="font-nunito"><ProfileList>Profile</ProfileList></Link> */}
-        {/* <Link to='/profile/plans' style={{ textDecoration: 'none'}}   className="font-nunito"><ProfileList>Saved Plans</ProfileList></Link> */}
-        {/* <Link to='/profile/notifications' style={{ textDecoration: 'none'}}   className="font-nunito"><ProfileList>Previous Plans</ProfileList></Link> */}
-        {/* <Link to='/profile/messages' style={{ textDecoration: 'none'}}   className="font-nunito"> <ProfileList>Messages</ProfileList></Link> */}
 
         <Link
           style={{ textDecoration: "none", color: "rgba(0,0,0,0.7)" }}

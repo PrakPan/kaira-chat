@@ -1,8 +1,8 @@
-import styled from 'styled-components';
-import { useState, useEffect } from 'react';
-import { AiFillStar } from 'react-icons/ai';
-import ImageLoader from '../../../components/ImageLoader';
-import { cutSentence } from '../../../helper/cutSentence';
+import styled from "styled-components";
+import { useEffect } from "react";
+import ImageLoader from "../../../components/ImageLoader";
+import { cutSentence } from "../../../helper/cutSentence";
+
 const Container = styled.div`
   display: grid;
   grid-template-columns: 1.1fr 2.5fr;
@@ -10,11 +10,9 @@ const Container = styled.div`
   @media screen and (min-width: 768px) {
   }
 `;
+
 const Heading = styled.p`
   margin-bottom: 2px;
-`;
-const Text = styled.p`
-  font-size: 14px;
 `;
 
 const FoodItem = (props) => {
@@ -27,7 +25,7 @@ const FoodItem = (props) => {
         dimensionsMobile={{ width: 100, height: 100 }}
         borderRadius="8px"
         hoverpointer
-        onclick={() => console.log('')}
+        onclick={() => console.log("")}
         width="100%"
         leftalign
         widthmobile="100%"
@@ -37,7 +35,7 @@ const FoodItem = (props) => {
         <Heading className="font-normal text-lg lg:text-md">
           {props.heading}
         </Heading>
-        
+
         <div className="pt-1 text-sm font-[350] line-clamp-3  ">
           {cutSentence(props.text, 18)}
         </div>

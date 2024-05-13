@@ -592,7 +592,6 @@ export const Destination = (props) => {
 
   const handleDragStart = (e, item) => {
     e.dataTransfer.setData("destId", index);
-    // setDraggedItem({ index });
   };
 
   const handleDragOver = (e) => {
@@ -605,10 +604,6 @@ export const Destination = (props) => {
 
     if (targetIndex > 0 && targetIndex < destinations.length - 1) {
       const items = [...destinations];
-      // const temp = items[targetIndex];
-      // items[targetIndex] = items[draggedIndex];
-      // items[draggedIndex] = temp;
-
       const [reorderedItem] = items.splice(draggedIndex, 1);
       items.splice(targetIndex, 0, reorderedItem);
 
@@ -788,7 +783,6 @@ export const NewDestination = (props) => {
 
   return (
     <div
-      // onBlur={handleCloseEdit}
       className="relative w-full flex border-1 border-black shadow-sm rounded-lg px-3 py-2"
     >
       <div className="w-full flex flex-row gap-2 items-center justify-between">
@@ -1031,7 +1025,6 @@ export const DestinationDates = (props) => {
   const {
     index,
     destinations,
-    setDestinations,
     startingCity,
     endingCity,
     cityData,
@@ -1079,9 +1072,6 @@ export const DestinationDates = (props) => {
   const handleDateChange = (e) => {
     e.target.value = getDateString(e.target.value);
     if (e.target.name === "Arrival Date") {
-      // if (isNaN(Date.parse(checkinDate))) {
-      // setCheckinDate(e.target.value);
-      // } else {
       const offSet = differenceInDays(
         new Date(e.target.value),
         new Date(checkinDate)
@@ -1089,9 +1079,6 @@ export const DestinationDates = (props) => {
       handleDates(offSet, index, e.target.value, checkoutDate, true);
       // }
     } else if (e.target.name === "Departure Date") {
-      // if (isNaN(Date.parse(checkoutDate))) {
-      //   setCheckoutDate(e.target.value);
-      // } else {
       const offSet = differenceInDays(
         new Date(e.target.value),
         new Date(checkoutDate)
@@ -1099,7 +1086,6 @@ export const DestinationDates = (props) => {
       handleDates(offSet, index, checkinDate, e.target.value);
       // }
     } else if (e.target.name === "Start Date") {
-      // if (!isNaN(Date.parse(startDate))) {
       const offSet = differenceInDays(
         new Date(e.target.value),
         new Date(startDate)
@@ -1110,15 +1096,6 @@ export const DestinationDates = (props) => {
     } else if (e.target.name === "End Date") {
       setEndDate(e.target.value);
 
-      // if (isNaN(Date.parse(endDate))) {
-      //   setEndDate(e.target.value);
-      // } else {
-      // const offSet = differenceInDays(
-      //   new Date(e.target.value),
-      //   new Date(endDate)
-      // );
-      //   handleDates(offSet, index, null, null);
-      // }
     }
   };
 
@@ -1418,9 +1395,6 @@ export const CustomCalendar = ({
           continue;
         }
       }
-
-      // monthDays = getDayColors(dateRanges[0], monthDays);
-      // monthDays = getDayColors(dateRanges[dateRanges.length - 1], monthDays);
 
       temp_months.push({ firstDay: firstDayOfMonth, days: monthDays });
     }

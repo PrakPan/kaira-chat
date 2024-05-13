@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import PinSection from "./PinSection";
 import MidSection from "./MidSection";
 import { ITINERARY_VERSION } from "../../../../services/constants";
@@ -68,29 +68,6 @@ const Route = (props) => {
       });
     }
   };
-
-  function getTransportationType(url) {
-    if (url) {
-      const fileName = url.substring(
-        url.lastIndexOf("/") + 1,
-        url.lastIndexOf(".")
-      );
-      const firstLetter = fileName.charAt(0).toUpperCase();
-      const restOfWord = fileName.slice(1);
-      const transportationType = firstLetter + restOfWord;
-      return transportationType;
-    } else {
-      return url;
-    }
-  }
-
-  function NoOfNights(days) {
-    if (days > 1) {
-      return " Nights";
-    } else {
-      return " Night";
-    }
-  }
 
   const handleEditRoute = () => {
     props.setEdit(true);
@@ -224,14 +201,6 @@ const Route = (props) => {
     if (props.breif)
       if (props.breif.city_slabs) {
         for (var i = 0; i < props.breif.city_slabs.length; i++) {
-          //If duration present and not 0, not trip terminated or departure only city show in route
-          // if (
-          //   !props.breif.city_slabs[i].is_trip_terminated &&
-          //   !props.breif.city_slabs[i].is_departure_only &&
-          //   !props.breif.city_slabs[i].is_departure_only &&
-          //   props.breif.city_slabs[i].duration &&
-          //   props.breif.city_slabs[i].duration !== "0"
-          // ) {
           locationsArr.push(
             <PinSection
               startingCity={i === 0}
@@ -281,7 +250,6 @@ const Route = (props) => {
               ></MidSection>
             );
           }
-          // }
         }
       }
   }

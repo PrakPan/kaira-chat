@@ -20,7 +20,6 @@ const Container = styled.div`
   top: 0;
   width: 100%;
   z-index: 1500;
-  // overflow: hidden;
   @media screen and (min-width: 768px) {
     width: 100%;
   }

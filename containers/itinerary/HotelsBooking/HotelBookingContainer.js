@@ -11,20 +11,10 @@ import media from "../../../components/media";
 import styled from "styled-components";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import CheckboxFormComponent from "../../../components/FormComponents/CheckboxFormComponent";
-import useMediaQuery from "../../../hooks/useMedia";
 import { getHumanDate } from "../../../services/getHumanDate";
 import { ITINERARY_STATUSES } from "../../../services/constants";
 import { MdWifi } from "react-icons/md";
 import { logEvent } from "../../../services/ga/Index";
-
-const starHotel = styled.div`
-  box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
-    rgba(0, 0, 0, 0.05) 0px 5px 10px;
-`;
-
-const ClippathComp = styled.div`
-  clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
-`;
 
 const RoomTypeGrid = styled.div`
   display: grid;
@@ -46,7 +36,6 @@ const HotelBookingContainer = ({
   handleClickAc,
   cityName,
   _updateSearchedAccommodation,
-  _SelectedBookingHandler,
   itinerary_id,
   alternates,
   cityData,
@@ -54,10 +43,8 @@ const HotelBookingContainer = ({
   setShowLoginModal,
   tailored_id,
   openDetails,
-  loginModal,
   payment,
   selectedBooking,
-  setLoginModal,
   token,
   plan,
 }) => {
@@ -69,7 +56,6 @@ const HotelBookingContainer = ({
   const [isSearchedBooking, setisSearchedBooking] = useState(
     booking?.user_selected ? false : true
   );
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setisSelect(booking?.user_selected);
@@ -101,52 +87,6 @@ const HotelBookingContainer = ({
     if (Math.floor(rating) < rating) stars.push(<FaStarHalfAlt />);
     return stars;
   };
-
-  const noOfWords = (sentence, number) => {
-    if (sentence) {
-      const words = sentence.toString().trim().split(/\s+/);
-      if (words.length > number) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-  };
-
-  let room = [];
-  function handleCheckboxChange(e) {
-    if (!payment?.is_registration_needed) {
-      if (token) {
-        setLoading(true);
-        _SelectedBookingHandler({
-          SelectedBookingId: selectedBooking?.id,
-          itinerary_id: itinerary_id,
-          tailored_id: tailored_id,
-          user_selected: isSelect,
-          index: index,
-          check_in: selectedBooking?.check_in,
-          check_out: selectedBooking?.check_out,
-        })
-          .then((data) => {
-            setLoading(false);
-
-            setisSelect(false);
-            // Handle success
-            // Access the response data using 'data'
-          })
-          .catch((error) => {
-            setLoading(false);
-
-            // Handle failure
-            // Access the error object using 'error'
-          });
-
-        e.stopPropagation();
-      } else {
-        setLoginModal(!loginModal);
-      }
-    }
-  }
 
   function handleSelectChange() {
     setisSelect(!isSelect);
@@ -228,7 +168,6 @@ const HotelBookingContainer = ({
     });
   };
 
-  const isMobile = useMediaQuery("(min-width:768px)");
   let img = "";
   if (banner_image) img = banner_image;
   if (booking && booking.images && booking.images.length && !banner_image)
@@ -462,9 +401,6 @@ const HotelBookingContainer = ({
                         <div className="flex flex-row items-center my-0">
                           <BsPlus className="text-md text-[#7A7A7A]" />
                           <div className="text-sm font-[400] line-clamp-1">
-                            {/* Extra beds cost - ₹
-                          {booking.costings_breakdown[0].price * booking.costings_breakdown[0].extra_bed_percent_cost * 0.01}
-                          /- */}
                             {booking.costings_breakdown[0].number_of_extra_beds}{" "}
                             {booking.costings_breakdown[0]
                               .number_of_extra_beds > 1
@@ -638,7 +574,6 @@ const HotelBookingContainer = ({
         <div>
           <div className="flex lg:flex-row flex-col justify-between lg:items-center items-start cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] p-3 ">
             <div className="flex flex-col">
-              {/* <div className="text-2xl">Add Stay in {cityName}</div> */}
               <div className="font-medium  inline">
                 <div className="font-bold flex flex-row lg:text-2xl text-xl lg:pb-2 pb-1 text-[#01202B]">
                   <div>

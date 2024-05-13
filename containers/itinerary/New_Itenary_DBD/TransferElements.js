@@ -10,16 +10,13 @@ import { Link } from "react-scroll";
 import { MdDoneAll } from "react-icons/md";
 
 const TransferElements = ({
-  time,
   heading,
   meta,
   modes,
   data,
   transfers,
   booking,
-  icon,
   text,
-  newcity,
   LastTransfer,
 }) => {
   function getUserSelectedByBookings(id) {
@@ -32,9 +29,6 @@ const TransferElements = ({
     return null;
   }
 
-  function isValueUndefined(value) {
-    return value === undefined;
-  }
 
   const handleTransferButtonClick = () => {
     logEvent({

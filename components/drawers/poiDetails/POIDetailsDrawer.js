@@ -69,7 +69,6 @@ const POIDetailsDrawer = (props) => {
       style={{ zIndex: props.itineraryDrawer ? 1503 : 1501 }}
       className="font-lexend"
       onHide={props.handleCloseDrawer}
-      // zIndex='1501'
     >
       {!loading ? (
         <POIDetails

@@ -4,9 +4,7 @@ export default function ViewMoreButton({ text, handler, isMob }) {
       onClick={handler}
       className={`flex items-center justify-center font-bold rounded md:rounded-lg lg:rounded-lg p-1 text-sm hover:bg-black hover:text-white hover:border-black`}
     >
-      <button className={``}>
-        {text}
-      </button>
+      <button className={``}>{text}</button>
       {text === "View more" ? (
         <svg
           stroke="currentColor"

@@ -176,18 +176,14 @@ const Booking = (props) => {
       [heading]: filter,
     }));
   };
+
   const _updateStarFilterHandler = (star) => {
-    /* let oldfilters = { ...filtersState };
-    let newfilters = {
-      ...oldfilters,
-      star_category: star,
-    };
-    setFiltersState(newfilters); */
     setFiltersState((prevState) => ({
       ...prevState,
       star_category: star,
     }));
   };
+
   const _removeFilterHandler = (heading) => {
     let oldfilters = {
       budget: "",
@@ -197,17 +193,16 @@ const Booking = (props) => {
     };
     setFiltersState((prev) => ({ ...prev, [heading]: oldfilters[heading] }));
   };
+
   const _generateFilterKeys = (filtersState) => {
     let budgetarr = filtersState.budget;
     let typearr = filtersState.type;
-    let sta_catgeoryarr = filtersState.star_category;
     let sort = filtersState.sort;
 
     let type = [];
     let price_lower_range = null;
     let price_upper_range = null;
     let sort_by = "price";
-    let price_set = false;
     if (sort === "popular") sort_by = "popularity";
     if (sort === "recommended") sort_by = "recommended";
     if (sort === "price: high to low" || sort === "price: low to high")
@@ -260,7 +255,6 @@ const Booking = (props) => {
       error: false,
       errorMsg: "",
     });
-    let budgetarr = filtersState.budget;
 
     let filters = _generateFilterKeys(filtersState);
     let sort_order = "asc";
@@ -381,7 +375,6 @@ const Booking = (props) => {
             setOffset(limit);
           } else {
             setSourceChange(true);
-            // setViewMoreStatus(true);
             setOffset(0);
           }
           setMoreOptionsJSX(options);
@@ -452,7 +445,6 @@ const Booking = (props) => {
             )
             .then((res) => {
               props._updateStayBookingHandler([res.data]);
-              // props._updatePaymentHandler(res.data.payment_info);
               props.getPaymentHandler();
               props.openNotification({
                 type: "success",
@@ -462,7 +454,6 @@ const Booking = (props) => {
               setUpdateBookingState(false);
             })
             .catch((err) => {
-              // setUpdateLoadingState(false);
               setUpdateBookingState(false);
               setUnauthorized(true);
               props.openNotification({
@@ -470,7 +461,6 @@ const Booking = (props) => {
                 text: "Something went wrong! Please try after some time.",
                 heading: "Error!",
               });
-              // window.alert("There seems to be a problem, please try again!")
             })
         : axiosbookingupdateinstance
             .patch(
@@ -485,7 +475,6 @@ const Booking = (props) => {
             )
             .then((res) => {
               props._updateStayBookingHandler([res.data]);
-              // props._updatePaymentHandler(res.data.payment_info);
               props.getPaymentHandler();
 
               setUpdateBookingState(false);
@@ -496,7 +485,6 @@ const Booking = (props) => {
               });
             })
             .catch((err) => {
-              // setUpdateLoadingState(false);
               setUpdateBookingState(false);
               setUnauthorized(true);
               props.openNotification({
@@ -504,7 +492,6 @@ const Booking = (props) => {
                 text: "Something went wrong! Please try after some time.",
                 heading: "Error!",
               });
-              // window.alert("There seems to be a problem, please try again!")
             });
     }
   };
@@ -550,7 +537,6 @@ const Booking = (props) => {
               setTimeout(function () {
                 props.getPaymentHandler();
               }, 1000);
-              // props._updatePaymentHandler(res.data.payment_info);
               setUpdateBookingState(false);
               props.openNotification({
                 type: "success",
@@ -559,7 +545,6 @@ const Booking = (props) => {
               });
             })
             .catch((err) => {
-              // setUpdateLoadingState(false);
               setUpdateBookingState(false);
               setUnauthorized(true);
               props.openNotification({
@@ -567,7 +552,6 @@ const Booking = (props) => {
                 text: "Something went wrong! Please try after some time.",
                 heading: "Error!",
               });
-              // window.alert("There seems to be a problem, please try again!")
             })
         : axiosbookingupdateinstance
             .patch(
@@ -584,7 +568,6 @@ const Booking = (props) => {
               setTimeout(function () {
                 props.getPaymentHandler();
               }, 1000);
-              // props._updatePaymentHandler(res.data.payment_info);
               setUpdateBookingState(false);
               props.openNotification({
                 type: "success",
@@ -593,7 +576,6 @@ const Booking = (props) => {
               });
             })
             .catch((err) => {
-              // setUpdateLoadingState(false);
               setUpdateBookingState(false);
               setUnauthorized(true);
               props.openNotification({
@@ -601,7 +583,6 @@ const Booking = (props) => {
                 text: "You're not authorized to take this action, please contact your experience captain.",
                 heading: "Error!",
               });
-              // window.alert("There seems to be a problem, please try again!")
             });
     }
   };
@@ -646,7 +627,6 @@ const Booking = (props) => {
               setTimeout(function () {
                 props.getPaymentHandler();
               }, 1000);
-              // props._updatePaymentHandler(res.data.payment_info);
               setUpdateBookingState(false);
               props.openNotification({
                 type: "success",
@@ -655,7 +635,6 @@ const Booking = (props) => {
               });
             })
             .catch((err) => {
-              // setUpdateLoadingState(false);
               setUpdateBookingState(false);
               setUnauthorized(true);
               props.openNotification({
@@ -663,7 +642,6 @@ const Booking = (props) => {
                 text: "You're not authorized to take this action, please contact your experience captain.",
                 heading: "Error!",
               });
-              // window.alert("There seems to be a problem, please try again!")
             })
         : axiosbookingupdateinstance
             .patch("update/?booking_type=Accommodation", updated_bookings_arr, {
@@ -676,7 +654,6 @@ const Booking = (props) => {
               setTimeout(function () {
                 props.getPaymentHandler();
               }, 1000);
-              // props._updatePaymentHandler(res.data.payment_info);
               setUpdateBookingState(false);
               props.openNotification({
                 type: "success",
@@ -685,7 +662,6 @@ const Booking = (props) => {
               });
             })
             .catch((err) => {
-              // setUpdateLoadingState(false);
               setUpdateBookingState(false);
               setUnauthorized(true);
               props.openNotification({
@@ -693,7 +669,6 @@ const Booking = (props) => {
                 text: "You're not authorized to take this action, please contact your experience captain.",
                 heading: "Error!",
               });
-              // window.alert("There seems to be a problem, please try again!")
             });
     }
   };
@@ -865,25 +840,6 @@ const Booking = (props) => {
       });
   };
 
-  const FILTERS = {
-    budget: ["Affordable", "Average", "Luxury", "Luxury+"],
-    type: [
-      "Hotels",
-      "Homestays",
-      "Hostels",
-      "Camps",
-      "Guest House",
-      "Cottage",
-      "Villa",
-      "Resort",
-      "Bed and Breakfast",
-      "Unique",
-      "Entire House",
-      "Capsule Hotel",
-    ],
-    star_category: ["3", "4", "5"],
-  };
-
   let room = [];
   try {
     for (var i = 0; i < props.accommodation.rooms_available.length; i++) {
@@ -900,10 +856,8 @@ const Booking = (props) => {
           show={props?.showBookingModal}
           anchor={"right"}
           backdrop
-          // style={{ zIndex: 1501 }}
           className="font-lexend "
           onHide={props?.setHideBookingModal}
-          // zIndex='1501'
         >
           {props?.showBookingModal ? (
             <>
@@ -1175,6 +1129,7 @@ const mapStateToPros = (state) => {
     hideloginclose: state.auth.hideloginclose,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     openNotification: (payload) => dispatch(openNotification(payload)),

@@ -1,13 +1,13 @@
 // for plural of the
 export const pluralDetector = (letter, number) =>
-  `${number > 1 ? letter + 's' : letter}`;
+  `${number > 1 ? letter + "s" : letter}`;
 
 export function checkNestedProperties(obj) {
-  if (obj === null || obj === undefined || obj === '') {
+  if (obj === null || obj === undefined || obj === "") {
     return false;
   }
 
-  if (typeof obj !== 'object' || Array.isArray(obj)) {
+  if (typeof obj !== "object" || Array.isArray(obj)) {
     return true;
   }
 

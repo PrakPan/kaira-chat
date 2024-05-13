@@ -1,21 +1,13 @@
-import styled from 'styled-components';
-import { useState, useEffect } from 'react';
-import { AiFillCar } from 'react-icons/ai';
-import ImageLoader from '../../../components/ImageLoader';
-import Button from '../../../components/ui/button/Index';
-import { ITINERARY_ELEMENT_TYPES } from '../../../services/constants';
-import { MdOutlineFlightTakeoff } from 'react-icons/md';
-import { IoMdRestaurant } from 'react-icons/io';
-import {
-  HLine,
-  newDayContainerTextpadding,
-} from '../../itinerary/New_Itenary_DBD/New_itenaryStyled';
-import FoodItem from './FoodItem';
-import { isJson } from '../../../services/isJSON';
-import { MdRestaurant } from 'react-icons/md';
+import styled from "styled-components";
+import { newDayContainerTextpadding } from "../../itinerary/New_Itenary_DBD/New_itenaryStyled";
+import FoodItem from "./FoodItem";
+import { isJson } from "../../../services/isJSON";
+import { MdRestaurant } from "react-icons/md";
+
 const padding = {
-  initialLeft: '8.5rem',
+  initialLeft: "8.5rem",
 };
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -28,8 +20,6 @@ const Container = styled.div`
   color: #01202b;
 `;
 
-const SectionOneText = styled.span``;
-
 export const Text = styled.p`
   overflow: hidden;
   line-height: 1.5;
@@ -39,29 +29,21 @@ export const Text = styled.p`
   -webkit-box-orient: vertical;
   font-size: 14px;
 `;
-const Heading = styled.p`
-  margin: 0;
-  font-weight: 500;
-  line-height: 1;
-`;
-const Line = styled.div`
-  border-style: none none solid none;
-  border-color: #e4e4e4;
-  border-width: 1px;
-`;
+
 export const RecommendationGridContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(1, 1fr);
   grid-template-rows: ${(props) =>
-    props.Norows > 2 ? 'repeat(1, 1fr)' : 'auto'};
+    props.Norows > 2 ? "repeat(1, 1fr)" : "auto"};
   grid-column-gap: 20px;
   grid-row-gap: 27px;
   @media screen and (min-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: ${(props) =>
-      props.Norows > 2 ? 'repeat(2, 1fr)' : 'auto'};
+      props.Norows > 2 ? "repeat(2, 1fr)" : "auto"};
   }
 `;
+
 export const TInfoContainer = styled.div`
   @media screen and (min-width: 768px) {
     display: flex;
@@ -73,25 +55,11 @@ export const TInfoContainer = styled.div`
     }
   }
 `;
+
 const ItineraryFoodElement = (props) => {
-  // let recomendation = props.recomendation
-  // const  isJson = (str) => {
-  //     try {
-  //         JSON.parse(str);
-  //     } catch (e) {
-  //         return false;
-  //     }
-  //     return true;
-  // }
-  // if(isJson(recomendation)){
-  //     recomendation = JSON.parse(recomendation)
-  // }else{
-  //     recomendation  = props.recomendation
-  // }
   return (
     <>
       <Container className="font-lexend pt-3">
-        {/* <div>{props.time}</div> */}
         <div className="flex flex-row ">
           <div className="w-[6.15rem] flex flex-col justify-center items-center">
             <div className="w-[6.15rem] grid place-items-center">
@@ -99,16 +67,6 @@ const ItineraryFoodElement = (props) => {
             </div>
           </div>
 
-          {/* <div>
-     
-            <ImageLoader
-              url={props.icon}
-              leftalign
-              dimensions={{ width: 200, height: 200 }}
-              width="4.05rem"
-              widthmobile="1.25rem"
-            ></ImageLoader>
-          </div> */}
           <div
             className="pl-[1.4rem] flex justify-center flex-col"
             style={{ paddingLeft: newDayContainerTextpadding.initialLeft }}
@@ -121,25 +79,9 @@ const ItineraryFoodElement = (props) => {
         </div>
 
         <TInfoContainer>
-          {/* <HLine style={{ width: '2rem' }}>
-            <div style={{ marginLeft: '-10px' }}>
-              <ImageLoader
-                url={props.icon}
-                leftalign
-                dimensions={{ width: 200, height: 200 }}
-                width="1.25rem"
-                widthmobile="1.25rem"
-              ></ImageLoader>
-            </div>
-          </HLine> */}
-
           <div>
             <div>
-              <div className="text-center">
-                {/* <IoMdRestaurant
-                  style={{ fontSize: '1.5rem', textAlign: 'center' }}
-                ></IoMdRestaurant> */}
-              </div>
+              <div className="text-center"></div>
             </div>
 
             {props.recomendation ? (

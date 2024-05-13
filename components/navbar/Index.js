@@ -14,16 +14,16 @@ import { closeTailoredModal } from "../../services/openTailoredModal";
 import { useRouter } from "next/router";
 
 const Navbar = React.memo((props) => {
-  const [scrollbarInstance, setScrollbarInstance] = useState(null);
   let isPageWide = media("(min-width: 768px)");
+  const [scrollbarInstance, setScrollbarInstance] = useState(null);
   const [hideNav, setHideNav] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [notOpenCount, setNotOpenCount] = useState();
   const [showLoginModal, setShowLoginModal] = useState(false);
-  let notopencount = 0;
   let [notifications, setNotifications] = useState([]);
   const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
   const router = useRouter();
+  let notopencount = 0;
 
   useEffect(() => {
     if (router.isReady) {
@@ -81,18 +81,16 @@ const Navbar = React.memo((props) => {
       } else {
       }
       let currentScroll = window.pageYOffset;
-      //sfroll up
       if (prevScroll >= currentScroll) {
         setHideNav(false);
-      }
-      //scroll down
-      else {
+      } else {
         if (!window.pageYOffset < 10) {
           setHideNav(true);
         }
       }
       prevScroll = currentScroll;
     };
+
     if (!props.staticnav) {
       window.addEventListener("scroll", scrollhandler);
       return () => {

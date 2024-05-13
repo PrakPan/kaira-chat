@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import CityCard from './CityCard';
+import React from "react";
+import styled from "styled-components";
+import CityCard from "./CityCard";
 
 const Container = styled.div`
   display: grid;
@@ -9,6 +9,7 @@ const Container = styled.div`
     grid-template-columns: 1fr 1fr;
   }
 `;
+
 const SingleCardContainer = styled.div`
   width: 90%;
   margin: auto;
@@ -18,7 +19,6 @@ const SingleCardContainer = styled.div`
 `;
 
 const OverviewIndex = (props) => {
-  // let Cards=[];
   let MoreCards = [];
 
   let cityids = []; //To make sure a city is not repeated
@@ -29,7 +29,7 @@ const OverviewIndex = (props) => {
         //Only add if not terminating / transition city with defined duration
         if (
           props.breif.city_slabs[k].duration &&
-          props.breif.city_slabs[k].duration !== '0' &&
+          props.breif.city_slabs[k].duration !== "0" &&
           !props.breif.city_slabs[k].is_starting_city_departure_only &&
           !props.breif.city_slabs[k].is_departure_only
         ) {

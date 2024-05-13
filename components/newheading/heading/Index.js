@@ -12,10 +12,7 @@ const Container = styled.div`
   }
 `;
 
-const Container2 = styled.div`
-  /* color: white;
-  padding: 2rem 0 2.5rem 0; */
-`;
+const Container2 = styled.div``;
 
 const Index = (props) => {
   const [JSX, setJSX] = useState("");
@@ -41,7 +38,6 @@ const Index = (props) => {
             align={props.align}
             borderStyle={props.borderStyle}
             maxWidth={props.maxWidth}
-            //
             margindesktop={props.marginDesktop}
           >
             {props.children}
@@ -54,18 +50,18 @@ const Index = (props) => {
           <Simpleheading
             className={props.blur ? "blurry-text font-lexend" : "font-lexend"}
             color={props.color}
-            fontWeight={props.fontWeight} //
+            fontWeight={props.fontWeight}
             borderColor={props.borderColor}
-            noline={props.noline} //
-            letterSpacing={props.letterSpacing} //
+            noline={props.noline}
+            letterSpacing={props.letterSpacing}
             fontSize={props.fontSize}
             padding={props.padding}
             margin={props.margin}
             textAlign={props.textAlign}
             width={props.width}
             borderWidth={props.borderWidth}
-            aligndesktop={props.aligndesktop} //
-            align={props.align} //
+            aligndesktop={props.aligndesktop}
+            align={props.align}
             borderStyle={props.borderStyle}
             maxWidth={props.maxWidth}
             margindesktop={props.marginDesktop}
@@ -126,4 +122,5 @@ const Index = (props) => {
 
   return <>{JSX}</>;
 };
+
 export default Index;

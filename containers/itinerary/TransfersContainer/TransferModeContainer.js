@@ -138,8 +138,8 @@ const PriceContainer = styled.div`
 `;
 
 const FacilityContainer = styled.div``;
+
 const Line = styled.hr`
-  /* background-image: linear-gradient(90deg,transparent,transparent 20%,#fff 50%,#fff 100%),linear-gradient(87deg,#0d6efd,#00fff0,#d4ff00,#ff7000,#ff0000); */
   background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
     ${(props) =>
       props.pinColour
@@ -168,16 +168,6 @@ const Line = styled.hr`
     top: 81px;
     right: -81px;
   }
-  /* border-style: dashed;
-  border-width: 1.4px;
-  position: absolute;
-  left: 50%;
-
-
-  border-color: ${(props) => (props.pinColour ? props.pinColour : "black")};
-  min-height: 10vw;
-  height: 100%;
-  margin: 0rem 0 0rem 0rem; */
 `;
 
 const Cost = styled.p`
@@ -247,7 +237,6 @@ const TransferModeContainer = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [addbooking, setaddboking] = useState(props.userSelected);
   const [loading, setLoading] = useState(false);
-  const [UpdateBookingState, setUpdateBookingState] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
   const [alternateRoutes, setAlternateRoutes] = useState({});
   const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
@@ -309,8 +298,6 @@ const TransferModeContainer = (props) => {
     let cost = props.booking["booking_cost"];
     let itinerary_id = props.booking["itinerary_id"];
     let itinerary_name = props.booking["itinerary_name"];
-    let booking_type = props.booking["booking_type"];
-
     let tailored_id = props.booking["tailored_itinerary"];
     let id = props.booking["id"];
     let check_in = props.booking["check_in"];
@@ -321,12 +308,9 @@ const TransferModeContainer = (props) => {
       number_of_infants: props.booking["number_of_infants"],
     };
     let city = props.booking["city"];
-    let room_type = props.booking["room_type"];
     let taxi_type = props.booking["taxi_type"];
     let transfer_type = props.booking["transfer_type"];
-    let city_id = props.booking["city_id"];
     let destination_city = props.booking["destination_city"];
-    let duration = props.booking["duration"];
     let origin_iata = props.booking["origin_code"];
     let destination_iata = props.booking["destination_code"];
     let user_selected = props.userSelected;
@@ -372,8 +356,6 @@ const TransferModeContainer = (props) => {
     let cost = props.booking["booking_cost"];
     let itinerary_id = props.booking["itinerary_id"];
     let itinerary_name = props.booking["itinerary_name"];
-    let booking_type = props.booking["booking_type"];
-
     let tailored_id = props.booking["tailored_itinerary"];
     let id = props.booking["id"];
     let check_in = props.booking["check_in"];
@@ -384,12 +366,9 @@ const TransferModeContainer = (props) => {
       number_of_infants: props.booking["number_of_infants"],
     };
     let city = props.booking["city"];
-    let room_type = props.booking["room_type"];
     let taxi_type = props.booking["taxi_type"];
     let transfer_type = props.booking["transfer_type"];
-    let city_id = props.booking["city_id"];
     let destination_city = props.booking["destination_city"];
-    let duration = props.booking["duration"];
     let origin_iata = props.booking["origin_city_iata_code"];
     let destination_iata = props.booking["destination_city_iata_code"];
 
@@ -456,8 +435,6 @@ const TransferModeContainer = (props) => {
   }
 
   const _updateSelectedTransfer = () => {
-    console.log("test");
-    setUpdateBookingState(true);
     setLoading(true);
 
     let updated_bookings_arr = [
@@ -486,7 +463,6 @@ const TransferModeContainer = (props) => {
           props.getPaymentHandler();
         }, 1000);
         setaddboking(!addbooking);
-        setUpdateBookingState(false);
         setLoading(false);
         props.openNotification({
           text: "Your Booking updated successfully!",
@@ -509,7 +485,6 @@ const TransferModeContainer = (props) => {
               type: "error",
             });
         }
-        setUpdateBookingState(false);
         setLoading(false);
         props.openNotification({
           text: "There seems to be a problem, please try again!",

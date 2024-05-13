@@ -1,95 +1,98 @@
-import React, {useState, useEffect} from 'react';
-import Accordion , {AccordionSummary , AccordionDetails} from '../../../../ui/Accordion';
-import Email from './Email';
-import Id from './Id';
-import axiosgitregisterinstance from '../../../../../services/sales/git/register';
-import Button from '../../../../ui/button/Index';
-import Spinner from '../../../../Spinner';
-import styled from  'styled-components';
-import media from '../../../../media';
+import React, { useState, useEffect } from "react";
+import Accordion, {
+  AccordionSummary,
+  AccordionDetails,
+} from "../../../../ui/Accordion";
+import Email from "./Email";
+import Id from "./Id";
+import axiosgitregisterinstance from "../../../../../services/sales/git/register";
+import Button from "../../../../ui/button/Index";
+import styled from "styled-components";
+
 const GridContainer = styled.div`
-display : grid;
-row-gap : 0.5rem;
-@media screen and (min-width: 768px){
-gap : 1rem;
-grid-template-columns : 1fr 1fr;
+  display: grid;
+  row-gap: 0.5rem;
+  @media screen and (min-width: 768px) {
+    gap: 1rem;
+    grid-template-columns: 1fr 1fr;
+  }
+`;
 
-}
-`
-  
 const Person = (props) => {
-  let isPageWide = media('(min-width: 768px)')
-  const [open , setOpen] = useState(false)
-    const [expanded, setExpanded] = useState(false);
-    const [verificationfailed, setVerificationFailed] = useState(false);
-    const [verificationfailedmessage, setVerificationFailedMessage] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [verificationfailed, setVerificationFailed] = useState(false);
+  const [verificationfailedmessage, setVerificationFailedMessage] =
+    useState(null);
+  const [verified, setVerified] = useState(false);
+  const [verificationLoading, setVerificationLoading] = useState(false);
+  const [email, setEmail] = useState(null);
+  const [id, setId] = useState(null);
 
-    const [verified, setVerified] = useState(false);
-    const [verificationLoading, setVerificationLoading] = useState(false);
-    const [email, setEmail] = useState(null);
-    const [id, setId] = useState(null);
+  useEffect(() => {
+    if (props.first) setExpanded(true);
+    if (props.first) setEmail(props.email);
+  }, []);
 
-    useEffect(() => {
-            if(props.first) setExpanded(true);
-            if(props.first) setEmail(props.email);
-      },[]);
+  const _handleClose = () => {
+    _checkValidation(email, id);
+  };
 
-      const _handleClose = () => {
-        _checkValidation(email, id);
-       
-      }
-
-      const _checkValidation = (email, id) => { 
-        setVerificationLoading(true);
-        const data = {
-            "itinerary_id": props.id,
-            "registered_users": [
-                {
-                     "email": email,
-                     "employee_id": id,
-                }
-            ]
-        }
-        // const token = localStorage.getItem('access_token');
-        axiosgitregisterinstance.post('/', data, {headers: {
-            'Authorization': `Bearer ${props.token}`
-            }}).then(res => {
-               setVerificationLoading(false);
-              props.setVerificationCount(props.verificationCount + 1)
-            // if(!res.data.verified) 
-            setVerificationFailed(false);
-            setVerified(true);
-            setExpanded(false);
-            try{
-            props._addPersonHandler({
-                email: res.data.registered_users[0].email,
-                employee_id: res.data.registered_users[0].employee_id,
-            })
-          }catch{
-
-          }
-          setOpen(false)
-     }).catch(err => {
-       try{
-         setVerificationFailed(err.response.data.registered_users[0].invalid_field);
-        setVerificationFailedMessage(err.response.data.registered_users[0][err.response.data.registered_users[0].invalid_field])
-      }catch{
-
-      }
-        // setVerificationFailed(err.response.data.registered_users[0].invalid_field);
-        setVerificationLoading(false);
-
-     })
-      }
-
-      const _handleChange = () => {
-        setVerified(false);
-        props.setVerificationCount(props.verificationCount - 1);
-        props._removePersonHandler({
+  const _checkValidation = (email, id) => {
+    setVerificationLoading(true);
+    const data = {
+      itinerary_id: props.id,
+      registered_users: [
+        {
           email: email,
           employee_id: id,
-        })
-      }
+        },
+      ],
+    };
+    axiosgitregisterinstance
+      .post("/", data, {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+        },
+      })
+      .then((res) => {
+        setVerificationLoading(false);
+        props.setVerificationCount(props.verificationCount + 1);
+        setVerificationFailed(false);
+        setVerified(true);
+        setExpanded(false);
+        try {
+          props._addPersonHandler({
+            email: res.data.registered_users[0].email,
+            employee_id: res.data.registered_users[0].employee_id,
+          });
+        } catch {}
+        setOpen(false);
+      })
+      .catch((err) => {
+        try {
+          setVerificationFailed(
+            err.response.data.registered_users[0].invalid_field
+          );
+          setVerificationFailedMessage(
+            err.response.data.registered_users[0][
+              err.response.data.registered_users[0].invalid_field
+            ]
+          );
+        } catch {}
+        setVerificationLoading(false);
+      });
+  };
+
+  const _handleChange = () => {
+    setVerified(false);
+    props.setVerificationCount(props.verificationCount - 1);
+    props._removePersonHandler({
+      email: email,
+      employee_id: id,
+    });
+  };
+
   return (
     <Accordion
       border
@@ -175,7 +178,6 @@ const Person = (props) => {
       </AccordionDetails>
     </Accordion>
   );
-
-}
+};
 
 export default Person;

@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import styled from "styled-components";
+import Person from "./person/Index";
+import Spinner from "../../../Spinner";
 
-import styled from 'styled-components';
-import Person from './person/Index';
-import Spinner from '../../../Spinner';
 const Container = styled.div`
   @media screen and (min-width: 768px) {
     width: 90%;
     margin: auto;
   }
 `;
+
 const PaxContainer = styled.div`
   width: 100%;
 `;
@@ -38,6 +39,7 @@ const Error = styled.p`
   font-size: 13px;
   margin: 1rem 0 1rem 0;
 `;
+
 const Enquiry = (props) => {
   const [paxList, setPaxList] = useState([]);
 
@@ -46,6 +48,7 @@ const Enquiry = (props) => {
     pax.push(data);
     setPaxList(pax);
   };
+
   const _removePersonHandler = (data) => {
     let pax = paxList.slice();
     let updated_pax = [];
@@ -54,10 +57,11 @@ const Enquiry = (props) => {
     }
     setPaxList(updated_pax);
   };
+
   let pax = [];
   for (var i = 0; i < props.pax; i++) {
     pax.push(
-      <div style={{ marginBlock: '1rem' }}>
+      <div style={{ marginBlock: "1rem" }}>
         <Person
           id={props.id}
           _removePersonHandler={_removePersonHandler}
@@ -72,14 +76,14 @@ const Enquiry = (props) => {
       </div>
     );
   }
-  // setPaxJSX(pax);
+
   return (
     <Container className="borer center-div">
       <div></div>
 
       <PaxContainer>{pax}</PaxContainer>
       {props.formNotFilledError ? (
-        <Error>{'Please fill all traveler details'}</Error>
+        <Error>{"Please fill all traveler details"}</Error>
       ) : null}
       {props.formFailedError ? <Error>{props.formFailedError}</Error> : null}
 

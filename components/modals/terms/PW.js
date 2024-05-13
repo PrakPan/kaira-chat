@@ -1,9 +1,7 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Modal from "../../ui/Modal";
 
 const RegistrationModal = (props) => {
-  useEffect(() => {}, []);
-
   return (
     <div>
       <Modal

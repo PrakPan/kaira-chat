@@ -26,6 +26,7 @@ const Layout = React.memo((props) => {
         window.fcWidget.user.setEmail(email);
       }
     }
+
     if (window.fcWidget) {
       if (!props.token) {
         window.fcWidget.user.clear();
@@ -43,6 +44,7 @@ const Layout = React.memo((props) => {
         }
       }, 5000);
     }
+
     return () => {
       if (window.fcWidget) {
         window.fcWidget.off("widget:loaded", handleWidgetLoaded());

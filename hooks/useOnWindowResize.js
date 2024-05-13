@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 const useOnWindowResize = (fn, delay = 100) => {
   const timeoutRef = useRef(null);
@@ -9,12 +9,12 @@ const useOnWindowResize = (fn, delay = 100) => {
       timeoutRef.current = setTimeout(fn, delay);
     };
 
-    window.addEventListener('resize', handleWindowResize);
+    window.addEventListener("resize", handleWindowResize);
 
     return () => {
       // Cleanup on unmount.
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      window.removeEventListener('resize', handleWindowResize);
+      window.removeEventListener("resize", handleWindowResize);
     };
   }, [fn, delay]);
 };

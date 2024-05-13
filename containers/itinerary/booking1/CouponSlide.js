@@ -4,26 +4,28 @@ import React, { useEffect, useRef, useState } from "react";
 import { BiArrowBack } from "react-icons/bi";
 import styled from "styled-components";
 import axioscouponfetchinstance from "../../../services/itinerary/coupon/couponlist";
-import SkeletonCard from "../../../components/ui/SkeletonCard";
 import { PuffLoader } from "react-spinners";
 import { getIndianPrice } from "../../../services/getIndianPrice";
+
 const Countainer = styled.div`
   padding-bottom: 1rem;
 `;
+
 const Header = styled.div`
   padding: 1rem;
   border-bottom: 1px solid #f0f0f0;
 `;
+
 const Body = styled.div`
   padding: 1rem;
-  // height: 20rem;
-  // overflow-y: scroll;
 `;
+
 const FlexBox = styled.div`
   display: flex;
   gap: 0.75rem;
   align-items: center;
 `;
+
 const Heading = styled.div`
   font-size: 18px;
   font-weight: 600;
@@ -37,6 +39,7 @@ const Heading = styled.div`
     padding-bottom: 0.5rem;
   }
 `;
+
 const CouponContainer = styled.div`
   border-radius: 10px;
   margin-bottom: 0.5rem;
@@ -98,9 +101,7 @@ const CouponSlide = (props) => {
     } else {
     }
   }, []);
-  // useEffect(() => {
 
-  // },[])
   useEffect(() => {
     setLoading(true);
     axioscouponfetchinstance
@@ -114,18 +115,6 @@ const CouponSlide = (props) => {
       });
   }, []);
 
-  const Counpons = (
-    <CouponContainer>
-      {/* <div className="coupon">NOCOSTEMI</div> */}
-      <div className="coupon">
-        <SkeletonCard />
-      </div>
-      <div className="text">
-        No cost EMI applicable on select credit/debit cards HDFC, HSBC, Axis and
-        more.
-      </div>
-    </CouponContainer>
-  );
   return (
     <Countainer>
       <Header>
@@ -160,18 +149,15 @@ const CouponSlide = (props) => {
         {props.couponJSX}
       </Header>
 
-      {/* {loading ? ( */}
       <FlexBox
         style={{
           justifyContent: "center",
           height: "380px",
-          // marginBlock: "1rem",
           display: loading ? "flex" : "none",
         }}
       >
         <PuffLoader color="black" size={65} />
       </FlexBox>
-      {/* ) : ( */}
       <div
         style={{
           display: !loading ? "initial" : "none",
@@ -218,7 +204,6 @@ const CouponSlide = (props) => {
           </div>
         </Body>
       </div>
-      {/* )} */}
     </Countainer>
   );
 };

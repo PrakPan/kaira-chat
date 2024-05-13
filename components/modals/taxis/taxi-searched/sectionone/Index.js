@@ -1,9 +1,8 @@
-import React from 'react';
-import styled from 'styled-components';
-import media from '../../../../media';
-import ImageLoader from '../../../../ImageLoader';
-import Route from './Route';
-import DropDown from '../Dropdown';
+import React from "react";
+import styled from "styled-components";
+import ImageLoader from "../../../../ImageLoader";
+import Route from "./Route";
+
 const Container = styled.div`
   display: grid;
   grid-template-columns: 7.5rem auto;
@@ -14,11 +13,9 @@ const Container = styled.div`
     grid-template-columns: 8.5rem auto;
   }
 `;
- 
- 
-const Section= (props) => {
-    let isPageWide = media('(min-width: 768px)')
-     if(props.data)
+
+const Section = (props) => {
+  if (props.data)
     return (
       <Container className="font-lexend">
         <div
@@ -30,8 +27,6 @@ const Section= (props) => {
             borderStyle: "none solid none none",
           }}
         >
-          {/* <DropDown></DropDown> */}
-          {/* <ImageLoader url={props.data.images ? props.data.images.image ? props.data.images.image : "media/icons/bookings/car (2).png" : "media/icons/bookings/car (2).png"}   width="5rem" widthmobile="5rem" height="auto" ></ImageLoader> */}
           {props.data.cab && props.data.cab.image ? (
             <ImageLoader
               is_url
@@ -69,10 +64,7 @@ const Section= (props) => {
           >
             {props.data.cab.seatingCapacity + "-seater"}
           </p>
-
-          {/* <p className='text-center font-lexend' style={{fontSize: '13px', margin: '0'}}>Occupancy: 5</p> */}
         </div>
-        {/* <div style={{padding:'1rem 0 1rem 0.5rem'}}><ImageLoader url="media/icons/bookings/airplane-ticket (1).png" leftalign dimensions={{width: 200, height: 200}} width="2.5rem" widthmobile="2.5rem" ></ImageLoader></div> */}
         <Route
           _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
           getPaymentHandler={props.getPaymentHandler}
@@ -81,8 +73,8 @@ const Section= (props) => {
           _updateSearchedTaxi={props._updateSearchedTaxi}
         ></Route>
       </Container>
-    ); 
+    );
   else return null;
-}
+};
 
 export default Section;

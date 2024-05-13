@@ -64,6 +64,19 @@ const SearchPannel = (props) => {
   const [showP, setShowP] = useState(false);
   const ref = useRef();
 
+  useEffect(() => {
+    const checkIfClickedOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) {
+        props.setPannelClose();
+      }
+    };
+    document.addEventListener("mousedown", checkIfClickedOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", checkIfClickedOutside);
+    };
+  }, []);
+
   const _onChangeHandler = (event) => {
     if (event.target.value.length % 3 === 0) {
       process.env.NODE_ENV === "production" &&
@@ -90,19 +103,6 @@ const SearchPannel = (props) => {
       }
     });
   };
-
-  useEffect(() => {
-    const checkIfClickedOutside = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) {
-        props.setPannelClose();
-      }
-    };
-    document.addEventListener("mousedown", checkIfClickedOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", checkIfClickedOutside);
-    };
-  }, []);
 
   return (
     <Container className="border" ref={ref}>

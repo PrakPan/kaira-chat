@@ -1,6 +1,5 @@
 import styled from "styled-components";
-import React, { useState, useEffect } from "react";
-import { useHover } from "../../../../hooks/useHover";
+import React from "react";
 import Pin from "./Pin";
 import { MdNavigateNext } from "react-icons/md";
 
@@ -8,15 +7,13 @@ const Container = styled.div`
   cursor: pointer;
   display: grid;
   grid-template-columns: max-content auto max-content;
-  // &:hover > .heading::after {
-  //   width: 100%;
-  // }
   &:hover {
     .IconContainer {
       right: -33px;
     }
   }
 `;
+
 const Heading = styled.div`
   width: fit-content;
   font-weight: 500;
@@ -27,6 +24,7 @@ const Heading = styled.div`
   align-items: center;
   position: relative;
 `;
+
 const IconContainer = styled.div`
   position: absolute;
   right: -23px;
@@ -36,7 +34,7 @@ const IconContainer = styled.div`
 
 const PinSection = (props) => {
   const handleClick = () => {
-    if (!props.duration || props.duration === '0' || props.transfersPin) return;
+    if (!props.duration || props.duration === "0" || props.transfersPin) return;
     props.setShowDrawer(true);
     props.setShowDrawerData(props.cityData);
   };

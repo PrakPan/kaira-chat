@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import styled, { css, keyframes } from 'styled-components';
+import React, { useState } from "react";
+import styled, { css, keyframes } from "styled-components";
+
 const pulse = keyframes`
   0% {
     transform: scale(1);
@@ -15,8 +16,8 @@ const pulse = keyframes`
   }
 `;
 const StyledButton = styled.button`
-  background-color: ${(props) => (props.primary ? '#F7E700' : '#FFFFFF')};
-  color: ${(props) => (props.primary ? '#01202B' : '#3498db')};
+  background-color: ${(props) => (props.primary ? "#F7E700" : "#FFFFFF")};
+  color: ${(props) => (props.primary ? "#01202B" : "#3498db")};
   border: 2px solid #000000;
   font-weight: 500;
   font-family: lexend;
@@ -89,9 +90,11 @@ const ButtonYellow = ({
 }) => {
   const [isMounted, setIsMounted] = useState(false);
   const [animate, setAnimate] = React.useState(false);
+
   const handleAnimationEnd = () => {
     setIsMounted(!isMounted);
   };
+
   function animateButton(e) {
     e.stopPropagation();
     setAnimate(true);

@@ -36,7 +36,7 @@ const Itinerary = (props) => {
           }}
         />
       </Head>
-      
+
       {router.query.id && (
         <ItineraryContainer id={router.query.id}></ItineraryContainer>
       )}

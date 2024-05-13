@@ -11,55 +11,12 @@ import { TransparentButton } from "../../../containers/itinerary/New_Itenary_DBD
 import { MdDoneAll } from "react-icons/md";
 import { convertDateFormat } from "../../../helper/ConvertDateFormat";
 
-const starHotel = styled.div`
-  box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px,
-    rgba(0, 0, 0, 0.05) 0px 5px 10px;
-`;
-
 const ClippathComp = styled.div`
   clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
 `;
 
-const SelectContainer = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-end;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
-
-const CounterContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-inline: auto;
-  width: 100%;
-  gap: 0.5rem;
-`;
-
-const CounterIcon = styled.div`
-  border-radius: 50%;
-  padding: 0.1rem;
-  color: white;
-  background: #01202b;
-  font-weight: 900;
-  font-size: 1rem;
-  border: 2px solid black;
-
-  &:hover {
-    background: white;
-    color: black;
-    ${(props) =>
-      props.disable &&
-      "background : #a9a9a9 ; border : 2px solid #a9a9a9 ; color : white"}
-  }
-  ${(props) =>
-    props.disable && "background : #a9a9a9 ; border : 2px solid #a9a9a9"}
-`;
-
 const PoiList = (props) => {
   const [isSelect, setisSelect] = useState(false);
-  const [numberOfTickets, setNumberOfTickets] = useState(props.ticketsCount);
   const [imageFail, setImageFail] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [stars, setStars] = useState(null);
@@ -267,27 +224,6 @@ const PoiList = (props) => {
                         </label>
                       </div>
                     )}
-
-                    {/* <div className="flex flex-row pb-2">
-                      {props?.data?.added_in_itinerary?.selected ? (
-                        <div className="whitespace-nowrap font-semibold">
-                          <TransparentButton>
-                            <MdDoneAll
-                              style={{
-                                display: "inline",
-                                marginRight: "0.35rem",
-                              }}
-                            />
-                            Added
-                            {props?.data?.added_in_itinerary?.added_on
-                              ? ` on ${convertDateFormat(
-                                  props?.data?.added_in_itinerary?.added_on
-                                )}`
-                              : null}
-                          </TransparentButton>
-                        </div>
-                      ) : null}
-                    </div> */}
                   </div>
                 </div>
               </div>
@@ -434,7 +370,6 @@ const PoiList = (props) => {
         )}
       </div>
       <POIDetailsDrawer
-        // show={props.showDrawer.isOpen}
         itineraryDrawer
         show={showDetails.show}
         iconId={
@@ -445,7 +380,6 @@ const PoiList = (props) => {
           showDetails.data.activity_data?.activity &&
           showDetails.data.activity_data?.activity?.id
         }
-        // handleCloseDrawer={props.handleCloseDrawer}
         handleCloseDrawer={handleCloseDrawer}
         Topheading={"Select Our Point Of Interest"}
       />
@@ -458,7 +392,5 @@ const mapStateToPros = (state) => {
     token: state.auth.token,
   };
 };
-const mapDispatchToProps = (dispatch) => {
-  return {};
-};
-export default connect(mapStateToPros, mapDispatchToProps)(PoiList);
+
+export default connect(mapStateToPros)(PoiList);

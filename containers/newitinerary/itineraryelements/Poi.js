@@ -94,56 +94,6 @@ const RatingContainer = styled.div`
   }
 `;
 
-const SectionOneText = styled.span``;
-
-const GridContainer = styled.div`
-  display: grid;
-  width: 100%;
-  margin-top: 1rem;
-
-  grid-column-gap: 0.5rem;
-`;
-
-const Text = styled.p`
-  overflow: hidden;
-  line-height: 1.5;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  font-size: 14px;
-`;
-
-const Heading = styled.span`
-  margin-bottom: 0rem;
-  margin-right: 0.25rem;
-  font-weight: 500;
-  line-height: 1;
-`;
-
-const Line = styled.div`
-  border-style: none none solid none;
-  border-color: #e4e4e4;
-  border-width: 1px;
-`;
-
-const BoldTags = styled.p`
-  font-weight: 600;
-  font-size: 14px;
-  margin-bottom: 0.25rem;
-`;
-
-const ColorTags = styled.span`
-  border-style: solid;
-  border-radius: 6px;
-  font-size: 12px;
-  line-height: 1;
-  letter-spacing: 1px;
-
-  font-weight: 400;
-  padding: 0.25rem 0.5rem;
-`;
-
 const FiltersContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -221,7 +171,6 @@ const ItineraryPoiElement = (props) => {
                   selectedData={props.data}
                   setShowDrawer={setShowDrawer}
                   data={res.data.results[i]}
-                  // loginModal={showLoginModal}
                   ticketsCount={ticketsCount}
                   setLoginModal={props.setShowLoginModal}
                 ></PoiList>
@@ -364,7 +313,6 @@ const ItineraryPoiElement = (props) => {
   };
 
   const _handleLoginClose = () => {
-    // props.getPaymentHandler();
     setShowLoginModal(false);
   };
 
@@ -419,7 +367,6 @@ const ItineraryPoiElement = (props) => {
 
   return (
     <Container>
-      {/* <div>{props.time}</div> */}
       <div
         id={`${props?.day_slab_index}-${props?.data?.element_index}-${props?.activity_data.id}`}
         className="group flex flex-row items-center p-2"
@@ -487,10 +434,7 @@ const ItineraryPoiElement = (props) => {
                 </div>
               </div>
               <div className="flex flex-row gap-2">
-                <div
-                  className="font-normal border-2 border-[#9F9F9F] rounded-md px-2 py-[1px] mt-1    block  bg-white text-[#9F9F9F]"
-                  // onClick={() => setViewMore(!viewMore)}
-                >
+                <div className="font-normal border-2 border-[#9F9F9F] rounded-md px-2 py-[1px] mt-1    block  bg-white text-[#9F9F9F]">
                   {props?.activity_data &&
                   props?.activity_data?.activity &&
                   props?.activity_data?.activity?.id
@@ -499,7 +443,6 @@ const ItineraryPoiElement = (props) => {
                 </div>
                 {props?.poi?.rating ? (
                   <RatingContainer>
-                    {/* <StarRating initialRating={4}></StarRating> */}
                     <div>{_getStars(props?.poi?.rating)}</div>
                     <span>{props.poi.rating} .</span>
                     <span className="underline">
@@ -510,7 +453,6 @@ const ItineraryPoiElement = (props) => {
                   </RatingContainer>
                 ) : props?.activity?.rating ? (
                   <RatingContainer>
-                    {/* <StarRating initialRating={4}></StarRating> */}
                     <div>{_getStars(props?.activity?.rating)}</div>
                     <span>{props.activity.rating} .</span>
                     <span className="underline">
@@ -738,9 +680,11 @@ const mapStateToPros = (state) => {
     itineraryActivities: state.itineraryActivities.activities,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     openNotification: (payload) => dispatch(openNotification(payload)),
   };
 };
+
 export default connect(mapStateToPros, mapDispatchToProps)(ItineraryPoiElement);

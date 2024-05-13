@@ -28,45 +28,38 @@ import Link from "next/link";
 import ImageLoader from "../../../components/ImageLoader";
 import { logEvent } from "../../../services/ga/Index";
 
-const INR = styled.div`
-  font-weight: 500;
-  font-size: 1.8rem;
-
-  &:after {
-    content: "Per Adult";
-    display: ${(props) => (props.show_per_person_cost ? "block" : "none")};
-    font-size: 1.5rem;
-    font-weight: 800;
-  }
-`;
-
-const BookingListCostContainer = styled.div`
-  border-style: none none solid none;
-  border-width: 1px;
-  border-color: hsl(0, 0%, 95%);
-  @media screen and (min-width: 768px) {
-    max-height: 30vh;
-    overflow-y: auto;
-  }
-`;
-
 const GetInTouchContainer = styled.div`
   &:hover img {
     filter: invert(100%);
   }
 `;
 
-const CouponsOption = styled.div`
-  color: #0a5edc;
-  font-size: 13px;
-  text-decoration: underline;
-  font-weight: 400;
-  cursor: pointer;
-  text-align: end;
-  margin-top: 0.25rem;
-`;
-
 const Details = (props) => {
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [Newitinerary, setNewitinerary] = useState(false);
+  const [acoordianceOpen, setAcordianOpen] = useState(false);
+  const [showVerification, setShowVerification] = useState(false);
+  const [showRegistration, setShowRegistartion] = useState(false);
+  const [pax, setPax] = useState(props?.payment?.meta_info?.number_of_adults);
+  const [focus, setFocus] = useState(false);
+  const [DropdownOpen, setDropdownOpen] = useState(false);
+  const router = useRouter();
+  const [showTerms, setShowTerms] = useState(false);
+  const [showRegisteredUsers, setShowRegisteredUsers] = useState(false);
+  const addDaysToDate = (dateString, numberOfDays) => {
+    const date = new Date(dateString);
+    const newDate = add(date, { days: numberOfDays });
+    const formattedDate = format(newDate, "yyyy-MM-dd");
+    return formattedDate;
+  };
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
+
   const getCurrentDateIfOlder = (dateString) => {
     const currentDate = startOfDay(new Date()); // Get the current date at the start of the day
 
@@ -81,12 +74,6 @@ const Details = (props) => {
     return dateString;
   };
 
-  const [paymentLoading, setPaymentLoading] = useState(false);
-  const [Newitinerary, setNewitinerary] = useState(false);
-  const [acoordianceOpen, setAcordianOpen] = useState(false);
-  const [showVerification, setShowVerification] = useState(false);
-  const [showRegistration, setShowRegistartion] = useState(false);
-  const [pax, setPax] = useState(props?.payment?.meta_info?.number_of_adults);
   const [date, setDate] = useState(
     getCurrentDateIfOlder(props?.plan?.start_date)
   );
@@ -102,32 +89,11 @@ const Details = (props) => {
     setPax(option);
   };
 
-  const [focus, setFocus] = useState(false);
-  const [DropdownOpen, setDropdownOpen] = useState(false);
-  const router = useRouter();
-  const [showTerms, setShowTerms] = useState(false);
-  const [showRegisteredUsers, setShowRegisteredUsers] = useState(false);
-
-  const addDaysToDate = (dateString, numberOfDays) => {
-    const date = new Date(dateString);
-    const newDate = add(date, { days: numberOfDays });
-    const formattedDate = format(newDate, "yyyy-MM-dd");
-    return formattedDate;
-  };
-
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    document.body.appendChild(script);
-  }, []);
-
   const scrollToElement = (elementId) => {
     scroller.scrollTo(elementId, {
       duration: 500,
       smooth: "easeInOutQuart",
       spy: true,
-      // duration={500}
       offset: -150,
     });
   };
@@ -292,9 +258,8 @@ const Details = (props) => {
 
   let bookingslist = [];
   let bookinglistwithcost = [];
-  //Date on which agoda changes made to box
+  // Date on which agoda changes made to box
   let oldaccommodation = false;
-  // if(props.payment) if(props..version ==='v1') oldaccommodation = true;
   if (props.traveleritinerary) oldaccommodation = true;
 
   setBookingSummary();
@@ -302,10 +267,9 @@ const Details = (props) => {
   let message =
     "Hey TTW! I need some help with my tailored experience - https://thetarzanway.com/" +
     router.asPath;
-  // const [paymentLoading, setPaymentLoading] = useState(false);
 
   const _startRazorpayHandler = (data) => {
-    //Razorpay payload
+    // Razorpay payload
 
     let razorpayOptions = {
       amount: data.amount,
@@ -315,7 +279,7 @@ const Details = (props) => {
       image:
         "https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480",
       order_id: data.order_id,
-      //Payment successfull handler passed to razorpay
+      // Payment successfull handler passed to razorpay
       handler: function (response) {
         setPaymentLoading(true);
 
@@ -333,7 +297,7 @@ const Details = (props) => {
             setPaymentLoading(false);
           });
       },
-      //User details will be present as user is logged in
+      // User details will be present as user is logged in
       prefill: {
         name: props.name,
         email: props.email,
@@ -587,6 +551,7 @@ const Details = (props) => {
             props.plan.featured ? null : (
               <div></div>
             )}
+
             {props.payment.itinerary_status ===
               ITINERARY_STATUSES.itinerary_finalized ||
             props.plan.featured ? null : (
@@ -651,6 +616,7 @@ const Details = (props) => {
                   </div>
                 </div>
               ) : null}
+
               {!oldaccommodation && !props.payment.are_prices_hidden ? (
                 <div className="flex flex-row justify-between">
                   <div
@@ -673,6 +639,7 @@ const Details = (props) => {
                   </div>
                 </div>
               ) : null}
+
               {props.payment ? (
                 props.payment.coupon && props.iscouponApplied ? (
                   props.payment.coupon.code ? (
@@ -801,7 +768,6 @@ const Details = (props) => {
         <div className="group text-md font-medium gap-3 flex flex-row items-center mb-2 ml-1">
           <BsPeopleFill className="text-md text-[#7A7A7A]" />
           <div className=" flex flex-row items-center text-md font-medium text-black">
-            {/* {booking.number_of_adults} */}
             <div>
               {pax} {pluralDetector("Adult", pax)}{" "}
             </div>
@@ -933,10 +899,8 @@ const Details = (props) => {
                 width="100%"
                 borderRadius="8px"
                 bgColor="#f8e000"
-                // loading={loading}
                 padding="12px"
                 onclick={handleGetInTouch}
-                // height='2rem'
               >
                 <div
                   style={{
@@ -1049,6 +1013,7 @@ const Details = (props) => {
     </>
   );
 };
+
 const mapStateToProps = (state) => {
   return {
     experience: state.experience.experience,
@@ -1068,10 +1033,12 @@ const mapStateToProps = (state) => {
     couponInvalid: state.experience.couponInvalid,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     setOrderDetails: (details) =>
       dispatch(orderaction.setOrderDetails(details)),
   };
 };
+
 export default connect(mapStateToProps, mapDispatchToProps)(Details);

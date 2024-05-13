@@ -101,7 +101,7 @@ const GroupType = (props) => {
           </OptionContainer>
           Friends
         </div>
-        
+
         <div className="text-center">
           <OptionContainer
             className="  center-div  font-lexend hover-pointer"

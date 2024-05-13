@@ -13,12 +13,14 @@ const Container = styled.div`
     background: #f0f0f0;
   }
 `;
+
 const MarkerContainer = styled.div`
   background: #dfdfdf;
   border-radius: 100%;
   padding: 10px;
   padding-top: 10px;
 `;
+
 const Text = styled.div`
 font-weight : 500;
 }

@@ -2,8 +2,6 @@ import React, { useState, useEffect, useLayoutEffect } from "react";
 import styled from "styled-components";
 import { Link as scroller } from "react-scroll";
 import { RxCross2 } from "react-icons/rx";
-import { Typography } from "@mui/material";
-import { Box } from "@mui/material";
 import GITSummaryContainer from "./booking1/gittailored/Index";
 import SummaryContainer from "./booking1/TailoredDetails";
 import axiosLeadChat from "../../services/leads/chat.js";
@@ -15,7 +13,6 @@ import { getIndianPrice } from "../../services/getIndianPrice";
 import Button from "../../components/ui/button/Index";
 import * as ga from "../../services/ga/Index";
 import { useRouter } from "next/router";
-import { useSticky } from "../../hooks/useSticky";
 import useMediaQuery from "../../hooks/useMedia";
 import NewItenaryDBDMob from "./New_Itenary_DBD/NewItenaryDBDMob";
 import NewItenaryMain from "./New_Itenary_DBD/NewItenaryMain";
@@ -37,145 +34,6 @@ import { connect } from "react-redux";
 import { openNotification } from "../../store/actions/notification";
 import { logEvent } from "../../services/ga/Index";
 
-const Container = styled.div`
-  margin-top: 1rem;
-  display: grid;
-  position: sticky;
-  top: 0;
-  padding-top: 0.5rem;
-  background-color: white;
-  z-index: 10 !important;
-  height: max-content;
-  max-width: 100vw;
-  overflow-x: hidden;
-  grid-template-columns: max-content max-content max-content max-content max-content max-content;
-  @media screen and (min-width: 768px) {
-    top: 10vh;
-  }
-`;
-
-const Location = styled.div`
-  padding: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-`;
-
-const LocationsContainer = styled.div`
-  display: flex;
-  position: fixed;
-  bottom: 0;
-  width: 100vw;
-  overflow-x: scroll;
-`;
-
-const CostContainer = styled.div`
-  display: none;
-  @media screen and (min-width: 768px) {
-    position: absolute;
-    right: 0;
-
-    display: flex;
-    flex-direction: row;
-    z-index: 1000;
-    align-items: center;
-  }
-`;
-
-const SelectedMenu = styled.div`
-  font-size: 14px;
-  font-weight: 600;
-  color: #f7e700;
-  background-color: #262626;
-  padding: 0.75rem 1.5rem;
-  border-style: none none solid none;
-  border-width: 4px;
-  border-color: #f7e700;
-  border-radius: 10px 10px 0 0;
-`;
-
-const NotSelectedMenu = styled.div`
-  font-size: 14px;
-  font-weight: 500;
-  color: rgb(122, 122, 122);
-
-  background-color: transparent;
-  padding: 0.75rem 1.5rem;
-`;
-
-const StrikedCost = styled.p`
-  position: relative;
-  width: max-content;
-  flex-grow: 1;
-  margin-bottom: 0;
-  margin-right: 6px;
-  font-weight: 400;
-  font-size: 1.25rem;
-  line-height: 1.5;
-  text-align: center;
-  &:before {
-    position: absolute;
-    content: "";
-    left: 0;
-    top: 23%;
-    right: 0;
-    border-top: 2px solid;
-    border-color: inherit;
-    -webkit-transform: skewY(-12deg);
-    -moz-transform: skewY(-12deg);
-    transform: skewY(-12deg);
-  }
-
-  @media screen and (min-width: 768px) {
-    font-size: 1rem;
-    &:before {
-      position: absolute;
-      content: "";
-      left: 0;
-      top: 20%;
-      right: 0;
-      border-top: 2px solid;
-      border-color: inherit;
-      -webkit-transform: skewY(-10deg);
-      -moz-transform: skewY(-10deg);
-      transform: skewY(-10deg);
-    }
-  }
-`;
-
-const Cost = styled.div`
-  text-align: right;
-  line-height: 1.5;
-  font-weight: 800;
-  font-size: 1.25rem;
-  &:after {
-    content: "per person";
-    display: block;
-    font-size: 0.9rem;
-    font-weight: 300;
-  }
-`;
-
-const GITCost = styled.div`
-  text-align: right;
-  line-height: 1.5;
-  font-weight: 800;
-  font-size: 1.25rem;
-  &:after {
-    content: "per member";
-    display: block;
-    font-size: 0.9rem;
-    font-weight: 300;
-  }
-`;
-
-const DiscountContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-right: 0.5rem;
-`;
-
 const useStyles = {
   root: `
     flex-grow-1
@@ -193,8 +51,6 @@ const SimpleTabsV2 = (props) => {
   const [isGroup, setIsGroup] = useState(false);
   const router = useRouter();
   const classes = useStyles;
-  const [value, setValue] = React.useState(0);
-  const [minimseBookingTimer, setMinimiseBookingTimer] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showFooterBannerMobile, setShowFooterBannerMobile] = useState(false);
   const [citydatadone, setcitydatadone] = useState(false);
@@ -207,12 +63,8 @@ const SimpleTabsV2 = (props) => {
     if (router.query.payment_status) {
       if (isPageWide) window.scrollTo(0, window.innerHeight);
       else window.scrollTo(0, window.innerHeight / 2);
-      setValue(2);
     }
-    // change after is_group field activated in itinerary APIs
-    // if(props.match.params.id === "LX1513cBeVVjRPY09EhI" || props.match.params.id === "AY2n7HcBeVVjRPY0MgwO"  || props.match.params.id==="9OjdZ3gBeVVjRPY01cew") setIsGroup(true);
     if (props.showbooking) {
-      setValue(2);
       window.scrollTo(0, window.innerHeight);
     }
   }, []);
@@ -276,30 +128,22 @@ const SimpleTabsV2 = (props) => {
           query_message: `I need help in completing booking.`,
         })
         .then((res) => {
-          //  props.getPaymentHandler();
           props.openNotification({
             type: "sucess",
             text: res.data.message,
             heading: "Request received.",
           });
-          //  setIsShow(true);
           setLoading(false);
         })
         .catch((err) => {
-          // setUpdateLoadingState(false);
           if (err.response) {
-            // The request was made and the server responded with a status code
-            // that falls out of the range of 2xx
-            // The response headers
           }
           props.openNotification({
             type: "error",
             text: "There seems to be a problem, please try again!",
             heading: "Error!",
           });
-          //  setIsShow(false);
           setLoading(false);
-          //  window.alert("There seems to be a problem, please try again!", err);
         });
     } else {
       setLoading(false);
@@ -308,7 +152,6 @@ const SimpleTabsV2 = (props) => {
   };
 
   const _handleLoginClose = () => {
-    // props.getPaymentHandler();
     setShowLoginModal(false);
   };
 
@@ -427,40 +270,6 @@ const SimpleTabsV2 = (props) => {
       },
     });
   };
-
-  const Navbar = styled.div`
-    position: ${({ sticky }) => (sticky ? "sticky" : "inherit")};
-    z-index: ${({ sticky }) => (sticky ? "1000" : "997")};
-    top: 15px;
-    display: flex;
-    ::-webkit-scrollbar {
-      display: none;
-    }
-    background-color: white;
-    height: 50px;
-    margin: 0px -20px 0px -20px;
-    overflow-x: scroll;
-    align-items: center;
-
-    background-color: white;
-  `;
-
-  const MenuContainer = styled.div`
-    border-bottom: 1px solid #f0f0f0;
-    width: 100vw;
-    margin-left: -1rem;
-    margin-bottom: 1rem;
-    > div {
-      margin: 0px 0px 0px -50px;
-    }
-  `;
-
-  const AppContainer = styled.div`
-    width: 100vw;
-    height: 100vh;
-    overflow: scroll;
-    font-family: sans-serif;
-  `;
 
   return (
     <div
@@ -831,7 +640,6 @@ const SimpleTabsV2 = (props) => {
                     _GetInTouch={() => _GetInTouch()}
                   ></SummaryContainer>
                 ) : (
-                  // width 27vw
                   <div>
                     <GITSummaryContainer
                       hasUserPaid={
@@ -1047,7 +855,6 @@ const SimpleTabsV2 = (props) => {
                   _GetInTouch={() => _GetInTouch()}
                 ></SummaryContainer>
               ) : (
-                // width 27vw
                 <div>
                   <GITSummaryContainer
                     hasUserPaid={
@@ -1309,7 +1116,6 @@ function newFunction(
           totalcityslabs += 1;
         }
       }
-  const locationtabwidth = 100 / totalcityslabs + "vw";
 
   if (!citydatadone) {
     async function processRoutes2(props) {
@@ -1368,24 +1174,4 @@ function newFunction(
     processRoutes(props);
   }
   return totalcityslabs;
-}
-
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
 }

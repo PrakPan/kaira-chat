@@ -1,18 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import Modal from '../../../components/ui/Modal';
-import styled from 'styled-components';
-import { TbArrowBack } from 'react-icons/tb';
-import media from '../../../components/media';
-import Form from './form/Index';
-import axiospurchaseinstance from '../../../services/sales/itinerary/Purchase';
-import { connect } from 'react-redux';
-import { useRouter } from 'next/router';
-import axiossalecreateinstance from '../../../services/sales/itinerary/SaleCreate';
-import Cart from './cart/Index';
-import axios from 'axios';
-import TermsModal from '../terms/PW';
-import LoadingPage from '../../LoadingPage';
-import dayjs from 'dayjs';
+import React, { useState, useEffect } from "react";
+import Modal from "../../../components/ui/Modal";
+import styled from "styled-components";
+import { TbArrowBack } from "react-icons/tb";
+import media from "../../../components/media";
+import Form from "./form/Index";
+import axiospurchaseinstance from "../../../services/sales/itinerary/Purchase";
+import { connect } from "react-redux";
+import { useRouter } from "next/router";
+import Cart from "./cart/Index";
+import TermsModal from "../terms/PW";
+import LoadingPage from "../../LoadingPage";
+import dayjs from "dayjs";
 
 const Body = styled.div`
   padding: 0.5rem !important;
@@ -26,102 +24,11 @@ const RegistrationModal = (props) => {
   const [formFailedError, setFormFailedError] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [rzVerificationLoading, setRzVerificationLoading] = useState(false);
+  let isPageWide = media("(min-width: 768px)");
 
-  let isPageWide = media('(min-width: 768px)');
-  useEffect(() => {
-    // const script = document.createElement('script');
-    // script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    // script.async = true;
-    // document.body.appendChild(script);
-  }, []);
   useEffect(() => {
     if (!formFailedError) setVerificationCount(0);
   }, [props.show]);
-
-  const _startRazorpayHandler = (data) => {
-    // console.log('rz', );
-
-    //Razorpay payload
-    let razorpayOptions = {
-      amount: data.amount,
-      // "currency": "INR",
-      name: 'The Tarzan Way Payment Portal',
-      description: '',
-      image:
-        'https://bitbucket.org/account/thetarzanway/avatar/256/?ts=1555263480',
-      order_id: data.order_id,
-      //Payment successfull handler passed to razorpay
-      handler: function (response) {
-        setRzVerificationLoading(true);
-
-        setPaymentLoading(true);
-        axios
-          .post(
-            'https://dev.suppliers.tarzanway.com/sales/verify/',
-            { ...response },
-            { headers: { Authorization: `Bearer ${props.token}` } }
-          )
-          .then((res) => {
-            setPaymentLoading(false);
-            // setRzVerificationLoading(false);
-            //  router.push('/itinerary/'+data.itinerary, undefined, {shallow: true})
-            // window.location.href="http://localhost:3002/itinerary/"+data.itinerary+"?payment_status=fail"
-
-            window.location.replace(
-              'https://dev.thetarzanway.com/itinerary/physicswallah/' +
-                data.itinerary +
-                '?payment_status=success'
-            );
-          })
-          .catch((err) => {
-            setPaymentLoading(false);
-            //  setRzVerificationLoading(false);
-
-            // router.push('/itinerary/'+data.itinerary)
-            window.location.href =
-              'https://dev.thetarzanway.com/itinerary/physicswallah/' +
-              data.itinerary +
-              '?payment_status=fail';
-
-            // window.location.href="http://localhost:3000/itinerary/"+data.itinerary+"?payment_status=fail"
-          });
-      },
-      //User details will be present as user is logged in
-      prefill: {
-        name: props.name,
-        email: props.email,
-        contact: props.phone,
-      },
-      theme: {
-        color: '#F7e700',
-      },
-    };
-    var rzp1 = new window.Razorpay(razorpayOptions);
-    rzp1.open();
-  };
-  const _saleCreateHandler = (id) => {
-    axiossalecreateinstance
-      .post(
-        '/',
-        {
-          itinerary_id: id,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${props.token}`,
-          },
-        }
-      )
-      .then((res) => {
-        setPaymentLoading(false);
-        // window.location.href = 'https://www.thetarzanway.com/itinerary/'+res.data.itinerary.id
-        _startRazorpayHandler(res.data);
-      })
-      .catch((err) => {
-        // window.location.href = 'https://www.thetarzanway.com/itinerary/'+res.data.itinerary.id
-        setPaymentLoading(false);
-      });
-  };
 
   const _cloneHandler = (data) => {
     setFormFailedError(false);
@@ -130,13 +37,13 @@ const RegistrationModal = (props) => {
       setPaymentLoading(true);
       axiospurchaseinstance
         .post(
-          '/',
+          "/",
           {
             itinerary_id: props.id,
             number_of_adults: parseInt(props.pax),
             number_of_children: 0,
             number_of_infants: 0,
-            start_date: dayjs(props.date).format('YYYY-MM-DD'),
+            start_date: dayjs(props.date).format("YYYY-MM-DD"),
             registered_users: data.slice(),
           },
           {
@@ -148,23 +55,17 @@ const RegistrationModal = (props) => {
         .then((res) => {
           if (isPageWide) {
             router.push(
-              '/itinerary/' +
+              "/itinerary/" +
                 res.data.itinerary.id +
-                '/?t=2&booking=false&scroll=Stays'
+                "/?t=2&booking=false&scroll=Stays"
             );
           } else {
             router.push(
-              '/itinerary/' + res.data.itinerary.id + '/?t=2&booking=true'
+              "/itinerary/" + res.data.itinerary.id + "/?t=2&booking=true"
             );
           }
-
-          // window.location.href = 'https://www.thetarzanway.com/itinerary/'+res.data.itinerary.id
-
-          // _saleCreateHandler(res.data.itinerary.id);
         })
         .catch((err) => {
-          // window.location.href = 'https://www.thetarzanway.com/itinerary/'+res.data.itinerary.id
-          // router.push('/itinerary/' + res.data.itinerary.id);
           setFormFailedError(err.response.data.message);
 
           setPaymentLoading(false);
@@ -173,6 +74,7 @@ const RegistrationModal = (props) => {
       setFormNotFilledError(true);
     }
   };
+
   if (!rzVerificationLoading)
     return (
       <div className="z-[99999]">
@@ -263,6 +165,7 @@ const mapStateToPros = (state) => {
     hideloginclose: state.auth.hideloginclose,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     setUserDetails: (details) => dispatch(authaction.setUserDetails(details)),

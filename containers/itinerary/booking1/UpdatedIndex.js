@@ -3,7 +3,6 @@ import styled from "styled-components";
 import BookingCard from "../../../components/cards/bookings/activitybooking/Index";
 import SummaryContainer from "./TailoredDetails";
 import GITSummaryContainer from "./gittailored/Index";
-import ComingSoon from "./ComingSoon";
 import FullScreenGallery from "../../../components/fullscreengallery/Index";
 import Timer from "../timer/Index";
 import { connect } from "react-redux";
@@ -45,29 +44,7 @@ const Container = styled.div`
     margin-top: 10vh;
   }
 `;
-const MobileWidthContainer = styled.div`
-  width: 90%;
-  margin: auto;
-  @media screen and (min-width: 768px) {
-    width: 100%;
-  }
-`;
-const CardsContainer = styled.div`
-  margin: auto;
-  padding: 0;
-  grid-template-columns: 1fr;
-  grid-template-rows: auto auto;
-  @media screen and (min-width: 768px) {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto;
-    grid-gap: 1rem;
-    background-color: hsl(0, 0%, 97%);
-    padding: 0.5rem;
-  }
-  @media (min-width: 768px) and (max-width: 1024px) {
-  }
-`;
+
 const BookingsContainer = styled.div`
   border-radius: 10px;
   @media screen and (min-width: 768px) {
@@ -76,20 +53,6 @@ const BookingsContainer = styled.div`
   }
 `;
 
-const MessageContainer = styled.div`
-  padding: 1rem;
-  display: grid;
-  grid-template-columns: max-content auto;
-  grid-gap: 1rem;
-  border-radius: 5px;
-  background-color: hsl(0, 0%, 97%);
-  font-weight: 300;
-  font-size: 0.9rem;
-  margin: 1rem 0.25rem;
-  @media screen and (min-width: 768px) {
-    margin: 0 0 2rem 0;
-  }
-`;
 const BookingSuccessContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr 4fr;
@@ -111,39 +74,12 @@ const BookingSuccessText = styled.div`
     margin: 0;
   }
 `;
-const CopyLink = styled.div`
-  position: relative;
-  display: inline-block;
-  border-style: solid;
-  border-color: rgb(0, 128, 10);
-  border-width: 1px;
-  width: max-content;
-  padding: 0 0.25rem;
-  margin-top: 0.5rem;
-  border-radius: 5px;
 
-  @media screen and (min-width: 768px) {
-    font-size: 12px;
-    margin-left: 0.5rem;
-    margin-top: 0;
-
-    &:hover {
-      cursor: pointer;
-      background-color: rgb(0, 128, 10);
-      color: white;
-    }
-  }
-`;
-const LinkCopied = styled.div`
-  position: absolute;
-  left: 100%;
-  margin-left: 0.25rem;
-  top: 0;
-`;
 const TargetContainer = styled.div`
   padding: 1rem 0;
   min-height: 50vh;
 `;
+
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -162,8 +98,34 @@ function TabPanel(props) {
 
 const Booking = (props) => {
   const router = useRouter();
-
   const [value, setValue] = React.useState(0);
+  let isPageWide = media("(min-width: 768px)");
+  const [alternates, setAlternates] = useState(null);
+  const [showpayment, setShowpayment] = useState(false);
+  const [images, setImages] = useState(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showFooterBannerMobile, setShowFooterBannerMobile] = useState(true);
+  const [bookingsAccommodationsDesktopJSX, setBookingAccommodationsDesktopJSX] =
+    useState([]);
+  const [bookingsAccommodationsMobileJSX, setBookingAccommodationsMobileJSX] =
+    useState([]);
+  const [bookingsTransfersDesktopJSX, setBookingTransfersDesktopJSX] = useState(
+    []
+  );
+  const [bookingsTransfersMobileJSX, setBookingTransfersMobileJSX] = useState(
+    []
+  );
+  const [bookingsFlightsDesktopJSX, setBookingFlightsDesktopJSX] = useState([]);
+  const [bookingsFlightsMobileJSX, setBookingFlightsMobileJSX] = useState([]);
+  const [bookingsAcivityDesktopJSX, setBookingActivityDesktopJSX] = useState(
+    []
+  );
+  const [bookingsActivityMobileJSX, setBookingActivityMobileJSX] = useState([]);
+  const [summaryContainerJSX, setSummaryContainerJSX] = useState(null);
+  const [selectedBooking, setSelectedBooking] = useState({
+    id: null,
+    name: null,
+  });
 
   const handleChange = (event, newValue) => {
     const tabs = ["S", "T", "A"];
@@ -178,40 +140,6 @@ const Booking = (props) => {
 
     setValue(newValue);
   };
-
-  let isPageWide = media("(min-width: 768px)");
-  const [alternates, setAlternates] = useState(null);
-  const [showpayment, setShowpayment] = useState(false);
-  const [images, setImages] = useState(null);
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showFooterBannerMobile, setShowFooterBannerMobile] = useState(true);
-
-  const [bookingsAccommodationsDesktopJSX, setBookingAccommodationsDesktopJSX] =
-    useState([]);
-  const [bookingsAccommodationsMobileJSX, setBookingAccommodationsMobileJSX] =
-    useState([]);
-
-  const [bookingsTransfersDesktopJSX, setBookingTransfersDesktopJSX] = useState(
-    []
-  );
-  const [bookingsTransfersMobileJSX, setBookingTransfersMobileJSX] = useState(
-    []
-  );
-
-  const [bookingsFlightsDesktopJSX, setBookingFlightsDesktopJSX] = useState([]);
-
-  const [bookingsFlightsMobileJSX, setBookingFlightsMobileJSX] = useState([]);
-
-  const [bookingsAcivityDesktopJSX, setBookingActivityDesktopJSX] = useState(
-    []
-  );
-  const [bookingsActivityMobileJSX, setBookingActivityMobileJSX] = useState([]);
-
-  const [summaryContainerJSX, setSummaryContainerJSX] = useState(null);
-  const [selectedBooking, setSelectedBooking] = useState({
-    id: null,
-    name: null,
-  });
 
   const _changeBookingHandler = (
     name,
@@ -259,6 +187,7 @@ const Booking = (props) => {
     });
     props.setShowBookingModal();
   };
+
   const _changeFlightHandler = (
     name,
     itinerary_id,
@@ -282,6 +211,7 @@ const Booking = (props) => {
           params: { name: name },
         });
     }
+
     setSelectedBooking({
       ...selectedBooking,
       name: name,
@@ -300,6 +230,7 @@ const Booking = (props) => {
     });
     props.setShowFlightModal();
   };
+
   const _changeTaxiHandler = (
     name,
     itinerary_id,
@@ -326,6 +257,7 @@ const Booking = (props) => {
           params: { name: name },
         });
     }
+
     setSelectedBooking({
       ...selectedBooking,
       name: name,
@@ -350,22 +282,19 @@ const Booking = (props) => {
 
   useEffect(() => {
     if (isPageWide) setShowpayment(true);
-    // if(props.loadtopayment) setShowpayment(true);
   }, []);
 
   const _showPaymentHandler = () => {
     setShowFooterBannerMobile(false);
     setShowpayment(true);
   };
+
   const _hidePaymentHandler = () => {
     setShowFooterBannerMobile(true);
     setShowpayment(false);
   };
 
   let bookingcities = {};
-  // let bookingsDesktop = [];
-  // let bookingsFlickity  = [];
-
   let bookings_accommodations = [];
   let bookings_transfers = [];
   let bookings_activities = [];
@@ -378,6 +307,7 @@ const Booking = (props) => {
     script.async = true;
     document.body.appendChild(script);
   }, []);
+
   useEffect(() => {
     if (props.stayBookings)
       for (var i = 0; i < props.stayBookings.length; i++) {
@@ -398,7 +328,6 @@ const Booking = (props) => {
         let cost = props.stayBookings[i]["booking_cost"];
         let itinerary_id = props.stayBookings[i]["itinerary_id"];
         let itinerary_name = props.stayBookings[i]["itinerary_name"];
-        let booking_type = props.stayBookings[i]["booking_type"];
         let images = props.stayBookings[i]["images"];
         let accommodation = props.stayBookings[i]["accommodation"];
         let tailored_id = props.stayBookings[i]["tailored_itinerary"];
@@ -438,13 +367,11 @@ const Booking = (props) => {
               showBookingModal={props.showBookingModal}
               setHideBookingModal={props.setHideBookingModal}
               blur={props.blur}
-              setImagesHandler={props.setImagesHandler}
               accommodation
               heading={props.stayBookings[i]["name"]}
               setImagesHandler={_setImagesHandler}
               rating={props.stayBookings[i]["user_rating"]}
               details={props.stayBookings[i]["points"]}
-              rating={props.stayBookings[i]["weighted_rating"]}
               images={props.stayBookings[i]["images"]}
               price={props.stayBookings[i]["booking_cost"]}
               number_of_rooms={props.stayBookings[i]["number_of_rooms"]}
@@ -567,21 +494,14 @@ const Booking = (props) => {
           }
         }
       }
+
     setAlternates(alternatesarr);
 
     setBookingAccommodationsDesktopJSX(
       <DesktopCardContainer>{bookings_accommodations}</DesktopCardContainer>
     );
+
     setBookingAccommodationsMobileJSX(
-      // <SwiperCarousel
-      //   slidesPerView={1}
-      //   // pageDots
-      //   navigationButtons
-      //   // navButtonBackground={"transparent"}
-      //   // navButtonColor={'black'}
-      //   centeredSlides
-      //   cards={bookings_accommodations}
-      // ></SwiperCarousel>
       <>
         {bookings_accommodations.map((e) => (
           <div style={{ marginBottom: "2rem" }}>{e}</div>
@@ -609,9 +529,6 @@ const Booking = (props) => {
           let cost = props.transferBookings[i]["booking_cost"];
           let itinerary_id = props.transferBookings[i]["itinerary_id"];
           let itinerary_name = props.transferBookings[i]["itinerary_name"];
-          let booking_type = props.transferBookings[i]["booking_type"];
-
-          // let accommodation = props.transferBookings[i]["accommodation"];
           let tailored_id = props.transferBookings[i]["tailored_itinerary"];
           let id = props.transferBookings[i]["id"];
           let check_in = props.transferBookings[i]["check_in"];
@@ -625,9 +542,7 @@ const Booking = (props) => {
           let room_type = props.transferBookings[i]["room_type"];
           let taxi_type = props.transferBookings[i]["taxi_type"];
           let transfer_type = props.transferBookings[i]["transfer_type"];
-          let city_id = props.transferBookings[i]["city_id"];
           let destination_city = props.transferBookings[i]["destination_city"];
-          let duration = props.transferBookings[i]["duration"];
           let origin_iata = props.transferBookings[i]["origin_city_iata_code"];
           let destination_iata =
             props.transferBookings[i]["destination_city_iata_code"];
@@ -655,7 +570,6 @@ const Booking = (props) => {
                 showBookingModal={props.showBookingModal}
                 setHideBookingModal={props.setHideBookingModal}
                 blur={props.blur}
-                setImagesHandler={props.setImagesHandler}
                 accommodation
                 heading={props.transferBookings[i]["name"]}
                 details={props.transferBookings[i]["points"]}
@@ -848,7 +762,6 @@ const Booking = (props) => {
           }
         }
 
-        // setAlternates(alternatesarr);
         setBookingTransfersDesktopJSX([...bookings_transfers]);
         setBookingTransfersMobileJSX(
           <SwiperCarousel
@@ -878,9 +791,6 @@ const Booking = (props) => {
         let cost = props.flightBookings[i]["booking_cost"];
         let itinerary_id = props.flightBookings[i]["itinerary_id"];
         let itinerary_name = props.flightBookings[i]["itinerary_name"];
-        let booking_type = props.flightBookings[i]["booking_type"];
-
-        // let accommodation = props.transferBookings[i]["accommodation"];
         let tailored_id = props.flightBookings[i]["tailored_itinerary"];
         let id = props.flightBookings[i]["id"];
         let check_in = props.flightBookings[i]["check_in"];
@@ -996,8 +906,9 @@ const Booking = (props) => {
           );
         }
       }
-    // setAlternates(alternatesarr);
+
     setBookingFlightsDesktopJSX([...bookings_flights]);
+
     setBookingFlightsMobileJSX(
       <SwiperCarousel
         slidesPerView={1}
@@ -1030,13 +941,9 @@ const Booking = (props) => {
         if (props.activityBookings[i].version === "v1") oldbooking = true;
         if (props.traveleritinerary) oldbooking = true;
         let name = props.activityBookings[i]["name"];
-        let costings_breakdown =
-          props.activityBookings[i]["costings_breakdown"];
-        let cost = props.activityBookings[i]["booking_cost"];
         let itinerary_id = props.activityBookings[i]["itinerary_id"];
         let itinerary_name = props.activityBookings[i]["itinerary_name"];
         let booking_type = props.activityBookings[i]["booking_type"];
-
         let accommodation = props.activityBookings[i]["accommodation"];
         let tailored_id = props.activityBookings[i]["tailored_itinerary"];
         let id = props.activityBookings[i]["id"];
@@ -1074,7 +981,6 @@ const Booking = (props) => {
               showBookingModal={props.showBookingModal}
               setHideBookingModal={props.setHideBookingModal}
               blur={props.blur}
-              setImagesHandler={props.setImagesHandler}
               accommodation
               heading={props.activityBookings[i]["name"]}
               details={props.activityBookings[i]["points"]}
@@ -1129,11 +1035,13 @@ const Booking = (props) => {
           );
         }
       }
+
     setAlternates(alternatesarr);
 
     setBookingActivityDesktopJSX(
       <DesktopCardContainer>{bookings_activities}</DesktopCardContainer>
     );
+
     setBookingActivityMobileJSX(
       <SwiperCarousel
         slidesPerView={1}
@@ -1171,7 +1079,6 @@ const Booking = (props) => {
             plan={props.plan}
           ></SummaryContainer>
         );
-      //   // setSummaryContainerJSX(S)
       else
         setSummaryContainerJSX(
           <GITSummaryContainer
@@ -1210,15 +1117,15 @@ const Booking = (props) => {
   let message =
     "Hey TTW! I need some help with my tailored experience - https://www.thetarzanway.com" +
     router.asPath;
+
   const _setImagesHandler = (images) => {
     setImages(images);
   };
 
   const _handleLoginClose = () => {
-    // props.getPaymentHandler();
-
     setShowLoginModal(false);
   };
+
   const REGISTRATION_PAYMENT_MESSAGES = {
     CREATED_ONE: "Your payment of amount INR ",
     CREATED_TWO:
@@ -1226,6 +1133,7 @@ const Booking = (props) => {
     FAILURE:
       "Your payment was not completed successfully. Please contact us using WhatsApp or any other means with this reference id: ",
   };
+
   const TAILORED_PAYMENT_MESSAGES = {
     CREATED_ONE: "Your payment of amount INR ",
     CREATED_TWO:
@@ -1234,24 +1142,379 @@ const Booking = (props) => {
       "Your payment was not completed successfully. Please contact us using WhatsApp or any other means with this reference id: ",
   };
 
-  if (true) {
-    if (!images) {
-      if (isPageWide) {
-        if (!showLoginModal)
-          return (
-            <div>
-              {props.showTimer && !props.hideTimer ? (
-                <Timer
-                  hideTimer={props.hideTimer}
-                  _handleTimerClose={props._handleTimerClose}
-                  booking
-                  openItinerary={props.openItinerary}
-                  _hideTimerHandler={props._hideTimerHandler}
-                ></Timer>
+  if (!images) {
+    if (isPageWide) {
+      if (!showLoginModal)
+        return (
+          <div>
+            {props.showTimer && !props.hideTimer ? (
+              <Timer
+                hideTimer={props.hideTimer}
+                _handleTimerClose={props._handleTimerClose}
+                booking
+                openItinerary={props.openItinerary}
+                _hideTimerHandler={props._hideTimerHandler}
+              ></Timer>
+            ) : null}
+            <Container>
+              <BookingsContainer style={{ marginTop: "0" }}>
+                {props.payment && props.payment_status ? (
+                  props.payment.paid_user ? (
+                    <BookingSuccessContainer
+                      style={{
+                        backgroundColor: props.payment.paid_user
+                          ? "rgba(0,128,10,0.1)"
+                          : "rgba(255,0,0,0.1)",
+                      }}
+                    >
+                      <div className="center-div">
+                        <ImageLoader
+                          url={
+                            props.payment.paid_user
+                              ? "media/icons/bookings/payment/success-green.svg"
+                              : "media/icons/bookings/payment/fail-red.svg"
+                          }
+                          height="max-content"
+                          margin="0"
+                          widthmobile="100%
+  margin-left: 0.5rem;"
+                        ></ImageLoader>
+                      </div>
+
+                      <BookingSuccessText
+                        style={{
+                          color: props.payment.paid_user ? "green" : "red",
+                        }}
+                      >
+                        <div
+                          style={{ lineHeight: "2" }}
+                          className="font-lexend"
+                        >
+                          {props.payment.paid_user
+                            ? props.is_registration_needed
+                              ? REGISTRATION_PAYMENT_MESSAGES.CREATED_ONE +
+                                getIndianPrice(
+                                  Math.round(
+                                    props.payment.per_person_total_cost / 100
+                                  )
+                                ) +
+                                REGISTRATION_PAYMENT_MESSAGES.CREATED_TWO
+                              : TAILORED_PAYMENT_MESSAGES.CREATED_ONE +
+                                getIndianPrice(
+                                  Math.round(
+                                    props.payment.per_person_total_cost / 100
+                                  )
+                                ) +
+                                TAILORED_PAYMENT_MESSAGES.CREATED_TWO
+                            : REGISTRATION_PAYMENT_MESSAGES.FAILURE}
+                        </div>
+                      </BookingSuccessText>
+                    </BookingSuccessContainer>
+                  ) : null
+                ) : null}
+
+                {!props.payment_status && props.payment ? (
+                  props.payment.paid_user ? (
+                    <BookingSuccessContainer
+                      style={{ backgroundColor: "rgba(0,128,10,0.1)" }}
+                    >
+                      <div className="center-div">
+                        <ImageLoader
+                          url={"media/icons/bookings/payment/success-green.svg"}
+                          height="max-content"
+                          margin="0"
+                          widthmobile="100%
+  margin-left: 0.5rem;"
+                        ></ImageLoader>
+                      </div>
+                      <BookingSuccessText style={{ color: "green" }}>
+                        <div
+                          style={{ lineHeight: "2" }}
+                          className="font-lexend"
+                        >
+                          {props.is_registration_needed
+                            ? REGISTRATION_PAYMENT_MESSAGES.CREATED_ONE +
+                              getIndianPrice(
+                                Math.round(
+                                  props.payment.per_person_total_cost / 100
+                                )
+                              ) +
+                              REGISTRATION_PAYMENT_MESSAGES.CREATED_TWO
+                            : TAILORED_PAYMENT_MESSAGES.CREATED_ONE +
+                              getIndianPrice(
+                                Math.round(
+                                  props.payment.per_person_total_cost / 100
+                                )
+                              ) +
+                              TAILORED_PAYMENT_MESSAGES.CREATED_TWO}
+                        </div>
+                      </BookingSuccessText>
+                    </BookingSuccessContainer>
+                  ) : null
+                ) : null}
+
+                <Tabs
+                  value={value}
+                  onChange={handleChange}
+                  variant={!isPageWide ? "scrollable" : "fullWidth"}
+                  scrollButtons={!isPageWide ? true : false}
+                  allowScrollButtonsMobile
+                  indicatorColor="#f7e700"
+                  id="poimodal-tabs"
+                >
+                  <Tab
+                    label={
+                      props.stayBookings
+                        ? "Stays" + " (" + props.stayBookings.length + ")"
+                        : "Stays"
+                    }
+                    className="bookingdetail-tab font-lexend"
+                  ></Tab>
+
+                  <Tab
+                    label={
+                      props.transferBookings
+                        ? "Transfers" +
+                          " (" +
+                          props.transferBookings.length +
+                          ")"
+                        : "Transfers"
+                    }
+                    className="bookingdetail-tab font-lexend"
+                    id="bookingdetail-tab-transfers"
+                  ></Tab>
+
+                  {props.flightBookings ? (
+                    props.flightBookings.length ? (
+                      <Tab
+                        label={props.flightBookings ? "Flights" : "Flights"}
+                        className="bookingdetail-tab font-lexend"
+                        id="bookingdetail-tab-flights"
+                      ></Tab>
+                    ) : (
+                      <Tab
+                        label={"Flights"}
+                        className="bookingdetail-tab font-lexend"
+                        id="bookingdetail-tab-flights"
+                        style={{ display: "none" }}
+                      ></Tab>
+                    )
+                  ) : (
+                    <Tab
+                      label={"Flights"}
+                      className="bookingdetail-tab font-lexend"
+                      id="bookingdetail-tab-flights"
+                      style={{ display: "none" }}
+                    ></Tab>
+                  )}
+
+                  {props.activityBookings ? (
+                    props.activityBookings.length ? (
+                      <Tab
+                        label={
+                          props.activityBookings
+                            ? "Activities" +
+                              " (" +
+                              props.activityBookings.length +
+                              ")"
+                            : "Activities"
+                        }
+                        className="bookingdetail-tab font-lexend"
+                      ></Tab>
+                    ) : (
+                      <Tab
+                        label={"Activities"}
+                        className="bookingdetail-tab font-lexend"
+                        style={{ display: "none" }}
+                      ></Tab>
+                    )
+                  ) : (
+                    <Tab
+                      label={"Activities"}
+                      className="bookingdetail-tab font-lexend"
+                      style={{ display: "none" }}
+                    ></Tab>
+                  )}
+                </Tabs>
+
+                <TabPanel value={value} index={0}>
+                  {props.stayBookings ? (
+                    props.stayBookings.length ? (
+                      bookingsAccommodationsDesktopJSX
+                    ) : (
+                      <ImageLoader
+                        url="media/website/undraw_best_place_re_lne9.svg"
+                        width="50%"
+                        widthmobile="50%"
+                      ></ImageLoader>
+                    )
+                  ) : (
+                    <ImageLoader
+                      url="media/website/undraw_best_place_re_lne9.svg"
+                      width="30%"
+                      widthmobile="50%"
+                    ></ImageLoader>
+                  )}
+
+                  {!props.stayBookings ? (
+                    <div className="center-div">
+                      <p
+                        className="font-lexend text-center"
+                        style={{ margin: "1rem 0" }}
+                      >
+                        Nothing to see here
+                      </p>
+                    </div>
+                  ) : !props.stayBookings.length ? (
+                    <div className="center-dov">
+                      <p
+                        className="font-lexend text-center"
+                        style={{ margin: "1rem 0" }}
+                      >
+                        Nothing to see here
+                      </p>
+                    </div>
+                  ) : null}
+                </TabPanel>
+
+                <TabPanel value={value} index={2}>
+                  {props.flightBookings ? (
+                    props.flightBookings.length ? (
+                      <DesktopCardContainer>
+                        {bookingsFlightsDesktopJSX}
+                      </DesktopCardContainer>
+                    ) : (
+                      <ImageLoader
+                        url="media/website/undraw_best_place_re_lne9.svg"
+                        width="50%"
+                        widthmobile="50%"
+                      ></ImageLoader>
+                    )
+                  ) : (
+                    <ImageLoader
+                      url="media/website/undraw_best_place_re_lne9.svg"
+                      width="30%"
+                      widthmobile="50%"
+                    ></ImageLoader>
+                  )}
+                </TabPanel>
+
+                <TabPanel value={value} index={1}>
+                  {props.transferBookings ? (
+                    props.transferBookings.length ? (
+                      <DesktopCardContainer>
+                        {bookingsTransfersDesktopJSX}
+                      </DesktopCardContainer>
+                    ) : (
+                      <ImageLoader
+                        url="media/website/undraw_best_place_re_lne9.svg"
+                        width="50%"
+                        widthmobile="50%"
+                      ></ImageLoader>
+                    )
+                  ) : (
+                    <ImageLoader
+                      url="media/website/undraw_best_place_re_lne9.svg"
+                      width="30%"
+                      widthmobile="50%"
+                    ></ImageLoader>
+                  )}
+                </TabPanel>
+
+                <TabPanel value={value} index={3}>
+                  {true ? (
+                    true ? (
+                      bookingsAcivityDesktopJSX
+                    ) : (
+                      <ImageLoader
+                        url="media/website/undraw_best_place_re_lne9.svg"
+                        width="50%"
+                        widthmobile="50%"
+                      ></ImageLoader>
+                    )
+                  ) : (
+                    <ImageLoader
+                      url="media/website/undraw_best_place_re_lne9.svg"
+                      width="30%"
+                      widthmobile="50%"
+                    ></ImageLoader>
+                  )}
+                </TabPanel>
+              </BookingsContainer>
+
+              {summaryContainerJSX}
+
+              <BookingModal
+                _setImagesHandler={_setImagesHandler}
+                getPaymentHandler={props.getPaymentHandler}
+                _updateStayBookingHandler={props._updateStayBookingHandler}
+                alternates={alternates[selectedBooking.id]}
+                tailored_id={
+                  props.stayBookings
+                    ? props.stayBookings[0]["tailored_itinerary"]
+                    : null
+                }
+                _updatePaymentHandler={props._updatePaymentHandler}
+                _updateBookingHandler={props._updateBookingHandler}
+                selectedBooking={selectedBooking}
+                setShowBookingModal={props.setShowBookingModal}
+                showBookingModal={props.showBookingModal}
+                setHideBookingModal={props.setHideBookingModal}
+              ></BookingModal>
+
+              {props.traveleritinerary ? (
+                <DesktopBanner
+                  onclick={() => openTailoredModal(router)}
+                  text="Want to personalize your own experience like this?"
+                ></DesktopBanner>
               ) : null}
-              <Container>
-                <BookingsContainer style={{ marginTop: "0" }}>
-                  {props.payment && props.payment_status ? (
+
+              <FlightModal
+                getPaymentHandler={props.getPaymentHandler}
+                _updateFlightBookingHandler={props._updateFlightBookingHandler}
+                _updateBookingHandler={props._updateBookingHandler}
+                itinerary_id={
+                  props.stayBookings.length
+                    ? props.flightBookings[0]["itinerary_id"]
+                    : null
+                }
+                setHideFlightModal={props.setHideFlightModal}
+                alternates={alternates[selectedBooking.id]}
+                tailored_id={props.flightBookings[0]["tailored_itinerary"]}
+                _updatePaymentHandler={props._updatePaymentHandler}
+                _updateFlightHandler={props._updateFlightHandler}
+                selectedBooking={selectedBooking}
+                setShowFlightModal={props.setShowFlightModal}
+                showFlightModal={props.showFlightModal}
+              ></FlightModal>
+
+              <TaxiModal
+                getPaymentHandler={props.getPaymentHandler}
+                _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+                setHideTaxiModal={() => props.setShowTaxiModal(false)}
+                showTaxiModal={props.showTaxiModal}
+                _updatePaymentHandler={props._updatePaymentHandler}
+                selectedBooking={selectedBooking}
+              ></TaxiModal>
+            </Container>
+          </div>
+        );
+      else
+        return (
+          <div>
+            <LogInModal show={true} onhide={_handleLoginClose}></LogInModal>
+          </div>
+        );
+    } else {
+      if (!showLoginModal)
+        return (
+          <Container style={{ marginTop: "0" }}>
+            {!showpayment ? (
+              <BookingsContainer
+                style={{ marginTop: props.showTimer ? "-50vh" : "0" }}
+              >
+                {props.payment_status && props.payment ? (
+                  props.payment.is_registration_needed ? (
                     props.payment.paid_user ? (
                       <BookingSuccessContainer
                         style={{
@@ -1273,6 +1536,7 @@ const Booking = (props) => {
   margin-left: 0.5rem;"
                           ></ImageLoader>
                         </div>
+
                         <BookingSuccessText
                           style={{
                             color: props.payment.paid_user ? "green" : "red",
@@ -1283,7 +1547,7 @@ const Booking = (props) => {
                             className="font-lexend"
                           >
                             {props.payment.paid_user
-                              ? props.is_registration_needed
+                              ? props.payment.is_registration_needed
                                 ? REGISTRATION_PAYMENT_MESSAGES.CREATED_ONE +
                                   getIndianPrice(
                                     Math.round(
@@ -1298,466 +1562,93 @@ const Booking = (props) => {
                                     )
                                   ) +
                                   TAILORED_PAYMENT_MESSAGES.CREATED_TWO
-                              : REGISTRATION_PAYMENT_MESSAGES.FAILURE}
-                            {/* { props.payment_status==="success" ? <CopyLink onClick={() => navigator.clipboard.writeText(window.location.protocol + '//' + window.location.host + window.location.pathname)}> Copy Link
-                   </CopyLink>: null} */}
+                              : REGISTRATION_PAYMENT_MESSAGES.FAILURE}{" "}
                           </div>
                         </BookingSuccessText>
                       </BookingSuccessContainer>
                     ) : null
-                  ) : null}
-
-                  {!props.payment_status && props.payment ? (
-                    props.payment.paid_user ? (
-                      <BookingSuccessContainer
-                        style={{ backgroundColor: "rgba(0,128,10,0.1)" }}
-                      >
-                        <div className="center-div">
-                          <ImageLoader
-                            url={
-                              "media/icons/bookings/payment/success-green.svg"
-                            }
-                            height="max-content"
-                            margin="0"
-                            widthmobile="100%
-  margin-left: 0.5rem;"
-                          ></ImageLoader>
-                        </div>
-                        <BookingSuccessText style={{ color: "green" }}>
-                          <div
-                            style={{ lineHeight: "2" }}
-                            className="font-lexend"
-                          >
-                            {props.is_registration_needed
-                              ? REGISTRATION_PAYMENT_MESSAGES.CREATED_ONE +
-                                getIndianPrice(
-                                  Math.round(
-                                    props.payment.per_person_total_cost / 100
-                                  )
-                                ) +
-                                REGISTRATION_PAYMENT_MESSAGES.CREATED_TWO
-                              : TAILORED_PAYMENT_MESSAGES.CREATED_ONE +
-                                getIndianPrice(
-                                  Math.round(
-                                    props.payment.per_person_total_cost / 100
-                                  )
-                                ) +
-                                TAILORED_PAYMENT_MESSAGES.CREATED_TWO}
-                          </div>
-                        </BookingSuccessText>
-                      </BookingSuccessContainer>
-                    ) : null
-                  ) : null}
-
-                  <Tabs
-                    value={value}
-                    onChange={handleChange}
-                    variant={!isPageWide ? "scrollable" : "fullWidth"}
-                    scrollButtons={!isPageWide ? true : false}
-                    allowScrollButtonsMobile
-                    indicatorColor="#f7e700"
-                    id="poimodal-tabs"
-                  >
-                    <Tab
-                      label={
-                        props.stayBookings
-                          ? "Stays" + " (" + props.stayBookings.length + ")"
-                          : "Stays"
-                      }
-                      className="bookingdetail-tab font-lexend"
-                    ></Tab>
-                    <Tab
-                      label={
-                        props.transferBookings
-                          ? "Transfers" +
-                            " (" +
-                            props.transferBookings.length +
-                            ")"
-                          : "Transfers"
-                      }
-                      className="bookingdetail-tab font-lexend"
-                      id="bookingdetail-tab-transfers"
-                    ></Tab>
-                    {props.flightBookings ? (
-                      props.flightBookings.length ? (
-                        <Tab
-                          label={props.flightBookings ? "Flights" : "Flights"}
-                          className="bookingdetail-tab font-lexend"
-                          id="bookingdetail-tab-flights"
-                        ></Tab>
-                      ) : (
-                        <Tab
-                          label={"Flights"}
-                          className="bookingdetail-tab font-lexend"
-                          id="bookingdetail-tab-flights"
-                          style={{ display: "none" }}
-                        ></Tab>
-                      )
-                    ) : (
-                      <Tab
-                        label={"Flights"}
-                        className="bookingdetail-tab font-lexend"
-                        id="bookingdetail-tab-flights"
-                        style={{ display: "none" }}
-                      ></Tab>
-                    )}
-
-                    {props.activityBookings ? (
-                      props.activityBookings.length ? (
-                        <Tab
-                          label={
-                            props.activityBookings
-                              ? "Activities" +
-                                " (" +
-                                props.activityBookings.length +
-                                ")"
-                              : "Activities"
-                          }
-                          className="bookingdetail-tab font-lexend"
-                        ></Tab>
-                      ) : (
-                        <Tab
-                          label={"Activities"}
-                          className="bookingdetail-tab font-lexend"
-                          style={{ display: "none" }}
-                        ></Tab>
-                      )
-                    ) : (
-                      <Tab
-                        label={"Activities"}
-                        className="bookingdetail-tab font-lexend"
-                        style={{ display: "none" }}
-                      ></Tab>
-                    )}
-                  </Tabs>
-                  <TabPanel value={value} index={0}>
-                    {props.stayBookings ? (
-                      props.stayBookings.length ? (
-                        bookingsAccommodationsDesktopJSX
-                      ) : (
-                        <ImageLoader
-                          url="media/website/undraw_best_place_re_lne9.svg"
-                          width="50%"
-                          widthmobile="50%"
-                        ></ImageLoader>
-                      )
-                    ) : (
-                      <ImageLoader
-                        url="media/website/undraw_best_place_re_lne9.svg"
-                        width="30%"
-                        widthmobile="50%"
-                      ></ImageLoader>
-                    )}
-                    {!props.stayBookings ? (
-                      <div className="center-div">
-                        <p
-                          className="font-lexend text-center"
-                          style={{ margin: "1rem 0" }}
-                        >
-                          Nothing to see here
-                        </p>
-                      </div>
-                    ) : !props.stayBookings.length ? (
-                      <div className="center-dov">
-                        <p
-                          className="font-lexend text-center"
-                          style={{ margin: "1rem 0" }}
-                        >
-                          Nothing to see here
-                        </p>
-                      </div>
-                    ) : null}
-                  </TabPanel>
-                  <TabPanel value={value} index={2}>
-                    {props.flightBookings ? (
-                      props.flightBookings.length ? (
-                        <DesktopCardContainer>
-                          {bookingsFlightsDesktopJSX}
-                          {/* {bookingsTransfersDesktopJSX} */}
-                        </DesktopCardContainer>
-                      ) : (
-                        <ImageLoader
-                          url="media/website/undraw_best_place_re_lne9.svg"
-                          width="50%"
-                          widthmobile="50%"
-                        ></ImageLoader>
-                      )
-                    ) : (
-                      <ImageLoader
-                        url="media/website/undraw_best_place_re_lne9.svg"
-                        width="30%"
-                        widthmobile="50%"
-                      ></ImageLoader>
-                    )}
-                    {/* {!props.flightBookings ? <div className='center-div'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.flightBookings.length ? <div className='center-dov'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
-                  </TabPanel>
-                  <TabPanel value={value} index={1}>
-                    {props.transferBookings ? (
-                      props.transferBookings.length ? (
-                        <DesktopCardContainer>
-                          {/* {bookingsFlightsDesktopJSX} */}
-                          {bookingsTransfersDesktopJSX}
-                        </DesktopCardContainer>
-                      ) : (
-                        <ImageLoader
-                          url="media/website/undraw_best_place_re_lne9.svg"
-                          width="50%"
-                          widthmobile="50%"
-                        ></ImageLoader>
-                      )
-                    ) : (
-                      <ImageLoader
-                        url="media/website/undraw_best_place_re_lne9.svg"
-                        width="30%"
-                        widthmobile="50%"
-                      ></ImageLoader>
-                    )}
-                    {/* {!props.transferBookings ? <div className='center-div'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.transferBookings.length ? <div className='center-dov'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
-                  </TabPanel>
-                  <TabPanel value={value} index={3}>
-                    {true ? (
-                      true ? (
-                        bookingsAcivityDesktopJSX
-                      ) : (
-                        <ImageLoader
-                          url="media/website/undraw_best_place_re_lne9.svg"
-                          width="50%"
-                          widthmobile="50%"
-                        ></ImageLoader>
-                      )
-                    ) : (
-                      <ImageLoader
-                        url="media/website/undraw_best_place_re_lne9.svg"
-                        width="30%"
-                        widthmobile="50%"
-                      ></ImageLoader>
-                    )}
-                    {/* {!props.activityBookings ? <div className='center-div'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.activityBookings.length ? <div className='center-dov'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
-                  </TabPanel>
-                </BookingsContainer>
-                {summaryContainerJSX}
-                {/* {props.showBookingModal ? ( */}
-                <BookingModal
-                  _setImagesHandler={_setImagesHandler}
-                  getPaymentHandler={props.getPaymentHandler}
-                  _updateStayBookingHandler={props._updateStayBookingHandler}
-                  alternates={alternates[selectedBooking.id]}
-                  tailored_id={
-                    props.stayBookings
-                      ? props.stayBookings[0]["tailored_itinerary"]
-                      : null
-                  }
-                  _updatePaymentHandler={props._updatePaymentHandler}
-                  _updateBookingHandler={props._updateBookingHandler}
-                  selectedBooking={selectedBooking}
-                  setShowBookingModal={props.setShowBookingModal}
-                  showBookingModal={props.showBookingModal}
-                  setHideBookingModal={props.setHideBookingModal}
-                ></BookingModal>
-                {/* ) : null} */}
-                {props.traveleritinerary ? (
-                  <DesktopBanner
-                    onclick={() => openTailoredModal(router)}
-                    text="Want to personalize your own experience like this?"
-                  ></DesktopBanner>
+                  ) : null
                 ) : null}
-                {/* {props.showFlightModal ? ( */}
-                <FlightModal
-                  getPaymentHandler={props.getPaymentHandler}
-                  _updateFlightBookingHandler={
-                    props._updateFlightBookingHandler
-                  }
-                  _updateBookingHandler={props._updateBookingHandler}
-                  itinerary_id={
-                    props.stayBookings.length
-                      ? props.flightBookings[0]["itinerary_id"]
-                      : null
-                  }
-                  setHideFlightModal={props.setHideFlightModal}
-                  alternates={alternates[selectedBooking.id]}
-                  tailored_id={props.flightBookings[0]["tailored_itinerary"]}
-                  _updatePaymentHandler={props._updatePaymentHandler}
-                  _updateFlightHandler={props._updateFlightHandler}
-                  selectedBooking={selectedBooking}
-                  setShowFlightModal={props.setShowFlightModal}
-                  showFlightModal={props.showFlightModal}
-                ></FlightModal>
-                {/* ) : null} */}
-                {/* {props.showTaxiModal ? ( */}
-                <TaxiModal
-                  getPaymentHandler={props.getPaymentHandler}
-                  _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-                  setHideTaxiModal={() => props.setShowTaxiModal(false)}
-                  showTaxiModal={props.showTaxiModal}
-                  _updatePaymentHandler={props._updatePaymentHandler}
-                  selectedBooking={selectedBooking}
-                ></TaxiModal>
-                {/* ) : null} */}
-              </Container>
-              {/* <Accommodation token={props.token} show={true} id="a7c63401-3cc4-4542-9e3a-505f73e98614"></Accommodation> */}
-            </div>
-          );
-        else
-          return (
-            <div>
-              <LogInModal show={true} onhide={_handleLoginClose}></LogInModal>
-            </div>
-          );
-      } else {
-        if (!showLoginModal)
-          return (
-            <Container style={{ marginTop: "0" }}>
-              {/* {props.showTimer && !props.hideTimer? <Timer hideTimer={props.hideTimer} _handleTimerClose={props._handleTimerClose} booking hours={props.hours} minutes={props.minutes} seconds={props.seconds}  startingTimer={props.startingTimer} itineraryDate={props.itineraryDate} openItinerary={props.openItinerary} booking  _hideTimerHandler={props._hideTimerHandler}></Timer> : <div></div>} */}
-              {!showpayment ? (
-                <BookingsContainer
-                  style={{ marginTop: props.showTimer ? "-50vh" : "0" }}
-                >
-                  {props.payment_status && props.payment ? (
-                    props.payment.is_registration_needed ? (
-                      props.payment.paid_user ? (
-                        <BookingSuccessContainer
-                          style={{
-                            backgroundColor: props.payment.paid_user
-                              ? "rgba(0,128,10,0.1)"
-                              : "rgba(255,0,0,0.1)",
-                          }}
+
+                {!props.payment_status && props.payment ? (
+                  props.payment.paid_user ? (
+                    <BookingSuccessContainer
+                      style={{ backgroundColor: "rgba(0,128,10,0.1)" }}
+                    >
+                      <div className="center-div">
+                        <ImageLoader
+                          url={"media/icons/bookings/payment/success-green.svg"}
+                          height="max-content"
+                          margin="0"
+                          widthmobile="100%
+  margin-left: 0.5rem;"
+                        ></ImageLoader>
+                      </div>
+
+                      <BookingSuccessText style={{ color: "green" }}>
+                        <div
+                          style={{ lineHeight: "2" }}
+                          className="font-lexend"
                         >
-                          <div className="center-div">
-                            <ImageLoader
-                              url={
-                                props.payment.paid_user
-                                  ? "media/icons/bookings/payment/success-green.svg"
-                                  : "media/icons/bookings/payment/fail-red.svg"
-                              }
-                              height="max-content"
-                              margin="0"
-                              widthmobile="100%
-  margin-left: 0.5rem;"
-                            ></ImageLoader>
-                          </div>
-                          <BookingSuccessText
-                            style={{
-                              color: props.payment.paid_user ? "green" : "red",
-                            }}
-                          >
-                            <div
-                              style={{ lineHeight: "2" }}
-                              className="font-lexend"
-                            >
-                              {props.payment.paid_user
-                                ? props.payment.is_registration_needed
-                                  ? REGISTRATION_PAYMENT_MESSAGES.CREATED_ONE +
-                                    getIndianPrice(
-                                      Math.round(
-                                        props.payment.per_person_total_cost /
-                                          100
-                                      )
-                                    ) +
-                                    REGISTRATION_PAYMENT_MESSAGES.CREATED_TWO
-                                  : TAILORED_PAYMENT_MESSAGES.CREATED_ONE +
-                                    getIndianPrice(
-                                      Math.round(
-                                        props.payment.per_person_total_cost /
-                                          100
-                                      )
-                                    ) +
-                                    TAILORED_PAYMENT_MESSAGES.CREATED_TWO
-                                : REGISTRATION_PAYMENT_MESSAGES.FAILURE}{" "}
-                            </div>
-                            {/* { props.payment_status==="success" ? <CopyLink onClick={() => navigator.clipboard.writeText(window.location.protocol + '//' + window.location.host + window.location.pathname)}> Copy Link
-                   </CopyLink>: null } */}
-                          </BookingSuccessText>
-                        </BookingSuccessContainer>
-                      ) : null
-                    ) : null
-                  ) : null}
-
-                  {!props.payment_status && props.payment ? (
-                    props.payment.paid_user ? (
-                      <BookingSuccessContainer
-                        style={{ backgroundColor: "rgba(0,128,10,0.1)" }}
-                      >
-                        <div className="center-div">
-                          <ImageLoader
-                            url={
-                              "media/icons/bookings/payment/success-green.svg"
-                            }
-                            height="max-content"
-                            margin="0"
-                            widthmobile="100%
-  margin-left: 0.5rem;"
-                          ></ImageLoader>
+                          {props.payment.is_registration_needed
+                            ? REGISTRATION_PAYMENT_MESSAGES.CREATED_ONE +
+                              getIndianPrice(
+                                Math.round(
+                                  props.payment.per_person_total_cost / 100
+                                )
+                              ) +
+                              REGISTRATION_PAYMENT_MESSAGES.CREATED_TWO
+                            : TAILORED_PAYMENT_MESSAGES.CREATED_ONE +
+                              getIndianPrice(
+                                Math.round(
+                                  props.payment.per_person_total_cost / 100
+                                )
+                              ) +
+                              TAILORED_PAYMENT_MESSAGES.CREATED_TWO}
                         </div>
-                        <BookingSuccessText style={{ color: "green" }}>
-                          <div
-                            style={{ lineHeight: "2" }}
-                            className="font-lexend"
-                          >
-                            {props.payment.is_registration_needed
-                              ? REGISTRATION_PAYMENT_MESSAGES.CREATED_ONE +
-                                getIndianPrice(
-                                  Math.round(
-                                    props.payment.per_person_total_cost / 100
-                                  )
-                                ) +
-                                REGISTRATION_PAYMENT_MESSAGES.CREATED_TWO
-                              : TAILORED_PAYMENT_MESSAGES.CREATED_ONE +
-                                getIndianPrice(
-                                  Math.round(
-                                    props.payment.per_person_total_cost / 100
-                                  )
-                                ) +
-                                TAILORED_PAYMENT_MESSAGES.CREATED_TWO}
-                          </div>
-                        </BookingSuccessText>
-                      </BookingSuccessContainer>
-                    ) : null
-                  ) : null}
+                      </BookingSuccessText>
+                    </BookingSuccessContainer>
+                  ) : null
+                ) : null}
 
-                  <Tabs
-                    value={value}
-                    onChange={handleChange}
-                    variant={!isPageWide ? "scrollable" : "fullWidth"}
-                    scrollButtons={false}
-                    allowScrollButtonsMobile
-                    indicatorColor="#f7e700"
-                    id="poimodal-tabs"
-                  >
-                    <Tab
-                      label={
-                        props.stayBookings
-                          ? "Stays" + " (" + props.stayBookings.length + ")"
-                          : "Stays"
-                      }
-                      className="bookingdetail-tab font-lexend"
-                    ></Tab>
-                    <Tab
-                      label={
-                        props.transferBookings
-                          ? "Transfers" +
-                            " (" +
-                            props.transferBookings.length +
-                            ")"
-                          : "Transfers"
-                      }
-                      className="bookingdetail-tab font-lexend"
-                      id="bookingdetail-tab-transfers"
-                    ></Tab>
-                    {props.flightBookings ? (
-                      props.flightBookings.length ? (
-                        <Tab
-                          label={props.flightBookings ? "Flights" : "Flights"}
-                          className="bookingdetail-tab font-lexend"
-                          id="bookingdetail-tab-flights"
-                        ></Tab>
-                      ) : (
-                        <Tab
-                          label={"Flights"}
-                          style={{ display: "none" }}
-                          className="bookingdetail-tab font-lexend"
-                          id="bookingdetail-tab-flights"
-                        ></Tab>
-                      )
+                <Tabs
+                  value={value}
+                  onChange={handleChange}
+                  variant={!isPageWide ? "scrollable" : "fullWidth"}
+                  scrollButtons={false}
+                  allowScrollButtonsMobile
+                  indicatorColor="#f7e700"
+                  id="poimodal-tabs"
+                >
+                  <Tab
+                    label={
+                      props.stayBookings
+                        ? "Stays" + " (" + props.stayBookings.length + ")"
+                        : "Stays"
+                    }
+                    className="bookingdetail-tab font-lexend"
+                  ></Tab>
+
+                  <Tab
+                    label={
+                      props.transferBookings
+                        ? "Transfers" +
+                          " (" +
+                          props.transferBookings.length +
+                          ")"
+                        : "Transfers"
+                    }
+                    className="bookingdetail-tab font-lexend"
+                    id="bookingdetail-tab-transfers"
+                  ></Tab>
+
+                  {props.flightBookings ? (
+                    props.flightBookings.length ? (
+                      <Tab
+                        label={props.flightBookings ? "Flights" : "Flights"}
+                        className="bookingdetail-tab font-lexend"
+                        id="bookingdetail-tab-flights"
+                      ></Tab>
                     ) : (
                       <Tab
                         label={"Flights"}
@@ -1765,247 +1656,240 @@ const Booking = (props) => {
                         className="bookingdetail-tab font-lexend"
                         id="bookingdetail-tab-flights"
                       ></Tab>
-                    )}
+                    )
+                  ) : (
+                    <Tab
+                      label={"Flights"}
+                      style={{ display: "none" }}
+                      className="bookingdetail-tab font-lexend"
+                      id="bookingdetail-tab-flights"
+                    ></Tab>
+                  )}
 
-                    {props.activityBookings ? (
-                      props.activityBookings.length ? (
-                        <Tab
-                          label={
-                            props.activityBookings
-                              ? "Activities" +
-                                " (" +
-                                props.activityBookings.length +
-                                ")"
-                              : "Activities (0)"
-                          }
-                          className="bookingdetail-tab font-lexend"
-                        ></Tab>
-                      ) : (
-                        <Tab
-                          label={"Activities"}
-                          className="bookingdetail-tab font-lexend"
-                          style={{ display: "none" }}
-                        ></Tab>
-                      )
+                  {props.activityBookings ? (
+                    props.activityBookings.length ? (
+                      <Tab
+                        label={
+                          props.activityBookings
+                            ? "Activities" +
+                              " (" +
+                              props.activityBookings.length +
+                              ")"
+                            : "Activities (0)"
+                        }
+                        className="bookingdetail-tab font-lexend"
+                      ></Tab>
                     ) : (
                       <Tab
                         label={"Activities"}
                         className="bookingdetail-tab font-lexend"
                         style={{ display: "none" }}
                       ></Tab>
-                    )}
-                  </Tabs>
-                  <TabPanel value={value} index={0}>
-                    {props.stayBookings ? (
-                      props.stayBookings.length ? (
-                        bookingsAccommodationsMobileJSX
-                      ) : (
-                        <ImageLoader
-                          url="media/website/undraw_best_place_re_lne9.svg"
-                          width="50%"
-                          widthmobile="50%"
-                        ></ImageLoader>
-                      )
-                    ) : (
-                      <ImageLoader
-                        height="auto"
-                        width="50%"
-                        widthmobile="50%"
-                        url="media/website/undraw_best_place_re_lne9.svg"
-                      ></ImageLoader>
-                    )}
-                    {!props.stayBookings ? (
-                      <div className="center-div">
-                        <p
-                          className="font-lexend text-center"
-                          style={{ margin: "1rem 0" }}
-                        >
-                          Nothing to see here
-                        </p>
-                      </div>
-                    ) : !props.stayBookings.length ? (
-                      <div className="center-dov">
-                        <p
-                          className="font-lexend text-center"
-                          style={{ margin: "1rem 0" }}
-                        >
-                          Nothing to see here
-                        </p>
-                      </div>
-                    ) : null}
-                  </TabPanel>
-                  <TabPanel value={value} index={2}>
-                    {props.flightBookings ? (
-                      props.flightBookings.length ? (
-                        bookingsFlightsMobileJSX
-                      ) : (
-                        <ImageLoader
-                          url="media/website/undraw_best_place_re_lne9.svg"
-                          width="50%"
-                          widthmobile="50%"
-                        ></ImageLoader>
-                      )
-                    ) : (
-                      <ImageLoader
-                        height="auto"
-                        width="50%"
-                        widthmobile="50%"
-                        url="media/website/undraw_best_place_re_lne9.svg"
-                      ></ImageLoader>
-                    )}
-                    {/* {!props.flightBookings ? <div className='center-div'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.flightBookings.length ? <div className='center-dov'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
+                    )
+                  ) : (
+                    <Tab
+                      label={"Activities"}
+                      className="bookingdetail-tab font-lexend"
+                      style={{ display: "none" }}
+                    ></Tab>
+                  )}
+                </Tabs>
 
-                    {/* {bookingsTransfersMobileJSX} */}
-                  </TabPanel>
-                  <TabPanel value={value} index={1}>
-                    {/* {bookingsFlightsMobileJSX} */}
-                    {props.transferBookings ? (
-                      props.transferBookings.length ? (
-                        bookingsTransfersMobileJSX
-                      ) : (
-                        <ImageLoader
-                          url="media/website/undraw_best_place_re_lne9.svg"
-                          width="50%"
-                          widthmobile="50%"
-                        ></ImageLoader>
-                      )
+                <TabPanel value={value} index={0}>
+                  {props.stayBookings ? (
+                    props.stayBookings.length ? (
+                      bookingsAccommodationsMobileJSX
                     ) : (
                       <ImageLoader
-                        height="auto"
+                        url="media/website/undraw_best_place_re_lne9.svg"
                         width="50%"
                         widthmobile="50%"
-                        url="media/website/undraw_best_place_re_lne9.svg"
                       ></ImageLoader>
-                    )}
-                    {/* {!props.transferBookings ? <div className='center-div'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.transferBookings.length ? <div className='center-dov'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
-                  </TabPanel>
-                  <TabPanel value={value} index={3}>
-                    {props.activityBookings ? (
-                      props.activityBookings.length ? (
-                        bookingsActivityMobileJSX
-                      ) : (
-                        <ImageLoader
-                          url="media/website/undraw_best_place_re_lne9.svg"
-                          width="50%"
-                          widthmobile="50%"
-                        ></ImageLoader>
-                      )
+                    )
+                  ) : (
+                    <ImageLoader
+                      height="auto"
+                      width="50%"
+                      widthmobile="50%"
+                      url="media/website/undraw_best_place_re_lne9.svg"
+                    ></ImageLoader>
+                  )}
+
+                  {!props.stayBookings ? (
+                    <div className="center-div">
+                      <p
+                        className="font-lexend text-center"
+                        style={{ margin: "1rem 0" }}
+                      >
+                        Nothing to see here
+                      </p>
+                    </div>
+                  ) : !props.stayBookings.length ? (
+                    <div className="center-dov">
+                      <p
+                        className="font-lexend text-center"
+                        style={{ margin: "1rem 0" }}
+                      >
+                        Nothing to see here
+                      </p>
+                    </div>
+                  ) : null}
+                </TabPanel>
+
+                <TabPanel value={value} index={2}>
+                  {props.flightBookings ? (
+                    props.flightBookings.length ? (
+                      bookingsFlightsMobileJSX
                     ) : (
                       <ImageLoader
-                        height="auto"
+                        url="media/website/undraw_best_place_re_lne9.svg"
                         width="50%"
                         widthmobile="50%"
-                        url="media/website/undraw_best_place_re_lne9.svg"
                       ></ImageLoader>
-                    )}
-                    {/* {!props.activityBookings ? <div className='center-div'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : !props.activityBookings.length ? <div className='center-dov'><p className="font-lexend text-center" style={{margin: '1rem 0'}}>Nothing to see here</p></div> : null } */}
-                  </TabPanel>
-                  {/* <MobileWidthContainer><Button width="100%" bgColor={props.traveleritinerary ? 'white' : "#F7e700"} borderRadius="5px" borderWidth={props.traveleritinerary ? '1px': "0px"} margin="0.5rem 0 0.5rem 0"  borderColor="#e4e4e4" onclick={_showPaymentHandler} ><p style={{margin: '0'}} className={props.blur ? "blurry-text" : ''}>{props.traveleritinerary ? 'View Details' : 'Buy Now'}</p></Button>
-             <Button onclick={()=> window.location.href=urls.WHATSAPP+"?text="+message} hoverColor="black" hoverBgColor="#128C7E"  onclickparam={null} width="100%" bgColor="white" borderRadius="5px" borderWidth="1px" borderColor="#e4e4e4"   margin="0 0 12.5vh 0" >
-      <FontAwesomeIcon icon={faWhatsapp} style={{marginRight: "0.5rem"}}/>
-       Connect on WhatsApp</Button></MobileWidthContainer> */}
-                </BookingsContainer>
-              ) : (
-                summaryContainerJSX
-              )}
-              {/* {showpayment &&props.payment.payment_info ?
-             <SummaryContainer hide={_hidePaymentHandler} payment={props.payment} experienceId={props.experienceId}></SummaryContainer> : null} */}
-              {/* {props.showBookingModal ? ( */}
-              <BookingModal
-                budget={props.budget}
-                _setImagesHandler={_setImagesHandler}
+                    )
+                  ) : (
+                    <ImageLoader
+                      height="auto"
+                      width="50%"
+                      widthmobile="50%"
+                      url="media/website/undraw_best_place_re_lne9.svg"
+                    ></ImageLoader>
+                  )}
+                </TabPanel>
+
+                <TabPanel value={value} index={1}>
+                  {props.transferBookings ? (
+                    props.transferBookings.length ? (
+                      bookingsTransfersMobileJSX
+                    ) : (
+                      <ImageLoader
+                        url="media/website/undraw_best_place_re_lne9.svg"
+                        width="50%"
+                        widthmobile="50%"
+                      ></ImageLoader>
+                    )
+                  ) : (
+                    <ImageLoader
+                      height="auto"
+                      width="50%"
+                      widthmobile="50%"
+                      url="media/website/undraw_best_place_re_lne9.svg"
+                    ></ImageLoader>
+                  )}
+                </TabPanel>
+
+                <TabPanel value={value} index={3}>
+                  {props.activityBookings ? (
+                    props.activityBookings.length ? (
+                      bookingsActivityMobileJSX
+                    ) : (
+                      <ImageLoader
+                        url="media/website/undraw_best_place_re_lne9.svg"
+                        width="50%"
+                        widthmobile="50%"
+                      ></ImageLoader>
+                    )
+                  ) : (
+                    <ImageLoader
+                      height="auto"
+                      width="50%"
+                      widthmobile="50%"
+                      url="media/website/undraw_best_place_re_lne9.svg"
+                    ></ImageLoader>
+                  )}
+                </TabPanel>
+              </BookingsContainer>
+            ) : (
+              summaryContainerJSX
+            )}
+
+            <BookingModal
+              budget={props.budget}
+              _setImagesHandler={_setImagesHandler}
+              getPaymentHandler={props.getPaymentHandler}
+              alternates={alternates[selectedBooking.id]}
+              tailored_id={props.stayBookings[0]["tailored_itinerary"]}
+              _updatePaymentHandler={props._updatePaymentHandler}
+              _updateStayBookingHandler={props._updateStayBookingHandler}
+              _updateBookingHandler={props._updateBookingHandler}
+              selectedBooking={selectedBooking}
+              setShowBookingModal={props.setShowBookingModal}
+              showBookingModal={props.showBookingModal}
+              setHideBookingModal={props.setHideBookingModal}
+            ></BookingModal>
+
+            {props.traveleritinerary ? (
+              <div className="hidden-desktop">
+                <Banner
+                  text="Want to craft your own travel experience like this?"
+                  buttontext="Start Now"
+                  color="black"
+                  buttonbgcolor="#f7e700"
+                ></Banner>
+              </div>
+            ) : null}
+
+            {props.showFlightModal ? (
+              <FlightModal
+                _updateFlightBookingHandler={props._updateFlightBookingHandler}
                 getPaymentHandler={props.getPaymentHandler}
-                alternates={alternates[selectedBooking.id]}
-                tailored_id={props.stayBookings[0]["tailored_itinerary"]}
-                _updatePaymentHandler={props._updatePaymentHandler}
-                _updateStayBookingHandler={props._updateStayBookingHandler}
                 _updateBookingHandler={props._updateBookingHandler}
-                selectedBooking={selectedBooking}
-                setShowBookingModal={props.setShowBookingModal}
-                showBookingModal={props.showBookingModal}
-                setHideBookingModal={props.setHideBookingModal}
-              ></BookingModal>
-              {/* ) : null} */}
-              {props.traveleritinerary ? (
-                <div className="hidden-desktop">
-                  <Banner
-                    text="Want to craft your own travel experience like this?"
-                    buttontext="Start Now"
-                    color="black"
-                    buttonbgcolor="#f7e700"
-                  ></Banner>
-                </div>
-              ) : null}
-              {props.showFlightModal ? (
-                <FlightModal
-                  _updateFlightBookingHandler={
-                    props._updateFlightBookingHandler
-                  }
-                  getPaymentHandler={props.getPaymentHandler}
-                  _updateBookingHandler={props._updateBookingHandler}
-                  itinerary_id={props.flightBookings[0]["itinerary_id"]}
-                  setHideFlightModal={props.setHideFlightModal}
-                  alternates={alternates[selectedBooking.id]}
-                  tailored_id={props.flightBookings[0]["tailored_itinerary"]}
-                  _updatePaymentHandler={props._updatePaymentHandler}
-                  _updateFlightHandler={props._updateFlightHandler}
-                  selectedBooking={selectedBooking}
-                  setShowFlightModal={props.setShowFlightModal}
-                  showFlightModal={props.showFlightModal}
-                ></FlightModal>
-              ) : null}
-              {/* {props.showTaxiModal ? ( */}
-              <TaxiModal
-                getPaymentHandler={props.getPaymentHandler}
-                _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-                setHideTaxiModal={() => props.setShowTaxiModal(false)}
-                showTaxiModal={props.showTaxiModal}
+                itinerary_id={props.flightBookings[0]["itinerary_id"]}
+                setHideFlightModal={props.setHideFlightModal}
+                alternates={alternates[selectedBooking.id]}
+                tailored_id={props.flightBookings[0]["tailored_itinerary"]}
                 _updatePaymentHandler={props._updatePaymentHandler}
+                _updateFlightHandler={props._updateFlightHandler}
                 selectedBooking={selectedBooking}
-              ></TaxiModal>
-              {/* ) : null} */}
+                setShowFlightModal={props.setShowFlightModal}
+                showFlightModal={props.showFlightModal}
+              ></FlightModal>
+            ) : null}
 
-              {showFooterBannerMobile ? (
-                <FooterBannerMobile
-                  hasUserPaid={
-                    props.payment
-                      ? props.payment.paid_user
-                        ? true
-                        : false
+            <TaxiModal
+              getPaymentHandler={props.getPaymentHandler}
+              _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+              setHideTaxiModal={() => props.setShowTaxiModal(false)}
+              showTaxiModal={props.showTaxiModal}
+              _updatePaymentHandler={props._updatePaymentHandler}
+              selectedBooking={selectedBooking}
+            ></TaxiModal>
+
+            {showFooterBannerMobile ? (
+              <FooterBannerMobile
+                hasUserPaid={
+                  props.payment
+                    ? props.payment.paid_user
+                      ? true
                       : false
-                  }
-                  paymentLoading={props.paymentLoading}
-                  payment={props.payment}
-                  openWhatsapp={() =>
-                    (window.location.href = urls.WHATSAPP + "?text=" + message)
-                  }
-                  openBooking={_showPaymentHandler}
-                ></FooterBannerMobile>
-              ) : null}
-              {/* <Accommodation token={props.token} show={true} id="a7c63401-3cc4-4542-9e3a-505f73e98614"></Accommodation> */}
-            </Container>
-          );
-        else
-          return (
-            <div>
-              <LogInModal show={true} onhide={_handleLoginClose}></LogInModal>
-            </div>
-          );
-      }
-    } else
-      return (
-        <FullScreenGallery
-          closeGalleryHandler={() => setImages(null)}
-          images={images}
-        ></FullScreenGallery>
-      );
+                    : false
+                }
+                paymentLoading={props.paymentLoading}
+                payment={props.payment}
+                openWhatsapp={() =>
+                  (window.location.href = urls.WHATSAPP + "?text=" + message)
+                }
+                openBooking={_showPaymentHandler}
+              ></FooterBannerMobile>
+            ) : null}
+          </Container>
+        );
+      else
+        return (
+          <div>
+            <LogInModal show={true} onhide={_handleLoginClose}></LogInModal>
+          </div>
+        );
+    }
   } else
     return (
-      <div>
-        <ComingSoon></ComingSoon>
-      </div>
+      <FullScreenGallery
+        closeGalleryHandler={() => setImages(null)}
+        images={images}
+      ></FullScreenGallery>
     );
 };
+
 const mapStateToPros = (state) => {
   return {
     name: state.auth.name,
@@ -2020,8 +1904,5 @@ const mapStateToPros = (state) => {
     hideloginclose: state.auth.hideloginclose,
   };
 };
-const mapDispatchToProps = (dispatch) => {
-  return {};
-};
 
-export default connect(mapStateToPros, mapDispatchToProps)(Booking);
+export default connect(mapStateToPros)(Booking);

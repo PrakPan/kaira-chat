@@ -24,10 +24,6 @@ const InnerContainer = styled.div`
   height: 100%;
 `;
 
-const LastNavigationLink = styled(NavigationLink)`
-  margin-left: auto;
-`;
-
 export const Navigation = ({ items, BarName, ClickHandler, selectedItem }) => {
   const [selectedTab, setSelectedTab] = useState(
     selectedItem ? selectedItem : `${items[0].id}`

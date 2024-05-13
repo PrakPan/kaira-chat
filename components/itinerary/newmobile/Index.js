@@ -1,15 +1,12 @@
-import React, { useRef, useState, useEffect } from 'react';
-import styled from 'styled-components';
-import CityContainer from '../CityContainer';
-import Timer from '../../../containers/itinerary/timer/Index';
-import { Tabs, Tab } from '@mui/material';
-
-import IconElement from '../element/Index';
-import Locations from './Locations';
-// import {ITINERARY_ELEMENT_TYPES} from '../../../services/constants';
-import { connect } from 'react-redux';
-import { getHumanDate } from '../../../services/getHumanDate';
-import { isJson } from '../../../services/isJSON';
+import React, { useRef, useState } from "react";
+import styled from "styled-components";
+import Timer from "../../../containers/itinerary/timer/Index";
+import { Tabs, Tab } from "@mui/material";
+import IconElement from "../element/Index";
+import Locations from "./Locations";
+import { connect } from "react-redux";
+import { getHumanDate } from "../../../services/getHumanDate";
+import { isJson } from "../../../services/isJSON";
 
 const Container = styled.div`
   @media screen and (min-width: 768px) {
@@ -21,24 +18,7 @@ const Container = styled.div`
   }
 `;
 
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={false}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      className="tab-test"
-      {...other}
-    >
-      {value === index && <div>{children}</div>}
-    </div>
-  );
-}
 const getCityFromDay = (day_slab_index, day_slabs, city_slabs) => {
-  // if(city_slabs)
   for (var i = 0; i < city_slabs.length - 1; i++) {
     if (city_slabs[i].day_slab_location.start_day_slab_index === day_slab_index)
       return i;
@@ -50,10 +30,6 @@ const getCityFromDay = (day_slab_index, day_slabs, city_slabs) => {
     }
   }
   return i;
-};
-
-const getCityIdFromDay = (day_slab_index, day_slabs, city_slabs) => {
-  const city = getCityFromDay(day_slab_index, day_slabs, city_slabs);
 };
 
 const Itinerary = (props) => {
@@ -79,29 +55,24 @@ const Itinerary = (props) => {
   const [value, setValue] = React.useState(0);
   const [locationValue, setLocationValue] = useState(0);
 
-  const [dayTabsJSX, setDayTabsJSX] = useState([]);
-  const [dayPanelsJSX, setDayPannelsJSX] = useState([]);
-
   const handleChange = (event, newValue) => {
     setLocationValue(
       getCityFromDay(newValue, props.day_slabs, props.city_slabs)
     );
     setValue(newValue);
-    if (typeof window !== 'undefined' && !props.experience)
+    if (typeof window !== "undefined" && !props.experience)
       window.scrollTo(0, window.innerHeight * 0.5);
   };
   const hadleLocationChange = (event, newValue) => {
     setLocationValue(newValue);
     setValue(props.city_slabs[newValue].day_slab_location.start_day_slab_index);
-    if (typeof window !== 'undefined' && !props.experience)
+    if (typeof window !== "undefined" && !props.experience)
       window.scrollTo(0, window.innerHeight * 0.5);
   };
-  const [hideTimer, setHideTimer] = useState(false);
 
   const _handleTimerClose = () => {
     props._hideTimerHandler();
     window.scrollTo(0, window.innerHeight / 2);
-    setHideTimer(true);
   };
   let day_tabs_jsx = [];
   let day_pannesl_jsx = [];
@@ -112,28 +83,24 @@ const Itinerary = (props) => {
         day_tabs_jsx.push(
           <Tab
             style={{
-              textTransform: 'none',
-              marginRight: '0.5rem',
-              padding: '0.25rem 1rem',
-              color: 'white !important',
+              textTransform: "none",
+              marginRight: "0.5rem",
+              padding: "0.25rem 1rem",
+              color: "white !important",
             }}
             label={getHumanDate(props.day_slabs[i].slab)}
             className="itinerary-day-tab font-lexend"
           ></Tab>
         );
-        //push an empty array since day is present
         day_slabs_jsx.push([]);
         for (var j = 0; j < props.day_slabs[i].slab_elements.length; j++) {
-          // const city_id = getCityIdFromElement(props.day_slabs[i].slab_elements[j].element_index, props.day_slabs, props.city_slabs)
           let city_id = null;
           if (props.day_slabs[i].slab_elements[j].activity_data)
             if (props.day_slabs[i].slab_elements[j].activity_data.city)
               city_id =
                 props.day_slabs[i].slab_elements[j].activity_data.city.id;
 
-          // const city_id=props.day_slabs[i].slab_elements[j];
-          //Push element if not newcity
-          if (props.day_slabs[i].slab_elements[j].element_type !== 'newcity')
+          if (props.day_slabs[i].slab_elements[j].element_type !== "newcity")
             day_slabs_jsx[i].push(
               <div>
                 <IconElement
@@ -146,13 +113,13 @@ const Itinerary = (props) => {
                   traveleritinerary={props.traveleritinerary}
                   is_poi_rec={
                     props.day_slabs[i].slab_elements[j].type ===
-                    'POI/Activity Recommendation'
+                    "POI/Activity Recommendation"
                       ? true
                       : false
                   }
                   is_food={
                     props.day_slabs[i].slab_elements[j].type ===
-                      'Food Recommendation' &&
+                      "Food Recommendation" &&
                     isJson(props.day_slabs[i].slab_elements[j].text)
                       ? true
                       : false
@@ -187,24 +154,18 @@ const Itinerary = (props) => {
         }
         day_pannesl_jsx.push(
           <TabPanel ref={ref} value={value} index={i}>
-            <div style={{ marginBottom: '10vh' }}>{day_slabs_jsx[i]}</div>
+            <div style={{ marginBottom: "10vh" }}>{day_slabs_jsx[i]}</div>
           </TabPanel>
         );
       }
-
-    // setDayTabsJSX(day_tabs_jsx);
-
-    // setDayPannelsJSX(day_pannesl_jsx);
   };
-  useEffect(() => {
-    // _generateDaySlabs();
-  }, []);
+
   _generateDaySlabs();
 
   return (
     <Container
       id="kochi-anchor"
-      style={{ marginTop: props.showTimer && !props.hideTimer ? '-50vh' : '0' }}
+      style={{ marginTop: props.showTimer && !props.hideTimer ? "-50vh" : "0" }}
     >
       {props.showTimer ? (
         <Timer
@@ -225,7 +186,7 @@ const Itinerary = (props) => {
         onChange={handleChange}
         indicatorColor="false"
         disableRippled
-        variant={'scrollable'}
+        variant={"scrollable"}
         scrollButtons={true}
         allowScrollButtonsMobile
       >

@@ -7,10 +7,12 @@ import { TbArrowBack } from "react-icons/tb";
 import SkeletonCard from "../../ui/SkeletonCard";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
+
 const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
 `;
+
 const Reviews = styled.div`
   display: flex;
   align-items: center;
@@ -25,6 +27,7 @@ const Reviews = styled.div`
     margin-inline: 0.2rem;
   }
 `;
+
 const Text = styled.p`
   font-size: 14px;
 `;
@@ -44,6 +47,7 @@ const Container = styled.div`
     width: 500px;
   }
 `;
+
 const TimeStamp = styled.span`
   height: 31px;
   padding: 4px 8px;
@@ -61,6 +65,7 @@ const TimeStamp = styled.span`
     left: 300px;
   }
 `;
+
 const BackContainer = styled.div`
   margin: 0;
   display: flex;
@@ -75,23 +80,21 @@ const BackContainer = styled.div`
     padding-block: 1rem;
   }
 `;
+
 const BackText = styled.div`
   font-size: 1.5rem;
   line-height: 2rem;
 `;
+
 const ImageContainer = styled.div`
   position: relative;
 `;
+
 const POIDetails = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageFail, setImageFail] = useState(false);
-  var about = (
-    <p>
-      {props?.data?.short_description}{" "}
-      {/* <b className="hover-pointer">...more</b> */}
-    </p>
-  );
+  var about = <p>{props?.data?.short_description} </p>;
   const [aboutText, setAboutText] = useState(about);
 
   var experience_filters = (
@@ -150,7 +153,6 @@ const POIDetails = (props) => {
               borderRadius="8px"
               marginTop="23px"
               widthMobile="100%"
-              // style={imageLoading ? { display: "none" } : {}}
               url={
                 props.data.image && !imageFail
                   ? props.data.image
@@ -198,11 +200,6 @@ const POIDetails = (props) => {
           <></>
         )}
       </ImageContainer>
-      {/* {!imageLoaded && (
-        <div
-          style={{ width: isPageWide ? "468px" : "100%", height: "188px" }}
-        />
-      )} */}
       <div>
         <Title>{props.data.name}</Title>
         {props.data.address && (
@@ -241,7 +238,6 @@ const POIDetails = (props) => {
           Cost: <div className="font-semibold px-1">₹</div> {props.data.cost}
           {" /- "}
           <div style={{ marginLeft: "0.5rem" }}>
-            {/* {props.data.price_category == "individual" ? "Per person" : null} */}
             Per person
           </div>
         </div>

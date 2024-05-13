@@ -1,11 +1,11 @@
-import React from 'react';
-import styled from 'styled-components';
-import FiltersMobile from './filtersmobile/Index';
-import Drawer from '../../ui/Drawer';
-import { useState } from 'react';
-import { IoMdClose, IoMdStar } from 'react-icons/io';
-import UiDropdown from '../../UiDropdown';
-import ButtonYellow from '../../ButtonYellow';
+import React from "react";
+import styled from "styled-components";
+import FiltersMobile from "./filtersmobile/Index";
+import Drawer from "../../ui/Drawer";
+import { useState } from "react";
+import { IoMdClose, IoMdStar } from "react-icons/io";
+import UiDropdown from "../../UiDropdown";
+import ButtonYellow from "../../ButtonYellow";
 
 const Container = styled.div`
   margin: 0;
@@ -16,35 +16,29 @@ const Container = styled.div`
 const Section = (props) => {
   const [SelectedStar, setSelectedStar] = useState();
   const [SelectedBudget, setSelectedBudget] = useState();
-  // let isPageWide = media('(min-width: 768px)')
-  const _selectFilter = (event, filter) => {
-    if (filter === 0) setFilterHeading('Budget');
-    else if (filter === 1) setFilterHeading('Type');
-    // else setFilterHeading('Star Category');
-    setFilterSelected(filter);
-    setState(true);
-  };
+
   const _onChangeHandler = (checked, filter, heading, i) => {
-    if (heading == 'budget') {
+    if (heading == "budget") {
       setSelectedBudget(i);
     }
 
     if (checked) props._addFilterHandler(filter, heading);
     else props._removeFilterHandler(filter);
   };
-   const _OnstarSelect = (i, currentfilter) => {
-     if (SelectedStar == i) {
-       setSelectedStar(-1);
-       props._updateStarFilterHandler("");
-       return;
-     }
-     setSelectedStar(i);
-     props._updateStarFilterHandler(currentfilter);
-   };
-  const handleSelectOption = (option) => {
-    // Perform additional actions with the selected option
-    _onChangeHandler(true, option, 'type');
+
+  const _OnstarSelect = (i, currentfilter) => {
+    if (SelectedStar == i) {
+      setSelectedStar(-1);
+      props._updateStarFilterHandler("");
+      return;
+    }
+    setSelectedStar(i);
+    props._updateStarFilterHandler(currentfilter);
   };
+  const handleSelectOption = (option) => {
+    _onChangeHandler(true, option, "type");
+  };
+
   return (
     <Container className="font-lexend">
       <FiltersMobile
@@ -87,7 +81,6 @@ const Section = (props) => {
                 {props.FILTERS["star_category"].map((currentfilter, i) => (
                   <button
                     onClick={() => _OnstarSelect(i, currentfilter)}
-                    // onClick={() => console.log("currentfilter", currentfilter , i)}
                     className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${
                       SelectedStar == i
                         ? "text-white border-0 bg-black "
@@ -147,9 +140,6 @@ const Section = (props) => {
             </ButtonYellow>
             <ButtonYellow
               className="w-1/2"
-              // onClick={() => {
-              //   handleClickAc(index, booking);
-              // }}
               onClick={() => props.setshowFilter(false)}
             >
               <div className="text-[#01202B] ">Apply</div>

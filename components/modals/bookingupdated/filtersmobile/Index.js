@@ -1,31 +1,10 @@
-import React, { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
-import Pannel from "./Pannel";
+import React, { useState } from "react";
 import styled from "styled-components";
-import { Tabs, Tab } from "@mui/material";
 import { IoMdStar } from "react-icons/io";
 import media from "../../../media";
 import UiDropdown from "../../../UiDropdown";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
-import DropDown from "../../../ui/DropDown";
-const FiltersContainer = styled.div`
-  display: flex;
-  margin: 0.5rem 0;
-`;
-const Filter = styled.div`
-  border-radius: 2rem;
-  padding: 0.25rem 1rem;
-  margin-right: 0.25rem;
-  font-size: 0.75rem;
-`;
-const NewFilter = styled.div`
-  padding: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-`;
+
 const SortContainer = styled.div`
   position: absolute;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
@@ -35,6 +14,7 @@ const SortContainer = styled.div`
   width: max-content;
   padding: 0.5rem;
 `;
+
 const SortItem = styled.div`
   text-align: center;
   padding: 0.2rem 0.5rem;
@@ -45,55 +25,14 @@ const SortItem = styled.div`
     background: #f7f3f3;
   }
 `;
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && <div>{children}</div>}
-    </div>
-  );
-}
 
 export default function TemporaryDrawer(props) {
   let isPageWide = media("(min-width: 768px)");
-
-  const [state, setState] = React.useState(false);
-  const [filterSelected, setFilterSelected] = useState(null);
-  const [filterHeading, setFilterHeading] = useState("Budget");
   const [SelectedStar, setSelectedStar] = useState(-1);
   const [SelectedBudget, setSelectedBudget] = useState();
   const [SelectedSort, setSelectedSort] = useState(props.filters.sort[0]);
   const [sortShow, setSortShow] = useState(false);
-  const _selectFilter = (event, filter) => {
-    if (filter === 0) setFilterHeading("Budget");
-    else if (filter === 1) setFilterHeading("Type");
-    // else setFilterHeading('Star Category');
-    setFilterSelected(filter);
-    setState(true);
-  };
 
-  const toggleDrawer = (open) => (event) => {
-    if (
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
-      return;
-    }
-
-    setState(open);
-  };
-
-  const _closePannel = () => {
-    setState(false);
-  };
-  const _handleChange = (event, value) => {};
   const _onChangeHandler = (checked, filter, heading, i) => {
     if (heading == "budget") {
       if (SelectedBudget == i) {
@@ -106,6 +45,7 @@ export default function TemporaryDrawer(props) {
     if (checked) props._addFilterHandler(filter, heading);
     else props._removeFilterHandler(heading);
   };
+
   const _OnstarSelect = (i, currentfilter) => {
     if (SelectedStar == i) {
       setSelectedStar(-1);

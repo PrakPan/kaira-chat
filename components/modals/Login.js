@@ -57,8 +57,8 @@ const TagsContent = [
 const Enquiry = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [modalWidth, setModalWidth] = useState(!isPageWide ? 90 : 50);
-  let myref = useRef(null);
   const [showImage, setShowImage] = useState(false);
+  let myref = useRef(null);
 
   useEffect(() => {
     if (myref.current) {
@@ -174,8 +174,4 @@ const mapStateToPros = (state) => {
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return {};
-};
-
-export default connect(mapStateToPros, mapDispatchToProps)(Enquiry);
+export default connect(mapStateToPros)(Enquiry);

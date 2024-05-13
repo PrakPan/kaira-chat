@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import media from "../../../components/media";
 import SkeletonCard from "../../../components/ui/SkeletonCard";
+
 const POIDetailsSkeleton = (props) => {
   const Container = styled.div`
     height: 368px;
@@ -12,7 +13,7 @@ const POIDetailsSkeleton = (props) => {
     flex-direction: column;
     gap: 1.5rem;
     position: relative;
-      margin-bottom : 1rem;
+    margin-bottom: 1rem;
 
     @media screen and (min-width: 768px) {
       flex-direction: row;
@@ -36,19 +37,15 @@ const POIDetailsSkeleton = (props) => {
     height: 1.2rem;
     display: flex;
     justify-content: space-between;
-    position : absolute;
-    bottom : 0.5rem;
+    position: absolute;
+    bottom: 0.5rem;
     @media screen and (min-width: 768px) {
       height: 1.5rem;
       position: absolute;
-      width : 100%;
+      width: 100%;
       right: 1rem;
-      justify-content : flex-end;
+      justify-content: flex-end;
     }
-  `;
-  const Title = styled.p`
-    font-weight: 800;
-    font-size: 20px;
   `;
   let isPageWide = media("(min-width: 768px)");
 

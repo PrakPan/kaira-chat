@@ -114,7 +114,7 @@ const ProfileDropDown = (props) => {
             style={{ color: "black" }}
           ></StyledFontAwesomeIcon>
         ) : null}
-          </CenterNav>
+      </CenterNav>
 
       {AuthMenu}
     </div>

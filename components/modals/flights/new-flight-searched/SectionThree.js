@@ -1,30 +1,22 @@
-import React, { useState } from "react";
 import styled from "styled-components";
 import { getIndianPrice } from "../../../../services/getIndianPrice";
 import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im";
 import media from "../../../media";
+
 const Container = styled.div`
   padding: 0.75rem;
   @media screen and (min-width: 768px) {
     margin: 0.5rem 0.5rem 0 0.5rem;
-    // display: flex;
-    // justify-content: space-between;
-    // text-align: center;
   }
-
-  // @media screen and (min-width: 768px) {
-  //   display: grid;
-  //   grid-template-columns: auto 6fr;
-  //   gap: 1.5rem;
-  //   padding: 1rem 0.5rem;
-  // }
 `;
+
 const Cost = styled.p`
   font-size: 20px;
   font-weight: 700;
   margin: 0;
   text-align: center;
 `;
+
 const Text = styled.p`
   font-size: 15px;
   font-weight: 300;
@@ -34,6 +26,7 @@ const Text = styled.p`
     text-align: center;
   }
 `;
+
 const FlexBox = styled.div`
   @media screen and (max-width: 768px) {
     display: flex;
@@ -41,6 +34,7 @@ const FlexBox = styled.div`
     gap: 0.4rem;
   }
 `;
+
 const SelectBox = styled.div`
   justify-content: center;
   display: flex;
@@ -63,7 +57,6 @@ const Section = (props) => {
   if (props.data)
     return (
       <Container className="font-lexend">
-        {/* <Text>Starting from</Text> */}
         <div
           style={
             isPageWide

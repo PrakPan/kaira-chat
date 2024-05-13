@@ -7,83 +7,15 @@ import { ImSpoonKnife } from "react-icons/im";
 import FullScreenGallery from "../../../components/fullscreengallery/Index";
 import * as ga from "../../../services/ga/Index";
 import ButtonYellow from "../../../components/ButtonYellow";
-import styled from "styled-components";
 import { getDate } from "../../../helper/ConvertDateFormat";
 import { connect } from "react-redux";
 import { BiTimeFive } from "react-icons/bi";
-import { CONTENT_SERVER_HOST } from "../../../services/constants";
 import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
 
-const ClippathComp = styled.div`
-  clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
-`;
 const ActivitiesBookings = (props) => {
-  const [selectedBooking, setSelectedBooking] = useState({
-    id: null,
-    name: null,
-  });
-  const [bookingsAccommodationsDesktopJSX, setBookingAccommodationsDesktopJSX] =
-    useState([]);
-  const [bookingsAccommodationsMobileJSX, setBookingAccommodationsMobileJSX] =
-    useState([]);
-  const [showDetails, setShowDetails] = useState(false);
-  const [bookingId, setBookingId] = useState(null);
   const [images, setImages] = useState(null);
-  const [alternates, setAlternates] = useState(null);
-  const [dates, setDates] = useState({ check_in: "", check_out: "" });
   const [viewMoreDiscription, setViewMoreDiscription] = useState(null);
   const [showMore, setShowMore] = useState(false);
-
-  const _changeBookingHandler = (
-    name,
-    itinerary_id,
-    tailored_id,
-    accommodation,
-    id,
-    check_in,
-    check_out,
-    pax,
-    city,
-    room_type,
-    number_of_rooms,
-    itinerary_name,
-    cost,
-    costings_breakdown,
-    images
-  ) => {
-    {
-      process.env.NODE_ENV === "production" &&
-        !CONTENT_SERVER_HOST.includes("dev") &&
-        ga.event({
-          action: "Itinerary-bookings-acc_change",
-          params: { name: name },
-        });
-    }
-
-    setSelectedBooking({
-      ...selectedBooking,
-      name: name,
-      itinerary_id: itinerary_id,
-      accommodation: accommodation,
-      id: id,
-      tailored_id: tailored_id,
-      check_in: check_in,
-      check_out: check_out,
-      pax: pax,
-      city: city,
-      room_type: room_type,
-
-      itinerary_name: itinerary_name,
-      cost: Math.round(cost / 100),
-      costings_breakdown: costings_breakdown,
-      images: images,
-    });
-    props.setShowBookingModal();
-  };
-
-  let bookings_accommodations = [];
-
-  let alternatesarr = [];
 
   function Addons(Shorthand) {
     switch (Shorthand) {
@@ -121,59 +53,6 @@ const ActivitiesBookings = (props) => {
       }
     }
   };
-
-  const _setImagesHandler = (images) => {
-    setImages(images);
-  };
-
-  function handleClickAc(i) {
-    let name = props.stayBookings[i]["name"];
-    let costings_breakdown = props.stayBookings[i]["costings_breakdown"];
-    let cost = props.stayBookings[i]["booking_cost"];
-    let itinerary_id = props.stayBookings[i]["itinerary_id"];
-    let itinerary_name = props.stayBookings[i]["itinerary_name"];
-    let booking_type = props.stayBookings[i]["booking_type"];
-    let accommodation = props.stayBookings[i]["accommodation"];
-    let tailored_id = props.stayBookings[i]["tailored_itinerary"];
-    let id = props.stayBookings[i]["id"];
-    let check_in = props.stayBookings[i]["check_in"];
-    let check_out = props.stayBookings[i]["check_out"];
-    let pax = {
-      number_of_adults:
-        props.stayBookings[i].costings_breakdown[0]["number_of_adults"],
-      number_of_children:
-        props.stayBookings[i].costings_breakdown[0]["number_of_children"],
-      number_of_infants:
-        props.stayBookings[i].costings_breakdown[0]["number_of_infants"],
-    };
-    let city = props.stayBookings[i]["city"];
-    let room_type = props.stayBookings[i]["room_type"];
-    _changeBookingHandler(
-      name,
-      itinerary_id,
-      tailored_id,
-      accommodation,
-      id,
-      check_in,
-      check_out,
-      pax,
-      city,
-      room_type,
-
-      itinerary_name
-    );
-
-    props.setShowBookingModal;
-  }
-
-  function handleClick(i, id) {
-    let check_in = props.stayBookings[i]["check_in"];
-    let check_out = props.stayBookings[i]["check_out"];
-    setDates({ check_in, check_out });
-    setBookingId(id);
-
-    setShowDetails(true);
-  }
 
   const handleMoreDiscription = (e) => {
     setViewMoreDiscription(e.currentTarget.id);
@@ -245,7 +124,6 @@ const ActivitiesBookings = (props) => {
                       {booking?.name}
                     </div>
                     <div className="flex flex-col gap-2 -mt-2">
-                      {/* //Replace city wiht address */}
                       <div className="text-sm font-normal">
                         {booking?.costings_breakdown?.activity_data?.address}
                       </div>
@@ -377,12 +255,7 @@ const ActivitiesBookings = (props) => {
 
                     <div className="flex flex-row gap-3 items-center w-full">
                       {booking.accommodation && (
-                        <ButtonYellow
-                          className="lg:w-fit w-1/2"
-                          onClick={() =>
-                            handleClick(index, booking.accommodation)
-                          }
-                        >
+                        <ButtonYellow className="lg:w-fit w-1/2">
                           <div className="text-[#01202B] ">View Detail</div>
                         </ButtonYellow>
                       )}
@@ -439,8 +312,5 @@ const mapStateToPros = (state) => {
     hideloginclose: state.auth.hideloginclose,
   };
 };
-const mapDispatchToProps = (dispatch) => {
-  return {};
-};
 
-export default connect(mapStateToPros, mapDispatchToProps)(ActivitiesBookings);
+export default connect(mapStateToPros)(ActivitiesBookings);

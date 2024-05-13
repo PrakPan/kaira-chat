@@ -1,10 +1,11 @@
-import React, { useMemo, useState } from 'react';
-import Button from '../../../components/Button';
-import Slide from '../../../Animation/framerAnimation/Slide';
-import axiosLeadChat from '../../../services/leads/chat.js';
-import { useRouter } from 'next/router';
-import { connect } from 'react-redux';
-import { openNotification } from '../../../store/actions/notification';
+import React, { useMemo, useState } from "react";
+import Button from "../../../components/Button";
+import Slide from "../../../Animation/framerAnimation/Slide";
+import axiosLeadChat from "../../../services/leads/chat.js";
+import { useRouter } from "next/router";
+import { connect } from "react-redux";
+import { openNotification } from "../../../store/actions/notification";
+
 const TransferContainerForMissing = ({
   cityname1,
   cityname2,
@@ -16,7 +17,7 @@ const TransferContainerForMissing = ({
   const [isShow, setIsShow] = useState(false);
   const [isSucess, setIsSucess] = useState({
     value: false,
-    errorMsg: '',
+    errorMsg: "",
   });
   const getCurrentUrl = () => {
     const router = useRouter();
@@ -25,22 +26,19 @@ const TransferContainerForMissing = ({
     return `${process.env.NEXT_PUBLIC_BASE_URL}${asPath}`;
   };
   const currentUrl = getCurrentUrl();
-  // request for get in touch
 
   const _GetInTouch = () => {
     setLoading(true);
 
     axiosLeadChat
-      .post('/', {
+      .post("/", {
         email: email,
         name: name,
         phone: phone,
-        source: 'Itinerary',
+        source: "Itinerary",
         query_message: `I need help in completing booking - Transfer from ${cityname1} to ${cityname2} for my itinerary - ${currentUrl}`,
       })
       .then((res) => {
-        //  props.getPaymentHandler();
-
         setIsSucess({
           value: true,
           errorMsg: res.data.message,
@@ -49,19 +47,14 @@ const TransferContainerForMissing = ({
         setLoading(false);
       })
       .catch((err) => {
-        // setUpdateLoadingState(false);
         if (err.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          // The response headers
         }
         setIsSucess({
           value: false,
-          errorMsg: '',
+          errorMsg: "",
         });
         setIsShow(false);
         setLoading(false);
-        // window.alert('There seems to be a problem, please try again!', err);
         props.openNotification({
           type: "error",
           text: "There seems to be a problem, please try again!",
@@ -76,7 +69,7 @@ const TransferContainerForMissing = ({
         onUnmount={() =>
           setIsSucess({
             value: false,
-            errorMsg: '',
+            errorMsg: "",
           })
         }
         isActive={isSucess.value}
@@ -125,16 +118,11 @@ const TransferContainerForMissing = ({
     </>
   );
 };
-const mapStateToPros = (state) => {
-  return {};
-};
+
 const mapDispatchToProps = (dispatch) => {
   return {
     openNotification: (payload) => dispatch(openNotification(payload)),
   };
 };
 
-export default connect(
-  mapStateToPros,
-  mapDispatchToProps
-)(TransferContainerForMissing);
+export default connect(mapDispatchToProps)(TransferContainerForMissing);
