@@ -5,11 +5,9 @@ import styled from "styled-components";
 import DesktopBanner from "../../components/containers/Banner";
 import Experiences from "../../components/containers/Experiences";
 import media from "../../components/media";
-import * as ga from "../../services/ga/Index";
 import BannerTwo from "./BannerTwo";
 import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs";
 import Reviews from "./CaseStudies/Index";
-import axiossearchinstance from "../../services/sales/search/Search";
 import ExperienceCard from "../../components/cards/newitinerarycard-main/ExperienceCard";
 import Overview from "./Overview";
 import Button from "../../components/ui/button/Index";
@@ -20,14 +18,12 @@ import WhyPlanWithUs from "../../components/WhyPlanWithUs/PlanWithUsWithEnquiry"
 import HeroBanner from "../../components/containers/HeroBanner/HeroBanner";
 import openTailoredModal from "../../services/openTailoredModal";
 import dynamic from "next/dynamic";
+import AsSeenIn from "../testimonial/AsSeenIn";
+import PathNavigation from "./PathNavigation.js";
+import { logEvent } from "../../services/ga/Index";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
-import usePageLoaded from "../../components/custom hooks/usePageLoaded";
-import AsSeenIn from "../testimonial/AsSeenIn";
-var qs = require("qs");
-import PathNavigation from "./PathNavigation.js";
-import { logEvent } from "../../services/ga/Index";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -62,35 +58,6 @@ const MapContainer = styled.div`
   }
 `;
 
-const HowItWorksHeading = styled.p`
-  font-weight: 600;
-  margin: 1rem 0 0.5rem 0;
-  @media screen and (min-width: 768px) {
-    font-size: 1.25rem;
-    margin: 2rem 0 0.5rem 0;
-  }
-`;
-
-const GridContainer = styled.div`
-  display: grid;
-  padding: 1rem;
-  grid-gap: 1rem;
-
-  @media screen and (min-width: 768px) {
-    padding: 1rem 0;
-    grid-gap: 1.5rem;
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-`;
-
-const MinHeightContainer = styled.div`
-  min-height: 40vh;
-
-  @media screen and (min-width: 768px) {
-    min-height: 40vh;
-  }
-`;
-
 const Heading = styled.h2`
   font-size: 32px;
   font-weight: 700;
@@ -104,21 +71,13 @@ const Heading = styled.h2`
 `;
 
 const Homepage = (props) => {
+  const router = useRouter();
   let isPageWide = media("(min-width: 768px)");
-  const isPageLoaded = usePageLoaded();
-  const [itinerariesExclusiveJSX, setItinerariesExclusiveJSX] = useState([]);
   const [userItineraries, setUserItineraries] = useState([]);
   const [TTWItineraries, setTTWItineraries] = useState([]);
   const [showMore, setShowMore] = useState(false);
-  const [filters, setFilters] = useState({
-    Trek: true,
-    "Road Trip": true,
-  });
-  const [itinerariesToIndexExclusive, setItinerariesToIndexExclusive] =
-    useState([]);
-  const [itinerariesToIndexCustomer, setItinerariesToIndexCusstomer] = useState(
-    []
-  );
+  const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
+  const [overviewHeading, setOverviewHeading] = useState(null);
 
   useEffect(() => {
     let iti_exclusive = [];
@@ -230,87 +189,8 @@ const Homepage = (props) => {
             ></ExperienceCard>
           );
       }
-      setItinerariesToIndexExclusive(iti_exclusive.slice());
-      setItinerariesToIndexCusstomer(iti_customer.slice());
     } catch {}
-
-    return () => {
-      setItinerariesToIndexExclusive([]);
-      setItinerariesToIndexCusstomer([]);
-    };
   }, []);
-
-  const [offsetExclusive, setOffsetExclusive] = useState(0);
-  const [offsetCustomer, setOffsetCustomer] = useState(0);
-
-  const _showMoreExclusiveItineraries = () => {
-    let itineraries = itinerariesExclusiveJSX.slice();
-    setLoading(true);
-    let locations = [];
-    try {
-      for (var i = 0; i < props.experienceData.locations.length; i++) {
-        locations.push(props.experienceData.locations[i].name);
-      }
-    } catch {}
-    axiossearchinstance
-      .post(
-        `?search_type=itinerary&owner=TTW&limit=9&offset=` + offsetExclusive,
-        {
-          city_list: locations,
-        }
-      )
-      .then((res) => {
-        setLoading(false);
-        for (var i = 0; i < res.data.results.length; i++) {
-          itineraries.push(
-            <ExperienceCard
-              data={res.data.results[i]}
-              key={res.data.results[i].short_text}
-              hardcoded={res.data.results[i].payment_info ? true : false}
-              filter={
-                res.data.results[i].experience_filters
-                  ? res.data.results[i].experience_filters[0]
-                  : null
-              }
-              rating={res.data.results[i].rating}
-              slug={res.data.results[i].slug}
-              id={res.data.results[i].id}
-              number_of_adults={res.data.results[i].number_of_adults}
-              locations={res.data.results[i]["itinerary_locations"]}
-              text={res.data.results[i].short_text}
-              experience={res.data.results[i].name}
-              cost={
-                res.data.results[i].payment_info
-                  ? res.data.results[i].payment_info.length
-                    ? res.data.results[i].payment_info[0].cost
-                    : null
-                  : null
-              }
-              duration_number={res.data.results[i].duration_number}
-              duration_unit={res.data.results[i].duration_unit}
-              location={res.data.results[i]["experience_region"]}
-              starting_cost={
-                res.data.results[i].payment_info
-                  ? res.data.results[i].payment_info.per_person_total_cost
-                  : res.data.results[i].starting_price
-              }
-              images={res.data.results[i].images}
-            ></ExperienceCard>
-          );
-        }
-
-        setItinerariesExclusiveJSX(itineraries.slice());
-
-        setOffsetExclusive(itineraries.length);
-
-        // setItinerariesToShowExclusiveJSX(itineraries_exclusive.slice(0,9));
-      })
-      .catch((err) => {
-        setLoading(false);
-      });
-
-    // }
-  };
 
   useEffect(() => {
     const user = [];
@@ -324,12 +204,6 @@ const Homepage = (props) => {
     setUserItineraries(user);
     setTTWItineraries(ttw);
   }, [props.experienceData.itinerary_data]);
-
-  //JSX for How it works
-
-  const router = useRouter();
-  const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
-  const [overviewHeading, setOverviewHeading] = useState(null);
 
   useEffect(() => {
     // The counter changed!
@@ -646,12 +520,6 @@ const Homepage = (props) => {
         <AsSeenIn />
         <ChatWithUs planner page_id={props.experienceData.id}></ChatWithUs>
       </SetWidthContainer>
-      {/* <WhatsappFloating
-        message={
-          "Hey, I need help planning my trip to " +
-          props.experienceData.destination
-        }
-      /> */}
     </div>
   );
 };
