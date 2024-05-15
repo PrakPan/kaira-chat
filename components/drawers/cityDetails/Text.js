@@ -12,7 +12,6 @@ const P = styled.div`
   line-height: 25px;
   position: relative;
   ${(props) => `height : ${props.clientHeight}px`};
-  // max-height : none;
   ${(props) => !props.more && "overflow : hidden ; height: 221px"};
   ${(props) => props.clientHeight < 221 && "height : auto"};
   transition: height 0.3s ease;

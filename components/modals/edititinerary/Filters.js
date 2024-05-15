@@ -1,14 +1,8 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-
-
-import { muisty}
-import { Grid } from '@mui/material';
-
-import { Typography } from '@mui/material';
-import Slider from '@mui/material';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox, { CheckboxProps } from '@mui/material/Checkbox';
+import { Grid } from "@mui/material";
+import { Typography } from "@mui/material";
+import Slider from "@mui/material";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
 
 const useStyles = {
   root: `w-[100%]
@@ -35,34 +29,19 @@ const Filters = (props) => {
     setValue(newValue);
   };
 
-  // return(
-  //     <div style={{backgroundColor: "hsl(0,0%,97%)", borderRadius: "5px", padding:"1rem"}} >
-  //     <p className="font-lexend" style={{fontSize: "1rem"}}><b>COST</b></p>
-  //     <div style={{display: "grid", gridTemplateColumns: "50% 50%"}}>
-  //         <div style={{border: "1px solid black", width: "90%", padding: "0.25rem", borderRadius: "5px", textAlign: "center", backgroundColor: "#F7e700", marginBottom: "1rem"}} className="font-nunito">Free</div>
-  //         <div style={{border: "1px solid black", width: "90%", padding: "0.25rem", borderRadius: "5px", textAlign: "center", backgroundColor: "#F7e700", marginBottom: "1rem"}}>Paid</div>
-  //     </div>
-  //     <p className="font-lexend" style={{fontSize: "1rem"}}><b>EXPERIENCE TYPE</b></p>
-  //     <div style={{border: "1px solid black", width: "100%", padding: "0.25rem", borderRadius: "5px", textAlign: "center", backgroundColor: "#F7e700", marginBottom: "1rem"}} className="font-nunito">Adventure</div>
-  //     <div style={{border: "1px solid black", width: "100%", padding: "0.25rem", borderRadius: "5px", textAlign: "center", marginBottom: "1rem"}} className="font-nunito">Culture</div>
-  //     <div style={{border: "1px solid black", width: "100%", padding: "0.25rem", borderRadius: "5px", textAlign: "center", marginBottom: "1rem"}} className="font-nunito">Heritage</div>
-  //     <div style={{border: "1px solid black", width: "100%", padding: "0.25rem", borderRadius: "5px", textAlign: "center", backgroundColor: "#F7e700", marginBottom: "1rem"}} className="font-nunito">Spiritual</div>
-  //     <div style={{border: "1px solid black", width: "100%", padding: "0.25rem", borderRadius: "5px", textAlign: "center", backgroundColor: "#F7e700", marginBottom: "1rem"}} className="font-nunito">Offbeat</div>
-  //     <div style={{border: "1px solid black", width: "100%", padding: "0.25rem", borderRadius: "5px", textAlign: "center", marginBottom: "1rem"}} className="font-nunito">Social Travel</div>
-  //     <div style={{border: "1px solid black", width: "100%", padding: "0.25rem", borderRadius: "5px", textAlign: "center", backgroundColor: "#F7e700", marginBottom: "1rem"}} className="font-nunito">Suprise Me</div>
-  // </div>
-  // );
   const marks = [
     {
       value: 0,
-      label: 'Free',
+      label: "Free",
     },
     {
       value: 100,
-      label: 'Luxury',
+      label: "Luxury",
     },
   ];
-  const CustomCheckbox =  <Checkbox color="default" {...props} />
+
+  const CustomCheckbox = <Checkbox color="default" {...props} />;
+
   const [state, setState] = React.useState({
     checkedA: true,
     checkedB: true,
@@ -75,27 +54,29 @@ const Filters = (props) => {
     checkedH: false,
     checkedI: false,
   });
+
   const handleCheckboxChange = (event) => {
     setState({ ...state, [event.target.name]: event.target.checked });
   };
+
   return (
     <div className={classes.root}>
       <Typography
         id="continuous-slider"
         gutterBottom
         className="font-lexend"
-        style={{ fontSize: '1rem', fontWeight: '600' }}
+        style={{ fontSize: "1rem", fontWeight: "600" }}
       >
         COST
       </Typography>
-      <Grid container spacing={2} style={{ textAlign: 'center' }}>
+      <Grid container spacing={2} style={{ textAlign: "center" }}>
         <Grid item xs>
           <Slider
             marks={marks}
             value={value}
             onChange={handleChange}
             aria-labelledby="continuous-slider"
-            style={{ width: '80%' }}
+            style={{ width: "80%" }}
           />
         </Grid>
       </Grid>
@@ -104,7 +85,7 @@ const Filters = (props) => {
           id="continuous-slider"
           gutterBottom
           className="font-lexend"
-          style={{ fontSize: '1rem', fontWeight: '600' }}
+          style={{ fontSize: "1rem", fontWeight: "600" }}
         >
           EXPERIENCE FILTERS
         </Typography>
@@ -116,7 +97,7 @@ const Filters = (props) => {
                 onChange={handleCheckboxChange}
                 name="checkedA"
                 className={classes.checkbox}
-                iconStyle={{ fill: 'black' }}
+                iconStyle={{ fill: "black" }}
               />
             }
             className={classes.checkbox}
@@ -170,7 +151,7 @@ const Filters = (props) => {
           id="continuous-slider"
           gutterBottom
           className="font-lexend"
-          style={{ fontSize: '1rem', fontWeight: '600' }}
+          style={{ fontSize: "1rem", fontWeight: "600" }}
         >
           GROUP TYPE
         </Typography>
@@ -182,7 +163,7 @@ const Filters = (props) => {
                 onChange={handleCheckboxChange}
                 name="checkedF"
                 className={classes.checkbox}
-                iconStyle={{ fill: 'black' }}
+                iconStyle={{ fill: "black" }}
               />
             }
             label="Solo"

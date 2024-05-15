@@ -1,37 +1,9 @@
-import React, { useState, useEffect, Fragment, useRef } from "react";
-import Button from "@mui/material/Button";
-import Button1 from "../Button";
-import TextField from "@mui/material/TextField";
-import Grid from "@mui/material/Grid";
-import { makeStyles } from "@mui/styles";
 import { connect } from "react-redux";
 import * as authaction from "../../store/actions/auth";
 import * as otpaction from "../../store/actions/getOtp";
-import axios from "axios";
-import styled from "styled-components";
 
 const UpdatePhone = (props) => {
-  return (
-    //     <Grid item xs={12}>
-    //   <TextField
-    //   key="otp"
-    //     // error={props.otpFail ? true : false}
-    //     // helperText={props.otpFail ? "OTP is not valid" : null}
-    //     variant="outlined"
-    //     required
-    //     fullWidth
-    //     name="otp"
-    //     label="Enter OTP"
-    //     type="otp"
-    //     id="otp"
-    //     autoComplete="current-password"
-    //     // onChange={handleOtpChange}
-    //     className="loginform"
-
-    //   />
-    //   </Grid>
-    <div>1</div>
-  );
+  return <div>1</div>;
 };
 
 const mapStateToPros = (state) => {
@@ -47,6 +19,7 @@ const mapStateToPros = (state) => {
     loadingsocial: state.auth.loadingsocial,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     onAuth: (mobile, password, name, email) =>

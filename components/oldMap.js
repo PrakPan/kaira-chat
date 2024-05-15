@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   GoogleMap,
   InfoWindow,
@@ -6,12 +6,11 @@ import {
   useJsApiLoader,
   MarkerClusterer,
   Polyline,
-} from '@react-google-maps/api';
-
-import SkeletonCard from './ui/SkeletonCard';
-import { useRef } from 'react';
-import { useEffect } from 'react';
-import { FaMapMarkerAlt } from 'react-icons/fa';
+} from "@react-google-maps/api";
+import SkeletonCard from "./ui/SkeletonCard";
+import { useRef } from "react";
+import { useEffect } from "react";
+import { FaMapMarkerAlt } from "react-icons/fa";
 
 function oldMap(props) {
   const [center, setCenter] = useState({
@@ -23,16 +22,14 @@ function oldMap(props) {
   const [map, setMap] = useState(null);
   const MapRef = useRef(null);
   const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: 'AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E',
+    googleMapsApiKey: "AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E",
   });
   const colorMarker = (color) => {
     return {
-      path:
-        'M11 0.666672C5.40001 0.666672 0.333344 4.96 0.333344 11.6C0.333344 16.0267 3.89334 21.2667 11 27.3333C18.1067 21.2667 21.6667 16.0267 21.6667 11.6C21.6667 4.96 16.6 0.666672 11 0.666672ZM11 14C9.53334 14 8.33334 12.8 8.33334 11.3333C8.33334 9.86667 9.53334 8.66667 11 8.66667C12.4667 8.66667 13.6667 9.86667 13.6667 11.3333C13.6667 12.8 12.4667 14 11 14Z',
-      // scaledSize: { width: 30, height: 30 },
+      path: "M11 0.666672C5.40001 0.666672 0.333344 4.96 0.333344 11.6C0.333344 16.0267 3.89334 21.2667 11 27.3333C18.1067 21.2667 21.6667 16.0267 21.6667 11.6C21.6667 4.96 16.6 0.666672 11 0.666672ZM11 14C9.53334 14 8.33334 12.8 8.33334 11.3333C8.33334 9.86667 9.53334 8.66667 11 8.66667C12.4667 8.66667 13.6667 9.86667 13.6667 11.3333C13.6667 12.8 12.4667 14 11 14Z",
       fillColor: color,
       fillOpacity: 1,
-      strokeColor: '#000',
+      strokeColor: "#000",
       strokeWeight: 1,
       scale: 1,
     };
@@ -44,7 +41,6 @@ function oldMap(props) {
         (location) => location.id == props.active
       );
 
-      // handleZoomToLocation (selectedMarker[0].lat,selectedMarker[0].long)
       setCenter({
         lat: selectedMarker[0].lat && 0,
         lng: selectedMarker[0].long && 0,
@@ -53,17 +49,7 @@ function oldMap(props) {
       handleActiveMarker(props.active);
     }
   }, [props.active]);
-  const handleZoomToLocation = (lat, lng) => {
-    const newCenter = { lat, lng };
-    const newZoom = 15;
 
-    setCenter(newCenter);
-    setZoom(newZoom);
-
-    if (MapRef.current) {
-      MapRef.current.panTo(newCenter);
-    }
-  };
   const mapOptions = {
     zoomControl: true,
     mapTypeControl: false,
@@ -96,16 +82,11 @@ function oldMap(props) {
     path.push({ lat: location.lat && 0, lng: location.long && 0 })
   );
   const containerStyle = {
-    width: props.width || '100%',
-    height: props.height || '100%',
-    borderRadius: props.borderRadius || '10px',
+    width: props.width || "100%",
+    height: props.height || "100%",
+    borderRadius: props.borderRadius || "10px",
   };
-  const defaultIcon = {
-    url:
-      'data:image/svg+xml;charset=UTF-8,' +
-      encodeURIComponent(<FaMapMarkerAlt />),
-    scaledSize: { width: 32, height: 32 },
-  };
+
   if (props.center) {
     return isLoaded ? (
       <GoogleMap
@@ -122,7 +103,7 @@ function oldMap(props) {
         >
           {activeMarker === props.center.lat + props.center.lng ? (
             <InfoWindow onCloseClick={() => setActiveMarker(null)}>
-              {props.InfoWindowContainer || ''}
+              {props.InfoWindowContainer || ""}
             </InfoWindow>
           ) : null}
         </Marker>
@@ -132,7 +113,7 @@ function oldMap(props) {
     );
   }
   const lineSymbol = {
-    path: 'M 0,-1 0,1',
+    path: "M 0,-1 0,1",
     strokeOpacity: 1,
     scale: 2,
   };
@@ -141,17 +122,15 @@ function oldMap(props) {
     icons: [
       {
         icon: lineSymbol,
-        offset: '0',
-        repeat: '20px',
+        offset: "0",
+        repeat: "20px",
       },
     ],
     strokeWeight: 2,
   };
-  const onLoad = (polyline) => {
-  };
+  const onLoad = (polyline) => {};
 
-  const onUnmount = (polyline) => {
-  };
+  const onUnmount = (polyline) => {};
 
   return isLoaded ? (
     <GoogleMap
@@ -161,7 +140,6 @@ function oldMap(props) {
       zoom={zoom}
       onClick={() => setActiveMarker(null)}
       mapContainerStyle={containerStyle}
-      // zoom={props.defaultZoom?props.defaultZoom:6}
       center={center}
     >
       <Polyline

@@ -1,20 +1,8 @@
-import React from 'react';
-import styled from 'styled-components';
-import Accordion from './Accordion'
-
-const Container = styled.div`
-@media screen and (min-width: 768px){
-}
-`;
+import React from "react";
+import Accordion from "./Accordion";
 
 const Faqs = (props) => {
-    
- 
-     return(
-        <Container>
-            <Accordion faqs={props.faqs}></Accordion>
-        </Container>
-  ); 
-}
+  return <Accordion faqs={props.faqs}></Accordion>;
+};
 
 export default Faqs;

@@ -10,8 +10,6 @@ const Container = styled.div`
   margin-bottom: 1rem;
   padding: ${(props) => (props.padding ? "1rem" : "0")};
   border-radius: 5px;
-  //background-color: ${(props) =>
-    props.bgColor ? props.bgColor : "transparent"}
   background-color: ${(props) =>
     props.bgColor ? props.bgColor : "transparent"};
   @media screen and (min-width: 768px) {
@@ -80,7 +78,6 @@ display: -webkit-box;
 -webkit-line-clamp: 4;
 -webkit-box-orient: vertical;
 
-
 `;
 
   const _onClickHandler = () => {
@@ -100,15 +97,15 @@ display: -webkit-box;
         widthmobile="50%"
         dimensions={{ width: 600, height: 600 }}
         url={props.img}
-          ></ImageLoader>
+      ></ImageLoader>
 
       <Name
         onClick={props.page || props.link ? _onClickHandler : null}
         className="font-lexend text-center hover-pointer"
       >
         <b>{props.heading}</b>
-          </Name>
-          
+      </Name>
+
       <Review
         onClick={props.page || props.link ? _onClickHandler : null}
         className="text-center font-nunito hover-pointer"

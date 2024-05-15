@@ -15,6 +15,7 @@ const pulse = keyframes`
     opacity: 1;
   }
 `;
+
 const StyledButton = styled.button`
   background-color: ${(props) => (props.primary ? "#F7E700" : "#FFFFFF")};
   color: ${(props) => (props.primary ? "#01202B" : "#3498db")};

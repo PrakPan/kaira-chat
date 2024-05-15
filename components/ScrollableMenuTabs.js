@@ -1,4 +1,4 @@
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { useSticky } from "../hooks/useSticky";
 import CustomMenu from "../containers/itinerary/CustomMenu";
@@ -12,8 +12,6 @@ import { useSelector } from "react-redux";
 import { logEvent } from "../services/ga/Index";
 
 const Navbar = styled.div`
-  /* position: ${({ sticky }) => (sticky ? "sticky" : "inherit")}; */
-
   font-family: lexend;
   display: flex;
   ::-webkit-scrollbar {
@@ -25,9 +23,7 @@ const Navbar = styled.div`
   align-items: center;
   overflow-y: ${({ Isvertical }) => (Isvertical ? "scroll" : "auto")};
   height: ${({ Isvertical }) => (Isvertical ? "85vh" : "auto")};
-
   flex-direction: ${({ Isvertical }) => (Isvertical ? "column" : "row")};
-
   margin: ${({ Isvertical }) => (Isvertical ? "0px -20px 0px -101px" : "")};
   position: ${({ Isvertical }) => (Isvertical ? "absolute" : "inherit")};
   background-color: white;
@@ -36,18 +32,13 @@ const Navbar = styled.div`
 const NavbarContainer = styled.div`
   position: sticky !important;
   z-index: 1;
-
   display: flex;
-
   flex-direction: ${({ Isvertical }) => (Isvertical ? "column" : "row")};
   margin: ${({ Isvertical }) =>
     Isvertical ? "0px -20px 0px -20px" : "0px -20px 0px -20px"};
   background-color: white;
-
   position: inherit;
-
   top: 120px;
-
   display: flex;
   width: ${({ Isvertical }) => (Isvertical ? "fit-content" : "auto")};
   height: ${({ isInView, Isvertical }) =>

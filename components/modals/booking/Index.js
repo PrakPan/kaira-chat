@@ -1,28 +1,22 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import styled from "styled-components";
 import media from "../../media";
 import LeftSideBar from "./leftsidebar/Index";
 import Accommodation from "./accommodation/Index";
-
-import FullScreenGallery from "../../fullscreengallery/Index";
 import axiosaccommodationinstance from "../../../services/bookings/FetchAccommodations";
 import MobileFilters from "./filtersmobile/Index";
 import Spinner from "../../Spinner";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronUp, faChevronLeft } from "@fortawesome/free-solid-svg-icons";
-import { Link, animateScroll as scroll } from "react-scroll";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import CurrentlyReplacing from "./leftsidebar/CurrentlyReplacing";
 import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
 import { connect } from "react-redux";
-import InfiniteScroller from "./InfniteScroller";
-// import Button from '../../Button';
 import Button from "../../ui/button/Index";
 import { openNotification } from "../../../store/actions/notification";
+
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
-
     display: grid;
     grid-template-columns: 1fr 3fr;
     grid-gap: 1rem;
@@ -42,42 +36,17 @@ const OptionsContainer = styled.div`
     max-height: 80vh;
   }
 `;
+
 const ContentContainer = styled.div`
   min-height: 65vh;
   @media screen and (min-width: 768px) {
     min-height: max-content;
   }
 `;
-const InfiniteOptionsContainer = styled.div``;
-const Cross = styled.img`
-  width: 1rem;
-  margin: 0.5rem;
-  &:hover {
-    cursor: pointer;
-  }
-`;
-const ButtonToTop = styled.div`
-  position: absolute;
-  bottom: 2rem;
-  right: 1.25rem;
-  background-color: rgba(0, 0, 0, 0.6);
-  width: max-content;
-  border-radius: 50%;
-  height: 2rem;
-  width: 2rem;
-`;
-const StyledLink = styled(Link)`
-  &:hover {
-    cursor: pointer;
-  }
-`;
 
 const Booking = (props) => {
   let isPageWide = media("(min-width: 768px)");
-
-  let OptionsJSX = [];
   const [optionsJSX, setOptionsJSX] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [filtersState, setFiltersState] = useState({
     budget: [],
     type: [],
@@ -86,12 +55,9 @@ const Booking = (props) => {
   const [limit, setLimit] = useState(20);
   const [offset, setOffset] = useState(0);
   const [viewMoreStatus, setViewMoreStatus] = useState(false);
-
   const [updateBookingState, setUpdateBookingState] = useState(false);
   const [updateLoadingState, setUpdateLoadingState] = useState(true);
-
   const [moreLoadingState, setMoreLoadingState] = useState(false);
-
   const [noResults, setNoResults] = useState(false);
 
   const filters = {
@@ -113,12 +79,7 @@ const Booking = (props) => {
       "Service Appartment",
       "Bed and Breakfast",
       "Farmstay",
-      // "Speciality Lodging",
-      // "Boat / Cruise",
-      // "Holiday Park / Caravan Park",
-      // "Country House",
       "Entire House",
-      // "Capsule Hotel",
       "Unique",
     ],
     star_category: ["1 star", "2 star", "3 star", "4 star", "5 star", "All"],
@@ -142,8 +103,6 @@ const Booking = (props) => {
           setNoResults(false);
           let options = [];
           for (var i = 0; i < res.data.results.length; i++) {
-            // if(res.data.results[i].name !== props.selectedBooking.name)
-            // options.push(<Accommodation selectedBooking={props.selectedBooking} tailored_id={props.tailored_id} updateLoadingState={updateLoadingState} booking_id={props.selectedBooking.id} itinerary_id={props.selectedBooking.itinerary_id}  accommodation_id={res.data.results[i].id} room_type={res.data.results[i].live_data.roomtypeName} pricing_type={res.data.results[i].live_data.includeBreakfast ? "CP" : "EP"}  _updateBookingHandler={_updateBookingHandler} type={res.data.results[i].accommodation_type} review_score={res.data.results[i].live_data.reviewScore}   review_count={res.data.results[i].live_data.reviewCount} key={i} name={res.data.results[i].name} description={res.data.results[i].description} location={res.data.results[i].location} star={res.data.results[i].star_category} cost={Math.ceil(res.data.results[i].live_data.dailyRate/100)} images={res.data.results[i].images}  room_type={res.data.results[i].live_data.roomtypeName}  includeBreakfast={res.data.results[i].live_data.includeBreakfast} ></Accommodation>)
             options.push(
               <Accommodation
                 check_in={props.selectedBooking.check_in}
@@ -170,7 +129,6 @@ const Booking = (props) => {
           setViewMoreStatus(false);
           setOptionsJSX([]);
         }
-        setLoading(false);
       })
       .catch((err) => {});
   }, []);
@@ -181,15 +139,14 @@ const Booking = (props) => {
     setNoResults(false);
     let budgetarr = filtersState.budget;
     let typearr = filtersState.type;
-    let sta_catgeoryarr = filtersState.star_category;
 
     let type = [];
     let price_lower_range = null;
     let price_upper_range = null;
     let price_set = false;
-    //TYPE FILTERS
+    // TYPE FILTERS
     if (!typearr.length) {
-      //send empty type
+      // send empty type
     } else {
       for (var i = 0; i < typearr.length; i++) {
         if (typearr[i] === "All") null;
@@ -204,15 +161,12 @@ const Booking = (props) => {
       }
     }
 
-    //BUDGET FILTERS
+    // BUDGET FILTERS
     if (!budgetarr.length) {
-      //send default
+      // send default
       price_lower_range = 0;
       price_upper_range = 100000000;
     } else {
-      // for(var i = 0 ; i < budgetarr.length; i++){
-      // }
-
       if (budgetarr.includes("Below ₹3,000")) {
         price_lower_range = 0;
         price_upper_range = 300000;
@@ -256,8 +210,6 @@ const Booking = (props) => {
     axiosaccommodationinstance
       .post("/?limit=" + limit + "&offset=0", {
         cities: [props.selectedBooking.city],
-        // "check_in": "2022-02-01",
-        // "check_out": "2022-02-04",
         check_in: props.selectedBooking.check_in,
         check_out: props.selectedBooking.check_out,
         accommodation_types: type,
@@ -275,7 +227,7 @@ const Booking = (props) => {
           for (var i = 0; i < res.data.results.length; i++) {
             if (res.data.results[i].images.length > 3)
               if (res.data.results[i].name !== props.selectedBooking.name)
-                //rmeove
+                // rmeove
                 options.push(
                   <Accommodation
                     _setImagesHandler={props._setImagesHandler}
@@ -324,12 +276,8 @@ const Booking = (props) => {
           setViewMoreStatus(false);
           setOptionsJSX([]);
         }
-        setLoading(false);
-        // setUpdateLoadingState(false);
       })
-      .catch((err) => {
-        setLoading(false);
-      });
+      .catch((err) => {});
   };
   const _addFilterHandler = (filter, heading) => {
     let oldfilters = filtersState;
@@ -375,7 +323,6 @@ const Booking = (props) => {
     costing_breakdown,
     itinerary_name,
   }) => {
-    // setUpdateLoadingState(true);
     setUpdateBookingState(true);
     axiosbookingupdateinstance
       .post(
@@ -402,16 +349,11 @@ const Booking = (props) => {
         }
       )
       .then((res) => {
-        /* props._updateBookingHandler(res.data.bookings);
-        props._updatePaymentHandler(res.data.payment_info); */
-        // setUpdateLoadingState(false);
         setUpdateBookingState(false);
       })
       .catch((err) => {
-        // setUpdateLoadingState(false);
         setUpdateBookingState(false);
 
-        // window.alert('There seems to be a problem, please try again!');
         props.openNotification({
           type: "error",
           text: "There seems to be a problem, please try again!",
@@ -420,15 +362,12 @@ const Booking = (props) => {
       });
   };
   const _loadAccommodationsHandler = () => {
-    // setUpdateLoadingState(true);
     setViewMoreStatus(false);
     setMoreLoadingState(true);
 
     axiosaccommodationinstance
       .post("/?limit=" + limit + "&offset=" + offset, {
         cities: [props.selectedBooking.city],
-        // "check_in": "2022-02-01",
-        // "check_out": "2022-02-04",
         check_in: props.selectedBooking.check_in,
         check_out: props.selectedBooking.check_out,
         accommodation_types: [],
@@ -438,10 +377,6 @@ const Booking = (props) => {
         number_of_infants: props.selectedBooking.pax.number_of_infants,
       })
       .then((res) => {
-        // setOffset(res.data.nextOffset);
-        // setOffset(offset+40);
-
-        // let oldoptions = optionsJSX;
         if (res.data.results.length) {
           setNoResults(false);
 
@@ -449,7 +384,7 @@ const Booking = (props) => {
           for (var i = 0; i < res.data.results.length; i++) {
             if (res.data.results[i].images.length > 3)
               if (res.data.results[i].name !== props.selectedBooking.name)
-                //rmeove
+                // rmeove
                 options.push(
                   <Accommodation
                     _setImagesHandler={props._setImagesHandler}
@@ -485,7 +420,6 @@ const Booking = (props) => {
                 );
           }
           setOptionsJSX(options);
-          // setUpdateLoadingState(false);
           if (res.data.next) {
             setOffset(offset + 20);
             setViewMoreStatus(true);
@@ -515,7 +449,6 @@ const Booking = (props) => {
         onHide={props.setHideBookingModal}
         style={{ padding: "0" }}
       >
-        {/* <Modal.Header>2</Modal.Header> */}
         <Modal.Body
           style={{
             padding: "0.5rem",
@@ -569,7 +502,6 @@ const Booking = (props) => {
                 <OptionsContainer id="options">
                   <div style={{ clear: "right" }}>
                     {optionsJSX.length ? optionsJSX : null}
-                    {/* {loading ? <div style={{width: 'max-content', margin: 'auto'}}><Spinner/></div> : null} */}
                   </div>
                   {moreLoadingState ? (
                     <div style={{ width: "max-content", margin: "auto" }}>
@@ -589,7 +521,6 @@ const Booking = (props) => {
                       View More
                     </Button>
                   ) : null}
-                  {/* {noResults ? 'NO RESULTS' : null} */}
                 </OptionsContainer>
               ) : null}
               {noResults ? (
@@ -599,14 +530,6 @@ const Booking = (props) => {
                   everyday!
                 </p>
               ) : null}
-              {/* <Button onclickparam={null} onclick={_loadAccommodationsHandler} margin="0.25rem auto" borderWidth="1px" borderRadius="2rem" padding="0.25rem 1rem">More</Button> */}
-              {/* {
-                   !updateLoadingState ? <InfiniteOptionsContainer><InfiniteScroller next={_loadAccommodationsHandler} hasMore={true} dataLength={optionsJSX.length} jsx={optionsJSX}></InfiniteScroller>{optionsJSX}</InfiniteOptionsContainer> : null
-                   }
-             */}
-              {/* <ButtonToTop className='center-div'>
-                   <FontAwesomeIcon icon={faChevronUp} style={{color: 'white', margin: '0'}}/>
-                </ButtonToTop> */}
             </ContentContainer>
           </GridContainer>
           {!isPageWide ? (
@@ -617,7 +540,6 @@ const Booking = (props) => {
           ) : null}
         </Modal.Body>
       </Modal>
-      {/* {showPhotos ? <FullScreenGallery images={[]} closeGalleryHandler={closePhotosHandler}></FullScreenGallery> : null} */}
     </div>
   );
 };
@@ -636,6 +558,7 @@ const mapStateToPros = (state) => {
     hideloginclose: state.auth.hideloginclose,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     openNotification: (payload) => dispatch(openNotification(payload)),

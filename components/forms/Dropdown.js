@@ -1,17 +1,19 @@
-import React from 'react';
-import styled from 'styled-components';
-import Label from './Label';
-import Message from './Message';
-import Tooltip from '@mui/material/Tooltip';
+import React from "react";
+import styled from "styled-components";
+import Label from "./Label";
+import Message from "./Message";
+import Tooltip from "@mui/material/Tooltip";
+
 const InputContainer = styled.div`
   width: 100%;
   margin: 0px auto;
 `;
+
 const StyledDropdown = styled.select`
   display: block;
   width: 100%;
   padding: 5px;
-  background-color: ${(props) => props.bgColor || 'transparent'};
+  background-color: ${(props) => props.bgColor || "transparent"};
   color: ${(props) => props.color || props.theme.colors.secondary};
   font-family: ${(props) => props.theme.font.nunito}, sans-serif;
   font-size: 1rem;
@@ -25,10 +27,10 @@ const StyledDropdown = styled.select`
   border-radius: 5px;
   box-sizing: border-box;
   margin: 0;
-  ${(props) => (props.readOnly ? 'cursor:no-drop;' : '')}
+  ${(props) => (props.readOnly ? "cursor:no-drop;" : "")}
   ${(props) =>
     props.disabled
-      ? 'opacity:0.4;cursor:no-drop;'
+      ? "opacity:0.4;cursor:no-drop;"
       : `
 opacity:1;
 &:hover,
@@ -39,6 +41,7 @@ opacity:1;
 }
 `};
 `;
+
 const Dropdown = ({
   color,
   bgColor,
@@ -53,12 +56,9 @@ const Dropdown = ({
   ...props
 }) => {
   function onValueChange(e) {
-    // let targetValue;
-    // if (e.target.value) {
-    //   targetValue = e.target.value;
-    // }
     onChangeHandler(e);
   }
+
   return (
     <>
       <InputContainer>
@@ -83,11 +83,11 @@ const Dropdown = ({
         )}
         <StyledDropdown
           {...props}
-          value={value || ''}
+          value={value || ""}
           id={id}
-          size={props.multiple ? size : '1'}
+          size={props.multiple ? size : "1"}
           onChange={(e) => onValueChange(e)}
-          onBlur={(e) => validate(e, 'error')}
+          onBlur={(e) => validate(e, "error")}
           error={error}
           success={success}
         >
@@ -98,4 +98,5 @@ const Dropdown = ({
     </>
   );
 };
+
 export default Dropdown;

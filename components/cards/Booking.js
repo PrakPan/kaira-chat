@@ -11,7 +11,6 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const Container = styled.div`
   width: 100%;
-
   border-radius: 10px;
   @media screen and (min-width: 768px) {
     border-radius: 0;

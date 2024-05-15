@@ -9,6 +9,7 @@ const Container = styled.div`
     margin: 0.5rem 0 0 0;
   }
 `;
+
 const FlexContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -17,6 +18,7 @@ const FlexContainer = styled.div`
     justify-content: center;
   }
 `;
+
 const Filter = styled.div`
   padding: 0.25rem 1rem;
   border-radius: 2rem !important;

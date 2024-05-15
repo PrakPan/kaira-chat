@@ -5,7 +5,6 @@ import styled from "styled-components";
 
 const DropdownContainer = styled.div`
   position: relative;
-
   width: inherit;
   min-width: 6rem;
   display: inline-block;

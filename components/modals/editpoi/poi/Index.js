@@ -24,7 +24,6 @@ const GridContainer = styled.div`
   }
 `;
 
-
 const Accommodation = (props) => {
   return (
     <Container className="borde">

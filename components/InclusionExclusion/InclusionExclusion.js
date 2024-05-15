@@ -1,13 +1,12 @@
-import React from 'react';
-import { useState } from 'react';
-import Exclusions from './Exclusions';
-import Inclusions from './Inclusions';
+import React from "react";
+import { useState } from "react";
+import Exclusions from "./Exclusions";
+import Inclusions from "./Inclusions";
 
 const InclusionExclusion = (props) => {
   const [staysIds] = useState(props.payment?.summary?.Stays.bookings);
   const [transferIds] = useState(props.payment?.summary?.Transfers.bookings);
   const [flightsIds] = useState(props.payment?.summary?.Flights.bookings);
-  const [activitiesIds] = useState(props.payment?.summary?.Activities.bookings);
 
   return (
     <div>

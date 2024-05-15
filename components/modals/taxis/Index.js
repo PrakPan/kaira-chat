@@ -15,7 +15,6 @@ import Skeleton from "./Skeleton";
 
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
-
     display: grid;
     grid-template-columns: 1fr;
 

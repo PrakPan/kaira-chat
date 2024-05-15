@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import styled, { keyframes } from 'styled-components';
+import React, { useState } from "react";
+import styled, { keyframes } from "styled-components";
 
 const DropdownContainer = styled.div`
   position: relative;
@@ -25,7 +25,7 @@ const DropdownContent = styled.div`
   padding: 8px;
   z-index: 1;
   opacity: ${({ open }) => (open ? 1 : 0)};
-  transform: translateY(${({ open }) => (open ? '0' : '10px')});
+  transform: translateY(${({ open }) => (open ? "0" : "10px")});
   transition: opacity 0.3s ease, transform 0.3s ease;
 
   > :not(:last-child) {
@@ -38,21 +38,6 @@ const DropdownContent = styled.div`
   > * {
     text-align: center;
   }
-`;
-
-const fadeIn = keyframes`
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-`;
-
-const ListItem = styled.div`
-  animation: ${fadeIn} 0.3s ease;
-  padding: 8px;
 `;
 
 const Dropdown = (props) => {
@@ -81,7 +66,7 @@ const Dropdown = (props) => {
         <div onClick={(e) => _handleChange(e)}>2</div>
         <div onClick={(e) => _handleChange(e)}>3</div>
         <div onClick={(e) => _handleChange(e)}>4</div>
-        <div onClick={(e) => _handleChange(e)} style={{ border: 'none' }}>
+        <div onClick={(e) => _handleChange(e)} style={{ border: "none" }}>
           5
         </div>
       </DropdownContent>
@@ -91,50 +76,3 @@ const Dropdown = (props) => {
 };
 
 export default Dropdown;
-
-// const DropDown = ({ props, children }) => {
-
-//   return (
-//     <Dropdown drop={'up'} onChange={_handleChange}>
-//       <Dropdown.Toggle
-//         className=" background: none;
-//   border: none;
-//   box-shadow: none;
-//   padding: 0;
-//   outline: none;"
-//       >
-//         {children}
-//       </Dropdown.Toggle>
-//       {/* <Collapse in={open}> */}
-//       <Dropdown.Menu id="staylisting-dropdown-menu" className="border">
-//         <p
-//           style={{
-//             margin: '0rem',
-//             padding: '0.75rem 0.5rem',
-//             borderRadius: '10px 10px 0 0',
-//             borderStyle: 'none none solid none',
-//             borderWidth: '1px',
-//             borderColor: '#e4e4e4',
-//             textAlign: 'right',
-//             fontWeight: '600',
-//           }}
-//         >
-//           How many rooms?
-//         </p>
-//         <Dropdown.Item onClick={(e) => _handleChange(e)}>1</Dropdown.Item>
-//         <Dropdown.Item onClick={(e) => _handleChange(e)}>2</Dropdown.Item>
-//         <Dropdown.Item onClick={(e) => _handleChange(e)}>3</Dropdown.Item>
-//         <Dropdown.Item onClick={(e) => _handleChange(e)}>4</Dropdown.Item>
-//         <Dropdown.Item
-//           onClick={(e) => _handleChange(e)}
-//           style={{ border: 'none' }}
-//         >
-//           5
-//         </Dropdown.Item>
-//       </Dropdown.Menu>
-//       {/* </Collapse> */}
-//     </Dropdown>
-//   );
-// };
-
-// export default DropDown;

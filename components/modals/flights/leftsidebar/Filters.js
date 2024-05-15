@@ -1,24 +1,22 @@
-import * as React from 'react';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import styled from 'styled-components'
-
+import * as React from "react";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
+import styled from "styled-components";
 
 const Container = styled.div`
-    margin: 0 0 2rem 0;
+  margin: 0 0 2rem 0;
 `;
+
 const Label = styled.p`
-    font-size: 0.75rem;
-    margin: 0 0 0 0.5rem;
+  font-size: 0.75rem;
+  margin: 0 0 0 0.5rem;
 `;
 export default function CheckboxLabels(props) {
   const _onChangeHandler = (checked, filter, heading) => {
-     if(checked)
-      props._addFilterHandler(filter, heading)
-    else
-      props._removeFilterHandler(filter,heading)
-  }
+    if (checked) props._addFilterHandler(filter, heading);
+    else props._removeFilterHandler(filter, heading);
+  };
   return (
     <Container>
       <FormGroup>

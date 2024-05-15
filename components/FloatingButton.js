@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const FloatingButton = ({
   isVisible,
@@ -21,20 +21,20 @@ const FloatingButton = ({
   };
 
   return (
-    <div style={{ position: 'fixed', right: 20, bottom: 20 }}>
+    <div style={{ position: "fixed", right: 20, bottom: 20 }}>
       <button onClick={handleButtonClick}>{buttonLabel}</button>
       <AnimatePresence>
         {isVisible && (
           <motion.div
-            initial={{ x: '100%' }}
+            initial={{ x: "100%" }}
             animate={{ x: 0 }}
-            exit={{ x: '100%' }}
+            exit={{ x: "100%" }}
             transition={{ duration: 0.5 }}
             style={{
-              position: 'absolute',
+              position: "absolute",
               width: 50,
               height: 50,
-              backgroundColor: backgroundColor || 'red',
+              backgroundColor: backgroundColor || "red",
             }}
           />
         )}

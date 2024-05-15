@@ -40,9 +40,7 @@ const GetInTouchContainer = styled.div`
   }
 `;
 
-const items = [
-  { id: 1, label: "Things To Do", link: "Activities" },
-];
+const items = [{ id: 1, label: "Things To Do", link: "Activities" }];
 
 const ActivityAddDrawer = (props) => {
   const [selectedExprience, setSelectedExprience] = useState(-1);

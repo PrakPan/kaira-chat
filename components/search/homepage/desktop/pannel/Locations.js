@@ -42,7 +42,6 @@ const LocationContainer = styled(Link)`
 `;
 
 const Locations = (props) => {
-
   let locations = [];
   if (props.hotlocations) {
     for (var i = 0; i < props.hotlocations.length; i++) {
@@ -89,7 +88,7 @@ const Locations = (props) => {
       );
     }
   }
-  
+
   return (
     <div>
       <Heading className="font-lexend">Top Locations</Heading>

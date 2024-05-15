@@ -1,27 +1,20 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import About from '../aboutus/About';
-import EntryFees from '../EntryFees';
-import GettingAround from '../GettingAround';
-import Recommendations from '../Recommendations';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Timings from '../Timings';
-import media from '../../../media';
-import ImageLoader from '../../../ImageLoader';
+import React from "react";
+import styled from "styled-components";
+import About from "../aboutus/About";
+import EntryFees from "../EntryFees";
+import GettingAround from "../GettingAround";
+import Recommendations from "../Recommendations";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Timings from "../Timings";
+import media from "../../../media";
+import ImageLoader from "../../../ImageLoader";
 
 const Container = styled.div`
   @media screen and (min-width: 768px) {
   }
 `;
 
-const GridContainer = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  border-style: none none solid none;
-  border-width: 1px;
-  border-color: #e4e4e4;
-`;
 const TargetContainer = styled.div`
   padding: 1rem 1rem;
   height: 40vh;
@@ -45,21 +38,21 @@ function TabPanel(props) {
     </div>
   );
 }
-const Tabscomponent = (props) => {
-  let isPageWide = media('(min-width: 768px)');
 
-  const [selectedState, setSelectedState] = useState(0);
+const Tabscomponent = (props) => {
+  let isPageWide = media("(min-width: 768px)");
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
   return (
     <Container>
       <Tabs
         value={value}
         onChange={handleChange}
-        variant={!isPageWide ? 'scrollable' : 'fullWidth'}
+        variant={!isPageWide ? "scrollable" : "fullWidth"}
         scrollButtons={!isPageWide ? true : false}
         allowScrollButtonsMobile
         indicatorColor="#f7e700"
@@ -126,7 +119,6 @@ const Tabscomponent = (props) => {
           label="Timings"
           className="poi-tab font-lexend"
         ></Tab>
-        {/* <Tab label="About"></Tab> */}
       </Tabs>
       <TabPanel value={value} index={0}>
         <About short_description={props.short_description}></About>

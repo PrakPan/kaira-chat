@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 const useFieldOfView = (targetId) => {
   const [isInView, setIsInView] = useState(false);
@@ -6,7 +6,7 @@ const useFieldOfView = (targetId) => {
   useEffect(() => {
     const observerOptions = {
       root: null,
-      rootMargin: '0px',
+      rootMargin: "0px",
       threshold: 0.1, // Percentage of the target element visible
     };
 

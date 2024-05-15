@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import styled, { css, keyframes } from 'styled-components';
+import React, { useState } from "react";
+import styled, { css, keyframes } from "styled-components";
 
 const PopupWrapper = styled.div`
   position: relative;

@@ -19,6 +19,7 @@ const HoverConainer = styled.div`
     cursor: pointer;
   }
 `;
+
 const Section = (props) => {
   if (props.data)
     return (

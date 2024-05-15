@@ -84,11 +84,9 @@ const Header = styled.div`
   position: ${(props) => (props.staticnav ? "static" : "fixed")} !important;
   z-index: 1003;
   height: 80px;
-
   transition: height ease-out 0.5s;
   top: 0 !important;
   width: 100vw !important;
-
   box-shadow: 0px 1px 1px 0px rgb(0 0 0 / 14%);
   @media screen and (min-width: 768px) {
   }

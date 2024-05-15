@@ -1,5 +1,6 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
+
 const StyeldMessage = styled.p`
   max-width: 100%;
   text-align: left;
@@ -13,13 +14,14 @@ const StyeldMessage = styled.p`
       : props.success
       ? props.theme.colors.success
       : props.color || props.theme.colors.secondary};
-  visibility: ${(props) => (props.error ? 'visible' : 'hidden')};
+  visibility: ${(props) => (props.error ? "visible" : "hidden")};
 `;
+
 const Message = (props) => {
   const { color, error, success } = props;
   return (
     <StyeldMessage error={error} success={success} color={color}>
-      {error || 'text'}
+      {error || "text"}
     </StyeldMessage>
   );
 };

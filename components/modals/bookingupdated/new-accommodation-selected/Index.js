@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import Info from './Info';
-import Gallery from './gallery/Index';
-import Buttons from './Buttons';
-import AccommodationModal from '../../accommodation/Index';
+import React, { useState } from "react";
+import styled from "styled-components";
+import Info from "./Info";
+import Gallery from "./gallery/Index";
+import Buttons from "./Buttons";
+import AccommodationModal from "../../accommodation/Index";
 
 const Container = styled.div`
   margin: 0 0 1rem 0;
@@ -30,7 +30,6 @@ const ImageContainer = styled.div`
 `;
 
 const Accommodation = (props) => {
-  //   if(!showPhotos)
   const [showDetails, setShowDetails] = useState(false);
 
   return (
@@ -60,9 +59,6 @@ const Accommodation = (props) => {
       <Buttons setShowDetails={() => setShowDetails(true)}></Buttons>
     </Container>
   );
-  //   else return(
-  //       <FullScreenGallery images={images} closeGalleryHandler={closePhotosHandler}></FullScreenGallery>
-  //   )
 };
 
 export default Accommodation;

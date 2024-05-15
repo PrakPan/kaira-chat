@@ -1,8 +1,6 @@
-import styled from 'styled-components';
-import { useState, useEffect } from 'react';
-import ImageLoader from '../ImageLoader';
-import IconsFetcher from '../../helper/IconsFetcher';
-
+import styled from "styled-components";
+import { useState, useEffect } from "react";
+import IconsFetcher from "../../helper/IconsFetcher";
 
 const WeatherGrid = styled.div`
   display: grid;
@@ -19,7 +17,7 @@ const TextBold = styled.p`
 const WeatherWidget = ({
   date,
   city,
-  apiKey = 'e2fe4bf0d3954e25a493b899a559f43d',
+  apiKey = "e2fe4bf0d3954e25a493b899a559f43d",
 }) => {
   const [weather, setWeather] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -59,11 +57,12 @@ const WeatherWidget = ({
   }
   return (
     <WeatherGrid>
-      
+      <IconsFetcher
+        weather={weather.description}
+        style={{ color: "#FF9900", fontSize: "50px", fontWeight: "600" }}
+      />
 
-      <IconsFetcher weather={weather.description} style={{color: '#FF9900', fontSize: '50px', fontWeight: '600',}}/>
-        
-{/*       
+      {/*
       <ImageLoader
         borderRadius="50%"
         url="media/website/grey.png"

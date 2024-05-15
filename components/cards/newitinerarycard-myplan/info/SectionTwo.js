@@ -1,16 +1,6 @@
-import React from 'react';
-import styled from 'styled-components';
-     
-const Container = styled.div`
-  
-`;
-const Pax = (props) => {
-    
-    return(
-        <Container  >
-        CREATED BY OUR USER FROM NEW DELHI
-        </Container>
-    );
-}
-export default Pax;
+import React from "react";
 
+const Pax = (props) => {
+  return <div>CREATED BY OUR USER FROM NEW DELHI</div>;
+};
+export default Pax;

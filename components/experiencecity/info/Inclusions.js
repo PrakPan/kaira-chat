@@ -16,9 +16,10 @@ const Container = styled.div`
 
     }
     `;
+    
 const Inlcusions = (props) => {
-    
-    
+
+
     let icons=[];
     props.icons.map((icon,i) => {
         icons.push(<Icon text={icon} key={i} type="line"></Icon>)
@@ -27,7 +28,7 @@ const Inlcusions = (props) => {
         <Container>
          {icons}
         </Container>
-  ); 
+  );
 }
 
 export default React.memo(Inlcusions);

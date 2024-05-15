@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
+import React, { useState, useRef, useEffect } from "react";
+import styled from "styled-components";
+import { motion } from "framer-motion";
 
 const Wrapper = styled.div`
   display: flex;
@@ -34,8 +34,8 @@ const Hoverable = ({ children, width, height, onHover }) => {
   const ref = useRef(null);
 
   useEffect(() => {
-    ref.current.addEventListener('mouseover', () => setIsHovered(true));
-    ref.current.addEventListener('mouseleave', () => setIsHovered(false));
+    ref.current.addEventListener("mouseover", () => setIsHovered(true));
+    ref.current.addEventListener("mouseleave", () => setIsHovered(false));
   }, []);
 
   return (

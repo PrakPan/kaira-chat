@@ -1,18 +1,13 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import About from '../aboutus/About';
-import EntryFees from '../EntryFees';
-import GettingAround from '../GettingAround';
-import Recommendations from '../Recommendations';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Timings from '../Timings';
-import media from '../../../media';
-import ImageLoader from '../../../ImageLoader';
-const Container = styled.div`
-  @media screen and (min-width: 768px) {
-  }
-`;
+import styled from "styled-components";
+import About from "../aboutus/About";
+import EntryFees from "../EntryFees";
+import GettingAround from "../GettingAround";
+import Recommendations from "../Recommendations";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Timings from "../Timings";
+import media from "../../../media";
+import ImageLoader from "../../../ImageLoader";
 
 const TargetContainer = styled.div`
   padding: 1rem 1rem;
@@ -22,14 +17,7 @@ const TargetContainer = styled.div`
     height: 45vh;
   }
 `;
-const Icon = styled.img`
-  width: 1.5rem;
-  height: 1.5rem;
-`;
-const Heading = styled.p`
-  font-size: 0.75rem;
-  margin: 0.5rem 0 0 0;
-`;
+
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -45,18 +33,19 @@ function TabPanel(props) {
     </div>
   );
 }
+
 const Tabscomponent = (props) => {
-  let isPageWide = media('(min-width: 768px)');
+  let isPageWide = media("(min-width: 768px)");
   const [value, setValue] = React.useState(0);
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
   return (
-    <Container>
+    <div>
       <Tabs
         value={value}
         onChange={handleChange}
-        variant={!isPageWide ? 'scrollable' : 'fullWidth'}
+        variant={!isPageWide ? "scrollable" : "fullWidth"}
         scrollButtons={!isPageWide ? true : false}
         allowScrollButtonsMobile
         indicatorColor="#f7e700"
@@ -143,7 +132,7 @@ const Tabscomponent = (props) => {
       <TabPanel value={value} index={4}>
         <Timings weekdays={props.weekdays}></Timings>
       </TabPanel>
-    </Container>
+    </div>
   );
 };
 

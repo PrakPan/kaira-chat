@@ -1,17 +1,11 @@
-import React from 'react';
-import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
-import InElementContainer from './containers/InElementContainer';
-import {
-  ColElementContainer,
-  LinkComp,
-  MainHeading,
-  RowElementContainer,
-} from './InclusionExclusionStyled';
+import React from "react";
+import InElementContainer from "./containers/InElementContainer";
+import { MainHeading } from "./InclusionExclusionStyled";
 
 const Inclusions = (props) => {
   return (
     <div>
-      <MainHeading size={'1.4rem'} style={{ paddingBottom: '10px' }}>
+      <MainHeading size={"1.4rem"} style={{ paddingBottom: "10px" }}>
         Inclusions
       </MainHeading>
 

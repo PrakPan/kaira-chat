@@ -156,7 +156,7 @@ const HowItWorksSlideshow = (props) => {
   return (
     <div>
       {isPageWide ? (
-          <Container length={slidesdesktop.length}>{slidesdesktop}</Container>
+        <Container length={slidesdesktop.length}>{slidesdesktop}</Container>
       ) : (
         <div style={{ padding: "0rem 1rem" }}>
           <SwiperCarousel

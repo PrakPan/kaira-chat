@@ -36,10 +36,7 @@ const AnimatePresence = ({ children }) => {
     // Add new items to the animate list
     children.forEach((child) => {
       if (!animateList.find((item) => item.key === child.key)) {
-        setAnimateList((list) => [
-          ...list,
-          { key: child.key, element: child },
-        ]);
+        setAnimateList((list) => [...list, { key: child.key, element: child }]);
       }
     });
   }, [children]);

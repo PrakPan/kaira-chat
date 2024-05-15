@@ -15,6 +15,7 @@ const pulse = keyframes`
     opacity: 1;
   }
 `;
+
 const Button = styled.button`
   cursor: pointer;
   transition: all 0.2s ease-in-out;

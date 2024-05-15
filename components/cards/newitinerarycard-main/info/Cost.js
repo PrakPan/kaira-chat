@@ -20,7 +20,6 @@ const StrikedCost = styled.p`
     right: 0;
     border-top: 1px solid;
     color: rgb(122, 122, 122);
-
     -webkit-transform: skewY(-0deg);
     -moz-transform: skewY(-0deg);
     transform: skewY(-0deg);

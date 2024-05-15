@@ -7,11 +7,13 @@ import media from "../media";
 import { useRouter } from "next/router";
 import * as ga from "../../services/ga/Index";
 import openTailoredModal from "../../services/openTailoredModal";
+
 const Container = styled.div`
   @media screen and (min-width: 768px) {
     margin: 5rem 0;
   }
 `;
+
 const GridContainer = styled.div`
   display: grid;
   grid-gap: 0.5rem;
@@ -22,9 +24,7 @@ const GridContainer = styled.div`
     grid-gap: 3rem;
   }
 `;
-// const Heading = styled.p`
 
-// `;
 const Banner = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
@@ -34,7 +34,6 @@ const Banner = (props) => {
   };
 
   const _handleGuideClick = () => {
-    // setLoading(true);
     setTimeout(_handleGuideRedirect, 1000);
 
     ga.callback_event({
@@ -46,8 +45,6 @@ const Banner = (props) => {
 
   return (
     <Container>
-      {/* <Heading align="center" aligndesktop="left" margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "5rem 0"}  bold>Top Destinations to travel</Heading>         */}
-
       <Heading
         align="center"
         bold

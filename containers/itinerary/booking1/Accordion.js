@@ -108,6 +108,7 @@ const FAQs = (props) => {
                 )
               </div>
             </Typography>
+
             <Typography
               content={"span"}
               className="font-lexend"
@@ -128,6 +129,7 @@ const FAQs = (props) => {
                 : null}
             </Typography>
           </AccordionSummary>
+
           <AccordionDetails style={{ display: "block", padding: "0.1rem" }}>
             {props.payment.are_prices_hidden
               ? bookingslist

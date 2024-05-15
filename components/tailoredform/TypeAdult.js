@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
   },
 }));
+
 const Option = styled.option`
   padding: 0.75rem;
   background-color: white;
@@ -29,10 +30,11 @@ const Option = styled.option`
     cursor: pointer;
   }
 `;
+
 const QueryType = (props) => {
-  const isPageLoaded = usePageLoaded()
-    const classes = useStyles();
-    const [queryType, setQueryType] = useState("");
+  const isPageLoaded = usePageLoaded();
+  const classes = useStyles();
+  const [queryType, setQueryType] = useState("");
 
   if (isPageLoaded) {
     const queries = [

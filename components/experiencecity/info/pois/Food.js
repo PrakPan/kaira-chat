@@ -3,7 +3,6 @@ import styled from "styled-components";
 import ImageLoader from "../../../ImageLoader";
 import POIModal from "../../../modals/poi/Index";
 import POIDetailsDrawer from "../../../drawers/poiDetails/POIDetailsDrawer";
-import axiosPOIdetailsInstance from '../../../../services/poi/poidetails'
 
 const Container = styled.div`
   width: 100%;
@@ -25,14 +24,6 @@ const Icon = (props) => {
 
   const handleCloseDrawer = () => {
     setShowDrawer(false);
-  };
-  const _handleOpen = (event) => {
-    if (props.drawer) {
-      setShowDrawer(true);
-      axiosPOIdetailsInstance
-      .get(`/?id=${props.icon.id}`)
-      .then((res) => setPoiDetailsData(res.data));
-    } else props._openPoiModal(props.icon);
   };
 
   return (

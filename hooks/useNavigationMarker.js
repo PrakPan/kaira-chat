@@ -25,7 +25,6 @@ export const useNavigationMarker = () => {
 
 export const NavigationMarker = styled.div`
   position: absolute;
-  /* 1px border negative margin */
   bottom: -1px;
   left: ${({ x }) => x || 0}px;
   height: 4px;

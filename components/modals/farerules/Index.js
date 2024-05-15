@@ -1,26 +1,30 @@
-import React, { useEffect, useState} from 'react';
-import {Modal} from 'react-bootstrap';
-   import axiosflightsearch from '../../../services/bookings/FlightSearch';
-import Header from './Header';
+import React, { useEffect, useState } from "react";
+import { Modal } from "react-bootstrap";
+import axiosflightsearch from "../../../services/bookings/FlightSearch";
+import Header from "./Header";
 import LoadingLottie from "../../ui/LoadingLottie";
-   const FareRules = (props) => {
-const [html, setHtml] = useState(null);
-    useEffect(() => {
-        const TBO_TRACE_ID =  localStorage.getItem('tbo_trace_id')
-if(props.showFareRules)
-        axiosflightsearch.get( "/", {headers: {
-           'Authorization': `Bearer ${props.token}`
-           },
-       params: {
-        result_index: props.result_index,
-        search_type : 'farerule',
-        trace_id : TBO_TRACE_ID,
-       }
-   }).then( res => {
-        setHtml(res.data.FareRules[0].FareRuleDetail)
-   })
-   .catch(err => {});
-},[props.showFareRules])
+
+const FareRules = (props) => {
+  const [html, setHtml] = useState(null);
+  useEffect(() => {
+    const TBO_TRACE_ID = localStorage.getItem("tbo_trace_id");
+    if (props.showFareRules)
+      axiosflightsearch
+        .get("/", {
+          headers: {
+            Authorization: `Bearer ${props.token}`,
+          },
+          params: {
+            result_index: props.result_index,
+            search_type: "farerule",
+            trace_id: TBO_TRACE_ID,
+          },
+        })
+        .then((res) => {
+          setHtml(res.data.FareRules[0].FareRuleDetail);
+        })
+        .catch((err) => {});
+  }, [props.showFareRules]);
 
   return (
     <div>
@@ -55,14 +59,8 @@ if(props.showFareRules)
           )}
         </Modal.Body>
       </Modal>
-      {/* {showPhotos ? <FullScreenGallery images={[]} closeGalleryHandler={closePhotosHandler}></FullScreenGallery> : null} */}
     </div>
   );
+};
 
- 
-
-}
-
-
- 
-export default  FareRules;
+export default FareRules;

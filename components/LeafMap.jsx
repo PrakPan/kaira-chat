@@ -3,6 +3,7 @@ import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import { MAPBOX_ACCESS_TOKEN } from "../services/constants";
 
 import styled from "styled-components";
+
 const [map, setMap] = useState(null);
 
 const MapInside = styled.div`

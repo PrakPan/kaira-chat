@@ -9,11 +9,6 @@ import Timings from "../Timings";
 import media from "../../../media";
 import ImageLoader from "../../../ImageLoader";
 
-const Container = styled.div`
-  @media screen and (min-width: 768px) {
-  }
-`;
-
 const TargetContainer = styled.div`
   padding: 1rem 1rem;
   height: 40vh;
@@ -46,7 +41,7 @@ const Tabscomponent = (props) => {
     setValue(newValue);
   };
   return (
-    <Container>
+    <div>
       <Tabs
         value={value}
         onChange={handleChange}
@@ -123,7 +118,7 @@ const Tabscomponent = (props) => {
       <TabPanel value={value} index={3}>
         <Timings weekdays={props.weekdays}></Timings>
       </TabPanel>
-    </Container>
+    </div>
   );
 };
 

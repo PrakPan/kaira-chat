@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import styled from 'styled-components';
-import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
+import React, { useState, useEffect, useRef } from "react";
+import styled from "styled-components";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 
 const ScrollableTabsContainer = styled.div`
   position: relative;
@@ -33,7 +33,7 @@ const ScrollableTab = styled.div`
 const ScrollButton = styled.button`
   position: absolute;
   top: 0;
-  ${(props) => (props.left ? 'left: 0;' : 'right: 0;')}
+  ${(props) => (props.left ? "left: 0;" : "right: 0;")}
   width: 50px;
   height: 100%;
   background-color: transparent;
@@ -52,7 +52,7 @@ const ScrollButton = styled.button`
   }
 `;
 
-const ScrollableTabs = ({ Mstyle = 'simple', items, activeItem, onSelect }) => {
+const ScrollableTabs = ({ Mstyle = "simple", items, activeItem, onSelect }) => {
   const tabsContainerRef = useRef(null);
   const [activeTab, setActiveTab] = useState(0);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -76,7 +76,7 @@ const ScrollableTabs = ({ Mstyle = 'simple', items, activeItem, onSelect }) => {
     const scrollDistance = Math.floor(tabsContainer.offsetWidth / 2);
     tabsContainer.scrollBy({
       left: -scrollDistance,
-      behavior: 'smooth',
+      behavior: "smooth",
     });
   };
 
@@ -85,7 +85,7 @@ const ScrollableTabs = ({ Mstyle = 'simple', items, activeItem, onSelect }) => {
     const scrollDistance = Math.floor(tabsContainer.offsetWidth / 2);
     tabsContainer.scrollBy({
       left: scrollDistance,
-      behavior: 'smooth',
+      behavior: "smooth",
     });
   };
 
@@ -103,14 +103,16 @@ const ScrollableTabs = ({ Mstyle = 'simple', items, activeItem, onSelect }) => {
       <ScrollableTabsInnerContainer
         ref={tabsContainerRef}
         onScroll={handleScroll}
-        className={`${canScrollRight &&
-          'scrollable-tabs__container--right-end'}`}
+        className={`${
+          canScrollRight && "scrollable-tabs__container--right-end"
+        }`}
       >
         {items.map((tab, index) => (
           <ScrollableTab
             key={index}
-            className={`${index === activeTab &&
-              'scrollable-tabs__tab--active'}`}
+            className={`${
+              index === activeTab && "scrollable-tabs__tab--active"
+            }`}
             onClick={() => handleTabClick(index)}
           >
             {tab.label}
