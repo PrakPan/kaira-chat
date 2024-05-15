@@ -1,21 +1,24 @@
-import React , { useEffect, useState } from 'react'
-import Card from '../../../components/containers/plannerlocations/Card';
-import media from "../../../components/media"
-import DesktopSkeleton,{MobileSkeleton} from '../../../components/containers/plannerlocations/LocationSkeleton'
-import Button from '../../../components/ui/button/Index'
-import styled from 'styled-components'
-import openTailoredModal from '../../../services/openTailoredModal';
-import { useRouter } from 'next/router';
-import SwiperCarousel from '../../../components/SwiperCarousel';
+import React, { useEffect, useState } from "react";
+import Card from "../../../components/containers/plannerlocations/Card";
+import media from "../../../components/media";
+import DesktopSkeleton, {
+  MobileSkeleton,
+} from "../../../components/containers/plannerlocations/LocationSkeleton";
+import Button from "../../../components/ui/button/Index";
+import styled from "styled-components";
+import openTailoredModal from "../../../services/openTailoredModal";
+import { useRouter } from "next/router";
+import SwiperCarousel from "../../../components/SwiperCarousel";
+
 const MobileCardsContainer = styled.div`
-  display : grid;
-grid-template-columns: 1fr 1fr ;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
-`
+`;
+
 const Heading = styled.p`
   font-weight: 600;
   font-size: 25px;
-  // line-height: 48px;
   margin-block: 1.5rem;
   @media screen and (min-width: 768px) {
     font-size: 32px;
@@ -25,19 +28,48 @@ const Heading = styled.p`
 
 const NearbyLocations = (props) => {
   if (!props.nearbyCities || props.nearbyCities?.length === 0) return <></>;
+
+  let isPageWide = media("(min-width: 768px)");
+  const router = useRouter();
   const [MobilecardsToShowJSX, setMobileCardsToShowJSX] = useState([]);
-  const [cards, setCards] = useState([])
-  const [hide , setHide] = useState(false)
+  const [cards, setCards] = useState([]);
+
   useEffect(() => {
-    
-let cardsArr = []
-let MobileCardsArr = []
-let count = 0
-    for (let i = 0; i < props.nearbyCities.length; i++){
-  const mostPopular = props.nearbyCities[i].most_popular_for;
-  if(i%4==0 && i!=0){
-      let n = cardsArr.length;
-      const el = cardsArr.slice(n-4,n)
+    let cardsArr = [];
+    let MobileCardsArr = [];
+    let count = 0;
+    for (let i = 0; i < props.nearbyCities.length; i++) {
+      const mostPopular = props.nearbyCities[i].most_popular_for;
+      if (i % 4 == 0 && i != 0) {
+        let n = cardsArr.length;
+        const el = cardsArr.slice(n - 4, n);
+        MobileCardsArr.push(
+          <MobileCardsContainer>
+            {el.map((e, i) => (
+              <div key={i}>{e}</div>
+            ))}
+          </MobileCardsContainer>
+        );
+        count++;
+      }
+      cardsArr.push(
+        <Card
+          key={props.nearbyCities[i].id}
+          location={props.nearbyCities[i].name}
+          heading={
+            mostPopular && mostPopular.length
+              ? mostPopular[mostPopular.length - 1]
+              : ""
+          }
+          img={props.nearbyCities[i].image}
+          path={props.nearbyCities[i].path}
+          link={props.nearbyCities[i].slug}
+          city={true}
+        ></Card>
+      );
+    }
+    if (count % 4 != 0) {
+      const el = cardsArr.slice(count * 4, cardsArr.length);
       MobileCardsArr.push(
         <MobileCardsContainer>
           {el.map((e, i) => (
@@ -45,33 +77,11 @@ let count = 0
           ))}
         </MobileCardsContainer>
       );
-    count++
     }
-  cardsArr.push(
-    <Card
-    key={props.nearbyCities[i].id}
-    location={props.nearbyCities[i].name}
-    heading={(mostPopular && mostPopular.length) ? mostPopular[mostPopular.length-1] : ''}
-    img={props.nearbyCities[i].image}
-    path={props.nearbyCities[i].path}
-    link={props.nearbyCities[i].slug}
-    city={true}
-     >
-    </Card>
-  )
-}
-if(count%4 !=0){
-  const el = cardsArr.slice(count*4,cardsArr.length)
-  MobileCardsArr.push(<MobileCardsContainer>{el.map((e, i) => <div key={i}>{e}</div>)}</MobileCardsContainer>)
-}
-setCards(cardsArr)
-setMobileCardsToShowJSX(MobileCardsArr)
-
+    setCards(cardsArr);
+    setMobileCardsToShowJSX(MobileCardsArr);
   }, []);
 
-
-  let isPageWide = media('(min-width: 768px)')
-const router = useRouter()
   return (
     <>
       <Heading>Nearby Locations to {props.data.name}</Heading>
@@ -107,8 +117,8 @@ const router = useRouter()
             <SwiperCarousel
               slidesPerView={1}
               pageDots
-                cards={MobilecardsToShowJSX}
-                noPadding
+              cards={MobilecardsToShowJSX}
+              noPadding
             ></SwiperCarousel>
           ) : (
             <MobileSkeleton />
@@ -117,6 +127,6 @@ const router = useRouter()
       )}
     </>
   );
-}
+};
 
-export default NearbyLocations
+export default NearbyLocations;

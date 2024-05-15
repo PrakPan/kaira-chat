@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import styled from "styled-components";
-import media from "../../../components/media";
 import WeatherWidget from "../../../components/WeatherWidget/WeatherWidget";
 import { BiChevronDown, BiChevronUp } from "react-icons/bi";
+
 const Container = styled.div`
   margin-top: 30px;
 
@@ -12,20 +12,19 @@ const Container = styled.div`
     gap: 2rem;
   }
 `;
+
 const P = styled.div`
   font-weight: 300;
   text-align: left;
   line-height: 30px;
   position: relative;
-  // ${(props) => `height : ${props.clientHeight}px`};
-  // max-height : none;
-  // ${(props) => !props.more && "overflow : hidden ; height: 201px"};
   transition: height 0.3s ease;
 
   @media screen and (min-width: 768px) {
     font-size: 18px;
   }
 `;
+
 const TextBold = styled.p`
   line-height: 24px;
   font-weight: 600;
@@ -49,14 +48,9 @@ const WeatherContainer = styled.div`
 `;
 
 const Brief = (props) => {
-  const isPageWide = media("(min-width: 768px)");
   const [more, setMore] = useState(false);
   const [clientHeight, setClientHeight] = useState(false);
   const ref = useRef();
-
-  //  useEffect(() => {
-  //    setClientHeight(ref.current.offsetHeight);
-  //  }, [isPageWide]);
 
   return (
     <Container>
@@ -70,16 +64,6 @@ const Brief = (props) => {
           <span
             className="hover-pointer text-container font-[600] text-gray-500 ml-1"
             onClick={() => setMore(!more)}
-            // style={{
-            //   position: "absolute",
-            //   right: "0",
-            //   bottom: "-8px",
-            //   marginBottom: "0px",
-            //   backgroundColor: "white",
-            //   zIndex: "2",
-            //   paddingLeft: "0.25rem",
-            //   fontWeight: "600",
-            // }}
           >
             {!more ? (
               <>

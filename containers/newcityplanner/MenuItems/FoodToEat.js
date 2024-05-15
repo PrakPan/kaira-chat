@@ -1,16 +1,18 @@
-import React from 'react';
-import styled from 'styled-components';
-import ImageLoader from '../../../components/ImageLoader';
-import SwiperCarousel from '../../../components/SwiperCarousel';
+import React from "react";
+import styled from "styled-components";
+import ImageLoader from "../../../components/ImageLoader";
+import SwiperCarousel from "../../../components/SwiperCarousel";
 
 const IconContainer = styled.div`
   width: 100%;
 `;
+
 const IconTagLine = styled.p`
   font-weight: 600;
   font-size: 16px;
   margin-block: 5px;
 `;
+
 const MobileCardsContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -22,15 +24,17 @@ const FoodToEat = (props) => {
     <IconContainer key={index}>
       <ImageLoader
         borderRadius="12px"
-        url={icon.image ? icon.image : 'media/food/dinner.png'}
+        url={icon.image ? icon.image : "media/food/dinner.png"}
         dimensions={{ width: 900, height: 900 }}
         dimensionsMobile={{ width: 900, height: 900 }}
       ></ImageLoader>
       <IconTagLine className="font-lexend">{icon.name}</IconTagLine>
     </IconContainer>
   ));
+
   const MobileCardsArr = [];
   let count = 0;
+
   for (let i = 4; i < cards.length; i = i + 4) {
     const el = cards.slice(i - 4, i);
     MobileCardsArr.push(
@@ -42,6 +46,7 @@ const FoodToEat = (props) => {
     );
     count++;
   }
+
   const el = cards.slice(count * 4, cards.length);
   MobileCardsArr.push(
     <MobileCardsContainer>

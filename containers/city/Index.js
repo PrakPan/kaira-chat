@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import FullScreenGallery from "../../components/fullscreengallery/Index";
 import DesktopPersonaliseBanner from "../../components/containers/Banner";
 import media from "../../components/media";
@@ -10,16 +10,10 @@ import validateTextSize from "../../services/textSizeValidator";
 import openTailoredModal from "../../services/openTailoredModal";
 
 const Experience = (props) => {
-  const [escapeState, setEscapeState] = useState(false);
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [galleryimages, setGalleryImages] = useState([]);
   const router = useRouter();
   let isPageWide = media("(min-width: 768px)");
-
-  useEffect(() => {
-    //Escape hatch for mobile images, do not remove
-    setEscapeState(true);
-  }, []);
 
   const closeGalleryHandler = () => {
     let images = [];

@@ -1,26 +1,17 @@
-import styled from "styled-components"
-import Experiences from "./Experiences"
- import { useState } from "react"
+import Experiences from "./Experiences";
 
-const Container = styled.div`
+const TopRecommendations = (props) => {
+  return (
+    <Experiences
+      cols={"3"}
+      link="https://www.blog.thetarzanway.com/post/hidden-gems-of-ladakh"
+      heading="Hidden Gems of Ladakh"
+      text="Well, Ladakh is often referred to as the Land of explorers, which is because this amazing place has several hidden treasures waiting to be explored."
+      img="media/website/b80cd8_8fb69995b7024cf3981e779ee18602d6_mv2.webp"
+      margin="2.5rem 0"
+      experiences={props.itinerary_data}
+    ></Experiences>
+  );
+};
 
-    @media screen and (min-width: 768px){
-        // display : grid;
-        // grid-template-columns : 3fr 1.2fr;
-        // gap : 2rem;
-          };
-          
-  
-`
-
-const TopRecommendations = (props)=>{
-    return (
-        <Container>
-        {/* <div style={{border : '1px solid red',gridColumnStart:2 , gridRowStart:1 , height : '390px'}}>Weather Component</div> */}
-
-        <Experiences  cols={'3'} link='https://www.blog.thetarzanway.com/post/hidden-gems-of-ladakh' heading="Hidden Gems of Ladakh"  text="Well, Ladakh is often referred to as the Land of explorers, which is because this amazing place has several hidden treasures waiting to be explored." img="media/website/b80cd8_8fb69995b7024cf3981e779ee18602d6_mv2.webp" margin="2.5rem 0" experiences={props.itinerary_data} ></Experiences>
-        
-        </Container>
-    )
-}
-export default TopRecommendations
+export default TopRecommendations;
