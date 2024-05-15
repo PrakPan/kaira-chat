@@ -25,7 +25,6 @@ const ImageContainer = styled.div`
     }
   }
   @media screen and (min-width: 768px) {
-    // height: 35vh;
     height: ${(props) => (props.continent ? "71vh" : "35vh")};
   }
 `;
@@ -107,7 +106,7 @@ const Experiences = (props) => {
             style={{ filter: "brightness(0.75)" }}
           ></ImageLoader>
         </ImageFade>
-        
+
         <BlackContainer continent={props.continent} className="font-lexend">
           {ImageLoaded && (
             <>

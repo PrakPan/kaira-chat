@@ -74,6 +74,7 @@ const HowItWorksSlideshow = (props) => {
           }
         />
       </ImageContainer>
+
       <TextContainer>
         {props.headings[0]}
         {props.content[0]}
@@ -95,6 +96,7 @@ const HowItWorksSlideshow = (props) => {
           }
         />
       </ImageContainer>
+
       <TextContainer>
         {props.headings[1]}
         {props.content[1]}
@@ -143,6 +145,7 @@ const HowItWorksSlideshow = (props) => {
             noLazy
           />
         </ImageContainer>
+
         <TextContainer>
           {props.headings[3]}
           {props.content[3]}
@@ -153,9 +156,7 @@ const HowItWorksSlideshow = (props) => {
   return (
     <div>
       {isPageWide ? (
-        <>
           <Container length={slidesdesktop.length}>{slidesdesktop}</Container>
-        </>
       ) : (
         <div style={{ padding: "0rem 1rem" }}>
           <SwiperCarousel
@@ -163,12 +164,11 @@ const HowItWorksSlideshow = (props) => {
             navButtonColor={"black"}
             slidesPerView={isTablet ? 2 : 1}
             cards={slidesdesktop}
-            // pageDots
             navigationButtons
           ></SwiperCarousel>
         </div>
       )}
-      
+
       {!props.nostart ? (
         <Button
           onclick={handlePlanButtonClick}

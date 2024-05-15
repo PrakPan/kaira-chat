@@ -140,8 +140,6 @@ const Index = (props) => {
         <HeroBanner
           image={props.data.image}
           page_id={props.data.id}
-          // destination={props.data.destination}
-          // cities={props.reccomendedCitiesData}
           title={`${props.data.destination} Trip Planner`}
           page={"Continent Page"}
         />
@@ -292,10 +290,7 @@ const Index = (props) => {
           <Heading style={{ margin: "3.5rem 0 3.5rem 0" }}>
             Why plan with us?
           </Heading>
-          <WhyPlanWithUs
-            page_id={props.data.id}
-            // destination={props.data.destination}
-          />
+          <WhyPlanWithUs page_id={props.data.id} />
 
           <Heading style={{ margin: "4rem 0 2.5rem 0" }}>
             What our customers say?

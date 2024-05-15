@@ -20,6 +20,7 @@ const TravelPlanner = (props) => {
         <meta property="og:image" content="/logoblack.svg" />
         <meta property="keywords" content={props.Data.meta_keywords}></meta>
       </Head>
+
       <ContinentPage
         contientTheme={props.contientTheme}
         data={props.Data}

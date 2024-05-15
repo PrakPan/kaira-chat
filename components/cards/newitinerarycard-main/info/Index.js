@@ -1,8 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 
-const Container = styled.div``;
-
 const Heading = styled.p`
   font-size: 18px;
   font-weight: 700;
@@ -32,6 +30,7 @@ const TourType = styled.p`
 
 const Info = (props) => {
   let LOCATIONS_TO_SHOW = "";
+
   if (props.locations) {
     for (var i = 0; i < props.locations.length; i++) {
       if (i !== props.locations.length - 1)
@@ -42,7 +41,7 @@ const Info = (props) => {
   }
 
   return (
-    <Container className="font-lexend">
+    <div className="font-lexend">
       <Heading className="font-lexend">{props.name}</Heading>
       <Locations>{LOCATIONS_TO_SHOW}</Locations>
       {props.PW ? (
@@ -62,7 +61,8 @@ const Info = (props) => {
           <b style={{ fontWeight: "500" }}>Handcrafted by us</b>
         </TourType>
       )}
-    </Container>
+    </div>
   );
 };
+
 export default Info;

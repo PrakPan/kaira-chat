@@ -34,7 +34,6 @@ const BlackContainer = styled.div`
   align-items: center;
   justify-content: flex-end;
   padding: 0.5rem;
-  // top: 0;
   bottom: 0;
   flex-direction: column;
 `;
@@ -56,7 +55,7 @@ const Subheading = styled.p`
 
 const Experiences = (props) => {
   const [loading, setLoading] = useState(true);
-  
+
   const handleImageClick = (e) => {
     logEvent({
       action: "View_Destination",

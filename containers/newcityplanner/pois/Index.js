@@ -4,8 +4,6 @@ import { useState } from "react";
 import media from "../../../components/media";
 import validateTextSize from "../../../services/textSizeValidator";
 import WeatherWidget from "../../../components/WeatherWidget/WeatherWidget";
-import openTailoredModal from "../../../services/openTailoredModal";
-import { useRouter } from "next/router";
 import SwiperCarousel from "../../../components/SwiperCarousel";
 import dynamic from "next/dynamic";
 const MapBox = dynamic(() => import("../../../components/Map.js"), {
@@ -66,7 +64,6 @@ const WeatherContainer = styled.div`
 `;
 
 const Poi = (props) => {
-  const router = useRouter();
   const [more, setMore] = useState(4);
   const drawerShowArr = props.pois?.map((e) => {
     return { ...e, isOpen: false };
@@ -84,7 +81,6 @@ const Poi = (props) => {
   };
 
   const handleCloseDrawer = (e) => {
-    // e.stopPropagation()
     if (e) e.stopPropagation();
     setShowDrawer(drawerShowArr);
   };

@@ -47,7 +47,6 @@ const Container = styled.div`
 
   overflow: hidden;
   & :hover {
-    // opacity : 0.9;
     .AnimateLeft {
       animation: 0.5s ${LeftSlideIn} forwards;
     }

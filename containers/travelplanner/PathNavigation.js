@@ -27,7 +27,6 @@ export default function PathNavigation(props) {
 
   const capitalizeFirstLetter = (string) => {
     const words = string.split("_");
-    // const newString = string.replace(/_/g, " ");
     const newString = words
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");

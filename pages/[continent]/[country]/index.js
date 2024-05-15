@@ -66,6 +66,7 @@ export async function getStaticPaths() {
     fallback: false,
   };
 }
+
 export async function getStaticProps(context) {
   let data = null;
   let locations = [];

@@ -15,8 +15,6 @@ const GridContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   @media screen and (min-width: 768px) {
-    // width: 80%;
-
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
   }
 `;
@@ -102,6 +100,7 @@ const LogoOuterContainer = styled.div`
 const AsSeenIn = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [selected, setSelected] = useState(0);
+
   const Quotes = [
     "In addition to providing worry-free travel as regards health concerns, The Tarzan Way does a complete surrender to nature along with teaching reasonable self-dependency, isolationist travel aligns nicely with responsible tourism.",
     "While creating a highly personalized experience, companies need to keep in mind the traveler’s purpose and what a particular location may have to offer, The Tarzan Way is doing a great job for that.",
@@ -111,6 +110,7 @@ const AsSeenIn = (props) => {
     `Giving an employer's perspective, Shikhar Chadha, CEO of travel firm The Tarzan Way, said, "Initially, WFH was very difficult because we were not familiar with it. Coordinating on phone was challenging but eventually we adapted to working remotely."`,
     "Imagine you're a traveler, and you want to visit some place; You might be interested in an exciting road trip, or thrilling treks, maybe a heritage walk and what not. What market has to offer you",
   ];
+
   const Urls = [
     "https://www.outlookindia.com/outlooktraveller/explore/story/70734/the-new-travel-trends-of-the-covid-19-era",
     "https://indianexpress.com/article/lifestyle/destination-of-the-week/travelling-in-the-new-normal-how-pandemic-has-changed-the-rules-of-the-game-7058162/",

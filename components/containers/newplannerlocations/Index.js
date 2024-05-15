@@ -1,22 +1,8 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Card from "./Card";
-import media from "../../media";
 import { useRouter } from "next/router";
 import SwiperCarousel from "../../SwiperCarousel";
-
-const Container = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 1rem;
-  padding: 0.5rem;
-
-  @media screen and (min-width: 768px) {
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-    grid-gap: 2rem;
-    padding: 0rem;
-  }
-`;
 
 const MobileCardsContainer = styled.div`
   display: grid;
@@ -25,7 +11,6 @@ const MobileCardsContainer = styled.div`
 `;
 
 const LocationsBlog = (props) => {
-  let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [cardsToShowJSX, setCardsToShowJSX] = useState([]);
   const [cardsToShowJSXmobile, setCardsToShowJSXmobile] = useState([]);
@@ -89,9 +74,6 @@ const LocationsBlog = (props) => {
   return (
     <>
       <div className="hidden-mobile new-planner-location">
-        {/* <Container >
-               {cardsToShowJSX}
-      </Container> */}
         <SwiperCarousel
           navigationButtons={true}
           slidesPerView={6}
@@ -108,7 +90,6 @@ const LocationsBlog = (props) => {
             cards={cardsToShowJSXmobile}
           ></SwiperCarousel>
         </div>
-        {/* {props.viewall ? <Button  onclikc={_handleTailoredClick} onclickparams={null} boxShadow borderWidth="1px" borderRadius="2rem" margin="auto" padding="0.25rem 2rem" >View More</Button> : null} */}
       </div>
     </>
   );

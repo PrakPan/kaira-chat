@@ -237,9 +237,7 @@ const POIDetails = (props) => {
         <div className="flex flex-row">
           Cost: <div className="font-semibold px-1">₹</div> {props.data.cost}
           {" /- "}
-          <div style={{ marginLeft: "0.5rem" }}>
-            Per person
-          </div>
+          <div style={{ marginLeft: "0.5rem" }}>Per person</div>
         </div>
       )}
       {props.data.short_description && (

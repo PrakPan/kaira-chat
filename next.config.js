@@ -1,8 +1,12 @@
-module.exports = {
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
+});
+
+const nextConfig = {
   distDir: process.env.BUILD_DIR || ".next",
   output: "export",
-  trailingSlash: true,
-  skipTrailingSlashRedirect: true,
+  // trailingSlash: true,
+  // skipTrailingSlashRedirect: true,
 
   images: {
     unoptimized: true,
@@ -46,9 +50,11 @@ module.exports = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  
+
   compiler: {
     // ssr and displayName are configured by default
     styledComponents: true,
   },
 };
+
+module.exports = withBundleAnalyzer(nextConfig);

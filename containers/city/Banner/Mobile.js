@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components'
-// import Button from '../../../components/Button';
 import Button from '../../../components/ui/button/Index';
 import validateTextSize from '../../../services/textSizeValidator';
+
 const Container = styled.div`
 position: fixed;
 bottom: 0;

@@ -138,7 +138,7 @@ const Index = (props) => {
         ></DesktopPersonaliseBanner>
       ) : (
         <MobileBanner
-          cityName={props.data.name}
+          cityName={props?.data?.name}
           onClick={() =>
             openTailoredModal(router, props.data.id, props.data.name)
           }
@@ -150,7 +150,6 @@ const Index = (props) => {
           image={props.data.image}
           page_id={props.data.id}
           destination={props.data.name}
-          // cities={props.reccomendedCitiesData}
           title={`${props.data.name} Trip Planner`}
           page={"Country Page"}
         />
@@ -245,9 +244,7 @@ const Index = (props) => {
             <MenuItem id="Places">
               <Heading>Places to visit in {props.data.name}</Heading>
               <Poi
-                // elevation={props.elevation}
                 data={props.data}
-                // thingsToDoPage={props.thingsToDoPage}
                 pois={props.data.pois}
                 city={props.data.name}
                 handlePlanButtonClick={handlePlanButtonClick}
@@ -306,7 +303,6 @@ const Index = (props) => {
                 page_id={props.data.id}
                 destination={props.data.name}
                 viewall
-                // country={country}
                 country
                 page={"Country Page"}
                 continent={props.data.continent}

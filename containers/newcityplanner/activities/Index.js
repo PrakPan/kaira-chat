@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import ActivityCard from "./ActivityCard.js";
 import { useState } from "react";
-import media from "../../../components/media";
 import validateTextSize from "../../../services/textSizeValidator";
 import openTailoredModal from "../../../services/openTailoredModal";
 import { useRouter } from "next/router";
@@ -28,7 +27,6 @@ const Activity = (props) => {
     return { ...e, isOpen: false };
   });
   const [showDrawer, setShowDrawer] = useState(drawerShowArr);
-  let isPageWide = media("(min-width: 768px)");
 
   const _handleOpen = (id) => {
     setShowDrawer(
@@ -40,7 +38,6 @@ const Activity = (props) => {
   };
 
   const handleCloseDrawer = (e) => {
-    // e.stopPropagation()
     if (e) e.stopPropagation();
     setShowDrawer(drawerShowArr);
   };

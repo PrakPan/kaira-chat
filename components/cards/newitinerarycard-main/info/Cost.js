@@ -2,8 +2,6 @@ import React from "react";
 import styled from "styled-components";
 import { getIndianPrice } from "../../../../services/getIndianPrice";
 
-const Container = styled.div``;
-
 const StrikedCost = styled.p`
   position: relative;
   width: max-content;
@@ -38,7 +36,6 @@ const StrikedCost = styled.p`
       top: 45%;
       right: 0;
       color: rgb(122, 122, 122);
-
       border-top: 1px solid;
       border-color: inherit;
       -webkit-transform: skewY(-0deg);
@@ -52,7 +49,6 @@ const Text = styled.p`
   font-weight: 700;
   font-size: 20px;
   text-align: left;
-
   width: max-content;
   line-height: 1;
 
@@ -102,7 +98,7 @@ const GITText = styled.p`
 
 const Cost = (props) => {
   return (
-    <Container className="center-di">
+    <div className="center-di">
       {props.starting_cost ? (
         <div style={{ display: "flex" }}>
           <div style={{ width: "max-content" }}>
@@ -163,7 +159,7 @@ const Cost = (props) => {
           </div>
         </div>
       )}
-    </Container>
+    </div>
   );
 };
 

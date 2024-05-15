@@ -5,11 +5,11 @@ import SkeletonCard from "../ui/SkeletonCard";
 
 const WeatherGrid = styled.div`
   display: grid;
-
   grid-template-columns: max-content max-content;
   grid-gap: 0.8rem;
   height: 50px;
 `;
+
 const TextBold = styled.div`
   line-height: 21px;
   font-weight: 600;
@@ -17,6 +17,7 @@ const TextBold = styled.div`
   margin: 0;
   color: rgb(1, 32, 43);
 `;
+
 const WeatherWidget = ({
   location,
   city,
@@ -95,6 +96,7 @@ const WeatherWidget = ({
       </div>
     ) : null;
   }
+
   return (
     <div>
       {weatherText && <TextBold>{weatherText}</TextBold>}

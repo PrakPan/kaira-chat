@@ -6,21 +6,6 @@ import PastItineraryCard from "../cards/Testimonial";
 import SwiperCarousel from "../SwiperCarousel";
 import usePageLoaded from "../custom hooks/usePageLoaded";
 
-const Container = styled.div`
-  @media screen and (min-width: 768px) {
-  }
-`;
-
-const GridContainer = styled.div`
-  // @media screen and (min-width: 768px){
-  //   display: grid;
-  //   grid-template-columns: ${(props) =>
-    props.columns ? "repeat(" + props.columns + ",1fr)" : "repeat(3,1fr)"};
-  //   grid-template-rows: auto;
-  //   grid-gap: 2.5rem;
-  // }
-`;
-
 const GridCard = styled.div`
   margin: 1rem 0.5rem;
 `;
@@ -216,22 +201,22 @@ const Experiences = (props) => {
 
   return (
     <>
-      <Container className="hidden-mobile">
+      <div className="hidden-mobile">
         <SwiperCarousel
           navigationButtons={true}
           slidesPerView={3}
           cards={cards}
         ></SwiperCarousel>
-      </Container>
+      </div>
 
       <div className="hidden-desktop">
         {isPageLoaded ? (
           props.mobileGrid ? (
-            <GridContainer>
+            <div>
               {cards.map((e) => (
                 <GridCard>{e}</GridCard>
               ))}
-            </GridContainer>
+            </div>
           ) : (
             <SwiperCarousel
               slidesPerView={1}

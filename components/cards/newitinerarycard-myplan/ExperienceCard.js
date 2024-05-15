@@ -23,7 +23,6 @@ const ImageContainer = styled.div`
 
 const ContentContainer = styled.div`
   width: 100%;
-
   padding: 1rem 1.5rem;
   box-sizing: border-box;
   @media screen and (min-width: 768px) {

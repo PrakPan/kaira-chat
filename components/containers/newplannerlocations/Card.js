@@ -1,23 +1,8 @@
 import React from "react";
 import styled from "styled-components";
-import media from "../../media";
 import ImageLoader from "../../ImageLoader";
 import Link from "next/link";
 import { logEvent } from "../../../services/ga/Index";
-
-const Container = styled.div`
-  width: 100%;
-  margin-bottom: 1rem;
-  height: 60vh;
-  @media screen and (min-width: 768px) {
-    margin: 0;
-    max-width: 100%;
-    height: 30vh;
-  }
-  &:hover {
-    cursor: pointer;
-  }
-`;
 
 const Name = styled.p`
   padding: 0rem 0;
@@ -25,11 +10,7 @@ const Name = styled.p`
   font-weight: 700;
   margin: 0 0 0.25rem 0;
   line-height: 1;
-
   width: 100%;
-
-  @media screen and (min-width: 768px) {
-  }
 `;
 
 const Subtext = styled.p`
@@ -39,8 +20,6 @@ const Subtext = styled.p`
 `;
 
 const Experiences = (props) => {
-  let isPageWide = media("(min-width: 768px)");
-  // const [ImageLoaded, setImageLoaded] = useState(false);
   let filters_to_show = "";
   try {
     for (var i = 0; i < props.filters.length; i++) {
@@ -78,7 +57,6 @@ const Experiences = (props) => {
           dimensions={{ width: 400, height: 400 }}
           borderRadius="10px"
           dimensionsMobile={{ width: 300, height: 300 }}
-          // onload={() => setImageLoaded(true)}
           style={{ cursor: "pointer" }}
           filter="brightness(0.80)"
         ></ImageLoader>

@@ -13,14 +13,12 @@ const DurationContainer = styled.div`
   top: 0;
   width: max-content;
   font-size: 0.85rem;
-
   color: white;
   border-radius: 20px;
   padding: 0.25rem 0.35rem;
   right: 0;
   background: #01202b;
   letter-spacing: 0.1em;
-
   margin: 0.5rem;
   font-weight: 600;
 `;
@@ -88,4 +86,5 @@ const ImageSlider = (props) => {
     </Container>
   );
 };
+
 export default React.memo(ImageSlider);

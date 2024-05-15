@@ -68,7 +68,7 @@ const FullImgContent = (props) => {
               <div key={i}>{e}</div>
             ))}
           </Container>
-          
+
           <Button
             link={"/testimonials"}
             onclickparams={null}

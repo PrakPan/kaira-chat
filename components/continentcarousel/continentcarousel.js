@@ -63,7 +63,7 @@ const Continentcarousel = (props) => {
 
   useEffect(() => {
     const cardsArr = [];
-    
+
     for (let i = 0; i < props.data.length; i++) {
       let hd = props.data[i].hot_destinations.length;
       cardsArr.push(

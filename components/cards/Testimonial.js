@@ -119,10 +119,9 @@ const Testimonial = (props) => {
               Start Planning
             </Button>
           </ButtonContainer>
-
         </GridContainer>
       </div>
-      
+
       <TailoredFormMobileModal
         destinationType={"city-planner"}
         onHide={() => setShowMobilePlanner(false)}

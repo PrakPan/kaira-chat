@@ -78,9 +78,7 @@ const IconsContainer = styled.div`
   width: 100%;
   padding-inline: 10px;
   @media screen and (min-width: 768px) {
-    // bottom: 30px;
     width: 40%;
-    // bottom : -20%;
   }
 `;
 

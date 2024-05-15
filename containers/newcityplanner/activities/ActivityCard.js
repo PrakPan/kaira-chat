@@ -76,7 +76,6 @@ export default function ActivityCard(props) {
       {props?.data?.cost ? (
         <div className="flex flex-col">
           <div className="flex flex-row items-center text-[20px] font-bold">
-            {/* <PiCurrencyInrBold className="inline" /> */}₹
             {getIndianPrice(props.data.cost)}
             <span className="text-[12px] font-[400] ml-2">per person*</span>
           </div>

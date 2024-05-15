@@ -1,38 +1,21 @@
-import React from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import ImageLoader from '../../components/ImageLoader';
-import media from '../../components/media';
-import * as ga from '../../services/ga/Index';
+import React from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import styled from "styled-components";
+import HowItWorks from "../../components/containers/HowItWorksSlideshow";
 
-import styled from 'styled-components';
-import HowItWorks from '../../components/containers/HowItWorksSlideshow';
 const Container = styled.div`
-
-@media screen and (min-width: 768px){
+  @media screen and (min-width: 768px) {
     padding: 0;
-}
-
-`;
-const GridContainer = styled.div`
-    display: grid;
-    grid-row-gap: 2rem;
-    @media screen and (min-width: 768px){
-        width: 100%;
-    }
-`;
-const Text = styled.p`
-    font-weight: 400;
-    margin: 1rem 0 0 0;
+  }
 `;
 
 const HowItWorksHeading = styled.p`
-     font-weight: 600;
-    margin: 1rem 0 0.5rem 0;
-    @media screen and (min-width: 768px){
-      font-size: 18px;
-      margin: 2rem 0 0.5rem 0;
-
-    }
+  font-weight: 600;
+  margin: 1rem 0 0.5rem 0;
+  @media screen and (min-width: 768px) {
+    font-size: 18px;
+    margin: 2rem 0 0.5rem 0;
+  }
 `;
 
 const HowItWorksText = styled.p`
@@ -49,8 +32,7 @@ font-weight: 300;
 }
 `;
 
-const  Banner = (props) =>{
-
+const Banner = (props) => {
   const HowitWorksHeadingsArr = [
     <HowItWorksHeading className="font-lexend">
       Handpick Your Selection
@@ -65,6 +47,7 @@ const  Banner = (props) =>{
       No Commissions - Pay for what you get
     </HowItWorksHeading>,
   ];
+
   const HowitWorksContentsArr = [
     <HowItWorksText className="font-lexend">
       From solo travel to workcation, honeymoon to family travel, tell us about
@@ -83,33 +66,25 @@ const  Banner = (props) =>{
     </HowItWorksText>,
   ];
 
+  const howitworksimgs = [
+    "media/website/whyus-1.webp",
+    "media/website/whyus-2.webp",
+    "media/website/whyus-3.webp",
+    "media/website/how4.png",
+  ];
 
-const howitworksimgs = ['media/website/whyus-1.webp', 'media/website/whyus-2.webp', 'media/website/whyus-3.webp','media/website/how4.png']
-
-
-  let isPageWide = media('(min-width: 768px)');
-  
   return (
     <Container>
-      {/* <GridContainer> */}
-        <div className="">
-          <HowItWorks
-            nostart
-            // page_id={props.page_id}
-            images={howitworksimgs}
-            content={HowitWorksContentsArr}
-            // destination={props.destination}
-            headings={HowitWorksHeadingsArr}
-          ></HowItWorks>
-
-          {/* <ImageLoader width="80%" url="media/illustrations/undraw_stranded_traveler_pdbw.svg"></ImageLoader> */}
-        </div>
-        {/* <div className='center-div hidden-mobile'><Enquiry page_id={props.page_id} destination={props.destination} cities={props.cities}></Enquiry></div> */}
-      {/* </GridContainer> */}
+      <div className="">
+        <HowItWorks
+          nostart
+          images={howitworksimgs}
+          content={HowitWorksContentsArr}
+          headings={HowitWorksHeadingsArr}
+        ></HowItWorks>
+      </div>
     </Container>
   );
-}
-
+};
 
 export default Banner;
-
