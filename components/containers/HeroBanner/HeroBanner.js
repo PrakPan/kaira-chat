@@ -7,7 +7,7 @@ const HeroBanner = (props) => {
       heightmobile="30rem"
       height="37rem"
       url={props.image}
-      filter="brightness(0.9)"
+      filter="brightness(1)"
       padding="2rem 0"
       resizeMode={props.resizeMode}
     >
