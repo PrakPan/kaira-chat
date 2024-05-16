@@ -125,7 +125,7 @@ const AffiliatePage = () => {
           buttonbgcolor="#f7e700"
         ></Banner>
       </div>
-      
+
       <DesktopBanner
         onclick={() => openTailoredModal(router)}
         text="Want to personalize your own experience?"

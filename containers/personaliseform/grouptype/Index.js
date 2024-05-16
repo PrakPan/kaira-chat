@@ -50,7 +50,7 @@ const StyledFontAwesome = styled(FontAwesomeIcon)`
 `;
 
 const Pax = (props) => {
-    let defaultcounters;
+  let defaultcounters;
 
   if (props.newAnswers[questioncontansts.PAX]["index"] === 2) {
     defaultcounters = [2, 0, 0];
@@ -59,7 +59,7 @@ const Pax = (props) => {
   } else if (props.newAnswers[questioncontansts.PAX]["index"] === 4) {
     defaultcounters = [15, 0, 0];
   }
-    
+
   return (
     <Container>
       <GroupTypeContainer

@@ -677,7 +677,7 @@ const Itinerary = (props) => {
           number_of_infants={props?.plan ? props.plan?.number_of_infants : null}
           setEditRoute={setEditRoute}
         ></Overview>
-        
+
         <div id="itinerary-anchor">
           <Menu
             hasUserPaid={hasUserPaid}

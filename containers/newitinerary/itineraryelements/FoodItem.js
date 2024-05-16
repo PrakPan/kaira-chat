@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import { useEffect } from "react";
 import ImageLoader from "../../../components/ImageLoader";
 import { cutSentence } from "../../../helper/cutSentence";
 
@@ -16,8 +15,6 @@ const Heading = styled.p`
 `;
 
 const FoodItem = (props) => {
-  useEffect(() => {}, []);
-
   return (
     <Container margin={props.margin}>
       <ImageLoader

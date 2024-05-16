@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from "react";
 
 const useAnimation = ({
   startAnimation = false,
   delay = 0,
   duration = 1000,
-  easing = 'ease',
+  easing = "ease",
   onStart = () => {},
   onComplete = () => {},
 }) => {

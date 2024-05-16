@@ -101,7 +101,7 @@ const Team = (props) => {
       url={team[4].image}
     ></Card>,
   ];
-  
+
   if (isPageWide)
     return (
       <div>

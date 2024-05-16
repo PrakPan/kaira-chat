@@ -177,7 +177,7 @@ const TestimonialCard = (props) => {
           borderRadius="50%"
           width="50%"
         />
-        
+
         <Name className="font-lexend">{props.name}</Name>
 
         <ImageLoader
@@ -207,7 +207,6 @@ const TestimonialCard = (props) => {
               Read More
             </ReadMore>
           ) : null}
-
         </ReviewContainer>
       </Card>
 

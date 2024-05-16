@@ -13,6 +13,7 @@ const ItineraryElementM = (props) => {
       }
     return null;
   }
+
   return (
     <div className="font-lexend">
       <div>

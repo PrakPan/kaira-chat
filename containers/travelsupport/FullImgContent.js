@@ -15,7 +15,6 @@ const Container = styled.div`
 
 const Heading = styled.h1`
   color: white;
-
   width: 99%;
   font-weight: 700;
   margin-bottom: 1rem;
@@ -45,7 +44,6 @@ const Button = styled.div`
   border-width: 1px;
   border-style: solid;
   margin: 2.5rem auto;
-
   font-weight: 100;
   @media screen and (min-width: 768px) {
     margin: 15vh 0;

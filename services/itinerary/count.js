@@ -1,9 +1,8 @@
-import axios from 'axios';
-import {MIS_SERVER_HOST} from '../constants';
-
+import axios from "axios";
+import { MIS_SERVER_HOST } from "../constants";
 
 const count = axios.create({
-    baseURL: MIS_SERVER_HOST+'/sales/itinerary/count',
-})
+  baseURL: MIS_SERVER_HOST + "/sales/itinerary/count",
+});
 
 export default count;

@@ -1,45 +1,17 @@
-import styled from 'styled-components';
-import { useState, useEffect } from 'react';
-import ImageLoader from '../../../../components/ImageLoader';
-import TruncatedText from '../../../../helper/TruncatedText';
-import WeatherWidget from '../../../../components/WeatherWidget/WeatherWidget';
-import { FaBed } from 'react-icons/fa';
+import styled from "styled-components";
+import { useEffect } from "react";
+import ImageLoader from "../../../../components/ImageLoader";
+import WeatherWidget from "../../../../components/WeatherWidget/WeatherWidget";
+import { FaBed } from "react-icons/fa";
 
-const Heading = styled.p`
-  font-size: 23px;
-  font-weight: 600;
-  color: #01202b;
-  font-style: Helvetica;
-  @media (min-width: 768px) {
-    font-size: 26px;
-  }
-`;
-const CityText = styled.p`
-  font-size: 18px;
-  font-weight: 400;
-  margin: 0 0 0 15px;
-  line-height: 24px;
-  color: rgba(1, 32, 43, 1);
-`;
 const GridContainer = styled.div`
   display: grid;
   grid-template-columns: 0.6fr 1fr;
   grid-gap: 0.5rem;
   margin-bottom: 0.75rem;
 `;
-const TextBold = styled.p`
-  line-height: 24px;
-  font-weight: 600;
-  margin: 0;
-  color: rgb(1, 32, 43);
-`;
 
-const TextLight = styled.p`
-  line-height: 24px;
-  margin: 0;
-`;
 export const ITbutton = styled.button`
-  /* Background/Primary */
   margin-top: 10px;
   display: flex;
   flex-direction: row;
@@ -49,11 +21,7 @@ export const ITbutton = styled.button`
   font-weight: 600;
   font-size: 12px;
   background: #ffffff;
-  /* Background/Tertiary  */
-
   border: 1.5px solid #eceaea;
-  /* Elevaion/Light/medium */
-
   box-shadow: 0px 2px 0px #eceaea;
   border-radius: 8px;
 `;
@@ -61,11 +29,6 @@ export const ITbutton = styled.button`
 const City = (props) => {
   useEffect(() => {}, []);
   function scrollToTargetAdjusted(id) {
-    // if (window.location.pathname === '/') {
-    //   router.push({ pathname: '/locations', query: { scroll: target } });
-    //   return;
-    // }
-    // console.log(`lool${target}`);
     const element = document.getElementById(id);
     const headerOffset = 117;
     const elementPosition = element.getBoundingClientRect().top;
@@ -73,13 +36,14 @@ const City = (props) => {
 
     window.scrollTo({
       top: offsetPosition,
-      behavior: 'smooth',
+      behavior: "smooth",
     });
   }
+
   return (
     <div className="font-lexend ">
       <div className="font-bold text-2xl pb-3">
-        {props.cityData.city_name + ' - ' + props.cityData.duration} Nights
+        {props.cityData.city_name + " - " + props.cityData.duration} Nights
       </div>
       <GridContainer>
         <ImageLoader
@@ -104,26 +68,9 @@ const City = (props) => {
               </div>
             </div>
           </div>
-          <div className="flex flex-col py-2">
-            {/* <div className="text-sm">Things to do</div>
-            <div className="font-medium text-sm">
-              Tours · Wildlife · Museums · Historic Sites
-            </div> */}
-          </div>
-          {/* <TruncatedText
-            text={props.cityData.short_description}
-            maxLength={120}
-            viewMoreText="more v"
-            viewLessText="less ^"
-          /> */}
+          <div className="flex flex-col py-2"></div>
 
           <div>
-            {/* <TextLight>Things to do</TextLight>
-      <TextBold>Tours · Wildlife · Museums</TextBold> */}
-
-            {/* <TextLight style={{ marginTop: '0.75rem' }}>
-        Weather (03 Feb - 05 Feb 2023)
-      </TextLight> */}
             <WeatherWidget
               city={props.cityData.city_name}
               lat={props.cityData.lat}
@@ -132,17 +79,15 @@ const City = (props) => {
             <ITbutton onClick={() => scrollToTargetAdjusted(props.dayId)}>
               View {props.cityData.city_name} in your Itinerary
             </ITbutton>
-            {/* <TextLight style={{ marginTop: '0.75rem' }}>Food to eat</TextLight>
-      <TextBold>Bajre di roti · Halwa · Lassi · Daal Baati </TextBold> */}
           </div>
         </div>
       </GridContainer>
 
       <div
         style={{
-          border: '1px solid #F0F0F0',
-          marginBottom: '0.75rem',
-          marginTop: '0.75rem',
+          border: "1px solid #F0F0F0",
+          marginBottom: "0.75rem",
+          marginTop: "0.75rem",
         }}
       ></div>
     </div>

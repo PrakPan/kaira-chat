@@ -24,7 +24,6 @@ const SetWidthContainer = styled.div`
 
 const MinHeightContainer = styled.div`
   min-height: 40vh;
-
   @media screen and (min-width: 768px) {
     min-height: 60vh;
   }
@@ -33,7 +32,6 @@ const MinHeightContainer = styled.div`
 const VideoContainer = styled.div`
   width: 90vw;
   height: 50vw;
-
   @media screen and (min-width: 768px) {
     width: 60vw;
     height: 30vw;
@@ -44,7 +42,6 @@ const GridContainer = styled.div`
   display: grid;
   padding: 1rem;
   grid-gap: 1rem;
-
   @media screen and (min-width: 768px) {
     padding: 2rem 0;
     grid-gap: 2rem;
@@ -221,7 +218,7 @@ const Homepage = (props) => {
         <FullImgContent />
       </FullImage>
       <BannerOne></BannerOne>
-      
+
       <Menu
         _toggleFilterHandler={_toggleFilterHandler}
         filters={filters}

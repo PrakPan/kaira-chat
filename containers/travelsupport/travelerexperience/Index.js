@@ -224,7 +224,6 @@ const PartnerWith = (props) => {
               {props.content[2].text}
             </PlanDetails>
 
-            {/* <Button bgColor="#f7e700" color="black" borderWidth="0px" hoverBgColor={"black"} hoverColor="white" onclick={_handleItineraryRedirect} onclickparam={props.content[2].itinerary_id}  padding="0.25rem 1rem" display={"inline"} borderRadius={"2rem"}>View Itinerary</Button> */}
             <Button
               boxShadow
               bgColor="#f7e700"

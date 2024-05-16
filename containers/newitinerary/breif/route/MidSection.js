@@ -18,7 +18,6 @@ const Container = styled.div`
 `;
 
 const Line = styled.hr`
-  /* background-image: linear-gradient(90deg,transparent,transparent 20%,#fff 50%,#fff 100%),linear-gradient(87deg,#0d6efd,#00fff0,#d4ff00,#ff7000,#ff0000); */
   background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
     ${(props) =>
       props.pinColour
@@ -26,7 +25,6 @@ const Line = styled.hr`
         : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
 
   background-size: 12px 3px, 100% 3px;
-
   color: #c80000;
   -webkit-transform: rotate(90deg);
   position: absolute;
@@ -34,7 +32,6 @@ const Line = styled.hr`
   height: 1.7px;
   top: 23px;
   right: -22px;
-
   border: 2px;
   opacity: initial;
 
@@ -44,16 +41,6 @@ const Line = styled.hr`
     top: ${(props) => (props.hidemidsection ? "22px" : "46px")};
     right: ${(props) => (props.hidemidsection ? "-31px" : "-46px")};
   }
-  /* border-style: dashed;
-  border-width: 1.4px;
-  position: absolute;
-  left: 50%;
-
-
-  border-color: ${(props) => (props.pinColour ? props.pinColour : "black")};
-  min-height: 10vw;
-  height: 100%;
-  margin: 0rem 0 0rem 0rem; */
 `;
 
 const Text = styled.div`

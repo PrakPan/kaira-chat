@@ -1,5 +1,6 @@
-import React from 'react';
-import { animated, useSpring } from 'react-spring';
+import React from "react";
+import { animated, useSpring } from "react-spring";
+
 export const Boop = ({
   x = 0,
   y = 0,
@@ -10,8 +11,8 @@ export const Boop = ({
 }) => {
   const [isBooped, setIsBooped] = React.useState(false);
   const style = useSpring({
-    display: 'inline-block',
-    backfaceVisibility: 'hidden',
+    display: "inline-block",
+    backfaceVisibility: "hidden",
     transform: isBooped
       ? `translate(${x}px, ${y}px)
          rotate(${rotation}deg)

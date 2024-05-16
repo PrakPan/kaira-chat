@@ -70,7 +70,7 @@ const Experience = (props) => {
         </FullImage>
 
         <Menu data={props.guideData}></Menu>
-        
+
         <Transition in={!props.guideData} timeout={1000} unmountOnExit>
           {(state) => (
             <div

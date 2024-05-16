@@ -74,7 +74,7 @@ const Itinerary = (props) => {
   };
 
   let totalduration = 0;
-  //Calculate duration to show in full image
+  // Calculate duration to show in full image
   for (var i = 0; i < breif.city_slabs.length; i++) {
     if (breif.city_slabs[i].duration)
       totalduration += parseInt(breif.city_slabs[i].duration);

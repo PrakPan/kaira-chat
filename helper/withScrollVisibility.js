@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from "react";
 
 const ScrollVisibleHOC = ({ visibleTime, containerRef, children }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -14,16 +14,16 @@ const ScrollVisibleHOC = ({ visibleTime, containerRef, children }) => {
     };
 
     if (containerRef && containerRef.current) {
-      containerRef.current.addEventListener('scroll', handleScroll);
+      containerRef.current.addEventListener("scroll", handleScroll);
     } else {
-      window.addEventListener('scroll', handleScroll);
+      window.addEventListener("scroll", handleScroll);
     }
 
     return () => {
       if (containerRef && containerRef.current) {
-        containerRef.current.removeEventListener('scroll', handleScroll);
+        containerRef.current.removeEventListener("scroll", handleScroll);
       } else {
-        window.removeEventListener('scroll', handleScroll);
+        window.removeEventListener("scroll", handleScroll);
       }
       clearTimeout(timeoutId.current);
     };

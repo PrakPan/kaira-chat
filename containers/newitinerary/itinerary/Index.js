@@ -1,11 +1,5 @@
-import styled from 'styled-components';
-import { useState, useEffect } from 'react';
-import DayContainer from './DayContainer';
-
-const Container = styled.div`
-  @media screen and (min-width: 768px) {
-  }
-`;
+import styled from "styled-components";
+import DayContainer from "./DayContainer";
 
 const CitiesContainer = styled.div`
   width: calc(100vw-32px);
@@ -19,20 +13,19 @@ const CitiesContainer = styled.div`
   z-index: 10;
   background-color: white;
 `;
+
 const City = styled.div`
   border-radius: 8px;
   padding: 0.5rem;
 `;
 
 const Itinerary = (props) => {
-  useEffect(() => {}, []);
-
   return (
-    <Container className="font-lexend">
+    <div className="font-lexend">
       <CitiesContainer>
         <City
           className="border-thin"
-          style={{ backgroundColor: 'black', color: 'white' }}
+          style={{ backgroundColor: "black", color: "white" }}
         >
           Jaipur (2N)
         </City>
@@ -43,7 +36,7 @@ const Itinerary = (props) => {
       <DayContainer></DayContainer>
       <DayContainer></DayContainer>
       <DayContainer></DayContainer>
-    </Container>
+    </div>
   );
 };
 

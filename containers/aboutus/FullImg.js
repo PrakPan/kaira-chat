@@ -77,7 +77,7 @@ const FullImg = () => {
           the world.
         </Text>
       </TextContainer>
-      
+
       <Link
         style={{ textDecoration: "none" }}
         to="about-anchor"

@@ -57,7 +57,7 @@ const NewItenaryMain = (props) => {
   if (props.itinerary.day_slabs) {
     for (var i = 1; i < props.itinerary.day_slabs.length; i++) {
       const index = i;
-      //Don't do anything if ending city
+      // Don't do anything if ending city
       if (props.city_slabs[i] ? props.city_slabs[i].is_trip_terminated : true)
         break;
       else if (props.city_slabs[i].duration <= 0) break;
@@ -93,7 +93,6 @@ const NewItenaryMain = (props) => {
 
   if (props.itinerary.day_slabs) {
     for (var i = 0; i < props.itinerary.day_slabs.length; i++) {
-
       const itenaryId = props.itinerary.day_slabs[i];
 
       itemsDays.push({
@@ -153,7 +152,9 @@ const NewItenaryMain = (props) => {
                 payment={props.payment}
                 plan={props.plan}
                 getPaymentHandler={props.getPaymentHandler}
-                itinerary_id={props?.plan?.id || props?.itinerary?.tailor_made_id}
+                itinerary_id={
+                  props?.plan?.id || props?.itinerary?.tailor_made_id
+                }
                 setItinerary={props.setItinerary}
                 token={props.token}
                 LastElement={props.itinerary.day_slabs.length === index + 1}

@@ -236,7 +236,6 @@ const Day_I_Container = (props) => {
           );
           break;
         case "newcity":
-
           break;
         case "accommodation":
           dayIcontainer.push(

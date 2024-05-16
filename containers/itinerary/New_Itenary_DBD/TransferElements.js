@@ -29,7 +29,6 @@ const TransferElements = ({
     return null;
   }
 
-
   const handleTransferButtonClick = () => {
     logEvent({
       action: "Details_View",

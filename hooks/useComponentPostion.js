@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from "react";
 
 export function useComponentPosition(emitOnScroll = false) {
   const componentRef = useRef(null);
@@ -12,9 +12,9 @@ export function useComponentPosition(emitOnScroll = false) {
       };
       handleUpdatePosition();
       if (emitOnScroll) {
-        window.addEventListener('scroll', handleUpdatePosition);
+        window.addEventListener("scroll", handleUpdatePosition);
         return () => {
-          window.removeEventListener('scroll', handleUpdatePosition);
+          window.removeEventListener("scroll", handleUpdatePosition);
         };
       }
     }

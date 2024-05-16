@@ -15,6 +15,7 @@ const SetWidthContainer = styled.div`
     padding: 0 2rem;
   }
 `;
+
 const Details = (props) => {
   let isPageWide = media("(min-width: 768px)");
   let JSX = [];

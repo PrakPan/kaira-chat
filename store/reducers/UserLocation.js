@@ -2,7 +2,7 @@ import * as actionTypes from "../actions/actionsTypes";
 
 // Define initial state
 const initialState = {
-  location : null ,
+  location: null,
 };
 
 // Define reducer

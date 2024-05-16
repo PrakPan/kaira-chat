@@ -13,9 +13,6 @@ const Container = styled.div`
   background-color: black;
   z-index: 1000;
   height: 66px;
-
-  @media screen and (min-width: 768px) {
-  }
 `;
 
 const SetWidthContainer = styled.div`

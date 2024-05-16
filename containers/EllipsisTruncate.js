@@ -33,11 +33,7 @@ const Tooltip = ({ text }) => {
 };
 
 // Ellipsis truncation component
-const EllipsisTruncation = ({
-  text,
-  maxCharacters = 20,
-  tooltipText,
-}) => {
+const EllipsisTruncation = ({ text, maxCharacters = 20, tooltipText }) => {
   const [isOverflowed, setIsOverflowed] = useState(false);
 
   const checkOverflow = (element) => {

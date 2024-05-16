@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
 
 const Container = styled.div`
   display: flex;
   flex-direction: row;
   overflow-x: scroll;
-  width: ${props => props.width}px;
-  height: ${props => props.height}px;
+  width: ${(props) => props.width}px;
+  height: ${(props) => props.height}px;
 `;
 
 const Content = styled.div`
   display: flex;
   flex-direction: row;
-  width: ${props => props.totalWidth}px;
+  width: ${(props) => props.totalWidth}px;
 `;
 
 const ScrollButton = styled.button`
@@ -33,16 +33,16 @@ const HorizontalBar = ({ width, height, content }) => {
       setTotalWidth(content.reduce((acc, cur) => acc + cur.width, 0));
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     handleResize();
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, [content]);
 
-  const handleScroll = e => {
+  const handleScroll = (e) => {
     setScrollPosition(e.target.scrollLeft);
   };
 

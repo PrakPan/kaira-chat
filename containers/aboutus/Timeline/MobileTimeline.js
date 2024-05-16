@@ -5,7 +5,7 @@ import content from "../../../public/content/aboutus";
 
 const Timeline = (props) => {
   let cards = [];
-  
+
   for (var i = 0; i < 7; i++) {
     if (i === 1 || i === 3 || i === 5) {
       cards.push(

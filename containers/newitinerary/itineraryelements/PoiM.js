@@ -29,9 +29,6 @@ import styled from "styled-components";
 import useDebounce from "../../../hooks/useDebounce";
 import { logEvent } from "../../../services/ga/Index";
 
-const Container = styled.div``;
-
-
 const GridContainer = styled.div`
   display: grid;
 
@@ -358,7 +355,7 @@ const ItineraryPoiElementM = (props) => {
   };
 
   return (
-    <Container
+    <div
       id={`${props?.day_slab_index}-${props?.data?.element_index}-${props?.activity_data.id}`}
       className="font-lexend p-2"
     >
@@ -714,7 +711,7 @@ const ItineraryPoiElementM = (props) => {
           </Floating>
         </div>
       )}
-    </Container>
+    </div>
   );
 };
 
@@ -723,11 +720,13 @@ const mapStateToPros = (state) => {
     itineraryActivities: state.itineraryActivities.activities,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     openNotification: (payload) => dispatch(openNotification(payload)),
   };
 };
+
 export default connect(
   mapStateToPros,
   mapDispatchToProps

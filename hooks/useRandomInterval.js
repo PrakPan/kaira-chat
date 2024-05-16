@@ -1,7 +1,8 @@
-import React from 'react';
+import React from "react";
 
 // Utility helper for random number generation
 const random = (min, max) => Math.floor(Math.random() * (max - min)) + min;
+
 export const useRandomInterval = (callback, minDelay, maxDelay) => {
   const timeoutId = React.useRef(null);
   const savedCallback = React.useRef(callback);
@@ -11,7 +12,7 @@ export const useRandomInterval = (callback, minDelay, maxDelay) => {
   React.useEffect(() => {
     // eslint-disable-next-line operator-linebreak
     const isEnabled =
-      typeof minDelay === 'number' && typeof maxDelay === 'number';
+      typeof minDelay === "number" && typeof maxDelay === "number";
     if (isEnabled) {
       const handleTick = () => {
         const nextTickAt = random(minDelay, maxDelay);

@@ -35,7 +35,6 @@ import { CONTENT_SERVER_HOST } from "../../../services/constants";
 const Container = styled.div`
   width: 100%;
   margin: auto;
-
   @media screen and (min-width: 768px) {
     width: 90%;
     display: grid;
@@ -63,7 +62,6 @@ const BookingSuccessContainer = styled.div`
   margin: 0.5rem;
   @media screen and (min-width: 768px) {
     grid-template-columns: 1fr 10fr;
-
     margin: 0;
   }
 `;
@@ -436,12 +434,12 @@ const Booking = (props) => {
                   data={props.stayBookings[i]}
                 ></StayBookingCard>
               );
-              //set as selectable booking
+              // set as selectable booking
             } else if (
               !props.stayBookings[i].user_selected &&
               props.stayBookings[i].alternate_to
             ) {
-              //add in alternate list
+              // add in alternate list
               alternatesarr[props.stayBookings[i].alternate_to].push(
                 props.stayBookings[i]
               );

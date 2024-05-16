@@ -171,7 +171,7 @@ const SearchField = (props) => {
           onChange={(event) => _handleChangeNew(event)}
           value={value}
         ></Search>
-        
+
         <IconContainer className="center-div">
           <BiSearchAlt2 style={{ fontSize: "1.5rem" }}></BiSearchAlt2>
         </IconContainer>

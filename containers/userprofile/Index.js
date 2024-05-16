@@ -17,7 +17,6 @@ import { logEvent } from "../../services/ga/Index";
 const Container = styled.div`
   width: 100%;
   margin: 12vh auto;
-
   @media screen and (min-width: 768px) {
     width: 70%;
     padding-top: 10vh;
@@ -127,7 +126,7 @@ const UserDashboard = (props) => {
           <Profile></Profile>
         </ContentContainer>
       </Container>
-      
+
       <ContentContainer className="w-full mb-5">
         <div style={{ display: "flex" }} className="">
           <Heading

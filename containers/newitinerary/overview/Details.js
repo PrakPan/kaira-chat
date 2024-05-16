@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import { useEffect } from "react";
 import { format, parseISO } from "date-fns";
 import { MdModeEdit } from "react-icons/md";
 import useMediaQuery from "../../../components/media";
@@ -43,8 +42,6 @@ const convertDFormat = (dt) => {
 
 const Details = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
-
-  useEffect(() => {}, []);
 
   return (
     <Container className="font-lexend">

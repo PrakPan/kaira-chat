@@ -75,7 +75,7 @@ const WhyTarzan = () => {
       >
         Why The Tarzan Way?
       </Heading>
-      
+
       <Container>
         <Card className="font-nunito">
           <ImageLoader

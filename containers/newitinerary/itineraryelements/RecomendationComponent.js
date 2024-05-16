@@ -1,12 +1,8 @@
 import React, { useState } from "react";
 import FoodItem from "./FoodItem";
-import {
-  RecommendationGridContainer,
-} from "./ItineraryFoodElement";
+import { RecommendationGridContainer } from "./ItineraryFoodElement";
 import { isJson } from "../../../services/isJSON";
-import {
-  Timecontainer,
-} from "../../itinerary/New_Itenary_DBD/New_itenaryStyled";
+import { Timecontainer } from "../../itinerary/New_Itenary_DBD/New_itenaryStyled";
 import styled from "styled-components";
 import { LivelyButton } from "../../../components/LiveleyButton";
 import { AiOutlineDown } from "react-icons/ai";
@@ -49,8 +45,7 @@ const RecomendationComponent = (props) => {
 
   return props.recomendation || props.recomendation.length < 1 ? (
     <div>
-      <Timecontainer>
-      </Timecontainer>
+      <Timecontainer></Timecontainer>
 
       <GridContainer>
         {isPageWide ? (

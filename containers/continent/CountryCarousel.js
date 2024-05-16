@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from "react";
 import SwiperLocations from "../../components/containers/SwiperLocations/Index";
 import media from "../../components/media";
 import axioscountrydetailsinstance from "../../services/pages/country";
-import styled from 'styled-components';
-import SkeletonCard from '../../components/ui/SkeletonCard';
-import SwiperCarousel from '../../components/SwiperCarousel';
+import styled from "styled-components";
+import SkeletonCard from "../../components/ui/SkeletonCard";
+import SwiperCarousel from "../../components/SwiperCarousel";
 
 const Heading = styled.h2`
   font-size: 32px;
@@ -30,28 +30,34 @@ const SkeletonContainer = styled.div`
 `;
 
 const CountryCarousel = (props) => {
-    const [data, setData] = useState([])
+  const [data, setData] = useState([]);
   let isPageWide = media("(min-width: 768px)");
 
-    const SkeletonCardEl = <SkeletonContainer>
-        <SkeletonCard lottieDimension={'100vw'} borderRadius={'0px'} />
-      </SkeletonContainer>
-    ;
-    const skeleton = [
-      SkeletonCardEl,
-      SkeletonCardEl,
-      SkeletonCardEl,
-      SkeletonCardEl,
-      SkeletonCardEl,
-      SkeletonCardEl,
-    ];
-    useEffect(() => {
-        const fetchData = async () => {
-            const response = await axioscountrydetailsinstance("/all?continent=" + props.slug);
-            setData(response.data);
-        }
-        fetchData()
-    },[])
+  const SkeletonCardEl = (
+    <SkeletonContainer>
+      <SkeletonCard lottieDimension={"100vw"} borderRadius={"0px"} />
+    </SkeletonContainer>
+  );
+
+  const skeleton = [
+    SkeletonCardEl,
+    SkeletonCardEl,
+    SkeletonCardEl,
+    SkeletonCardEl,
+    SkeletonCardEl,
+    SkeletonCardEl,
+  ];
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await axioscountrydetailsinstance(
+        "/all?continent=" + props.slug
+      );
+      setData(response.data);
+    };
+    fetchData();
+  }, []);
+
   return (
     <div>
       <>
@@ -62,16 +68,17 @@ const CountryCarousel = (props) => {
             destination={props.destination}
             country
           ></SwiperLocations>
-        ) : 
-                      <SwiperCarousel
-                          slidesPerView={isPageWide ? 5 : 1.3}
-                          initialSlide={isPageWide ? "0" : '1'}
-                          centeredSlides={!isPageWide}
-                          cards={skeleton} />
-    }
+        ) : (
+          <SwiperCarousel
+            slidesPerView={isPageWide ? 5 : 1.3}
+            initialSlide={isPageWide ? "0" : "1"}
+            centeredSlides={!isPageWide}
+            cards={skeleton}
+          />
+        )}
       </>
     </div>
   );
-}
+};
 
-export default CountryCarousel
+export default CountryCarousel;

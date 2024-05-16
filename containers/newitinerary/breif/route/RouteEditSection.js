@@ -782,9 +782,7 @@ export const NewDestination = (props) => {
   };
 
   return (
-    <div
-      className="relative w-full flex border-1 border-black shadow-sm rounded-lg px-3 py-2"
-    >
+    <div className="relative w-full flex border-1 border-black shadow-sm rounded-lg px-3 py-2">
       <div className="w-full flex flex-row gap-2 items-center justify-between">
         <div className="w-full flex flex-row items-center gap-3">
           <IoLocationSharp
@@ -1095,7 +1093,6 @@ export const DestinationDates = (props) => {
       setStartDate(e.target.value);
     } else if (e.target.name === "End Date") {
       setEndDate(e.target.value);
-
     }
   };
 

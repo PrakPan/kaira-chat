@@ -1,163 +1,93 @@
-import React from 'react';
-import styled from 'styled-components';
-import Button from '../../components/ui/button/Index';
-import media from '../../components/media';
-import { Link } from 'react-scroll';
+import React from "react";
+import styled from "styled-components";
+import Button from "../../components/ui/button/Index";
+import media from "../../components/media";
+import { Link } from "react-scroll";
+
 const Container = styled.div`
-  color:white;
- width: 100%;
- display: flex;
- flex-direction: column;
- padding: 0 1rem;
-
- @media screen and (min-width: 768px){
+  color: white;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 0 1rem;
+  @media screen and (min-width: 768px) {
     padding: 12.5vh 7.5vh;
- 
-    }
+  }
 `;
+
 const Heading = styled.h1`
-color: white;
-
-width: 99%;
-font-weight: 800;
-margin-bottom: 0;
-margin-left: -3px;
-line-height: 1;
-letter-spacing: 3px;
-font-size: 2rem;
-@media screen and (min-width: 768px){
-  font-size: 4rem;
-  font-weight: 700;
-
-}
+  color: white;
+  width: 99%;
+  font-weight: 800;
+  margin-bottom: 0;
+  margin-left: -3px;
+  line-height: 1;
+  letter-spacing: 3px;
+  font-size: 2rem;
+  @media screen and (min-width: 768px) {
+    font-size: 4rem;
+    font-weight: 700;
+  }
 `;
+
 const SubText = styled.h3`
-color: white;
-    font-weight: 100;
-    width: 99%;
-    letter-spacing: 3px;
-    line-height: 1.5;
-
-    margin: 0 0 0 -1px;
-    font-size: 1.2rem;
-     @media screen and (min-width: 768px){
-        font-size: 1.5rem;
-     }
-
+  color: white;
+  font-weight: 100;
+  width: 99%;
+  letter-spacing: 3px;
+  line-height: 1.5;
+  margin: 0 0 0 -1px;
+  font-size: 1.2rem;
+  @media screen and (min-width: 768px) {
+    font-size: 1.5rem;
+  }
 `;
 
 const PaddingContianer = styled.div`
-padding: 0 0 0 0;
-flex-grow: 1;
-@media screen and (min-width: 768px){
+  padding: 0 0 0 0;
+  flex-grow: 1;
+  @media screen and (min-width: 768px) {
     padding: 0 0 0 0;
+  }
+`;
 
-}
-`
 const LogosContainer = styled.div`
-display: grid;
-grid-template-columns: max-content max-content;
-width: max-content;
-margin: auto;
- grid-gap: 0.5rem;
- padding-bottom: 0.5rem;
-
-
-@media screen and (min-width: 768px){
- }
-`
-;
-const LogoText = styled.div`
-font-size: 12px;
-color: black; 
-display : flex;
- align-items: center;
-
- font-weight: 800;
-@media screen and (min-width: 768px){
-    font-size: 18px;
-
-}
+  display: grid;
+  grid-template-columns: max-content max-content;
+  width: max-content;
+  margin: auto;
+  grid-gap: 0.5rem;
+  padding-bottom: 0.5rem;
 `;
-const StyledA = styled.a`
-    color: black;
-    display: flex;
-    height: max-content;
-    text-decoration: none;
-    border-radius: 10px;
-    font-weight: 600;
-    background-color: #f7e700;
-    margin: 24px 0;
-    padding: 12px 24px;
-    line-height:1;
 
-    @media screen and (min-width: 768px){
-
-    margin: 1rem auto 0 auto;
-font-size: 1.25rem;
-    &:hover{
-        color: black;
-    }
-}
-`;
 const FullImgContent = (props) => {
-    let isPageWide = media('(min-width: 768px)');
+  let isPageWide = media("(min-width: 768px)");
 
-    return (
-      <Container className="font-lexend center-di ">
-        <PaddingContianer>
-          <Heading style={{ fontWeight: "800" }}>HOLI SPECIALS</Heading>
-          <SubText>Avail 50% discount for Holi Dates.</SubText>
-          <SubText>#PWTravelTogether</SubText>
-          {/* <Heading>GETAWAY</Heading> */}
-
-          {/* <SubText>
-                50% amount of your holiday will be paid by Physics Wallah
-            </SubText>
-            <SubText style={{fontSize: '1rem'}}>
-                 Discounts on family packages coming soon...
-            </SubText> */}
-          {/* <SubText>Get Benefit of Exclusive Festive Offers</SubText>  */}
-          {/* <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', width: 'max-content', margin: 'auto'}}>
-                <Button  onclick={isPageWide ? ()=> window.scrollTo(0,window.innerHeight) : ()=> window.scrollTo(0,window.innerHeight*0.7)  } onclickparams={null}  fontSizeDesktop="1.25rem" link="/" margin={"1rem auto 0 auto"} marginMobile="1.5rem auto" bgColor="#f7e700" borderRadius="10px" lineHeight="1"  hoverBgColor="black" hoverColor="white" borderWidth="0px" fontWeight="600" padding="0.75rem 1.5rem">
-                 View Trips
-                <BsFillCalendarFill style={{marginLeft: '0.5rem', fontSize: '14px', marginTop:'-3px'}}></BsFillCalendarFill>
-                </Button>
-                
-                <StyledA href='#link'>
-                 How it works
-                <BsYoutube style={{marginLeft: '0.5rem', marginTop: '-0px'}}></BsYoutube>
-                 </StyledA>
-            </div> */}
-          <Link style={{ textDecoration: "none" }} to="holi">
-            <Button
-              borderWidth="0"
-              bgColor="#f7e700"
-              hoverBgColor="black"
-              fontWeight="700"
-              borderRadius="5px"
-              padding="0.5rem 1.5rem"
-              hoverColor="white"
-              margin={isPageWide ? "2.5rem 0 0 0 " : "4rem 0 0 0"}
-              onclick={() => console.log("")}
-            >
-              View Now
-            </Button>
-          </Link>
-        </PaddingContianer>
-        {/* <Banner></Banner> */}
-        <LogosContainer>
-          {/* <div style={{backgroundColor: 'rgba(255,255,255,0.7)', display: 'flex', padding: '0.5rem', borderRadius: '5px'}}>
-                <ImageLoader leftalign url="media/website/pwlogo.png" width="3rem" widthmobile="2rem" height="auto"></ImageLoader>
-                <LogoText className="font-opesans hden-mobile" style={{}}>Physics Wallah</LogoText>
-                </div>
-                <div style={{backgroundColor: 'rgba(255,255,255,0.7)', display: 'flex', padding: '0.5rem', borderRadius: '5px'}}>
-                <ImageLoader leftalign url="media/website/logoblack.svg" width="3rem" widthmobile="2rem"  height="auto"></ImageLoader>
-                <LogoText className="font-opesans hiden-mobile" style={{}}>The Tarzan Way</LogoText>
-                </div> */}
-        </LogosContainer>
-      </Container>
-    );
-}
+  return (
+    <Container className="font-lexend center-di ">
+      <PaddingContianer>
+        <Heading style={{ fontWeight: "800" }}>HOLI SPECIALS</Heading>
+        <SubText>Avail 50% discount for Holi Dates.</SubText>
+        <SubText>#PWTravelTogether</SubText>
+        <Link style={{ textDecoration: "none" }} to="holi">
+          <Button
+            borderWidth="0"
+            bgColor="#f7e700"
+            hoverBgColor="black"
+            fontWeight="700"
+            borderRadius="5px"
+            padding="0.5rem 1.5rem"
+            hoverColor="white"
+            margin={isPageWide ? "2.5rem 0 0 0 " : "4rem 0 0 0"}
+            onclick={() => console.log("")}
+          >
+            View Now
+          </Button>
+        </Link>
+      </PaddingContianer>
+      <LogosContainer></LogosContainer>
+    </Container>
+  );
+};
 
 export default FullImgContent;

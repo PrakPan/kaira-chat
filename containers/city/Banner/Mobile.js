@@ -1,15 +1,15 @@
-import React from 'react';
-import styled from 'styled-components'
-import Button from '../../../components/ui/button/Index';
-import validateTextSize from '../../../services/textSizeValidator';
+import React from "react";
+import styled from "styled-components";
+import Button from "../../../components/ui/button/Index";
+import validateTextSize from "../../../services/textSizeValidator";
 
 const Container = styled.div`
-position: fixed;
-bottom: 0;
-width: 100vw;
-padding: 1rem;
-z-index: 1000;
-left: 0;
+  position: fixed;
+  bottom: 0;
+  width: 100vw;
+  padding: 1rem;
+  z-index: 1000;
+  left: 0;
 `;
 
 const BannerMobile = (props) => {
@@ -37,6 +37,6 @@ const BannerMobile = (props) => {
       </Button>
     </Container>
   );
-}
+};
 
 export default BannerMobile;

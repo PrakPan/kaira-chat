@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 export const range = (start, end, step = 1) => {
   const output = [];
-  if (typeof end === 'undefined') {
+  if (typeof end === "undefined") {
     end = start;
     start = 0;
   }

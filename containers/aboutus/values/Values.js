@@ -63,7 +63,7 @@ const HowitWorksContentsArr = [
 
 const Values = () => {
   let isPageWide = media("(min-width: 768px)");
-  
+
   if (isPageWide)
     return (
       <>

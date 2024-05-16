@@ -13,8 +13,6 @@ const Container = styled.div`
   }
 `;
 
-const TextContainer = styled.div``;
-
 const ImageContainer = styled.div`
   padding: auto 1rem;
 `;
@@ -24,7 +22,6 @@ const HowItWorksHeading = styled.p`
   font-weight: 600;
   margin: 1rem 0 0.5rem 0;
   font-size: 1.25rem;
-
   @media screen and (min-width: 768px) {
     font-size: 1.25rem;
     margin: 1rem 0 0.5rem 0;
@@ -37,7 +34,6 @@ const HowItWorksText = styled.p`
   margin: 0 0 1rem 0;
   font-weight: 100;
   font-size: 1.25rem;
-
   @media screen and (min-width: 768px) {
     font-size: 1.25rem;
     font-weight: 100;
@@ -56,14 +52,14 @@ const HowItWorksSlideshow = (props) => {
           widthmobile={props.vertical ? "40%" : "60%"}
         />
       </ImageContainer>
-      <TextContainer className="center-div">
+      <div className="center-div">
         <HowItWorksHeading className="font-lexend">
           {travelsupportcontent.howitworks[0].heading}
         </HowItWorksHeading>
         <HowItWorksText className="font-lexend">
           {travelsupportcontent.howitworks[0].text}
         </HowItWorksText>
-      </TextContainer>
+      </div>
     </div>,
     <div key={1} style={{}}>
       <ImageContainer className="center-div">
@@ -74,14 +70,14 @@ const HowItWorksSlideshow = (props) => {
           widthmobile={props.vertical ? "40%" : "60%"}
         />
       </ImageContainer>
-      <TextContainer className="center-div">
+      <div className="center-div">
         <HowItWorksHeading className="font-lexend">
           {travelsupportcontent.howitworks[1].heading}
         </HowItWorksHeading>
         <HowItWorksText className="font-lexend">
           {travelsupportcontent.howitworks[1].text}
         </HowItWorksText>
-      </TextContainer>
+      </div>
     </div>,
     <div key={2} style={{}}>
       <ImageContainer className="center-div">
@@ -92,22 +88,18 @@ const HowItWorksSlideshow = (props) => {
           widthmobile={props.vertical ? "40%" : "60%"}
         />
       </ImageContainer>
-      <TextContainer className="center-div">
+      <div className="center-div">
         <HowItWorksHeading className="font-lexend">
           {travelsupportcontent.howitworks[2].heading}
         </HowItWorksHeading>
         <HowItWorksText className="font-lexend">
           {travelsupportcontent.howitworks[2].text}
         </HowItWorksText>
-      </TextContainer>
+      </div>
     </div>,
   ];
 
-  return (
-    <>
-      <Container>{slidesdesktop}</Container>
-    </>
-  );
+  return <Container>{slidesdesktop}</Container>;
 };
 
 export default HowItWorksSlideshow;

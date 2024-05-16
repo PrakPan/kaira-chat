@@ -1,12 +1,12 @@
-import React, {useState} from 'react';
-import dayjs, { Dayjs } from 'dayjs';
-import TextField from '@mui/material/TextField';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import React, { useState } from "react";
+import dayjs from "dayjs";
+import TextField from "@mui/material/TextField";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 
 const BasicDateTimePicker = () => {
-  const [value, setValue] =useState((dayjs()));
+  const [value, setValue] = useState(dayjs());
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -20,6 +20,6 @@ const BasicDateTimePicker = () => {
       />
     </LocalizationProvider>
   );
-}
+};
 
 export default BasicDateTimePicker;

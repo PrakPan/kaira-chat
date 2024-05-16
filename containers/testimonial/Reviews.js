@@ -14,8 +14,6 @@ const Heading = styled.p`
     @media screen and (min-width: 768px){
         padding: 1rem;
         font-weight: 600;
-
-
     }
 `;
 

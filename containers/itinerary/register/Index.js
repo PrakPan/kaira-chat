@@ -36,18 +36,23 @@ const Register = (props) => {
   const _handleFnameChange = (event) => {
     setDetails({ ...details, fname: event.target.value });
   };
+
   const _handleLnameChange = (event) => {
     setDetails({ ...details, lname: event.target.value });
   };
+
   const _handleEmailChange = (event) => {
     setDetails({ ...details, email: event.target.value });
   };
+
   const _handleMobileChange = (event) => {
     setDetails({ ...details, mobile: event.target.value });
   };
+
   const _handleEmergencyContactChange = (event) => {
     setDetails({ ...details, emergencycontact: event.target.value });
   };
+
   const _submitHandler = () => {
     axios
       .post("https://suppliers.tarzanway.com/campaign/response/", {
@@ -67,6 +72,7 @@ const Register = (props) => {
         alert("There was a problem, please refresh and try again.");
       });
   };
+
   return (
     <Container id="Register">
       <DescriptionContainer>

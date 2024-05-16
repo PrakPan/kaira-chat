@@ -59,7 +59,7 @@ const Route = (props) => {
 
   const _moveUpHandler = (index) => {
     if (index === 1) {
-      //First item, disable button
+      // First item, disable button
     } else {
       setOrder({
         ...order,
@@ -134,7 +134,7 @@ const Route = (props) => {
               startingcity = props.breif.city_slabs[0].city_name;
             if (props.breif.city_slabs[i].is_trip_terminated)
               endingcity = props.breif.city_slabs[i].city_name;
-            //If duration present and not 0, not trip terminated or departure only city show in route
+            // If duration present and not 0, not trip terminated or departure only city show in route
             if (
               !props.breif.city_slabs[i].is_trip_terminated &&
               !props.breif.city_slabs[i].is_departure_only &&

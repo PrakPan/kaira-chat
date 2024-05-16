@@ -1,5 +1,6 @@
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
 const Fade = ({ children, isActive }) => {
   return (
     <AnimatePresence>

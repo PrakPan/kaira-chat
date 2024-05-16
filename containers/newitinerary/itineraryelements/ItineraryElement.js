@@ -5,8 +5,6 @@ import {
   TransparentButton,
   newDayContainerTextpadding,
 } from "../../itinerary/New_Itenary_DBD/New_itenaryStyled";
-import isSameDay from "date-fns/isSameDay";
-import { parse } from "date-fns";
 import { MdDoneAll } from "react-icons/md";
 
 const padding = {
@@ -18,9 +16,7 @@ const Container = styled.div`
   flex-direction: column;
   font-style: normal;
   font-weight: 400;
-
   line-height: 22px;
-
   padding: 0px 0px 0px 0px;
   color: #01202b;
 `;
@@ -28,7 +24,6 @@ const Container = styled.div`
 export const TInfoContainer = styled.div`
   @media screen and (min-width: 768px) {
     display: flex;
-
     flex-direction: row;
     & > div {
       padding-left: ${padding.initialLeft};

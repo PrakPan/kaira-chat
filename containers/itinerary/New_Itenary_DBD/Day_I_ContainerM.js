@@ -198,7 +198,6 @@ const Day_I_ContainerM = (props) => {
           );
           break;
         case "newcity":
-
           break;
         case "accommodation":
           dayIcontainer.push(

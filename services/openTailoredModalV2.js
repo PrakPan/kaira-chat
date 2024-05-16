@@ -4,7 +4,7 @@ export default function openTailoredModal(router, page_id, destination) {
       {
         query: {
           ...router.query,
-          'tailored-travel': true,
+          "tailored-travel": true,
           page_id: page_id,
           destination: destination,
         },
@@ -15,7 +15,7 @@ export default function openTailoredModal(router, page_id, destination) {
   else
     router.replace(
       {
-        query: { ...router.query, 'tailored-travel': true },
+        query: { ...router.query, "tailored-travel": true },
       },
       undefined,
       { scroll: false }
@@ -25,8 +25,8 @@ export default function openTailoredModal(router, page_id, destination) {
 }
 
 export function closeTailoredModal(router, id) {
-  delete router.query['tailored-travel'];
-  delete router.query['page_id'];
-  delete router.query['destination'];
+  delete router.query["tailored-travel"];
+  delete router.query["page_id"];
+  delete router.query["destination"];
   router.push(`/itinerary/${id}`, undefined, { scroll: false });
 }

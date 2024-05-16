@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import styled from 'styled-components';
-import Button from '../../components/ui/button/Index';
+import { useState } from "react";
+import styled from "styled-components";
+import Button from "../../components/ui/button/Index";
+
 const Title = styled.p`
   cursor: pointer;
   color: #7a7a7a;
@@ -13,10 +14,11 @@ const Title = styled.p`
 `;
 
 const selectedStyle = {
-  background: '#262626',
-  color: '#F7E700',
-  borderBottom: '3px solid #F7E700',
+  background: "#262626",
+  color: "#F7E700",
+  borderBottom: "3px solid #F7E700",
 };
+
 const Container = styled.div`
   margin-top: 50px;
   display: flex;
@@ -29,6 +31,7 @@ const Container = styled.div`
     background: white;
   }
 `;
+
 const TitleContainer = styled.div`
   display: flex;
   justify-content: space-between;
@@ -36,8 +39,9 @@ const TitleContainer = styled.div`
   white-space: nowrap;
   width: 85%;
 `;
+
 const Navigator = (props) => {
-  const [selectedPoint, setSelectedPoint] = useState('Brief');
+  const [selectedPoint, setSelectedPoint] = useState("Brief");
 
   const changeData = (e) => {
     setSelectedPoint(e);
@@ -45,13 +49,13 @@ const Navigator = (props) => {
   };
 
   const points = [
-    'Brief',
-    'Itinerary',
-    'Things to do',
-    'How to reach',
-    'Food to eat',
-    'Survival Tips & Tricks',
-    'Folklore or Story',
+    "Brief",
+    "Itinerary",
+    "Things to do",
+    "How to reach",
+    "Food to eat",
+    "Survival Tips & Tricks",
+    "Folklore or Story",
   ];
 
   return (
@@ -69,7 +73,7 @@ const Navigator = (props) => {
       </TitleContainer>
       <div className="hidden-mobile">
         <Button
-          onclick={() => console.log('')}
+          onclick={() => console.log("")}
           fontWeight="500"
           hoverBgColor="white"
           fontSize="14px"

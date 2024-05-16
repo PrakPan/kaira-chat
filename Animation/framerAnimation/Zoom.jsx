@@ -1,5 +1,6 @@
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
 const Zoom = ({ children, isActive }) => {
   return (
     <AnimatePresence className="absolute z-30">

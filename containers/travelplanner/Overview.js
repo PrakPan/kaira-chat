@@ -37,6 +37,7 @@ const Heading = styled.h2`
     text-align: left;
   }
 `;
+
 const Overview = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [more, setMore] = useState(false);

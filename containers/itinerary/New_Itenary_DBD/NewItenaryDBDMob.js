@@ -35,7 +35,7 @@ const NewItenaryDBDMob = (props) => {
   if (props.itinerary.day_slabs) {
     for (var i = 1; i < props.itinerary.day_slabs.length; i++) {
       const index = i;
-      //Don't do anything if ending city
+      // Don't do anything if ending city
       if (props.city_slabs[i] && !props.city_slabs[i].is_trip_terminated) {
         const itenaryId =
           i % props.city_slabs[i].duration

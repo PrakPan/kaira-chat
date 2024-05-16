@@ -1,4 +1,5 @@
 import axiosPoiCityInstance from "../../services/poi/city";
+
 export const getCityDetails = (() => {
   // Define the cache object
   const cache = {};

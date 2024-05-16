@@ -11,6 +11,7 @@ const Container = styled.div`
   width: 100%;
   margin: 1rem 0;
 `;
+
 const IconContainer = styled.div`
   background-color: #f7e700;
   width: 3rem;

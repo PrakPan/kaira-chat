@@ -7,20 +7,19 @@ const initialState = {
   type: "",
   heading: "",
   show: false,
-  duration : 5
+  duration: 5,
 };
 
 // Define reducer
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.NOTIFICATION_OPEN:
-
       return {
         ...state,
         text: action.payload.text,
         type: action.payload.type,
         heading: action.payload.heading,
-        duration : action.payload.duration,
+        duration: action.payload.duration,
         show: true,
       };
     case actionTypes.NOTIFICATION_CLOSE:

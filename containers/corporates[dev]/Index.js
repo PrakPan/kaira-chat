@@ -59,19 +59,12 @@ const CardListItem = styled.li`
 `;
 
 const HowitWorksHeadingsArr = [
-  <HowItWorksHeading className="font-lexend">
-    Leisure Travel
-    {/* : Team building company retreats */}
-  </HowItWorksHeading>,
+  <HowItWorksHeading className="font-lexend">Leisure Travel</HowItWorksHeading>,
 
-  <HowItWorksHeading className="font-lexend">
-    Booking Needs
-    {/* : Employee business travel needs */}
-  </HowItWorksHeading>,
+  <HowItWorksHeading className="font-lexend">Booking Needs</HowItWorksHeading>,
 
   <HowItWorksHeading className="font-lexend">
     Support & Conferences
-    {/* : Company travel excursions and conferences */}
   </HowItWorksHeading>,
 ];
 

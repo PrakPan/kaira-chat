@@ -1,13 +1,13 @@
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled, { keyframes } from "styled-components";
 import media from "../../components/media";
 import Button from "../../components/ui/button/Index";
 import ImageLoader from "../../components/ImageLoader";
-import axiosPageListInstance from "../../services/pages/list";
 import SkeletonCard from "../../components/ui/SkeletonCard";
 import openTailoredModal from "../../services/openTailoredModal";
 import Link from "next/link";
+
 const Container = styled.div`
   height: 90vh;
   display: grid;
@@ -41,25 +41,26 @@ const Container = styled.div`
       "f f f g g g g g g";
   }
 
- 
+
   }
 `;
+
 const TopSlideIn = keyframes`
-from { 
+from {
   transform: translateY(0%);
 }
-to { 
+to {
   transform: translateY(30%);
-} 
+}
 `;
 
 const TopSlideOut = keyframes`
-from { 
+from {
   transform: translateY(30%);
 }
-to { 
+to {
   transform: translateY(0%);
-} 
+}
 
 `;
 
@@ -108,6 +109,7 @@ const GridItem = styled(Link)`
   height: 100%;
   width: 100%;
 `;
+
 const ImageContainer = styled.div`
   cursor: pointer;
   height: 100%;
@@ -136,44 +138,13 @@ const ImageContainer = styled.div`
   }
 `;
 
-const BlackContainer = styled.div`
-  background: linear-gradient(
-    0deg,
-    rgba(2, 0, 36, 1) 0%,
-    rgba(0, 0, 0, 1) 0%,
-    rgba(255, 255, 255, 0) 40%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  &:hover {
-    background: linear-gradient(
-      0deg,
-      rgba(0, 0, 0, 1) 0%,
-      rgba(255, 255, 255, 0) 58%
-    );
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#000000",endColorstr="#ffffff",GradientType=1);
-  }
-`;
-
 const PlanAsPerTheme = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const order = ["a", "b", "c", "d", "e", "f", "g"];
 
-  const _handleTripRedirect = (path) => {
-    if (path) window.location.href = "/" + path;
-  };
-
   const ThemeContainer = props.data?.map((e, i) => (
-    <GridItem
-      className={order[i]}
-      key={i}
-      // onClick={() => _handleTripRedirect(e.path)}
-      href={"/" + e.path}
-    >
+    <GridItem className={order[i]} key={i} href={"/" + e.path}>
       <ImageContainer>
         {
           <TextContainer className="AnimateTop">
@@ -190,10 +161,7 @@ const PlanAsPerTheme = (props) => {
           dimensionsMobile={{ width: 500, height: 500 }}
           url={e.image}
           style={{ filter: "brightness(0.75)" }}
-
-          // onload={_handleImageLoaded}
         ></ImageLoader>
-        {/* {<BlackContainer />} */}
       </ImageContainer>
     </GridItem>
   ));

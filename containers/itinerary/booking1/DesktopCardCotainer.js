@@ -16,6 +16,7 @@ const Container = styled.div`
   @media (min-width: 768px) and (max-width: 1024px) {
   }
 `;
+
 const Cards = (props) => {
   return <Container>{props.children}</Container>;
 };

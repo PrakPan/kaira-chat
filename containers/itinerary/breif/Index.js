@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import Heading from '../../../components/heading/Heading';
-import Route from './route/Index';
-import media from '../../../components/media';
-import Overview from './overview/Index';
-import Timer from '../timer/Index';
-import DesktopBanner from '../../../components/containers/Banner';
-import Banner from '../../homepage/banner/Mobile';
-import { useRouter } from 'next/router';
+import styled from "styled-components";
+import Heading from "../../../components/heading/Heading";
+import Route from "./route/Index";
+import media from "../../../components/media";
+import Overview from "./overview/Index";
+import Timer from "../timer/Index";
+import DesktopBanner from "../../../components/containers/Banner";
+import Banner from "../../homepage/banner/Mobile";
+import { useRouter } from "next/router";
+
 const Container = styled.div`
   padding: 1rem;
   color: black;
@@ -17,15 +17,16 @@ const Container = styled.div`
     padding: 2rem;
   }
 `;
+
 const RouteSlab = (props) => {
-  let isPageWide = media('(min-width: 768px)');
+  let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const _handleTimerClose = () => {
     window.scrollTo(0, window.innerHeight);
     props._hideTimerHandler();
   };
   const _handleTailoredRedirect = (e) => {
-    router.push('/tailored-travel');
+    router.push("/tailored-travel");
   };
 
   return (

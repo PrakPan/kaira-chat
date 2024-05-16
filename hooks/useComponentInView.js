@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from "react";
 
 export function useIsComponentInView(id, options = {}, onInViewChange) {
   const ref = useRef(null);
@@ -12,7 +12,7 @@ export function useIsComponentInView(id, options = {}, onInViewChange) {
         onInViewChange && onInViewChange(newIsInView);
       },
       {
-        rootMargin: options.rootMargin || '0px',
+        rootMargin: options.rootMargin || "0px",
         threshold: options.threshold || 0,
       }
     );

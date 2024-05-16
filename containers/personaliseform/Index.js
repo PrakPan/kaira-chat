@@ -21,7 +21,6 @@ import { CONTENT_SERVER_HOST } from "../../services/constants";
 
 const Container = styled.div`
   min-height: 100vh;
-  // padding-top: 22vw;
   padding: 2rem 0 0 0;
   box-sizing: border-box;
 `;
@@ -41,7 +40,6 @@ const Question = styled.p`
   font-size: 1.5rem;
   margin: 1rem 0 1.5rem 0;
   font-weight: 800;
-
   text-align: center;
   @media screen and (min-width: 768px) {
     position: relative;
@@ -74,7 +72,7 @@ const Personaliseform = (props) => {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [selectedCities, setSelectedCities] = useState([]);
   const [toggle, setToggle] = useState(false);
-  //Store answers
+  // Store answers
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [newAnswers, setNewAnswers] = useState({
@@ -84,9 +82,9 @@ const Personaliseform = (props) => {
     "For how long?": [],
     "Is this a workcation?": [],
   });
-  //Store subimtted state
+  // Store subimtted state
   const [submitted, setSubmitted] = useState(false);
-  //Loader when submit clicked
+  // Loader when submit clicked
   const [lat, setLat] = useState(null);
   const [long, setLong] = useState(null);
   let data = {};
@@ -158,7 +156,7 @@ const Personaliseform = (props) => {
   };
 
   const _addCityHandler = (city_id, city) => {
-    //check if city present
+    // check if city present
     if (_checkCityPresent(city)) {
     } else {
       {
@@ -280,7 +278,7 @@ const Personaliseform = (props) => {
         questions.options[3][newAnswers[questioncontansts.BUDGET][0]].heading;
     }
 
-    //Generate experience filters array
+    // Generate experience filters array
     for (let i = 0; i < newAnswers[questioncontansts.FILTERS].length; i++) {
       filters.push(
         questions.options[1][newAnswers[questioncontansts.FILTERS][i]].heading
@@ -375,7 +373,7 @@ const Personaliseform = (props) => {
     );
   }
 
-  //Show contact form
+  // Show contact form
   else if (questionIndex === 6) {
     if (
       !props.token ||

@@ -1,20 +1,23 @@
-import * as actionTypes from './actionsTypes';
-import axiosauthinstance from '../../services/user/auth';
-import { setUserDetails } from './auth';
-import * as ga from '../../services/ga/Index';
-import { CONTENT_SERVER_HOST } from '../../services/constants';
+import * as actionTypes from "./actionsTypes";
+import axiosauthinstance from "../../services/user/auth";
+import { setUserDetails } from "./auth";
+import * as ga from "../../services/ga/Index";
+import { CONTENT_SERVER_HOST } from "../../services/constants";
+
 //Show spinner
 export const authStartLoading = () => {
   return {
     type: actionTypes.AUTH_STARTLOADING,
   };
 };
+
 //Otp sent succesfully
 export const authSendOtp = () => {
   return {
     type: actionTypes.AUTH_OTPSENT,
   };
 };
+
 //Inavlid mobile
 export const authMobileFail = (message) => {
   return {
@@ -22,12 +25,14 @@ export const authMobileFail = (message) => {
     mobilefailmessage: message,
   };
 };
+
 //New user
 export const newUser = () => {
   return {
     type: actionTypes.NEW_USER,
   };
 };
+
 export const getotp = (mobile) => {
   const authData = {
     username: mobile,
@@ -45,9 +50,9 @@ export const getotp = (mobile) => {
   return (dispatch) => {
     dispatch(authStartLoading()); //Show spinner
     axiosauthinstance
-      .post('/initiate/', authData)
+      .post("/initiate/", authData)
       .then((response) => {
-        if (response.data.message == 'success') {
+        if (response.data.message == "success") {
           {
             process.env.NODE_ENV === "production" &&
               !CONTENT_SERVER_HOST.includes("dev") &&

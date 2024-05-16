@@ -95,8 +95,8 @@ const Location = (props) => {
           hoveropacity="0.6"
           hoverpointer
         />
-          </div>
-          
+      </div>
+
       <div className="center-div font-nunito text-center">
         <Name>{props.location ? props.location.name : ""}</Name>
       </div>

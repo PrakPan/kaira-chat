@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from "react";
 
 const TruncatedText = ({
   text,
   maxLength,
   wordsOnly = true,
-  viewMoreText = 'View more',
-  viewLessText = 'View less',
+  viewMoreText = "View more",
+  viewLessText = "View less",
 }) => {
   const [truncatedText, setTruncatedText] = useState(text.substr(0, maxLength));
   const [isTruncated, setIsTruncated] = useState(text.length > maxLength);
@@ -15,8 +15,8 @@ const TruncatedText = ({
     if (isTruncated) {
       setTruncatedText(text.substr(0, maxLength));
     } else {
-      const words = text.split(' ');
-      setTruncatedText(words.slice(0, maxLength).join(' '));
+      const words = text.split(" ");
+      setTruncatedText(words.slice(0, maxLength).join(" "));
     }
     setIsTruncated(!isTruncated);
   };
@@ -33,16 +33,16 @@ const TruncatedText = ({
       }
 
       if (newMaxLength !== maxLength) {
-        const words = text.split(' ');
-        setTruncatedText(words.slice(0, newMaxLength).join(' '));
+        const words = text.split(" ");
+        setTruncatedText(words.slice(0, newMaxLength).join(" "));
         setIsTruncated(text.length > newMaxLength);
       }
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, [maxLength, text]);
 
@@ -51,7 +51,10 @@ const TruncatedText = ({
       <div ref={textRef} className="truncated-text">
         {truncatedText}
         {isTruncated && (
-          <div className="view-more-btn font-bold" onClick={handleViewMoreClick}>
+          <div
+            className="view-more-btn font-bold"
+            onClick={handleViewMoreClick}
+          >
             {viewMoreText}
           </div>
         )}
@@ -59,7 +62,10 @@ const TruncatedText = ({
       {!isTruncated &&
         textRef.current &&
         textRef.current.scrollHeight > textRef.current.clientHeight && (
-          <div className="view-more-btn font-bold" onClick={handleViewMoreClick}>
+          <div
+            className="view-more-btn font-bold"
+            onClick={handleViewMoreClick}
+          >
             {viewLessText}
           </div>
         )}
@@ -68,19 +74,3 @@ const TruncatedText = ({
 };
 
 export default TruncatedText;
-
-
-
-
-// Example usage:
-//   const textEl = document.getElementById('text');
-//   const screenWidth = window.innerWidth;
-//   let maxLength = 100;
-
-//   if (screenWidth <= 480) {
-//     maxLength = 50;
-//   } else if (screenWidth <= 768) {
-//     maxLength = 75;
-//   }
-
-//   textEl.innerHTML = truncateString('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut imperdiet ex. Donec at elit vel mi blandit efficitur quis ac lectus. Proin eget hendrerit augue. Nulla eget velit vel massa aliquam lacinia. Nunc ut purus id tellus aliquet bibendum sed a nulla. Curabitur eu diam sed justo pharetra pulvinar. Praesent vel consectetur dolor. Nulla sed lacus sit amet sapien pharetra ullamcorper.', maxLength);
