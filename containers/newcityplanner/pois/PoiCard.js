@@ -3,6 +3,7 @@ import ImageLoader from "../../../components/ImageLoader";
 import { MdNavigateNext } from "react-icons/md";
 import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
 import { useState } from "react";
+import { logEvent } from "../../../services/ga/Index";
 
 const LeftSlideIn = keyframes`
   from {

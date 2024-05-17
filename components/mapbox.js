@@ -7,7 +7,6 @@ import {
   useMap,
 } from "react-leaflet";
 import leaflet, { divIcon } from "leaflet";
-import { format, parseISO } from "date-fns";
 import "leaflet/dist/leaflet.css";
 import React, { useEffect } from "react";
 import { useState } from "react";
@@ -16,21 +15,6 @@ import WeatherWidget from "./WeatherWidget/WeatherWidget";
 import { getHumanDate } from "../services/getHumanDate";
 import useMediaQuery from "./media";
 import { MAPBOX_ACCESS_TOKEN } from "../services/constants";
-
-const MyIcon = ({ color }) => {
-  const iconMarkup = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <circle cx="10" cy="10" r="8" stroke="${color}" stroke-width="2" fill="transparent"/>
-                    </svg>`;
-
-  const iconOptions = {
-    html: iconMarkup,
-    className: "my-icon-class",
-    iconSize: [20, 20],
-  };
-
-  const customIcon = new DivIcon(iconOptions);
-  return customIcon;
-};
 
 const limeOptions = {
   color: "#004d6994",
@@ -48,16 +32,6 @@ const Mapbox = React.memo(
     onload,
   }) => {
     const isDesktop = useMediaQuery("(min-width:768px)");
-
-    function sortWholeNumbersDescending(arr) {
-      // Convert decimal numbers to whole numbers using Math.floor()
-      const wholeNumbers = arr.map((num) => Math.floor(num));
-
-      // Sort whole numbers in descending order using Array.sort()
-      wholeNumbers.sort((a, b) => b - a);
-
-      return wholeNumbers;
-    }
 
     const FitBoundsOnMount = () => {
       const map = useMap();
@@ -81,36 +55,7 @@ const Mapbox = React.memo(
       return null;
     };
 
-    function getDegree(value) {
-      const degrees = [
-        { range: [0, 49], degree: 10 },
-        { range: [50, 99], degree: 9 },
-        { range: [100, 149], degree: 9 },
-        { range: [150, 199], degree: 9 },
-        { range: [200, 249], degree: 8 },
-        { range: [250, 299], degree: 7 },
-        { range: [300, 499], degree: 6 },
-        { range: [2000, 2999], degree: 5 },
-        { range: [3000, 3999], degree: 4 },
-        { range: [4000, Infinity], degree: 3 },
-      ];
-
-      for (let i = 0; i < degrees.length; i++) {
-        const range = degrees[i].range;
-
-        if (value >= range[0] && value <= range[1]) {
-          return degrees[i].degree;
-        }
-      }
-    }
-
     const [polylines, setPolylines] = useState();
-
-    const convertDFormat = (dt) => {
-      const date = parseISO(dt);
-      const formattedDate = format(date, "MMMM do");
-      return formattedDate;
-    };
 
     useEffect(() => {
       const updatedPolylines = locations.map((element) => [

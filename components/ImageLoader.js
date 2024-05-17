@@ -4,8 +4,9 @@ import media from "./media";
 import usePageLoaded from "./custom hooks/usePageLoaded";
 import LazyLoad from "react-lazyload";
 import Image from "next/image";
+import { red } from "@mui/material/colors";
 
-const ImageLoader = (props) => {
+const OldImageLoader = (props) => {
   const Container = styled(props.noLazy ? "div" : LazyLoad)`
     @media screen and (min-width: 768px) {
       width: ${props.width ? props.width : "100%"};
@@ -403,7 +404,7 @@ const ImageLoader = (props) => {
   }
 };
 
-const NewImageLoader = (props) => {
+const ImageLoader = (props) => {
   const isPageWide = media("(min-width: 768px)");
   const isPageLoaded = usePageLoaded();
 
@@ -620,7 +621,11 @@ const ImageContainer = (props) => {
   let is_url = isValidHttpUrl(props.url);
 
   return (
-    <div blur={fullLoaded} onClick={props.onclick} style={props.containerStyle}>
+    <div
+      blur={fullLoaded}
+      onClick={props.onclick}
+      style={{ ...props.containerStyle }}
+    >
       {/* Small Image */}
       <Image
         src={
@@ -644,6 +649,7 @@ const ImageContainer = (props) => {
           ...props.style,
         }}
       />
+
       {/* Full Image */}
       <Image
         src={
@@ -655,17 +661,21 @@ const ImageContainer = (props) => {
             ? `${imgUrlEndPoint}/${btoa(props.imageRequest)}`
             : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
         }
-        fill={true}
+        width={145}
+        height={145}
+        priority={props.noLazy ? true : false}
         loading={props.noLazy ? "eager" : "lazy"}
         onLoad={fullImageLoadedHandler}
         onError={props.onfail ? props.onfail : handleError}
         alt=""
         style={{
           display: fullLoaded ? "block" : "none",
-          // height: props.height ? props.height : "auto",
+          width: props.width ? props.width : "100%",
+          height: props.height ? props.height : "100%",
           borderRadius: props.borderRadius ? props.borderRadius : "0",
           maxWidth: props.maxwidth ? props.maxwidth : "none",
           maxHeight: props.maxheight ? props.maxheight : "none",
+          objectFit: props.resizeMode ? props.resizeMode : "cover",
           ...props.style,
         }}
       />

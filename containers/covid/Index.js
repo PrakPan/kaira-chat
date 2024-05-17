@@ -87,7 +87,7 @@ const Covid = () => {
         <IconListWidthContainer>
           <Icon>
             <ImageLoader
-              dimensions={{ height: 300, width: 300 }}
+              dimensions={{ height: 145, width: 145 }}
               url={"media/icons/covid/protection.png"}
             />
           </Icon>
@@ -103,7 +103,7 @@ const Covid = () => {
           </div>
           <Icon>
             <ImageLoader
-              dimensions={{ height: 300, width: 300 }}
+              dimensions={{ height: 145, width: 145 }}
               url={"media/icons/covid/avoid.png"}
             />
           </Icon>
@@ -122,7 +122,7 @@ const Covid = () => {
           </div>
           <Icon>
             <ImageLoader
-              dimensions={{ height: 300, width: 300 }}
+              dimensions={{ height: 145, width: 145 }}
               url={"media/icons/covid/calendar.png"}
             />
           </Icon>
@@ -139,7 +139,7 @@ const Covid = () => {
           </div>
           <Icon>
             <ImageLoader
-              dimensions={{ height: 300, width: 300 }}
+              dimensions={{ height: 145, width: 145 }}
               url={"media/icons/covid/laboratory.png"}
             />
           </Icon>
@@ -156,7 +156,7 @@ const Covid = () => {
           </div>
           <Icon>
             <ImageLoader
-              dimensions={{ height: 300, width: 300 }}
+              dimensions={{ height: 145, width: 145 }}
               url={"media/icons/covid/map.png"}
             />
           </Icon>
@@ -173,7 +173,7 @@ const Covid = () => {
           </div>
           <Icon>
             <ImageLoader
-              dimensions={{ height: 300, width: 300 }}
+              dimensions={{ height: 145, width: 145 }}
               url={"media/icons/covid/camping.png"}
             />
           </Icon>

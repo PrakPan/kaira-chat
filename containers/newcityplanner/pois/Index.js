@@ -64,12 +64,14 @@ const WeatherContainer = styled.div`
 `;
 
 const Poi = (props) => {
+  let isPageWide = media("(min-width: 768px)");
   const [more, setMore] = useState(4);
+
   const drawerShowArr = props.pois?.map((e) => {
     return { ...e, isOpen: false };
   });
+
   const [showDrawer, setShowDrawer] = useState(drawerShowArr);
-  let isPageWide = media("(min-width: 768px)");
 
   const _handleOpen = (id) => {
     setShowDrawer(

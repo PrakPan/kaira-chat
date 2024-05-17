@@ -45,6 +45,11 @@ const ImagesMobile = (props) => {
     1: false,
     2: false,
   });
+  const [ImagesError, setImagesError] = useState({
+    0: false,
+    1: false,
+    2: false,
+  });
 
   function OnImageLoad(i) {
     if (!ImagesLoaded[i]) {
@@ -58,10 +63,20 @@ const ImagesMobile = (props) => {
     }
   }
 
+  function OnImageFail(i) {
+    setImagesError((prev) => {
+      return { ...prev, [i]: true };
+    });
+  }
+
   return props.images.length >= 3 ? (
     <Container ConImg={props.images[1]}>
       <>
-        <div style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
+        <div
+          style={{
+            display: ImagesLoaded[0] && !ImagesError[0] ? "initial" : "none",
+          }}
+        >
           <ImageLoader
             borderRadius="12px"
             dimensions={{ width: 1500, height: 600 }}
@@ -70,6 +85,7 @@ const ImagesMobile = (props) => {
             heightMobile="auto"
             dimensionsMobile={{ width: 328, height: 141 }}
             onload={() => OnImageLoad(0)}
+            onfail={() => OnImageFail(0)}
             noLazy
           ></ImageLoader>
         </div>
@@ -86,8 +102,9 @@ const ImagesMobile = (props) => {
       {props.images[1] ? (
         <GridContainer>
           <div
-            style={{ display: ImagesLoaded[1] ? "initial" : "none" }}
-            className=""
+            style={{
+              display: ImagesLoaded[1] && !ImagesError[1] ? "initial" : "none",
+            }}
           >
             <ImageLoader
               borderRadius="12px"
@@ -97,6 +114,7 @@ const ImagesMobile = (props) => {
               heightMobile="auto"
               dimensionsMobile={{ width: 160, height: 90 }}
               onload={() => OnImageLoad(1)}
+              onfail={() => OnImageFail(1)}
               noLazy
             ></ImageLoader>
           </div>
@@ -110,7 +128,9 @@ const ImagesMobile = (props) => {
             <SkeletonCard />
           </div>
           <div
-            style={{ display: ImagesLoaded[2] ? "initial" : "none" }}
+            style={{
+              display: ImagesLoaded[2] && !ImagesError[2] ? "initial" : "none",
+            }}
             className=""
           >
             <ImageLoader
@@ -121,6 +141,7 @@ const ImagesMobile = (props) => {
               heightMobile="auto"
               dimensionsMobile={{ width: 160, height: 90 }}
               onload={() => OnImageLoad(2)}
+              onfail={() => OnImageFail(2)}
               noLazy
             ></ImageLoader>
           </div>
@@ -137,54 +158,66 @@ const ImagesMobile = (props) => {
       ) : null}
     </Container>
   ) : props.images.length === 2 ? (
-    <>
-      <TwoImageContainer>
-        <div style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
-          <ImageLoader
-            borderRadius="12px"
-            dimensions={{ width: 1071, height: 400 }}
-            url={props.images[0]}
-            height={isPageWide ? "400px" : "190px"}
-            dimensionsMobile={{ width: 328, height: 141 }}
-            onload={() => OnImageLoad(0)}
-            noLazy
-          ></ImageLoader>
-        </div>
-        <div
-          style={{
-            display: !ImagesLoaded[0] ? "initial" : "none",
-            borderRadius: "12px",
-            overflow: "hidden",
-          }}
-        >
-          <SkeletonCard />
-        </div>
-        <div style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
-          <ImageLoader
-            borderRadius="12px"
-            url={props.images[1]}
-            dimensions={{ width: 436, height: 150 }}
-            height={isPageWide ? "400px" : "190px"}
-            heightMobile="auto"
-            dimensionsMobile={{ width: 160, height: 90 }}
-            onload={() => OnImageLoad(1)}
-            noLazy
-          ></ImageLoader>
-        </div>
-        <div
-          style={{
-            display: !ImagesLoaded[1] ? "initial" : "none",
-            borderRadius: "12px",
-            overflow: "hidden",
-          }}
-        >
-          <SkeletonCard />
-        </div>
-      </TwoImageContainer>
-    </>
+    <TwoImageContainer>
+      <div
+        style={{
+          display: ImagesLoaded[0] && !ImagesError[0] ? "initial" : "none",
+        }}
+      >
+        <ImageLoader
+          borderRadius="12px"
+          dimensions={{ width: 1071, height: 400 }}
+          url={props.images[0]}
+          height={isPageWide ? "400px" : "190px"}
+          dimensionsMobile={{ width: 328, height: 141 }}
+          onload={() => OnImageLoad(0)}
+          onfail={() => OnImageFail(0)}
+          noLazy
+        ></ImageLoader>
+      </div>
+      <div
+        style={{
+          display: !ImagesLoaded[0] ? "initial" : "none",
+          borderRadius: "12px",
+          overflow: "hidden",
+        }}
+      >
+        <SkeletonCard />
+      </div>
+      <div
+        style={{
+          display: ImagesLoaded[1] && !ImagesError[1] ? "initial" : "none",
+        }}
+      >
+        <ImageLoader
+          borderRadius="12px"
+          url={props.images[1]}
+          dimensions={{ width: 436, height: 150 }}
+          height={isPageWide ? "400px" : "190px"}
+          heightMobile="auto"
+          dimensionsMobile={{ width: 160, height: 90 }}
+          onload={() => OnImageLoad(1)}
+          onfail={() => OnImageFail(1)}
+          noLazy
+        ></ImageLoader>
+      </div>
+      <div
+        style={{
+          display: !ImagesLoaded[1] ? "initial" : "none",
+          borderRadius: "12px",
+          overflow: "hidden",
+        }}
+      >
+        <SkeletonCard />
+      </div>
+    </TwoImageContainer>
   ) : (
     <Container>
-      <div style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
+      <div
+        style={{
+          display: ImagesLoaded[0] && !ImagesError[0] ? "initial" : "none",
+        }}
+      >
         <ImageLoader
           borderRadius="12px"
           dimensions={{ width: 1071, height: 400 }}
@@ -193,6 +226,7 @@ const ImagesMobile = (props) => {
           heightMobile="auto"
           dimensionsMobile={{ width: 328, height: 141 }}
           onload={() => OnImageLoad(0)}
+          onfail={() => OnImageFail(0)}
           noLazy
         ></ImageLoader>
       </div>

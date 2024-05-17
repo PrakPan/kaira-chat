@@ -120,7 +120,6 @@ const Details = (props) => {
   }
 
   const MapWithNoSSR = ({
-    locations,
     currentPopup,
     setCurrentPopup,
     setShowDrawer,
@@ -151,7 +150,6 @@ const Details = (props) => {
               <>
                 <div style={{ display: mapLoaded ? "initial" : "none" }}>
                   <MapWithNoSSR
-                    locations={Locationlatlong}
                     currentPopup={currentPopup}
                     setCurrentPopup={setCurrentPopup}
                     setShowDrawer={setShowDrawer}
