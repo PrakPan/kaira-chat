@@ -195,7 +195,7 @@ const Homepage = (props) => {
       <HeroBanner
         image={
           isPageWide
-            ? "media/website/banners/homepage-herobanner.webp"
+            ? "media/website/banners/homepage-herobanner-3.webp"
             : "media/website/banners/homepage-banner-mobile.webp"
         }
         destinationType={"city-planner"}
@@ -321,7 +321,6 @@ const Homepage = (props) => {
 
             <Button
               link="/europe"
-              onclick={handleButtonClick}
               onclickparam={"Europe"}
               fontWeight="500"
               boxShadow
@@ -360,7 +359,6 @@ const Homepage = (props) => {
 
             <Button
               link="/asia"
-              onclick={handleButtonClick}
               onclickparam={"Asia"}
               fontWeight="500"
               boxShadow

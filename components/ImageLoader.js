@@ -634,7 +634,6 @@ const ImageContainer = (props) => {
             ? `${imgUrlEndPoint}/${btoa(props.smallImageRequest)}`
             : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
         }
-        // fill={true}
         width={100}
         height={100}
         loading={props.noLazy ? "eager" : "lazy"}
@@ -642,7 +641,7 @@ const ImageContainer = (props) => {
         onError={props.onfail ? props.onfail : handleError}
         alt=""
         style={{
-          height: props.height ? props.height : "auto",
+          height: props.height ? props.height : "100%",
           display: !fullLoaded ? "initial" : "none",
           borderRadius: props.borderRadius ? props.borderRadius : "5px",
           ...props.style,
