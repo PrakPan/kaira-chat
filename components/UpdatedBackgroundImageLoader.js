@@ -22,8 +22,8 @@ const SaifBackgroundImageLoader = (props) => {
           noLazy={props.noLazy}
           url={props.url}
           style={{ filter: props.filter }}
-          height="100%"
-          width="100%"
+          height={props.height ? props.height : "100%"}
+          width={props.width ? props.width : "100%"}
           dimensions={props.dimensions}
           dimensionsMobile={props.dimensionsMobile}
           borderRadius={props.borderRadius ? props.borderRadius : "0"}

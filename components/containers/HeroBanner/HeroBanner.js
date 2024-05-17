@@ -10,6 +10,7 @@ const HeroBanner = (props) => {
       filter="brightness(1)"
       padding="2rem 0"
       resizeMode={props.resizeMode}
+      noLazy
     >
       <FullImgContent
         page_id={props.page_id}

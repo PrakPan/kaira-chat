@@ -23,10 +23,12 @@ const FullImage = (props) => {
             filter={props.filter}
             center
             url={props.url}
+            height={props.height}
             dimensions={{ width: 1806, height: 592 }}
             dimensionsMobile={{ width: 607, height: 810 }}
             className="center-div"
             style={{ position: "absolute", zIndex: props.zIndex }}
+            noLazy={props.noLazy}
           >
             <div>{props.children}</div>
           </BackgroundImageLoader>
@@ -39,6 +41,7 @@ const FullImage = (props) => {
             dimensions={{ width: 1806, height: 592 }}
             dimensionsMobile={{ width: 607, height: 810 }}
             style={{ position: "absolute", zIndex: props.zIndex }}
+            noLazy={props.noLazy}
           >
             <div>{props.children}</div>
           </BackgroundImageLoader>
@@ -69,6 +72,7 @@ const FullImage = (props) => {
           style={{ position: "absolute" }}
           className="center-dv"
           resizeMode={props.resizeMode}
+          noLazy={props.noLazy}
         >
           <div
             style={{

@@ -4,7 +4,6 @@ import media from "./media";
 import usePageLoaded from "./custom hooks/usePageLoaded";
 import LazyLoad from "react-lazyload";
 import Image from "next/image";
-import { red } from "@mui/material/colors";
 
 const OldImageLoader = (props) => {
   const Container = styled(props.noLazy ? "div" : LazyLoad)`
