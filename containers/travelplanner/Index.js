@@ -21,6 +21,7 @@ import dynamic from "next/dynamic";
 import AsSeenIn from "../testimonial/AsSeenIn";
 import PathNavigation from "./PathNavigation.js";
 import { logEvent } from "../../services/ga/Index";
+import H3 from "../../components/heading/H3";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -42,10 +43,8 @@ const MapInfo = styled.div`
 const MapGridContainer = styled.div`
   display: grid;
   grid-gap: 30px;
-
   @media screen and (min-width: 768px) {
     width: 100%;
-
     grid-template-columns: auto 500px;
     grid-gap: 40px;
     margin: 0 auto 0 auto;
@@ -55,18 +54,6 @@ const MapGridContainer = styled.div`
 const MapContainer = styled.div`
   @media screen and (min-width: 768px) {
     padding-top: 116px;
-  }
-`;
-
-const Heading = styled.h2`
-  font-size: 32px;
-  font-weight: 700;
-  margin: 1.5rem 0.5rem;
-  text-align: center;
-
-  @media screen and (min-width: 768px) {
-    text-align: left;
-    margin: 3.5rem 0rem;
   }
 `;
 
@@ -266,8 +253,10 @@ const Homepage = (props) => {
         title={props.experienceData.banner_heading}
         page={"State Page"}
       />
+
       <SetWidthContainer>
         <PathNavigation path={props.experienceData.path} />
+
         {props.experienceData.page_type == "Theme" && (
           <MapGridContainer>
             <Overview
@@ -292,20 +281,18 @@ const Homepage = (props) => {
 
         {props?.experienceData?.locations?.length ? (
           <>
-            <Heading
-              align="center"
-              aligndesktop="left"
-              margin={
-                !isPageWide
-                  ? "2.5rem 0.5rem 1.5rem 0.5rem"
-                  : "2.5rem 0 4.5rem 0"
-              }
-              bold
+            <H3
+              style={{
+                textAlign: isPageWide ? "left" : "center",
+                margin: isPageWide
+                  ? "2.5rem 0 4.5rem 0"
+                  : "2.5rem 0.5rem 1.5rem 0.5rem",
+              }}
             >
               {props.experienceData.destination
                 ? "Top locations across " + props.experienceData.destination
                 : "Top Locations"}
-            </Heading>
+            </H3>
             <Locations
               locations={props.experienceData.locations}
               viewall
@@ -317,18 +304,16 @@ const Homepage = (props) => {
 
         {userItineraries.length ? (
           <>
-            <Heading
-              align="center"
-              aligndesktop="left"
-              margin={
-                !isPageWide
-                  ? "2.5rem 0.5rem 1.5rem 0.5rem"
-                  : "2.5rem 0 2.5rem 0"
-              }
-              bold
+            <H3
+              style={{
+                textAlign: isPageWide ? "left" : "center",
+                margin: isPageWide
+                  ? "2.5rem 0 2.5rem 0"
+                  : "2.5rem 0.5rem 1.5rem 0.5rem",
+              }}
             >
               Trips by our users
-            </Heading>
+            </H3>
             <Experiences
               experiences={userItineraries}
               page={"State Page"}
@@ -377,12 +362,14 @@ const Homepage = (props) => {
       </SetWidthContainer>
 
       <SetWidthContainer>
-        <Heading
-          align="left"
-          margin={!isPageWide ? "2.5rem 0.5rem 0rem 0.5rem" : "3rem 0"}
+        <H3
+          style={{
+            textAlign: isPageWide ? "left" : "center",
+            margin: isPageWide ? "3rem 0" : "2.5rem 0.5rem 0rem 0.5rem",
+          }}
         >
           How it works?
-        </Heading>
+        </H3>
         <div>
           <BannerTwo
             page_id={props.experienceData.id}
@@ -393,18 +380,16 @@ const Homepage = (props) => {
 
         {TTWItineraries.length ? (
           <>
-            <Heading
-              align="center"
-              aligndesktop="left"
-              margin={
-                !isPageWide
-                  ? "2.5rem 0.5rem 1.5rem 0.5rem"
-                  : "2.5rem 0 2.5rem 0"
-              }
-              bold
+            <H3
+              style={{
+                textAlign: isPageWide ? "left" : "center",
+                margin: isPageWide
+                  ? "2.5rem 0 2.5rem 0"
+                  : "2.5rem 0.5rem 1.5rem 0.5rem",
+              }}
             >
               Tarzan Way Community Top Picks
-            </Heading>
+            </H3>
             <Experiences
               mobileGrid
               experiences={
@@ -415,9 +400,7 @@ const Homepage = (props) => {
           </>
         ) : null}
 
-        {!TTWItineraries.length || isPageWide ? (
-          <></>
-        ) : showMore ? (
+        {!TTWItineraries.length || isPageWide ? null : showMore ? (
           <Button
             onclick={() =>
               handlePlanButtonClick(`Tarzan Way Community Top Picks`)
@@ -454,9 +437,7 @@ const Homepage = (props) => {
           >
             Unlock your adventure
           </Button>
-        ) : (
-          <></>
-        )}
+        ) : null}
       </SetWidthContainer>
       <DesktopBanner
         loading={desktopBannerLoading}
@@ -488,7 +469,14 @@ const Homepage = (props) => {
       <SetWidthContainer>
         {props.locations && props.locations.length ? (
           <>
-            <Heading>Other Destinations</Heading>
+            <H3
+              style={{
+                textAlign: isPageWide ? "left" : "center",
+                margin: isPageWide ? "3.5rem 0rem" : "1.5rem 0.5rem",
+              }}
+            >
+              Other Destinations
+            </H3>
             <OldLocations
               locations={props.locations}
               page_id={props.experienceData.id}
@@ -500,23 +488,40 @@ const Homepage = (props) => {
           </>
         ) : null}
 
-        <Heading style={{ margin: "3.5rem 0 3.5rem 0" }}>
+        <H3
+          style={{
+            textAlign: isPageWide ? "left" : "center",
+            margin: "3.5rem 0 3.5rem 0",
+          }}
+        >
           Why plan with us?
-        </Heading>
+        </H3>
         <WhyPlanWithUs
           page_id={props.experienceData.id}
           destination={props.experienceData.destination}
           cities={props.experienceData.locations}
         />
 
-        <Heading style={{ margin: "4rem 0 2.5rem 0" }}>
+        <H3
+          style={{
+            textAlign: isPageWide ? "left" : "center",
+            margin: "4rem 0 2.5rem 0",
+          }}
+        >
           Happy Community of The Tarzan Way
-        </Heading>
+        </H3>
         <Reviews></Reviews>
       </SetWidthContainer>
 
       <SetWidthContainer>
-        <Heading style={{ margin: "4rem 0 2.5rem 0" }}>What they say?</Heading>
+        <H3
+          style={{
+            textAlign: isPageWide ? "left" : "center",
+            margin: "4rem 0 2.5rem 0",
+          }}
+        >
+          What they say?
+        </H3>
         <AsSeenIn />
         <ChatWithUs planner page_id={props.experienceData.id}></ChatWithUs>
       </SetWidthContainer>

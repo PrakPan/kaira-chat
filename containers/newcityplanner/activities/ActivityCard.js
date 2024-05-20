@@ -4,6 +4,8 @@ import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsD
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import { logEvent } from "../../../services/ga/Index";
+import H8 from "../../../components/heading/H8";
+import H9 from "../../../components/heading/H9";
 
 export default function ActivityCard(props) {
   const [show, setShow] = useState(false);
@@ -56,8 +58,8 @@ export default function ActivityCard(props) {
         />
       </div>
       <div className="flex flex-col gap-1">
-        <div className="text-lg font-semibold line-clamp-2">
-          {props?.data?.name}
+        <div className="line-clamp-2">
+          <H8>{props?.data?.name}</H8>
         </div>
         {stars && (
           <span className="flex flex-row items-center gap-1 text-sm text-[#7a7a7a]">
@@ -68,8 +70,8 @@ export default function ActivityCard(props) {
             </span>
           </span>
         )}
-        <div className="text-[14px] font-[300] line-clamp-3">
-          {props?.data?.short_description}
+        <div className="line-clamp-3">
+          <H9>{props?.data?.short_description}</H9>
         </div>
         <div className="text-[14px] font-[300] text-gray-500">...more</div>
       </div>

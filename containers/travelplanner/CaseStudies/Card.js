@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { AiFillStar } from "react-icons/ai";
 import ImageLoader from "../../../components/ImageLoader";
 import Link from "next/link";
+import H9 from "../../../components/heading/H9";
 
 const Card = styled.div`
   padding: 0rem;
@@ -14,25 +15,11 @@ const Card = styled.div`
   }
 `;
 
-const CardHeading = styled.p`
-  font-size: 0.9rem;
-  font-weight: 700;
-  margin: 0;
-  margin-top: 5px;
-`;
-
 const CardSubHeading = styled.p`
   font-size: 0.9rem;
   font-weight: 400;
   margin: 0 0 0rem 0;
   color: rgb(122, 122, 122);
-`;
-
-const CardListItem = styled.p`
-  font-size: 0.9rem;
-  font-weight: 300;
-  margin: 0;
-  line-height: 1.5;
 `;
 
 const GridContainer = styled.div`
@@ -85,9 +72,24 @@ const CardContainer = (props) => {
           </div>
 
           <FlexBox>
-            <CardListItem className="font-lexend">{props.text}</CardListItem>
+            <H9
+              style={{
+                fontSize: "0.9rem",
+                lineHeight: 1.5,
+                margin: "0",
+              }}
+            >
+              {props.text}
+            </H9>
             <FlexBox>
-              <CardHeading className="font-lexend">{props.heading}</CardHeading>
+              <H9
+                style={{
+                  marginTop: "5px",
+                  fontWeight: 700,
+                }}
+              >
+                {props.heading}
+              </H9>
 
               <RatingContainer>
                 <div>
@@ -172,7 +174,15 @@ const CardContainer = (props) => {
             dimensions={{ width: 900, height: 900 }}
           ></ImageLoader>
 
-          <CardHeading className="font-lexend">{props.heading}</CardHeading>
+          <H9
+            style={{
+              marginTop: "5px",
+              fontWeight: 700,
+            }}
+            className="font-lexend"
+          >
+            {props.heading}
+          </H9>
 
           <RatingContainer>
             <div>
@@ -230,7 +240,16 @@ const CardContainer = (props) => {
         </div>
 
         <div>
-          <CardListItem className="font-lexend">{props.text}</CardListItem>
+          <H9
+            style={{
+              fontSize: "0.9rem",
+              lineHeight: 1.5,
+              margin: "0",
+            }}
+            className="font-lexend"
+          >
+            {props.text}
+          </H9>
         </div>
       </GridContainer>
     </Card>

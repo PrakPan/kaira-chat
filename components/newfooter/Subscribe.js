@@ -4,6 +4,8 @@ import axiosSubscribeInstance from "../../services/subscribe/subscribe";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import media from "../media";
+import H2 from "../../components/heading/H2";
+import H7 from "../../components/heading/H7";
 
 const Container = styled.div`
   height: 375px;
@@ -25,30 +27,6 @@ const Container = styled.div`
     position: absolute;
     border-radius: 20px;
     left: 10%;
-  }
-`;
-
-const Heading = styled.h1`
-  font-weight: 600;
-  font-size: 24px;
-  text-align: center;
-  margin-block: 2rem 0.5rem;
-  position: relative;
-  @media screen and (min-width: 768px) {
-    font-size: 36px;
-    margin-block: 5rem 0rem;
-  }
-`;
-
-const SubHeading = styled.div`
-  font-weight: 200;
-  font-size: 16px;
-  text-align: center;
-  margin-block: 0rem 2rem;
-  position: relative;
-  @media screen and (min-width: 768px) {
-    font-size: 22px;
-    margin-block: 0.5rem 3.5rem;
   }
 `;
 
@@ -126,11 +104,26 @@ const Subscribe = (props) => {
 
   return (
     <Container shadow={props.shadow}>
-      <Heading>Join The Tarzan Way Community</Heading>
+      <H2
+        style={{
+          color: "black",
+          marginBlock: isPageWide ? "5rem 0rem" : "2rem 0.5rem",
+          textAlign: "center",
+        }}
+      >
+        Join The Tarzan Way Community
+      </H2>
 
-      <SubHeading>
+      <H7
+        style={{
+          textAlign: "center",
+          marginBlock: isPageWide ? "0.5rem 3.5rem" : "0rem 2rem",
+          fontSize: isPageWide ? "22px" : "16px",
+          position: "relative",
+        }}
+      >
         Get Early Bird Deals, Extra Discounts & Priority Customer Support.
-      </SubHeading>
+      </H7>
 
       <Form onSubmit={_handleSubmit}>
         <Input

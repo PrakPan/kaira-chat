@@ -8,6 +8,7 @@ import openTailoredModal from "../../services/openTailoredModal";
 import TripsCounter from "./TripsCounter";
 import Link from "next/link";
 import { logEvent } from "../../services/ga/Index";
+import H5 from "../../components/heading/H5";
 
 const Container = styled.div`
   height: 430px;
@@ -182,7 +183,7 @@ const PlanAsPerTheme = (props) => {
     >
       <ImageContainer bg="road-trip.png" href={"/asia/india/" + e.path}>
         <TextContainer className="AnimateTop">
-          <Heading>{e.banner_heading}</Heading>
+          <H5>{e.banner_heading}</H5>
           {isPageWide && <div className="StartNow">Explore!</div>}
         </TextContainer>
         <ImageLoader

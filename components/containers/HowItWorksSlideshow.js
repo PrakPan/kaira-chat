@@ -7,6 +7,8 @@ import ImageLoader from "../ImageLoader";
 import openTailoredModal from "../../services/openTailoredModal";
 import SwiperCarousel from "../SwiperCarousel";
 import { logEvent } from "../../services/ga/Index";
+import H8 from "../heading/H8";
+import H9 from "../heading/H9";
 
 const Container = styled.div`
   margin-top: -50px;
@@ -20,7 +22,6 @@ const Container = styled.div`
 `;
 
 const TextContainer = styled.div`
-  font-size: 16px;
   text-align: center;
 `;
 
@@ -76,10 +77,17 @@ const HowItWorksSlideshow = (props) => {
       </ImageContainer>
 
       <TextContainer>
-        {props.headings[0]}
-        {props.content[0]}
+        <H8>{props.headings[0]}</H8>
+        <H9
+          style={{
+            lineHeight: 1.5,
+          }}
+        >
+          {props.content[0]}
+        </H9>
       </TextContainer>
     </GridContainer>,
+
     <GridContainer key={1} style={{}}>
       <ImageContainer>
         <ImageLoader
@@ -98,8 +106,14 @@ const HowItWorksSlideshow = (props) => {
       </ImageContainer>
 
       <TextContainer>
-        {props.headings[1]}
-        {props.content[1]}
+        <H8>{props.headings[1]}</H8>
+        <H9
+          style={{
+            lineHeight: 1.5,
+          }}
+        >
+          {props.content[1]}
+        </H9>
       </TextContainer>
     </GridContainer>,
 
@@ -120,8 +134,14 @@ const HowItWorksSlideshow = (props) => {
         />
       </ImageContainer>
       <TextContainer>
-        {props.headings[2]}
-        {props.content[2]}
+        <H8>{props.headings[2]}</H8>
+        <H9
+          style={{
+            lineHeight: 1.5,
+          }}
+        >
+          {props.content[2]}
+        </H9>
       </TextContainer>
     </GridContainer>,
   ];
@@ -147,8 +167,14 @@ const HowItWorksSlideshow = (props) => {
         </ImageContainer>
 
         <TextContainer>
-          {props.headings[3]}
-          {props.content[3]}
+          <H8 style={{ textAlign: "center" }}>{props.headings[3]}</H8>
+          <H9
+            style={{
+              lineHeight: 1.5,
+            }}
+          >
+            {props.content[3]}
+          </H9>
         </TextContainer>
       </GridContainer>
     );

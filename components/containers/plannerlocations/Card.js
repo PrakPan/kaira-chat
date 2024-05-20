@@ -3,6 +3,8 @@ import styled from "styled-components";
 import ImageLoader from "../../ImageLoader";
 import Link from "next/link";
 import { logEvent } from "../../../services/ga/Index";
+import H6 from "../../heading/H6";
+import H9 from "../../heading/H9";
 
 const ImageFade = styled.div`
   width: 100%;
@@ -36,21 +38,6 @@ const BlackContainer = styled.div`
   padding: 0.5rem;
   bottom: 0;
   flex-direction: column;
-`;
-
-const Heading = styled.p`
-  font-size: 1.25rem;
-  font-weight: 700;
-  line-height: 1;
-  text-align: center;
-  margin-bottom: 0.5rem;
-`;
-
-const Subheading = styled.p`
-  font-size: 1rem;
-  line-height: 1;
-  text-align: center;
-  font-weight: 300;
 `;
 
 const Experiences = (props) => {
@@ -97,8 +84,24 @@ const Experiences = (props) => {
             </div>
           ) : (
             <>
-              <Heading>{props.location}</Heading>
-              <Subheading>{props.heading}</Subheading>
+              <H6
+                style={{
+                  color: "white",
+                  textAlign: "center",
+                  lineHeight: 1,
+                  marginBottom: "0.5rem",
+                }}
+              >
+                {props.location}
+              </H6>
+              <H9
+                style={{
+                  textAlign: "center",
+                  lineHeight: 1,
+                }}
+              >
+                {props.heading}
+              </H9>
             </>
           )}
         </BlackContainer>

@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import styled from "styled-components";
 import WeatherWidget from "../../../components/WeatherWidget/WeatherWidget";
 import { BiChevronDown, BiChevronUp } from "react-icons/bi";
+import H9 from "../../../components/heading/H9";
 
 const Container = styled.div`
   margin-top: 30px;
@@ -10,18 +11,6 @@ const Container = styled.div`
     display: grid;
     grid-template-columns: 3fr 1.1fr;
     gap: 2rem;
-  }
-`;
-
-const P = styled.div`
-  font-weight: 300;
-  text-align: left;
-  line-height: 30px;
-  position: relative;
-  transition: height 0.3s ease;
-
-  @media screen and (min-width: 768px) {
-    font-size: 18px;
   }
 `;
 
@@ -54,7 +43,16 @@ const Brief = (props) => {
 
   return (
     <Container>
-      <P more={more} clientHeight={clientHeight}>
+      <H9
+        style={{
+          textAlign: "left",
+          lineHeight: "30px",
+          position: "relative",
+          transition: "height 0.3s ease",
+        }}
+        more={more}
+        clientHeight={clientHeight}
+      >
         <span ref={ref}>
           {more
             ? props.short_description
@@ -90,7 +88,7 @@ const Brief = (props) => {
             )}
           </span>
         )}
-      </P>
+      </H9>
       <WeatherContainer elevation={props.elevation}>
         <WeatherWidget city={props.name} lat={props.lat} lon={props.lon} />
         {props.elevation && (

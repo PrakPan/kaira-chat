@@ -3,6 +3,8 @@ import styled from "styled-components";
 import BackroundImageLoader from "../UpdatedBackgroundImageLoader";
 import media from "../media";
 import Button from "../ui/button/Index";
+import H4 from "../heading/H4";
+import H7 from "../heading/H7";
 
 const Container = styled.div`
   width: 100%;
@@ -62,21 +64,6 @@ ${(props) => props.loading && "height : 20%"};
    transition : height 0.3s ease;
 `;
 
-const Name = styled.p`
-  text-align: center;
-  padding: 0rem 0;
-  color: white;
-  font-weight: 500;
-  margin: 0;
-  line-height: 1;
-  font-weight: 300;
-  font-size: 22px;
-  width: 100%;
-  letter-spacing: 1px;
-  @media screen and (min-width: 768px) {
-  }
-`;
-
 const Experiences = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [loading, setLoading] = useState(false);
@@ -106,18 +93,31 @@ const Experiences = (props) => {
             </div>
           ) : (
             <>
-              <Name className="font-lexend">{props.heading}</Name>
-              <Name
+              <H7
+                style={{
+                  textAlign: "center",
+                  color: "white",
+                  lineHeight: 1,
+                  width: "100%",
+                  letterSpacing: "1px",
+                }}
+                className="font-lexend"
+              >
+                {props.heading}
+              </H7>
+              <H4
                 className="font-lexend"
                 style={{
-                  fontSize: "28px",
-                  fontWeight: "700",
+                  color: "white",
                   letterSpacing: "0",
                   marginTop: "0.5rem",
+                  textAlign: "center",
+                  lineHeight: 1,
+                  width: "100%",
                 }}
               >
                 {props.location}
-              </Name>
+              </H4>
             </>
           )}
         </TextContainer>

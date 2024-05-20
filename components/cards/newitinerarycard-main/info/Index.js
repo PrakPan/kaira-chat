@@ -1,12 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-
-const Heading = styled.p`
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1;
-  margin: 0;
-`;
+import H8 from "../../../heading/H8";
 
 const Locations = styled.p`
   line-height: 1.2;
@@ -42,7 +36,14 @@ const Info = (props) => {
 
   return (
     <div className="font-lexend">
-      <Heading className="font-lexend">{props.name}</Heading>
+      <H8
+        style={{
+          lineHeight: 1,
+        }}
+        className="font-lexend"
+      >
+        {props.name}
+      </H8>
       <Locations>{LOCATIONS_TO_SHOW}</Locations>
       {props.PW ? (
         <TourType>

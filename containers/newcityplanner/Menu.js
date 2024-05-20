@@ -10,6 +10,8 @@ import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs";
 import NearbyLocations from "./MenuItems/NearbyLocations";
 import AsSeenIn from "../testimonial/AsSeenIn";
 import PathNavigation from "../travelplanner/PathNavigation";
+import H3 from "../../components/heading/H3";
+import media from "../../components/media";
 
 const MenuContainer = styled.div`
   width: 95%;
@@ -81,22 +83,30 @@ const P = styled.p`link
 `;
 
 const Menu = (props) => {
+  let isPageWide = media("(min-width: 768px)");
   return (
     <MenuContainer thingsToDoPage={props.thingsToDoPage}>
       <PathNavigation path={props.data?.path} />
 
       {!!props.data.itinerary_data.length && (
         <MenuItem id="Itinerary">
-          <Heading>Trips by our users to {props.data.name}</Heading>
+          <H3
+            style={{
+              lineHeight: "48px",
+              marginBlock: isPageWide ? "3.5rem" : "1.5rem",
+            }}
+          >
+            Trips by our users to {props.data.name}
+          </H3>
           <TopRecommendations itinerary_data={props.data.itinerary_data} />
         </MenuItem>
       )}
 
       {props.data.short_description && !props.thingsToDoPage && (
         <MenuItem id="Brief">
-          <Heading style={{ margin: "30px 0 30px 0" }}>
+          <H3 style={{ margin: "30px 0 30px 0" }}>
             {"A little about " + props.data.name}
-          </Heading>
+          </H3>
           <Brief
             short_description={props.data.short_description}
             lat={props.data.lat}
@@ -113,7 +123,14 @@ const Menu = (props) => {
 
       {props.data.activities.length ? (
         <MenuItem id="Activities">
-          <Heading>Things to do in {props.data.name}</Heading>
+          <H3
+            style={{
+              lineHeight: "48px",
+              marginBlock: isPageWide ? "3.5rem" : "1.5rem",
+            }}
+          >
+            Things to do in {props.data.name}
+          </H3>
           <Activity
             data={props.data}
             activities={props.data.activities}
@@ -124,7 +141,14 @@ const Menu = (props) => {
 
       {!!props.data.pois.length && (
         <MenuItem id="Places">
-          <Heading>Places to visit in {props.data.name}</Heading>
+          <H3
+            style={{
+              lineHeight: "48px",
+              marginBlock: isPageWide ? "3.5rem" : "1.5rem",
+            }}
+          >
+            Places to visit in {props.data.name}
+          </H3>
           <Poi
             elevation={props.elevation}
             data={props.data}
@@ -141,36 +165,72 @@ const Menu = (props) => {
 
       {!!props.data.foods.length && (
         <MenuItem id="Food" single>
-          <Heading>Food to eat</Heading>
+          <H3
+            style={{
+              lineHeight: "48px",
+              marginBlock: isPageWide ? "3.5rem" : "1.5rem",
+            }}
+          >
+            Food to eat
+          </H3>
           <FoodToEat foods={props.data.foods} />
         </MenuItem>
       )}
 
       {props.data.conveyance_available && (
         <MenuItem id="Reach" single>
-          <Heading style={{ marginBottom: "1rem" }}>How to reach</Heading>
+          <H3
+            style={{
+              lineHeight: "48px",
+              marginBlock: isPageWide ? "3.5rem" : "1.5rem",
+              marginBottom: "1rem",
+            }}
+          >
+            How to reach
+          </H3>
           <P>{props.data.conveyance_available}</P>
         </MenuItem>
       )}
 
       {props.data.survival_tips_and_tricks && (
         <MenuItem id="Survival" single>
-          <Heading style={{ marginBottom: "1rem" }}>
+          <H3
+            style={{
+              lineHeight: "48px",
+              marginBlock: isPageWide ? "3.5rem" : "1.5rem",
+              marginBottom: "1rem",
+            }}
+          >
             Survival Tips & Tricks
-          </Heading>
+          </H3>
           <P>{props.data.survival_tips_and_tricks}</P>
         </MenuItem>
       )}
 
       {props.data.folklore_or_story && (
         <MenuItem id="Folklore" single>
-          <Heading style={{ marginBottom: "1rem" }}>Folklore or Story</Heading>
+          <H3
+            style={{
+              lineHeight: "48px",
+              marginBlock: isPageWide ? "3.5rem" : "1.5rem",
+              marginBottom: "1rem",
+            }}
+          >
+            Folklore or Story
+          </H3>
           <P>{props.data.folklore_or_story}</P>
         </MenuItem>
       )}
 
       <MenuItem id="Why">
-        <Heading>Why plan with us?</Heading>
+        <H3
+          style={{
+            lineHeight: "48px",
+            marginBlock: isPageWide ? "3.5rem" : "1.5rem",
+          }}
+        >
+          Why plan with us?
+        </H3>
         <WhyPlanWithUs
           page_id={props.data.id}
           destination={props.destination}
@@ -178,14 +238,28 @@ const Menu = (props) => {
       </MenuItem>
 
       <MenuItem id="Customers">
-        <Heading style={{ marginBottom: "1.5rem" }}>
+        <H3
+          style={{
+            lineHeight: "48px",
+            marginBlock: isPageWide ? "3.5rem" : "1.5rem",
+            marginBottom: "1.5rem",
+          }}
+        >
           Happy Community of The Tarzan Way
-        </Heading>
+        </H3>
         <Reviews />
       </MenuItem>
 
       <MenuItem>
-        <Heading style={{ marginBottom: "1.5rem" }}>What they say?</Heading>
+        <H3
+          style={{
+            lineHeight: "48px",
+            marginBlock: isPageWide ? "3.5rem" : "1.5rem",
+            marginBottom: "1.5rem",
+          }}
+        >
+          What they say?
+        </H3>
         <AsSeenIn />
         <ChatWithUs />
       </MenuItem>

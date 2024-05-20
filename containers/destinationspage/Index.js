@@ -8,6 +8,7 @@ import CaseStudies from "../../containers/travelplanner/CaseStudies/Index";
 import { useRouter } from "next/router";
 import media from "../../components/media";
 import { logEvent } from "../../services/ga/Index";
+import H3 from "../../components/heading/H3";
 
 const Container = styled.div`
   width: 100%;
@@ -66,9 +67,14 @@ export default function DestinationsPageContainer({
         {allDestinations && allDestinations.length
           ? allDestinations.map((dest, index) => (
               <div key={index} className="">
-                <Heading>
+                <H3
+                  style={{
+                    textAlign: isPageWide ? "left" : "center",
+                    margin: isPageWide ? "3.5rem 0rem" : "1.5rem 0.5rem",
+                  }}
+                >
                   Top countries to visit in {dest.continent.title}
-                </Heading>
+                </H3>
 
                 <SwiperLocations
                   locations={dest.locations}
@@ -102,19 +108,16 @@ export default function DestinationsPageContainer({
 
         {ThemeData && ThemeData.length ? (
           <>
-            <Heading
-              noline
-              textAlign="left"
-              fontSize={isPageWide ? "32px" : "24px"}
-              align="center"
-              aligndesktop="left"
-              margin={
-                !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
-              }
-              bold
+            <H3
+              style={{
+                textAlign: isPageWide ? "left" : "center",
+                margin: isPageWide
+                  ? "3rem 0 2rem 0"
+                  : "2.5rem 0.5rem 1.5rem 0.5rem",
+              }}
             >
               Plan trip as per mood
-            </Heading>
+            </H3>
             <PlanAsPerTheme
               ThemeData={ThemeData}
               Count={Count}
@@ -123,30 +126,24 @@ export default function DestinationsPageContainer({
           </>
         ) : null}
 
-        <Heading
-          noline
-          textAlign="left"
-          fontSize={isPageWide ? "32px" : "24px"}
-          align="center"
-          aligndesktop="left"
-          margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}
-          bold
+        <H3
+          style={{
+            textAlign: isPageWide ? "left" : "center",
+            margin: isPageWide ? "3.5rem 0rem" : "1.5rem 0.5rem",
+          }}
         >
           Why plan with us?
-        </Heading>
+        </H3>
         <PlanWithUs />
 
-        <Heading
-          noline
-          textAlign="left"
-          fontSize={isPageWide ? "32px" : "24px"}
-          align="center"
-          aligndesktop="left"
-          margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}
-          bold
+        <H3
+          style={{
+            textAlign: isPageWide ? "left" : "center",
+            margin: isPageWide ? "3.5rem 0rem" : "1.5rem 0.5rem",
+          }}
         >
           Happy Community of The Tarzan Way
-        </Heading>
+        </H3>
         <CaseStudies></CaseStudies>
       </Container>
     </>

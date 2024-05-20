@@ -9,6 +9,8 @@ import { useRouter } from "next/router";
 import TailoredFormMobileModal from "../../modals/TailoredFomrMobile";
 import { useState } from "react";
 import { logEvent } from "../../../services/ga/Index";
+import H1 from "../../heading/H1";
+import H7 from "../../heading/H7";
 
 const Container = styled.div`
   color: white;
@@ -22,19 +24,6 @@ const Container = styled.div`
     margin: auto;
     grid-template-columns: auto 400px;
     margin-top: 2vh;
-  }
-`;
-
-const Heading = styled.h1`
-  color: white;
-
-  width: 99%;
-  font-weight: 800;
-  margin-bottom: 1rem;
-  font-size: 28px;
-  @media screen and (min-width: 768px) {
-    font-size: 48px;
-    font-weight: 700;
   }
 `;
 
@@ -56,16 +45,6 @@ const IconText = styled.div`
   margin-top: 7px;
   @media screen and (min-width: 768px) {
     font-size: 16px;
-  }
-`;
-
-const SubHeading = styled.div`
-  font-size: 16px;
-  line-height: 20px;
-  font-weight: 200;
-  @media screen and (min-width: 768px) {
-    font-size: 25px;
-    line-height: 35px;
   }
 `;
 
@@ -108,21 +87,38 @@ const FullImgContent = (props) => {
   return (
     <Container className="font-lexend center-di text-cente">
       <PaddingContianer>
-        <Heading>{props.title}</Heading>
+        <H1 style={{ color: "white" }}>{props.title}</H1>
         {props.subheading ? (
-          <SubHeading>{props.subheading}</SubHeading>
+          <H7
+            style={{
+              lineHeight: isPageWide ? "35px" : "20px",
+              fontSize: isPageWide ? "25px" : "20px",
+            }}
+          >
+            {props.subheading}
+          </H7>
         ) : isPageWide ? (
-          <SubHeading>
+          <H7
+            style={{
+              lineHeight: isPageWide ? "35px" : "20px",
+              fontSize: isPageWide ? "25px" : "20px",
+            }}
+          >
             Bid farewell to generic holiday packages.
             <br />
             Get Your AI-Personalised Itineraries
-          </SubHeading>
+          </H7>
         ) : (
-          <SubHeading>
+          <H7
+            style={{
+              lineHeight: isPageWide ? "35px" : "20px",
+              fontSize: isPageWide ? "25px" : "20px",
+            }}
+          >
             Say goodbye to packages.
             <br />
             Get Your AI-Personalised Itineraries
-          </SubHeading>
+          </H7>
         )}
 
         {isPageWide ? (

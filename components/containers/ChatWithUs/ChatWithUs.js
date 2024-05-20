@@ -6,6 +6,8 @@ import classes from "./ChatWithUs.module.css";
 import urls from "../../../services/urls";
 import ImageLoader from "../../ImageLoader";
 import HowItWorks from "../../containers/HowItWorksSlideshow";
+import H3 from "../../heading/H3";
+import H9 from "../../heading/H9";
 
 const Text = styled.p`
   width: 80%;
@@ -102,15 +104,24 @@ const ChatWithUs = (props) => {
         )}
 
         <div className="center-div">
-          <Heading fontSize="32px" margin="1rem" align="center" bold noline>
+          <H3
+            style={{
+              textAlign: "center",
+              margin: "1rem",
+            }}
+          >
             {props.heading ? props.heading : "Come On! Talk to Us."}
-          </Heading>
+          </H3>
 
-          <Text className="font-nunito">
+          <H9
+            style={{
+              textAlign: "center",
+            }}
+          >
             {props.text
               ? props.text
               : "We’ve a large community of bloggers, influencers, travelers and of course travel experts to help you out."}
-          </Text>
+          </H9>
 
           <Button
             boxShadow
@@ -140,15 +151,24 @@ const ChatWithUs = (props) => {
         ></ImageLoader>
 
         <div className="center-div">
-          <Heading fontSize="32px" margin="1rem" align="center" bold noline>
+          <H3
+            style={{
+              textAlign: "center",
+              margin: "1rem",
+            }}
+          >
             {props.heading ? props.heading : "Come On! Talk to Us."}
-          </Heading>
+          </H3>
 
-          <Text className="font-nunito">
+          <H9
+            style={{
+              textAlign: "center",
+            }}
+          >
             {props.text
               ? props.text
               : "We’ve a large community of bloggers, influencers, travelers and of course travel experts to help you out."}
-          </Text>
+          </H9>
 
           <Button
             boxShadow

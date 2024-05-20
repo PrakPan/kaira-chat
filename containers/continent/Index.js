@@ -21,6 +21,7 @@ import Experience from "../../components/containers/Experiences";
 import Locations from "../../components/containers/newplannerlocations/Index";
 import dynamic from "next/dynamic";
 import { logEvent } from "../../services/ga/Index.js";
+import H3 from "../../components/heading/H3.js";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -148,9 +149,14 @@ const Index = (props) => {
 
           {props.locations && props.locations.length ? (
             <>
-              <Heading>
+              <H3
+                style={{
+                  textAlign: isPageWide ? "left" : "center",
+                  margin: isPageWide ? "3.5rem 0rem" : "1.5rem 0.5rem",
+                }}
+              >
                 Top countries to visit in {props.data.destination}
-              </Heading>
+              </H3>
               <SwiperLocations
                 locations={props.locations}
                 page_id={props.data.id}
@@ -210,18 +216,16 @@ const Index = (props) => {
 
           {userItineraries.length ? (
             <>
-              <Heading
-                align="center"
-                aligndesktop="left"
-                margin={
-                  !isPageWide
+              <H3
+                style={{
+                  textAlign: isPageWide ? "left" : "center",
+                  margin: !isPageWide
                     ? "2.5rem 0.5rem 1.5rem 0.5rem"
-                    : "2.5rem 0 2.5rem 0"
-                }
-                bold
+                    : "2.5rem 0 2.5rem 0",
+                }}
               >
                 Trips by our users
-              </Heading>
+              </H3>
               <Experience
                 experiences={userItineraries}
                 page={"Continent Page"}
@@ -231,20 +235,18 @@ const Index = (props) => {
 
           {hotLocations.length ? (
             <>
-              <Heading
-                align="center"
-                aligndesktop="left"
-                margin={
-                  !isPageWide
+              <H3
+                style={{
+                  textAlign: isPageWide ? "left" : "center",
+                  margin: !isPageWide
                     ? "2.5rem 0.5rem 1.5rem 0.5rem"
-                    : "2.5rem 0 4.5rem 0"
-                }
-                bold
+                    : "2.5rem 0 4.5rem 0",
+                }}
               >
                 {props.data.destination
                   ? "Popular locations to visit in " + props.data.destination
                   : "Popular Locations"}
-              </Heading>
+              </H3>
               <Locations
                 locations={hotLocations}
                 page={"Continent Page"}
@@ -253,9 +255,14 @@ const Index = (props) => {
             </>
           ) : null}
 
-          <Heading align="left" style={{ margin: "3.5rem 0 3.5rem 0" }}>
+          <H3
+            style={{
+              margin: "3.5rem 0 3.5rem 0",
+              textAlign: isPageWide ? "left" : "center",
+            }}
+          >
             How it works?
-          </Heading>
+          </H3>
           <div>
             <BannerTwo
               page_id={props.data.id}
@@ -265,7 +272,14 @@ const Index = (props) => {
 
           {props.continetCarousel.length ? (
             <>
-              <Heading>Plan your trip anywhere in the world</Heading>
+              <H3
+                style={{
+                  textAlign: isPageWide ? "left" : "center",
+                  margin: isPageWide ? "3.5rem 0rem" : "1.5rem 0.5rem",
+                }}
+              >
+                Plan your trip anywhere in the world
+              </H3>
               <Continentcarousel
                 data={props.continetCarousel}
                 page={"Continent Page"}
@@ -287,19 +301,34 @@ const Index = (props) => {
             <></>
           )}
 
-          <Heading style={{ margin: "3.5rem 0 3.5rem 0" }}>
+          <H3
+            style={{
+              textAlign: isPageWide ? "left" : "center",
+              margin: isPageWide ? "3.5rem 0rem" : "1.5rem 0.5rem",
+            }}
+          >
             Why plan with us?
-          </Heading>
+          </H3>
           <WhyPlanWithUs page_id={props.data.id} />
 
-          <Heading style={{ margin: "4rem 0 2.5rem 0" }}>
+          <H3
+            style={{
+              margin: "4rem 0 2.5rem 0",
+              textAlign: isPageWide ? "left" : "center",
+            }}
+          >
             What our customers say?
-          </Heading>
+          </H3>
           <Reviews></Reviews>
 
-          <Heading style={{ margin: "4rem 0 2.5rem 0" }}>
+          <H3
+            style={{
+              margin: "4rem 0 2.5rem 0",
+              textAlign: isPageWide ? "left" : "center",
+            }}
+          >
             What they say?
-          </Heading>
+          </H3>
           <AsSeenIn />
 
           <ChatWithUs planner page_id={props.data.id}></ChatWithUs>

@@ -641,6 +641,7 @@ const ImageContainer = (props) => {
         onError={props.onfail ? props.onfail : handleError}
         alt=""
         style={{
+          width: props.width ? props.width : "100%",
           height: props.height ? props.height : "100%",
           display: !fullLoaded ? "initial" : "none",
           borderRadius: props.borderRadius ? props.borderRadius : "5px",

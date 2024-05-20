@@ -5,6 +5,8 @@ import ImageLoader from "../ImageLoader";
 import { useState } from "react";
 import Link from "next/link";
 import { logEvent } from "../../services/ga/Index";
+import H2 from "../heading/H2";
+import H7 from "../heading/H7";
 
 const ImageFade = styled.div`
   width: 100%;
@@ -39,26 +41,6 @@ const BlackContainer = styled.div`
     ${(props) => (props.continent ? "top : 50%" : "top : unset ; bottom: 0%")};
   }
   transform: translate(-50%, -50%);
-`;
-
-const Heading = styled.p`
-  font-size: ${(props) => (props.continent ? "3rem" : "1.25rem")};
-  font-weight: 700;
-  line-height: 1;
-  text-align: center;
-  margin-bottom: 0rem;
-
-  @media screen and (min-width: 768px) {
-    margin-bottom: 0.5rem;
-  }
-`;
-
-const Subheading = styled.p`
-  font-size: ${(props) => (props.continent ? "1.5rem" : "1rem")};
-  line-height: 1;
-  text-align: center;
-  margin: 0;
-  font-weight: 200;
 `;
 
 const Experiences = (props) => {
@@ -110,11 +92,26 @@ const Experiences = (props) => {
         <BlackContainer continent={props.continent} className="font-lexend">
           {ImageLoaded && (
             <>
-              <Heading continent={props.continent}>{props.location}</Heading>
+              <H2
+                style={{
+                  fontSize: props.continent ? "3rem" : "1.25rem",
+                  lineHeight: 1,
+                  textAlign: "center",
+                  marginBottom: isPageWide ? "0.5rem" : "0rem",
+                }}
+              >
+                {props.location}
+              </H2>
               {isPageWide && (
-                <Subheading continent={props.continent}>
+                <H7
+                  style={{
+                    fontSize: props.continent ? "1.5rem" : "1rem",
+                    lineHeight: 1,
+                    textAlign: "center",
+                  }}
+                >
                   {props.heading}
-                </Subheading>
+                </H7>
               )}
             </>
           )}

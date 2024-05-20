@@ -16,6 +16,8 @@ import { getHumanDate } from "../services/getHumanDate";
 import useMediaQuery from "./media";
 import { MAPBOX_ACCESS_TOKEN } from "../services/constants";
 
+
+
 const limeOptions = {
   color: "#004d6994",
   dashArray: "10, 5", // Defines the pattern of the dashed line (10 units of solid line, 5 units of blank space)

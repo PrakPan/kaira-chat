@@ -9,6 +9,7 @@ import styled from "styled-components";
 import openTailoredModal from "../../../services/openTailoredModal";
 import { useRouter } from "next/router";
 import SwiperCarousel from "../../../components/SwiperCarousel";
+import H3 from "../../../components/heading/H3";
 
 const MobileCardsContainer = styled.div`
   display: grid;
@@ -84,7 +85,13 @@ const NearbyLocations = (props) => {
 
   return (
     <>
-      <Heading>Nearby Locations to {props.data.name}</Heading>
+      <H3
+        style={{
+          marginBlock: isPageWide ? "3.5rem" : "1.5rem",
+        }}
+      >
+        Nearby Locations to {props.data.name}
+      </H3>
 
       {isPageWide ? (
         <>

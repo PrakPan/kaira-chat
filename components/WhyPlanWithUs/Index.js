@@ -1,23 +1,7 @@
 import styled from "styled-components";
-
-const Heading = styled.p`
-  font-weight: 600;
-  font-size: 14px;
-  margin-bottom: 5px;
-  margin-top: -5px;
-  @media screen and (min-width: 768px) {
-    font-size: 18px;
-  }
-`;
-
-const Text = styled.p`
-  font-weight: 300;
-  font-size: 12px;
-  padding-right: 5px;
-  @media screen and (min-width: 768px) {
-    font-size: 15px;
-  }
-`;
+import H8 from "../heading/H8";
+import H9 from "../heading/H9";
+import media from "../../components/media";
 
 const Flex = styled.div`
   display: grid;
@@ -69,6 +53,8 @@ const TextArr = [
 ];
 
 const WhyPlanWithUs = (props) => {
+  let isPageWide = media("(min-width: 768px)");
+
   const newArr = [];
 
   for (let i = 0; i < ImagesArr.length; i++) {
@@ -76,8 +62,25 @@ const WhyPlanWithUs = (props) => {
       <Flex>
         <Icon>{ImagesArr[i]}</Icon>
         <div>
-          <Heading className="font-lexend">{HeadingArr[i]}</Heading>
-          <Text className="font-lexend">{TextArr[i]}</Text>
+          <H8
+            style={{
+              fontSize: isPageWide ? "18px" : "14px",
+              marginTop: "-5px",
+              marginBottom: "5px",
+            }}
+            className="font-lexend"
+          >
+            {HeadingArr[i]}
+          </H8>
+          <H9
+            style={{
+              fontSize: isPageWide ? "15px" : "12px",
+              paddingRight: "5px",
+            }}
+            className="font-lexend"
+          >
+            {TextArr[i]}
+          </H9>
         </div>
       </Flex>
     );

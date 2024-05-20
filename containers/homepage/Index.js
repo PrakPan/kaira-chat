@@ -5,7 +5,6 @@ import styled from "styled-components";
 import DesktopBanner from "../../components/containers/Banner";
 import Experiences from "../../components/containers/Experiences";
 import axiomyplansinstance from "../../services/sales/MyPlans";
-import Heading from "../../components/newheading/heading/Index";
 import HowItWorks from "../../components/containers/HowItWorksSlideshow";
 import SwiperLocations from "../../components/containers/SwiperLocations/Index";
 import Banner from "./banner/Mobile";
@@ -23,6 +22,7 @@ import axios from "axios";
 import { changeUserLocation } from "../../store/actions/userLocation";
 import { connect } from "react-redux";
 import { logEvent } from "../../services/ga/Index";
+import H3 from "../../components/heading/H3";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -218,17 +218,15 @@ const Homepage = (props) => {
 
       <SetWidthContainer>
         <HowItWorksContainer>
-          <Heading
-            textAlign="left"
-            bold
-            noline
-            fontSize={isPageWide ? "32px" : "24px"}
-            align="center"
-            aligndesktop="left"
-            margin={!isPageWide ? "2.5rem 0.5rem 0rem 0.5rem" : "3rem 0"}
+          <H3
+            style={{
+              color: "black",
+              padding: "5px",
+              margin: !isPageWide ? "2.5rem 0.5rem 0rem 0.5rem" : "3rem 0",
+            }}
           >
             How it works?
-          </Heading>
+          </H3>
           <HowItWorks
             images={howitworksimgs}
             content={HowitWorksContentsArr}
@@ -239,19 +237,18 @@ const Homepage = (props) => {
 
         {props.token && myPlansArr.length ? (
           <>
-            <Heading
-              noline
-              fontSize={isPageWide ? "32px" : "24px"}
-              align="left"
-              aligndesktop="left"
-              margin={
-                !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
-              }
-              bold
-              textAlign="left"
+            <H3
+              style={{
+                color: "black",
+                margin: !isPageWide
+                  ? "2.5rem 0.5rem 1.5rem 0.5rem"
+                  : "3rem 0 2rem 0",
+
+                padding: "5px",
+              }}
             >
               {"My Trips "} {plansCount ? `(${plansCount})` : null}
-            </Heading>
+            </H3>
             <Experiences
               margin="2.5rem 0"
               experiences={myPlansArr}
@@ -276,19 +273,17 @@ const Homepage = (props) => {
       <SetWidthContainer style={{}}>
         {props.locations && props.locations.length ? (
           <>
-            <Heading
-              noline
-              textAlign="left"
-              fontSize={isPageWide ? "32px" : "24px"}
-              align="center"
-              aligndesktop="left"
-              margin={
-                !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
-              }
-              bold
+            <H3
+              style={{
+                color: "black",
+                margin: !isPageWide
+                  ? "2.5rem 0.5rem 1.5rem 0.5rem"
+                  : "3rem 0 2rem 0",
+                padding: "5px",
+              }}
             >
               Plan as per the best destinations in India
-            </Heading>
+            </H3>
             <Locations
               locations={props.locations}
               page={"Home Page"}
@@ -299,18 +294,17 @@ const Homepage = (props) => {
 
         {props.europeLocations && props.europeLocations.length ? (
           <>
-            <Heading
-              noline
-              fontSize={isPageWide ? "32px" : "24px"}
-              align="center"
-              aligndesktop="left"
-              margin={
-                !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
-              }
-              bold
+            <H3
+              style={{
+                color: "black",
+                margin: !isPageWide
+                  ? "2.5rem 0.5rem 1.5rem 0.5rem"
+                  : "3rem 0 2rem 0",
+                padding: "5px",
+              }}
             >
               Top countries to visit in Europe
-            </Heading>
+            </H3>
 
             <SwiperLocations
               locations={props.europeLocations}
@@ -337,18 +331,17 @@ const Homepage = (props) => {
 
         {props.asiaLocations && props.asiaLocations.length ? (
           <>
-            <Heading
-              noline
-              fontSize={isPageWide ? "32px" : "24px"}
-              align="center"
-              aligndesktop="left"
-              margin={
-                !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
-              }
-              bold
+            <H3
+              style={{
+                color: "black",
+                margin: !isPageWide
+                  ? "2.5rem 0.5rem 1.5rem 0.5rem"
+                  : "3rem 0 2rem 0",
+                padding: "5px",
+              }}
             >
               Top countries to visit in Asia
-            </Heading>
+            </H3>
 
             <SwiperLocations
               locations={props.asiaLocations}
@@ -375,19 +368,17 @@ const Homepage = (props) => {
 
         {props.continetCarousel.length ? (
           <>
-            <Heading
-              noline
-              textAlign="left"
-              fontSize={isPageWide ? "32px" : "24px"}
-              align="center"
-              aligndesktop="left"
-              margin={
-                !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
-              }
-              bold
+            <H3
+              style={{
+                color: "black",
+                margin: !isPageWide
+                  ? "2.5rem 0.5rem 1.5rem 0.5rem"
+                  : "3rem 0 2rem 0",
+                padding: "5px",
+              }}
             >
               Plan your trip anywhere in the world
-            </Heading>
+            </H3>
 
             <Continentcarousel
               data={props.continetCarousel}
@@ -398,19 +389,17 @@ const Homepage = (props) => {
 
         {props.ThemeData && props.ThemeData.length ? (
           <>
-            <Heading
-              noline
-              textAlign="left"
-              fontSize={isPageWide ? "32px" : "24px"}
-              align="center"
-              aligndesktop="left"
-              margin={
-                !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
-              }
-              bold
+            <H3
+              style={{
+                color: "black",
+                margin: !isPageWide
+                  ? "2.5rem 0.5rem 1.5rem 0.5rem"
+                  : "3rem 0 2rem 0",
+                padding: "5px",
+              }}
             >
               Plan trip as per mood
-            </Heading>
+            </H3>
 
             <PlanAsPerTheme
               ThemeData={props.ThemeData}
@@ -420,30 +409,30 @@ const Homepage = (props) => {
           </>
         ) : null}
 
-        <Heading
-          noline
-          textAlign="left"
-          fontSize={isPageWide ? "32px" : "24px"}
-          align="center"
-          aligndesktop="left"
-          margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}
-          bold
+        <H3
+          style={{
+            color: "black",
+            margin: !isPageWide
+              ? "2.5rem 0.5rem 1.5rem 0.5rem"
+              : "3rem 0 2rem 0",
+            padding: "5px",
+          }}
         >
           Why plan with us?
-        </Heading>
+        </H3>
         <PlanWithUs />
 
-        <Heading
-          noline
-          textAlign="left"
-          fontSize={isPageWide ? "32px" : "24px"}
-          align="center"
-          aligndesktop="left"
-          margin={!isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"}
-          bold
+        <H3
+          style={{
+            color: "black",
+            margin: !isPageWide
+              ? "2.5rem 0.5rem 1.5rem 0.5rem"
+              : "3rem 0 2rem 0",
+            padding: "5px",
+          }}
         >
           Happy Community of The Tarzan Way
-        </Heading>
+        </H3>
         <CaseStudies></CaseStudies>
       </SetWidthContainer>
 

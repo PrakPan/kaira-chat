@@ -24,6 +24,7 @@ import dynamic from "next/dynamic";
 import Poi from "../../containers/newcityplanner/pois/Index";
 import Activity from "../../containers/newcityplanner/activities/Index";
 import { logEvent } from "../../services/ga/Index.js";
+import H3 from "../../components/heading/H3";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -39,10 +40,8 @@ const SetWidthContainer = styled.div`
 const MapGridContainer = styled.div`
   display: grid;
   grid-gap: 30px;
-
   @media screen and (min-width: 768px) {
     width: 100%;
-
     grid-template-columns: auto 500px;
     grid-gap: 40px;
     margin: 0 auto 0 auto;
@@ -58,18 +57,6 @@ const MapContainer = styled.div`
 const MapInfo = styled.div`
   b {
     font-weight: 600;
-  }
-`;
-
-const Heading = styled.h2`
-  font-size: 32px;
-  font-weight: 700;
-  margin: 1.5rem 0.5rem;
-  text-align: center;
-
-  @media screen and (min-width: 768px) {
-    text-align: left;
-    margin: 3.5rem 0rem;
   }
 `;
 
@@ -158,20 +145,18 @@ const Index = (props) => {
 
           {hotLocations.length ? (
             <>
-              <Heading
-                align="center"
-                aligndesktop="left"
-                margin={
-                  !isPageWide
-                    ? "2.5rem 0.5rem 1.5rem 0.5rem"
-                    : "2.5rem 0 4.5rem 0"
-                }
-                bold
+              <H3
+                style={{
+                  textAlign: isPageWide ? "left" : "center",
+                  margin: isPageWide
+                    ? "2.5rem 0 4.5rem 0"
+                    : "2.5rem 0.5rem 1.5rem 0.5rem",
+                }}
               >
                 {props.data.name
                   ? "Popular locations to visit in " + props.data.name
                   : "Popular Locations"}
-              </Heading>
+              </H3>
               <Locations
                 locations={hotLocations}
                 page={"Country Page"}
@@ -211,25 +196,30 @@ const Index = (props) => {
 
           {userItineraries?.length ? (
             <>
-              <Heading
-                align="center"
-                aligndesktop="left"
-                margin={
-                  !isPageWide
-                    ? "2.5rem 0.5rem 1.5rem 0.5rem"
-                    : "2.5rem 0 2.5rem 0"
-                }
-                bold
+              <H3
+                style={{
+                  textAlign: isPageWide ? "left" : "center",
+                  margin: isPageWide
+                    ? "2.5rem 0 2.5rem 0"
+                    : "2.5rem 0.5rem 1.5rem 0.5rem",
+                }}
               >
                 Trips by our users
-              </Heading>
+              </H3>
               <Experience experiences={userItineraries} page={"Country Page"} />
             </>
           ) : null}
 
           {props.data.activities.length ? (
             <div id="Activities">
-              <Heading>Things to do in {props.data.name}</Heading>
+              <H3
+                style={{
+                  textAlign: isPageWide ? "left" : "center",
+                  margin: isPageWide ? "3.5rem 0rem" : "1.5rem 0.5rem",
+                }}
+              >
+                Things to do in {props.data.name}
+              </H3>
               <Activity
                 data={props.data}
                 activities={props.data.activities}
@@ -242,7 +232,14 @@ const Index = (props) => {
 
           {props.data.pois.length ? (
             <MenuItem id="Places">
-              <Heading>Places to visit in {props.data.name}</Heading>
+              <H3
+                style={{
+                  textAlign: isPageWide ? "left" : "center",
+                  margin: isPageWide ? "3.5rem 0rem" : "1.5rem 0.5rem",
+                }}
+              >
+                Places to visit in {props.data.name}
+              </H3>
               <Poi
                 data={props.data}
                 pois={props.data.pois}
@@ -255,7 +252,14 @@ const Index = (props) => {
 
           {props.data.states && props.data.states.length ? (
             <>
-              <Heading>Trending destinations across {props.data.name}</Heading>
+              <H3
+                style={{
+                  textAlign: isPageWide ? "left" : "center",
+                  margin: isPageWide ? "3.5rem 0rem" : "1.5rem 0.5rem",
+                }}
+              >
+                Trending destinations across {props.data.name}
+              </H3>
               <OldLocations
                 locations={props.data.states}
                 page_id={props.data.id}
@@ -282,12 +286,14 @@ const Index = (props) => {
             </>
           ) : null}
 
-          <Heading
-            align="left"
-            margin={!isPageWide ? "2.5rem 0.5rem 0rem 0.5rem" : "3rem 0"}
+          <H3
+            style={{
+              textAlign: isPageWide ? "left" : "center",
+              margin: isPageWide ? "3rem 0rem" : "2.5rem 0.5rem 0rem 0.5rem",
+            }}
           >
             How it works?
-          </Heading>
+          </H3>
           <BannerTwo
             page_id={props.data.id}
             destination={props.data.name}
@@ -295,9 +301,14 @@ const Index = (props) => {
 
           {props.locations && props.locations.length ? (
             <>
-              <Heading>
+              <H3
+                style={{
+                  textAlign: isPageWide ? "left" : "center",
+                  margin: isPageWide ? "3.5rem 0rem" : "1.5rem 0.5rem",
+                }}
+              >
                 Other destinations to explore in {props.data.continent}
-              </Heading>
+              </H3>
               <SwiperLocations
                 locations={props.locations}
                 page_id={props.data.id}
@@ -326,7 +337,14 @@ const Index = (props) => {
 
           {props.continetCarousel.length ? (
             <>
-              <Heading>Plan your trip to anywhere in the world</Heading>
+              <H3
+                style={{
+                  textAlign: isPageWide ? "left" : "center",
+                  margin: isPageWide ? "3.5rem 0rem" : "1.5rem 0.5rem",
+                }}
+              >
+                Plan your trip to anywhere in the world
+              </H3>
               <Continentcarousel
                 data={props.continetCarousel}
                 page={"Country Page"}
@@ -350,22 +368,37 @@ const Index = (props) => {
             <></>
           )}
 
-          <Heading style={{ margin: "3.5rem 0 3.5rem 0" }}>
+          <H3
+            style={{
+              textAlign: isPageWide ? "left" : "center",
+              margin: "3.5rem 0 3.5rem 0",
+            }}
+          >
             Why plan with us?
-          </Heading>
+          </H3>
           <WhyPlanWithUs
             page_id={props.data.id}
             destination={props.data.name}
           />
 
-          <Heading style={{ margin: "4rem 0 2.5rem 0" }}>
+          <H3
+            style={{
+              textAlign: isPageWide ? "left" : "center",
+              margin: "4rem 0 2.5rem 0",
+            }}
+          >
             Happy Community of The Tarzan Way
-          </Heading>
+          </H3>
           <Reviews></Reviews>
 
-          <Heading style={{ margin: "4rem 0 2.5rem 0" }}>
+          <H3
+            style={{
+              textAlign: isPageWide ? "left" : "center",
+              margin: "4rem 0 2.5rem 0",
+            }}
+          >
             What they say?
-          </Heading>
+          </H3>
           <AsSeenIn />
 
           <ChatWithUs planner page_id={props.data.id}></ChatWithUs>
