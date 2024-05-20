@@ -110,7 +110,9 @@ const SimpleTabsV2 = (props) => {
       RoutesData,
       TransfersData
     );
-  }, []);
+  }, [props.breif, props.routes]);
+
+  console.log("city data >>>>>", CityData);
 
   const _GetInTouch = () => {
     setLoading(true);
@@ -1081,6 +1083,9 @@ const SimpleTabsV2 = (props) => {
 const mapStateToPros = (state) => {
   return {
     notificationText: state.Notification.text,
+    itinerary: state.Itinerary,
+    plan: state.Plan,
+    routes: state.ItineraryRoutes,
   };
 };
 

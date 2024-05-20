@@ -681,7 +681,6 @@ const Itinerary = (props) => {
         <div id="itinerary-anchor">
           <Menu
             hasUserPaid={hasUserPaid}
-            plan={props.plan}
             isDatePresent={isDatePresent}
             _updateTaxiBookingHandler={_updateTaxiBookingHandler}
             showTaxiModal={showTaxiModal}
@@ -731,8 +730,6 @@ const Itinerary = (props) => {
             itineraryDate={itineraryDate}
             showbooking={showbooking}
             payment={payment}
-            routes={props.routes}
-            itinerary={props.itinerary}
             breif={breif}
             booking={booking}
             token={props.token}

@@ -169,6 +169,26 @@ export default class MyDocument extends Document {
             )}
           {/* End Google Tag Manager */}
 
+          {/* <link rel="stylesheet" href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css" />
+          <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"></script>
+          <df-messenger
+            project-id="the-tarzan-way-1"
+            agent-id="d091101e-2408-4bdc-b967-f93db2333638"
+            language-code="en"
+            max-query-length="-1">
+            <df-messenger-chat-bubble
+            chat-title="Travel Experience Captain">
+            </df-messenger-chat-bubble>
+          </df-messenger>
+          <style>
+            df-messenger {
+              z-index: 999,
+              position: "fixed",
+              bottom: "16px",
+              right: "16px",
+            }
+          </style> */}
+
           <link
             rel="icon"
             href="https://d31aoa0ehgvjdi.cloudfront.net/media/website/logoyellow.png"

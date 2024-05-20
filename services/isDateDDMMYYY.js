@@ -1,4 +1,5 @@
 export const dateIsValid = (dateStr) => {
+  if (!dateStr) return false;
   const regex = /^\d{2}\/\d{2}\/\d{4}$/;
 
   if (dateStr?.match(regex) === null) {
