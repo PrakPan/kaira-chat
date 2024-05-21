@@ -21,13 +21,6 @@ export default class MyDocument extends Document {
   render() {
     return (
       <Html id="html" lang="en">
-        <script
-          chat="true"
-          src="//in.fw-cdn.com/30401267/225580.js"
-          strategy="beforeInteractive"
-          type="text/javascript"
-        ></script>
-
         <Head>
           <script
             async
@@ -169,25 +162,31 @@ export default class MyDocument extends Document {
             )}
           {/* End Google Tag Manager */}
 
-          {/* <link rel="stylesheet" href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css" />
+          {/* Chat Bot */}
+          <link
+            rel="stylesheet"
+            href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css"
+          />
           <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"></script>
           <df-messenger
             project-id="the-tarzan-way-1"
             agent-id="d091101e-2408-4bdc-b967-f93db2333638"
             language-code="en"
-            max-query-length="-1">
-            <df-messenger-chat-bubble
-            chat-title="Travel Experience Captain">
-            </df-messenger-chat-bubble>
+            max-query-length="-1"
+          >
+            <df-messenger-chat-bubble chat-title="Travel Experience Captain"></df-messenger-chat-bubble>
           </df-messenger>
           <style>
+            {`
             df-messenger {
-              z-index: 999,
-              position: "fixed",
-              bottom: "16px",
-              right: "16px",
+              z-index: 999;
+              position: fixed;
+              bottom: 16px;
+              right: 16px;
             }
-          </style> */}
+            `}
+          </style>
+          {/* End Chat Bot */}
 
           <link
             rel="icon"
@@ -212,7 +211,11 @@ export default class MyDocument extends Document {
             rel="stylesheet"
           ></link>
 
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
+          <link
+            rel="preconnect"
+            href="https://fonts.gstatic.com"
+            crossOrigin="true"
+          />
 
           <link
             href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
