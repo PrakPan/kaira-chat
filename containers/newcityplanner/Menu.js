@@ -63,16 +63,6 @@ const MenuItem = styled.div`
   }
 `;
 
-const Heading = styled.p`
-  font-weight: 600;
-  font-size: 32px;
-  line-height: 48px;
-  margin-block: 1.5rem;
-  @media screen and (min-width: 768px) {
-    margin-block: 3.5rem;
-  }
-`;
-
 const P = styled.p`link
   font-weight: 300;
   text-align: left;

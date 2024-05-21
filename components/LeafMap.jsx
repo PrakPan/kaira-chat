@@ -9,7 +9,6 @@ const [map, setMap] = useState(null);
 const MapInside = styled.div`
   flex: 3;
   width: 100%;
-
   zindex: 8;
   @media screen and (max-width: 768px) {
     height: 100% !important;

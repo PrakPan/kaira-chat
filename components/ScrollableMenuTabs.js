@@ -107,21 +107,19 @@ const ScrollableMenuTabs = ({
           <div className="font-bold">{new Date(startDate).getFullYear()}</div>
         ) : null}
         {items.map((item, index) => (
-          <>
-            <CustomMenu
-              {...markerHandlers}
-              key={index}
-              index={index}
-              Isvertical={vertical}
-              Iterable={Iterable}
-              BarName={BarName}
-              Mstyle={Mstyle}
-              item={item}
-              activeItem={activeItem}
-              onSelect={handleSelect}
-              offSet={scrollOffSet}
-            />
-          </>
+          <CustomMenu
+            {...markerHandlers}
+            key={index}
+            index={index}
+            Isvertical={vertical}
+            Iterable={Iterable}
+            BarName={BarName}
+            Mstyle={Mstyle}
+            item={item}
+            activeItem={activeItem}
+            onSelect={handleSelect}
+            offSet={scrollOffSet}
+          />
         ))}
         <NavigationMarker x={markerPos.x} width={markerPos.width} />
       </Navbar>

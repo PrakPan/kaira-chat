@@ -112,8 +112,6 @@ const SimpleTabsV2 = (props) => {
     );
   }, [props.breif, props.routes]);
 
-  console.log("city data >>>>>", CityData);
-
   const _GetInTouch = () => {
     setLoading(true);
 
@@ -1096,6 +1094,7 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export default connect(mapStateToPros, mapDispatchToProps)(SimpleTabsV2);
+
 function newFunction(
   props,
   totalcityslabs,

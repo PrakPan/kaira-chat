@@ -621,7 +621,7 @@ const ImageContainer = (props) => {
 
   return (
     <div
-      blur={fullLoaded}
+      blur={fullLoaded ? "true" : "false"}
       onClick={props.onclick}
       style={{ ...props.containerStyle }}
     >

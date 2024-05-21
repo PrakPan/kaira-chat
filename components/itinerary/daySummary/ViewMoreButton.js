@@ -9,7 +9,7 @@ export default function ViewMoreButton({ text, handler, isMob }) {
         <svg
           stroke="currentColor"
           fill="currentColor"
-          stroke-width="0"
+          strokeWidth="0"
           viewBox="0 0 1024 1024"
           className={`ml-2 transition-all`}
           height="1em"
@@ -22,7 +22,7 @@ export default function ViewMoreButton({ text, handler, isMob }) {
         <svg
           stroke="currentColor"
           fill="currentColor"
-          stroke-width="0"
+          strokeWidth="0"
           viewBox="0 0 1024 1024"
           className={`ml-2 transition-all rotate-180`}
           height="1em"

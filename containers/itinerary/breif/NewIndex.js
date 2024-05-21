@@ -65,10 +65,6 @@ const Details = (props) => {
         props.routesData[i].duration &&
         props.routesData[i].duration !== "0"
       ) {
-        console.log(
-          "here ???????????????????",
-          props.routesData[i].day_slab_location.start_day_slab_index
-        );
         Locationlatlong.push({
           dayId: getdayId(
             props.routesData[i].day_slab_location.start_day_slab_index
@@ -97,10 +93,6 @@ const Details = (props) => {
           postion.duration &&
           postion.duration !== "0"
         ) {
-          console.log(
-            "here <<<<<<<<<<<<<<>>>>>>>>>>>>>",
-            postion.day_slab_location.start_day_slab_index
-          );
           Locationlatlong.push({
             dayId: getdayId(postion.day_slab_location.start_day_slab_index),
             cityData: postion,
@@ -126,8 +118,6 @@ const Details = (props) => {
     }
     return null; // Return null if city_id is not found in the array
   }
-
-  console.log("here >>>>>", Locationlatlong);
 
   const MapWithNoSSR = ({
     currentPopup,

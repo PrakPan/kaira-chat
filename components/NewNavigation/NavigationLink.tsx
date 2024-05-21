@@ -15,35 +15,32 @@ const variants: Variants = {
   },
 };
 
-const Container = styled(motion.div)<{ isSelected?: boolean }>`
+const Container = styled(motion.div)<{ isselected?: boolean }>`
   padding: 10px;
   cursor: pointer;
   width: max-content;
   padding: 10px 24px 10px 24px;
   margin-left: 4px;
-  background-color: ${({ isSelected }) => (isSelected ? "#262626" : "none")};
-  color: ${({ isSelected }) => (isSelected ? "#F7E700" : "#7A7A7A")};
-
-  border-radius: ${({ isSelected }) =>
-    isSelected ? "10% 10% 0 0" : "10% 10% 0 0"};
+  background-color: ${({ isselected }) => (isselected ? "#262626" : "none")};
+  color: ${({ isselected }) => (isselected ? "#F7E700" : "#7A7A7A")};
+  border-radius: ${({ isselected }) =>
+    isselected ? "10% 10% 0 0" : "10% 10% 0 0"};
   transition: border-color 0.3s ease;
   font-weight: 600;
-  /* border-bottom: ${({ isSelected }) =>
-    isSelected ? "4px solid #F7E700" : "4px solid transparent"}; */
   :hover {
-    background-color: ${({ isSelected }) => (isSelected ? "#262626" : "none")};
+    background-color: ${({ isselected }) => (isselected ? "#262626" : "none")};
     color: "#F7E700";
     border-bottom: "2px solid #F7E700";
   }
 `;
 
-const Label = styled.div<{ isSelected?: boolean }>`
+const Label = styled.div<{ isselected?: boolean }>`
   transition: all ease 0.3s;
-  color: ${({ isSelected }) => (isSelected ? "#F7E700" : "#3d3c3b")};
+  color: ${({ isselected }) => (isselected ? "#F7E700" : "#3d3c3b")};
   white-space: nowrap;
 
   :hover {
-    color: ${({ isSelected }) => (isSelected ? "#F7E700" : "#010700")};
+    color: ${({ isselected }) => (isselected ? "#F7E700" : "#010700")};
   }
 `;
 
@@ -89,8 +86,8 @@ export const NavigationLink = ({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <Container isSelected={isSelected} ref={ref}>
-        <Label isSelected={isSelected}>{children}</Label>
+      <Container isselected={isSelected} ref={ref}>
+        <Label isselected={isSelected}>{children}</Label>
       </Container>
     </Link>
   );

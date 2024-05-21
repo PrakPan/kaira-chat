@@ -304,6 +304,7 @@ const TransfersContainer = (props) => {
       for (var i = 0; i < props.routes.length - 1; i += 2) {
         locationsArr.push(
           <PinSection
+            key={i}
             transfersPin
             setCurrentPopup={false}
             city={props.routes[i].city_name}
@@ -588,7 +589,7 @@ const TransfersContainer = (props) => {
         className="cursor-pointer font-lexend mb-8  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit"
       >
         Transfers
-        <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
+        <span className="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
       </div>
 
       {props.showFlightModal && (
