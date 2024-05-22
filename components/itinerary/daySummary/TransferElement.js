@@ -10,7 +10,7 @@ import ImageLoader from "../../ImageLoader";
 import { logEvent } from "../../../services/ga/Index";
 
 export default function TransferElement(props) {
-  const { modes, heading, meta, booking, data, transfers } = props;
+  const { modes, heading, meta, booking, data } = props;
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);

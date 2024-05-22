@@ -142,7 +142,7 @@ const Day_I_Container = (props) => {
               <TransferElement
                 key={`summary_transfer_${props.indexDay}-${index}`}
                 modes={
-                  elements?.modes
+                  element?.modes
                     ? element.modes[0]
                     : getTransportationType(element.icon)
                 }

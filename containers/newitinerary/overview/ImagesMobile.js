@@ -103,7 +103,7 @@ const ImagesMobile = (props) => {
         <GridContainer>
           <div
             style={{
-              display: ImagesLoaded[1] ? "initial" : "none",
+              display: ImagesLoaded[1] && !ImagesError[1] ? "initial" : "none",
             }}
           >
             <ImageLoader
@@ -129,7 +129,7 @@ const ImagesMobile = (props) => {
           </div>
           <div
             style={{
-              display: ImagesLoaded[2] ? "initial" : "none",
+              display: ImagesLoaded[2] && !ImagesError[2] ? "initial" : "none",
             }}
             className=""
           >
