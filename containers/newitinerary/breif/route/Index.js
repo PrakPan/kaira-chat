@@ -27,6 +27,7 @@ const Route = (props) => {
       duration: "1 Night",
     },
   };
+  
   let locationsArr = [];
   const [order, setOrder] = useState(initialorder);
 

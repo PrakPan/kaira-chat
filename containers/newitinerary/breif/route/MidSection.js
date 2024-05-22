@@ -148,6 +148,7 @@ const MidSection = (props) => {
       <div style={{ position: "relative" }}>
         <Line pinColour={props.pinColour} hidemidsection={hidemidsection} />
       </div>
+
       {!hidemidsection && (
         <>
           {props.version == "v2" ? (
@@ -156,14 +157,13 @@ const MidSection = (props) => {
             props.route?.transfers?.id !== "" &&
             (!props.bookings || props.bookings.length === 0) ? (
               <Text>
-                {" "}
                 <button
                   id="transferAdd"
                   onClick={(e) => handleTransferEdit(e, "Add Transfer")}
                   className="text-blue hover:underline"
                 >
                   + Add Transfer
-                </button>{" "}
+                </button>
               </Text>
             ) : (
               <Text>

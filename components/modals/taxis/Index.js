@@ -57,6 +57,7 @@ const Booking = (props) => {
   useEffect(() => {
     setError(false);
     if (!props.alternates && props.showTaxiModal) {
+      let params = null;
       try {
         if (props.selectedBooking.transfer_type === "Intercity one-way") {
           params = {
@@ -82,7 +83,6 @@ const Booking = (props) => {
         params = {
           transfer_type: "Intercity one-way",
           search_by: "name",
-
           locations: "Munnar,Kochi",
         };
       }
