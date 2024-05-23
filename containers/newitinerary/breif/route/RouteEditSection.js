@@ -1426,7 +1426,7 @@ export const CustomCalendar = ({
   };
 
   return (
-    <div className="w-[50%] flex flex-col gap-5">
+    <div className="w-full flex flex-row gap-5">
       {months.map((month, i) => (
         <Month
           key={i}
