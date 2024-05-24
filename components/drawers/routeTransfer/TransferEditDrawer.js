@@ -138,7 +138,7 @@ const TransferEditDrawer = (props) => {
       .catch((err) => {
         setSelectLoading(false);
         setShowDrawer(false);
-        if (err.response.status === 403) {
+        if (err?.response?.status === 403) {
           props.openNotification({
             text: "You are not allowed to make changes to this itinerary",
             heading: "Error!",

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import styled from "styled-components";
-import { Link as scroller } from "react-scroll";
+import { scroller } from "react-scroll";
 import { RxCross2 } from "react-icons/rx";
 import GITSummaryContainer from "./booking1/gittailored/Index";
 import SummaryContainer from "./booking1/TailoredDetails";
@@ -70,7 +70,7 @@ const SimpleTabsV2 = (props) => {
   }, []);
 
   const scrollToElement = (elementId) => {
-    scroller.scrollTo(elementId, {
+    scroller?.scrollTo(elementId, {
       duration: 500,
       smooth: false,
       spy: true,
