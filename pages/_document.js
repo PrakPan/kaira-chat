@@ -21,13 +21,6 @@ export default class MyDocument extends Document {
   render() {
     return (
       <Html id="html" lang="en">
-        <script
-          chat="true"
-          src="//in.fw-cdn.com/30401267/225580.js"
-          strategy="beforeInteractive"
-          type="text/javascript"
-        ></script>
-        
         <Head>
           <script
             async
@@ -169,6 +162,39 @@ export default class MyDocument extends Document {
             )}
           {/* End Google Tag Manager */}
 
+          {/* Chat Bot */}
+          <link
+            rel="stylesheet"
+            href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css"
+          />
+          <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"></script>
+
+          <style>
+            {`
+            df-messenger {
+              --df-messenger-font-family: lexend;
+              --df-messenger-chat-bubble-icon-size: 20px;
+              --df-messenger-chat-bubble-size: 20px;
+              --df-messenger-chat-bubble-background: black;
+              --df-messenger-chat-bubble-icon-color: white;
+              --df-messenger-chat-bubble-border-radius: 5px;
+              --df-messenger-message-user-background: #f7e700;
+              --df-messenger-send-icon-color-active: black;
+              --df-messenger-send-icon-color-hover: black;
+
+              z-index: 1999;
+              // position: fixed;
+              // bottom: 16px;
+              // right: 16px;
+            }
+
+            .bubble {
+              width: 200px;
+            }
+            `}
+          </style>
+          {/* End Chat Bot */}
+
           <link
             rel="icon"
             href="https://d31aoa0ehgvjdi.cloudfront.net/media/website/logoyellow.png"
@@ -230,6 +256,23 @@ export default class MyDocument extends Document {
           <Main />
           <div id="modal-portal" />
           <div id="popup-portal" />
+
+          <div className="z-50 fixed bottom-5 right-5 flex flex-row items-center bg-black gap-2 rounded-lg px-3 py-2">
+            <df-messenger
+              project-id="the-tarzan-way-1"
+              agent-id="d091101e-2408-4bdc-b967-f93db2333638"
+              language-code="en"
+              max-query-length="-1"
+            >
+              <df-messenger-chat-bubble
+                chat-title="Travel Experience Captain"
+                chat-icon="https://images.thetarzanway.com/media/icons/ui/chat-dots.webp"
+                chat-width="400"
+              ></df-messenger-chat-bubble>
+            </df-messenger>
+            <div className="text-sm text-[#fcfcfc]">Let's Chat!</div>
+          </div>
+
           <NextScript />
         </body>
       </Html>
