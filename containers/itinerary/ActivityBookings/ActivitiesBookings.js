@@ -127,7 +127,7 @@ const ActivitiesBookings = (props) => {
                       <div className="text-sm font-normal">
                         {booking?.costings_breakdown?.activity_data?.address}
                       </div>
-                      {booking?.costings_breakdown?.activity_data?.rating && (
+                      {booking?.costings_breakdown?.activity_data?.rating ? (
                         <div className="gap-1 flex flex-row  items-center">
                           <div className="flex flex-row text-[#ffa500]">
                             {starRating(
@@ -148,7 +148,8 @@ const ActivitiesBookings = (props) => {
                             </div>
                           )}
                         </div>
-                      )}
+                    ): null}
+
                       {booking?.points && booking?.points.length ? (
                         booking.points.map((data, i) => (
                           <div className="flex flex-col gap-0">

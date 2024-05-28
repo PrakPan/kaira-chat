@@ -98,7 +98,7 @@ const Details = (props) => {
               </Text>
             )}
           </div>
-          {props.itineraryRoutes && props.itineraryRoutes.length > 0 ? (
+          {false && props.itineraryRoutes && props.itineraryRoutes.length > 0 ? (
             isDesktop ? (
               <button
                 onClick={() => props.setEditRoute("editDates")}
