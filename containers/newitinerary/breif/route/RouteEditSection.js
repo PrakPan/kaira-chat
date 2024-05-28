@@ -489,19 +489,6 @@ const Header = (props) => {
               {convertDFormat(props.end_date)}
             </div>
           </div>
-          {isDesktop ? (
-            <button
-              onClick={() => props.setEditDestination(false)}
-              className="text-sm border-2 border-black rounded-lg px-4 py-2 hover:bg-black hover:text-white transition ease-in-out duration-500"
-            >
-              Edit Dates
-            </button>
-          ) : (
-            <MdModeEdit
-              onClick={() => props.setEditDestination(false)}
-              className="text-lg cursor-pointer hover:text-yellow-400"
-            />
-          )}
         </div>
       </div>
     </div>
