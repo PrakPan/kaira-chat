@@ -173,19 +173,31 @@ export default class MyDocument extends Document {
             {`
             df-messenger {
               --df-messenger-font-family: lexend;
-              --df-messenger-chat-bubble-icon-size: 20px;
-              --df-messenger-chat-bubble-size: 20px;
+              --df-messenger-chat-border-radius: 10px;
+              --df-messenger-chat-border: 2px solid black;
+              --df-messenger-chat-window-offset: 10px;
+
+              --df-messenger-titlebar-background: #f7e700;
+
+              --df-messenger-chat-bubble-size: 60px;
+              --df-messenger-chat-bubble-icon-size: 40px;
               --df-messenger-chat-bubble-background: black;
               --df-messenger-chat-bubble-icon-color: white;
-              --df-messenger-chat-bubble-border-radius: 5px;
+              --df-messenger-chat-bubble-border-radius: 10px;
+
               --df-messenger-message-user-background: #f7e700;
+
+              --df-messenger-input-focus-border: 2px solid #f7e700;
+              --df-messenger-input-box-border: 2px solid black;
+              --df-messenger-input-box-focus-border: 2px solid #f7e700;
+
               --df-messenger-send-icon-color-active: black;
               --df-messenger-send-icon-color-hover: black;
 
               z-index: 1999;
-              // position: fixed;
-              // bottom: 16px;
-              // right: 16px;
+              position: fixed;
+              bottom: 16px;
+              right: 16px;
             }
             `}
           </style>
@@ -253,21 +265,18 @@ export default class MyDocument extends Document {
           <div id="modal-portal" />
           <div id="popup-portal" />
 
-          <div className="z-50 fixed bottom-5 right-5 flex flex-row items-center bg-black gap-2 rounded-lg px-3 py-2">
-            <df-messenger
-              project-id="the-tarzan-way-1"
-              agent-id="d091101e-2408-4bdc-b967-f93db2333638"
-              language-code="en"
-              max-query-length="-1"
-            >
-              <df-messenger-chat-bubble
-                chat-title="Travel Experience Captain"
-                chat-icon="https://images.thetarzanway.com/media/icons/ui/chat-dots.webp"
-                chat-width="400"
-              ></df-messenger-chat-bubble>
-            </df-messenger>
-            <div className="text-sm text-[#fcfcfc]">Let's Chat!</div>
-          </div>
+          <df-messenger
+            project-id="the-tarzan-way-1"
+            agent-id="d091101e-2408-4bdc-b967-f93db2333638"
+            language-code="en"
+            max-query-length="-1"
+          >
+            <df-messenger-chat-bubble
+              chat-title="Travel Experience Captain"
+              chat-icon="https://images.thetarzanway.com/media/icons/ui/chat-dots.webp"
+              chat-width="400"
+            ></df-messenger-chat-bubble>
+          </df-messenger>
 
           <NextScript />
         </body>
