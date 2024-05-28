@@ -17,6 +17,7 @@ import { getIndianPrice } from "../../../services/getIndianPrice";
 import Button from "../../../components/ui/button/Index";
 import TransferEditDrawer from "../../../components/drawers/routeTransfer/TransferEditDrawer";
 import routeAlternates from "../../../services/itinerary/brief/routeAlternates";
+import axiosRoundTripInstance from "../../../services/itinerary/brief/roundTripSuggestion";
 import { logEvent } from "../../../services/ga/Index";
 
 const Plan = styled.div`
@@ -201,6 +202,7 @@ function formatDate(dateString) {
   }
   return format(date, "EEE, dd MMM");
 }
+
 function createCacheKey(checkIn, checkOut) {
   return `${checkIn}-${checkOut}`;
 }
@@ -518,7 +520,6 @@ const TransferModeContainer = (props) => {
       })
       .catch((err) => {
         console.log("[ERROR][TransferEdit]: ", err);
-        setLoadingAlternates(false);
       });
   };
 
@@ -1287,11 +1288,13 @@ const mapStateToPros = (state) => {
     notificationText: state.Notification.text,
   };
 };
+
 const mapDispatchToProps = (dispatch) => {
   return {
     openNotification: (payload) => dispatch(openNotification(payload)),
   };
 };
+
 export default connect(
   mapStateToPros,
   mapDispatchToProps

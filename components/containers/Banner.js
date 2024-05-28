@@ -3,13 +3,13 @@ import styled from "styled-components";
 import Button from "../ui/button/Index";
 
 const Container = styled.div`
-  display: none;
   @media screen and (min-width: 768px) {
     display: initial;
     z-index: 998 !important;
-    width: 100vw;
+    width: auto;
     position: fixed;
-    left: 0;
+    left: 50%;
+    transform: translateX(-50%);
     bottom: 0;
     margin-bottom: 1rem;
   }
@@ -58,7 +58,7 @@ const Banner = (props) => {
 
   if (showBanner)
     return (
-      <Container>
+      <Container className="flex place-self-end">
         <GridContainer>
           <div className="center-div">
             <Text className="font-lexend">{props.text}</Text>
