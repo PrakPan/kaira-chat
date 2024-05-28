@@ -187,10 +187,6 @@ export default class MyDocument extends Document {
               // bottom: 16px;
               // right: 16px;
             }
-
-            .bubble {
-              width: 200px;
-            }
             `}
           </style>
           {/* End Chat Bot */}

@@ -27,7 +27,7 @@ const Route = (props) => {
       duration: "1 Night",
     },
   };
-  
+
   let locationsArr = [];
   const [order, setOrder] = useState(initialorder);
 
@@ -261,7 +261,7 @@ const Route = (props) => {
         <div className="font-lexend mb-4 lg:mb-10  lg:mt-[4rem] mt-[2rem] font-bold text-4xl">
           Route
         </div>
-        {false && props.itineraryRoutes && props.itineraryRoutes.length > 0 ? (
+        {props.itineraryRoutes && props.itineraryRoutes.length > 0 ? (
           <button
             onClick={handleEditRoute}
             className="mb-4 lg:mb-10  lg:mt-[4rem] mt-[2rem] font-semibold text-sm px-4 py-2 border-2 border-black rounded-lg hover:text-white hover:bg-black transform ease-in-out duration-300"
