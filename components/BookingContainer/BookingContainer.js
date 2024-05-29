@@ -15,7 +15,7 @@ const BookingContainer = (props) => {
   const [acoordianceOpen, setAcordianOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
   let message =
-    "Hey TTW! I need some help with my tailored experience - https://thetarzanway.com/" +
+    "Hey TTW! I need some help with my tailored experience - https://thetarzanway.com" +
     router.asPath;
 
   const handleSubmit = (e) => {
@@ -184,7 +184,6 @@ const BookingContainer = (props) => {
                           )
                         )}
                     </p>
-                    {/* <div></div> */}
                   </div>
                 );
               }
