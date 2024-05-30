@@ -6,7 +6,6 @@ import Banner from "../../homepage/banner/Mobile";
 import Route from "../../newitinerary/breif/route/Index";
 import dynamic from "next/dynamic";
 import Drawer from "../../../components/drawers/cityDetails/CityDetailsDrawer";
-import SkeletonCard from "../../../components/ui/SkeletonCard";
 import RouteEditSection from "../../newitinerary/breif/route/RouteEditSection.js";
 import { getHumanDate } from "../../../services/getHumanDate";
 import WeatherWidget from "../../../components/WeatherWidget/WeatherWidget";
@@ -244,27 +243,17 @@ const Details = (props) => {
         >
           <div
             className="sticky lg:w-full lg:h-[50vh] rounded-xl"
-            id="MapcontainerRoute"
+            id="MapcontainerRouteEditSection"
           >
             <div
               className="absolute w-[100%] h-[100%] rounded-xl"
               style={{ overflow: "hidden" }}
             >
               {Locationlatlong.length >= 1 ? (
-                <>
-                  <div style={{ display: mapLoaded ? "initial" : "none" }}>
-                    <MapWithNoSSR
-                      locations={Locationlatlong}
-                      currentPopup={currentPopup}
-                      setCurrentPopup={setCurrentPopup}
-                      setShowDrawer={setShowDrawer}
-                      setShowDrawerData={setShowDrawerData}
-                    />
-                  </div>
-                  <div>
-                    <SkeletonCard />
-                  </div>
-                </>
+                <MapWithNoSSR
+                  setShowDrawer={setShowDrawer}
+                  setShowDrawerData={setShowDrawerData}
+                />
               ) : (
                 <div></div>
               )}
