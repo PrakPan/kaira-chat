@@ -1,20 +1,37 @@
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  Polyline,
+  useMap,
+} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import React, { useEffect } from "react";
-import leaflet from "leaflet";
+import React, { useEffect, useState } from "react";
+import leaflet, { divIcon } from "leaflet";
 import ReactLeafletGoogleLayer from "react-leaflet-google-layer";
 import MarkerClusterGroup from "@changey/react-leaflet-markercluster";
 import "@changey/react-leaflet-markercluster/dist/styles.min.css";
 import { MAPBOX_ACCESS_TOKEN } from "../services/constants";
 
-const customIcon = leaflet.icon({
-  iconUrl:
-    "https://d31aoa0ehgvjdi.cloudfront.net/media/icons/general/black-marker.png",
-  iconSize: [28, 32],
-  iconAnchor: [14, 32],
-});
+const limeOptions = {
+  color: "#004d6994",
+  dashArray: "10, 5", // Defines the pattern of the dashed line (10 units of solid line, 5 units of blank space)
+  dashOffset: "15",
+};
 
 const Mapbox = React.memo((props) => {
+  const [polylines, setPolylines] = useState();
+
+  useEffect(() => {
+    const updatedPolylines = props.locations.map((element) => [
+      element.lat,
+      element.long,
+    ]);
+
+    setPolylines(updatedPolylines);
+  }, [props.locations]);
+
   const FitBoundsOnMount = () => {
     const map = useMap();
 
@@ -37,39 +54,6 @@ const Mapbox = React.memo((props) => {
     return null;
   };
 
-  if (props.center) {
-    return (
-      <MapContainer
-        center={props.center}
-        zoom={props.defaultZoom || 1}
-        style={{
-          height: props.height || "100%",
-          width: "100%",
-          borderRadius: "1rem",
-        }}
-      >
-        <TileLayer
-          url={`
-       https://api.mapbox.com/styles/v1/shivaank/clhpyxasr01ud01qu4n3e7x80/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_ACCESS_TOKEN}`}
-        />
-        <ReactLeafletGoogleLayer apiKey="AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E" />
-        <MarkerClusterGroup>
-          <Marker
-            key={props?.center?.lat}
-            animate
-            position={[props?.center?.lat, props?.center?.lng]}
-            draggable={false}
-            icon={customIcon}
-          >
-            <Popup>
-              {props?.InfoWindowContainer ? props.InfoWindowContainer : ""}
-            </Popup>
-          </Marker>
-        </MarkerClusterGroup>
-      </MapContainer>
-    );
-  }
-
   return props?.locations ? (
     <MapContainer
       center={{ lat: props?.locations[0]?.lat, lng: props?.locations[0]?.long }}
@@ -84,7 +68,13 @@ const Mapbox = React.memo((props) => {
         url={`
        https://api.mapbox.com/styles/v1/shivaank/clhpyxasr01ud01qu4n3e7x80/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_ACCESS_TOKEN}`}
       />
+
       <ReactLeafletGoogleLayer apiKey="AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E" />
+
+      {polylines ? (
+        <Polyline pathOptions={limeOptions} positions={polylines} />
+      ) : null}
+
       <MarkerClusterGroup>
         {props.locations.map((location, index) => (
           <Marker
@@ -95,9 +85,22 @@ const Mapbox = React.memo((props) => {
               location?.long ? location.long : "",
             ]}
             draggable={false}
-            icon={customIcon}
+            icon={divIcon({
+              className: "icon",
+              html: `
+                <div class="-mt-1 -ml-2 group w-[40px] h-[40px] rounded-full grid place-items-center">
+                    <div class="-mt-2 drop-shadow-lg group-hover:animate-bounce rounded-full w-[30px] h-[30px] flex justify-center items-center" style="background-color: ${
+                      location.color ? location.color : "#111"
+                    };">
+                    <span class="text-white text-xs font-bold  ">  ${
+                      index + 1
+                    }</span>
+                    </div>
+                </div>`,
+              iconSize: 20,
+            })}
           >
-            <Popup>
+            <Popup className="w-[26rem]">
               {props.InfoWindowContainer ? (
                 props.InfoWindowContainer(location)
               ) : (
@@ -107,6 +110,7 @@ const Mapbox = React.memo((props) => {
           </Marker>
         ))}
       </MarkerClusterGroup>
+
       <FitBoundsOnMount />
     </MapContainer>
   ) : null;

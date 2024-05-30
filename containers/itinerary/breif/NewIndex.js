@@ -11,10 +11,7 @@ import RouteEditSection from "../../newitinerary/breif/route/RouteEditSection.js
 import { getHumanDate } from "../../../services/getHumanDate";
 import WeatherWidget from "../../../components/WeatherWidget/WeatherWidget";
 import ImageLoader from "../../../components/ImageLoader.js";
-const LeafMap = dynamic(() => import("../../../components/mapbox.js"), {
-  ssr: false,
-});
-const MapBox = dynamic(() => import("../../../components/Map.js"), {
+const MapBox = dynamic(() => import("../../../components/NewMapBox.js"), {
   ssr: false,
 });
 
@@ -43,13 +40,12 @@ const RouteComponent = styled.div`
 `;
 
 const Details = (props) => {
+  const router = useRouter();
   const [active, setActive] = useState(null);
   const [showDrawer, setShowDrawer] = useState(false);
   const [showDrawerData, setShowDrawerData] = useState(false);
   const [currentPopup, setCurrentPopup] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
-
-  const router = useRouter();
 
   function scrollToTargetAdjusted(id) {
     const element = document.getElementById(id);
@@ -175,18 +171,11 @@ const Details = (props) => {
     </div>
   );
 
-  const MapWithNoSSR = ({
-    currentPopup,
-    setCurrentPopup,
-    setShowDrawer,
-    setShowDrawerData,
-  }) => (
+  const MapWithNoSSR = ({ setShowDrawer, setShowDrawerData }) => (
     <MapBox
       height="100%"
       InfoWindowContainer={InfoWindowContainer}
       locations={Locationlatlong}
-      currentPopup={currentPopup}
-      setCurrentPopup={setCurrentPopup}
       setShowDrawer={setShowDrawer}
       setShowDrawerData={setShowDrawerData}
     />
@@ -205,8 +194,6 @@ const Details = (props) => {
           >
             {Locationlatlong.length >= 1 ? (
               <MapWithNoSSR
-                currentPopup={currentPopup}
-                setCurrentPopup={setCurrentPopup}
                 setShowDrawer={setShowDrawer}
                 setShowDrawerData={setShowDrawerData}
               />
