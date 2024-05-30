@@ -282,8 +282,13 @@ const Enquiry = (props) => {
         if (!response.data.auto_itinerary_created) {
           router.push("/thank-you");
         } else {
-          window.location.href =
-            "/itinerary/" + response.data.itinerary.itinerary_id;
+          if (response.data.loader_time) {
+            window.location.href =
+              "/itinerary/" + response.data.itinerary.itinerary_id + "?t=" + response.data.loader_time;;
+          } else {
+            window.location.href =
+              "/itinerary/" + response.data.itinerary.itinerary_id;
+          }
           setLoading(false);
         }
       })

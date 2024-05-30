@@ -14,9 +14,20 @@ const BookingContainer = (props) => {
   const router = useRouter();
   const [acoordianceOpen, setAcordianOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
+
+  function getURL() {
+    const url = router.asPath.split("?")[0];
+    const searchParams = new URLSearchParams(router.asPath.split("?")[1]);
+    searchParams.delete("t");
+    const newPath =
+      url + (searchParams.toString() ? `?${searchParams.toString()}` : "");
+
+    return newPath;
+  }
+
   let message =
     "Hey TTW! I need some help with my tailored experience - https://thetarzanway.com" +
-    router.asPath;
+    getURL();
 
   const handleSubmit = (e) => {
     e.preventDefault();
