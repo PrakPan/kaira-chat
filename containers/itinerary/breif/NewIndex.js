@@ -244,27 +244,17 @@ const Details = (props) => {
         >
           <div
             className="sticky lg:w-full lg:h-[50vh] rounded-xl"
-            id="MapcontainerRoute"
+            id="MapcontainerRouteEditSection"
           >
             <div
               className="absolute w-[100%] h-[100%] rounded-xl"
               style={{ overflow: "hidden" }}
             >
               {Locationlatlong.length >= 1 ? (
-                <>
-                  <div style={{ display: mapLoaded ? "initial" : "none" }}>
-                    <MapWithNoSSR
-                      locations={Locationlatlong}
-                      currentPopup={currentPopup}
-                      setCurrentPopup={setCurrentPopup}
-                      setShowDrawer={setShowDrawer}
-                      setShowDrawerData={setShowDrawerData}
-                    />
-                  </div>
-                  <div>
-                    <SkeletonCard />
-                  </div>
-                </>
+                <MapWithNoSSR
+                  setShowDrawer={setShowDrawer}
+                  setShowDrawerData={setShowDrawerData}
+                />
               ) : (
                 <div></div>
               )}
