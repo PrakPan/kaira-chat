@@ -341,7 +341,6 @@ const TransfersContainer = (props) => {
                           <TransferModeContainer
                             setShowLoginModal={props?.setShowLoginModal}
                             routes={props?.routes}
-                            plan={props.plan}
                             getPaymentHandler={props.getPaymentHandler}
                             _updateTaxiBookingHandler={
                               props._updateTaxiBookingHandler
@@ -386,7 +385,6 @@ const TransfersContainer = (props) => {
                           <TransferModeContainer
                             setShowLoginModal={props?.setShowLoginModal}
                             routes={props?.routes}
-                            plan={props.plan}
                             getPaymentHandler={props.getPaymentHandler}
                             _updateTaxiBookingHandler={
                               props._updateTaxiBookingHandler
@@ -497,7 +495,6 @@ const TransfersContainer = (props) => {
                   <TransferModeContainer
                     setShowLoginModal={props?.setShowLoginModal}
                     routes={props?.routes}
-                    plan={props.plan}
                     getPaymentHandler={props.getPaymentHandler}
                     _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
                     _updatePaymentHandler={props._updatePaymentHandler}
@@ -531,7 +528,6 @@ const TransfersContainer = (props) => {
                   <TransferModeContainer
                     setShowLoginModal={props?.setShowLoginModal}
                     routes={props?.routes}
-                    plan={props.plan}
                     getPaymentHandler={props.getPaymentHandler}
                     _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
                     _updatePaymentHandler={props._updatePaymentHandler}
