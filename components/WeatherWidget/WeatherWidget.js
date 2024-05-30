@@ -40,12 +40,12 @@ const WeatherWidget = ({
     fetch(apiUrl)
       .then((response) => response.json())
       .then((data) => {
-        const tempArr = data.list.map((e) => Math.floor(e.main.temp));
+        const tempArr = data?.list.map((e) => Math.floor(e.main.temp));
         const weatherObj = {
           minTemp: Math.min(...tempArr),
           maxTemp: Math.max(...tempArr),
-          description: data.list[0].weather[0].description,
-          icon: data.list[0].weather[0].icon.slice(0, 2),
+          description: data?.list[0]?.weather[0]?.description,
+          icon: data?.list[0]?.weather[0]?.icon?.slice(0, 2),
         };
         setWeather(weatherObj);
         setIsLoading(false);
@@ -99,7 +99,7 @@ const WeatherWidget = ({
 
   return (
     <div>
-      {weatherText && <TextBold>{weatherText}</TextBold>}
+      {weatherText && <TextBold className="text-nowrap">{weatherText}</TextBold>}
       <WeatherGrid>
         {weather.icon && <IconsFetcher iconId={weather.icon} />}
         <div>

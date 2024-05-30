@@ -97,7 +97,7 @@ const Mapbox = React.memo((props) => {
             draggable={false}
             icon={customIcon}
           >
-            <Popup>
+            <Popup className="w-[26rem]">
               {props.InfoWindowContainer ? (
                 props.InfoWindowContainer(location)
               ) : (

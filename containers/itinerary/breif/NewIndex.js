@@ -8,7 +8,13 @@ import dynamic from "next/dynamic";
 import Drawer from "../../../components/drawers/cityDetails/CityDetailsDrawer";
 import SkeletonCard from "../../../components/ui/SkeletonCard";
 import RouteEditSection from "../../newitinerary/breif/route/RouteEditSection.js";
+import { getHumanDate } from "../../../services/getHumanDate";
+import WeatherWidget from "../../../components/WeatherWidget/WeatherWidget";
+import ImageLoader from "../../../components/ImageLoader.js";
 const LeafMap = dynamic(() => import("../../../components/mapbox.js"), {
+  ssr: false,
+});
+const MapBox = dynamic(() => import("../../../components/Map.js"), {
   ssr: false,
 });
 
@@ -44,6 +50,18 @@ const Details = (props) => {
   const [mapLoaded, setMapLoaded] = useState(false);
 
   const router = useRouter();
+
+  function scrollToTargetAdjusted(id) {
+    const element = document.getElementById(id);
+    const headerOffset = 117;
+    const elementPosition = element.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: "smooth",
+    });
+  }
 
   const _handleTailoredRedirect = (e) => {
     router.push("/tailored-travel");
@@ -119,19 +137,58 @@ const Details = (props) => {
     return null; // Return null if city_id is not found in the array
   }
 
+  const InfoWindowContainer = (location) => (
+    <div className="w-full flex flex-row gap-3">
+      <ImageLoader
+        borderRadius="8px"
+        url={location?.cityData?.image}
+        height={150}
+        width={150}
+        heightMobile="auto"
+        dimensionsMobile={{ width: 150, height: 150 }}
+      ></ImageLoader>
+
+      <div className="flex flex-col gap-2">
+        <div>
+          <div className="font-bold text-lg text-[#270e0e] text-nowrap">
+            {location.name} - {location?.duration} Nights
+          </div>
+          <div className="font-semibold">{getHumanDate(location.date)}</div>
+        </div>
+
+        <WeatherWidget
+          location={location}
+          city={location?.name}
+          description={location?.cityData?.short_description}
+          setShowDrawer={setShowDrawer}
+          setShowDrawerData={setShowDrawerData}
+          noSkeleton
+        />
+
+        <div
+          className={`text-nowrap relative rounded w-fit cursor-pointer bg-slate-600 px-2 py-2 text-xs font-semibold text-white shadow-sm  hover:bg-[#BF3535] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
+          onClick={() => scrollToTargetAdjusted(location.dayId)}
+        >
+          View {location.name} in your Itinerary
+        </div>
+      </div>
+    </div>
+  );
+
   const MapWithNoSSR = ({
     currentPopup,
     setCurrentPopup,
     setShowDrawer,
     setShowDrawerData,
   }) => (
-    <LeafMap
+    <MapBox
+      height="100%"
+      InfoWindowContainer={InfoWindowContainer}
       locations={Locationlatlong}
       currentPopup={currentPopup}
       setCurrentPopup={setCurrentPopup}
       setShowDrawer={setShowDrawer}
       setShowDrawerData={setShowDrawerData}
-      onload={() => setMapLoaded(true)}
     />
   );
 
@@ -147,19 +204,12 @@ const Details = (props) => {
             style={{ overflow: "hidden" }}
           >
             {Locationlatlong.length >= 1 ? (
-              <>
-                <div style={{ display: mapLoaded ? "initial" : "none" }}>
-                  <MapWithNoSSR
-                    currentPopup={currentPopup}
-                    setCurrentPopup={setCurrentPopup}
-                    setShowDrawer={setShowDrawer}
-                    setShowDrawerData={setShowDrawerData}
-                  />
-                </div>
-                <div>
-                  <SkeletonCard />
-                </div>
-              </>
+              <MapWithNoSSR
+                currentPopup={currentPopup}
+                setCurrentPopup={setCurrentPopup}
+                setShowDrawer={setShowDrawer}
+                setShowDrawerData={setShowDrawerData}
+              />
             ) : (
               <div></div>
             )}

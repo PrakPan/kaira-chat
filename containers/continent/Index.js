@@ -59,18 +59,6 @@ const MapInfo = styled.div`
   }
 `;
 
-const Heading = styled.h2`
-  font-size: 32px;
-  font-weight: 700;
-  margin: 1.5rem 0.5rem;
-  text-align: center;
-
-  @media screen and (min-width: 768px) {
-    text-align: left;
-    margin: 3.5rem 0rem;
-  }
-`;
-
 const Index = (props) => {
   const router = useRouter();
   let isPageWide = media("(min-width: 768px)");
@@ -137,6 +125,7 @@ const Index = (props) => {
           }
         />
       )}
+
       <div>
         <HeroBanner
           image={props.data.image}
@@ -144,6 +133,7 @@ const Index = (props) => {
           title={`${props.data.destination} Trip Planner`}
           page={"Continent Page"}
         />
+
         <SetWidthContainer>
           <PathNavigation path={props.data.path} />
 
@@ -188,6 +178,7 @@ const Index = (props) => {
               overview_heading={props.data.overview_heading}
               overview_text={props.data.overview_text}
             ></Overview>
+
             <MapContainer>
               {props.data.locations && props.data.locations.length ? (
                 <MapBox
