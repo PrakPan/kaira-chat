@@ -567,7 +567,7 @@ export const EditDestinations = (props) => {
   return (
     <div
       ref={props.destinationRef}
-      className="w-full mg:w-[50%] lg:w-[50%] flex flex-col items-center justify-center pb-5 gap-3"
+      className="w-full md:w-[50%] lg:w-[50%] flex flex-col items-center justify-center pb-5 gap-3"
     >
       <div className="w-full flex flex-row items-center justify-between">
         <div className="text-[24px] font-semibold leading-6">Route</div>
@@ -617,8 +617,12 @@ export const Destination = (props) => {
   } = props;
 
   const [draggedItem, setDraggedItem] = useState(null);
+  const [dragging, setDragging] = useState(false);
+  const dragStartX = useRef(0);
+  const dragStartY = useRef(0);
 
   const handleDragStart = (e, item) => {
+    // setDraggedItem(item);
     e.dataTransfer.setData("destId", index);
   };
 
@@ -636,7 +640,53 @@ export const Destination = (props) => {
       items.splice(targetIndex, 0, reorderedItem);
       items = updateDestinationsDates(items);
       setDestinations(items);
-      setDraggedItem(null);
+    }
+    setDraggedItem(null);
+  };
+
+  const handleTouchStart = (e, item) => {
+    if (!(startingCity || endingCity)) {
+      setDraggedItem(item);
+      setDragging(true);
+      dragStartX.current = e.touches[0].clientX;
+      dragStartY.current = e.touches[0].clientY;
+      e.stopPropagation();
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (dragging) {
+      e.preventDefault();
+      e.stopPropagation();
+      const touch = e.touches[0];
+      const offsetX = touch.clientX - dragStartX.current;
+      const offsetY = touch.clientY - dragStartY.current;
+      const draggedElement = document.querySelector(`[data-index="${index}"]`);
+      if (draggedElement) {
+        draggedElement.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+      }
+    }
+  };
+
+  const handleTouchEnd = (e, targetIndex) => {
+    if (dragging) {
+      setDragging(false);
+      const draggedElement = document.querySelector(`[data-index="${index}"]`);
+      if (draggedElement) {
+        draggedElement.style.transform = "none";
+      }
+      if (draggedItem !== null) {
+        const draggedIndex = draggedItem.index;
+
+        if (targetIndex > 0 && targetIndex < destinations.length - 1) {
+          let items = [...destinations];
+          const [reorderedItem] = items.splice(draggedIndex, 1);
+          items.splice(targetIndex, 0, reorderedItem);
+          items = updateDestinationsDates(items);
+          setDestinations(items);
+          setDraggedItem(null);
+        }
+      }
     }
   };
 
@@ -702,9 +752,14 @@ export const Destination = (props) => {
       onDragStart={(e) => handleDragStart(e, { index })}
       onDragOver={(e) => handleDragOver(e)}
       onDrop={(e) => handleDrop(e, index)}
+      onTouchStart={(e) => handleTouchStart(e, { index })}
+      onTouchMove={(e) => handleTouchMove(e)}
+      onTouchEnd={(e) => handleTouchEnd(e, index)}
       className={`w-full flex border-1 border-gray-200 shadow-sm rounded-lg px-3 py-2 ${
         draggedItem && draggedItem.index === index ? "opacity-50" : ""
       }`}
+      data-index={index}
+      style={{ touchAction: "none" }}
     >
       <div className="w-full flex flex-row items-center justify-between">
         <div className="flex flex-row items-center gap-3">
