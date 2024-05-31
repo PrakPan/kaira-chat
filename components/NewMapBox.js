@@ -78,7 +78,7 @@ const Mapbox = React.memo((props) => {
       <MarkerClusterGroup>
         {props.locations.map((location, index) => (
           <Marker
-            key={location.id}
+            key={`${location.id}-${index}`}
             animate
             position={[
               location?.lat ? location.lat : "",

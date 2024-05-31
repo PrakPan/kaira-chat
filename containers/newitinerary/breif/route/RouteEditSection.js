@@ -166,6 +166,10 @@ const RouteEditSection = (props) => {
             ...props.routes[i],
             checkin_date: getDate(props.routes[i].checkin_date),
             checkout_date: getDate(props.routes[i].checkout_date),
+            nights: differenceInDays(
+              new Date(getDate(props.routes[i].checkout_date)),
+              new Date(getDate(props.routes[i].checkin_date))
+            ),
           },
         });
       }
@@ -420,6 +424,7 @@ const RouteEditSection = (props) => {
               handleAddDestinationButton={handleAddDestinationButton}
               setDestinations={setDestinations}
               destinationRef={destinationRef}
+              startDate={startDate}
             />
             {isDesktop && <div className="w-[50%]">{props.children}</div>}
           </>
@@ -580,6 +585,7 @@ export const EditDestinations = (props) => {
           <Destination
             key={ind}
             index={ind}
+            startDate={props.startDate}
             startingCity={dest.startingCity}
             endingCity={dest.endingCity}
             cityData={dest?.cityData}
@@ -598,6 +604,7 @@ export const EditDestinations = (props) => {
 
 export const Destination = (props) => {
   const {
+    startDate,
     startingCity,
     endingCity,
     isNewDestination,
@@ -624,14 +631,32 @@ export const Destination = (props) => {
     const draggedIndex = e.dataTransfer.getData("destId");
 
     if (targetIndex > 0 && targetIndex < destinations.length - 1) {
-      const items = [...destinations];
+      let items = [...destinations];
       const [reorderedItem] = items.splice(draggedIndex, 1);
       items.splice(targetIndex, 0, reorderedItem);
-
+      items = updateDestinationsDates(items);
       setDestinations(items);
       setDraggedItem(null);
     }
   };
+
+  function updateDestinationsDates(destinations) {
+    let prevDate = getDate(startDate);
+
+    for (let i = 1; i < destinations.length - 1; i++) {
+      const dest = destinations[i];
+      const checkInDate = prevDate;
+      const checkOutDate = getDateString(
+        addDays(new Date(getDate(prevDate)), dest.cityData.nights)
+      );
+
+      dest.cityData.checkin_date = checkInDate;
+      dest.cityData.checkout_date = checkOutDate;
+      prevDate = checkOutDate;
+    }
+
+    return destinations;
+  }
 
   const handleRemoveDestination = () => {
     setDestinations((prev) => {

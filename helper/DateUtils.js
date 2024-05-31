@@ -1,10 +1,14 @@
 import { format } from "date-fns";
 
 export const getDate = (dateString) => {
-  if (!dateString) return "";
-  const [day, month, year] = dateString.split("/");
-  if (!day || !month || !year) return dateString;
-  return `${year}-${month}-${day}`;
+  try {
+    if (!dateString) return dateString;
+    const [day, month, year] = dateString.split("/");
+    if (!day || !month || !year) return dateString;
+    return `${year}-${month}-${day}`;
+  } catch (err) {
+    return dateString;
+  }
 };
 
 export const getYear = (dateString) => {
