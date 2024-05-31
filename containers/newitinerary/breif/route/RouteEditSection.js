@@ -806,11 +806,18 @@ export const NewDestination = (props) => {
               onClick={() => handleSetDestination(ind)}
               className="cursor-pointer flex flex-row items-center gap-3 hover:bg-gray-100 rounded-full"
             >
-              <div className="w-8 h-8 bg-gray-200 rounded-full p-2 flex items-center justify-center">
-                <IoLocationSharp />
+              <div className="w-12 h-12 bg-gray-200 rounded-full p-2 flex items-center justify-center">
+                <IoLocationSharp className="text-lg text-black" />
               </div>
-              <div className="text-sm font-bold">
-                {startingCity || endingCity ? res.text : res.name}
+              <div className="flex flex-col">
+                <div className="text-sm font-semibold">
+                  {startingCity || endingCity ? res.text : res.name}
+                </div>
+                {!(startingCity || endingCity) && (
+                  <div className="text-sm text-gray-500">
+                    {res.parent}, {res.country}
+                  </div>
+                )}
               </div>
             </div>
           ))}
