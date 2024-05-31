@@ -151,6 +151,7 @@ const RouteEditSection = (props) => {
     props.editRoute === "editDates" ? false : true
   );
   const [isValidDates, setIsValidDates] = useState(true);
+  const [invalidDateError, setInvalidDateError] = useState(null);
   const [loading, setLoading] = useState(false);
   const destinationRef = useRef(null);
 
@@ -212,19 +213,35 @@ const RouteEditSection = (props) => {
       isNaN(Date.parse(startDate)) ||
       (!isSameDay(new Date(startDate), today) && new Date(startDate) < today)
     ) {
+      setInvalidDateError(
+        `Invalid date selected for starting city (${
+          destinations[0].cityData.city_name ||
+          destinations[0].cityData.name ||
+          destinations[0].cityData.text
+        })`
+      );
       return false;
     }
 
     let prevDate = new Date(startDate);
+
     for (let i = 1; i < destinations.length - 1; i++) {
       const checkin_date = getDate(destinations[i].cityData.checkin_date);
       const checkout_date = getDate(destinations[i].cityData.checkout_date);
+
       if (
         !new Date(checkin_date) ||
         isNaN(Date.parse(checkin_date)) ||
         (!isSameDay(new Date(checkin_date), prevDate) &&
           new Date(checkin_date) < prevDate)
       ) {
+        setInvalidDateError(
+          `Invalid Arrival date selected for city (${
+            destinations[i].cityData.city_name ||
+            destinations[i].cityData.name ||
+            destinations[i].cityData.text
+          })`
+        );
         return false;
       }
 
@@ -234,8 +251,16 @@ const RouteEditSection = (props) => {
         (!isSameDay(new Date(checkout_date), new Date(checkin_date)) &&
           new Date(checkout_date) < new Date(checkin_date))
       ) {
+        setInvalidDateError(
+          `Invalid Departure date selected for city (${
+            destinations[i].cityData.city_name ||
+            destinations[i].cityData.name ||
+            destinations[i].cityData.text
+          })`
+        );
         return false;
       }
+
       prevDate = new Date(checkout_date);
     }
 
@@ -244,9 +269,17 @@ const RouteEditSection = (props) => {
       isNaN(Date.parse(endDate)) ||
       (!isSameDay(new Date(endDate), prevDate) && new Date(endDate) < prevDate)
     ) {
+      setInvalidDateError(
+        `Invalid date selected for ending city (${
+          destinations[destinations.length - 1].cityData.city_name ||
+          destinations[destinations.length - 1].cityData.name ||
+          destinations[destinations.length - 1].cityData.text
+        })`
+      );
       return false;
     }
 
+    setInvalidDateError(null);
     return true;
   };
 
@@ -399,6 +432,7 @@ const RouteEditSection = (props) => {
             endDate={endDate}
             setEndDate={setEndDate}
             isValidDates={isValidDates}
+            invalidDateError={invalidDateError}
           />
         )}
       </div>
@@ -835,6 +869,7 @@ export const EditDates = ({
   setEndDate,
   endDate,
   isValidDates,
+  invalidDateError,
 }) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [calendarMonths, setCalenderMonths] = useState(null);
@@ -991,12 +1026,8 @@ export const EditDates = ({
           <div className="flex flex-row gap-1 items-center">
             {!isValidDates ? (
               <>
-                <>
-                  <RxCrossCircled className="text-sm text-white bg-red-500 rounded-full" />
-                  <span className="text-sm">
-                    Invalid dates selected on the left!
-                  </span>
-                </>
+                <RxCrossCircled className="text-sm text-white bg-red-500 rounded-full" />
+                <span className="text-sm">{invalidDateError}</span>
               </>
             ) : (
               <>
