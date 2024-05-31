@@ -1010,6 +1010,7 @@ export const DestinationDates = (props) => {
   const {
     index,
     destinations,
+    setDestinations,
     startingCity,
     endingCity,
     cityData,
@@ -1054,29 +1055,66 @@ export const DestinationDates = (props) => {
     setCheckoutDate(getDate(cityData.checkout_date));
   }, [destinations]);
 
+  function updateDate(date, isArrival = true) {
+    setDestinations((prev) => {
+      return prev.map((dest, ind) => {
+        if (ind === index && !(dest.startingCity || dest.endingCity)) {
+          if (isArrival) {
+            return {
+              ...dest,
+              cityData: {
+                ...dest.cityData,
+                checkin_date: date,
+              },
+            };
+          }
+          return {
+            ...dest,
+            cityData: {
+              ...dest.cityData,
+              checkout_date: date,
+            },
+          };
+        }
+
+        return dest;
+      });
+    });
+  }
+
   const handleDateChange = (e) => {
     e.target.value = getDateString(e.target.value);
+
     if (e.target.name === "Arrival Date") {
       const offSet = differenceInDays(
         new Date(e.target.value),
         new Date(checkinDate)
       );
-      handleDates(offSet, index, e.target.value, checkoutDate, true);
-      // }
+
+      if (isValidDates) {
+        handleDates(offSet, index, e.target.value, checkoutDate, true);
+      } else {
+        updateDate(e.target.value);
+      }
     } else if (e.target.name === "Departure Date") {
       const offSet = differenceInDays(
         new Date(e.target.value),
         new Date(checkoutDate)
       );
-      handleDates(offSet, index, checkinDate, e.target.value);
-      // }
+
+      if (isValidDates) {
+        handleDates(offSet, index, checkinDate, e.target.value);
+      } else {
+        updateDate(e.target.value, false);
+      }
     } else if (e.target.name === "Start Date") {
       const offSet = differenceInDays(
         new Date(e.target.value),
         new Date(startDate)
       );
-      handleDates(offSet, index, null, null);
-      // }
+      if (isValidDates) {
+        handleDates(offSet, index, null, null);
+      }
       setStartDate(e.target.value);
     } else if (e.target.name === "End Date") {
       setEndDate(e.target.value);
@@ -1198,15 +1236,6 @@ export const DestinationDates = (props) => {
         </div>
       </div>
       <div className="w-full flex flex-row items-center gap-3">
-        {/* <div className="w-6 flex flex-col gap-1 items-center justify-center">
-          {!endingCity &&
-            [...Array(divCount)].map((_, index) => (
-              <div
-                key={index}
-                className="w-[2px] h-3 rounded-full bg-green-200"
-              ></div>
-            ))}
-        </div> */}
         {!endingCity ? (
           startingCity ? (
             <div className="w-6 flex flex-col gap-1 items-center justify-center">
