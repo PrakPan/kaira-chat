@@ -33,6 +33,7 @@ import moment from "moment";
 import media from "../../../../components/media";
 import { SingleDatePicker } from "react-dates";
 import styled from "styled-components";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const Container = styled.div`
   position: relative;
@@ -425,6 +426,7 @@ const RouteEditSection = (props) => {
               setDestinations={setDestinations}
               destinationRef={destinationRef}
               startDate={startDate}
+              setEndDate={setEndDate}
             />
             {isDesktop && <div className="w-[50%]">{props.children}</div>}
           </>
@@ -580,31 +582,52 @@ export const EditDestinations = (props) => {
           </button>
         </div>
       </div>
-      <div className="w-full flex flex-col gap-3">
-        {props.destinations.map((dest, ind) => (
+      {props.destinations.length ? (
+        <div className="w-full flex flex-col">
+          <div className="mb-3.5">
+            <Destination
+              index={0}
+              startingCity={props.destinations[0].startingCity}
+              endingCity={props.destinations[0].endingCity}
+              cityData={props.destinations[0]?.cityData}
+              pinColour={props.destinations[0]?.cityData?.color}
+              setDestinations={props.setDestinations}
+              isNewDestination={props.destinations[0].isNewDestination}
+              isEditDestination={props.destinations[0].isEditDestination}
+            />
+          </div>
+          <DragDrop {...props} />
           <Destination
-            key={ind}
-            index={ind}
-            startDate={props.startDate}
-            startingCity={dest.startingCity}
-            endingCity={dest.endingCity}
-            cityData={dest?.cityData}
-            pinColour={dest?.cityData?.color}
+            index={props.destinations.length - 1}
+            startingCity={
+              props.destinations[props.destinations.length - 1].startingCity
+            }
+            endingCity={
+              props.destinations[props.destinations.length - 1].endingCity
+            }
+            cityData={
+              props.destinations[props.destinations.length - 1]?.cityData
+            }
+            pinColour={
+              props.destinations[props.destinations.length - 1]?.cityData?.color
+            }
             setDestinations={props.setDestinations}
-            destinations={props.destinations}
-            isNewDestination={dest.isNewDestination}
-            isEditDestination={dest.isEditDestination}
-            destinationRef={props.destinationRef}
+            isNewDestination={
+              props.destinations[props.destinations.length - 1].isNewDestination
+            }
+            isEditDestination={
+              props.destinations[props.destinations.length - 1]
+                .isEditDestination
+            }
           />
-        ))}
-      </div>
+        </div>
+      ) : null}
     </div>
   );
 };
 
 export const Destination = (props) => {
   const {
-    startDate,
     startingCity,
     endingCity,
     isNewDestination,
@@ -613,100 +636,7 @@ export const Destination = (props) => {
     pinColour,
     index,
     setDestinations,
-    destinations,
   } = props;
-
-  const [draggedItem, setDraggedItem] = useState(null);
-  const [dragging, setDragging] = useState(false);
-  const dragStartX = useRef(0);
-  const dragStartY = useRef(0);
-
-  const handleDragStart = (e, item) => {
-    // setDraggedItem(item);
-    e.dataTransfer.setData("destId", index);
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (e, targetIndex) => {
-    e.preventDefault();
-    const draggedIndex = e.dataTransfer.getData("destId");
-
-    if (targetIndex > 0 && targetIndex < destinations.length - 1) {
-      let items = [...destinations];
-      const [reorderedItem] = items.splice(draggedIndex, 1);
-      items.splice(targetIndex, 0, reorderedItem);
-      items = updateDestinationsDates(items);
-      setDestinations(items);
-    }
-    setDraggedItem(null);
-  };
-
-  const handleTouchStart = (e, item) => {
-    if (!(startingCity || endingCity)) {
-      setDraggedItem(item);
-      setDragging(true);
-      dragStartX.current = e.touches[0].clientX;
-      dragStartY.current = e.touches[0].clientY;
-      e.stopPropagation();
-    }
-  };
-
-  const handleTouchMove = (e) => {
-    if (dragging) {
-      e.preventDefault();
-      e.stopPropagation();
-      const touch = e.touches[0];
-      const offsetX = touch.clientX - dragStartX.current;
-      const offsetY = touch.clientY - dragStartY.current;
-      const draggedElement = document.querySelector(`[data-index="${index}"]`);
-      if (draggedElement) {
-        draggedElement.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
-      }
-    }
-  };
-
-  const handleTouchEnd = (e, targetIndex) => {
-    if (dragging) {
-      setDragging(false);
-      const draggedElement = document.querySelector(`[data-index="${index}"]`);
-      if (draggedElement) {
-        draggedElement.style.transform = "none";
-      }
-      if (draggedItem !== null) {
-        const draggedIndex = draggedItem.index;
-
-        if (targetIndex > 0 && targetIndex < destinations.length - 1) {
-          let items = [...destinations];
-          const [reorderedItem] = items.splice(draggedIndex, 1);
-          items.splice(targetIndex, 0, reorderedItem);
-          items = updateDestinationsDates(items);
-          setDestinations(items);
-          setDraggedItem(null);
-        }
-      }
-    }
-  };
-
-  function updateDestinationsDates(destinations) {
-    let prevDate = getDate(startDate);
-
-    for (let i = 1; i < destinations.length - 1; i++) {
-      const dest = destinations[i];
-      const checkInDate = prevDate;
-      const checkOutDate = getDateString(
-        addDays(new Date(getDate(prevDate)), dest.cityData.nights)
-      );
-
-      dest.cityData.checkin_date = checkInDate;
-      dest.cityData.checkout_date = checkOutDate;
-      prevDate = checkOutDate;
-    }
-
-    return destinations;
-  }
 
   const handleRemoveDestination = () => {
     setDestinations((prev) => {
@@ -748,18 +678,7 @@ export const Destination = (props) => {
 
   return (
     <div
-      draggable={!(startingCity || endingCity)}
-      onDragStart={(e) => handleDragStart(e, { index })}
-      onDragOver={(e) => handleDragOver(e)}
-      onDrop={(e) => handleDrop(e, index)}
-      onTouchStart={(e) => handleTouchStart(e, { index })}
-      onTouchMove={(e) => handleTouchMove(e)}
-      onTouchEnd={(e) => handleTouchEnd(e, index)}
-      className={`w-full flex border-1 border-gray-200 shadow-sm rounded-lg px-3 py-2 ${
-        draggedItem && draggedItem.index === index ? "opacity-50" : ""
-      }`}
-      data-index={index}
-      style={{ touchAction: "none" }}
+      className={`w-full flex border-1 border-gray-200 shadow-sm rounded-lg px-3 py-2`}
     >
       <div className="w-full flex flex-row items-center justify-between">
         <div className="flex flex-row items-center gap-3">
@@ -937,6 +856,132 @@ export const NewDestination = (props) => {
           ))}
         </div>
       ) : null}
+    </div>
+  );
+};
+
+export const DragDrop = (props) => {
+  const { destinations, setDestinations, setEndDate } = props;
+
+  function updateDestinationsDates(destinations) {
+    let prevDate = getDate(props.startDate);
+
+    for (let i = 1; i < destinations.length - 1; i++) {
+      const dest = destinations[i];
+      const checkInDate = prevDate;
+      const checkOutDate = dest.cityData.nights
+        ? getDateString(
+            addDays(new Date(getDate(prevDate)), dest.cityData.nights)
+          )
+        : getDateString(addDays(new Date(getDate(prevDate)), 1));
+
+      dest.cityData.checkin_date = checkInDate;
+      dest.cityData.checkout_date = checkOutDate;
+      prevDate = checkOutDate;
+    }
+
+    setEndDate(prevDate);
+
+    return destinations;
+  }
+
+  const reorder = (list, startIndex, endIndex) => {
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+
+    return result;
+  };
+
+  function onDragEnd(result) {
+    // dropped outside the list
+    if (!result.destination) {
+      return;
+    }
+
+    if (
+      result.destination.index === 0 ||
+      result.destination.index === destinations.length - 1
+    ) {
+      return;
+    }
+
+    let items = reorder(
+      destinations,
+      result.source.index,
+      result.destination.index
+    );
+
+    items = updateDestinationsDates(items);
+
+    setDestinations(items);
+  }
+
+  const getItemStyle = (isDragging, draggableStyle) => ({
+    userSelect: "none",
+
+    // change background colour if dragging
+    background: isDragging ? "rgb(229 231 235)" : "white",
+    margin: `0 0 15px 0`,
+    borderRadius: "8px",
+
+    // styles we need to apply on draggables
+    ...draggableStyle,
+  });
+
+  const getListStyle = (isDraggingOver) => ({});
+
+  return (
+    <div>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId="droppable">
+          {(provided, snapshot) => (
+            <div
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              style={getListStyle(snapshot.isDraggingOver)}
+            >
+              {destinations.map((item, index) => {
+                if (index !== 0 && index !== destinations.length - 1)
+                  return (
+                    <Draggable
+                      key={`item-${index}`}
+                      draggableId={`item-${index}`}
+                      index={index}
+                      isDragDisabled={
+                        index === 0 || index === destinations.length - 1
+                      }
+                    >
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          style={getItemStyle(
+                            snapshot.isDragging,
+                            provided.draggableProps.style
+                          )}
+                        >
+                          <Destination
+                            index={index}
+                            startingCity={item.startingCity}
+                            endingCity={item.endingCity}
+                            cityData={item?.cityData}
+                            pinColour={item?.cityData?.color}
+                            setDestinations={props.setDestinations}
+                            isNewDestination={item.isNewDestination}
+                            isEditDestination={item.isEditDestination}
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  );
+              })}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
     </div>
   );
 };
