@@ -33,6 +33,7 @@ import moment from "moment";
 import media from "../../../../components/media";
 import { SingleDatePicker } from "react-dates";
 import styled from "styled-components";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const Container = styled.div`
   position: relative;
@@ -151,6 +152,7 @@ const RouteEditSection = (props) => {
     props.editRoute === "editDates" ? false : true
   );
   const [isValidDates, setIsValidDates] = useState(true);
+  const [invalidDateError, setInvalidDateError] = useState(null);
   const [loading, setLoading] = useState(false);
   const destinationRef = useRef(null);
 
@@ -165,6 +167,10 @@ const RouteEditSection = (props) => {
             ...props.routes[i],
             checkin_date: getDate(props.routes[i].checkin_date),
             checkout_date: getDate(props.routes[i].checkout_date),
+            nights: differenceInDays(
+              new Date(getDate(props.routes[i].checkout_date)),
+              new Date(getDate(props.routes[i].checkin_date))
+            ),
           },
         });
       }
@@ -212,19 +218,35 @@ const RouteEditSection = (props) => {
       isNaN(Date.parse(startDate)) ||
       (!isSameDay(new Date(startDate), today) && new Date(startDate) < today)
     ) {
+      setInvalidDateError(
+        `Invalid date selected for starting city (${
+          destinations[0].cityData.city_name ||
+          destinations[0].cityData.name ||
+          destinations[0].cityData.text
+        })`
+      );
       return false;
     }
 
     let prevDate = new Date(startDate);
+
     for (let i = 1; i < destinations.length - 1; i++) {
       const checkin_date = getDate(destinations[i].cityData.checkin_date);
       const checkout_date = getDate(destinations[i].cityData.checkout_date);
+
       if (
         !new Date(checkin_date) ||
         isNaN(Date.parse(checkin_date)) ||
         (!isSameDay(new Date(checkin_date), prevDate) &&
           new Date(checkin_date) < prevDate)
       ) {
+        setInvalidDateError(
+          `Invalid Arrival date selected for city (${
+            destinations[i].cityData.city_name ||
+            destinations[i].cityData.name ||
+            destinations[i].cityData.text
+          })`
+        );
         return false;
       }
 
@@ -234,8 +256,16 @@ const RouteEditSection = (props) => {
         (!isSameDay(new Date(checkout_date), new Date(checkin_date)) &&
           new Date(checkout_date) < new Date(checkin_date))
       ) {
+        setInvalidDateError(
+          `Invalid Departure date selected for city (${
+            destinations[i].cityData.city_name ||
+            destinations[i].cityData.name ||
+            destinations[i].cityData.text
+          })`
+        );
         return false;
       }
+
       prevDate = new Date(checkout_date);
     }
 
@@ -244,9 +274,17 @@ const RouteEditSection = (props) => {
       isNaN(Date.parse(endDate)) ||
       (!isSameDay(new Date(endDate), prevDate) && new Date(endDate) < prevDate)
     ) {
+      setInvalidDateError(
+        `Invalid date selected for ending city (${
+          destinations[destinations.length - 1].cityData.city_name ||
+          destinations[destinations.length - 1].cityData.name ||
+          destinations[destinations.length - 1].cityData.text
+        })`
+      );
       return false;
     }
 
+    setInvalidDateError(null);
     return true;
   };
 
@@ -387,6 +425,8 @@ const RouteEditSection = (props) => {
               handleAddDestinationButton={handleAddDestinationButton}
               setDestinations={setDestinations}
               destinationRef={destinationRef}
+              startDate={startDate}
+              setEndDate={setEndDate}
             />
             {isDesktop && <div className="w-[50%]">{props.children}</div>}
           </>
@@ -399,6 +439,7 @@ const RouteEditSection = (props) => {
             endDate={endDate}
             setEndDate={setEndDate}
             isValidDates={isValidDates}
+            invalidDateError={invalidDateError}
           />
         )}
       </div>
@@ -528,7 +569,7 @@ export const EditDestinations = (props) => {
   return (
     <div
       ref={props.destinationRef}
-      className="w-full mg:w-[50%] lg:w-[50%] flex flex-col items-center justify-center pb-5 gap-3"
+      className="w-full md:w-[50%] lg:w-[50%] flex flex-col items-center justify-center pb-5 gap-3"
     >
       <div className="w-full flex flex-row items-center justify-between">
         <div className="text-[24px] font-semibold leading-6">Route</div>
@@ -541,23 +582,46 @@ export const EditDestinations = (props) => {
           </button>
         </div>
       </div>
-      <div className="w-full flex flex-col gap-3">
-        {props.destinations.map((dest, ind) => (
+      {props.destinations.length ? (
+        <div className="w-full flex flex-col">
+          <div className="mb-3.5">
+            <Destination
+              index={0}
+              startingCity={props.destinations[0].startingCity}
+              endingCity={props.destinations[0].endingCity}
+              cityData={props.destinations[0]?.cityData}
+              pinColour={props.destinations[0]?.cityData?.color}
+              setDestinations={props.setDestinations}
+              isNewDestination={props.destinations[0].isNewDestination}
+              isEditDestination={props.destinations[0].isEditDestination}
+            />
+          </div>
+          <DragDrop {...props} />
           <Destination
-            key={ind}
-            index={ind}
-            startingCity={dest.startingCity}
-            endingCity={dest.endingCity}
-            cityData={dest?.cityData}
-            pinColour={dest?.cityData?.color}
+            index={props.destinations.length - 1}
+            startingCity={
+              props.destinations[props.destinations.length - 1].startingCity
+            }
+            endingCity={
+              props.destinations[props.destinations.length - 1].endingCity
+            }
+            cityData={
+              props.destinations[props.destinations.length - 1]?.cityData
+            }
+            pinColour={
+              props.destinations[props.destinations.length - 1]?.cityData?.color
+            }
             setDestinations={props.setDestinations}
-            destinations={props.destinations}
-            isNewDestination={dest.isNewDestination}
-            isEditDestination={dest.isEditDestination}
-            destinationRef={props.destinationRef}
+            isNewDestination={
+              props.destinations[props.destinations.length - 1].isNewDestination
+            }
+            isEditDestination={
+              props.destinations[props.destinations.length - 1]
+                .isEditDestination
+            }
           />
-        ))}
-      </div>
+        </div>
+      ) : null}
     </div>
   );
 };
@@ -572,32 +636,7 @@ export const Destination = (props) => {
     pinColour,
     index,
     setDestinations,
-    destinations,
   } = props;
-
-  const [draggedItem, setDraggedItem] = useState(null);
-
-  const handleDragStart = (e, item) => {
-    e.dataTransfer.setData("destId", index);
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (e, targetIndex) => {
-    e.preventDefault();
-    const draggedIndex = e.dataTransfer.getData("destId");
-
-    if (targetIndex > 0 && targetIndex < destinations.length - 1) {
-      const items = [...destinations];
-      const [reorderedItem] = items.splice(draggedIndex, 1);
-      items.splice(targetIndex, 0, reorderedItem);
-
-      setDestinations(items);
-      setDraggedItem(null);
-    }
-  };
 
   const handleRemoveDestination = () => {
     setDestinations((prev) => {
@@ -639,13 +678,7 @@ export const Destination = (props) => {
 
   return (
     <div
-      draggable={!(startingCity || endingCity)}
-      onDragStart={(e) => handleDragStart(e, { index })}
-      onDragOver={(e) => handleDragOver(e)}
-      onDrop={(e) => handleDrop(e, index)}
-      className={`w-full flex border-1 border-gray-200 shadow-sm rounded-lg px-3 py-2 ${
-        draggedItem && draggedItem.index === index ? "opacity-50" : ""
-      }`}
+      className={`w-full flex border-1 border-gray-200 shadow-sm rounded-lg px-3 py-2`}
     >
       <div className="w-full flex flex-row items-center justify-between">
         <div className="flex flex-row items-center gap-3">
@@ -806,16 +839,149 @@ export const NewDestination = (props) => {
               onClick={() => handleSetDestination(ind)}
               className="cursor-pointer flex flex-row items-center gap-3 hover:bg-gray-100 rounded-full"
             >
-              <div className="w-8 h-8 bg-gray-200 rounded-full p-2 flex items-center justify-center">
-                <IoLocationSharp />
+              <div className="w-12 h-12 bg-gray-200 rounded-full p-2 flex items-center justify-center">
+                <IoLocationSharp className="text-lg text-black" />
               </div>
-              <div className="text-sm font-bold">
-                {startingCity || endingCity ? res.text : res.name}
+              <div className="flex flex-col">
+                <div className="text-sm font-semibold">
+                  {startingCity || endingCity ? res.text : res.name}
+                </div>
+                {!(startingCity || endingCity) && (
+                  <div className="text-sm text-gray-500">
+                    {res.parent}, {res.country}
+                  </div>
+                )}
               </div>
             </div>
           ))}
         </div>
       ) : null}
+    </div>
+  );
+};
+
+export const DragDrop = (props) => {
+  const { destinations, setDestinations, setEndDate } = props;
+
+  function updateDestinationsDates(destinations) {
+    let prevDate = getDate(props.startDate);
+
+    for (let i = 1; i < destinations.length - 1; i++) {
+      const dest = destinations[i];
+      const checkInDate = prevDate;
+      const checkOutDate = dest.cityData.nights
+        ? getDateString(
+            addDays(new Date(getDate(prevDate)), dest.cityData.nights)
+          )
+        : getDateString(addDays(new Date(getDate(prevDate)), 1));
+
+      dest.cityData.checkin_date = checkInDate;
+      dest.cityData.checkout_date = checkOutDate;
+      prevDate = checkOutDate;
+    }
+
+    setEndDate(prevDate);
+
+    return destinations;
+  }
+
+  const reorder = (list, startIndex, endIndex) => {
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+
+    return result;
+  };
+
+  function onDragEnd(result) {
+    // dropped outside the list
+    if (!result.destination) {
+      return;
+    }
+
+    if (
+      result.destination.index === 0 ||
+      result.destination.index === destinations.length - 1
+    ) {
+      return;
+    }
+
+    let items = reorder(
+      destinations,
+      result.source.index,
+      result.destination.index
+    );
+
+    items = updateDestinationsDates(items);
+
+    setDestinations(items);
+  }
+
+  const getItemStyle = (isDragging, draggableStyle) => ({
+    userSelect: "none",
+
+    // change background colour if dragging
+    background: isDragging ? "rgb(229 231 235)" : "white",
+    margin: `0 0 15px 0`,
+    borderRadius: "8px",
+
+    // styles we need to apply on draggables
+    ...draggableStyle,
+  });
+
+  const getListStyle = (isDraggingOver) => ({});
+
+  return (
+    <div>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId="droppable">
+          {(provided, snapshot) => (
+            <div
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              style={getListStyle(snapshot.isDraggingOver)}
+            >
+              {destinations.map((item, index) => {
+                if (index !== 0 && index !== destinations.length - 1)
+                  return (
+                    <Draggable
+                      key={`item-${index}`}
+                      draggableId={`item-${index}`}
+                      index={index}
+                      isDragDisabled={
+                        index === 0 || index === destinations.length - 1
+                      }
+                    >
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          style={getItemStyle(
+                            snapshot.isDragging,
+                            provided.draggableProps.style
+                          )}
+                        >
+                          <Destination
+                            index={index}
+                            startingCity={item.startingCity}
+                            endingCity={item.endingCity}
+                            cityData={item?.cityData}
+                            pinColour={item?.cityData?.color}
+                            setDestinations={props.setDestinations}
+                            isNewDestination={item.isNewDestination}
+                            isEditDestination={item.isEditDestination}
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  );
+              })}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
     </div>
   );
 };
@@ -828,6 +994,7 @@ export const EditDates = ({
   setEndDate,
   endDate,
   isValidDates,
+  invalidDateError,
 }) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [calendarMonths, setCalenderMonths] = useState(null);
@@ -984,12 +1151,8 @@ export const EditDates = ({
           <div className="flex flex-row gap-1 items-center">
             {!isValidDates ? (
               <>
-                <>
-                  <RxCrossCircled className="text-sm text-white bg-red-500 rounded-full" />
-                  <span className="text-sm">
-                    Invalid dates selected on the left!
-                  </span>
-                </>
+                <RxCrossCircled className="text-sm text-white bg-red-500 rounded-full" />
+                <span className="text-sm">{invalidDateError}</span>
               </>
             ) : (
               <>
@@ -1010,6 +1173,7 @@ export const DestinationDates = (props) => {
   const {
     index,
     destinations,
+    setDestinations,
     startingCity,
     endingCity,
     cityData,
@@ -1054,29 +1218,66 @@ export const DestinationDates = (props) => {
     setCheckoutDate(getDate(cityData.checkout_date));
   }, [destinations]);
 
+  function updateDate(date, isArrival = true) {
+    setDestinations((prev) => {
+      return prev.map((dest, ind) => {
+        if (ind === index && !(dest.startingCity || dest.endingCity)) {
+          if (isArrival) {
+            return {
+              ...dest,
+              cityData: {
+                ...dest.cityData,
+                checkin_date: date,
+              },
+            };
+          }
+          return {
+            ...dest,
+            cityData: {
+              ...dest.cityData,
+              checkout_date: date,
+            },
+          };
+        }
+
+        return dest;
+      });
+    });
+  }
+
   const handleDateChange = (e) => {
     e.target.value = getDateString(e.target.value);
+
     if (e.target.name === "Arrival Date") {
       const offSet = differenceInDays(
         new Date(e.target.value),
         new Date(checkinDate)
       );
-      handleDates(offSet, index, e.target.value, checkoutDate, true);
-      // }
+
+      if (isValidDates) {
+        handleDates(offSet, index, e.target.value, checkoutDate, true);
+      } else {
+        updateDate(e.target.value);
+      }
     } else if (e.target.name === "Departure Date") {
       const offSet = differenceInDays(
         new Date(e.target.value),
         new Date(checkoutDate)
       );
-      handleDates(offSet, index, checkinDate, e.target.value);
-      // }
+
+      if (isValidDates) {
+        handleDates(offSet, index, checkinDate, e.target.value);
+      } else {
+        updateDate(e.target.value, false);
+      }
     } else if (e.target.name === "Start Date") {
       const offSet = differenceInDays(
         new Date(e.target.value),
         new Date(startDate)
       );
-      handleDates(offSet, index, null, null);
-      // }
+      if (isValidDates) {
+        handleDates(offSet, index, null, null);
+      }
       setStartDate(e.target.value);
     } else if (e.target.name === "End Date") {
       setEndDate(e.target.value);
@@ -1198,15 +1399,6 @@ export const DestinationDates = (props) => {
         </div>
       </div>
       <div className="w-full flex flex-row items-center gap-3">
-        {/* <div className="w-6 flex flex-col gap-1 items-center justify-center">
-          {!endingCity &&
-            [...Array(divCount)].map((_, index) => (
-              <div
-                key={index}
-                className="w-[2px] h-3 rounded-full bg-green-200"
-              ></div>
-            ))}
-        </div> */}
         {!endingCity ? (
           startingCity ? (
             <div className="w-6 flex flex-col gap-1 items-center justify-center">
