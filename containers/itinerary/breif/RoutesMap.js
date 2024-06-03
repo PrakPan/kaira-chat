@@ -10,8 +10,13 @@ export default function RoutesMap({
   locations,
   setShowDrawer,
   setShowDrawerData,
+  setEditRoute,
 }) {
   function scrollToTargetAdjusted(id) {
+    if (setEditRoute) {
+      setEditRoute(false);
+    }
+    
     const element = document.getElementById(id);
     const headerOffset = 117;
     const elementPosition = element.getBoundingClientRect().top;

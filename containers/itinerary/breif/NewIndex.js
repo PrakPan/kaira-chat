@@ -182,6 +182,7 @@ const Details = (props) => {
             locations={locationsLatLong}
             setShowDrawer={setShowDrawer}
             setShowDrawerData={setShowDrawerData}
+            setEditRoute={props.setEditRoute}
           />
         </RouteEditSection>
       )}
