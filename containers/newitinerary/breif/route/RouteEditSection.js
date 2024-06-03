@@ -7,7 +7,7 @@ import { FaLocationCrosshairs } from "react-icons/fa6";
 import { BiSolidPencil } from "react-icons/bi";
 import { FaTrashAlt } from "react-icons/fa";
 import { RxCrossCircled } from "react-icons/rx";
-import { MdDone, MdModeEdit } from "react-icons/md";
+import { MdDone } from "react-icons/md";
 import { getDate, getDateString } from "../../../../helper/DateUtils";
 import {
   startOfMonth,
@@ -190,6 +190,7 @@ const RouteEditSection = (props) => {
     setDestinations((prev) => {
       let flag = true;
       let curDestinations = [...prev];
+
       curDestinations = curDestinations.map((dest) => {
         if (dest.isNewDestination) {
           flag = false;
@@ -198,6 +199,7 @@ const RouteEditSection = (props) => {
         dest.isEditDestination = false;
         return dest;
       });
+
       if (flag) {
         curDestinations.splice(curDestinations.length - 1, 0, {
           startingCity: false,
@@ -206,6 +208,7 @@ const RouteEditSection = (props) => {
           cityData: {},
         });
       }
+
       return curDestinations;
     });
   };
@@ -219,11 +222,11 @@ const RouteEditSection = (props) => {
       (!isSameDay(new Date(startDate), today) && new Date(startDate) < today)
     ) {
       setInvalidDateError(
-        `Invalid date selected for starting city (${
+        `Invalid date selected for starting city ${
           destinations[0].cityData.city_name ||
           destinations[0].cityData.name ||
           destinations[0].cityData.text
-        })`
+        }`
       );
       return false;
     }
@@ -241,11 +244,11 @@ const RouteEditSection = (props) => {
           new Date(checkin_date) < prevDate)
       ) {
         setInvalidDateError(
-          `Invalid Arrival date selected for city (${
+          `Invalid Arrival date selected for city ${
             destinations[i].cityData.city_name ||
             destinations[i].cityData.name ||
             destinations[i].cityData.text
-          })`
+          }`
         );
         return false;
       }
@@ -257,11 +260,11 @@ const RouteEditSection = (props) => {
           new Date(checkout_date) < new Date(checkin_date))
       ) {
         setInvalidDateError(
-          `Invalid Departure date selected for city (${
+          `Invalid Departure date selected for city ${
             destinations[i].cityData.city_name ||
             destinations[i].cityData.name ||
             destinations[i].cityData.text
-          })`
+          }`
         );
         return false;
       }
@@ -275,11 +278,11 @@ const RouteEditSection = (props) => {
       (!isSameDay(new Date(endDate), prevDate) && new Date(endDate) < prevDate)
     ) {
       setInvalidDateError(
-        `Invalid date selected for ending city (${
+        `Invalid date selected for ending city ${
           destinations[destinations.length - 1].cityData.city_name ||
           destinations[destinations.length - 1].cityData.name ||
           destinations[destinations.length - 1].cityData.text
-        })`
+        }`
       );
       return false;
     }
@@ -417,9 +420,10 @@ const RouteEditSection = (props) => {
         editDestination={editDestination}
         setEditDestination={setEditDestination}
       />
-      <div className="w-full h-fit md:w-[85%] lg:w-[85%] flex flex-col md:flex-row lg:flex-row items-start justify-between hide-scrollbar overflow-y-auto px-2 py-5 gap-5">
+
+      <div className="w-full h-fit md:w-[85%] lg:w-[85%] hide-scrollbar overflow-y-auto py-5">
         {editDestination ? (
-          <>
+          <div className="w-full flex flex-row gap-5">
             <EditDestinations
               destinations={destinations}
               handleAddDestinationButton={handleAddDestinationButton}
@@ -427,9 +431,14 @@ const RouteEditSection = (props) => {
               destinationRef={destinationRef}
               startDate={startDate}
               setEndDate={setEndDate}
+              setLocationsLatLong={props.setLocationsLatLong}
             />
-            {isDesktop && <div className="w-[50%]">{props.children}</div>}
-          </>
+            {isDesktop && (
+              <div className="sticky top-0 w-[50%] h-[50vh]">
+                {props.children}
+              </div>
+            )}
+          </div>
         ) : (
           <EditDates
             destinations={destinations}
@@ -443,6 +452,7 @@ const RouteEditSection = (props) => {
           />
         )}
       </div>
+
       <ActionPanel
         setEdit={props.setEdit}
         editDestination={editDestination}
@@ -566,6 +576,41 @@ export const EditPanel = ({ editDestination, setEditDestination }) => {
 };
 
 export const EditDestinations = (props) => {
+  function updateLatLong(items) {
+    props.setLocationsLatLong((prev) => {
+      let locations = [...prev];
+      const newLocations = [];
+
+      for (let i = 1; i < items.length - 1; i++) {
+        const lat = items[i].cityData.lat;
+        const long = items[i].cityData.long;
+        const color = items[i].cityData.color;
+        const name = items[i].cityData.name;
+
+        if (color) {
+          const location = locations.find((item) => item.color === color);
+          if (location) {
+            newLocations.push(location);
+          } else {
+            newLocations.push({
+              lat: lat,
+              long: long,
+              name: name,
+            });
+          }
+        } else if (lat && long) {
+          newLocations.push({
+            lat: lat,
+            long: long,
+            name: name,
+          });
+        }
+      }
+
+      return newLocations;
+    });
+  }
+
   return (
     <div
       ref={props.destinationRef}
@@ -596,7 +641,7 @@ export const EditDestinations = (props) => {
               isEditDestination={props.destinations[0].isEditDestination}
             />
           </div>
-          <DragDrop {...props} />
+          <DragDrop updateLatLong={updateLatLong} {...props} />
           <Destination
             index={props.destinations.length - 1}
             startingCity={
@@ -626,6 +671,135 @@ export const EditDestinations = (props) => {
   );
 };
 
+export const DragDrop = (props) => {
+  const { destinations, setDestinations, setEndDate, updateLatLong } = props;
+
+  function updateDestinationsDates(destinations) {
+    let prevDate = getDate(props.startDate);
+
+    for (let i = 1; i < destinations.length - 1; i++) {
+      const dest = destinations[i];
+      const checkInDate = prevDate;
+      const checkOutDate = dest.cityData.nights
+        ? getDateString(
+            addDays(new Date(getDate(prevDate)), dest.cityData.nights)
+          )
+        : getDateString(addDays(new Date(getDate(prevDate)), 1));
+
+      dest.cityData.checkin_date = checkInDate;
+      dest.cityData.checkout_date = checkOutDate;
+      prevDate = checkOutDate;
+    }
+
+    setEndDate(prevDate);
+
+    return destinations;
+  }
+
+  const reorder = (list, startIndex, endIndex) => {
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+
+    return result;
+  };
+
+  function onDragEnd(result) {
+    // dropped outside the list
+    if (!result.destination) {
+      return;
+    }
+
+    if (
+      result.destination.index === 0 ||
+      result.destination.index === destinations.length - 1
+    ) {
+      return;
+    }
+
+    let items = reorder(
+      destinations,
+      result.source.index,
+      result.destination.index
+    );
+
+    items = updateDestinationsDates(items);
+
+    updateLatLong(items);
+
+    setDestinations(items);
+  }
+
+  const getItemStyle = (isDragging, draggableStyle) => ({
+    userSelect: "none",
+
+    // change background colour if dragging
+    background: isDragging ? "rgb(229 231 235)" : "white",
+    margin: `0 0 15px 0`,
+    borderRadius: "8px",
+
+    // styles we need to apply on draggables
+    ...draggableStyle,
+  });
+
+  const getListStyle = (isDraggingOver) => ({});
+
+  return (
+    <div>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Droppable droppableId="droppable">
+          {(provided, snapshot) => (
+            <div
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              style={getListStyle(snapshot.isDraggingOver)}
+            >
+              {destinations.map((item, index) => {
+                if (index !== 0 && index !== destinations.length - 1)
+                  return (
+                    <Draggable
+                      key={`item-${index}`}
+                      draggableId={`item-${index}`}
+                      index={index}
+                      isDragDisabled={
+                        index === 0 || index === destinations.length - 1
+                      }
+                    >
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          style={getItemStyle(
+                            snapshot.isDragging,
+                            provided.draggableProps.style
+                          )}
+                        >
+                          <Destination
+                            index={index}
+                            startingCity={item.startingCity}
+                            endingCity={item.endingCity}
+                            cityData={item?.cityData}
+                            pinColour={item?.cityData?.color}
+                            setDestinations={props.setDestinations}
+                            isNewDestination={item.isNewDestination}
+                            isEditDestination={item.isEditDestination}
+                            updateLatLong={updateLatLong}
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  );
+              })}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
+    </div>
+  );
+};
+
 export const Destination = (props) => {
   const {
     startingCity,
@@ -636,11 +810,14 @@ export const Destination = (props) => {
     pinColour,
     index,
     setDestinations,
+    updateLatLong,
   } = props;
 
   const handleRemoveDestination = () => {
     setDestinations((prev) => {
-      return prev.filter((dest, i) => i !== index);
+      const updatedDestinations = prev.filter((dest, i) => i !== index);
+      updateLatLong(updatedDestinations);
+      return updatedDestinations;
     });
   };
 
@@ -648,10 +825,12 @@ export const Destination = (props) => {
     setDestinations((prev) => {
       let destinations = [...prev];
       destinations = destinations.filter((dest) => !dest.isNewDestination);
+
       destinations = destinations.map((dest) => {
         dest.isEditDestination = false;
         return dest;
       });
+
       const curDestination = destinations[index];
       destinations[index] = {
         startingCity: curDestination.startingCity,
@@ -659,6 +838,9 @@ export const Destination = (props) => {
         isEditDestination: true,
         cityData: { ...curDestination.cityData },
       };
+
+      updateLatLong(destinations);
+
       return destinations;
     });
   };
@@ -672,6 +854,7 @@ export const Destination = (props) => {
         startingCity={startingCity}
         endingCity={endingCity}
         setDestinations={setDestinations}
+        updateLatLong={updateLatLong}
       />
     );
   }
@@ -725,11 +908,11 @@ export const Destination = (props) => {
 export const NewDestination = (props) => {
   const {
     index,
-    handleRemoveDestination,
     cityData,
     startingCity,
     endingCity,
     setDestinations,
+    updateLatLong,
   } = props;
   const [search, setSearch] = useState(
     cityData.city_name || cityData.name || cityData.text
@@ -746,21 +929,6 @@ export const NewDestination = (props) => {
 
   const clearSearch = () => {
     setSearch("");
-  };
-
-  const handleCloseEdit = () => {
-    setDestinations((prev) => {
-      let destinations = [...prev];
-      destinations = destinations.map((dest) => {
-        if (dest.isNewDestination || dest.isEditDestination) {
-          dest.isNewDestination = false;
-          dest.isEditDestination = false;
-        }
-        return dest;
-      });
-
-      return destinations;
-    });
   };
 
   const handleDestinationSeach = () => {
@@ -788,15 +956,20 @@ export const NewDestination = (props) => {
   const handleSetDestination = (i) => {
     setDestinations((prev) => {
       let destinations = [...prev];
-
       const curDestination = destinations[index];
+
       destinations[index] = {
         startingCity: curDestination.startingCity,
         endingCity: curDestination.endingCity,
         isNewDestination: false,
         isEditDestination: false,
-        cityData: { ...searchResults[i] },
+        cityData: {
+          ...searchResults[i],
+        },
       };
+
+      updateLatLong(destinations);
+
       return destinations;
     });
   };
@@ -856,132 +1029,6 @@ export const NewDestination = (props) => {
           ))}
         </div>
       ) : null}
-    </div>
-  );
-};
-
-export const DragDrop = (props) => {
-  const { destinations, setDestinations, setEndDate } = props;
-
-  function updateDestinationsDates(destinations) {
-    let prevDate = getDate(props.startDate);
-
-    for (let i = 1; i < destinations.length - 1; i++) {
-      const dest = destinations[i];
-      const checkInDate = prevDate;
-      const checkOutDate = dest.cityData.nights
-        ? getDateString(
-            addDays(new Date(getDate(prevDate)), dest.cityData.nights)
-          )
-        : getDateString(addDays(new Date(getDate(prevDate)), 1));
-
-      dest.cityData.checkin_date = checkInDate;
-      dest.cityData.checkout_date = checkOutDate;
-      prevDate = checkOutDate;
-    }
-
-    setEndDate(prevDate);
-
-    return destinations;
-  }
-
-  const reorder = (list, startIndex, endIndex) => {
-    const result = Array.from(list);
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
-
-    return result;
-  };
-
-  function onDragEnd(result) {
-    // dropped outside the list
-    if (!result.destination) {
-      return;
-    }
-
-    if (
-      result.destination.index === 0 ||
-      result.destination.index === destinations.length - 1
-    ) {
-      return;
-    }
-
-    let items = reorder(
-      destinations,
-      result.source.index,
-      result.destination.index
-    );
-
-    items = updateDestinationsDates(items);
-
-    setDestinations(items);
-  }
-
-  const getItemStyle = (isDragging, draggableStyle) => ({
-    userSelect: "none",
-
-    // change background colour if dragging
-    background: isDragging ? "rgb(229 231 235)" : "white",
-    margin: `0 0 15px 0`,
-    borderRadius: "8px",
-
-    // styles we need to apply on draggables
-    ...draggableStyle,
-  });
-
-  const getListStyle = (isDraggingOver) => ({});
-
-  return (
-    <div>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="droppable">
-          {(provided, snapshot) => (
-            <div
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-              style={getListStyle(snapshot.isDraggingOver)}
-            >
-              {destinations.map((item, index) => {
-                if (index !== 0 && index !== destinations.length - 1)
-                  return (
-                    <Draggable
-                      key={`item-${index}`}
-                      draggableId={`item-${index}`}
-                      index={index}
-                      isDragDisabled={
-                        index === 0 || index === destinations.length - 1
-                      }
-                    >
-                      {(provided, snapshot) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          style={getItemStyle(
-                            snapshot.isDragging,
-                            provided.draggableProps.style
-                          )}
-                        >
-                          <Destination
-                            index={index}
-                            startingCity={item.startingCity}
-                            endingCity={item.endingCity}
-                            cityData={item?.cityData}
-                            pinColour={item?.cityData?.color}
-                            setDestinations={props.setDestinations}
-                            isNewDestination={item.isNewDestination}
-                            isEditDestination={item.isEditDestination}
-                          />
-                        </div>
-                      )}
-                    </Draggable>
-                  );
-              })}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
     </div>
   );
 };
