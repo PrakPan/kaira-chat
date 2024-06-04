@@ -408,10 +408,8 @@ const RouteEditSection = (props) => {
               setDestinationChanges={setDestinationChanges}
             />
             {isDesktop && (
-              <div className="w-[50%] flex flex-col gap-3 items-center">
-                <div className="sticky top-0 w-full h-[50vh] ">
-                  {props.children}
-                </div>
+              <div className="sticky top-0 h-[50vh] w-[50%] flex flex-col gap-3 items-center">
+                {props.children}
 
                 {destinationChanges && (
                   <div className="flex flex-row items-center gap-2">
@@ -1037,7 +1035,7 @@ export const DestinationPopUp = (props) => {
   return (
     <div
       ref={destinationRef}
-      className={`z-50 w-[80%] lg:w-[50%] absolute ${
+      className={`z-50 w-[80%] lg:w-[80%] absolute ${
         index !== undefined
           ? `top-0 left-[15%] lg:left-[30%]`
           : "-bottom-[150px] left-[15%]"
