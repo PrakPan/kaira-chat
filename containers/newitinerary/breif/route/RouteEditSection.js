@@ -130,8 +130,6 @@ const CalenderIcons = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  // width: 100% !important;
-  // height: 7.5rem;
 `;
 
 const Icon = styled.div`
@@ -358,7 +356,7 @@ const RouteEditSection = (props) => {
       destinationRef.current &&
       !destinationRef.current.contains(event.target)
     ) {
-      destinationRef.current.data();
+      destinationRef.current.setPopUp();
     }
   };
 
@@ -461,8 +459,6 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(mapStateToPros, mapDispatchToProps)(RouteEditSection);
 
 const Header = (props) => {
-  const isDesktop = useMediaQuery("(min-width:768px)");
-
   const convertDFormat = (dt) => {
     try {
       const date = parseISO(dt);
@@ -702,8 +698,6 @@ export const DragDrop = (props) => {
     ...draggableStyle,
   });
 
-  const getListStyle = (isDraggingOver) => ({});
-
   return (
     <div className="w-full flex flex-col relative">
       <div className="mb-3.5">
@@ -723,11 +717,7 @@ export const DragDrop = (props) => {
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="droppable">
           {(provided, snapshot) => (
-            <div
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-              style={getListStyle(snapshot.isDraggingOver)}
-            >
+            <div {...provided.droppableProps} ref={provided.innerRef}>
               {destinations.map((item, index) => {
                 if (index !== 0 && index !== destinations.length - 1)
                   return (
@@ -931,7 +921,7 @@ export const DestinationPopUp = (props) => {
   const [searchResults, setSearchResults] = useState(null);
 
   useEffect(() => {
-    destinationRef.current.data = () => setPopUp(false);
+    destinationRef.current.setPopUp = () => setPopUp(false);
     return () => {
       setSearchResults(null);
       setPopUp(null);
@@ -1338,31 +1328,12 @@ export const DestinationDates = (props) => {
     handleDates,
   } = props;
 
-  const cityRef = useRef(null);
-  const [divCount, setDivCount] = useState(0);
   const [checkinDate, setCheckinDate] = useState(
     getDate(cityData.checkin_date)
   );
   const [checkoutDate, setCheckoutDate] = useState(
     getDate(cityData.checkout_date)
   );
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (cityRef.current) {
-        const containerHeight = cityRef.current.clientHeight;
-        const divHeight = 14;
-        const newDivCount = Math.floor(containerHeight / divHeight);
-        setDivCount(newDivCount);
-      }
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [cityRef]);
 
   useEffect(() => {
     setCheckinDate(getDate(cityData.checkin_date));
@@ -1581,7 +1552,7 @@ export const DestinationDates = (props) => {
         ) : (
           <div className="w-6"></div>
         )}
-        <div ref={cityRef} className="w-full flex flex-col gap-2 py-3">
+        <div className="w-full flex flex-col gap-2 py-3">
           <div className="flex flex-row items-center gap-3">
             <div className="flex flex-col gap-1">
               <label>
