@@ -1015,7 +1015,7 @@ const MultiModeContainer = ({ transferIndex, transfer, handleSelect }) => {
                 className="flex mt-2 flex-row gap-2 items-end justify-end cursor-pointer"
               >
                 <CheckboxFormComponent
-                  checked={transferIndex === 0 && transferIndex.isSelected}
+                  checked={transferIndex === 0 && transfer.isSelected}
                   className="mb-1"
                 />
                 <label className="text-center cursor-pointer">
