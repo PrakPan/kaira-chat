@@ -72,7 +72,7 @@ const FlightIcon = ({ Instyle, classname, Multimode }) => {
           ? "https://images.thetarzanway.com/media/icons/transfers/multi-mode/Vector.png"
           : "https://images.thetarzanway.com/media/icons/transfers/flight.png"
       } `}
-      width={classname.width}
+      width={Multimode ? classname.width - 12 : classname.width}
       height={classname.height}
       alt="icon"
       onError={() => setError(true)}
