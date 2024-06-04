@@ -3,11 +3,18 @@ import { connect } from "react-redux";
 import { openNotification } from "../../../../store/actions/notification";
 import useMediaQuery from "../../../../components/media";
 import { IoMenu, IoLocationSharp } from "react-icons/io5";
-import { FaLocationCrosshairs } from "react-icons/fa6";
+import {
+  FaLocationCrosshairs,
+  FaCirclePlus,
+  FaCircleMinus,
+  FaCalendarDays,
+} from "react-icons/fa6";
+import { TiWarning } from "react-icons/ti";
 import { BiSolidPencil } from "react-icons/bi";
 import { FaTrashAlt } from "react-icons/fa";
 import { RxCrossCircled } from "react-icons/rx";
-import { MdDone, MdModeEdit } from "react-icons/md";
+import { MdDone } from "react-icons/md";
+import { BiSolidLeftArrow } from "react-icons/bi";
 import { getDate, getDateString } from "../../../../helper/DateUtils";
 import {
   startOfMonth,
@@ -28,9 +35,7 @@ import axiosItineraryUpdateInstance from "../../../../services/itinerary/update"
 import { dateFormat } from "../../../../helper/DateUtils";
 import "react-dates/initialize";
 import "react-dates/lib/css/_datepicker.css";
-import { BiCalendarAlt } from "react-icons/bi";
 import moment from "moment";
-import media from "../../../../components/media";
 import { SingleDatePicker } from "react-dates";
 import styled from "styled-components";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
@@ -151,6 +156,7 @@ const RouteEditSection = (props) => {
   const [editDestination, setEditDestination] = useState(
     props.editRoute === "editDates" ? false : true
   );
+  const [destinationChanges, setDestinationChanges] = useState(false);
   const [isValidDates, setIsValidDates] = useState(true);
   const [invalidDateError, setInvalidDateError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -167,13 +173,17 @@ const RouteEditSection = (props) => {
             ...props.routes[i],
             checkin_date: getDate(props.routes[i].checkin_date),
             checkout_date: getDate(props.routes[i].checkout_date),
-            nights: differenceInDays(
-              new Date(getDate(props.routes[i].checkout_date)),
-              new Date(getDate(props.routes[i].checkin_date))
-            ),
           },
         });
+
+        if (i !== 0 && i !== props.routes.length - 1) {
+          cities[cities.length - 1].cityData.nights = differenceInDays(
+            new Date(getDate(props.routes[i].checkout_date)),
+            new Date(getDate(props.routes[i].checkin_date))
+          );
+        }
       }
+
       setDestinations(cities);
     }
   }, [props.routes]);
@@ -186,30 +196,6 @@ const RouteEditSection = (props) => {
     }
   }, [destinations, startDate, endDate]);
 
-  const handleAddDestinationButton = () => {
-    setDestinations((prev) => {
-      let flag = true;
-      let curDestinations = [...prev];
-      curDestinations = curDestinations.map((dest) => {
-        if (dest.isNewDestination) {
-          flag = false;
-          return dest;
-        }
-        dest.isEditDestination = false;
-        return dest;
-      });
-      if (flag) {
-        curDestinations.splice(curDestinations.length - 1, 0, {
-          startingCity: false,
-          endingCity: false,
-          isNewDestination: true,
-          cityData: {},
-        });
-      }
-      return curDestinations;
-    });
-  };
-
   const validateDates = () => {
     const today = new Date();
 
@@ -219,11 +205,11 @@ const RouteEditSection = (props) => {
       (!isSameDay(new Date(startDate), today) && new Date(startDate) < today)
     ) {
       setInvalidDateError(
-        `Invalid date selected for starting city (${
+        `Invalid date selected for starting city ${
           destinations[0].cityData.city_name ||
           destinations[0].cityData.name ||
           destinations[0].cityData.text
-        })`
+        }`
       );
       return false;
     }
@@ -241,11 +227,11 @@ const RouteEditSection = (props) => {
           new Date(checkin_date) < prevDate)
       ) {
         setInvalidDateError(
-          `Invalid Arrival date selected for city (${
+          `Invalid Arrival date selected for city ${
             destinations[i].cityData.city_name ||
             destinations[i].cityData.name ||
             destinations[i].cityData.text
-          })`
+          }`
         );
         return false;
       }
@@ -257,11 +243,11 @@ const RouteEditSection = (props) => {
           new Date(checkout_date) < new Date(checkin_date))
       ) {
         setInvalidDateError(
-          `Invalid Departure date selected for city (${
+          `Invalid Departure date selected for city ${
             destinations[i].cityData.city_name ||
             destinations[i].cityData.name ||
             destinations[i].cityData.text
-          })`
+          }`
         );
         return false;
       }
@@ -275,11 +261,11 @@ const RouteEditSection = (props) => {
       (!isSameDay(new Date(endDate), prevDate) && new Date(endDate) < prevDate)
     ) {
       setInvalidDateError(
-        `Invalid date selected for ending city (${
+        `Invalid date selected for ending city ${
           destinations[destinations.length - 1].cityData.city_name ||
           destinations[destinations.length - 1].cityData.name ||
           destinations[destinations.length - 1].cityData.text
-        })`
+        }`
       );
       return false;
     }
@@ -372,16 +358,7 @@ const RouteEditSection = (props) => {
       destinationRef.current &&
       !destinationRef.current.contains(event.target)
     ) {
-      setDestinations((prev) => {
-        let destinations = [...prev];
-        destinations = destinations.filter((dest) => !dest.isNewDestination);
-        destinations = destinations.map((dest) => {
-          dest.isEditDestination = false;
-          return dest;
-        });
-
-        return destinations;
-      });
+      destinationRef.current.data();
     }
   };
 
@@ -417,19 +394,32 @@ const RouteEditSection = (props) => {
         editDestination={editDestination}
         setEditDestination={setEditDestination}
       />
-      <div className="w-full h-fit md:w-[85%] lg:w-[85%] flex flex-col md:flex-row lg:flex-row items-start justify-between hide-scrollbar overflow-y-auto px-2 py-5 gap-5">
+
+      <div className="w-full h-fit md:w-[85%] lg:w-[85%] px-3 hide-scrollbar overflow-y-auto py-5">
         {editDestination ? (
-          <>
+          <div className="w-full flex flex-row justify-center gap-5">
             <EditDestinations
               destinations={destinations}
-              handleAddDestinationButton={handleAddDestinationButton}
               setDestinations={setDestinations}
               destinationRef={destinationRef}
               startDate={startDate}
               setEndDate={setEndDate}
+              setLocationsLatLong={props.setLocationsLatLong}
+              setDestinationChanges={setDestinationChanges}
             />
-            {isDesktop && <div className="w-[50%]">{props.children}</div>}
-          </>
+            {isDesktop && (
+              <div className="sticky top-0 h-[50vh] w-[50%] flex flex-col gap-3 items-center">
+                {props.children}
+
+                {destinationChanges && (
+                  <div className="flex flex-row items-center gap-2">
+                    <TiWarning className="text-2xl text-yellow-500" />
+                    <div className="text-sm">Changes to be saved</div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         ) : (
           <EditDates
             destinations={destinations}
@@ -443,6 +433,7 @@ const RouteEditSection = (props) => {
           />
         )}
       </div>
+
       <ActionPanel
         setEdit={props.setEdit}
         editDestination={editDestination}
@@ -566,302 +557,42 @@ export const EditPanel = ({ editDestination, setEditDestination }) => {
 };
 
 export const EditDestinations = (props) => {
-  return (
-    <div
-      ref={props.destinationRef}
-      className="w-full md:w-[50%] lg:w-[50%] flex flex-col items-center justify-center pb-5 gap-3"
-    >
-      <div className="w-full flex flex-row items-center justify-between">
-        <div className="text-[24px] font-semibold leading-6">Route</div>
-        <div>
-          <button
-            onClick={props.handleAddDestinationButton}
-            className="border-2 border-black rounded-lg px-4 py-2 hover:bg-black hover:text-white transition ease-in-out duration-500"
-          >
-            Add Destination
-          </button>
-        </div>
-      </div>
-      {props.destinations.length ? (
-        <div className="w-full flex flex-col">
-          <div className="mb-3.5">
-            <Destination
-              index={0}
-              startingCity={props.destinations[0].startingCity}
-              endingCity={props.destinations[0].endingCity}
-              cityData={props.destinations[0]?.cityData}
-              pinColour={props.destinations[0]?.cityData?.color}
-              setDestinations={props.setDestinations}
-              isNewDestination={props.destinations[0].isNewDestination}
-              isEditDestination={props.destinations[0].isEditDestination}
-            />
-          </div>
-          <DragDrop {...props} />
-          <Destination
-            index={props.destinations.length - 1}
-            startingCity={
-              props.destinations[props.destinations.length - 1].startingCity
-            }
-            endingCity={
-              props.destinations[props.destinations.length - 1].endingCity
-            }
-            cityData={
-              props.destinations[props.destinations.length - 1]?.cityData
-            }
-            pinColour={
-              props.destinations[props.destinations.length - 1]?.cityData?.color
-            }
-            setDestinations={props.setDestinations}
-            isNewDestination={
-              props.destinations[props.destinations.length - 1].isNewDestination
-            }
-            isEditDestination={
-              props.destinations[props.destinations.length - 1]
-                .isEditDestination
-            }
-          />
-        </div>
-      ) : null}
-    </div>
-  );
-};
+  const [popUp, setPopUp] = useState(false);
 
-export const Destination = (props) => {
-  const {
-    startingCity,
-    endingCity,
-    isNewDestination,
-    isEditDestination,
-    cityData,
-    pinColour,
-    index,
-    setDestinations,
-  } = props;
+  function updateLatLong(items) {
+    props.setLocationsLatLong((prev) => {
+      let locations = [...prev];
+      const newLocations = [];
 
-  const handleRemoveDestination = () => {
-    setDestinations((prev) => {
-      return prev.filter((dest, i) => i !== index);
-    });
-  };
+      for (let i = 1; i < items.length - 1; i++) {
+        const lat = items[i].cityData.lat;
+        const long = items[i].cityData.long;
+        const color = items[i].cityData.color;
+        const name = items[i].cityData.name;
 
-  const handleEditDestination = () => {
-    setDestinations((prev) => {
-      let destinations = [...prev];
-      destinations = destinations.filter((dest) => !dest.isNewDestination);
-      destinations = destinations.map((dest) => {
-        dest.isEditDestination = false;
-        return dest;
-      });
-      const curDestination = destinations[index];
-      destinations[index] = {
-        startingCity: curDestination.startingCity,
-        endingCity: curDestination.endingCity,
-        isEditDestination: true,
-        cityData: { ...curDestination.cityData },
-      };
-      return destinations;
-    });
-  };
-
-  if (isNewDestination || isEditDestination) {
-    return (
-      <NewDestination
-        index={index}
-        cityData={cityData}
-        handleRemoveDestination={handleRemoveDestination}
-        startingCity={startingCity}
-        endingCity={endingCity}
-        setDestinations={setDestinations}
-      />
-    );
-  }
-
-  return (
-    <div
-      className={`w-full flex border-1 border-gray-200 shadow-sm rounded-lg px-3 py-2`}
-    >
-      <div className="w-full flex flex-row items-center justify-between">
-        <div className="flex flex-row items-center gap-3">
-          <IoMenu
-            className={`text-3xl ${
-              !(startingCity || endingCity)
-                ? "cursor-grab active:cursor-grabbing"
-                : "text-gray-300"
-            } `}
-          />
-          {startingCity ? (
-            <FaLocationCrosshairs className="text-xl" />
-          ) : (
-            <IoLocationSharp
-              className={`text-xl`}
-              style={{ color: pinColour }}
-            />
-          )}
-
-          <div
-            onClick={handleEditDestination}
-            className="text-lg font-semibold cursor-pointer"
-          >
-            {cityData.city_name || cityData.name || cityData.text}
-          </div>
-        </div>
-        <div className="flex flex-row items-center gap-3">
-          <BiSolidPencil
-            onClick={handleEditDestination}
-            className="text-xl cursor-pointer"
-          />
-          {!startingCity && !endingCity && (
-            <FaTrashAlt
-              onClick={handleRemoveDestination}
-              className="text-xl cursor-pointer"
-            />
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export const NewDestination = (props) => {
-  const {
-    index,
-    handleRemoveDestination,
-    cityData,
-    startingCity,
-    endingCity,
-    setDestinations,
-  } = props;
-  const [search, setSearch] = useState(
-    cityData.city_name || cityData.name || cityData.text
-  );
-  const [searchResults, setSearchResults] = useState(null);
-
-  useEffect(() => {
-    handleDestinationSeach();
-
-    return () => {
-      setSearchResults(null);
-    };
-  }, [search]);
-
-  const clearSearch = () => {
-    setSearch("");
-  };
-
-  const handleCloseEdit = () => {
-    setDestinations((prev) => {
-      let destinations = [...prev];
-      destinations = destinations.map((dest) => {
-        if (dest.isNewDestination || dest.isEditDestination) {
-          dest.isNewDestination = false;
-          dest.isEditDestination = false;
-        }
-        return dest;
-      });
-
-      return destinations;
-    });
-  };
-
-  const handleDestinationSeach = () => {
-    if (startingCity || endingCity) {
-      axiossearchstartinginstance
-        .get(`?q=${search}`)
-        .then((results) => {
-          setSearchResults(results.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } else {
-      axiossearchinstance
-        .get(`?type=Location&q=${search}`)
-        .then((results) => {
-          setSearchResults(results.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-  };
-
-  const handleSetDestination = (i) => {
-    setDestinations((prev) => {
-      let destinations = [...prev];
-
-      const curDestination = destinations[index];
-      destinations[index] = {
-        startingCity: curDestination.startingCity,
-        endingCity: curDestination.endingCity,
-        isNewDestination: false,
-        isEditDestination: false,
-        cityData: { ...searchResults[i] },
-      };
-      return destinations;
-    });
-  };
-
-  return (
-    <div className="relative w-full flex border-1 border-black shadow-sm rounded-lg px-3 py-2">
-      <div className="w-full flex flex-row gap-2 items-center justify-between">
-        <div className="w-full flex flex-row items-center gap-3">
-          <IoLocationSharp
-            className={`text-xl`}
-            style={{ color: cityData.color }}
-          />
-
-          <div className="w-full text-lg font-semibold">
-            <input
-              type="text"
-              autoFocus
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search Destination"
-              className="focus:outline-none w-full"
-            ></input>
-          </div>
-        </div>
-        <div className="flex flex-row items-center gap-3">
-          {
-            <RxCrossCircled
-              onClick={() => clearSearch()}
-              className="text-2xl cursor-pointer"
-            />
+        if (color) {
+          const location = locations.find((item) => item.color === color);
+          if (location) {
+            newLocations.push(location);
+          } else {
+            newLocations.push({
+              lat: lat,
+              long: long,
+              name: name,
+            });
           }
-        </div>
-      </div>
+        } else if (lat && long) {
+          newLocations.push({
+            lat: lat,
+            long: long,
+            name: name,
+          });
+        }
+      }
 
-      {searchResults && searchResults.length ? (
-        <div className="absolute fixed top-10 left-[0%] w-[100%] max-h-64 overflow-y-auto border-2 rounded-lg bg-white p-2 flex flex-col gap-3">
-          {searchResults.map((res, ind) => (
-            <div
-              key={ind}
-              onClick={() => handleSetDestination(ind)}
-              className="cursor-pointer flex flex-row items-center gap-3 hover:bg-gray-100 rounded-full"
-            >
-              <div className="w-12 h-12 bg-gray-200 rounded-full p-2 flex items-center justify-center">
-                <IoLocationSharp className="text-lg text-black" />
-              </div>
-              <div className="flex flex-col">
-                <div className="text-sm font-semibold">
-                  {startingCity || endingCity ? res.text : res.name}
-                </div>
-                {!(startingCity || endingCity) && (
-                  <div className="text-sm text-gray-500">
-                    {res.parent}, {res.country}
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : null}
-    </div>
-  );
-};
-
-export const DragDrop = (props) => {
-  const { destinations, setDestinations, setEndDate } = props;
+      return newLocations;
+    });
+  }
 
   function updateDestinationsDates(destinations) {
     let prevDate = getDate(props.startDate);
@@ -869,7 +600,7 @@ export const DragDrop = (props) => {
     for (let i = 1; i < destinations.length - 1; i++) {
       const dest = destinations[i];
       const checkInDate = prevDate;
-      const checkOutDate = dest.cityData.nights
+      const checkOutDate = dest?.cityData?.nights
         ? getDateString(
             addDays(new Date(getDate(prevDate)), dest.cityData.nights)
           )
@@ -880,10 +611,48 @@ export const DragDrop = (props) => {
       prevDate = checkOutDate;
     }
 
-    setEndDate(prevDate);
-
-    return destinations;
+    props.setEndDate(prevDate);
   }
+
+  return (
+    <div className="w-full md:w-[40%] lg:w-[40%] flex flex-col items-center justify-center pb-[150px] gap-3">
+      <div className="w-full flex flex-row items-center justify-between">
+        <div className="text-[24px] font-semibold leading-6">Route</div>
+
+        <div>
+          <button
+            onClick={() => setPopUp(true)}
+            className="border-2 border-black rounded-lg px-4 py-2 hover:bg-black hover:text-white transition ease-in-out duration-500"
+          >
+            Add Destination
+          </button>
+        </div>
+      </div>
+
+      {props.destinations.length ? (
+        <DragDrop
+          popUp={popUp}
+          setPopUp={setPopUp}
+          updateLatLong={updateLatLong}
+          updateDestinationsDates={updateDestinationsDates}
+          {...props}
+        />
+      ) : null}
+    </div>
+  );
+};
+
+export const DragDrop = (props) => {
+  const {
+    destinations,
+    setDestinations,
+    updateLatLong,
+    updateDestinationsDates,
+    popUp,
+    setPopUp,
+    setDestinationChanges,
+    destinationRef,
+  } = props;
 
   const reorder = (list, startIndex, endIndex) => {
     const result = Array.from(list);
@@ -912,7 +681,11 @@ export const DragDrop = (props) => {
       result.destination.index
     );
 
-    items = updateDestinationsDates(items);
+    updateDestinationsDates(items);
+
+    updateLatLong(items);
+
+    setDestinationChanges(true);
 
     setDestinations(items);
   }
@@ -932,7 +705,21 @@ export const DragDrop = (props) => {
   const getListStyle = (isDraggingOver) => ({});
 
   return (
-    <div>
+    <div className="w-full flex flex-col relative">
+      <div className="mb-3.5">
+        <Destination
+          index={0}
+          startingCity={props.destinations[0].startingCity}
+          endingCity={props.destinations[0].endingCity}
+          cityData={props.destinations[0]?.cityData}
+          pinColour={props.destinations[0]?.cityData?.color}
+          setDestinations={props.setDestinations}
+          updateDestinationsDates={updateDestinationsDates}
+          setDestinationChanges={setDestinationChanges}
+          destinationRef={destinationRef}
+        />
+      </div>
+
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="droppable">
           {(provided, snapshot) => (
@@ -969,8 +756,11 @@ export const DragDrop = (props) => {
                             cityData={item?.cityData}
                             pinColour={item?.cityData?.color}
                             setDestinations={props.setDestinations}
-                            isNewDestination={item.isNewDestination}
-                            isEditDestination={item.isEditDestination}
+                            updateLatLong={updateLatLong}
+                            setPopUp={setPopUp}
+                            updateDestinationsDates={updateDestinationsDates}
+                            setDestinationChanges={setDestinationChanges}
+                            destinationRef={destinationRef}
                           />
                         </div>
                       )}
@@ -982,6 +772,367 @@ export const DragDrop = (props) => {
           )}
         </Droppable>
       </DragDropContext>
+
+      {popUp && (
+        <DestinationPopUp
+          setDestinations={setDestinations}
+          updateLatLong={updateLatLong}
+          setPopUp={setPopUp}
+          updateDestinationsDates={updateDestinationsDates}
+          setDestinationChanges={setDestinationChanges}
+          destinationRef={destinationRef}
+        />
+      )}
+
+      <Destination
+        index={props.destinations.length - 1}
+        startingCity={
+          props.destinations[props.destinations.length - 1].startingCity
+        }
+        endingCity={
+          props.destinations[props.destinations.length - 1].endingCity
+        }
+        cityData={props.destinations[props.destinations.length - 1]?.cityData}
+        pinColour={
+          props.destinations[props.destinations.length - 1]?.cityData?.color
+        }
+        setDestinations={props.setDestinations}
+        updateDestinationsDates={updateDestinationsDates}
+        setDestinationChanges={setDestinationChanges}
+        destinationRef={destinationRef}
+      />
+    </div>
+  );
+};
+
+export const Destination = (props) => {
+  const {
+    startingCity,
+    endingCity,
+    cityData,
+    pinColour,
+    index,
+    setDestinations,
+    updateLatLong,
+    updateDestinationsDates,
+    setDestinationChanges,
+    destinationRef,
+  } = props;
+
+  const [popUp, setPopUp] = useState(false);
+
+  const handleRemoveDestination = (e) => {
+    e.stopPropagation();
+
+    setDestinationChanges(true);
+
+    setDestinations((prev) => {
+      const updatedDestinations = prev.filter((dest, i) => i !== index);
+      updateLatLong(updatedDestinations);
+      return updatedDestinations;
+    });
+  };
+
+  const handleEditDestination = () => {
+    setPopUp(true);
+  };
+
+  return (
+    <div
+      className={`relative w-full flex border-1 border-gray-200 shadow-sm rounded-lg px-3 py-2`}
+    >
+      {popUp && (
+        <DestinationPopUp
+          index={index}
+          cityData={cityData}
+          startingCity={startingCity}
+          endingCity={endingCity}
+          setDestinations={props.setDestinations}
+          updateLatLong={updateLatLong}
+          setPopUp={setPopUp}
+          updateDestinationsDates={updateDestinationsDates}
+          setDestinationChanges={setDestinationChanges}
+          destinationRef={destinationRef}
+        />
+      )}
+
+      <div
+        onClick={() => setPopUp(true)}
+        className="w-full flex flex-row items-center justify-between"
+      >
+        <div className="flex flex-row items-center gap-3">
+          <IoMenu
+            className={`text-3xl ${
+              !(startingCity || endingCity)
+                ? "cursor-grab active:cursor-grabbing"
+                : "text-gray-300"
+            } `}
+          />
+
+          {startingCity || endingCity ? (
+            <FaLocationCrosshairs className="text-xl" />
+          ) : (
+            <IoLocationSharp
+              className={`text-xl`}
+              style={{ color: pinColour }}
+            />
+          )}
+
+          <div
+            onClick={handleEditDestination}
+            className="text-lg font-medium cursor-pointer flex flex-row gap-5"
+          >
+            {cityData.city_name || cityData.name || cityData.text}{" "}
+            {!(startingCity || endingCity) && cityData?.nights
+              ? ` - ${cityData.nights} ${
+                  cityData.nights > 1 ? "Nights" : "Night"
+                }`
+              : null}
+          </div>
+        </div>
+
+        <div className="flex flex-row items-center gap-3">
+          <BiSolidPencil
+            onClick={handleEditDestination}
+            className="text-xl cursor-pointer"
+          />
+
+          {!startingCity && !endingCity && (
+            <FaTrashAlt
+              onClick={(e) => handleRemoveDestination(e)}
+              className="text-xl cursor-pointer"
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const DestinationPopUp = (props) => {
+  const {
+    index,
+    cityData,
+    startingCity,
+    endingCity,
+    setDestinations,
+    updateLatLong,
+    updateDestinationsDates,
+    setPopUp,
+    setDestinationChanges,
+    destinationRef,
+  } = props;
+
+  const [search, setSearch] = useState(
+    (cityData?.city_name || cityData?.name || cityData?.text) ?? ""
+  );
+  const [destination, setDestination] = useState(cityData);
+  const [days, setDays] = useState(cityData?.nights ?? 1);
+  const [searchResults, setSearchResults] = useState(null);
+
+  useEffect(() => {
+    destinationRef.current.data = () => setPopUp(false);
+    return () => {
+      setSearchResults(null);
+      setPopUp(null);
+    };
+  }, []);
+
+  const handleSearch = (e) => {
+    if (e.target.value) {
+      handleDestinationSeach(e.target.value);
+    }
+    setSearch(e.target.value);
+  };
+
+  const handleDestinationSeach = (value) => {
+    if (startingCity || endingCity) {
+      axiossearchstartinginstance
+        .get(`?q=${value}`)
+        .then((results) => {
+          setSearchResults(results.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      axiossearchinstance
+        .get(`?type=Location&q=${value}`)
+        .then((results) => {
+          setSearchResults(results.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+
+  const handleSetDestination = (i) => {
+    setSearch(
+      searchResults[i].name || searchResults[i].text || searchResults[i].name
+    );
+
+    setDestination((prev) => {
+      if (prev && prev?.resource_id === searchResults[i]?.resource_id) {
+        return prev;
+      } else if (prev && prev?.place_id === searchResults[i]?.place_id) {
+        return prev;
+      }
+
+      return searchResults[i];
+    });
+
+    setSearchResults(null);
+  };
+
+  const handleUpdateDestination = () => {
+    setDestinationChanges(true);
+
+    setDestinations((prev) => {
+      let destinations = [...prev];
+      const curDestination = destinations[index];
+
+      if (curDestination) {
+        if (curDestination.startingCity || curDestination.endingCity) {
+          destinations[index] = {
+            startingCity: curDestination.startingCity,
+            endingCity: curDestination.endingCity,
+            cityData: {
+              ...destination,
+            },
+          };
+        } else {
+          destinations[index] = {
+            startingCity: curDestination.startingCity,
+            endingCity: curDestination.endingCity,
+            cityData: {
+              ...destination,
+              nights: days,
+            },
+          };
+        }
+      } else {
+        destinations.splice(destinations.length - 1, 0, {
+          startingCity: false,
+          endingCity: false,
+          cityData: {
+            ...destination,
+            nights: days,
+          },
+        });
+      }
+
+      updateDestinationsDates(destinations);
+
+      updateLatLong(destinations);
+
+      return destinations;
+    });
+
+    setPopUp(false);
+  };
+
+  return (
+    <div
+      ref={destinationRef}
+      className={`z-50 w-[80%] lg:w-[80%] absolute ${
+        index !== undefined
+          ? `top-0 left-[15%] lg:left-[30%]`
+          : "-bottom-[150px] left-[15%]"
+      }  bg-gray-200 rounded-lg`}
+    >
+      <div className="relative flex flex-col gap-3 p-3">
+        <BiSolidLeftArrow className="text-2xl absolute left-[-18px] text-gray-200" />
+
+        <RxCrossCircled
+          onClick={() => setPopUp(false)}
+          className="text-2xl cursor-pointer absolute right-2 top-2"
+        />
+
+        <div className="text-sm font-semibold px-2">
+          {startingCity
+            ? "Where is your trip starting from?"
+            : endingCity
+            ? "Where is your trip ending?"
+            : "What do you want to explore?"}
+        </div>
+
+        <div className="relative flex flex-row items-center justify-between gap-3 w-full text-sm rounded-lg p-2 bg-white border-2 border-gray-300">
+          <IoLocationSharp
+            className={`text-xl`}
+            style={{ color: cityData?.color }}
+          />
+          <input
+            type="text"
+            autoFocus
+            value={search}
+            onChange={(e) => handleSearch(e)}
+            placeholder="Search Destination"
+            className="focus:outline-none w-full"
+          ></input>
+          <RxCrossCircled
+            onClick={() => setSearch("")}
+            className="text-2xl cursor-pointer"
+          />
+
+          {searchResults && searchResults.length ? (
+            <div className="absolute fixed top-10 left-[0%] w-[100%] max-h-64 overflow-y-auto border-2 rounded-lg bg-white p-2 flex flex-col gap-3">
+              {searchResults.map((res, ind) => (
+                <div
+                  key={ind}
+                  onClick={() => handleSetDestination(ind)}
+                  className="cursor-pointer flex flex-row items-center gap-3 hover:bg-gray-100 rounded-full"
+                >
+                  <div className="w-10 h-10 bg-gray-200 rounded-full p-2 flex items-center justify-center">
+                    <IoLocationSharp className="text-lg text-black" />
+                  </div>
+                  <div className="flex flex-col">
+                    <div className="text-sm">
+                      {startingCity || endingCity ? res.text : res.name}
+                    </div>
+                    {!(startingCity || endingCity) && (
+                      <div className="text-sm text-gray-500">
+                        {res.parent}, {res.country}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : null}
+        </div>
+
+        {!(startingCity || endingCity) && (
+          <div className="flex flex-row items-center justify-between w-full text-sm rounded-lg p-2 bg-white border-2 border-gray-300">
+            <div className="flex flex-row items-center gap-3">
+              <FaCalendarDays className="" />
+
+              <div className="text-sm">Number of nights</div>
+            </div>
+
+            <div className="flex flex-row items-center justify-between gap-2">
+              <FaCircleMinus
+                onClick={() =>
+                  setDays((prev) => (prev === 1 ? prev : prev - 1))
+                }
+                className="text-2xl cursor-pointer"
+              />
+              <div className="text-center">{days}</div>
+              <FaCirclePlus
+                onClick={() => setDays((prev) => prev + 1)}
+                className="text-2xl cursor-pointer"
+              />
+            </div>
+          </div>
+        )}
+
+        <button
+          onClick={handleUpdateDestination}
+          className="w-full bg-yellow rounded-lg border-2 border-black p-2 text-sm font-semibold"
+        >
+          Update
+        </button>
+      </div>
     </div>
   );
 };
@@ -1669,8 +1820,6 @@ export const Month = ({ firstDay, days, startDate, endDate }) => {
 export const DatePicker = (props) => {
   const [focusedInput, setFocusedInput] = useState(false);
 
-  let isPageWide = media("(min-width: 768px)");
-
   function handleFocus() {
     setFocusedInput(true);
   }
@@ -1683,7 +1832,7 @@ export const DatePicker = (props) => {
   };
 
   return (
-    <Container onClick={handleFocus} className="flex flex-col">
+    <Container onClick={handleFocus} className="flex flex-col w-[80%]">
       <SingleDatePicker
         readOnly={true}
         initialVisibleMonth={initialMonth}
@@ -1706,7 +1855,7 @@ export const DatePicker = (props) => {
       />
       <CalenderIcons className="p-2 py-3">
         <Icon>
-          <BiCalendarAlt />
+          <FaCalendarDays />
         </Icon>
       </CalenderIcons>
     </Container>
@@ -1731,12 +1880,10 @@ export const ActionPanel = (props) => {
           {editDestination ? "Cancel" : "Back"}
         </button>
         <button
-          onClick={
-            editDestination ? () => setEditDestination(false) : handleSaveButton
-          }
+          onClick={handleSaveButton}
           className="bg-[#F7E700] px-5 py-2 rounded-lg border-2 border-black hover:text-white hover:bg-black transition ease-in-out duration-500"
         >
-          {editDestination ? "Next" : "Save"}
+          Save
         </button>
       </div>
     </div>

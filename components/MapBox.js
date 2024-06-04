@@ -13,12 +13,26 @@ import ReactLeafletGoogleLayer from "react-leaflet-google-layer";
 import MarkerClusterGroup from "@changey/react-leaflet-markercluster";
 import "@changey/react-leaflet-markercluster/dist/styles.min.css";
 import { MAPBOX_ACCESS_TOKEN } from "../services/constants";
+import { FaLocationPin } from "react-icons/fa6";
+import ReactDOMServer from "react-dom/server";
 
 const limeOptions = {
   color: "#004d6994",
   dashArray: "10, 5", // Defines the pattern of the dashed line (10 units of solid line, 5 units of blank space)
   dashOffset: "15",
 };
+
+const CustomMarkerIcon = ({ index, color }) => (
+  <div className="-mt-4 relative">
+    <FaLocationPin
+      style={{ color: color ? color : "#111" }}
+      className={`text-[40px] font-bold`}
+    />
+    <span className="absolute top-[8px] left-[17px] text-white text-xs font-bold">
+      {index + 1}
+    </span>
+  </div>
+);
 
 const Mapbox = React.memo((props) => {
   const [polylines, setPolylines] = useState();
@@ -87,16 +101,9 @@ const Mapbox = React.memo((props) => {
             draggable={false}
             icon={divIcon({
               className: "icon",
-              html: `
-                <div class="-mt-1 -ml-2 group w-[40px] h-[40px] rounded-full grid place-items-center">
-                    <div class="-mt-2 drop-shadow-lg group-hover:animate-bounce rounded-full w-[30px] h-[30px] flex justify-center items-center" style="background-color: ${
-                      location.color ? location.color : "#111"
-                    };">
-                    <span class="text-white text-xs font-bold  ">  ${
-                      index + 1
-                    }</span>
-                    </div>
-                </div>`,
+              html: ReactDOMServer.renderToStaticMarkup(
+                <CustomMarkerIcon index={index} color={location?.color} />
+              ),
               iconSize: 20,
             })}
           >

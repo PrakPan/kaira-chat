@@ -1121,36 +1121,34 @@ function newFunction(
         }
       }
 
-  if (!citydatadone) {
-    async function processRoutes2(props) {
-      for (var i = 0; i < props.breif.city_slabs.length; i++) {
-        if (props.breif.city_slabs[i].long) {
-          CityDataTemp.push(props.breif.city_slabs[i]);
-        } else {
-          if (
-            props.breif.city_slabs[i].city_id &&
-            props.breif.city_slabs[i].duration > "0"
-          ) {
-            try {
-              const data = await getCityDetails(
-                props.breif.city_slabs[i].city_id
-              );
-              const updatedRoutes = replaceLatLong(
-                props.breif.city_slabs[i],
-                data
-              );
-              CityDataTemp.push(updatedRoutes);
-            } catch (error) {
-              console.error(error);
-            }
+  async function processRoutes2(props) {
+    for (var i = 0; i < props.breif.city_slabs.length; i++) {
+      if (props.breif.city_slabs[i].long) {
+        CityDataTemp.push(props.breif.city_slabs[i]);
+      } else {
+        if (
+          props.breif.city_slabs[i].city_id &&
+          props.breif.city_slabs[i].duration > "0"
+        ) {
+          try {
+            const data = await getCityDetails(
+              props.breif.city_slabs[i].city_id
+            );
+            const updatedRoutes = replaceLatLong(
+              props.breif.city_slabs[i],
+              data
+            );
+            CityDataTemp.push(updatedRoutes);
+          } catch (error) {
+            console.error(error);
           }
         }
       }
-      setcitydatadone(true);
-      setCityData(CityDataTemp);
     }
-    processRoutes2(props);
+    setcitydatadone(true);
+    setCityData(CityDataTemp);
   }
+  processRoutes2(props);
 
   if (props.routes) {
     async function processRoutes(props) {

@@ -1,18 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useRouter } from "next/router";
 import DesktopBanner from "../../../components/containers/Banner";
 import Banner from "../../homepage/banner/Mobile";
 import Route from "../../newitinerary/breif/route/Index";
-import dynamic from "next/dynamic";
 import Drawer from "../../../components/drawers/cityDetails/CityDetailsDrawer";
 import RouteEditSection from "../../newitinerary/breif/route/RouteEditSection.js";
-import { getHumanDate } from "../../../services/getHumanDate";
-import WeatherWidget from "../../../components/WeatherWidget/WeatherWidget";
-import ImageLoader from "../../../components/ImageLoader.js";
-const MapBox = dynamic(() => import("../../../components/NewMapBox.js"), {
-  ssr: false,
-});
+import RoutesMap from "./RoutesMap.js";
 
 const DetailsContainer = styled.div`
   width: 100%;
@@ -44,19 +38,65 @@ const Details = (props) => {
   const [showDrawer, setShowDrawer] = useState(false);
   const [showDrawerData, setShowDrawerData] = useState(false);
   const [currentPopup, setCurrentPopup] = useState(false);
-  const [mapLoaded, setMapLoaded] = useState(false);
+  const [locationsLatLong, setLocationsLatLong] = useState([]);
 
-  function scrollToTargetAdjusted(id) {
-    const element = document.getElementById(id);
-    const headerOffset = 117;
-    const elementPosition = element.getBoundingClientRect().top;
-    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+  useEffect(() => {
+    const Locationlatlong = [];
 
-    window.scrollTo({
-      top: offsetPosition,
-      behavior: "smooth",
-    });
-  }
+    if (props.routesData.length >= 1) {
+      for (var i = 0; i < props.routesData.length; i++) {
+        var postion = props.breif.city_slabs[i + 1];
+        if (
+          props.routesData[i].duration &&
+          props.routesData[i].duration !== "0"
+        ) {
+          Locationlatlong.push({
+            dayId: getdayId(
+              props.routesData[i].day_slab_location.start_day_slab_index
+            ),
+            cityData: postion,
+            id: props.routesData[i].gmaps_place_id,
+            city_id: props.routesData[i].city_id,
+            lat: props.routesData[i].lat,
+            long: props.routesData[i].long,
+            name: props.routesData[i].city_name,
+            duration: props.routesData[i].duration,
+            color: props.routesData[i].color,
+            date: getdateId(
+              props.routesData[i].day_slab_location.start_day_slab_index
+            ),
+          });
+        }
+      }
+    } else {
+      if (props.CityData.length >= 1) {
+        for (var i = 0; i < props.CityData.length; i++) {
+          var postion = props.CityData[i];
+          if (
+            !postion.is_departure_only &&
+            !postion.is_trip_terminated &&
+            postion.duration &&
+            postion.duration !== "0"
+          ) {
+            Locationlatlong.push({
+              dayId: getdayId(postion.day_slab_location.start_day_slab_index),
+              cityData: postion,
+              id: postion.gmaps_place_id,
+              city_id: postion.city_id,
+              lat: postion.lat,
+              long: postion.long,
+              name: postion.city_name,
+              duration: postion.duration,
+              color: postion.color,
+              date: getdateId(postion.day_slab_location.start_day_slab_index),
+            });
+          }
+        }
+      }
+    }
+
+    setLocationsLatLong(Locationlatlong);
+  }, [props.routesData, props.CityData]);
 
   const _handleTailoredRedirect = (e) => {
     router.push("/tailored-travel");
@@ -70,115 +110,14 @@ const Details = (props) => {
     return props.itinerary?.day_slabs[id]?.slab;
   };
 
-  const Locationlatlong = [];
-  if (props.routesData.length >= 1) {
-    for (var i = 0; i < props.routesData.length; i++) {
-      var postion = props.breif.city_slabs[i + 1];
-      if (
-        props.routesData[i].duration &&
-        props.routesData[i].duration !== "0"
-      ) {
-        Locationlatlong.push({
-          dayId: getdayId(
-            props.routesData[i].day_slab_location.start_day_slab_index
-          ),
-          cityData: postion,
-          id: props.routesData[i].gmaps_place_id,
-          city_id: props.routesData[i].city_id,
-          lat: props.routesData[i].lat,
-          long: props.routesData[i].long,
-          name: props.routesData[i].city_name,
-          duration: props.routesData[i].duration,
-          color: props.routesData[i].color,
-          date: getdateId(
-            props.routesData[i].day_slab_location.start_day_slab_index
-          ),
-        });
-      }
-    }
-  } else {
-    if (props.CityData.length >= 1) {
-      for (var i = 0; i < props.CityData.length; i++) {
-        var postion = props.CityData[i];
-        if (
-          !postion.is_departure_only &&
-          !postion.is_trip_terminated &&
-          postion.duration &&
-          postion.duration !== "0"
-        ) {
-          Locationlatlong.push({
-            dayId: getdayId(postion.day_slab_location.start_day_slab_index),
-            cityData: postion,
-            id: postion.gmaps_place_id,
-            city_id: postion.city_id,
-            lat: postion.lat,
-            long: postion.long,
-            name: postion.city_name,
-            duration: postion.duration,
-            color: postion.color,
-            date: getdateId(postion.day_slab_location.start_day_slab_index),
-          });
-        }
-      }
-    }
-  }
-
   function findDayIdByCityId(cityId) {
-    for (const item of Locationlatlong) {
+    for (const item of locationsLatLong) {
       if (item.city_id === cityId) {
         return item.dayId;
       }
     }
     return null; // Return null if city_id is not found in the array
   }
-
-  const InfoWindowContainer = (location) => (
-    <div className="w-full flex flex-row gap-3">
-      <ImageLoader
-        borderRadius="8px"
-        url={location?.cityData?.image}
-        height={150}
-        width={150}
-        heightMobile="auto"
-        dimensionsMobile={{ width: 150, height: 150 }}
-      ></ImageLoader>
-
-      <div className="flex flex-col gap-2">
-        <div>
-          <div className="font-bold text-lg text-[#270e0e] text-nowrap">
-            {location.name} - {location?.duration} Nights
-          </div>
-          <div className="font-semibold">{getHumanDate(location.date)}</div>
-        </div>
-
-        <WeatherWidget
-          location={location}
-          city={location?.name}
-          description={location?.cityData?.short_description}
-          setShowDrawer={setShowDrawer}
-          setShowDrawerData={setShowDrawerData}
-          noSkeleton
-        />
-
-        <div
-          className={`text-nowrap relative rounded w-fit cursor-pointer bg-slate-600 px-2 py-2 text-xs font-semibold text-white shadow-sm  hover:bg-[#BF3535] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
-          onClick={() => scrollToTargetAdjusted(location.dayId)}
-        >
-          View {location.name} in your Itinerary
-        </div>
-      </div>
-    </div>
-  );
-
-  const MapWithNoSSR = ({ setShowDrawer, setShowDrawerData }) => (
-    <MapBox
-      height="100%"
-      InfoWindowContainer={InfoWindowContainer}
-      locations={Locationlatlong}
-      setShowDrawer={setShowDrawer}
-      setShowDrawerData={setShowDrawerData}
-    />
-  );
 
   return (
     <div className="mt-16">
@@ -191,14 +130,11 @@ const Details = (props) => {
             className="absolute w-[100%] h-[100%] rounded-xl"
             style={{ overflow: "hidden" }}
           >
-            {Locationlatlong.length >= 1 ? (
-              <MapWithNoSSR
-                setShowDrawer={setShowDrawer}
-                setShowDrawerData={setShowDrawerData}
-              />
-            ) : (
-              <div></div>
-            )}
+            <RoutesMap
+              locations={locationsLatLong}
+              setShowDrawer={setShowDrawer}
+              setShowDrawerData={setShowDrawerData}
+            />
           </div>
         </div>
 
@@ -240,25 +176,14 @@ const Details = (props) => {
           travellerType={props.travellerType}
           fetchData={props.fetchData}
           setShowLoginModal={props.setShowLoginModal}
+          setLocationsLatLong={setLocationsLatLong}
         >
-          <div
-            className="sticky lg:w-full lg:h-[50vh] rounded-xl"
-            id="MapcontainerRouteEditSection"
-          >
-            <div
-              className="absolute w-[100%] h-[100%] rounded-xl"
-              style={{ overflow: "hidden" }}
-            >
-              {Locationlatlong.length >= 1 ? (
-                <MapWithNoSSR
-                  setShowDrawer={setShowDrawer}
-                  setShowDrawerData={setShowDrawerData}
-                />
-              ) : (
-                <div></div>
-              )}
-            </div>
-          </div>
+          <RoutesMap
+            locations={locationsLatLong}
+            setShowDrawer={setShowDrawer}
+            setShowDrawerData={setShowDrawerData}
+            setEditRoute={props.setEditRoute}
+          />
         </RouteEditSection>
       )}
 
