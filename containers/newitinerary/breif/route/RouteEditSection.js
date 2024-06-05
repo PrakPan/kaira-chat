@@ -866,9 +866,9 @@ export const Destination = (props) => {
 
       <div
         onClick={() => setPopUp(true)}
-        className="w-full flex flex-row items-center justify-between"
+        className="w-full flex flex-row items-center justify-between gap-3"
       >
-        <div className="flex flex-row items-center gap-3">
+        <div className="w-[60%] flex flex-row items-center gap-3">
           <IoMenu
             className={`text-3xl ${
               !(startingCity || endingCity)
@@ -888,18 +888,26 @@ export const Destination = (props) => {
 
           <div
             onClick={handleEditDestination}
-            className="text-lg font-medium cursor-pointer flex flex-row gap-5"
+            className="text-sm lg:text-lg font-medium cursor-pointer flex flex-row gap-5"
           >
             {cityData.city_name || cityData.name || cityData.text}{" "}
-            {!(startingCity || endingCity) && cityData?.nights
-              ? ` - ${cityData.nights} ${
-                  cityData.nights > 1 ? "Nights" : "Night"
-                }`
-              : null}
           </div>
         </div>
 
-        <div className="flex flex-row items-center gap-3">
+        {!(startingCity || endingCity) && (
+          <div className="w-[30%] h-full flex flex-row items-center gap-2">
+            <div className="h-[80%] w-[2px] rounded-lg bg-gray-400"></div>
+            <div className="text-sm text-gray-500">
+              {!(startingCity || endingCity) && cityData?.nights
+                ? `${cityData.nights} ${
+                    cityData.nights > 1 ? "Nights" : "Night"
+                  }`
+                : null}
+            </div>
+          </div>
+        )}
+
+        <div className="flex flex-row items-center gap-3 justify-self-end">
           <BiSolidPencil
             onClick={handleEditDestination}
             className="text-xl cursor-pointer"
