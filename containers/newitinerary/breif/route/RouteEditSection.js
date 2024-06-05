@@ -9,9 +9,8 @@ import {
   FaCircleMinus,
   FaCalendarDays,
 } from "react-icons/fa6";
-import { TiWarning } from "react-icons/ti";
 import { BiSolidPencil } from "react-icons/bi";
-import { FaTrashAlt } from "react-icons/fa";
+import { FaTrashAlt, FaInfoCircle } from "react-icons/fa";
 import { RxCrossCircled } from "react-icons/rx";
 import { MdDone } from "react-icons/md";
 import { BiSolidLeftArrow } from "react-icons/bi";
@@ -141,6 +140,16 @@ const Icon = styled.div`
   margin-right: 5px;
   margin-top: -5px;
 `;
+
+const CITY_COLOR_CODES = [
+  "#359EBF", // shade of blue
+  "#F0C631", // shade of yellow
+  "#BF3535", // shade of red
+  "#47691e", // shade of green
+  "#cc610a", // shade of orange
+  "#008080", // shade of teal
+  "#7d5e7d", // shade of purple
+];
 
 const RouteEditSection = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
@@ -411,7 +420,7 @@ const RouteEditSection = (props) => {
 
                 {destinationChanges && (
                   <div className="flex flex-row items-center gap-2">
-                    <TiWarning className="text-2xl text-yellow-500" />
+                    <FaInfoCircle className="text-2xl text-yellow-500" />
                     <div className="text-sm">Changes to be saved</div>
                   </div>
                 )}
@@ -565,9 +574,17 @@ export const EditDestinations = (props) => {
         const long = items[i].cityData.long;
         const color = items[i].cityData.color;
         const name = items[i].cityData.name;
+        const nights = items[i].cityData.nights;
 
         if (color) {
-          const location = locations.find((item) => item.color === color);
+          const location = locations.find(
+            (item) =>
+              item.color === color &&
+              item.lat === lat &&
+              item.long === long &&
+              item.nights === nights
+          );
+
           if (location) {
             newLocations.push(location);
           } else {
@@ -575,6 +592,7 @@ export const EditDestinations = (props) => {
               lat: lat,
               long: long,
               name: name,
+              color: color,
             });
           }
         } else if (lat && long) {
@@ -611,7 +629,7 @@ export const EditDestinations = (props) => {
   }
 
   return (
-    <div className="w-full md:w-[40%] lg:w-[40%] flex flex-col items-center justify-center pb-[150px] gap-3">
+    <div className="w-full md:w-[50%] lg:w-[50%] flex flex-col items-center justify-center pb-[150px] gap-3">
       <div className="w-full flex flex-row items-center justify-between">
         <div className="text-[24px] font-semibold leading-6">Route</div>
 
@@ -1008,6 +1026,7 @@ export const DestinationPopUp = (props) => {
           cityData: {
             ...destination,
             nights: days,
+            color: CITY_COLOR_CODES[(destinations.length - 1) % 7],
           },
         });
       }
