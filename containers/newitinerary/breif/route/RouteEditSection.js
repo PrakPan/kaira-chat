@@ -935,7 +935,7 @@ export const DestinationPopUp = (props) => {
     (cityData?.city_name || cityData?.name || cityData?.text) ?? ""
   );
   const [destination, setDestination] = useState(cityData);
-  const [days, setDays] = useState(cityData?.nights ?? 1);
+  const [nights, setNights] = useState(cityData?.nights ?? 1);
   const [searchResults, setSearchResults] = useState(null);
 
   useEffect(() => {
@@ -976,9 +976,7 @@ export const DestinationPopUp = (props) => {
   };
 
   const handleSetDestination = (i) => {
-    setSearch(
-      searchResults[i].name || searchResults[i].text || searchResults[i].name
-    );
+    setSearch(searchResults[i].name || searchResults[i].text);
 
     setDestination((prev) => {
       if (prev && prev?.resource_id === searchResults[i]?.resource_id) {
@@ -1015,7 +1013,7 @@ export const DestinationPopUp = (props) => {
             endingCity: curDestination.endingCity,
             cityData: {
               ...destination,
-              nights: days,
+              nights: nights,
             },
           };
         }
@@ -1025,7 +1023,7 @@ export const DestinationPopUp = (props) => {
           endingCity: false,
           cityData: {
             ...destination,
-            nights: days,
+            nights: nights,
             color: CITY_COLOR_CODES[(destinations.length - 1) % 7],
           },
         });
@@ -1044,14 +1042,14 @@ export const DestinationPopUp = (props) => {
   return (
     <div
       ref={destinationRef}
-      className={`z-50 w-[80%] lg:w-[80%] absolute ${
+      className={`z-50 drop-shadow-3xl w-[90%] lg:w-[70%] absolute ${
         index !== undefined
-          ? `top-0 left-[15%] lg:left-[30%]`
-          : "-bottom-[150px] left-[15%]"
+          ? `top-0 left-[10%] lg:left-[30%]`
+          : "-bottom-[150px] left-[10%] lg:left-[15%]"
       }  bg-gray-200 rounded-lg`}
     >
       <div className="relative flex flex-col gap-3 p-3">
-        <BiSolidLeftArrow className="text-2xl absolute left-[-18px] text-gray-200" />
+        <BiSolidLeftArrow className="text-2xl absolute left-[-18px] top-3 text-gray-200" />
 
         <RxCrossCircled
           onClick={() => setPopUp(false)}
@@ -1122,13 +1120,13 @@ export const DestinationPopUp = (props) => {
             <div className="flex flex-row items-center justify-between gap-2">
               <FaCircleMinus
                 onClick={() =>
-                  setDays((prev) => (prev === 1 ? prev : prev - 1))
+                  setNights((prev) => (prev === 1 ? prev : prev - 1))
                 }
                 className="text-2xl cursor-pointer"
               />
-              <div className="text-center">{days}</div>
+              <div className="text-center">{nights}</div>
               <FaCirclePlus
-                onClick={() => setDays((prev) => prev + 1)}
+                onClick={() => setNights((prev) => prev + 1)}
                 className="text-2xl cursor-pointer"
               />
             </div>
