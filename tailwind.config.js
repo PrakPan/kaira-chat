@@ -54,6 +54,9 @@ module.exports = {
         slideDown: "slideDown 0.2s ease-in-out",
         popOut: "popOut 0.2s ease-in-out",
       },
+      dropShadow: {
+        "3xl": "0px 0px 50px rgba(0, 0, 0, 0.25)",
+      },
     },
   },
   plugins: [],
