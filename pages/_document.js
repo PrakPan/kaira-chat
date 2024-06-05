@@ -196,7 +196,7 @@ export default class MyDocument extends Document {
 
               z-index: 1999;
               position: fixed;
-              bottom: 16px;
+              bottom: 80px;
               right: 16px;
             }
             `}

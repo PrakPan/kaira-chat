@@ -372,7 +372,7 @@ const RouteEditSection = (props) => {
   return (
     <div
       onClick={(e) => handleOutsideClick(e)}
-      className="fixed inset-0 flex flex-col items-center bg-white z-40"
+      className="fixed inset-0 flex flex-col items-center bg-white z-50"
     >
       {loading && <Loader />}
       <Header
@@ -847,7 +847,7 @@ export const Destination = (props) => {
 
   return (
     <div
-      className={`relative w-full flex border-1 border-gray-200 shadow-sm rounded-lg px-3 py-2`}
+      className={`relative w-full flex border-1 border-gray-200 shadow-sm rounded-lg px-2 md:px-3 lg:px-3 py-2`}
     >
       {popUp && (
         <DestinationPopUp
