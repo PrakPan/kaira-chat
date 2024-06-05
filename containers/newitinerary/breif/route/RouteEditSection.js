@@ -9,9 +9,8 @@ import {
   FaCircleMinus,
   FaCalendarDays,
 } from "react-icons/fa6";
-import { TiWarning } from "react-icons/ti";
 import { BiSolidPencil } from "react-icons/bi";
-import { FaTrashAlt } from "react-icons/fa";
+import { FaTrashAlt, FaInfoCircle } from "react-icons/fa";
 import { RxCrossCircled } from "react-icons/rx";
 import { MdDone } from "react-icons/md";
 import { BiSolidLeftArrow } from "react-icons/bi";
@@ -141,6 +140,16 @@ const Icon = styled.div`
   margin-right: 5px;
   margin-top: -5px;
 `;
+
+const CITY_COLOR_CODES = [
+  "#359EBF", // shade of blue
+  "#F0C631", // shade of yellow
+  "#BF3535", // shade of red
+  "#47691e", // shade of green
+  "#cc610a", // shade of orange
+  "#008080", // shade of teal
+  "#7d5e7d", // shade of purple
+];
 
 const RouteEditSection = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
@@ -411,7 +420,7 @@ const RouteEditSection = (props) => {
 
                 {destinationChanges && (
                   <div className="flex flex-row items-center gap-2">
-                    <TiWarning className="text-2xl text-yellow-500" />
+                    <FaInfoCircle className="text-2xl text-yellow-500" />
                     <div className="text-sm">Changes to be saved</div>
                   </div>
                 )}
@@ -565,9 +574,17 @@ export const EditDestinations = (props) => {
         const long = items[i].cityData.long;
         const color = items[i].cityData.color;
         const name = items[i].cityData.name;
+        const nights = items[i].cityData.nights;
 
         if (color) {
-          const location = locations.find((item) => item.color === color);
+          const location = locations.find(
+            (item) =>
+              item.color === color &&
+              item.lat === lat &&
+              item.long === long &&
+              item.nights === nights
+          );
+
           if (location) {
             newLocations.push(location);
           } else {
@@ -575,6 +592,7 @@ export const EditDestinations = (props) => {
               lat: lat,
               long: long,
               name: name,
+              color: color,
             });
           }
         } else if (lat && long) {
@@ -611,7 +629,7 @@ export const EditDestinations = (props) => {
   }
 
   return (
-    <div className="w-full md:w-[40%] lg:w-[40%] flex flex-col items-center justify-center pb-[150px] gap-3">
+    <div className="w-full md:w-[50%] lg:w-[50%] flex flex-col items-center justify-center pb-[150px] gap-3">
       <div className="w-full flex flex-row items-center justify-between">
         <div className="text-[24px] font-semibold leading-6">Route</div>
 
@@ -1008,6 +1026,7 @@ export const DestinationPopUp = (props) => {
           cityData: {
             ...destination,
             nights: days,
+            color: CITY_COLOR_CODES[(destinations.length - 1) % 7],
           },
         });
       }
@@ -1406,15 +1425,15 @@ export const DestinationDates = (props) => {
     }
   };
 
-  const isInvalidDate = (date, is_departure = false) => {
-    const date_obj = new Date(date);
+  const isInvalidDate = (is_departure = false) => {
     const prevDate = new Date(previousDate);
     const checkin_date = new Date(checkinDate);
 
     switch (startingCity || endingCity || is_departure || true) {
       case startingCity:
         const today = new Date();
-        if (!date_obj || isNaN(Date.parse(date))) {
+        const start_date = new Date(startDate);
+        if (isNaN(Date.parse(startDate))) {
           return {
             error: true,
             invalid: false,
@@ -1422,7 +1441,7 @@ export const DestinationDates = (props) => {
               cityData.city_name || cityData.name || cityData.text
             }`,
           };
-        } else if (!isSameDay(date_obj, today) && date_obj < today) {
+        } else if (!isSameDay(start_date, today) && start_date < today) {
           return {
             error: true,
             invalid: true,
@@ -1435,7 +1454,8 @@ export const DestinationDates = (props) => {
             error: false,
           };
       case endingCity:
-        if (!date_obj || isNaN(Date.parse(date))) {
+        const end_date = new Date(endDate);
+        if (isNaN(Date.parse(endDate))) {
           return {
             error: true,
             invalid: false,
@@ -1443,7 +1463,7 @@ export const DestinationDates = (props) => {
               cityData.city_name || cityData.name || cityData.text
             }`,
           };
-        } else if (!isSameDay(date_obj, prevDate) && date_obj < prevDate) {
+        } else if (!isSameDay(end_date, prevDate) && end_date < prevDate) {
           return {
             error: true,
             invalid: true,
@@ -1456,7 +1476,8 @@ export const DestinationDates = (props) => {
             error: false,
           };
       case is_departure:
-        if (!date_obj || isNaN(Date.parse(date))) {
+        const checkout_date = new Date(checkoutDate);
+        if (isNaN(Date.parse(checkoutDate))) {
           return {
             error: true,
             invalid: false,
@@ -1465,8 +1486,8 @@ export const DestinationDates = (props) => {
             }`,
           };
         } else if (
-          !isSameDay(date_obj, checkin_date) &&
-          date_obj < checkin_date
+          !isSameDay(checkout_date, checkin_date) &&
+          checkout_date < checkin_date
         ) {
           return {
             error: true,
@@ -1480,7 +1501,7 @@ export const DestinationDates = (props) => {
             error: false,
           };
       default:
-        if (!date_obj || isNaN(Date.parse(date))) {
+        if (isNaN(Date.parse(checkinDate))) {
           return {
             error: true,
             invalid: false,
@@ -1488,7 +1509,10 @@ export const DestinationDates = (props) => {
               cityData.city_name || cityData.name || cityData.text
             }`,
           };
-        } else if (!isSameDay(date_obj, prevDate) && date_obj < prevDate) {
+        } else if (
+          !isSameDay(checkin_date, prevDate) &&
+          checkin_date < prevDate
+        ) {
           return {
             error: true,
             invalid: true,
@@ -1562,76 +1586,60 @@ export const DestinationDates = (props) => {
                   ? "End Date"
                   : "Arrival Date"}
               </label>
-              <DatePicker
-                defaultDate={getDate(previousDate)}
-                date={
-                  startingCity
-                    ? startDate
-                    : endingCity
-                    ? endDate
-                    : getDate(cityData.checkin_date)
-                }
-                onDateChange={handleDateChange}
-                id={
-                  startingCity
-                    ? "Start Date"
-                    : endingCity
-                    ? "End Date"
-                    : "Arrival Date"
-                }
-              />
-              {!isValidDates &&
-                isInvalidDate(
-                  startingCity ? startDate : endingCity ? endDate : checkinDate
-                ).error && (
-                  <div
-                    className={`text-xs lg:text-sm text-white text-center ${
-                      isInvalidDate(
-                        startingCity
-                          ? startDate
-                          : endingCity
-                          ? endDate
-                          : checkinDate
-                      ).invalid
-                        ? "bg-red-500"
-                        : "bg-[#ffbb33]"
-                    }  p-2 rounded-full rounded-tl-none animate-popOut`}
-                  >
-                    {
-                      isInvalidDate(
-                        startingCity
-                          ? startDate
-                          : endingCity
-                          ? endDate
-                          : checkinDate
-                      ).message
-                    }
-                  </div>
-                )}
+              <div
+                className={`${
+                  !isValidDates
+                    ? isInvalidDate().error
+                      ? isInvalidDate().invalid
+                        ? "w-[80%] border-2 border-red-500 rounded-lg"
+                        : "w-[80%] border-2 border-[#ffbb33] rounded-lg"
+                      : "w-[80%]"
+                    : "w-[80%] "
+                } `}
+              >
+                <DatePicker
+                  defaultDate={getDate(previousDate)}
+                  date={
+                    startingCity
+                      ? startDate
+                      : endingCity
+                      ? endDate
+                      : getDate(cityData.checkin_date)
+                  }
+                  onDateChange={handleDateChange}
+                  id={
+                    startingCity
+                      ? "Start Date"
+                      : endingCity
+                      ? "End Date"
+                      : "Arrival Date"
+                  }
+                />
+              </div>
             </div>
           </div>
           {!(startingCity || endingCity) && (
             <div className="flex flex-row items-center gap-3">
               <div className="flex flex-col gap-1">
                 <label htmlFor="endDate">Departure Date</label>
-                <DatePicker
-                  defaultDate={getDate(previousDate)}
-                  date={getDate(cityData.checkout_date)}
-                  onDateChange={handleDateChange}
-                  id={"Departure Date"}
-                />
-
-                {!isValidDates && isInvalidDate(checkoutDate, true).error && (
-                  <div
-                    className={`text-xs lg:text-sm text-white text-center ${
-                      isInvalidDate(checkoutDate, true).invalid
-                        ? "bg-red-500"
-                        : "bg-[#ffbb33]"
-                    } p-2 rounded-full rounded-tl-none animate-popOut`}
-                  >
-                    {isInvalidDate(checkoutDate, true).message}
-                  </div>
-                )}
+                <div
+                  className={`${
+                    !isValidDates
+                      ? isInvalidDate(true).error
+                        ? isInvalidDate(true).invalid
+                          ? "w-[80%] border-2 border-red-500 rounded-lg"
+                          : "w-[80%] border-2 border-[#ffbb33] rounded-lg"
+                        : "w-[80%]"
+                      : "w-[80%] "
+                  } `}
+                >
+                  <DatePicker
+                    defaultDate={getDate(previousDate)}
+                    date={getDate(cityData.checkout_date)}
+                    onDateChange={handleDateChange}
+                    id={"Departure Date"}
+                  />
+                </div>
               </div>
             </div>
           )}
@@ -1803,7 +1811,7 @@ export const DatePicker = (props) => {
   };
 
   return (
-    <Container onClick={handleFocus} className="flex flex-col w-[80%]">
+    <Container onClick={handleFocus} className="flex flex-col">
       <SingleDatePicker
         readOnly={true}
         initialVisibleMonth={initialMonth}

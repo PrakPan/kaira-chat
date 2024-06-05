@@ -28,7 +28,7 @@ const CustomMarkerIcon = ({ index, color }) => (
       style={{ color: color ? color : "#111" }}
       className={`text-[40px] font-bold`}
     />
-    <span className="absolute top-[8px] left-[17px] text-white text-xs font-bold">
+    <span className="absolute top-2 left-[85%] transform -translate-x-[20%] text-white text-center text-xs font-bold">
       {index + 1}
     </span>
   </div>
