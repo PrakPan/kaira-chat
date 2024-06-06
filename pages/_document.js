@@ -196,7 +196,7 @@ export default class MyDocument extends Document {
 
               z-index: 1999;
               position: fixed;
-              bottom: 80px;
+              bottom: 16px;
               right: 16px;
             }
             `}
@@ -274,7 +274,7 @@ export default class MyDocument extends Document {
             <df-messenger-chat-bubble
               chat-title="Travel Experience Captain"
               chat-icon="https://images.thetarzanway.com/media/icons/ui/chat-dots.webp"
-              chat-width="400"
+              chat-width="340"
             ></df-messenger-chat-bubble>
           </df-messenger>
 

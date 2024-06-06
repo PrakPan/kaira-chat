@@ -309,6 +309,7 @@ const RouteEditSection = (props) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${props.token}`,
     };
+    
     axiosItineraryUpdateInstance
       .post("", data, { headers })
       .then((response) => {
