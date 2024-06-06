@@ -309,7 +309,7 @@ const RouteEditSection = (props) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${props.token}`,
     };
-    
+
     axiosItineraryUpdateInstance
       .post("", data, { headers })
       .then((response) => {
@@ -727,6 +727,7 @@ export const DragDrop = (props) => {
           cityData={props.destinations[0]?.cityData}
           pinColour={props.destinations[0]?.cityData?.color}
           setDestinations={props.setDestinations}
+          updateLatLong={updateLatLong}
           updateDestinationsDates={updateDestinationsDates}
           setDestinationChanges={setDestinationChanges}
           destinationRef={destinationRef}
@@ -806,6 +807,7 @@ export const DragDrop = (props) => {
           props.destinations[props.destinations.length - 1]?.cityData?.color
         }
         setDestinations={props.setDestinations}
+        updateLatLong={updateLatLong}
         updateDestinationsDates={updateDestinationsDates}
         setDestinationChanges={setDestinationChanges}
         destinationRef={destinationRef}
@@ -988,9 +990,17 @@ export const DestinationPopUp = (props) => {
     setSearch(searchResults[i].name || searchResults[i].text);
 
     setDestination((prev) => {
-      if (prev && prev?.resource_id === searchResults[i]?.resource_id) {
+      if (
+        prev &&
+        prev?.resource_id &&
+        prev.resource_id === searchResults[i]?.resource_id
+      ) {
         return prev;
-      } else if (prev && prev?.place_id === searchResults[i]?.place_id) {
+      } else if (
+        prev &&
+        prev?.place_id &&
+        prev.place_id === searchResults[i]?.place_id
+      ) {
         return prev;
       }
 
@@ -1023,6 +1033,7 @@ export const DestinationPopUp = (props) => {
             cityData: {
               ...destination,
               nights: nights,
+              color: curDestination.cityData.color,
             },
           };
         }
