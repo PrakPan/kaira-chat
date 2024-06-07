@@ -3,6 +3,7 @@ import { format, parseISO } from "date-fns";
 import { MdModeEdit } from "react-icons/md";
 import useMediaQuery from "../../../components/media";
 import { connect } from "react-redux";
+import { logEvent } from "../../../services/ga/Index";
 
 const Container = styled.div`
   display: grid;
@@ -42,6 +43,20 @@ const convertDFormat = (dt) => {
 
 const Details = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
+
+  function handleEditDates() {
+    props.setEditRoute("editDates");
+
+    logEvent({
+      action: "Route Edit",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: "Edit Dates",
+        event_action: "Edit Route Dates",
+      },
+    });
+  }
 
   return (
     <Container className="font-lexend">
@@ -98,17 +113,19 @@ const Details = (props) => {
               </Text>
             )}
           </div>
-          {props.itineraryRoutes && props.itineraryRoutes.length > 0 ? (
+          {!props.plan?.is_released_for_customer &&
+          props?.routes &&
+          props.routes.length > 0 ? (
             isDesktop ? (
               <button
-                onClick={() => props.setEditRoute("editDates")}
+                onClick={handleEditDates}
                 className="text-sm border-2 border-black rounded-lg px-4 py-2 hover:bg-black hover:text-white transition ease-in-out duration-500"
               >
                 Edit Dates
               </button>
             ) : (
               <MdModeEdit
-                onClick={() => props.setEditRoute("editDates")}
+                onClick={handleEditDates}
                 className="text-lg cursor-pointer hover:text-yellow-400"
               />
             )
@@ -121,7 +138,8 @@ const Details = (props) => {
 
 const mapStateToPros = (state) => {
   return {
-    itineraryRoutes: state.ItineraryRoutes,
+    routes: state.ItineraryRoutes,
+    plan: state.Plan,
   };
 };
 

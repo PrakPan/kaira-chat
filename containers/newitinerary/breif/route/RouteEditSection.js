@@ -38,6 +38,7 @@ import moment from "moment";
 import { SingleDatePicker } from "react-dates";
 import styled from "styled-components";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { logEvent } from "../../../../services/ga/Index";
 
 const Container = styled.div`
   position: relative;
@@ -359,6 +360,16 @@ const RouteEditSection = (props) => {
     } else {
       setIsValidDates(false);
     }
+
+    logEvent({
+      action: "Route Edit",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Update Itinerary Routes",
+        event_label: "Save",
+        event_action: "Update Routes",
+      },
+    });
   };
 
   const handleOutsideClick = (event) => {
@@ -457,6 +468,9 @@ const mapStateToPros = (state) => {
     notificationText: state.Notification.text,
     token: state.auth.token,
     ItineraryId: state.ItineraryId,
+    itinerary: state.Itinerary,
+    plan: state.Plan,
+    routes: state.ItineraryRoutes,
   };
 };
 
@@ -534,11 +548,29 @@ const Header = (props) => {
 };
 
 export const EditPanel = ({ editDestination, setEditDestination }) => {
+  function handleEditPanel(editDates = false) {
+    if (editDates) {
+      setEditDestination(false);
+    } else {
+      setEditDestination(true);
+    }
+
+    logEvent({
+      action: "Route Edit",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: editDates ? "Edit Dates" : "Edit/Remove Destination",
+        event_action: "Edit Destinations",
+      },
+    });
+  }
+
   return (
     <div className="w-full pt-3 flex items-center justify-center border-b-2 px-2 text-sm md:text-lg lg:text-lg">
       <div className="flex flex-row gap-4">
         <div
-          onClick={() => setEditDestination(true)}
+          onClick={() => handleEditPanel()}
           className={`cursor-pointer ${
             editDestination
               ? "bg-black border-b-2 border-b-[#F7E700] text-[#F7E700] px-3 py-2 rounded-t-lg"
@@ -548,7 +580,7 @@ export const EditPanel = ({ editDestination, setEditDestination }) => {
           Edit/Remove Destination
         </div>
         <div
-          onClick={() => setEditDestination(false)}
+          onClick={() => handleEditPanel(true)}
           className={`cursor-pointer ${
             !editDestination
               ? "bg-black border-b-2 border-b-[#F7E700] text-[#F7E700] px-3 py-2 rounded-t-lg"
@@ -564,6 +596,20 @@ export const EditPanel = ({ editDestination, setEditDestination }) => {
 
 export const EditDestinations = (props) => {
   const [popUp, setPopUp] = useState(false);
+
+  function handleAddDestination() {
+    setPopUp(true);
+
+    logEvent({
+      action: "Route Edit",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: "Add Destination",
+        event_action: "Add New Destination",
+      },
+    });
+  }
 
   function updateLatLong(items) {
     props.setLocationsLatLong((prev) => {
@@ -636,7 +682,7 @@ export const EditDestinations = (props) => {
 
         <div>
           <button
-            onClick={() => setPopUp(true)}
+            onClick={handleAddDestination}
             className="border-2 border-black rounded-lg px-4 py-2 hover:bg-black hover:text-white transition ease-in-out duration-500"
           >
             Add Destination
@@ -703,6 +749,16 @@ export const DragDrop = (props) => {
     setDestinationChanges(true);
 
     setDestinations(items);
+
+    logEvent({
+      action: "Route Edit",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Drag and Drop",
+        event_label: "Edit",
+        event_action: "Edit destinations",
+      },
+    });
   }
 
   const getItemStyle = (isDragging, draggableStyle) => ({
@@ -745,9 +801,6 @@ export const DragDrop = (props) => {
                       key={`item-${index}`}
                       draggableId={`item-${index}`}
                       index={index}
-                      isDragDisabled={
-                        index === 0 || index === destinations.length - 1
-                      }
                     >
                       {(provided, snapshot) => (
                         <div
@@ -842,10 +895,30 @@ export const Destination = (props) => {
       updateLatLong(updatedDestinations);
       return updatedDestinations;
     });
+
+    logEvent({
+      action: "Route Edit",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: "Remove",
+        event_action: "Remove destination",
+      },
+    });
   };
 
   const handleEditDestination = () => {
     setPopUp(true);
+
+    logEvent({
+      action: "Route Edit",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: "Edit",
+        event_action: "Edit destination",
+      },
+    });
   };
 
   return (
@@ -868,7 +941,7 @@ export const Destination = (props) => {
       )}
 
       <div
-        onClick={() => setPopUp(true)}
+        onClick={handleEditDestination}
         className="w-full flex flex-row items-center justify-between gap-3"
       >
         <div className="w-[60%] flex flex-row items-center gap-3">
@@ -960,6 +1033,16 @@ export const DestinationPopUp = (props) => {
   const handleSearch = (e) => {
     if (e.target.value) {
       handleDestinationSeach(e.target.value);
+
+      logEvent({
+        action: "Route Edit",
+        params: {
+          page: "Itinerary Page",
+          event_category: "Search",
+          event_label: "Search Destination",
+          event_action: "Search destination",
+        },
+      });
     }
     setSearch(e.target.value);
   };
@@ -1010,6 +1093,24 @@ export const DestinationPopUp = (props) => {
     setSearchResults(null);
   };
 
+  const handleSetNights = (minus = false) => {
+    if (minus) {
+      setNights((prev) => (prev === 1 ? prev : prev - 1));
+    } else {
+      setNights((prev) => prev + 1);
+    }
+
+    logEvent({
+      action: "Route Edit",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Update Destination",
+        event_label: minus ? "Decrease Nights" : "Increase Nights",
+        event_action: "Update Nights",
+      },
+    });
+  };
+
   const handleUpdateDestination = () => {
     setDestinationChanges(true);
 
@@ -1057,6 +1158,16 @@ export const DestinationPopUp = (props) => {
     });
 
     setPopUp(false);
+
+    logEvent({
+      action: "Route Edit",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Update Destination",
+        event_label: "Update",
+        event_action: "Update destination",
+      },
+    });
   };
 
   return (
@@ -1139,14 +1250,12 @@ export const DestinationPopUp = (props) => {
 
             <div className="flex flex-row items-center justify-between gap-2">
               <FaCircleMinus
-                onClick={() =>
-                  setNights((prev) => (prev === 1 ? prev : prev - 1))
-                }
+                onClick={() => handleSetNights(true)}
                 className="text-2xl cursor-pointer"
               />
               <div className="text-center">{nights}</div>
               <FaCirclePlus
-                onClick={() => setNights((prev) => prev + 1)}
+                onClick={() => handleSetNights()}
                 className="text-2xl cursor-pointer"
               />
             </div>
@@ -1843,7 +1952,21 @@ export const DatePicker = (props) => {
           })
         }
         focused={focusedInput}
-        onFocusChange={({ focused }) => setFocusedInput(false)}
+        onFocusChange={({ focused }) => {
+          setFocusedInput(false);
+
+          if (focused) {
+            logEvent({
+              action: "Route Edit",
+              params: {
+                page: "Itinerary Page",
+                event_category: "Edit Dates",
+                event_label: "Edit Date",
+                event_action: "Focus on Date Input",
+              },
+            });
+          }
+        }}
         id={props.id}
         noBorder={true}
         placeholder={"DD/MM/YYYY"}
