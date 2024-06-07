@@ -114,6 +114,7 @@ const Details = (props) => {
             )}
           </div>
           {!props.plan?.is_released_for_customer &&
+          props.plan?.itinerary_status !== "ITINERARY_PREPARED" &&
           props?.routes &&
           props.routes.length > 0 ? (
             isDesktop ? (
