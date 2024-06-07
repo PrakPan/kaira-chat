@@ -141,14 +141,11 @@ const Details = (props) => {
         <RouteComponent>
           <div id="route">
             <Route
-              itinerary_id={props?.itinerary?.tailor_made_id || props?.plan?.id}
               payment={props.payment}
-              plan={props.plan}
               dayslab={props.itinerary?.day_slabs}
               breif={props.breif}
               routesData={props.routesData}
               transfers={props.transfersData}
-              routes={props.routes}
               setPlaceID={setActive}
               active={active}
               setCurrentPopup={setCurrentPopup}
@@ -168,9 +165,6 @@ const Details = (props) => {
         <RouteEditSection
           editRoute={props.editRoute}
           setEdit={props.setEditRoute}
-          routes={props.routes}
-          itinerary={props.itinerary}
-          plan={props.plan}
           group_type={props.group_type}
           duration_time={props.duration_time}
           travellerType={props.travellerType}

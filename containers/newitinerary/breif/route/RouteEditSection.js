@@ -457,6 +457,9 @@ const mapStateToPros = (state) => {
     notificationText: state.Notification.text,
     token: state.auth.token,
     ItineraryId: state.ItineraryId,
+    itinerary: state.Itinerary,
+    plan: state.Plan,
+    routes: state.ItineraryRoutes,
   };
 };
 
@@ -745,9 +748,6 @@ export const DragDrop = (props) => {
                       key={`item-${index}`}
                       draggableId={`item-${index}`}
                       index={index}
-                      isDragDisabled={
-                        index === 0 || index === destinations.length - 1
-                      }
                     >
                       {(provided, snapshot) => (
                         <div
