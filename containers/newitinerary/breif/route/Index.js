@@ -4,6 +4,7 @@ import PinSection from "./PinSection";
 import MidSection from "./MidSection";
 import { ITINERARY_VERSION } from "../../../../services/constants";
 import { connect } from "react-redux";
+import { logEvent } from "../../../../services/ga/Index";
 
 const Container = styled.div`
   @media screen and (min-width: 768px) {
@@ -72,6 +73,16 @@ const Route = (props) => {
 
   const handleEditRoute = () => {
     props.setEdit(true);
+
+    logEvent({
+      action: "Route Edit",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: "Edit Route",
+        event_action: "Edit Route",
+      },
+    });
   };
 
   let startingcity = null;
