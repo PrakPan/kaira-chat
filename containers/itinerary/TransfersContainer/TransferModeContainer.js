@@ -534,9 +534,13 @@ const TransferModeContainer = (props) => {
         },
       })
       .then((response) => {
-        if (response.status === 200) {
+        if (response.status === 200 && response.data.routes.length > 0) {
           const data = response.data;
           setAlternateRoutes(data);
+        } else {
+          setAlternatesError(
+            "No route found, please get in touch with us to complete this booking!"
+          );
         }
         setLoadingAlternates(false);
       })
