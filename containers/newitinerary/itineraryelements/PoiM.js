@@ -262,7 +262,7 @@ const ItineraryPoiElementM = (props) => {
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            Authorization: `Bearer ${props.token}`,
           },
         }
       )
@@ -718,6 +718,7 @@ const ItineraryPoiElementM = (props) => {
 const mapStateToPros = (state) => {
   return {
     itineraryActivities: state.itineraryActivities.activities,
+    token: state.auth.token,
   };
 };
 

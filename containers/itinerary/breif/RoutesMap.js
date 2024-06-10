@@ -16,9 +16,9 @@ export default function RoutesMap({
     if (setEditRoute) {
       setEditRoute(false);
     }
-    
+
     const element = document.getElementById(id);
-    const headerOffset = 117;
+    const headerOffset = 90;
     const elementPosition = element.getBoundingClientRect().top;
     const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
