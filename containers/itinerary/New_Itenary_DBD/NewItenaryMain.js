@@ -3,8 +3,6 @@ import styled from "styled-components";
 import Day_I_Container from "./Day_I_Container";
 import ScrollableMenuTabs from "../../../components/ScrollableMenuTabs";
 import { convertDateFormat } from "../../../helper/ConvertDateFormat";
-import { connect } from "react-redux";
-import { setItineraryActivities } from "../../../store/actions/itineraryActivities";
 
 const NewItenaryMain = (props) => {
   const Wrapper = styled.div`
@@ -14,24 +12,7 @@ const NewItenaryMain = (props) => {
     flex-direction: column;
   `;
 
-  useEffect(() => {
-    const activities = getItineraryActivities();
-    props.setItineraryActivities({ activities });
-  }, [props?.itinerary]);
-
   let currentCity = props.itinerary.starting_city.city_name;
-
-  const getItineraryActivities = () => {
-    let itenaryActivities = [];
-    props.itinerary.day_slabs.map((day_slab, index) => {
-      day_slab.slab_elements.map((element, index) => {
-        if (element.element_type === "activity") {
-          itenaryActivities.push({ activity: element, date: day_slab.slab });
-        }
-      });
-    });
-    return itenaryActivities;
-  };
 
   const getCurrentCity = () => {
     props.itinerary.day_slabs.map((day_slab, index) => {
@@ -128,6 +109,7 @@ const NewItenaryMain = (props) => {
         BarName="CityName"
         Mstyle={"round"}
       ></ScrollableMenuTabs>
+
       {props.itinerary && (
         <ScrollableMenuTabs
           icons={false}
@@ -176,20 +158,4 @@ const NewItenaryMain = (props) => {
   );
 };
 
-const mapStateToPros = (state) => {
-  return {
-    itineraryActivities: state.itineraryActivities.activities,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    setItineraryActivities: (payload) =>
-      dispatch(setItineraryActivities(payload)),
-  };
-};
-
-export default connect(
-  mapStateToPros,
-  mapDispatchToProps
-)(React.memo(NewItenaryMain));
+export default React.memo(NewItenaryMain);

@@ -128,7 +128,7 @@ const ItineraryPoiElement = (props) => {
   };
 
   const fetchData = (showMore = false) => {
-    const added_activities = props.itineraryActivities.map((element, index) => {
+    const added_activities = props.itineraryActivities?.map((element, index) => {
       return {
         id:
           element.activity?.activity_data?.activity?.id ||
@@ -675,7 +675,7 @@ const ItineraryPoiElement = (props) => {
 const mapStateToPros = (state) => {
   return {
     notificationText: state.Notification.text,
-    itineraryActivities: state.itineraryActivities.activities,
+    itineraryActivities: state.itineraryActivities,
     token: state.auth.token,
   };
 };

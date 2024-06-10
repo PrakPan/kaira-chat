@@ -129,7 +129,7 @@ const ItineraryPoiElementM = (props) => {
   ];
 
   const fetchData = (showMore = false) => {
-    const added_activities = props.itineraryActivities.map((el, index) => {
+    const added_activities = props.itineraryActivities?.map((el, index) => {
       return {
         id:
           el.activity?.activity_data?.activity?.id ||
@@ -283,11 +283,19 @@ const ItineraryPoiElementM = (props) => {
         }, 1000);
       })
       .catch((err) => {
-        props.openNotification({
-          text: "There seems to be a problem, please try again!",
-          heading: "Error!",
-          type: "error",
-        });
+        if (err.response.status === 403) {
+          props.openNotification({
+            text: "You are not allowed to make changes to this itinerary",
+            heading: "Error!",
+            type: "error",
+          });
+        } else {
+          props.openNotification({
+            text: "There seems to be a problem, please try again!",
+            heading: "Error!",
+            type: "error",
+          });
+        }
       });
   };
 
@@ -717,7 +725,7 @@ const ItineraryPoiElementM = (props) => {
 
 const mapStateToPros = (state) => {
   return {
-    itineraryActivities: state.itineraryActivities.activities,
+    itineraryActivities: state.itineraryActivities,
     token: state.auth.token,
   };
 };

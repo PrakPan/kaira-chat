@@ -21,6 +21,7 @@ import { setItineraryRoutes } from "../../../store/actions/itineraryRoutes";
 import setItinerary from "../../../store/actions/itinerary";
 import setPlan from "../../../store/actions/plan";
 import { setBookings } from "../../../store/actions/bookings";
+import { setItineraryActivities } from "../../../store/actions/itineraryActivities";
 
 const Container = styled.div`
   width: 90%;
@@ -77,6 +78,25 @@ const Itinerary = (props) => {
       if (props.token) getPaymentHandler();
     } else hasRendered.current = true;
   }, [props.token]);
+
+  useEffect(() => {
+    if (props.itinerary.name !== "Loading Itinerary") {
+      const activities = getItineraryActivities();
+      props.setItineraryActivities(activities);
+    }
+  }, [props.itinerary]);
+
+  const getItineraryActivities = () => {
+    let itenaryActivities = [];
+    props.itinerary?.day_slabs.map((day_slab, index) => {
+      day_slab?.slab_elements.map((element, index) => {
+        if (element.element_type === "activity") {
+          itenaryActivities.push({ activity: element, date: day_slab.slab });
+        }
+      });
+    });
+    return itenaryActivities;
+  };
 
   const getBreifHandler = () => {
     axiosbreifinstance
@@ -775,6 +795,7 @@ const mapStateToPros = (state) => {
     plan: state.Plan,
     routes: state.ItineraryRoutes,
     bookings: state.Bookings,
+    itineraryActivities: state.itineraryActivities,
   };
 };
 
@@ -786,6 +807,8 @@ const mapDispatchToProps = (dispatch) => {
     setItinerary: (payload) => dispatch(setItinerary(payload)),
     setPlan: (payload) => dispatch(setPlan(payload)),
     setBookings: (payload) => dispatch(setBookings(payload)),
+    setItineraryActivities: (payload) =>
+      dispatch(setItineraryActivities(payload)),
   };
 };
 
