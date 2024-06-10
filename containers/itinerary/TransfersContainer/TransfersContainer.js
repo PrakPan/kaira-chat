@@ -42,17 +42,12 @@ const Line = styled.hr`
         : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
 
   background-size: 8px 3px, 100% 3px;
-
   color: #c80000;
   -webkit-transform: rotate(90deg);
   position: absolute;
-
   height: 1px;
-
   border: 2px;
-
   width: ${(props) => (props.Transfers ? `16rem` : `5rem`)};
-
   top: ${(props) => (props.Transfers ? `101px` : `23px`)};
   right: ${(props) => (props.Transfers ? `-110px` : `-25px`)};
   opacity: initial;
@@ -66,24 +61,8 @@ const Line = styled.hr`
 `;
 
 const TransfersContainer = (props) => {
-  const initialorder = {
-    0: {
-      location: "Jodhpur",
-      duration: "1 Night",
-    },
-    1: {
-      location: "Jaisalmer",
-      duration: "2 Nights",
-    },
-    2: {
-      location: "Jodhpur",
-      duration: "1 Night",
-    },
-  };
-
   let locationsArr = [];
 
-  const [order, setOrder] = useState(initialorder);
   const [selectedBooking, setSelectedBooking] = useState({
     id: null,
     name: null,
@@ -279,18 +258,6 @@ const TransfersContainer = (props) => {
 
   const return_booking_from_id = (arr, id) => {
     if (arr) return arr.find((obj) => obj.id === id);
-  };
-
-  const _moveUpHandler = (index) => {
-    if (index === 1) {
-      //First item, disable button
-    } else {
-      setOrder({
-        ...order,
-        [index]: order[index - 1],
-        [index - 1]: order[index],
-      });
-    }
   };
 
   if (

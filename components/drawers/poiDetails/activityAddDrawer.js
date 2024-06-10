@@ -429,7 +429,7 @@ const ActivityAddDrawer = (props) => {
 const mapStateToPros = (state) => {
   return {
     notificationText: state.Notification.text,
-    itineraryActivities: state.itineraryActivities.activities,
+    itineraryActivities: state.itineraryActivities,
   };
 };
 
