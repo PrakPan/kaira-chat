@@ -93,7 +93,7 @@ const TransferEditDrawer = (props) => {
   };
 
   useEffect(() => {
-    if (!loadingAlternates && !alternatesError) {
+    if (!loadingAlternates && !alternatesError && alternateRoutes?.routes) {
       const filterdTransfers = filterAlternateRoutes();
       setTransfers(filterdTransfers);
     }

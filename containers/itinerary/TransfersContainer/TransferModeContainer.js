@@ -1209,14 +1209,14 @@ const TransferModeContainer = (props) => {
                               props.booking_type == "Taxi"
                                 ? "lg:bottom-[3.6rem]"
                                 : "lg:bottom-[3.6rem]"
-                            }  bottom-[1.5rem] `
+                            }  bottom-[1rem] `
                           : `${
                               props.payment?.paid_user ||
                               !props.payment?.user_allowed_to_pay
                                 ? "lg:bottom-10 bottom-[1.2rem]"
                                 : "lg:bottom-10 bottom-[2.5rem]"
                             }`
-                      } right-8 -m-3`}
+                      } right-6 -m-3`}
                     >
                       {loading && (
                         <PulseLoader
@@ -1230,7 +1230,8 @@ const TransferModeContainer = (props) => {
                           speedMultiplier={0.6}
                           color="#111"
                         />
-                      )}
+                          )}
+
                       <div
                         onClick={(e) => {
                           handleCheckboxChange(
@@ -1238,7 +1239,7 @@ const TransferModeContainer = (props) => {
                             `${addbooking ? "Added Booking" : "Add Booking"}`
                           );
                         }}
-                        className="flex flex-row gap-1 items-center  cursor-pointer"
+                        className="flex flex-row gap-1 items-center cursor-pointer"
                       >
                         <CheckboxFormComponent checked={addbooking} />
                         <label className="text-center sm:text-sm text-[0.7rem]">
