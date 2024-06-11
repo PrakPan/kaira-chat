@@ -322,16 +322,12 @@ const TransferEditDrawer = (props) => {
                   borderRadius="8px"
                   bgColor="#f8e000"
                   padding="12px"
-                  onclick={props._GetInTouch}
+                  onclick={() => {
+                    props._GetInTouch();
+                    setShowDrawer(false);
+                  }}
                 >
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      gap: "0.5rem",
-                      alignItems: "center",
-                    }}
-                  >
+                  <div className="flex flex-row gap-2 items-center justify-center">
                     <ImageLoader
                       dimensions={{ height: 50, width: 50 }}
                       dimensionsMobile={{ height: 50, width: 50 }}
@@ -339,8 +335,8 @@ const TransferEditDrawer = (props) => {
                       width={"20px"}
                       leftalign
                       url={"media/icons/login/customer-service-black.png"}
-                    />{" "}
-                    <span>Get in touch!</span>
+                    />
+                    <span className="text-nowrap">Get in touch!</span>
                   </div>
                 </Button>
               </GetInTouchContainer>
@@ -516,27 +512,7 @@ const RouteContainer = (props) => {
                 </div>
               </div>
               <div className="flex flex-col gap-2 items-end">
-                <div className="text-[13px] font-[300] leading-3">
-                  Estimated cost
-                </div>
-                <div className="text-[18px] font-[800] leading-3">
-                  {getIndianPrice(
-                    Math.floor(transfer?.meta?.estimated_cost)
-                  ) !== "NaN" && (
-                    <span>
-                      ₹
-                      {parseInt(
-                        getIndianPrice(
-                          Math.floor(transfer?.meta?.estimated_cost)
-                        )
-                      ) > 0
-                        ? getIndianPrice(
-                            Math.floor(transfer?.meta?.estimated_cost)
-                          )
-                        : " -"}
-                    </span>
-                  )}
-                </div>
+                <EstimatedCost cost={transfer?.meta?.estimated_cost} />
               </div>
             </div>
 
@@ -616,22 +592,7 @@ const MultiRoute = (props) => {
             </div>
           </div>
           <div className="flex flex-col gap-2 items-end">
-            <div className="text-[13px] font-[300] leading-3">
-              Estimated cost
-            </div>
-            <div className="text-[18px] font-[800] leading-3">
-              {getIndianPrice(Math.floor(transfer?.meta?.estimated_cost)) !==
-                "NaN" && (
-                <span>
-                  ₹
-                  {parseInt(
-                    getIndianPrice(Math.floor(transfer?.meta?.estimated_cost))
-                  ) > 0
-                    ? getIndianPrice(Math.floor(transfer?.meta?.estimated_cost))
-                    : " -"}
-                </span>
-              )}
-            </div>
+            <EstimatedCost cost={transfer?.meta?.estimated_cost} />
           </div>
         </div>
 
@@ -761,27 +722,7 @@ const MobileRouteContainer = (props) => {
 
             <div className="flex flex-row items-end justify-between mb-2">
               <div className="flex flex-col gap-2 items-start">
-                <div className="text-[13px] font-[300] leading-3">
-                  Estimated cost
-                </div>
-                <div className="text-[18px] font-[800] leading-3">
-                  {getIndianPrice(
-                    Math.floor(transfer?.meta?.estimated_cost)
-                  ) !== "NaN" && (
-                    <span>
-                      ₹
-                      {parseInt(
-                        getIndianPrice(
-                          Math.floor(transfer?.meta?.estimated_cost)
-                        )
-                      ) > 0
-                        ? getIndianPrice(
-                            Math.floor(transfer?.meta?.estimated_cost)
-                          )
-                        : " -"}
-                    </span>
-                  )}
-                </div>
+                <EstimatedCost cost={transfer?.meta?.estimated_cost} />
               </div>
               <div
                 onClick={() => handleSelect(transferIndex)}
@@ -859,22 +800,7 @@ const MobileMultiRoute = (props) => {
 
         <div className="flex flex-row items-end justify-between mb-2">
           <div className="flex flex-col gap-2 items-start">
-            <div className="text-[13px] font-[300] leading-3">
-              Estimated cost
-            </div>
-            <div className="text-[18px] font-[800] leading-3">
-              {getIndianPrice(Math.floor(transfer?.meta?.estimated_cost)) !==
-                "NaN" && (
-                <span>
-                  ₹
-                  {parseInt(
-                    getIndianPrice(Math.floor(transfer?.meta?.estimated_cost))
-                  ) > 0
-                    ? getIndianPrice(Math.floor(transfer?.meta?.estimated_cost))
-                    : " -"}
-                </span>
-              )}
-            </div>
+            <EstimatedCost cost={transfer?.meta?.estimated_cost} />
           </div>
           <div
             onClick={() => handleSelect(transferIndex)}
@@ -916,27 +842,7 @@ const MultiModeContainer = ({ transferIndex, transfer, handleSelect }) => {
               </div>
               {index === 0 && (
                 <div className="flex flex-col gap-2 items-end">
-                  <div className="text-[13px] font-[300] leading-3">
-                    Estimated cost
-                  </div>
-                  <div className="text-[18px] font-[800] leading-3">
-                    {getIndianPrice(
-                      Math.floor(transfer?.meta?.estimated_cost)
-                    ) !== "NaN" && (
-                      <span>
-                        ₹
-                        {parseInt(
-                          getIndianPrice(
-                            Math.floor(transfer?.meta?.estimated_cost)
-                          )
-                        ) > 0
-                          ? getIndianPrice(
-                              Math.floor(transfer?.meta?.estimated_cost)
-                            )
-                          : " -"}
-                      </span>
-                    )}
-                  </div>
+                  <EstimatedCost cost={transfer?.meta?.estimated_cost} />
                 </div>
               )}
             </div>
@@ -1127,20 +1033,7 @@ const MobileMultiModeContainer = ({
 
       <div className="flex flex-row items-center justify-between mt-2 py-3">
         <div className="flex flex-col gap-2 items-start">
-          <div className="text-[13px] font-[300] leading-3">Estimated cost</div>
-          <div className="text-[18px] font-[800] leading-3">
-            {getIndianPrice(Math.floor(transfer?.meta?.estimated_cost)) !==
-              "NaN" && (
-              <span>
-                ₹
-                {parseInt(
-                  getIndianPrice(Math.floor(transfer?.meta?.estimated_cost))
-                ) > 0
-                  ? getIndianPrice(Math.floor(transfer?.meta?.estimated_cost))
-                  : " -"}
-              </span>
-            )}
-          </div>
+          <EstimatedCost cost={transfer?.meta?.estimated_cost} />
         </div>
         <div
           onClick={() => handleSelect(transferIndex)}
@@ -1556,4 +1449,21 @@ const MultiCityTripSuggestion = ({
       </div>
     </div>
   );
+};
+
+const EstimatedCost = ({ cost }) => {
+  const estimatedCost = getIndianPrice(Math.floor(cost));
+
+  if (estimatedCost !== "NaN" && parseInt(estimatedCost) > 0) {
+    return (
+      <>
+        <div className="text-[13px] font-[300] leading-3">Estimated cost</div>
+        <div className="text-[18px] font-[800] leading-3">
+          <span>₹ {estimatedCost}</span>
+        </div>
+      </>
+    );
+  }
+
+  return null;
 };
