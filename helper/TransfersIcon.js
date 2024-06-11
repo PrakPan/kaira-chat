@@ -122,7 +122,7 @@ const FerryIcon = ({ Instyle, classname }) => {
   }
   return (
     <Image
-      src="https://images.thetarzanway.com/media/icons/transfers/ferry.svg"
+      src="https://images.thetarzanway.com/media/icons/transfers/ferry.webp"
       width={classname.width}
       height={classname.height}
       alt="icon"
