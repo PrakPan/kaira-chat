@@ -19,12 +19,14 @@ const TransferContainerForMissing = ({
     value: false,
     errorMsg: "",
   });
+  
   const getCurrentUrl = () => {
     const router = useRouter();
     const { asPath } = router;
 
     return `${process.env.NEXT_PUBLIC_BASE_URL}${asPath}`;
   };
+
   const currentUrl = getCurrentUrl();
 
   const _GetInTouch = () => {
@@ -62,6 +64,7 @@ const TransferContainerForMissing = ({
         });
       });
   };
+
   const SlideComponent = useMemo(
     () => (
       <Slide
@@ -84,6 +87,7 @@ const TransferContainerForMissing = ({
     ),
     [isSucess.value]
   );
+
   return (
     <>
       <div className=" fixed right-[10px] top-[50px] z-[200] ">

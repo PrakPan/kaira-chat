@@ -49,7 +49,7 @@ const Line = styled.hr`
   border: 2px;
   width: ${(props) => (props.Transfers ? `16rem` : `5rem`)};
   top: ${(props) => (props.Transfers ? `101px` : `23px`)};
-  right: ${(props) => (props.Transfers ? `-110px` : `-25px`)};
+  right: ${(props) => (props.Transfers ? `-110px` : `-22px`)};
   opacity: initial;
   z-index: -1;
   @media screen and (min-width: 768px) {
@@ -395,10 +395,7 @@ const TransfersContainer = (props) => {
             ? locationsArr.push(
                 <TransContainer>
                   <div style={{ position: "relative" }}>
-                    <Line
-                      pinColour={props?.breif?.city_slabs[i]?.color}
-                      Transfers={true}
-                    />
+                    <Line pinColour={props?.breif?.city_slabs[i]?.color} />
                   </div>
                   <div className="w-full h-full flex items-center justify-start ml-4">
                     {props?.routes[i + 1]?.transfers?.id !== "" && (
