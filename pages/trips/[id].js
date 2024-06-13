@@ -1,11 +1,12 @@
-import ItineraryContainer from "../../../containers/itinerary/IndexsV2/Index";
-import { useRouter } from "next/router";
-import LayoutV2 from "../../../components/Layout";
 import Head from "next/head";
-import { connect } from "react-redux";
-import * as authaction from "../../../store/actions/auth";
-import setItineraryId from "../../../store/actions/itineraryId";
+import { useRouter } from "next/router";
 import { useEffect } from "react";
+import { connect } from "react-redux";
+import ItineraryContainer from "../../containers/itinerary/IndexsV2/Index";
+import LayoutV2 from "../../components/Layout";
+import * as authaction from "../../store/actions/auth";
+import setItineraryId from "../../store/actions/itineraryId";
+import axiosplaninstance from "../../services/itinerary/plan";
 
 const IndexedItinerary = (props) => {
   const router = useRouter();
@@ -17,32 +18,63 @@ const IndexedItinerary = (props) => {
     props.checkAuthState();
   }, [router]);
 
+  function cityNames() {
+    if (props?.Data?.cities) {
+      const Cities = props.Data.cities;
+      let city_names = "";
+      for (let i = 0; i < Cities.length; i++) {
+        if (i === Cities.length - 1) {
+          city_names = city_names + Cities[i];
+        } else {
+          city_names = city_names + Cities[i] + ", ";
+        }
+      }
+
+      return city_names;
+    }
+
+    return "";
+  }
+
   return (
     <LayoutV2 staticnav itinerary page={"Itinerary Page"}>
       <Head>
-        <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title> Tailored Itinerary | The Tarzan Way </title>
+        <title> {props?.Data?.name} </title>
         <meta
           name="description"
-          content="Discover the best of [City Name] with our complete 3-day itinerary. From iconic landmarks to hidden gems, explore [City Name] like a local."
+          content={`Discover the best of ${cityNames()} with our complete ${
+            props?.Data?.duration
+          }-day itinerary. Explore iconic landmarks, hidden gems, and local experiences like a true traveler.`}
         />
         <meta
           name="keywords"
-          content="[City Name] itinerary, 3-day [City Name] trip, [City Name] travel guide, [City Name] attractions, things to do in [City Name]"
+          content={`${cityNames()} itinerary, ${
+            props?.Data?.duration
+          }-day trip, multi-city travel, travel guide, ${cityNames()} attractions, things to do in ${cityNames()}`}
         />
         <meta
           property="og:title"
-          content="Complete 3-Day Itinerary for Exploring [City Name]"
+          content={`Complete ${
+            props?.Data?.duration
+          }-Day Itinerary for Exploring ${cityNames()}`}
         />
         <meta
           property="og:description"
-          content="Discover the best of [City Name] with our complete 3-day itinerary. From iconic landmarks to hidden gems, explore [City Name] like a local."
+          content={`Discover the best of ${cityNames()} with our complete ${
+            props?.Data?.duration
+          }-day itinerary. Explore iconic landmarks, hidden gems, and local experiences like a true traveler.`}
         />
         <meta property="og:image" content="/logoblack.svg" />
-        <meta property="og:url" content="https://thetarzanway.com/trips/[id]" />
+        <meta
+          property="og:url"
+          content={`https://thetarzanway.com/trips/${props?.Data?.ID}`}
+        />
         <meta property="og:type" content="website" />
-        <link rel="canonical" href="https://thetarzanway.com/trips/[id]"></link>
+        <link
+          rel="canonical"
+          href={`https://thetarzanway.com/trips/${props?.Data?.ID}`}
+        ></link>
       </Head>
 
       {router.query.id && (
@@ -51,6 +83,59 @@ const IndexedItinerary = (props) => {
     </LayoutV2>
   );
 };
+
+export async function getStaticPaths() {
+  const IDS = [
+    "caecfa4d-4590-4c07-bed1-269d6c3aee87",
+    "3676c206-9209-41fa-bab2-a6784557ff33",
+    "8744b2a3-95d7-45e9-9f84-7800e690c7f1",
+    "fee0fcaf-e089-400e-904d-d4fe18f01ac6",
+    "428c132c-3b3a-410e-bd4d-c55850dac231",
+    "bc75f358-ef3a-4cc5-b589-654e8f733964",
+    "36fc1c31-afcd-457a-bd95-808778f060ac",
+    "33bfb03f-42da-4544-bdb3-83380335732d",
+    "ae2a9352-5f1b-464c-8c26-acac3c51533e",
+    "b54315aa-30bd-4272-b65d-60a1c9a50cee",
+  ];
+  let paths = [];
+
+  for (let id of IDS) {
+    paths.push({
+      params: {
+        id: id,
+      },
+    });
+  }
+
+  return {
+    paths: paths,
+    fallback: false,
+  };
+}
+
+export async function getStaticProps(context) {
+  let data = null;
+
+  try {
+    const res = await axiosplaninstance.get(
+      `/?itinerary_id=${context.params.id}`
+    );
+    data = res.data;
+  } catch (err) {
+    console.error("[ERROR][tripsPage:getStaticProps]: ", err.message);
+  }
+
+  return {
+    props: {
+      Data: {
+        ID: context.params.id,
+        name: data?.name,
+        duration: data?.duration_number,
+        cities: data?.itinerary_locations,
+      },
+    },
+  };
+}
 
 const mapStateToPros = (state) => {
   return {
@@ -68,54 +153,3 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export default connect(mapStateToPros, mapDispatchToProps)(IndexedItinerary);
-
-export async function getStaticPaths() {
-  let paths = [];
-
-  try {
-    const res = await axiossearchInstance.get(
-      "/?type=Location&fields=path,cta"
-    );
-
-    const data = res.data;
-
-    for (var i = 0; i < data.length; i++) {
-      const pathArr = data[i].path.split("/");
-      var [continentSlug, countrySlug, stateSlug, citySlug] = pathArr;
-      if (data[i].cta) {
-        paths.push({
-          params: {
-            continent: continentSlug,
-            country: countrySlug,
-            state: stateSlug,
-            city: citySlug,
-          },
-        });
-      }
-    }
-  } catch (err) {
-    console.log("[ERROR][tripsPage:getStaticPaths]: ", err.message);
-  }
-
-  return {
-    paths: paths,
-    fallback: false,
-  };
-}
-
-export async function getStaticProps(context) {
-  let data = null;
-
-  try {
-    const res = await axiosPoiCityInstance.get(`/?slug=${context.params.id}`);
-    data = res.data;
-  } catch (err) {
-    console.error("[ERROR][tripsPage:getStaticProps]: ", err.message);
-  }
-
-  return {
-    props: {
-      Data: data,
-    },
-  };
-}
