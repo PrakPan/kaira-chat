@@ -6,7 +6,9 @@
     "dev": "cross-env NODE_OPTIONS=\"--max_old_space_size=8192\" next dev",
     "build": "next build",
     "start": "next start -p 3002",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build:dev": "NODE_ENV=development next build",
+    "build:prod": "NODE_ENV=production next build"
   },
   "dependencies": {
     "@builder.io/partytown": "^0.8.0",

@@ -114,13 +114,18 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps(context) {
-  let data = null;
+  let name = null;
+  let duration = null;
+  let cities = [];
 
   try {
     const res = await axiosplaninstance.get(
       `/?itinerary_id=${context.params.id}`
     );
-    data = res.data;
+    const data = res.data;
+    name = data.name;
+    duration = data.duration_number;
+    cities = data.itinerary_locations;
   } catch (err) {
     console.error("[ERROR][tripsPage:getStaticProps]: ", err.message);
   }
@@ -129,9 +134,9 @@ export async function getStaticProps(context) {
     props: {
       Data: {
         ID: context.params.id,
-        name: data?.name,
-        duration: data?.duration_number,
-        cities: data?.itinerary_locations,
+        name,
+        duration,
+        cities,
       },
     },
   };
