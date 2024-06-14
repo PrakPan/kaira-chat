@@ -304,6 +304,9 @@ const RouteEditSection = (props) => {
       user_location: {
         place_id: destinations[0].cityData.place_id,
       },
+      end_location: {
+        place_id: destinations[destinations.length - 1].cityData.place_id,
+      },
     };
 
     const headers = {
@@ -617,13 +620,13 @@ export const EditDestinations = (props) => {
       const newLocations = [];
 
       for (let i = 1; i < items.length - 1; i++) {
-        const lat = items[i].cityData.lat;
-        const long = items[i].cityData.long;
-        const color = items[i].cityData.color;
-        const name = items[i].cityData.name;
-        const nights = items[i].cityData.nights;
+        const lat = items[i]?.cityData?.lat;
+        const long = items[i]?.cityData?.long;
+        const color = items[i]?.cityData?.color;
+        const name = items[i]?.cityData?.name;
+        const nights = items[i]?.cityData?.nights;
 
-        if (color) {
+        if (lat && long) {
           const location = locations.find(
             (item) =>
               item.color === color &&
@@ -642,12 +645,6 @@ export const EditDestinations = (props) => {
               color: color,
             });
           }
-        } else if (lat && long) {
-          newLocations.push({
-            lat: lat,
-            long: long,
-            name: name,
-          });
         }
       }
 
