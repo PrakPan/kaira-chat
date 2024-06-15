@@ -604,22 +604,45 @@ const TransfersContainer = (props) => {
               transfersPin
               setCurrentPopup={false}
               dayId={
-                props.breif.city_slabs[0].day_slab_location.start_day_slab_index
+                props.breif.city_slabs[props.breif.city_slabs.length - 1]
+                  .day_slab_location.start_day_slab_index
               }
-              cityData={props.breif.city_slabs[0]}
+              cityData={
+                props.breif.city_slabs[props.breif.city_slabs.length - 1]
+              }
               dayslab={props.dayslab}
-              lat={props.breif.city_slabs[0].lat}
-              long={props.breif.city_slabs[0].long}
-              Mapid={props.breif.city_slabs[0].gmaps_place_id}
-              city={props.breif.city_slabs[0].city_name}
-              cityId={props.breif.city_slabs[0].city_id}
+              lat={
+                props.breif.city_slabs[props.breif.city_slabs.length - 1].lat
+              }
+              long={
+                props.breif.city_slabs[props.breif.city_slabs.length - 1].long
+              }
+              Mapid={
+                props.breif.city_slabs[props.breif.city_slabs.length - 1]
+                  .gmaps_place_id
+              }
+              city={
+                props.breif.city_slabs[props.breif.city_slabs.length - 1]
+                  .city_name
+              }
+              cityId={
+                props.breif.city_slabs[props.breif.city_slabs.length - 1]
+                  .city_id
+              }
               duration={
-                props.breif.city_slabs[0].duration
-                  ? props.breif.city_slabs[0].duration +
-                    NoOfNights(props.breif.city_slabs[0].duration)
+                props.breif.city_slabs[props.breif.city_slabs.length - 1]
+                  .duration
+                  ? props.breif.city_slabs[props.breif.city_slabs.length - 1]
+                      .duration +
+                    NoOfNights(
+                      props.breif.city_slabs[props.breif.city_slabs.length - 1]
+                        .duration
+                    )
                   : null
               }
-              pinColour={props.breif.city_slabs[0].color}
+              pinColour={
+                props.breif.city_slabs[props.breif.city_slabs.length - 1].color
+              }
             ></PinSection>
           )}
         </>

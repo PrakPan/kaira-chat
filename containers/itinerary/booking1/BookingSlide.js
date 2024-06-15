@@ -265,12 +265,11 @@ const Details = (props) => {
   setBookingSummary();
 
   function getURL() {
-    const url = router.asPath.split('?')[0]
-    const searchParams = new URLSearchParams(router.asPath.split('?')[1]);
+    const url = router.asPath.split("?")[0];
+    const searchParams = new URLSearchParams(router.asPath.split("?")[1]);
     searchParams.delete("t");
     const newPath =
-      url +
-      (searchParams.toString() ? `?${searchParams.toString()}` : "");
+      url + (searchParams.toString() ? `?${searchParams.toString()}` : "");
 
     return newPath;
   }
@@ -1042,6 +1041,7 @@ const mapStateToProps = (state) => {
     orderCreated: state.experience.orderCreated,
     couponApplied: state.experience.couponApplied,
     couponInvalid: state.experience.couponInvalid,
+    plan: state.Plan,
   };
 };
 
