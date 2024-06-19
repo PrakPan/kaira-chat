@@ -89,8 +89,8 @@ export async function getStaticPaths() {
   let paths = [];
 
   try {
-    const response = await axiosIndexedItinerary.get("/?limit=30&offset=0");
-    const data = response?.data?.results;
+    const response = await axiosIndexedItinerary.get("");
+    const data = response?.data;
     if (data?.length > 0) {
       for (let i of data) {
         paths.push({
