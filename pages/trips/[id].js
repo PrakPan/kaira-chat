@@ -7,6 +7,7 @@ import LayoutV2 from "../../components/Layout";
 import * as authaction from "../../store/actions/auth";
 import setItineraryId from "../../store/actions/itineraryId";
 import axiosplaninstance from "../../services/itinerary/plan";
+import axiosIndexedItinerary from "../../services/itinerary/releasedForCustomer";
 
 const IndexedItinerary = (props) => {
   const router = useRouter();
@@ -85,26 +86,22 @@ const IndexedItinerary = (props) => {
 };
 
 export async function getStaticPaths() {
-  const IDS = [
-    "caecfa4d-4590-4c07-bed1-269d6c3aee87",
-    "3676c206-9209-41fa-bab2-a6784557ff33",
-    "8744b2a3-95d7-45e9-9f84-7800e690c7f1",
-    "fee0fcaf-e089-400e-904d-d4fe18f01ac6",
-    "428c132c-3b3a-410e-bd4d-c55850dac231",
-    "bc75f358-ef3a-4cc5-b589-654e8f733964",
-    "36fc1c31-afcd-457a-bd95-808778f060ac",
-    "33bfb03f-42da-4544-bdb3-83380335732d",
-    "ae2a9352-5f1b-464c-8c26-acac3c51533e",
-    "b54315aa-30bd-4272-b65d-60a1c9a50cee",
-  ];
   let paths = [];
 
-  for (let id of IDS) {
-    paths.push({
-      params: {
-        id: id,
-      },
-    });
+  try {
+    const response = await axiosIndexedItinerary.get("/?limit=30&offset=0");
+    const data = response?.data?.results;
+    if (data?.length > 0) {
+      for (let i of data) {
+        paths.push({
+          params: {
+            id: i.id,
+          },
+        });
+      }
+    }
+  } catch (err) {
+    console.log("[ERROR][getStaticPaths:tripsPage]: ", err.message);
   }
 
   return {
