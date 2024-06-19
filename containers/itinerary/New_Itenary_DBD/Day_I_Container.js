@@ -191,8 +191,9 @@ const Day_I_Container = (props) => {
               />
             );
           } else if (
-            element?.activity_data?.poi &&
-            Object.keys(element?.activity_data?.poi).length !== 0
+            (element?.activity_data?.poi &&
+              Object.keys(element?.activity_data?.poi).length !== 0) ||
+            element?.heading
           ) {
             pois.push({
               heading: element.heading,
