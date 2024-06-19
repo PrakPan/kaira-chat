@@ -185,7 +185,10 @@ export default class MyDocument extends Document {
               --df-messenger-chat-bubble-icon-color: white;
               --df-messenger-chat-bubble-border-radius: 10px;
 
-              --df-messenger-message-user-background: #f7e700;
+              --df-messenger-message-user-background: #E9E9E9;
+              --df-messenger-message-bot-background: #FDFACC;
+
+              --df-messenger-chat-scroll-button-background: #f7e700;
 
               --df-messenger-input-focus-border: 2px solid #f7e700;
               --df-messenger-input-box-border: 2px solid black;
