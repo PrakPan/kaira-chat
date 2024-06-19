@@ -197,10 +197,12 @@ const RouteEditSection = (props) => {
   }, [props.routes]);
 
   useEffect(() => {
-    if (validateDates()) {
-      setIsValidDates(true);
-    } else {
-      setIsValidDates(false);
+    if (destinations.length) {
+      if (validateDates()) {
+        setIsValidDates(true);
+      } else {
+        setIsValidDates(false);
+      }
     }
   }, [destinations, startDate, endDate]);
 

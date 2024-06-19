@@ -101,7 +101,7 @@ export async function getStaticPaths() {
       }
     }
   } catch (err) {
-    console.log("[ERROR][getStaticPaths:tripsPage]: ", err.message);
+    console.log("[ERROR][tripsPage:getStaticPaths]: ", err.message);
   }
 
   return {
