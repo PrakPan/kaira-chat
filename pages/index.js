@@ -19,7 +19,7 @@ const Home = (props) => {
         <title>Travel Company | India | The Tarzan Way</title>
         <meta
           name="description"
-          content="The Tarzan Way is a travel based startup with the vision to simplify travel and build immersive travel programs across India. We personalize travel package and provide unique travel experience for travel in India"
+          content="The Tarzan Way is the best trip-planning platform to craft your trips, your way using AI Trip Planner. Create, browse, customise travel itineraries, manage bookings - all in one place!"
         ></meta>
         <meta
           property="og:title"
@@ -27,7 +27,7 @@ const Home = (props) => {
         />
         <meta
           property="og:description"
-          content="The Tarzan Way is a travel based startup with the vision to simplify travel and build immersive travel programs across India. We personalize travel package and provide unique travel experience for travel in India"
+          content="The Tarzan Way is the best trip-planning platform to craft your trips, your way using AI Trip Planner. Create, browse, customise travel itineraries, manage bookings - all in one place!"
         />
         <meta property="og:image" content="/logoblack.svg" />
         <meta
