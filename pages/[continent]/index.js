@@ -13,10 +13,16 @@ const TravelPlanner = (props) => {
       page="Continent Page"
     >
       <Head>
-        <title>{props.Data.page_title}</title>
-        <meta name="description" content={props.Data.short_description}></meta>
+        <title>{`${props.Data.destination} Trip Planner & Itinerary | Travel Company | India | The Tarzan Way`}</title>
+        <meta
+          name="description"
+          content={`Discover ${props.Data.destination} with The Tarzan Way’s AI Trip Planner. Book your flights, accommodations, and transfers all in one go and discover must-visit ${props.Data.destination} destinations for an extraordinary journey! `}
+        ></meta>
         <meta property="og:title" content={props.Data.page_title} />
-        <meta property="og:description" content={props.Data.overview_text} />
+        <meta
+          property="og:description"
+          content={`Discover ${props.Data.destination} with The Tarzan Way’s AI Trip Planner. Book your flights, accommodations, and transfers all in one go and discover must-visit ${props.Data.destination} destinations for an extraordinary journey! `}
+        />
         <meta property="og:image" content="/logoblack.svg" />
         <meta property="keywords" content={props.Data.meta_keywords}></meta>
       </Head>
