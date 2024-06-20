@@ -41,12 +41,10 @@ const IndexedItinerary = (props) => {
     <LayoutV2 staticnav itinerary page={"Itinerary Page"}>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title> {props?.Data?.name} </title>
+        <title> {props?.Data?.page_title} </title>
         <meta
           name="description"
-          content={`Discover the best of ${cityNames()} with our complete ${
-            props?.Data?.duration
-          }-day itinerary. Explore iconic landmarks, hidden gems, and local experiences like a true traveler.`}
+          content={props?.Data?.meta_description}
         />
         <meta
           name="keywords"
@@ -56,15 +54,11 @@ const IndexedItinerary = (props) => {
         />
         <meta
           property="og:title"
-          content={`Complete ${
-            props?.Data?.duration
-          }-Day Itinerary for Exploring ${cityNames()}`}
+          content={props?.Data?.social_title}
         />
         <meta
           property="og:description"
-          content={`Discover the best of ${cityNames()} with our complete ${
-            props?.Data?.duration
-          }-day itinerary. Explore iconic landmarks, hidden gems, and local experiences like a true traveler.`}
+          content={props?.Data?.social_description}
         />
         <meta property="og:image" content="/logoblack.svg" />
         <meta
@@ -111,7 +105,10 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps(context) {
-  let name = null;
+  let page_title = null;
+  let meta_description = null;
+  let social_title = null;
+  let social_description = null;
   let duration = null;
   let cities = [];
 
@@ -120,7 +117,10 @@ export async function getStaticProps(context) {
       `/?itinerary_id=${context.params.id}`
     );
     const data = res.data;
-    name = data.name;
+    page_title = data.page_title;
+    meta_description = data.meta_description;
+    social_title = data.social_share_title;
+    social_description = data.social_media_description;
     duration = data.duration_number;
     cities = data.itinerary_locations;
   } catch (err) {
@@ -131,7 +131,10 @@ export async function getStaticProps(context) {
     props: {
       Data: {
         ID: context.params.id,
-        name,
+        page_title,
+        meta_description,
+        social_title,
+        social_description,
         duration,
         cities,
       },
