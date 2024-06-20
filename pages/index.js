@@ -34,6 +34,51 @@ const Home = (props) => {
           property="keywords"
           content="travel in india, tour in india, india travel, travel agents near me, plan a trip, travel and experience culture, local travel experience, customized trip planner india, customized holiday packages, customized packages in computer, customized travel, honeymoon travel packages, personalized travel package"
         ></meta>
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: `
+            {
+              "@context": "https://schema.org",
+              "@type": "TravelAgency",
+              "name": "The Tarzan Way",
+              "image": "https://www.thetarzanway.com/logoblack.svg",
+              "@id": "",
+              "url": "https://www.thetarzanway.com/",
+              "telephone": "+91 95821 25476",
+              "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "",
+                "addressLocality": "",
+                "postalCode": "",
+                "addressCountry": "IN"
+              },
+              "openingHoursSpecification": {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": [
+                  "Monday",
+                  "Tuesday",
+                  "Wednesday",
+                  "Thursday",
+                  "Friday",
+                  "Saturday",
+                  "Sunday"
+                ],
+                "opens": "00:00",
+                "closes": "23:59"
+              },
+              "sameAs": [
+                "https://www.facebook.com/thetarzanway/",
+                "https://twitter.com/thetarzanway",
+                "https://www.instagram.com/thetarzanway/",
+                "https://www.linkedin.com/company/thetarzanway/",
+                "https://in.pinterest.com/thetarzanway/"
+              ]
+            }
+          `,
+          }}
+        />
       </Head>
 
       <HomepageContainer
