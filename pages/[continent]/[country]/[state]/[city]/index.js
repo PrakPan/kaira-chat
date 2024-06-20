@@ -46,7 +46,7 @@ const Experience = (props) => {
         </title>
         <meta
           property="keywords"
-          content="best places to visit in india, best places to visit in kasol, best places to visit in ladakh, best places to visit in andaman, best places to visit in manali, best places to visit in delhi, best places to visit in rajasthan, package for ladakh, package for manali, package for delhi, package for andaman, package for kashmir"
+          content={`${props?.cityData?.name} trip planner, ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, travel in ${props?.cityData?.name}, ${props?.cityData?.name} tour package, experience ${props?.cityData?.name} culture, ${props?.cityData?.name} holiday package, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, best places in ${props?.cityData?.name}, places to visit in ${props?.cityData?.name}, best activities in ${props?.cityData?.name}, things to do in ${props?.cityData?.name}, package for ${props?.cityData?.name}, top places in ${props?.cityData?.name}, wanderlog, inspirock, tripit, hotels, flights, activities, transfers, solo travel, family travel,`}
         ></meta>
       </Head>
 

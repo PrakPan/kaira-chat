@@ -6,20 +6,35 @@ import Head from "next/head";
 import DestinationsPageContainer from "../../containers/destinationspage/Index";
 
 export default function AllDestinations(props) {
-
-
   return (
     <Layout destination={"All Destinations"} id={""} page={"Destinations page"}>
       <Head>
-        <title>Travel Company | India | The Tarzan Way</title>
-        <meta name="description" content={""}></meta>
+        <title>
+          All Destinations Trip Planner & Itinerary | Travel Company | India |
+          The Tarzan Way
+        </title>
+        <meta
+          name="description"
+          content={
+            "The Tarzan Way is the best trip-planning platform to craft your trips, your way using AI Trip Planner. Create, browse, customise travel itineraries, manage bookings - all in one place!"
+          }
+        ></meta>
         <meta
           property="og:title"
-          content={"Travel Company | India | The Tarzan Way"}
+          content="All Destinations Trip Planner & Itinerary | Travel Company | India |
+          The Tarzan Way"
         />
-        <meta property="og:description" content={""} />
+        <meta
+          property="og:description"
+          content={
+            "The Tarzan Way is the best trip-planning platform to craft your trips, your way using AI Trip Planner. Create, browse, customise travel itineraries, manage bookings - all in one place!"
+          }
+        />
         <meta property="og:image" content="/logoblack.svg" />
-        <meta property="keywords" content={""}></meta>
+        <meta
+          property="keywords"
+          content="ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, wanderlog, inspirock, tripit, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, hotels, flights, activities, transfers,"
+        ></meta>
       </Head>
 
       <DestinationsPageContainer
@@ -41,7 +56,7 @@ export async function getStaticProps(context) {
     { slug: "north_america", title: "North America" },
     { slug: "south_america", title: "South America" },
   ];
-  
+
   let ThemeData = [];
   const allDestinations = [];
   let Count = null;

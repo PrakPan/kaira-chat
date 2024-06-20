@@ -20,7 +20,7 @@ const AboutUsContainer = () => {
           <title>About Us | Travel India | The Tarzan Way</title>
           <meta
             name="description"
-            content="Here's our journey on how we started a travel startup that personalizes and customizes a travel package based on how the user is. The Tarzan Way is a travel-startup based out of India with the vision to build immersive travel experiences and simplify travel across the country. We curate experiential travel programs and provide tailored custom-made travel itineraries."
+            content="The Tarzan Way is the best trip-planning platform to craft your trips, your way using AI Trip Planner. Create, browse, customise travel itineraries, manage bookings - all in one place. Here’s our journey on how we started as a travel startup in India to curate experiential travel programs and provide tailored custom-made travel itineraries!"
           ></meta>
           <meta
             property="og:title"
@@ -28,9 +28,13 @@ const AboutUsContainer = () => {
           />
           <meta
             property="og:description"
-            content="Here's our journey on how we started a travel startup that personalizes and customizes a travel package based on how the user is. The Tarzan Way is a travel-startup based out of India with the vision to build immersive travel experiences and simplify travel across the country. We curate experiential travel programs and provide tailored custom-made travel itineraries."
+            content="The Tarzan Way is the best trip-planning platform to craft your trips, your way using AI Trip Planner. Create, browse, customise travel itineraries, manage bookings - all in one place. Here’s our journey on how we started as a travel startup in India to curate experiential travel programs and provide tailored custom-made travel itineraries!"
           />
           <meta property="og:image" content="/logoblack.svg" />
+          <meta
+            property="keywords"
+            content="ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, wanderlog, inspirock, tripit, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, hotels, flights, activities, transfers,"
+          ></meta>
         </Head>
 
         <FullImage></FullImage>

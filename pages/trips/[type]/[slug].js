@@ -47,16 +47,11 @@ const IndexedItinerary = ({ Data, setItineraryId, checkAuthState }) => {
         <meta name="description" content={Data?.meta_description} />
         <meta
           name="keywords"
-          content={`${cityNames()} itinerary, ${
-            Data?.duration
-          }-day trip, multi-city travel, travel guide, ${cityNames()} attractions, things to do in ${cityNames()}`}
+          content={`ai trip planner, trip planner, itinerary, ${cityNames()} trip planner, travel in ${cityNames()}, ${cityNames()} travel package, ${cityNames()} tour package, ${cityNames()} holiday package, travel plan, ai itinerary, ai plan, craft a trip, wanderlog, inspirock, tripit, local travel experience, customized trip planner, customized holiday packages, customized packages, honeymoon travel packages, solo travel, family travel, personalized travel package, hotels, flights, activities, transfers,`}
         />
         <meta property="og:title" content={Data?.social_title} />
         <meta property="og:description" content={Data?.social_description} />
-        <meta
-          property="og:image"
-          content={`https://d31aoa0ehgvjdi.cloudfront.net/${Data?.image}`}
-        />
+        <meta property="og:image" content="/logoblack.svg" />
         <meta
           property="og:url"
           content={`https://thetarzanway.com/trips/${Data?.path}`}
@@ -74,11 +69,11 @@ const IndexedItinerary = ({ Data, setItineraryId, checkAuthState }) => {
                 {
                 "@context": "https://schema.org/",
                 "@type": "Product",
-                "name": ${Data?.page_title},
+                "name": "${Data?.page_title}",
                 "image": [
                   "https://d31aoa0ehgvjdi.cloudfront.net/${Data?.image}"
                 ],
-                "description": ${Data?.meta_description},
+                "description": "${Data?.meta_description}",
                 "aggregateRating": {
                   "@type": "AggregateRating",
                   "ratingValue": ${Data?.review},
@@ -89,7 +84,7 @@ const IndexedItinerary = ({ Data, setItineraryId, checkAuthState }) => {
                   "price": ${Data?.price},
                   "priceCurrency": "INR",
                   "availability": "LimitedAvailability",
-                  "priceValidUntil": ${Data?.priceValid}
+                  "priceValidUntil": "${Data?.priceValid}"
                 }
               }
             `,

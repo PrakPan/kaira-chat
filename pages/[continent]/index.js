@@ -18,13 +18,19 @@ const TravelPlanner = (props) => {
           name="description"
           content={`Discover ${props.Data.destination} with The Tarzan Way’s AI Trip Planner. Book your flights, accommodations, and transfers all in one go and discover must-visit ${props.Data.destination} destinations for an extraordinary journey! `}
         ></meta>
-        <meta property="og:title" content={props.Data.page_title} />
+        <meta
+          property="og:title"
+          content={`${props.Data.destination} Trip Planner & Itinerary | Travel Company | India | The Tarzan Way`}
+        />
         <meta
           property="og:description"
           content={`Discover ${props.Data.destination} with The Tarzan Way’s AI Trip Planner. Book your flights, accommodations, and transfers all in one go and discover must-visit ${props.Data.destination} destinations for an extraordinary journey! `}
         />
         <meta property="og:image" content="/logoblack.svg" />
-        <meta property="keywords" content={props.Data.meta_keywords}></meta>
+        <meta
+          property="keywords"
+          content={`${props.Data.destination} trip planner, ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, travel in ${props.Data.destination}, ${props.Data.destination} tour package, experience ${props.Data.destination} culture, ${props.Data.destination} holiday package, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, best places in ${props.Data.destination}, places to visit in ${props.Data.destination}, best activities in ${props.Data.destination}, things to do in ${props.Data.destination}, package for ${props.Data.destination}, top places in ${props.Data.destination}, wanderlog, inspirock, tripit, hotels, flights, activities, transfers, solo travel, family travel,`}
+        ></meta>
       </Head>
 
       <ContinentPage
