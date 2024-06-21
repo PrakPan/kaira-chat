@@ -21,16 +21,14 @@ const IndexedItinerary = ({ Data, setItineraryId, checkAuthState }) => {
     checkAuthState();
   }, [router]);
 
-  function cityNames() {
+  function cityNames(str, start = false) {
     if (Data?.cities) {
       const Cities = Data.cities;
       let city_names = "";
       for (let i = 0; i < Cities.length; i++) {
-        if (i === Cities.length - 1) {
-          city_names = city_names + Cities[i];
-        } else {
-          city_names = city_names + Cities[i] + ", ";
-        }
+        city_names = start
+          ? city_names + str + " " + Cities[i] + ", "
+          : city_names + Cities[i] + " " + str + ", ";
       }
 
       return city_names;
@@ -47,7 +45,13 @@ const IndexedItinerary = ({ Data, setItineraryId, checkAuthState }) => {
         <meta name="description" content={Data?.meta_description} />
         <meta
           name="keywords"
-          content={`ai trip planner, trip planner, itinerary, ${cityNames()} trip planner, travel in ${cityNames()}, ${cityNames()} travel package, ${cityNames()} tour package, ${cityNames()} holiday package, travel plan, ai itinerary, ai plan, craft a trip, wanderlog, inspirock, tripit, local travel experience, customized trip planner, customized holiday packages, customized packages, honeymoon travel packages, solo travel, family travel, personalized travel package, hotels, flights, activities, transfers,`}
+          content={`ai trip planner, trip planner, itinerary, ${cityNames(
+            "trip planner"
+          )}${cityNames("travel in", true)}${cityNames(
+            "travel package"
+          )}${cityNames("tour package")}${cityNames(
+            "holiday package"
+          )}travel plan, ai itinerary, ai plan, craft a trip, wanderlog, inspirock, tripit, local travel experience, customized trip planner, customized holiday packages, customized packages, honeymoon travel packages, solo travel, family travel, personalized travel package, hotels, flights, activities, transfers,`}
         />
         <meta property="og:title" content={Data?.social_title} />
         <meta property="og:description" content={Data?.social_description} />
@@ -194,7 +198,7 @@ export async function getStaticProps(context) {
     review = data?.review;
     rating_count = data?.rating_count;
     price = data?.payment_info?.per_person_total_cost / 100;
-    cities = data?.itinerary_locations;
+    cities = [...new Set(data?.itinerary_locations)];
   } catch (err) {
     console.log("[ERROR][tripsPage:getStaticProps]: ", err.message);
   }
