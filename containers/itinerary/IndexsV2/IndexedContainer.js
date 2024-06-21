@@ -1,15 +1,12 @@
 import React, { useRef, useState, useEffect } from "react";
-import { useRouter } from "next/router";
 import styled from "styled-components";
 import Menu from "../MenuV2";
 import Spinner from "../../../containers/loaderbar/Index";
-import OldSpinner from "../../../components/LoadingPage";
 import axiosdaybydayinstance from "../../../services/itinerary/daybyday/preview";
 import axiosbreifinstance from "../../../services/itinerary/brief/preview";
 import * as authaction from "../../../store/actions/auth";
 import { connect, useDispatch } from "react-redux";
 import { ITINERARY_STATUSES } from "../../../services/constants";
-import { TRAVELER_ITINERARIES } from "../../../services/constants";
 import axiosPoiRoutes from "../../../services/itinerary/brief/route";
 import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
 import Overview from "../../newitinerary/overview/Index";
@@ -35,12 +32,10 @@ const Container = styled.div`
 `;
 
 const Itinerary = (props) => {
-  const router = useRouter();
   const [totalduration, setTotalduration] = useState(0);
   const [itineraryReleased, setItineraryReleased] = useState(false);
   const [itineraryDate, setItineraryDate] = useState("");
   const [booking, setBooking] = useState(null);
-  const [itineraryLoading, setItineraryLoading] = useState(true);
   const [paymentLoading, setPaymentLoading] = useState(true);
   const [cardUpdateLoading, setCardUpdateLoading] = useState(null);
   const [stayBookings, setStayBookings] = useState(null);
@@ -82,6 +77,135 @@ const Itinerary = (props) => {
     }
   }, [props.itinerary]);
 
+  useEffect(() => {
+    getDaybyday(props.daybydayData);
+    getItineraryRoutes(props.routesData);
+    getBreif(props.breifData);
+    getPlan(props.planData);
+    getBookings(props.bookingsData);
+    getPaymentData(props.paymentData);
+  }, [props.id]);
+
+  function getDaybyday(data) {
+    if (data.day_slabs.length) {
+      if (data.is_stock) setIsStock(true);
+
+      props.setItinerary({
+        ...data,
+        images: data.images,
+      });
+    }
+  }
+
+  function getItineraryRoutes(data) {
+    props.setItineraryRoutes(data);
+  }
+
+  function getBreif(data) {
+    props.setBreif(data);
+
+    if (data) {
+      if (data.city_slabs) {
+        if (data.city_slabs.length)
+          for (var i = 0; i < data.city_slabs.length; i++) {
+            if (data.city_slabs[i].duration)
+              setTotalduration(
+                totalduration + parseInt(data.city_slabs[i].duration)
+              );
+          }
+      }
+    }
+  }
+
+  function getPlan(data) {
+    props.setPlan(data);
+    props.setItineraryStartDate({ date: data.start_date });
+    setUserEmail(data.user_email);
+    settravellerType(data.experience_filters_selected);
+    if (data.start_date) setIsDatePresent(true);
+    setgroup_type(data.group_type);
+    setduration_time(data.duration_number);
+    setItineraryReleased(data.is_released_for_customer);
+    setItineraryDate(data.created_at);
+  }
+
+  function getBookings(data) {
+    let stay_bookings = [];
+    let activity_bookings = [];
+    let transfer_bookings = [];
+    let flight_bookings = [];
+
+    for (var i = 0; i < data.bookings.length; i++) {
+      if (data.bookings[i].booking_type === "Accommodation")
+        stay_bookings.push(data.bookings[i]);
+      else if (data.bookings[i].booking_type === "Activity")
+        activity_bookings.push(data.bookings[i]);
+      else {
+        transfer_bookings.push(data.bookings[i]);
+        if (data.bookings[i].booking_type === "Flight") {
+          flight_bookings.push(data.bookings[i]);
+        }
+      }
+    }
+
+    props.setBookings({
+      stayBookings: stay_bookings,
+      activityBookings: activity_bookings.length ? activity_bookings : null,
+      flightBookings: flight_bookings.length ? flight_bookings : null,
+      transferBookings: transfer_bookings.length ? transfer_bookings : null,
+    });
+
+    setStayBookings(stay_bookings);
+    if (activity_bookings.length) {
+      setActivityBookings(activity_bookings);
+    } else {
+      setActivityBookings(null);
+    }
+
+    if (flight_bookings.length) {
+      setFlightBookings(flight_bookings);
+    } else {
+      setFlightBookings(null);
+    }
+
+    if (transfer_bookings.length) {
+      setTransferBookings(transfer_bookings);
+    } else {
+      setTransferBookings(null);
+    }
+  }
+
+  function getPaymentData(data) {
+    if (
+      props.token &&
+      !data.user_allowed_to_pay &&
+      data.itinerary_status == ITINERARY_STATUSES.itinerary_unclaimed
+    ) {
+      authaction
+        .ClaimItinary(props.id, props.token)
+        .then((res) => {
+          setPayment(res); //
+          setPaymentLoading(false);
+        })
+        .catch((err) => {});
+    } else {
+      setPayment(data);
+      setPaymentLoading(false);
+    }
+
+    let email = localStorage.getItem("email");
+    if (props.token) {
+      for (var i = 0; i < data.registered_users.length; i++) {
+        if (data.registered_users[i].email === email) {
+          if (data.registered_users[i].payment_status)
+            if (data.registered_users[i].payment_status === "captured")
+              setHasUserPaid(true);
+          break;
+        }
+      }
+    }
+  }
+
   const getItineraryActivities = () => {
     let itenaryActivities = [];
     props.itinerary?.day_slabs.map((day_slab, index) => {
@@ -110,6 +234,7 @@ const Itinerary = (props) => {
               }
           }
         }
+
         if (res.data.city_slabs)
           if (!res.data.city_slabs.length)
             if (!props.breif.city_slabs)
@@ -245,28 +370,20 @@ const Itinerary = (props) => {
 
   function fetchData(scroll = true) {
     if (scroll) window.scrollTo(0, 0);
-    if (TRAVELER_ITINERARIES.includes(props.id))
-      setIsPastTravelerItinerary(true);
     axiosdaybydayinstance
       .get(`/?itinerary_id=` + props.id)
       .then((res) => {
         if (res.data.day_slabs.length) {
           if (res.data.is_stock) setIsStock(true);
-
           props.setItinerary({
             ...res.data,
             images: res.data.images.filter((value) => value),
           });
-
-          setItineraryLoading(false);
         } else {
         }
       })
-      .catch((error) => {
-        setItineraryLoading(false);
-      });
+      .catch((error) => {});
     getBreifHandler();
-
     getRoutes(props.id)
       .then((res) => {
         props.setItineraryRoutes(res);
@@ -296,17 +413,6 @@ const Itinerary = (props) => {
       .catch((error) => {});
     getAccommodationAndActivitiesHandler();
   }
-
-  useEffect(() => {
-    var IntervalTiming;
-    if (router.query.t) IntervalTiming = (+router.query.t + 2) * 1000;
-    if (!IntervalTiming) {
-      fetchData();
-    } else
-      setTimeout(() => {
-        fetchData();
-      }, [IntervalTiming]);
-  }, []);
 
   const _updateTransferBooking = (arr1, arr2) => {
     const combinedArray = [...arr1]; // Copy arr1 to avoid modifying the original array
@@ -663,7 +769,7 @@ const Itinerary = (props) => {
     setShowPoiModal(false);
   };
 
-  if (props.breif && !itineraryLoading)
+  if (props.breif)
     return (
       <Container>
         <Overview
@@ -750,19 +856,7 @@ const Itinerary = (props) => {
         </div>
       </Container>
     );
-  else if (isPastTravelerItinerary)
-    return (
-      <div>
-        <OldSpinner></OldSpinner>{" "}
-      </div>
-    );
-  else if (router.query.payment_status) {
-    return (
-      <div>
-        <OldSpinner></OldSpinner>
-      </div>
-    );
-  } else
+  else
     return (
       <div>
         <Spinner></Spinner>
@@ -795,6 +889,8 @@ const mapDispatchToProps = (dispatch) => {
     setItineraryActivities: (payload) =>
       dispatch(setItineraryActivities(payload)),
     setBreif: (payload) => dispatch(setBreif(payload)),
+    setItineraryStartDate: (payload) =>
+      dispatch(setItineraryStartDate(payload)),
   };
 };
 

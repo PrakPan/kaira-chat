@@ -2,16 +2,31 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { connect } from "react-redux";
-import ItineraryContainer from "../../../containers/itinerary/IndexsV2/Index";
+import ItineraryContainer from "../../../containers/itinerary/IndexsV2/IndexedContainer";
 import LayoutV2 from "../../../components/Layout";
 import * as authaction from "../../../store/actions/auth";
 import setItineraryId from "../../../store/actions/itineraryId";
 import axiosplaninstance from "../../../services/itinerary/plan";
 import axiosIndexedItinerary from "../../../services/itinerary/releasedForCustomer";
+import axiosDaybyDayInstance from "../../../services/itinerary/daybyday/preview";
+import axiosbreifinstance from "../../../services/itinerary/brief/preview";
+import axiosRoutesInstance from "../../../services/itinerary/brief/route";
+import axiosBookingsInstance from "../../../services/itinerary/bookings";
+import axiosPaymentInstance from "../../../services/itinerary/payment";
 
 let TRIPS_CACHE = null;
 
-const IndexedItinerary = ({ Data, setItineraryId, checkAuthState }) => {
+const IndexedItinerary = ({
+  Data,
+  daybyday,
+  breif,
+  routes,
+  plan,
+  bookings,
+  payment,
+  setItineraryId,
+  checkAuthState,
+}) => {
   const router = useRouter();
 
   useEffect(() => {
@@ -96,7 +111,17 @@ const IndexedItinerary = ({ Data, setItineraryId, checkAuthState }) => {
         />
       </Head>
 
-      {Data?.ID && <ItineraryContainer id={Data?.ID}></ItineraryContainer>}
+      {Data?.ID && (
+        <ItineraryContainer
+          id={Data?.ID}
+          daybydayData={daybyday}
+          breifData={breif}
+          routesData={routes}
+          planData={plan}
+          bookingsData={bookings}
+          paymentData={payment}
+        ></ItineraryContainer>
+      )}
     </LayoutV2>
   );
 };
@@ -119,9 +144,28 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(mapStateToPros, mapDispatchToProps)(IndexedItinerary);
 
 async function fetchTripDataById(id) {
-  const response = await axiosplaninstance.get(`/?itinerary_id=${id}`);
-  const data = response.data;
-  return data;
+  const daybydayResponse = await axiosDaybyDayInstance.get(
+    `/?itinerary_id=${id}`
+  );
+  const breifResponse = await axiosbreifinstance.get(`/?itinerary_id=${id}`);
+  const routesResponse = await axiosRoutesInstance.get(`/?itinerary_id=${id}`);
+  const bookingsResponse = await axiosBookingsInstance.get(
+    `/?itinerary_id=${id}`
+  );
+  const planResponse = await axiosplaninstance.get(`/?itinerary_id=${id}`);
+  const paymentResponse = await axiosPaymentInstance.post("", {
+    itinerary_type: "Tailored",
+    itinerary_id: id,
+  });
+
+  return {
+    daybydayResponse: daybydayResponse.data,
+    breifResponse: breifResponse.data,
+    routesResponse: routesResponse.data,
+    bookingsResponse: bookingsResponse.data,
+    planResponse: planResponse.data,
+    paymentResponse: paymentResponse.data,
+  };
 }
 
 async function fetchAllSlugsWithIds() {
@@ -179,6 +223,12 @@ export async function getStaticProps(context) {
   const priceValid = `${new Date().getFullYear()}-12-31`;
   const path = `${type}/${slug}`;
   let cities = [];
+  let daybyday = null;
+  let breif = null;
+  let routes = null;
+  let bookings = null;
+  let plan = null;
+  let payment = null;
 
   try {
     if (!TRIPS_CACHE) {
@@ -186,19 +236,34 @@ export async function getStaticProps(context) {
     }
 
     const trip = TRIPS_CACHE.find((trip) => trip.slug === slug);
-    const data = await fetchTripDataById(trip.id);
+
+    const {
+      planResponse,
+      daybydayResponse,
+      breifResponse,
+      routesResponse,
+      bookingsResponse,
+      paymentResponse,
+    } = await fetchTripDataById(trip.id);
+
+    daybyday = daybydayResponse;
+    breif = breifResponse;
+    routes = routesResponse;
+    bookings = bookingsResponse;
+    plan = planResponse;
+    payment = paymentResponse;
 
     ID = trip.id;
-    page_title = data?.page_title;
-    meta_description = data?.meta_description;
-    social_title = data?.social_share_title;
-    social_description = data?.social_media_description;
-    duration = data?.duration_number;
-    image = data?.images?.length > 0 ? data.images[0] : null;
-    review = data?.review;
-    rating_count = data?.rating_count;
-    price = data?.payment_info?.per_person_total_cost / 100;
-    cities = [...new Set(data?.itinerary_locations)];
+    page_title = planResponse?.page_title;
+    meta_description = planResponse?.meta_description;
+    social_title = planResponse?.social_share_title;
+    social_description = planResponse?.social_media_description;
+    duration = planResponse?.duration_number;
+    image = planResponse?.images?.length > 0 ? planResponse.images[0] : null;
+    review = planResponse?.review;
+    rating_count = planResponse?.rating_count;
+    price = planResponse?.payment_info?.per_person_total_cost / 100;
+    cities = [...new Set(planResponse?.itinerary_locations)];
   } catch (err) {
     console.log("[ERROR][tripsPage:getStaticProps]: ", err.message);
   }
@@ -220,6 +285,12 @@ export async function getStaticProps(context) {
         path,
         cities,
       },
+      daybyday,
+      breif,
+      routes,
+      bookings,
+      plan,
+      payment,
     },
   };
 }
