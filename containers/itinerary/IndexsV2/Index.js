@@ -22,6 +22,7 @@ import setItinerary from "../../../store/actions/itinerary";
 import setPlan from "../../../store/actions/plan";
 import { setBookings } from "../../../store/actions/bookings";
 import { setItineraryActivities } from "../../../store/actions/itineraryActivities";
+import setBreif from "../../../store/actions/breif";
 
 const Container = styled.div`
   width: 90%;
@@ -36,9 +37,7 @@ const Itinerary = (props) => {
   const router = useRouter();
   const [totalduration, setTotalduration] = useState(0);
   const [itineraryReleased, setItineraryReleased] = useState(false);
-  const [itineraryDate, setItineraryDate] = useState("2021-09-20 18:05:48");
-  const [timeRequired, setTimeRequired] = useState();
-  const [breif, setBreif] = useState();
+  const [itineraryDate, setItineraryDate] = useState("");
   const [booking, setBooking] = useState(null);
   const [itineraryLoading, setItineraryLoading] = useState(true);
   const [paymentLoading, setPaymentLoading] = useState(true);
@@ -102,7 +101,7 @@ const Itinerary = (props) => {
     axiosbreifinstance
       .get(`/?itinerary_id=` + props.id)
       .then((res) => {
-        setBreif(res.data);
+        props.setBreif(res.data);
         if (res.data) {
           if (res.data.city_slabs) {
             if (res.data.city_slabs.length)
@@ -116,8 +115,9 @@ const Itinerary = (props) => {
         }
         if (res.data.city_slabs)
           if (!res.data.city_slabs.length)
-            if (!breif.city_slabs)
-              if (!breif.city_slabs.length) setTimeout(getBreifHandler, 3000);
+            if (!props.breif.city_slabs)
+              if (!props.breif.city_slabs.length)
+                setTimeout(getBreifHandler, 3000);
       })
       .catch((error) => {
         window.location.href = "/thank-you";
@@ -292,9 +292,8 @@ const Itinerary = (props) => {
           if (res.data.start_date) setIsDatePresent(true);
           setgroup_type(res.data.group_type);
           setduration_time(res.data.duration_number);
-          setItineraryReleased(res.data.is_visible_to_customer);
+          setItineraryReleased(res.data.is_released_for_customer);
           setItineraryDate(res.data.created_at);
-          setTimeRequired(res.data.time_needed_for_itinerary_completion);
         }
       })
       .catch((error) => {});
@@ -672,7 +671,7 @@ const Itinerary = (props) => {
     text: [],
   };
 
-  if (breif && !itineraryLoading)
+  if (props.breif && !itineraryLoading)
     return (
       <Container>
         <Overview
@@ -745,12 +744,10 @@ const Itinerary = (props) => {
             showPoiModal={showPoiModal}
             showBookingModal={showBookingModal}
             _updateBookingHandler={_updateBookingHandler}
-            timeRequired={timeRequired}
             itineraryReleased={itineraryReleased}
             itineraryDate={itineraryDate}
             showbooking={showbooking}
             payment={payment}
-            breif={breif}
             booking={booking}
             token={props.token}
             fetchData={fetchData}
@@ -792,6 +789,7 @@ const mapStateToPros = (state) => {
     email: state.auth.email,
     otpSent: state.auth.otpSent,
     itinerary: state.Itinerary,
+    breif: state.Breif,
     plan: state.Plan,
     routes: state.ItineraryRoutes,
     bookings: state.Bookings,
@@ -809,6 +807,7 @@ const mapDispatchToProps = (dispatch) => {
     setBookings: (payload) => dispatch(setBookings(payload)),
     setItineraryActivities: (payload) =>
       dispatch(setItineraryActivities(payload)),
+    setBreif: (payload) => dispatch(setBreif(payload)),
   };
 };
 

@@ -1084,6 +1084,7 @@ const mapStateToPros = (state) => {
     itinerary: state.Itinerary,
     plan: state.Plan,
     routes: state.ItineraryRoutes,
+    breif: state.Breif,
   };
 };
 
