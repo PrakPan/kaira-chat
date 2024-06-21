@@ -21,13 +21,10 @@ const Itinerary = (props) => {
     <LayoutV2 staticnav itinerary page={"Itinerary Page"}>
       <Head>
         <title> Tailored Itinerary | The Tarzan Way </title>
-        <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
-        <meta property="og:title" content="Tailored Travel | The Tarzan Way" />
         <meta
-          property="og:description"
-          content="We envision to simplify travel and build immersive travel experiences."
-        />
-        <meta property="og:image" content="/logoblack.svg" />
+          name="viewport"
+          content="width=device-width, initial-scale=1"
+        ></meta>
       </Head>
 
       {router.query.id && (

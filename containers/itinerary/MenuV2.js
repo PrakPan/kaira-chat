@@ -64,9 +64,6 @@ const SimpleTabsV2 = (props) => {
       if (isPageWide) window.scrollTo(0, window.innerHeight);
       else window.scrollTo(0, window.innerHeight / 2);
     }
-    if (props.showbooking) {
-      window.scrollTo(0, window.innerHeight);
-    }
   }, []);
 
   const scrollToElement = (elementId) => {
@@ -582,7 +579,6 @@ const SimpleTabsV2 = (props) => {
                 _updateBookingHandler={props._updateBookingHandler}
                 _updateStayBookingHandler={props._updateStayBookingHandler}
                 _updatePaymentHandler={props._updatePaymentHandler}
-                flightLoading={props.flightLoading}
                 flightBookings={props.flightBookings}
                 getPaymentHandler={props.getPaymentHandler}
                 setShowBookingModal={() => props.setShowBookingModal(true)}
@@ -813,7 +809,6 @@ const SimpleTabsV2 = (props) => {
                   _updateBookingHandler={props._updateBookingHandler}
                   _updateStayBookingHandler={props._updateStayBookingHandler}
                   _updatePaymentHandler={props._updatePaymentHandler}
-                  flightLoading={props.flightLoading}
                   flightBookings={props.flightBookings}
                   getPaymentHandler={props.getPaymentHandler}
                   setShowBookingModal={() => props.setShowBookingModal(true)}
@@ -1084,6 +1079,7 @@ const mapStateToPros = (state) => {
     itinerary: state.Itinerary,
     plan: state.Plan,
     routes: state.ItineraryRoutes,
+    breif: state.Breif,
   };
 };
 

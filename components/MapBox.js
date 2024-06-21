@@ -1,18 +1,10 @@
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-  Polyline,
-  useMap,
-} from "react-leaflet";
+import { MapContainer, Marker, Popup, Polyline, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import React, { useEffect, useState } from "react";
 import leaflet, { divIcon } from "leaflet";
 import ReactLeafletGoogleLayer from "react-leaflet-google-layer";
 import MarkerClusterGroup from "@changey/react-leaflet-markercluster";
 import "@changey/react-leaflet-markercluster/dist/styles.min.css";
-import { MAPBOX_ACCESS_TOKEN } from "../services/constants";
 import { FaLocationPin } from "react-icons/fa6";
 import ReactDOMServer from "react-dom/server";
 
@@ -78,11 +70,6 @@ const Mapbox = React.memo((props) => {
         borderRadius: "1rem",
       }}
     >
-      <TileLayer
-        url={`
-       https://api.mapbox.com/styles/v1/shivaank/clhpyxasr01ud01qu4n3e7x80/tiles/256/{z}/{x}/{y}@2x?access_token=${MAPBOX_ACCESS_TOKEN}`}
-      />
-
       <ReactLeafletGoogleLayer apiKey="AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E" />
 
       {polylines ? (

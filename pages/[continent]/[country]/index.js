@@ -30,7 +30,15 @@ const TravelPlanner = (props) => {
           content={`Discover ${props?.Data?.name} with The Tarzan Way's AI Trip Planner. Book your flights, accommodations, and transfers all in one go and discover must-visit destinations for an extraordinary journey.`}
         />
         <meta property="og:image" content="/logoblack.svg" />
-        <meta property="keywords" content={props?.Data?.meta_keywords}></meta>
+        <meta
+          property="keywords"
+          content={`${props?.Data?.name} trip planner, ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, travel in ${props?.Data?.name}, ${props?.Data?.name} tour package, experience ${props?.Data?.name} culture, ${props?.Data?.name} holiday package, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, best places in ${props?.Data?.name}, places to visit in ${props?.Data?.name}, best activities in ${props?.Data?.name}, things to do in ${props?.Data?.name}, package for ${props?.Data?.name}, top places in ${props?.Data?.name}, wanderlog, inspirock, tripit, hotels, flights, activities, transfers, solo travel, family travel,`}
+        ></meta>
+
+        <link
+          rel="canonical"
+          href={`https://thetarzanway.com/${props.path}`}
+        ></link>
       </Head>
 
       <CountryPage
@@ -71,6 +79,8 @@ export async function getStaticProps(context) {
   let data = null;
   let locations = [];
   const continetCarousel = [];
+  const { continent, country } = context.params;
+  const path = `${continent}/${country}`;
 
   try {
     const res = await axioscountrydetailsinstance.get(
@@ -115,6 +125,7 @@ export async function getStaticProps(context) {
       Data: data,
       locations,
       continetCarousel,
+      path,
     },
   };
 }

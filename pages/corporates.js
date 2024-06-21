@@ -7,20 +7,31 @@ const Covid = (props) => {
   return (
     <Layout>
       <Head>
-        <title>Travel Support | Travel India | The Tarzan Way </title>
+        <title>
+          Corporate Travel Support | Business Travel India | The Tarzan Way
+        </title>
         <meta
           name="description"
-          content="Keeping safe from coronavirus while traveling in India is very important and we have taken a number of steps to make sure that your travel experience in India is the safest and we are taking multiple steps to prevent anything happening to our travelers while traveling in India during the pandemic outbreak of coronavirus"
+          content="Streamline corporate travel with our AI-powered planning and support. Enjoy personalized itineraries, cost savings, and 24/7 assistance for a hassle-free business travel experience."
         ></meta>
         <meta
           property="og:title"
-          content="COVID-19 Safety | Safe Travel India | The Tarzan Way"
+          content="Corporate Travel Support | Business Travel India | The Tarzan Way"
         />
         <meta
           property="og:description"
-          content="Keeping safe from coronavirus while traveling in India is very important and we have taken a number of steps to make sure that your travel experience in India is the safest and we are taking multiple steps to prevent anything happening to our travelers while traveling in India during the pandemic outbreak of coronavirus"
+          content="Streamline corporate travel with our AI-powered planning and support. Enjoy personalized itineraries, cost savings, and 24/7 assistance for a hassle-free business travel experience."
         />
         <meta property="og:image" content="/logoblack.svg" />
+        <meta
+          name="keyword"
+          content="ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, corporate trip, business trip, business travel,  large group, group trips, group travel package, travel allowance, wanderlog, inspirock, tripit, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, hotels, flights, activities, transfers, solo travel, family travel"
+        />
+
+        <link
+          rel="canonical"
+          href={`https://thetarzanway.com/corporates`}
+        ></link>
       </Head>
 
       <CovidContainer {...props}></CovidContainer>

@@ -169,7 +169,6 @@ const Navbar = React.memo((props) => {
             _openAllNotificationsHandler={_openAllNotificationsHandler}
             notOpenCount={notOpenCount}
             notifications={notifications}
-            token={props.token}
             setShowLoginModal={setShowLoginModal}
             page={props.page}
           ></IndexDesktop>

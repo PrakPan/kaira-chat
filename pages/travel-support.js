@@ -22,10 +22,15 @@ const Covid = () => {
         <meta property="og:image" content="/logoblack.svg" />
         <meta
           property="keywords"
-          content="best places to visit in india, best places to visit in kasol, best places to visit in ladakh, best places to visit in andaman, best places to visit in manali, best places to visit in delhi, best places to visit in rajasthan, package for ladakh, package for manali, package for delhi, package for andaman, package for kashmir"
+          content="ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, wanderlog, inspirock, tripit, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, hotels, flights, activities, transfers,"
         ></meta>
+
+        <link
+          rel="canonical"
+          href={`https://thetarzanway.com/travel-support`}
+        ></link>
       </Head>
-      
+
       <CovidContainer></CovidContainer>
     </Layout>
   );

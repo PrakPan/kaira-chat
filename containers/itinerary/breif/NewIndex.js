@@ -188,7 +188,7 @@ const Details = (props) => {
         dayId={findDayIdByCityId(showDrawerData.city_id)}
       ></Drawer>
 
-      {props.traveleritinerary ? (
+      {props.traveleritinerary? (
         <DesktopBanner
           onclick={_handleTailoredRedirect}
           text="Want to personalize your own experience like this?"
