@@ -582,7 +582,7 @@ const LogIn = React.memo((props) => {
             </Button>
           )}
 
-          <div
+          {/* <div
             style={{
               position: "relative",
               marginBlock: isPageWide ? "3rem" : "2rem",
@@ -602,9 +602,9 @@ const LogIn = React.memo((props) => {
             >
               OR
             </p>
-          </div>
+          </div> */}
 
-          <Button
+          {/* <Button
             onclick={() => _handleGoogleLogin()}
             margin={"0"}
             width="100%"
@@ -650,7 +650,8 @@ const LogIn = React.memo((props) => {
                 Sign in with Google
               </p>
             </div>
-          </Button>
+          </Button> */}
+            
           <div
             className="text-center font-lexend"
             style={{ fontSize: "12px", fontWeight: "300", margin: "1.5rem 0" }}
