@@ -48,6 +48,11 @@ const Experience = (props) => {
           property="keywords"
           content={`${props?.cityData?.name} trip planner, ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, travel in ${props?.cityData?.name}, ${props?.cityData?.name} tour package, experience ${props?.cityData?.name} culture, ${props?.cityData?.name} holiday package, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, best places in ${props?.cityData?.name}, places to visit in ${props?.cityData?.name}, best activities in ${props?.cityData?.name}, things to do in ${props?.cityData?.name}, package for ${props?.cityData?.name}, top places in ${props?.cityData?.name}, wanderlog, inspirock, tripit, hotels, flights, activities, transfers, solo travel, family travel,`}
         ></meta>
+
+        <link
+          rel="canonical"
+          href={`https://thetarzanway.com/${props.path}`}
+        ></link>
       </Head>
 
       <CityPage
@@ -96,6 +101,8 @@ export async function getStaticPaths() {
 export async function getStaticProps(context) {
   let reccomendedCitiesData = [];
   let data = null;
+  const { continent, country, state, city } = context.params;
+  const path = `${continent}/${country}/${state}/${city}`;
 
   try {
     const res = await axiosPoiCityInstance.get(`/?slug=${context.params.city}`);
@@ -133,6 +140,7 @@ export async function getStaticProps(context) {
     props: {
       cityData: data,
       reccomendedCitiesData,
+      path,
     },
   };
 }

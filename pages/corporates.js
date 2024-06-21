@@ -27,6 +27,11 @@ const Covid = (props) => {
           name="keyword"
           content="ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, corporate trip, business trip, business travel,  large group, group trips, group travel package, travel allowance, wanderlog, inspirock, tripit, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, hotels, flights, activities, transfers, solo travel, family travel"
         />
+
+        <link
+          rel="canonical"
+          href={`https://thetarzanway.com/corporates`}
+        ></link>
       </Head>
 
       <CovidContainer {...props}></CovidContainer>

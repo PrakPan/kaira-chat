@@ -34,6 +34,11 @@ const TravelPlanner = (props) => {
           property="keywords"
           content={`${props.Data.destination} trip planner, ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, travel in ${props.Data.destination}, ${props.Data.destination} tour package, experience ${props.Data.destination} culture, ${props.Data.destination} holiday package, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, best places in ${props.Data.destination}, places to visit in ${props.Data.destination}, best activities in ${props.Data.destination}, things to do in ${props.Data.destination}, package for ${props.Data.destination}, top places in ${props.Data.destination}, wanderlog, inspirock, tripit, hotels, flights, activities, transfers, solo travel, family travel,`}
         ></meta>
+
+        <link
+          rel="canonical"
+          href={`https://thetarzanway.com/${props.path}`}
+        ></link>
       </Head>
 
       <StatePage
@@ -87,6 +92,8 @@ export async function getStaticPaths() {
 export async function getStaticProps(context) {
   var locations = [];
   let data = null;
+  const { continent, country, state } = context.params;
+  const path = `${continent}/${country}/${state}`;
 
   try {
     const res = await axiosTravelPlannerInstance.get(
@@ -116,6 +123,7 @@ export async function getStaticProps(context) {
     props: {
       Data: data,
       locations,
+      path,
     },
   };
 }
