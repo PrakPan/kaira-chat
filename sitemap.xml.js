@@ -66,7 +66,7 @@ const generateSitemap = async () => {
   let tripsPaths = trips.map((trip) => {
     return {
       title: "Trip",
-      link: BASE_URL + "/" + trip.path,
+      link: BASE_URL + "/trips/" + trip.path,
     };
   });
 
