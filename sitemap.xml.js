@@ -8,11 +8,14 @@ const generateSitemap = async () => {
 
   // Fetch continents list
   const continents = await axios.get(
-    "https://apis.tarzanway.com/page/list?page_type=Continents&fields=path"
+    "https://apis.tarzanway.com/page/list?page_type=Continent&fields=path"
   );
   const continentsData = continents.data;
   let continentsPaths = continentsData.map((object) => {
-    return { title: "Continent Planner", link: BASE_URL + "/" + object.path };
+    return {
+      title: "Continent Planner",
+      link: BASE_URL + "/" + object.path,
+    };
   });
 
   // Fetch countries list
@@ -29,10 +32,11 @@ const generateSitemap = async () => {
     "https://apis.tarzanway.com/search/all/?type=State&fields=path"
   );
   const statesData = states.data;
+
   let statesPaths = statesData.map((object) => {
     return {
       title: "State Planner",
-      link: BASE_URL + "/" + object.path,
+      link: BASE_URL + "/" + object.path.replaceAll(" ", "_").toLowerCase(),
     };
   });
 
@@ -46,6 +50,26 @@ const generateSitemap = async () => {
     return { title: "City Planner", link: BASE_URL + "/" + object.path };
   });
 
+  // Fetch trips list
+  const response = await axios.get(
+    "https://suppliers.tarzanway.com/sales/itinerary/indexed/"
+  );
+  const trips = response.data.map((trip) => {
+    let group_type = trip?.group_type
+      ? trip.group_type.replaceAll(" ", "_").toLowerCase()
+      : "group";
+    return {
+      path: group_type + "/" + trip.slug,
+    };
+  });
+
+  let tripsPaths = trips.map((trip) => {
+    return {
+      title: "Trip",
+      link: BASE_URL + "/" + trip.path,
+    };
+  });
+
   const StaticPaths = [
     { title: "Home Page", link: BASE_URL },
     { title: "Travel Guide", link: BASE_URL + "/travel-guide" },
@@ -54,6 +78,8 @@ const generateSitemap = async () => {
       link: BASE_URL + "/covid-19-safe-travel-india",
     },
     { title: "Travel Experiences", link: BASE_URL + "/travel-experiences" },
+    { title: "All Destinations", link: BASE_URL + "/destinations" },
+    { title: "Corporates", link: BASE_URL + "/corporates" },
   ];
 
   const allPaths = [
@@ -62,6 +88,7 @@ const generateSitemap = async () => {
     ...countriesPaths,
     ...statesPaths,
     ...cityPaths,
+    ...tripsPaths,
   ];
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>

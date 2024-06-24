@@ -126,7 +126,7 @@ const IndexedItinerary = ({
   );
 };
 
-const mapStateToPros = (state) => {
+const mapStateToProps = (state) => {
   return {
     token: state.auth.token,
     showLogin: state.auth.showLogin,
@@ -141,7 +141,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToPros, mapDispatchToProps)(IndexedItinerary);
+export default connect(mapStateToProps, mapDispatchToProps)(IndexedItinerary);
 
 async function fetchTripDataById(id) {
   const daybydayResponse = await axiosDaybyDayInstance.get(
