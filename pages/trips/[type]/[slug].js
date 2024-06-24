@@ -144,27 +144,65 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(mapStateToProps, mapDispatchToProps)(IndexedItinerary);
 
 async function fetchTripDataById(id) {
-  const daybydayResponse = await axiosDaybyDayInstance.get(
-    `/?itinerary_id=${id}`
-  );
-  const breifResponse = await axiosbreifinstance.get(`/?itinerary_id=${id}`);
-  const routesResponse = await axiosRoutesInstance.get(`/?itinerary_id=${id}`);
-  const bookingsResponse = await axiosBookingsInstance.get(
-    `/?itinerary_id=${id}`
-  );
-  const planResponse = await axiosplaninstance.get(`/?itinerary_id=${id}`);
-  const paymentResponse = await axiosPaymentInstance.post("", {
-    itinerary_type: "Tailored",
-    itinerary_id: id,
-  });
+  let daybydayResponse = null;
+  let breifResponse = null;
+  let routesResponse = null;
+  let bookingsResponse = null;
+  let planResponse = null;
+  let paymentResponse = null;
+
+  try {
+    const response = await axiosDaybyDayInstance.get(`/?itinerary_id=${id}`);
+    daybydayResponse = response.data;
+  } catch (err) {
+    console.log("[ERROR][tripsPage:daybyday]: ", err.message);
+  }
+
+  try {
+    const response = await axiosbreifinstance.get(`/?itinerary_id=${id}`);
+    breifResponse = response.data;
+  } catch (err) {
+    console.log("[ERROR][tripsPage:breif]: ", err.message);
+  }
+
+  try {
+    const response = await axiosRoutesInstance.get(`/?itinerary_id=${id}`);
+    routesResponse = response.data;
+  } catch (err) {
+    console.log("[ERROR][tripsPage:routes]: ", err.message);
+  }
+
+  try {
+    const response = await axiosBookingsInstance.get(`/?itinerary_id=${id}`);
+    bookingsResponse = response.data;
+  } catch (err) {
+    console.log("[ERROR][tripsPage:bookings]: ", err.message);
+  }
+
+  try {
+    const response = await axiosplaninstance.get(`/?itinerary_id=${id}`);
+    planResponse = response.data;
+  } catch (err) {
+    console.log("[ERROR][tripsPage:plan]: ", err.message);
+  }
+
+  try {
+    const response = await axiosPaymentInstance.post("", {
+      itinerary_type: "Tailored",
+      itinerary_id: id,
+    });
+    paymentResponse = response.data;
+  } catch (err) {
+    console.log("[ERROR][tripsPage:payment]: ", err.message);
+  }
 
   return {
-    daybydayResponse: daybydayResponse.data,
-    breifResponse: breifResponse.data,
-    routesResponse: routesResponse.data,
-    bookingsResponse: bookingsResponse.data,
-    planResponse: planResponse.data,
-    paymentResponse: paymentResponse.data,
+    daybydayResponse,
+    breifResponse,
+    routesResponse,
+    bookingsResponse,
+    planResponse,
+    paymentResponse,
   };
 }
 
