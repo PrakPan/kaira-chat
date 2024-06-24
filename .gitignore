@@ -98,3 +98,4 @@ services/dump.rdb
 deploy-to-s3.sh
 py_script.py
 /analyze/
+public/sitemap.xml
