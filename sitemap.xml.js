@@ -72,12 +72,10 @@ const generateSitemap = async () => {
 
   const StaticPaths = [
     { title: "Home Page", link: BASE_URL },
-    { title: "Travel Guide", link: BASE_URL + "/travel-guide" },
     {
       title: "COVID-19 Safe Travel India",
       link: BASE_URL + "/covid-19-safe-travel-india",
     },
-    { title: "Travel Experiences", link: BASE_URL + "/travel-experiences" },
     { title: "All Destinations", link: BASE_URL + "/destinations" },
     { title: "Corporates", link: BASE_URL + "/corporates" },
   ];
