@@ -1,12 +1,12 @@
-import axios from "axios";
-const Sitemap = () => {
-  return null;
-};
+// const { default: axios } = require("axios");
+const axios = require("axios");
+const fs = require("fs");
+const path = require("path");
 
-export const getServerSideProps = async ({ res }) => {
+const generateSitemap = async () => {
   const BASE_URL = "https://thetarzanway.com";
 
-  // Fetch continents list :-
+  // Fetch continents list
   const continents = await axios.get(
     "https://apis.tarzanway.com/page/list?page_type=Continents&fields=path"
   );
@@ -15,7 +15,7 @@ export const getServerSideProps = async ({ res }) => {
     return { title: "Continent Planner", link: BASE_URL + "/" + object.path };
   });
 
-  // Fetch Countries list :-
+  // Fetch countries list
   const countries = await axios.get(
     "https://apis.tarzanway.com/poi/country/all?fields=path"
   );
@@ -24,7 +24,7 @@ export const getServerSideProps = async ({ res }) => {
     return { title: "Country Planner", link: BASE_URL + "/" + object.path };
   });
 
-  // Fetch States list :-
+  // Fetch states list
   const states = await axios.get(
     "https://apis.tarzanway.com/search/all/?type=State&fields=path"
   );
@@ -36,15 +36,16 @@ export const getServerSideProps = async ({ res }) => {
     };
   });
 
-  //Fetch city list
-  const cities = await fetch(
-    `https://apis.tarzanway.com/search/all/?type=Location&fields=path`
+  // Fetch cities list
+  const cities = await axios.get(
+    "https://apis.tarzanway.com/search/all/?type=Location&fields=path"
   );
-  const citiesdata = await cities.json();
+  const citiesData = cities.data;
 
-  let citypaths = citiesdata.map((object) => {
+  let cityPaths = citiesData.map((object) => {
     return { title: "City Planner", link: BASE_URL + "/" + object.path };
   });
+
   const StaticPaths = [
     { title: "Home Page", link: BASE_URL },
     { title: "Travel Guide", link: BASE_URL + "/travel-guide" },
@@ -52,18 +53,17 @@ export const getServerSideProps = async ({ res }) => {
       title: "COVID-19 Safe Travel India",
       link: BASE_URL + "/covid-19-safe-travel-india",
     },
-    { title: "Travel Experiences", link: BASE_URL + "/travel-experiences}" },
+    { title: "Travel Experiences", link: BASE_URL + "/travel-experiences" },
   ];
+
   const allPaths = [
     ...StaticPaths,
     ...continentsPaths,
     ...countriesPaths,
     ...statesPaths,
-    ...citypaths,
+    ...cityPaths,
   ];
-  {
-    /* <title>${el.title}</title>; */
-  }
+
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
       ${allPaths
@@ -79,15 +79,16 @@ export const getServerSideProps = async ({ res }) => {
         })
         .join("")}
     </urlset>
-`;
+  `;
 
-  res.setHeader("Content-Type", "text/xml");
-  res.write(sitemap);
-  res.end();
-
-  return {
-    props: {},
-  };
+  fs.writeFileSync(
+    path.join(process.cwd(), "public", "sitemap.xml"),
+    sitemap,
+    "utf8"
+  );
+  console.log("Sitemap generated successfully!");
 };
 
-export default Sitemap;
+generateSitemap().catch((error) => {
+  console.error("Error generating sitemap:", error);
+});
