@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=\"--max_old_space_size=8192\" next dev",
-    "build": "node sitemap.xml.js && next build",
+    "prebuild": "node scripts/sitemap.xml.js && node scripts/removeTripsPage.js prebuild",
+    "build": "next build",
+    "postbuild": "node scripts/removeTripsPage.js postbuild",
     "start": "next start -p 3002",
     "lint": "next lint"
   },
