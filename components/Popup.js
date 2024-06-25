@@ -22,17 +22,14 @@ export const Popup = ({ children, content }) => {
 };
 
 const PopupTarget = styled.div`
-  /* initial styling for the popup trigger */
   background-color: #fff;
   border: 1px solid #ccc;
   padding: 10px;
 
-  /* styling for the trigger when hovered */
   &:hover {
     background-color: #eee;
   }
 
-  /* styling for the trigger when the popup content is visible */
   ${(showPopup) =>
     showPopup &&
     css`
@@ -53,17 +50,14 @@ const fadeIn = keyframes`
 `;
 
 const PopupContent = styled.div`
-  /* initial styling for the popup content */
   position: absolute;
   z-index: 1;
   opacity: 0;
   pointer-events: none;
 
-  /* animation to fade in the content */
   animation: ${({ showPopup }) =>
     showPopup &&
     css`
       ${fadeIn} 0.3s ease forwards
     `};
-  /* pointer-events: none prevents the user from interacting with the popup content while it's invisible */
 `;
