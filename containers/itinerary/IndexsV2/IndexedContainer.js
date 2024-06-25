@@ -78,12 +78,12 @@ const Itinerary = (props) => {
   }, [props.itinerary]);
 
   useEffect(() => {
-    getDaybyday(props.daybydayData);
-    getItineraryRoutes(props.routesData);
-    getBreif(props.breifData);
-    getPlan(props.planData);
-    getBookings(props.bookingsData);
-    getPaymentData(props.paymentData);
+    if (props.daybydayData) getDaybyday(props.daybydayData);
+    if (props.routesData) getItineraryRoutes(props.routesData);
+    if (props.breifData) getBreif(props.breifData);
+    if (props.planData) getPlan(props.planData);
+    if (props.bookingsData) getBookings(props.bookingsData);
+    if (props.paymentData) getPaymentData(props.paymentData);
   }, [props.id]);
 
   function getDaybyday(data) {
