@@ -4,11 +4,9 @@ import BackgroundImageLoader from "./UpdatedBackgroundImageLoader";
 
 const Container = styled.div`
   width: 100%;
-  padding: 0;
   height: ${(props) => (props.heightmobile ? props.heightmobile : "37rem")};
   @media screen and (min-width: 768px) {
     height: ${(props) => (props.height ? props.height : "37rem")};
-    padding: 0;
   }
   position: relative;
 `;
@@ -30,7 +28,7 @@ const FullImage = (props) => {
             style={{ position: "absolute", zIndex: props.zIndex }}
             noLazy={props.noLazy}
           >
-            <div>{props.children}</div>
+            <div className="w-full">{props.children}</div>
           </BackgroundImageLoader>
         ) : (
           <BackgroundImageLoader
@@ -50,11 +48,7 @@ const FullImage = (props) => {
     );
   } else {
     return (
-      <Container
-        height={props.height}
-        heightmobile={props.heightmobile}
-        className="center-dv"
-      >
+      <Container  height={props.height} heightmobile={props.heightmobile}>
         <BackgroundImageLoader
           padding={props.padding}
           filter={props.filter}
@@ -70,7 +64,7 @@ const FullImage = (props) => {
               : { width: 607, height: 810 }
           }
           style={{ position: "absolute" }}
-          className="center-dv"
+          className="center"
           resizeMode={props.resizeMode}
           noLazy={props.noLazy}
         >

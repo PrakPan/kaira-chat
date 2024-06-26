@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import Details from "./Details";
 import ImagesMobile from "./ImagesMobile";
+import useMediaQuery from "../../../hooks/useMedia";
 import Ratings from "../../../components/itinerary/Ratings/Rating";
 
 const GridContainer = styled.div`
@@ -27,13 +28,15 @@ const toTitleCase = (str) => {
 };
 
 const Overview = (props) => {
+  const isDesktop = useMediaQuery("(min-width:767px)");
+
   return (
     <div>
       <GridContainer className="gap-2">
         <Heading className="font-lexend">{toTitleCase(props.title)}</Heading>
-        <Ratings />
+        {!isDesktop && <Ratings />}
       </GridContainer>
-      <div>
+      <div className="flex flex-row justify-between">
         <Details
           group_type={props.group_type}
           duration_time={props.duration_time}
@@ -47,6 +50,7 @@ const Overview = (props) => {
           number_of_infants={props?.number_of_infants}
           setEditRoute={props.setEditRoute}
         ></Details>
+        {isDesktop && <Ratings />}
       </div>
 
       <div className="pt-3 pb-1">

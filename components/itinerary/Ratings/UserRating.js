@@ -3,9 +3,12 @@ import { FaStar } from "react-icons/fa";
 import { connect } from "react-redux";
 import rateItineraryInstance from "../../../services/itinerary/rateItinerary";
 
-const UserRatings = ({ itinerary_id, plan, userRatingRef }) => {
-  const rating = plan?.review;
-  const reviews = plan?.rating_count;
+const UserRatings = ({
+  itinerary_id,
+  userRatingRef,
+  setRating,
+  setReviews,
+}) => {
   const [stars, setStars] = useState(null);
   const [userRating, setUserRating] = useState(null);
 
@@ -46,6 +49,9 @@ const UserRatings = ({ itinerary_id, plan, userRatingRef }) => {
       })
       .then((response) => {
         if (response.status === 200) {
+          const data = response.data;
+          setRating(data.review);
+          setReviews(data.rating_count);
         } else {
           setUserRating(null);
         }
@@ -62,22 +68,15 @@ const UserRatings = ({ itinerary_id, plan, userRatingRef }) => {
       className="w-fit p-5 bg-white rounded-lg drop-shadow-2xl"
     >
       <div className="flex flex-col gap-2 items-center">
-        <div className="text-lg font-medium">Rate this itinerary</div>
+        <div className="text-lg font-medium">Liked this itinerary?</div>
 
         <div className="bg-gray-100 rounded-full px-3 py-2 flex flex-row gap-2 items-center">
           <div className="flex flex-row gap-1 text-gray-300">{stars}</div>
-          {rating ? (
-            <div className="text-sm font-light text-gray-600">
-              {rating} out of 5
-            </div>
-          ) : null}
         </div>
 
-        {reviews ? (
-          <div className="text-sm font-light text-gray-600 leading-3">
-            {reviews} customer ratings
-          </div>
-        ) : null}
+        <div className="text-sm font-light text-gray-600 leading-3">
+          Please rate out of 5
+        </div>
       </div>
     </div>
   );
@@ -85,7 +84,6 @@ const UserRatings = ({ itinerary_id, plan, userRatingRef }) => {
 
 const mapStateToPros = (state) => {
   return {
-    plan: state.Plan,
     itinerary_id: state.ItineraryId,
   };
 };
