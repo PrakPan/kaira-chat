@@ -3,7 +3,7 @@ import { FaStar } from "react-icons/fa";
 import { connect } from "react-redux";
 import rateItineraryInstance from "../../../services/itinerary/rateItinerary";
 
-const UserRatings = ({ itinerary_id, plan }) => {
+const UserRatings = ({ itinerary_id, plan, userRatingRef }) => {
   const rating = plan?.review;
   const reviews = plan?.rating_count;
   const [stars, setStars] = useState(null);
@@ -57,9 +57,12 @@ const UserRatings = ({ itinerary_id, plan }) => {
   };
 
   return (
-    <div className="w-full border-2 border-gray-200 rounded-lg p-5 shadow-lg">
+    <div
+      ref={userRatingRef}
+      className="w-fit p-5 bg-white rounded-lg drop-shadow-2xl"
+    >
       <div className="flex flex-col gap-2 items-center">
-        <div className="text-lg font-medium">Rate this Itinerary</div>
+        <div className="text-lg font-medium">Rate this itinerary</div>
 
         <div className="bg-gray-100 rounded-full px-3 py-2 flex flex-row gap-2 items-center">
           <div className="flex flex-row gap-1 text-gray-300">{stars}</div>
