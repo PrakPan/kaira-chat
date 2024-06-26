@@ -180,7 +180,6 @@ const Itinerary = (props) => {
 
     axiosBookingsInstance
       .get("?itinerary_id=" + props.id, {
-        params: { itinerary_id: props.id },
         headers: {
           Authorization: `Bearer ${access_token}`,
           "Content-Type": "application/json",
@@ -247,6 +246,7 @@ const Itinerary = (props) => {
     if (scroll) window.scrollTo(0, 0);
     if (TRAVELER_ITINERARIES.includes(props.id))
       setIsPastTravelerItinerary(true);
+
     axiosdaybydayinstance
       .get(`/?itinerary_id=` + props.id)
       .then((res) => {
@@ -265,6 +265,7 @@ const Itinerary = (props) => {
       .catch((error) => {
         setItineraryLoading(false);
       });
+
     getBreifHandler();
 
     getRoutes(props.id)
@@ -272,6 +273,7 @@ const Itinerary = (props) => {
         props.setItineraryRoutes(res);
       })
       .catch((err) => {});
+
     axiosPlanInstance
       .get("?itinerary_id=" + props.id)
       .then((res) => {
@@ -294,6 +296,7 @@ const Itinerary = (props) => {
         }
       })
       .catch((error) => {});
+
     getAccommodationAndActivitiesHandler();
   }
 

@@ -33,6 +33,7 @@ import ImageLoader from "../../components/ImageLoader";
 import { connect } from "react-redux";
 import { openNotification } from "../../store/actions/notification";
 import { logEvent } from "../../services/ga/Index";
+import UserRatings from "../../components/itinerary/Ratings/UserRating.js";
 
 const useStyles = {
   root: `
@@ -825,7 +826,7 @@ const SimpleTabsV2 = (props) => {
           {props.payment ? (
             <div
               id="Booking_container"
-              className="sticky top-[6rem] mt-40 ml-4"
+              className="sticky top-[6rem] mt-40 ml-4 flex flex-col gap-3"
             >
               {!props.payment.is_registration_needed || true ? (
                 <SummaryContainer
@@ -882,6 +883,8 @@ const SimpleTabsV2 = (props) => {
                   ></GITSummaryContainer>
                 </div>
               )}
+
+              <UserRatings />
             </div>
           ) : null}
         </SplitScreen>

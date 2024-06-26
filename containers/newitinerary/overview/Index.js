@@ -1,14 +1,16 @@
 import styled from "styled-components";
 import Details from "./Details";
 import ImagesMobile from "./ImagesMobile";
+import Ratings from "../../../components/itinerary/Ratings/Rating";
 
 const GridContainer = styled.div`
   display: grid;
-  grid-template-columns: auto max-content;
+  grid-template-rows: auto max-content;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
   @media screen and (min-width: 768px) {
     margin-top: 0rem;
+    grid-template-columns: auto max-content;
   }
 `;
 
@@ -27,8 +29,9 @@ const toTitleCase = (str) => {
 const Overview = (props) => {
   return (
     <div>
-      <GridContainer>
+      <GridContainer className="gap-2">
         <Heading className="font-lexend">{toTitleCase(props.title)}</Heading>
+        <Ratings />
       </GridContainer>
       <div>
         <Details
