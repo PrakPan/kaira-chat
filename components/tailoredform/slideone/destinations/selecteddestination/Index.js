@@ -96,6 +96,7 @@ const SelectedDestination = (props) => {
             }}
           ></BiTargetLock>
         )}
+
         {props.selectlocation ? (
           !props.showSearchStarting ? (
             !props.startingLocation ? (
@@ -112,7 +113,7 @@ const SelectedDestination = (props) => {
                 </span>
               </>
             ) : (
-              <>
+              <div className="w-[60%] md:w-[80%] truncate">
                 {props.startingLocation.name}{" "}
                 <span
                   style={{
@@ -123,7 +124,7 @@ const SelectedDestination = (props) => {
                 >
                   Departing
                 </span>
-              </>
+              </div>
             )
           ) : (
             <SearchInputStarting
