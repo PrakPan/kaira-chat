@@ -825,7 +825,7 @@ const SimpleTabsV2 = (props) => {
           {props.payment ? (
             <div
               id="Booking_container"
-              className="sticky top-[6rem] mt-40 ml-4"
+              className="sticky top-[6rem] mt-40 ml-4 flex flex-col gap-3"
             >
               {!props.payment.is_registration_needed || true ? (
                 <SummaryContainer

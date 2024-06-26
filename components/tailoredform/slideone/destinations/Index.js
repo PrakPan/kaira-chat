@@ -123,6 +123,7 @@ const Destinations = (props) => {
         setDestination={props.setDestination}
         setSelectedCities={props.setSelectedCities}
       ></SelectedDestination>
+
       {destinations.map((e, i) => (
         <div key={i}>{e}</div>
       ))}

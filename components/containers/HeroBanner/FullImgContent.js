@@ -53,7 +53,7 @@ const IconsContainer = styled.div`
   filter: invert(100%);
   justify-content: space-between;
   position: absolute;
-  bottom: 50px;
+  bottom: 20px;
   width: 100%;
   padding-inline: 10px;
   @media screen and (min-width: 768px) {
@@ -85,41 +85,43 @@ const FullImgContent = (props) => {
   };
 
   return (
-    <Container className="font-lexend center-di text-cente">
-      <PaddingContianer>
-        <H1 style={{ color: "white" }}>{props.title}</H1>
-        {props.subheading ? (
-          <H7
-            style={{
-              lineHeight: isPageWide ? "35px" : "20px",
-              fontSize: isPageWide ? "25px" : "20px",
-            }}
-          >
-            {props.subheading}
-          </H7>
-        ) : isPageWide ? (
-          <H7
-            style={{
-              lineHeight: isPageWide ? "35px" : "20px",
-              fontSize: isPageWide ? "25px" : "20px",
-            }}
-          >
-            Bid farewell to generic holiday packages.
-            <br />
-            Get Your AI-Personalised Itineraries
-          </H7>
-        ) : (
-          <H7
-            style={{
-              lineHeight: isPageWide ? "35px" : "20px",
-              fontSize: isPageWide ? "25px" : "20px",
-            }}
-          >
-            Say goodbye to packages.
-            <br />
-            Get Your AI-Personalised Itineraries
-          </H7>
-        )}
+    <Container className="font-lexend">
+      <PaddingContianer className="">
+        <div className="">
+          <H1 style={{ color: "white" }}>{props.title}</H1>
+          {props.subheading ? (
+            <H7
+              style={{
+                lineHeight: isPageWide ? "35px" : "20px",
+                fontSize: isPageWide ? "25px" : "20px",
+              }}
+            >
+              {props.subheading}
+            </H7>
+          ) : isPageWide ? (
+            <H7
+              style={{
+                lineHeight: isPageWide ? "35px" : "20px",
+                fontSize: isPageWide ? "25px" : "20px",
+              }}
+            >
+              Bid farewell to generic holiday packages.
+              <br />
+              Get Your AI-Personalised Itineraries
+            </H7>
+          ) : (
+            <H7
+              style={{
+                lineHeight: isPageWide ? "35px" : "20px",
+                fontSize: isPageWide ? "25px" : "20px",
+              }}
+            >
+              Say goodbye to packages.
+              <br />
+              Get Your AI-Personalised Itineraries
+            </H7>
+          )}
+        </div>
 
         {isPageWide ? (
           <div>
@@ -181,6 +183,7 @@ const FullImgContent = (props) => {
             Free Personalized <br /> Itineraries
           </IconText>
         </div>
+
         <div>
           <ImageLoader
             height="2.5rem"
@@ -194,6 +197,7 @@ const FullImgContent = (props) => {
             Flexible Bookings
           </IconText>
         </div>
+
         <div>
           <ImageLoader
             height="2.5rem"

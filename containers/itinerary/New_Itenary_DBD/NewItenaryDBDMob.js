@@ -10,7 +10,7 @@ const NewItenaryDBDMob = (props) => {
     flex-direction: column;
   `;
 
-  let currentCity = props.itinerary.starting_city.city_name;
+  let currentCity = props?.itinerary?.starting_city?.city_name;
 
   const getCurrentCity = () => {
     props.itinerary.day_slabs.map((day_slab, index) => {
