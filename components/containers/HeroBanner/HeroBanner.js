@@ -17,7 +17,7 @@ const HeroBanner = (props) => {
       <div
         className={
           isDesktop
-            ? "h-full pt-[2rem] md:bg-gradient-to-r md:from-black md:from-0% md:to-70%"
+            ? "h-full pt-[2rem] md:bg-gradient-to-r md:from-black md:to-50%"
             : "h-full pt-[2rem] bg-black bg-opacity-25"
         }
       >
