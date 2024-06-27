@@ -171,6 +171,7 @@ const Navbar = React.memo((props) => {
             notifications={notifications}
             setShowLoginModal={setShowLoginModal}
             page={props.page}
+            itinerary={props.itinerary}
           ></IndexDesktop>
         )}
       </div>

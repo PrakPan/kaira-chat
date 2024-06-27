@@ -18,7 +18,7 @@ const Itinerary = (props) => {
   }, [router]);
 
   return (
-    <LayoutV2 itinerary page={"Itinerary Page"}>
+    <LayoutV2 staticnav itinerary page={"Itinerary Page"}>
       <Head>
         <title> Tailored Itinerary | The Tarzan Way </title>
         <meta

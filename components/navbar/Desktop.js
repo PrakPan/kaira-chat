@@ -112,6 +112,8 @@ const TopContainer = styled.div`
   width: 100%;
   margin: auto;
   height: 50px;
+  z-index: 101;
+  background-color: white;
 `;
 
 const SearchContainer = styled.div`
@@ -276,7 +278,7 @@ const Navbar = (props) => {
               </div>
             </TTWLogoContainer>
 
-            {!props.hidecta && !props.staticnav && (
+            {props.itinerary || (!props.hidecta && !props.staticnav) ? (
               <div
                 style={{
                   position: "absolute",
@@ -302,7 +304,7 @@ const Navbar = (props) => {
                   </SearchContainer>
                 </TopContainer>
               </div>
-            )}
+            ) : null}
 
             {toggleSearch ? (
               <DesktopSearch

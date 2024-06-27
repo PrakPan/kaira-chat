@@ -10,7 +10,7 @@ const fadeInAnimation = keyframes`${fadeIn}`;
 const Container = styled.div`
   width: 600px;
   margin: auto;
-  animation: 0.3s ${fadeInAnimation};
+  // animation: 0.3s ${fadeInAnimation};
   position: initial;
 `;
 
@@ -19,7 +19,7 @@ const BlackContainer = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 0;
+  z-index: 100;
   width: 100vw;
   height: 100vh;
 `;

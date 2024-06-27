@@ -16,7 +16,7 @@ const Container = styled.div`
   width: 37%;
 
   top: 15px;
-  z-index: 2;
+  z-index: 101;
   left: 26%;
   @media screen and (min-width: 950px) {
     left: 32%;

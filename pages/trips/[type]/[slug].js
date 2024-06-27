@@ -53,7 +53,7 @@ const IndexedItinerary = ({
   }
 
   return (
-    <LayoutV2 itinerary page={"Itinerary Page"}>
+    <LayoutV2 staticnav itinerary page={"Itinerary Page"}>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title> {Data?.page_title} </title>
