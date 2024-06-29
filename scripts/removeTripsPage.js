@@ -30,19 +30,16 @@ if (args.length > 0) {
     case "prebuild":
       // Rename the trips page to exclude it from the build
       renameFile(tripsPagePath, tripsPageBackupPath);
-      console.log(`Renamed ${tripsPagePath} to ${tripsPageBackupPath}`);
       break;
     case "postbuild":
       // Ensure the backup file is restored after the build process
       renameFile(tripsPageBackupPath, tripsPagePath);
-      console.log(`Renamed ${tripsPageBackupPath} to ${tripsPagePath}`);
-
       break;
     default:
       process.exit();
   }
 } else {
-    console.log("Expected command line arguments: <prebuild> or <postbuild>")
+  console.log("Expected command line arguments: <prebuild> or <postbuild>");
   process.exit();
 }
 

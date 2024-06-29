@@ -1,5 +1,6 @@
 import React from "react";
 import Card from "../../cards/Location";
+import { LocationCard } from "../../cards/Location";
 import media from "../../media";
 import SwiperCarousel from "../../SwiperCarousel";
 import Link from "next/link";
@@ -36,7 +37,7 @@ const LocationsBlog = (props) => {
     if (props.locations[i].image)
       cardsarr.push(
         <Link href={"/" + path} style={{ textDecoration: "none" }}>
-          <Card
+          <LocationCard
             key={i}
             location={props.locations[i].name ? props.locations[i].name : ""}
             heading={
@@ -44,7 +45,7 @@ const LocationsBlog = (props) => {
             }
             img={props.locations[i].image}
             onclick={() => _handleRedirect(path, location[i])}
-          ></Card>
+          ></LocationCard>
         </Link>
       );
   }
@@ -55,7 +56,8 @@ const LocationsBlog = (props) => {
         <SwiperCarousel
           navigationButtons
           cards={cardsarr}
-          slidesPerView={5}
+          slidesPerView={4}
+          buttonSize={80}
         ></SwiperCarousel>
       );
     else return null;

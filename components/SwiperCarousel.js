@@ -22,13 +22,17 @@ const SwiperContainer = styled.div`
   .swiper-button-prev {
     left: -10px;
     @media screen and (min-width: 768px) {
-      left: -20px;
+      ${(props) =>
+        props.buttonSize ? `left: -${props.buttonSize / 2}px` : "left: -20px"};
     }
   }
   .swiper-button-next {
     right: -10px;
     @media screen and (min-width: 768px) {
-      right: -20px;
+      ${(props) =>
+        props.buttonSize
+          ? `right: -${props.buttonSize / 2}px`
+          : "right: -20px"};
     }
   }
   .swiper-button-next,
@@ -45,8 +49,10 @@ const SwiperContainer = styled.div`
     ${(props) => props.navButtonsTop && `top : ${props.navButtonsTop}`};
 
     @media screen and (min-width: 768px) {
-      width: 40px;
-      height: 40px;
+      ${(props) =>
+        props.buttonSize ? `width: ${props.buttonSize}px` : "width: 40px"};
+      ${(props) =>
+        props.buttonSize ? `height: ${props.buttonSize}px` : "height: 40px"};
     }
   }
   .swiper-button-next::after {
@@ -110,6 +116,7 @@ const SwiperCarousel = (props) => {
       navButtonBackground={props.navButtonBackground}
       navButtonColor={props.navButtonColor}
       noPadding={props.noPadding}
+      buttonSize={props.buttonSize}
     >
       <Swiper
         onInit={(swiper) => {
@@ -122,7 +129,7 @@ const SwiperCarousel = (props) => {
             );
           }
         }}
-        spaceBetween={12}
+        spaceBetween={30}
         centeredSlides={props.centeredSlides}
         initialSlide={props.initialSlide || 0}
         navigation={props.navigationButtons}
