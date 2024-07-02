@@ -293,7 +293,7 @@ const HotelBookingContainer = ({
                             {booking?.user_rating}
                             {" . "}
                           </div>
-                          {booking.number_of_reviews && (
+                          {booking?.number_of_reviews && (
                             <div className="text-sm text-[#7A7A7A] font-[400] underline">
                               {booking.number_of_reviews}{" "}
                               {booking?.source === "Agoda"
@@ -318,7 +318,7 @@ const HotelBookingContainer = ({
                       ) : null}
                     </div>
                   )}
-                  {booking.check_in &&
+                  {booking?.check_in &&
                   ITINERARY_STATUSES.itinerary_prepared !==
                     plan?.itinerary_status ? (
                     <div className="flex flex-row gap-3 lg:mt-2 mt-0">
@@ -352,7 +352,7 @@ const HotelBookingContainer = ({
                   ) : (
                     currentBooking &&
                     ITINERARY_STATUSES.itinerary_prepared !==
-                      plan.itinerary_status && (
+                      plan?.itinerary_status && (
                       <div className="flex flex-row gap-3 lg:mt-2 mt-0">
                         {currentBooking?.check_in && (
                           <div className="flex flex-row gap-2 items-center">
@@ -369,7 +369,7 @@ const HotelBookingContainer = ({
                         <div className="text-sm font-[400] gap-2 flex flex-row items-center">
                           <BsPeopleFill className="text-sm text-[#7A7A7A]" />
                           <div className=" text-sm font-[400] min-w-fit">
-                            {booking.number_of_adults
+                            {booking?.number_of_adults
                               ? booking.number_of_adults
                               : currentBooking?.number_of_adults}{" "}
                             Adults
@@ -384,26 +384,30 @@ const HotelBookingContainer = ({
                       <RoomTypeGrid>
                         <BiBed className="text-sm text-[#7A7A7A]" />
                         <div className="text-sm font-[400] line-clamp-1">
-                          {booking.costings_breakdown[0].room_type}
+                          {booking?.costings_breakdown[0]?.room_type}
                         </div>
                         <div>
                           {"("}
-                          {booking.costings_breakdown[0].number_of_rooms}{" "}
-                          {booking.costings_breakdown[0].number_of_rooms > 1
+                          {booking?.costings_breakdown[0]?.number_of_rooms}{" "}
+                          {booking?.costings_breakdown[0]?.number_of_rooms > 1
                             ? "Rooms"
                             : "Room"}
                           {")"}
                         </div>
                       </RoomTypeGrid>
 
-                      {booking.costings_breakdown[0].number_of_extra_beds &&
-                      booking.costings_breakdown[0].number_of_extra_beds > 0 ? (
+                      {booking?.costings_breakdown[0]?.number_of_extra_beds &&
+                      booking?.costings_breakdown[0]?.number_of_extra_beds >
+                        0 ? (
                         <div className="flex flex-row items-center my-0">
                           <BsPlus className="text-md text-[#7A7A7A]" />
                           <div className="text-sm font-[400] line-clamp-1">
-                            {booking.costings_breakdown[0].number_of_extra_beds}{" "}
-                            {booking.costings_breakdown[0]
-                              .number_of_extra_beds > 1
+                            {
+                              booking?.costings_breakdown[0]
+                                ?.number_of_extra_beds
+                            }{" "}
+                            {booking?.costings_breakdown[0]
+                              ?.number_of_extra_beds > 1
                               ? "Extra beds"
                               : "Extra bed"}
                           </div>
@@ -413,7 +417,7 @@ const HotelBookingContainer = ({
                       )}
                     </>
                   ) : (
-                    (booking?.room_count || booking.room_type_name) && (
+                    (booking?.room_count || booking?.room_type_name) && (
                       <>
                         <div
                           className={`flex ${"flex-row"} gap-3 lg:mt-2 mt-0`}
@@ -421,9 +425,9 @@ const HotelBookingContainer = ({
                           <div className="text-sm font-[400] gap-2 flex flex-row items-center">
                             <BiBed className="text-sm text-[#7A7A7A]" />
                             <div className="text-sm font-[400] line-clamp-1">
-                              {booking.source &&
-                              booking.source === "Agoda" &&
-                              booking.room_type_name ? (
+                              {booking?.source &&
+                              booking?.source === "Agoda" &&
+                              booking?.room_type_name ? (
                                 <>{booking.room_type_name}</>
                               ) : (
                                 <> {booking?.room_count} room options</>
@@ -435,17 +439,17 @@ const HotelBookingContainer = ({
                     )
                   )}
                   {booking.costings_breakdown &&
-                  Addons(booking.costings_breakdown[0].pricing_type) ? (
+                  Addons(booking?.costings_breakdown[0]?.pricing_type) ? (
                     <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
                       <ImSpoonKnife className="text-sm text-[#7A7A7A]" />
                       <div className="text-sm font-[400]">
-                        {Addons(booking.costings_breakdown[0].pricing_type)}
+                        {Addons(booking?.costings_breakdown[0]?.pricing_type)}
                       </div>
                     </div>
                   ) : null}
-                  {booking.amenities &&
-                  booking.amenities.length &&
-                  booking.amenities.includes("WIFI") ? (
+                  {booking?.amenities &&
+                  booking?.amenities?.length &&
+                  booking?.amenities?.includes("WIFI") ? (
                     <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
                       <MdWifi className="text-sm text-[#7A7A7A]" />
                       <div className="text-sm font-[400]">WIFI available</div>
@@ -458,7 +462,7 @@ const HotelBookingContainer = ({
                 {currentBooking && booking?.price && (
                   <div className="flex flex-row gap-1 items-center w-full font-bold">
                     <div className="text-2xl font-bold">
-                      {booking.source === "Agoda"
+                      {booking?.source === "Agoda"
                         ? "₹" +
                           getIndianPrice(Math.round(+booking.price / 100)) +
                           "/-"
@@ -474,7 +478,7 @@ const HotelBookingContainer = ({
                         fontWeight: 300,
                       }}
                     >
-                      {booking.source === "Agoda" ? (
+                      {booking?.source === "Agoda" ? (
                         <>per night</>
                       ) : (
                         <>for {currentBooking?.duration} Nights</>
@@ -509,7 +513,7 @@ const HotelBookingContainer = ({
                           handleChageHotel(
                             e,
                             `${!isSelect ? "Add Hotel" : "Change"}`,
-                            booking.name
+                            booking?.name
                           )
                         }
                       >

@@ -48,7 +48,7 @@ const Itinerary = (props) => {
   const [flightFlickityIndex, setFlightFlickityIndex] = useState(0);
   const [activityFlickityIndex, setActivityFlickityIndex] = useState(0);
   const [payment, setPayment] = useState(null);
-  const [showBookingModal, setShowBookinblackgModal] = useState(false);
+  const [showBookingModal, setShowBookingModal] = useState(false);
   const [isDatePresent, setIsDatePresent] = useState(false);
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showTaxiModal, setShowTaxiModal] = useState(false);

@@ -110,6 +110,8 @@ const Index = (props) => {
     });
   };
 
+  if (!props?.data) return null;
+
   return (
     <div>
       {isPageWide ? (
@@ -134,14 +136,14 @@ const Index = (props) => {
 
       <div>
         <HeroBanner
-          image={props.data.image}
-          page_id={props.data.id}
-          destination={props.data.name}
-          title={`${props.data.name} Trip Planner`}
+          image={props?.data?.image}
+          page_id={props?.data?.id}
+          destination={props?.data?.name}
+          title={`${props?.data?.name} Trip Planner`}
           page={"Country Page"}
         />
         <SetWidthContainer>
-          <PathNavigation path={props.data.path} />
+          <PathNavigation path={props?.data?.path} />
 
           {hotLocations.length ? (
             <>
@@ -153,14 +155,14 @@ const Index = (props) => {
                     : "2.5rem 0.5rem 1.5rem 0.5rem",
                 }}
               >
-                {props.data.name
-                  ? "Popular locations to visit in " + props.data.name
+                {props?.data?.name
+                  ? "Popular locations to visit in " + props?.data?.name
                   : "Popular Locations"}
               </H3>
               <Locations
                 locations={hotLocations}
                 page={"Country Page"}
-                state={props.data.name}
+                state={props?.data?.name}
                 viewall
               ></Locations>
             </>
@@ -168,14 +170,14 @@ const Index = (props) => {
 
           <MapGridContainer>
             <Overview
-              overview_heading={"A little about " + props.data.name}
-              overview_text={props.data.short_description}
+              overview_heading={"A little about " + props?.data?.name}
+              overview_text={props?.data?.short_description}
             ></Overview>
             <MapContainer>
-              {props.data.locations && props.data.locations.length ? (
+              {props?.data?.locations && props?.data?.locations?.length ? (
                 <MapBox
                   InfoWindowContainer={InfoWindowContainer}
-                  locations={props.data.locations}
+                  locations={props?.data?.locations}
                   height="300px"
                 />
               ) : null}
@@ -218,11 +220,11 @@ const Index = (props) => {
                   margin: isPageWide ? "3.5rem 0rem" : "1.5rem 0.5rem",
                 }}
               >
-                Things to do in {props.data.name}
+                Things to do in {props?.data?.name}
               </H3>
               <Activity
-                data={props.data}
-                activities={props.data.activities}
+                data={props?.data}
+                activities={props?.data?.activities}
                 city={props?.data?.name}
                 handlePlanButtonClick={handlePlanButtonClick}
                 page={"Country Page"}
@@ -238,12 +240,12 @@ const Index = (props) => {
                   margin: isPageWide ? "3.5rem 0rem" : "1.5rem 0.5rem",
                 }}
               >
-                Places to visit in {props.data.name}
+                Places to visit in {props?.data?.name}
               </H3>
               <Poi
-                data={props.data}
-                pois={props.data.pois}
-                city={props.data.name}
+                data={props?.data}
+                pois={props?.data?.pois}
+                city={props?.data?.name}
                 handlePlanButtonClick={handlePlanButtonClick}
                 page={"Country Page"}
               />
@@ -258,7 +260,7 @@ const Index = (props) => {
                   margin: isPageWide ? "3.5rem 0rem" : "1.5rem 0.5rem",
                 }}
               >
-                Trending destinations across {props.data.name}
+                Trending destinations across {props?.data?.name}
               </H3>
               <OldLocations
                 locations={props.data.states}

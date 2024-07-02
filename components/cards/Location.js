@@ -173,9 +173,13 @@ export const LocationCard = (props) => {
         }}
       />
 
-      <div className="w-fit absolute top-4 left-4 rounded-full text-sm text-center text-white bg-[#01202B] px-2 py-1">
-        Best time: Oct - Feb
-      </div>
+      {imageLoading ? (
+        <div className="w-[40%] h-6 absolute top-4 left-4 rounded-full  bg-gray-300 animate-pulse"></div>
+      ) : (
+        <div className="w-fit absolute top-4 left-4 rounded-full text-sm text-center text-white bg-[#01202B] px-2 py-1">
+          Best time: Oct - Feb
+        </div>
+      )}
 
       <div
         className={`w-full flex flex-col px-3 gap-2 rounded-[10px] absolute bottom-0 pb-4 translate-y-[60px] transition-all ${
