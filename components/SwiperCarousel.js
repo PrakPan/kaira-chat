@@ -37,7 +37,7 @@ const SwiperContainer = styled.div`
   }
   .swiper-button-next,
   .swiper-button-prev {
-    background: rgba(1, 32, 43, 0.7);
+    background: #01202b;
     color: white;
     ${(props) =>
       props.navButtonBackground && `background : ${props.navButtonBackground}`};
@@ -129,7 +129,7 @@ const SwiperCarousel = (props) => {
             );
           }
         }}
-        spaceBetween={30}
+        spaceBetween={25}
         centeredSlides={props.centeredSlides}
         initialSlide={props.initialSlide || 0}
         navigation={props.navigationButtons}

@@ -153,7 +153,7 @@ export const LocationCard = (props) => {
   return (
     <div
       onClick={props.onclick ? props.onclick : null}
-      className={`group relative h-[55vh] rounded-[10px] overflow-hidden ${
+      className={`group relative h-[45vh] rounded-[10px] overflow-hidden ${
         imageLoading ? "bg-gray-200 animate-pulse" : ""
       }`}
     >
@@ -176,15 +176,15 @@ export const LocationCard = (props) => {
       {imageLoading ? (
         <div className="w-[40%] h-6 absolute top-4 left-4 rounded-full  bg-gray-300 animate-pulse"></div>
       ) : (
-        <div className="w-fit absolute top-4 left-4 rounded-full text-sm text-center text-white bg-[#01202B] px-2 py-1">
-          Best time: Oct - Feb
+        <div className="w-fit absolute top-4 left-4 rounded-full text-xs text-center font-normal text-white bg-[#01202B] px-[10px] py-1">
+          Best time : Oct - Feb
         </div>
       )}
 
       <div
         className={`w-full flex flex-col px-3 gap-2 rounded-[10px] absolute bottom-0 pb-4 translate-y-[60px] transition-all ${
           !imageLoading &&
-          "bg-gradient-to-t from-black from-50% group-hover:translate-y-0"
+          "bg-gradient-to-t from-black from-60% group-hover:translate-y-0"
         }`}
       >
         <div className="w-full">
@@ -194,12 +194,12 @@ export const LocationCard = (props) => {
               <div className="w-[60%] h-8 bg-gray-300 rounded-lg"></div>
             </div>
           ) : (
-            <div className="w-full flex flex-col py-2">
+            <div className="w-full flex flex-col py-1">
               <div>
-                <p className="text-white text-lg font-bold leading-3">
+                <p className="text-white text-lg font-bold leading-[16px]">
                   {props.location}
                 </p>
-                <p className="text-white text-md font-light leading-3">
+                <p className="text-white text-md font-light leading-[5px]">
                   {props.heading}
                 </p>
               </div>

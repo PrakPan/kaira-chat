@@ -56,8 +56,8 @@ const LocationsBlog = (props) => {
         <SwiperCarousel
           navigationButtons
           cards={cardsarr}
-          slidesPerView={4}
-          buttonSize={80}
+          slidesPerView={5}
+          buttonSize={60}
         ></SwiperCarousel>
       );
     else return null;

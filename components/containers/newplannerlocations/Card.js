@@ -22,10 +22,10 @@ const Subtext = styled.p`
 const Experiences = (props) => {
   let filters_to_show = "";
   try {
-    for (var i = 0; i < props.filters.length; i++) {
-      if (i === props.filters.length - 1)
-        filters_to_show = filters_to_show + props.filters[i];
-      else filters_to_show = filters_to_show + props.filters[i] + ", ";
+    for (var i = 0; i < props?.tags.length; i++) {
+      if (i === props?.tags.length - 1)
+        filters_to_show = filters_to_show + props?.tags[i];
+      else filters_to_show = filters_to_show + props?.tags[i] + ", ";
     }
   } catch {}
 
@@ -64,7 +64,7 @@ const Experiences = (props) => {
       <div style={{ padding: "0.5rem 0" }} className="hover-pointer">
         <>
           <Name className="font-lexend">{props.location}</Name>
-          <Subtext className="font-lexend">{filters_to_show}</Subtext>
+          <Subtext className="font-lexend truncate">{filters_to_show}</Subtext>
         </>
       </div>
     </Link>

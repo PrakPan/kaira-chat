@@ -70,7 +70,6 @@ const Index = (props) => {
     if (props?.data?.locations) {
       props.data.locations.map((location, i) => {
         if (location?.is_hot_location) {
-          location.name = `${location.name}, ${location.state.country}`;
           hot_locations.push(location);
         }
       });
