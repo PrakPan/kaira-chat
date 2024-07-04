@@ -199,7 +199,7 @@ export const LocationCard = (props) => {
                 <p className="text-white text-lg font-bold leading-[16px]">
                   {props.location}
                 </p>
-                <p className="text-white text-md font-light leading-[5px]">
+                <p className="text-white text-md font-light leading-[14px]">
                   {props.heading}
                 </p>
               </div>
@@ -208,7 +208,7 @@ export const LocationCard = (props) => {
         </div>
 
         <button className="w-full bg-[#F7E700] rounded-lg text-sm text-black text-center px-2 py-2">
-          Plan a Trip
+          Plan a trip
         </button>
       </div>
     </div>
