@@ -245,7 +245,7 @@ const TransferEditDrawer = (props) => {
       mobileWidth={"100vw"}
       width="50vw"
     >
-      <div className="sticky px-2 top-0 bg-white z-[900] flex flex-col gap-4 py-4 pb-1 justify-start items-start mx-auto w-[98%]">
+      <div className="sticky px-2 top-0 bg-white z-[900] flex flex-col gap-4 pt-4 pb-[100px] justify-start items-start mx-auto w-[98%]">
         <div className="flex flex-row gap-3 my-0 justify-start items-center">
           <IoMdArrowRoundBack
             onClick={() => setShowDrawer(false)}
@@ -458,6 +458,7 @@ const RouteContainer = (props) => {
           Recommended
         </ClippathComp>
       )}
+
       {transfer.modes && transfer.modes.length > 1 ? (
         viewMore ? (
           <div className="w-full flex flex-col items-center justify-center">
@@ -501,50 +502,15 @@ const RouteContainer = (props) => {
 
           <div className="w-full flex flex-col gap-2 justify-center">
             <div className="flex flex-row items-center justify-between">
-              <div className="flex flex-col items-start gap-2">
-                <div className="text-lg font-[500] leading-3">
-                  {transfer.modes[0]}
-                </div>
-                <div className="text-sm text-gray-400">
-                  {transfer?.legs[0]?.carrier && `${transfer.legs[0].carrier}`}
-                  {transfer.meta.Time && ` | ${transfer.meta.Time}`}
-                  {transfer.meta.Distance && ` | ${transfer.meta.Distance} Kms`}
-                </div>
-              </div>
+              <TransferItem transfer={transfer} />
+
               <div className="flex flex-col gap-2 items-end">
                 <EstimatedCost cost={transfer?.meta?.estimated_cost} />
-              </div>
-            </div>
-
-            <div className="w-full flex flex-row items-center justify-between">
-              <div className="w-full">
-                {transfer?.legs[0]?.facilities?.length ? (
-                  <div className="text-sm">
-                    Facilities:{" "}
-                    {transfer?.legs[0]?.facilities?.map((facility, ind) => (
-                      <span key={ind}>
-                        <span>{facility}</span>
-                        {ind < transfer?.legs[0]?.facilities?.length - 1 &&
-                          " | "}
-                      </span>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-
-              <div
-                onClick={() => handleSelect(transferIndex)}
-                className="flex mt-2 flex-row gap-2 items-end justify-end cursor-pointer"
-              >
-                <CheckboxFormComponent
-                  checked={transferIndex === 0 && transfer.isSelected}
-                  className="mb-1"
+                <SelectButton
+                  transfer={transfer}
+                  transferIndex={transferIndex}
+                  handleSelect={handleSelect}
                 />
-                <label className="text-center cursor-pointer">
-                  {transferIndex === 0 && transfer.isSelected
-                    ? "Selected"
-                    : "Select"}
-                </label>
               </div>
             </div>
           </div>
@@ -574,56 +540,15 @@ const MultiRoute = (props) => {
 
       <div className="w-full flex flex-col gap-2 justify-center">
         <div className="flex flex-row items-center justify-between">
-          <div className="flex flex-col items-start gap-2">
-            <div className="text-lg font-[500] leading-3">
-              {transfer.modes.map((mode, index) => {
-                return (
-                  <span key={index}>
-                    {mode}
-                    {index < transfer.modes.length - 1 && ", "}
-                  </span>
-                );
-              })}
-            </div>
-            <div className="text-sm text-gray-400">
-              {transfer?.legs[0]?.carrier && `${transfer.legs[0].carrier}`}
-              {transfer?.meta?.Time && ` | ${transfer.meta.Time}`}
-              {transfer?.meta?.Distance && ` | ${transfer.meta.Distance} Kms`}
-            </div>
-          </div>
+          <TransferItem transfer={transfer} />
+
           <div className="flex flex-col gap-2 items-end">
             <EstimatedCost cost={transfer?.meta?.estimated_cost} />
-          </div>
-        </div>
-
-        <div className="w-full flex flex-row items-center justify-between">
-          <div className="w-full">
-            {transfer?.legs[0]?.facilities?.length ? (
-              <div className="text-sm">
-                Facilities:{" "}
-                {transfer?.legs[0]?.facilities?.map((facility, ind) => (
-                  <span key={ind}>
-                    <span>{facility}</span>
-                    {ind < transfer?.legs[0]?.facilities?.length - 1 && " | "}
-                  </span>
-                ))}
-              </div>
-            ) : null}
-          </div>
-
-          <div
-            onClick={() => handleSelect(transferIndex)}
-            className="flex mt-2 flex-row gap-2 items-end justify-end cursor-pointer"
-          >
-            <CheckboxFormComponent
-              checked={transferIndex === 0 && transfer.isSelected}
-              className="mb-1"
+            <SelectButton
+              transfer={transfer}
+              transferIndex={transferIndex}
+              handleSelect={handleSelect}
             />
-            <label className="text-center cursor-pointer">
-              {transferIndex === 0 && transfer.isSelected
-                ? "Selected"
-                : "Select"}
-            </label>
           </div>
         </div>
       </div>
@@ -697,9 +622,9 @@ const MobileRouteContainer = (props) => {
                 {transfer.modes[0]}
               </div>
               <div className="text-sm text-gray-400">
-                {transfer?.legs[0]?.carrier && `${transfer.legs[0].carrier}`}
-                {transfer?.meta?.Time && ` | ${transfer.meta.Time}`}
-                {transfer?.meta?.Distance && ` | ${transfer.meta.Distance} Kms`}
+                {transfer?.legs[0]?.carrier && `${transfer.legs[0].carrier} | `}
+                {transfer?.meta?.Time && `${transfer.meta.Time} | `}
+                {transfer?.meta?.Distance && `${transfer.meta.Distance} Kms`}
               </div>
             </div>
           </div>
@@ -724,20 +649,12 @@ const MobileRouteContainer = (props) => {
               <div className="flex flex-col gap-2 items-start">
                 <EstimatedCost cost={transfer?.meta?.estimated_cost} />
               </div>
-              <div
-                onClick={() => handleSelect(transferIndex)}
-                className="flex flex-row gap-2 items-end justify-start cursor-pointer"
-              >
-                <CheckboxFormComponent
-                  checked={transferIndex === 0 && transfer.isSelected}
-                  className="mb-1"
-                />
-                <label className="text-center cursor-pointer">
-                  {transferIndex === 0 && transfer.isSelected
-                    ? "Selected"
-                    : "Select"}
-                </label>
-              </div>
+
+              <SelectButton
+                transfer={transfer}
+                transferIndex={transferIndex}
+                handleSelect={handleSelect}
+              />
             </div>
           </div>
         </div>
@@ -776,8 +693,8 @@ const MobileMultiRoute = (props) => {
             })}
           </div>
           <div className="text-sm text-gray-400">
-            {transfer?.legs[0]?.carrier && `${transfer.legs[0].carrier}`}
-            {transfer.meta.Time && ` | ${transfer.meta.Time}`}
+            {transfer?.legs[0]?.carrier && `${transfer.legs[0].carrier} | `}
+            {transfer.meta.Time && `${transfer.meta.Time} | `}
             {transfer.meta.Distance && ` | ${transfer.meta.Distance} Kms`}
           </div>
         </div>
@@ -802,20 +719,11 @@ const MobileMultiRoute = (props) => {
           <div className="flex flex-col gap-2 items-start">
             <EstimatedCost cost={transfer?.meta?.estimated_cost} />
           </div>
-          <div
-            onClick={() => handleSelect(transferIndex)}
-            className="flex flex-row gap-2 items-end justify-start cursor-pointer"
-          >
-            <CheckboxFormComponent
-              checked={transferIndex === 0 && transfer.isSelected}
-              className="mb-1"
-            />
-            <label className="text-center cursor-pointer">
-              {transferIndex === 0 && transfer.isSelected
-                ? "Selected"
-                : "Select"}
-            </label>
-          </div>
+          <SelectButton
+            transfer={transfer}
+            transferIndex={transferIndex}
+            handleSelect={handleSelect}
+          />
         </div>
       </div>
     </div>
@@ -871,35 +779,7 @@ const MultiModeContainer = ({ transferIndex, transfer, handleSelect }) => {
             </div>
             <div className="w-full flex flex-col gap-2 items-center justify-center">
               <div className="w-full flex flex-col items-start justify-start gap-0">
-                <div className="text-[16px] md:text-lg lg:text-lg font-medium leading-3">
-                  {transfer.modes[index]}
-                </div>
-                <div className="text-sm text-gray-400">
-                  {transfer?.legs[index]?.carrier &&
-                    `${transfer.legs[index].carrier}`}
-                  {transfer?.meta?.Time && ` | ${transfer.meta.Time}`}
-                  {transfer?.meta?.Distance &&
-                    ` | ${transfer.meta.Distance} Kms`}
-                </div>
-              </div>
-
-              <div className="w-full flex flex-row items-center justify-between">
-                <div className="w-full">
-                  {transfer?.legs[index]?.facilities?.length ? (
-                    <div className="text-sm">
-                      Facilities:{" "}
-                      {transfer?.legs[index]?.facilities?.map(
-                        (facility, ind) => (
-                          <span key={ind}>
-                            <span>{facility}</span>
-                            {ind < transfer?.legs[0]?.facilities?.length - 1 &&
-                              " | "}
-                          </span>
-                        )
-                      )}
-                    </div>
-                  ) : null}
-                </div>
+                <TransferItem transfer={transfer} transferIndex={index} />
               </div>
             </div>
           </div>
@@ -916,20 +796,11 @@ const MultiModeContainer = ({ transferIndex, transfer, handleSelect }) => {
               </div>
             </div>
             {index === transfer.modes.length - 1 && (
-              <div
-                onClick={() => handleSelect(transferIndex)}
-                className="flex mt-2 flex-row gap-2 items-end justify-end cursor-pointer"
-              >
-                <CheckboxFormComponent
-                  checked={transferIndex === 0 && transfer.isSelected}
-                  className="mb-1"
-                />
-                <label className="text-center cursor-pointer">
-                  {transferIndex === 0 && transfer.isSelected
-                    ? "Selected"
-                    : "Select"}
-                </label>
-              </div>
+              <SelectButton
+                transfer={transfer}
+                transferIndex={transferIndex}
+                handleSelect={handleSelect}
+              />
             )}
           </div>
         </div>
@@ -986,34 +857,7 @@ const MobileMultiModeContainer = ({
             </div>
             <div className="w-full flex flex-col gap-2 items-center justify-center">
               <div className="w-full flex flex-col items-start justify-start gap-0">
-                <div className="text-[16px] md:text-lg lg:text-lg font-medium leading-3">
-                  {transfer.modes[index]}
-                </div>
-                <div className="text-sm text-gray-400">
-                  {transfer?.legs[index]?.carrier &&
-                    `${transfer.legs[index].carrier}`}
-                  {transfer?.meta?.Time && ` | ${transfer.meta.Time}`}
-                  {transfer.meta.Distance && ` | ${transfer.meta.Distance} Kms`}
-                </div>
-              </div>
-
-              <div className="w-full flex flex-row items-center justify-between">
-                <div className="w-full">
-                  {transfer?.legs[index]?.facilities?.length ? (
-                    <div className="text-sm">
-                      Facilities:{" "}
-                      {transfer?.legs[index]?.facilities?.map(
-                        (facility, ind) => (
-                          <span key={ind}>
-                            <span>{facility}</span>
-                            {ind < transfer?.legs[0]?.facilities?.length - 1 &&
-                              " | "}
-                          </span>
-                        )
-                      )}
-                    </div>
-                  ) : null}
-                </div>
+                <TransferItem transfer={transfer} transferIndex={index} />
               </div>
             </div>
           </div>
@@ -1035,18 +879,11 @@ const MobileMultiModeContainer = ({
         <div className="flex flex-col gap-2 items-start">
           <EstimatedCost cost={transfer?.meta?.estimated_cost} />
         </div>
-        <div
-          onClick={() => handleSelect(transferIndex)}
-          className="flex flex-row gap-2 items-end justify-end cursor-pointer"
-        >
-          <CheckboxFormComponent
-            checked={transferIndex === 0 && transfer.isSelected}
-            className="mb-1"
-          />
-          <label className="text-center cursor-pointer">
-            {transferIndex === 0 && transfer.isSelected ? "Selected" : "Select"}
-          </label>
-        </div>
+        <SelectButton
+          transfer={transfer}
+          transferIndex={transferIndex}
+          handleSelect={handleSelect}
+        />
       </div>
     </div>
   );
@@ -1466,4 +1303,64 @@ const EstimatedCost = ({ cost }) => {
   }
 
   return null;
+};
+
+const SelectButton = ({ transferIndex, transfer, handleSelect }) => {
+  return (
+    <div
+      onClick={() => handleSelect(transferIndex)}
+      className="flex mt-2 flex-row gap-2 items-end justify-end cursor-pointer"
+    >
+      <CheckboxFormComponent
+        checked={transferIndex === 0 && transfer.isSelected}
+        className="mb-1"
+      />
+      <label className="text-center cursor-pointer">
+        {transferIndex === 0 && transfer.isSelected ? "Selected" : "Select"}
+      </label>
+    </div>
+  );
+};
+
+const TransferItem = ({ transfer, transferIndex }) => {
+  return (
+    <div className="flex flex-col items-start gap-2">
+      <div className="text-lg font-[500] leading-3">
+        {transferIndex !== undefined
+          ? transfer.modes[transferIndex]
+          : transfer.modes.length > 1
+          ? transfer.modes.map((mode, index) => {
+              if (index === transfer.modes.length - 1) {
+                return mode;
+              }
+              return mode + ", ";
+            })
+          : transfer.modes[0]}
+      </div>
+      <div className="text-sm text-gray-400">
+        {transfer?.legs[transferIndex ?? 0]?.carrier &&
+          `${transfer.legs[transferIndex ?? 0].carrier} | `}
+        {transfer.meta.Time && `${transfer.meta.Time} | `}
+        {transfer.meta.Distance && `${transfer.meta.Distance} Kms`}
+      </div>
+
+      <div className="w-full">
+        {transfer?.legs[transferIndex ?? 0]?.facilities?.length ? (
+          <div className="text-sm">
+            Facilities:{" "}
+            {transfer?.legs[transferIndex ?? 0]?.facilities?.map(
+              (facility, ind) => (
+                <span key={ind}>
+                  <span>{facility}</span>
+                  {ind <
+                    transfer?.legs[transferIndex ?? 0]?.facilities?.length -
+                      1 && " | "}
+                </span>
+              )
+            )}
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
 };
