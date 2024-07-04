@@ -10,7 +10,6 @@ import H7 from "../heading/H7";
 
 const ImageFade = styled.div`
   width: 100%;
-  height: auto;
   transition: 0.2s all ease-in-out;
 `;
 
@@ -38,9 +37,12 @@ const BlackContainer = styled.div`
   left: 50%;
   top: 50%;
   @media screen and (min-width: 768px) {
-    ${(props) => (props.continent ? "top : 50%" : "top : unset ; bottom: 0%")};
+    ${(props) => (props.continent ? "top : 50%" : "top : unset ; bottom: 4%")};
   }
-  transform: translate(-50%, -50%);
+  ${(props) =>
+    props.continent
+      ? "transform: translate(-50%, -50%);"
+      : "transform: translate(-50%, 0%);"};
 `;
 
 const Experiences = (props) => {
@@ -70,7 +72,9 @@ const Experiences = (props) => {
         onClick={(e) => _handleRedirect(e)}
         continent={props.continent}
       >
-        <ImageFade>
+        <ImageFade
+          className={!ImageLoaded && "bg-gray-200 h-[71vh] animate-pulse"}
+        >
           <ImageLoader
             url={props.img}
             dimensions={
@@ -90,13 +94,13 @@ const Experiences = (props) => {
         </ImageFade>
 
         <BlackContainer continent={props.continent} className="font-lexend">
-          {ImageLoaded && (
-            <>
+          {ImageLoaded ? (
+            <div className="px-3">
               <H2
                 style={{
                   fontSize: props.continent ? "3rem" : "1.25rem",
                   lineHeight: 1,
-                  textAlign: "center",
+                  textAlign: props.country ? "left" : "center",
                   marginBottom: isPageWide ? "0.5rem" : "0rem",
                 }}
               >
@@ -107,13 +111,30 @@ const Experiences = (props) => {
                   style={{
                     fontSize: props.continent ? "1.5rem" : "1rem",
                     lineHeight: 1,
-                    textAlign: "center",
+                    textAlign: props.country ? "left" : "center",
                   }}
                 >
                   {props.heading}
                 </H7>
               )}
-            </>
+            </div>
+          ) : (
+            <div
+              className={`flex flex-col gap-2 px-3 ${
+                props.continent ? "items-center" : "items-start"
+              }`}
+            >
+              <div
+                className={`bg-gray-300 rounded-md animate-pulse ${
+                  props.continent ? "w-[30%] h-10" : "w-[50%] h-8"
+                }`}
+              ></div>
+              <div
+                className={`bg-gray-300 rounded-md animate-pulse ${
+                  props.continent ? "w-[50%] h-8" : "w-[70%] h-6"
+                }`}
+              ></div>
+            </div>
           )}
         </BlackContainer>
       </ImageContainer>
