@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
 import Card from "./Card";
 import { useRouter } from "next/router";
 import SwiperCarousel from "../../SwiperCarousel";

@@ -129,7 +129,7 @@ const SwiperCarousel = (props) => {
             );
           }
         }}
-        spaceBetween={25}
+        spaceBetween={props.spaceBetween ? props.spaceBetween : 25}
         centeredSlides={props.centeredSlides}
         initialSlide={props.initialSlide || 0}
         navigation={props.navigationButtons}

@@ -60,9 +60,10 @@ const Activity = (props) => {
       <div className="hidden-mobile">
         <SwiperCarousel
           navigationButtons={true}
-          slidesPerView={4}
+          slidesPerView={5}
           cards={cards}
           navButtonsTop={"50%"}
+          spaceBetween={10}
         ></SwiperCarousel>
 
         <Button
