@@ -25,11 +25,6 @@ const Itinerary = (props) => {
           name="viewport"
           content="width=device-width, initial-scale=1"
         ></meta>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `gtag('event', 'conversion', {'send_to': 'AW-738037519/IF5rCMyxhL8ZEI-e9t8C'});`,
-          }}
-        />
       </Head>
 
       {router.query.id && (
