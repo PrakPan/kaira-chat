@@ -554,7 +554,7 @@ const SimpleTabsV2 = (props) => {
                 setHideBookingModal={props.setHideBookingModal}
                 payment={props.payment}
                 transferBookings={props?.transferBookings}
-                itinerary_id={props.itinerary.tailor_made_id}
+                itinerary_id={props.itinerary_id}
                 fetchData={props.fetchData}
                 _GetInTouch={_GetInTouch}
               />
@@ -784,7 +784,7 @@ const SimpleTabsV2 = (props) => {
                   setHideBookingModal={props.setHideBookingModal}
                   payment={props.payment}
                   transferBookings={props?.transferBookings}
-                  itinerary_id={props.itinerary.tailor_made_id}
+                  itinerary_id={props.itinerary_id}
                   fetchData={props.fetchData}
                   _GetInTouch={_GetInTouch}
                 />
@@ -1080,6 +1080,7 @@ const mapStateToPros = (state) => {
     plan: state.Plan,
     routes: state.ItineraryRoutes,
     breif: state.Breif,
+    itinerary_id: state.ItineraryId,
   };
 };
 

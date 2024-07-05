@@ -149,7 +149,7 @@ const Booking = (props) => {
                 selectedBooking={props.selectedBooking}
                 tailored_id={props.tailored_id}
                 updateLoadingState={updateLoadingState}
-                itinerary_id={props.payment.tailored_itinerary}
+                itinerary_id={props.itinerary_id}
                 accommodation={props.alternates[i]}
                 _updateSearchedAccommodation={_newUpdateBookingHandler}
                 _SelectedBookingHandler={_SelectedBookingHandler}
@@ -357,7 +357,7 @@ const Booking = (props) => {
                       s
                       _updateSearchedAccommodation={_newUpdateBookingHandler}
                       _SelectedBookingHandler={_SelectedBookingHandler}
-                      itinerary_id={props.payment.tailored_itinerary}
+                      itinerary_id={props.itinerary_id}
                       tailored_id={props.tailored_id}
                       _updateBookingHandler={_newUpdateBookingHandler}
                       accommodation={res.data.results[i]}
@@ -755,7 +755,7 @@ const Booking = (props) => {
                           _updateSearchedAccommodation
                         }
                         _SelectedBookingHandler={_SelectedBookingHandler}
-                        itinerary_id={props.payment.tailored_itinerary}
+                        itinerary_id={props.itinerary_id}
                         tailored_id={props.tailored_id}
                         _updateBookingHandler={_newUpdateBookingHandler}
                         accommodation={res.data.results[i]}
@@ -793,7 +793,7 @@ const Booking = (props) => {
                         _updateSearchedAccommodation
                       }
                       _SelectedBookingHandler={_SelectedBookingHandler}
-                      itinerary_id={props.payment.tailored_itinerary}
+                      itinerary_id={props.itinerary_id}
                       tailored_id={props.tailored_id}
                       _updateBookingHandler={_newUpdateBookingHandler}
                       accommodation={res.data.results[i]}
@@ -1127,6 +1127,7 @@ const mapStateToPros = (state) => {
     emailfailmessage: state.auth.emailfailmessage,
     loginmessage: state.auth.loginmessage,
     hideloginclose: state.auth.hideloginclose,
+    itinerary_id: state.ItineraryId,
   };
 };
 

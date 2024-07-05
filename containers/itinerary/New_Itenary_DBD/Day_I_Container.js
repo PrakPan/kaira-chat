@@ -15,6 +15,7 @@ import PoiElement from "../../../components/itinerary/daySummary/PoiElement";
 import { getYear } from "../../../helper/DateUtils";
 import ActivityAddDrawer from "../../../components/drawers/poiDetails/activityAddDrawer";
 import { logEvent } from "../../../services/ga/Index";
+import { connect } from "react-redux";
 
 export const DayContainerStyle = styled.div`
   display: flex;
@@ -418,7 +419,6 @@ const Day_I_Container = (props) => {
         cityName={newCity ? newCity?.city_name : props?.current_city?.city_name}
         cityID={newCity ? newCity?.city_id : props?.current_city?.city_id}
         date={props?.Days?.date}
-        itinerary_id={props?.itinerary_id}
         day_slab_index={props?.indexDay}
         getPaymentHandler={props?.getPaymentHandler}
         getAccommodationAndActivitiesHandler={
@@ -432,4 +432,10 @@ const Day_I_Container = (props) => {
   );
 };
 
-export default Day_I_Container;
+const mapStateToPros = (state) => {
+  return {
+    itinerary_id: state.ItineraryId,
+  };
+};
+
+export default connect(mapStateToPros)(Day_I_Container);

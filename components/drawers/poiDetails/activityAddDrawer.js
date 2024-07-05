@@ -430,6 +430,7 @@ const mapStateToPros = (state) => {
   return {
     notificationText: state.Notification.text,
     itineraryActivities: state.itineraryActivities,
+    itinerary_id: state.ItineraryId,
   };
 };
 
