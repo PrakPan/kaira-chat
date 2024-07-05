@@ -69,7 +69,7 @@ export async function getStaticProps(context) {
   try {
     for (let i = 0; i < CONTINENTS.length; i++) {
       const response = await axiosAllDestinationsInstance(
-        `/all/?continent=${CONTINENTS[i].slug}&fields=id,name,path,tagline,image`
+        `/all/?continent=${CONTINENTS[i].slug}&fields=id,name,path,tagline,image,best_time`
       );
       const locations = response.data;
       allDestinations.push({

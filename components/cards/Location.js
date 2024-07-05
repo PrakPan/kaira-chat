@@ -116,7 +116,7 @@ const Experiences = (props) => {
                   width: "100%",
                 }}
               >
-                {props.location}
+                {props.name}
               </H4>
             </>
           )}
@@ -138,7 +138,7 @@ const Experiences = (props) => {
             }
           }}
         >
-          Plan trip to {props.location} !
+          Plan trip to {props.name} !
         </Button>
       </CtaContainer>
     </Container>
@@ -173,13 +173,15 @@ export const LocationCard = (props) => {
         }}
       />
 
-      {imageLoading ? (
-        <div className="w-[40%] h-6 absolute top-4 left-4 rounded-full  bg-gray-300 animate-pulse"></div>
-      ) : (
-        <div className="w-fit absolute top-4 left-4 rounded-full text-xs text-center font-normal text-white bg-[#01202B] px-[10px] py-1">
-          Best time : Oct - Feb
-        </div>
-      )}
+      {props.location.best_time ? (
+        imageLoading ? (
+          <div className="w-[40%] h-6 absolute top-4 left-4 rounded-full  bg-gray-300 animate-pulse"></div>
+        ) : (
+          <div className="w-fit absolute top-4 left-4 rounded-full text-xs text-center font-normal text-white bg-[#01202B] px-[10px] py-1">
+            {props.location.best_time}
+          </div>
+        )
+      ) : null}
 
       <div
         className={`w-full flex flex-col px-3 gap-2 rounded-[10px] absolute bottom-0 pb-4 translate-y-[60px] transition-all ${
@@ -197,7 +199,7 @@ export const LocationCard = (props) => {
             <div className="w-full flex flex-col py-1">
               <div>
                 <p className="text-white text-lg font-bold leading-[16px]">
-                  {props.location}
+                  {props.name}
                 </p>
                 <p className="text-white text-md font-light leading-[14px]">
                   {props.heading}

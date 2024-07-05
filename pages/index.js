@@ -140,7 +140,7 @@ export async function getStaticProps() {
 
     for (let i = 0; i < continetCarouselResponse.length; i++) {
       const countrydetailsResponse = await axioscountrydetailsinstance(
-        `/all/?continent=${continetCarouselResponse[i].destination}&fields=id,name,path,tagline,image,is_hot_location`
+        `/all/?continent=${continetCarouselResponse[i].destination}&fields=id,name,path,tagline,image,is_hot_location,best_time`
       );
 
       if (continetCarouselResponse[i].destination.toLowerCase() === "asia") {

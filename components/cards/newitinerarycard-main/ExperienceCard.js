@@ -44,6 +44,7 @@ const ContentContainer = styled.div`
 const ExperienceCard = (props) => {
   const router = useRouter();
   const [hover, setHover] = useState(false);
+  const [name, setName] = useState(props.data ? props.data.name : props.name);
 
   const _handleRedirect = () => {
     logEvent({
@@ -87,7 +88,7 @@ const ExperienceCard = (props) => {
           hover ? "opacity-100" : "opacity-0"
         } `}
       >
-        {props.data ? props.data.name : props.name}
+        {name}
       </div>
 
       <ContentContainer className="">
@@ -97,7 +98,7 @@ const ExperienceCard = (props) => {
           user_name={props.data.user_name}
           locations={props.locations}
           FONT_SIZES_DESKTOP={FONT_SIZES_DESKTOP}
-          name={props.data ? props.data.name : props.name}
+          name={name}
           id={props.id}
           number_of_adults={props.number_of_adults}
           starting_cost={props.starting_cost}

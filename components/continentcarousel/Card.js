@@ -62,7 +62,6 @@ const Experiences = (props) => {
         event_action: `Plan your trip anywhere in the world`,
       },
     });
-    if (props.path) window.location.href = "/" + props.path;
   };
 
   return (

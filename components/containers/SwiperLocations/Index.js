@@ -1,5 +1,4 @@
 import React from "react";
-import Card from "../../cards/Location";
 import { LocationCard } from "../../cards/Location";
 import media from "../../media";
 import SwiperCarousel from "../../SwiperCarousel";
@@ -10,7 +9,7 @@ const LocationsBlog = (props) => {
   let isPageWide = media("(min-width: 768px)");
   let cardsarr = [];
 
-  const _handleRedirect = (path, location) => {
+  const _handleRedirect = (location) => {
     logEvent({
       action: "View_Destination",
       params: {
@@ -23,7 +22,6 @@ const LocationsBlog = (props) => {
         }`,
       },
     });
-    if (path) window.location.href = "/" + path;
   };
 
   for (var i = 0; i < props.locations.length; i++) {
@@ -39,12 +37,13 @@ const LocationsBlog = (props) => {
         <Link href={"/" + path} style={{ textDecoration: "none" }}>
           <LocationCard
             key={i}
-            location={props.locations[i].name ? props.locations[i].name : ""}
+            location={props.locations[i]}
+            name={props.locations[i].name ? props.locations[i].name : ""}
             heading={
               props.locations[i].tagline ? props.locations[i].tagline : ""
             }
             img={props.locations[i].image}
-            onclick={() => _handleRedirect(path, location[i])}
+            onclick={() => _handleRedirect(props.locations[i])}
           ></LocationCard>
         </Link>
       );
