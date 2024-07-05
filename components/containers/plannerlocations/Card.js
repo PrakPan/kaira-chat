@@ -79,7 +79,7 @@ const Experiences = (props) => {
         <BlackContainer className="font-lexend w-full">
           {loading ? (
             <div className="w-full flex flex-col items-center gap-2">
-              <div className="w-[80%] h-10 bg-gray-300 w-20 rounded-lg"></div>
+              <div className="w-[80%] h-10 bg-gray-300 rounded-lg"></div>
               <div className="w-[60%] h-8 bg-gray-300 rounded-lg"></div>
             </div>
           ) : (

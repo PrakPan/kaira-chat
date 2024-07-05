@@ -63,6 +63,7 @@ const Layout = React.memo((props) => {
         id={props.id}
         destination={props.destination}
         page={props.page}
+        itinerary={props.itinerary}
       />
 
       <div

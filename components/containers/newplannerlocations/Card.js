@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import ImageLoader from "../../ImageLoader";
 import Link from "next/link";
@@ -20,12 +20,14 @@ const Subtext = styled.p`
 `;
 
 const Experiences = (props) => {
+  const [imageLoading, setImageLoading] = useState(true);
+
   let filters_to_show = "";
   try {
-    for (var i = 0; i < props.filters.length; i++) {
-      if (i === props.filters.length - 1)
-        filters_to_show = filters_to_show + props.filters[i];
-      else filters_to_show = filters_to_show + props.filters[i] + ", ";
+    for (var i = 0; i < props?.tags.length; i++) {
+      if (i === props?.tags.length - 1)
+        filters_to_show = filters_to_show + props?.tags[i];
+      else filters_to_show = filters_to_show + props?.tags[i] + ", ";
     }
   } catch {}
 
@@ -49,7 +51,7 @@ const Experiences = (props) => {
       style={{ textDecoration: "none", color: "black", cursor: "pointer" }}
       onClick={handleImageClick}
     >
-      <div>
+      <div className={imageLoading && "bg-gray-300 animate-pulse rounded-md"}>
         <ImageLoader
           noLazy
           hoverpointer
@@ -59,13 +61,23 @@ const Experiences = (props) => {
           dimensionsMobile={{ width: 300, height: 300 }}
           style={{ cursor: "pointer" }}
           filter="brightness(0.80)"
+          onload={() => setImageLoading(false)}
         ></ImageLoader>
       </div>
       <div style={{ padding: "0.5rem 0" }} className="hover-pointer">
-        <>
-          <Name className="font-lexend">{props.location}</Name>
-          <Subtext className="font-lexend">{filters_to_show}</Subtext>
-        </>
+        {imageLoading ? (
+          <div className="flex flex-col gap-2">
+            <div className="w-[50%] h-6 bg-gray-300 animate-pulse rounded-md"></div>
+            <div className="w-[90%] h-4 bg-gray-300 animate-pulse rounded-md"></div>
+          </div>
+        ) : (
+          <>
+            <Name className="font-lexend">{props.location}</Name>
+            <Subtext className="font-lexend truncate">
+              {filters_to_show}
+            </Subtext>
+          </>
+        )}
       </div>
     </Link>
   );

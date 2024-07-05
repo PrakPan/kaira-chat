@@ -265,7 +265,7 @@ const Details = (props) => {
     >
       {couponSlide ? (
         <CouponSlide
-          itinerary_id={props.payment.tailored_itinerary}
+          itinerary_id={props.itinerary_id}
           closeCouponSlide={() => setCouponSlide(false)}
           setInputValue={setInputValue}
           couponJSX={couponJSX}
@@ -302,6 +302,7 @@ const mapStateToProps = (state) => {
     orderCreated: state.experience.orderCreated,
     couponApplied: state.experience.couponApplied,
     couponInvalid: state.experience.couponInvalid,
+    itinerary_id: state.ItineraryId
   };
 };
 

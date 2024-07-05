@@ -558,7 +558,7 @@ const Details = (props) => {
           >
             {props.payment.itinerary_status ===
               ITINERARY_STATUSES.itinerary_finalized ||
-            props.plan.featured ? null : (
+            props?.plan?.featured ? null : (
               <div></div>
             )}
 

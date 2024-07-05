@@ -856,12 +856,7 @@ const Itinerary = (props) => {
         </div>
       </Container>
     );
-  else
-    return (
-      <div>
-        <Spinner></Spinner>
-      </div>
-    );
+  else return <div></div>;
 };
 
 const mapStateToPros = (state) => {

@@ -137,7 +137,7 @@ const Destinations = (props) => {
           marginRight: "10px",
         }}
       >
-        {!props?.selectedCities?.some((e) => !e.name) && !isCountryId && (
+        {!props?.selectedCities?.some((e) => !e.name) && (
           <p
             onClick={_addDestinationHandler}
             className="text-center font-lexend hover-pointer"

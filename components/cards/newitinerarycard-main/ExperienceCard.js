@@ -7,6 +7,7 @@ import { fadeIn } from "react-animations";
 import Summary from "./Summary";
 import Cost from "./info/Cost";
 import Button from "../../ui/button/Index";
+import { useState } from "react";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 
@@ -42,6 +43,8 @@ const ContentContainer = styled.div`
 
 const ExperienceCard = (props) => {
   const router = useRouter();
+  const [hover, setHover] = useState(false);
+  const [name, setName] = useState(props.data ? props.data.name : props.name);
 
   const _handleRedirect = () => {
     logEvent({
@@ -66,7 +69,12 @@ const ExperienceCard = (props) => {
   const FONT_SIZES_DESKTOP = ["20px"];
 
   return (
-    <Container className="netflix-ite" onClick={_handleRedirect}>
+    <Container
+      className="netflix-ite group:"
+      onClick={_handleRedirect}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
       <ImageContainer>
         <ImageGallery
           duration_number={props.duration_number ? props.duration_number : null}
@@ -75,14 +83,22 @@ const ExperienceCard = (props) => {
         ></ImageGallery>
       </ImageContainer>
 
-      <ContentContainer className="text-cente">
+      <div
+        className={`absolute transition w-fit flex place-self-center bottom-[55%] z-50 bg-gray-200 px-2 py-1 rounded-md drop-shadow-2xl text-sm ${
+          hover ? "opacity-100" : "opacity-0"
+        } `}
+      >
+        {name}
+      </div>
+
+      <ContentContainer className="">
         <Info
           PW={props.PW}
           owner={props.data.owner}
           user_name={props.data.user_name}
           locations={props.locations}
           FONT_SIZES_DESKTOP={FONT_SIZES_DESKTOP}
-          name={props.data ? props.data.name : props.name}
+          name={name}
           id={props.id}
           number_of_adults={props.number_of_adults}
           starting_cost={props.starting_cost}

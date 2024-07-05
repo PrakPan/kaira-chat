@@ -68,7 +68,7 @@ const P = styled.p`link
   text-align: left;
   line-height: 32px;
   @media screen and (min-width: 768px) {
-    font-size: 18px;
+    font-size: 16px;
   }
 `;
 
@@ -178,7 +178,7 @@ const Menu = (props) => {
           >
             How to reach
           </H3>
-          <P>{props.data.conveyance_available}</P>
+          <P className="font-light">{props.data.conveyance_available}</P>
         </MenuItem>
       )}
 

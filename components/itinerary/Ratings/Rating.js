@@ -69,7 +69,7 @@ const Ratings = ({ plan }) => {
       {showUserRating && (
         <div
           onClick={handleOutsideClick}
-          className="inset-0 fixed flex items-center justify-center bg-black bg-opacity-50 z-50"
+          className="inset-0 fixed flex items-center justify-center bg-black bg-opacity-50 z-[999]"
         >
           <UserRating
             userRatingRef={userRatingRef}

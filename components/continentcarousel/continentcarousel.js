@@ -92,6 +92,7 @@ const Continentcarousel = (props) => {
                   path={e.path}
                   hd={hd < 4}
                   page={props.page}
+                  country
                 />
               </div>
             ))}

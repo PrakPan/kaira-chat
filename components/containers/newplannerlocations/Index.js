@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
 import Card from "./Card";
 import { useRouter } from "next/router";
 import SwiperCarousel from "../../SwiperCarousel";
-
-const MobileCardsContainer = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.5rem;
-`;
 
 const LocationsBlog = (props) => {
   const router = useRouter();
@@ -28,11 +21,11 @@ const LocationsBlog = (props) => {
           let n = cardsarr.length;
           const el = cardsarr.slice(n - 4, n);
           MobileCardsArr.push(
-            <MobileCardsContainer>
+            <div className="grid grid-cols-2 grid-rows-2 gap-4">
               {el.map((e, i) => (
                 <div key={i}>{e}</div>
               ))}
-            </MobileCardsContainer>
+            </div>
           );
           count++;
         }
@@ -47,7 +40,11 @@ const LocationsBlog = (props) => {
                   heading={props.locations[i].tagline}
                   img={props.locations[i].image}
                   path={props.locations[i].path}
-                  filters={props.locations[i].most_popular_for}
+                  tags={
+                    props.locations[i].tags
+                      ? props.locations[i].tags
+                      : props.locations[i].most_popular_for
+                  }
                   page={props?.page}
                   state={props?.state}
                 ></Card>
@@ -60,11 +57,11 @@ const LocationsBlog = (props) => {
     if (count === 0 || count % 4 !== 0) {
       const el = cardsarr.slice(count * 4, cardsarr.length);
       MobileCardsArr.push(
-        <MobileCardsContainer>
+        <div className="grid grid-cols-2 grid-rows-2 gap-4">
           {el.map((e, i) => (
             <div key={i}>{e}</div>
           ))}
-        </MobileCardsContainer>
+        </div>
       );
     }
     setCardsToShowJSX(cardsarr);
@@ -78,7 +75,7 @@ const LocationsBlog = (props) => {
           navigationButtons={true}
           slidesPerView={6}
           cards={cardsToShowJSX}
-          navButtonsTop={"38%"}
+          navButtonsTop={"40%"}
         ></SwiperCarousel>
       </div>
 

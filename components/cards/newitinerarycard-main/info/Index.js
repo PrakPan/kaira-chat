@@ -35,15 +35,16 @@ const Info = (props) => {
   }
 
   return (
-    <div className="font-lexend">
-      <H8
-        style={{
-          lineHeight: 1,
-        }}
-        className="font-lexend"
-      >
-        {props.name}
-      </H8>
+    <div className=" font-lexend">
+      <div className="line-clamp-1">
+        <H8
+          style={{
+            lineHeight: 1,
+          }}
+        >
+          {props.name}
+        </H8>
+      </div>
       <Locations>{LOCATIONS_TO_SHOW}</Locations>
       {props.PW ? (
         <TourType>

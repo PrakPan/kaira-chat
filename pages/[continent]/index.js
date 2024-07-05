@@ -107,7 +107,7 @@ export async function getStaticProps(context) {
   try {
     for (let i = 0; i < contientTheme.length; i++) {
       const countrydetailsResponse = await axioscountrydetailsinstance(
-        `/all/?continent=${contientTheme[i].destination}&fields=id,name,path,tagline,image,is_hot_location`
+        `/all/?continent=${contientTheme[i].destination}&fields=id,name,path,tagline,image,is_hot_location,best_time`
       );
 
       if (contientTheme[i].destination === data.destination) {

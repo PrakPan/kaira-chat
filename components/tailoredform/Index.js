@@ -14,6 +14,7 @@ import { fadeIn } from "react-animations";
 import Popup from "../ErrorPopup";
 import { RxCross2 } from "react-icons/rx";
 import usePageLoaded from "../custom hooks/usePageLoaded";
+import { logEvent } from "../../services/ga/Index";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 
@@ -284,12 +285,22 @@ const Enquiry = (props) => {
         } else {
           if (response.data.loader_time) {
             window.location.href =
-              "/itinerary/" + response.data.itinerary.itinerary_id + "?t=" + response.data.loader_time;;
+              "/itinerary/" +
+              response.data.itinerary.itinerary_id +
+              "?t=" +
+              response.data.loader_time;
           } else {
             window.location.href =
               "/itinerary/" + response.data.itinerary.itinerary_id;
           }
           setLoading(false);
+
+          logEvent({
+            action: "conversion",
+            params: {
+              send_to: "AW-738037519/IF5rCMyxhL8ZEI-e9t8C",
+            },
+          });
         }
       })
       .catch((err) => {
