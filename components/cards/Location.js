@@ -178,7 +178,7 @@ export const LocationCard = (props) => {
           <div className="w-[40%] h-6 absolute top-4 left-4 rounded-full  bg-gray-300 animate-pulse"></div>
         ) : (
           <div className="w-fit absolute top-4 left-4 rounded-full text-xs text-center font-normal text-white bg-[#01202B] px-[10px] py-1">
-            {props.location.best_time}
+            Best time : {props.location.best_time}
           </div>
         )
       ) : null}
