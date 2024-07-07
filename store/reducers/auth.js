@@ -28,7 +28,6 @@ const reducer = (state = initialState, action) => {
         ...state,
         showLogin: true,
       };
-
     case actionTypes.AUTH_CLOSELOGIN:
       return {
         ...state,

@@ -264,7 +264,7 @@ const Homepage = (props) => {
               overview_heading={overviewHeading}
               overview_text={props.experienceData.overview_text}
             ></Overview>
-            <MapContainer>
+            {/* <MapContainer>
               {props.experienceData.locations &&
               props.experienceData.locations.length ? (
                 <MapBox
@@ -275,7 +275,7 @@ const Homepage = (props) => {
               ) : (
                 <></>
               )}
-            </MapContainer>
+            </MapContainer> */}
           </MapGridContainer>
         )}
 
@@ -328,7 +328,7 @@ const Homepage = (props) => {
               overview_heading={overviewHeading}
               overview_text={props.experienceData.overview_text}
             ></Overview>
-            <MapContainer>
+            {/* <MapContainer>
               {props.experienceData.locations &&
               props.experienceData.locations.length ? (
                 <MapBox
@@ -339,7 +339,7 @@ const Homepage = (props) => {
               ) : (
                 <></>
               )}
-            </MapContainer>
+            </MapContainer> */}
           </MapGridContainer>
         )}
 

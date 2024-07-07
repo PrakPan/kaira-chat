@@ -91,6 +91,7 @@ const OtpContainer = styled.div`
 
 const CountryImg = styled(Image)`
   height: 1.5rem;
+  alt: "";
 `;
 
 const UpdatePhone = styled.p`

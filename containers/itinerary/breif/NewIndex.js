@@ -130,11 +130,11 @@ const Details = (props) => {
             className="absolute w-[100%] h-[100%] rounded-xl"
             style={{ overflow: "hidden" }}
           >
-            <RoutesMap
+            {/* <RoutesMap
               locations={locationsLatLong}
               setShowDrawer={setShowDrawer}
               setShowDrawerData={setShowDrawerData}
-            />
+            /> */}
           </div>
         </div>
 
@@ -172,12 +172,12 @@ const Details = (props) => {
           setShowLoginModal={props.setShowLoginModal}
           setLocationsLatLong={setLocationsLatLong}
         >
-          <RoutesMap
+          {/* <RoutesMap
             locations={locationsLatLong}
             setShowDrawer={setShowDrawer}
             setShowDrawerData={setShowDrawerData}
             setEditRoute={props.setEditRoute}
-          />
+          /> */}
         </RouteEditSection>
       )}
 

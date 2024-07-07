@@ -176,7 +176,7 @@ const Poi = (props) => {
           </WeatherContainer>
         )}
 
-        {props.pois && props.pois.length ? (
+        {/* {props.pois && props.pois.length ? (
           <MapBox
             locations={props.pois}
             defaultZoom={12}
@@ -187,7 +187,7 @@ const Poi = (props) => {
           />
         ) : (
           <div></div>
-        )}
+        )} */}
       </div>
     </GridContainer>
   );

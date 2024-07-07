@@ -50,8 +50,6 @@ const Experiences = (props) => {
   const [ImageLoaded, setImageLoaded] = useState(false);
 
   const _handleRedirect = (e) => {
-    e.preventDefault();
-
     logEvent({
       action: "View_Destination",
       params: {
