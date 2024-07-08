@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import SearchResult from "./SearchResult";
 import Spinner from "../../../../Spinner";
 import axiossearchstartinginstance from "../../../../../services/search/startinglocation";
 import SkeletonCard from "../../../../ui/SkeletonCard";
+import useDebounce from "../../../../../hooks/useDebounce";
 
 const ResultsContainer = styled.div`
   position: absolute;
@@ -50,6 +51,12 @@ const skeleton = (
 const SearchInput = (props) => {
   const [loading, setLoading] = useState(false);
   const [resultsJSX, setResultsJSX] = useState([]);
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search);
+
+  useEffect(() => {
+    _getResults(debouncedSearch);
+  }, [debouncedSearch]);
 
   const _selectResult = (event, text, place_id) => {
     event.stopPropagation();
@@ -103,7 +110,7 @@ const SearchInput = (props) => {
   };
 
   return (
-    <div>
+    <div className="w-[90%]">
       {props.showSearchStarting ? (
         <div style={{ display: "flex" }}>
           <InputContainer
@@ -112,7 +119,8 @@ const SearchInput = (props) => {
             placeholder="Departing from"
             className="font-lexend"
             autoFocus
-            onChange={(e) => _getResults(e.target.value)}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
           ></InputContainer>
           {loading ? <Spinner size={16} margin="0"></Spinner> : null}
         </div>
