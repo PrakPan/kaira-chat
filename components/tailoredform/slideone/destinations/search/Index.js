@@ -22,7 +22,6 @@ const Search = (props) => {
   const { query } = useRouter();
 
   const _handleKey = (value) => {
-    if (value === "") setShowHotLocations(true);
     if (value)
       if (value.length > 1) {
         setShowHotLocations(false);
@@ -93,7 +92,6 @@ const Search = (props) => {
           setSelectedCities={props.setSelectedCities}
           selectedCities={props.selectedCities}
           setShowResults={setShowResults}
-          autofocus={props.autofocus}
         ></SearchInput>
       </div>
 
