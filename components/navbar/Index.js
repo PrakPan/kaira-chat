@@ -7,7 +7,6 @@ import "overlayscrollbars/overlayscrollbars.css";
 import IndexDesktop from "./Desktop";
 import media from "../media";
 import NewMobile from "./mobile/Index";
-import axiosnotificationsinstance from "../../services/user/notifications/notifications";
 import LogInModal from "../modals/Login";
 import TailoredFormMobileModal from "../modals/TailoredFomrMobile";
 import { closeTailoredModal } from "../../services/openTailoredModal";
@@ -23,7 +22,6 @@ const Navbar = React.memo((props) => {
   let [notifications, setNotifications] = useState([]);
   const [showMoiblePlanner, setShowMobilePlanner] = useState(false);
   const router = useRouter();
-  let notopencount = 0;
 
   useEffect(() => {
     if (router.isReady) {
@@ -54,26 +52,6 @@ const Navbar = React.memo((props) => {
   }, [isPageWide, props.overflow]);
 
   useEffect(() => {
-    if (props.token)
-      axiosnotificationsinstance
-        .get("", {
-          headers: {
-            Authorization: `Bearer ${props.token}`,
-          },
-        })
-        .then((res) => {
-          for (var i = 0; i < res.data.length; i++) {
-            if (res.data[i].status == "Not opened") {
-              notopencount = notopencount + 1;
-            }
-          }
-          setNotifications(res.data);
-          setNotOpenCount(notopencount);
-        })
-        .catch((err) => {});
-  }, [props.token]);
-
-  useEffect(() => {
     let prevScroll = window.pageYOffset;
     let scrollhandler = () => {
       if (window.pageYOffset < 10) {
@@ -99,37 +77,9 @@ const Navbar = React.memo((props) => {
     }
   });
 
-  const _deleteNotificationHandler = (id) => {
-    if (props.token)
-      axiosnotificationsinstance
-        .delete("?id=" + id, {
-          headers: {
-            Authorization: `Bearer ${props.token}`,
-          },
-        })
-        .then((res) => {
-          setNotifications(res.data);
-        })
-        .catch((err) => {});
-  };
+  const _deleteNotificationHandler = (id) => {};
 
-  const _openAllNotificationsHandler = () => {
-    if (props.token)
-      axiosnotificationsinstance
-        .patch(
-          "",
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${props.token}`,
-            },
-          }
-        )
-        .then((res) => {
-          setNotOpenCount(0);
-        })
-        .catch((err) => {});
-  };
+  const _openAllNotificationsHandler = () => {};
 
   return (
     <div className="font-lexend">
