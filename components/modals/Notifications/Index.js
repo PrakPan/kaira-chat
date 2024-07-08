@@ -4,7 +4,6 @@ import styled from "styled-components";
 import Notification from "./Notification";
 import Heading from "../../newheading/heading/Index";
 import media from "../../media";
-import axiosnotificationsinstance from "../../../services/user/notifications/notifications";
 import { connect } from "react-redux";
 import ImageLoader from "../../ImageLoader";
 
@@ -47,14 +46,6 @@ const Enquiry = (props) => {
 
   const _clearAllHandler = () => {
     setNotificationsArr([]);
-    axiosnotificationsinstance
-      .delete("", {
-        headers: {
-          Authorization: `Bearer ${props.token}`,
-        },
-      })
-      .then((res) => {})
-      .catch((err) => {});
   };
 
   const _handleClose = () => {

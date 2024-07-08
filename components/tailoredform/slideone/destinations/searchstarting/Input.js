@@ -5,6 +5,9 @@ import Spinner from "../../../../Spinner";
 import axiossearchstartinginstance from "../../../../../services/search/startinglocation";
 import SkeletonCard from "../../../../ui/SkeletonCard";
 import useDebounce from "../../../../../hooks/useDebounce";
+import Cookies from "js-cookie";
+import { connect } from "react-redux";
+import { changeUserLocation } from "../../../../../store/actions/userLocation";
 
 const ResultsContainer = styled.div`
   position: absolute;
@@ -63,6 +66,16 @@ const SearchInput = (props) => {
     setResultsJSX([]);
     props.setShowSearchStarting(false);
     props.setStartingLocation({ name: text, place_id: place_id });
+    Cookies.set(
+      "userLocation",
+      JSON.stringify({
+        text: text,
+        place_id: place_id,
+      })
+    );
+    props.changeUserLocation({
+      location: { text: text, place_id: place_id },
+    });
   };
 
   const _getResults = (query) => {
@@ -141,4 +154,10 @@ const SearchInput = (props) => {
   );
 };
 
-export default SearchInput;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    changeUserLocation: (payload) => dispatch(changeUserLocation(payload)),
+  };
+};
+
+export default connect(null, mapDispatchToProps)(SearchInput);

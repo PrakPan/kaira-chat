@@ -7,6 +7,7 @@ import MarkerClusterGroup from "@changey/react-leaflet-markercluster";
 import "@changey/react-leaflet-markercluster/dist/styles.min.css";
 import { FaLocationPin } from "react-icons/fa6";
 import ReactDOMServer from "react-dom/server";
+import { GOOGLE_MAPS_API_KEY } from "../services/constants";
 
 const limeOptions = {
   color: "#004d6994",
@@ -70,7 +71,7 @@ const Mapbox = React.memo((props) => {
         borderRadius: "1rem",
       }}
     >
-      <ReactLeafletGoogleLayer apiKey="AIzaSyAn7MlgjpLEwzJ_o6CX--Ux7IL5bkPD39E" />
+      <ReactLeafletGoogleLayer apiKey={GOOGLE_MAPS_API_KEY} />
 
       {polylines ? (
         <Polyline pathOptions={limeOptions} positions={polylines} />
