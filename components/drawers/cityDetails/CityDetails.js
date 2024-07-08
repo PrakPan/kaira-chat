@@ -153,12 +153,12 @@ const CityDetails = (props) => {
       </Link>
       {props.data.pois && props.data.pois.length ? (
         <div>
-          {/* <MapBox
+          <MapBox
             locations={props.data.pois}
             defaultZoom={12}
             height={"300px"}
             InfoWindowContainer={InfoWindowContainer}
-          /> */}
+          />
         </div>
       ) : (
         <div></div>

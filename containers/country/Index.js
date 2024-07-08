@@ -173,7 +173,7 @@ const Index = (props) => {
               overview_heading={"A little about " + props?.data?.name}
               overview_text={props?.data?.short_description}
             ></Overview>
-            {/* <MapContainer>
+            <MapContainer>
               {props?.data?.locations && props?.data?.locations?.length ? (
                 <MapBox
                   InfoWindowContainer={InfoWindowContainer}
@@ -181,7 +181,7 @@ const Index = (props) => {
                   height="300px"
                 />
               ) : null}
-            </MapContainer> */}
+            </MapContainer>
           </MapGridContainer>
           <Button
             onclick={() =>

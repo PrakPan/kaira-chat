@@ -21,14 +21,14 @@ const Contact = () => {
 
         <ContactInfo></ContactInfo>
 
-        {/* <MapBox
+        <MapBox
           center={{ lat: 28.5779959, lng: 77.343917 }}
           defaultZoom={14}
           InfoWindowContainer={
             <h4 style={{ padding: "0rem 1rem" }}>The tarzan way</h4>
           }
           height={"500px"}
-        /> */}
+        />
       </YellowContainer>
     </div>
   );
