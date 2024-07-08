@@ -123,7 +123,7 @@ const Details = (props) => {
     <div className="mt-16">
       <DetailsContainer>
         <div
-          className="sticky md:top-[70px] lg:w-[50vw] lg:h-[70vh]  w-[88vw] h-[23rem] lg:mt-20 mt-8  rounded-xl"
+          className="sticky md:top-[70px] lg:w-[50vw] lg:h-[70vh]  w-[88vw] h-fit lg:mt-20 mt-8  rounded-xl"
           id="MapcontainerRoute"
         >
           <div
