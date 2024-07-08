@@ -20,14 +20,6 @@ const Container = styled.div`
   }
 `;
 
-const LeftContent = styled.div`
-  line-height: 1;
-  font-size: 0.85rem;
-  display: grid;
-  grid-template-columns: 1fr max-content;
-  align-items: center;
-`;
-
 const RightContainer = styled.div`
   line-height: 1;
   font-size: 0.85rem;
@@ -66,7 +58,7 @@ const SelectedDestination = (props) => {
               _handleFocusSearch();
             }
       }
-      className=" font-lexend hover-pointer"
+      className="font-lexend hover-pointer"
       style={{
         borderRadius: "8px",
         border:
@@ -75,8 +67,8 @@ const SelectedDestination = (props) => {
             : "1px solid black",
       }}
     >
-      <LeftContent
-        className="hover-pointer"
+      <div
+        className="hover-pointer text-[0.85rem] flex flex-row items-center justify-between w-full"
         selectlocation={props.selectlocation}
       >
         {!props.selectlocation ? (
@@ -84,7 +76,6 @@ const SelectedDestination = (props) => {
             style={{
               lineHeight: "1",
               fontSize: "1.25rem",
-              marginRight: "13px",
             }}
           ></MdOutlineLocationOn>
         ) : (
@@ -92,7 +83,6 @@ const SelectedDestination = (props) => {
             style={{
               lineHeight: "1",
               fontSize: "1.25rem",
-              marginRight: "13px",
             }}
           ></BiTargetLock>
         )}
@@ -100,26 +90,22 @@ const SelectedDestination = (props) => {
         {props.selectlocation ? (
           !props.showSearchStarting ? (
             !props.startingLocation ? (
-              <>
-                Delhi, IN{" "}
+              <div className="w-[90%] flex flex-row gap-2 justify-between">
+                <div className="truncate">Delhi, IN</div>
                 <span
                   style={{
                     opacity: "0.3",
-                    position: "absolute",
-                    right: "0.5rem",
                   }}
                 >
                   Departing from
                 </span>
-              </>
+              </div>
             ) : (
-              <div className="w-[60%] md:w-[80%] truncate">
-                {props.startingLocation.name}{" "}
+              <div className="w-[90%] flex flex-row gap-2 justify-between">
+                <div className="truncate">{props.startingLocation.name}</div>
                 <span
                   style={{
                     opacity: "0.3",
-                    position: "absolute",
-                    right: "0.5rem",
                   }}
                 >
                   Departing
@@ -140,20 +126,20 @@ const SelectedDestination = (props) => {
             ></SearchInputStarting>
           )
         ) : props.destination && showDestination ? (
-          <>
-            {props.destination}
+          <div className="w-[90%] flex flex-row gap-2 justify-between">
+            <div className="truncate">
+              {props.destination}
+            </div>
             {!props.setDeletedId && (
               <span
                 style={{
                   opacity: "0.3",
-                  position: "absolute",
-                  right: "0.5rem",
                 }}
               >
                 Destination
               </span>
             )}
-          </>
+          </div>
         ) : (
           <SearchInput
             autofocus={props.autofocus}
@@ -175,10 +161,10 @@ const SelectedDestination = (props) => {
             selectedCities={props.selectedCities}
           ></SearchInput>
         )}
-      </LeftContent>
+      </div>
 
       {!props.selectlocation ? (
-        <RightContainer className="hover-pointer">
+        <RightContainer className="hover-pointer bg-emerald-400">
           {props.setDeletedId ? (
             <AiFillDelete
               onClick={() => {

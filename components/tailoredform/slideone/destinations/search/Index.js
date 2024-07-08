@@ -21,15 +21,15 @@ const Search = (props) => {
   const [showHotLocations, setShowHotLocations] = useState(false);
   const { query } = useRouter();
 
-  const _handleKey = (e) => {
-    if (e.target.value === "") setShowHotLocations(true);
-    if (e.target.value)
-      if (e.target.value.length > 1) {
+  const _handleKey = (value) => {
+    if (value === "") setShowHotLocations(true);
+    if (value)
+      if (value.length > 1) {
         setShowHotLocations(false);
         setShowResults(true);
         setLoading(true);
         axiossearchsuggestinstance
-          .get(`?q=` + event.target.value)
+          .get(`?q=` + value)
           .then((res) => {
             setLoading(false);
             if (res.data.length) {

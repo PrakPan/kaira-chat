@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import useDebounce from "../../../../../hooks/useDebounce";
 
 const Container = styled.input`
   width: 92%;
@@ -23,11 +24,11 @@ const Container = styled.input`
 
 const SearchInput = (props) => {
   const [value, setValue] = useState("");
+  const debouncedSearch = useDebounce(value);
 
-  const _handleKey = (e) => {
-    setValue(e.target.value);
-    props._handleKey(e);
-  };
+  useEffect(() => {
+    props._handleKey(debouncedSearch);
+  }, [debouncedSearch]);
 
   useEffect(() => {
     if (props.searchFinalized) setValue(props.searchFinalized.name);
@@ -68,7 +69,7 @@ const SearchInput = (props) => {
       placeholder="Search destination"
       className="font-lexend"
       value={value}
-      onChange={(e) => _handleKey(e)}
+      onChange={(e) => setValue(e.target.value)}
     ></Container>
   );
 };
