@@ -52,7 +52,10 @@ const Text = styled.p`
   line-height: 1;
 
   &:after {
-    content: "per person*";
+    ${(props) =>
+      props.show_per_person
+        ? 'content: "per person*"'
+        : `content: "for ${props.persons} person*"`};
     margin-top: 0.25rem;
     margin-left: 0.25rem;
     font-size: 14px !important;
@@ -78,7 +81,10 @@ const GITText = styled.p`
   line-height: 1;
 
   &:after {
-    content: "per member";
+    ${(props) =>
+      props.show_per_person
+        ? 'content: " per member*"'
+        : `content: " for ${props.persons} person*"`};
     margin-top: 0.25rem;
     font-size: 0.75rem !important;
     font-weight: 400;
@@ -101,29 +107,38 @@ const Cost = (props) => {
       {props.starting_cost ? (
         <div style={{ display: "flex" }}>
           <div style={{ width: "max-content" }}>
-            {props.PW ? (
-              <StrikedCost>
-                {" "}
-                {"₹ " +
-                  getIndianPrice(Math.round(props.starting_cost / 100) * 2)}
-              </StrikedCost>
-            ) : (
-              <StrikedCost>
-                {" "}
-                {"₹ " +
-                  getIndianPrice(Math.round((props.starting_cost / 100) * 1.2))}
-              </StrikedCost>
-            )}
+            {props.coupon_applied &&
+              (props.PW ? (
+                <StrikedCost>
+                  {" "}
+                  {"₹ " +
+                    getIndianPrice(Math.round(props.discounted_cost / 100))}
+                </StrikedCost>
+              ) : (
+                <StrikedCost>
+                  {" "}
+                  {"₹ " +
+                    getIndianPrice(Math.round(props.discounted_cost / 100))}
+                </StrikedCost>
+              ))}
 
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               {!props.PW ? (
-                <Text className="font-lexend">
+                <Text
+                  show_per_person={props.show_per_person}
+                  persons={props.persons}
+                  className="font-lexend"
+                >
                   {"₹ " +
                     getIndianPrice(Math.round(props.starting_cost / 100)) +
                     "/-"}
                 </Text>
               ) : (
-                <GITText className="font-lexend">
+                <GITText
+                  show_per_person={props.show_per_person}
+                  persons={props.persons}
+                  className="font-lexend"
+                >
                   {"₹ " +
                     getIndianPrice(Math.round(props.starting_cost / 100)) +
                     "/-"}

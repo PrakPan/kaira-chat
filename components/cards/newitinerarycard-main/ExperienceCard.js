@@ -121,7 +121,18 @@ const ExperienceCard = (props) => {
           justifyContent: "flex-end",
         }}
       >
-        <Cost PW={props.PW} starting_cost={props.starting_cost}></Cost>
+        <Cost
+          PW={props.PW}
+          coupon_applied={props.data?.payment_info?.coupon_usage}
+          discounted_cost={props.data?.payment_info?.discounted_cost}
+          show_per_person={props.data?.payment_info?.show_per_person_cost}
+          persons={
+            props.data?.number_of_adults +
+            props.data?.number_of_children +
+            props.data?.number_of_infants
+          }
+          starting_cost={props.starting_cost}
+        ></Cost>
         <Button
           borderRadius="6px"
           onclick={_handleRedirect}

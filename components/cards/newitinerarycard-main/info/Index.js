@@ -35,11 +35,14 @@ const Info = (props) => {
   }
 
   return (
-    <div className=" font-lexend">
-      <div className="line-clamp-1">
+    <div className="">
+      <div className="truncate">
         <H8
           style={{
             lineHeight: 1,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
           }}
         >
           {props.name}
