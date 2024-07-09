@@ -69,21 +69,31 @@ export default function ActivityCard(props) {
       </div>
 
       <div className="flex flex-col gap-2">
-        <div className="line-clamp-1">
-          <H8>{props?.data?.name}</H8>
+        <div className="">
+          <H8
+            style={{
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {props?.data?.name}
+          </H8>
         </div>
 
-        {stars && (
-          <span className="flex flex-row items-center gap-1 text-sm text-[#7A7A7A]">
-            <span className="flex flex-row gap-1 text-[#FFD201]">{stars}</span>
-            <span className="text-[12px] font-normal">
-              {props.data?.rating} .{" "}
+        <div className="w-full h-5">
+          {stars && (
+            <span className="flex flex-row items-center gap-1 text-sm text-[#7A7A7A]">
+              <span className="flex flex-row gap-1 text-[#FFD201]">
+                {stars}
+              </span>
+              <span className="text-[12px] font-normal">
+                {props.data?.rating}
+                {` (${props?.data?.user_ratings_total})`}
+              </span>
             </span>
-            <span className="text-[12px] font-normal underline">
-              {props?.data?.user_ratings_total} user reviews
-            </span>
-          </span>
-        )}
+          )}
+        </div>
 
         <div className="text-[14px] font-[400] line-clamp-3">
           <div>{props?.data?.short_description}</div>
@@ -101,6 +111,7 @@ export default function ActivityCard(props) {
           </div>
         </div>
       ) : null}
+
       <POIDetailsDrawer
         show={show}
         ActivityiconId={props.data.id}
