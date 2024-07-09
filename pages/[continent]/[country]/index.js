@@ -88,6 +88,8 @@ export async function getStaticProps(context) {
     );
     data = res.data;
 
+    locations = data.see_also;
+
     if (!data) {
       return {
         notFound: true,
@@ -101,10 +103,6 @@ export async function getStaticProps(context) {
       const countrydetailsResponse = await axioscountrydetailsinstance(
         `/all/?continent=${continentData.data[i].destination}&fields=id,name,path,tagline,image,is_hot_location,best_time`
       );
-
-      if (continentData.data[i].destination === data.continent) {
-        locations = countrydetailsResponse.data;
-      }
 
       let hot_data = countrydetailsResponse.data.filter(
         (d) => d.is_hot_location

@@ -95,7 +95,7 @@ export default function ActivityCard(props) {
           )}
         </div>
 
-        <div className="text-[14px] font-[400] line-clamp-3">
+        <div className="h-16 text-[14px] font-[400] line-clamp-3">
           <div>{props?.data?.short_description}</div>
         </div>
       </div>
