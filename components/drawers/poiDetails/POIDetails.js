@@ -119,8 +119,10 @@ const POIDetails = (props) => {
   for (let i = 0; i < Math.floor(props.data.rating); i++) {
     stars.push(<FaStar />);
   }
+
   if (Math.floor(props.data.rating) < props.data.rating)
     stars.push(<FaStarHalfAlt />);
+
   return (
     <Container itineraryDrawer={props.itineraryDrawer}>
       {!props.itineraryDrawer ? (
@@ -211,8 +213,8 @@ const POIDetails = (props) => {
         <Reviews>
           {props.data.rating && (
             <div
-              style={{ color: "#ffa500", marginBottom: "0.3rem" }}
-              className="flex flex-row"
+              style={{ color: "#FFD201", marginBottom: "0.3rem" }}
+              className="flex flex-row gap-1"
             >
               {stars}
             </div>
