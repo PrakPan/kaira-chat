@@ -1,8 +1,6 @@
 import React, { useState } from "react";
-import styled from "styled-components";
 import media from "./media";
 import usePageLoaded from "./custom hooks/usePageLoaded";
-import LazyLoad from "react-lazyload";
 import Image from "next/image";
 
 const ImageLoader = (props) => {
@@ -42,6 +40,7 @@ const ImageLoader = (props) => {
           },
         },
       });
+
       if (!props.fit)
         imageRequest = JSON.stringify({
           bucket: "thetarzanway-web",
@@ -67,7 +66,7 @@ const ImageLoader = (props) => {
           },
         });
     } else {
-      imageRequest = JSON.stringify({
+      smallImageRequest = JSON.stringify({
         bucket: "thetarzanway-web",
         key: props.url,
         edits: {
@@ -76,7 +75,8 @@ const ImageLoader = (props) => {
           },
         },
       });
-      smallImageRequest = JSON.stringify({
+
+      imageRequest = JSON.stringify({
         bucket: "thetarzanway-web",
         key: props.url,
         edits: {
@@ -229,7 +229,7 @@ const ImageContainer = (props) => {
 
   return (
     <div
-      blur={fullLoaded ? "true" : "false"}
+      // blur={fullLoaded ? "true" : "false"}
       onClick={props.onclick}
       style={{ ...props.containerStyle }}
     >
@@ -242,8 +242,8 @@ const ImageContainer = (props) => {
             ? `${imgUrlEndPoint}/${btoa(props.smallImageRequest)}`
             : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
         }
-        width={100}
-        height={100}
+        width={145}
+        height={145}
         loading={props.noLazy ? "eager" : "lazy"}
         onLoad={fullImageLoadedHandler}
         onError={handleError}
@@ -252,7 +252,10 @@ const ImageContainer = (props) => {
           width: props.width ? props.width : "100%",
           height: props.height ? props.height : "100%",
           display: !fullLoaded ? "initial" : "none",
-          borderRadius: props.borderRadius ? props.borderRadius : "5px",
+          borderRadius: props.borderRadius ? props.borderRadius : "0px",
+          maxWidth: props.maxwidth ? props.maxwidth : "none",
+          maxHeight: props.maxheight ? props.maxheight : "none",
+          objectFit: props.resizeMode ? props.resizeMode : "cover",
           ...props.style,
         }}
       />
@@ -276,10 +279,10 @@ const ImageContainer = (props) => {
         onError={handleError}
         alt=""
         style={{
-          display: error ? "none" : fullLoaded ? "block" : "none",
           width: props.width ? props.width : "100%",
           height: props.height ? props.height : "100%",
-          borderRadius: props.borderRadius ? props.borderRadius : "0",
+          display: error ? "none" : fullLoaded ? "block" : "none",
+          borderRadius: props.borderRadius ? props.borderRadius : "0px",
           maxWidth: props.maxwidth ? props.maxwidth : "none",
           maxHeight: props.maxheight ? props.maxheight : "none",
           objectFit: props.resizeMode ? props.resizeMode : "cover",
