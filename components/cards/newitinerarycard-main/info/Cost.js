@@ -53,9 +53,9 @@ const Text = styled.p`
 
   &:after {
     ${(props) =>
-      props.show_per_person
-        ? 'content: "per person*"'
-        : `content: "for ${props.persons} person*"`};
+      props.show_per_person || props.persons < 2
+        ? 'content: "per person"'
+        : `content: "for ${props.persons} people"`};
     margin-top: 0.25rem;
     margin-left: 0.25rem;
     font-size: 14px !important;
@@ -129,7 +129,7 @@ const Cost = (props) => {
                   persons={props.persons}
                   className="font-lexend"
                 >
-                  {"₹ " +
+                  {"₹" +
                     getIndianPrice(Math.round(props.starting_cost / 100)) +
                     "/-"}
                 </Text>
@@ -139,7 +139,7 @@ const Cost = (props) => {
                   persons={props.persons}
                   className="font-lexend"
                 >
-                  {"₹ " +
+                  {"₹" +
                     getIndianPrice(Math.round(props.starting_cost / 100)) +
                     "/-"}
                 </GITText>

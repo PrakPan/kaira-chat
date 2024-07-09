@@ -158,18 +158,23 @@ export default function PoiCard(props) {
         />
       </ImageContainer>
 
-      {stars && (
-        <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white rounded-md p-1 flex flex-row items-center gap-1 text-xs">
-          <span className="flex flex-row gap-1 text-[#FFD201]">{stars}</span>
-          {props.data.rating} ({props.data?.user_ratings_total})
-        </div>
-      )}
-
       <Overlay />
 
       {props.data.name && (
         <Typography>
-          <p className="AnimateLeft">{props.data.name}</p>{" "}
+          <div className="leading-[5px]">
+            <p className="AnimateLeft">{props.data.name}</p>
+
+            {stars && (
+              <div className="text-white flex flex-row items-center gap-1 text-xs AnimateLeft">
+                <span className="flex flex-row gap-1 text-[#FFD201]">
+                  {stars}
+                </span>
+                {props.data.rating} ({props.data?.user_ratings_total})
+              </div>
+            )}
+          </div>
+
           <div>
             <MdNavigateNext
               style={{ fontSize: "1.8rem" }}

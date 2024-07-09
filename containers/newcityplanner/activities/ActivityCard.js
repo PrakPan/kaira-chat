@@ -47,7 +47,7 @@ export default function ActivityCard(props) {
       onClick={handleActivityClick}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      className="group relative cursor-pointer p-2 border-2 rounded-xl gap-3 flex flex-col mx-1 hover:border-yellow-300"
+      className="h-[420px] group relative cursor-pointer p-2 border-2 rounded-xl gap-3 flex flex-col mx-1 hover:border-yellow-300"
     >
       <div
         className={`absolute transition w-fit flex place-self-center bottom-[60%] z-50 bg-gray-200 px-2 py-1 rounded-md drop-shadow-2xl text-sm ${
@@ -81,7 +81,7 @@ export default function ActivityCard(props) {
           </H8>
         </div>
 
-        <div className="w-full h-5">
+        <div className="w-full">
           {stars && (
             <span className="flex flex-row items-center gap-1 text-sm text-[#7A7A7A]">
               <span className="flex flex-row gap-1 text-[#FFD201]">
@@ -95,7 +95,7 @@ export default function ActivityCard(props) {
           )}
         </div>
 
-        <div className="h-16 text-[14px] font-[400] line-clamp-3">
+        <div className="text-[14px] font-[400] line-clamp-3">
           <div>{props?.data?.short_description}</div>
         </div>
       </div>
@@ -103,8 +103,8 @@ export default function ActivityCard(props) {
       {props?.data?.cost ? (
         <div className="flex flex-col">
           <div className="flex flex-row items-center text-[20px] font-bold">
-            ₹{getIndianPrice(props.data.cost)}
-            <span className="text-[12px] font-[400] ml-2">per person*</span>
+            ₹{getIndianPrice(props.data.cost)}/-
+            <span className="text-[12px] font-[400] ml-2">per person</span>
           </div>
           <div className="text-[12px] font-light text-[#7A7A7A]">
             Excluding applicable taxes

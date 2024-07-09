@@ -161,6 +161,7 @@ const ImageLoader = (props) => {
           width: props.widthmobile ? props.widthmobile : "100%",
           height: props.height ? props.height : "auto",
           margin: props.leftalign ? "0" : "0 auto",
+          filter: props.blur ? "blur(0.5rem)" : "blur(0)",
           borderRadius: props.borderRadius ? props.borderRadius : "0",
           ...props.style,
         }}

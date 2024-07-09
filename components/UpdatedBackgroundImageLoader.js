@@ -12,7 +12,6 @@ const SaifBackgroundImageLoader = (props) => {
           left: "0",
           height: props.height ? props.height : "100%",
           width: props.width ? props.width : "100%",
-          width: "100%",
           borderRadius: props.borderRadius ? props.borderRadius : "0",
           filter: props.filter,
           ...props.style,
