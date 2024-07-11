@@ -1,19 +1,14 @@
 import styled from "styled-components";
 import PoiCard from "./PoiCard";
 import { useState } from "react";
-import media from "../../../components/media";
 import validateTextSize from "../../../services/textSizeValidator";
 import WeatherWidget from "../../../components/WeatherWidget/WeatherWidget";
 import SwiperCarousel from "../../../components/SwiperCarousel";
-import dynamic from "next/dynamic";
-const MapBox = dynamic(() => import("../../../components/Map.js"), {
-  ssr: false,
-});
 
 const GridContainer = styled.div`
   @media screen and (min-width: 768px) {
     display: grid;
-    grid-template-columns: 3fr 1.1fr;
+    grid-template-columns: 3fr;
     gap: 2.5rem;
   }
 `;
@@ -23,7 +18,7 @@ const Items = styled.div`
   gap: 22px;
 
   @media screen and (min-width: 768px) {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
   }
 `;
 
@@ -49,12 +44,6 @@ const Button = styled.button`
   }
 `;
 
-const MapInfo = styled.div`
-  b {
-    font-weight: 600;
-  }
-`;
-
 const WeatherContainer = styled.div`
   border: 1px solid #eceaea;
   border-radius: 10px;
@@ -64,8 +53,7 @@ const WeatherContainer = styled.div`
 `;
 
 const Poi = (props) => {
-  let isPageWide = media("(min-width: 768px)");
-  const [more, setMore] = useState(4);
+  const [more, setMore] = useState(6);
 
   const drawerShowArr = props.pois?.map((e) => {
     return { ...e, isOpen: false };
@@ -86,20 +74,6 @@ const Poi = (props) => {
     if (e) e.stopPropagation();
     setShowDrawer(drawerShowArr);
   };
-
-  const InfoWindowContainer = (location) => (
-    <MapInfo>
-      <b>{location.name}</b>
-      <div>
-        {location.experience_filters.map((e, i) =>
-          i != 0 ? <span key={i}>{", " + e}</span> : <span key={i}>{e}</span>
-        )}
-      </div>
-      {location.ideal_duration_hours && (
-        <p>Ideal duration : {location.ideal_duration_hours} hrs</p>
-      )}
-    </MapInfo>
-  );
 
   const cards = props.pois?.map((e, i) => (
     <PoiCard
@@ -131,6 +105,7 @@ const Poi = (props) => {
               />
             ))}
         </Items>
+
         <Button
           onClick={() => {
             more < props.pois.length
@@ -153,6 +128,7 @@ const Poi = (props) => {
       <div className="hidden-desktop">
         <SwiperCarousel slidesPerView={1} pageDots noPadding cards={cards} />
       </div>
+
       <div>
         {props.thingsToDoPage && (
           <WeatherContainer elevation={props.elevation}>
@@ -174,19 +150,6 @@ const Poi = (props) => {
                 </div>
               )}
           </WeatherContainer>
-        )}
-
-        {props.pois && props.pois.length ? (
-          <MapBox
-            locations={props.pois}
-            defaultZoom={12}
-            height={
-              isPageWide ? (props.thingsToDoPage ? "320px" : "350px") : "230px"
-            }
-            InfoWindowContainer={InfoWindowContainer}
-          />
-        ) : (
-          <div></div>
         )}
       </div>
     </GridContainer>

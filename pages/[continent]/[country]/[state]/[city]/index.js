@@ -1,13 +1,20 @@
+import { useRouter } from "next/router";
+import Head from "next/head";
+import { connect } from "react-redux";
+import { useEffect } from "react";
 import CityPage from "../../../../../containers/city/Index";
 import Layout from "../../../../../components/Layout";
-import { useRouter } from "next/router";
 import axiossearchInstance from "../../../../../services/search/all";
 import axiosPoiCityInstance from "../../../../../services/poi/city";
 import axiosReccommendedCityInstance from "../../../../../services/poi/reccommededcities";
-import Head from "next/head";
+import axioslocationsinstance from "../../../../../services/search/search";
+import setHotLocationSearch from "../../../../../store/actions/hotLocationSearch";
 
 const Experience = (props) => {
   const router = useRouter();
+   useEffect(() => {
+     props.setHotLocationSearch(props.hotLocationSearch);
+   }, []);
 
   const schemaData = {
     "@context": "https://schema.org/",
@@ -89,7 +96,10 @@ export async function getStaticPaths() {
       }
     }
   } catch (err) {
-    console.log("[ERROR][cityPage:getStaticPaths]: ", err.message);
+    console.log(
+      "[ERROR][cityPage:axiossearchInstance][/?type=Location&fields=path,cta]: ",
+      err.message
+    );
   }
 
   return {
@@ -101,6 +111,7 @@ export async function getStaticPaths() {
 export async function getStaticProps(context) {
   let reccomendedCitiesData = [];
   let data = null;
+  let hotLocationSearch = [];
   const { continent, country, state, city } = context.params;
   const path = `${continent}/${country}/${state}/${city}`;
 
@@ -108,7 +119,10 @@ export async function getStaticProps(context) {
     const res = await axiosPoiCityInstance.get(`/?slug=${context.params.city}`);
     data = res.data;
   } catch (err) {
-    console.error("[ERROR][cityPage:getStaticProps]: ", err.message);
+    console.error(
+      `[ERROR][cityPage:axiosPoiCityInstance][/?slug=${context.params.city}]: `,
+      err.message
+    );
   }
 
   if (!data) {
@@ -131,9 +145,26 @@ export async function getStaticProps(context) {
       most_popular_for: e.most_popular_for,
       name: e.name,
       path: e.path,
+      budget: e.budget,
     }));
   } catch (err) {
-    console.error("[ERROR][cityPage:getStaticProps]: ", err.message);
+    console.error(
+      `[ERROR][cityPage:axiosReccommendedCityInstance][/?slug=${context.params.city}&limit=6]: `,
+      err.message
+    );
+  }
+
+  try {
+    const response = await axioslocationsinstance.get(
+      `hot_destinations/?state=${state}/`
+    );
+    if (response.data?.length) {
+      hotLocationSearch = response.data;
+    }
+  } catch (err) {
+    console.log(
+      `[ERROR][CityPage][axioslocationsinstance:/hot_destinations/?state=${state}/]`
+    );
   }
 
   return {
@@ -141,8 +172,15 @@ export async function getStaticProps(context) {
       cityData: data,
       reccomendedCitiesData,
       path,
+      hotLocationSearch,
     },
   };
 }
 
-export default Experience;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setHotLocationSearch: (payload) => dispatch(setHotLocationSearch(payload)),
+  };
+};
+
+export default connect(null, mapDispatchToProps)(Experience);

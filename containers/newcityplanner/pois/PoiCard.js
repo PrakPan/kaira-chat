@@ -2,8 +2,9 @@ import styled, { keyframes } from "styled-components";
 import ImageLoader from "../../../components/ImageLoader";
 import { MdNavigateNext } from "react-icons/md";
 import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { logEvent } from "../../../services/ga/Index";
+import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 
 const LeftSlideIn = keyframes`
   from {
@@ -108,8 +109,10 @@ const Overlay = styled.div`
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#000000",endColorstr="#ffffff",GradientType=1);
   }
 `;
+
 export default function PoiCard(props) {
   const [show, setShow] = useState(false);
+  const [stars, setStars] = useState(null);
 
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
@@ -129,8 +132,23 @@ export default function PoiCard(props) {
     });
   };
 
+  useEffect(() => {
+    let stars = [];
+
+    if (props.data?.rating) {
+      for (let i = 0; i < Math.floor(props.data.rating); i++) {
+        stars.push(<FaStar />);
+      }
+
+      if (Math.floor(props.data.rating) < props.data.rating)
+        stars.push(<FaStarHalfAlt />);
+
+      setStars(stars);
+    }
+  }, []);
+
   return (
-    <Container onClick={handlePOIClick}>
+    <Container className="relative" onClick={handlePOIClick}>
       <ImageContainer>
         <ImageLoader
           url={props.data.image}
@@ -139,10 +157,24 @@ export default function PoiCard(props) {
           noLazy
         />
       </ImageContainer>
+
       <Overlay />
+
       {props.data.name && (
         <Typography>
-          <p className="AnimateLeft">{props.data.name}</p>{" "}
+          <div className="leading-[5px]">
+            <p className="AnimateLeft">{props.data.name}</p>
+
+            {stars && (
+              <div className="text-white flex flex-row items-center gap-1 text-xs AnimateLeft">
+                <span className="flex flex-row gap-1 text-[#FFD201]">
+                  {stars}
+                </span>
+                {props.data.rating} ({props.data?.user_ratings_total})
+              </div>
+            )}
+          </div>
+
           <div>
             <MdNavigateNext
               style={{ fontSize: "1.8rem" }}
@@ -151,6 +183,7 @@ export default function PoiCard(props) {
           </div>
         </Typography>
       )}
+
       <POIDetailsDrawer
         show={show}
         iconId={props.data.id}

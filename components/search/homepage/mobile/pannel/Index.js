@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Locations from "./Locations";
 import * as ga from "../../../../../services/ga/Index";
-import axioslocationsinstance from "../../../../../services/search/search";
 import axiossearchsuggestinstance from "../../../../../services/search/searchsuggest";
 import NewResults from "./NewResults";
 import { ImSearch } from "react-icons/im";
 import { MdCancel } from "react-icons/md";
 import { RxCross2 } from "react-icons/rx";
 import { CONTENT_SERVER_HOST } from "../../../../../services/constants";
+import { connect } from "react-redux";
 
 const Container = styled.div`
   background-color: white;
@@ -73,9 +73,7 @@ const SearchPannel = (props) => {
   const [showP, setShowP] = useState(false);
 
   useEffect(() => {
-    axioslocationsinstance.get("hot_destinations").then((response) => {
-      setHotLocationsData(response.data);
-    });
+    setHotLocationsData(props.hotLocations);
   }, []);
 
   const _onChangeHandler = (event) => {
@@ -183,4 +181,10 @@ const SearchPannel = (props) => {
   );
 };
 
-export default SearchPannel;
+const mapStateToPros = (state) => {
+  return {
+    hotLocations: state.HotLocationSearch.locations,
+  };
+};
+
+export default connect(mapStateToPros)(SearchPannel);

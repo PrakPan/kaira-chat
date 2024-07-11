@@ -1,11 +1,19 @@
-import StatePage from "../../../../containers/travelplanner/Index";
 import Head from "next/head";
+import { useEffect } from "react";
+import { connect } from "react-redux";
+import StatePage from "../../../../containers/travelplanner/Index";
 import Layout from "../../../../components/Layout";
 import axiosTravelPlannerInstance from "../../../../services/pages/travel-planner";
 import axiossearchallinstance from "../../../../services/search/all";
 import axiospagelistinstance from "../../../../services/pages/list";
+import axioslocationsinstance from "../../../../services/search/search";
+import setHotLocationSearch from "../../../../store/actions/hotLocationSearch";
 
 const TravelPlanner = (props) => {
+  useEffect(() => {
+    props.setHotLocationSearch(props.hotLocationSearch);
+  }, []);
+
   return (
     <Layout
       page_id={props.Data.id}
@@ -56,11 +64,21 @@ export async function getStaticPaths() {
     const res = await axiossearchallinstance.get("/?type=State&fields=path");
     const data = res.data;
 
-    const themeRes = await axiospagelistinstance.get(
-      "/?fields=path&page_type=Theme"
-    );
+    let themePages = null;
 
-    let themePages = themeRes.data;
+    try {
+      const themeRes = await axiospagelistinstance.get(
+        "/?fields=path&page_type=Theme"
+      );
+
+      themePages = themeRes.data;
+    } catch (err) {
+      console.error(
+        "[ERROR][statePage:axiospagelistinstance][/?fields=path&page_type=Theme]: ",
+        err.message
+      );
+    }
+
     themePages = themePages.map((page) => {
       return {
         path: "asia/India/" + page.path,
@@ -81,7 +99,10 @@ export async function getStaticPaths() {
       });
     }
   } catch (err) {
-    console.error("[ERROR][statePage:getStaticPaths]: ", err.message);
+    console.error(
+      "[ERROR][statePage:axiossearchallinstance][/?type=State&fields=path]: ",
+      err.message
+    );
   }
 
   return {
@@ -89,9 +110,11 @@ export async function getStaticPaths() {
     fallback: false,
   };
 }
+
 export async function getStaticProps(context) {
   var locations = [];
   let data = null;
+  let hotLocationSearch = [];
   const { continent, country, state } = context.params;
   const path = `${continent}/${country}/${state}`;
 
@@ -101,7 +124,10 @@ export async function getStaticProps(context) {
     );
     data = res.data;
   } catch (err) {
-    console.log("[ERROR][statePage:getStaticProps]: ", err.message);
+    console.log(
+      `[ERROR][statePage:axiosTravelPlannerInstance][${context.params.state}]: `,
+      err.message
+    );
   }
 
   if (!data) {
@@ -112,11 +138,27 @@ export async function getStaticProps(context) {
 
   try {
     const loc = await axiospagelistinstance.get(
-      `/?country=${context.params.country}&page_type=Destination&fields=id,ancestors,path,destination,name,tagline,image,link`
+      `/?country=${context.params.country}&page_type=Destination&fields=id,ancestors,path,destination,name,tagline,image,link,budget`
     );
     locations = loc.data;
   } catch (err) {
-    console.log("[ERROR][statePage:getStaticProps]: ", err.message);
+    console.log(
+      `[ERROR][statePage:axiospagelistinstance][${context.params.country}]: `,
+      err.message
+    );
+  }
+
+  try {
+    const response = await axioslocationsinstance.get(
+      `hot_destinations/?state=${state}/`
+    );
+    if (response.data?.length) {
+      hotLocationSearch = response.data;
+    }
+  } catch (err) {
+    console.log(
+      `[ERROR][StatePage][axioslocationsinstance:/hot_destinations/?state=${state}/]`
+    );
   }
 
   return {
@@ -124,8 +166,15 @@ export async function getStaticProps(context) {
       Data: data,
       locations,
       path,
+      hotLocationSearch,
     },
   };
 }
 
-export default TravelPlanner;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setHotLocationSearch: (payload) => dispatch(setHotLocationSearch(payload)),
+  };
+};
+
+export default connect(null, mapDispatchToProps)(TravelPlanner);

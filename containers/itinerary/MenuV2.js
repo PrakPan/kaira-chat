@@ -33,6 +33,7 @@ import ImageLoader from "../../components/ImageLoader";
 import { connect } from "react-redux";
 import { openNotification } from "../../store/actions/notification";
 import { logEvent } from "../../services/ga/Index";
+import openTailoredModal from "../../services/openTailoredModal";
 
 const useStyles = {
   root: `
@@ -268,6 +269,20 @@ const SimpleTabsV2 = (props) => {
     });
   };
 
+  const handleCreateTripButton = () => {
+    openTailoredModal(router);
+
+    logEvent({
+      action: "Plan_Itinerary",
+      params: {
+        page: props.page ? props.page : "Itinerary Page",
+        event_category: "Button Click",
+        event_label: "Create a Trip",
+        event_action: "Payments Slide",
+      },
+    });
+  };
+
   return (
     <div
       className={classes.root}
@@ -331,83 +346,30 @@ const SimpleTabsV2 = (props) => {
                   </div>
                 ) : null}
               </div>
+
               {props?.token && props?.payment?.paid_user && (
                 <div className="border-[1px] flex my-2 justify-center items-center text-[#04AA32] text-center  text-medium border-[#04AA32] px-[2px] py-[1px]">
                   PAID
                 </div>
               )}
-              {!props.token ? (
-                <div>
-                  <Button
-                    color="#111"
-                    fontWeight="400"
-                    fontSize="0.45rem"
-                    borderWidth="2px"
-                    width="12rem"
-                    borderRadius="10px"
-                    bgColor="#F7E700"
-                    onclick={handleLoginButton}
-                  >
-                    Log in to proceed
-                  </Button>
-                </div>
-              ) : null}
 
-              {props.payment && props.token ? (
-                props.payment.itinerary_status ===
-                  ITINERARY_STATUSES.itinerary_finalized &&
-                !props.payment.paid_user &&
-                props.payment.user_allowed_to_pay ? (
-                  props.payment.total_cost > 0 ? (
+              {props.tripsPage ? (
+                <Button
+                  color="#111"
+                  fontWeight="400"
+                  fontSize="0.45rem"
+                  borderWidth="2px"
+                  width="12rem"
+                  borderRadius="10px"
+                  bgColor="#F7E700"
+                  onclick={handleCreateTripButton}
+                >
+                  Craft a new trip!
+                </Button>
+              ) : (
+                <>
+                  {!props.token ? (
                     <div>
-                      <Button
-                        color="#111"
-                        fontWeight="400"
-                        fontSize="0.45rem"
-                        borderWidth="2px"
-                        width="13rem"
-                        borderRadius="10px"
-                        bgColor="#F7E700"
-                        onclick={() => handleButtonClick("View Inclusions")}
-                        onclickparams={null}
-                      >
-                        View Inclusions
-                      </Button>
-                    </div>
-                  ) : (
-                    <div>
-                      <Button
-                        color="#111"
-                        fontWeight="400"
-                        fontSize="0.45rem"
-                        borderWidth="2px"
-                        width="9rem"
-                        borderRadius="10px"
-                        bgColor="#F7E700"
-                        onclick={() => handleButtonClick("Add Hotels")}
-                      >
-                        Add Hotels
-                      </Button>
-                    </div>
-                  )
-                ) : !props.payment.paid_user ? (
-                  props.payment.is_registration_needed ? (
-                    <div className="">
-                      <Button
-                        color="#111"
-                        fontWeight="600"
-                        fontSize="0.85rem"
-                        borderWidth="2px"
-                        width="11rem"
-                        borderRadius="8px"
-                        bgColor="#f8e000"
-                        onclick={() => handleButtonClick("View Inclusions")}
-                      >
-                        View Inclusions
-                      </Button>
-                    </div>
-                  ) : (
-                    <GetInTouchContainer>
                       <Button
                         color="#111"
                         fontWeight="400"
@@ -416,45 +378,119 @@ const SimpleTabsV2 = (props) => {
                         width="12rem"
                         borderRadius="10px"
                         bgColor="#F7E700"
-                        onclick={handleGetInTouch}
-                        loading={loading}
+                        onclick={handleLoginButton}
                       >
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            gap: "0.5rem",
-                            alignItems: "center",
-                          }}
-                        >
-                          <ImageLoader
-                            dimensions={{ height: 50, width: 50 }}
-                            dimensionsMobile={{ height: 50, width: 50 }}
-                            height={"20px"}
-                            width={"20px"}
-                            leftalign
-                            url={"media/icons/login/customer-service-black.png"}
-                          />{" "}
-                          <span>Get in touch!</span>
-                        </div>
+                        Log in to proceed
                       </Button>
-                    </GetInTouchContainer>
-                  )
-                ) : (
-                  <Button
-                    color="#111"
-                    fontWeight="400"
-                    fontSize="0.45rem"
-                    borderWidth="2px"
-                    width="9rem"
-                    borderRadius="10px"
-                    bgColor="#F7E700"
-                    onclick={() => handleButtonClick("View Bookings")}
-                  >
-                    View Bookings
-                  </Button>
-                )
-              ) : null}
+                    </div>
+                  ) : null}
+
+                  {props.payment && props.token ? (
+                    props.payment.itinerary_status ===
+                      ITINERARY_STATUSES.itinerary_finalized &&
+                    !props.payment.paid_user &&
+                    props.payment.user_allowed_to_pay ? (
+                      props.payment.total_cost > 0 ? (
+                        <div>
+                          <Button
+                            color="#111"
+                            fontWeight="400"
+                            fontSize="0.45rem"
+                            borderWidth="2px"
+                            width="13rem"
+                            borderRadius="10px"
+                            bgColor="#F7E700"
+                            onclick={() => handleButtonClick("View Inclusions")}
+                            onclickparams={null}
+                          >
+                            View Inclusions
+                          </Button>
+                        </div>
+                      ) : (
+                        <div>
+                          <Button
+                            color="#111"
+                            fontWeight="400"
+                            fontSize="0.45rem"
+                            borderWidth="2px"
+                            width="9rem"
+                            borderRadius="10px"
+                            bgColor="#F7E700"
+                            onclick={() => handleButtonClick("Add Hotels")}
+                          >
+                            Add Hotels
+                          </Button>
+                        </div>
+                      )
+                    ) : !props.payment.paid_user ? (
+                      props.payment.is_registration_needed ? (
+                        <div className="">
+                          <Button
+                            color="#111"
+                            fontWeight="600"
+                            fontSize="0.85rem"
+                            borderWidth="2px"
+                            width="11rem"
+                            borderRadius="8px"
+                            bgColor="#f8e000"
+                            onclick={() => handleButtonClick("View Inclusions")}
+                          >
+                            View Inclusions
+                          </Button>
+                        </div>
+                      ) : (
+                        <GetInTouchContainer>
+                          <Button
+                            color="#111"
+                            fontWeight="400"
+                            fontSize="0.45rem"
+                            borderWidth="2px"
+                            width="12rem"
+                            borderRadius="10px"
+                            bgColor="#F7E700"
+                            onclick={handleGetInTouch}
+                            loading={loading}
+                          >
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                gap: "0.5rem",
+                                alignItems: "center",
+                              }}
+                            >
+                              <ImageLoader
+                                dimensions={{ height: 50, width: 50 }}
+                                dimensionsMobile={{ height: 50, width: 50 }}
+                                height={"20px"}
+                                width={"20px"}
+                                leftalign
+                                url={
+                                  "media/icons/login/customer-service-black.png"
+                                }
+                              />{" "}
+                              <span>Get in touch!</span>
+                            </div>
+                          </Button>
+                        </GetInTouchContainer>
+                      )
+                    ) : (
+                      <Button
+                        color="#111"
+                        fontWeight="400"
+                        fontSize="0.45rem"
+                        borderWidth="2px"
+                        width="9rem"
+                        borderRadius="10px"
+                        bgColor="#F7E700"
+                        onclick={() => handleButtonClick("View Bookings")}
+                      >
+                        View Bookings
+                      </Button>
+                    )
+                  ) : null}
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -590,6 +626,7 @@ const SimpleTabsV2 = (props) => {
               />
             </div>
           )}
+
           <Modal
             centered
             show={showFooterBannerMobile}
@@ -827,61 +864,27 @@ const SimpleTabsV2 = (props) => {
               id="Booking_container"
               className="sticky top-[6rem] mt-40 ml-4 flex flex-col gap-3"
             >
-              {!props.payment.is_registration_needed || true ? (
-                <SummaryContainer
-                  setUserDetails={props.setUserDetails}
-                  id={props.id}
-                  stayBookings={props.stayBookings}
-                  flightBookings={props.flightBookings}
-                  activityBookings={props.activityBookings}
-                  transferBookings={props.transferBookings}
-                  setShowFooterBannerMobile={() =>
-                    setShowFooterBannerMobile(true)
-                  }
-                  getPaymentHandler={props.getPaymentHandler}
-                  payment={props.payment}
-                  traveleritinerary={props.traveleritinerary}
-                  blur={props.blur}
-                  hide={_hidePaymentHandler}
-                  experienceId={props.experienceId}
-                  token={props.token}
-                  setShowLoginModal={setShowLoginModal}
-                  plan={props.plan}
-                  _GetInTouch={() => _GetInTouch()}
-                ></SummaryContainer>
-              ) : (
-                <div>
-                  <GITSummaryContainer
-                    hasUserPaid={
-                      props.payment
-                        ? props.payment.paid_user
-                          ? true
-                          : false
-                        : false
-                    }
-                    payment_status={props.payment_status}
-                    plan={props.plan}
-                    itinerary={props.itinerary}
-                    getPaymentHandler={props.getPaymentHandler}
-                    setUserDetails={props.setUserDetails}
-                    id={props.id}
-                    stayBookings={props.stayBookings}
-                    flightBookings={props.flightBookings}
-                    activityBookings={props.activityBookings}
-                    transferBookings={props.transferBookings}
-                    setShowFooterBannerMobile={() =>
-                      setShowFooterBannerMobile(true)
-                    }
-                    payment={props.payment}
-                    traveleritinerary={props.traveleritinerary}
-                    blur={props.blur}
-                    hide={_hidePaymentHandler}
-                    experienceId={props.experienceId}
-                    token={props.token}
-                    setShowLoginModal={setShowLoginModal}
-                  ></GITSummaryContainer>
-                </div>
-              )}
+              <SummaryContainer
+                setUserDetails={props.setUserDetails}
+                id={props.id}
+                stayBookings={props.stayBookings}
+                flightBookings={props.flightBookings}
+                activityBookings={props.activityBookings}
+                transferBookings={props.transferBookings}
+                setShowFooterBannerMobile={() =>
+                  setShowFooterBannerMobile(true)
+                }
+                getPaymentHandler={props.getPaymentHandler}
+                payment={props.payment}
+                traveleritinerary={props.traveleritinerary}
+                blur={props.blur}
+                hide={_hidePaymentHandler}
+                experienceId={props.experienceId}
+                token={props.token}
+                setShowLoginModal={setShowLoginModal}
+                plan={props.plan}
+                _GetInTouch={() => _GetInTouch()}
+              ></SummaryContainer>
             </div>
           ) : null}
         </SplitScreen>
@@ -925,125 +928,147 @@ const SimpleTabsV2 = (props) => {
               PAID
             </div>
           )}
-          {!props.token ? (
-            <div className="">
-              <Button
-                color="#111"
-                fontWeight="600"
-                fontSize="0.85rem"
-                borderWidth="3px"
-                width="10rem"
-                borderRadius="8px"
-                bgColor="#f8e000"
-                onclick={handleLoginButton}
-              >
-                Log in to proceed
-              </Button>
-            </div>
-          ) : null}
 
-          {props.payment && props.token ? (
-            props.payment.itinerary_status ===
-              ITINERARY_STATUSES.itinerary_finalized &&
-            !props.payment.paid_user &&
-            props.payment.user_allowed_to_pay ? (
-              props.payment.total_cost > 0 ? (
+          {props.tripsPage ? (
+            <Button
+              color="#111"
+              fontWeight="600"
+              fontSize="0.85rem"
+              borderWidth="3px"
+              width="10rem"
+              borderRadius="8px"
+              bgColor="#f8e000"
+              onclick={handleCreateTripButton}
+            >
+              Craft a new trip!
+            </Button>
+          ) : (
+            <>
+              {!props.token ? (
                 <div className="">
                   <Button
                     color="#111"
                     fontWeight="600"
                     fontSize="0.85rem"
-                    borderWidth="2px"
+                    borderWidth="3px"
                     width="10rem"
                     borderRadius="8px"
                     bgColor="#f8e000"
-                    onclick={() => handleFooterBannerMobile("View Inclusions")}
+                    onclick={handleLoginButton}
                   >
-                    View Inclusions
+                    Log in to proceed
                   </Button>
                 </div>
-              ) : (
-                <div className="">
-                  <Button
-                    color="#111"
-                    fontWeight="600"
-                    fontSize="0.85rem"
-                    borderWidth="2px"
-                    width="10rem"
-                    borderRadius="8px"
-                    bgColor="#f8e000"
-                    onclick={() => handleButtonClick("Add Hotels")}
-                  >
-                    Add Hotels
-                  </Button>
-                </div>
-              )
-            ) : !props.payment.paid_user ? (
-              props.payment.is_registration_needed ? (
-                <div className="">
-                  <Button
-                    color="#111"
-                    fontWeight="600"
-                    fontSize="0.85rem"
-                    borderWidth="2px"
-                    width="10rem"
-                    borderRadius="8px"
-                    bgColor="#f8e000"
-                    onclick={() => handleFooterBannerMobile("View Inclusions")}
-                  >
-                    View Inclusions
-                  </Button>
-                </div>
-              ) : (
-                <GetInTouchContainer className="">
-                  <Button
-                    color="#111"
-                    fontWeight="600"
-                    fontSize="0.85rem"
-                    borderWidth="2px"
-                    width="10rem"
-                    borderRadius="8px"
-                    bgColor="#f8e000"
-                    loading={loading}
-                    onclick={handleGetInTouch}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        gap: "0.5rem",
-                        alignItems: "center",
-                      }}
-                    >
-                      <ImageLoader
-                        dimensions={{ height: 50, width: 50 }}
-                        dimensionsMobile={{ height: 50, width: 50 }}
-                        height={"20px"}
-                        width={"20px"}
-                        widthmobile={"20px"}
-                        leftalign
-                        url={"media/icons/login/customer-service-black.png"}
-                      />{" "}
-                      <span>Get in touch!</span>
+              ) : null}
+
+              {props.payment && props.token ? (
+                props.payment.itinerary_status ===
+                  ITINERARY_STATUSES.itinerary_finalized &&
+                !props.payment.paid_user &&
+                props.payment.user_allowed_to_pay ? (
+                  props.payment.total_cost > 0 ? (
+                    <div className="">
+                      <Button
+                        color="#111"
+                        fontWeight="600"
+                        fontSize="0.85rem"
+                        borderWidth="2px"
+                        width="10rem"
+                        borderRadius="8px"
+                        bgColor="#f8e000"
+                        onclick={() =>
+                          handleFooterBannerMobile("View Inclusions")
+                        }
+                      >
+                        View Inclusions
+                      </Button>
                     </div>
+                  ) : (
+                    <div className="">
+                      <Button
+                        color="#111"
+                        fontWeight="600"
+                        fontSize="0.85rem"
+                        borderWidth="2px"
+                        width="10rem"
+                        borderRadius="8px"
+                        bgColor="#f8e000"
+                        onclick={() => handleButtonClick("Add Hotels")}
+                      >
+                        Add Hotels
+                      </Button>
+                    </div>
+                  )
+                ) : !props.payment.paid_user ? (
+                  props.payment.is_registration_needed ? (
+                    <div className="">
+                      <Button
+                        color="#111"
+                        fontWeight="600"
+                        fontSize="0.85rem"
+                        borderWidth="2px"
+                        width="10rem"
+                        borderRadius="8px"
+                        bgColor="#f8e000"
+                        onclick={() =>
+                          handleFooterBannerMobile("View Inclusions")
+                        }
+                      >
+                        View Inclusions
+                      </Button>
+                    </div>
+                  ) : (
+                    <GetInTouchContainer className="">
+                      <Button
+                        color="#111"
+                        fontWeight="600"
+                        fontSize="0.85rem"
+                        borderWidth="2px"
+                        width="10rem"
+                        borderRadius="8px"
+                        bgColor="#f8e000"
+                        loading={loading}
+                        onclick={handleGetInTouch}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            gap: "0.5rem",
+                            alignItems: "center",
+                          }}
+                        >
+                          <ImageLoader
+                            dimensions={{ height: 50, width: 50 }}
+                            dimensionsMobile={{ height: 50, width: 50 }}
+                            height={"20px"}
+                            width={"20px"}
+                            widthmobile={"20px"}
+                            leftalign
+                            url={"media/icons/login/customer-service-black.png"}
+                          />{" "}
+                          <span>Get in touch!</span>
+                        </div>
+                      </Button>
+                    </GetInTouchContainer>
+                  )
+                ) : (
+                  <Button
+                    color="#111"
+                    fontWeight="600"
+                    fontSize="0.85rem"
+                    borderWidth="2px"
+                    width="10rem"
+                    borderRadius="8px"
+                    bgColor="#f8e000"
+                    onclick={() => handleButtonClick("View Bookingstays")}
+                  >
+                    View Bookings
                   </Button>
-                </GetInTouchContainer>
-              )
-            ) : (
-              <Button
-                color="#111"
-                fontWeight="600"
-                fontSize="0.85rem"
-                borderWidth="2px"
-                width="10rem"
-                borderRadius="8px"
-                bgColor="#f8e000"
-                onclick={() => handleButtonClick("View Bookingstays")}
-              >
-                View Bookings
-              </Button>
-            )
-          ) : null}
+                )
+              ) : null}
+            </>
+          )}
         </div>
       </div>
 
@@ -1081,6 +1106,7 @@ const mapStateToPros = (state) => {
     routes: state.ItineraryRoutes,
     breif: state.Breif,
     itinerary_id: state.ItineraryId,
+    tripsPage: state.TripsPage,
   };
 };
 

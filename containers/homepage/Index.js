@@ -17,10 +17,6 @@ import PlanWithUs from "../../components/WhyPlanWithUs/Index";
 import HeroBanner from "../../components/containers/HeroBanner/HeroBanner";
 import openTailoredModal from "../../services/openTailoredModal";
 import Continentcarousel from "../../components/continentcarousel/continentcarousel";
-import Cookies from "js-cookie";
-import axios from "axios";
-import { changeUserLocation } from "../../store/actions/userLocation";
-import { connect } from "react-redux";
 import { logEvent } from "../../services/ga/Index";
 import H3 from "../../components/heading/H3";
 
@@ -64,37 +60,6 @@ const Homepage = (props) => {
   const [myPlansArr, setMyPlansArr] = useState([]);
   const [plansCount, setPlansCount] = useState(null);
   let isPageWide = media("(min-width: 768px)");
-
-  useLayoutEffect(() => {
-    const userLocation = Cookies.get("userLocation");
-
-    if (!userLocation) getUserIp();
-    else {
-      props.changeUserLocation({ location: JSON.parse(userLocation) });
-    }
-
-    async function getUserIp() {
-      try {
-        const res = await axios.get("https://api.ipify.org?format=json");
-        const IpAddress = res.data.ip;
-        if (IpAddress) getUserLocation(IpAddress);
-      } catch (e) {}
-    }
-
-    async function getUserLocation(ip) {
-      try {
-        const res = await axios.get(
-          `https://apis.tarzanway.com/search/user_location/?ip=${ip}`
-        );
-
-        const data = res.data;
-        if (res.data) {
-          Cookies.set("userLocation", JSON.stringify(data), { expires: 3 });
-          props.changeUserLocation({ location: data });
-        }
-      } catch (e) {}
-    }
-  }, []);
 
   useEffect(() => {
     if (props.token) {
@@ -451,16 +416,4 @@ const Homepage = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
-  return {
-    userLocation: state.UserLocation.location,
-  };
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    changeUserLocation: (payload) => dispatch(changeUserLocation(payload)),
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Homepage);
+export default Homepage;

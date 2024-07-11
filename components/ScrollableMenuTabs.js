@@ -8,7 +8,7 @@ import {
   useNavigationMarker,
 } from "../hooks/useNavigationMarker";
 import useFieldOfView from "../hooks/useFieldOfView";
-import { useSelector } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { logEvent } from "../services/ga/Index";
 
 const Navbar = styled.div`
@@ -60,6 +60,7 @@ const ScrollableMenuTabs = ({
   vertical = false,
   classStyle,
   scrollOffSet,
+  tripsPage,
 }) => {
   const [activeItem, setActiveItem] = useState(0);
   const startDate = useSelector((state) => state.itineraryStartDate.startDate);
@@ -103,7 +104,7 @@ const ScrollableMenuTabs = ({
       isInView={isInView}
     >
       <Navbar ref={ref} onScroll={debounceFun} Isvertical={vertical}>
-        {vertical ? (
+        {vertical && !tripsPage ? (
           <div className="font-bold">{new Date(startDate).getFullYear()}</div>
         ) : null}
         {items.map((item, index) => (
@@ -127,4 +128,10 @@ const ScrollableMenuTabs = ({
   );
 };
 
-export default ScrollableMenuTabs;
+const mapStateToProps = (state) => {
+  return {
+    tripsPage: state.TripsPage,
+  };
+};
+
+export default connect(mapStateToProps)(ScrollableMenuTabs);

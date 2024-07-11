@@ -102,17 +102,27 @@ const Details = (props) => {
           style={{ width: "max-content" }}
           className="flex flex-row items-center gap-4"
         >
-          <div>
-            <Heading className="flex flex-row gap-2 items-center">
-              Dates ({props.duration})
-            </Heading>
-            {props.start_date && (
-              <Text>
-                {convertDFormat(props.start_date)} -{" "}
-                {convertDFormat(props.end_date)}
-              </Text>
-            )}
-          </div>
+          {props.tripsPage ? (
+            <div>
+              <Heading className="flex flex-row gap-2 items-center">
+                Dates
+              </Heading>
+              <Text>{props.duration}</Text>
+            </div>
+          ) : (
+            <div>
+              <Heading className="flex flex-row gap-2 items-center">
+                Dates ({props.duration})
+              </Heading>
+              {props.start_date && (
+                <Text>
+                  {convertDFormat(props.start_date)} -{" "}
+                  {convertDFormat(props.end_date)}
+                </Text>
+              )}
+            </div>
+          )}
+
           {!props.plan?.is_released_for_customer &&
           props.plan?.itinerary_status !== "ITINERARY_PREPARED" &&
           props?.routes &&
@@ -141,6 +151,7 @@ const mapStateToPros = (state) => {
   return {
     routes: state.ItineraryRoutes,
     plan: state.Plan,
+    tripsPage: state.TripsPage,
   };
 };
 

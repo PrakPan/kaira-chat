@@ -76,7 +76,7 @@ const ActivitiesBookings = (props) => {
   };
 
   return (
-    <div className="lg:w-[60vw] w-full">
+    <div id="activities" className="lg:w-[60vw] w-full">
       <div className="cursor-pointer font-lexend mb-2  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit">
         Activities
         <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
@@ -148,7 +148,7 @@ const ActivitiesBookings = (props) => {
                             </div>
                           )}
                         </div>
-                    ): null}
+                      ) : null}
 
                       {booking?.points && booking?.points.length ? (
                         booking.points.map((data, i) => (

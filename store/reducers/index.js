@@ -14,6 +14,8 @@ import ItineraryRoutes from "./ItineraryRoutes";
 import Plan from "./Plan";
 import Bookings from "./Bookings";
 import Breif from "./Breif";
+import TripsPage from "./TripsPage";
+import HotLocationSearch from "./HotLocationSearch";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -31,6 +33,8 @@ const rootReducer = combineReducers({
   Plan,
   Bookings,
   Breif,
+  TripsPage,
+  HotLocationSearch,
 });
 
 export default rootReducer;

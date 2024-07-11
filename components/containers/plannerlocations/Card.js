@@ -3,8 +3,7 @@ import styled from "styled-components";
 import ImageLoader from "../../ImageLoader";
 import Link from "next/link";
 import { logEvent } from "../../../services/ga/Index";
-import H6 from "../../heading/H6";
-import H9 from "../../heading/H9";
+import { getIndianPrice } from "../../../services/getIndianPrice";
 
 const ImageFade = styled.div`
   width: 100%;
@@ -28,18 +27,6 @@ const ImageContainer = styled.div`
   }
 `;
 
-const BlackContainer = styled.div`
-  width: 100%;
-  position: absolute;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 0.5rem;
-  bottom: 0;
-  flex-direction: column;
-`;
-
 const Experiences = (props) => {
   const [loading, setLoading] = useState(true);
 
@@ -59,7 +46,7 @@ const Experiences = (props) => {
   };
 
   return (
-    <Link className="hover-pointer" href={"/" + props.path}>
+    <Link className="hover-pointer group" href={"/" + props.path}>
       <ImageContainer
         className={`w-full ${loading ? "bg-gray-200 animate-pulse" : ""}`}
         onClick={handleImageClick}
@@ -76,35 +63,43 @@ const Experiences = (props) => {
             }}
           ></ImageLoader>
         </ImageFade>
-        <BlackContainer className="font-lexend w-full">
+
+        <div
+          className={`w-full flex flex-col px-3 gap-4 rounded-[10px] absolute bottom-0 pb-4 translate-y-[60px] transition-all ${
+            !loading &&
+            "bg-gradient-to-t from-black from-60% group-hover:translate-y-0"
+          }`}
+        >
           {loading ? (
-            <div className="w-full flex flex-col items-center gap-2">
+            <div className="w-full flex flex-col items-start gap-2">
               <div className="w-[80%] h-10 bg-gray-300 rounded-lg"></div>
               <div className="w-[60%] h-8 bg-gray-300 rounded-lg"></div>
             </div>
           ) : (
-            <>
-              <H6
-                style={{
-                  color: "white",
-                  textAlign: "center",
-                  lineHeight: 1,
-                  marginBottom: "0.5rem",
-                }}
-              >
+            <div className="w-full flex flex-col gap-3">
+              <div className="text-white text-lg font-bold leading-[16px]">
                 {props.location}
-              </H6>
-              <H9
-                style={{
-                  textAlign: "center",
-                  lineHeight: 1,
-                }}
-              >
-                {props.heading}
-              </H9>
-            </>
+              </div>
+              {props.data?.budget ? (
+                <div className="text-white text-md font-light leading-[14px]">
+                  From{" "}
+                  <span className="font-bold">
+                    ₹{getIndianPrice(props.data.budget)}
+                  </span>
+                  /- per day
+                </div>
+              ) : (
+                <div className="text-white text-md font-light leading-[16px]">
+                  {props.heading}
+                </div>
+              )}
+            </div>
           )}
-        </BlackContainer>
+
+          <button className="w-full bg-[#F7E700] rounded-lg text-sm text-black text-center px-2 py-2">
+            Plan a trip
+          </button>
+        </div>
       </ImageContainer>
     </Link>
   );

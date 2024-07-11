@@ -17,6 +17,7 @@ import ViewMoreButton from "../../../components/itinerary/daySummary/ViewMoreBut
 import { DaySummaryContainerStyle } from "./Day_I_Container";
 import ActivityAddDrawer from "../../../components/drawers/poiDetails/activityAddDrawer";
 import { logEvent } from "../../../services/ga/Index";
+import { connect } from "react-redux";
 
 const Container = styled.div`
   background: #ffffff;
@@ -300,9 +301,16 @@ const Day_I_ContainerM = (props) => {
               : "text-black text-base font-bold"
           }`}
         >
-          {convertDateFormat(props.Days?.slab)}
-          {getYear(props?.Days?.slab) &&
-            `, ${getYear(props?.Days?.slab)}`} -{" "}
+          {props.tripsPage ? (
+            "Day 1 - "
+          ) : (
+            <>
+              {convertDateFormat(props.Days?.slab)}
+              {getYear(props?.Days?.slab) &&
+                `, ${getYear(props?.Days?.slab)} - `}
+            </>
+          )}
+
           {newCity
             ? `Arrival in ${newCity.city_name}`
             : `${props.current_city.city_name} Exploration`}
@@ -324,10 +332,12 @@ const Day_I_ContainerM = (props) => {
                   className="text-lg font-normal text-blue hover:underline"
                 >
                   +Add Activity{" "}
-                  {props?.Days?.date
-                    ? `on ${convertDateFormat(props?.Days?.date)}`
+                  {props.tripsPage
+                    ? ` on Day ${props.indexDay + 1}`
+                    : props?.Days?.date
+                    ? ` on ${convertDateFormat(props?.Days?.date)}`
                     : props?.Days?.slab
-                    ? `on ${convertDateFormat(props?.Days?.slab)}`
+                    ? ` on ${convertDateFormat(props?.Days?.slab)}`
                     : ""}
                 </button>
               )}
@@ -347,10 +357,12 @@ const Day_I_ContainerM = (props) => {
                   className="text-sm font-normal text-blue hover:underline"
                 >
                   +Add Activity{" "}
-                  {props?.Days?.date
-                    ? `on ${convertDateFormat(props?.Days?.date)}`
+                  {props.tripsPage
+                    ? ` on Day ${props.indexDay + 1}`
+                    : props?.Days?.date
+                    ? ` on ${convertDateFormat(props?.Days?.date)}`
                     : props?.Days?.slab
-                    ? `on ${convertDateFormat(props?.Days?.slab)}`
+                    ? ` on ${convertDateFormat(props?.Days?.slab)}`
                     : ""}
                 </button>
               )}
@@ -385,4 +397,10 @@ const Day_I_ContainerM = (props) => {
   );
 };
 
-export default Day_I_ContainerM;
+const mapStateToProps = (state) => {
+  return {
+    tripsPage: state.TripsPage,
+  };
+};
+
+export default connect(mapStateToProps)(Day_I_ContainerM);

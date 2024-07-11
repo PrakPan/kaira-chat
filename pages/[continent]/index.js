@@ -1,11 +1,19 @@
 import Head from "next/head";
+import { useEffect } from "react";
+import { connect } from "react-redux";
 import Layout from "../../components/Layout";
 import ContinentPage from "../../containers/continent/Index";
 import axioscountrydetailsinstance from "../../services/pages/country";
 import axiospagelistinstance from "../../services/pages/list";
 import axiospagedetailsinstance from "../../services/pages/pagedetails";
+import axioslocationsinstance from "../../services/search/search";
+import setHotLocationSearch from "../../store/actions/hotLocationSearch";
 
 const TravelPlanner = (props) => {
+  useEffect(() => {
+    props.setHotLocationSearch(props.hotLocationSearch);
+  }, []);
+
   return (
     <Layout
       destination={props.Data.destination}
@@ -72,11 +80,13 @@ export async function getStaticPaths() {
     fallback: false,
   };
 }
+
 export async function getStaticProps(context) {
   let data = null;
   let contientTheme = [];
   let locations = [];
   const continetCarousel = [];
+  let hotLocationSearch = [];
   const { continent } = context.params;
   const path = `${continent}`;
 
@@ -107,7 +117,7 @@ export async function getStaticProps(context) {
   try {
     for (let i = 0; i < contientTheme.length; i++) {
       const countrydetailsResponse = await axioscountrydetailsinstance(
-        `/all/?continent=${contientTheme[i].destination}&fields=id,name,path,tagline,image,is_hot_location,best_time`
+        `/all/?continent=${contientTheme[i].destination}&fields=id,name,path,tagline,image,is_hot_location,best_time,budget`
       );
 
       if (contientTheme[i].destination === data.destination) {
@@ -128,6 +138,19 @@ export async function getStaticProps(context) {
     console.error("[ERROR][continentPage:getStaticPaths]: ", err.message);
   }
 
+  try {
+    const response = await axioslocationsinstance.get(
+      `hot_destinations/?continent=${continent}/`
+    );
+    if (response.data?.length) {
+      hotLocationSearch = response.data;
+    }
+  } catch (err) {
+    console.log(
+      `[ERROR][ContinentPage][axioslocationsinstance:/hot_destinations/?continent=${continent}/]`
+    );
+  }
+
   return {
     props: {
       Data: data,
@@ -135,8 +158,15 @@ export async function getStaticProps(context) {
       contientTheme,
       continetCarousel,
       path,
+      hotLocationSearch,
     },
   };
 }
 
-export default TravelPlanner;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setHotLocationSearch: (payload) => dispatch(setHotLocationSearch(payload)),
+  };
+};
+
+export default connect(null, mapDispatchToProps)(TravelPlanner);

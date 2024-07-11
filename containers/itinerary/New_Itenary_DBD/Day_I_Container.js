@@ -339,7 +339,7 @@ const Day_I_Container = (props) => {
   };
 
   return (
-    <Container className="font-lexend">
+    <Container id={`day${props.indexDay + 1}`} className="font-lexend">
       <DivDayContainerRow>
         <InnerDayLocationRow style={{ paddingRight: "2px" }}>
           <div
@@ -349,14 +349,20 @@ const Day_I_Container = (props) => {
                 : "text-black text-[16px] font-[500] leading-[22px]"
             }`}
           >
-            {convertDateFormat(props.Days?.slab)}
-            {getYear(props?.Days?.slab) && `, ${getYear(props?.Days?.slab)}`}
-            {" - "}
+            {props.tripsPage ? (
+              `Day ${props.indexDay + 1} - `
+            ) : (
+              <>
+                {convertDateFormat(props.Days?.slab)}
+                {getYear(props?.Days?.slab) &&
+                  `, ${getYear(props?.Days?.slab)} - `}
+              </>
+            )}
             <span className="font-semibold">
               {newCity
                 ? `Arrival in ${newCity.city_name}`
                 : `${props.current_city.city_name ?? ""} Exploration`}
-            </span>{" "}
+            </span>
           </div>
         </InnerDayLocationRow>
 
@@ -365,53 +371,60 @@ const Day_I_Container = (props) => {
           handler={handleViewMoreButton}
         />
       </DivDayContainerRow>
-      {viewMore ? (
-        <DayContainerStyle>
-          {dayIcontainer}
-          <div className="flex w-full ml-3">
-            {!props.LastElement && (
-              <button
-                onClick={() =>
-                  handleAddActivity(
-                    `Add Activity on ${convertDateFormat(props?.Days?.date)}`
-                  )
-                }
-                className="text-lg font-normal text-blue hover:underline"
-              >
-                +Add Activity{" "}
-                {props?.Days?.date
-                  ? `on ${convertDateFormat(props?.Days?.date)}`
-                  : props?.Days?.slab
-                  ? `on ${convertDateFormat(props?.Days?.slab)}`
-                  : ""}
-              </button>
-            )}
-          </div>
-        </DayContainerStyle>
-      ) : (
-        <DaySummaryContainerStyle>
-          {summaryIContainer}
-          <div className="flex ml-[10.50%]">
-            {!props.LastElement && (
-              <button
-                onClick={() =>
-                  handleAddActivity(
-                    `Add Activity on ${convertDateFormat(props?.Days?.date)}`
-                  )
-                }
-                className="text-[14px] font-[600] leading-[22px] text-blue hover:underline"
-              >
-                +Add Activity{" "}
-                {props?.Days?.date
-                  ? `on ${convertDateFormat(props?.Days?.date)}`
-                  : props?.Days?.slab
-                  ? `on ${convertDateFormat(props?.Days?.slab)}`
-                  : ""}
-              </button>
-            )}
-          </div>
-        </DaySummaryContainerStyle>
-      )}
+
+      <div id={newCity && newCity.city_name.replaceAll(" ", "_").toLowerCase()}>
+        {viewMore ? (
+          <DayContainerStyle>
+            {dayIcontainer}
+            <div className="flex w-full ml-3">
+              {!props.LastElement && (
+                <button
+                  onClick={() =>
+                    handleAddActivity(
+                      `Add Activity on ${convertDateFormat(props?.Days?.date)}`
+                    )
+                  }
+                  className="text-lg font-normal text-blue hover:underline"
+                >
+                  +Add Activity
+                  {props.tripsPage
+                    ? ` on Day ${props.indexDay + 1}`
+                    : props?.Days?.date
+                    ? ` on ${convertDateFormat(props?.Days?.date)}`
+                    : props?.Days?.slab
+                    ? ` on ${convertDateFormat(props?.Days?.slab)}`
+                    : ""}
+                </button>
+              )}
+            </div>
+          </DayContainerStyle>
+        ) : (
+          <DaySummaryContainerStyle>
+            {summaryIContainer}
+            <div className="flex ml-[10.50%]">
+              {!props.LastElement && (
+                <button
+                  onClick={() =>
+                    handleAddActivity(
+                      `Add Activity on ${convertDateFormat(props?.Days?.date)}`
+                    )
+                  }
+                  className="text-[14px] font-[600] leading-[22px] text-blue hover:underline"
+                >
+                  +Add Activity
+                  {props.tripsPage
+                    ? ` on Day ${props.indexDay + 1}`
+                    : props?.Days?.date
+                    ? ` on ${convertDateFormat(props?.Days?.date)}`
+                    : props?.Days?.slab
+                    ? ` on ${convertDateFormat(props?.Days?.slab)}`
+                    : ""}
+                </button>
+              )}
+            </div>
+          </DaySummaryContainerStyle>
+        )}
+      </div>
 
       <ActivityAddDrawer
         showDrawer={showAddDrawer}
@@ -435,6 +448,7 @@ const Day_I_Container = (props) => {
 const mapStateToPros = (state) => {
   return {
     itinerary_id: state.ItineraryId,
+    tripsPage: state.TripsPage,
   };
 };
 

@@ -1,26 +1,29 @@
 import React, { useRef, useState, useEffect } from "react";
+import { connect, useDispatch } from "react-redux";
 import styled from "styled-components";
 import Menu from "../MenuV2";
-import Spinner from "../../../containers/loaderbar/Index";
-import axiosdaybydayinstance from "../../../services/itinerary/daybyday/preview";
-import axiosbreifinstance from "../../../services/itinerary/brief/preview";
-import * as authaction from "../../../store/actions/auth";
-import { connect, useDispatch } from "react-redux";
-import { ITINERARY_STATUSES } from "../../../services/constants";
-import axiosPoiRoutes from "../../../services/itinerary/brief/route";
-import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
 import Overview from "../../newitinerary/overview/Index";
+import DesktopBanner from "../../../components/containers/Banner";
+import * as authaction from "../../../store/actions/auth";
 import { openNotification } from "../../../store/actions/notification";
 import { setItineraryStartDate } from "../../../store/actions/itineraryStartDate";
 import { setItineraryRoutes } from "../../../store/actions/itineraryRoutes";
+import { setItineraryActivities } from "../../../store/actions/itineraryActivities";
 import setItinerary from "../../../store/actions/itinerary";
 import setPlan from "../../../store/actions/plan";
 import { setBookings } from "../../../store/actions/bookings";
-import { setItineraryActivities } from "../../../store/actions/itineraryActivities";
 import setBreif from "../../../store/actions/breif";
+import setTripsPage from "../../../store/actions/tripsPage";
+import axiosdaybydayinstance from "../../../services/itinerary/daybyday/preview";
+import axiosbreifinstance from "../../../services/itinerary/brief/preview";
+import { ITINERARY_STATUSES } from "../../../services/constants";
+import axiosPoiRoutes from "../../../services/itinerary/brief/route";
+import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
 import axiosPaymentInstance from "../../../services/itinerary/payment";
 import axiosBookingsInstance from "../../../services/itinerary/bookings";
 import axiosPlanInstance from "../../../services/itinerary/plan";
+import openTailoredModal from "../../../services/openTailoredModal";
+import { useRouter } from "next/router";
 
 const Container = styled.div`
   width: 90%;
@@ -63,6 +66,17 @@ const Itinerary = (props) => {
   const hasRendered = useRef(false);
   const [editRoute, setEditRoute] = useState(false);
   const dispatch = useDispatch();
+  const router = useRouter();
+
+  useEffect(() => {
+    props.setTripsPage(true);
+
+    const timeout = setTimeout(() => {
+      openTailoredModal(router);
+    }, 60000);
+
+    return () => clearTimeout(timeout);
+  }, []);
 
   useEffect(() => {
     if (hasRendered.current) {
@@ -195,7 +209,7 @@ const Itinerary = (props) => {
 
     let email = localStorage.getItem("email");
     if (props.token) {
-      for (var i = 0; i < data.registered_users.length; i++) {
+      for (var i = 0; i < data?.registered_users?.length; i++) {
         if (data.registered_users[i].email === email) {
           if (data.registered_users[i].payment_status)
             if (data.registered_users[i].payment_status === "captured")
@@ -772,8 +786,14 @@ const Itinerary = (props) => {
   if (props.breif)
     return (
       <Container>
+        <DesktopBanner
+          onclick={() => openTailoredModal(router)}
+          text="Liked this itinerary? Craft one for yourself now!"
+          // cta="Craft one for yourself now!"
+        />
+
         <Overview
-          title={props.itinerary.name}
+          title={props.page_title}
           group_type={group_type}
           duration_time={duration_time}
           images={props.itinerary.images}
@@ -886,6 +906,7 @@ const mapDispatchToProps = (dispatch) => {
     setBreif: (payload) => dispatch(setBreif(payload)),
     setItineraryStartDate: (payload) =>
       dispatch(setItineraryStartDate(payload)),
+    setTripsPage: (payload) => dispatch(setTripsPage(payload)),
   };
 };
 

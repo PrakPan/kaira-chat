@@ -1,5 +1,5 @@
 import React from "react";
-import { LocationCard } from "../../cards/Location";
+import LocationCard from "../../cards/Location";
 import media from "../../media";
 import SwiperCarousel from "../../SwiperCarousel";
 import Link from "next/link";

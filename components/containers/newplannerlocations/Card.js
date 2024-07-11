@@ -3,6 +3,7 @@ import styled from "styled-components";
 import ImageLoader from "../../ImageLoader";
 import Link from "next/link";
 import { logEvent } from "../../../services/ga/Index";
+import { getIndianPrice } from "../../../services/getIndianPrice";
 
 const Name = styled.p`
   padding: 0rem 0;
@@ -64,11 +65,13 @@ const Experiences = (props) => {
           onload={() => setImageLoading(false)}
         ></ImageLoader>
       </div>
+
       <div style={{ padding: "0.5rem 0" }} className="hover-pointer">
         {imageLoading ? (
           <div className="flex flex-col gap-2">
             <div className="w-[50%] h-6 bg-gray-300 animate-pulse rounded-md"></div>
             <div className="w-[90%] h-4 bg-gray-300 animate-pulse rounded-md"></div>
+            <div className="w-[60%] h-4 bg-gray-300 animate-pulse rounded-md"></div>
           </div>
         ) : (
           <>
@@ -76,6 +79,15 @@ const Experiences = (props) => {
             <Subtext className="font-lexend truncate">
               {filters_to_show}
             </Subtext>
+            {props.data?.budget && (
+              <Subtext>
+                From{" "}
+                <span className="font-bold">
+                  ₹{getIndianPrice(props.data.budget)}
+                </span>
+                /- per day
+              </Subtext>
+            )}
           </>
         )}
       </div>

@@ -618,6 +618,7 @@ const TransferModeContainer = (props) => {
                   )}{" "}
                 </div>
               </div>
+
               <div
                 id={props.booking.id}
                 className={`mb-4 mt-2 lg:block ${
@@ -734,17 +735,19 @@ const TransferModeContainer = (props) => {
                                   </span>
                                 )}
                             </div>
-                            {ITINERARY_STATUSES.itinerary_prepared !==
-                              props?.plan?.itinerary_status && (
-                              <div className="min-w-max text-[0.8rem] -mt-1">
-                                {formatDate(props.booking.check_in)}
-                              </div>
-                            )}
+                            {!props.tripsPage &&
+                              ITINERARY_STATUSES.itinerary_prepared !==
+                                props?.plan?.itinerary_status && (
+                                <div className="min-w-max text-[0.8rem] -mt-1">
+                                  {formatDate(props.booking.check_in)}
+                                </div>
+                              )}
 
                             <div className="min-w-max">
                               {props.booking.city}
                             </div>
                           </div>
+
                           <div
                             style={{
                               margin: "0",
@@ -812,12 +815,14 @@ const TransferModeContainer = (props) => {
                                     </span>
                                   )}
                               </div>
-                              {ITINERARY_STATUSES.itinerary_prepared !==
-                                props?.plan?.itinerary_status && (
-                                <div className="min-w-max text-[0.8rem] -mt-1">
-                                  {formatDate(props.booking.check_out)}
-                                </div>
-                              )}
+                              {!props.tripsPage &&
+                                ITINERARY_STATUSES.itinerary_prepared !==
+                                  props?.plan?.itinerary_status && (
+                                  <div className="min-w-max text-[0.8rem] -mt-1">
+                                    {formatDate(props.booking.check_out)}
+                                  </div>
+                                )}
+
                               <div className="min-w-max">
                                 {props.booking.destination_city}
                               </div>
@@ -826,6 +831,7 @@ const TransferModeContainer = (props) => {
                         </div>
                       </InfoContainer>
                     )}
+
                     {isDesktop && (
                       <>
                         {props.userSelected ? (
@@ -918,12 +924,13 @@ const TransferModeContainer = (props) => {
                                 </span>
                               )}
                           </div>
-                          {ITINERARY_STATUSES.itinerary_prepared !==
-                            props?.plan?.itinerary_status && (
-                            <div className="min-w-max text-[0.8rem] -mt-1">
-                              {formatDate(props.booking.check_in)}
-                            </div>
-                          )}
+                          {!props.tripsPage &&
+                            ITINERARY_STATUSES.itinerary_prepared !==
+                              props?.plan?.itinerary_status && (
+                              <div className="min-w-max text-[0.8rem] -mt-1">
+                                {formatDate(props.booking.check_in)}
+                              </div>
+                            )}
 
                           <div
                             className="min-w-max"
@@ -932,6 +939,7 @@ const TransferModeContainer = (props) => {
                             {props.booking.city}
                           </div>
                         </div>
+
                         <div
                           style={{
                             margin: "0",
@@ -969,12 +977,13 @@ const TransferModeContainer = (props) => {
                                   </span>
                                 )}
                             </div>
-                            {ITINERARY_STATUSES.itinerary_prepared !==
-                              props?.plan?.itinerary_status && (
-                              <div className="min-w-max text-[0.8rem] -mt-1">
-                                {formatDate(props.booking.check_out)}
-                              </div>
-                            )}
+                            {!props.tripsPage &&
+                              ITINERARY_STATUSES.itinerary_prepared !==
+                                props?.plan?.itinerary_status && (
+                                <div className="min-w-max text-[0.8rem] -mt-1">
+                                  {formatDate(props.booking.check_out)}
+                                </div>
+                              )}
                             <div
                               className="min-w-max"
                               style={{ fontWeight: "400", fontSize: "0.8rem" }}
@@ -1230,7 +1239,7 @@ const TransferModeContainer = (props) => {
                           speedMultiplier={0.6}
                           color="#111"
                         />
-                          )}
+                      )}
 
                       <div
                         onClick={(e) => {
@@ -1292,6 +1301,7 @@ const mapStateToPros = (state) => {
   return {
     notificationText: state.Notification.text,
     plan: state.Plan,
+    tripsPage: state.TripsPage,
   };
 };
 
