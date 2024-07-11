@@ -788,12 +788,12 @@ const Itinerary = (props) => {
       <Container>
         <DesktopBanner
           onclick={() => openTailoredModal(router)}
-          text="Liked this itinerary?"
-          cta="Craft one for yourself now!"
+          text="Liked this itinerary? Craft one for yourself now!"
+          // cta="Craft one for yourself now!"
         />
 
         <Overview
-          title={props.itinerary.name}
+          title={props.page_title}
           group_type={group_type}
           duration_time={duration_time}
           images={props.itinerary.images}

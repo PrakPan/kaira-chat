@@ -114,6 +114,7 @@ const IndexedItinerary = ({
       {Data?.ID && (
         <ItineraryContainer
           id={Data?.ID}
+          page_title={Data?.page_title}
           daybydayData={daybyday}
           breifData={breif}
           routesData={routes}

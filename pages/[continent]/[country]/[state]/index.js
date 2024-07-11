@@ -112,7 +112,7 @@ export async function getStaticProps(context) {
 
   try {
     const loc = await axiospagelistinstance.get(
-      `/?country=${context.params.country}&page_type=Destination&fields=id,ancestors,path,destination,name,tagline,image,link`
+      `/?country=${context.params.country}&page_type=Destination&fields=id,ancestors,path,destination,name,tagline,image,link,budget`
     );
     locations = loc.data;
   } catch (err) {
