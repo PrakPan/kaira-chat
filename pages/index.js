@@ -3,14 +3,17 @@ import HomepageContainer from "../containers/homepage/Index";
 import Layout from "../components/Layout";
 import { connect } from "react-redux";
 import * as authaction from "../store/actions/auth";
+import setHotLocationSearch from "../store/actions/hotLocationSearch";
 import { useEffect } from "react";
 import axiospagelistinstance from "../services/pages/list";
 import axioscountrydetailsinstance from "../services/pages/country";
 import axiosCountInstance from "../services/itinerary/count";
+import axioslocationsinstance from "../services/search/search";
 
 const Home = (props) => {
   useEffect(() => {
     props.checkAuthState();
+    props.setHotLocationSearch(props.hotLocationSearch);
   }, []);
 
   return (
@@ -107,8 +110,11 @@ const mapDispatchToProps = (dispatch) => {
   return {
     checkAuthState: () => dispatch(authaction.checkAuthState()),
     authCloseLogin: () => dispatch(authaction.authCloseLogin()),
+    setHotLocationSearch: (payload) => dispatch(setHotLocationSearch(payload)),
   };
 };
+
+export default connect(mapStateToPros, mapDispatchToProps)(Home);
 
 export async function getStaticProps() {
   var ThemeData = [];
@@ -117,6 +123,7 @@ export async function getStaticProps() {
   var europeLocations = [];
   var continetCarousel = [];
   let Count = null;
+  let hotLocationSearch = [];
 
   try {
     const pageListResponse = await axiospagelistinstance.get(
@@ -173,6 +180,15 @@ export async function getStaticProps() {
     console.log("[ERROR][HomePage:getStaticProps]: ", err.message);
   }
 
+  try {
+    const response = await axioslocationsinstance.get("hot_destinations/");
+    if (response.data?.length) {
+      hotLocationSearch = response.data;
+    }
+  } catch (err) {
+    console.log(`[ERROR][HomePage][axioslocationsinstance:/hot_destinations]`);
+  }
+
   return {
     props: {
       ThemeData,
@@ -181,8 +197,7 @@ export async function getStaticProps() {
       europeLocations,
       continetCarousel,
       Count,
+      hotLocationSearch,
     },
   };
 }
-
-export default connect(mapStateToPros, mapDispatchToProps)(Home);

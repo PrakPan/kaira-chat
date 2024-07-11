@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import SearchInput from "./Input";
 import SearchResults from "./results/Index";
-import axioslocationsinstance from "../../../../../services/search/search";
 import axiossearchsuggestinstance from "../../../../../services/search/searchsuggest";
 import { useRouter } from "next/router";
+import { connect } from "react-redux";
 
 const Container = styled.div`
   width: 100%;
@@ -59,15 +59,17 @@ const Search = (props) => {
     else if (query.country) params = `?country=${query.country}`;
     else if (query.continent) params = `?continent=${query.continent}`;
 
-    axioslocationsinstance
-      .get("hot_destinations" + params)
-      .then((response) => {
-        if (response.data.length) setHotLocationsData(response.data);
-        else setShowHotLocations(false);
-      })
-      .catch((e) => {
-        setShowHotLocations(false);
-      });
+    setHotLocationsData(props.hotLocations);
+
+    // axioslocationsinstance
+    //   .get("hot_destinations" + params)
+    //   .then((response) => {
+    //     if (response.data.length) setHotLocationsData(response.data);
+    //     else setShowHotLocations(false);
+    //   })
+    //   .catch((e) => {
+    //     setShowHotLocations(false);
+    //   });
   }, []);
 
   return (
@@ -131,4 +133,10 @@ const Search = (props) => {
   );
 };
 
-export default Search;
+const mapStateToPros = (state) => {
+  return {
+    hotLocations: state.HotLocationSearch.locations,
+  };
+};
+
+export default connect(mapStateToPros)(Search);

@@ -2,15 +2,12 @@ import React, { useState, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import Bar from "./Bar";
 import Pannel from "./pannel/Index";
-import axioslocationsinstance from "../../../../services/search/search";
 import { fadeIn } from "react-animations";
-
-const fadeInAnimation = keyframes`${fadeIn}`;
+import { connect } from "react-redux";
 
 const Container = styled.div`
   width: 600px;
   margin: auto;
-  // animation: 0.3s ${fadeInAnimation};
   position: initial;
 `;
 
@@ -29,9 +26,7 @@ const MobileSearch = (props) => {
   const [hotLocationsData, setHotLocationsData] = useState();
 
   useEffect(() => {
-    axioslocationsinstance.get("hot_destinations").then((response) => {
-      setHotLocationsData(response.data);
-    });
+    setHotLocationsData(props.hotLocations);
   }, []);
 
   return (
@@ -51,4 +46,10 @@ const MobileSearch = (props) => {
   );
 };
 
-export default MobileSearch;
+const mapStateToPros = (state) => {
+  return {
+    hotLocations: state.HotLocationSearch.locations,
+  };
+};
+
+export default connect(mapStateToPros)(MobileSearch);

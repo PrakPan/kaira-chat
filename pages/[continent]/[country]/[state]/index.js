@@ -1,11 +1,19 @@
-import StatePage from "../../../../containers/travelplanner/Index";
 import Head from "next/head";
+import { useEffect } from "react";
+import { connect } from "react-redux";
+import StatePage from "../../../../containers/travelplanner/Index";
 import Layout from "../../../../components/Layout";
 import axiosTravelPlannerInstance from "../../../../services/pages/travel-planner";
 import axiossearchallinstance from "../../../../services/search/all";
 import axiospagelistinstance from "../../../../services/pages/list";
+import axioslocationsinstance from "../../../../services/search/search";
+import setHotLocationSearch from "../../../../store/actions/hotLocationSearch";
 
 const TravelPlanner = (props) => {
+  useEffect(() => {
+    props.setHotLocationSearch(props.hotLocationSearch);
+  }, []);
+
   return (
     <Layout
       page_id={props.Data.id}
@@ -102,9 +110,11 @@ export async function getStaticPaths() {
     fallback: false,
   };
 }
+
 export async function getStaticProps(context) {
   var locations = [];
   let data = null;
+  let hotLocationSearch = [];
   const { continent, country, state } = context.params;
   const path = `${continent}/${country}/${state}`;
 
@@ -138,13 +148,33 @@ export async function getStaticProps(context) {
     );
   }
 
+  try {
+    const response = await axioslocationsinstance.get(
+      `hot_destinations/?state=${state}/`
+    );
+    if (response.data?.length) {
+      hotLocationSearch = response.data;
+    }
+  } catch (err) {
+    console.log(
+      `[ERROR][StatePage][axioslocationsinstance:/hot_destinations/?state=${state}/]`
+    );
+  }
+
   return {
     props: {
       Data: data,
       locations,
       path,
+      hotLocationSearch,
     },
   };
 }
 
-export default TravelPlanner;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setHotLocationSearch: (payload) => dispatch(setHotLocationSearch(payload)),
+  };
+};
+
+export default connect(null, mapDispatchToProps)(TravelPlanner);

@@ -72,14 +72,14 @@ const SearchResults = (props) => {
     );
   return (
     <AbsoluteContainer
-      className={props.results.length && "border"}
+      className={props?.results?.length && "border"}
       top={props.top}
     >
-      {props.hotLocations && props.results.length ? (
+      {props.hotLocations && props?.results?.length ? (
         <Heading className="font-lexend">POPULAR DESTINATIONS</Heading>
       ) : null}
-      {props.results.length ? (
-        props.results.map((result, i) => {
+      {props?.results?.length ? (
+        props?.results?.map((result, i) => {
           if (i < 5)
             return (
               <div key={i}>

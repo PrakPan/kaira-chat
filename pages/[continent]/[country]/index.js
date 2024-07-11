@@ -1,10 +1,18 @@
 import Head from "next/head";
+import { connect } from "react-redux";
+import { useEffect } from "react";
 import Layout from "../../../components/Layout";
 import CountryPage from "../../../containers/country/Index";
 import axioscountrydetailsinstance from "../../../services/pages/country";
 import axiospagelistinstance from "../../../services/pages/list";
+import axioslocationsinstance from "../../../services/search/search";
+import setHotLocationSearch from "../../../store/actions/hotLocationSearch";
 
 const TravelPlanner = (props) => {
+  useEffect(() => {
+    props.setHotLocationSearch(props.hotLocationSearch);
+  }, []);
+
   return (
     <Layout
       destination={props?.Data?.name}
@@ -79,6 +87,7 @@ export async function getStaticProps(context) {
   let data = null;
   let locations = [];
   const continetCarousel = [];
+  let hotLocationSearch = [];
   const { continent, country } = context.params;
   const path = `${continent}/${country}`;
 
@@ -118,14 +127,34 @@ export async function getStaticProps(context) {
     console.error("[ERROR][countryPage:getStaticProps]: ", err.message);
   }
 
+  try {
+    const response = await axioslocationsinstance.get(
+      `hot_destinations/?country=${country}/`
+    );
+    if (response.data?.length) {
+      hotLocationSearch = response.data;
+    }
+  } catch (err) {
+    console.log(
+      `[ERROR][CountryPage][axioslocationsinstance:/hot_destinations/?continent=${continent}/]`
+    );
+  }
+
   return {
     props: {
       Data: data,
       locations,
       continetCarousel,
       path,
+      hotLocationSearch,
     },
   };
 }
 
-export default TravelPlanner;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setHotLocationSearch: (payload) => dispatch(setHotLocationSearch(payload)),
+  };
+};
+
+export default connect(null, mapDispatchToProps)(TravelPlanner);

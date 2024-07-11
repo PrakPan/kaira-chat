@@ -1,11 +1,19 @@
+import Head from "next/head";
+import { useEffect } from "react";
+import DestinationsPageContainer from "../../containers/destinationspage/Index";
+import Layout from "../../components/Layout";
 import axiosAllDestinationsInstance from "../../services/pages/allDestinations";
 import axiospagelistinstance from "../../services/pages/list";
 import axiosCountInstance from "../../services/itinerary/count";
-import Layout from "../../components/Layout";
-import Head from "next/head";
-import DestinationsPageContainer from "../../containers/destinationspage/Index";
+import axioslocationsinstance from "../../services/search/search";
+import setHotLocationSearch from "../../store/actions/hotLocationSearch";
+import { connect } from "react-redux";
 
-export default function AllDestinations(props) {
+const AllDestinations = (props) => {
+  useEffect(() => {
+    props.setHotLocationSearch(props.hotLocationSearch);
+  }, []);
+
   return (
     <Layout destination={"All Destinations"} id={""} page={"Destinations page"}>
       <Head>
@@ -49,7 +57,15 @@ export default function AllDestinations(props) {
       />
     </Layout>
   );
-}
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setHotLocationSearch: (payload) => dispatch(setHotLocationSearch(payload)),
+  };
+};
+
+export default connect(null, mapDispatchToProps)(AllDestinations);
 
 export async function getStaticProps(context) {
   const CONTINENTS = [
@@ -65,6 +81,7 @@ export async function getStaticProps(context) {
   let ThemeData = [];
   const allDestinations = [];
   let Count = null;
+  let hotLocationSearch = [];
 
   try {
     for (let i = 0; i < CONTINENTS.length; i++) {
@@ -99,12 +116,23 @@ export async function getStaticProps(context) {
   } catch (err) {
     console.log("[Error][AllDestinationsPage:getStaticProps]: ", err.message);
   }
+  try {
+    const response = await axioslocationsinstance.get("hot_destinations/");
+    if (response.data?.length) {
+      hotLocationSearch = response.data;
+    }
+  } catch (err) {
+    console.log(
+      `[ERROR][DestinationsPage][axioslocationsinstance:/hot_destinations]`
+    );
+  }
 
   return {
     props: {
       allDestinations,
       ThemeData,
       Count,
+      hotLocationSearch,
     },
   };
 }
