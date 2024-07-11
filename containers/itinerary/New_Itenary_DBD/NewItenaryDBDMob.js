@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Day_I_ContainerM from "./Day_I_ContainerM";
 import ScrollableMenuTabs from "../../../components/ScrollableMenuTabs";
 import { convertDateFormat } from "../../../helper/ConvertDateFormat";
+import { connect } from "react-redux";
 
 const NewItenaryDBDMob = (props) => {
   const Wrapper = styled.div`
@@ -79,12 +80,20 @@ const NewItenaryDBDMob = (props) => {
           itenaryId !== undefined
             ? itenaryId.slab && convertDateFormat(itenaryId.slab)
             : convertDateFormat(props.itinerary.day_slabs[1].slab),
+        day: `Day ${i + 1}`,
       });
     }
   }
 
+  const yearCalc = (days) => {
+    if (days[0]) {
+      var year1 = days[0]?.date?.split("/")[2];
+      return year1;
+    }
+  };
+
   return (
-    <Wrapper>
+    <Wrapper id="itinerary">
       {" "}
       <div className="font-lexend font-bold text-2xl mb-[2.4rem] mt-4">
         {" "}
@@ -102,9 +111,9 @@ const NewItenaryDBDMob = (props) => {
         offset={items.length ? "89px" : "50px"}
         items={itemsDays}
         BarName="CityName"
-        year={"2024"}
+        year={yearCalc(props?.itinerary?.day_slabs[0]?.slab)}
         Mstyle={"round"}
-        Iterable="date"
+        Iterable={props.tripsPage ? "day" : "date"}
       />
       <div className="itenaryContainer">
         {props?.itinerary?.day_slabs?.map((element, index) => (
@@ -136,4 +145,10 @@ const NewItenaryDBDMob = (props) => {
   );
 };
 
-export default React.memo(NewItenaryDBDMob);
+const mapStateToProps = (state) => {
+  return {
+    tripsPage: state.TripsPage,
+  };
+};
+
+export default connect(mapStateToProps)(React.memo(NewItenaryDBDMob));

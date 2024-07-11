@@ -120,7 +120,7 @@ export async function getStaticProps() {
 
   try {
     const pageListResponse = await axiospagelistinstance.get(
-      `/?country=india&page_type=Theme,Continent,Destination&fields=id,destination,tagline,image,link,path,banner_heading,page_type`
+      `/?country=india&page_type=Theme,Continent,Destination&fields=id,destination,tagline,image,link,path,banner_heading,page_type,budget`
     );
 
     ThemeData = pageListResponse.data.filter(
@@ -137,7 +137,7 @@ export async function getStaticProps() {
 
     for (let i = 0; i < continetCarouselResponse.length; i++) {
       const countrydetailsResponse = await axioscountrydetailsinstance(
-        `/all/?continent=${continetCarouselResponse[i].destination}&fields=id,name,path,tagline,image,is_hot_location,best_time`
+        `/all/?continent=${continetCarouselResponse[i].destination}&fields=id,name,path,tagline,image,is_hot_location,best_time,budget`
       );
 
       if (continetCarouselResponse[i].destination.toLowerCase() === "asia") {

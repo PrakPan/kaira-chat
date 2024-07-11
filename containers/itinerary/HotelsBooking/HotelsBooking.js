@@ -399,7 +399,7 @@ const HotelsBooking = (props) => {
   }
 
   return (
-    <div className="lg:w-[60vw] w-full lg:mx-0 lg:mt-16">
+    <div id="stays" className="lg:w-[60vw] w-full lg:mx-0 lg:mt-16">
       <div
         id="staysBooking"
         className="cursor-pointer font-lexend mb-2  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit"

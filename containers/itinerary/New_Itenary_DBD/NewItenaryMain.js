@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Day_I_Container from "./Day_I_Container";
 import ScrollableMenuTabs from "../../../components/ScrollableMenuTabs";
 import { convertDateFormat } from "../../../helper/ConvertDateFormat";
+import { connect } from "react-redux";
 
 const NewItenaryMain = (props) => {
   const Wrapper = styled.div`
@@ -86,6 +87,7 @@ const NewItenaryMain = (props) => {
           itenaryId !== undefined
             ? itenaryId.slab && convertDateFormat(itenaryId.slab)
             : convertDateFormat(props.itinerary.day_slabs[1].slab),
+        day: `Day ${i + 1}`,
       });
     }
   }
@@ -98,7 +100,7 @@ const NewItenaryMain = (props) => {
   };
 
   return (
-    <Wrapper>
+    <Wrapper id="itinerary">
       <div className="text-3xl font-bold mb-8 mt-4"> Day By Day Itinerary</div>
 
       <ScrollableMenuTabs
@@ -118,7 +120,7 @@ const NewItenaryMain = (props) => {
           BarName="CityName"
           year={yearCalc(props?.itinerary?.day_slabs[0]?.slab)}
           Mstyle={"round"}
-          Iterable="date"
+          Iterable={props.tripsPage ? "day" : "date"}
           vertical={true}
         ></ScrollableMenuTabs>
       )}
@@ -155,4 +157,10 @@ const NewItenaryMain = (props) => {
   );
 };
 
-export default React.memo(NewItenaryMain);
+const mapStateToProps = (state) => {
+  return {
+    tripsPage: state.TripsPage,
+  };
+};
+
+export default connect(mapStateToProps)(React.memo(NewItenaryMain));

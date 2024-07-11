@@ -15,6 +15,7 @@ import { getHumanDate } from "../../../services/getHumanDate";
 import { ITINERARY_STATUSES } from "../../../services/constants";
 import { MdWifi } from "react-icons/md";
 import { logEvent } from "../../../services/ga/Index";
+import { connect } from "react-redux";
 
 const RoomTypeGrid = styled.div`
   display: grid;
@@ -47,6 +48,7 @@ const HotelBookingContainer = ({
   selectedBooking,
   token,
   plan,
+  tripsPage,
 }) => {
   let isDesktop = media("(min-width: 1147px)");
   let isPageWide = media("(min-width: 768px)");
@@ -240,6 +242,7 @@ const HotelBookingContainer = ({
                     }}
                   ></ImageLoader>
                 </div>
+
                 <div
                   style={{
                     height: "100%",
@@ -259,6 +262,7 @@ const HotelBookingContainer = ({
                   </starHotel>
                 ) : null}
               </div>
+
               <div className="flex flex-col gap-2 text-[#01202B] lg:w-[70%] w-full justify-between">
                 <div className="flex flex-col gap-2">
                   <div
@@ -303,6 +307,7 @@ const HotelBookingContainer = ({
                           )}
                         </div>
                       )}
+
                       {booking?.rating_ext ? (
                         <div className="gap-1 flex flex-row  items-center">
                           <div className="flex flex-row text-[#FFD201]">
@@ -318,15 +323,38 @@ const HotelBookingContainer = ({
                       ) : null}
                     </div>
                   )}
-                  {booking?.check_in &&
-                  ITINERARY_STATUSES.itinerary_prepared !==
-                    plan?.itinerary_status ? (
+
+                  {tripsPage ? (
+                    <div className="flex flex-row gap-2 items-center">
+                      <BsCalendar2 className="text-sm text-[#7A7A7A]" />
+                      <div className="text-sm font-[400]">
+                        {booking ? booking?.duration : 1} Nights stay
+                      </div>
+
+                      {booking?.number_of_adults ||
+                      currentBooking?.number_of_adults ? (
+                        <div className="text-sm font-[400] gap-2 flex flex-row items-center">
+                          <BsPeopleFill className="text-sm text-[#7A7A7A]" />
+                          <div className="text-sm font-[400] min-w-fit">
+                            {booking?.number_of_adults
+                              ? booking?.number_of_adults
+                              : currentBooking?.number_of_adults}{" "}
+                            Adults
+                          </div>
+                        </div>
+                      ) : (
+                        <></>
+                      )}
+                    </div>
+                  ) : booking?.check_in &&
+                    ITINERARY_STATUSES.itinerary_prepared !==
+                      plan?.itinerary_status ? (
                     <div className="flex flex-row gap-3 lg:mt-2 mt-0">
                       {booking.check_in && (
                         <div className="flex flex-row gap-2 items-center">
                           <BsCalendar2 className="text-sm text-[#7A7A7A]" />
                           <div>
-                            <div className="text-sm font-[400] ">
+                            <div className="text-sm font-[400]">
                               {getDate(booking.check_in)}-
                               {getDate(booking.check_out)}
                             </div>
@@ -438,6 +466,7 @@ const HotelBookingContainer = ({
                       </>
                     )
                   )}
+
                   {booking.costings_breakdown &&
                   Addons(booking?.costings_breakdown[0]?.pricing_type) ? (
                     <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
@@ -447,6 +476,7 @@ const HotelBookingContainer = ({
                       </div>
                     </div>
                   ) : null}
+
                   {booking?.amenities &&
                   booking?.amenities?.length &&
                   booking?.amenities?.includes("WIFI") ? (
@@ -486,6 +516,7 @@ const HotelBookingContainer = ({
                     </div>
                   </div>
                 )}
+
                 {handleClick && (
                   <div
                     className={`flex flex-row gap-2 items-end justify-end w-full ${
@@ -619,4 +650,10 @@ const HotelBookingContainer = ({
   );
 };
 
-export default HotelBookingContainer;
+const mapStateToProps = (state) => {
+  return {
+    tripsPage: state.TripsPage,
+  };
+};
+
+export default connect(mapStateToProps)(HotelBookingContainer);

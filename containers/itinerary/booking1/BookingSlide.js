@@ -27,6 +27,7 @@ import UiDropdown from "../../../components/UiDropdown";
 import Link from "next/link";
 import ImageLoader from "../../../components/ImageLoader";
 import { logEvent } from "../../../services/ga/Index";
+import openTailoredModal from "../../../services/openTailoredModal";
 
 const GetInTouchContainer = styled.div`
   &:hover img {
@@ -453,6 +454,20 @@ const Details = (props) => {
     });
   };
 
+  const handleCreateTripButton = () => {
+    openTailoredModal(router);
+
+    logEvent({
+      action: "Plan_Itinerary",
+      params: {
+        page: props.page ? props.page : "Itinerary Page",
+        event_category: "Button Click",
+        event_label: "Create a Trip",
+        event_action: "Payments Slide",
+      },
+    });
+  };
+
   return (
     <>
       <div
@@ -722,34 +737,38 @@ const Details = (props) => {
           <div className=" group flex flex-row gap-3 items-center py-[1rem]">
             <BsCalendar2 className="text-md text-[#7A7A7A]" />
             <div className="text-md font-medium text-black flex flex-row items-center gap-2">
-              <div>
-                {props.plan
-                  ? props.plan
-                    ? getHumanDateWithYear(
-                        format(new Date(date), "dd-MM-yyyy").replaceAll(
-                          "-",
-                          "/"
-                        )
-                      )
-                    : null
-                  : null}
-                {" - "}
-                {date
-                  ? getHumanDateWithYear(
-                      format(
-                        new Date(
-                          addDaysToDate(
-                            date,
-                            props?.plan?.duration_number
-                              ? props?.plan?.duration_number
-                              : 4
+              {props.tripsPage ? (
+                <div>{props.plan.duration_number + " Nights"}</div>
+              ) : (
+                <div>
+                  {props.plan
+                    ? props.plan
+                      ? getHumanDateWithYear(
+                          format(new Date(date), "dd-MM-yyyy").replaceAll(
+                            "-",
+                            "/"
                           )
-                        ),
-                        "dd-MM-yyyy"
-                      ).replaceAll("-", "/")
-                    )
-                  : null}
-              </div>
+                        )
+                      : null
+                    : null}
+                  {" - "}
+                  {date
+                    ? getHumanDateWithYear(
+                        format(
+                          new Date(
+                            addDaysToDate(
+                              date,
+                              props?.plan?.duration_number
+                                ? props?.plan?.duration_number
+                                : 4
+                            )
+                          ),
+                          "dd-MM-yyyy"
+                        ).replaceAll("-", "/")
+                      )
+                    : null}
+                </div>
+              )}
 
               {props.payment.itinerary_status ===
               ITINERARY_STATUSES.itinerary_prepared ? (
@@ -819,124 +838,7 @@ const Details = (props) => {
         </div>
       </div>
 
-      {props.payment && props.token ? (
-        props.payment.itinerary_status ===
-          ITINERARY_STATUSES.itinerary_finalized &&
-        !props.payment.paid_user &&
-        props.payment.user_allowed_to_pay ? (
-          props.payment.total_cost > 0 ? (
-            <Button
-              color="#111"
-              fontWeight="500"
-              fontSize="1rem"
-              borderWidth="2px"
-              width="100%"
-              borderRadius="8px"
-              bgColor="#f8e000"
-              padding="12px"
-              onclick={() => handlePayNow("_saleCreateHandler")}
-              loading={paymentLoading}
-            >
-              Pay Now & Book
-            </Button>
-          ) : (
-            <Button
-              color="#111"
-              fontWeight="500"
-              fontSize="1rem"
-              borderWidth="2px"
-              width="100%"
-              borderRadius="8px"
-              bgColor="#f8e000"
-              padding="12px"
-              onclick={() => handleViewBooking("Add Hotels")}
-            >
-              Add Hotels
-            </Button>
-          )
-        ) : props?.payment?.is_registration_needed ? (
-          props?.payment?.email_reverification_needed ? (
-            <Button
-              color="#111"
-              fontWeight="500"
-              fontSize="1rem"
-              borderWidth="2px"
-              width="100%"
-              borderRadius="8px"
-              bgColor="#f8e000"
-              padding="12px"
-              onclick={() => handlePayNow("setShowVerification")}
-            >
-              Pay Now & Book
-            </Button>
-          ) : props?.payment?.paid_user ? (
-            <Button
-              color="#111"
-              fontWeight="500"
-              fontSize="1rem"
-              borderWidth="2px"
-              width="100%"
-              borderRadius="8px"
-              bgColor="#f8e000"
-              padding="12px"
-              onclick={() => handleViewBooking("View Bookings")}
-            >
-              View Bookings
-            </Button>
-          ) : (
-            <Button
-              color="#111"
-              fontWeight="500"
-              fontSize="1rem"
-              borderWidth="2px"
-              width="100%"
-              borderRadius="8px"
-              bgColor="#f8e000"
-              padding="12px"
-              onclick={handleTravellersDetails}
-            >
-              Add Travellers Details
-            </Button>
-          )
-        ) : (
-          !props.payment.paid_user && (
-            <GetInTouchContainer>
-              <Button
-                color="#111"
-                fontWeight="500"
-                fontSize="1rem"
-                borderWidth="2px"
-                width="100%"
-                borderRadius="8px"
-                bgColor="#f8e000"
-                padding="12px"
-                onclick={handleGetInTouch}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    gap: "0.5rem",
-                    alignItems: "center",
-                  }}
-                >
-                  <ImageLoader
-                    dimensions={{ height: 50, width: 50 }}
-                    dimensionsMobile={{ height: 50, width: 50 }}
-                    height={"20px"}
-                    width={"20px"}
-                    leftalign
-                    url={"media/icons/login/customer-service-black.png"}
-                  />{" "}
-                  <span>Get in touch!</span>
-                </div>
-              </Button>
-            </GetInTouchContainer>
-          )
-        )
-      ) : null}
-
-      {!props.token ? (
+      {props.tripsPage ? (
         <Button
           color="#111"
           fontWeight="500"
@@ -946,11 +848,146 @@ const Details = (props) => {
           borderRadius="8px"
           bgColor="#f8e000"
           padding="12px"
-          onclick={handleLoginButton}
+          onclick={handleCreateTripButton}
         >
-          Log in to proceed
+          Craft a new trip!
         </Button>
-      ) : null}
+      ) : (
+        <>
+          {props.payment && props.token ? (
+            props.payment.itinerary_status ===
+              ITINERARY_STATUSES.itinerary_finalized &&
+            !props.payment.paid_user &&
+            props.payment.user_allowed_to_pay ? (
+              props.payment.total_cost > 0 ? (
+                <Button
+                  color="#111"
+                  fontWeight="500"
+                  fontSize="1rem"
+                  borderWidth="2px"
+                  width="100%"
+                  borderRadius="8px"
+                  bgColor="#f8e000"
+                  padding="12px"
+                  onclick={() => handlePayNow("_saleCreateHandler")}
+                  loading={paymentLoading}
+                >
+                  Pay Now & Book
+                </Button>
+              ) : (
+                <Button
+                  color="#111"
+                  fontWeight="500"
+                  fontSize="1rem"
+                  borderWidth="2px"
+                  width="100%"
+                  borderRadius="8px"
+                  bgColor="#f8e000"
+                  padding="12px"
+                  onclick={() => handleViewBooking("Add Hotels")}
+                >
+                  Add Hotels
+                </Button>
+              )
+            ) : props?.payment?.is_registration_needed ? (
+              props?.payment?.email_reverification_needed ? (
+                <Button
+                  color="#111"
+                  fontWeight="500"
+                  fontSize="1rem"
+                  borderWidth="2px"
+                  width="100%"
+                  borderRadius="8px"
+                  bgColor="#f8e000"
+                  padding="12px"
+                  onclick={() => handlePayNow("setShowVerification")}
+                >
+                  Pay Now & Book
+                </Button>
+              ) : props?.payment?.paid_user ? (
+                <Button
+                  color="#111"
+                  fontWeight="500"
+                  fontSize="1rem"
+                  borderWidth="2px"
+                  width="100%"
+                  borderRadius="8px"
+                  bgColor="#f8e000"
+                  padding="12px"
+                  onclick={() => handleViewBooking("View Bookings")}
+                >
+                  View Bookings
+                </Button>
+              ) : (
+                <Button
+                  color="#111"
+                  fontWeight="500"
+                  fontSize="1rem"
+                  borderWidth="2px"
+                  width="100%"
+                  borderRadius="8px"
+                  bgColor="#f8e000"
+                  padding="12px"
+                  onclick={handleTravellersDetails}
+                >
+                  Add Travellers Details
+                </Button>
+              )
+            ) : (
+              !props.payment.paid_user && (
+                <GetInTouchContainer>
+                  <Button
+                    color="#111"
+                    fontWeight="500"
+                    fontSize="1rem"
+                    borderWidth="2px"
+                    width="100%"
+                    borderRadius="8px"
+                    bgColor="#f8e000"
+                    padding="12px"
+                    onclick={handleGetInTouch}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        gap: "0.5rem",
+                        alignItems: "center",
+                      }}
+                    >
+                      <ImageLoader
+                        dimensions={{ height: 50, width: 50 }}
+                        dimensionsMobile={{ height: 50, width: 50 }}
+                        height={"20px"}
+                        width={"20px"}
+                        leftalign
+                        url={"media/icons/login/customer-service-black.png"}
+                      />{" "}
+                      <span>Get in touch!</span>
+                    </div>
+                  </Button>
+                </GetInTouchContainer>
+              )
+            )
+          ) : null}
+
+          {!props.token ? (
+            <Button
+              color="#111"
+              fontWeight="500"
+              fontSize="1rem"
+              borderWidth="2px"
+              width="100%"
+              borderRadius="8px"
+              bgColor="#f8e000"
+              padding="12px"
+              onclick={handleLoginButton}
+            >
+              Log in to proceed
+            </Button>
+          ) : null}
+        </>
+      )}
 
       <Button
         width="100%"
@@ -1042,6 +1079,7 @@ const mapStateToProps = (state) => {
     couponApplied: state.experience.couponApplied,
     couponInvalid: state.experience.couponInvalid,
     plan: state.Plan,
+    tripsPage: state.TripsPage,
   };
 };
 

@@ -41,3 +41,4 @@ export const SET_ITINERARY = "SET_ITINERARY";
 export const SET_PLAN = "SET_PLAN";
 export const SET_BOOKINGS = "SET_BOOKINGS";
 export const SET_BREIF = "SET_BREIF";
+export const SET_TRIPS_PAGE = "SET_TRIPS_PAGE";

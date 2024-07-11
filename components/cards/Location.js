@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import ImageLoader from "../ImageLoader";
 import { getIndianPrice } from "../../services/getIndianPrice";
 
-export const LocationCard = (props) => {
+const LocationCard = (props) => {
   const [imageLoading, setImageLoading] = useState(true);
 
   return (
@@ -56,12 +56,17 @@ export const LocationCard = (props) => {
                 <p className="text-white text-lg font-bold leading-[16px]">
                   {props.name}
                 </p>
-                {props.location?.budget && (
+                {props.location?.budget ? (
                   <p className="text-white text-md font-light leading-[14px]">
                     From{" "}
                     <span className="font-bold">
                       ₹{getIndianPrice(props.location.budget)}
-                    </span>/- per day
+                    </span>
+                    /- per day
+                  </p>
+                ) : (
+                  <p className="text-white text-md font-light leading-[14px]">
+                    {props.heading}
                   </p>
                 )}
               </div>
@@ -76,3 +81,5 @@ export const LocationCard = (props) => {
     </div>
   );
 };
+
+export default LocationCard;

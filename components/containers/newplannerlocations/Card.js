@@ -81,7 +81,7 @@ const Experiences = (props) => {
             </Subtext>
             {props.data?.budget && (
               <Subtext>
-                Starting from{" "}
+                From{" "}
                 <span className="font-bold">
                   ₹{getIndianPrice(props.data.budget)}
                 </span>

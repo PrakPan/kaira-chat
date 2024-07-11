@@ -80,13 +80,17 @@ const Experiences = (props) => {
               <div className="text-white text-lg font-bold leading-[16px]">
                 {props.location}
               </div>
-              {props.data?.budget && (
+              {props.data?.budget ? (
                 <div className="text-white text-md font-light leading-[14px]">
                   From{" "}
                   <span className="font-bold">
                     ₹{getIndianPrice(props.data.budget)}
                   </span>
                   /- per day
+                </div>
+              ) : (
+                <div className="text-white text-md font-light leading-[16px]">
+                  {props.heading}
                 </div>
               )}
             </div>

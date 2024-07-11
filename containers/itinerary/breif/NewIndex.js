@@ -120,7 +120,7 @@ const Details = (props) => {
   }
 
   return (
-    <div className="mt-16">
+    <div id="brief" className="mt-16">
       <DetailsContainer>
         <div
           className="sticky md:top-[70px] lg:w-[50vw] lg:h-[70vh]  w-[88vw] h-[23rem] lg:mt-20 mt-8  rounded-xl"
@@ -188,7 +188,7 @@ const Details = (props) => {
         dayId={findDayIdByCityId(showDrawerData.city_id)}
       ></Drawer>
 
-      {props.traveleritinerary? (
+      {props.traveleritinerary ? (
         <DesktopBanner
           onclick={_handleTailoredRedirect}
           text="Want to personalize your own experience like this?"
