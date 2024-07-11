@@ -56,11 +56,21 @@ export async function getStaticPaths() {
     const res = await axiossearchallinstance.get("/?type=State&fields=path");
     const data = res.data;
 
-    const themeRes = await axiospagelistinstance.get(
-      "/?fields=path&page_type=Theme"
-    );
+    let themePages = null;
 
-    let themePages = themeRes.data;
+    try {
+      const themeRes = await axiospagelistinstance.get(
+        "/?fields=path&page_type=Theme"
+      );
+
+      themePages = themeRes.data;
+    } catch (err) {
+      console.error(
+        "[ERROR][statePage:axiospagelistinstance][/?fields=path&page_type=Theme]: ",
+        err.message
+      );
+    }
+
     themePages = themePages.map((page) => {
       return {
         path: "asia/India/" + page.path,
@@ -81,7 +91,10 @@ export async function getStaticPaths() {
       });
     }
   } catch (err) {
-    console.error("[ERROR][statePage:getStaticPaths]: ", err.message);
+    console.error(
+      "[ERROR][statePage:axiossearchallinstance][/?type=State&fields=path]: ",
+      err.message
+    );
   }
 
   return {
@@ -101,7 +114,10 @@ export async function getStaticProps(context) {
     );
     data = res.data;
   } catch (err) {
-    console.log("[ERROR][statePage:getStaticProps]: ", err.message);
+    console.log(
+      `[ERROR][statePage:axiosTravelPlannerInstance][${context.params.state}]: `,
+      err.message
+    );
   }
 
   if (!data) {
@@ -116,7 +132,10 @@ export async function getStaticProps(context) {
     );
     locations = loc.data;
   } catch (err) {
-    console.log("[ERROR][statePage:getStaticProps]: ", err.message);
+    console.log(
+      `[ERROR][statePage:axiospagelistinstance][${context.params.country}]: `,
+      err.message
+    );
   }
 
   return {

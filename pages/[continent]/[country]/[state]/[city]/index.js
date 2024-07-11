@@ -89,7 +89,10 @@ export async function getStaticPaths() {
       }
     }
   } catch (err) {
-    console.log("[ERROR][cityPage:getStaticPaths]: ", err.message);
+    console.log(
+      "[ERROR][cityPage:axiossearchInstance][/?type=Location&fields=path,cta]: ",
+      err.message
+    );
   }
 
   return {
@@ -108,7 +111,10 @@ export async function getStaticProps(context) {
     const res = await axiosPoiCityInstance.get(`/?slug=${context.params.city}`);
     data = res.data;
   } catch (err) {
-    console.error("[ERROR][cityPage:getStaticProps]: ", err.message);
+    console.error(
+      `[ERROR][cityPage:axiosPoiCityInstance][/?slug=${context.params.city}]: `,
+      err.message
+    );
   }
 
   if (!data) {
@@ -131,9 +137,13 @@ export async function getStaticProps(context) {
       most_popular_for: e.most_popular_for,
       name: e.name,
       path: e.path,
+      budget: e.budget,
     }));
   } catch (err) {
-    console.error("[ERROR][cityPage:getStaticProps]: ", err.message);
+    console.error(
+      `[ERROR][cityPage:axiosReccommendedCityInstance][/?slug=${context.params.city}&limit=6]: `,
+      err.message
+    );
   }
 
   return {

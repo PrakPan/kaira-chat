@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Card from "../../../components/containers/plannerlocations/Card";
+import Card from "../../../components/containers/newplannerlocations/Card";
 import media from "../../../components/media";
 import DesktopSkeleton, {
   MobileSkeleton,
@@ -66,6 +66,14 @@ const NearbyLocations = (props) => {
           path={props.nearbyCities[i].path}
           link={props.nearbyCities[i].slug}
           city={true}
+          data={props.nearbyCities[i]}
+          tags={
+            props.nearbyCities[i].tags
+              ? props.nearbyCities[i].tags
+              : props.nearbyCities[i].most_popular_for
+          }
+          page={props?.page}
+          state={props?.state}
         ></Card>
       );
     }

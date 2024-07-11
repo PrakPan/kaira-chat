@@ -150,7 +150,12 @@ const Menu = (props) => {
       )}
 
       <MenuItem id="nearby-places">
-        <NearbyLocations nearbyCities={props.nearbyCities} data={props.data} />
+        <NearbyLocations
+          nearbyCities={props.nearbyCities}
+          state={props.destination}
+          page={"City Page"}
+          data={props.data}
+        />
       </MenuItem>
 
       {!!props.data.foods.length && (
