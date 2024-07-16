@@ -133,6 +133,8 @@ var userDetails = {
 };
 
 const LogIn = React.memo((props) => {
+  let isPageWide = media("(min-width: 768px)");
+
   if (props.loadingsocial)
     return (
       <div style={{ height: "27.25rem", width: "100%", display: "flex" }}>
@@ -176,6 +178,12 @@ const LogIn = React.memo((props) => {
       props.authCloseLogin();
   }, [props.name, props.phone, props.token]);
 
+  useEffect(() => {
+    if (otp.length > 3) {
+      submitOtpHandler();
+    }
+  }, [otp]);
+
   const handleExtensionChangeOption = (country) => {
     setExtension(country);
   };
@@ -218,7 +226,7 @@ const LogIn = React.memo((props) => {
   };
 
   //Submit OTP
-  const submitOtpHandler = (event) => {
+  const submitOtpHandler = () => {
     setUserNameError(false);
 
     if (props.newUser) {
@@ -381,8 +389,6 @@ const LogIn = React.memo((props) => {
     onSuccess: (tokenResponse) => props.onGoogleAuth(tokenResponse),
   });
 
-  let isPageWide = media("(min-width: 768px)");
-
   return (
     <div className="font-lexend">
       {!props.noheading ? (
@@ -400,6 +406,7 @@ const LogIn = React.memo((props) => {
           {props.loginmessage ? props.loginmessage : "Login to your account"}
         </h1>
       ) : null}
+
       {(props.token && !props.phone) ||
       (props.token && props.phone === "null") ? (
         <p
@@ -410,6 +417,7 @@ const LogIn = React.memo((props) => {
           your plan.
         </p>
       ) : null}
+
       {(props.token && !props.phone) ||
       (props.token && props.phone == "null") ? (
         <form noValidate>
@@ -440,7 +448,7 @@ const LogIn = React.memo((props) => {
           </MobileNumberContainer>
           <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
             {whatsapp ? <ImCheckboxChecked /> : <ImCheckboxUnchecked />} Receive
-            boooking updates via WhatsApp
+            booking updates via WhatsApp
           </WhatsappCheckBox>
           <Button
             onclick={_updatePhoneHandler}
@@ -490,7 +498,7 @@ const LogIn = React.memo((props) => {
 
           <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
             {whatsapp ? <ImCheckboxChecked /> : <ImCheckboxUnchecked />} Receive
-            boooking updates via WhatsApp
+            booking updates via WhatsApp
           </WhatsappCheckBox>
 
           {props.newUser || (props.otpSent && !props.name) ? (
@@ -566,7 +574,7 @@ const LogIn = React.memo((props) => {
             </Button>
           ) : (
             <Button
-              onclick={(e) => submitOtpHandler(e)}
+              onclick={submitOtpHandler}
               margin={props.nospacing ? "0" : "0.5rem 0"}
               width="100%"
               bgColor="#F7E700"
