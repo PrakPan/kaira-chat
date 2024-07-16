@@ -81,7 +81,7 @@ export async function getStaticPaths() {
 
     themePages = themePages.map((page) => {
       return {
-        path: "asia/India/" + page.path,
+        path: "asia/india/" + page.path,
       };
     });
 
