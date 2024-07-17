@@ -56,7 +56,7 @@ const IndexedItinerary = ({
     <LayoutV2 staticnav itinerary page={"Itinerary Page"}>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title> {Data?.page_title} </title>
+        <title>{Data?.page_title}</title>
         <meta name="description" content={Data?.meta_description} />
         <meta
           name="keywords"

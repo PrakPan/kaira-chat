@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import axiomyplansinstance from "../../services/sales/MyPlans";
 import styled from "styled-components";
 import CheckAuthRedirect from "../../components/HOC/CheckAuthRedirect";
-import Heading from "../../components/newheading/heading/Index";
 import Profile from "./Profile";
 import media from "../../components/media";
 import ImageLoader from "../../components/ImageLoader";
@@ -13,6 +12,7 @@ import ExperienceCard from "../../components/cards/newitinerarycard-main/Experie
 import ExperienceCardSkeleton from "../../components/cards/newitinerarycard-main/ExperienceCardSkeleton";
 import Button from "../../components/ui/button/Index";
 import { logEvent } from "../../services/ga/Index";
+import H2 from "../../components/heading/H2";
 
 const Container = styled.div`
   width: 100%;
@@ -129,20 +129,17 @@ const UserDashboard = (props) => {
 
       <ContentContainer className="w-full mb-5">
         <div style={{ display: "flex" }} className="">
-          <Heading
-            noline
-            bold
-            align="left"
-            textAlign="left"
-            aligndesktop="left"
-            fontSize={isPageWide ? "32px" : "24px"}
-            margin={
-              !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
-            }
+          <H2
+            style={{
+              align: "left",
+              textAlign: "left",
+              aligndesktop: "left",
+              fontSize: isPageWide ? "32px" : "24px",
+              margin: !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem",
+            }}
           >
-            {"My Trips "}
-            {totalPlans && `(${totalPlans})`}
-          </Heading>
+            {totalPlans ? `My Trips (${totalPlans})` : "My Trips"}
+          </H2>
         </div>
 
         {isPageWide && !myPlansArr.length && !loading ? (

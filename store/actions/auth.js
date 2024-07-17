@@ -61,7 +61,13 @@ export const authSuccess = (token) => {
 //Set user name and email
 export const setUserDetails = (userdetails) => {
   try {
-    localStorage.setItem("email", userdetails.email);
+    userdetails.email && localStorage.setItem("email", userdetails.email);
+    userdetails.name && localStorage.setItem("name", userdetails.name);
+    userdetails.phone && localStorage.setItem("phone", userdetails.phone);
+    userdetails.user_image &&
+      localStorage.setItem("user_image", userdetails.user_image);
+    userdetails.whatsapp_opt_in &&
+      localStorage.setItem("whatsapp_opt_in", userdetails.whatsapp_opt_in);
   } catch {}
   return {
     type: actionTypes.AUTH_SETUSERDETAILS,
@@ -173,6 +179,7 @@ export const checkAuthState = () => {
           email: localStorage.getItem("email"),
           id: localStorage.getItem("user_id"),
           image: localStorage.getItem("user_image"),
+          whatsapp_opt_in: localStorage.getItem("whatsapp_opt_in"),
         };
         //Update redux with token and user details
         dispatch(authSuccess(access_token));
@@ -239,6 +246,7 @@ export const auth = (mobile, password, name, email, whatsapp) => {
             email: response.data.email,
             id: response.data.id,
             image: response.data.profile_pic,
+            whatsapp_opt_in: response.data.whatsapp_opt_in,
           };
           //Store user details in local storage
           localStorage.setItem("name", userdata.name);
@@ -246,6 +254,7 @@ export const auth = (mobile, password, name, email, whatsapp) => {
           localStorage.setItem("phone", userdata.phone);
           localStorage.setItem("user_id", userdata.id);
           localStorage.setItem("user_image", userdata.image);
+          localStorage.setItem("whatsapp_opt_in", userdata.whatsapp_opt_in);
 
           //Store token expiration date in local storage
           const expirationDate = new Date(
@@ -317,6 +326,7 @@ export const googleAuth = (response) => {
             email: res.data.email,
             id: res.data.id,
             image: res.data.profile_pic,
+            whatsapp_opt_in: res.data.whatsapp_opt_in,
           };
 
           if (!res.data.phone) {
@@ -329,6 +339,7 @@ export const googleAuth = (response) => {
           localStorage.setItem("phone", userdata.phone);
           localStorage.setItem("user_id", userdata.id);
           localStorage.setItem("user_image", userdata.image);
+          localStorage.setItem("whatsapp_opt_in", userdata.whatsapp_opt_in);
 
           //Store token expiration date in local storage
           const expirationDate = new Date(
@@ -409,6 +420,9 @@ export const changeUserDetails = (userdetails) => {
         localStorage.setItem("name", res.data.name);
         localStorage.setItem("email", res.data.email);
         localStorage.setItem("phone", res.data.phone);
+        localStorage.setItem("user_id", res.data.id);
+        localStorage.setItem("user_image", res.data.profile_pic);
+        localStorage.setItem("whatsapp_opt_in", res.data.whatsapp_opt_in);
         dispatch(setUserDetails(userdetails));
         dispatch(authSetLoginMessage(null));
         dispatch(authCloseLogin());

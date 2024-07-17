@@ -126,7 +126,7 @@ export async function getStaticProps(context) {
   } catch (err) {
     console.log(
       `[ERROR][statePage:axiosTravelPlannerInstance][${context.params.state}]: `,
-      err.message
+      err
     );
   }
 

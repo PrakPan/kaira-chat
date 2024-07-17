@@ -70,7 +70,7 @@ const ExperienceCard = (props) => {
 
   return (
     <Container
-      className="netflix-ite group:"
+      className="netflix-ite relative"
       onClick={_handleRedirect}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
