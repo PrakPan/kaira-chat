@@ -18,11 +18,13 @@ const EditInput = connect(
   const [loading, setLoading] = useState(false);
 
   const handleSave = () => {
-    setLoading(true);
-    let data = {};
-    data[name] = value;
-    changeUserDetails(data);
-    setLoading(false);
+    if (value !== text) {
+      setLoading(true);
+      let data = {};
+      data[name] = value;
+      changeUserDetails(data);
+      setLoading(false);
+    }
     closeEdit(false);
   };
 
