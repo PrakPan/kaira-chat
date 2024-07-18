@@ -87,10 +87,13 @@ docker-compose.yml
 Dockerfile
 
 # Sentry
-
 *.swp
-
 .sentryclirc
+
+# Sentry Config File
+.env.sentry-build-plugin
+sentry-example-api.js
+sentry-example-page.jsx
 
 pm2-deploy.sh
 ecosystem.config.js
