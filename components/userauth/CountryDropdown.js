@@ -28,7 +28,7 @@ const CountryCodeDropdown = (props) => {
     };
   }, []);
 
-  return <Container ref={ref}>{props.ExtensionOptions}</Container>;
+  return <Container className="flex flex-col gap-2" ref={ref}>{props.ExtensionOptions}</Container>;
 };
 
 export default CountryCodeDropdown;

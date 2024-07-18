@@ -135,13 +135,6 @@ var userDetails = {
 const LogIn = React.memo((props) => {
   let isPageWide = media("(min-width: 768px)");
 
-  if (props.loadingsocial)
-    return (
-      <div style={{ height: "27.25rem", width: "100%", display: "flex" }}>
-        <LoginLoadingIcon width={"7rem"} />
-      </div>
-    );
-
   const mobileRef = useRef();
   const [mobile, setMobile] = useState("+91");
   const [otpResent, setOtpResent] = useState(false);
@@ -388,6 +381,13 @@ const LogIn = React.memo((props) => {
   const _handleGoogleLogin = useGoogleLogin({
     onSuccess: (tokenResponse) => props.onGoogleAuth(tokenResponse),
   });
+
+  if (props.loadingsocial)
+    return (
+      <div style={{ height: "27.25rem", width: "100%", display: "flex" }}>
+        <LoginLoadingIcon width={"7rem"} />
+      </div>
+    );
 
   return (
     <div className="font-lexend">
