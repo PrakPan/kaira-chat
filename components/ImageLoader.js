@@ -159,7 +159,10 @@ const ImageLoader = (props) => {
   }
 
   const _handleError = () => {
-    setError(true);
+    if (!error) {
+      if (props.onfail) props.onfail();
+      setError(true);
+    }
   };
 
   let is_url = isValidHttpUrl(props.url);
@@ -207,12 +210,12 @@ const ImageLoader = (props) => {
                 ? error
                   ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                   : isPageLoaded
-                  ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                    ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
+                    : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
             onLoad={fullImageLoadedHandler}
-            onError={props.onfail ? props.onfail : _handleError}
+            onError={_handleError}
             resizeMode={props.resizeMode}
             style={{
               height: props.height ? props.height : "auto",
@@ -260,12 +263,12 @@ const ImageLoader = (props) => {
                 ? error
                   ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                   : isPageLoaded
-                  ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                    ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
+                    : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
             onLoad={fullImageLoadedHandler}
-            onError={props.onfail ? props.onfail : _handleError}
+            onError={_handleError}
             resizeMode={props.resizeMode}
             style={{
               height: props.height ? props.height : "auto",
@@ -315,14 +318,14 @@ const ImageLoader = (props) => {
                 ? error
                   ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                   : isPageLoaded
-                  ? `${imgUrlEndPoint}/${btoa(imageRequestMobile)}`
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                    ? `${imgUrlEndPoint}/${btoa(imageRequestMobile)}`
+                    : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
             width={props.dimensionsMobile.width}
             height={props.dimensionsMobile.height}
             onLoad={fullImageLoadedHandler}
-            onError={props.onfail ? props.onfail : _handleError}
+            onError={_handleError}
             resizeMode={props.resizeMode}
             style={{
               height: props.height ? props.height : "auto",
@@ -369,12 +372,12 @@ const ImageLoader = (props) => {
                 ? error
                   ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                   : isPageLoaded
-                  ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                    ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
+                    : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
             onLoad={fullImageLoadedHandler}
-            onError={props.onfail ? props.onfail : _handleError}
+            onError={_handleError}
             resizeMode={props.resizeMode}
             style={{
               height: props.height ? props.height : "auto",

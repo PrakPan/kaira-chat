@@ -8,7 +8,8 @@ const Container = styled.div`
   overflow: auto;
   height: 17.5rem;
   width: 90px;
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
+  box-shadow:
+    rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
     rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
 `;
 
@@ -28,7 +29,7 @@ const CountryCodeDropdown = (props) => {
     };
   }, []);
 
-  return <Container className="flex flex-col gap-2" ref={ref}>{props.ExtensionOptions}</Container>;
+  return <Container ref={ref}>{props.ExtensionOptions}</Container>;
 };
 
 export default CountryCodeDropdown;
