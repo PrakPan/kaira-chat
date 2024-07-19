@@ -26,10 +26,10 @@ const Details = (props) => {
   const [couponSlide, setCouponSlide] = useState(false);
   const [isDatePast, setIsDatePast] = useState(false);
   const [iscouponApplied, setiscouponApplied] = useState(
-    props.payment?.coupon ? true : false
+    props.payment?.coupon ? true : false,
   );
   const [inputValue, setInputValue] = useState(
-    props.payment?.coupon ? props.payment?.coupon?.code : ""
+    props.payment?.coupon ? props.payment?.coupon?.code : "",
   );
   const [couponLoading, setCouponLoading] = useState(false);
   const [isSucess, setIsSucess] = useState({
@@ -70,7 +70,7 @@ const Details = (props) => {
           headers: {
             Authorization: `Bearer ${props.token}`,
           },
-        }
+        },
       )
       .then((res) => {
         setCouponLoading(false);
@@ -120,7 +120,7 @@ const Details = (props) => {
           headers: {
             Authorization: `Bearer ${props.token}`,
           },
-        }
+        },
       )
       .then((res) => {
         setCouponLoading(false);
@@ -302,7 +302,7 @@ const mapStateToProps = (state) => {
     orderCreated: state.experience.orderCreated,
     couponApplied: state.experience.couponApplied,
     couponInvalid: state.experience.couponInvalid,
-    itinerary_id: state.ItineraryId
+    itinerary_id: state.ItineraryId,
   };
 };
 

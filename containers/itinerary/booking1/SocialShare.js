@@ -1,0 +1,169 @@
+import { useState } from "react";
+import { useRef } from "react";
+import { FaWhatsapp, FaFacebook } from "react-icons/fa";
+import { MdLink } from "react-icons/md";
+import { RiTwitterXLine } from "react-icons/ri";
+import { IoIosDoneAll, IoMdClose } from "react-icons/io";
+import { CgMoreO } from "react-icons/cg";
+
+export const SocialShare = ({ more }) => {
+  const [copied, setCopied] = useState(false);
+
+  const getURL = () => {
+    let currentUrl = window.location.href;
+    const newUrl = new URL(currentUrl);
+    newUrl.search = "";
+
+    return newUrl.toString();
+  };
+
+  const handleClick = (id) => {
+    const url = getURL();
+    const text = "Check out this amazing itinerary";
+
+    switch (id) {
+      case "whatsapp":
+        const whatsappShareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text + " " + url)}`;
+        window.open(whatsappShareUrl, "_blank", "noopener,noreferrer");
+        break;
+      case "fb":
+        const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+        window.open(facebookShareUrl, "_blank", "noopener,noreferrer");
+        break;
+      case "twitter":
+        const twitterShareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+        window.open(twitterShareUrl, "_blank", "noopener,noreferrer");
+        break;
+      default:
+        return;
+    }
+  };
+
+  const copyToClipboard = () => {
+    const url = getURL();
+
+    if (navigator.clipboard && window.isSecureContext) {
+      // Use the navigator clipboard API when available and secure context
+      navigator.clipboard.writeText(url).then(
+        () => {
+          setCopied(true);
+          setTimeout(() => {
+            setCopied(false);
+          }, 1000);
+        },
+        (err) => {
+          console.error("Could not copy text: ", err);
+        },
+      );
+    } else {
+      // Fallback method for older browsers or insecure context
+      const textArea = document.createElement("textarea");
+      textArea.value = url;
+      textArea.style.position = "fixed"; // Avoid scrolling to bottom of page in mobile browsers
+      textArea.style.opacity = 0; // Make it invisible
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        const successful = document.execCommand("copy");
+        if (successful) {
+          setCopied(true);
+          setTimeout(() => {
+            setCopied(false);
+          }, 1000);
+        } else {
+          console.error("Fallback: Could not copy text");
+        }
+      } catch (err) {
+        console.error("Fallback: Could not copy text: ", err);
+      }
+      document.body.removeChild(textArea);
+    }
+  };
+
+  const handleMore = () => {
+    const url = getURL();
+
+    if (navigator.share) {
+      navigator
+        .share({
+          title: document.title,
+          text: "Check out this amazing itinerary",
+          url: url,
+        })
+        .then(() => {
+          console.log("Thanks for sharing!");
+        })
+        .catch(console.error);
+    } else {
+      // fallback
+    }
+  };
+
+  return (
+    <div className="w-full flex flex-col items-center gap-3 p-0">
+      <div className="text-xl flex flex-col gap-1">
+        <div>Liked this itinerary?</div>
+        <div>Share on social media</div>
+      </div>
+      <div className="relative flex flex-row items-center gap-4 pt-3">
+        {copied && (
+          <div className="absolute top-0 flex flex-row items-center gap-1 text-sm">
+            Copied <IoIosDoneAll className="text-2xl text-green-500" />
+          </div>
+        )}
+        <MdLink
+          onClick={copyToClipboard}
+          className="text-[40px] text-[#1D9BF0] cursor-pointer"
+        />
+        <FaWhatsapp
+          onClick={() => handleClick("whatsapp")}
+          className="text-[40px] text-green-600 cursor-pointer"
+        />
+        <FaFacebook
+          onClick={() => handleClick("fb")}
+          className="text-[40px] text-[#3b5998] cursor-pointer"
+        />
+        <RiTwitterXLine
+          onClick={() => handleClick("twitter")}
+          className="text-[35px] text-black cursor-pointer"
+        />
+        {more && (
+          <CgMoreO
+            onClick={handleMore}
+            className="text-[35px] text-gray-500 cursor-pointer"
+          />
+        )}
+      </div>
+    </div>
+  );
+};
+
+export const SocialShareMobile = ({ setShare }) => {
+  const ref = useRef();
+
+  const closeShare = (event) => {
+    if (ref.current && !ref.current.contains(event.target)) {
+      setShare(false);
+    }
+  };
+
+  return (
+    <div
+      onClick={(e) => closeShare(e)}
+      className="z-[2000] fixed inset-0 bg-black bg-opacity-50 flex items-end"
+    >
+      <div ref={ref} className={`w-full bg-white flex flex-col gap-3 p-3`}>
+        <div className="flex flex-row items-center gap-2">
+          <IoMdClose
+            onClick={() => setShare(false)}
+            className="text-xl cursor-pointer"
+          />
+          Share
+        </div>
+
+        <SocialShare more />
+      </div>
+    </div>
+  );
+};

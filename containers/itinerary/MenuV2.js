@@ -34,6 +34,9 @@ import { connect } from "react-redux";
 import { openNotification } from "../../store/actions/notification";
 import { logEvent } from "../../services/ga/Index";
 import openTailoredModal from "../../services/openTailoredModal";
+import { SocialShare } from "./booking1/SocialShare.js";
+import { SocialShareMobile } from "./booking1/SocialShare.js";
+import { IoShare } from "react-icons/io5";
 
 const useStyles = {
   root: `
@@ -58,6 +61,7 @@ const SimpleTabsV2 = (props) => {
   const [CityData, setCityData] = useState();
   const [selectedPoi, setSelectedPoi] = useState({ name: "Kasol" });
   const [loading, setLoading] = useState(false);
+  const [share, setShare] = useState(false);
   const isDesktop = useMediaQuery("(min-width:1148px)");
 
   useEffect(() => {
@@ -106,7 +110,7 @@ const SimpleTabsV2 = (props) => {
       setCityData,
       CityData,
       RoutesData,
-      TransfersData
+      TransfersData,
     );
   }, [props.breif, props.routes]);
 
@@ -316,12 +320,12 @@ const SimpleTabsV2 = (props) => {
                   props?.payment?.show_per_person_cost
                     ? "Per Person"
                     : props.payment?.is_estimated_price
-                    ? `${
-                        props.payment.total_cost === 0
-                          ? "No Bookings"
-                          : "Estimated Price"
-                      }`
-                    : "Total Cost"}
+                      ? `${
+                          props.payment.total_cost === 0
+                            ? "No Bookings"
+                            : "Estimated Price"
+                        }`
+                      : "Total Cost"}
                 </div>
                 {props.payment ? (
                   <div>
@@ -332,14 +336,14 @@ const SimpleTabsV2 = (props) => {
                         ? getIndianPrice(
                             Math.round(
                               Math.round(
-                                props.payment.per_person_discounted_cost
-                              ) / 100
-                            )
+                                props.payment.per_person_discounted_cost,
+                              ) / 100,
+                            ),
                           )
                         : getIndianPrice(
                             Math.round(
-                              Math.round(props.payment.discounted_cost) / 100
-                            )
+                              Math.round(props.payment.discounted_cost) / 100,
+                            ),
                           )}
                       {"/-"}
                     </span>
@@ -885,12 +889,15 @@ const SimpleTabsV2 = (props) => {
                 plan={props.plan}
                 _GetInTouch={() => _GetInTouch()}
               ></SummaryContainer>
+              <div className="p-5">
+                <SocialShare />
+              </div>
             </div>
           ) : null}
         </SplitScreen>
       ) : null}
 
-      <div className="  z-10 sticky shadow-lg z-2 bottom-[0px] bg-white px-1 py-2 md:hidden -mx-5">
+      <div className="z-10 sticky shadow-lg z-2 bottom-[0px] bg-white px-1 py-2 md:hidden -mx-5">
         <div className="flex flex-row justify-between items-center mx-3">
           <div className="flex flex-col">
             <div className="text-sm">
@@ -898,8 +905,8 @@ const SimpleTabsV2 = (props) => {
               props?.payment?.show_per_person_cost
                 ? "Per Person"
                 : props.payment?.is_estimated_price
-                ? `${props.payment.total_cost == 0 ? "" : "Estimated Price"}`
-                : "Total Cost"}
+                  ? `${props.payment.total_cost == 0 ? "" : "Estimated Price"}`
+                  : "Total Cost"}
             </div>
             {props.payment ? (
               <div>
@@ -910,13 +917,13 @@ const SimpleTabsV2 = (props) => {
                     ? getIndianPrice(
                         Math.round(
                           Math.round(props.payment.per_person_discounted_cost) /
-                            100
-                        )
+                            100,
+                        ),
                       )
                     : getIndianPrice(
                         Math.round(
-                          Math.round(props.payment.discounted_cost) / 100
-                        )
+                          Math.round(props.payment.discounted_cost) / 100,
+                        ),
                       )}
                   {"/-"}
                 </span>
@@ -1072,6 +1079,19 @@ const SimpleTabsV2 = (props) => {
         </div>
       </div>
 
+      <div className="z-[999] fixed bottom-[80px] right-4 md:hidden bg-white p-2 w-fit flex items-center justify-center rounded-full border-2">
+        <IoShare
+          onClick={() => setShare(true)}
+          className="text-[40px] cursor-pointer"
+        />
+      </div>
+
+      {share && (
+        <div className="md:hidden">
+          <SocialShareMobile setShare={setShare} />
+        </div>
+      )}
+
       {!props.preview ? (
         <PoiEditModal
           setItinerary={props.setItinerary}
@@ -1127,7 +1147,7 @@ function newFunction(
   setCityData,
   CityData,
   RoutesData,
-  TransfersData
+  TransfersData,
 ) {
   function replaceLatLong(source, destination) {
     return {
@@ -1155,11 +1175,11 @@ function newFunction(
         ) {
           try {
             const data = await getCityDetails(
-              props.breif.city_slabs[i].city_id
+              props.breif.city_slabs[i].city_id,
             );
             const updatedRoutes = replaceLatLong(
               props.breif.city_slabs[i],
-              data
+              data,
             );
             CityDataTemp.push(updatedRoutes);
           } catch (error) {
