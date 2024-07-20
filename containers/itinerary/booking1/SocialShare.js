@@ -106,33 +106,62 @@ export const SocialShare = ({ more }) => {
         <div>Liked this itinerary?</div>
         <div>Share on social media</div>
       </div>
-      <div className="relative flex flex-row items-center gap-4 pt-3">
-        {copied && (
-          <div className="absolute top-0 flex flex-row items-center gap-1 text-sm">
-            Copied <IoIosDoneAll className="text-2xl text-green-500" />
+      <div className="w-[99%] md:w-full flex flex-row justify-center items-center gap-3 pt-3 overflow-x-auto hide-scrollbar">
+        <div className="relative flex flex-col items-center">
+          {copied && (
+            <div className="absolute -top-3 left-0 flex flex-row items-center gap-1 text-sm">
+              Copied <IoIosDoneAll className="text-2xl text-green-500" />
+            </div>
+          )}
+          <div className="p-1 flex items-center justify-center">
+            <MdLink
+              onClick={copyToClipboard}
+              className="text-[40px] text-[#1D9BF0] cursor-pointer"
+            />
           </div>
-        )}
-        <MdLink
-          onClick={copyToClipboard}
-          className="text-[40px] text-[#1D9BF0] cursor-pointer"
-        />
-        <FaWhatsapp
-          onClick={() => handleClick("whatsapp")}
-          className="text-[40px] text-green-600 cursor-pointer"
-        />
-        <FaFacebook
-          onClick={() => handleClick("fb")}
-          className="text-[40px] text-[#3b5998] cursor-pointer"
-        />
-        <RiTwitterXLine
-          onClick={() => handleClick("twitter")}
-          className="text-[35px] text-black cursor-pointer"
-        />
+          <div className="text-xs font-medium text-nowrap">Copy link</div>
+        </div>
+
+        <div className="flex flex-col items-center">
+          <div className="p-1 flex items-center justify-center">
+            <FaWhatsapp
+              onClick={() => handleClick("whatsapp")}
+              className="text-[40px] text-green-600 cursor-pointer"
+            />
+          </div>
+          <div className="text-xs font-medium text-nowrap">Whatsapp</div>
+        </div>
+
+        <div className="flex flex-col items-center">
+          <div className="p-1 flex items-center justify-center">
+            <FaFacebook
+              onClick={() => handleClick("fb")}
+              className="text-[40px] text-[#3b5998] cursor-pointer"
+            />
+          </div>
+          <div className="text-xs font-medium text-nowrap">Facebook</div>
+        </div>
+
+        <div className="flex flex-col items-center">
+          <div className="p-1 flex items-center justify-center">
+            <RiTwitterXLine
+              onClick={() => handleClick("twitter")}
+              className="text-[40px] text-black cursor-pointer"
+            />
+          </div>
+          <div className="text-xs font-medium text-nowrap">Twitter</div>
+        </div>
+
         {more && (
-          <CgMoreO
-            onClick={handleMore}
-            className="text-[35px] text-gray-500 cursor-pointer"
-          />
+          <div className="flex flex-col items-center">
+            <div className="p-1 flex items-center justify-center">
+              <CgMoreO
+                onClick={handleMore}
+                className="text-[35px] text-gray-500 cursor-pointer"
+              />
+            </div>
+            <div className="text-xs font-medium text-nowrap">More Apps</div>
+          </div>
         )}
       </div>
     </div>
@@ -159,7 +188,7 @@ export const SocialShareMobile = ({ setShare }) => {
             onClick={() => setShare(false)}
             className="text-xl cursor-pointer"
           />
-          Share
+          <div className="text-xl">Share</div>
         </div>
 
         <SocialShare more />
