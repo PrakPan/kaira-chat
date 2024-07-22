@@ -102,65 +102,75 @@ export const SocialShare = ({ more }) => {
 
   return (
     <div className="w-full flex flex-col items-center gap-3 p-0">
-      <div className="text-xl flex flex-col gap-1">
+      <div className="text-xl flex flex-col gap-1 text-gray-600">
         <div>Liked this itinerary?</div>
         <div>Share on social media</div>
       </div>
       <div className="w-[99%] md:w-full flex flex-row justify-center items-center gap-3 pt-3 overflow-x-auto hide-scrollbar">
-        <div className="relative flex flex-col items-center">
+        <div className="relative flex flex-col gap-1 items-center">
           {copied && (
-            <div className="absolute -top-3 left-0 flex flex-row items-center gap-1 text-sm">
+            <div className="absolute -top-6 left-0 flex flex-row items-center gap-1 text-sm text-gray-600">
               Copied <IoIosDoneAll className="text-2xl text-green-500" />
             </div>
           )}
-          <div className="p-1 flex items-center justify-center">
+          <div className="p-1 flex items-center justify-center bg-[#1D9BF0] rounded-full">
             <MdLink
               onClick={copyToClipboard}
-              className="text-[40px] text-[#1D9BF0] cursor-pointer"
+              className="text-[40px] text-white p-1 cursor-pointer"
             />
           </div>
-          <div className="text-xs font-medium text-nowrap">Copy link</div>
+          <div className="text-xs font-medium text-nowrap text-gray-600">
+            Copy Link
+          </div>
         </div>
 
-        <div className="flex flex-col items-center">
-          <div className="p-1 flex items-center justify-center">
+        <div className="flex flex-col gap-1 items-center">
+          <div className="p-1 flex items-center justify-center bg-green-500 rounded-full">
             <FaWhatsapp
               onClick={() => handleClick("whatsapp")}
-              className="text-[40px] text-green-600 cursor-pointer"
+              className="text-[40px] text-white p-1 cursor-pointer"
             />
           </div>
-          <div className="text-xs font-medium text-nowrap">Whatsapp</div>
+          <div className="text-xs font-medium text-nowrap text-gray-600">
+            Whatsapp
+          </div>
         </div>
 
-        <div className="flex flex-col items-center">
-          <div className="p-1 flex items-center justify-center">
+        <div className="flex flex-col gap-1 items-center">
+          <div className="p-1 flex items-center justify-center bg-[#3b5998] rounded-full">
             <FaFacebook
               onClick={() => handleClick("fb")}
-              className="text-[40px] text-[#3b5998] cursor-pointer"
+              className="text-[40px] text-white p-1 cursor-pointer"
             />
           </div>
-          <div className="text-xs font-medium text-nowrap">Facebook</div>
+          <div className="text-xs font-medium text-nowrap text-gray-600">
+            Facebook
+          </div>
         </div>
 
-        <div className="flex flex-col items-center">
-          <div className="p-1 flex items-center justify-center">
+        <div className="flex flex-col gap-1 items-center">
+          <div className="p-1 flex items-center justify-center bg-black rounded-full">
             <RiTwitterXLine
               onClick={() => handleClick("twitter")}
-              className="text-[40px] text-black cursor-pointer"
+              className="text-[40px] text-white p-1 cursor-pointer"
             />
           </div>
-          <div className="text-xs font-medium text-nowrap">Twitter</div>
+          <div className="text-xs font-medium text-nowrap text-gray-600">
+            Twitter
+          </div>
         </div>
 
         {more && (
-          <div className="flex flex-col items-center">
-            <div className="p-1 flex items-center justify-center">
+          <div className="flex flex-col gap-1 items-center">
+            <div className="p-1 flex items-center justify-center bg-gray-500 rounded-full">
               <CgMoreO
                 onClick={handleMore}
-                className="text-[35px] text-gray-500 cursor-pointer"
+                className="text-[40px] text-white p-1 cursor-pointer"
               />
             </div>
-            <div className="text-xs font-medium text-nowrap">More Apps</div>
+            <div className="text-xs font-medium text-nowrap text-gray-600">
+              More Apps
+            </div>
           </div>
         )}
       </div>
@@ -186,7 +196,7 @@ export const SocialShareMobile = ({ setShare }) => {
         <div className="flex flex-row items-center gap-2">
           <IoMdClose
             onClick={() => setShare(false)}
-            className="text-xl cursor-pointer"
+            className="text-xl font-bold cursor-pointer"
           />
           <div className="text-xl">Share</div>
         </div>

@@ -1079,10 +1079,10 @@ const SimpleTabsV2 = (props) => {
         </div>
       </div>
 
-      <div className="z-[999] fixed bottom-[80px] right-4 md:hidden bg-white p-2 w-fit flex items-center justify-center rounded-full border-2">
+      <div className="z-[999] fixed bottom-[80px] right-4 md:hidden bg-black p-2 w-fit flex items-center justify-center rounded-full border-2">
         <IoShare
           onClick={() => setShare(true)}
-          className="text-[40px] cursor-pointer"
+          className="text-[30px] text-gray-300 cursor-pointer"
         />
       </div>
 

@@ -56,7 +56,7 @@ const Profile = (props) => {
 
   const Name = styled.p`
     font-size: ${(props) => props.theme.fontsizes.mobile.text.two};
-    margin: 1rem 0 0 0;
+    margin: 0 0 0 0;
     font-weight: 700;
     @media screen and (min-width: 768px) {
       font-size: ${(props) => props.theme.fontsizes.desktop.text.two};
@@ -127,7 +127,7 @@ const Profile = (props) => {
               />
             </div>
           ) : (
-            <div className="flex flex-row items-center">
+            <div className="flex flex-row gap-2 items-center">
               <Name className="font-lexend">{props.name}</Name>
               <MdEdit
                 onClick={(e) => {
@@ -155,7 +155,7 @@ const Profile = (props) => {
           <DetailHeading className="font-lexend">Contact Number</DetailHeading>
 
           {editPhone ? (
-            <div className="w-full flex flex-row items-center gap-3 mb-4">
+            <div className="w-full flex flex-row justify-center items-center gap-3 mb-4">
               <EditInput
                 name="phone"
                 type="text"
@@ -164,7 +164,7 @@ const Profile = (props) => {
               />
             </div>
           ) : (
-            <div className="flex flex-row items-center gap-3 mb-4">
+            <div className="flex flex-row justify-center items-center md:justify-start gap-3 mb-4">
               <DetailText style={{ marginBottom: "0" }}>
                 {props.phone}
               </DetailText>
@@ -179,7 +179,7 @@ const Profile = (props) => {
             </div>
           )}
 
-          <div className="flex flex-row items-center gap-2 mb-4">
+          <div className="flex flex-row items-center justify-center md:justify-start gap-2 mb-4">
             <div
               onClick={() => setWhatsapp((prev) => !prev)}
               className={`w-5 h-5 flex items-center justify-center rounded-md border-2 border-black cursor-pointer ${
@@ -189,7 +189,10 @@ const Profile = (props) => {
               {whatsapp && <MdDone className="text-lg text-white" />}
             </div>
 
-            <DetailHeading style={{ marginBottom: "0", fontSize: "16px" }}>
+            <DetailHeading
+              className="text-xs w-fit"
+              style={{ marginBottom: "0", fontSize: "15px" }}
+            >
               Receive booking updates on WhatsApp?
             </DetailHeading>
           </div>
@@ -199,7 +202,7 @@ const Profile = (props) => {
           </DetailHeading>
 
           {editEmail ? (
-            <div className="mb-4">
+            <div className="w-full flex items-center justify-center">
               <EditInput
                 name="email"
                 type="email"
@@ -208,7 +211,7 @@ const Profile = (props) => {
               />
             </div>
           ) : (
-            <div className="flex flex-row gap-3 items-center mb-4">
+            <div className="flex flex-row gap-3 justify-center md:justify-start items-center">
               <DetailText style={{ marginBottom: "0" }}>
                 {props.email}
               </DetailText>

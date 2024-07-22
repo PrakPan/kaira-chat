@@ -11,9 +11,14 @@ const CityDetailsDrawer = (props) => {
   const [data, setData] = useState(null);
 
   const getCityData = async () => {
-    const res = await axioscitydatainstance.get("?city_id=" + props.city_id);
-    setData(res.data);
+    try {
+      const res = await axioscitydatainstance.get("?city_id=" + props.city_id);
+      setData(res.data);
+    } catch (err) {
+      console.log("[ERROR][CityDetailsDrawer:getCityData]: ", err.message);
+    }
   };
+
   useEffect(() => {
     if (props.show) {
       getCityData();

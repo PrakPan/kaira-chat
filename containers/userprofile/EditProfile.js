@@ -182,7 +182,7 @@ export const EditInput = connect(
     if (token) {
       if (
         (name === "phone" && extensions[extension].label + value !== text) ||
-        value != text
+        ((name === "email" || name === "name") && value != text)
       ) {
         setLoading(true);
         let data = {};
@@ -283,10 +283,10 @@ export const EditInput = connect(
   };
 
   return (
-    <div className="w-full flex flex-col gap-2">
+    <div className="w-full flex flex-col items-center justify-center gap-2">
       <div
-        className={`w-full flex flex-row items-center gap-3 ${
-          name === "name" && "justify-center"
+        className={`w-full flex flex-row justify-center items-center gap-3 ${
+          name === "name" ? "md:justify-center" : "md:justify-start"
         }`}
       >
         {name === "phone" && (
