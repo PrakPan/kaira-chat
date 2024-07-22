@@ -5,6 +5,7 @@ import { MdLink } from "react-icons/md";
 import { RiTwitterXLine } from "react-icons/ri";
 import { IoIosDoneAll, IoMdClose } from "react-icons/io";
 import { CgMoreO } from "react-icons/cg";
+import { useEffect } from "react";
 
 export const SocialShare = ({ more }) => {
   const [copied, setCopied] = useState(false);
@@ -106,10 +107,10 @@ export const SocialShare = ({ more }) => {
         <div>Liked this itinerary?</div>
         <div>Share on social media</div>
       </div>
-      <div className="w-[99%] md:w-full flex flex-row justify-center items-center gap-3 pt-3 overflow-x-auto hide-scrollbar">
+      <div className="w-[99%] md:w-full flex flex-row justify-center items-center gap-3 pt-4 overflow-x-auto hide-scrollbar">
         <div className="relative flex flex-col gap-1 items-center">
           {copied && (
-            <div className="absolute -top-6 left-0 flex flex-row items-center gap-1 text-sm text-gray-600">
+            <div className="absolute z-50 -top-6 left-0 flex flex-row items-center gap-1 text-sm text-gray-600">
               Copied <IoIosDoneAll className="text-2xl text-green-500" />
             </div>
           )}
@@ -192,8 +193,11 @@ export const SocialShareMobile = ({ setShare }) => {
       onClick={(e) => closeShare(e)}
       className="z-[2000] fixed inset-0 bg-black bg-opacity-50 flex items-end"
     >
-      <div ref={ref} className={`w-full bg-white flex flex-col gap-3 p-3`}>
-        <div className="flex flex-row items-center gap-2">
+      <div
+        ref={ref}
+        className={`animate-slideUp w-full bg-white flex flex-col gap-3 py-2 transition-all duration-300`}
+      >
+        <div className="flex flex-row items-center gap-2 px-2">
           <IoMdClose
             onClick={() => setShare(false)}
             className="text-xl font-bold cursor-pointer"
