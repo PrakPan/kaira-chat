@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { MdDone, MdEdit } from "react-icons/md";
 import ImageLoader from "../../components/ImageLoader";
 import media from "../../components/media";
-import { EditInput } from "./EditProfile";
+import { EditInput, ImageInput } from "./EditProfile";
 import * as authaction from "../../store/actions/auth";
 
 const Container = styled.div`
@@ -34,6 +34,7 @@ const ImageNameContainer = styled.div`
 
 const Profile = (props) => {
   let isPageWide = media("(min-width: 768px)");
+  const [editImage, setEditImage] = useState(false);
   const [editName, setEditName] = useState(false);
   const [editPhone, setEditPhone] = useState(false);
   const [editEmail, setEditEmail] = useState(false);
@@ -105,18 +106,41 @@ const Profile = (props) => {
     <Container className="border-thin">
       <OverviewContainer>
         <ImageNameContainer className="center-div flex flex-col gap-4 items-center">
-          <ImageLoader
-            dimesions={{ width: 1600, height: 1600 }}
-            dimensionsMobile={{ width: 1600, height: 1600 }}
-            url={
-              props.image !== "null" && props.image !== null
-                ? props.image
-                : "media/website/user.svg"
-            }
-            width="40%"
-            borderRadius="50%"
-            widthmobile="40%"
-          ></ImageLoader>
+          {editImage ? (
+            <ImageInput setEditImage={setEditImage}>
+              <ImageLoader
+                dimesions={{ width: 1600, height: 1600 }}
+                dimensionsMobile={{ width: 1600, height: 1600 }}
+                url={
+                  props.image !== "null" && props.image !== null
+                    ? props.image
+                    : "media/website/user.svg"
+                }
+                width="100%"
+                borderRadius="50%"
+                widthmobile="95%"
+              ></ImageLoader>
+            </ImageInput>
+          ) : (
+            <div
+              onClick={() => setEditImage(true)}
+              className="w-[45%] cursor-pointer rounded-full"
+            >
+              <ImageLoader
+                dimesions={{ width: 1600, height: 1600 }}
+                dimensionsMobile={{ width: 1600, height: 1600 }}
+                url={
+                  props.image !== "null" && props.image !== null
+                    ? props.image
+                    : "media/website/user.svg"
+                }
+                width="100%"
+                borderRadius="50%"
+                widthmobile="95%"
+              ></ImageLoader>
+            </div>
+          )}
+
           {editName ? (
             <div className="w-full flex items-center justify-center py-[12px]">
               <EditInput

@@ -6,11 +6,15 @@ import styled from "styled-components";
 import OTPInput from "react-otp-input";
 import { BiError } from "react-icons/bi";
 import { FiChevronDown } from "react-icons/fi";
+import { LuImagePlus } from "react-icons/lu";
 import CountryCodeDropdown from "../../components/userauth/CountryDropdown";
-import { userEmailEditInstance } from "../../services/user/edit";
-import axiosuserinstance from "../../services/user/edit";
+import axiosuserinstance, {
+  userEmailEditInstance,
+  userImageUploadInstance,
+} from "../../services/user/edit";
 import * as authaction from "../../store/actions/auth";
 import extensions from "../../public/content/extensionsdata";
+import { useRef } from "react";
 
 const CountryCodeContainer = styled.div`
   position: relative;
@@ -449,3 +453,79 @@ const OPTInput = ({ name, token, phone, email, setUserDetails, closeEdit }) => {
     </div>
   );
 };
+
+export const ImageInput = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(({ children, setEditImage, setUserDetails, token }) => {
+  const fileInputRef = useRef();
+  const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const onFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const onFileUpload = async () => {
+    if (!file) return;
+
+    setLoading(true);
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    userImageUploadInstance
+      .patch("", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((response) => {
+        setUserDetails(response.data);
+        setLoading(true);
+        setEditImage(false);
+      })
+      .catch((err) => {
+        setLoading(true);
+        setEditImage(false);
+        console.log("[ERROR][EditProfile:onFileUpload]: ", err.message);
+      });
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current.click();
+  };
+
+  return (
+    <div
+      className={`relative w-[45%] flex flex-col gap-3 items-center ${loading && "opacity-50"}`}
+    >
+      <div className="w-full opacity-75">{children}</div>
+      <LuImagePlus
+        onClick={triggerFileInput}
+        className="text-[60px] md:text-[100px] absolute top-[50%] translate-y-[-70%] md:translate-y-[-60%] text-white cursor-pointer"
+      />
+      <input
+        ref={fileInputRef}
+        type="file"
+        onChange={onFileChange}
+        className="hidden"
+      ></input>
+      <div className="flex flex-row gap-4 text-sm">
+        <button
+          onClick={() => setEditImage(false)}
+          className="border-2 border-black px-3 py-1 rounded-md hover:bg-black hover:text-white transition-all"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={onFileUpload}
+          className="border-2 border-black px-3  py-1 rounded-md hover:bg-black hover:text-white transition-all"
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  );
+});
