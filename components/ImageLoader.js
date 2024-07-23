@@ -182,7 +182,7 @@ const ImageLoader = (props) => {
           onClick={props.onclick}
           style={{
             width: props.widthmobile ? props.widthmobile : "100%",
-            height: props.height ? props.height : "max-content",
+            height: props.heightmobile ? props.heightmobile : "max-content",
             margin: props.leftalign ? "0" : "0 auto",
             filter: props.blur ? "blur(0.5rem)" : "blur(0)",
             borderRadius: props.borderRadius ? props.borderRadius : "0",
@@ -289,7 +289,7 @@ const ImageLoader = (props) => {
           onClick={props.onclick}
           style={{
             width: props.widthmobile ? props.widthmobile : "100%",
-            height: props.height ? props.height : "auto",
+            height: props.heightmobile ? props.heightmobile : "auto",
             margin: props.leftalign ? "0" : "0 auto",
             filter: props.blur ? "blur(0.5rem)" : "blur(0)",
             borderRadius: props.borderRadius ? props.borderRadius : "0",

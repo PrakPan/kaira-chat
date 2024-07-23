@@ -8,12 +8,12 @@ import { BiError } from "react-icons/bi";
 import { FiChevronDown } from "react-icons/fi";
 import { LuImagePlus } from "react-icons/lu";
 import CountryCodeDropdown from "../../components/userauth/CountryDropdown";
+import * as authaction from "../../store/actions/auth";
+import extensions from "../../public/content/extensionsdata";
 import axiosuserinstance, {
   userEmailEditInstance,
   userImageUploadInstance,
 } from "../../services/user/edit";
-import * as authaction from "../../store/actions/auth";
-import extensions from "../../public/content/extensionsdata";
 
 const CountryCodeContainer = styled.div`
   position: relative;
@@ -401,11 +401,15 @@ const OPTInput = ({ name, token, phone, email, setUserDetails, closeEdit }) => {
   const handleEmailOPT = ({ otp }) => {
     setLoading(true);
     userEmailEditInstance
-      .get(`complete/?otp=${otp}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      .patch(
+        `complete/`,
+        { opt: otp },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      })
+      )
       .then((res) => {
         setUserDetails(res.data);
         setLoading(false);
@@ -494,7 +498,7 @@ export const ImageInput = connect(
 
   return (
     <div
-      className={`relative animate-popOut w-[45%] flex flex-col gap-3 items-center ${loading && "opacity-50"}`}
+      className={`relative w-[45%] flex flex-col gap-3 items-center ${loading && "opacity-50"}`}
     >
       <div className="w-full opacity-75">{children}</div>
       <LuImagePlus

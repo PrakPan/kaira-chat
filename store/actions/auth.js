@@ -63,15 +63,21 @@ export const setUserDetails = (userdetails) => {
   try {
     userdetails.email && localStorage.setItem("email", userdetails.email);
     userdetails.name && localStorage.setItem("name", userdetails.name);
+    userdetails.country && localStorage.setItem("country", userdetails.country);
     userdetails.phone && localStorage.setItem("phone", userdetails.phone);
     userdetails.is_phone_verified &&
       localStorage.setItem("is_phone_verified", userdetails.is_phone_verified);
     userdetails.is_email_verified &&
       localStorage.setItem("is_email_verified", userdetails.is_email_verified);
-    userdetails.user_image &&
-      localStorage.setItem("user_image", userdetails.user_image);
+    userdetails.profile_pic &&
+      localStorage.setItem("user_image", userdetails.profile_pic);
     userdetails.whatsapp_opt_in &&
       localStorage.setItem("whatsapp_opt_in", userdetails.whatsapp_opt_in);
+    userdetails.email_last_verified_on &&
+      localStorage.setItem(
+        "email_last_verified_on",
+        userdetails.email_last_verified_on,
+      );
   } catch {}
   return {
     type: actionTypes.AUTH_SETUSERDETAILS,
@@ -179,6 +185,7 @@ export const checkAuthState = () => {
       else {
         const userdata = {
           name: localStorage.getItem("name"),
+          country: localStorage.getItem("country"),
           phone: localStorage.getItem("phone"),
           email: localStorage.getItem("email"),
           id: localStorage.getItem("user_id"),
@@ -189,6 +196,9 @@ export const checkAuthState = () => {
           ),
           is_email_verified: JSON.parse(
             localStorage.getItem("is_email_verified"),
+          ),
+          email_last_verified_on: localStorage.getItem(
+            "email_last_verified_on",
           ),
         };
         //Update redux with token and user details
@@ -252,6 +262,7 @@ export const auth = (mobile, password, name, email, whatsapp) => {
 
           const userdata = {
             name: response.data.name,
+            country: response.data.country,
             phone: response.data.phone,
             email: response.data.email,
             id: response.data.id,
@@ -259,9 +270,11 @@ export const auth = (mobile, password, name, email, whatsapp) => {
             whatsapp_opt_in: response.data.whatsapp_opt_in,
             is_phone_verified: response.data.is_phone_verified,
             is_email_verified: response.data.is_email_verified,
+            email_last_verified_on: response.data.email_last_verified_on,
           };
           //Store user details in local storage
           localStorage.setItem("name", userdata.name);
+          localStorage.setItem("country", userdata.country);
           localStorage.setItem("email", userdata.email);
           localStorage.setItem("phone", userdata.phone);
           localStorage.setItem("user_id", userdata.id);
@@ -269,6 +282,10 @@ export const auth = (mobile, password, name, email, whatsapp) => {
           localStorage.setItem("whatsapp_opt_in", userdata.whatsapp_opt_in);
           localStorage.setItem("is_phone_verified", userdata.is_phone_verified);
           localStorage.setItem("is_email_verified", userdata.is_email_verified);
+          localStorage.setItem(
+            "email_last_verified_on",
+            userdata.email_last_verified_on,
+          );
 
           //Store token expiration date in local storage
           const expirationDate = new Date(
@@ -337,12 +354,14 @@ export const googleAuth = (response) => {
           const userdata = {
             name: res.data.name,
             phone: res.data.phone,
+            country: res.data.country,
             email: res.data.email,
             id: res.data.id,
             image: res.data.profile_pic,
             whatsapp_opt_in: res.data.whatsapp_opt_in,
             is_phone_verified: res.data.is_phone_verified,
             is_email_verified: res.data.is_email_verified,
+            email_last_verified_on: res.data.email_last_verified_on,
           };
 
           if (!res.data.phone) {
@@ -351,6 +370,7 @@ export const googleAuth = (response) => {
 
           //Store user details in local storage
           localStorage.setItem("name", userdata.name);
+          localStorage.setItem("country", userdata.country);
           localStorage.setItem("email", userdata.email);
           localStorage.setItem("phone", userdata.phone);
           localStorage.setItem("user_id", userdata.id);
@@ -358,6 +378,10 @@ export const googleAuth = (response) => {
           localStorage.setItem("whatsapp_opt_in", userdata.whatsapp_opt_in);
           localStorage.setItem("is_phone_verified", userdata.is_phone_verified);
           localStorage.setItem("is_email_verified", userdata.is_email_verified);
+          localStorage.setItem(
+            "email_last_verified_on",
+            userdata.email_last_verified_on,
+          );
 
           //Store token expiration date in local storage
           const expirationDate = new Date(
@@ -441,13 +465,19 @@ export const changeUserDetails = (userdetails) => {
         localStorage.setItem("user_id", res.data.id);
         localStorage.setItem("user_image", res.data.profile_pic);
         localStorage.setItem("whatsapp_opt_in", res.data.whatsapp_opt_in);
+        localStorage.setItem("is_phone_verified", res.data.is_phone_verified);
+        localStorage.setItem("is_email_verified", res.data.is_email_verified);
+        localStorage.setItem(
+          "email_last_verified_on",
+          res.data.email_last_verified_on,
+        );
         dispatch(setUserDetails(userdetails));
         dispatch(authSetLoginMessage(null));
         dispatch(authCloseLogin());
       })
       .catch((err) => {
         //set error
-        if (err.response.data.phone)
+        if (err?.response?.data?.phone)
           dispatch(authMobileFail(err.response.data.phone[0]));
         //Invalid / already taken  mobile
         else dispatch(authMobileFail()); //Invalid / already taken  mobile

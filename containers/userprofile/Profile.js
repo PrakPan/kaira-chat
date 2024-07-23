@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import Image from "next/image";
 import { connect } from "react-redux";
 import styled from "styled-components";
 import { MdDone, MdEdit } from "react-icons/md";
@@ -7,6 +8,8 @@ import ImageLoader from "../../components/ImageLoader";
 import media from "../../components/media";
 import { EditInput, ImageInput } from "./EditProfile";
 import * as authaction from "../../store/actions/auth";
+import { userImageUploadInstance } from "../../services/user/edit";
+import extensions from "../../public/content/extensionsdata";
 
 const Container = styled.div`
   padding: 0.5rem;
@@ -32,20 +35,97 @@ const ImageNameContainer = styled.div`
     padding: 0;
   }
 `;
+const CountryImg = styled(Image)`
+  height: 1.5rem;
+  alt: "";
+`;
 
 const Profile = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [editImage, setEditImage] = useState(false);
   const [editName, setEditName] = useState(false);
+  const [editCounty, setEditCounry] = useState(false);
   const [editPhone, setEditPhone] = useState(false);
   const [editEmail, setEditEmail] = useState(false);
   const [whatsapp, setWhatsapp] = useState(props.whatsapp_opt_in);
   const [emailVerifyHover, setEmailVerifyHover] = useState(false);
   const [phoneVerifyHover, setPhoneVerifyHover] = useState(false);
+  const fileInputRef = useRef();
+  const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     handleSave();
   }, [whatsapp]);
+
+  useEffect(() => {
+    onFileUpload();
+  }, [file]);
+
+  const onFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const onFileUpload = async (remove = false) => {
+    setEditImage(false);
+
+    if (remove) {
+      setLoading(true);
+
+      userImageUploadInstance
+        .delete("", {
+          headers: {
+            Authorization: `Bearer ${props.token}`,
+          },
+        })
+        .then((response) => {
+          response.data["image"] = response.profile_pic;
+          props.setUserDetails(response.data);
+          setLoading(false);
+          setEditImage(false);
+        })
+        .catch((err) => {
+          setLoading(false);
+          setEditImage(false);
+          console.log("[ERROR][EditProfile:onFileUpload]: ", err.message);
+        });
+
+      return;
+    }
+
+    if (!file) {
+      setEditImage(false);
+      return;
+    }
+
+    setLoading(true);
+
+    const formData = new FormData();
+    formData.append("profile_pic", file);
+
+    userImageUploadInstance
+      .patch("", formData, {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((response) => {
+        response.data["image"] = response.profile_pic;
+        props.setUserDetails(response.data);
+        setLoading(false);
+        setEditImage(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        setEditImage(false);
+        console.log("[ERROR][EditProfile:onFileUpload]: ", err.message);
+      });
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current.click();
+  };
 
   const handleSave = () => {
     props.changeUserDetails({ whatsapp_opt_in: whatsapp });
@@ -80,6 +160,7 @@ const Profile = (props) => {
     font-size: ${(props) => props.theme.fontsizes.mobile.text.two};
     font-weight: 500;
     margin-bottom: 0.5rem;
+    text-align: left;
     @media screen and (min-width: 768px) {
       font-size: ${(props) => props.theme.fontsizes.desktop.text.three};
       text-align: left;
@@ -101,41 +182,54 @@ const Profile = (props) => {
   return (
     <Container className="border-thin">
       <OverviewContainer>
-        <ImageNameContainer className="center-div flex flex-col gap-4 items-center">
-          {editImage ? (
-            <ImageInput setEditImage={setEditImage}>
-              <ImageLoader
-                dimesions={{ width: 1600, height: 1600 }}
-                dimensionsMobile={{ width: 1600, height: 1600 }}
-                url={
-                  props.image !== "null" && props.image !== null
-                    ? props.image
-                    : "media/website/user.svg"
-                }
-                width="100%"
-                borderRadius="50%"
-                widthmobile="95%"
-              ></ImageLoader>
-            </ImageInput>
-          ) : (
-            <div
-              onClick={() => setEditImage(true)}
-              className="w-[45%] cursor-pointer rounded-full"
-            >
-              <ImageLoader
-                dimesions={{ width: 1600, height: 1600 }}
-                dimensionsMobile={{ width: 1600, height: 1600 }}
-                url={
-                  props.image !== "null" && props.image !== null
-                    ? props.image
-                    : "media/website/user.svg"
-                }
-                width="100%"
-                borderRadius="50%"
-                widthmobile="95%"
-              ></ImageLoader>
+        <ImageNameContainer className={`center-div`}>
+          <div className={`relative ${loading && "animate-pulse"}`}>
+            <ImageLoader
+              borderRadius="50%"
+              url={
+                props.image !== "null" && props.image !== null
+                  ? props.image
+                  : "media/icons/navigation/profile-user.png"
+              }
+              width="10rem"
+              height="10rem"
+              dimesions={{ width: 1600, height: 1600 }}
+              dimensionsMobile={{ width: 1600, height: 1600 }}
+              noPlaceholder={true}
+            />
+
+            <div className="absolute top-[70%] left-[75%] flex flex-col gap-1 w-full">
+              <div
+                onClick={() => setEditImage((prev) => !prev)}
+                className="w-fit py-1 px-2 bg-black cursor-pointer text-white text-xs border-2 border-gray-600 rounded-md flex flex-row gap-1 items-center"
+              >
+                <MdEdit /> Edit
+              </div>
+              {editImage && (
+                <div className="w-fit flex flex-col gap-1 py-2 text-sm text-white bg-black border-2 border-gray-600 rounded-md cursor-pointer">
+                  <div
+                    onClick={triggerFileInput}
+                    className="cursor-pointer hover:bg-gray-700 py-1 px-3"
+                  >
+                    Upload a photo
+                  </div>
+                  <div
+                    onClick={() => onFileUpload(true)}
+                    className="cursor-pointer hover:bg-gray-700 py-1 px-3"
+                  >
+                    Remove photo
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              onChange={onFileChange}
+              className="hidden"
+            ></input>
+          </div>
 
           {editName ? (
             <div className="w-full flex items-center justify-center py-[12px]">
@@ -158,6 +252,41 @@ const Profile = (props) => {
               />
             </div>
           )}
+
+          {editCounty ? (
+            <div className="w-full flex items-center justify-center py-[12px]">
+              <EditInput
+                name="country"
+                type="text"
+                text={props.country ? props.country : ""}
+                closeEdit={setEditCounry}
+              />
+            </div>
+          ) : props.country ? (
+            <div className="flex flex-row items-center gap-2">
+              <Image
+                height="29"
+                width="29"
+                objectFit="cover"
+                src={extensions[props.country].img}
+              ></Image>
+              {props.country}
+              <MdEdit
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditCounry(true);
+                }}
+                className="text-xl cursor-pointer"
+              />
+            </div>
+          ) : (
+            <div
+              onClick={() => setEditCounry(true)}
+              className="text-sm text-blue underline cursor-pointer"
+            >
+              Add your country
+            </div>
+          )}
         </ImageNameContainer>
 
         {!isPageWide ? <hr style={{ margin: "0" }} /> : null}
@@ -177,7 +306,7 @@ const Profile = (props) => {
           </DetailHeading>
 
           {editPhone ? (
-            <div className="w-full flex flex-row justify-center items-center gap-3 mb-4">
+            <div className="w-full flex flex-row justify-start items-center gap-3 mb-4">
               <EditInput
                 name="phone"
                 type="text"
@@ -186,7 +315,7 @@ const Profile = (props) => {
               />
             </div>
           ) : (
-            <div className="flex flex-row justify-center items-center md:justify-start gap-3 mb-4">
+            <div className="flex flex-row justify-start items-center gap-3 mb-4">
               <DetailText style={{ marginBottom: "0" }}>
                 {props.phone}
               </DetailText>
@@ -224,7 +353,7 @@ const Profile = (props) => {
             </div>
           )}
 
-          <div className="flex flex-row items-center justify-center md:justify-start gap-2 mb-4">
+          <div className="flex flex-row items-center justify-start gap-3 mb-4">
             <div
               onClick={() => setWhatsapp((prev) => !prev)}
               className={`w-5 h-5 flex items-center justify-center rounded-md border-2 border-black cursor-pointer ${
@@ -247,7 +376,7 @@ const Profile = (props) => {
           </DetailHeading>
 
           {editEmail ? (
-            <div className="w-full flex items-center justify-center">
+            <div className="w-full flex items-start justify-center">
               <EditInput
                 name="email"
                 type="email"
@@ -256,7 +385,7 @@ const Profile = (props) => {
               />
             </div>
           ) : (
-            <div className="flex flex-row gap-3 justify-center md:justify-start items-center">
+            <div className="flex flex-row gap-3 justify-start items-center">
               <DetailText style={{ marginBottom: "0" }}>
                 {props.email}
               </DetailText>
@@ -276,8 +405,9 @@ const Profile = (props) => {
                   className="relative group"
                 >
                   {emailVerifyHover && (
-                    <div className="absolute text-xs text-gray-600 right-[50%] translate-x-[50%] -top-4 transition-all">
-                      Verified
+                    <div className="absolute text-xs text-nowrap text-gray-600 right-[50%] translate-x-[50%] -top-4 transition-all">
+                      Last Verified on{" "}
+                      {new Date(props.email_last_verified_on).toDateString()}
                     </div>
                   )}
 
@@ -303,6 +433,7 @@ const mapStateToPros = (state) => {
   return {
     otpFail: state.auth.otpFail,
     name: state.auth.name,
+    country: state.auth.country,
     phone: state.auth.phone,
     is_phone_verified: state.auth.is_phone_verified,
     email: state.auth.email,
@@ -310,6 +441,7 @@ const mapStateToPros = (state) => {
     image: state.auth.image,
     token: state.auth.token,
     whatsapp_opt_in: state.auth.whatsapp_opt_in,
+    email_last_verified_on: state.auth.email_last_verified_on,
   };
 };
 
@@ -318,6 +450,7 @@ const mapDispatchToProps = (dispatch) => {
     onSetProfilePic: (image) => dispatch(authaction.uploadProfilePic(image)),
     changeUserDetails: (payload) =>
       dispatch(authaction.changeUserDetails(payload)),
+    setUserDetails: (payload) => dispatch(authaction.setUserDetails(payload)),
   };
 };
 
