@@ -103,7 +103,7 @@ export const SocialShare = ({ more }) => {
 
   return (
     <div className="w-full flex flex-col items-center gap-3 p-0">
-      <div className="text-xl flex flex-col gap-1 text-gray-600">
+      <div className="text-lg flex flex-col gap-1">
         <div>Liked this itinerary?</div>
         <div>Share on social media</div>
       </div>
@@ -120,9 +120,7 @@ export const SocialShare = ({ more }) => {
               className="text-[40px] text-white p-1 cursor-pointer"
             />
           </div>
-          <div className="text-xs font-medium text-nowrap text-gray-600">
-            Copy Link
-          </div>
+          <div className="text-xs font-medium text-nowrap">Copy Link</div>
         </div>
 
         <div className="flex flex-col gap-1 items-center">
@@ -132,9 +130,7 @@ export const SocialShare = ({ more }) => {
               className="text-[40px] text-white p-1 cursor-pointer"
             />
           </div>
-          <div className="text-xs font-medium text-nowrap text-gray-600">
-            Whatsapp
-          </div>
+          <div className="text-xs font-medium text-nowrap">WhatsApp</div>
         </div>
 
         <div className="flex flex-col gap-1 items-center">
@@ -144,9 +140,7 @@ export const SocialShare = ({ more }) => {
               className="text-[40px] text-white p-1 cursor-pointer"
             />
           </div>
-          <div className="text-xs font-medium text-nowrap text-gray-600">
-            Facebook
-          </div>
+          <div className="text-xs font-medium text-nowrap">Facebook</div>
         </div>
 
         <div className="flex flex-col gap-1 items-center">
@@ -156,9 +150,7 @@ export const SocialShare = ({ more }) => {
               className="text-[40px] text-white p-1 cursor-pointer"
             />
           </div>
-          <div className="text-xs font-medium text-nowrap text-gray-600">
-            Twitter
-          </div>
+          <div className="text-xs font-medium text-nowrap">Twitter</div>
         </div>
 
         {more && (
@@ -169,9 +161,7 @@ export const SocialShare = ({ more }) => {
                 className="text-[40px] text-white p-1 cursor-pointer"
               />
             </div>
-            <div className="text-xs font-medium text-nowrap text-gray-600">
-              More Apps
-            </div>
+            <div className="text-xs font-medium text-nowrap">More Apps</div>
           </div>
         )}
       </div>
@@ -202,7 +192,7 @@ export const SocialShareMobile = ({ setShare }) => {
             onClick={() => setShare(false)}
             className="text-xl font-bold cursor-pointer"
           />
-          <div className="text-xl">Share</div>
+          <div className="text-lg">Share</div>
         </div>
 
         <SocialShare more />
