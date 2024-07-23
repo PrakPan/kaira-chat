@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import styled from "styled-components";
 import { MdDone, MdEdit } from "react-icons/md";
+import { MdVerified } from "react-icons/md";
 import ImageLoader from "../../components/ImageLoader";
 import media from "../../components/media";
 import { EditInput, ImageInput } from "./EditProfile";
@@ -38,14 +39,9 @@ const Profile = (props) => {
   const [editName, setEditName] = useState(false);
   const [editPhone, setEditPhone] = useState(false);
   const [editEmail, setEditEmail] = useState(false);
-  const [whatsapp, setWhatsapp] = useState(false);
-
-  useEffect(() => {
-    const whatsapp = localStorage.getItem("whatsapp_opt_in");
-    if (whatsapp) {
-      setWhatsapp(JSON.parse(whatsapp));
-    }
-  }, []);
+  const [whatsapp, setWhatsapp] = useState(props.whatsapp_opt_in);
+  const [emailVerifyHover, setEmailVerifyHover] = useState(false);
+  const [phoneVerifyHover, setPhoneVerifyHover] = useState(false);
 
   useEffect(() => {
     handleSave();
@@ -176,7 +172,9 @@ const Profile = (props) => {
             </SectionHeading>
           ) : null}
 
-          <DetailHeading className="font-lexend">Contact Number</DetailHeading>
+          <DetailHeading className="font-lexend">
+            <div>Contact Number</div>
+          </DetailHeading>
 
           {editPhone ? (
             <div className="w-full flex flex-row justify-center items-center gap-3 mb-4">
@@ -200,6 +198,29 @@ const Profile = (props) => {
                 }}
                 className="text-xl cursor-pointer"
               />
+
+              {props.is_phone_verified ? (
+                <div
+                  onMouseOver={() => setPhoneVerifyHover(true)}
+                  onMouseOut={() => setPhoneVerifyHover(false)}
+                  className="relative group"
+                >
+                  {phoneVerifyHover && (
+                    <div className="absolute text-xs text-gray-600 right-[50%] translate-x-[50%] -top-4 transition-all">
+                      Verified
+                    </div>
+                  )}
+
+                  <MdVerified className="text-2xl text-green-500" />
+                </div>
+              ) : (
+                <div
+                  onClick={() => setEditPhone(true)}
+                  className="text-sm text-white cursor-pointer bg-red-500 px-2 py-1 rounded-md"
+                >
+                  Verify Now
+                </div>
+              )}
             </div>
           )}
 
@@ -222,7 +243,7 @@ const Profile = (props) => {
           </div>
 
           <DetailHeading className="font-lexend" style={{ clear: "both" }}>
-            Email
+            <div>Email</div>
           </DetailHeading>
 
           {editEmail ? (
@@ -247,6 +268,29 @@ const Profile = (props) => {
                 }}
                 className="text-xl cursor-pointer"
               />
+
+              {props.is_email_verified ? (
+                <div
+                  onMouseOver={() => setEmailVerifyHover(true)}
+                  onMouseOut={() => setEmailVerifyHover(false)}
+                  className="relative group"
+                >
+                  {emailVerifyHover && (
+                    <div className="absolute text-xs text-gray-600 right-[50%] translate-x-[50%] -top-4 transition-all">
+                      Verified
+                    </div>
+                  )}
+
+                  <MdVerified className="text-2xl text-green-500" />
+                </div>
+              ) : (
+                <div
+                  onClick={() => setEditEmail(true)}
+                  className="text-sm text-white cursor-pointer bg-red-500 px-2 py-1 rounded-md"
+                >
+                  Verify Now
+                </div>
+              )}
             </div>
           )}
         </DetailsContainer>
@@ -260,10 +304,12 @@ const mapStateToPros = (state) => {
     otpFail: state.auth.otpFail,
     name: state.auth.name,
     phone: state.auth.phone,
+    is_phone_verified: state.auth.is_phone_verified,
     email: state.auth.email,
+    is_email_verified: state.auth.is_email_verified,
     image: state.auth.image,
     token: state.auth.token,
-    whatsapp_opt_in: state.whatsapp_opt_in,
+    whatsapp_opt_in: state.auth.whatsapp_opt_in,
   };
 };
 

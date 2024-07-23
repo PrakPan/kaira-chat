@@ -1,8 +1,8 @@
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { connect } from "react-redux";
-import { MdDone } from "react-icons/md";
 import styled from "styled-components";
+import { MdDone } from "react-icons/md";
 import OTPInput from "react-otp-input";
 import { BiError } from "react-icons/bi";
 import { FiChevronDown } from "react-icons/fi";
@@ -14,7 +14,6 @@ import axiosuserinstance, {
 } from "../../services/user/edit";
 import * as authaction from "../../store/actions/auth";
 import extensions from "../../public/content/extensionsdata";
-import { useRef } from "react";
 
 const CountryCodeContainer = styled.div`
   position: relative;
@@ -184,29 +183,22 @@ export const EditInput = connect(
 
   const handleSave = () => {
     if (token) {
-      if (
-        (name === "phone" && extensions[extension].label + value !== text) ||
-        ((name === "email" || name === "name") && value != text)
-      ) {
-        setLoading(true);
-        let data = {};
-        data[name] = value;
+      setLoading(true);
+      let data = {};
+      data[name] = value;
 
-        switch (name) {
-          case "phone":
-            handlePhone({
-              data: { phone: extensions[extension].label + value },
-            });
-            break;
-          case "email":
-            handleEmail({ email: value });
-            break;
-          default:
-            handleName({ data });
-            break;
-        }
-      } else {
-        closeEdit(false);
+      switch (name) {
+        case "phone":
+          handlePhone({
+            data: { phone: extensions[extension].label + value },
+          });
+          break;
+        case "email":
+          handleEmail({ email: value });
+          break;
+        default:
+          handleName({ data });
+          break;
       }
     } else {
       closeEdit(false);
@@ -467,12 +459,15 @@ export const ImageInput = connect(
   };
 
   const onFileUpload = async () => {
-    if (!file) return;
+    if (!file) {
+      setEditImage(false);
+      return;
+    }
 
     setLoading(true);
 
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("profile_pic", file);
 
     userImageUploadInstance
       .patch("", formData, {
@@ -483,11 +478,11 @@ export const ImageInput = connect(
       })
       .then((response) => {
         setUserDetails(response.data);
-        setLoading(true);
+        setLoading(false);
         setEditImage(false);
       })
       .catch((err) => {
-        setLoading(true);
+        setLoading(false);
         setEditImage(false);
         console.log("[ERROR][EditProfile:onFileUpload]: ", err.message);
       });
@@ -499,7 +494,7 @@ export const ImageInput = connect(
 
   return (
     <div
-      className={`relative w-[45%] flex flex-col gap-3 items-center ${loading && "opacity-50"}`}
+      className={`relative animate-popOut w-[45%] flex flex-col gap-3 items-center ${loading && "opacity-50"}`}
     >
       <div className="w-full opacity-75">{children}</div>
       <LuImagePlus
