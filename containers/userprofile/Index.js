@@ -122,9 +122,9 @@ const UserDashboard = (props) => {
       redirectOnFail={() => router.push("/")}
     >
       <Container className="">
-        <ContentContainer>
-          <Profile></Profile>
-        </ContentContainer>
+        {/* <ContentContainer className="bg-blue w-full"> */}
+        <Profile></Profile>
+        {/* </ContentContainer> */}
       </Container>
 
       <ContentContainer className="w-full mb-5">
@@ -212,8 +212,8 @@ const UserDashboard = (props) => {
                     plan?.duration
                       ? plan.duration
                       : plan?.duration_number && plan?.duration_unit
-                      ? plan.duration_number + " " + plan.duration_unit
-                      : null
+                        ? plan.duration_number + " " + plan.duration_unit
+                        : null
                   }
                   location={plan["experience_region"]}
                   starting_cost={

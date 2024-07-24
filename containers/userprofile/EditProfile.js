@@ -181,6 +181,17 @@ export const EditInput = connect(
     return null;
   };
 
+  const onChangeValue = (e) => {
+    setValue(e.target.value);
+  };
+
+  const handleEnterKey = (e) => {
+    if (e.key === "Enter" && e.target.value) {
+      e.preventDefault();
+      handleSave();
+    }
+  };
+
   const handleSave = () => {
     if (token) {
       setLoading(true);
@@ -282,7 +293,9 @@ export const EditInput = connect(
     <div className="w-full flex flex-col items-center justify-center gap-2">
       <div
         className={`w-full flex flex-row justify-center items-center gap-3 ${
-          name === "name" ? "md:justify-center" : "md:justify-start"
+          name === "name" || name === "country"
+            ? "md:justify-center"
+            : "md:justify-start"
         }`}
       >
         {name === "phone" && (
@@ -316,7 +329,8 @@ export const EditInput = connect(
           name={name}
           type={type}
           value={value}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => onChangeValue(e)}
+          onKeyDown={(e) => handleEnterKey(e)}
           className={`w-[60%] border-2 border-[#d0d5dd] rounded-md px-2 py-[0.64rem] focus:outline-none ${
             loading && "opacity-25"
           }`}

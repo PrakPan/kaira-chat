@@ -6,7 +6,7 @@ import { MdDone, MdEdit } from "react-icons/md";
 import { MdVerified } from "react-icons/md";
 import ImageLoader from "../../components/ImageLoader";
 import media from "../../components/media";
-import { EditInput, ImageInput } from "./EditProfile";
+import { EditInput } from "./EditProfile";
 import * as authaction from "../../store/actions/auth";
 import { userImageUploadInstance } from "../../services/user/edit";
 import extensions from "../../public/content/extensionsdata";
@@ -50,10 +50,11 @@ const Profile = (props) => {
   const [whatsapp, setWhatsapp] = useState(props.whatsapp_opt_in);
   const [emailVerifyHover, setEmailVerifyHover] = useState(false);
   const [phoneVerifyHover, setPhoneVerifyHover] = useState(false);
-  const fileInputRef = useRef();
   const [file, setFile] = useState(null);
   const [fileSizeError, setFileSizeError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef();
+  const imageEditRef = useRef();
 
   useEffect(() => {
     handleSave();
@@ -76,6 +77,14 @@ const Profile = (props) => {
       clearTimeout(timeOut);
     };
   }, [file]);
+
+  useEffect(() => {
+    document.addEventListener("click", (e) => {
+      if (imageEditRef.current && !imageEditRef.current.contains(e.target)) {
+        setEditImage(false);
+      }
+    });
+  }, []);
 
   const onFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -213,7 +222,10 @@ const Profile = (props) => {
               noPlaceholder={true}
             />
 
-            <div className="absolute top-[70%] left-[75%] flex flex-col gap-1 w-full">
+            <div
+              ref={imageEditRef}
+              className="absolute top-[70%] left-[75%] flex flex-col gap-1 w-full"
+            >
               <div
                 onClick={() => setEditImage((prev) => !prev)}
                 className="w-fit py-1 px-2 bg-black cursor-pointer text-white text-xs border-2 border-gray-600 rounded-md flex flex-row gap-1 items-center"
