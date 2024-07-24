@@ -71,6 +71,8 @@ export const setUserDetails = (userdetails) => {
       localStorage.setItem("is_email_verified", userdetails.is_email_verified);
     userdetails.profile_pic &&
       localStorage.setItem("user_image", userdetails.profile_pic);
+    userdetails.user_image &&
+      localStorage.setItem("user_image", userdetails.user_image);
     userdetails.whatsapp_opt_in &&
       localStorage.setItem("whatsapp_opt_in", userdetails.whatsapp_opt_in);
     userdetails.email_last_verified_on &&
@@ -78,6 +80,12 @@ export const setUserDetails = (userdetails) => {
         "email_last_verified_on",
         userdetails.email_last_verified_on,
       );
+
+    if (userdetails.profile_pic) {
+      userdetails["image"] = userdetails.profile_pic;
+    } else if (userdetails.user_image) {
+      userdetails["image"] = userdetails.user_image;
+    }
   } catch {}
   return {
     type: actionTypes.AUTH_SETUSERDETAILS,

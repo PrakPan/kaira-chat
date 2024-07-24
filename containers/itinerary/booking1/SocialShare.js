@@ -1,13 +1,19 @@
-import { useState } from "react";
-import { useRef } from "react";
+import { useEffect, useState, useRef } from "react";
+import Image from "next/image";
 import { FaWhatsapp, FaFacebook } from "react-icons/fa";
 import { MdLink } from "react-icons/md";
 import { RiTwitterXLine } from "react-icons/ri";
 import { IoIosDoneAll, IoMdClose } from "react-icons/io";
 import { CgMoreO } from "react-icons/cg";
-import { useEffect } from "react";
+import ImageLoader from "../../../components/ImageLoader";
 
-export const SocialShare = ({ more }) => {
+export const SocialShare = ({
+  social_title,
+  social_description,
+  itineraryName,
+  itineraryImage,
+  more,
+}) => {
   const [copied, setCopied] = useState(false);
 
   const getURL = () => {
@@ -20,7 +26,9 @@ export const SocialShare = ({ more }) => {
 
   const handleClick = (id) => {
     const url = getURL();
-    const text = "Check out this amazing itinerary";
+    const text = social_description
+      ? social_description
+      : "Check out this amazing itinerary";
 
     switch (id) {
       case "whatsapp":
@@ -88,8 +96,10 @@ export const SocialShare = ({ more }) => {
     if (navigator.share) {
       navigator
         .share({
-          title: document.title,
-          text: "Check out this amazing itinerary",
+          title: social_title ? social_title : document.title,
+          text: social_description
+            ? social_description
+            : "Check out this amazing itinerary",
           url: url,
         })
         .then(() => {
@@ -102,27 +112,24 @@ export const SocialShare = ({ more }) => {
   };
 
   return (
-    <div className="w-full flex flex-col items-center gap-3 p-0">
-      <div className="text-lg flex flex-col gap-1">
-        <div>Liked this itinerary?</div>
-        <div>Share on social media</div>
-      </div>
-      <div className="w-[99%] md:w-full flex flex-row justify-center items-center gap-3 pt-4 overflow-x-auto hide-scrollbar">
-        <div className="relative flex flex-col gap-1 items-center">
-          {copied && (
-            <div className="absolute z-50 -top-6 left-0 flex flex-row items-center gap-1 text-sm text-gray-600">
-              Copied <IoIosDoneAll className="text-2xl text-green-500" />
-            </div>
-          )}
-          <div className="p-1 flex items-center justify-center bg-[#1D9BF0] rounded-full">
-            <MdLink
-              onClick={copyToClipboard}
-              className="text-[40px] text-white p-1 cursor-pointer"
-            />
-          </div>
-          <div className="text-xs font-medium text-nowrap">Copy Link</div>
+    <div className="w-full flex flex-col gap-3 p-0">
+      <div className="text-lg font-bold">Share</div>
+      <div className="flex flex-row items-center gap-2">
+        <ImageLoader
+          url={itineraryImage}
+          borderRadius="5%"
+          width="5rem"
+          height="5rem"
+          dimesions={{ width: 100, height: 100 }}
+          dimensionsMobile={{ width: 100, height: 100 }}
+          noPlaceholder={true}
+        ></ImageLoader>
+        <div className="w-[75%] flex flex-col gap-1">
+          <div className="flex text-lg font-bold">{itineraryName}</div>
+          <div className="flex text-sm text-gray-600 truncate">{getURL()}</div>
         </div>
-
+      </div>
+      <div className="w-[99%] md:w-full flex flex-row justify-center items-center gap-3 px-2 overflow-x-auto hide-scrollbar">
         <div className="flex flex-col gap-1 items-center">
           <div className="p-1 flex items-center justify-center bg-green-500 rounded-full">
             <FaWhatsapp
@@ -165,11 +172,70 @@ export const SocialShare = ({ more }) => {
           </div>
         )}
       </div>
+
+      <div className="w-full flex justify-center items-center">
+        <div
+          onClick={copyToClipboard}
+          className="w-[70%] p-1 flex flex-row gap-2 items-center justify-center border-2 border-gray-300 cursor-pointer rounded-lg"
+        >
+          <MdLink className="text-[40px] p-1 cursor-pointer" />
+          <div className="text-sm font-medium text-nowrap">Copy Link</div>
+
+          {copied && (
+            <div className="flex flex-row items-center gap-1 text-sm text-gray-600">
+              Copied <IoIosDoneAll className="text-2xl text-green-500" />
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
 
-export const SocialShareMobile = ({ setShare }) => {
+export const SocialShareDesktop = ({
+  setShare,
+  itineraryName,
+  itineraryImage,
+  social_title,
+  social_description,
+}) => {
+  const ref = useRef();
+
+  const closeShare = (event) => {
+    if (ref.current && !ref.current.contains(event.target)) {
+      setShare(false);
+    }
+  };
+
+  return (
+    // <div
+    //   onClick={(e) => closeShare(e)}
+    //   className="z-[2000] fixed inset-0 flex items-center justify-end px-3"
+    // >
+    <div className="fixed bottom-[140px] right-4 z-[999] w-fit animate-slideRight drop-shadow-2xl shadow-2xl border-2 border-black rounded-md">
+      <div
+        ref={ref}
+        className={`animate-slideRight w-full bg-white rounded-md flex flex-col gap-3 p-3 transition-all duration-300`}
+      >
+        <SocialShare
+          social_title={social_title}
+          social_description={social_description}
+          itineraryName={itineraryName}
+          itineraryImage={itineraryImage}
+        />
+      </div>
+    </div>
+    // </div>
+  );
+};
+
+export const SocialShareMobile = ({
+  setShare,
+  itineraryName,
+  itineraryImage,
+  social_title,
+  social_description,
+}) => {
   const ref = useRef();
 
   const closeShare = (event) => {
@@ -181,21 +247,28 @@ export const SocialShareMobile = ({ setShare }) => {
   return (
     <div
       onClick={(e) => closeShare(e)}
-      className="z-[2000] fixed inset-0 bg-black bg-opacity-50 flex items-end"
+      className="z-[2000] fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center px-3"
     >
-      <div
-        ref={ref}
-        className={`animate-slideUp w-full bg-white flex flex-col gap-3 py-2 transition-all duration-300`}
-      >
-        <div className="flex flex-row items-center gap-2 px-2">
-          <IoMdClose
-            onClick={() => setShare(false)}
-            className="text-xl font-bold cursor-pointer"
+      <div className="w-full animate-slideRight flex flex-col justify-center gap-3 items-center">
+        <div
+          ref={ref}
+          className={`animate-slideRight w-full bg-white rounded-md flex flex-col gap-3 p-3 transition-all duration-300`}
+        >
+          <SocialShare
+            itineraryName={itineraryName}
+            itineraryImage={itineraryImage}
+            social_title={social_title}
+            social_description={social_description}
+            more
           />
-          <div className="text-lg">Share</div>
         </div>
 
-        <SocialShare more />
+        <div
+          onClick={() => setShare(false)}
+          className="animate-slideRight bg-white p-2 rounded-full cursor-pointer"
+        >
+          <IoMdClose className="text-2xl" />
+        </div>
       </div>
     </div>
   );

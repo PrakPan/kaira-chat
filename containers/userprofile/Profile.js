@@ -103,7 +103,6 @@ const Profile = (props) => {
           },
         })
         .then((response) => {
-          response.data["image"] = response.profile_pic;
           props.setUserDetails(response.data);
           setLoading(false);
           setEditImage(false);
@@ -135,7 +134,6 @@ const Profile = (props) => {
         },
       })
       .then((response) => {
-        response.data["image"] = response.profile_pic;
         props.setUserDetails(response.data);
         setLoading(false);
         setEditImage(false);
@@ -235,6 +233,12 @@ const Profile = (props) => {
 
               {editImage && (
                 <div className="w-fit flex flex-col gap-1 py-2 text-sm text-white bg-black border-2 border-gray-600 rounded-md cursor-pointer">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    onChange={onFileChange}
+                    className="hidden"
+                  ></input>
                   {fileSizeError && (
                     <div className="w-full text-xs text-red-500 px-1 text-nowrap">
                       File size exceeds 5MB!
@@ -255,13 +259,6 @@ const Profile = (props) => {
                 </div>
               )}
             </div>
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              onChange={onFileChange}
-              className="hidden"
-            ></input>
           </div>
 
           {editName ? (
@@ -301,7 +298,7 @@ const Profile = (props) => {
                 height="29"
                 width="29"
                 objectFit="cover"
-                src={extensions[props.country].img}
+                src={extensions[props.country]?.img}
               ></Image>
               {props.country}
               <MdEdit

@@ -61,11 +61,11 @@ const IndexedItinerary = ({
         <meta
           name="keywords"
           content={`ai trip planner, trip planner, itinerary, ${cityNames(
-            "trip planner"
+            "trip planner",
           )}${cityNames("travel in", true)}${cityNames(
-            "travel package"
+            "travel package",
           )}${cityNames("tour package")}${cityNames(
-            "holiday package"
+            "holiday package",
           )}travel plan, ai itinerary, ai plan, craft a trip, wanderlog, inspirock, tripit, local travel experience, customized trip planner, customized holiday packages, customized packages, honeymoon travel packages, solo travel, family travel, personalized travel package, hotels, flights, activities, transfers,`}
         />
         <meta property="og:title" content={Data?.social_title} />
@@ -115,6 +115,8 @@ const IndexedItinerary = ({
         <ItineraryContainer
           id={Data?.ID}
           page_title={Data?.page_title}
+          social_title={Data?.social_title}
+          social_description={Data?.social_description}
           daybydayData={daybyday}
           breifData={breif}
           routesData={routes}

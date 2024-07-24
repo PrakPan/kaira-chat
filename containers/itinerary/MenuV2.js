@@ -34,9 +34,12 @@ import { connect } from "react-redux";
 import { openNotification } from "../../store/actions/notification";
 import { logEvent } from "../../services/ga/Index";
 import openTailoredModal from "../../services/openTailoredModal";
-import { SocialShare } from "./booking1/SocialShare.js";
-import { SocialShareMobile } from "./booking1/SocialShare.js";
-import { IoShare } from "react-icons/io5";
+import {
+  SocialShareMobile,
+  SocialShareDesktop,
+} from "./booking1/SocialShare.js";
+import { BsShareFill } from "react-icons/bs";
+import { IoMdClose } from "react-icons/io";
 
 const useStyles = {
   root: `
@@ -62,6 +65,7 @@ const SimpleTabsV2 = (props) => {
   const [selectedPoi, setSelectedPoi] = useState({ name: "Kasol" });
   const [loading, setLoading] = useState(false);
   const [share, setShare] = useState(false);
+  const [shareMobile, setShareMobile] = useState(false);
   const isDesktop = useMediaQuery("(min-width:1148px)");
 
   useEffect(() => {
@@ -889,9 +893,6 @@ const SimpleTabsV2 = (props) => {
                 plan={props.plan}
                 _GetInTouch={() => _GetInTouch()}
               ></SummaryContainer>
-              <div className="p-5">
-                <SocialShare />
-              </div>
             </div>
           ) : null}
         </SplitScreen>
@@ -1079,16 +1080,50 @@ const SimpleTabsV2 = (props) => {
         </div>
       </div>
 
-      <div className="z-[999] fixed bottom-[80px] right-4 md:hidden bg-black p-2 w-fit flex items-center justify-center rounded-full border-2">
-        <IoShare
-          onClick={() => setShare(true)}
-          className="text-[30px] text-gray-300 cursor-pointer"
+      {isPageWide && (
+        <div className="z-[999] flex fixed bottom-[80px] right-4 bg-[#F7E700] p-2 w-fit items-center justify-center rounded-full border-2 border-black">
+          {share ? (
+            <IoMdClose
+              onClick={() => setShare(false)}
+              className="animate-popOut text-[30px] text-black cursor-pointer"
+            />
+          ) : (
+            <BsShareFill
+              onClick={() => setShare(true)}
+              className="animate-popOut text-[30px] text-black cursor-pointer"
+            />
+          )}
+        </div>
+      )}
+
+      {isPageWide && share && (
+        <div className="">
+          <SocialShareDesktop
+            social_title={props?.social_title}
+            social_description={props?.social_description}
+            itineraryName={props.itinerary.name}
+            itineraryImage={props.itinerary.images[0]}
+            setShare={setShare}
+          />
+        </div>
+      )}
+
+      <div className="z-[999] fixed bottom-[80px] right-4 md:hidden bg-[#F7E700] p-2 w-fit flex items-center justify-center rounded-full border-2 border-black">
+        <BsShareFill
+          onClick={() => setShareMobile(true)}
+          className="text-[30px] text-black cursor-pointer"
         />
       </div>
 
-      {share && (
+      {shareMobile && (
         <div className="md:hidden">
-          <SocialShareMobile setShare={setShare} />
+          <SocialShareMobile
+            social_title={props?.social_title}
+            social_description={props?.social_description}
+            itineraryName={props.itinerary.name}
+            itineraryImage={props.itinerary.images[0]}
+            setShare={setShareMobile}
+          />
         </div>
       )}
 
