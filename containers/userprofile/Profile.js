@@ -52,6 +52,7 @@ const Profile = (props) => {
   const [phoneVerifyHover, setPhoneVerifyHover] = useState(false);
   const fileInputRef = useRef();
   const [file, setFile] = useState(null);
+  const [fileSizeError, setFileSizeError] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -59,7 +60,21 @@ const Profile = (props) => {
   }, [whatsapp]);
 
   useEffect(() => {
+    const maxSize = 5 * 1024 * 1024;
+    let timeOut;
+    if (file && file.size > maxSize) {
+      setFileSizeError(true);
+      timeOut = setTimeout(() => {
+        setFileSizeError(false);
+      }, 10000);
+      return;
+    }
+
     onFileUpload();
+
+    return () => {
+      clearTimeout(timeOut);
+    };
   }, [file]);
 
   const onFileChange = (e) => {
@@ -205,8 +220,14 @@ const Profile = (props) => {
               >
                 <MdEdit /> Edit
               </div>
+
               {editImage && (
                 <div className="w-fit flex flex-col gap-1 py-2 text-sm text-white bg-black border-2 border-gray-600 rounded-md cursor-pointer">
+                  {fileSizeError && (
+                    <div className="w-full text-xs text-red-500 px-1 text-nowrap">
+                      File size exceeds 5MB!
+                    </div>
+                  )}
                   <div
                     onClick={triggerFileInput}
                     className="cursor-pointer hover:bg-gray-700 py-1 px-3"
