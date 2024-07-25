@@ -110,7 +110,7 @@ const Enquiry = (props) => {
   const [startingLocation, setStartingLocation] = useState(false);
   const isPageLoaded = usePageLoaded();
   const [destination, setDestination] = useState(
-    routerquery.destination || props.destination
+    routerquery.destination || props.destination,
   );
   const popupObj = {
     dateStart: false,
@@ -257,6 +257,10 @@ const Enquiry = (props) => {
           : "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
       },
     };
+
+    if (selectedCities[0].type === "Continent") {
+      data.destination_id = [selectedCities[0].resource_id];
+    }
 
     if (selectedCities[0].destination_id) {
       data.destination_id = [selectedCities[0].destination_id];

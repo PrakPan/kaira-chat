@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from "react";
 import Image from "next/image";
+import React, { useEffect, useState, useRef } from "react";
 import { connect } from "react-redux";
 import styled from "styled-components";
 import { MdDone, MdEdit } from "react-icons/md";
@@ -35,6 +35,7 @@ const ImageNameContainer = styled.div`
     padding: 0;
   }
 `;
+
 const CountryImg = styled(Image)`
   height: 1.5rem;
   alt: "";

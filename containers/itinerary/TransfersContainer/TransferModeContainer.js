@@ -147,7 +147,9 @@ const Line = styled.hr`
         ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
         : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
 
-  background-size: 8px 3px, 100% 3px;
+  background-size:
+    8px 3px,
+    100% 3px;
 
   color: #c80000;
   -webkit-transform: rotate(90deg);
@@ -220,7 +222,7 @@ function processBookingTimes(checkIn, checkOut) {
 
   const durationInMinutes = differenceInMinutes(
     new Date(checkOut),
-    new Date(checkIn)
+    new Date(checkIn),
   );
   const durationHours = Math.floor(durationInMinutes / 60);
   const durationMinutes = durationInMinutes % 60;
@@ -334,7 +336,7 @@ const TransferModeContainer = (props) => {
       destination_city,
       taxi_type,
       transfer_type,
-      user_selected
+      user_selected,
     );
 
     logEvent({
@@ -390,7 +392,7 @@ const TransferModeContainer = (props) => {
       destination_iata,
       destination_city,
       taxi_type,
-      transfer_type
+      transfer_type,
     );
 
     logEvent({
@@ -539,7 +541,7 @@ const TransferModeContainer = (props) => {
           setAlternateRoutes(data);
         } else {
           setAlternatesError(
-            "No route found, please get in touch with us to complete this booking!"
+            "No route found, please get in touch with us to complete this booking!",
           );
         }
         setLoadingAlternates(false);
@@ -548,11 +550,11 @@ const TransferModeContainer = (props) => {
         setLoadingAlternates(false);
         if (err.response.status === 404) {
           setAlternatesError(
-            "No route found, please get in touch with us to complete this booking!"
+            "No route found, please get in touch with us to complete this booking!",
           );
         } else {
           setAlternatesError(
-            "There seems to be problem, please try again! adsfasdf"
+            "There seems to be problem, please try again! adsfasdf",
           );
         }
       });
@@ -690,7 +692,7 @@ const TransferModeContainer = (props) => {
                                       ? ` (${props.booking.duration}h)`
                                       : processBookingTimes(
                                           props.booking.check_in,
-                                          props.booking.check_out
+                                          props.booking.check_out,
                                         ).duration}
                                   </span>
                                 )}
@@ -721,7 +723,7 @@ const TransferModeContainer = (props) => {
                                   {
                                     processBookingTimes(
                                       props.booking.check_in,
-                                      props.booking.check_out
+                                      props.booking.check_out,
                                     ).checkInTime
                                   }
                                 </span>
@@ -786,7 +788,7 @@ const TransferModeContainer = (props) => {
                                       ? ` (${props.booking.duration}h)`
                                       : processBookingTimes(
                                           props.booking.check_in,
-                                          props.booking.check_out
+                                          props.booking.check_out,
                                         ).duration}
                                   </span>
                                 )}
@@ -802,7 +804,7 @@ const TransferModeContainer = (props) => {
                                     {
                                       processBookingTimes(
                                         props.booking.check_in,
-                                        props.booking.check_out
+                                        props.booking.check_out,
                                       ).checkOutTime
                                     }
                                   </span>
@@ -849,7 +851,7 @@ const TransferModeContainer = (props) => {
                                     {
                                       processBookingTimes(
                                         props.booking.check_in,
-                                        props.booking.check_out
+                                        props.booking.check_out,
                                       ).duration
                                     }
                                     {props.booking.duration
@@ -910,7 +912,7 @@ const TransferModeContainer = (props) => {
                                 {
                                   processBookingTimes(
                                     props.booking.check_in,
-                                    props.booking.check_out
+                                    props.booking.check_out,
                                   ).checkInTime
                                 }
                               </span>
@@ -964,7 +966,7 @@ const TransferModeContainer = (props) => {
                                   {
                                     processBookingTimes(
                                       props.booking.check_in,
-                                      props.booking.check_out
+                                      props.booking.check_out,
                                     ).checkOutTime
                                   }
                                 </span>
@@ -1003,8 +1005,8 @@ const TransferModeContainer = (props) => {
                                   ? "₹" +
                                     getIndianPrice(
                                       Math.round(
-                                        props.booking.booking_cost / 100
-                                      )
+                                        props.booking.booking_cost / 100,
+                                      ),
                                     ) +
                                     "/-"
                                   : null}
@@ -1074,7 +1076,7 @@ const TransferModeContainer = (props) => {
                     onClick={(e) => {
                       handleCheckboxChange(
                         e,
-                        `${addbooking ? "Added Booking" : "Add Booking"}`
+                        `${addbooking ? "Added Booking" : "Add Booking"}`,
                       );
                     }}
                   >
@@ -1146,7 +1148,7 @@ const TransferModeContainer = (props) => {
                             ? props.booking.costings_breakdown.gozo.model
                             : truncateString(
                                 props.booking.costings_breakdown.gozo.model,
-                                25
+                                25,
                               )
                           : "Private transfer "
                         : props.booking_type}
@@ -1181,7 +1183,7 @@ const TransferModeContainer = (props) => {
                                     <div className="">{data}</div>
                                   </div>
                                 </div>
-                              )
+                              ),
                           )}
                         </GridContainer>
                       </FacilityContainer>
@@ -1245,7 +1247,7 @@ const TransferModeContainer = (props) => {
                         onClick={(e) => {
                           handleCheckboxChange(
                             e,
-                            `${addbooking ? "Added Booking" : "Add Booking"}`
+                            `${addbooking ? "Added Booking" : "Add Booking"}`,
                           );
                         }}
                         className="flex flex-row gap-1 items-center cursor-pointer"
@@ -1313,5 +1315,5 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(
   mapStateToPros,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(TransferModeContainer);

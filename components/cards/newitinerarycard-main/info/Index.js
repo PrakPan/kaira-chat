@@ -36,7 +36,7 @@ const Info = (props) => {
 
   return (
     <div className="">
-      <div className="truncate">
+      <div className="">
         <H8
           style={{
             lineHeight: 1,

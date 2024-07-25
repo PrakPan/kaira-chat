@@ -231,10 +231,10 @@ export const EditInput = connect(
       .catch((err) => {
         setLoading(false);
         closeEdit(false);
-        if (err.response.data.name) {
+        if (err?.response?.data?.name) {
           console.log(err.response.data.name[0]);
         } else {
-          console.log(err.response.data);
+          console.log(err?.response?.data);
         }
       });
   };
@@ -255,9 +255,9 @@ export const EditInput = connect(
         setLoading(false);
         closeEdit(false);
         if (err.response.data.phone) {
-          console.log(err.response.data.phone[0]);
+          console.log(err?.response?.data?.phone[0]);
         } else {
-          console.log(err.response.data);
+          console.log(err?.response?.data);
         }
       });
   };
@@ -278,9 +278,9 @@ export const EditInput = connect(
         setLoading(false);
         closeEdit(false);
         if (err.response.data.email) {
-          console.log(err.response.data.email[0]);
+          console.log(err?.response?.data?.email[0]);
         } else {
-          console.log(err.response.data);
+          console.log(err?.response?.data);
         }
       });
   };
