@@ -414,7 +414,6 @@ const TransferModeContainer = (props) => {
         ? `${props?.costings_breakdown?.luggage_bags} Luggage bags`
         : "2 Luggage bags"
       : null,
-    props?.booking?.transfer_type === "Intracity" ? "250 kms per day" : null,
 
     props?.costings_breakdown?.taxi_occupancy ||
     props?.costings_breakdown?.no_of_seats
