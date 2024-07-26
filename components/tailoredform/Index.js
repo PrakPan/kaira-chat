@@ -261,10 +261,6 @@ const Enquiry = (props) => {
       },
     };
 
-    // if (selectedCities[0].type === "Continent") {
-    //   data.destination_id = [selectedCities[0].resource_id];
-    // }
-
     if (selectedCities[0].destination_id) {
       data.destination_id = [selectedCities[0].destination_id];
     }

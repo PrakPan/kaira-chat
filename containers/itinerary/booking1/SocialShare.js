@@ -193,6 +193,7 @@ export const SocialShare = ({
 };
 
 export const SocialShareDesktop = ({
+  share,
   setShare,
   itineraryName,
   itineraryImage,
@@ -200,6 +201,23 @@ export const SocialShareDesktop = ({
   social_description,
 }) => {
   const ref = useRef();
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (share) {
+        setOpen(true);
+      } else {
+        setOpen(false);
+      }
+    }, 100);
+  }, [share]);
+
+  useEffect(() => {
+    document.addEventListener("mousedown", closeShare);
+
+    return () => document.removeEventListener("mousedown", closeShare);
+  }, []);
 
   const closeShare = (event) => {
     if (ref.current && !ref.current.contains(event.target)) {
@@ -208,14 +226,13 @@ export const SocialShareDesktop = ({
   };
 
   return (
-    // <div
-    //   onClick={(e) => closeShare(e)}
-    //   className="z-[2000] fixed inset-0 flex items-center justify-end px-3"
-    // >
-    <div className="fixed bottom-[140px] right-4 z-[999] w-fit animate-slideRight drop-shadow-2xl shadow-2xl border-2 border-black rounded-md">
+    // <div onClick={(e) => closeShare(e)} className={`z-[2000] fixed inset-0`}>
+    <div
+      className={`fixed bottom-[160px] right-4 z-[999] w-fit drop-shadow-2xl shadow-2xl border-2 border-black rounded-md transition-all popup ${open && "open-popup"}`}
+    >
       <div
         ref={ref}
-        className={`animate-slideRight w-full bg-white rounded-md flex flex-col gap-3 p-3 transition-all duration-300`}
+        className={`w-full bg-white rounded-md flex flex-col gap-3 p-3`}
       >
         <SocialShare
           social_title={social_title}
@@ -224,8 +241,8 @@ export const SocialShareDesktop = ({
           itineraryImage={itineraryImage}
         />
       </div>
+      {/* </div> */}
     </div>
-    // </div>
   );
 };
 
@@ -249,10 +266,10 @@ export const SocialShareMobile = ({
       onClick={(e) => closeShare(e)}
       className="z-[2000] fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center px-3"
     >
-      <div className="w-full animate-slideRight flex flex-col justify-center gap-3 items-center">
+      <div className="w-full animate-popOut flex flex-col justify-center gap-3 items-center">
         <div
           ref={ref}
-          className={`animate-slideRight w-full bg-white rounded-md flex flex-col gap-3 p-3 transition-all duration-300`}
+          className={`w-full bg-white rounded-md flex flex-col gap-3 p-3`}
         >
           <SocialShare
             itineraryName={itineraryName}
@@ -265,7 +282,7 @@ export const SocialShareMobile = ({
 
         <div
           onClick={() => setShare(false)}
-          className="animate-slideRight bg-white p-2 rounded-full cursor-pointer"
+          className="bg-white p-2 rounded-full cursor-pointer"
         >
           <IoMdClose className="text-2xl" />
         </div>

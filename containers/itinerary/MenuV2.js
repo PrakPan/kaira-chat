@@ -1081,37 +1081,36 @@ const SimpleTabsV2 = (props) => {
       </div>
 
       {isPageWide && (
-        <div className="z-[999] flex fixed bottom-[80px] right-4 bg-[#F7E700] p-2 w-fit items-center justify-center rounded-full border-2 border-black">
+        <div className="z-[999] flex fixed bottom-[90px] right-4 bg-black p-3 w-fit items-center justify-center rounded-full border-2 border-black">
           {share ? (
             <IoMdClose
               onClick={() => setShare(false)}
-              className="animate-popOut text-[30px] text-black cursor-pointer"
+              className="animate-popOut text-[30px] text-white cursor-pointer"
             />
           ) : (
             <BsShareFill
               onClick={() => setShare(true)}
-              className="animate-popOut text-[30px] text-black cursor-pointer"
+              className="animate-popOut text-[30px] text-white cursor-pointer"
             />
           )}
         </div>
       )}
 
-      {isPageWide && share && (
-        <div className="">
-          <SocialShareDesktop
-            social_title={props?.social_title}
-            social_description={props?.social_description}
-            itineraryName={props.itinerary.name}
-            itineraryImage={props.itinerary.images[0]}
-            setShare={setShare}
-          />
-        </div>
+      {isPageWide && (
+        <SocialShareDesktop
+          social_title={props?.social_title}
+          social_description={props?.social_description}
+          itineraryName={props.itinerary.name}
+          itineraryImage={props.itinerary.images[0]}
+          setShare={setShare}
+          share={share}
+        />
       )}
 
-      <div className="z-[999] fixed bottom-[80px] right-4 md:hidden bg-[#F7E700] p-2 w-fit flex items-center justify-center rounded-full border-2 border-black">
+      <div className="z-[999] fixed bottom-[90px] right-4 md:hidden bg-black p-3 w-fit flex items-center justify-center rounded-full border-2 border-black">
         <BsShareFill
           onClick={() => setShareMobile(true)}
-          className="text-[30px] text-black cursor-pointer"
+          className="text-[30px] text-white cursor-pointer"
         />
       </div>
 
