@@ -193,7 +193,7 @@ export const checkAuthState = () => {
       else {
         const userdata = {
           name: localStorage.getItem("name"),
-          country: localStorage.getItem("country"),
+          country: JSON.parse(localStorage.getItem("country")),
           phone: localStorage.getItem("phone"),
           email: localStorage.getItem("email"),
           id: localStorage.getItem("user_id"),
