@@ -212,5 +212,5 @@ a.termsnavunderlinelink {
 
 .open-popup {
     visibility: visible;
-    transform: translate(-5%, -5%) scale(1);
+    transform: translate(0%, 0%) scale(1);
 }

@@ -1,20 +1,17 @@
 import React, { useRef, useState, useEffect } from "react";
 import { connect } from "react-redux";
-import { openNotification } from "../../../../store/actions/notification";
-import useMediaQuery from "../../../../components/media";
 import { IoMenu, IoLocationSharp } from "react-icons/io5";
+import { RxCrossCircled } from "react-icons/rx";
+import { MdDone } from "react-icons/md";
+import { BiSolidLeftArrow } from "react-icons/bi";
+import { BiSolidPencil } from "react-icons/bi";
+import { FaTrashAlt, FaInfoCircle } from "react-icons/fa";
 import {
   FaLocationCrosshairs,
   FaCirclePlus,
   FaCircleMinus,
   FaCalendarDays,
 } from "react-icons/fa6";
-import { BiSolidPencil } from "react-icons/bi";
-import { FaTrashAlt, FaInfoCircle } from "react-icons/fa";
-import { RxCrossCircled } from "react-icons/rx";
-import { MdDone } from "react-icons/md";
-import { BiSolidLeftArrow } from "react-icons/bi";
-import { getDate, getDateString } from "../../../../helper/DateUtils";
 import {
   startOfMonth,
   endOfMonth,
@@ -28,17 +25,20 @@ import {
   addDays,
   differenceInDays,
 } from "date-fns";
-import axiossearchstartinginstance from "../../../../services/search/startinglocation";
-import axiossearchinstance from "../../../../services/search/searchsuggest";
-import axiosItineraryUpdateInstance from "../../../../services/itinerary/update";
-import { dateFormat } from "../../../../helper/DateUtils";
 import "react-dates/initialize";
 import "react-dates/lib/css/_datepicker.css";
 import moment from "moment";
 import { SingleDatePicker } from "react-dates";
 import styled from "styled-components";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import useMediaQuery from "../../../../components/media";
 import { logEvent } from "../../../../services/ga/Index";
+import axiossearchinstance from "../../../../services/search/searchsuggest";
+import axiossearchstartinginstance from "../../../../services/search/startinglocation";
+import axiosItineraryUpdateInstance from "../../../../services/itinerary/update";
+import { getDate, getDateString } from "../../../../helper/DateUtils";
+import { dateFormat } from "../../../../helper/DateUtils";
+import { openNotification } from "../../../../store/actions/notification";
 
 const Container = styled.div`
   position: relative;
@@ -155,14 +155,14 @@ const CITY_COLOR_CODES = [
 const RouteEditSection = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [startDate, setStartDate] = useState(
-    getDate(props?.plan ? props?.plan.start_date : null)
+    getDate(props?.plan ? props?.plan.start_date : null),
   );
   const [endDate, setEndDate] = useState(
-    getDate(props?.plan ? props?.plan.end_date : null)
+    getDate(props?.plan ? props?.plan.end_date : null),
   );
   const [destinations, setDestinations] = useState([]);
   const [editDestination, setEditDestination] = useState(
-    props.editRoute === "editDates" ? false : true
+    props.editRoute === "editDates" ? false : true,
   );
   const [destinationChanges, setDestinationChanges] = useState(false);
   const [isValidDates, setIsValidDates] = useState(true);
@@ -187,7 +187,7 @@ const RouteEditSection = (props) => {
         if (i !== 0 && i !== props.routes.length - 1) {
           cities[cities.length - 1].cityData.nights = differenceInDays(
             new Date(getDate(props.routes[i].checkout_date)),
-            new Date(getDate(props.routes[i].checkin_date))
+            new Date(getDate(props.routes[i].checkin_date)),
           );
         }
       }
@@ -219,7 +219,7 @@ const RouteEditSection = (props) => {
           destinations[0].cityData.city_name ||
           destinations[0].cityData.name ||
           destinations[0].cityData.text
-        }`
+        }`,
       );
       return false;
     }
@@ -241,7 +241,7 @@ const RouteEditSection = (props) => {
             destinations[i].cityData.city_name ||
             destinations[i].cityData.name ||
             destinations[i].cityData.text
-          }`
+          }`,
         );
         return false;
       }
@@ -257,7 +257,7 @@ const RouteEditSection = (props) => {
             destinations[i].cityData.city_name ||
             destinations[i].cityData.name ||
             destinations[i].cityData.text
-          }`
+          }`,
         );
         return false;
       }
@@ -275,7 +275,7 @@ const RouteEditSection = (props) => {
           destinations[destinations.length - 1].cityData.city_name ||
           destinations[destinations.length - 1].cityData.name ||
           destinations[destinations.length - 1].cityData.text
-        }`
+        }`,
       );
       return false;
     }
@@ -301,7 +301,7 @@ const RouteEditSection = (props) => {
           };
         })
         .filter(
-          (dest, index) => index !== 0 && index !== destinations.length - 1
+          (dest, index) => index !== 0 && index !== destinations.length - 1,
         ),
       user_location: {
         place_id: destinations[0].cityData.place_id,
@@ -389,7 +389,7 @@ const RouteEditSection = (props) => {
   return (
     <div
       onClick={(e) => handleOutsideClick(e)}
-      className="fixed inset-0 flex flex-col items-center bg-white z-50"
+      className="fixed inset-0 flex flex-col items-center bg-white z-[999]"
     >
       {loading && <Loader />}
       <Header
@@ -499,7 +499,7 @@ const Header = (props) => {
   };
 
   return (
-    <div className="w-full p-3 border-b-2 border-b-gray-200 space-y-5">
+    <div className="w-full md:w-[85%] p-3 border-b-2 border-b-gray-200 space-y-5">
       <h1 className="text-2xl md:text-3xl lg:text-3xl font-semibold">
         {props?.title}
       </h1>
@@ -572,7 +572,7 @@ export const EditPanel = ({ editDestination, setEditDestination }) => {
   }
 
   return (
-    <div className="w-full pt-3 flex items-center justify-center border-b-2 px-2 text-sm md:text-lg lg:text-lg">
+    <div className="w-full md:w-[85%] pt-3 flex items-center justify-center border-b-2 px-2 text-sm md:text-lg lg:text-lg">
       <div className="flex flex-row gap-4">
         <div
           onClick={() => handleEditPanel()}
@@ -634,7 +634,7 @@ export const EditDestinations = (props) => {
               item.color === color &&
               item.lat === lat &&
               item.long === long &&
-              item.nights === nights
+              item.nights === nights,
           );
 
           if (location) {
@@ -662,7 +662,7 @@ export const EditDestinations = (props) => {
       const checkInDate = prevDate;
       const checkOutDate = dest?.cityData?.nights
         ? getDateString(
-            addDays(new Date(getDate(prevDate)), dest.cityData.nights)
+            addDays(new Date(getDate(prevDate)), dest.cityData.nights),
           )
         : getDateString(addDays(new Date(getDate(prevDate)), 1));
 
@@ -738,7 +738,7 @@ export const DragDrop = (props) => {
     let items = reorder(
       destinations,
       result.source.index,
-      result.destination.index
+      result.destination.index,
     );
 
     updateDestinationsDates(items);
@@ -808,7 +808,7 @@ export const DragDrop = (props) => {
                           {...provided.dragHandleProps}
                           style={getItemStyle(
                             snapshot.isDragging,
-                            provided.draggableProps.style
+                            provided.draggableProps.style,
                           )}
                         >
                           <Destination
@@ -1015,7 +1015,7 @@ export const DestinationPopUp = (props) => {
   } = props;
 
   const [search, setSearch] = useState(
-    (cityData?.city_name || cityData?.name || cityData?.text) ?? ""
+    (cityData?.city_name || cityData?.name || cityData?.text) ?? "",
   );
   const [destination, setDestination] = useState(cityData);
   const [nights, setNights] = useState(cityData?.nights ?? 1);
@@ -1190,8 +1190,8 @@ export const DestinationPopUp = (props) => {
           {startingCity
             ? "Where is your trip starting from?"
             : endingCity
-            ? "Where is your trip ending?"
-            : "What do you want to explore?"}
+              ? "Where is your trip ending?"
+              : "What do you want to explore?"}
         </div>
 
         <div className="relative flex flex-row items-center justify-between gap-3 w-full text-sm rounded-lg p-2 bg-white border-2 border-gray-300">
@@ -1325,7 +1325,7 @@ export const EditDates = ({
     index,
     checkinDate,
     checkoutDate,
-    isArrival = false
+    isArrival = false,
   ) => {
     setDestinations((prev) => {
       return prev.map((dest, ind) => {
@@ -1339,7 +1339,7 @@ export const EditDates = ({
                 checkout_date:
                   getDate(checkoutDate) !== "" && !isNaN(offSet)
                     ? getDateString(
-                        addDays(new Date(getDate(checkoutDate)), offSet)
+                        addDays(new Date(getDate(checkoutDate)), offSet),
                       )
                     : checkoutDate,
               },
@@ -1363,8 +1363,8 @@ export const EditDates = ({
                   ? getDateString(
                       addDays(
                         new Date(getDate(dest.cityData.checkin_date)),
-                        offSet
-                      )
+                        offSet,
+                      ),
                     )
                   : dest.cityData.checkin_date,
               checkout_date:
@@ -1372,8 +1372,8 @@ export const EditDates = ({
                   ? getDateString(
                       addDays(
                         new Date(getDate(dest.cityData.checkout_date)),
-                        offSet
-                      )
+                        offSet,
+                      ),
                     )
                   : dest.cityData.checkout_date,
             },
@@ -1385,7 +1385,7 @@ export const EditDates = ({
     });
 
     setEndDate((prev) =>
-      !isNaN(offSet) ? getDateString(addDays(new Date(prev), offSet)) : prev
+      !isNaN(offSet) ? getDateString(addDays(new Date(prev), offSet)) : prev,
     );
   };
 
@@ -1474,10 +1474,10 @@ export const DestinationDates = (props) => {
   } = props;
 
   const [checkinDate, setCheckinDate] = useState(
-    getDate(cityData.checkin_date)
+    getDate(cityData.checkin_date),
   );
   const [checkoutDate, setCheckoutDate] = useState(
-    getDate(cityData.checkout_date)
+    getDate(cityData.checkout_date),
   );
 
   useEffect(() => {
@@ -1518,7 +1518,7 @@ export const DestinationDates = (props) => {
     if (e.target.name === "Arrival Date") {
       const offSet = differenceInDays(
         new Date(e.target.value),
-        new Date(checkinDate)
+        new Date(checkinDate),
       );
 
       if (isValidDates) {
@@ -1529,7 +1529,7 @@ export const DestinationDates = (props) => {
     } else if (e.target.name === "Departure Date") {
       const offSet = differenceInDays(
         new Date(e.target.value),
-        new Date(checkoutDate)
+        new Date(checkoutDate),
       );
 
       if (isValidDates) {
@@ -1540,7 +1540,7 @@ export const DestinationDates = (props) => {
     } else if (e.target.name === "Start Date") {
       const offSet = differenceInDays(
         new Date(e.target.value),
-        new Date(startDate)
+        new Date(startDate),
       );
       if (isValidDates) {
         handleDates(offSet, index, null, null);
@@ -1572,7 +1572,7 @@ export const DestinationDates = (props) => {
             error: true,
             invalid: true,
             message: `Start Date should be greater than or equal to ${dateFormat(
-              format(today, "dd/MM/yyyy")
+              format(today, "dd/MM/yyyy"),
             )}`,
           };
         } else
@@ -1594,7 +1594,7 @@ export const DestinationDates = (props) => {
             error: true,
             invalid: true,
             message: `End Date should be greater than or equal to ${dateFormat(
-              format(prevDate, "dd/MM/yyyy")
+              format(prevDate, "dd/MM/yyyy"),
             )}`,
           };
         } else
@@ -1619,7 +1619,7 @@ export const DestinationDates = (props) => {
             error: true,
             invalid: true,
             message: `Departure Date should be greater than or equal to ${dateFormat(
-              format(checkin_date, "dd/MM/yyyy")
+              format(checkin_date, "dd/MM/yyyy"),
             )}`,
           };
         } else
@@ -1643,7 +1643,7 @@ export const DestinationDates = (props) => {
             error: true,
             invalid: true,
             message: `Arrival Date should be greater than or equal to ${dateFormat(
-              format(prevDate, "dd/MM/yyyy")
+              format(prevDate, "dd/MM/yyyy"),
             )}`,
           };
         } else
@@ -1709,8 +1709,8 @@ export const DestinationDates = (props) => {
                 {startingCity
                   ? "Start Date"
                   : endingCity
-                  ? "End Date"
-                  : "Arrival Date"}
+                    ? "End Date"
+                    : "Arrival Date"}
               </label>
               <div
                 className={`${
@@ -1729,16 +1729,16 @@ export const DestinationDates = (props) => {
                     startingCity
                       ? startDate
                       : endingCity
-                      ? endDate
-                      : getDate(cityData.checkin_date)
+                        ? endDate
+                        : getDate(cityData.checkin_date)
                   }
                   onDateChange={handleDateChange}
                   id={
                     startingCity
                       ? "Start Date"
                       : endingCity
-                      ? "End Date"
-                      : "Arrival Date"
+                        ? "End Date"
+                        : "Arrival Date"
                   }
                 />
               </div>
