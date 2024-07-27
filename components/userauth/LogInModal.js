@@ -19,10 +19,11 @@ import Image from "next/image";
 import ImageLoader from "../ImageLoader";
 import media from "../media";
 import { useGoogleLogin } from "@react-oauth/google";
+import { getCountryCodes } from "../../store/actions/countryCodes";
 
 const MobileNumberContainer = styled.div`
   display: grid;
-  grid-template-columns: 90px 1fr;
+  grid-template-columns: 150px 1fr;
   gap: 0.5rem;
 `;
 
@@ -39,13 +40,13 @@ const WhatsappCheckBox = styled.div`
 
 const CountryCodeContainer = styled.div`
   position: relative;
-  width: 90px;
+  width: 150px;
   height: 3.1rem;
   .CountryInput {
     display: grid;
     border: 1px solid #d0d5dd;
     border-radius: 0.5rem;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 0.5fr;
     padding-inline: 0.2rem;
     gap: 0.4rem;
     height: 100%;
@@ -90,7 +91,10 @@ const OtpContainer = styled.div`
 `;
 
 const CountryImg = styled(Image)`
-  height: 1.5rem;
+  // height: 15px;
+  // width: 15px;
+  // border-radius: 50%;
+  background-position: cover;
   alt: "";
 `;
 
@@ -154,6 +158,7 @@ const LogIn = React.memo((props) => {
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
     script.async = true;
     document.body.appendChild(script);
+    props.getCountryCodes();
   }, []);
 
   useEffect(() => {
@@ -181,9 +186,10 @@ const LogIn = React.memo((props) => {
     setExtension(country);
   };
 
-  for (const country in extensions) {
+  for (const country in props.CountryCodes) {
     ExtensionOptions.push(
-      <CountryCodeOption
+      <div
+        className="flex flex-row gap-3 items-center p-2"
         key={country}
         value={country}
         onClick={() => {
@@ -191,14 +197,15 @@ const LogIn = React.memo((props) => {
         }}
       >
         <CountryImg
-          height="29"
-          width="29"
+          height="25"
+          width="25"
           objectFit="cover"
-          src={extensions[country].img}
+          src={props.CountryCodes[country].img}
           onClick={() => handleExtensionChangeOption(country)}
         ></CountryImg>
-        <p>{extensions[country].label}</p>
-      </CountryCodeOption>
+        <p className="">{props.CountryCodes[country].label}</p>
+        <p className="text-nowrap">{props.CountryCodes[country].value}</p>
+      </div>,
     );
   }
 
@@ -234,7 +241,7 @@ const LogIn = React.memo((props) => {
           userDetails.userName,
           userDetails.email,
           whatsapp,
-          props.itinary_id
+          props.itinary_id,
         );
     } else if (props.otpSent && !props.name) {
       props.onAuth(
@@ -243,7 +250,7 @@ const LogIn = React.memo((props) => {
         userDetails.userName,
         null,
         whatsapp,
-        props.itinary_id
+        props.itinary_id,
       );
     } else if (props.otpSent && !props.name && !props.email) {
       props.onAuth(
@@ -252,7 +259,7 @@ const LogIn = React.memo((props) => {
         userDetails.userName,
         userDetails.email,
         whatsapp,
-        props.itinary_id
+        props.itinary_id,
       );
     } else if (props.otpSent && !props.email) {
       props.onAuth(
@@ -261,7 +268,7 @@ const LogIn = React.memo((props) => {
         null,
         userDetails.email,
         whatsapp,
-        props.itinary_id
+        props.itinary_id,
       );
     } else {
       props.onAuth(
@@ -270,7 +277,7 @@ const LogIn = React.memo((props) => {
         null,
         null,
         whatsapp,
-        props.itinary_id
+        props.itinary_id,
       );
     }
   };
@@ -431,10 +438,17 @@ const LogIn = React.memo((props) => {
                   height="29"
                   width="29"
                   objectFit="cover"
-                  src={extensions[extension].img}
+                  src={
+                    props.CountryCodes ? props.CountryCodes[extension].img : ""
+                  }
                 ></CountryImg>
 
-                <p>{extensions[extension].label} </p>
+                <p>
+                  {props.CountryCodes && props.CountryCodes[extension].label}{" "}
+                </p>
+                <p>
+                  {props.CountryCodes && props.CountryCodes[extension].label}{" "}
+                </p>
                 <FiChevronDown />
               </div>
               {openCountryCodeOption && (
@@ -480,10 +494,17 @@ const LogIn = React.memo((props) => {
                   height="29"
                   width="29"
                   objectFit="cover"
-                  src={extensions[extension].img}
+                  src={
+                    props.CountryCodes ? props.CountryCodes[extension].img : ""
+                  }
                 ></CountryImg>
 
-                <p>{extensions[extension].label} </p>
+                <p>
+                  {props.CountryCodes && props.CountryCodes[extension].label}{" "}
+                </p>
+                <p className="w-[50px] overflow-hidden truncate">
+                  {props.CountryCodes && props.CountryCodes[extension].value}{" "}
+                </p>
                 <FiChevronDown />
               </div>
               {openCountryCodeOption && (
@@ -714,6 +735,7 @@ const mapStateToPros = (state) => {
     emailfailmessage: state.auth.emailfailmessage,
     loginmessage: state.auth.loginmessage,
     hideloginclose: state.auth.hideloginclose,
+    CountryCodes: state.CountryCodes,
   };
 };
 
@@ -721,7 +743,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     onAuth: (mobile, password, name, email, whatsapp, itinary_id) =>
       dispatch(
-        authaction.auth(mobile, password, name, email, whatsapp, itinary_id)
+        authaction.auth(mobile, password, name, email, whatsapp, itinary_id),
       ),
     onOtp: (mobile, setNewUser) =>
       dispatch(otpaction.getotp(mobile, setNewUser)),
@@ -730,6 +752,7 @@ const mapDispatchToProps = (dispatch) => {
     onFbAuth: (response) => dispatch(authaction.fbAuth(response)),
     onUpdate: (response) => dispatch(authaction.changeUserDetails(response)),
     authCloseLogin: () => dispatch(authaction.authCloseLogin()),
+    getCountryCodes: () => dispatch(getCountryCodes()),
   };
 };
 
