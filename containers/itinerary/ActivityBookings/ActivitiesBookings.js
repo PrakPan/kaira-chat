@@ -129,7 +129,7 @@ const ActivitiesBookings = (props) => {
                       </div>
                       {booking?.costings_breakdown?.activity_data?.rating ? (
                         <div className="gap-1 flex flex-row  items-center">
-                          <div className="flex flex-row text-[#ffa500]">
+                          <div className="flex flex-row text-[#FFD201]">
                             {starRating(
                               booking?.costings_breakdown?.activity_data?.rating
                             )}
@@ -167,13 +167,16 @@ const ActivitiesBookings = (props) => {
                             0,
                             250
                           )}
-                          <button
-                            id={index}
-                            onClick={handleMoreDiscription}
-                            className="font-semibold text-gray-500 ml-1"
-                          >
-                            {"...more"}
-                          </button>
+                          {booking?.costings_breakdown?.activity_data
+                            ?.short_description.length ? (
+                            <button
+                              id={index}
+                              onClick={handleMoreDiscription}
+                              className="font-semibold text-gray-500 ml-1"
+                            >
+                              {"...more"}
+                            </button>
+                          ) : null}
                         </div>
                       )}
                     </div>

@@ -61,7 +61,31 @@ export const authSuccess = (token) => {
 //Set user name and email
 export const setUserDetails = (userdetails) => {
   try {
-    localStorage.setItem("email", userdetails.email);
+    userdetails.email && localStorage.setItem("email", userdetails.email);
+    userdetails.name && localStorage.setItem("name", userdetails.name);
+    userdetails.country && localStorage.setItem("country", userdetails.country);
+    userdetails.phone && localStorage.setItem("phone", userdetails.phone);
+    userdetails.is_phone_verified &&
+      localStorage.setItem("is_phone_verified", userdetails.is_phone_verified);
+    userdetails.is_email_verified &&
+      localStorage.setItem("is_email_verified", userdetails.is_email_verified);
+    userdetails.profile_pic &&
+      localStorage.setItem("user_image", userdetails.profile_pic);
+    userdetails.user_image &&
+      localStorage.setItem("user_image", userdetails.user_image);
+    userdetails.whatsapp_opt_in &&
+      localStorage.setItem("whatsapp_opt_in", userdetails.whatsapp_opt_in);
+    userdetails.email_last_verified_on &&
+      localStorage.setItem(
+        "email_last_verified_on",
+        userdetails.email_last_verified_on,
+      );
+
+    if (userdetails.profile_pic) {
+      userdetails["image"] = userdetails.profile_pic;
+    } else if (userdetails.user_image) {
+      userdetails["image"] = userdetails.user_image;
+    }
   } catch {}
   return {
     type: actionTypes.AUTH_SETUSERDETAILS,
@@ -169,10 +193,21 @@ export const checkAuthState = () => {
       else {
         const userdata = {
           name: localStorage.getItem("name"),
+          country: JSON.parse(localStorage.getItem("country")),
           phone: localStorage.getItem("phone"),
           email: localStorage.getItem("email"),
           id: localStorage.getItem("user_id"),
           image: localStorage.getItem("user_image"),
+          whatsapp_opt_in: JSON.parse(localStorage.getItem("whatsapp_opt_in")),
+          is_phone_verified: JSON.parse(
+            localStorage.getItem("is_phone_verified"),
+          ),
+          is_email_verified: JSON.parse(
+            localStorage.getItem("is_email_verified"),
+          ),
+          email_last_verified_on: localStorage.getItem(
+            "email_last_verified_on",
+          ),
         };
         //Update redux with token and user details
         dispatch(authSuccess(access_token));
@@ -180,8 +215,8 @@ export const checkAuthState = () => {
         //Start logout /refresh  timer -> logout /refresh  after new token expiration time
         dispatch(
           checkAuthTimeout(
-            (expirationDate.getTime() - new Date().getTime()) / 1000
-          )
+            (expirationDate.getTime() - new Date().getTime()) / 1000,
+          ),
         );
         //Auth check completed (for checkAuth HOC)
         dispatch(authCheckCompleted());
@@ -235,21 +270,34 @@ export const auth = (mobile, password, name, email, whatsapp) => {
 
           const userdata = {
             name: response.data.name,
+            country: response.data.country,
             phone: response.data.phone,
             email: response.data.email,
             id: response.data.id,
             image: response.data.profile_pic,
+            whatsapp_opt_in: response.data.whatsapp_opt_in,
+            is_phone_verified: response.data.is_phone_verified,
+            is_email_verified: response.data.is_email_verified,
+            email_last_verified_on: response.data.email_last_verified_on,
           };
           //Store user details in local storage
           localStorage.setItem("name", userdata.name);
+          localStorage.setItem("country", userdata.country);
           localStorage.setItem("email", userdata.email);
           localStorage.setItem("phone", userdata.phone);
           localStorage.setItem("user_id", userdata.id);
           localStorage.setItem("user_image", userdata.image);
+          localStorage.setItem("whatsapp_opt_in", userdata.whatsapp_opt_in);
+          localStorage.setItem("is_phone_verified", userdata.is_phone_verified);
+          localStorage.setItem("is_email_verified", userdata.is_email_verified);
+          localStorage.setItem(
+            "email_last_verified_on",
+            userdata.email_last_verified_on,
+          );
 
           //Store token expiration date in local storage
           const expirationDate = new Date(
-            new Date().getTime() + response.data.oauth.expires_in * 1000
+            new Date().getTime() + response.data.oauth.expires_in * 1000,
           );
           dispatch(authSuccess(response.data.oauth.access_token)); //Store token
           dispatch(setUserDetails(userdata)); //Store user name and email
@@ -258,7 +306,7 @@ export const auth = (mobile, password, name, email, whatsapp) => {
           //store token details in local storage
           localStorage.setItem(
             "access_token",
-            response.data.oauth.access_token
+            response.data.oauth.access_token,
           );
           localStorage.setItem("expirationDate", expirationDate);
         }
@@ -314,9 +362,14 @@ export const googleAuth = (response) => {
           const userdata = {
             name: res.data.name,
             phone: res.data.phone,
+            country: res.data.country,
             email: res.data.email,
             id: res.data.id,
             image: res.data.profile_pic,
+            whatsapp_opt_in: res.data.whatsapp_opt_in,
+            is_phone_verified: res.data.is_phone_verified,
+            is_email_verified: res.data.is_email_verified,
+            email_last_verified_on: res.data.email_last_verified_on,
           };
 
           if (!res.data.phone) {
@@ -325,14 +378,22 @@ export const googleAuth = (response) => {
 
           //Store user details in local storage
           localStorage.setItem("name", userdata.name);
+          localStorage.setItem("country", userdata.country);
           localStorage.setItem("email", userdata.email);
           localStorage.setItem("phone", userdata.phone);
           localStorage.setItem("user_id", userdata.id);
           localStorage.setItem("user_image", userdata.image);
+          localStorage.setItem("whatsapp_opt_in", userdata.whatsapp_opt_in);
+          localStorage.setItem("is_phone_verified", userdata.is_phone_verified);
+          localStorage.setItem("is_email_verified", userdata.is_email_verified);
+          localStorage.setItem(
+            "email_last_verified_on",
+            userdata.email_last_verified_on,
+          );
 
           //Store token expiration date in local storage
           const expirationDate = new Date(
-            new Date().getTime() + res.data.oauth.expires_in * 1000
+            new Date().getTime() + res.data.oauth.expires_in * 1000,
           );
 
           dispatch(authSuccess(res.data.oauth.access_token)); //Store token
@@ -376,7 +437,7 @@ export const fbAuth = (response) => {
 
           //Store token expiration date in local storage
           const expirationDate = new Date(
-            new Date().getTime() + res.data.oauth.expires_in * 1000
+            new Date().getTime() + res.data.oauth.expires_in * 1000,
           );
           dispatch(authSuccess(res.data.oauth.access_token)); //Store token
           dispatch(setUserDetails(userdata)); //Store user name and email
@@ -409,13 +470,22 @@ export const changeUserDetails = (userdetails) => {
         localStorage.setItem("name", res.data.name);
         localStorage.setItem("email", res.data.email);
         localStorage.setItem("phone", res.data.phone);
+        localStorage.setItem("user_id", res.data.id);
+        localStorage.setItem("user_image", res.data.profile_pic);
+        localStorage.setItem("whatsapp_opt_in", res.data.whatsapp_opt_in);
+        localStorage.setItem("is_phone_verified", res.data.is_phone_verified);
+        localStorage.setItem("is_email_verified", res.data.is_email_verified);
+        localStorage.setItem(
+          "email_last_verified_on",
+          res.data.email_last_verified_on,
+        );
         dispatch(setUserDetails(userdetails));
         dispatch(authSetLoginMessage(null));
         dispatch(authCloseLogin());
       })
       .catch((err) => {
         //set error
-        if (err.response.data.phone)
+        if (err?.response?.data?.phone)
           dispatch(authMobileFail(err.response.data.phone[0]));
         //Invalid / already taken  mobile
         else dispatch(authMobileFail()); //Invalid / already taken  mobile
@@ -434,7 +504,7 @@ export const uploadProfilePic = (image) => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       )
       .then((res) => {
         dispatch(setProiflePic(true));
@@ -458,7 +528,7 @@ export const ClaimItinary = (itinaryId, token) => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       )
       .then((res) => {
         resolve(res.data); //

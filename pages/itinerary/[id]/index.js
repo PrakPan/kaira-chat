@@ -1,11 +1,13 @@
-import ItineraryContainer from "../../../containers/itinerary/IndexsV2/Index";
-import { useRouter } from "next/router";
-import LayoutV2 from "../../../components/Layout";
 import Head from "next/head";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 import { connect } from "react-redux";
+import ItineraryContainer from "../../../containers/itinerary/IndexsV2/Index";
+import LayoutV2 from "../../../components/Layout";
 import * as authaction from "../../../store/actions/auth";
 import setItineraryId from "../../../store/actions/itineraryId";
-import { useEffect } from "react";
+import setHotLocationSearch from "../../../store/actions/hotLocationSearch";
+import axioslocationsinstance from "../../../services/search/search";
 
 const Itinerary = (props) => {
   const router = useRouter();
@@ -14,8 +16,23 @@ const Itinerary = (props) => {
     if (router.query.id) {
       props.setItineraryId(router.query.id);
     }
+    getHotLocationsSearch();
     props.checkAuthState();
   }, [router]);
+
+  const getHotLocationsSearch = async () => {
+    try {
+      const response = await axioslocationsinstance.get("hot_destinations/");
+      if (response.data?.length) {
+        const hotLocationSearch = response.data;
+        props.setHotLocationSearch(hotLocationSearch);
+      }
+    } catch (err) {
+      console.log(
+        `[ERROR][ItineraryPage][axioslocationsinstance:/hot_destinations]`
+      );
+    }
+  };
 
   return (
     <LayoutV2 staticnav itinerary page={"Itinerary Page"}>
@@ -46,6 +63,7 @@ const mapDispatchToProps = (dispatch) => {
     checkAuthState: () => dispatch(authaction.checkAuthState()),
     authCloseLogin: () => dispatch(authaction.authCloseLogin()),
     setItineraryId: (payload) => dispatch(setItineraryId(payload)),
+    setHotLocationSearch: (payload) => dispatch(setHotLocationSearch(payload)),
   };
 };
 

@@ -68,20 +68,20 @@ export async function getStaticPaths() {
 
     try {
       const themeRes = await axiospagelistinstance.get(
-        "/?fields=path&page_type=Theme"
+        "/?fields=path&page_type=Theme",
       );
 
       themePages = themeRes.data;
     } catch (err) {
       console.error(
         "[ERROR][statePage:axiospagelistinstance][/?fields=path&page_type=Theme]: ",
-        err.message
+        err.message,
       );
     }
 
     themePages = themePages.map((page) => {
       return {
-        path: "asia/India/" + page.path,
+        path: "asia/india/" + page.path,
       };
     });
 
@@ -101,7 +101,7 @@ export async function getStaticPaths() {
   } catch (err) {
     console.error(
       "[ERROR][statePage:axiossearchallinstance][/?type=State&fields=path]: ",
-      err.message
+      err.message,
     );
   }
 
@@ -120,13 +120,13 @@ export async function getStaticProps(context) {
 
   try {
     const res = await axiosTravelPlannerInstance.get(
-      `/?link=${context.params.state}`
+      `/?link=${context.params.state}`,
     );
     data = res.data;
   } catch (err) {
     console.log(
       `[ERROR][statePage:axiosTravelPlannerInstance][${context.params.state}]: `,
-      err.message
+      err.message,
     );
   }
 
@@ -138,26 +138,27 @@ export async function getStaticProps(context) {
 
   try {
     const loc = await axiospagelistinstance.get(
-      `/?country=${context.params.country}&page_type=Destination&fields=id,ancestors,path,destination,name,tagline,image,link,budget`
+      `/?country=${context.params.country}&page_type=Destination&fields=id,ancestors,path,destination,name,tagline,image,link,budget`,
     );
     locations = loc.data;
   } catch (err) {
     console.log(
       `[ERROR][statePage:axiospagelistinstance][${context.params.country}]: `,
-      err.message
+      err.message,
     );
   }
 
   try {
     const response = await axioslocationsinstance.get(
-      `hot_destinations/?state=${state}/`
+      `hot_destinations/?state=${state}/`,
     );
     if (response.data?.length) {
       hotLocationSearch = response.data;
     }
   } catch (err) {
     console.log(
-      `[ERROR][StatePage][axioslocationsinstance:/hot_destinations/?state=${state}/]`
+      `[ERROR][StatePage][axioslocationsinstance:/hot_destinations/?state=${state}/]`,
+      err.message,
     );
   }
 

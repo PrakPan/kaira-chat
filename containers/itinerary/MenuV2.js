@@ -34,6 +34,12 @@ import { connect } from "react-redux";
 import { openNotification } from "../../store/actions/notification";
 import { logEvent } from "../../services/ga/Index";
 import openTailoredModal from "../../services/openTailoredModal";
+import {
+  SocialShareMobile,
+  SocialShareDesktop,
+} from "./booking1/SocialShare.js";
+import { BsShareFill } from "react-icons/bs";
+import { IoMdClose } from "react-icons/io";
 
 const useStyles = {
   root: `
@@ -58,6 +64,8 @@ const SimpleTabsV2 = (props) => {
   const [CityData, setCityData] = useState();
   const [selectedPoi, setSelectedPoi] = useState({ name: "Kasol" });
   const [loading, setLoading] = useState(false);
+  const [share, setShare] = useState(false);
+  const [shareMobile, setShareMobile] = useState(false);
   const isDesktop = useMediaQuery("(min-width:1148px)");
 
   useEffect(() => {
@@ -106,7 +114,7 @@ const SimpleTabsV2 = (props) => {
       setCityData,
       CityData,
       RoutesData,
-      TransfersData
+      TransfersData,
     );
   }, [props.breif, props.routes]);
 
@@ -316,12 +324,12 @@ const SimpleTabsV2 = (props) => {
                   props?.payment?.show_per_person_cost
                     ? "Per Person"
                     : props.payment?.is_estimated_price
-                    ? `${
-                        props.payment.total_cost === 0
-                          ? "No Bookings"
-                          : "Estimated Price"
-                      }`
-                    : "Total Cost"}
+                      ? `${
+                          props.payment.total_cost === 0
+                            ? "No Bookings"
+                            : "Estimated Price"
+                        }`
+                      : "Total Cost"}
                 </div>
                 {props.payment ? (
                   <div>
@@ -332,14 +340,14 @@ const SimpleTabsV2 = (props) => {
                         ? getIndianPrice(
                             Math.round(
                               Math.round(
-                                props.payment.per_person_discounted_cost
-                              ) / 100
-                            )
+                                props.payment.per_person_discounted_cost,
+                              ) / 100,
+                            ),
                           )
                         : getIndianPrice(
                             Math.round(
-                              Math.round(props.payment.discounted_cost) / 100
-                            )
+                              Math.round(props.payment.discounted_cost) / 100,
+                            ),
                           )}
                       {"/-"}
                     </span>
@@ -890,7 +898,7 @@ const SimpleTabsV2 = (props) => {
         </SplitScreen>
       ) : null}
 
-      <div className="  z-10 sticky shadow-lg z-2 bottom-[0px] bg-white px-1 py-2 md:hidden -mx-5">
+      <div className="z-10 sticky shadow-lg z-2 bottom-[0px] bg-white px-1 py-2 md:hidden -mx-5">
         <div className="flex flex-row justify-between items-center mx-3">
           <div className="flex flex-col">
             <div className="text-sm">
@@ -898,8 +906,8 @@ const SimpleTabsV2 = (props) => {
               props?.payment?.show_per_person_cost
                 ? "Per Person"
                 : props.payment?.is_estimated_price
-                ? `${props.payment.total_cost == 0 ? "" : "Estimated Price"}`
-                : "Total Cost"}
+                  ? `${props.payment.total_cost == 0 ? "" : "Estimated Price"}`
+                  : "Total Cost"}
             </div>
             {props.payment ? (
               <div>
@@ -910,13 +918,13 @@ const SimpleTabsV2 = (props) => {
                     ? getIndianPrice(
                         Math.round(
                           Math.round(props.payment.per_person_discounted_cost) /
-                            100
-                        )
+                            100,
+                        ),
                       )
                     : getIndianPrice(
                         Math.round(
-                          Math.round(props.payment.discounted_cost) / 100
-                        )
+                          Math.round(props.payment.discounted_cost) / 100,
+                        ),
                       )}
                   {"/-"}
                 </span>
@@ -1072,6 +1080,52 @@ const SimpleTabsV2 = (props) => {
         </div>
       </div>
 
+      {isPageWide && (
+        <div className="z-[999] flex fixed bottom-[90px] right-4 bg-black p-3 w-fit items-center justify-center rounded-full border-2 border-black">
+          {share ? (
+            <IoMdClose
+              onClick={() => setShare(false)}
+              className="animate-popOut text-[30px] text-white cursor-pointer"
+            />
+          ) : (
+            <BsShareFill
+              onClick={() => setShare(true)}
+              className="animate-popOut text-[30px] text-white cursor-pointer"
+            />
+          )}
+        </div>
+      )}
+
+      {isPageWide && (
+        <SocialShareDesktop
+          social_title={props?.social_title}
+          social_description={props?.social_description}
+          itineraryName={props.itinerary.name}
+          itineraryImage={props.itinerary.images[0]}
+          setShare={setShare}
+          share={share}
+        />
+      )}
+
+      <div className="z-[999] fixed bottom-[90px] right-4 md:hidden bg-black p-3 w-fit flex items-center justify-center rounded-full border-2 border-black">
+        <BsShareFill
+          onClick={() => setShareMobile(true)}
+          className="text-[30px] text-white cursor-pointer"
+        />
+      </div>
+
+      {shareMobile && (
+        <div className="md:hidden">
+          <SocialShareMobile
+            social_title={props?.social_title}
+            social_description={props?.social_description}
+            itineraryName={props.itinerary.name}
+            itineraryImage={props.itinerary.images[0]}
+            setShare={setShareMobile}
+          />
+        </div>
+      )}
+
       {!props.preview ? (
         <PoiEditModal
           setItinerary={props.setItinerary}
@@ -1127,7 +1181,7 @@ function newFunction(
   setCityData,
   CityData,
   RoutesData,
-  TransfersData
+  TransfersData,
 ) {
   function replaceLatLong(source, destination) {
     return {
@@ -1155,11 +1209,11 @@ function newFunction(
         ) {
           try {
             const data = await getCityDetails(
-              props.breif.city_slabs[i].city_id
+              props.breif.city_slabs[i].city_id,
             );
             const updatedRoutes = replaceLatLong(
               props.breif.city_slabs[i],
-              data
+              data,
             );
             CityDataTemp.push(updatedRoutes);
           } catch (error) {

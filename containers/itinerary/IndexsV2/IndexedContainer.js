@@ -124,7 +124,7 @@ const Itinerary = (props) => {
           for (var i = 0; i < data.city_slabs.length; i++) {
             if (data.city_slabs[i].duration)
               setTotalduration(
-                totalduration + parseInt(data.city_slabs[i].duration)
+                totalduration + parseInt(data.city_slabs[i].duration),
               );
           }
       }
@@ -243,7 +243,7 @@ const Itinerary = (props) => {
               for (var i = 0; i < res.data.city_slabs.length; i++) {
                 if (res.data.city_slabs[i].duration)
                   setTotalduration(
-                    totalduration + parseInt(res.data.city_slabs[i].duration)
+                    totalduration + parseInt(res.data.city_slabs[i].duration),
                   );
               }
           }
@@ -274,7 +274,7 @@ const Itinerary = (props) => {
           headers: {
             Authorization: `Bearer ${props.token}`,
           },
-        }
+        },
       )
       .then((res) => {
         if (
@@ -412,7 +412,7 @@ const Itinerary = (props) => {
           res.data.itinerary_status === ITINERARY_STATUSES.itinerary_not_created
         ) {
           alert(
-            "Looks like the response took too long, please refresh and try again."
+            "Looks like the response took too long, please refresh and try again.",
           );
         } else {
           setUserEmail(res.data.user_email);
@@ -436,7 +436,7 @@ const Itinerary = (props) => {
 
       // Check if the ID already exists in the combined array
       const existingElementIndex = combinedArray.findIndex(
-        (el) => el.id === newId
+        (el) => el.id === newId,
       );
 
       if (existingElementIndex !== -1) {
@@ -501,7 +501,7 @@ const Itinerary = (props) => {
     city_id,
     destination_city_id,
     duration,
-    check_in
+    check_in,
   ) => {
     let data = [];
     setCardUpdateLoading(booking_id);
@@ -539,7 +539,7 @@ const Itinerary = (props) => {
         setCardUpdateLoading(null);
 
         window.alert(
-          "You're not authorized to take this action, please contact your experience captain."
+          "You're not authorized to take this action, please contact your experience captain.",
         );
       });
   };
@@ -590,7 +590,7 @@ const Itinerary = (props) => {
           headers: {
             Authorization: `Bearer ${props.token}`,
           },
-        }
+        },
       )
       .then((res) => {
         setCardUpdateLoading(null);
@@ -606,7 +606,7 @@ const Itinerary = (props) => {
         setCardUpdateLoading(null);
 
         window.alert(
-          "You're not authorized to take this action, please contact your experience captain."
+          "You're not authorized to take this action, please contact your experience captain.",
         );
       });
   };
@@ -639,7 +639,7 @@ const Itinerary = (props) => {
           headers: {
             Authorization: `Bearer ${props.token}`,
           },
-        }
+        },
       )
       .then((res) => {
         setCardUpdateLoading(null);
@@ -655,7 +655,7 @@ const Itinerary = (props) => {
         setCardUpdateLoading(null);
 
         window.alert(
-          "You're not authorized to take this action, please contact your experience captain."
+          "You're not authorized to take this action, please contact your experience captain.",
         );
       });
   };
@@ -690,7 +690,7 @@ const Itinerary = (props) => {
           headers: {
             Authorization: `Bearer ${props.token}`,
           },
-        }
+        },
       )
       .then((res) => {
         setCardUpdateLoading(null);
@@ -750,7 +750,7 @@ const Itinerary = (props) => {
           headers: {
             Authorization: `Bearer ${props.token}`,
           },
-        }
+        },
       )
       .then((res) => {
         setCardUpdateLoading(null);
@@ -766,7 +766,7 @@ const Itinerary = (props) => {
         setCardUpdateLoading(null);
 
         window.alert(
-          "You're not authorized to take this action, please contact your experience captain."
+          "You're not authorized to take this action, please contact your experience captain.",
         );
       });
   };
@@ -872,6 +872,8 @@ const Itinerary = (props) => {
             travellerType={travellerType}
             editRoute={editRoute}
             setEditRoute={setEditRoute}
+            social_title={props?.social_title}
+            social_description={props?.social_description}
           ></Menu>
         </div>
       </Container>
@@ -912,5 +914,5 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(
   mapStateToPros,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(React.memo(Itinerary));

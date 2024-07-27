@@ -110,7 +110,7 @@ const Enquiry = (props) => {
   const [startingLocation, setStartingLocation] = useState(false);
   const isPageLoaded = usePageLoaded();
   const [destination, setDestination] = useState(
-    routerquery.destination || props.destination
+    routerquery.destination || props.destination,
   );
   const popupObj = {
     dateStart: false,
@@ -186,6 +186,7 @@ const Enquiry = (props) => {
     let locations = [];
     let stateIds = [];
     let countryIds = [];
+    let continentIds = [];
     let preferences = [];
 
     for (var i = 0; i < selectedPreferences.length; i++) {
@@ -209,6 +210,8 @@ const Enquiry = (props) => {
             stateIds.push(selectedCities[i].id);
           else if (selectedCities[i].type == "Country")
             countryIds.push(selectedCities[i].id);
+          else if (selectedCities[i].type == "Continent")
+            continentIds.push(selectedCities[i].id);
           else {
             cityids.push(selectedCities[i].id);
           }
@@ -261,6 +264,7 @@ const Enquiry = (props) => {
     if (selectedCities[0].destination_id) {
       data.destination_id = [selectedCities[0].destination_id];
     }
+    if (continentIds.length) data.destination_id = continentIds;
     if (stateIds.length) data.state_id = stateIds;
     if (countryIds.length) data.country_id = countryIds;
     if (cityids.length) data.city_id = cityids;

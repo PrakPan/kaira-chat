@@ -3,6 +3,7 @@ import Details from "./Details";
 import ImagesMobile from "./ImagesMobile";
 import useMediaQuery from "../../../hooks/useMedia";
 import Ratings from "../../../components/itinerary/Ratings/Rating";
+import { connect } from "react-redux";
 
 const GridContainer = styled.div`
   display: grid;
@@ -34,7 +35,7 @@ const Overview = (props) => {
     <div>
       <GridContainer className="gap-2">
         <Heading className="font-lexend">{toTitleCase(props.title)}</Heading>
-        {!isDesktop && <Ratings />}
+        {!isDesktop && props.tripsPage && <Ratings />}
       </GridContainer>
       <div className="flex flex-row justify-between">
         <Details
@@ -50,7 +51,7 @@ const Overview = (props) => {
           number_of_infants={props?.number_of_infants}
           setEditRoute={props.setEditRoute}
         ></Details>
-        {isDesktop && <Ratings />}
+        {isDesktop && props.tripsPage && <Ratings />}
       </div>
 
       <div className="pt-3 pb-1">
@@ -60,4 +61,10 @@ const Overview = (props) => {
   );
 };
 
-export default Overview;
+const mapStateToPros = (state) => {
+  return {
+    tripsPage: state.TripsPage,
+  };
+};
+
+export default connect(mapStateToPros)(Overview);
