@@ -293,7 +293,9 @@ const Profile = (props) => {
                 closeEdit={setEditCounry}
               />
             </div>
-          ) : props.country ? (
+          ) : props.country &&
+            props.country !== "" &&
+            props.country !== "null" ? (
             <div className="flex flex-row items-center gap-2">
               <Image
                 height="29"
