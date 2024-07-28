@@ -1081,7 +1081,7 @@ const SimpleTabsV2 = (props) => {
       </div>
 
       {isPageWide && (
-        <div className="z-[999] flex fixed bottom-[90px] right-4 bg-black p-3 w-fit items-center justify-center rounded-full border-2 border-black">
+        <div className="z-[999] flex fixed bottom-[130px] right-[16px] bg-black p-[13px] w-fit items-center justify-center rounded-full border-2 border-black">
           {share ? (
             <IoMdClose
               onClick={() => setShare(false)}
@@ -1107,7 +1107,7 @@ const SimpleTabsV2 = (props) => {
         />
       )}
 
-      <div className="z-[999] fixed bottom-[90px] right-4 md:hidden bg-black p-3 w-fit flex items-center justify-center rounded-full border-2 border-black">
+      <div className="z-[999] fixed bottom-[130px] right-[16px] md:hidden bg-black p-[13px] w-fit flex items-center justify-center rounded-full border-2 border-black">
         <BsShareFill
           onClick={() => setShareMobile(true)}
           className="text-[30px] text-white cursor-pointer"
