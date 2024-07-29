@@ -191,9 +191,13 @@ export const checkAuthState = () => {
       }
       //Token valid
       else {
+        const country = localStorage.getItem("country");
         const userdata = {
           name: localStorage.getItem("name"),
-          country: localStorage.getItem("country"),
+          country:
+            country === "" || country === "null"
+              ? null
+              : localStorage.getItem("country"),
           phone: localStorage.getItem("phone"),
           email: localStorage.getItem("email"),
           id: localStorage.getItem("user_id"),

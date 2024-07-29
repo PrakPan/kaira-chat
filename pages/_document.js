@@ -8,7 +8,7 @@ export default class MyDocument extends Document {
     const sheet = new ServerStyleSheet();
     // Step 2: Retrieve styles from components in the page
     const page = await ctx.renderPage(
-      (App) => (props) => sheet.collectStyles(<App {...props} />)
+      (App) => (props) => sheet.collectStyles(<App {...props} />),
     );
 
     // Step 3: Extract the styles as <style> tags
@@ -130,7 +130,7 @@ export default class MyDocument extends Document {
 
               z-index: 1999;
               position: fixed;
-              bottom: 16px;
+              bottom: 65px;
               right: 16px;
             }
             `}
