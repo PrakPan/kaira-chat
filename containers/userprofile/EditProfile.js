@@ -17,13 +17,13 @@ import axiosuserinstance, {
 
 const CountryCodeContainer = styled.div`
   position: relative;
-  width: 90px;
+  width: 150px;
   height: 3.1rem;
   .CountryInput {
     display: grid;
     border: 2px solid #d0d5dd;
     border-radius: 0.5rem;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 0.5fr;
     padding-inline: 0.2rem;
     gap: 0.4rem;
     height: 100%;
@@ -117,7 +117,8 @@ export const EditInput = connect(
     let Options = [];
     for (const country in extensions) {
       Options.push(
-        <CountryCodeOption
+        <div
+          className="grid grid-cols-3 gap-3 items-center p-2"
           key={country}
           value={country}
           onClick={() => {
@@ -133,7 +134,8 @@ export const EditInput = connect(
             onClick={() => handleExtensionChangeOption(country)}
           ></CountryImg>
           <p>{extensions[country].label}</p>
-        </CountryCodeOption>,
+          <p className="text-nowrap">{extensions[country].value}</p>
+        </div>,
       );
     }
 
@@ -312,6 +314,9 @@ export const EditInput = connect(
               ></CountryImg>
 
               <p>{extensions[extension].label} </p>
+              <p className="w-[50px] overflow-hidden truncate">
+                {extensions[extension].value}{" "}
+              </p>
               <FiChevronDown />
             </div>
             {openCountryCodeOption && (

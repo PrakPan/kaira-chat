@@ -446,8 +446,8 @@ const LogIn = React.memo((props) => {
                 <p>
                   {props.CountryCodes && props.CountryCodes[extension].label}{" "}
                 </p>
-                <p>
-                  {props.CountryCodes && props.CountryCodes[extension].label}{" "}
+                <p className="w-[50px] overflow-hidden truncate">
+                  {props.CountryCodes && props.CountryCodes[extension].value}{" "}
                 </p>
                 <FiChevronDown />
               </div>
