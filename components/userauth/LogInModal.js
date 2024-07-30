@@ -247,6 +247,7 @@ const LogIn = React.memo((props) => {
           userDetails.userName,
           userDetails.email,
           whatsapp,
+          props.CountryCodes[extension].value,
           props.itinary_id,
         );
     } else if (props.otpSent && !props.name) {
@@ -733,9 +734,17 @@ const mapStateToPros = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onAuth: (mobile, password, name, email, whatsapp, itinary_id) =>
+    onAuth: (mobile, password, name, email, whatsapp, country, itinary_id) =>
       dispatch(
-        authaction.auth(mobile, password, name, email, whatsapp, itinary_id),
+        authaction.auth(
+          mobile,
+          password,
+          name,
+          email,
+          whatsapp,
+          country,
+          itinary_id,
+        ),
       ),
     onOtp: (mobile, setNewUser) =>
       dispatch(otpaction.getotp(mobile, setNewUser)),
