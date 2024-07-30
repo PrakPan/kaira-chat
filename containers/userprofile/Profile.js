@@ -9,7 +9,7 @@ import media from "../../components/media";
 import { EditInput } from "./EditProfile";
 import * as authaction from "../../store/actions/auth";
 import { userImageUploadInstance } from "../../services/user/edit";
-import extensions from "../../public/content/extensionsdata";
+import { getCountryCodes } from "../../store/actions/countryCodes";
 
 const Container = styled.div`
   padding: 0.5rem;
@@ -36,11 +36,6 @@ const ImageNameContainer = styled.div`
   }
 `;
 
-const CountryImg = styled(Image)`
-  height: 1.5rem;
-  alt: "";
-`;
-
 const Profile = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [editImage, setEditImage] = useState(false);
@@ -56,6 +51,10 @@ const Profile = (props) => {
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef();
   const imageEditRef = useRef();
+
+  useEffect(() => {
+    props.getCountryCodes();
+  }, []);
 
   useEffect(() => {
     handleSave();
@@ -301,7 +300,12 @@ const Profile = (props) => {
                 height="29"
                 width="29"
                 objectFit="cover"
-                src={extensions[props.country]?.img}
+                style={{ display: props.CountryCodes ? "block" : "none" }}
+                src={
+                  props.CountryCodes
+                    ? props.CountryCodes[props.country]?.img
+                    : ""
+                }
               ></Image>
               {props.country}
               <MdEdit
@@ -475,6 +479,7 @@ const mapStateToPros = (state) => {
     token: state.auth.token,
     whatsapp_opt_in: state.auth.whatsapp_opt_in,
     email_last_verified_on: state.auth.email_last_verified_on,
+    CountryCodes: state.CountryCodes,
   };
 };
 
@@ -484,6 +489,7 @@ const mapDispatchToProps = (dispatch) => {
     changeUserDetails: (payload) =>
       dispatch(authaction.changeUserDetails(payload)),
     setUserDetails: (payload) => dispatch(authaction.setUserDetails(payload)),
+    getCountryCodes: () => dispatch(getCountryCodes()),
   };
 };
 

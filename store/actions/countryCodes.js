@@ -15,15 +15,18 @@ export const getCountryCodes = () => {
     axios
       .get(URL)
       .then((response) => {
-        const data = response.data;
+        let data = response.data;
+        data.sort((a, b) => a.name.common.localeCompare(b.name.common));
         let countries = {};
         for (let country of data) {
           if (country?.idd?.root) {
+            const code =
+              country.idd?.suffixes && country.idd.suffixes.length === 1
+                ? country.idd.root + country.idd.suffixes[0]
+                : country.idd.root;
             countries[country.name.common] = {
               value: country.name.common,
-              label: country.idd?.suffixes
-                ? country.idd.root + country.idd.suffixes[0]
-                : country.idd.root,
+              label: code.length <= 4 ? code : country.idd.root,
               img: country.flags.svg,
             };
           }

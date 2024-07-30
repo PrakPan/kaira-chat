@@ -6,7 +6,6 @@ import * as otpaction from "../../store/actions/getOtp";
 import axios from "axios";
 import Spinner from "../Spinner";
 import styled from "styled-components";
-import extensions from "../../public/content/extensionsdata";
 import Link from "next/link";
 import CountryCodeDropdown from "./CountryDropdown";
 import { FiChevronDown } from "react-icons/fi";
@@ -23,7 +22,7 @@ import { getCountryCodes } from "../../store/actions/countryCodes";
 
 const MobileNumberContainer = styled.div`
   display: grid;
-  grid-template-columns: 150px 1fr;
+  grid-template-columns: 90px 1fr;
   gap: 0.5rem;
 `;
 
@@ -36,33 +35,6 @@ const WhatsappCheckBox = styled.div`
   gap: 0.3rem;
   margin-block: 1rem 1rem;
   align-items: center;
-`;
-
-const CountryCodeContainer = styled.div`
-  position: relative;
-  width: 150px;
-  height: 3.1rem;
-  .CountryInput {
-    display: grid;
-    border: 1px solid #d0d5dd;
-    border-radius: 0.5rem;
-    grid-template-columns: 1fr 1fr 1fr 0.5fr;
-    padding-inline: 0.2rem;
-    gap: 0.4rem;
-    height: 100%;
-    paddding-left: 10%;
-  }
-  img {
-    margin-block: auto;
-  }
-  p {
-    margin: auto;
-  }
-  svg {
-    margin-block: auto;
-    font-size: 1.3rem;
-    margin-left: -5px;
-  }
 `;
 
 const ErrorText = styled.div`
@@ -140,7 +112,8 @@ const LogIn = React.memo((props) => {
   let isPageWide = media("(min-width: 768px)");
 
   const mobileRef = useRef();
-  const [mobile, setMobile] = useState("+91");
+  const [mobile, setMobile] = useState("");
+  const [phone, setPhone] = useState("+91");
   const [otpResent, setOtpResent] = useState(false);
   const [whatsapp, setWhatsapp] = useState(true);
   const [extension, setExtension] = useState("India"); //store extension
@@ -151,7 +124,6 @@ const LogIn = React.memo((props) => {
   let password = null; //JSX for OTP
   let mobileInput = null; //JSX for mobile input field
   let ExtensionOptions = [];
-  let mobilevariable = "";
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -183,13 +155,24 @@ const LogIn = React.memo((props) => {
   }, [otp]);
 
   const handleExtensionChangeOption = (country) => {
+    const res = separateCountryCode(phone);
+    if (res) {
+      setPhone(props.CountryCodes[country].label + res.number);
+    } else {
+      if (phone.length === 10) {
+        setPhone(props.CountryCodes[country].label + phone);
+      } else {
+        setPhone(props.CountryCodes[country].label);
+      }
+    }
+
     setExtension(country);
   };
 
   for (const country in props.CountryCodes) {
     ExtensionOptions.push(
       <div
-        className="flex flex-row gap-3 items-center p-2"
+        className="flex flex-row gap-3 items-center p-2 cursor-pointer"
         key={country}
         value={country}
         onClick={() => {
@@ -197,14 +180,14 @@ const LogIn = React.memo((props) => {
         }}
       >
         <CountryImg
-          height="25"
-          width="25"
+          height="30"
+          width="30"
           objectFit="cover"
           src={props.CountryCodes[country].img}
           onClick={() => handleExtensionChangeOption(country)}
         ></CountryImg>
-        <p className="">{props.CountryCodes[country].label}</p>
-        <p className="text-nowrap">{props.CountryCodes[country].value}</p>
+        <p className="m-0">{props.CountryCodes[country].value}</p>
+        <p className="m-0 text-gray-600">{props.CountryCodes[country].label}</p>
       </div>,
     );
   }
@@ -218,7 +201,30 @@ const LogIn = React.memo((props) => {
   };
 
   const handleMobileBlur = (event) => {
-    setMobile(mobileRef.current.value);
+    const phone = mobileRef.current.value;
+    const res = separateCountryCode(phone);
+    if (res) {
+      setMobile(res.number);
+    } else {
+      setMobile(phone);
+    }
+  };
+
+  const separateCountryCode = (phoneNumber) => {
+    const pattern = /^(\+\d{1,4})(\d{10})$/;
+    const match = phoneNumber.match(pattern);
+
+    if (match) {
+      const countryCode = match[1];
+      const number = match[2];
+
+      return {
+        countryCode: countryCode,
+        number: number,
+      };
+    } else {
+      return null; // Invalid phone number format
+    }
   };
 
   const checkNewUserData = () => {
@@ -236,7 +242,7 @@ const LogIn = React.memo((props) => {
 
       if (newUserValidity)
         props.onAuth(
-          extensions[extension].label + mobile,
+          props.CountryCodes[extension].label + mobile,
           otp,
           userDetails.userName,
           userDetails.email,
@@ -245,7 +251,7 @@ const LogIn = React.memo((props) => {
         );
     } else if (props.otpSent && !props.name) {
       props.onAuth(
-        extensions[extension].label + mobile,
+        props.CountryCodes[extension].label + mobile,
         otp,
         userDetails.userName,
         null,
@@ -254,7 +260,7 @@ const LogIn = React.memo((props) => {
       );
     } else if (props.otpSent && !props.name && !props.email) {
       props.onAuth(
-        extensions[extension].label + mobile,
+        props.CountryCodes[extension].label + mobile,
         otp,
         userDetails.userName,
         userDetails.email,
@@ -263,7 +269,7 @@ const LogIn = React.memo((props) => {
       );
     } else if (props.otpSent && !props.email) {
       props.onAuth(
-        extensions[extension].label + mobile,
+        props.CountryCodes[extension].label + mobile,
         otp,
         null,
         userDetails.email,
@@ -272,7 +278,7 @@ const LogIn = React.memo((props) => {
       );
     } else {
       props.onAuth(
-        extensions[extension].label + mobile,
+        props.CountryCodes[extension].label + mobile,
         otp,
         null,
         null,
@@ -289,18 +295,18 @@ const LogIn = React.memo((props) => {
 
   //Set Mobile
   const handleMobileChange = (event) => {
-    mobilevariable = event.target.value;
+    setPhone(event.target.value);
   };
 
   //Dispatch Action
   const otpHandler = () => {
-    props.onOtp(extensions[extension].label + mobileRef.current.value);
+    props.onOtp(props.CountryCodes[extension].label + mobile);
   };
 
   //TEST
   const resetOtpHandler = () => {
     const authData = {
-      username: extensions[extension].label + mobile,
+      username: props.CountryCodes[extension].label + mobile,
     };
     axios
       .post("https://apis.tarzanway.com/user/resend/otp/", authData)
@@ -311,7 +317,7 @@ const LogIn = React.memo((props) => {
   //Update phone
   const _updatePhoneHandler = () => {
     props.onUpdate({
-      phone: extensions[extension].label + mobileRef.current.value,
+      phone: props.CountryCodes[extension].label + mobile,
       whatsapp_opt_in: whatsapp,
     });
   };
@@ -330,6 +336,7 @@ const LogIn = React.memo((props) => {
         label="Mobile Number"
         type="mobile"
         id="mobile"
+        value={phone}
         onChange={handleMobileChange}
         onBlur={handleMobileBlur}
         className="loginform"
@@ -428,36 +435,28 @@ const LogIn = React.memo((props) => {
       {(props.token && !props.phone) ||
       (props.token && props.phone == "null") ? (
         <form noValidate>
-          <MobileNumberContainer>
-            <CountryCodeContainer>
-              <div
-                className="CountryInput"
-                onClick={() => setOpenCountryCodeOption(true)}
-              >
-                <CountryImg
-                  height="29"
-                  width="29"
-                  objectFit="cover"
-                  src={
-                    props.CountryCodes ? props.CountryCodes[extension].img : ""
-                  }
-                ></CountryImg>
+          <MobileNumberContainer className="relative">
+            <div
+              className="w-fit px-2 flex flex-row gap-3 items-center border-[1px] border-[#d0d5dd] rounded-lg"
+              onClick={() => setOpenCountryCodeOption(true)}
+            >
+              <CountryImg
+                height="30"
+                width="30"
+                objectFit="cover"
+                src={
+                  props.CountryCodes ? props.CountryCodes[extension].img : ""
+                }
+              ></CountryImg>
 
-                <p>
-                  {props.CountryCodes && props.CountryCodes[extension].label}{" "}
-                </p>
-                <p className="w-[50px] overflow-hidden truncate">
-                  {props.CountryCodes && props.CountryCodes[extension].value}{" "}
-                </p>
-                <FiChevronDown />
-              </div>
-              {openCountryCodeOption && (
-                <CountryCodeDropdown
-                  onClose={() => setOpenCountryCodeOption(false)}
-                  ExtensionOptions={ExtensionOptions}
-                />
-              )}
-            </CountryCodeContainer>
+              <FiChevronDown />
+            </div>
+            {openCountryCodeOption && (
+              <CountryCodeDropdown
+                onClose={() => setOpenCountryCodeOption(false)}
+                ExtensionOptions={ExtensionOptions}
+              />
+            )}
             {mobileInput}
           </MobileNumberContainer>
           <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
@@ -485,35 +484,27 @@ const LogIn = React.memo((props) => {
       ) : (
         <form noValidate>
           <MobileNumberContainer>
-            <CountryCodeContainer>
-              <div
-                className="CountryInput"
-                onClick={() => setOpenCountryCodeOption(true)}
-              >
-                <CountryImg
-                  height="29"
-                  width="29"
-                  objectFit="cover"
-                  src={
-                    props.CountryCodes ? props.CountryCodes[extension].img : ""
-                  }
-                ></CountryImg>
+            <div
+              className="w-fit px-2 flex flex-row gap-3 items-center border-[1px] border-[#d0d5dd] rounded-lg"
+              onClick={() => setOpenCountryCodeOption(true)}
+            >
+              <CountryImg
+                height="30"
+                width="30"
+                objectFit="cover"
+                src={
+                  props.CountryCodes ? props.CountryCodes[extension].img : ""
+                }
+              ></CountryImg>
 
-                <p>
-                  {props.CountryCodes && props.CountryCodes[extension].label}{" "}
-                </p>
-                <p className="w-[50px] overflow-hidden truncate">
-                  {props.CountryCodes && props.CountryCodes[extension].value}{" "}
-                </p>
-                <FiChevronDown />
-              </div>
-              {openCountryCodeOption && (
-                <CountryCodeDropdown
-                  onClose={() => setOpenCountryCodeOption(false)}
-                  ExtensionOptions={ExtensionOptions}
-                />
-              )}
-            </CountryCodeContainer>
+              <FiChevronDown />
+            </div>
+            {openCountryCodeOption && (
+              <CountryCodeDropdown
+                onClose={() => setOpenCountryCodeOption(false)}
+                ExtensionOptions={ExtensionOptions}
+              />
+            )}
             {mobileInput}
           </MobileNumberContainer>
 
@@ -681,6 +672,7 @@ const LogIn = React.memo((props) => {
               </p>
             </div>
           </Button>
+
           <div
             className="text-center font-lexend"
             style={{ fontSize: "12px", fontWeight: "300", margin: "1.5rem 0" }}
