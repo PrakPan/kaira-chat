@@ -7,9 +7,9 @@ import OTPInput from "react-otp-input";
 import { BiError } from "react-icons/bi";
 import { FiChevronDown } from "react-icons/fi";
 import { LuImagePlus } from "react-icons/lu";
+import { RiArrowDropDownLine } from "react-icons/ri";
 import CountryCodeDropdown from "../../components/userauth/CountryDropdown";
 import * as authaction from "../../store/actions/auth";
-import extensions from "../../public/content/extensionsdata";
 import axiosuserinstance, {
   userEmailEditInstance,
   userImageUploadInstance,
@@ -17,13 +17,13 @@ import axiosuserinstance, {
 
 const CountryCodeContainer = styled.div`
   position: relative;
-  width: 90px;
+  width: 150px;
   height: 3.1rem;
   .CountryInput {
     display: grid;
     border: 2px solid #d0d5dd;
     border-radius: 0.5rem;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 0.5fr;
     padding-inline: 0.2rem;
     gap: 0.4rem;
     height: 100%;
@@ -45,23 +45,6 @@ const CountryCodeContainer = styled.div`
 const CountryImg = styled(Image)`
   height: 1.5rem;
   alt: "";
-`;
-
-const CountryCodeOption = styled.div`
-  display: grid;
-  grid-template-columns: 0.7fr max-content;
-  padding-inline: 0.2rem;
-  gap: 0.6rem;
-  &:hover {
-    cursor: pointer;
-  }
-  text-align: center;
-  height: 2rem !important;
-  margin-block: 0.5rem;
-
-  p {
-    margin: auto;
-  }
 `;
 
 const OtpContainer = styled.div`
@@ -93,6 +76,7 @@ const ErrorText = styled.div`
 const mapStateToProps = (state) => {
   return {
     token: state.auth.token,
+    CountryCodes: state.CountryCodes,
   };
 };
 
@@ -105,19 +89,37 @@ const mapDispatchToProps = (dispatch) => {
 export const EditInput = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(({ token, type, name, text, closeEdit, setUserDetails }) => {
+)(({ token, CountryCodes, type, name, text, closeEdit, setUserDetails }) => {
   const [value, setValue] = useState(text);
   const [loading, setLoading] = useState(false);
   const [optSent, setOptSent] = useState(false);
+  const [phone, setPhone] = useState(text);
+  const [error, setError] = useState(null);
   const [extension, setExtension] = useState("India");
   const [openCountryCodeOption, setOpenCountryCodeOption] = useState(false);
   const [ExtensionOptions, setExtensionOptions] = useState([]);
+  const [openCountryMenu, setOpenCountryMenu] = useState(false);
+  const ref = useRef();
+
+  useEffect(() => {
+    const checkIfClickedOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) {
+        closeEdit(false);
+      }
+    };
+    document.addEventListener("mousedown", checkIfClickedOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", checkIfClickedOutside);
+    };
+  }, []);
 
   useEffect(() => {
     let Options = [];
-    for (const country in extensions) {
+    for (const country in CountryCodes) {
       Options.push(
-        <CountryCodeOption
+        <div
+          className="flex flex-row gap-3 items-center p-2 cursor-pointer"
           key={country}
           value={country}
           onClick={() => {
@@ -129,11 +131,12 @@ export const EditInput = connect(
             height="29"
             width="29"
             objectFit="cover"
-            src={extensions[country].img}
+            src={CountryCodes[country].img}
             onClick={() => handleExtensionChangeOption(country)}
           ></CountryImg>
-          <p>{extensions[country].label}</p>
-        </CountryCodeOption>,
+          <p className="m-0">{CountryCodes[country].value}</p>
+          <p className="m-0 text-gray-600">{CountryCodes[country].label}</p>
+        </div>,
       );
     }
 
@@ -156,7 +159,7 @@ export const EditInput = connect(
   }, []);
 
   const separateCountryCode = (phoneNumber) => {
-    const pattern = /^(\+\d{1,3})(\d{10})$/;
+    const pattern = /^(\+\d{1,4})(\d{10})$/;
     const match = phoneNumber.match(pattern);
 
     if (match) {
@@ -173,16 +176,27 @@ export const EditInput = connect(
   };
 
   const getCountryName = (code) => {
-    for (const country in extensions) {
-      if (extensions[country].label === code) {
-        return extensions[country].value;
+    for (const country in CountryCodes) {
+      if (CountryCodes[country].label === code) {
+        return CountryCodes[country].value;
       }
     }
     return null;
   };
 
   const onChangeValue = (e) => {
-    setValue(e.target.value);
+    if (name === "phone") {
+      const phone = e.target.value;
+      setPhone(phone);
+      const res = separateCountryCode(phone);
+      if (res) {
+        setValue(res.number);
+      } else {
+        setValue(phone);
+      }
+    } else {
+      setValue(e.target.value);
+    }
   };
 
   const handleEnterKey = (e) => {
@@ -201,7 +215,7 @@ export const EditInput = connect(
       switch (name) {
         case "phone":
           handlePhone({
-            data: { phone: extensions[extension].label + value },
+            data: { phone: CountryCodes[extension].label + value },
           });
           break;
         case "email":
@@ -241,6 +255,7 @@ export const EditInput = connect(
 
   const handlePhone = ({ data }) => {
     setOptSent(false);
+    setError(null);
     axiosuserinstance
       .post("phone_change/initiate/", data, {
         headers: {
@@ -253,10 +268,11 @@ export const EditInput = connect(
       })
       .catch((err) => {
         setLoading(false);
-        closeEdit(false);
         if (err.response.data.phone) {
           console.log(err?.response?.data?.phone[0]);
+          setError(err?.response?.data?.phone[0]);
         } else {
+          closeEdit(false);
           console.log(err?.response?.data);
         }
       });
@@ -264,6 +280,7 @@ export const EditInput = connect(
 
   const handleEmail = ({ email }) => {
     setOptSent(false);
+    setError(null);
     userEmailEditInstance
       .get(`initiate/?email=${email}`, {
         headers: {
@@ -276,65 +293,110 @@ export const EditInput = connect(
       })
       .catch((err) => {
         setLoading(false);
-        closeEdit(false);
         if (err.response.data.email) {
           console.log(err?.response?.data?.email[0]);
+          setError(err?.response?.data?.email[0]);
         } else {
+          closeEdit(false);
           console.log(err?.response?.data);
         }
       });
   };
 
   const handleExtensionChangeOption = (country) => {
+    const res = separateCountryCode(phone);
+    if (res) {
+      setPhone(CountryCodes[country].label + res.number);
+    } else {
+      if (phone.length === 10) {
+        setPhone(CountryCodes[country].label + phone);
+      } else {
+        setPhone(CountryCodes[country].label);
+      }
+    }
+
     setExtension(country);
   };
 
   return (
-    <div className="w-full flex flex-col items-center justify-center gap-2">
+    <div
+      ref={ref}
+      className="w-full flex flex-col items-center justify-center gap-2"
+    >
       <div
-        className={`w-full flex flex-row justify-center items-center gap-3 ${
+        className={`w-full flex flex-row justify-start items-center gap-3 ${
           name === "name" || name === "country"
-            ? "md:justify-center"
-            : "md:justify-start"
+            ? "justify-center"
+            : "justify-start"
         }`}
       >
         {name === "phone" && (
-          <CountryCodeContainer>
+          <div className="">
             <div
-              className="CountryInput"
+              className={`w-fit px-2 py-[0.64rem] flex flex-row gap-3 items-center border-2 border-[#d0d5dd] rounded-md ${loading && "opacity-25"}`}
               onClick={() => setOpenCountryCodeOption(true)}
             >
               <CountryImg
                 height="29"
                 width="29"
                 objectFit="cover"
-                src={extensions[extension].img}
+                src={CountryCodes ? CountryCodes[extension].img : ""}
               ></CountryImg>
 
-              <p>{extensions[extension].label} </p>
               <FiChevronDown />
             </div>
             {openCountryCodeOption && (
-              <CountryCodeDropdown
-                onClose={() => setOpenCountryCodeOption(false)}
-                ExtensionOptions={ExtensionOptions}
-              />
+              <div className="absolute top-[160px]">
+                <CountryCodeDropdown
+                  onClose={() => setOpenCountryCodeOption(false)}
+                  ExtensionOptions={ExtensionOptions}
+                />
+              </div>
             )}
-          </CountryCodeContainer>
+          </div>
         )}
 
-        <input
-          autoFocus
-          disabled={loading}
-          name={name}
-          type={type}
-          value={value}
-          onChange={(e) => onChangeValue(e)}
-          onKeyDown={(e) => handleEnterKey(e)}
-          className={`w-[60%] border-2 border-[#d0d5dd] rounded-md px-2 py-[0.64rem] focus:outline-none ${
-            loading && "opacity-25"
-          }`}
-        ></input>
+        <div className="w-[60%] flex flex-col relative">
+          <input
+            autoFocus
+            disabled={loading || name === "country"}
+            name={name}
+            type={type}
+            value={name === "phone" ? phone : value}
+            onChange={(e) => onChangeValue(e)}
+            onKeyDown={(e) => handleEnterKey(e)}
+            className={`w-full border-2 border-[#d0d5dd] rounded-md px-2 py-[0.64rem] focus:outline-none ${
+              loading && "opacity-25"
+            }`}
+          ></input>
+          {name === "country" && (
+            <div className="absolute right-4 top-[50%] translate-y-[-50%]">
+              <RiArrowDropDownLine
+                onClick={() => setOpenCountryMenu((prev) => !prev)}
+                className="text-[30px] cursor-pointer"
+              />
+            </div>
+          )}
+
+          {error && (
+            <ErrorText className="absolute bottom-[-20px]">
+              <BiError style={{ fontSize: "1rem" }} />
+              <span style={{ marginLeft: "2px", marginTop: "2px" }}>
+                {error}
+              </span>
+            </ErrorText>
+          )}
+
+          {name === "country" && openCountryMenu && (
+            <div className="absolute z-[1999] top-[110%] w-full h-[46vh]">
+              <CountryMenu
+                setValue={setValue}
+                setOpenCountryMenu={setOpenCountryMenu}
+                CountryCodes={CountryCodes}
+              />
+            </div>
+          )}
+        </div>
 
         {loading ? (
           <div className="w-6 h-6 rounded-full animate-spin border-t-2 border-black"></div>
@@ -357,7 +419,7 @@ export const EditInput = connect(
           <OPTInput
             name={name}
             token={token}
-            phone={extensions[extension].label + value}
+            phone={CountryCodes[extension].label + value}
             email={value}
             setUserDetails={setUserDetails}
             closeEdit={closeEdit}
@@ -460,6 +522,60 @@ const OPTInput = ({ name, token, phone, email, setUserDetails, closeEdit }) => {
           </span>
         </ErrorText>
       )}
+    </div>
+  );
+};
+
+const CountryMenu = ({ CountryCodes, setOpenCountryMenu, setValue }) => {
+  const ref = useRef();
+  const [countries, setCountries] = useState([]);
+
+  useEffect(() => {
+    const checkIfClickedOutside = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) {
+        setOpenCountryMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", checkIfClickedOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", checkIfClickedOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    let Options = [];
+    for (const country in CountryCodes) {
+      Options.push(
+        <div
+          className="flex flex-row gap-3 items-center p-2 cursor-pointer"
+          key={country}
+          value={country}
+          onClick={() => {
+            setValue(country), setOpenCountryMenu(false);
+          }}
+        >
+          <CountryImg
+            height="29"
+            width="29"
+            objectFit="cover"
+            src={CountryCodes[country].img}
+            onClick={() => setValue(country)}
+          ></CountryImg>
+          <p className="m-0">{CountryCodes[country].value}</p>
+        </div>,
+      );
+    }
+
+    setCountries(Options);
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className="z-[2999] bg-white w-full h-full border-2 rounded-md p-2 overflow-auto"
+    >
+      {countries}
     </div>
   );
 };

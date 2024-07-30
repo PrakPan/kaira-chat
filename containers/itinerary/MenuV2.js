@@ -114,7 +114,7 @@ const SimpleTabsV2 = (props) => {
       setCityData,
       CityData,
       RoutesData,
-      TransfersData,
+      TransfersData
     );
   }, [props.breif, props.routes]);
 
@@ -324,12 +324,12 @@ const SimpleTabsV2 = (props) => {
                   props?.payment?.show_per_person_cost
                     ? "Per Person"
                     : props.payment?.is_estimated_price
-                      ? `${
-                          props.payment.total_cost === 0
-                            ? "No Bookings"
-                            : "Estimated Price"
-                        }`
-                      : "Total Cost"}
+                    ? `${
+                        props.payment.total_cost === 0
+                          ? "No Bookings"
+                          : "Estimated Price"
+                      }`
+                    : "Total Cost"}
                 </div>
                 {props.payment ? (
                   <div>
@@ -340,14 +340,14 @@ const SimpleTabsV2 = (props) => {
                         ? getIndianPrice(
                             Math.round(
                               Math.round(
-                                props.payment.per_person_discounted_cost,
-                              ) / 100,
-                            ),
+                                props.payment.per_person_discounted_cost
+                              ) / 100
+                            )
                           )
                         : getIndianPrice(
                             Math.round(
-                              Math.round(props.payment.discounted_cost) / 100,
-                            ),
+                              Math.round(props.payment.discounted_cost) / 100
+                            )
                           )}
                       {"/-"}
                     </span>
@@ -906,8 +906,8 @@ const SimpleTabsV2 = (props) => {
               props?.payment?.show_per_person_cost
                 ? "Per Person"
                 : props.payment?.is_estimated_price
-                  ? `${props.payment.total_cost == 0 ? "" : "Estimated Price"}`
-                  : "Total Cost"}
+                ? `${props.payment.total_cost == 0 ? "" : "Estimated Price"}`
+                : "Total Cost"}
             </div>
             {props.payment ? (
               <div>
@@ -918,13 +918,13 @@ const SimpleTabsV2 = (props) => {
                     ? getIndianPrice(
                         Math.round(
                           Math.round(props.payment.per_person_discounted_cost) /
-                            100,
-                        ),
+                            100
+                        )
                       )
                     : getIndianPrice(
                         Math.round(
-                          Math.round(props.payment.discounted_cost) / 100,
-                        ),
+                          Math.round(props.payment.discounted_cost) / 100
+                        )
                       )}
                   {"/-"}
                 </span>
@@ -1081,17 +1081,14 @@ const SimpleTabsV2 = (props) => {
       </div>
 
       {isPageWide && (
-        <div className="z-[999] flex fixed bottom-[90px] right-[20px] bg-black p-[13px] w-fit items-center justify-center rounded-full border-2 border-black">
+        <div
+          onClick={() => setShare((prev) => !prev)}
+          className="z-[999] flex fixed bottom-[90px] right-[25px] bg-[#2b2b27] p-[18px] w-fit items-center justify-center rounded-full cursor-pointer"
+        >
           {share ? (
-            <IoMdClose
-              onClick={() => setShare(false)}
-              className="animate-popOut text-[30px] text-white cursor-pointer"
-            />
+            <IoMdClose className="animate-popOut text-[25px] text-white" />
           ) : (
-            <BsShareFill
-              onClick={() => setShare(true)}
-              className="animate-popOut text-[30px] text-white cursor-pointer"
-            />
+            <BsShareFill className="animate-popOut text-[25px] text-white" />
           )}
         </div>
       )}
@@ -1107,11 +1104,11 @@ const SimpleTabsV2 = (props) => {
         />
       )}
 
-      <div className="z-[999] fixed bottom-[130px] right-[16px] md:hidden bg-black p-[13px] w-fit flex items-center justify-center rounded-full border-2 border-black">
-        <BsShareFill
-          onClick={() => setShareMobile(true)}
-          className="text-[30px] text-white cursor-pointer"
-        />
+      <div
+        onClick={() => setShareMobile((prev) => !prev)}
+        className="z-[999] fixed bottom-[130px] right-[16px] md:hidden bg-[#2b2b27] p-[18px] w-fit flex items-center justify-center rounded-full cursor-pointer"
+      >
+        <BsShareFill className="text-[25px] text-white" />
       </div>
 
       {shareMobile && (
@@ -1181,7 +1178,7 @@ function newFunction(
   setCityData,
   CityData,
   RoutesData,
-  TransfersData,
+  TransfersData
 ) {
   function replaceLatLong(source, destination) {
     return {
@@ -1209,11 +1206,11 @@ function newFunction(
         ) {
           try {
             const data = await getCityDetails(
-              props.breif.city_slabs[i].city_id,
+              props.breif.city_slabs[i].city_id
             );
             const updatedRoutes = replaceLatLong(
               props.breif.city_slabs[i],
-              data,
+              data
             );
             CityDataTemp.push(updatedRoutes);
           } catch (error) {

@@ -16,6 +16,7 @@ import Bookings from "./Bookings";
 import Breif from "./Breif";
 import TripsPage from "./TripsPage";
 import HotLocationSearch from "./HotLocationSearch";
+import CountryCodes from "./CountryCodes";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -35,6 +36,7 @@ const rootReducer = combineReducers({
   Breif,
   TripsPage,
   HotLocationSearch,
+  CountryCodes,
 });
 
 export default rootReducer;

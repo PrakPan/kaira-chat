@@ -237,7 +237,7 @@ export const setAuthRedirect = (path) => {
   };
 };
 
-export const auth = (mobile, password, name, email, whatsapp) => {
+export const auth = (mobile, password, name, email, whatsapp, country) => {
   //name and email null incase of old user
 
   const authData = {
@@ -260,6 +260,7 @@ export const auth = (mobile, password, name, email, whatsapp) => {
         ...updatedauthdata,
         is_new_user: true,
         whatsapp_opt_in: whatsapp,
+        country,
       };
     axiosauthinstance
       .post("/complete/", updatedauthdata)

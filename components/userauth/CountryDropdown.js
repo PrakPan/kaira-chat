@@ -1,17 +1,4 @@
 import { useEffect, useRef } from "react";
-import styled from "styled-components";
-
-const Container = styled.div`
-  background: white;
-  position: absolute;
-  z-index: 5;
-  overflow: auto;
-  height: 17.5rem;
-  width: 90px;
-  box-shadow:
-    rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
-    rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
-`;
 
 const CountryCodeDropdown = (props) => {
   const ref = useRef();
@@ -29,7 +16,14 @@ const CountryCodeDropdown = (props) => {
     };
   }, []);
 
-  return <Container ref={ref}>{props.ExtensionOptions}</Container>;
+  return (
+    <div
+      ref={ref}
+      className="fixed z-[1900] w-[90%] md:w-[40%] h-[80%] bg-white border-2 rounded-md overflow-auto drop-shadow-2xl shadow-2xl"
+    >
+      {props.ExtensionOptions}
+    </div>
+  );
 };
 
 export default CountryCodeDropdown;
