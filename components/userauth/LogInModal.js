@@ -15,7 +15,6 @@ import FloatingInput from "../ui/input/FloatingInput";
 import { BiError } from "react-icons/bi";
 import LoginLoadingIcon from "../ui/LoadingLottie";
 import Image from "next/image";
-import ImageLoader from "../ImageLoader";
 import media from "../media";
 import { useGoogleLogin } from "@react-oauth/google";
 import { getCountryCodes } from "../../store/actions/countryCodes";
@@ -63,9 +62,6 @@ const OtpContainer = styled.div`
 `;
 
 const CountryImg = styled(Image)`
-  // height: 15px;
-  // width: 15px;
-  // border-radius: 50%;
   background-position: cover;
   alt: "";
 `;
@@ -81,23 +77,6 @@ const ResendOtp = styled.p`
   float: right;
   &:hover {
     cursor: pointer;
-  }
-`;
-
-const CountryCodeOption = styled.div`
-  display: grid;
-  grid-template-columns: 0.7fr max-content;
-  padding-inline: 0.2rem;
-  gap: 0.6rem;
-  &:hover {
-    cursor: pointer;
-  }
-  text-align: center;
-  height: 2rem !important;
-  margin-block: 0.5rem;
-
-  p {
-    margin: auto;
   }
 `;
 
@@ -123,7 +102,6 @@ const LogIn = React.memo((props) => {
   let email = null; //JSX for email
   let password = null; //JSX for OTP
   let mobileInput = null; //JSX for mobile input field
-  let ExtensionOptions = [];
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -168,29 +146,6 @@ const LogIn = React.memo((props) => {
 
     setExtension(country);
   };
-
-  for (const country in props.CountryCodes) {
-    ExtensionOptions.push(
-      <div
-        className="flex flex-row gap-3 items-center p-2 cursor-pointer"
-        key={country}
-        value={country}
-        onClick={() => {
-          handleExtensionChangeOption(country), setOpenCountryCodeOption(false);
-        }}
-      >
-        <CountryImg
-          height="30"
-          width="30"
-          objectFit="cover"
-          src={props.CountryCodes[country].img}
-          onClick={() => handleExtensionChangeOption(country)}
-        ></CountryImg>
-        <p className="m-0">{props.CountryCodes[country].value}</p>
-        <p className="m-0 text-gray-600">{props.CountryCodes[country].label}</p>
-      </div>
-    );
-  }
 
   //Change user details on key press
   const _userDetailsOnChangeHandler = (event, target) => {
@@ -455,7 +410,9 @@ const LogIn = React.memo((props) => {
             {openCountryCodeOption && (
               <CountryCodeDropdown
                 onClose={() => setOpenCountryCodeOption(false)}
-                ExtensionOptions={ExtensionOptions}
+                CountryCodes={props.CountryCodes}
+                handleExtensionChangeOption={handleExtensionChangeOption}
+                setOpenCountryCodeOption={setOpenCountryCodeOption}
               />
             )}
             {mobileInput}
@@ -503,7 +460,9 @@ const LogIn = React.memo((props) => {
             {openCountryCodeOption && (
               <CountryCodeDropdown
                 onClose={() => setOpenCountryCodeOption(false)}
-                ExtensionOptions={ExtensionOptions}
+                CountryCodes={props.CountryCodes}
+                handleExtensionChangeOption={handleExtensionChangeOption}
+                setOpenCountryCodeOption={setOpenCountryCodeOption}
               />
             )}
             {mobileInput}

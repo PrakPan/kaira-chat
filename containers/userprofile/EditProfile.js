@@ -88,7 +88,7 @@ const mapDispatchToProps = (dispatch) => {
 
 export const EditInput = connect(
   mapStateToProps,
-  mapDispatchToProps,
+  mapDispatchToProps
 )(({ token, CountryCodes, type, name, text, closeEdit, setUserDetails }) => {
   const [value, setValue] = useState(text);
   const [loading, setLoading] = useState(false);
@@ -136,7 +136,7 @@ export const EditInput = connect(
           ></CountryImg>
           <p className="m-0">{CountryCodes[country].value}</p>
           <p className="m-0 text-gray-600">{CountryCodes[country].label}</p>
-        </div>,
+        </div>
       );
     }
 
@@ -333,7 +333,9 @@ export const EditInput = connect(
         {name === "phone" && (
           <div className="">
             <div
-              className={`w-fit px-2 py-[0.64rem] flex flex-row gap-3 items-center border-2 border-[#d0d5dd] rounded-md ${loading && "opacity-25"}`}
+              className={`w-fit px-2 py-[0.64rem] flex flex-row gap-3 items-center border-2 border-[#d0d5dd] rounded-md ${
+                loading && "opacity-25"
+              }`}
               onClick={() => setOpenCountryCodeOption(true)}
             >
               <CountryImg
@@ -349,7 +351,9 @@ export const EditInput = connect(
               <div className="absolute top-[160px]">
                 <CountryCodeDropdown
                   onClose={() => setOpenCountryCodeOption(false)}
-                  ExtensionOptions={ExtensionOptions}
+                  CountryCodes={CountryCodes}
+                  handleExtensionChangeOption={handleExtensionChangeOption}
+                  setOpenCountryCodeOption={setOpenCountryCodeOption}
                 />
               </div>
             )}
@@ -484,7 +488,7 @@ const OPTInput = ({ name, token, phone, email, setUserDetails, closeEdit }) => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        },
+        }
       )
       .then((res) => {
         setUserDetails(res.data);
@@ -529,6 +533,7 @@ const OPTInput = ({ name, token, phone, email, setUserDetails, closeEdit }) => {
 const CountryMenu = ({ CountryCodes, setOpenCountryMenu, setValue }) => {
   const ref = useRef();
   const [countries, setCountries] = useState([]);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     const checkIfClickedOutside = (e) => {
@@ -545,36 +550,88 @@ const CountryMenu = ({ CountryCodes, setOpenCountryMenu, setValue }) => {
 
   useEffect(() => {
     let Options = [];
-    for (const country in CountryCodes) {
-      Options.push(
-        <div
-          className="flex flex-row gap-3 items-center p-2 cursor-pointer"
-          key={country}
-          value={country}
-          onClick={() => {
-            setValue(country), setOpenCountryMenu(false);
-          }}
-        >
-          <CountryImg
-            height="29"
-            width="29"
-            objectFit="cover"
-            src={CountryCodes[country].img}
-            onClick={() => setValue(country)}
-          ></CountryImg>
-          <p className="m-0">{CountryCodes[country].value}</p>
-        </div>,
-      );
+
+    if (search) {
+      const results = searchCountries(search);
+
+      for (const country of results) {
+        Options.push(
+          <div
+            className="flex flex-row gap-3 items-center p-2 cursor-pointer"
+            key={country.value}
+            value={country.value}
+            onClick={() => {
+              setValue(country.value), setOpenCountryMenu(false);
+            }}
+          >
+            <CountryImg
+              height="29"
+              width="29"
+              objectFit="cover"
+              src={country.img}
+              onClick={() => setValue(country.value)}
+            ></CountryImg>
+            <p className="m-0">{country.value}</p>
+          </div>
+        );
+      }
+    } else {
+      for (const country in CountryCodes) {
+        Options.push(
+          <div
+            className="flex flex-row gap-3 items-center p-2 cursor-pointer"
+            key={country}
+            value={country}
+            onClick={() => {
+              setValue(country), setOpenCountryMenu(false);
+            }}
+          >
+            <CountryImg
+              height="29"
+              width="29"
+              objectFit="cover"
+              src={CountryCodes[country].img}
+              onClick={() => setValue(country)}
+            ></CountryImg>
+            <p className="m-0">{CountryCodes[country].value}</p>
+          </div>
+        );
+      }
     }
 
     setCountries(Options);
-  }, []);
+  }, [CountryCodes, search]);
+
+  function searchCountries(query) {
+    const searchResults = [];
+
+    Object.keys(CountryCodes).forEach((key) => {
+      const country = CountryCodes[key];
+      if (
+        key.includes(query) ||
+        key.toLowerCase().includes(query.toLowerCase())
+      ) {
+        searchResults.push(country);
+      }
+    });
+
+    return searchResults;
+  }
 
   return (
     <div
       ref={ref}
-      className="z-[2999] bg-white w-full h-full border-2 rounded-md p-2 overflow-auto"
+      className="z-[2999] bg-white w-full h-full border-2 rounded-md p-2 pt-0 overflow-auto"
     >
+      <div className="sticky top-0 w-full bg-white p-2">
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          type="text"
+          className="w-full p-2 border-2 rounded-lg focus:outline-none"
+          placeholder="Search"
+        ></input>
+      </div>
       {countries}
     </div>
   );
@@ -582,7 +639,7 @@ const CountryMenu = ({ CountryCodes, setOpenCountryMenu, setValue }) => {
 
 export const ImageInput = connect(
   mapStateToProps,
-  mapDispatchToProps,
+  mapDispatchToProps
 )(({ children, setEditImage, setUserDetails, token }) => {
   const fileInputRef = useRef();
   const [file, setFile] = useState(null);
@@ -628,7 +685,9 @@ export const ImageInput = connect(
 
   return (
     <div
-      className={`relative w-[45%] flex flex-col gap-3 items-center ${loading && "opacity-50"}`}
+      className={`relative w-[45%] flex flex-col gap-3 items-center ${
+        loading && "opacity-50"
+      }`}
     >
       <div className="w-full opacity-75">{children}</div>
       <LuImagePlus
