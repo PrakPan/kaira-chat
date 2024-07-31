@@ -127,9 +127,7 @@ const SelectedDestination = (props) => {
           )
         ) : props.destination && showDestination ? (
           <div className="w-[90%] flex flex-row gap-2 justify-between">
-            <div className="truncate">
-              {props.destination}
-            </div>
+            <div className="truncate">{props.destination}</div>
             {!props.setDeletedId && (
               <span
                 style={{
@@ -164,7 +162,7 @@ const SelectedDestination = (props) => {
       </div>
 
       {!props.selectlocation ? (
-        <RightContainer className="hover-pointer bg-emerald-400">
+        <RightContainer className="hover-pointer">
           {props.setDeletedId ? (
             <AiFillDelete
               onClick={() => {
