@@ -63,9 +63,6 @@ const OtpContainer = styled.div`
 `;
 
 const CountryImg = styled(Image)`
-  // height: 15px;
-  // width: 15px;
-  // border-radius: 50%;
   background-position: cover;
   alt: "";
 `;
@@ -81,23 +78,6 @@ const ResendOtp = styled.p`
   float: right;
   &:hover {
     cursor: pointer;
-  }
-`;
-
-const CountryCodeOption = styled.div`
-  display: grid;
-  grid-template-columns: 0.7fr max-content;
-  padding-inline: 0.2rem;
-  gap: 0.6rem;
-  &:hover {
-    cursor: pointer;
-  }
-  text-align: center;
-  height: 2rem !important;
-  margin-block: 0.5rem;
-
-  p {
-    margin: auto;
   }
 `;
 
@@ -123,7 +103,6 @@ const LogIn = React.memo((props) => {
   let email = null; //JSX for email
   let password = null; //JSX for OTP
   let mobileInput = null; //JSX for mobile input field
-  let ExtensionOptions = [];
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -168,29 +147,6 @@ const LogIn = React.memo((props) => {
 
     setExtension(country);
   };
-
-  for (const country in props.CountryCodes) {
-    ExtensionOptions.push(
-      <div
-        className="flex flex-row gap-3 items-center p-2 cursor-pointer"
-        key={country}
-        value={country}
-        onClick={() => {
-          handleExtensionChangeOption(country), setOpenCountryCodeOption(false);
-        }}
-      >
-        <CountryImg
-          height="30"
-          width="30"
-          objectFit="cover"
-          src={props.CountryCodes[country].img}
-          onClick={() => handleExtensionChangeOption(country)}
-        ></CountryImg>
-        <p className="m-0">{props.CountryCodes[country].value}</p>
-        <p className="m-0 text-gray-600">{props.CountryCodes[country].label}</p>
-      </div>,
-    );
-  }
 
   //Change user details on key press
   const _userDetailsOnChangeHandler = (event, target) => {
@@ -248,7 +204,7 @@ const LogIn = React.memo((props) => {
           userDetails.email,
           whatsapp,
           props.CountryCodes[extension].value,
-          props.itinary_id,
+          props.itinary_id
         );
     } else if (props.otpSent && !props.name) {
       props.onAuth(
@@ -257,7 +213,7 @@ const LogIn = React.memo((props) => {
         userDetails.userName,
         null,
         whatsapp,
-        props.itinary_id,
+        props.itinary_id
       );
     } else if (props.otpSent && !props.name && !props.email) {
       props.onAuth(
@@ -266,7 +222,7 @@ const LogIn = React.memo((props) => {
         userDetails.userName,
         userDetails.email,
         whatsapp,
-        props.itinary_id,
+        props.itinary_id
       );
     } else if (props.otpSent && !props.email) {
       props.onAuth(
@@ -275,7 +231,7 @@ const LogIn = React.memo((props) => {
         null,
         userDetails.email,
         whatsapp,
-        props.itinary_id,
+        props.itinary_id
       );
     } else {
       props.onAuth(
@@ -284,7 +240,7 @@ const LogIn = React.memo((props) => {
         null,
         null,
         whatsapp,
-        props.itinary_id,
+        props.itinary_id
       );
     }
   };
@@ -455,7 +411,9 @@ const LogIn = React.memo((props) => {
             {openCountryCodeOption && (
               <CountryCodeDropdown
                 onClose={() => setOpenCountryCodeOption(false)}
-                ExtensionOptions={ExtensionOptions}
+                CountryCodes={props.CountryCodes}
+                handleExtensionChangeOption={handleExtensionChangeOption}
+                setOpenCountryCodeOption={setOpenCountryCodeOption}
               />
             )}
             {mobileInput}
@@ -503,7 +461,9 @@ const LogIn = React.memo((props) => {
             {openCountryCodeOption && (
               <CountryCodeDropdown
                 onClose={() => setOpenCountryCodeOption(false)}
-                ExtensionOptions={ExtensionOptions}
+                CountryCodes={props.CountryCodes}
+                handleExtensionChangeOption={handleExtensionChangeOption}
+                setOpenCountryCodeOption={setOpenCountryCodeOption}
               />
             )}
             {mobileInput}
@@ -743,8 +703,8 @@ const mapDispatchToProps = (dispatch) => {
           email,
           whatsapp,
           country,
-          itinary_id,
-        ),
+          itinary_id
+        )
       ),
     onOtp: (mobile, setNewUser) =>
       dispatch(otpaction.getotp(mobile, setNewUser)),
