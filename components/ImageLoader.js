@@ -210,8 +210,8 @@ const ImageLoader = (props) => {
                 ? error
                   ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                   : isPageLoaded
-                    ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
-                    : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                  ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
+                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
             onLoad={fullImageLoadedHandler}
@@ -250,7 +250,7 @@ const ImageLoader = (props) => {
                 : props.url
             }
             style={{
-              height: props.height ? props.height : "auto",
+              height: props.height ? props.height : "100%",
               display: !fullLoaded ? "initial" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
               ...props.style,
@@ -263,15 +263,15 @@ const ImageLoader = (props) => {
                 ? error
                   ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                   : isPageLoaded
-                    ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
-                    : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                  ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
+                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
             onLoad={fullImageLoadedHandler}
             onError={_handleError}
             resizeMode={props.resizeMode}
             style={{
-              height: props.height ? props.height : "auto",
+              height: props.height ? props.height : "100%",
               display: fullLoaded ? "block" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
@@ -289,7 +289,7 @@ const ImageLoader = (props) => {
           onClick={props.onclick}
           style={{
             width: props.widthmobile ? props.widthmobile : "100%",
-            height: props.heightmobile ? props.heightmobile : "auto",
+            height: props.heightmobile ? props.heightmobile : "100%",
             margin: props.leftalign ? "0" : "0 auto",
             filter: props.blur ? "blur(0.5rem)" : "blur(0)",
             borderRadius: props.borderRadius ? props.borderRadius : "0",
@@ -305,7 +305,7 @@ const ImageLoader = (props) => {
                 : props.url
             }
             style={{
-              height: props.height ? props.height : "auto",
+              height: props.height ? props.height : "100%",
               display: !fullLoaded ? "initial" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
               ...props.style,
@@ -318,8 +318,8 @@ const ImageLoader = (props) => {
                 ? error
                   ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                   : isPageLoaded
-                    ? `${imgUrlEndPoint}/${btoa(imageRequestMobile)}`
-                    : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                  ? `${imgUrlEndPoint}/${btoa(imageRequestMobile)}`
+                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
             width={props.dimensionsMobile.width}
@@ -328,7 +328,7 @@ const ImageLoader = (props) => {
             onError={_handleError}
             resizeMode={props.resizeMode}
             style={{
-              height: props.height ? props.height : "auto",
+              height: props.height ? props.height : "100%",
               display: fullLoaded ? "block" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
@@ -360,7 +360,7 @@ const ImageLoader = (props) => {
                 : props.url
             }
             style={{
-              height: props.height ? props.height : "auto",
+              height: props.height ? props.height : "100%",
               display: !fullLoaded ? "initial" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
               ...props.style,
@@ -372,15 +372,15 @@ const ImageLoader = (props) => {
                 ? error
                   ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                   : isPageLoaded
-                    ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
-                    : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                  ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
+                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
             onLoad={fullImageLoadedHandler}
             onError={_handleError}
             resizeMode={props.resizeMode}
             style={{
-              height: props.height ? props.height : "auto",
+              height: props.height ? props.height : "100%",
               display: fullLoaded ? "block" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
@@ -407,21 +407,21 @@ const SmallImage = (props) => {
   );
 };
 
-const FullImage = (props) => {
-  return (
-    <Image
-      alt=""
-      src={props.src}
-      width={145}
-      height={145}
-      onLoad={props.onLoad}
-      onError={props.onError}
-      style={{
-        width: "100%",
-        objectFit: `${props.resizeMode ? props.resizeMode : "cover"}`,
-        zIndex: "0 !important",
-        ...props.style,
-      }}
-    />
-  );
-};
+// const FullImage = (props) => {
+//   return (
+//     <Image
+//       alt=""
+//       src={props.src}
+//       width={145}
+//       height={145}
+//       onLoad={props.onLoad}
+//       onError={props.onError}
+//       style={{
+//         width: "100%",
+//         objectFit: `${props.resizeMode ? props.resizeMode : "cover"}`,
+//         zIndex: "0 !important",
+//         ...props.style,
+//       }}
+//     />
+//   );
+// };
