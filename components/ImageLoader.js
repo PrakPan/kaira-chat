@@ -197,7 +197,7 @@ const ImageLoader = (props) => {
                 : props.url
             }
             style={{
-              height: props.height ? props.height : "auto",
+              height: props.height ? props.height : "100%",
               display: !fullLoaded ? "initial" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
               ...props.style,
@@ -218,7 +218,7 @@ const ImageLoader = (props) => {
             onError={_handleError}
             resizeMode={props.resizeMode}
             style={{
-              height: props.height ? props.height : "auto",
+              height: props.height ? props.height : "100%",
               display: fullLoaded ? "block" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
