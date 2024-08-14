@@ -18,6 +18,7 @@ import Image from "next/image";
 import media from "../media";
 import { useGoogleLogin } from "@react-oauth/google";
 import { getCountryCodes } from "../../store/actions/countryCodes";
+import ImageLoader from "../../components/ImageLoader";
 
 const MobileNumberContainer = styled.div`
   display: grid;
@@ -563,7 +564,7 @@ const LogIn = React.memo((props) => {
             </Button>
           )}
 
-          {/* <div
+          <div
             style={{
               position: "relative",
               marginBlock: isPageWide ? "3rem" : "2rem",
@@ -631,7 +632,7 @@ const LogIn = React.memo((props) => {
                 Sign in with Google
               </p>
             </div>
-          </Button> */}
+          </Button>
 
           <div
             className="text-center font-lexend"
