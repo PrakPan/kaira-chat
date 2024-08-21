@@ -109,7 +109,7 @@ export default function TransferElement(props) {
                 selectedBooking?.images?.image !== "" &&
                 !imageFailed ? (
                   <ImageLoader
-                    is_url={selectedBooking?.images?.image.includes("gozo")}
+                    is_url={selectedBooking?.images?.image?.includes("gozo")}
                     dimensions={{ width: 300, height: 300 }}
                     dimensionsMobile={{ width: 300, height: 300 }}
                     borderRadius="8px"
