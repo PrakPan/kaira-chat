@@ -129,7 +129,7 @@ const Route = (props) => {
               payment={props.payment}
               plan={props.plan}
               originCity={props.routes[i].city_name}
-              destinationCity={props.routes[i + 2].city_name}
+              destinationCity={props.routes[i + 2]?.city_name}
               fetchData={props.fetchData}
               getPaymentHandler={props.getPaymentHandler}
               setShowLoginModal={props.setShowLoginModal}

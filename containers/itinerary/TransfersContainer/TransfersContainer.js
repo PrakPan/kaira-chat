@@ -343,7 +343,7 @@ const TransfersContainer = (props) => {
                             itinerary_id={props?.itinerary_id}
                             fetchData={props.fetchData}
                             originCity={props.routes[i].city_name}
-                            destinationCity={props.routes[i + 2].city_name}
+                            destinationCity={props.routes[i + 2]?.city_name}
                           ></TransferModeContainer>
                         </div>
                       )
@@ -385,7 +385,7 @@ const TransfersContainer = (props) => {
                             itinerary_id={props?.itinerary_id}
                             fetchData={props.fetchData}
                             originCity={props.routes[i].city_name}
-                            destinationCity={props.routes[i + 2].city_name}
+                            destinationCity={props.routes[i + 2]?.city_name}
                           ></TransferModeContainer>
                         )
                       );
