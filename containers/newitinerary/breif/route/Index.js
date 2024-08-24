@@ -220,7 +220,7 @@ const Route = (props) => {
               setCurrentPopup={props.setCurrentPopup}
               handlemap={handlemap}
               dayId={
-                props.breif.city_slabs[i].day_slab_location.start_day_slab_index
+                props.breif.city_slabs[i]?.day_slab_location?.start_day_slab_index
               }
               setShowDrawer={props.setShowDrawer}
               setShowDrawerData={props.setShowDrawerData}
