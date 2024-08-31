@@ -93,7 +93,7 @@ const LogIn = React.memo((props) => {
 
   const mobileRef = useRef();
   const [mobile, setMobile] = useState("");
-  // const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState("");
   const [otpResent, setOtpResent] = useState(false);
   const [whatsapp, setWhatsapp] = useState(true);
   const [extension, setExtension] = useState("India"); //store extension
@@ -157,18 +157,17 @@ const LogIn = React.memo((props) => {
   };
 
   const handleMobileBlur = (event) => {
-    setMobile(mobileRef.current.value)
-    // const phone = mobileRef.current.value;
-    // const res = separateCountryCode(phone);
-    // if (res) {
-    //   setMobile(res.number);
-    // } else {
-    //   setMobile(phone);
-    // }
+    const phone = mobileRef.current.value;
+    const res = separateCountryCode(phone);
+    if (res) {
+      setMobile(res.number);
+    } else {
+      setMobile(phone);
+    }
   };
 
   const separateCountryCode = (phoneNumber) => {
-    const pattern = /^(\+\d{1,4})(\d{10})$/;
+    const pattern = /^(\+\d{1,3})(\d{10})$/;
     const match = phoneNumber.match(pattern);
 
     if (match) {
@@ -253,7 +252,7 @@ const LogIn = React.memo((props) => {
 
   //Set Mobile
   const handleMobileChange = (event) => {
-    setMobile(event.target.value);
+    setPhone(event.target.value);
   };
 
   //Dispatch Action
@@ -294,7 +293,7 @@ const LogIn = React.memo((props) => {
         label="Mobile Number"
         type="mobile"
         id="mobile"
-        value={mobile}
+        value={phone}
         onChange={handleMobileChange}
         onBlur={handleMobileBlur}
         className="loginform"
