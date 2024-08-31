@@ -93,7 +93,7 @@ const LogIn = React.memo((props) => {
 
   const mobileRef = useRef();
   const [mobile, setMobile] = useState("");
-  const [phone, setPhone] = useState("+91");
+  // const [phone, setPhone] = useState("");
   const [otpResent, setOtpResent] = useState(false);
   const [whatsapp, setWhatsapp] = useState(true);
   const [extension, setExtension] = useState("India"); //store extension
@@ -134,16 +134,16 @@ const LogIn = React.memo((props) => {
   }, [otp]);
 
   const handleExtensionChangeOption = (country) => {
-    const res = separateCountryCode(phone);
-    if (res) {
-      setPhone(props.CountryCodes[country].label + res.number);
-    } else {
-      if (phone.length === 10) {
-        setPhone(props.CountryCodes[country].label + phone);
-      } else {
-        setPhone(props.CountryCodes[country].label);
-      }
-    }
+    // const res = separateCountryCode(phone);
+    // if (res) {
+    //   setPhone(props.CountryCodes[country].label + res.number);
+    // } else {
+    //   if (phone.length === 10) {
+    //     setPhone(props.CountryCodes[country].label + phone);
+    //   } else {
+    //     setPhone(props.CountryCodes[country].label);
+    //   }
+    // }
 
     setExtension(country);
   };
@@ -157,13 +157,14 @@ const LogIn = React.memo((props) => {
   };
 
   const handleMobileBlur = (event) => {
-    const phone = mobileRef.current.value;
-    const res = separateCountryCode(phone);
-    if (res) {
-      setMobile(res.number);
-    } else {
-      setMobile(phone);
-    }
+    setMobile(mobileRef.current.value)
+    // const phone = mobileRef.current.value;
+    // const res = separateCountryCode(phone);
+    // if (res) {
+    //   setMobile(res.number);
+    // } else {
+    //   setMobile(phone);
+    // }
   };
 
   const separateCountryCode = (phoneNumber) => {
@@ -252,7 +253,7 @@ const LogIn = React.memo((props) => {
 
   //Set Mobile
   const handleMobileChange = (event) => {
-    setPhone(event.target.value);
+    setMobile(event.target.value);
   };
 
   //Dispatch Action
@@ -293,7 +294,7 @@ const LogIn = React.memo((props) => {
         label="Mobile Number"
         type="mobile"
         id="mobile"
-        value={phone}
+        value={mobile}
         onChange={handleMobileChange}
         onBlur={handleMobileBlur}
         className="loginform"
