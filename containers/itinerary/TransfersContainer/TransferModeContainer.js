@@ -678,13 +678,6 @@ const TransferModeContainer = (props) => {
                                   fontWeight: "300",
                                 }}
                               >
-                                {props.booking.via_airports &&
-                                props.booking.costings_breakdown
-                                  ? `(${
-                                      props.booking.costings_breakdown
-                                        .Segments[0].length - 1
-                                    } Lay)`
-                                  : "(Nonstop)"}
                                 {props.booking?.airline_code && (
                                   <span className="ml-1">
                                     {props.booking.duration
@@ -773,13 +766,6 @@ const TransferModeContainer = (props) => {
                                   fontWeight: "300",
                                 }}
                               >
-                                {props.booking.via_airports &&
-                                props.booking.costings_breakdown
-                                  ? `(${
-                                      props.booking.costings_breakdown
-                                        .Segments[0].length - 1
-                                    } Lay)`
-                                  : "(Nonstop)"}
                                 {props.booking?.airline_code && (
                                   <span className="ml-1">
                                     {props.booking.duration &&
@@ -841,12 +827,6 @@ const TransferModeContainer = (props) => {
                               {props.booking.duration && (
                                 <div className="flex pl-2  font-[300]">
                                   <div>
-                                    {props.booking.via_airports
-                                      ? `(${
-                                          props.booking.costings_breakdown
-                                            .Segments[0].length - 1
-                                        } Lay)`
-                                      : "(Nonstop)"}
                                     {
                                       processBookingTimes(
                                         props.booking.check_in,
