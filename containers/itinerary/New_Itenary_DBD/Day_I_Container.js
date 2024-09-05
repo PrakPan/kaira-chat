@@ -354,8 +354,8 @@ const Day_I_Container = (props) => {
             ) : (
               <>
                 {convertDateFormat(props.Days?.slab)}
-                {getYear(props?.Days?.slab) &&
-                  `, ${getYear(props?.Days?.slab)} - `}
+                {getYear(props?.Days?.slab) ?
+                  `, ${getYear(props?.Days?.slab)} - ` : " - "}
               </>
             )}
             <span className="font-semibold">

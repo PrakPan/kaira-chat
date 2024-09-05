@@ -143,10 +143,10 @@ const Day_I_ContainerM = (props) => {
           break;
         case "activity":
           if (
-            element.activity_data.activity &&
-            Object.keys(element.activity_data.activity).length !== 0 &&
+            element?.activity_data?.activity &&
+            Object.keys(element?.activity_data?.activity)?.length !== 0 &&
             element?.bookings &&
-            element?.bookings.length
+            element?.bookings?.length
           ) {
             summaryIContainer.push(
               <ActivityElement
@@ -306,8 +306,8 @@ const Day_I_ContainerM = (props) => {
           ) : (
             <>
               {convertDateFormat(props.Days?.slab)}
-              {getYear(props?.Days?.slab) &&
-                `, ${getYear(props?.Days?.slab)} - `}
+              {getYear(props?.Days?.slab) ?
+                `, ${getYear(props?.Days?.slab)} - ` : " - "}
             </>
           )}
 
