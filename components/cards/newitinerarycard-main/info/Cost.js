@@ -165,7 +165,7 @@ const Cost = (props) => {
             {props.PW ? <StrikedCost> {"₹ 0"}</StrikedCost> : null}
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               {!props.PW ? (
-                <Text className="font-lexend">{"₹ 0 /-"}</Text>
+                <Text className="font-lexend">{"₹ 0/-"}</Text>
               ) : (
                 <GITText className="font-lexend">{"₹ 0/-"}</GITText>
               )}
