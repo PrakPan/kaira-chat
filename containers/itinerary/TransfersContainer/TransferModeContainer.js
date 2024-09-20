@@ -1069,7 +1069,7 @@ const TransferModeContainer = (props) => {
                     <div className=" text-md font-semibold text-[#E00000]  ">
                       Excluded
                     </div>
-                  )}{" "}
+                  )}
                 </div>
               </div>
 
