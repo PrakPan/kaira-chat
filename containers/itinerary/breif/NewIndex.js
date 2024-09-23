@@ -194,6 +194,7 @@ const Details = (props) => {
           text="Want to personalize your own experience like this?"
         ></DesktopBanner>
       ) : null}
+
       {props.traveleritinerary ? (
         <div className="hidden-desktop">
           <Banner

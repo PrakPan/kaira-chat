@@ -39,7 +39,7 @@ const Mapbox = React.memo((props) => {
     setPolylines(updatedPolylines);
   }, [props.locations]);
 
-  const FitBoundsOnMount = () => {
+  const FitBoundsOnMount = ({ maxZoom = 12 }) => {
     const map = useMap();
 
     useEffect(() => {
@@ -53,7 +53,14 @@ const Mapbox = React.memo((props) => {
           .getBounds();
 
         if (bounds.isValid()) {
-          map.fitBounds(bounds);
+          if (props.locations.length === 1) {
+            // If there's only one location, set view with controlled zoom
+            const center = bounds.getCenter();
+            map.setView(center, maxZoom);
+          } else {
+            // For multiple locations, fit bounds but limit max zoom
+            map.fitBounds(bounds, { maxZoom: maxZoom });
+          }
         }
       }
     }, [map]);
