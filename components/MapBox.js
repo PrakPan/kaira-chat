@@ -39,7 +39,7 @@ const Mapbox = React.memo((props) => {
     setPolylines(updatedPolylines);
   }, [props.locations]);
 
-  const FitBoundsOnMount = ({ maxZoom = 12 }) => {
+  const FitBoundsOnMount = ({ maxZoom = 10 }) => {
     const map = useMap();
 
     useEffect(() => {
