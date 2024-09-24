@@ -266,7 +266,7 @@ const Homepage = (props) => {
       <SetWidthContainer>
         {!props.themePage && <PathNavigation path={props.experienceData.path} />}
 
-        {props.experienceData.page_type == "Theme" && (
+        {props.experienceData.page_type == "Theme" && props.experienceData.overview_text && (
           <MapGridContainer>
             <Overview
               locations={props.experienceData.locations}
@@ -346,7 +346,7 @@ const Homepage = (props) => {
               page={"State Page"}
             ></Experiences>
 
-            {index % 2 && (
+            {index % 2 ? (
               <Button
                 onclick={() =>
                   handlePlanButtonClick(heading.name)
@@ -359,7 +359,7 @@ const Homepage = (props) => {
               >
                 Create your travel plan now!
               </Button>
-            )}
+            ) : null}
           </div>
         ))}
 
@@ -382,7 +382,7 @@ const Homepage = (props) => {
           </>
         ) : null}
 
-        {props.experienceData.page_type !== "Theme" && (
+        {props.experienceData.page_type !== "Theme" && props.experienceData.overview_text && (
           <MapGridContainer>
             <Overview
               locations={props.experienceData.locations}
