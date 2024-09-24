@@ -352,6 +352,7 @@ const Section = (props) => {
               >
                 Cancel
               </Button>
+              
               <Button
                 onclick={() => {
                   props._FetchFlightsHandler();

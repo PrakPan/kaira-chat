@@ -3,7 +3,7 @@ import styled from "styled-components";
 import media from "../../media";
 import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
 import { connect } from "react-redux";
-import axiosflightsearch from "../../../services/bookings/FlightSearch";
+import axiosflightsearch, {axiosFlightSearch} from "../../../services/bookings/FlightSearch";
 import SectionOne from "./SectionOne";
 import Button from "../../ui/button/Index";
 import Flight from "./new-flight-searched/Index";
@@ -108,51 +108,59 @@ const Booking = (props) => {
 
   const _FetchFlightsHandler = () => {
     let options = [];
+    let airlines = [];
     setOptionsJSX([]);
     setLoading(true);
-    if (props.selectedBooking && props.token)
-      axiosflightsearch
-        .get("/?limit=" + limit + "&offset=" + offset, {
+    setFetchingIsError({
+            error: false,
+            errorMsg: ``,
+          });
+    if (props.selectedBooking && props.token) {
+
+      const data = {
+            adult_count: props.selectedBooking.pax.number_of_adults,
+            child_count: props.selectedBooking.pax.number_of_children,
+            infant_count: props.selectedBooking.pax.number_of_infants,
+            direct_flight: "false",
+            journey_type: "1",
+            origin: props.selectedBooking.origin_iata,
+            destination: props.selectedBooking.destination_iata,
+            preferred_departure_time: `${props.selectedBooking.check_in}T00:00:00`,
+            flight_cabin_class: "1",
+          }
+
+      axiosFlightSearch
+        .post(`?price_order=${filtersState.order}&is_nonstop=${filtersState.non_stop_flights ? 1 : 0}`, data, {
           headers: {
             Authorization: `Bearer ${props.token}`,
-          },
-          params: {
-            number_of_adults: props.selectedBooking.pax.number_of_adults,
-            number_of_children: props.selectedBooking.pax.number_of_children,
-            number_of_infants: props.selectedBooking.pax.number_of_infants,
-            check_in: props.selectedBooking.check_in,
-            city_code: props.selectedBooking.origin_iata,
-            destination_city_code: props.selectedBooking.destination_iata,
-            flight_cabin_class: "1",
-            ...filtersState,
-          },
+            "Content-Type": "application/json",
+          }
         })
         .then((res) => {
-          localStorage.setItem("tbo_trace_id", res.data.TraceId);
-          if (res.data.search && res.data.search.airline_names) {
-            setAirlineNames(["All", ...res.data.search.airline_names]);
-            setFlightsCount(res.data.count);
-          }
-          if (res.data.Results.length) {
-            for (var i = 0; i < res.data.Results.length; i++) {
+          const provider = res.data.provider
+          localStorage.setItem(`${provider}_trace_id`, res.data.trace_id);
+
+          if (res.data?.results.length) {
+            for (var i = 0; i < res.data.results.length; i++) {
               options.push(
                 <Flight
                   itinerary_id={props.itinerary_id}
-                  data={res.data.Results[i]}
+                  data={res.data.results[i]}
                   selectedBooking={props.selectedBooking}
                   _updateBookingHandler={_newUpdateBookingHandler}
                   isSelected={false}
                 ></Flight>
               );
+
+              const airlineName = res.data.results[i]?.segments[0]?.airline?.name;
+
+              if (airlineName && !airlines.includes(airlineName)) {
+                airlines.push(airlineName)
+              }
             }
             setOptionsJSX(options);
-          }
-          if (res.data.next_page) {
-            setViewMoreStatus(true);
-            setOffset(offset + 20);
-          } else {
-            setViewMoreStatus(false);
-            setOffset(0);
+            setFlightsCount(res.data.results.length);
+            setAirlineNames(["All", ...airlines]);
           }
           setLoading(false);
         })
@@ -163,6 +171,7 @@ const Booking = (props) => {
             errorMsg: `Sorry, we could not find any flights from ${props?.selectedBooking?.city} to ${props?.selectedBooking?.destination_city} for given dates at the moment. Please contact us to complete this booking`,
           });
         });
+    }
   };
 
   const _newUpdateBookingHandler = ({
@@ -237,7 +246,7 @@ const Booking = (props) => {
         localStorage.setItem("tbo_trace_id", res.data.TraceId);
         if (res.data.search && res.data.search.airline_names) {
           setAirlineNames(["All", ...res.data.search.airline_names]);
-          setFlightsCount(res.data.count);
+          setFlightsCount(res.data.data);
         }
         let options = optionsJSX.slice();
         if (res.data.Results.length) {
@@ -306,6 +315,7 @@ const Booking = (props) => {
                   Fetching best fares
                 </div>
               ) : null}
+
               {updateBookingState ? (
                 <div
                   style={{
@@ -319,6 +329,7 @@ const Booking = (props) => {
                   Please wait while we update your flight
                 </div>
               ) : null}
+
               {isFetchingError.error ? (
                 <div className="flex flex-row items-center justify-center h-[80vh] text-center font-lexend">
                   {isFetchingError.errorMsg}
@@ -328,8 +339,10 @@ const Booking = (props) => {
                   <div style={{ clear: "right" }}>
                     {optionsJSX.length && !updateBookingState
                       ? optionsJSX
-                      : null}
-                    {loading && !optionsJSX.length ? <Skeleton /> : null}
+                        : null}
+
+                      {loading && !optionsJSX.length ? <Skeleton /> : null}
+
                     {!loading && !optionsJSX.length ? (
                       <div
                         style={{
@@ -343,8 +356,10 @@ const Booking = (props) => {
                         available.
                       </div>
                     ) : null}
-                  </div>
-                  {moreLoadingState ? <Skeleton /> : null}
+                    </div>
+
+                    {moreLoadingState ? <Skeleton /> : null}
+
                   {viewMoreStatus &&
                   !updateBookingState &&
                   !loading &&
@@ -363,6 +378,7 @@ const Booking = (props) => {
                   ) : null}
                 </OptionsContainer>
               ) : null}
+
               {unauthorized ? (
                 <div
                   style={{

@@ -277,6 +277,7 @@ const Booking = (props) => {
             ) : null)}
         </div>
       </FlexBox>
+      
       <DetailsGridContainer>
         <div style={{ display: "flex", gap: "0.25rem" }}>
           {props.data.Segments ? (

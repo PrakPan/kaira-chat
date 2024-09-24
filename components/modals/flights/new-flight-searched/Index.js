@@ -3,6 +3,7 @@ import styled from "styled-components";
 import SectionTwo from "./sectiontwo/Index";
 import SectionThree from "./SectionThree";
 import SelectedSectionTwo from "./sectiontwo/SelectedSectionTwo";
+import LogoContainer from "./LogoContainer";
 
 const Container = styled.div`
   width: 95%;
@@ -30,7 +31,7 @@ const GridContainer = styled.div`
   }
 `;
 
-const Booking = (props) => {
+const Flight = (props) => {
   return (
     <>
       <Container
@@ -38,6 +39,7 @@ const Booking = (props) => {
         isSelected={props.isSelected}
         style={{ borderRadius: "10px" }}
       >
+        <LogoContainer url={`media/airlines/${props.data?.segments[0]?.airline?.code}.png`} />
         <GridContainer>
           {props.isSelected ? (
             <SelectedSectionTwo
@@ -66,4 +68,4 @@ const Booking = (props) => {
   );
 };
 
-export default Booking;
+export default Flight;
