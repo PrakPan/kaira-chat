@@ -5,7 +5,6 @@ import { connect } from "react-redux";
 import StatePage from "../../containers/travelplanner/Index";
 import Layout from "../../components/Layout";
 import axiosTravelPlannerInstance from "../../services/pages/travel-planner";
-import axiossearchallinstance from "../../services/search/all";
 import axiospagelistinstance from "../../services/pages/list";
 import axioslocationsinstance from "../../services/search/search";
 import setHotLocationSearch from "../../store/actions/hotLocationSearch";
@@ -51,6 +50,7 @@ const TravelPlanner = (props) => {
             </Head>
 
             <StatePage
+                themePage
                 experienceData={props.Data}
                 locations={props.locations}
             ></StatePage>
