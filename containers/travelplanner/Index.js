@@ -65,6 +65,7 @@ const Homepage = (props) => {
   const [showMore, setShowMore] = useState(false);
   const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
   const [overviewHeading, setOverviewHeading] = useState(null);
+  const [headings, setHeadings] = useState([]);
 
   useEffect(() => {
     let iti_exclusive = [];
@@ -101,7 +102,7 @@ const Homepage = (props) => {
                 props.experienceData.itinerary_data[i].payment_info
                   ? props.experienceData.itinerary_data[i].payment_info.length
                     ? props.experienceData.itinerary_data[i].payment_info[0]
-                        .cost
+                      .cost
                     : null
                   : null
               }
@@ -117,7 +118,7 @@ const Homepage = (props) => {
               starting_cost={
                 props.experienceData.itinerary_data[i].payment_info
                   ? props.experienceData.itinerary_data[i].payment_info
-                      .per_person_total_cost
+                    .per_person_total_cost
                   : props.experienceData.itinerary_data[i].starting_price
               }
               images={props.experienceData.itinerary_data[i].images}
@@ -153,7 +154,7 @@ const Homepage = (props) => {
                 props.experienceData.itinerary_data[i].payment_info
                   ? props.experienceData.itinerary_data[i].payment_info.length
                     ? props.experienceData.itinerary_data[i].payment_info[0]
-                        .cost
+                      .cost
                     : null
                   : null
               }
@@ -169,15 +170,23 @@ const Homepage = (props) => {
               starting_cost={
                 props.experienceData.itinerary_data[i].payment_info
                   ? props.experienceData.itinerary_data[i].payment_info
-                      .per_person_total_cost
+                    .per_person_total_cost
                   : props.experienceData.itinerary_data[i].starting_price
               }
               images={props.experienceData.itinerary_data[i].images}
             ></ExperienceCard>
           );
       }
-    } catch {}
+    } catch { }
   }, []);
+
+  useEffect(() => {
+    if (props.experienceData?.headings) {
+      let headings = props.experienceData?.headings;
+      headings.sort((a, b) => a?.priority - b?.priority)
+      setHeadings(headings);
+    }
+  }, [props.experienceData?.headings])
 
   useEffect(() => {
     const user = [];
@@ -266,7 +275,7 @@ const Homepage = (props) => {
             ></Overview>
             <MapContainer>
               {props.experienceData.locations &&
-              props.experienceData.locations.length ? (
+                props.experienceData.locations.length ? (
                 <MapBox
                   InfoWindowContainer={InfoWindowContainer}
                   locations={props.experienceData.locations}
@@ -302,6 +311,25 @@ const Homepage = (props) => {
           </>
         ) : null}
 
+        {headings.map((heading, index) => (
+          <div key={index}>
+            <H3
+              style={{
+                textAlign: isPageWide ? "left" : "center",
+                margin: isPageWide
+                  ? "2.5rem 0 2.5rem 0"
+                  : "2.5rem 0.5rem 1.5rem 0.5rem",
+              }}
+            >
+              {heading.name}
+            </H3>
+            <Experiences
+              experiences={heading?.itinerary_data}
+              page={"State Page"}
+            ></Experiences>
+          </div>
+        ))}
+
         {userItineraries.length ? (
           <>
             <H3
@@ -330,7 +358,7 @@ const Homepage = (props) => {
             ></Overview>
             <MapContainer>
               {props.experienceData.locations &&
-              props.experienceData.locations.length ? (
+                props.experienceData.locations.length ? (
                 <MapBox
                   InfoWindowContainer={InfoWindowContainer}
                   locations={props.experienceData.locations}
@@ -448,11 +476,10 @@ const Homepage = (props) => {
             props.experienceData.destination
           )
         }
-        text={`Craft a personalized itinerary${
-          props.experienceData.destination
-            ? " to " + props.experienceData.destination + " now"
-            : ""
-        }!`}
+        text={`Craft a personalized itinerary${props.experienceData.destination
+          ? " to " + props.experienceData.destination + " now"
+          : ""
+          }!`}
       ></DesktopBanner>
       <div className="hidden-desktop">
         <MobileBanner
