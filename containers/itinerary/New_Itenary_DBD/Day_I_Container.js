@@ -142,11 +142,7 @@ const Day_I_Container = (props) => {
             summaryIContainer.push(
               <TransferElement
                 key={`summary_transfer_${props.indexDay}-${index}`}
-                modes={
-                  element?.modes
-                    ? element.modes[0]
-                    : getTransportationType(element.icon)
-                }
+                modes={element.modes}
                 heading={element.heading}
                 booking={props.transferBookings}
                 meta={element.meta}
