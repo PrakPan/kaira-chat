@@ -237,9 +237,10 @@ const POIDetails = (props) => {
       </div>
       {props.data.cost && (
         <div className="flex flex-row">
-          Cost: <div className="font-semibold px-1">₹</div> {props.data.cost}
-          {" /- "}
-          <div style={{ marginLeft: "0.5rem" }}>Per person</div>
+          Cost:
+          {props.data.cost > 0 ? (
+            <div><span className="font-semibold px-1">₹</span>{props.data.cost}{" /- "}{"Per person"}</div>
+          ) : " Complimentary Activity"}
         </div>
       )}
       {props.data.short_description && (
