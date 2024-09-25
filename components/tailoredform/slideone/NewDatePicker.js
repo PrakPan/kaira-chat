@@ -184,6 +184,7 @@ const DatePicker = (props) => {
         <DateRangePicker
           displayFormat="DD/MM/YYYY"
           readOnly={true}
+          disabled={props.eventDates ? true : false}
           startDate={props.valueStart}
           startDateId="startDate"
           startDatePlaceholderText="DD/MM/YYYY"

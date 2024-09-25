@@ -1,5 +1,7 @@
 import { FaMapMarkerAlt } from "react-icons/fa";
 import styled from "styled-components";
+import moment from "moment";
+
 
 const Container = styled.div`
   display: grid;
@@ -36,6 +38,12 @@ const Result = (props) => {
     e.stopPropagation();
     props.setSearchFinalized({ name: props.name, type: props.type });
     props.setDestination(props.name);
+
+    if (props.result?.start_date && props.result?.end_date) {
+      props.setValueStart(moment(props.result.start_date));
+      props.setValueEnd(moment(props.result.end_date))
+    }
+
     if (props.setShowResults) props.setShowResults(false);
     props.setFocusSearch(false);
   };

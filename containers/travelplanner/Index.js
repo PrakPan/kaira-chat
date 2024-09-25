@@ -261,6 +261,7 @@ const Homepage = (props) => {
         children_cities={props.experienceData.children}
         title={props.experienceData.banner_heading}
         page={"State Page"}
+        eventDates={props.eventDates}
       />
 
       <SetWidthContainer>
@@ -288,7 +289,7 @@ const Homepage = (props) => {
           </MapGridContainer>
         )}
 
-        {props?.experienceData?.locations?.length ? (
+        {!props.themePage && props?.experienceData?.locations?.length ? (
           <>
             <H3
               style={{
@@ -308,24 +309,6 @@ const Homepage = (props) => {
               page={"State Page"}
               state={props?.experienceData?.destination}
             ></Locations>
-
-            {props.themePage && (
-              <Button
-                onclick={() =>
-                  handlePlanButtonClick(
-                    `Top Locations`
-                  )
-                }
-                borderWidth="1px"
-                fontWeight="500"
-                borderRadius="6px"
-                margin="2rem auto"
-                padding="0.5rem 2rem"
-              >
-                Create your travel plan now!
-              </Button>
-            )}
-
           </>
         ) : null}
 
@@ -379,6 +362,29 @@ const Homepage = (props) => {
               experiences={userItineraries}
               page={"State Page"}
             ></Experiences>
+          </>
+        ) : null}
+
+        {props.themePage && props?.experienceData?.locations?.length ? (
+          <>
+            <H3
+              style={{
+                textAlign: isPageWide ? "left" : "center",
+                margin: isPageWide
+                  ? "2.5rem 0 4.5rem 0"
+                  : "2.5rem 0.5rem 1.5rem 0.5rem",
+              }}
+            >
+              {props.experienceData.destination
+                ? "Top locations across " + props.experienceData.destination
+                : "Top Locations"}
+            </H3>
+            <Locations
+              locations={props.experienceData.locations}
+              viewall
+              page={"Theme Page"}
+              state={props?.experienceData?.destination}
+            ></Locations>
           </>
         ) : null}
 

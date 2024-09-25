@@ -27,6 +27,7 @@ const TailoredFormMobileModal = (props) => {
         destination={props.destination}
         cities={props.cities}
         onHide={props.onHide}
+        eventDates={props.eventDates}
       ></TailoredForm>
     </Modal>
   );

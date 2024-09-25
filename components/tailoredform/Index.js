@@ -218,7 +218,7 @@ const Enquiry = (props) => {
           locations.push(selectedCities[i].name);
         }
       }
-    } catch {}
+    } catch { }
 
     const start_date = format(value_start, "yyyy-MM-dd");
     const end_date = format(value_end, "yyyy-MM-dd");
@@ -520,6 +520,7 @@ const Enquiry = (props) => {
               selectedPreferences={selectedPreferences}
               setSelectedPreferences={setSelectedPreferences}
               setSubmitSecondSlide={setSubmitSecondSlide}
+              eventDates={props.eventDates}
             ></Flickity>
 
             {slideIndex === 0 ? (
@@ -535,11 +536,11 @@ const Enquiry = (props) => {
                   style={
                     !isPageWide && isPageLoaded
                       ? {
-                          position: "fixed",
-                          left: "1rem",
-                          right: "1rem",
-                          bottom: "0",
-                        }
+                        position: "fixed",
+                        left: "1rem",
+                        right: "1rem",
+                        bottom: "0",
+                      }
                       : {}
                   }
                   padding="0.5rem 2rem"
@@ -564,11 +565,11 @@ const Enquiry = (props) => {
                     style={
                       !isPageWide
                         ? {
-                            position: "fixed",
-                            left: "1rem",
-                            right: "1rem",
-                            bottom: "0",
-                          }
+                          position: "fixed",
+                          left: "1rem",
+                          right: "1rem",
+                          bottom: "0",
+                        }
                         : {}
                     }
                     padding="0.5rem 2rem"
@@ -590,11 +591,11 @@ const Enquiry = (props) => {
                     style={
                       !isPageWide
                         ? {
-                            position: "fixed",
-                            left: "1rem",
-                            right: "1rem",
-                            bottom: "0",
-                          }
+                          position: "fixed",
+                          left: "1rem",
+                          right: "1rem",
+                          bottom: "0",
+                        }
                         : {}
                     }
                     padding="0.5rem 2rem"

@@ -47,6 +47,9 @@ const Destinations = (props) => {
           openCities={() => props.setShowCities(true)}
           setDestination={props.setDestination}
           setSelectedCities={props.setSelectedCities}
+          setValueStart={props.setValueStart}
+          setValueEnd={props.setValueEnd}
+          eventDates={props.eventDates}
         ></SelectedDestination>,
       );
     }
@@ -68,6 +71,9 @@ const Destinations = (props) => {
         openCities={() => props.setShowCities(true)}
         setDestination={props.setDestination}
         setSelectedCities={props.setSelectedCities}
+        setValueStart={props.setValueStart}
+        setValueEnd={props.setValueEnd}
+        eventDates={props.eventDates}
       ></SelectedDestination>,
     );
     setDestinations(dest.slice());

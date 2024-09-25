@@ -11,7 +11,28 @@ import setHotLocationSearch from "../../store/actions/hotLocationSearch";
 
 const TravelPlanner = (props) => {
     useEffect(() => {
-        props.setHotLocationSearch(props.hotLocationSearch);
+        let locations = props.Data?.locations;
+        if (locations?.length) {
+            locations = locations.map(location => {
+                return {
+                    country: location?.state?.country,
+                    is_active: true,
+                    lat: location?.lat,
+                    long: location?.long,
+                    name: location?.name,
+                    parent: location?.state?.country,
+                    path: location?.path,
+                    resource_id: location?.id,
+                    type: "state",
+                    start_date: props.Data?.event_dates[location.id]?.start_date,
+                    end_date: props.Data?.event_dates[location.id]?.end_date
+                }
+            })
+
+            props.setHotLocationSearch(locations);
+        } else {
+            props.setHotLocationSearch(props.hotLocationSearch);
+        }
     }, []);
 
     return (
@@ -53,6 +74,7 @@ const TravelPlanner = (props) => {
                 themePage
                 experienceData={props.Data}
                 locations={props.locations}
+                eventDates={props.Data?.event_dates && Object.keys(props.Data.event_dates).length !== 0}
             ></StatePage>
         </Layout>
     );
@@ -65,30 +87,6 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export default connect(null, mapDispatchToProps)(TravelPlanner);
-
-let PATHS_CACHE = null;
-
-async function fetchAllSlugs() {
-    const response = await axiospagelistinstance.get(
-        "/?fields=path&page_type=Theme",
-    );
-
-    const paths = response.data.map((path) => {
-        let [theme_type, slug] = path.split('/').filter(el => el != '');
-
-        if (!slug) {
-            slug = theme_type
-            theme_type = 'theme'
-        }
-
-        return {
-            theme_type: theme_type,
-            slug: slug,
-        };
-    });
-
-    return paths;
-}
 
 export async function getStaticPaths() {
     let paths = [];

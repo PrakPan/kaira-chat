@@ -95,6 +95,8 @@ const SearchResults = (props) => {
                   setSearchFinalized={props.setSearchFinalized}
                   setSelectedCities={props.setSelectedCities}
                   selectedCities={props.selectedCities}
+                  setValueStart={props.setValueStart}
+                  setValueEnd={props.setValueEnd}
                 ></Result>
               </div>
             );
