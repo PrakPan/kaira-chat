@@ -1,9 +1,9 @@
 import React from "react";
 import styled from "styled-components";
-import SectionTwo from "./sectiontwo/Index";
-import SectionThree from "./SectionThree";
-import SelectedSectionTwo from "./sectiontwo/SelectedSectionTwo";
-import LogoContainer from "./LogoContainer";
+import LogoContainer, { Logo } from "./LogoContainer";
+import FlightDetails from "./FlightDetails";
+import PriceContainer from "./PriceContainer";
+import { useState } from "react";
 
 const Container = styled.div`
   width: 95%;
@@ -23,49 +23,101 @@ const Container = styled.div`
   }
 `;
 
-const GridContainer = styled.div`
-  @media screen and (min-width: 768px) {
-    display: grid;
-    grid-template-columns: 1fr 8.5rem;
-    justify-content: space-between;
-  }
-`;
-
 const Flight = (props) => {
+  const [showDetails, setShowDetails] = useState(false);
+
   return (
-    <>
-      <Container
-        className="border"
-        isSelected={props.isSelected}
-        style={{ borderRadius: "10px" }}
+    <Container
+      className="border p-3 space-y-2"
+      isSelected={props.isSelected}
+      style={{ borderRadius: "10px" }}
+    >
+      <div className="flex flex-col gap-1 lg:flex-row lg:items-center lg:justify-between">
+        <LogoContainer
+          data={props.data?.segments[0]?.airline}
+        />
+
+        <FlightDetails
+          origin={props.data?.segments[0]?.origin}
+          destination={props.data?.segments[0]?.destination}
+          duration={props.data?.segments[0]?.accumulated_duration}
+          isNonStop={props.filtersState.non_stop_flights}
+        />
+
+        <PriceContainer
+          data={{
+            resultIndex: props.data?.result_index,
+            finalFare: props.data?.final_fare,
+            isRefundable: props.data?.is_refundable
+          }}
+          isSelected={props.isSelected}
+          selectedBooking={props.selectedBooking}
+          _updateBookingHandler={props._updateBookingHandler}
+          provider={props.provider}
+        />
+      </div>
+
+      <button className="text-sm text-blue hover:underline transition-all"
+        onClick={() => setShowDetails(prev => !prev)}
       >
-        <LogoContainer url={`media/airlines/${props.data?.segments[0]?.airline?.code}.png`} />
-        <GridContainer>
-          {props.isSelected ? (
-            <SelectedSectionTwo
-              data={props.data}
-              selectedBooking={props.selectedBooking}
-              isSelected={props.isSelected}
-            ></SelectedSectionTwo>
-          ) : (
-            <SectionTwo
-              data={props.data}
-              selectedBooking={props.selectedBooking}
-              isSelected={props.isSelected}
-            ></SectionTwo>
-          )}
-          <SectionThree
-            selectedBooking={props.selectedBooking}
-            _deselectBookingHandler={props._deselectBookingHandler}
-            _updateBookingHandler={props._updateBookingHandler}
-            is_selecting={props.is_selecting}
-            isSelected={props.isSelected}
-            data={props.data}
-          ></SectionThree>
-        </GridContainer>
-      </Container>
-    </>
+        Flight Details
+      </button>
+
+      {showDetails && (
+        <Details
+          airline={props.data?.segments[0]?.airline}
+          baggage={{
+            baggage_allowance: props.data?.segments[0]?.baggage_allowance,
+            cabin_baggage_allowance: props.data?.segments[0]?.cabin_baggage_allowance,
+          }} />
+      )}
+    </Container>
   );
 };
 
 export default Flight;
+
+const Details = ({ airline, baggage }) => {
+  return (
+    <div className="flex flex-col gap-3 lg:flex-row lg:justify-between bg-gray-100 p-2 rounded-md">
+      <div className="flex flex-col gap-2">
+        <div className="text-sm font-bold">
+          Airline
+        </div>
+
+        <div className="flex flex-row items-center gap-2">
+          <Logo src={airline?.code} />
+
+          <div className="flex flex-col gap-1">
+            <div className="text-sm">
+              {airline?.name}
+            </div>
+            <div className="text-sm text-gray-600">
+              {airline?.code}-{airline?.flight_number}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <div className="text-sm font-bold">
+          Check-in Baggage
+        </div>
+
+        <div>
+          {baggage?.baggage_allowance}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <div className="text-sm font-bold">
+          Cabin Baggage
+        </div>
+
+        <div>
+          {baggage?.cabin_baggage_allowance}
+        </div>
+      </div>
+    </div>
+  )
+}

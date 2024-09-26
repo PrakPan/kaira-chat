@@ -3,7 +3,7 @@ import styled from "styled-components";
 import media from "../../media";
 import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
 import { connect } from "react-redux";
-import axiosflightsearch, {axiosFlightSearch} from "../../../services/bookings/FlightSearch";
+import axiosflightsearch, { axiosFlightSearch } from "../../../services/bookings/FlightSearch";
 import SectionOne from "./SectionOne";
 import Button from "../../ui/button/Index";
 import Flight from "./new-flight-searched/Index";
@@ -111,23 +111,25 @@ const Booking = (props) => {
     let airlines = [];
     setOptionsJSX([]);
     setLoading(true);
+    setUnauthorized(false);
     setFetchingIsError({
-            error: false,
-            errorMsg: ``,
-          });
+      error: false,
+      errorMsg: ``,
+    });
+
     if (props.selectedBooking && props.token) {
 
       const data = {
-            adult_count: props.selectedBooking.pax.number_of_adults,
-            child_count: props.selectedBooking.pax.number_of_children,
-            infant_count: props.selectedBooking.pax.number_of_infants,
-            direct_flight: "false",
-            journey_type: "1",
-            origin: props.selectedBooking.origin_iata,
-            destination: props.selectedBooking.destination_iata,
-            preferred_departure_time: `${props.selectedBooking.check_in}T00:00:00`,
-            flight_cabin_class: "1",
-          }
+        adult_count: props.selectedBooking.pax.number_of_adults,
+        child_count: props.selectedBooking.pax.number_of_children,
+        infant_count: props.selectedBooking.pax.number_of_infants,
+        direct_flight: "false",
+        journey_type: "1",
+        origin: props.selectedBooking.origin_iata,
+        destination: props.selectedBooking.destination_iata,
+        preferred_departure_time: `${props.selectedBooking.check_in}T00:00:00`,
+        flight_cabin_class: "1",
+      }
 
       axiosFlightSearch
         .post(`?price_order=${filtersState.order}&is_nonstop=${filtersState.non_stop_flights ? 1 : 0}`, data, {
@@ -149,6 +151,8 @@ const Booking = (props) => {
                   selectedBooking={props.selectedBooking}
                   _updateBookingHandler={_newUpdateBookingHandler}
                   isSelected={false}
+                  provider={res.data?.provider}
+                  filtersState={filtersState}
                 ></Flight>
               );
 
@@ -178,13 +182,14 @@ const Booking = (props) => {
     booking_id,
     itinerary_id,
     result_index,
+    provider
   }) => {
     setUpdateBookingState(true);
     setUnauthorized(false);
     let updated_bookings_arr = [];
 
     updated_bookings_arr.push({
-      trace_id: localStorage.getItem("tbo_trace_id"),
+      trace_id: localStorage.getItem(`${provider}_trace_id`),
       id: booking_id,
       user_selected: true,
       booking_type: "Flight",
@@ -339,9 +344,9 @@ const Booking = (props) => {
                   <div style={{ clear: "right" }}>
                     {optionsJSX.length && !updateBookingState
                       ? optionsJSX
-                        : null}
+                      : null}
 
-                      {loading && !optionsJSX.length ? <Skeleton /> : null}
+                    {loading && !optionsJSX.length ? <Skeleton /> : null}
 
                     {!loading && !optionsJSX.length ? (
                       <div
@@ -356,14 +361,14 @@ const Booking = (props) => {
                         available.
                       </div>
                     ) : null}
-                    </div>
+                  </div>
 
-                    {moreLoadingState ? <Skeleton /> : null}
+                  {moreLoadingState ? <Skeleton /> : null}
 
                   {viewMoreStatus &&
-                  !updateBookingState &&
-                  !loading &&
-                  optionsJSX.length ? (
+                    !updateBookingState &&
+                    !loading &&
+                    optionsJSX.length ? (
                     <Button
                       boxShadow
                       onclickparam={null}
