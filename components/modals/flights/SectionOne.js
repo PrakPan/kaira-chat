@@ -44,7 +44,6 @@ const DropDownContainer = styled.div`
   display: flex;
   gap: 2%;
   width: 95%;
-  align-items: center;
   margin-inline: auto;
 `;
 
@@ -146,6 +145,13 @@ const Section = (props) => {
   const [sortShow, setSortShow] = useState(false);
   const [SelectedSort, setSelectedSort] = useState(props.filtersState.sort_by);
 
+  var adult;
+  if (props.selectedBooking.pax.number_of_adults > 1) adult = " Adults";
+  else adult = " adult";
+  var child;
+  if (props.selectedBooking.pax.number_of_children > 1) child = " Childs";
+  else child = " Child";
+
   const _handleFilterChange = (key, value) => {
     const obj = {
       order: "asc",
@@ -199,7 +205,7 @@ const Section = (props) => {
 
       <P style={{ margin: "0.5rem auto 0.5rem auto", width: "95%" }}>Airline</P>
 
-      <DropDownContainer>
+      <DropDownContainer className="flex flex-col gap-3 md:flex-row md:items-center">
         <div style={{ width: "15rem" }}>
           <DropDown
             onChange={(e) => {
@@ -241,7 +247,18 @@ const Section = (props) => {
             <ImCheckboxUnchecked style={{ display: "inline" }} /> Nonstop
           </div>
         )}
+
+        <div>
+          {"(" +
+            props.selectedBooking.pax.number_of_adults +
+            adult +
+            (props.selectedBooking.pax.number_of_children
+              ? ", " + props.selectedBooking.pax.number_of_children + child
+              : "") +
+            ")"}
+        </div>
       </DropDownContainer>
+
     </div>
   );
 
@@ -352,7 +369,7 @@ const Section = (props) => {
               >
                 Cancel
               </Button>
-              
+
               <Button
                 onclick={() => {
                   props._FetchFlightsHandler();

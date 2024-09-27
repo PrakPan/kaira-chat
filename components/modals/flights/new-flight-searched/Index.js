@@ -3,7 +3,9 @@ import styled from "styled-components";
 import LogoContainer, { Logo } from "./LogoContainer";
 import FlightDetails from "./FlightDetails";
 import PriceContainer from "./PriceContainer";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { axiosFlightFareRule } from "../../../../services/bookings/FlightSearch";
+import { IoMdCloseCircle } from "react-icons/io";
 
 const Container = styled.div`
   width: 95%;
@@ -57,7 +59,7 @@ const Flight = (props) => {
         />
       </div>
 
-      <button className="text-sm text-blue hover:underline transition-all"
+      <button className="text-sm text-blue hover:underline transition-all focus:outline-none"
         onClick={() => setShowDetails(prev => !prev)}
       >
         Flight Details
@@ -65,11 +67,14 @@ const Flight = (props) => {
 
       {showDetails && (
         <Details
-          airline={props.data?.segments[0]?.airline}
           baggage={{
             baggage_allowance: props.data?.segments[0]?.baggage_allowance,
             cabin_baggage_allowance: props.data?.segments[0]?.cabin_baggage_allowance,
-          }} />
+          }}
+          provider={props.provider}
+          resultIndex={props.data?.result_index}
+          setShowDetails={setShowDetails}
+        />
       )}
     </Container>
   );
@@ -77,47 +82,79 @@ const Flight = (props) => {
 
 export default Flight;
 
-const Details = ({ airline, baggage }) => {
+const Details = ({ baggage, provider, resultIndex, setShowDetails }) => {
+  const [fareRules, setFareRules] = useState(null);
+  const [fareRUlesError, setFareRulesError] = useState(false);
+  const [activeTab, setActiveTab] = useState(1);
+
+  useEffect(() => {
+    getFareRules();
+  }, [])
+
+  const getFareRules = () => {
+    setFareRulesError(false);
+
+    const traceId = localStorage.getItem(`${provider}_trace_id`);
+    const data = {
+      trace_id: traceId,
+      result_index: resultIndex
+    }
+
+    axiosFlightFareRule.post('', data).then(response => {
+      setFareRules(response.data.results[0].fareRuleDetail)
+    }).catch(err => {
+      setFareRulesError(true);
+    })
+  }
+
   return (
-    <div className="flex flex-col gap-3 lg:flex-row lg:justify-between bg-gray-100 p-2 rounded-md">
-      <div className="flex flex-col gap-2">
-        <div className="text-sm font-bold">
-          Airline
-        </div>
+    <div className="relative flex flex-col gap-3 bg-gray-100 p-2 rounded-md">
+      <div className="absolute right-1 top-1 z-50">
+        <IoMdCloseCircle onClick={() => setShowDetails(false)} className="text-lg md:text-xl text-gray-400 cursor-pointer" />
+      </div>
 
-        <div className="flex flex-row items-center gap-2">
-          <Logo src={airline?.code} />
+      <div className="mt-3 flex flex-row justify-center items-center md:gap-5">
+        <div
+          onClick={() => setActiveTab(1)}
+          style={{ backgroundColor: activeTab === 1 ? "#F8E000" : "" }}
+          className="text-sm font-bold py-2 px-3 rounded-lg cursor-pointer">Baggage Information</div>
+        <div
+          onClick={() => setActiveTab(2)}
+          style={{ backgroundColor: activeTab === 2 ? "#F8E000" : "" }}
+          className="text-sm font-bold py-2 px-3 rounded-lg cursor-pointer">Fare Details and Rules</div>
+      </div>
 
-          <div className="flex flex-col gap-1">
-            <div className="text-sm">
-              {airline?.name}
+      {activeTab === 1 && (
+        <div className="flex flex-col gap-2 md:flex-row md:justify-center md:space-x-10">
+          <div className="flex flex-col gap-2">
+            <div className="text-sm font-bold">
+              Check-in Baggage
             </div>
-            <div className="text-sm text-gray-600">
-              {airline?.code}-{airline?.flight_number}
+
+            <div>
+              {baggage?.baggage_allowance}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <div className="text-sm font-bold">
+              Cabin Baggage
+            </div>
+
+            <div>
+              {baggage?.cabin_baggage_allowance}
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      <div className="flex flex-col gap-2">
-        <div className="text-sm font-bold">
-          Check-in Baggage
-        </div>
-
-        <div>
-          {baggage?.baggage_allowance}
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <div className="text-sm font-bold">
-          Cabin Baggage
-        </div>
-
-        <div>
-          {baggage?.cabin_baggage_allowance}
-        </div>
-      </div>
+      {activeTab === 2 ? fareRUlesError ? (<div className="text-sm text-center">Something went wrong, please try again</div>) : (<div
+        dangerouslySetInnerHTML={{
+          __html: fareRules,
+        }}
+        className="flex flex-col gap-1 text-sm"
+      >
+      </div>) : null}
     </div>
   )
 }

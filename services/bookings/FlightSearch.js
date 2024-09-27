@@ -11,3 +11,7 @@ export default fetchaccommodations;
 export const axiosFlightSearch = axios.create({
   baseURL: MERCURY_HOST + "/api/v1/transfers/flight/search/",
 })
+
+export const axiosFlightFareRule = axios.create({
+  baseURL: MERCURY_HOST + "/api/v1/transfers/flight/fare-rules/",
+})

@@ -307,6 +307,7 @@ const Booking = (props) => {
             flightCount={flightCount}
             setHideFlightModal={props.setHideFlightModal}
             text={props.selectedBooking?.name}
+            selectedBooking={props.selectedBooking}
           ></SectionOne>
 
           <GridContainer style={{ clear: "right" }}>

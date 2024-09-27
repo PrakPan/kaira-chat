@@ -4,13 +4,13 @@ import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im";
 
 export default function PriceContainer({ data, isSelected, selectedBooking, _updateBookingHandler, provider }) {
     return (
-        <div className="lg:w-[30%] flex flex-row items-center justify-between">
+        <>
             <div className="flex flex-col gap-1">
                 <div className="text-lg font-bold">
                     {data.finalFare ? `₹${getIndianPrice(data.finalFare)}` : null}
                 </div>
                 {data.isRefundable ? (
-                    <div className="text-xs bg-[#F8E000] px-2 py-1 rounded-lg">
+                    <div className="w-fit text-xs bg-[#F8E000] px-2 py-1 rounded-lg">
                         Refundable
                     </div>
                 ) : null}
@@ -37,6 +37,6 @@ export default function PriceContainer({ data, isSelected, selectedBooking, _upd
                     </div>
                 )}
             </div>
-        </div>
+        </>
     );
 }
