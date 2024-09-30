@@ -38,7 +38,7 @@ const Plan = styled.div`
   transform: translate(-50%, -45%);
 `;
 
-export default function FlightDetails({ origin, destination, duration, isNonStop }) {
+export default function FlightDetails({ origin, destination, duration, isNonStop, numStops }) {
     function getTime(totalMinutes) {
         const hours = Math.floor(totalMinutes / 60);
         const minutes = totalMinutes % 60;
@@ -81,9 +81,9 @@ export default function FlightDetails({ origin, destination, duration, isNonStop
                     </Plan>
                 </div>
 
-                {isNonStop && (
+                {isNonStop ? (
                     <div className="text-sm text-gray-600">Nonstop</div>
-                )}
+                ) : (<div className="text-sm text-gray-600">{numStops} stop{numStops > 1 ? 's' : null }</div>)}
             </div>
 
 

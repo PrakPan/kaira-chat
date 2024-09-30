@@ -76,13 +76,12 @@ const Booking = (props) => {
   const [loading, setLoading] = useState(true);
   const [filtersState, setFiltersState] = useState({
     order: "asc",
-    non_stop_flights: false,
+    non_stop_flights: true,
     departure_time_period: "",
     arrival_time_period: "",
     airline_name: "",
     sort_by: "price",
   });
-  const [airlineNames, setAirlineNames] = useState(["All"]);
   const [limit, setLimit] = useState(20);
   const [offset, setOffset] = useState(0);
   const [viewMoreStatus, setViewMoreStatus] = useState(false);
@@ -97,6 +96,19 @@ const Booking = (props) => {
   const [noResults, setNoResults] = useState(false);
   const [unauthorized, setUnauthorized] = useState(false);
   const [flightCount, setFlightsCount] = useState(0);
+  const [pax, setPax] = useState({
+    adults: props.selectedBooking?.pax?.number_of_adults ? props.selectedBooking.pax.number_of_adults : 1,
+    children: props.selectedBooking?.pax?.number_of_children ? props.selectedBooking.pax.number_of_children : 0,
+    infants: props.selectedBooking?.pax?.number_of_infants ? props.selectedBooking.pax.number_of_infants : 0,
+  });
+
+  useEffect(() => {
+    setPax({
+      adults: props.selectedBooking?.pax?.number_of_adults,
+      children: props.selectedBooking?.pax?.number_of_children,
+      infants: props.selectedBooking?.pax?.number_of_infants,
+    })
+  }, [props.selectedBooking])
 
   useEffect(() => {
     if (!isPageWide && props.showFlightModal) _FetchFlightsHandler();
@@ -108,7 +120,6 @@ const Booking = (props) => {
 
   const _FetchFlightsHandler = () => {
     let options = [];
-    let airlines = [];
     setOptionsJSX([]);
     setLoading(true);
     setUnauthorized(false);
@@ -120,9 +131,9 @@ const Booking = (props) => {
     if (props.selectedBooking && props.token) {
 
       const data = {
-        adult_count: props.selectedBooking.pax.number_of_adults,
-        child_count: props.selectedBooking.pax.number_of_children,
-        infant_count: props.selectedBooking.pax.number_of_infants,
+        adult_count: pax.adults,
+        child_count: pax.children,
+        infant_count: pax.infants,
         direct_flight: "false",
         journey_type: "1",
         origin: props.selectedBooking.origin_iata,
@@ -132,7 +143,7 @@ const Booking = (props) => {
       }
 
       axiosFlightSearch
-        .post(`?price_order=${filtersState.order}&is_nonstop=${filtersState.non_stop_flights ? 1 : 0}`, data, {
+        .post(`?${filtersState.sort_by}_order=${filtersState.order}&is_nonstop=${filtersState.non_stop_flights ? 1 : 0}${filtersState.departure_time_period ? '&departure_time_period=' + filtersState.departure_time_period : ''}${filtersState.arrival_time_period ? '&arrival_time_period=' + filtersState.arrival_time_period : ''}`, data, {
           headers: {
             Authorization: `Bearer ${props.token}`,
             "Content-Type": "application/json",
@@ -156,15 +167,9 @@ const Booking = (props) => {
                 ></Flight>
               );
 
-              const airlineName = res.data.results[i]?.segments[0]?.airline?.name;
-
-              if (airlineName && !airlines.includes(airlineName)) {
-                airlines.push(airlineName)
-              }
             }
             setOptionsJSX(options);
             setFlightsCount(res.data.results.length);
-            setAirlineNames(["All", ...airlines]);
           }
           setLoading(false);
         })
@@ -250,7 +255,6 @@ const Booking = (props) => {
         setMoreLoadingState(false);
         localStorage.setItem("tbo_trace_id", res.data.TraceId);
         if (res.data.search && res.data.search.airline_names) {
-          setAirlineNames(["All", ...res.data.search.airline_names]);
           setFlightsCount(res.data.data);
         }
         let options = optionsJSX.slice();
@@ -302,12 +306,12 @@ const Booking = (props) => {
             setShowFilter={setShowFilter}
             filtersState={filtersState}
             setFiltersState={setFiltersState}
-            airlineNames={airlineNames}
-            setAirlineNames={setAirlineNames}
             flightCount={flightCount}
             setHideFlightModal={props.setHideFlightModal}
             text={props.selectedBooking?.name}
             selectedBooking={props.selectedBooking}
+            pax={pax}
+            setPax={setPax}
           ></SectionOne>
 
           <GridContainer style={{ clear: "right" }}>

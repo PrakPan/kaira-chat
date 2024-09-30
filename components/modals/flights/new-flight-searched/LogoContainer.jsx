@@ -42,7 +42,7 @@ export const Logo = ({ src, width, height }) => {
 
 
       <div
-        style={{ display: imageLoaded ? "block" : "none" }}
+        // style={{ display: imageLoaded ? "block" : "none" }}
         className={`relative w-12 md:w-16 h-12 md:h-16`}
       >
         <Image

@@ -42,8 +42,9 @@ const Flight = (props) => {
         <FlightDetails
           origin={props.data?.segments[0]?.origin}
           destination={props.data?.segments[0]?.destination}
-          duration={props.data?.segments[0]?.accumulated_duration}
+          duration={props.data?.total_duration}
           isNonStop={props.filtersState.non_stop_flights}
+          numStops={props.data?.segments?.length-1}
         />
 
         <PriceContainer
@@ -84,14 +85,15 @@ export default Flight;
 
 const Details = ({ baggage, provider, resultIndex, setShowDetails }) => {
   const [fareRules, setFareRules] = useState(null);
+  const [fareRulesLoading, setFareRulesLoading] = useState(false)
   const [fareRUlesError, setFareRulesError] = useState(false);
-  const [activeTab, setActiveTab] = useState(1);
 
   useEffect(() => {
     getFareRules();
   }, [])
 
   const getFareRules = () => {
+    setFareRulesLoading(true);
     setFareRulesError(false);
 
     const traceId = localStorage.getItem(`${provider}_trace_id`);
@@ -102,59 +104,66 @@ const Details = ({ baggage, provider, resultIndex, setShowDetails }) => {
 
     axiosFlightFareRule.post('', data).then(response => {
       setFareRules(response.data.results[0].fareRuleDetail)
+      setFareRulesLoading(false);
     }).catch(err => {
       setFareRulesError(true);
+      setFareRulesLoading(false);
     })
   }
 
   return (
-    <div className="relative flex flex-col gap-3 bg-gray-100 p-2 rounded-md">
+    <div className="relative flex flex-col gap-4 bg-gray-100 p-2 rounded-md">
       <div className="absolute right-1 top-1 z-50">
         <IoMdCloseCircle onClick={() => setShowDetails(false)} className="text-lg md:text-xl text-gray-400 cursor-pointer" />
       </div>
 
-      <div className="mt-3 flex flex-row justify-center items-center md:gap-5">
-        <div
-          onClick={() => setActiveTab(1)}
-          style={{ backgroundColor: activeTab === 1 ? "#F8E000" : "" }}
-          className="text-sm font-bold py-2 px-3 rounded-lg cursor-pointer">Baggage Information</div>
-        <div
-          onClick={() => setActiveTab(2)}
-          style={{ backgroundColor: activeTab === 2 ? "#F8E000" : "" }}
-          className="text-sm font-bold py-2 px-3 rounded-lg cursor-pointer">Fare Details and Rules</div>
-      </div>
-
-      {activeTab === 1 && (
-        <div className="flex flex-col gap-2 md:flex-row md:justify-center md:space-x-10">
-          <div className="flex flex-col gap-2">
-            <div className="text-sm font-bold">
-              Check-in Baggage
-            </div>
-
-            <div>
-              {baggage?.baggage_allowance}
-            </div>
+        <div className="flex flex-col gap-2">
+          <div
+            className="w-fit py-1 px-3 text-sm font-bold bg-[#F8E000] rounded-lg cursor-pointer">
+            Baggage Information
           </div>
 
-          <div className="flex flex-col gap-2">
-            <div className="text-sm font-bold">
-              Cabin Baggage
+          <div className="flex flex-col gap-2 md:flex-row md:space-x-10">
+            <div className="flex flex-col gap-2">
+              <div className="text-sm font-bold">
+                Check-in Baggage
+              </div>
+
+              <div>
+                {baggage?.baggage_allowance}
+              </div>
             </div>
 
-            <div>
-              {baggage?.cabin_baggage_allowance}
+            <div className="flex flex-col gap-2">
+              <div className="text-sm font-bold">
+                Cabin Baggage
+              </div>
+
+              <div>
+                {baggage?.cabin_baggage_allowance}
+              </div>
             </div>
           </div>
         </div>
-      )}
 
-      {activeTab === 2 ? fareRUlesError ? (<div className="text-sm text-center">Something went wrong, please try again</div>) : (<div
-        dangerouslySetInnerHTML={{
-          __html: fareRules,
-        }}
-        className="flex flex-col gap-1 text-sm"
-      >
-      </div>) : null}
+      {fareRulesLoading ? (<div className="flex items-center justify-center">
+        <div className="w-5 h-5 border-4 border-t-[#F8E000] rounded-full animate-spin"></div>
+      </div>) : fareRUlesError ? (<div className="text-sm text-center">Something went wrong, please try again</div>) : (
+        <div className="flex flex-col">
+          <div
+            className="w-fit py-1 px-3 text-sm font-bold bg-[#F8E000] rounded-lg cursor-pointer">
+            Fare Details and Rules
+          </div>
+
+          <div
+            dangerouslySetInnerHTML={{
+              __html: fareRules,
+            }}
+            className="flex flex-col gap-1 text-sm"
+          >
+          </div>
+        </div>
+      )}
     </div>
   )
 }

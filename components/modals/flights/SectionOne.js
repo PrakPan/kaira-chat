@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { IoMdClose } from "react-icons/io";
 import styled from "styled-components";
 import DropDown from "../../ui/DropDown";
@@ -9,6 +9,8 @@ import { TbArrowBack } from "react-icons/tb";
 import Drawer from "../../ui/Drawer";
 import Button from "../../ui/button/Index";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
+import { FaMinus, FaPlus } from "react-icons/fa";
+
 
 const Heading = styled.div`
   margin: 0;
@@ -144,13 +146,17 @@ const Section = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [sortShow, setSortShow] = useState(false);
   const [SelectedSort, setSelectedSort] = useState(props.filtersState.sort_by);
+  const [showPax, setShowPax] = useState(false);
 
   var adult;
-  if (props.selectedBooking.pax.number_of_adults > 1) adult = " Adults";
-  else adult = " adult";
+  if (props.pax.adults > 1) adult = " Adults";
+  else adult = " Adult";
   var child;
-  if (props.selectedBooking.pax.number_of_children > 1) child = " Childs";
+  if (props.pax.children > 1) child = " Childs";
   else child = " Child";
+  var infant;
+  if (props.pax.infants > 1) infant = " Infants";
+  else infant = " Infant";
 
   const _handleFilterChange = (key, value) => {
     const obj = {
@@ -203,33 +209,22 @@ const Section = (props) => {
         </div>
       </FlexBox>
 
-      <P style={{ margin: "0.5rem auto 0.5rem auto", width: "95%" }}>Airline</P>
+      <P style={{ margin: "0.5rem auto 0.5rem auto", width: "95%" }}>Passengers & Class</P>
+
+      <div onClick={() => setShowPax(true)} className="relative w-fit px-3 py-1 rounded-lg ml-[0.5rem] md:ml-4 mb-2 border-2 cursor-pointer">
+        {props.pax.adults +
+          adult +
+          (props.pax.children
+            ? ", " + props.pax.children + child
+            : "") +
+          (props.pax.infants
+            ? ", " + props.pax.infants + infant
+            : "")}
+      </div>
+
+      {showPax && (<Pax setShowPax={setShowPax} _FetchFlightsHandler={props._FetchFlightsHandler} pax={props.pax} setPax={props.setPax} />)}
 
       <DropDownContainer className="flex flex-col gap-3 md:flex-row md:items-center">
-        <div style={{ width: "15rem" }}>
-          <DropDown
-            onChange={(e) => {
-              if (e.target.value !== "All")
-                _handleFilterChange("airline_name", e.target.value);
-              else _handleFilterChange("airline_name", "");
-            }}
-            height="35px"
-            label="Select"
-            labelStyle={{ paddingLeft: "20px" }}
-            noFloatingabel
-          >
-            {props.airlineNames.map((e, i) => (
-              <option
-                style={{ borderBottom: "1px solid #e6e6e6" }}
-                key={i}
-                value={e}
-              >
-                {e}
-              </option>
-            ))}
-          </DropDown>
-        </div>
-
         {props.filtersState.non_stop_flights ? (
           <div
             onClick={() => {
@@ -247,16 +242,6 @@ const Section = (props) => {
             <ImCheckboxUnchecked style={{ display: "inline" }} /> Nonstop
           </div>
         )}
-
-        <div>
-          {"(" +
-            props.selectedBooking.pax.number_of_adults +
-            adult +
-            (props.selectedBooking.pax.number_of_children
-              ? ", " + props.selectedBooking.pax.number_of_children + child
-              : "") +
-            ")"}
-        </div>
       </DropDownContainer>
 
     </div>
@@ -400,3 +385,153 @@ const Section = (props) => {
 };
 
 export default Section;
+
+const Pax = ({ setShowPax, _FetchFlightsHandler, pax, setPax }) => {
+  let isPageWide = media("(min-width: 768px)");
+  const ref = useRef(null);
+  const [adults, setAdults] = useState(pax.adults ? pax.adults : 1);
+  const [children, setChildren] = useState(pax.children ? pax.children : 0);
+  const [infants, setInfants] = useState(pax.infants ? pax.infants : 0);
+  const [classType, setClassType] = useState('Economy')
+  const [updated, setUpdated] = useState(false);
+
+  useEffect(() => {
+    setUpdated(true);
+  }, [pax, classType]);
+
+  useEffect(() => {
+    setPax({
+      adults,
+      children,
+      infants
+    });
+  }, [adults, children, infants])
+
+  const handleMinus = (type) => {
+    switch (type) {
+      case "adult":
+        setAdults(prev => {
+          if (prev > 1) {
+            return prev - 1;
+          }
+          return prev;
+        })
+        break;
+      case "children":
+        setChildren(prev => {
+          if (prev > 0) {
+            return prev - 1;
+          }
+          return prev;
+        })
+        break;
+      case "infants":
+        setInfants(prev => {
+          if (prev > 0) {
+            return prev - 1;
+          }
+          return prev;
+        })
+        break;
+      default:
+        break;
+    }
+  }
+
+  const handlePlus = (type) => {
+    switch (type) {
+      case 'adult':
+        setAdults(prev => prev + 1);
+        break;
+      case 'children':
+        setChildren(prev => prev + 1);
+        break;
+      case 'infants':
+        setInfants(prev => prev + 1);
+        break;
+      default:
+        break;
+    }
+  }
+
+  const handleClose = (e) => {
+    if (ref.current && !ref.current.contains(e.target)) {
+      setShowPax(false);
+      if (isPageWide && updated) {
+        _FetchFlightsHandler();
+      }
+    }
+  }
+
+  return (
+    <div onClick={handleClose} className="fixed inset-0 z-50">
+      <div ref={ref} className="absolute top-[200px] md:left-5 bg-gray-100 shadow-2xl drop-shadow-2xl p-3 rounded-lg space-y-5 text-sm">
+        <div className="flex flex-col gap-1">
+          <div>Adults (12y +)</div>
+          <div className="flex flex-row items-center gap-2">
+            <FaMinus onClick={() => handleMinus('adult')} className="cursor-pointer" />
+            <div className="bg-white px-2 py-1 rounded-md">{adults}</div>
+            <FaPlus onClick={() => handlePlus('adult')} className="cursor-pointer" />
+          </div>
+        </div>
+
+        <div className="flex flex-row gap-5">
+          <div className="flex flex-col gap-1">
+            <div>Children (12y - 12y)</div>
+            <div className="flex flex-row items-center gap-2">
+              <FaMinus onClick={() => handleMinus('children')} className="cursor-pointer" />
+              <div className="bg-white px-2 py-1 rounded-md">{children}</div>
+              <FaPlus onClick={() => handlePlus('children')} className="cursor-pointer" />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <div>Infants (below 2y)</div>
+            <div className="flex flex-row items-center gap-2">
+              <FaMinus onClick={() => handleMinus('infants')} className="cursor-pointer" />
+              <div className="bg-white px-2 py-1 rounded-md">{infants}</div>
+              <FaPlus onClick={() => handlePlus('infants')} className="cursor-pointer" />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <div>Chose Travel Class</div>
+          <div className="w-fit flex flex-col md:flex-row border-2 border-gray-400 rounded-lg">
+            <div
+              onClick={() => setClassType('Economy')}
+              style={{ backgroundColor: classType === 'Economy' ? "#F8E000" : "" }}
+              className="px-3 py-2 rounded-lg cursor-pointer"
+            >
+              Economy
+            </div>
+
+            <div
+              onClick={() => setClassType('Premium_Economy')}
+              style={{ backgroundColor: classType === 'Premium_Economy' ? "#F8E000" : "" }}
+              className="px-3 py-2 rounded-lg cursor-pointer"
+            >
+              Premium Economy
+            </div>
+
+            <div
+              onClick={() => setClassType('Business')}
+              style={{ backgroundColor: classType === 'Business' ? "#F8E000" : "" }}
+              className="px-3 py-2 rounded-lg cursor-pointer"
+            >
+              Business
+            </div>
+
+            <div
+              onClick={() => setClassType('First_Class')}
+              style={{ backgroundColor: classType === 'First_Class' ? "#F8E000" : "" }}
+              className="px-3 py-2 rounded-lg cursor-pointer"
+            >
+              First Class
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
