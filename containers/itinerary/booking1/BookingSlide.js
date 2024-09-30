@@ -627,7 +627,7 @@ const Details = (props) => {
                         : "font-lexend text-enter text-sm font-normal"
                     }
                   >
-                    {"Service Fee"}
+                    {"Surcharges & Taxes"}
                   </div>
                   <div
                     className={
