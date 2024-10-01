@@ -101,14 +101,10 @@ const Booking = (props) => {
     children: props.selectedBooking?.pax?.number_of_children ? props.selectedBooking.pax.number_of_children : 0,
     infants: props.selectedBooking?.pax?.number_of_infants ? props.selectedBooking.pax.number_of_infants : 0,
   });
-
-  useEffect(() => {
-    setPax({
-      adults: props.selectedBooking?.pax?.number_of_adults,
-      children: props.selectedBooking?.pax?.number_of_children,
-      infants: props.selectedBooking?.pax?.number_of_infants,
-    })
-  }, [props.selectedBooking])
+  const [classType, setClassType] = useState({
+    key: 'Economy',
+    value: 2
+  });
 
   useEffect(() => {
     if (!isPageWide && props.showFlightModal) _FetchFlightsHandler();
@@ -116,11 +112,12 @@ const Booking = (props) => {
 
   useEffect(() => {
     if (isPageWide && props.showFlightModal) _FetchFlightsHandler();
-  }, [props.selectedBooking, props.token, filtersState]);
+  }, [props.selectedBooking, props.token, filtersState, pax, classType]);
 
   const _FetchFlightsHandler = () => {
     let options = [];
     setOptionsJSX([]);
+    setFlightsCount(0);
     setLoading(true);
     setUnauthorized(false);
     setFetchingIsError({
@@ -139,7 +136,7 @@ const Booking = (props) => {
         origin: props.selectedBooking.origin_iata,
         destination: props.selectedBooking.destination_iata,
         preferred_departure_time: `${props.selectedBooking.check_in}T00:00:00`,
-        flight_cabin_class: "1",
+        flight_cabin_class: classType.value,
       }
 
       axiosFlightSearch
@@ -312,6 +309,8 @@ const Booking = (props) => {
             selectedBooking={props.selectedBooking}
             pax={pax}
             setPax={setPax}
+            classType={classType}
+            setClassType={setClassType}
           ></SectionOne>
 
           <GridContainer style={{ clear: "right" }}>

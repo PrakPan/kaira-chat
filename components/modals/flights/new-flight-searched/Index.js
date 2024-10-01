@@ -30,10 +30,16 @@ const Flight = (props) => {
 
   return (
     <Container
-      className="border p-3 space-y-2"
+      className="relative border p-3 space-y-2"
       isSelected={props.isSelected}
       style={{ borderRadius: "10px" }}
     >
+      {props.data?.is_refundable ? (
+        <div className="absolute top-0 right-0 w-fit text-xs bg-[#F8E000] px-2 py-1 rounded-tr-lg">
+          Refundable
+        </div>
+      ) : null}
+
       <div className="flex flex-col gap-1 lg:flex-row lg:items-center lg:justify-between">
         <LogoContainer
           data={props.data?.segments[0]?.airline}

@@ -44,7 +44,7 @@ export default function FlightDetails({ origin, destination, duration, isNonStop
         const minutes = totalMinutes % 60;
         const formattedHours = hours.toString().padStart(2, '0');
         const formattedMinutes = minutes.toString().padStart(2, '0');
-        return `${formattedHours}h:${formattedMinutes}m`;
+        return `${hours ? hours + 'h' : ''} ${minutes ? minutes + 'm' : ''}`;
     }
 
     return (
@@ -82,8 +82,8 @@ export default function FlightDetails({ origin, destination, duration, isNonStop
                 </div>
 
                 {isNonStop ? (
-                    <div className="text-sm text-gray-600">Nonstop</div>
-                ) : (<div className="text-sm text-gray-600">{numStops} stop{numStops > 1 ? 's' : null }</div>)}
+                    <div className="text-sm text-gray-600">Non-stop</div>
+                ) : numStops === 0 ? <div className="text-sm text-gray-600">Non-stop</div> :  (<div className="text-sm text-gray-600">{numStops} stop{numStops > 1 ? 's' : null }</div>)}
             </div>
 
 

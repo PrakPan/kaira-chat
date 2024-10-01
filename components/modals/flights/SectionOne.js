@@ -1,15 +1,22 @@
-import React, { useEffect, useRef } from "react";
-import { IoMdClose } from "react-icons/io";
+import React, { useState, useRef } from "react";
 import styled from "styled-components";
-import DropDown from "../../ui/DropDown";
-import { useState } from "react";
 import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im";
-import media from "../../media";
-import { TbArrowBack } from "react-icons/tb";
-import Drawer from "../../ui/Drawer";
-import Button from "../../ui/button/Index";
+import { IoMdClose, IoMdSunny } from "react-icons/io";
+import { TbArrowBack, TbSunset2 } from "react-icons/tb";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { FaMinus, FaPlus } from "react-icons/fa";
+import { LuSun } from "react-icons/lu";
+import { WiSunrise } from "react-icons/wi";
+import { MdNightsStay } from "react-icons/md";
+import media from "../../media";
+import Drawer from "../../ui/Drawer";
+import Button from "../../ui/button/Index";
+import { BsFillSunriseFill, BsSunsetFill } from "react-icons/bs";
+
+
+
+
+
 
 
 const Heading = styled.div`
@@ -84,6 +91,8 @@ const Item = styled.div`
   background: ${(props) => (props.isSelected ? "#01202b" : "white")};
   border: ${(props) =>
     props.isSelected ? "2px solid #01202b" : " 2px solid #d0d5dd"};
+    border-bottom: ${(props) =>
+    props.isSelected ? "4px solid #F7E700" : " 2px solid #d0d5dd"};
   color: ${(props) => (props.isSelected ? "white" : "black")};
 
   &:hover {
@@ -179,52 +188,54 @@ const Section = (props) => {
   };
 
   const FiltersSection = (
-    <div>
+    <div className="flex flex-col gap-3">
       <FlexBox>
         <div>
-          <P>Departure in</P>
+          <P>Departure from {props.selectedBooking?.city}</P>
           <ItemContainer>
             {ItemArr.map((e) => (
               <Item
                 onClick={() => _handleFilterChange("departure_time_period", e)}
                 isSelected={props.filtersState.departure_time_period === e}
               >
-                {e}
+                <TimeIcon time={e} isSelected={props.filtersState.departure_time_period === e} />
               </Item>
             ))}
           </ItemContainer>
         </div>
         <div>
-          <P>Reach by</P>
+          <P>Arrival at {props.selectedBooking?.destination_city}</P>
           <ItemContainer>
             {ItemArr.map((e) => (
               <Item
                 onClick={() => _handleFilterChange("arrival_time_period", e)}
                 isSelected={props.filtersState.arrival_time_period === e}
               >
-                {e}
+                <TimeIcon time={e} isSelected={props.filtersState.arrival_time_period === e} />
               </Item>
             ))}
           </ItemContainer>
         </div>
       </FlexBox>
 
-      <P style={{ margin: "0.5rem auto 0.5rem auto", width: "95%" }}>Passengers & Class</P>
+      <div className="flex flex-col gap-3 px-[.5rem] md:flex-row md:items-center md:space-x-10 md:pl-6">
+        <div className="flex flex-col gap-1">
+          <div>Passengers & Class</div>
 
-      <div onClick={() => setShowPax(true)} className="relative w-fit px-3 py-1 rounded-lg ml-[0.5rem] md:ml-4 mb-2 border-2 cursor-pointer">
-        {props.pax.adults +
-          adult +
-          (props.pax.children
-            ? ", " + props.pax.children + child
-            : "") +
-          (props.pax.infants
-            ? ", " + props.pax.infants + infant
-            : "")}
-      </div>
+          <div onClick={() => setShowPax(true)} className="relative w-fit px-3 py-1 rounded-lg border-2 cursor-pointer">
+            {props.pax.adults +
+              adult +
+              (props.pax.children
+                ? ", " + props.pax.children + child
+                : "") +
+              (props.pax.infants
+                ? ", " + props.pax.infants + infant
+                : "") + ("/" + props.classType.key)}
+          </div>
 
-      {showPax && (<Pax setShowPax={setShowPax} _FetchFlightsHandler={props._FetchFlightsHandler} pax={props.pax} setPax={props.setPax} />)}
+          {showPax && (<Pax setShowPax={setShowPax} pax={props.pax} setPax={props.setPax} classType={props.classType} setClassType={props.setClassType} />)}
+        </div>
 
-      <DropDownContainer className="flex flex-col gap-3 md:flex-row md:items-center">
         {props.filtersState.non_stop_flights ? (
           <div
             onClick={() => {
@@ -242,10 +253,13 @@ const Section = (props) => {
             <ImCheckboxUnchecked style={{ display: "inline" }} /> Nonstop
           </div>
         )}
-      </DropDownContainer>
 
+        <div className="py-1">Departure Date: <span className="font-bold">{new Date(props.selectedBooking.check_in).toDateString()}</span>
+        </div>
+      </div>
     </div>
   );
+
 
   return (
     <Container>
@@ -261,6 +275,8 @@ const Section = (props) => {
       {isPageWide ? FiltersSection : <></>}
 
       <TextContainer>
+
+
         Showing {props.flightCount} {props.text} {isPageWide ? "|" : <br />}{" "}
         Sort by:{" "}
         <div
@@ -386,26 +402,12 @@ const Section = (props) => {
 
 export default Section;
 
-const Pax = ({ setShowPax, _FetchFlightsHandler, pax, setPax }) => {
-  let isPageWide = media("(min-width: 768px)");
+const Pax = ({ setShowPax, pax, setPax, classType, setClassType }) => {
   const ref = useRef(null);
   const [adults, setAdults] = useState(pax.adults ? pax.adults : 1);
   const [children, setChildren] = useState(pax.children ? pax.children : 0);
   const [infants, setInfants] = useState(pax.infants ? pax.infants : 0);
-  const [classType, setClassType] = useState('Economy')
-  const [updated, setUpdated] = useState(false);
-
-  useEffect(() => {
-    setUpdated(true);
-  }, [pax, classType]);
-
-  useEffect(() => {
-    setPax({
-      adults,
-      children,
-      infants
-    });
-  }, [adults, children, infants])
+  const [cabinClass, setCabinClass] = useState(classType);
 
   const handleMinus = (type) => {
     switch (type) {
@@ -457,15 +459,24 @@ const Pax = ({ setShowPax, _FetchFlightsHandler, pax, setPax }) => {
   const handleClose = (e) => {
     if (ref.current && !ref.current.contains(e.target)) {
       setShowPax(false);
-      if (isPageWide && updated) {
-        _FetchFlightsHandler();
-      }
     }
+  }
+
+  const handleDone = () => {
+    setPax({
+      adults,
+      children,
+      infants
+    });
+
+    setClassType(cabinClass);
+
+    setShowPax(false);
   }
 
   return (
     <div onClick={handleClose} className="fixed inset-0 z-50">
-      <div ref={ref} className="absolute top-[200px] md:left-5 bg-gray-100 shadow-2xl drop-shadow-2xl p-3 rounded-lg space-y-5 text-sm">
+      <div ref={ref} className="absolute top-[270px] md:top-[200px] left-2 right-2 md:left-5 md:right-auto bg-neutral-200 shadow-2xl drop-shadow-2xl p-3 rounded-lg space-y-5 text-sm">
         <div className="flex flex-col gap-1">
           <div>Adults (12y +)</div>
           <div className="flex flex-row items-center gap-2">
@@ -499,39 +510,88 @@ const Pax = ({ setShowPax, _FetchFlightsHandler, pax, setPax }) => {
           <div>Chose Travel Class</div>
           <div className="w-fit flex flex-col md:flex-row border-2 border-gray-400 rounded-lg">
             <div
-              onClick={() => setClassType('Economy')}
-              style={{ backgroundColor: classType === 'Economy' ? "#F8E000" : "" }}
-              className="px-3 py-2 rounded-lg cursor-pointer"
+              onClick={() => setCabinClass({ key: 'Economy', value: 2 })}
+              style={{ backgroundColor: cabinClass.value === 2 ? "#F8E000" : "" }}
+              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#F8E000]"
             >
               Economy
             </div>
 
             <div
-              onClick={() => setClassType('Premium_Economy')}
-              style={{ backgroundColor: classType === 'Premium_Economy' ? "#F8E000" : "" }}
-              className="px-3 py-2 rounded-lg cursor-pointer"
+              onClick={() => setCabinClass({ key: 'Premium Economy', value: 3 })}
+              style={{ backgroundColor: cabinClass.value === 3 ? "#F8E000" : "" }}
+              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#F8E000]"
             >
               Premium Economy
             </div>
 
             <div
-              onClick={() => setClassType('Business')}
-              style={{ backgroundColor: classType === 'Business' ? "#F8E000" : "" }}
-              className="px-3 py-2 rounded-lg cursor-pointer"
+              onClick={() => setCabinClass({ key: 'Business', value: 4 })}
+              style={{ backgroundColor: cabinClass.value === 4 ? "#F8E000" : "" }}
+              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#F8E000]"
             >
               Business
             </div>
 
             <div
-              onClick={() => setClassType('First_Class')}
-              style={{ backgroundColor: classType === 'First_Class' ? "#F8E000" : "" }}
-              className="px-3 py-2 rounded-lg cursor-pointer"
+              onClick={() => setCabinClass({ key: 'Premium Business', value: 5 })}
+              style={{ backgroundColor: cabinClass.value === 5 ? "#F8E000" : "" }}
+              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#F8E000]"
+            >
+              Premium Business
+            </div>
+
+            <div
+              onClick={() => setCabinClass({ key: 'First Class', value: 6 })}
+              style={{ backgroundColor: cabinClass.value === 6 ? "#F8E000" : "" }}
+              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#F8E000]"
             >
               First Class
             </div>
           </div>
         </div>
+
+        <div className="border-t-2 border-t-white pt-2">
+          <button onClick={handleDone} className="bg-[#F8E000] py-2 px-3 rounded-lg">Done</button>
+        </div>
       </div>
     </div>
   )
+}
+
+const TimeIcon = ({ time, isSelected }) => {
+  switch (time) {
+    case 'Morning':
+      return (
+        <div style={{ color: isSelected ? "#F7E700" : "" }} className="flex flex-col items-center">
+          <BsFillSunriseFill className="text-lg md:text-2xl" />
+          <div className="text-xs md:text-sm">Before 6 AM</div>
+        </div>
+      )
+    case 'Afternoon':
+      return (
+        <div style={{ color: isSelected ? "#F7E700" : "" }} className="flex flex-col items-center">
+          <IoMdSunny className="text-lg md:text-2xl" />
+          <div className="text-xs md:text-sm">6 AM - 12 PM</div>
+        </div>
+      )
+    case 'Evening':
+      return (
+        <div style={{ color: isSelected ? "#F7E700" : "" }} className="flex flex-col items-center">
+          <BsSunsetFill className="text-lg md:text-2xl" />
+          <div className="text-xs md:text-sm">12 PM - 6 PM</div>
+        </div>
+      )
+    case 'Night':
+      return (
+        <div style={{ color: isSelected ? "#F7E700" : "" }} className="flex flex-col items-center">
+          <MdNightsStay className="text-lg md:text-2xl" />
+          <div className="text-xs md:text-sm">After 6 PM</div>
+        </div>
+      )
+    default:
+      break;
+  }
+
+
 }
