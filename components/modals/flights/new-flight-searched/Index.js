@@ -42,12 +42,13 @@ const Flight = (props) => {
 
       <div className="flex flex-col gap-1 lg:flex-row lg:items-center lg:justify-between">
         <LogoContainer
-          data={props.data?.segments[0]?.airline}
+          data={props.data}
         />
 
         <FlightDetails
+          data={props.data}
           origin={props.data?.segments[0]?.origin}
-          destination={props.data?.segments[0]?.destination}
+          destination={props.data?.segments[props.data?.segments?.length-1]?.destination}
           duration={props.data?.total_duration}
           isNonStop={props.filtersState.non_stop_flights}
           numStops={props.data?.segments?.length-1}

@@ -241,11 +241,13 @@ const Section = (props) => {
             onClick={() => {
               _handleFilterChange("non_stop_flights", false);
             }}
+            className="cursor-pointer"
           >
             <ImCheckboxChecked style={{ display: "inline" }} /> Nonstop
           </div>
         ) : (
           <div
+            className="cursor-pointer"
             onClick={() => {
               _handleFilterChange("non_stop_flights", true);
             }}

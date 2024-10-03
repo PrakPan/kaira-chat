@@ -72,7 +72,12 @@ export const getotp = (mobile) => {
         } else dispatch(authMobileFail()); //Invalid mobile
       })
       .catch((err) => {
-        dispatch(authMobileFail(err.response.data.username[0])); //Invalid mobile
+        if (err?.response?.data) {
+
+          dispatch(authMobileFail(err?.response?.data?.username[0])); //Invalid mobile
+        } else {
+          dispatch(authMobileFail("Something went wrong!, try again"));
+        }
       });
   };
 };

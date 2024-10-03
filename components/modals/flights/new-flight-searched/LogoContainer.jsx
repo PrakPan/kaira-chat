@@ -9,15 +9,17 @@ export default function LogoContainer({ data }) {
 
   return (
     <div className="flex flex-row gap-2 items-center">
-      <Logo src={data?.code} />
+      <Logo src={data?.segments[0]?.airline.code} />
 
       <div className="flex flex-col gap-1">
         <div className="text-sm">
-          {data?.name}
+          {data?.segments[0]?.airline.name}{data?.segments.length > 1 && data?.segments[0]?.airline.name !== data?.segments[1]?.airline.name && " +1"}
         </div>
-        <div className="text-sm text-gray-600">
-          {data?.code}-{data?.flight_number}
-        </div>
+        {data?.segments.map((value, index) => (
+          <div key={index} className="text-sm text-gray-600">
+            {value?.airline.code}-{value?.airline.flight_number}
+          </div>
+        ))}
       </div>
 
     </div>
