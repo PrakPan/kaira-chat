@@ -25,6 +25,10 @@ const Container = styled.div`
   }
 `;
 
+const ClippathComp = styled.div`
+  clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
+`;
+
 const Flight = (props) => {
   const [showDetails, setShowDetails] = useState(false);
 
@@ -35,9 +39,9 @@ const Flight = (props) => {
       style={{ borderRadius: "10px" }}
     >
       {props.data?.is_refundable ? (
-        <div className="absolute top-0 right-0 w-fit text-xs bg-[#F8E000] px-2 py-1 rounded-tr-lg">
+        <ClippathComp className="absolute top-0 right-0 w-fit text-xs bg-[#F8E000] pr-2 pl-4 py-1 rounded-tr-lg">
           Refundable
-        </div>
+        </ClippathComp>
       ) : null}
 
       <div className="flex flex-col gap-1 lg:flex-row lg:items-center lg:justify-between">

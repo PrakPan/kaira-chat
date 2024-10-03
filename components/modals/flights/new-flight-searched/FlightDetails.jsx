@@ -51,7 +51,7 @@ export default function FlightDetails({ data, origin, destination, duration, isN
         position: 'absolute',
         bottom: '50%',
         left: '50%',
-        translate: '-70%',
+        // translate: '-70%',
         boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
     };
 
@@ -112,7 +112,7 @@ export default function FlightDetails({ data, origin, destination, duration, isN
                             <div className="text-sm text-blue cursor-pointer">
                                 {numStops} stop{numStops !== 1 && 's'}
                             </div>
-                            <div style={popupStyle} className="z-50 text-sm text-center flex flex-col gap-2 bg-gray-200 drop-shadow-3xl">
+                            <div style={popupStyle} className="z-50 translate-x-[-50%] md:translate-x-[-65%] text-sm text-center flex flex-col gap-2 bg-gray-200 drop-shadow-3xl">
                                 {data?.segments.map((segment, index) => {
                                     if (index == 0) return null;
                                     return (
