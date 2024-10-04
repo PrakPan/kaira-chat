@@ -1,5 +1,5 @@
-import PWContainer from "../../containers/PW/Index";
-import Layout from "../../components/Layout";
+import PWContainer from "../../../containers/PW/Index";
+import Layout from "../../../components/Layout";
 import Head from "next/head";
 
 const Itinerary = () => {

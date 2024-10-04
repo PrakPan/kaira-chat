@@ -159,6 +159,30 @@ const AffiliatePage = (props) => {
           ></HowItWorks>
         </HowItWorksContainer>
 
+        {props.getaways_delhi_experiences.length ? (
+          <>
+            <Heading
+              noline
+              textAlign="left"
+              fontSize={isPageWide ? "32px" : "24px"}
+              align="center"
+              aligndesktop="left"
+              margin={
+                !isPageWide ? "2.5rem 0.5rem 1.5rem 0.5rem" : "3rem 0 2rem 0"
+              }
+              bold
+            >
+              Corporate Getaways from Delhi
+            </Heading>
+
+            <Experiences
+              experiences={props.getaways_delhi_experiences}
+            ></Experiences>
+          </>
+        ) : (
+          <></>
+        )}
+
         {props.workcation_experience.length ? (
           <>
             <Heading
