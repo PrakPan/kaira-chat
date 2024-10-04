@@ -1,3 +1,4 @@
+const { withSentryConfig } = require("@sentry/nextjs");
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",
 });
@@ -37,6 +38,7 @@ const nextConfig = {
   experimental: {
     nextScriptWorkers: true,
     forceSwcTransforms: true,
+    instrumentationHook: true,
   },
 
   swcMinify: true,
@@ -57,4 +59,15 @@ const nextConfig = {
   },
 };
 
-module.exports = withBundleAnalyzer(nextConfig);
+// module.exports = withBundleAnalyzer(nextConfig);
+
+module.exports = withSentryConfig(nextConfig, {
+  org: "the-tarzan-way",
+  project: "front-end",
+
+  // An auth token is required for uploading source maps.
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+
+  silent: false, // Can be used to suppress logs
+  tunnelRoute: "/monitoring-tunnel",
+});
