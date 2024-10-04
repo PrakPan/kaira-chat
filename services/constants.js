@@ -13,6 +13,8 @@ export const FACEBOOK_PIXEL_ID = process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID;
 
 export const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
+export const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN
+
 export const ITINERARY_STATUSES = {
   itinerarary_under_preparation: "ITINERARY_UNDER_PREPARATION",
   itinerary_not_created: "ITINERARY_NOT_CREATED",
