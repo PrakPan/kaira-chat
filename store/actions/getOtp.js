@@ -3,6 +3,7 @@ import axiosauthinstance from "../../services/user/auth";
 import { setUserDetails } from "./auth";
 import * as ga from "../../services/ga/Index";
 import { CONTENT_SERVER_HOST } from "../../services/constants";
+import * as Sentry from "@sentry/nextjs";
 
 //Show spinner
 export const authStartLoading = () => {
@@ -73,10 +74,11 @@ export const getotp = (mobile) => {
       })
       .catch((err) => {
         if (err?.response?.data) {
-
-          dispatch(authMobileFail(err?.response?.data?.username[0])); //Invalid mobile
+          Sentry.captureException(new Error(`[LogIn Error]: ${err.response.config.url} : ${err.response.config.data} : ${err.response.data.username[0]}`));
+          dispatch(authMobileFail(err.response.data.username[0])); //Invalid mobile
         } else {
-          dispatch(authMobileFail("Something went wrong!, try again"));
+          Sentry.captureException(new Error(`[LogIn Error]: ${err.response.config.url} : ${err.response.config.data}`));
+          dispatch(authMobileFail("Something went wrong!, please try again")); //Invalid mobile
         }
       });
   };

@@ -94,6 +94,7 @@ const Search = (props) => {
           setSelectedCities={props.setSelectedCities}
           selectedCities={props.selectedCities}
           setShowResults={setShowResults}
+          eventDates={props.eventDates}
         ></SearchInput>
       </div>
 
@@ -127,6 +128,8 @@ const Search = (props) => {
           setSearchFinalized={props.setSearchFinalized}
           setSelectedCities={props.setSelectedCities}
           selectedCities={props.selectedCities}
+          setValueStart={props.setValueStart}
+          setValueEnd={props.setValueEnd}
         ></SearchResults>
       )}
     </Container>

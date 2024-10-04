@@ -44,6 +44,9 @@ const SlideOne = (props) => {
           CITIES={props.cities ? props.cities : CITIES}
           selectedCities={props.selectedCities}
           setSelectedCities={props.setSelectedCities}
+          setValueStart={props.setValueStart}
+          setValueEnd={props.setValueEnd}
+          eventDates={props.eventDates}
         ></Destinations>
       </Section>
 
@@ -62,6 +65,7 @@ const SlideOne = (props) => {
           valueEnd={props.valueEnd}
           setValueStart={props.setValueStart}
           setValueEnd={props.setValueEnd}
+          eventDates={props.eventDates}
         />
         <div
           className="hover-pointer"
@@ -73,37 +77,48 @@ const SlideOne = (props) => {
             marginLeft: "2px",
           }}
         >
-          <div onClick={() => props.setFlexible(!props.flexible)}>
-            <div
-              className="center-div"
-              style={{
-                border: "2px solid #01202B",
-                color: "black",
-                lineHeight: "1",
-                fontSize: "0.75rem",
-                borderRadius: "3px",
-                opacity: "1",
-                height: "20px",
-                width: "20px",
-                backgroundColor: props.flexible
-                  ? "rgba(247,231,0,1)"
-                  : "transparent",
-              }}
+          {props.eventDates && props.destination ? (
+            <div className="font-lexend"
+              style={{ fontSize: "0.8rem" }}
             >
-              {props.flexible ? <BsCheck></BsCheck> : null}
+              The dates for this event are fixed and cannot be changed!
             </div>
-          </div>
-          <div
-            onClick={() => props.setFlexible(!props.flexible)}
-            className="font-lexend"
-            style={{ fontSize: "0.8rem" }}
-          >
-            Not sure? Let us decide best time for your trip.
-          </div>
+          ) : (
+            <>
+              <div onClick={() => props.setFlexible(!props.flexible)}>
+                <div
+                  className="center-div"
+                  style={{
+                    border: "2px solid #01202B",
+                    color: "black",
+                    lineHeight: "1",
+                    fontSize: "0.75rem",
+                    borderRadius: "3px",
+                    opacity: "1",
+                    height: "20px",
+                    width: "20px",
+                    backgroundColor: props.flexible
+                      ? "rgba(247,231,0,1)"
+                      : "transparent",
+                  }}
+                >
+                  {props.flexible ? <BsCheck></BsCheck> : null}
+                </div>
+              </div>
+              <div
+                onClick={() => props.setFlexible(!props.flexible)}
+                className="font-lexend"
+                style={{ fontSize: "0.8rem" }}
+              >
+                Not sure? Let us decide best time for your trip.
+              </div>
+            </>
+          )}
+
         </div>
-      </Section>
+      </Section >
       <Section style={{ marginBottom: "0.5rem" }}></Section>
-    </Container>
+    </Container >
   );
 };
 

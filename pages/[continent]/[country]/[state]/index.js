@@ -64,28 +64,7 @@ export async function getStaticPaths() {
     const res = await axiossearchallinstance.get("/?type=State&fields=path");
     const data = res.data;
 
-    let themePages = null;
-
-    try {
-      const themeRes = await axiospagelistinstance.get(
-        "/?fields=path&page_type=Theme",
-      );
-
-      themePages = themeRes.data;
-    } catch (err) {
-      console.error(
-        "[ERROR][statePage:axiospagelistinstance][/?fields=path&page_type=Theme]: ",
-        err.message,
-      );
-    }
-
-    themePages = themePages.map((page) => {
-      return {
-        path: "asia/india/" + page.path,
-      };
-    });
-
-    const allPaths = [...data, ...themePages];
+    const allPaths = [...data];
 
     for (var i = 0; i < allPaths.length; i++) {
       const pathArr = allPaths[i].path.split("/");

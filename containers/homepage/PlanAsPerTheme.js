@@ -181,7 +181,7 @@ const PlanAsPerTheme = (props) => {
       key={i}
       onClick={() => _handleTripRedirect(e.banner_heading)}
     >
-      <ImageContainer bg="road-trip.png" href={"/asia/india/" + e.path}>
+      <ImageContainer bg="road-trip.png" href={"/theme/" + e.path}>
         <TextContainer className="AnimateTop">
           <H5>{e.banner_heading}</H5>
           {isPageWide && <div className="StartNow">Explore!</div>}

@@ -11,23 +11,61 @@ import { logEvent } from "../../../services/ga/Index";
 
 export default function TransferElement(props) {
   const { modes, heading, meta, booking, data } = props;
-  const [selectedBooking, setSelectedBooking] = useState(null);
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [imageFailed, setImageFailed] = useState(false);
+  const [selectedBookings, setSelectedBookings] = useState([]);
+
   const isPageWide = media("(min-width: 768px)");
 
   useEffect(() => {
-    if (
-      booking &&
-      booking.length &&
-      data?.bookings?.length &&
-      data?.bookings[0]?.id
-    ) {
-      for (let book of booking) {
-        if (book.id === data.bookings[0].id) setSelectedBooking(book);
-      }
+    let bookings = []
+    if (booking?.length && data?.bookings?.length) {
+      for (let transferBooking of data.bookings)
+        for (let book of booking) {
+          if (book.id === transferBooking?.id) bookings.push(book);
+        }
     }
+
+    setSelectedBookings(bookings);
   }, [booking]);
+
+
+
+  return (
+    <Container className="pt-0">
+      <div className="flex flex-col items-center justify-center w-full">
+        <div className="w-full flex flex-col space-y-2 md:space-y-0 lg:space-y-0 md:flex-row lg:flex-row items-start md:items-center lg:items-center">
+          <div className="flex flex-row lg:w-[11%] md:w-[21%] justify-center">
+            {meta?.day_timing ? (
+              <span className="font-normal text-sm text-gray-500">
+                {meta.day_timing}
+              </span>
+            ) : (
+              <div className="flex items-center">
+                <WiSunrise className="text-2xl text-gray-500"></WiSunrise>
+                {isPageWide ? (
+                  <></>
+                ) : (
+                  <span className="font-normal text-xs text-gray-500 ml-2">
+                    Morning
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+          <div className="font-medium text-sm">{heading}</div>
+        </div>
+
+        {selectedBookings.map((selectedBooking, index) => (
+          <Booking mode={modes[index]} meta={meta} selectedBooking={selectedBooking} data={data} heading={heading} />
+        ))}
+      </div>
+    </Container>
+  );
+}
+
+
+const Booking = ({ mode, meta, selectedBooking, data, heading }) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
 
   const handleImageError = () => {
     setImageFailed(true);
@@ -62,9 +100,8 @@ export default function TransferElement(props) {
       params: {
         page: "Itinerary Page",
         event_category: "Button Click",
-        event_label: `${
-          selectedBooking?.user_selected ? modes + " added" : "Add " + modes
-        }`,
+        event_label: `${selectedBooking?.user_selected ? mode + " added" : "Add " + mode
+          }`,
         event_value: heading,
         event_action: "Day by Day Itinerary",
       },
@@ -72,120 +109,93 @@ export default function TransferElement(props) {
   };
 
   return (
-    <Container className="pt-0">
-      <div className="flex flex-col items-center justify-center w-full">
-        <div className="w-full flex flex-col space-y-2 md:space-y-0 lg:space-y-0 md:flex-row lg:flex-row items-start md:items-center lg:items-center">
-          <div className="flex flex-row lg:w-[11%] md:w-[21%] justify-center">
-            {meta?.day_timing ? (
-              <span className="font-normal text-sm text-gray-500">
-                {meta.day_timing}
-              </span>
+    <div className="w-full flex flex-col lg:flex-row md:flex-row items-start">
+      <div className="lg:w-[11%] md:w-[21%]"></div>
+      <div className="flex flex-row items-center">
+        <div
+          className={`flex items-center justify-center w-[4rem] h-[4rem] ${!imageLoaded && "bg-gray-200 rounded-lg animate-pulse"
+            }`}
+        >
+          <div className={`${imageLoaded ? "visible" : "invisible"}`}>
+            {selectedBooking &&
+              selectedBooking?.images?.image !== "" &&
+              !imageFailed ? (
+              <ImageLoader
+                is_url={selectedBooking?.images?.image?.includes("gozo")}
+                dimensions={{ width: 300, height: 300 }}
+                dimensionsMobile={{ width: 300, height: 300 }}
+                borderRadius="8px"
+                hoverpointer
+                width="4rem"
+                height="4rem"
+                leftalign
+                widthmobile="4rem"
+                url={selectedBooking?.images?.image}
+                noLazy
+                onfail={handleImageError}
+                onload={() => {
+                  setImageLoaded(true);
+                }}
+              ></ImageLoader>
+            ) : mode ? (
+              <TransportIconFetcher
+                TransportMode={mode}
+                classname="text-black text-[3rem]"
+              />
             ) : (
-              <div className="flex items-center">
-                <WiSunrise className="text-2xl text-gray-500"></WiSunrise>
-                {isPageWide ? (
-                  <></>
-                ) : (
-                  <span className="font-normal text-xs text-gray-500 ml-2">
-                    Morning
-                  </span>
-                )}
-              </div>
+              <div className=""></div>
             )}
           </div>
-          <div className="font-medium text-sm">{heading}</div>
         </div>
 
-        <div className="w-full flex flex-col lg:flex-row md:flex-row items-start">
-          <div className="lg:w-[11%] md:w-[21%]"></div>
-          <div className="flex flex-row items-center">
-            <div
-              className={`flex items-center justify-center w-[4rem] h-[4rem] ${
-                !imageLoaded && "bg-gray-200 rounded-lg animate-pulse"
-              }`}
-            >
-              <div className={`${imageLoaded ? "visible" : "invisible"}`}>
-                {selectedBooking &&
-                selectedBooking?.images?.image !== "" &&
-                !imageFailed ? (
-                  <ImageLoader
-                    is_url={selectedBooking?.images?.image?.includes("gozo")}
-                    dimensions={{ width: 300, height: 300 }}
-                    dimensionsMobile={{ width: 300, height: 300 }}
-                    borderRadius="8px"
-                    hoverpointer
-                    width="4rem"
-                    height="4rem"
-                    leftalign
-                    widthmobile="4rem"
-                    url={selectedBooking?.images?.image}
-                    noLazy
-                    onfail={handleImageError}
-                    onload={() => {
-                      setImageLoaded(true);
-                    }}
-                  ></ImageLoader>
-                ) : modes ? (
-                  <TransportIconFetcher
-                    TransportMode={modes}
-                    classname="text-black text-[3rem]"
-                  />
-                ) : (
-                  <div className=""></div>
-                )}
-              </div>
-            </div>
-
-            <div className="flex flex-col ml-3">
-              <div className="text-xs leading-7 ml-2">
-                {isOriginDestination()
-                  ? selectedBooking.city +
-                    " - " +
-                    selectedBooking.destination.shortName
-                  : ""}
-              </div>
-
-              <div className="font-normal text-xs leading-4 ml-2">
-                {getFlightDuration() ? (
-                  `Duration:  ${getFlightDuration()}`
-                ) : (
-                  <></>
-                )}
-              </div>
-            </div>
+        <div className="flex flex-col ml-3">
+          <div className="text-xs leading-7 ml-2">
+            {isOriginDestination()
+              ? selectedBooking.city +
+              " - " +
+              selectedBooking.destination.shortName
+              : ""}
           </div>
 
-          <div className="lg:ml-4 md:ml-4">
-            {selectedBooking ? (
-              <Link
-                to={
-                  data.bookings && data.bookings[0] && data.bookings[0].id
-                    ? `${data.bookings[0].id}`
-                    : "Transfer_Container"
-                }
-                offset={-90}
-                onClick={handleTransferButtonClick}
-              >
-                <TransparentButton>
-                  {selectedBooking && selectedBooking.user_selected ? (
-                    <>
-                      <MdDoneAll
-                        style={{
-                          display: "inline",
-                          marginRight: "0.35rem",
-                        }}
-                      />{" "}
-                      {modes ? `${modes} added` : null}
-                    </>
-                  ) : (
-                    <>{modes ? `Add ${modes}` : null}</>
-                  )}
-                </TransparentButton>
-              </Link>
-            ) : null}
+          <div className="font-normal text-xs leading-4 ml-2">
+            {getFlightDuration() ? (
+              `Duration:  ${getFlightDuration()}`
+            ) : (
+              <></>
+            )}
           </div>
         </div>
       </div>
-    </Container>
+
+      <div className="lg:ml-4 md:ml-4">
+        {selectedBooking ? (
+          <Link
+            to={
+              selectedBooking.id
+                ? `${selectedBooking.id}`
+                : "Transfer_Container"
+            }
+            offset={-90}
+            onClick={handleTransferButtonClick}
+          >
+            <TransparentButton>
+              {selectedBooking && selectedBooking.user_selected ? (
+                <>
+                  <MdDoneAll
+                    style={{
+                      display: "inline",
+                      marginRight: "0.35rem",
+                    }}
+                  />{" "}
+                  {mode ? `${mode} added` : null}
+                </>
+              ) : (
+                <>{mode ? `Add ${mode}` : null}</>
+              )}
+            </TransparentButton>
+          </Link>
+        ) : null}
+      </div>
+    </div>
   );
 }

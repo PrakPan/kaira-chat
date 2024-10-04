@@ -30,6 +30,7 @@ const HeroBanner = (props) => {
           title={props.title}
           _startPlanningFunction={props._startPlanningFunction}
           page={props.page}
+          eventDates={props.eventDates}
         />
       </div>
     </FullImage>

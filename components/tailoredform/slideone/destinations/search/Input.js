@@ -65,7 +65,7 @@ const SearchInput = (props) => {
       onFocus={props.onfocus}
       onBlur={_handleBlur}
       onClick={props.searchFinalized ? _handleReset : _resetSelectedCities}
-      disabled={false}
+      readOnly={props.eventDates ? true : false}
       placeholder="Search destination"
       className="font-lexend"
       value={value}

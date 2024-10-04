@@ -166,6 +166,7 @@ const FullImgContent = (props) => {
             destination={props.destination}
             cities={props.cities}
             HeroBanner
+            eventDates={props.eventDates}
           ></TailoredForm>
         </div>
       )}
@@ -222,6 +223,7 @@ const FullImgContent = (props) => {
           setShowTailoredModal(false);
         }}
         show={showTailoredModal}
+        eventDates={props.eventDates}
       />
     </Container>
   );

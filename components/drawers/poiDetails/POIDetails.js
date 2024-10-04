@@ -235,11 +235,13 @@ const POIDetails = (props) => {
         </Reviews>
         {props.data.experience_filters && <Text>{experience_filters}</Text>}
       </div>
-      {props.data.cost && (
+      {props.data?.cost ? (
         <div className="flex flex-row">
-          Cost: <div className="font-semibold px-1">₹</div> {props.data.cost}
-          {" /- "}
-          <div style={{ marginLeft: "0.5rem" }}>Per person</div>
+          Cost: <span className="font-semibold px-1">₹</span>{props.data.cost}{" /- "}{"Per person"}
+        </div>
+      ) : (
+        <div className="flex flex-row">
+          Cost: Complimentary Activity
         </div>
       )}
       {props.data.short_description && (

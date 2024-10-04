@@ -40,6 +40,7 @@ const FlickityComp = (props) => {
             valueEnd={props.valueEnd}
             setValueStart={props.setValueStart}
             setValueEnd={props.setValueEnd}
+            eventDates={props.eventDates}
           ></SlideOne>
         </Card>
       ) : null}
