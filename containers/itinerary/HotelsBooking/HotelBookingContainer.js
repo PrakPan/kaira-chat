@@ -194,7 +194,7 @@ const HotelBookingContainer = ({
                 <span>({booking ? booking?.duration : 1}N)</span>
               </div>
             )}
-            <div className={`text-md font-semibold ${booking.user_selected ? 'text-[#277004]' : 'text-[#E00000]'}`}>
+            <div className={`ml-auto text-md font-semibold ${booking.user_selected ? 'text-[#277004]' : 'text-[#E00000]'}`}>
               {booking.user_selected ? "Included" : "Excluded"}
               </div>
           </div>

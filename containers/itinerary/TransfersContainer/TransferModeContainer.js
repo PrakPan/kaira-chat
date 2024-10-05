@@ -595,7 +595,7 @@ const TransferModeContainer = (props) => {
             <div className="mt-3 lg:ml-7">
               <div className="flex flex-row w-full justify-between items-center">
                 <span className="font-medium  inline">{props.heading}</span>
-                <div className="flex flex-row gap-2 justify-center items-center">
+                <div className="flex flex-row gap-2 justify-center items-center ml-auto">
                   <div
                     className={`${
                       props.booking_type == "Train"
@@ -616,7 +616,7 @@ const TransferModeContainer = (props) => {
                     <div className=" text-md font-semibold text-[#E00000]  ">
                       Excluded
                     </div>
-                  )}{" "}
+                  )}
                 </div>
               </div>
 
