@@ -68,18 +68,18 @@ export default function FlightDetails({ data, origin, destination, duration, isN
     }
 
     return (
-        <div className="lg:w-[40%] flex flex-row gap-2 items-center justify-between">
-            <div className="flex flex-col items-center">
+        <div className="lg:w-[50%] flex flex-row gap-2 items-center justify-between">
+            <div className="w-[20%] flex flex-col items-center">
                 <div className="text-lg font-bold">
                     {new Date(origin.departure_time).getHours().toString().padStart(2, '0')}:
                     {new Date(origin.departure_time).getMinutes().toString().padStart(2, '0')}
                 </div>
-                <div className="text-sm">
+                <div className="w-full text-sm truncate text-center">
                     {origin.city_name}
                 </div>
             </div>
 
-            <div className="w-full flex flex-col items-center gap-2">
+            <div className="w-[60%] flex flex-col items-center gap-2">
                 {duration ? (
                     <div className="text-sm text-gray-600">{getTime(duration)}</div>
                 ) : null}
@@ -130,13 +130,13 @@ export default function FlightDetails({ data, origin, destination, duration, isN
             </div>
 
 
-            <div className="flex flex-col items-center">
+            <div className="w-[20%] flex flex-col items-center">
                 <div className="text-lg font-bold">
                     {new Date(destination.arrival_time).getHours().toString().padStart(2, '0')}:
                     {new Date(destination.arrival_time).getMinutes().toString().padStart(2, '0')}
                 </div>
 
-                <div className="text-sm">
+                <div className="w-full text-sm truncate text-center">
                     {destination.city_name}
                 </div>
 
