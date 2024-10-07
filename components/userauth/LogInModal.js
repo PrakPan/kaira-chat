@@ -93,7 +93,6 @@ const LogIn = React.memo((props) => {
 
   const mobileRef = useRef();
   const [mobile, setMobile] = useState("");
-  const [phone, setPhone] = useState("");
   const [otpResent, setOtpResent] = useState(false);
   const [whatsapp, setWhatsapp] = useState(true);
   const [extension, setExtension] = useState("India"); //store extension
@@ -158,13 +157,21 @@ const LogIn = React.memo((props) => {
 
   const handleMobileBlur = (event) => {
     const phone = mobileRef.current.value;
-    const res = separateCountryCode(phone);
-    if (res) {
-      setMobile(res.number);
-    } else {
-      setMobile(phone);
-    }
+    setMobile(phone);
   };
+
+  const combinePhoneNumber = (selectedCountryCode, phoneInput) => {
+    if (phoneInput.startsWith(selectedCountryCode)) {
+      // Phone input starts with the selected country code
+      return phoneInput;
+    } else if (phoneInput.startsWith('+')) {
+      // Phone input likely includes a country code, so return it as is
+      return phoneInput;
+    } else {
+      // Prepend the selected country code
+      return selectedCountryCode + phoneInput;
+    }
+  }
 
   const separateCountryCode = (phoneNumber) => {
     const pattern = /^(\+\d{1,3})(\d{10})$/;
@@ -252,12 +259,13 @@ const LogIn = React.memo((props) => {
 
   //Set Mobile
   const handleMobileChange = (event) => {
-    setPhone(event.target.value);
+    setMobile(event.target.value);
   };
 
   //Dispatch Action
   const otpHandler = () => {
-    props.onOtp(props.CountryCodes[extension].label + mobile);
+    const countryCode = props.CountryCodes[extension].label;
+    props.onOtp(combinePhoneNumber(countryCode, mobile));
   };
 
   //TEST
@@ -267,7 +275,7 @@ const LogIn = React.memo((props) => {
     };
     axios
       .post("https://apis.tarzanway.com/user/resend/otp/", authData)
-      .then((response) => {});
+      .then((response) => { });
     setOtpResent(true);
   };
 
@@ -293,7 +301,7 @@ const LogIn = React.memo((props) => {
         label="Mobile Number"
         type="mobile"
         id="mobile"
-        value={phone}
+        value={mobile}
         onChange={handleMobileChange}
         onBlur={handleMobileBlur}
         className="loginform"
@@ -379,7 +387,7 @@ const LogIn = React.memo((props) => {
       ) : null}
 
       {(props.token && !props.phone) ||
-      (props.token && props.phone === "null") ? (
+        (props.token && props.phone === "null") ? (
         <p
           style={{ margin: "0 1rem 2rem 1rem", fontWeight: "200" }}
           className="font-lexend text-center"
@@ -390,7 +398,7 @@ const LogIn = React.memo((props) => {
       ) : null}
 
       {(props.token && !props.phone) ||
-      (props.token && props.phone == "null") ? (
+        (props.token && props.phone == "null") ? (
         <form noValidate>
           <MobileNumberContainer className="relative">
             <div
@@ -444,8 +452,12 @@ const LogIn = React.memo((props) => {
         <form noValidate>
           <MobileNumberContainer>
             <div
-              className="w-fit px-2 flex flex-row gap-3 items-center border-[1px] border-[#d0d5dd] rounded-lg"
-              onClick={() => setOpenCountryCodeOption(true)}
+              className="w-fit h-[50px] px-2 flex flex-row gap-3 items-center border-[1px] border-[#d0d5dd] rounded-lg"
+              onClick={() => {
+                if (props.otpSent) return;
+                setOpenCountryCodeOption(true)
+              }
+              }
             >
               <CountryImg
                 height="30"
@@ -458,6 +470,7 @@ const LogIn = React.memo((props) => {
 
               <FiChevronDown />
             </div>
+
             {openCountryCodeOption && (
               <CountryCodeDropdown
                 onClose={() => setOpenCountryCodeOption(false)}
@@ -466,6 +479,7 @@ const LogIn = React.memo((props) => {
                 setOpenCountryCodeOption={setOpenCountryCodeOption}
               />
             )}
+
             {mobileInput}
           </MobileNumberContainer>
 
