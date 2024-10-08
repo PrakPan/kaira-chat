@@ -644,29 +644,6 @@ const Details = (props) => {
                 </div>
               ) : null}
 
-              {!oldaccommodation && !props.payment.are_prices_hidden ? (
-                <div className="flex flex-row justify-between">
-                  <div
-                    className={
-                      props.blur
-                        ? "font-lexend text-enter blurry-text  "
-                        : "font-lexend text-enter text-sm font-normal"
-                    }
-                  >
-                    {"GST"}
-                  </div>
-                  <div
-                    className={
-                      props.blur
-                        ? "font-lexend text-enter blurry-text "
-                        : "font-lexend text-enter "
-                    }
-                  >
-                    {"₹ " + getIndianPrice(Math.round(props.payment.gst / 100))}
-                  </div>
-                </div>
-              ) : null}
-
               {props.payment ? (
                 props.payment.coupon && props.iscouponApplied ? (
                   props.payment.coupon.code ? (
