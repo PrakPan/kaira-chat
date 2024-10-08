@@ -197,6 +197,7 @@ const LogIn = React.memo((props) => {
   //Submit OTP
   const submitOtpHandler = () => {
     setUserNameError(false);
+    const countryCode = props.CountryCodes[extension].label;
 
     if (props.newUser) {
       const newUserValidity = checkNewUserData();
@@ -205,7 +206,7 @@ const LogIn = React.memo((props) => {
 
       if (newUserValidity)
         props.onAuth(
-          props.CountryCodes[extension].label + mobile,
+          combinePhoneNumber(countryCode, mobile),
           otp,
           userDetails.userName,
           userDetails.email,
@@ -215,7 +216,7 @@ const LogIn = React.memo((props) => {
         );
     } else if (props.otpSent && !props.name) {
       props.onAuth(
-        props.CountryCodes[extension].label + mobile,
+        combinePhoneNumber(countryCode, mobile),
         otp,
         userDetails.userName,
         null,
@@ -224,7 +225,7 @@ const LogIn = React.memo((props) => {
       );
     } else if (props.otpSent && !props.name && !props.email) {
       props.onAuth(
-        props.CountryCodes[extension].label + mobile,
+        combinePhoneNumber(countryCode, mobile),
         otp,
         userDetails.userName,
         userDetails.email,
@@ -233,7 +234,7 @@ const LogIn = React.memo((props) => {
       );
     } else if (props.otpSent && !props.email) {
       props.onAuth(
-        props.CountryCodes[extension].label + mobile,
+        combinePhoneNumber(countryCode, mobile),
         otp,
         null,
         userDetails.email,
@@ -242,7 +243,7 @@ const LogIn = React.memo((props) => {
       );
     } else {
       props.onAuth(
-        props.CountryCodes[extension].label + mobile,
+        combinePhoneNumber(countryCode, mobile),
         otp,
         null,
         null,
