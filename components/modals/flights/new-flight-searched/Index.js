@@ -114,7 +114,7 @@ const Details = ({ baggage, provider, resultIndex, setShowDetails }) => {
     }
 
     axiosFlightFareRule.post('', data).then(response => {
-      setFareRules(response.data.results[0].fareRuleDetail)
+      setFareRules(response.data.results[0].fare_rule_detail)
       setFareRulesLoading(false);
     }).catch(err => {
       setFareRulesError(true);
