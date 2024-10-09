@@ -14,6 +14,9 @@ module.exports = {
       sans: ["lexend"],
     },
     extend: {
+      fontFamily: {
+        buffalo: ['Buffalo', 'sans-serif'],
+      },
       height: {
         300: "300px",
         557: "557px",

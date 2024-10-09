@@ -56,7 +56,7 @@ const FullImage = (props) => {
           dimensions={
             props?.resizeMode === "fill"
               ? { width: 2240, height: 840 }
-              : { width: 2240, height: 840 }
+              : { width: 2240, height: 1040 }
           }
           dimensionsMobile={
             props?.resizeMode === "fill"
