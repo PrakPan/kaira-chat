@@ -3,7 +3,7 @@ import styled from "styled-components";
 import media from "../../media";
 import AccommodationSearched from "./new-accommodation-searched/Index";
 import AccommodationModal from "../accommodation/Index";
-import axiosaccommodationinstance from "../../../services/bookings/FetchAccommodations";
+import axiosaccommodationinstance, { hotelSearch } from "../../../services/bookings/FetchAccommodations";
 import axiosagodaaccommodationionstance from "../../../services/bookings/FetchAccommodationsAgoda";
 import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
 import { connect } from "react-redux";
@@ -102,7 +102,7 @@ const Booking = (props) => {
 
   useEffect(() => {
     if (props?.showBookingModal) {
-      _updateOptionsHandlerWithFilter();
+      fetchHotels();
     } else {
       setFiltersState({
         budget: "",
@@ -245,6 +245,110 @@ const Booking = (props) => {
       sort_by: sort_by,
     };
   };
+
+  const fetchHotels = () => {
+    setLoading(true);
+    setUpdateLoadingState(true);
+    setNoResults(false);
+    setFetchingIsError({
+      error: false,
+      errorMsg: "",
+    });
+
+    hotelSearch.post("", {
+      // check_in: props?.selectedBooking?.check_in,
+      // check_out: props?.selectedBooking?.check_out,
+      // city_id: props?.selectedBooking?.cityId,
+      check_in: "2024-10-25",
+      check_out: "2024-10-26",
+      city_id: "5ae21a64-58c2-4221-a993-b844a99de2c2",
+      num_adults: props?.selectedBooking?.pax?.number_of_adults,
+      // source: "agoda"
+    }).then(res => {
+      setUpdateLoadingState(false);
+
+      if (res.data?.trace_details?.id) {
+        setTraceID(res.data.trace_details.id)
+      }
+
+      if (res.data?.data?.length) {
+        if (
+          res.data?.search &&
+          res.data?.search?.accommodation_types &&
+          res.data?.search?.accommodation_types?.length
+        ) {
+          let accommodation_types = Array.from(
+            new Set(res.data.search.accommodation_types)
+          );
+          setFiltersObj({
+            ...filtersObj,
+            type: accommodation_types,
+          });
+        }
+
+        if (res.data?.count) setTotalCount(res.data.count);
+
+        setNoResults(false);
+
+        let options = [];
+        for (var i = 0; i < res.data.data.length; i++) {
+          if (res.data.data[i].name !== props?.selectedBooking.name)
+            if (
+              res.data.data[i]?.images &&
+              res.data.data[i]?.images?.length &&
+              res.data.data[i]?.price
+            ) {
+              let img = false;
+              for (let j = 0; j < res.data.data[i].images.length; j++) {
+                if (res.data.data[i].images[j]?.image) {
+                  img = res.data.data[i].images[j].image;
+                  break;
+                }
+              }
+
+              if (img)
+                options.push(
+                  <AccommodationSearched
+                    payment={props.payment}
+                    plan={props.plan}
+                    currentBooking={props.currentBooking}
+                    _setImagesHandler={props._setImagesHandler}
+                    _updateSearchedAccommodation={_newUpdateBookingHandler}
+                    _SelectedBookingHandler={_SelectedBookingHandler}
+                    itinerary_id={props.itinerary_id}
+                    tailored_id={props.tailored_id}
+                    _updateBookingHandler={_newUpdateBookingHandler}
+                    accommodation={res.data.data[i]}
+                    selectedBooking={props.selectedBooking}
+                    key={i}
+                    images={res.data.data[i].images}
+                    banner_image={img}
+                    bookings={props.bookings}
+                    traceId={traceId}
+                  ></AccommodationSearched>
+                );
+            }
+        }
+
+        setMoreOptionsJSX(options);
+      } else {
+        setNoResults(true);
+        setOffset(0);
+        setViewMoreStatus(false);
+        setMoreOptionsJSX([]);
+      }
+      setLoading(false);
+
+    }).catch(err => {
+      setLoading(false);
+      setFetchingIsError({
+        error: true,
+        errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
+      });
+    })
+
+
+  }
 
   const _updateOptionsHandlerWithFilter = (gear) => {
     setLoading(true);
@@ -433,66 +537,66 @@ const Booking = (props) => {
     {
       props.AddHotel
         ? axiosbookingupdateinstance
-            .post(
-              "add/?booking_type=Accommodation" +
-                props.selectedBooking.itinerary_id,
-              updated_bookings_arr[0],
-              {
-                headers: {
-                  Authorization: `Bearer ${props.token}`,
-                },
-              }
-            )
-            .then((res) => {
-              props._updateStayBookingHandler([res.data]);
-              props.getPaymentHandler();
-              props.openNotification({
-                type: "success",
-                text: "Hotel added successfully.",
-                heading: "Sucess!",
-              });
-              setUpdateBookingState(false);
-            })
-            .catch((err) => {
-              setUpdateBookingState(false);
-              setUnauthorized(true);
-              props.openNotification({
-                type: "error",
-                text: "Something went wrong! Please try after some time.",
-                heading: "Error!",
-              });
-            })
-        : axiosbookingupdateinstance
-            .patch(
-              "update/?booking_type=Accommodation&itinerary_id=" +
-                props.selectedBooking.itinerary_id,
-              updated_bookings_arr[0],
-              {
-                headers: {
-                  Authorization: `Bearer ${props.token}`,
-                },
-              }
-            )
-            .then((res) => {
-              props._updateStayBookingHandler([res.data]);
-              props.getPaymentHandler();
-
-              setUpdateBookingState(false);
-              props.openNotification({
-                type: "success",
-                text: "Hotel changed successfully.",
-                heading: "Sucess!",
-              });
-            })
-            .catch((err) => {
-              setUpdateBookingState(false);
-              setUnauthorized(true);
-              props.openNotification({
-                type: "error",
-                text: "Something went wrong! Please try after some time.",
-                heading: "Error!",
-              });
+          .post(
+            "add/?booking_type=Accommodation" +
+            props.selectedBooking.itinerary_id,
+            updated_bookings_arr[0],
+            {
+              headers: {
+                Authorization: `Bearer ${props.token}`,
+              },
+            }
+          )
+          .then((res) => {
+            props._updateStayBookingHandler([res.data]);
+            props.getPaymentHandler();
+            props.openNotification({
+              type: "success",
+              text: "Hotel added successfully.",
+              heading: "Sucess!",
             });
+            setUpdateBookingState(false);
+          })
+          .catch((err) => {
+            setUpdateBookingState(false);
+            setUnauthorized(true);
+            props.openNotification({
+              type: "error",
+              text: "Something went wrong! Please try after some time.",
+              heading: "Error!",
+            });
+          })
+        : axiosbookingupdateinstance
+          .patch(
+            "update/?booking_type=Accommodation&itinerary_id=" +
+            props.selectedBooking.itinerary_id,
+            updated_bookings_arr[0],
+            {
+              headers: {
+                Authorization: `Bearer ${props.token}`,
+              },
+            }
+          )
+          .then((res) => {
+            props._updateStayBookingHandler([res.data]);
+            props.getPaymentHandler();
+
+            setUpdateBookingState(false);
+            props.openNotification({
+              type: "success",
+              text: "Hotel changed successfully.",
+              heading: "Sucess!",
+            });
+          })
+          .catch((err) => {
+            setUpdateBookingState(false);
+            setUnauthorized(true);
+            props.openNotification({
+              type: "error",
+              text: "Something went wrong! Please try after some time.",
+              heading: "Error!",
+            });
+          });
     }
   };
 
@@ -527,63 +631,63 @@ const Booking = (props) => {
     {
       props.AddHotel
         ? axiosbookingupdateinstance
-            .post("add/?booking_type=Accommodation", updated_bookings_arr[0], {
+          .post("add/?booking_type=Accommodation", updated_bookings_arr[0], {
+            headers: {
+              Authorization: `Bearer ${props.token}`,
+            },
+          })
+          .then((res) => {
+            props._updateStayBookingHandler([res.data]);
+            setTimeout(function () {
+              props.getPaymentHandler();
+            }, 1000);
+            setUpdateBookingState(false);
+            props.openNotification({
+              type: "success",
+              text: "Hotel added successfully.",
+              heading: "Sucess!",
+            });
+          })
+          .catch((err) => {
+            setUpdateBookingState(false);
+            setUnauthorized(true);
+            props.openNotification({
+              type: "error",
+              text: "Something went wrong! Please try after some time.",
+              heading: "Error!",
+            });
+          })
+        : axiosbookingupdateinstance
+          .patch(
+            "update/?booking_type=Accommodation",
+            updated_bookings_arr[0],
+            {
               headers: {
                 Authorization: `Bearer ${props.token}`,
               },
-            })
-            .then((res) => {
-              props._updateStayBookingHandler([res.data]);
-              setTimeout(function () {
-                props.getPaymentHandler();
-              }, 1000);
-              setUpdateBookingState(false);
-              props.openNotification({
-                type: "success",
-                text: "Hotel added successfully.",
-                heading: "Sucess!",
-              });
-            })
-            .catch((err) => {
-              setUpdateBookingState(false);
-              setUnauthorized(true);
-              props.openNotification({
-                type: "error",
-                text: "Something went wrong! Please try after some time.",
-                heading: "Error!",
-              });
-            })
-        : axiosbookingupdateinstance
-            .patch(
-              "update/?booking_type=Accommodation",
-              updated_bookings_arr[0],
-              {
-                headers: {
-                  Authorization: `Bearer ${props.token}`,
-                },
-              }
-            )
-            .then((res) => {
-              props._updateStayBookingHandler([res.data]);
-              setTimeout(function () {
-                props.getPaymentHandler();
-              }, 1000);
-              setUpdateBookingState(false);
-              props.openNotification({
-                type: "success",
-                text: "Hotel changed successfully.",
-                heading: "Sucess!",
-              });
-            })
-            .catch((err) => {
-              setUpdateBookingState(false);
-              setUnauthorized(true);
-              props.openNotification({
-                type: "error",
-                text: "You're not authorized to take this action, please contact your experience captain.",
-                heading: "Error!",
-              });
+            }
+          )
+          .then((res) => {
+            props._updateStayBookingHandler([res.data]);
+            setTimeout(function () {
+              props.getPaymentHandler();
+            }, 1000);
+            setUpdateBookingState(false);
+            props.openNotification({
+              type: "success",
+              text: "Hotel changed successfully.",
+              heading: "Sucess!",
             });
+          })
+          .catch((err) => {
+            setUpdateBookingState(false);
+            setUnauthorized(true);
+            props.openNotification({
+              type: "error",
+              text: "You're not authorized to take this action, please contact your experience captain.",
+              heading: "Error!",
+            });
+          });
     }
   };
 
@@ -617,59 +721,59 @@ const Booking = (props) => {
     {
       props.AddHotel
         ? axiosbookingupdateinstance
-            .post("add/?booking_type=Accommodation", updated_bookings_arr[0], {
-              headers: {
-                Authorization: `Bearer ${props.token}`,
-              },
-            })
-            .then((res) => {
-              props._updateStayBookingHandler([res.data]);
-              setTimeout(function () {
-                props.getPaymentHandler();
-              }, 1000);
-              setUpdateBookingState(false);
-              props.openNotification({
-                type: "success",
-                text: "Hotel changed successfully.",
-                heading: "Sucess!",
-              });
-            })
-            .catch((err) => {
-              setUpdateBookingState(false);
-              setUnauthorized(true);
-              props.openNotification({
-                type: "error",
-                text: "You're not authorized to take this action, please contact your experience captain.",
-                heading: "Error!",
-              });
-            })
-        : axiosbookingupdateinstance
-            .patch("update/?booking_type=Accommodation", updated_bookings_arr, {
-              headers: {
-                Authorization: `Bearer ${props.token}`,
-              },
-            })
-            .then((res) => {
-              props._updateStayBookingHandler([res.data]);
-              setTimeout(function () {
-                props.getPaymentHandler();
-              }, 1000);
-              setUpdateBookingState(false);
-              props.openNotification({
-                type: "success",
-                text: "Hotel changed successfully.",
-                heading: "Sucess!",
-              });
-            })
-            .catch((err) => {
-              setUpdateBookingState(false);
-              setUnauthorized(true);
-              props.openNotification({
-                type: "error",
-                text: "You're not authorized to take this action, please contact your experience captain.",
-                heading: "Error!",
-              });
+          .post("add/?booking_type=Accommodation", updated_bookings_arr[0], {
+            headers: {
+              Authorization: `Bearer ${props.token}`,
+            },
+          })
+          .then((res) => {
+            props._updateStayBookingHandler([res.data]);
+            setTimeout(function () {
+              props.getPaymentHandler();
+            }, 1000);
+            setUpdateBookingState(false);
+            props.openNotification({
+              type: "success",
+              text: "Hotel changed successfully.",
+              heading: "Sucess!",
             });
+          })
+          .catch((err) => {
+            setUpdateBookingState(false);
+            setUnauthorized(true);
+            props.openNotification({
+              type: "error",
+              text: "You're not authorized to take this action, please contact your experience captain.",
+              heading: "Error!",
+            });
+          })
+        : axiosbookingupdateinstance
+          .patch("update/?booking_type=Accommodation", updated_bookings_arr, {
+            headers: {
+              Authorization: `Bearer ${props.token}`,
+            },
+          })
+          .then((res) => {
+            props._updateStayBookingHandler([res.data]);
+            setTimeout(function () {
+              props.getPaymentHandler();
+            }, 1000);
+            setUpdateBookingState(false);
+            props.openNotification({
+              type: "success",
+              text: "Hotel changed successfully.",
+              heading: "Sucess!",
+            });
+          })
+          .catch((err) => {
+            setUpdateBookingState(false);
+            setUnauthorized(true);
+            props.openNotification({
+              type: "error",
+              text: "You're not authorized to take this action, please contact your experience captain.",
+              heading: "Error!",
+            });
+          });
     }
   };
 
@@ -847,7 +951,7 @@ const Booking = (props) => {
         room.push(props.accommodation.rooms_available[i].room_type);
       }
     }
-  } catch {}
+  } catch { }
 
   if (props?.token)
     return (
@@ -948,7 +1052,7 @@ const Booking = (props) => {
                     {isFetchingError.error ? (
                       <div className="flex flex-col items-center justify-center h-[80vh] gap-3">
                         <div className="flex flex-row items-center justify-center text-center font-lexend">
-                          {isFetchingError.errorMsg} hello
+                          {isFetchingError.errorMsg}
                         </div>
                         <GetInTouchContainer>
                           <Button

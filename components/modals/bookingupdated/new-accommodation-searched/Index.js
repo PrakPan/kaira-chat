@@ -31,6 +31,7 @@ const Accommodation = (props) => {
         id={props.accommodation.id}
         currentBooking={props.accommodation}
         show={showDetails}
+        traceId={props.traceId}
       ></AccommodationModal>
     </div>
   );

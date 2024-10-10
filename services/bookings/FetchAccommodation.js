@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {MIS_SERVER_HOST} from '../constants';
+import {MIS_SERVER_HOST, MERCURY_HOST} from '../constants';
 
 
 const fetchaccommodations = axios.create({
@@ -7,3 +7,7 @@ const fetchaccommodations = axios.create({
 })
 
 export default fetchaccommodations;
+
+export const hotelDetails = axios.create({
+    baseURL: MERCURY_HOST + '/api/v1/hotels/detail/',
+})

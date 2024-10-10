@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Overview from "./Overview/Overview";
 import styled from "styled-components";
-import axiosaccommodationinstance from "../../../services/bookings/FetchAccommodation";
+import axiosaccommodationinstance, { hotelDetails } from "../../../services/bookings/FetchAccommodation";
 import { connect } from "react-redux";
 import { TbArrowBack } from "react-icons/tb";
 import media from "../../media";
@@ -63,52 +63,78 @@ const ErrorContainer = styled.div`
 `;
 
 const POI = (props) => {
+  let isPageWide = media("(min-width: 768px)");
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
   const [error, setError] = useState(false);
 
+  // useEffect(() => {
+  //   if (props.show) {
+  //     setLoading(true);
+  //     setError(false);
+  //     let check_in = props.check_in;
+  //     let check_out = props.check_out;
+  //     if (props.check_in.includes("/")) {
+  //       check_in = props.check_in.split("/").reverse().join("-");
+  //       check_out = props.check_out.split("/").reverse().join("-");
+  //     }
+  //     let paramsObj = {
+  //       accommodation_id: props.id,
+  //       show_rooms: true,
+  //     };
+  //     if (
+  //       props.currentBooking &&
+  //       props.currentBooking.source &&
+  //       props.currentBooking.source == "Agoda"
+  //     ) {
+  //       paramsObj.check_in = check_in;
+  //       paramsObj.check_out = check_out;
+  //       paramsObj.source = "Agoda";
+  //     }
+  //     axiosaccommodationinstance
+  //       .get("", { params: paramsObj })
+  //       .then((res) => {
+  //         setLoading(false);
+  //         setData(res.data);
+  //       })
+  //       .catch((error) => {
+  //         setLoading(false);
+  //         setError(true);
+  //         props.openNotification({
+  //           type: "error",
+  //           text: "There seems to be a problem, please try again!",
+  //           heading: "Error!",
+  //         });
+  //       });
+  //   }
+  // }, [props.id, props.show]);
+
   useEffect(() => {
     if (props.show) {
-      setLoading(true);
-      setError(false);
-      let check_in = props.check_in;
-      let check_out = props.check_out;
-      if (props.check_in.includes("/")) {
-        check_in = props.check_in.split("/").reverse().join("-");
-        check_out = props.check_out.split("/").reverse().join("-");
-      }
-      let paramsObj = {
-        accommodation_id: props.id,
-        show_rooms: true,
-      };
-      if (
-        props.currentBooking &&
-        props.currentBooking.source &&
-        props.currentBooking.source == "Agoda"
-      ) {
-        paramsObj.check_in = check_in;
-        paramsObj.check_out = check_out;
-        paramsObj.source = "Agoda";
-      }
-      axiosaccommodationinstance
-        .get("", { params: paramsObj })
-        .then((res) => {
-          setLoading(false);
-          setData(res.data);
-        })
-        .catch((error) => {
-          setLoading(false);
-          setError(true);
-          props.openNotification({
-            type: "error",
-            text: "There seems to be a problem, please try again!",
-            heading: "Error!",
-          });
-        });
+      fetchDetails();
     }
-  }, [props.id, props.show]);
+  }, [props.id, props.show])
 
-  let isPageWide = media("(min-width: 768px)");
+  const fetchDetails = () => {
+    setLoading(true);
+    setError(false);
+
+    hotelDetails.post("", {
+      hotel_id: props.id,
+      trace_id: props.traceId,
+    }).then(res => {
+      setLoading(false);
+      setData(res.data);
+    }).catch(err => {
+      setLoading(false);
+      setError(true);
+      props.openNotification({
+        type: "error",
+        text: "There seems to be a problem, please try again!",
+        heading: "Error!",
+      });
+    })
+  }
 
   return (
     <Drawer
@@ -138,7 +164,7 @@ const POI = (props) => {
                 currentBooking={props.currentBooking}
                 number_of_reviews={props.number_of_reviews}
                 data={data}
-                images={data.images ? data.images : []}
+                images={data?.images ? data.images : []}
                 experience_filters={
                   props.poi ? props.poi.experience_filters : null
                 }

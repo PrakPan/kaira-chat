@@ -737,17 +737,17 @@ const Overview = (props) => {
         {props.data.check_in && props.data.check_out ? (
           <CheckInText>
             <div>
-              Check in: {getHumanTime(props.data.check_in.substring(0, 5))}
+              Check in: {getHumanTime(props.data.check_in.begin_time.substring(0, 5))}
             </div>
             <div>
-              Check out: {getHumanTime(props.data.check_out.substring(0, 5))}
+              Check out: {getHumanTime(props.data.check_out.time.substring(0, 5))}
             </div>
           </CheckInText>
         ) : (
           <></>
         )}
       </DetailsContainer>
-      {props.data.description && (
+      {props.data?.description && (
         <>
           <Heading>About</Heading>
           <MoreText>
@@ -757,8 +757,8 @@ const Overview = (props) => {
           </MoreText>
         </>
       )}
-      {props.data.rooms_available &&
-      props.data.rooms_available[0].prices.min_price ? (
+      {props.data?.rooms_available &&
+      props.data?.rooms_available[0]?.prices?.min_price ? (
         <>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Rooms</Heading>
 
@@ -768,15 +768,15 @@ const Overview = (props) => {
         <></>
       )}
 
-      {props.data.hotel_facilities && (
+      {props.data?.hotel_facilities && (
         <div>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Amenities</Heading>
           <MoreText>
             <div>
-              {props.data.hotel_facilities?.map((e, i) => (
+              {props.data?.hotel_facilities?.map((e, i) => (
                 <span key={i}>
                   {e}{" "}
-                  {props.data.hotel_facilities.length - 1 == i ? "" : <b>·</b>}{" "}
+                  {props.data?.hotel_facilities?.length - 1 == i ? "" : <b>·</b>}{" "}
                 </span>
               ))}
             </div>
@@ -784,13 +784,13 @@ const Overview = (props) => {
         </div>
       )}
 
-      {props.data.google_maps_link ? (
+      {props.data?.google_maps_link ? (
         <div>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Location</Heading>
           <Address style={{ fontSize: "14px" }}>
-            {props.data.addr1 ? props.data.addr1 + ", " : ""}{" "}
-            {props.data.addr2 ? props.data.addr2 + ", " : ""}{" "}
-            {props.data.city ? props.data.city : ""}
+            {props.data?.addr1 ? props.data.addr1 + ", " : ""}{" "}
+            {props.data?.addr2 ? props.data.addr2 + ", " : ""}{" "}
+            {props.data?.city ? props.data.city : ""}
           </Address>
           <div
             style={{
@@ -814,7 +814,7 @@ const Overview = (props) => {
               />
             </div>
             <a
-              href={props.data.google_maps_link}
+              href={props.data?.google_maps_link}
               target="_blank"
               style={{ color: "black", fontSize: "14px" }}
             >
@@ -822,13 +822,13 @@ const Overview = (props) => {
             </a>
           </div>
         </div>
-      ) : props.data.lat && props.data.long ? (
+      ) : props.data?.coordinates?.latitude && props.data?.coordinates?.longitude ? (
         <div>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Location</Heading>
           <Address style={{ fontSize: "14px" }}>
-            {props.data.addr1 ? props.data.addr1 + ", " : ""}{" "}
-            {props.data.addr2 ? props.data.addr2 + ", " : ""}{" "}
-            {props.data.city ? props.data.city : ""}
+            {props.data?.addr1 ? props.data.addr1 + ", " : ""}{" "}
+            {props.data?.addr2 ? props.data.addr2 + ", " : ""}{" "}
+            {props.data?.city ? props.data.city : ""}
           </Address>
           <div
             style={{
@@ -853,8 +853,8 @@ const Overview = (props) => {
             </div>
             <a
               href={`https://www.google.com/maps/search/?api=1&query=${
-                props.data.lat
-              },${props.data.long}+(${props.data.name.split(" ").join("+")})`}
+                  props.data?.coordinates?.latitude
+                  },${props.data.coordinates?.longitude}+(${props.data?.name?.split(" ").join("+")})`}
               target="_blank"
               style={{ color: "black", fontSize: "14px" }}
             >

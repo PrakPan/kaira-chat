@@ -6,7 +6,6 @@ import media from '../../../media';
 
 export default function LogoContainer({ data }) {
 
-
   return (
     <div className="flex flex-row gap-2 items-center">
       <Logo src={data?.segments[0]?.airline.code} />
@@ -52,7 +51,6 @@ export const Logo = ({ src, width, height }) => {
           alt=""
           src={`https://d31aoa0ehgvjdi.cloudfront.net/media/airlines/${src}.png`}
           onLoad={() => {
-            console.log("HERE >>>", src);
             setImageLoaded(true);
           }}
         ></Image>
