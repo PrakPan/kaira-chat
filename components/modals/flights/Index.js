@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import media from "../../media";
-import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
+import axiosbookingupdateinstance, { updateFlightBooking } from "../../../services/bookings/UpdateBookings";
 import { connect } from "react-redux";
 import axiosflightsearch, { axiosFlightSearch } from "../../../services/bookings/FlightSearch";
 import SectionOne from "./SectionOne";
@@ -119,6 +119,7 @@ const Booking = (props) => {
     setOptionsJSX([]);
     setFlightsCount(0);
     setLoading(true);
+    setUpdateBookingState(false);
     setUnauthorized(false);
     setFetchingIsError({
       error: false,
@@ -200,14 +201,20 @@ const Booking = (props) => {
       itinerary_type: "Tailored",
     });
 
-    axiosbookingupdateinstance
-      .post("?booking_type=Flight", updated_bookings_arr, {
+    const data = {
+      source: provider.toLowerCase(),
+      trace_id: localStorage.getItem(`${provider}_trace_id`),
+      result_indices: [result_index],
+    }
+
+    updateFlightBooking
+      .post("", data, {
         headers: {
           Authorization: `Bearer ${props.token}`,
         },
       })
       .then((res) => {
-        props._updateFlightBookingHandler(res.data.bookings);
+        props._updateFlightBookingHandler([res.data]);
         props.getPaymentHandler();
         setUpdateBookingState(false);
         props.openNotification({
