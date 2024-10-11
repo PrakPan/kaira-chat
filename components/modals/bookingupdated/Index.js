@@ -256,12 +256,12 @@ const Booking = (props) => {
     });
 
     hotelSearch.post("", {
-      // check_in: props?.selectedBooking?.check_in,
-      // check_out: props?.selectedBooking?.check_out,
-      // city_id: props?.selectedBooking?.cityId,
-      check_in: "2024-10-25",
-      check_out: "2024-10-26",
-      city_id: "5ae21a64-58c2-4221-a993-b844a99de2c2",
+      // check_in: "2024-10-25",
+      // check_out: "2024-10-26",
+      // city_id: "5ae21a64-58c2-4221-a993-b844a99de2c2",
+      check_in: props?.selectedBooking?.check_in,
+      check_out: props?.selectedBooking?.check_out,
+      city_id: props?.selectedBooking?.cityId,
       num_adults: props?.selectedBooking?.pax?.number_of_adults,
       // source: "agoda"
     }).then(res => {

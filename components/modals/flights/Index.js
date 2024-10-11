@@ -225,7 +225,7 @@ const Booking = (props) => {
       })
       .catch((err) => {
         setUpdateBookingState(false);
-        setUnauthorized(true);
+        setUnauthorized(true);a
         props.openNotification({
           type: "error",
           text: "Oops, this action is not allowed on another user's itinerary.",
