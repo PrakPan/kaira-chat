@@ -10,6 +10,7 @@ import axioscountrydetailsinstance from "../services/pages/country";
 import axiosCountInstance from "../services/itinerary/count";
 import axioslocationsinstance from "../services/search/search";
 
+
 const Home = (props) => {
   useEffect(() => {
     props.checkAuthState();
