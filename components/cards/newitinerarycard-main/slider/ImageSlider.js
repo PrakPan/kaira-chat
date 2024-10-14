@@ -31,7 +31,7 @@ const ImageSlider = (props) => {
     setHeight((Component.current.offsetWidth * 2.5) / 5);
   }, []);
 
-  var isArr = Object.prototype.toString.call(props.images) == "[object Array]";
+  var isArr = Array.isArray(props.images);
 
   var image;
   if (isArr || props.images === null) {
@@ -43,7 +43,7 @@ const ImageSlider = (props) => {
         }
       }
     else image = props.images[0];
-  } else image = props.images.main_image;
+  } else image = props.images?.main_image;
 
   let LOCATIONS_TO_SHOW = "";
   if (props.locations) {

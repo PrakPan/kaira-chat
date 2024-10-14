@@ -2,6 +2,8 @@ import CovidContainer from "../../containers/corporates[dev]/Index";
 import Head from "next/head";
 import Layout from "../../components/Layout";
 import itineraryplaninstance from "../../services/itinerary/plan";
+import axiospagelistinstance from "../../services/pages/list";
+
 
 const Covid = (props) => {
   return (
@@ -58,39 +60,99 @@ export async function getStaticProps() {
     "c11a421c-d60f-40b1-bfa4-ab87548f7bd3",
   ];
 
+  let getaways_delhi_ids = [
+    "3ad0311a-e500-42bb-9453-65e4f93e7bf8",
+    "26e9f57c-6efd-4280-9291-a90b4bd088c8",
+    "3a7c5d08-7ebb-4383-a2d3-d18e67e18dac",
+    "1412fe78-2e7e-49cd-a946-132a73e263ca",
+    "eb2f0fe2-8d91-465a-800b-a3f1f98ab97c"
+  ];
+
   var workcation_experience = [];
   var offbeat_experiences = [];
   var getaway_experiences = [];
+  var getaways_delhi_experiences = [];
+  var locations = [];
+
+  try {
+    const pageListResponse = await axiospagelistinstance.get(
+      `/?country=india&page_type=Destination&fields=id,destination,tagline,image,link,path,banner_heading,page_type,budget`
+    );
+
+    locations = pageListResponse.data;
+  } catch (err) {
+    console.log("[ERROR][corporatespage:getStaticProps]: ", err.message);
+  }
+
+
 
   for (let i = 0; i < workcation_ids.length; i++) {
     try {
       const res = await itineraryplaninstance.get(
         "/?itinerary_id=" + workcation_ids[i]
       );
-      if (res.data.message !== "not found")
-        workcation_experience.push(res.data);
+      if (res?.data?.message !== 'Not found') {
+        const data = {
+          id: workcation_ids[i],
+          ...res.data
+        }
+
+        workcation_experience.push(data);
+      }
     } catch (e) {
       console.log("[ERROR][corporatespage:getStaticProps]: ", e.message);
     }
   }
 
-  for (let i = 0; i < offbeat_ids.length; i++) {
-    try {
-      const res = await itineraryplaninstance.get(
-        "/?itinerary_id=" + offbeat_ids[i]
-      );
-      if (res.data.id) offbeat_experiences.push(res.data);
-    } catch (e) {
-      console.log("[ERROR][corporatespage:getStaticProps]: ", e.message);
-    }
-  }
+  // for (let i = 0; i < offbeat_ids.length; i++) {
+  //   try {
+  //     const res = await itineraryplaninstance.get(
+  //       "/?itinerary_id=" + offbeat_ids[i]
+  //     );
+  //     if (res?.data?.message !== 'Not found') {
+  //       const data = {
+  //         id: offbeat_ids[i],
+  //         ...res.data
+  //       }
+  //       offbeat_experiences.push(data);
+  //     }
+  //   } catch (e) {
+  //     console.log("[ERROR][corporatespage:getStaticProps]: ", e.message);
+  //   }
+  // }
 
-  for (let i = 0; i < getaway_ids.length; i++) {
+  // for (let i = 0; i < getaway_ids.length; i++) {
+  //   try {
+  //     const res = await itineraryplaninstance.get(
+  //       "/?itinerary_id=" + getaway_ids[i]
+  //     );
+  //     if (res?.data?.message !== 'Not found') {
+  //       const data = {
+  //         id: getaway_ids[i],
+  //         ...res.data,
+  //       }
+
+  //       getaway_experiences.push(data);
+  //     }
+  //   } catch (e) {
+  //     console.log("[ERROR][corporatespage:getStaticProps]: ", e.message);
+  //   }
+  // }
+
+  for (let i = 0; i < getaways_delhi_ids.length; i++) {
     try {
       const res = await itineraryplaninstance.get(
-        "/?itinerary_id=" + getaway_ids[i]
+        "/?itinerary_id=" + getaways_delhi_ids[i]
       );
-      if (res.data.id) getaway_experiences.push(res.data);
+
+      if (res?.data?.message !== 'Not found') {
+        const data = {
+          id: getaways_delhi_ids[i],
+          ...res.data,
+        }
+
+        getaways_delhi_experiences.push(data);
+      }
     } catch (e) {
       console.log("[ERROR][corporatespage:getStaticProps]: ", e.message);
     }
@@ -101,6 +163,8 @@ export async function getStaticProps() {
       workcation_experience,
       offbeat_experiences,
       getaway_experiences,
+      getaways_delhi_experiences,
+      locations
     },
   };
 }
