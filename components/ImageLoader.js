@@ -174,6 +174,15 @@ const ImageLoader = (props) => {
     setFullLoaded(true);
   };
 
+  const getBtoaUrl = (imgUrlEndPoint, imageRequest) => {
+    try {
+      return `${imgUrlEndPoint}/${btoa(imageRequest)}`
+    } catch (err) {
+      console.error(err);
+      return "";
+    }
+  }
+
   if (!props.dimensionsMobile) {
     if (!isPageWide)
       return (
@@ -192,7 +201,7 @@ const ImageLoader = (props) => {
             src={
               !is_url
                 ? isPageLoaded
-                  ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
+                  ? getBtoaUrl(imgUrlEndPoint, smallImageRequest)
                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
@@ -210,8 +219,8 @@ const ImageLoader = (props) => {
                 ? error
                   ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                   : isPageLoaded
-                  ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                    ? getBtoaUrl(imgUrlEndPoint, imageRequest)
+                    : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
             onLoad={fullImageLoadedHandler}
@@ -245,7 +254,7 @@ const ImageLoader = (props) => {
             src={
               !is_url
                 ? isPageLoaded
-                  ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
+                  ? getBtoaUrl(imgUrlEndPoint, smallImageRequest)
                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
@@ -263,8 +272,8 @@ const ImageLoader = (props) => {
                 ? error
                   ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                   : isPageLoaded
-                  ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                    ? getBtoaUrl(imgUrlEndPoint, imageRequest)
+                    : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
             onLoad={fullImageLoadedHandler}
@@ -300,7 +309,7 @@ const ImageLoader = (props) => {
             src={
               !is_url
                 ? isPageLoaded
-                  ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
+                  ? getBtoaUrl(imgUrlEndPoint, smallImageRequest)
                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
@@ -318,8 +327,8 @@ const ImageLoader = (props) => {
                 ? error
                   ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                   : isPageLoaded
-                  ? `${imgUrlEndPoint}/${btoa(imageRequestMobile)}`
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                    ? getBtoaUrl(imgUrlEndPoint, imageRequestMobile)
+                    : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
             width={props.dimensionsMobile.width}
@@ -355,7 +364,7 @@ const ImageLoader = (props) => {
             src={
               !is_url
                 ? isPageLoaded
-                  ? `${imgUrlEndPoint}/${btoa(smallImageRequest)}`
+                  ? getBtoaUrl(imgUrlEndPoint, smallImageRequest)
                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
@@ -372,8 +381,8 @@ const ImageLoader = (props) => {
                 ? error
                   ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                   : isPageLoaded
-                  ? `${imgUrlEndPoint}/${btoa(imageRequest)}`
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                    ? getBtoaUrl(imgUrlEndPoint, imageRequest)
+                    : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
             onLoad={fullImageLoadedHandler}
