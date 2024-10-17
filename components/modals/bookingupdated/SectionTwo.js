@@ -54,6 +54,7 @@ const Section = (props) => {
         No_of_stays={props.No_of_stays}
         totalCount={props.TotalCount}
       ></FiltersMobile>
+
       <Drawer
         show={props.showFilter}
         anchor={"right"}
@@ -81,14 +82,13 @@ const Section = (props) => {
                 {props.FILTERS["star_category"].map((currentfilter, i) => (
                   <button
                     onClick={() => _OnstarSelect(i, currentfilter)}
-                    className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${
-                      SelectedStar == i
+                    className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${SelectedStar == i
                         ? "text-white border-0 bg-black "
                         : "border-2 bg-white text-black"
-                    } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
+                      } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
                     key={i}
                   >
-                    {currentfilter} hi
+                    {currentfilter}
                     <IoMdStar />
                   </button>
                 ))}
@@ -107,11 +107,10 @@ const Section = (props) => {
                         i
                       )
                     }
-                    className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${
-                      SelectedBudget == i
+                    className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${SelectedBudget == i
                         ? "text-white border-0 bg-black "
                         : "border-2 bg-white text-black"
-                    } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
+                      } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
                     key={i}
                   >
                     {currentfilter}

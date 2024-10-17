@@ -55,11 +55,13 @@ export default function TemporaryDrawer(props) {
     setSelectedStar(i);
     props._updateStarFilterHandler(currentfilter);
   };
+
   const handleSelectOption = (option) => {
     if (option == "All") return _onChangeHandler(true, "", "type");
 
     _onChangeHandler(true, option, "type");
   };
+  
   return (
     <div>
       <React.Fragment key={"bottom"}>

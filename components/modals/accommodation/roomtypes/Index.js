@@ -13,16 +13,19 @@ const Bar = styled.div`
 
 const Rooms = (props) => {
   const [rooms, setRooms] = useState(null);
+  const [selectedRoom, setSelectedRoom] = useState(props.data[0].id)
 
   useEffect(() => {
     let rooms_arr = [];
-    if (props.data.rooms_available) {
-      for (var i = 0; i < props.data.rooms_available.length; i++) {
-        if (props.data.rooms_available[i].prices.min_price) {
+    if (props.data) {
+      for (var i = 0; i < props.data.length; i++) {
+        if (props.data[i]?.final_rate) {
           rooms_arr.push(
             <RoomType
-              data={props.data.rooms_available[i]}
-              images={props.data.rooms_available[i].images}
+              price={props.data[i].final_rate}
+              data={props.data[i]}
+              selectedRoom={selectedRoom === props.data[i].id}
+              setSelectedRoom={setSelectedRoom}
             ></RoomType>
           );
         }
@@ -33,7 +36,7 @@ const Rooms = (props) => {
 
   return (
     <div>
-      <Bar>{rooms}</Bar>
+      {rooms}
     </div>
   );
 };

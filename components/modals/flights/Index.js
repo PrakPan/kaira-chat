@@ -132,7 +132,7 @@ const Booking = (props) => {
         adult_count: pax.adults,
         child_count: pax.children,
         infant_count: pax.infants,
-        direct_flight: "false",
+        direct_flight: filtersState.non_stop_flights ? 'true' : 'false',
         journey_type: "1",
         origin: props.selectedBooking.origin_iata,
         destination: props.selectedBooking.destination_iata,
@@ -141,7 +141,7 @@ const Booking = (props) => {
       }
 
       axiosFlightSearch
-        .post(`?${filtersState.sort_by}_order=${filtersState.order}&is_nonstop=${filtersState.non_stop_flights ? 1 : 0}${filtersState.departure_time_period ? '&departure_time_period=' + filtersState.departure_time_period : ''}${filtersState.arrival_time_period ? '&arrival_time_period=' + filtersState.arrival_time_period : ''}`, data, {
+        .post(`?${filtersState.sort_by}_order=${filtersState.order}${filtersState.departure_time_period ? '&departure_time_period=' + filtersState.departure_time_period : ''}${filtersState.arrival_time_period ? '&arrival_time_period=' + filtersState.arrival_time_period : ''}`, data, {
           headers: {
             Authorization: `Bearer ${props.token}`,
             "Content-Type": "application/json",
@@ -225,7 +225,7 @@ const Booking = (props) => {
       })
       .catch((err) => {
         setUpdateBookingState(false);
-        setUnauthorized(true);a
+        setUnauthorized(true); a
         props.openNotification({
           type: "error",
           text: "Oops, this action is not allowed on another user's itinerary.",

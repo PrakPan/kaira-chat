@@ -1,14 +1,12 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import FullImg from "../../components/FullImage";
-import Heading from "../../components/newheading/heading/Index";
 import FullImgContent from "./FullImgContent";
 import HowItWorks from "../../components/containers/HowItWorksSlideshow";
 import media from "../../components/media";
 import travelsupportcontent from "../../public/content/travelsupport";
 import Logos from "./Logos";
 import Enquiry from "./enquiry/Index";
-import NewCaseStudies from "./NewCaseStudies/Index";
 import BannerMobile from "./banner/Mobile";
 import Experiences from "../../components/containers/Experiences";
 import WhatWeOffer from "./WhatWeOffer";

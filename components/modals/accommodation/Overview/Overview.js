@@ -12,6 +12,7 @@ import Button from "../../../ui/button/Index";
 import SkeletonCard from "../../../ui/SkeletonCard";
 import { connect } from "react-redux";
 
+
 const starRating = (rating) => {
   var stars = [];
   for (let i = 0; i < Math.floor(rating); i++) {
@@ -65,7 +66,7 @@ const PhotosButton = styled.div`
   border-radius: 6px;
   position: absolute;
   right: 0.5rem;
-  top: 0.5rem;
+  bottom: 0.5rem;
   padding: 0.5rem 1rem;
   font-size: 0.85rem;
   letterspacing: 1px;
@@ -171,9 +172,9 @@ const Overview = (props) => {
   let images = [];
   try {
     for (var i = 0; i < props.images.length; i++) {
-      if (props.images[i].image) images.push(props.images[i].image);
+      if (props.images[i].image) images.push(props.images[i]);
     }
-  } catch {}
+  } catch { }
 
   return (
     <Container>
@@ -181,14 +182,14 @@ const Overview = (props) => {
         <div>
           <Name>{props.data.name}</Name>
           <Address>
-            {props.data.addr1 ? props.data.addr1 + ", " : ""}{" "}
-            {props.data.addr2 ? props.data.addr2 + ", " : ""}{" "}
-            {props.data.city ? props.data.city : ""}
+            {props.data?.addr1 ? props.data.addr1 + ", " : ""}{" "}
+            {props.data?.addr2 ? props.data.addr2 + ", " : ""}{" "}
+            {props.data?.city ? props.data.city : ""}
           </Address>
         </div>
         {props.payment && props.token ? (
           props.payment?.is_registration_needed ? null : props.payment
-              ?.paid_user || !props.payment?.user_allowed_to_pay ? null : (
+            ?.paid_user || !props.payment?.user_allowed_to_pay ? null : (
             <Button
               padding="7px 25px"
               borderRadius="7px"
@@ -201,6 +202,27 @@ const Overview = (props) => {
           <></>
         )}
       </FlexBox>
+
+      {props.data?.rating_ext && (
+        <div className="gap-1 flex flex-row  items-center">
+          <div className="flex flex-row text-[#FFD201]">
+            {starRating(props.data?.rating_ext)}
+          </div>
+          <div>
+            {props.data?.rating_ext}
+            {" . "}
+          </div>
+          {props.data?.num_reviews_ext && (
+            <div className="text-sm text-[#7A7A7A] font-[400] underline">
+              {props.data?.num_reviews_ext}{" "}
+              {props.data?.source === "agoda"
+                ? "user reviews"
+                : "Google reviews"}
+            </div>
+          )}
+        </div>
+      )}
+
       {props?.currentBooking.user_rating && (
         <div className="flex flex-col gap-1">
           {props?.currentBooking.user_rating && (
@@ -235,7 +257,7 @@ const Overview = (props) => {
                     url={
                       ImagesError[0]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[0]
+                        : images[0].image
                     }
                     width="100%"
                     height="100%"
@@ -261,7 +283,7 @@ const Overview = (props) => {
                     url={
                       ImagesError[1]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[1]
+                        : images[1].image
                     }
                     fit="cover"
                     width="100%"
@@ -287,7 +309,7 @@ const Overview = (props) => {
                     url={
                       ImagesError[2]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[2]
+                        : images[2].image
                     }
                     fit="cover"
                     width="100%"
@@ -313,7 +335,7 @@ const Overview = (props) => {
                     url={
                       ImagesError[3]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[3]
+                        : images[3].image
                     }
                     fit="cover"
                     width="100%"
@@ -343,7 +365,7 @@ const Overview = (props) => {
                     url={
                       ImagesError[0]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[0]
+                        : images[0].image
                     }
                     width="100%"
                     height="100%"
@@ -369,7 +391,7 @@ const Overview = (props) => {
                     url={
                       ImagesError[1]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[1]
+                        : images[1].image
                     }
                     fit="cover"
                     width="100%"
@@ -395,7 +417,7 @@ const Overview = (props) => {
                     url={
                       ImagesError[2]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[2]
+                        : images[2].image
                     }
                     fit="cover"
                     width="100%"
@@ -424,7 +446,7 @@ const Overview = (props) => {
                     url={
                       ImagesError[0]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[0]
+                        : images[0].image
                     }
                     fit="cover"
                     width="100%"
@@ -451,7 +473,7 @@ const Overview = (props) => {
                     url={
                       ImagesError[1]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[1]
+                        : images[1].image
                     }
                     fit="cover"
                     width="100%"
@@ -479,7 +501,7 @@ const Overview = (props) => {
                   url={
                     ImagesError[0]
                       ? "media/icons/bookings/notfounds/noroom.png"
-                      : images[0]
+                      : images[0].image
                   }
                   fit="cover"
                   width="100%"
@@ -506,7 +528,7 @@ const Overview = (props) => {
             props.images.length ? (
               <PhotosButton
                 onClick={() => props._setImagesHandler(images)}
-                className="font-lexend"
+                className="font-lexend bg-black"
               >
                 View Gallery
               </PhotosButton>
@@ -538,7 +560,7 @@ const Overview = (props) => {
                       url={
                         ImagesError[0]
                           ? "media/icons/bookings/notfounds/noroom.png"
-                          : images[0]
+                          : images[0].image
                       }
                       fit="cover"
                       width="100%"
@@ -567,7 +589,7 @@ const Overview = (props) => {
                       url={
                         ImagesError[1]
                           ? "media/icons/bookings/notfounds/noroom.png"
-                          : images[1]
+                          : images[1].image
                       }
                       fit="cover"
                       width="100%"
@@ -595,7 +617,7 @@ const Overview = (props) => {
                       url={
                         ImagesError[2]
                           ? "media/icons/bookings/notfounds/noroom.png"
-                          : images[2]
+                          : images[2].image
                       }
                       fit="cover"
                       width="100%"
@@ -626,7 +648,7 @@ const Overview = (props) => {
                       url={
                         ImagesError[0]
                           ? "media/icons/bookings/notfounds/noroom.png"
-                          : images[0]
+                          : images[0].image
                       }
                       fit="cover"
                       width="100%"
@@ -655,7 +677,7 @@ const Overview = (props) => {
                       url={
                         ImagesError[1]
                           ? "media/icons/bookings/notfounds/noroom.png"
-                          : images[1]
+                          : images[1].image
                       }
                       fit="cover"
                       width="100%"
@@ -686,7 +708,7 @@ const Overview = (props) => {
                       url={
                         ImagesError[0]
                           ? "media/icons/bookings/notfounds/noroom.png"
-                          : images[0]
+                          : images[0].image
                       }
                       fit="cover"
                       width="100%"
@@ -713,7 +735,7 @@ const Overview = (props) => {
             props.images.length ? (
               <PhotosButton
                 onClick={() => props._setImagesHandler(images)}
-                className="font-lexend"
+                  className="font-lexend bg-black"
               >
                 All Photos
               </PhotosButton>
@@ -734,9 +756,9 @@ const Overview = (props) => {
       )}
 
       <DetailsContainer>
-        {props.data.check_in && props.data.check_out ? (
+        {props.data?.check_in?.begin_time && props.data?.check_out?.time ? (
           <CheckInText>
-            <div>
+            <div className="">
               Check in: {getHumanTime(props.data.check_in.begin_time.substring(0, 5))}
             </div>
             <div>
@@ -747,6 +769,16 @@ const Overview = (props) => {
           <></>
         )}
       </DetailsContainer>
+
+      {props.data?.check_in?.instructions?.length ? (
+        <div className="flex flex-col gap-1">
+          <div className="text-lg font-bold">About</div>
+          <div className="text-[14px] ml-[-30px]" dangerouslySetInnerHTML={{
+          __html: props.data?.check_in?.instructions[0]
+        }}></div>
+        </div>
+      ) : null}
+
       {props.data?.description && (
         <>
           <Heading>About</Heading>
@@ -757,12 +789,12 @@ const Overview = (props) => {
           </MoreText>
         </>
       )}
-      {props.data?.rooms_available &&
-      props.data?.rooms_available[0]?.prices?.min_price ? (
+
+      {props.data?.rates && props.data?.rates?.length ? (
         <>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Rooms</Heading>
 
-          <Rooms data={props.data}></Rooms>
+          <Rooms data={props.data.rates}></Rooms>
         </>
       ) : (
         <></>
@@ -852,9 +884,8 @@ const Overview = (props) => {
               />
             </div>
             <a
-              href={`https://www.google.com/maps/search/?api=1&query=${
-                  props.data?.coordinates?.latitude
-                  },${props.data.coordinates?.longitude}+(${props.data?.name?.split(" ").join("+")})`}
+              href={`https://www.google.com/maps/search/?api=1&query=${props.data?.coordinates?.latitude
+                },${props.data.coordinates?.longitude}+(${props.data?.name?.split(" ").join("+")})`}
               target="_blank"
               style={{ color: "black", fontSize: "14px" }}
             >

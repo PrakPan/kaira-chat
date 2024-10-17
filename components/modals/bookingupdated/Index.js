@@ -19,6 +19,7 @@ import { openNotification } from "../../../store/actions/notification";
 import Skeleton from "./Skeleton";
 import useDebounce from "../../../hooks/useDebounce";
 import ImageLoader from "../../../components/ImageLoader";
+import { getDate } from "../../../helper/DateUtils";
 
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
@@ -60,7 +61,6 @@ const GetInTouchContainer = styled.div`
 const Booking = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [showDetails, setShowDetails] = useState(false);
-  const [optionsJSX, setOptionsJSX] = useState([]);
   const [moreOptionsJSX, setMoreOptionsJSX] = useState([]);
   const [isError, setIsError] = useState({
     error: false,
@@ -79,7 +79,9 @@ const Booking = (props) => {
   });
   const [offset, setOffset] = useState(0);
   const [viewMoreStatus, setViewMoreStatus] = useState(false);
+  const [nextPage, setNextPage] = useState(1);
   const [traceId, setTraceID] = useState("");
+  const [provider, setProvider] = useState(null);
   const [updateBookingState, setUpdateBookingState] = useState(false);
   const [updateLoadingState, setUpdateLoadingState] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
@@ -119,48 +121,6 @@ const Booking = (props) => {
     props?.showBookingModal,
     debouncedSearch,
   ]);
-
-  useEffect(() => {
-    let options = [];
-    if (props.alternates)
-      for (var i = 0; i < props.alternates.length; i++) {
-        if (
-          props.alternates[i].images &&
-          props.alternates[i].images.length &&
-          props.alternates[i].price
-        ) {
-          let img = false;
-          for (let j = 0; j < props.alternates[i].images.length; j++) {
-            if (props.alternates[i].images.image) {
-              img = props.alternates[i].images.image;
-              break;
-            }
-          }
-
-          if (img)
-            options.push(
-              <AccommodationSearched
-                payment={props.payment}
-                plan={props.plan}
-                currentBooking={props.currentBooking}
-                _setImagesHandler={props._setImagesHandler}
-                alternates={props.alternates}
-                bookings={props.bookings}
-                selectedBooking={props.selectedBooking}
-                tailored_id={props.tailored_id}
-                updateLoadingState={updateLoadingState}
-                itinerary_id={props.itinerary_id}
-                accommodation={props.alternates[i]}
-                _updateSearchedAccommodation={_newUpdateBookingHandler}
-                _SelectedBookingHandler={_SelectedBookingHandler}
-                banner_image={img}
-                key={i}
-              ></AccommodationSearched>
-            );
-        }
-      }
-    setOptionsJSX(options);
-  }, [props?.alternates, props?.bookings]);
 
   useEffect(() => {
     setSelectedSearch("");
@@ -246,6 +206,17 @@ const Booking = (props) => {
     };
   };
 
+  const setAccommodationsTypes = (accommodations) => {
+    let accommodation_types = Array.from(
+      new Set(accommodations)
+    );
+    accommodation_types = accommodation_types.filter(acc => acc !== 'Unknown')
+    setFiltersObj({
+      ...filtersObj,
+      type: accommodation_types,
+    });
+  }
+
   const fetchHotels = () => {
     setLoading(true);
     setUpdateLoadingState(true);
@@ -255,42 +226,59 @@ const Booking = (props) => {
       errorMsg: "",
     });
 
-    hotelSearch.post("", {
-      // check_in: "2024-10-25",
-      // check_out: "2024-10-26",
-      // city_id: "5ae21a64-58c2-4221-a993-b844a99de2c2",
-      check_in: props?.selectedBooking?.check_in,
-      check_out: props?.selectedBooking?.check_out,
+    const requestData = {
+      check_in: getDate(props?.selectedBooking?.check_in),
+      check_out: getDate(props?.selectedBooking?.check_out),
       city_id: props?.selectedBooking?.cityId,
-      num_adults: props?.selectedBooking?.pax?.number_of_adults,
-      // source: "agoda"
-    }).then(res => {
+      occupancies: [
+        {
+          num_adults: props?.selectedBooking?.pax?.number_of_adults,
+          child_ages: []
+        }
+      ],
+      filter_by: {
+        price_lower_range: 1200,
+        price_upper_range: 20000,
+        hotel_name: debouncedSearch,
+        sub_location_ids: null,
+        free_breakfast: null,
+        is_refundable: null,
+        facilities: null,
+        tags: null,
+        type: filtersState.type,
+        star_category: filtersState.star_category ? [filtersState.star_category] : [1, 2, 3, 4, 5]
+        ,
+        user_ratings: [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        page: nextPage
+      },
+      sort_by: {
+        price_order: filtersState.sort === "price: high to low" ? "desc" : "asc"
+      },
+      source: provider
+    }
+
+    hotelSearch.post("", requestData).then(res => {
       setUpdateLoadingState(false);
 
-      if (res.data?.trace_details?.id) {
-        setTraceID(res.data.trace_details.id)
+      setProvider(res.data?.source);
+
+      if (res.data?.trace__details?.id) {
+        setTraceID(res.data.trace__details.id)
       }
 
       if (res.data?.data?.length) {
-        if (
-          res.data?.search &&
-          res.data?.search?.accommodation_types &&
-          res.data?.search?.accommodation_types?.length
-        ) {
-          let accommodation_types = Array.from(
-            new Set(res.data.search.accommodation_types)
-          );
-          setFiltersObj({
-            ...filtersObj,
-            type: accommodation_types,
-          });
-        }
-
-        if (res.data?.count) setTotalCount(res.data.count);
+        if (res.data?.total_count) setTotalCount(res.data.total_count);
 
         setNoResults(false);
 
         let options = [];
+        let accommodation_types = [];
         for (var i = 0; i < res.data.data.length; i++) {
           if (res.data.data[i].name !== props?.selectedBooking.name)
             if (
@@ -305,6 +293,8 @@ const Booking = (props) => {
                   break;
                 }
               }
+
+              accommodation_types.push(...res.data.data[i].accommodation_type);
 
               if (img)
                 options.push(
@@ -324,13 +314,27 @@ const Booking = (props) => {
                     images={res.data.data[i].images}
                     banner_image={img}
                     bookings={props.bookings}
-                    traceId={traceId}
+                    traceId={res.data?.trace__details?.id ? res.data.trace__details.id : ""}
+                    provider={res.data?.source}
                   ></AccommodationSearched>
                 );
             }
         }
 
-        setMoreOptionsJSX(options);
+        setAccommodationsTypes(accommodation_types)
+
+        if (res.data?.previous) {
+          setMoreOptionsJSX(prev => [...prev, ...options]);
+        } else {
+          setMoreOptionsJSX(options);
+        }
+
+        if (res.data?.next) {
+          setViewMoreStatus(true);
+          setNextPage(res.data.next);
+        } else {
+          setViewMoreStatus(false);
+        }
       } else {
         setNoResults(true);
         setOffset(0);
@@ -346,163 +350,7 @@ const Booking = (props) => {
         errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
       });
     })
-
-
   }
-
-  const _updateOptionsHandlerWithFilter = (gear) => {
-    setLoading(true);
-    setOffset(0);
-    setUpdateLoadingState(true);
-    setNoResults(false);
-    setFetchingIsError({
-      error: false,
-      errorMsg: "",
-    });
-
-    let filters = _generateFilterKeys(filtersState);
-    let sort_order = "asc";
-    if (filtersState.sort === "price: high to low") sort_order = "desc";
-
-    setViewMoreStatus(false);
-    setUpdateLoadingState(true);
-    setMoreOptionsJSX([]);
-    let limit = 10;
-    var agodaAccomodation = axiosaccommodationinstance;
-    if (props?.currentBooking && props?.currentBooking.source) {
-      if (props?.currentBooking.source === "Agoda") {
-        if (gear === "second") {
-          agodaAccomodation = axiosaccommodationinstance;
-          limit = 10;
-        } else {
-          agodaAccomodation = axiosagodaaccommodationionstance;
-          limit = 30;
-        }
-      } else {
-        if (gear === "second") {
-          agodaAccomodation = axiosagodaaccommodationionstance;
-          limit = 30;
-        } else {
-          agodaAccomodation = axiosaccommodationinstance;
-          limit = 10;
-        }
-      }
-    } else {
-      if (gear === "second") {
-        agodaAccomodation = axiosagodaaccommodationionstance;
-        limit = 30;
-      } else {
-        agodaAccomodation = axiosaccommodationinstance;
-        limit = 10;
-      }
-    }
-
-    agodaAccomodation
-      .post("/?limit=" + limit + "&offset=0", {
-        city: props?.selectedBooking?.city,
-        check_in: props?.selectedBooking?.check_in,
-        check_out: props?.selectedBooking?.check_out,
-
-        trace: traceId,
-        star_category: filtersState.star_category,
-        accommodation_type: filtersState.type != "" ? [filtersState.type] : [],
-        city_id: props?.selectedBooking?.cityId,
-        price_lower_range: filters.price_lower_range,
-        price_upper_range: filters.price_upper_range,
-        number_of_adults: props?.selectedBooking?.pax?.number_of_adults,
-        number_of_children: props?.selectedBooking?.pax?.number_of_children,
-        number_of_infants: props?.selectedBooking?.pax?.number_of_infants,
-        sort_by: filters.sort_by,
-        sort_order: sort_order,
-        live: true,
-        q: debouncedSearch,
-      })
-      .then((res) => {
-        setUpdateLoadingState(false);
-        if (res.data.results.length) {
-          if (
-            res.data.search &&
-            res.data.search.accommodation_types &&
-            res.data.search.accommodation_types.length
-          ) {
-            let accommodation_types = Array.from(
-              new Set(res.data.search.accommodation_types)
-            );
-            setFiltersObj({
-              ...filtersObj,
-              type: accommodation_types,
-            });
-          }
-          if (res.data.count) setTotalCount(res.data.count);
-          setNoResults(false);
-          let options = [];
-          for (var i = 0; i < res.data.results.length; i++) {
-            if (res.data.results[i].name !== props?.selectedBooking.name)
-              if (
-                res.data.results[i].images &&
-                res.data.results[i].images.length &&
-                res.data.results[i].price
-              ) {
-                let img = false;
-                for (let j = 0; j < res.data.results[i].images.length; j++) {
-                  if (res.data.results[i].images[j].image) {
-                    img = res.data.results[i].images[j].image;
-                    break;
-                  }
-                }
-
-                if (img)
-                  options.push(
-                    <AccommodationSearched
-                      payment={props.payment}
-                      plan={props.plan}
-                      currentBooking={props.currentBooking}
-                      _setImagesHandler={props._setImagesHandler}
-                      s
-                      _updateSearchedAccommodation={_newUpdateBookingHandler}
-                      _SelectedBookingHandler={_SelectedBookingHandler}
-                      itinerary_id={props.itinerary_id}
-                      tailored_id={props.tailored_id}
-                      _updateBookingHandler={_newUpdateBookingHandler}
-                      accommodation={res.data.results[i]}
-                      selectedBooking={props.selectedBooking}
-                      key={i}
-                      images={res.data.results.images}
-                      banner_image={img}
-                      bookings={props.bookings}
-                    ></AccommodationSearched>
-                  );
-              }
-          }
-          if (res.data.next) {
-            setViewMoreStatus(true);
-            setOffset(limit);
-          } else {
-            setSourceChange(true);
-            setOffset(0);
-          }
-          setMoreOptionsJSX(options);
-        } else {
-          setNoResults(true);
-          setOffset(0);
-          setViewMoreStatus(false);
-          setMoreOptionsJSX([]);
-        }
-        setLoading(false);
-      })
-      .catch((err) => {
-        if (err?.response?.status === 400 && gear !== "second") {
-          setSourceChange(true);
-          _updateOptionsHandlerWithFilter("second");
-          return;
-        }
-        setLoading(false);
-        setFetchingIsError({
-          error: true,
-          errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
-        });
-      });
-  };
 
   const _updateSearchedAccommodation = ({
     SelectedBookingId,
@@ -777,182 +625,6 @@ const Booking = (props) => {
     }
   };
 
-  const _loadAccommodationsHandler = () => {
-    setUpdateLoadingState(true);
-    setViewMoreStatus(false);
-    setFetchingIsError({
-      error: false,
-      errorMsg: "",
-    });
-
-    let filters = _generateFilterKeys(filtersState);
-    let limit = 10;
-    var agodaAccomodation = axiosagodaaccommodationionstance;
-
-    agodaAccomodation
-      .post("/?limit=" + limit + "&offset=" + offset, {
-        city: props.selectedBooking.city,
-        check_in: props.selectedBooking.check_in,
-        check_out: props.selectedBooking.check_out,
-        city_id: props.selectedBooking.cityId,
-        trace: traceId,
-        number_of_adults: props.selectedBooking.pax.number_of_adults,
-        number_of_children: props.selectedBooking.pax.number_of_children,
-        number_of_infants: props.selectedBooking.pax.number_of_infants,
-        star_category: filtersState.star_category,
-        accommodation_types: filters.type,
-        price_lower_range: filters.price_lower_range,
-        price_upper_range: filters.price_upper_range,
-        sort_by: filters.sort_by,
-        sort_order: "asc",
-        live: true,
-        q: selectSearch,
-      })
-      .then((res) => {
-        if (res.data.results.length) {
-          setNoResults(false);
-          if (res.data.results.length) {
-            if (
-              res.data.search &&
-              res.data.search.accommodation_types &&
-              res.data.search.accommodation_types.length
-            ) {
-              let accommodation_types = Array.from(
-                new Set(res.data.search.accommodation_types)
-              );
-              setFiltersObj({
-                ...filtersObj,
-                type: accommodation_types,
-              });
-            }
-          }
-          if (res.data.count) setTotalCount(res.data.count);
-          let options = moreOptionsJSX.slice();
-          for (var i = 0; i < res.data.results.length; i++) {
-            try {
-              if (
-                res.data.results[i].name !== props.selectedBooking.name &&
-                res.data.results[i].rooms_available[0].prices.min_price
-              )
-                if (
-                  res.data.results[i].images &&
-                  res.data.results[i].images.length &&
-                  res.data.results[i].price
-                ) {
-                  let img = false;
-                  for (let j = 0; j < res.data.results[i].images.length; j++) {
-                    if (res.data.results[i].images[j].image) {
-                      img = res.data.results[i].images[j].image;
-                      break;
-                    }
-                  }
-
-                  if (img)
-                    options.push(
-                      <AccommodationSearched
-                        payment={props.payment}
-                        plan={props.plan}
-                        currentBooking={props.currentBooking}
-                        _setImagesHandler={props._setImagesHandler}
-                        token={props.token}
-                        _updateSearchedAccommodation={
-                          _updateSearchedAccommodation
-                        }
-                        _SelectedBookingHandler={_SelectedBookingHandler}
-                        itinerary_id={props.itinerary_id}
-                        tailored_id={props.tailored_id}
-                        _updateBookingHandler={_newUpdateBookingHandler}
-                        accommodation={res.data.results[i]}
-                        selectedBooking={props.selectedBooking}
-                        key={i}
-                        images={res.data.results.images}
-                        bookings={props.bookings}
-                        banner_image={img}
-                      ></AccommodationSearched>
-                    );
-                }
-            } catch {
-              if (
-                res.data.results[i].images &&
-                res.data.results[i].images.length &&
-                res.data.results[i].price
-              ) {
-                let img = false;
-                for (let j = 0; j < res.data.results[i].images.length; j++) {
-                  if (res.data.results[i].images[j].image) {
-                    img = res.data.results[i].images[j].image;
-                    break;
-                  }
-                }
-
-                if (img)
-                  options.push(
-                    <AccommodationSearched
-                      payment={props.payment}
-                      plan={props.plan}
-                      currentBooking={props.currentBooking}
-                      _setImagesHandler={props._setImagesHandler}
-                      token={props.token}
-                      _updateSearchedAccommodation={
-                        _updateSearchedAccommodation
-                      }
-                      _SelectedBookingHandler={_SelectedBookingHandler}
-                      itinerary_id={props.itinerary_id}
-                      tailored_id={props.tailored_id}
-                      _updateBookingHandler={_newUpdateBookingHandler}
-                      accommodation={res.data.results[i]}
-                      selectedBooking={props.selectedBooking}
-                      key={i}
-                      images={res.data.results.images}
-                      banner_image={img}
-                      bookings={props.bookings}
-                    ></AccommodationSearched>
-                  );
-              }
-            }
-          }
-          setMoreOptionsJSX([...options]);
-
-          if (res.data.next) {
-            setOffset(offset + limit);
-            setViewMoreStatus(true);
-          } else {
-            if (sourceChange) {
-              setOffset(0);
-              setViewMoreStatus(false);
-            } else {
-              setSourceChange(true);
-              setViewMoreStatus(true);
-              setOffset(0);
-            }
-          }
-        } else {
-          setNoResults(true);
-          setOffset(0);
-          setViewMoreStatus(false);
-          setMoreOptionsJSX([]);
-        }
-        setUpdateLoadingState(false);
-      })
-      .catch((err) => {
-        setUpdateLoadingState(false);
-        if (!optionsJSX.length && !moreOptionsJSX)
-          setFetchingIsError({
-            error: true,
-            errorMsg: `Sorry, e we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
-          });
-      });
-  };
-
-  let room = [];
-  try {
-    for (var i = 0; i < props.accommodation.rooms_available.length; i++) {
-      if (props.accommodation.rooms_available[i].prices.min_price) {
-        room.push(props.accommodation.rooms_available[i].room_type);
-      }
-    }
-  } catch { }
-
   if (props?.token)
     return (
       <div>
@@ -986,16 +658,18 @@ const Booking = (props) => {
                   </Slide>
                 )}
               </div>
+
               <div className="sticky lg:w-[50vw] w-[100vw] py-2 top-0 bg-white z-[900]">
                 <SectionOne
                   booking_city={props?.selectedBooking?.city}
                   setHideBookingModal={props?.setHideBookingModal}
                   selectSearch={selectSearch}
                   setSelectedSearch={setSelectedSearch}
-                  _updateOptionsHandlerWithFilter={
-                    _updateOptionsHandlerWithFilter
+                  fetchHotels={
+                    fetchHotels
                   }
                 ></SectionOne>
+
                 <SectionTwo
                   loading={loading}
                   showFilter={props?.showFilter}
@@ -1006,12 +680,13 @@ const Booking = (props) => {
                   _removeFilterHandler={_removeFilterHandler}
                   _addFilterHandler={_addFilterHandler}
                   booking_city={props?.selectedBooking?.city}
-                  No_of_stays={optionsJSX.length + moreOptionsJSX.length}
+                  No_of_stays={totalCount}
                   payment={props?.payment}
                   plan={props?.plan}
                   TotalCount={totalCount}
                 ></SectionTwo>
               </div>
+
               <div className="lg:w-[100%] w-[95%] mx-auto">
                 {unauthorized ? (
                   <p
@@ -1089,27 +764,22 @@ const Booking = (props) => {
                           </Button>
                         </GetInTouchContainer>
                       </div>
-                    ) : !noResults && !updateBookingState ? (
+                    ) : loading ? (<Skeleton />) : !noResults && !updateBookingState ? (
                       <OptionsContainer id="options">
                         <div className="mb-3" style={{ clear: "right" }}>
-                          {optionsJSX.length ? (
-                            <>
-                              {optionsJSX}
-                              {updateLoadingState && <Skeleton />}
-                            </>
-                          ) : moreOptionsJSX.length ? (
+                          {moreOptionsJSX.length ? (
                             <>
                               {moreOptionsJSX}
                               {updateLoadingState && <Skeleton />}
                             </>
                           ) : null}
-                          {loading && !optionsJSX.length ? <Skeleton /> : null}
+
                           <div className="mt-3">
-                            {viewMoreStatus && !optionsJSX.length ? (
+                            {viewMoreStatus ? (
                               <Button
                                 boxShadow
                                 onclickparam={null}
-                                onclick={_loadAccommodationsHandler}
+                                onclick={fetchHotels}
                                 margin="0.25rem auto"
                                 borderWidth="1px"
                                 borderRadius="2rem"

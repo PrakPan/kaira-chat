@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Overview from "./Overview/Overview";
 import styled from "styled-components";
-import axiosaccommodationinstance, { hotelDetails } from "../../../services/bookings/FetchAccommodation";
+import { hotelDetails } from "../../../services/bookings/FetchAccommodation";
 import { connect } from "react-redux";
 import { TbArrowBack } from "react-icons/tb";
 import media from "../../media";
@@ -68,61 +68,34 @@ const POI = (props) => {
   const [data, setData] = useState({});
   const [error, setError] = useState(false);
 
-  // useEffect(() => {
-  //   if (props.show) {
-  //     setLoading(true);
-  //     setError(false);
-  //     let check_in = props.check_in;
-  //     let check_out = props.check_out;
-  //     if (props.check_in.includes("/")) {
-  //       check_in = props.check_in.split("/").reverse().join("-");
-  //       check_out = props.check_out.split("/").reverse().join("-");
-  //     }
-  //     let paramsObj = {
-  //       accommodation_id: props.id,
-  //       show_rooms: true,
-  //     };
-  //     if (
-  //       props.currentBooking &&
-  //       props.currentBooking.source &&
-  //       props.currentBooking.source == "Agoda"
-  //     ) {
-  //       paramsObj.check_in = check_in;
-  //       paramsObj.check_out = check_out;
-  //       paramsObj.source = "Agoda";
-  //     }
-  //     axiosaccommodationinstance
-  //       .get("", { params: paramsObj })
-  //       .then((res) => {
-  //         setLoading(false);
-  //         setData(res.data);
-  //       })
-  //       .catch((error) => {
-  //         setLoading(false);
-  //         setError(true);
-  //         props.openNotification({
-  //           type: "error",
-  //           text: "There seems to be a problem, please try again!",
-  //           heading: "Error!",
-  //         });
-  //       });
-  //   }
-  // }, [props.id, props.show]);
-
   useEffect(() => {
     if (props.show) {
       fetchDetails();
     }
-  }, [props.id, props.show])
+  }, [props.id, props.show, props.provider])
 
   const fetchDetails = () => {
     setLoading(true);
     setError(false);
 
-    hotelDetails.post("", {
-      hotel_id: props.id,
+    let check_in = props.check_in;
+    let check_out = props.check_out;
+    if (props.check_in.includes("/")) {
+      check_in = props.check_in.split("/").reverse().join("-");
+      check_out = props.check_out.split("/").reverse().join("-");
+    }
+    const requestData = {
+      hotel_id: `${props.id}`,
       trace_id: props.traceId,
-    }).then(res => {
+      check_in: check_in,
+      check_out: check_out,
+      num_adults: props?.pax?.number_of_adults,
+      num_children: props?.pax?.number_of_children,
+      currency: "INR",
+      source: props.provider.toLowerCase(),
+    };
+
+    hotelDetails.post("", requestData).then(res => {
       setLoading(false);
       setData(res.data);
     }).catch(err => {

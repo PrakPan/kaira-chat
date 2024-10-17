@@ -26,12 +26,14 @@ const Accommodation = (props) => {
       <AccommodationModal
         check_in={props.selectedBooking.check_in}
         check_out={props.selectedBooking.check_out}
+        pax={props.selectedBooking?.pax}
         _setImagesHandler={props._setImagesHandler}
         onHide={() => setShowDetails(false)}
         id={props.accommodation.id}
         currentBooking={props.accommodation}
         show={showDetails}
         traceId={props.traceId}
+        provider={props.provider}
       ></AccommodationModal>
     </div>
   );
