@@ -1,21 +1,14 @@
 import React, { useEffect, useRef } from "react";
-import styled from "styled-components";
 import Link from "next/link";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import styled from "styled-components";
 import ImageLoader from "../ImageLoader";
-import { getFirstName } from "../../services/getfirstname";
 import urls from "../../services/urls";
+import { getFirstName } from "../../services/getfirstname";
+import usePageLoaded from "../custom hooks/usePageLoaded";
 import { FaBell, FaUser } from "react-icons/fa";
 import { MdOutlineLogout, MdAssignment } from "react-icons/md";
-import usePageLoaded from "../custom hooks/usePageLoaded";
+import { IoIosArrowDown } from "react-icons/io";
 
-const CenterNav = styled.div`
-  width: 100%;
-  height: 3rem;
-  display: flex;
-  align-items: center;
-`;
 
 const ProfileList = styled.span`
   font-weight: 500;
@@ -32,17 +25,6 @@ const ProfileList = styled.span`
   }
   div {
     text-align: left;
-  }
-`;
-
-const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
-  margin: 0 0.5rem 0 0.5rem;
-
-  @media screen and (min-width: 768px) {
-    margin: 0 0 0 0.5rem;
-    &:hover {
-      cursor: pointer;
-    }
   }
 `;
 
@@ -184,13 +166,13 @@ const ProfileDropDown = (props) => {
   return (
     <div
       ref={profileRef}
-      style={{ marginRight: "2.5rem", position: "relative" }}
+      className="relative w-fit"
     >
       {props.notifications.length && props.notOpenedCount ? (
         <RedDot className="center-div">1</RedDot>
       ) : null}
 
-      <CenterNav className="">
+      <div className="w-full flex flex-row items-center gap-1">
         <ImageLoader
           borderRadius="50%"
           url={
@@ -205,13 +187,13 @@ const ProfileDropDown = (props) => {
           noPlaceholder={true}
         />
         {isPageLoaded ? (
-          <StyledFontAwesomeIcon
-            icon={faChevronDown}
+          <IoIosArrowDown
+            className="text-2xl"
             onClick={props.toggleProfileList}
             style={{ color: props.headerColor === "black" ? "white" : "black" }}
-          ></StyledFontAwesomeIcon>
+          />
         ) : null}
-      </CenterNav>
+      </div>
 
       {AuthMenu}
     </div>

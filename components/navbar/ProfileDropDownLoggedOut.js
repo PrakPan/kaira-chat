@@ -1,18 +1,10 @@
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import ImageLoader from "../ImageLoader";
 import { getFirstName } from "../../services/getfirstname";
 import usePageLoaded from "../custom hooks/usePageLoaded";
+import { IoIosArrowDown } from "react-icons/io";
 
-const CenterNav = styled.div`
-  width: 100%;
-  height: 3rem;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-`;
 
 const ProfileList = styled.span`
   text-align: center;
@@ -23,16 +15,6 @@ const ProfileList = styled.span`
   transition: all 0.2s ease-in-out;
   &:hover {
     color: lightgrey;
-  }
-`;
-
-const StyledFontAwesomeIcon = styled(FontAwesomeIcon)`
-  font-size: 0.75rem;
-  @media screen and (min-width: 768px) {
-    margin: 0 1rem 0 0.25rem;
-    &:hover {
-      cursor: pointer;
-    }
   }
 `;
 
@@ -97,8 +79,8 @@ const ProfileDropDown = (props) => {
   );
 
   return (
-    <div style={{ position: "relative" }} ref={profileRef}>
-      <CenterNav onClick={props.toggleProfileList}>
+    <div className="relative w-fit" ref={profileRef}>
+      <div className="w-full flex flex-row items-center gap-1" onClick={props.toggleProfileList}>
         <ImageLoader
           borderRadius="50%"
           url={"media/icons/navigation/profile-user.png"}
@@ -108,13 +90,12 @@ const ProfileDropDown = (props) => {
         />
 
         {isPageLoaded ? (
-          <StyledFontAwesomeIcon
-            icon={faChevronDown}
+          <IoIosArrowDown
+            className="text-2xl"
             onClick={props.toggleProfileList}
-            style={{ color: "black" }}
-          ></StyledFontAwesomeIcon>
+          />
         ) : null}
-      </CenterNav>
+      </div>
 
       {AuthMenu}
     </div>
