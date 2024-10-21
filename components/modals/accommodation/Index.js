@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
-import Overview from "./Overview/Overview";
-import styled from "styled-components";
-import { hotelDetails } from "../../../services/bookings/FetchAccommodation";
 import { connect } from "react-redux";
+import styled from "styled-components";
+import { IoMdClose } from "react-icons/io";
 import { TbArrowBack } from "react-icons/tb";
 import media from "../../media";
+import Overview from "./Overview/Overview";
 import Drawer from "../../ui/Drawer";
 import Skeleton from "./Skeleton";
-import { IoMdClose } from "react-icons/io";
 import { openNotification } from "../../../store/actions/notification";
+import { hotelDetails } from "../../../services/bookings/FetchAccommodation";
+import { updateAccommodationBooking } from "../../../services/bookings/UpdateBookings";
+
 
 const Container = styled.div`
   padding: 0 0.75rem 0.75rem 0.75rem;
@@ -109,6 +111,42 @@ const POI = (props) => {
     })
   }
 
+  const updateBooking = (rates, recommendation_id) => {
+    props.setUpdateBookingState(true);
+
+    const requestData = {
+      rates: rates,
+      itinerary_code: data?.itinerary_code,
+      items: data?.items,
+      recommendation_id: recommendation_id,
+      trace_id: props.traceId,
+      itinerary_id: props.itineraryId,
+      hotel_id: data?.id,
+      source: props.provider.toLowerCase()
+    }
+
+    updateAccommodationBooking.post("", requestData).then(response => {
+      props._updateStayBookingHandler([res.data]);
+      props.setUpdateBookingState(false);
+      setTimeout(() => {
+        props.getPaymentHandler();
+      }, 1000);
+      props.openNotification({
+        type: "success",
+        text: "Hotel added successfully.",
+        heading: "Sucess!",
+      });
+    }).catch(err => {
+      props.setUpdateBookingState(false);
+      props.setUnauthorized(true);
+      props.openNotification({
+        type: "error",
+        text: "Something went wrong! Please try after some time.",
+        heading: "Error!",
+      });
+    })
+  }
+
   return (
     <Drawer
       show={props.show}
@@ -146,6 +184,7 @@ const POI = (props) => {
                 BookingButton={props.BookingButton}
                 BookingButtonFun={props.BookingButtonFun}
                 payment={props.payment}
+                updateBooking={updateBooking}
               ></Overview>
             </div>
           ) : (
@@ -173,6 +212,7 @@ const POI = (props) => {
 const mapStateToPros = (state) => {
   return {
     token: state.auth.token,
+    itineraryId: state.itineraryId,
   };
 };
 

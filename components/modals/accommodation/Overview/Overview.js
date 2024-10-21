@@ -735,7 +735,7 @@ const Overview = (props) => {
             props.images.length ? (
               <PhotosButton
                 onClick={() => props._setImagesHandler(images)}
-                  className="font-lexend bg-black"
+                className="font-lexend bg-black"
               >
                 All Photos
               </PhotosButton>
@@ -774,8 +774,8 @@ const Overview = (props) => {
         <div className="flex flex-col gap-1">
           <div className="text-lg font-bold">About</div>
           <div className="text-[14px] ml-[-30px]" dangerouslySetInnerHTML={{
-          __html: props.data?.check_in?.instructions[0]
-        }}></div>
+            __html: props.data?.check_in?.instructions[0]
+          }}></div>
         </div>
       ) : null}
 
@@ -790,11 +790,11 @@ const Overview = (props) => {
         </>
       )}
 
-      {props.data?.rates && props.data?.rates?.length ? (
+      {props.data?.recommendations && props.data?.recommendations?.length ? (
         <>
-          <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Rooms</Heading>
+          <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Room Recommendations</Heading>
 
-          <Rooms data={props.data.rates}></Rooms>
+          <Rooms data={props.data?.recommendations} updateBooking={props.updateBooking}></Rooms>
         </>
       ) : (
         <></>

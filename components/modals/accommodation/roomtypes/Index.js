@@ -1,31 +1,30 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
 import RoomType from "./roomtype/Index";
 
-const Bar = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-row-gap: 1rem;
-  @media screen and (min-width: 768px) {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-`;
 
 const Rooms = (props) => {
   const [rooms, setRooms] = useState(null);
-  const [selectedRoom, setSelectedRoom] = useState(props.data[0].id)
+  const [selectedRecommendation, setSelectedRecommendation] = useState(null);
+
+  const handleUpdateBooking = (index) => {
+    props.updateBooking(props.data[index].rates, props.data[index].id)
+  }
 
   useEffect(() => {
     let rooms_arr = [];
     if (props.data) {
       for (var i = 0; i < props.data.length; i++) {
-        if (props.data[i]?.final_rate) {
+        if (props.data[i]?.total_rate) {
           rooms_arr.push(
             <RoomType
-              price={props.data[i].final_rate}
-              data={props.data[i]}
-              selectedRoom={selectedRoom === props.data[i].id}
-              setSelectedRoom={setSelectedRoom}
+              key={i}
+              index={i}
+              price={props.data[i].total_rate}
+              data={props.data[i].rates[0]}
+              rooms={getRooms(props.data[i].rates)}
+              handleUpdateBooking={handleUpdateBooking}
+              selectedRecommendation={selectedRecommendation && selectedRecommendation === i}
+              setSelectedRecommendation={setSelectedRecommendation}
             ></RoomType>
           );
         }
@@ -34,8 +33,19 @@ const Rooms = (props) => {
     }
   }, []);
 
+  const getRooms = (rates) => {
+    if (rates) {
+      let rooms = [];
+      for (const rate of rates) {
+        rooms.push(...rate?.rooms)
+      }
+      return rooms;
+    }
+    return [];
+  }
+
   return (
-    <div>
+    <div className="flex flex-col gap-3">
       {rooms}
     </div>
   );

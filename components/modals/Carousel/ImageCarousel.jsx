@@ -23,6 +23,8 @@ const ImageCarousel = ({ images }) => {
         );
     };
 
+    if (emptyImages) return null;
+
     return (
         <div className="relative w-full h-full max-w-2xl mx-auto">
             <div className="relative h-full overflow-hidden rounded-lg">
@@ -40,15 +42,6 @@ const ImageCarousel = ({ images }) => {
                         />
                     </div>
                 ))}
-
-                {emptyImages && (
-                    <Image
-                        src={"https://d31aoa0ehgvjdi.cloudfront.net/media/icons/bookings/notfounds/noroom.png"}
-                        alt={`Slide`}
-                        layout="fill"
-                        objectFit="cover"
-                    />
-                )}
             </div>
             <button
                 onClick={prevSlide}

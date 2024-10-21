@@ -3,6 +3,8 @@ import ImageLoader from "../../../../UpdatedBackgroundImageLoader";
 import { getIndianPrice } from "../../../../../services/getIndianPrice";
 import media from "../../../../media";
 import CheckboxFormComponent from "../../../../../components/FormComponents/CheckboxFormComponent";
+import { RxCross2 } from "react-icons/rx";
+
 import { useState } from "react";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 import ImageCarousel from "../../../Carousel/ImageCarousel";
@@ -25,15 +27,48 @@ const RoomType = (props) => {
       }
     }
 
-    return "media/icons/bookings/notfounds/noroom.png";
+    return null;
   }
 
+
   return (
-    <div className="bg-[#F4F4F4] flex flex-col gap-3 p-3 rounded-lg relative">
-      {props.data?.rooms.map((room, index) => (
-        <div key={index} className="flex flex-row items-center justify-between">
-          <div className="w-[70%] flex flex-row items-center gap-3">
-            <ImageContainer>
+    <div onClick={() => setOpen(prev => !prev)} className="bg-[#F4F4F4] flex flex-col gap-3 p-3 rounded-lg cursor-pointer">
+      <div className="flex flex-row justify-between">
+        <div className="flex flex-row gap-2">
+          <div className="text-lg font-bold">Recommendation {props.index + 1}</div>
+          <div className="text-blue">
+            {open ? (
+              <div className="flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer">
+                <div>Hide details</div>
+                <IoIosArrowUp className="text-xl" />
+              </div>
+            ) :
+              (
+                <div className="flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer">
+                  <div>See details</div>
+                  <IoIosArrowDown className="text-xl" />
+                </div>
+              )}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-2 items-end justify-between">
+          <div className="text-2xl font-bold">
+            {"₹" + getIndianPrice(Math.round(props.data?.final_rate))}
+          </div>
+
+          <div className="bg-[#F7E700] py-2 px-4 rounded-lg border-2 border-black hover:bg-black hover:text-white transition-all cursor-pointer"
+            onClick={() => props.handleUpdateBooking(props.index)}
+          >
+            Add to Itinerary
+          </div>
+        </div>
+      </div>
+
+      {props.rooms.map((room, index) => (
+        <div key={index} className="flex flex-col gap-3 bg-white p-2 rounded-lg">
+          <div className="w-[70%] flex flex-row gap-3">
+            {getRoomImage(room?.images) && (<ImageContainer>
               <ImageLoader
                 noLazy
                 height={isPageWide ? "85px" : "75px"}
@@ -42,14 +77,14 @@ const RoomType = (props) => {
                 dimensions={{ height: 200, width: 200 }}
                 url={getRoomImage(room?.images)}
               />
-            </ImageContainer>
+            </ImageContainer>)}
 
             <div className="w-full">
-              <div
-                className="w-full text-[14px] font-[400] md:text-[16px] md:font-[500]"
+              {room.name ? (<div
+                className="w-full flex flex-row items-center gap-1 text-[14px] font-[400] md:text-lg md:font-semibold"
               >
-                {room.name ? room.name : ""}
-              </div>
+                {room.name} <RxCross2 /> 1
+              </div>) : null}
 
               {room?.number_of_adults && room?.number_of_adults !== '0' ? (
                 <div className="flex flex-row gap-1">
@@ -63,59 +98,42 @@ const RoomType = (props) => {
             </div>
           </div>
 
-          {index === 0 && (
-            <div className="w-[30%] flex flex-row items-center justify-end">
-              <div className="flex flex-col gap-1 items-end">
-                <div style={{ fontWeight: "500" }}>
-                  {"₹" + getIndianPrice(Math.round(props.data?.final_rate))}
-                  <span className="text-xs md:text-sm font-[300] truncate"> per night</span>
-                </div>
+          {open && (
+            <div className="flex flex-col gap-3">
+              {props.rooms.map((room, index) => (
+                <div key={index} className="flex flex-col gap-3">
+                  <div key={index} className="flex flex-col md:flex-row gap-5 md:items-center justify-between">
+                    {room?.description ? (
+                      <div dangerouslySetInnerHTML={{
+                        __html: room.description
+                      }} className=""></div>
+                    ) : null}
+                    <div className="flex flex-col items-center justify-center gap-3 h-[300px]">
+                      <ImageCarousel images={room?.images} />
+                    </div>
+                  </div>
 
-                <div className="flex flex-row items-center gap-1" onClick={props.setSelectedRoom(props.data.id)}>
-                  <CheckboxFormComponent checked={props.selectedRoom} />
-                  {props.selectedRoom ? 'Selected' : 'Select'}
+                  {room?.facilities ? (
+                    <div className="flex flex-col gap-2">
+                      <div className="text-lg font-semibold">Room Amenities</div>
+                      <div className="text-[14px]">
+                        {room.facilities.map((item, index) => (
+                          <span key={index}>{item}
+                            {index < room.facilities.length - 1 && " . "}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
-              </div>
-
-              <div className="absolute top-1 right-1">
-                {open ? (<IoIosArrowUp onClick={() => setOpen(false)} className="text-2xl cursor-pointer" />) :
-                  (<IoIosArrowDown onClick={() => setOpen(true)} className="text-2xl cursor-pointer" />)}
-              </div>
+              ))}
             </div>
           )}
         </div>
       ))}
 
-
       {open && (
         <div className="flex flex-col gap-3">
-          {props.data?.rooms.map((room, index) => (
-            <div key={index} className="flex flex-col md:flex-row gap-5 justify-between">
-              <div className="flex flex-col gap-3 md:w-[50%] h-[300px]">
-                <ImageCarousel images={room?.images} />
-                <div className="text-md md:text-lg font-semibold">{room?.name}</div>
-              </div>
-              {room?.description ? (
-                <div dangerouslySetInnerHTML={{
-                  __html: room.description
-                }} className=""></div>
-              ) : null}
-            </div>
-          ))}
-
-          {props.data?.rooms[0]?.facilities ? (
-            <div className="flex flex-col gap-2">
-              <div className="text-lg font-semibold">Amenities</div>
-              <div className="text-[14px]">
-                {props.data?.rooms[0]?.facilities.map((item, index) => (
-                  <span key={index}>{item}
-                    {index < props.data.rooms[0].facilities.length - 1 && " . "}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ) : null}
-
           {props.data?.polices ? (
             props.data.polices.map((item, index) => (
               <div className="flex flex-col gap-2">

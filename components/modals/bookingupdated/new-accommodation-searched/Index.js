@@ -17,8 +17,6 @@ const Accommodation = (props) => {
         alternates={props.alternates}
         selectedBooking={props.selectedBooking}
         handleClick={false}
-        _updateSearchedAccommodation={props._updateSearchedAccommodation}
-        _SelectedBookingHandler={props._SelectedBookingHandler}
         openDetails={() => setShowDetails(true)}
         banner_image={props.banner_image}
       ></HotelBookingContainer>
@@ -34,6 +32,10 @@ const Accommodation = (props) => {
         show={showDetails}
         traceId={props.traceId}
         provider={props.provider}
+        setUpdateBookingState={props.setUpdateBookingState}
+        setUnauthorized={props.setUnauthorized}
+        _updateStayBookingHandler={props._updateStayBookingHandler}
+        getPaymentHandler={props.getPaymentHandler}
       ></AccommodationModal>
     </div>
   );

@@ -15,6 +15,9 @@ import { ITINERARY_STATUSES } from "../../../services/constants";
 import { MdWifi } from "react-icons/md";
 import { logEvent } from "../../../services/ga/Index";
 import { connect } from "react-redux";
+import { PiForkKnifeFill } from "react-icons/pi";
+
+
 
 const RoomTypeGrid = styled.div`
   display: grid;
@@ -35,16 +38,11 @@ const HotelBookingContainer = ({
   handleClick,
   handleClickAc,
   cityName,
-  _updateSearchedAccommodation,
-  itinerary_id,
-  alternates,
   cityData,
   city_id,
   setShowLoginModal,
-  tailored_id,
   openDetails,
   payment,
-  selectedBooking,
   token,
   plan,
   tripsPage,
@@ -91,21 +89,6 @@ const HotelBookingContainer = ({
 
   function handleSelectChange() {
     setisSelect(!isSelect);
-  }
-
-  function _handleUpdateChange(e) {
-    e.stopPropagation();
-    handleSelectChange();
-    _updateSearchedAccommodation({
-      SelectedBookingId: selectedBooking?.id,
-      Selected_id: booking?.id,
-      itinerary_id: itinerary_id,
-      result_index: booking?.result_index,
-      category_id: booking?.category_id,
-      check_in: selectedBooking?.check_in,
-      check_out: selectedBooking?.check_out,
-      source: booking?.source,
-    });
   }
 
   const handleViewDetails = (value) => {
@@ -264,7 +247,7 @@ const HotelBookingContainer = ({
                 <div className="flex flex-col gap-2">
                   <div className="flex flex-row justify-between items-center">
                     <div
-                      className={`${currentBooking ? "text-lg" : "text-2xl"
+                      className={`${currentBooking ? "text-2xl" : "text-2xl"
                         } font-semibold `}
                     >
                       {booking?.name}
@@ -492,32 +475,42 @@ const HotelBookingContainer = ({
                   ) : (
                     <></>
                   )}
+
+                  {(
+                    <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
+                      <PiForkKnifeFill className="text-lg text-[#7A7A7A]" />
+                      <div className="text-sm font-[400]">Complimentary breakfast available</div>
+                    </div>
+                  )}
                 </div>
 
                 {currentBooking && booking?.price && (
-                  <div className="flex flex-row gap-1 items-center w-full font-bold">
-                    <div className="text-2xl font-bold">
-                      {booking?.source === "Agoda"
-                        ? "₹" +
-                        getIndianPrice(Math.round(+booking.price / 100)) +
-                        "/-"
-                        : "₹" +
-                        getIndianPrice(Math.round(booking?.price)) +
-                        "/-"}
-                    </div>
-                    <div
-                      className="font-normal text-base self-end"
-                      style={{
-                        height: "auto",
-                        marginBottom: "0.15rem",
-                        fontWeight: 300,
-                      }}
-                    >
-                      {booking?.source === "Agoda" ? (
-                        <>per night</>
-                      ) : (
-                        <>for {currentBooking?.duration} Nights</>
-                      )}
+                  <div>
+                    <div className="font-[300] text-sm">Starting from</div>
+                    <div className="flex flex-row gap-1 items-center w-full font-bold">
+                      <div className="text-2xl font-bold">
+                        {booking?.source === "Agoda"
+                          ? "₹" +
+                          getIndianPrice(Math.round(+booking.price / 100)) +
+                          "/-"
+                          : "₹" +
+                          getIndianPrice(Math.round(booking?.price)) +
+                          "/-"}
+                      </div>
+                      <div
+                        className="font-normal text-base self-end"
+                        style={{
+                          height: "auto",
+                          marginBottom: "0.15rem",
+                          fontWeight: 300,
+                        }}
+                      >
+                        {booking?.source === "Agoda" ? (
+                          <>per night</>
+                        ) : (
+                          <>for {currentBooking?.duration} nights</>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -574,9 +567,9 @@ const HotelBookingContainer = ({
                   className=" z-50"
                   onClick={() => handleViewHotel()}
                 >
-                  <div className="cursor-pointer bg-[#F7E700] px-4 py-1 rounded-lg hover:bg-black hover:text-white transition-all border-2 border-black">
+                  <div className="cursor-pointer bg-[#F7E700] px-4 py-2 rounded-lg hover:bg-black hover:text-white transition-all border-2 border-black">
                     <label className="text-center">
-                      {isSelect ? "Selected" : "Select"}
+                      View Details
                     </label>
                   </div>
                 </div>
