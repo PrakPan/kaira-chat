@@ -2,7 +2,8 @@ import CovidContainer from "../../containers/corporates[dev]/Index";
 import Head from "next/head";
 import Layout from "../../components/Layout";
 import itineraryplaninstance from "../../services/itinerary/plan";
-import { red } from "@mui/material/colors";
+import axiospagelistinstance from "../../services/pages/list";
+
 
 const Covid = (props) => {
   return (
@@ -71,6 +72,19 @@ export async function getStaticProps() {
   var offbeat_experiences = [];
   var getaway_experiences = [];
   var getaways_delhi_experiences = [];
+  var locations = [];
+
+  try {
+    const pageListResponse = await axiospagelistinstance.get(
+      `/?country=india&page_type=Destination&fields=id,destination,tagline,image,link,path,banner_heading,page_type,budget`
+    );
+
+    locations = pageListResponse.data;
+  } catch (err) {
+    console.log("[ERROR][corporatespage:getStaticProps]: ", err.message);
+  }
+
+
 
   for (let i = 0; i < workcation_ids.length; i++) {
     try {
@@ -150,6 +164,7 @@ export async function getStaticProps() {
       offbeat_experiences,
       getaway_experiences,
       getaways_delhi_experiences,
+      locations
     },
   };
 }

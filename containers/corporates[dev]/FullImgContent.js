@@ -57,38 +57,35 @@ const FullImgContent = (props) => {
   let isPageWide = media("(min-width: 768px)");
 
   return (
-    <>
-      <Container className="font-lexend">
+      <div className="font-lexend text-white text-[27px] md:text-[40px] font-[300] md:leading-[56px] pl-[30px] md:pl-[120px] pt-[104px] md:pt-[304px]">
         {isPageWide ? (
-          <CompanyName className="font-lexend">
-            TheTarzanWay
-            <span style={{ fontWeight: "100" }}> For Business</span>
-          </CompanyName>
+          <div className="font-lexend">
+            <span className="text-[#F7E700] font-[700]">TheTarzanWay</span> For Business
+          </div>
         ) : null}
 
-        <Heading>Hassle-Free Business Travel Partner</Heading>
+        <div className="font-[700]">Hassle-Free Business Travel Partner</div>
 
-        <SubText>
+        <div>
           Workcations, Retreats, Conferences, Weekend Getaways and more
-        </SubText>
-      </Container>
+        </div>
 
-      <Button
-        onclick={props.setEnquiryOpen}
-        onclickparams={null}
-        link="/"
-        padding="0.75rem 1rem"
-        fontSize="18px"
-        fontWeight="500"
-        bgColor="#f7e700"
-        borderRadius="7px"
-        color="black"
-        borderWidth="1px"
-        margin={isPageWide ? "1rem 11vh" : "1rem auto 1rem auto"}
-      >
-        Schedule Callback
-      </Button>
-    </>
+        <Button
+          onclick={props.setEnquiryOpen}
+          onclickparams={null}
+          link="/"
+          padding="0.75rem 1rem"
+          fontSize="18px"
+          fontWeight="500"
+          bgColor="#f7e700"
+          borderRadius="7px"
+          color="black"
+          borderWidth="1px"
+          margin={isPageWide ? "3rem 0 0 0" : "2rem 0 0 0"}
+        >
+          Schedule a Callback
+        </Button>
+      </div>
   );
 };
 
