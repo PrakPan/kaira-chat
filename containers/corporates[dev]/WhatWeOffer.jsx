@@ -1,5 +1,4 @@
 import { GoArrowRight } from "react-icons/go";
-
 import Button from "../../components/ui/button/Index"
 import ImageLoader from "../../components/ImageLoader";
 import openTailoredModal from "../../services/openTailoredModal";
@@ -8,7 +7,7 @@ import { useRouter } from "next/router";
 import media from "../../components/media";
 
 
-export default function WhatWeOffer() {
+export default function WhatWeOffer(props) {
     const router = useRouter();
     let isPageWide = media("(min-width: 768px)");
 
@@ -63,9 +62,9 @@ export default function WhatWeOffer() {
                     borderRadius="6px"
                     margin={isPageWide ? "4rem 0 0 0" : "2rem 0 0 0"}
                     padding="1rem 2rem"
-                    onclick={handleCreateTripButton}
+                    onclick={props.setEnquiryOpen}
                 >
-                    Plan Itinerary Now!
+                    Schedule a Callback
                 </Button>
             </div>
         </div>

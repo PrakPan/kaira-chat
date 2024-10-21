@@ -83,7 +83,7 @@ const FullImgContent = (props) => {
           borderWidth="1px"
           margin={isPageWide ? "3rem 0 0 0" : "2rem 0 0 0"}
         >
-          Schedule Callback
+          Schedule a Callback
         </Button>
       </div>
   );
