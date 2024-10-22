@@ -1,97 +1,95 @@
-import styled from "styled-components";
-import H8 from "../heading/H8";
-import H9 from "../heading/H9";
 import media from "../../components/media";
-
-const Flex = styled.div`
-  display: grid;
-  grid-template-columns: max-content auto;
-  grid-column-gap: 20px;
-  @media screen and (min-width: 768px) {
-    margin-block: 0.75rem;
-  }
-`;
-
-const Icon = styled.div`
-  font-size: 55px;
-  margin-top: -20px;
-  height: 4.5rem;
-  width: 4.5rem;
-  text-align: center;
-`;
-
-const Items = styled.div`
-  display: grid;
-  grid-row-gap: 1rem;
-
-  @media screen and (min-width: 768px) {
-    display: grid;
-    grid-template-columns: 2fr 2fr;
-    margin-inline: 0px;
-    grid-column-gap: 2rem;
-  }
-`;
-
-const ImagesArr = ["🌴", "🌍", "📱", "🕰️", "🦜", "💰"];
-
-const HeadingArr = [
-  "Personalization in seconds",
-  "Best Real-Time Negotiated Bookings",
-  "Book-it-all in one click",
-  "24x7 Live Assistance as you explore",
-  "Offbeat Experiences, curated for you",
-  "Transparent Pricing - No Commissions",
-];
-
-const TextArr = [
-  "Personalized and flexible itineraries crafted by our AI-powered planner",
-  "Dedicated travel experts negotiate the best prices within your budget",
-  "Book all your personalized and flexible travel needs in just one click",
-  "24x7 support that keeps you swinging all day and night, no monkey business!",
-  "Discover offbeat adventures, activities & experiences.",
-  "Transparent pricing with no hidden fees - pay only a small service fee!",
-];
+import Image from "next/image";
 
 const WhyPlanWithUs = (props) => {
   let isPageWide = media("(min-width: 768px)");
 
-  const newArr = [];
-
-  for (let i = 0; i < ImagesArr.length; i++) {
-    newArr.push(
-      <Flex>
-        <Icon>{ImagesArr[i]}</Icon>
-        <div>
-          <H8
-            style={{
-              fontSize: isPageWide ? "18px" : "14px",
-              marginTop: "-5px",
-              marginBottom: "5px",
-            }}
-            className="font-lexend"
-          >
-            {HeadingArr[i]}
-          </H8>
-          <H9
-            style={{
-              fontSize: isPageWide ? "15px" : "12px",
-              paddingRight: "5px",
-            }}
-            className="font-lexend"
-          >
-            {TextArr[i]}
-          </H9>
-        </div>
-      </Flex>
-    );
-  }
-
   return (
-    <Items>
-      {newArr.map((e, i) => (
-        <div key={i}>{e}</div>
-      ))}
-    </Items>
+    <div className=" mx-2 grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="flex flex-row items-center gap-3">
+        <div className="w-[76px] h-[76px] md:w-[96px] md:h-[96px] p-2 bg-[#F8AE4033] flex items-center justify-center rounded-lg">
+          <Image src={"https://d31aoa0ehgvjdi.cloudfront.net/media/corporates/whychooseus-1.png"} width={isPageWide ? 48 : 38} height={isPageWide ? 48 : 38} />
+        </div>
+        <div className="w-fit flex flex-col md:gap-2">
+          <div className="text-[18px] md:text-[22px] font-[700] leading-[32px]">
+            Personalization in seconds
+          </div>
+          <div className="text-[14px] md:text-[16px] font-[350] leading-[24px] text-[#7C7C7C]">
+            Personalized and flexible itineraries crafted by our AI-powered planner.
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-row items-center gap-3">
+        <div className="w-[76px] h-[76px] md:w-[96px] md:h-[96px] p-2 bg-[#E8584133] flex items-center justify-center rounded-lg">
+          <Image src={"https://d31aoa0ehgvjdi.cloudfront.net/media/corporates/whychooseus-2.png"} width={isPageWide ? 48 : 38} height={isPageWide ? 48 : 38} />
+        </div>
+        <div className="w-fit flex flex-col md:gap-2">
+          <div className="text-[18px] md:text-[22px] font-[700] leading-[32px]">
+            Real-Time Negotiated Bookings
+          </div>
+          <div className="text-[14px] md:text-[16px] font-[350] leading-[24px] text-[#7C7C7C]">
+            Dedicated travel experts negotiate the best prices within your budget.
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-row items-center gap-3">
+        <div className="w-[76px] h-[76px] md:w-[96px] md:h-[96px] p-2 bg-[#665CE834] flex items-center justify-center rounded-lg">
+          <Image src={"https://d31aoa0ehgvjdi.cloudfront.net/media/corporates/whychooseus-3.png"} width={isPageWide ? 48 : 38} height={isPageWide ? 48 : 38} />
+        </div>
+        <div className="w-fit flex flex-col md:gap-2">
+          <div className="text-[18px] md:text-[22px] font-[700] leading-[32px]">
+            Book-it-all in one click
+          </div>
+          <div className="text-[14px] md:text-[16px] font-[350] leading-[24px] text-[#7C7C7C]">
+            Book all your personalized and flexible travel needs in just one click.
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-row items-center gap-3">
+        <div className="w-[76px] h-[76px] md:w-[96px] md:h-[96px] p-2 bg-[#0070E132] flex items-center justify-center rounded-lg">
+          <Image src={"https://d31aoa0ehgvjdi.cloudfront.net/media/corporates/whychooseus-4.png"} width={isPageWide ? 48 : 38} height={isPageWide ? 48 : 38} />
+        </div>
+        <div className="w-fit flex flex-col md:gap-2">
+          <div className="text-[18px] md:text-[22px] font-[700] leading-[32px]">
+            24x7 Live Assistance
+          </div>
+          <div className="text-[14px] md:text-[16px] font-[350] leading-[24px] text-[#7C7C7C]">
+            24x7 support that keeps you swinging all day and night, no monkey business!
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-row items-center gap-3">
+        <div className="w-[76px] h-[76px] md:w-[96px] md:h-[96px] p-2 bg-[#B02DB933] flex items-center justify-center rounded-lg">
+          <Image src={"https://d31aoa0ehgvjdi.cloudfront.net/media/corporates/whychooseus-5.png"} width={isPageWide ? 48 : 38} height={isPageWide ? 48 : 38} />
+        </div>
+        <div className="w-fit flex flex-col md:gap-2">
+          <div className="text-[18px] md:text-[22px] font-[700] leading-[32px]">
+            Offbeat Experiences, curated for you
+          </div>
+          <div className="text-[14px] md:text-[16px] font-[350] leading-[24px] text-[#7C7C7C]">
+            Discover offbeat adventures, activities & experiences.
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-row items-center gap-3">
+        <div className="w-[76px] h-[76px] md:w-[96px] md:h-[96px] p-2 bg-[#35C78134] flex items-center justify-center rounded-lg">
+          <Image src={"https://d31aoa0ehgvjdi.cloudfront.net/media/corporates/whychooseus-6.png"} width={isPageWide ? 48 : 38} height={isPageWide ? 48 : 38} />
+        </div>
+        <div className="w-fit flex flex-col md:gap-2">
+          <div className="text-[18px] md:text-[22px] font-[700] leading-[32px]">
+            Transparent Pricing
+          </div>
+          <div className="text-[14px] md:text-[16px] font-[350] leading-[24px] text-[#7C7C7C]">
+            Transparent pricing with no hidden fees - pay only a small service fee!
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
