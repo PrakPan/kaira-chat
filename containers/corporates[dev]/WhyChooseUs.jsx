@@ -9,7 +9,7 @@ export default function WhyChooseUs() {
         <div className="bg-[#F9F9F9] flex flex-col gap-5 pl-3 pr-3 pt-3 pb-3 md:p-[50px]">
             <div className="flex flex-col items-center gap-3">
                 <div className="text-[27px] md:text-[40px] font-[700]">Why Choose Us</div>
-                <div className="text-[16px] font-[400] leading-[26px] text-center text-[#7C7C7C]">
+                <div className="text-[16px] font-[350] leading-[26px] text-center text-[#7C7C7C]">
                     Experience personalized journeys, seamless planning, and exceptional support. We go beyond standard travel to offer unique, immersive experiences tailored just for you.
                 </div>
             </div>

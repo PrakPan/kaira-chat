@@ -98,7 +98,7 @@ export default function OurCustomers(props) {
                 <div className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]">
                     What Our Customers Say About Us?
                 </div>
-                <div className="text-[16px] font-[400] leading-[24px]">
+                <div className="text-[16px] font-[350] leading-[24px]">
                     Hear from our travelers! Discover how we've made their journeys unforgettable through personalized experiences and seamless service.
                 </div>
             </div>

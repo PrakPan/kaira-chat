@@ -145,7 +145,7 @@ const AffiliatePage = (props) => {
               >
                 Destinations in India for Corporate Getaways
               </div>
-              <div className="text-[16px] font-[400] leading-[24px] text-center">Corporate Getaways are essential for building relationships and closing deals. Nothing compares to the impact of face-to-face interaction and a handshake. It’s key to developing partnerships and achieving a range of business objectives.</div>
+              <div className="text-[16px] font-[350] leading-[24px] text-center">Corporate Getaways are essential for building relationships and closing deals. Nothing compares to the impact of face-to-face interaction and a handshake. It’s key to developing partnerships and achieving a range of business objectives.</div>
             </div>
 
             <Locations
@@ -165,7 +165,7 @@ const AffiliatePage = (props) => {
                 >
                   Corporate Getaways from Delhi
                 </div>
-                <div className="text-[16px] font-[400] leading-[24px] text-center">Far from the busiest roads of the city, breathe in fresh air and relax in the lap of nature while staying productive. Discover a change that leaves you and your team feeling inspired and ready to achieve the next big goals.</div>
+                <div className="text-[16px] font-[350] leading-[24px] text-center">Far from the busiest roads of the city, breathe in fresh air and relax in the lap of nature while staying productive. Discover a change that leaves you and your team feeling inspired and ready to achieve the next big goals.</div>
               </div>
 
               <Experiences
@@ -188,7 +188,7 @@ const AffiliatePage = (props) => {
                 >
                   Workcation Itineraries for Corporates
                 </div>
-                <div className="text-[16px] font-[400] leading-[24px] text-center">There’s more to Business travel than just meetings! Step out of the routine, build connections, meet clients on their turf, and experience the energy that only in-person interactions can bring.</div>
+                <div className="text-[16px] font-[350] leading-[24px] text-center">There’s more to Business travel than just meetings! Step out of the routine, build connections, meet clients on their turf, and experience the energy that only in-person interactions can bring.</div>
               </div>
 
               <Experiences
@@ -210,7 +210,7 @@ const AffiliatePage = (props) => {
               >
                 Corporate getaways
               </div>
-              <div className="text-[16px] font-[400] leading-[24px] text-center">Business travel is essential for building relationships and closing deals. Nothing compares to the impact of face-to-face interaction and a handshake. It’s key to developing partnerships and achieving a range of business objectives.</div>
+              <div className="text-[16px] font-[350] leading-[24px] text-center">Business travel is essential for building relationships and closing deals. Nothing compares to the impact of face-to-face interaction and a handshake. It’s key to developing partnerships and achieving a range of business objectives.</div>
             </div>
 
             <Experiences experiences={props.getaway_experiences}></Experiences>
@@ -227,7 +227,7 @@ const AffiliatePage = (props) => {
               >
                 Offbeat getaways
               </div>
-              <div className="text-[16px] font-[400] leading-[24px] text-center">Business travel is essential for building relationships and closing deals. Nothing compares to the impact of face-to-face interaction and a handshake. It’s key to developing partnerships and achieving a range of business objectives.</div>
+              <div className="text-[16px] font-[350] leading-[24px] text-center">Business travel is essential for building relationships and closing deals. Nothing compares to the impact of face-to-face interaction and a handshake. It’s key to developing partnerships and achieving a range of business objectives.</div>
             </div>
 
             <Experiences experiences={props.offbeat_experiences}></Experiences>
