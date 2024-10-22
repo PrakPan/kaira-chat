@@ -63,7 +63,7 @@ const Question = ({ question, answer }) => {
     const [open, setOpen] = useState(false);
 
     return (
-        <div onClick={() => setOpen(prev => !prev)} className="w-full flex flex-col gap-3 bg-[#F4F4F4] pt-2 pb-2 pl-2 pr-2 md:pt-4 md:mb-4 md:pl-4 md:pr-4 rounded-lg cursor-pointer">
+        <div onClick={() => setOpen(prev => !prev)} className="w-full flex flex-col gap-3 bg-[#F4F4F4] p-4 rounded-lg cursor-pointer">
             <div className="flex flex-row justify-between">
                 <div className="text-[18px] md:text-[22px] font-[600] md:leading-[32px]">{question}</div>
                 <div className="w-[5%]">
