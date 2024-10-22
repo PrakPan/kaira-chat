@@ -111,7 +111,7 @@ const POI = (props) => {
     })
   }
 
-  const updateBooking = (rates, recommendation_id) => {
+  const updateBooking = (recommendation_id, rates) => {
     props.setUpdateBookingState(true);
 
     const requestData = {

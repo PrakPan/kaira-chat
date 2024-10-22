@@ -7,7 +7,7 @@ const Rooms = (props) => {
   const [selectedRecommendation, setSelectedRecommendation] = useState(null);
 
   const handleUpdateBooking = (index) => {
-    props.updateBooking(props.data[index].rates, props.data[index].id)
+    props.updateBooking(props.data[index].id, props.data[index].rates)
   }
 
   useEffect(() => {
