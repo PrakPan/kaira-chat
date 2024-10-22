@@ -33,9 +33,9 @@ const RoomType = (props) => {
 
   return (
     <div onClick={() => setOpen(prev => !prev)} className="bg-[#F4F4F4] flex flex-col gap-3 p-3 rounded-lg cursor-pointer">
-      <div className="flex flex-row justify-between">
-        <div className="flex flex-row gap-2">
-          <div className="text-lg font-bold">Recommendation {props.index + 1}</div>
+      <div className="flex flex-col gap-2 md:flex-row justify-between">
+        <div className="flex flex-row items-center h-fit gap-2">
+          <div className="text-md md:text-lg font-bold">Recommendation {props.index + 1}</div>
           <div className="text-blue">
             {open ? (
               <div className="flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer">
@@ -52,8 +52,8 @@ const RoomType = (props) => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 items-end justify-between">
-          <div className="text-2xl font-bold">
+        <div className="flex sm:flex-row md:flex-col sm:gap-0 md:gap-2 items-center md:items-end justify-between">
+          <div className="text-xl md:text-2xl font-bold">
             {"₹" + getIndianPrice(Math.round(props.data?.final_rate))}
           </div>
 
@@ -67,7 +67,7 @@ const RoomType = (props) => {
 
       {props.rooms.map((room, index) => (
         <div key={index} className="flex flex-col gap-3 bg-white p-2 rounded-lg">
-          <div className="w-[70%] flex flex-row gap-3">
+          <div className="flex flex-row gap-3">
             {getRoomImage(room?.images) && (
               <ImageContainer>
               <ImageLoader
@@ -104,13 +104,13 @@ const RoomType = (props) => {
             <div className="flex flex-col gap-3">
               {props.rooms.map((room, index) => (
                 <div key={index} className="flex flex-col gap-3">
-                  <div key={index} className="flex flex-col md:flex-row gap-5 justify-between">
+                  <div key={index} className="flex flex-col md:flex-row gap-1 justify-between">
                     {room?.description ? (
                       <div dangerouslySetInnerHTML={{
                         __html: room.description
                       }} className=""></div>
                     ) : null}
-                    <div className="flex flex-col items-center justify-center gap-3 w-[40%] h-[250px]">
+                    <div className="flex flex-col items-center justify-center gap-3 md:w-[40%] h-[250px]">
                       <ImageCarousel images={room?.images} />
                     </div>
                   </div>
