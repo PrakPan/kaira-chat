@@ -1,9 +1,6 @@
-import React, { useState } from "react";
 import { PiForkKnifeFill } from "react-icons/pi";
 import { BsCalendar2, BsPeopleFill } from "react-icons/bs";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
-import ImageLoader from "../../../ImageLoader";
-import Skeleton from "../../../ui/SkeletonCard";
 import { getDate } from "../../../../helper/ConvertDateFormat";
 import { getIndianPrice } from "../../../../services/getIndianPrice";
 import { logEvent } from "../../../../services/ga/Index";
@@ -15,10 +12,6 @@ export default function NewHotelBooking({
     banner_image,
     openDetails,
 }) {
-    const [imageFail, setImageFail] = useState(false);
-    const [imageLoaded, setImageLoaded] = useState(false);
-
-
     const starRating = (rating) => {
         var stars = [];
         for (let i = 0; i < Math.floor(rating); i++) {
@@ -42,17 +35,6 @@ export default function NewHotelBooking({
         });
     };
 
-    let img = "";
-    if (banner_image) img = banner_image;
-    if (booking && booking.images && booking.images.length && !banner_image)
-        for (let i = 0; i < booking.images.length; i++) {
-            if (booking.images[i].image) {
-                img = booking.images[i].image;
-                break;
-            }
-        }
-
-
     return (
         <div
             id={booking?.id}
@@ -73,44 +55,7 @@ export default function NewHotelBooking({
                         >
                             <div className="w-full h-full">
                                 <ImageCarousel images={booking.images} />
-                                {/* <ImageLoader
-                                    dimensions={{ width: 400, height: 400 }}
-                                    dimensionsMobile={{ width: 400, height: 400 }}
-                                    borderRadius="16px"
-                                    hoverpointer
-                                    onclick={() => console.log("")}
-                                    width="100%"
-                                    height="100%"
-                                    leftalign
-                                    widthmobile="100%"
-                                    noLazy
-                                    url={
-                                        img && !imageFail
-                                            ? img
-                                            : "media/icons/bookings/notfounds/noroom.png"
-                                    }
-                                    onfail={() => {
-                                        setImageFail(true);
-                                        setImageLoaded(true);
-                                    }}
-                                    onload={() => {
-                                        setTimeout(() => {
-                                            setImageLoaded(true);
-                                        }, 1000);
-                                    }}
-                                ></ImageLoader> */}
                             </div>
-
-                            {/* <div
-                                style={{
-                                    height: "100%",
-                                    overflow: "hidden",
-                                    borderRadius: "16px",
-                                    display: !imageLoaded ? "block" : "none",
-                                }}
-                            >
-                                <Skeleton />
-                            </div> */}
 
                             {booking.star_category ? (
                                 <starHotel

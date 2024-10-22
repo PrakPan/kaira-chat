@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import AccommodationModal from "../../accommodation/Index";
-import HotelBookingContainer from "../../../../containers/itinerary/HotelsBooking/HotelBookingContainer";
 import NewHotelBooking from "./NewHotelBooking";
 
 const Accommodation = (props) => {

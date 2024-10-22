@@ -7,7 +7,15 @@ const Rooms = (props) => {
   const [selectedRecommendation, setSelectedRecommendation] = useState(null);
 
   const handleUpdateBooking = (index) => {
-    props.updateBooking(props.data[index].id, props.data[index].rates)
+    const rates = props.data[index].rates.map(rate => {
+      return {
+        rate_id: rate.id,
+        room_id: rate.rooms[0].id,
+        adults: rate.rooms[0].number_of_adults,
+        child_ages: []
+      }
+    })
+    props.updateBooking(props.data[index].id, rates)
   }
 
   useEffect(() => {

@@ -10,6 +10,7 @@ import Skeleton from "./Skeleton";
 import { openNotification } from "../../../store/actions/notification";
 import { hotelDetails } from "../../../services/bookings/FetchAccommodation";
 import { updateAccommodationBooking } from "../../../services/bookings/UpdateBookings";
+import { useRouter } from "next/router";
 
 
 const Container = styled.div`
@@ -66,6 +67,7 @@ const ErrorContainer = styled.div`
 
 const POI = (props) => {
   let isPageWide = media("(min-width: 768px)");
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
   const [error, setError] = useState(false);
@@ -120,7 +122,7 @@ const POI = (props) => {
       items: data?.items,
       recommendation_id: recommendation_id,
       trace_id: props.traceId,
-      itinerary_id: props.itineraryId,
+      itinerary_id: router?.query?.id,
       hotel_id: data?.id,
       source: props.provider.toLowerCase()
     }
@@ -138,7 +140,7 @@ const POI = (props) => {
       });
     }).catch(err => {
       props.setUpdateBookingState(false);
-      props.setUnauthorized(true);
+      // props.setUnauthorized(true);
       props.openNotification({
         type: "error",
         text: "Something went wrong! Please try after some time.",
