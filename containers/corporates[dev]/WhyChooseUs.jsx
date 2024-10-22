@@ -1,4 +1,3 @@
-import ImageLoader from "../../components/ImageLoader";
 import media from "../../components/media";
 import Image from "next/image";
 
@@ -23,7 +22,7 @@ export default function WhyChooseUs() {
                         <div className="text-[18px] md:text-[22px] font-[700] leading-[32px]">
                             Personalization in seconds
                         </div>
-                        <div className="text-[14px] md:text-[16px] font-[400] leading-[24px] text-[#7C7C7C]">
+                        <div className="text-[14px] md:text-[16px] font-[350] leading-[24px] text-[#7C7C7C]">
                             Personalized and flexible itineraries crafted by our AI-powered planner.
                         </div>
                     </div>
@@ -37,7 +36,7 @@ export default function WhyChooseUs() {
                         <div className="text-[18px] md:text-[22px] font-[700] leading-[32px]">
                             Real-Time Negotiated Bookings
                         </div>
-                        <div className="text-[14px] md:text-[16px] font-[400] leading-[24px] text-[#7C7C7C]">
+                        <div className="text-[14px] md:text-[16px] font-[350] leading-[24px] text-[#7C7C7C]">
                             Dedicated travel experts negotiate the best prices within your budget.
                         </div>
                     </div>
@@ -51,7 +50,7 @@ export default function WhyChooseUs() {
                         <div className="text-[18px] md:text-[22px] font-[700] leading-[32px]">
                             Book-it-all in one click
                         </div>
-                        <div className="text-[14px] md:text-[16px] font-[400] leading-[24px] text-[#7C7C7C]">
+                        <div className="text-[14px] md:text-[16px] font-[350] leading-[24px] text-[#7C7C7C]">
                             Book all your personalized and flexible travel needs in just one click.
                         </div>
                     </div>
@@ -65,7 +64,7 @@ export default function WhyChooseUs() {
                         <div className="text-[18px] md:text-[22px] font-[700] leading-[32px]">
                             24x7 Live Assistance
                         </div>
-                        <div className="text-[14px] md:text-[16px] font-[400] leading-[24px] text-[#7C7C7C]">
+                        <div className="text-[14px] md:text-[16px] font-[350] leading-[24px] text-[#7C7C7C]">
                             24x7 support that keeps you swinging all day and night, no monkey business!
                         </div>
                     </div>
@@ -79,7 +78,7 @@ export default function WhyChooseUs() {
                         <div className="text-[18px] md:text-[22px] font-[700] leading-[32px]">
                             Offbeat Experiences, curated for you
                         </div>
-                        <div className="text-[14px] md:text-[16px] font-[400] leading-[24px] text-[#7C7C7C]">
+                        <div className="text-[14px] md:text-[16px] font-[350] leading-[24px] text-[#7C7C7C]">
                             Discover offbeat adventures, activities & experiences.
                         </div>
                     </div>
@@ -93,7 +92,7 @@ export default function WhyChooseUs() {
                         <div className="text-[18px] md:text-[22px] font-[700] leading-[32px]">
                             Transparent Pricing
                         </div>
-                        <div className="text-[14px] md:text-[16px] font-[400] leading-[24px] text-[#7C7C7C]">
+                        <div className="text-[14px] md:text-[16px] font-[350] leading-[24px] text-[#7C7C7C]">
                             Transparent pricing with no hidden fees - pay only a small service fee!
                         </div>
                     </div>
