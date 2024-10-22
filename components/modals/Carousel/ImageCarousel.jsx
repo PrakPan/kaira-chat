@@ -11,13 +11,15 @@ const ImageCarousel = ({ images }) => {
         }
     }, [images])
 
-    const nextSlide = () => {
+    const nextSlide = (e) => {
+        e.stopPropagation();
         setCurrentIndex((prevIndex) =>
             prevIndex === images.length - 1 ? 0 : prevIndex + 1
         );
     };
 
-    const prevSlide = () => {
+    const prevSlide = (e) => {
+        e.stopPropagation();
         setCurrentIndex((prevIndex) =>
             prevIndex === 0 ? images.length - 1 : prevIndex - 1
         );
@@ -44,13 +46,13 @@ const ImageCarousel = ({ images }) => {
                 ))}
             </div>
             <button
-                onClick={prevSlide}
+                onClick={(e) => prevSlide(e)}
                 className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-r"
             >
                 &lt;
             </button>
             <button
-                onClick={nextSlide}
+                onClick={(e) => nextSlide(e)}
                 className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-l"
             >
                 &gt;

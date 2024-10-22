@@ -68,7 +68,8 @@ const RoomType = (props) => {
       {props.rooms.map((room, index) => (
         <div key={index} className="flex flex-col gap-3 bg-white p-2 rounded-lg">
           <div className="w-[70%] flex flex-row gap-3">
-            {getRoomImage(room?.images) && (<ImageContainer>
+            {getRoomImage(room?.images) && (
+              <ImageContainer>
               <ImageLoader
                 noLazy
                 height={isPageWide ? "85px" : "75px"}
@@ -77,7 +78,8 @@ const RoomType = (props) => {
                 dimensions={{ height: 200, width: 200 }}
                 url={getRoomImage(room?.images)}
               />
-            </ImageContainer>)}
+              </ImageContainer>
+            )}
 
             <div className="w-full">
               {room.name ? (<div
@@ -102,13 +104,13 @@ const RoomType = (props) => {
             <div className="flex flex-col gap-3">
               {props.rooms.map((room, index) => (
                 <div key={index} className="flex flex-col gap-3">
-                  <div key={index} className="flex flex-col md:flex-row gap-5 md:items-center justify-between">
+                  <div key={index} className="flex flex-col md:flex-row gap-5 justify-between">
                     {room?.description ? (
                       <div dangerouslySetInnerHTML={{
                         __html: room.description
                       }} className=""></div>
                     ) : null}
-                    <div className="flex flex-col items-center justify-center gap-3 h-[300px]">
+                    <div className="flex flex-col items-center justify-center gap-3 w-[40%] h-[250px]">
                       <ImageCarousel images={room?.images} />
                     </div>
                   </div>

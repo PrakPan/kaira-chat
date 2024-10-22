@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import AccommodationModal from "../../accommodation/Index";
 import HotelBookingContainer from "../../../../containers/itinerary/HotelsBooking/HotelBookingContainer";
+import NewHotelBooking from "./NewHotelBooking";
 
 const Accommodation = (props) => {
   const [showDetails, setShowDetails] = useState(false);
 
   return (
     <div>
-      <HotelBookingContainer
+      <NewHotelBooking
         currentBooking={props.currentBooking}
         payment={props.payment}
         plan={props.plan}
@@ -16,10 +17,9 @@ const Accommodation = (props) => {
         booking={props.accommodation}
         alternates={props.alternates}
         selectedBooking={props.selectedBooking}
-        handleClick={false}
         openDetails={() => setShowDetails(true)}
         banner_image={props.banner_image}
-      ></HotelBookingContainer>
+      />
 
       <AccommodationModal
         check_in={props.selectedBooking.check_in}
