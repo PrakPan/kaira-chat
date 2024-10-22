@@ -112,13 +112,6 @@ const AffiliatePage = (props) => {
   const [enquiryOpen, setEnquiryOpen] = useState(false);
   let isPageWide = media("(min-width: 768px)");
 
-  const howitworksimgs = [
-    "media/website/whyus-1.webp",
-    "media/website/whyus-2.webp",
-    "media/website/whyus-3.webp",
-    "media/website/how4.png",
-  ];
-
   return (
     <>
       <FullImg
@@ -142,7 +135,7 @@ const AffiliatePage = (props) => {
       <Logos></Logos>
 
       <SetWidthContainer className="space-y-[100px]">
-        <WhatWeOffer />
+        <WhatWeOffer setEnquiryOpen={() => setEnquiryOpen(true)} />
 
         {props.locations && props.locations.length ? (
           <div className="mt-5">
@@ -150,9 +143,9 @@ const AffiliatePage = (props) => {
               <div
                 className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]"
               >
-                Types Of Travel
+                Destinations in India for Corporate Getaways
               </div>
-              <div className="text-[16px] font-[400] leading-[24px] text-center">Business travel is essential for building relationships and closing deals. Nothing compares to the impact of face-to-face interaction and a handshake. It’s key to developing partnerships and achieving a range of business objectives.</div>
+              <div className="text-[16px] font-[350] leading-[24px] text-center">Corporate Getaways are essential for building relationships and closing deals. Nothing compares to the impact of face-to-face interaction and a handshake. It’s key to developing partnerships and achieving a range of business objectives.</div>
             </div>
 
             <Locations
@@ -164,38 +157,46 @@ const AffiliatePage = (props) => {
         ) : null}
 
         {props.getaways_delhi_experiences.length ? (
-          <div className="mt-5">
-            <div className="flex flex-col pb-5 pl-3 pr-3 md:p-5 gap-3 items-center">
-              <div
-                className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]"
-              >
-                Corporate Getaways from Delhi.
+          <div className="mt-5 flex flex-col gap-5">
+            <div>
+              <div className="flex flex-col pb-5 pl-3 pr-3 md:p-5 gap-3 items-center">
+                <div
+                  className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]"
+                >
+                  Corporate Getaways from Delhi
+                </div>
+                <div className="text-[16px] font-[350] leading-[24px] text-center">Far from the busiest roads of the city, breathe in fresh air and relax in the lap of nature while staying productive. Discover a change that leaves you and your team feeling inspired and ready to achieve the next big goals.</div>
               </div>
-              <div className="text-[16px] font-[400] leading-[24px] text-center">Business travel is essential for building relationships and closing deals. Nothing compares to the impact of face-to-face interaction and a handshake. It’s key to developing partnerships and achieving a range of business objectives.</div>
+
+              <Experiences
+                experiences={props.getaways_delhi_experiences}
+              ></Experiences>
             </div>
 
-            <Experiences
-              experiences={props.getaways_delhi_experiences}
-            ></Experiences>
+            <button onClick={() => setEnquiryOpen(true)} className="border-2 border-black rounded-lg px-5 py-2 mx-auto hover:text-white hover:bg-black transition-all">Schedule a Callback Now!</button>
           </div>
         ) : (
           <></>
         )}
 
         {props.workcation_experience.length ? (
-          <div className="mt-5">
-            <div className="flex flex-col pb-5 pl-3 pr-3 md:p-5 gap-3 items-center">
-              <div
-                className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]"
-              >
-                Workcation Itineraries for Corporates
+          <div className="mt-5 flex flex-col gap-5">
+            <div>
+              <div className="flex flex-col pb-5 pl-3 pr-3 md:p-5 gap-3 items-center">
+                <div
+                  className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]"
+                >
+                  Workcation Itineraries for Corporates
+                </div>
+                <div className="text-[16px] font-[350] leading-[24px] text-center">There’s more to Business travel than just meetings! Step out of the routine, build connections, meet clients on their turf, and experience the energy that only in-person interactions can bring.</div>
               </div>
-              <div className="text-[16px] font-[400] leading-[24px] text-center">Business travel is essential for building relationships and closing deals. Nothing compares to the impact of face-to-face interaction and a handshake. It’s key to developing partnerships and achieving a range of business objectives.</div>
+
+              <Experiences
+                experiences={props.workcation_experience}
+              ></Experiences>
             </div>
 
-            <Experiences
-              experiences={props.workcation_experience}
-            ></Experiences>
+            <button onClick={() => setEnquiryOpen(true)} className="border-2 border-black rounded-lg px-5 py-2 mx-auto hover:text-white hover:bg-black transition-all">Plan your Workcation Now!</button>
           </div>
         ) : (
           <></>
@@ -207,9 +208,9 @@ const AffiliatePage = (props) => {
               <div
                 className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]"
               >
-                Corporate getaways.
+                Corporate getaways
               </div>
-              <div className="text-[16px] font-[400] leading-[24px] text-center">Business travel is essential for building relationships and closing deals. Nothing compares to the impact of face-to-face interaction and a handshake. It’s key to developing partnerships and achieving a range of business objectives.</div>
+              <div className="text-[16px] font-[350] leading-[24px] text-center">Business travel is essential for building relationships and closing deals. Nothing compares to the impact of face-to-face interaction and a handshake. It’s key to developing partnerships and achieving a range of business objectives.</div>
             </div>
 
             <Experiences experiences={props.getaway_experiences}></Experiences>
@@ -224,9 +225,9 @@ const AffiliatePage = (props) => {
               <div
                 className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]"
               >
-                Offbeat getaways.
+                Offbeat getaways
               </div>
-              <div className="text-[16px] font-[400] leading-[24px] text-center">Business travel is essential for building relationships and closing deals. Nothing compares to the impact of face-to-face interaction and a handshake. It’s key to developing partnerships and achieving a range of business objectives.</div>
+              <div className="text-[16px] font-[350] leading-[24px] text-center">Business travel is essential for building relationships and closing deals. Nothing compares to the impact of face-to-face interaction and a handshake. It’s key to developing partnerships and achieving a range of business objectives.</div>
             </div>
 
             <Experiences experiences={props.offbeat_experiences}></Experiences>
