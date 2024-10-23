@@ -128,7 +128,7 @@ const POI = (props) => {
     }
 
     updateAccommodationBooking.post("", requestData).then(response => {
-      props._updateStayBookingHandler([res.data]);
+      props._updateStayBookingHandler([response.data]);
       props.setUpdateBookingState(false);
       setTimeout(() => {
         props.getPaymentHandler();

@@ -295,7 +295,6 @@ const HotelsBooking = (props) => {
   const HotelArray = [];
   if (props.breif.city_slabs[1]?.hasOwnProperty("accommodation_booking")) {
     if (props.breif.city_slabs) {
-      if (true) {
         for (var i = 0; i < props.breif.city_slabs.length - 1; i++) {
           if (props.breif.city_slabs[i].duration >= 1) {
             if (
@@ -393,7 +392,6 @@ const HotelsBooking = (props) => {
             }
           }
         }
-      }
     }
   }
 
