@@ -36,7 +36,7 @@ const RoomType = (props) => {
       <div className="flex flex-col gap-2 md:flex-row justify-between">
         <div className="flex flex-row items-center h-fit gap-2">
           <div className="text-md md:text-lg font-bold">Recommendation {props.index + 1}</div>
-          <div className="text-blue">
+          {props.rooms.length > 1 && (<div className="text-blue">
             {open ? (
               <div className="flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer">
                 <div>Hide details</div>
@@ -49,7 +49,7 @@ const RoomType = (props) => {
                   <IoIosArrowDown className="text-xl" />
                 </div>
               )}
-          </div>
+          </div>)}
         </div>
 
         <div className="flex sm:flex-row md:flex-col sm:gap-0 md:gap-2 items-center md:items-end justify-between">
@@ -83,9 +83,9 @@ const RoomType = (props) => {
 
             <div className="w-full">
               {room.name ? (<div
-                className="w-full flex flex-row items-center gap-1 text-[14px] font-[400] md:text-lg md:font-semibold"
+                className="w-full text-[14px] font-[400] md:text-lg md:font-semibold"
               >
-                {room.name} <RxCross2 /> 1
+                {room.name} <span><RxCross2 className="inline" /> 1 room</span>
               </div>) : null}
 
               {room?.number_of_adults && room?.number_of_adults !== '0' ? (
@@ -97,6 +97,21 @@ const RoomType = (props) => {
                   </div>
                 </div>
               ) : null}
+
+              {props.rooms.length === 1 && (<div className="text-blue">
+                {open ? (
+                  <div className="w-fit flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer">
+                    <div>Hide details</div>
+                    <IoIosArrowUp className="text-xl" />
+                  </div>
+                ) :
+                  (
+                    <div className="w-fit flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer">
+                      <div>See details</div>
+                      <IoIosArrowDown className="text-xl" />
+                    </div>
+                  )}
+              </div>)}
             </div>
           </div>
 
