@@ -4,7 +4,7 @@ import { IoMdClose } from "react-icons/io";
 import { EXPERIENCE_FILTERS_BOX } from "../../../services/constants";
 import styled from "styled-components";
 import { Navigation } from "../../NewNavigation";
-import axiosaxtivitiesinstance from "../../../services/poi/reccommendedactivities";
+import { activtySearch } from "../../../services/poi/reccommendedactivities";
 import axiosaddActivityinstance from "../../../services/poi/addActivities";
 import PoiList from "../../../containers/newitinerary/itineraryelements/PoiList";
 import { BiErrorCircle } from "react-icons/bi";
@@ -18,6 +18,8 @@ import useDebounce from "../../../hooks/useDebounce";
 import Button from "../../ui/button/Index";
 import ImageLoader from "../../../components/ImageLoader";
 import { logEvent } from "../../../services/ga/Index";
+import NewActivityBooking from "../../../containers/newitinerary/itineraryelements/NewActivityBooking";
+
 
 const FiltersContainer = styled.div`
   display: flex;
@@ -50,9 +52,22 @@ const ActivityAddDrawer = (props) => {
   const [showMoreResults, setShowMoreResults] = useState(false);
   const [selectSearch, setSelectedSearch] = useState("");
   const debouncedSearch = useDebounce(selectSearch);
-  const [fetchingPoi, setFetchingPoi] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [offSet, setOffSet] = useState(0);
   const isDesktop = useMediaQuery("(min-width:767px)");
+
+  useEffect(() => {
+    if (props.showDrawer) {
+      setLoading(true);
+      fetchData();
+    }
+  }, [elementType, selectedExprience, props.showDrawer, debouncedSearch]);
+
+  useEffect(() => {
+    setSelectedSearch("");
+    setOptions([]);
+    setOffSet(0);
+  }, [props.showDrawer]);
 
   const setFocus = (dayIndex, elementIndex, activityId) => {
     const element = document.getElementById(
@@ -137,40 +152,37 @@ const ActivityAddDrawer = (props) => {
   };
 
   function fetchData(showMore = false) {
-    const added_activities = props.itineraryActivities.map((element, index) => {
-      return {
-        id:
-          element.activity?.activity_data?.activity?.id ||
-          element.activity?.activity_data?.poi?.id,
-        date: element.date,
-      };
-    });
-    axiosaxtivitiesinstance
-      .post(`/?limit=30&offset=${offSet}`, {
-        location: props?.cityID,
-        duration: 10,
-        element_type: elementType,
-        experience_filters: EXPERIENCE_FILTERS_BOX[selectedExprience]
-          ? EXPERIENCE_FILTERS_BOX[selectedExprience].actual
-          : [],
-        search_query: debouncedSearch,
-        added_activities,
-      })
+    const requestData = {
+      city: props?.cityID,
+      start_date: getDate(props.date),
+      number_of_adults: props.plan?.number_of_adults,
+      number_of_children: props.plan?.number_of_children,
+      child_ages: [], // Not getting accepted yet and assumed 18 for all adults, and 8 for children.
+      filter_by: {
+        // Here, we have only dynamic filters. Static filters are just
+      },
+      sort_by: {
+        // no sorting filters added yet.
+      }
+    }
+    activtySearch
+      .post(`/?limit=30&offset=${offSet}`, requestData)
       .then((res) => {
-        if (res.data.results.length) {
-          setTotalResults(res.data.count);
+        if (res.data.data.activities.length) {
+          setTotalResults(res.data.results);
           let options = [];
 
-          for (var i = 0; i < res.data.results.length; i++) {
+          for (var i = 0; i < res.data.data.activities.length; i++) {
             options.push(
-              <PoiList
+              <NewActivityBooking
                 key={i}
                 activityAddDrawer
                 _updatePoiHandler={_addActivityHandler}
                 setShowDrawer={props?.setShowDrawer}
-                data={res.data.results[i]}
+                data={res.data.data.activities[i]}
                 setLoginModal={props.setShowLoginModal}
-              ></PoiList>
+                date={props.date}
+              ></NewActivityBooking>
             );
           }
 
@@ -188,24 +200,12 @@ const ActivityAddDrawer = (props) => {
           setOptions([]);
           setTotalResults(null);
         }
-        setFetchingPoi(false);
+        setLoading(false);
       })
       .catch((err) => {
-        setFetchingPoi(false);
+        setLoading(false);
       });
   }
-
-  useEffect(() => {
-    if (props.showDrawer) {
-      setFetchingPoi(true);
-      fetchData();
-    }
-  }, [elementType, selectedExprience, props.showDrawer, debouncedSearch]);
-
-  useEffect(() => {
-    setSelectedSearch("");
-    setOptions([]);
-  }, [props.showDrawer]);
 
   const searchHandler = (e) => {
     if (e.target.id === "icon" && selectSearch.trim().length > 0) {
@@ -271,11 +271,10 @@ const ActivityAddDrawer = (props) => {
                     if (selectedExprience !== i) setSelectedExprience(i);
                     else setSelectedExprience(-1);
                   }}
-                  className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${
-                    selectedExprience == i
+                  className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${selectedExprience == i
                       ? "text-white border-0 bg-black "
                       : "border-2 bg-white text-black"
-                  } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
+                    } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
                   key={i}
                 >
                   {currentfilter.display}
@@ -297,9 +296,8 @@ const ActivityAddDrawer = (props) => {
               type="text"
               value={selectSearch}
               onChange={searchHandler}
-              placeholder={`Search ${
-                elementType === "POI" ? "attractions" : "activities"
-              }`}
+              placeholder={`Search ${elementType === "POI" ? "attractions" : "activities"
+                }`}
               className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
             ></input>
           </div>
@@ -324,9 +322,8 @@ const ActivityAddDrawer = (props) => {
                 type="text"
                 value={selectSearch}
                 onChange={searchHandler}
-                placeholder={`Search ${
-                  elementType === "POI" ? "attractions" : "activities"
-                }`}
+                placeholder={`Search ${elementType === "POI" ? "attractions" : "activities"
+                  }`}
                 className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
               ></input>
             </div>
@@ -340,7 +337,7 @@ const ActivityAddDrawer = (props) => {
         />
       </div>
 
-      {!fetchingPoi ? (
+      {!loading ? (
         options.length ? (
           <div
             onScroll={handleScroll}
@@ -431,6 +428,7 @@ const mapStateToPros = (state) => {
     notificationText: state.Notification.text,
     itineraryActivities: state.itineraryActivities,
     itinerary_id: state.ItineraryId,
+    plan: state.Plan
   };
 };
 
