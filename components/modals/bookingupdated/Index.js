@@ -69,9 +69,15 @@ const Booking = (props) => {
   });
   const [loading, setLoading] = useState(false);
   const [filtersState, setFiltersState] = useState({
-    budget: "",
+    free_breakfast: true,
+    is_refundable: false,
+    budget: {
+      price_lower_range: 3000,
+      price_upper_range: 8000,
+    },
     type: "",
     star_category: "",
+    user_ratings: "",
     sort: "recommended",
   });
   const [viewMoreStatus, setViewMoreStatus] = useState(false);
@@ -87,6 +93,7 @@ const Booking = (props) => {
     budget: ["Affordable", "Average", "Luxury", "Luxury+"],
     type: [],
     star_category: ["3", "4", "5"],
+    user_ratings: ["3", "4", "5"],
     sort: [
       "Recommended",
       "Popular",
@@ -102,9 +109,15 @@ const Booking = (props) => {
       fetchHotels();
     } else {
       setFiltersState({
-        budget: "",
+        free_breakfast: true,
+        is_refundable: false,
+        budget: {
+          price_lower_range: 3000,
+          price_upper_range: 8000,
+        },
         type: "",
         star_category: "",
+        user_ratings: "",
         sort: "recommended",
       });
       setNextPage(1);
@@ -114,7 +127,10 @@ const Booking = (props) => {
     filtersState.budget,
     filtersState.type,
     filtersState.star_category,
+    filtersState.user_ratings,
     filtersState.sort,
+    filtersState.free_breakfast,
+    filtersState.is_refundable,
     props?.showBookingModal,
     debouncedSearch,
   ]);
@@ -140,6 +156,13 @@ const Booking = (props) => {
       star_category: star,
     }));
   };
+
+  const updateUserStarHandler = (star) => {
+    setFiltersState((prevState) => ({
+      ...prevState,
+      user_ratings: star,
+    }));
+  }
 
   const _removeFilterHandler = (heading) => {
     let oldfilters = {
@@ -222,8 +245,6 @@ const Booking = (props) => {
       errorMsg: "",
     });
 
-    const filterKeys = _generateFilterKeys(filtersState);
-
     const requestData = {
       check_in: getDate(props?.selectedBooking?.check_in),
       check_out: getDate(props?.selectedBooking?.check_out),
@@ -235,17 +256,17 @@ const Booking = (props) => {
         }
       ],
       filter_by: {
-        price_lower_range: filterKeys.price_lower_range,
-        price_upper_range: filterKeys.price_upper_range,
+        price_lower_range: filtersState.budget.price_lower_range,
+        price_upper_range: filtersState.budget.price_upper_range,
         hotel_name: debouncedSearch,
         sub_location_ids: null,
-        free_breakfast: true,
-        is_refundable: null,
+        free_breakfast: filtersState.free_breakfast,
+        is_refundable: filtersState.is_refundable,
         facilities: null,
         tags: null,
         type: filtersState.type,
         star_category: filtersState.star_category ? [filtersState.star_category] : [1, 2, 3, 4, 5],
-        user_ratings: [1, 2, 3, 4, 5],
+        user_ratings: filtersState.user_ratings ? [filtersState.user_ratings] : [1, 2, 3, 4, 5],
         page: nextPage
       },
       sort_by: {
@@ -395,6 +416,7 @@ const Booking = (props) => {
                   filtersState={filtersState}
                   FILTERS={filtersObj}
                   _updateStarFilterHandler={_updateStarFilterHandler}
+                  updateUserStarHandler={updateUserStarHandler}
                   _removeFilterHandler={_removeFilterHandler}
                   _addFilterHandler={_addFilterHandler}
                   booking_city={props?.selectedBooking?.city}
@@ -402,6 +424,7 @@ const Booking = (props) => {
                   payment={props?.payment}
                   plan={props?.plan}
                   TotalCount={totalCount}
+                  setFiltersState={setFiltersState}
                 ></SectionTwo>
               </div>
 
@@ -583,6 +606,7 @@ const Booking = (props) => {
                   </ContentContainer>
                 </GridContainer>
               </div>
+              
               <AccommodationModal
                 check_in={props?.selectedBooking.check_in}
                 check_out={props?.selectedBooking.check_out}

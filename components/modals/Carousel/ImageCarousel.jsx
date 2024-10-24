@@ -14,7 +14,7 @@ const ImageCarousel = ({ images }) => {
                 if (currentIndex < images.length - 1) {
                     nextSlide();
                 }
-            }, 3000)
+            }, 1000)
         } else {
             clearInterval(interval);
         }
