@@ -38,29 +38,25 @@ export default function NewHotelBooking({
     return (
         <div
             id={booking?.id}
-            className={`flex gap-1 pt-4 flex-col justify-start `}
+            className={`flex gap-1 pt-4 flex-col justify-start`}
         >
             <div>
-                <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3">
+                <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3 h-full w-full">
                     <div
                         onClick={() => {
                             handleViewHotel()
                         }}
-                        className={`relative flex lg:flex-row w-full flex-col gap-4 grayscale-0`}
+                        className={`w-full h-full flex md:flex-row md:items-center flex-col gap-4 grayscale-0`}
                     >
                         <div
-                            className={`relative  ${currentBooking
-                                ? "lg:h-[12rem]"
-                                : "lg:h-[12rem]"} lg:w-[30%] w-full  h-[12rem]`}
+                            className={`relative w-full h-[12rem] md:w-[30%] md:min-h-full`}
                         >
-                            <div className="w-full h-full">
-                                <ImageCarousel images={booking.images} />
-                            </div>
+                            <ImageCarousel images={booking.images} />
 
                             {booking.star_category ? (
                                 <starHotel
                                     starHotel
-                                    className={`text-white bg-[#01202B] lg:px-4 px-3 lg:py-3 py-2 m-2 text-sm font-[400]nsition-all shadow-slate-700/70 shadow-md hover:drop-shadow-xl   absolute top-0 rounded-3xl`}
+                                    className={`text-white bg-[#01202B] lg:px-4 px-3 lg:py-3 py-2 m-2 text-sm font-[400]nsition-all shadow-slate-700/70 shadow-md hover:drop-shadow-xl absolute top-0 rounded-3xl`}
                                 >
                                     {booking.star_category} star hotel
                                 </starHotel>
@@ -136,7 +132,7 @@ export default function NewHotelBooking({
                             {booking?.price && (
                                 <div>
                                     <div className="font-[300] text-sm">Starting from</div>
-                                    <div className="flex flex-row gap-1 items-center w-full font-bold">
+                                    <div className="flex flex-col md:flex-row gap-1 md:items-center w-full font-bold">
                                         <div className="text-2xl font-bold">
                                             {booking?.source === "Agoda"
                                                 ? "₹" +
@@ -147,7 +143,7 @@ export default function NewHotelBooking({
                                                 "/-"}
                                         </div>
                                         <div
-                                            className="font-normal text-base self-end"
+                                            className="font-normal text-base md:self-end"
                                             style={{
                                                 height: "auto",
                                                 marginBottom: "0.15rem",

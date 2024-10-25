@@ -4,7 +4,7 @@ import { getIndianPrice } from "../../../../../services/getIndianPrice";
 import media from "../../../../media";
 import CheckboxFormComponent from "../../../../../components/FormComponents/CheckboxFormComponent";
 import { RxCross2 } from "react-icons/rx";
-
+import { dateFormat } from "../../../../../helper/DateUtils";
 import { useState } from "react";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 import ImageCarousel from "../../../Carousel/ImageCarousel";
@@ -33,7 +33,7 @@ const RoomType = (props) => {
 
   return (
     <div onClick={() => setOpen(prev => !prev)} className="bg-[#F4F4F4] flex flex-col gap-3 p-3 rounded-lg cursor-pointer">
-      <div className="flex flex-col gap-2 md:flex-row justify-between">
+      <div className="flex flex-col gap-1">
         <div className="flex flex-row items-center h-fit gap-2">
           <div className="text-md md:text-lg font-bold">Recommendation {props.index + 1}</div>
           {props.rooms.length > 1 && (<div className="text-blue">
@@ -52,15 +52,21 @@ const RoomType = (props) => {
           </div>)}
         </div>
 
-        <div className="flex sm:flex-row md:flex-col sm:gap-0 md:gap-2 items-center md:items-end justify-between">
+        <div className="flex flex-row items-center justify-between">
           <div className="text-xl md:text-2xl font-bold">
             {"₹" + getIndianPrice(Math.round(props.data?.final_rate))}
           </div>
 
-          <div className="bg-[#F7E700] py-2 px-4 rounded-lg border-2 border-black hover:bg-black hover:text-white transition-all cursor-pointer"
-            onClick={() => props.handleUpdateBooking(props.index)}
-          >
-            Add to Itinerary
+          <div className="flex flex-col gap-1 items-end">
+            <button className="bg-[#F7E700] py-2 px-4 rounded-lg border-2 border-black hover:bg-black hover:text-white transition-all"
+              onClick={() => props.handleUpdateBooking(props.index)}
+            >
+              Add to Itinerary
+            </button>
+
+            <div className="text-sm">
+              on {dateFormat(props.checkInDate)} ({props.city})
+            </div>
           </div>
         </div>
       </div>
@@ -70,14 +76,14 @@ const RoomType = (props) => {
           <div className="flex flex-row gap-3">
             {getRoomImage(room?.images) && (
               <ImageContainer>
-              <ImageLoader
-                noLazy
-                height={isPageWide ? "85px" : "75px"}
-                width={isPageWide ? "85px" : "75px"}
-                borderRadius="10px"
-                dimensions={{ height: 200, width: 200 }}
-                url={getRoomImage(room?.images)}
-              />
+                <ImageLoader
+                  noLazy
+                  height={isPageWide ? "85px" : "75px"}
+                  width={isPageWide ? "85px" : "75px"}
+                  borderRadius="10px"
+                  dimensions={{ height: 200, width: 200 }}
+                  url={getRoomImage(room?.images)}
+                />
               </ImageContainer>
             )}
 

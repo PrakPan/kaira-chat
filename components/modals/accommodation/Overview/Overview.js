@@ -142,6 +142,7 @@ const Overview = (props) => {
     2: false,
     3: false,
   });
+
   const [ImagesError, setImagesError] = useState({
     0: false,
     1: false,
@@ -252,7 +253,7 @@ const Overview = (props) => {
           {images.length > 3 ? (
             <GridImage>
               <Child area="1 / 1 / 5 / 4" className="div1 ">
-                <div style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
+                <div className="relative" style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
                   <ImageLoader
                     url={
                       ImagesError[0]
@@ -265,6 +266,11 @@ const Overview = (props) => {
                     onfail={() => OnImageError(0)}
                     noLazy
                   />
+
+                  {images[0]?.caption ? (
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">{images[0]?.caption}
+                    </div>
+                  ) : null}
                 </div>
                 <div
                   style={{
@@ -278,7 +284,7 @@ const Overview = (props) => {
               </Child>
 
               <Child area="1 / 8 / 5 / 11" className="div2 rounded-lg">
-                <div style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
+                <div className="relative" style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
                   <ImageLoader
                     url={
                       ImagesError[1]
@@ -292,6 +298,11 @@ const Overview = (props) => {
                     onfail={() => OnImageError(1)}
                     noLazy
                   />
+
+                  {images[1]?.caption ? (
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">{images[1]?.caption}
+                    </div>
+                  ) : null}
                 </div>
                 <div
                   style={{
@@ -303,8 +314,9 @@ const Overview = (props) => {
                   <SkeletonCard lottieDimension={"50rem"} />
                 </div>
               </Child>
+
               <Child area="1 / 4 / 3 / 8" className="div3">
-                <div style={{ display: ImagesLoaded[2] ? "initial" : "none" }}>
+                <div className="relative" style={{ display: ImagesLoaded[2] ? "initial" : "none" }}>
                   <ImageLoader
                     url={
                       ImagesError[2]
@@ -318,6 +330,11 @@ const Overview = (props) => {
                     onfail={() => OnImageError(2)}
                     noLazy
                   />
+
+                  {images[2]?.caption ? (
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">{images[2]?.caption}
+                    </div>
+                  ) : null}
                 </div>
                 <div
                   style={{
@@ -329,8 +346,9 @@ const Overview = (props) => {
                   <SkeletonCard lottieDimension={"50rem"} />
                 </div>
               </Child>
+
               <Child area="3 / 4 / 5 / 8" className="div4">
-                <div style={{ display: ImagesLoaded[3] ? "initial" : "none" }}>
+                <div className="relative" style={{ display: ImagesLoaded[3] ? "initial" : "none" }}>
                   <ImageLoader
                     url={
                       ImagesError[3]
@@ -344,6 +362,11 @@ const Overview = (props) => {
                     onfail={() => OnImageError(3)}
                     noLazy
                   />
+
+                  {images[3]?.caption ? (
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">{images[3]?.caption}
+                    </div>
+                  ) : null}
                 </div>
                 <div
                   style={{
@@ -359,7 +382,7 @@ const Overview = (props) => {
           ) : images.length == 3 ? (
             <GridImage>
               <Child area="1 / 1 / 5 / 4" className="div1 ">
-                <div style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
+                <div className="relative" style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
                   <ImageLoader
                     noLazy
                     url={
@@ -372,6 +395,11 @@ const Overview = (props) => {
                     onload={() => OnImageLoad(0)}
                     onfail={() => OnImageError(0)}
                   />
+
+                  {images[0]?.caption ? (
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">{images[0]?.caption}
+                    </div>
+                  ) : null}
                 </div>
                 <div
                   style={{
@@ -385,7 +413,7 @@ const Overview = (props) => {
               </Child>
 
               <Child area=" 1 / 4 / 5 / 7" className="div2 rounded-lg">
-                <div style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
+                <div className="relative" style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
                   <ImageLoader
                     noLazy
                     url={
@@ -399,6 +427,11 @@ const Overview = (props) => {
                     onload={() => OnImageLoad(1)}
                     onfail={() => OnImageError(1)}
                   />
+
+                  {images[1]?.caption ? (
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">{images[1]?.caption}
+                    </div>
+                  ) : null}
                 </div>
                 <div
                   style={{
@@ -410,8 +443,9 @@ const Overview = (props) => {
                   <SkeletonCard lottieDimension={"50rem"} />
                 </div>
               </Child>
+
               <Child area="1 / 7 / 5 / 11" className="div3">
-                <div style={{ display: ImagesLoaded[2] ? "initial" : "none" }}>
+                <div className="relative" style={{ display: ImagesLoaded[2] ? "initial" : "none" }}>
                   <ImageLoader
                     noLazy
                     url={
@@ -425,6 +459,11 @@ const Overview = (props) => {
                     onload={() => OnImageLoad(2)}
                     onfail={() => OnImageError(2)}
                   />
+
+                  {images[2]?.caption ? (
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">{images[2]?.caption}
+                    </div>
+                  ) : null}
                 </div>
                 <div
                   style={{
@@ -440,7 +479,7 @@ const Overview = (props) => {
           ) : images.length == 2 ? (
             <GridImage>
               <Child area="1 / 1 / 5 / 6" className="div1 ">
-                <div style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
+                <div className="relative" style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
                   <ImageLoader
                     noLazy
                     url={
@@ -454,6 +493,11 @@ const Overview = (props) => {
                     onload={() => OnImageLoad(0)}
                     onfail={() => OnImageError(0)}
                   />
+
+                  {images[0]?.caption ? (
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">{images[0]?.caption}
+                    </div>
+                  ) : null}
                 </div>
                 <div
                   style={{
@@ -467,7 +511,7 @@ const Overview = (props) => {
               </Child>
 
               <Child area="1 / 6 / 5 / 11" className="div2 rounded-lg">
-                <div style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
+                <div className="relative" style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
                   <ImageLoader
                     noLazy
                     url={
@@ -481,6 +525,11 @@ const Overview = (props) => {
                     onload={() => OnImageLoad(1)}
                     onfail={() => OnImageError(1)}
                   />
+
+                  {images[1]?.caption ? (
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">{images[1]?.caption}
+                    </div>
+                  ) : null}
                 </div>
                 <div
                   style={{
@@ -495,7 +544,7 @@ const Overview = (props) => {
             </GridImage>
           ) : (
             <Child style={{ height: "19rem" }}>
-              <div style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
+              <div className="relative" style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
                 <ImageLoader
                   noLazy
                   url={
@@ -510,6 +559,11 @@ const Overview = (props) => {
                   onfail={() => OnImageError(0)}
                   dimensions={{ height: 800, width: 1200 }}
                 />
+
+                {images[0]?.caption ? (
+                  <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">{images[0]?.caption}
+                  </div>
+                ) : null}
               </div>
               <div
                 style={{
@@ -534,14 +588,7 @@ const Overview = (props) => {
               </PhotosButton>
             ) : null
           ) : null}
-          <div
-            style={{
-              position: "absolute",
-              bottom: "0.25rem",
-              right: "0.25rem",
-              display: "flex",
-            }}
-          ></div>
+
           {props.tag ? (
             <Tag star_category={props.star_category} tag={props.tag}></Tag>
           ) : null}
@@ -553,6 +600,7 @@ const Overview = (props) => {
               <>
                 <Child area="1 / 1 / 4 / 7" className="div1 ">
                   <div
+                    className="relative"
                     style={{ display: ImagesLoaded[0] ? "initial" : "none" }}
                   >
                     <ImageLoader
@@ -568,6 +616,11 @@ const Overview = (props) => {
                       onload={() => OnImageLoad(0)}
                       onfail={() => OnImageError(0)}
                     />
+
+                    {images[0]?.caption ? (
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">{images[0]?.caption}
+                      </div>
+                    ) : null}
                   </div>
                   <div
                     style={{
@@ -582,6 +635,7 @@ const Overview = (props) => {
 
                 <Child area=" 4 / 1 / 7 / 4" className="div2 rounded-lg">
                   <div
+                    className="relative"
                     style={{ display: ImagesLoaded[1] ? "initial" : "none" }}
                   >
                     <ImageLoader
@@ -597,6 +651,11 @@ const Overview = (props) => {
                       onload={() => OnImageLoad(1)}
                       onfail={() => OnImageError(1)}
                     />
+
+                    {images[1]?.caption ? (
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">{images[1]?.caption}
+                      </div>
+                    ) : null}
                   </div>
                   <div
                     style={{
@@ -608,8 +667,10 @@ const Overview = (props) => {
                     <SkeletonCard lottieDimension={"50rem"} />
                   </div>
                 </Child>
+
                 <Child area="4 / 4 / 7 / 7" className="div3">
                   <div
+                    className="relative"
                     style={{ display: ImagesLoaded[2] ? "initial" : "none" }}
                   >
                     <ImageLoader
@@ -625,6 +686,11 @@ const Overview = (props) => {
                       onload={() => OnImageLoad(2)}
                       onfail={() => OnImageError(2)}
                     />
+
+                    {images[2]?.caption ? (
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">{images[2]?.caption}
+                      </div>
+                    ) : null}
                   </div>
                   <div
                     style={{
@@ -641,6 +707,7 @@ const Overview = (props) => {
               <>
                 <Child area="1 / 1 / 4 / 7" className="div1 ">
                   <div
+                    className="relative"
                     style={{ display: ImagesLoaded[0] ? "initial" : "none" }}
                   >
                     <ImageLoader
@@ -656,6 +723,11 @@ const Overview = (props) => {
                       onload={() => OnImageLoad(0)}
                       onfail={() => OnImageError(0)}
                     />
+
+                    {images[0]?.caption ? (
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">{images[0]?.caption}
+                      </div>
+                    ) : null}
                   </div>
                   <div
                     style={{
@@ -670,6 +742,7 @@ const Overview = (props) => {
 
                 <Child area=" 4 / 1 / 7 / 7" className="div2 rounded-lg">
                   <div
+                    className="relative"
                     style={{ display: ImagesLoaded[1] ? "initial" : "none" }}
                   >
                     <ImageLoader
@@ -685,6 +758,11 @@ const Overview = (props) => {
                       onload={() => OnImageLoad(1)}
                       onfail={() => OnImageError(1)}
                     />
+
+                    {images[1]?.caption ? (
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">{images[1]?.caption}
+                      </div>
+                    ) : null}
                   </div>
                   <div
                     style={{
@@ -701,6 +779,7 @@ const Overview = (props) => {
               <>
                 <Child area="1 / 1 / 7 / 7" className="div1 ">
                   <div
+                    className="relative"
                     style={{ display: ImagesLoaded[0] ? "initial" : "none" }}
                   >
                     <ImageLoader
@@ -716,6 +795,11 @@ const Overview = (props) => {
                       onload={() => OnImageLoad(0)}
                       onfail={() => OnImageError(0)}
                     />
+
+                    {images[0]?.caption ? (
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">{images[0]?.caption}
+                      </div>
+                    ) : null}
                   </div>
                   <div
                     style={{
@@ -794,26 +878,14 @@ const Overview = (props) => {
         <>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Room Recommendations</Heading>
 
-          <Rooms data={props.data?.recommendations} updateBooking={props.updateBooking}></Rooms>
+          <Rooms
+            data={props.data?.recommendations}
+            checkInDate={props.data?.check_in?.date}
+            city={props.data?.city}
+            updateBooking={props.updateBooking}></Rooms>
         </>
       ) : (
         <></>
-      )}
-
-      {props.data?.hotel_facilities && (
-        <div>
-          <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Amenities</Heading>
-          <MoreText>
-            <div>
-              {props.data?.hotel_facilities?.map((e, i) => (
-                <span key={i}>
-                  {e}{" "}
-                  {props.data?.hotel_facilities?.length - 1 == i ? "" : <b>·</b>}{" "}
-                </span>
-              ))}
-            </div>
-          </MoreText>
-        </div>
       )}
 
       {props.data?.google_maps_link ? (

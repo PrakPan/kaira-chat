@@ -51,7 +51,7 @@ const ImageCarousel = ({ images }) => {
     if (emptyImages) return null;
 
     return (
-        <div onMouseEnter={() => setMouseHovered(true)} onMouseLeave={() => setMouseHovered(false)} className="relative w-full h-full max-w-2xl mx-auto">
+        <div onMouseEnter={() => setMouseHovered(true)} onMouseLeave={() => setMouseHovered(false)} className="relative w-full h-full">
             <div className="absolute top-0 left-0 w-full h-full bg-gray-200 rounded-lg animate-pulse"></div>
             <div className="relative h-full overflow-hidden rounded-lg">
                 {images.map((src, index) => (
@@ -67,7 +67,6 @@ const ImageCarousel = ({ images }) => {
                         />
                     </div>
                 ))}
-
             </div>
 
             <div className='absolute bottom-0 right-[50%] translate-x-[50%] z-50 flex flex-row gap-1 items-center'>
