@@ -8,7 +8,7 @@ import { MdEdit, MdNavigateNext } from "react-icons/md";
 import Drawer from "../../../components/ui/Drawer";
 import { IoMdClose } from "react-icons/io";
 import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
-import axiosactivitiesinstance from "../../../services/poi/reccommendedactivities";
+import axiosactivitiesinstance, { activtySearch } from "../../../services/poi/reccommendedactivities";
 import axiositineraryeditinstance from "../../../services/itinerary/edit";
 import PoiList from "./PoiList";
 import PoiListSkeleton from "./PoiListSkeleton";
@@ -23,6 +23,9 @@ import { BiErrorCircle } from "react-icons/bi";
 import { IoMdSearch } from "react-icons/io";
 import useDebounce from "../../../hooks/useDebounce";
 import { logEvent } from "../../../services/ga/Index";
+import { getDate } from "../../../helper/DateUtils";
+import NewActivityBooking from "./NewActivityBooking";
+
 
 const padding = {
   initialLeft: "60px",
@@ -127,7 +130,7 @@ const ItineraryPoiElement = (props) => {
     setShow(false);
   };
 
-  const fetchData = (showMore = false) => {
+  const fetchPois = (showMore = false) => {
     const added_activities = props.itineraryActivities?.map((element, index) => {
       return {
         id:
@@ -194,6 +197,70 @@ const ItineraryPoiElement = (props) => {
       .catch((err) => {
         setFetchingPoi(false);
       });
+  }
+
+  const fetchActivities = (showMore = false) => {
+    const requestData = {
+      city: props?.city_id,
+      start_date: getDate(props.date),
+      number_of_adults: props.plan?.number_of_adults,
+      number_of_children: props.plan?.number_of_children,
+      child_ages: [], // Not getting accepted yet and assumed 18 for all adults, and 8 for children.
+      filter_by: {
+        // Here, we have only dynamic filters. Static filters are just
+      },
+      sort_by: {
+        // no sorting filters added yet.
+      }
+    }
+    activtySearch
+      .post(`/?limit=30&offset=${offSet}`, requestData)
+      .then((res) => {
+        if (res.data?.data?.activities?.length) {
+          setTotalResults(res.data.results);
+          let options = [];
+
+          for (var i = 0; i < res.data.data.activities.length; i++) {
+            options.push(
+              <NewActivityBooking
+                key={i}
+                activityAddDrawer
+                _updatePoiHandler={_updatePoiHandler}
+                setShowDrawer={setShowDrawer}
+                data={res.data.data.activities[i]}
+                setLoginModal={props.setShowLoginModal}
+                date={props.date}
+              ></NewActivityBooking>
+            );
+          }
+
+          if (showMore) setOptionsJSX((prev) => [...prev, ...options]);
+          else setOptionsJSX(options);
+
+          if (res.data?.next) {
+            setShowMoreResults(true);
+            setOffSet((prev) => prev + 30);
+          } else {
+            setShowMoreResults(false);
+            setOffSet(0);
+          }
+        } else {
+          setOptionsJSX([]);
+          setTotalResults(null);
+        }
+        setFetchingPoi(false);
+      })
+      .catch((err) => {
+        setFetchingPoi(false);
+      });
+  }
+
+  const fetchData = (showMore = false) => {
+    if (elementType === "POI") {
+      fetchPois(showMore);
+    } else {
+      fetchActivities(showMore);
+    }
   };
 
   useEffect(() => {
@@ -434,8 +501,8 @@ const ItineraryPoiElement = (props) => {
               <div className="flex flex-row gap-2">
                 <div className="font-normal border-2 border-[#9F9F9F] rounded-md px-2 py-[1px] mt-1    block  bg-white text-[#9F9F9F]">
                   {props?.activity_data &&
-                  props?.activity_data?.activity &&
-                  props?.activity_data?.activity?.id
+                    props?.activity_data?.activity &&
+                    props?.activity_data?.activity?.id
                     ? "ACTIVITY"
                     : "Self Exploration"}
                 </div>
@@ -530,11 +597,10 @@ const ItineraryPoiElement = (props) => {
                       if (SelectedExprience !== i) SetSelectedExprience(i);
                       else SetSelectedExprience(-1);
                     }}
-                    className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${
-                      SelectedExprience == i
-                        ? "text-white border-0 bg-black "
-                        : "border-2 bg-white text-black"
-                    } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
+                    className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${SelectedExprience == i
+                      ? "text-white border-0 bg-black "
+                      : "border-2 bg-white text-black"
+                      } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
                     key={i}
                   >
                     {currentfilter.display}
@@ -563,9 +629,8 @@ const ItineraryPoiElement = (props) => {
                 type="text"
                 value={selectSearch}
                 onChange={searchHandler}
-                placeholder={`Search ${
-                  elementType === "POI" ? "attractions" : "activities"
-                }`}
+                placeholder={`Search ${elementType === "POI" ? "attractions" : "activities"
+                  }`}
                 className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
               ></input>
             </div>
@@ -587,6 +652,7 @@ const ItineraryPoiElement = (props) => {
               className="flex flex-col items-center mb-3 h-[100vh] overflow-y-scroll"
             >
               {optionsJSX.map((option, index) => option)}
+
               {selectSearch !== "" ? (
                 <Button
                   boxShadow
@@ -677,6 +743,7 @@ const mapStateToPros = (state) => {
     notificationText: state.Notification.text,
     itineraryActivities: state.itineraryActivities,
     token: state.auth.token,
+    plan: state.Plan,
   };
 };
 

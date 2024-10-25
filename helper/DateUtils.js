@@ -35,10 +35,14 @@ export function dateFormat(dateString) {
     "Dec",
   ];
 
-  const [day, monthIndex, year] = dateString.split("/");
+  let [day, monthIndex, year] = dateString.split("/");
 
   if (!day || !monthIndex || !year) {
-    return dateString;
+    [year, monthIndex, day] = dateString.split("-");
+
+    if (!year || !monthIndex || !day) {
+      return dateString;
+    }
   }
 
   const monthName = months[Number(monthIndex) - 1];

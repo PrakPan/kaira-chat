@@ -11,7 +11,6 @@ import { FaPerson } from "react-icons/fa6";
 import { IoMdClose } from "react-icons/io";
 import { IoFastFood, IoTicket } from "react-icons/io5";
 import { MdTransferWithinAStation } from "react-icons/md";
-import { BsPersonStanding } from "react-icons/bs";
 
 
 export default function ActivityDetails(props) {

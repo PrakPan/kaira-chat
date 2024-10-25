@@ -6,7 +6,6 @@ import styled from "styled-components";
 import { Navigation } from "../../NewNavigation";
 import { activtySearch } from "../../../services/poi/reccommendedactivities";
 import axiosaddActivityinstance from "../../../services/poi/addActivities";
-import PoiList from "../../../containers/newitinerary/itineraryelements/PoiList";
 import { BiErrorCircle } from "react-icons/bi";
 import PoiListSkeleton from "../../../containers/newitinerary/itineraryelements/PoiListSkeleton";
 import { getDate } from "../../../helper/DateUtils";
@@ -168,7 +167,7 @@ const ActivityAddDrawer = (props) => {
     activtySearch
       .post(`/?limit=30&offset=${offSet}`, requestData)
       .then((res) => {
-        if (res.data.data.activities.length) {
+        if (res.data?.data?.activities?.length) {
           setTotalResults(res.data.results);
           let options = [];
 
