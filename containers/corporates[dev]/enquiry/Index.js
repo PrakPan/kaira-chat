@@ -130,15 +130,15 @@ const Enquiry = (props) => {
         style={
           isPageWide
             ? {
-                padding: "0 18px 18px 18px",
-                width: "27rem",
-                borderRadius: "1rem",
-              }
+              padding: "0 18px 18px 18px",
+              width: "27rem",
+              borderRadius: "1rem",
+            }
             : {
-                padding: "0px 18px 18px 18px",
-                width: "95%",
-                borderRadius: "1rem",
-              }
+              padding: "0px 18px 18px 18px",
+              width: "95%",
+              borderRadius: "1rem",
+            }
         }
         zIndex={1298}
       >
@@ -153,9 +153,15 @@ const Enquiry = (props) => {
           />
         </CloseIcon>
 
-        <Heading>
-          {submitted ? "Thank you for reaching out" : "Let's Connect"}
-        </Heading>
+        {submitted ? (
+          <div className="mt-3 text-lg md:text-xl font-medium md:font-semibold">
+            We have got your details and someone from our team will reach out to you regarding the next steps
+          </div>
+        ) : (
+          <Heading>
+            Let's Connect
+          </Heading>
+        )}
 
         {!submitted ? (
           <>
