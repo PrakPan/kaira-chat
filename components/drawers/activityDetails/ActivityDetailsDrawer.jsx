@@ -64,17 +64,26 @@ const ActivityDetailsDrawer = (props) => {
         }
 
         activityBooking.post("", requestData).then(res => {
+            props.getAccommodationAndActivitiesHandler();
             props.openNotification({
                 type: "success",
                 text: "Activity added successfully.",
                 heading: "Sucess!",
             });
         }).catch(err => {
-            props.openNotification({
-                type: "error",
-                text: "Something went wrong! Please try after some time.",
-                heading: "Error!",
-            });
+            if (err?.response?.status === 403) {
+                props.openNotification({
+                    text: "You are not allowed to make changes to this itinerary",
+                    heading: "Error!",
+                    type: "error",
+                });
+            } else {
+                props.openNotification({
+                    text: "There seems to be a problem, please try again!",
+                    heading: "Error!",
+                    type: "error",
+                });
+            }
         })
     }
 

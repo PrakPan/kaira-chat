@@ -181,6 +181,7 @@ const ActivityAddDrawer = (props) => {
                 data={res.data.data.activities[i]}
                 setLoginModal={props.setShowLoginModal}
                 date={props.date}
+                getAccommodationAndActivitiesHandler={props.getAccommodationAndActivitiesHandler}
               ></NewActivityBooking>
             );
           }

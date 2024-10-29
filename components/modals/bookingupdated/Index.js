@@ -17,6 +17,7 @@ import Skeleton from "./Skeleton";
 import useDebounce from "../../../hooks/useDebounce";
 import ImageLoader from "../../../components/ImageLoader";
 import { getDate } from "../../../helper/DateUtils";
+import Filters from "./filtersmobile/Filters";
 
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
@@ -102,6 +103,7 @@ const Booking = (props) => {
     ],
   });
   const [selectSearch, setSelectedSearch] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
   const debouncedSearch = useDebounce(selectSearch);
 
   useEffect(() => {
@@ -425,6 +427,7 @@ const Booking = (props) => {
                   plan={props?.plan}
                   TotalCount={totalCount}
                   setFiltersState={setFiltersState}
+                  setShowFilters={setShowFilters}
                 ></SectionTwo>
               </div>
 
@@ -606,7 +609,16 @@ const Booking = (props) => {
                   </ContentContainer>
                 </GridContainer>
               </div>
-              
+
+              <Filters
+                showFilter={showFilters}
+                setshowFilter={setShowFilters}
+                filtersState={filtersState}
+                FILTERS={filtersObj}
+                _addFilterHandler={_addFilterHandler}
+                updateUserStarHandler={updateUserStarHandler}
+              />
+
               <AccommodationModal
                 check_in={props?.selectedBooking.check_in}
                 check_out={props?.selectedBooking.check_out}

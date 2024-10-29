@@ -48,9 +48,9 @@ export default function RangeSliderInput(props) {
     return (
         <Container>
             <RangeSlider
-                min={1000}
-                max={20000}
-                step={1000}
+                min={700}
+                max={10000}
+                step={1}
                 defaultValue={props.defaultValue}
                 value={props.value}
                 onInput={props.onChange}

@@ -90,7 +90,7 @@ export default function NewActivityBooking(props) {
                             {props.data?.ideal_duration_number && props.data?.ideal_duration_unit ? (
                                 <div className="absolute bottom-2 right-2 bg-[#000000bf] text-white p-2 rounded-lg flex flex-row items-center gap-1">
                                     <FaClock />
-                                    {props.data?.ideal_duration_number} {props.data?.ideal_duration_unit}
+                                    {props.data.ideal_duration_number} {props.data.ideal_duration_number > 1 ? props.data?.ideal_duration_unit.toLowerCase() : props.data?.ideal_duration_unit.toLowerCase().slice(0, -1)}
                                 </div>
                             ) : null}
                         </div>
@@ -194,6 +194,7 @@ export default function NewActivityBooking(props) {
                 activityId={props.data?.id}
                 handleCloseDrawer={handleCloseDrawer}
                 Topheading={"Select Our Activity"}
+                getAccommodationAndActivitiesHandler={props.getAccommodationAndActivitiesHandler}
             />
         </>
 

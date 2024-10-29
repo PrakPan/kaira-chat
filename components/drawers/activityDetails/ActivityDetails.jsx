@@ -11,6 +11,7 @@ import { FaPerson } from "react-icons/fa6";
 import { IoMdClose } from "react-icons/io";
 import { IoFastFood, IoTicket } from "react-icons/io5";
 import { MdTransferWithinAStation } from "react-icons/md";
+import { BiSolidCustomize } from "react-icons/bi";
 
 
 export default function ActivityDetails(props) {
@@ -114,7 +115,7 @@ export default function ActivityDetails(props) {
                             <div className="absolute bottom-1 right-1 bg-[#000000bf] text-white px-4 py-2 rounded-lg flex flex-row items-center gap-2">
                                 <FaClock />
                                 {props.data.ideal_duration_number}{" "}
-                                {props.data?.ideal_duration_unit}
+                                {props.data.ideal_duration_number > 1 ? props.data?.ideal_duration_unit.toLowerCase() : props.data?.ideal_duration_unit.toLowerCase().slice(0, -1)}
                             </div>
                         ) : (
                             <></>
@@ -164,10 +165,10 @@ export default function ActivityDetails(props) {
                     </div>
 
                     {props.data?.experience_filters && (
-                        <div className="text-[14px]">
+                        <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
                             {props.data.experience_filters?.map((e, i) => (
-                                <span key={i}>
-                                    {e} {props.data.experience_filters.length - 1 == i ? "" : <b>·</b>}{" "}
+                                <span key={i} className="border-2 rounded-full px-2 py-1">
+                                    {e}
                                 </span>
                             ))}
                         </div>
@@ -182,8 +183,10 @@ export default function ActivityDetails(props) {
                             </div>
 
                             {inclusiveCost.length ? (
-                                <div className="text-sm">
-                                    Inclusive of {inclusiveCost.join(', ')}
+                                <div className="text-sm flex flex-row items-center gap-1 flex-wrap">
+                                    Inclusive of {inclusiveCost.map((item, index) => (
+                                        <span key={index} className="border-2 rounded-full px-2 py-1">{item}</span>
+                                    ))}
                                 </div>
                             ) : null}
                         </div>
@@ -197,7 +200,7 @@ export default function ActivityDetails(props) {
                         <button onClick={handleUpdate} className="bg-[#F7E700] py-2 px-4 border-2 border-black rounded-lg">
                             {props.data?.city ? `Add to ${props.data?.city} Itinerary` : 'Add to Itinerary'}
                         </button>
-                        <div className="px-2">on {dateFormat(props.date)}</div>
+                        <div className="text-sm px-2">on {dateFormat(props.date)}</div>
                     </div>
                 </div>
 
@@ -242,8 +245,6 @@ export default function ActivityDetails(props) {
 
                 {props.data?.amenities && props.data?.amenities?.length ? (
                     <div className="flex flex-col gap-2 relative">
-
-
                         <div className="text-[18px] font-[800]">Add-ons</div>
                         <div className="flex flex-col gap-2">
                             {props.data.amenities.map((amenity, index) => (
@@ -275,7 +276,7 @@ const Amenity = ({ index, amenity, handleAmenityChange }) => {
             case 'Entry Ticket':
                 return <IoTicket />
             default:
-                return null;
+                return <BiSolidCustomize />;
         }
     }
 

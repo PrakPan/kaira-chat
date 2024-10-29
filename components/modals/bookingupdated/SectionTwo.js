@@ -101,6 +101,7 @@ const Section = (props) => {
         totalCount={props.TotalCount}
         setFiltersState={props.setFiltersState}
         plan={props?.plan}
+        setShowFilters={props.setShowFilters}
       ></FiltersMobile>
 
       <Drawer
@@ -202,7 +203,7 @@ const Section = (props) => {
               </button>
             </div>
           </div>
-          
+
           <div className="w-full flex gap-3 flex-row justify-between mt-0">
             <ButtonYellow
               primary={false}
