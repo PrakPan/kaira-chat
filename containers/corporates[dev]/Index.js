@@ -202,6 +202,29 @@ const AffiliatePage = (props) => {
           <></>
         )}
 
+        {props.experiential_experiences.length ? (
+          <div className="mt-5 flex flex-col gap-5">
+            <div>
+              <div className="flex flex-col pb-5 pl-3 pr-3 md:p-5 gap-3 items-center">
+                <div
+                  className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]"
+                >
+                  Experiential Corporate Getaways
+                </div>
+                <div className="text-[16px] font-[350] leading-[24px] text-center">There’s more to Business travel than just meetings! Step out of the routine, build connections, meet clients on their turf, and experience the energy that only in-person interactions can bring.</div>
+              </div>
+
+              <Experiences
+                experiences={props.experiential_experiences}
+              ></Experiences>
+            </div>
+
+            <button onClick={() => setEnquiryOpen(true)} className="border-2 border-black rounded-lg px-5 py-2 mx-auto hover:text-white hover:bg-black transition-all">Plan your Workcation Now!</button>
+          </div>
+        ) : (
+          <></>
+        )}
+
         {props.getaway_experiences.length ? (
           <div className="mt-5">
             <div className="flex flex-col pb-5 pl-3 pr-3 md:p-5 gap-3 items-center">

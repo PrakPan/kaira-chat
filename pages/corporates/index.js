@@ -68,10 +68,17 @@ export async function getStaticProps() {
     "eb2f0fe2-8d91-465a-800b-a3f1f98ab97c"
   ];
 
+  let experiential_getaways = [
+    "bdd34d4d-485b-45bc-9568-bc53b8fed39f",
+    "f24fd741-2339-466a-9977-9357ce252bf1",
+    "eda17cdf-eade-40a3-b281-daf51831e3ff"
+  ]
+
   var workcation_experience = [];
   var offbeat_experiences = [];
   var getaway_experiences = [];
   var getaways_delhi_experiences = [];
+  var experiential_experiences = []
   var locations = [];
 
   try {
@@ -104,41 +111,6 @@ export async function getStaticProps() {
     }
   }
 
-  // for (let i = 0; i < offbeat_ids.length; i++) {
-  //   try {
-  //     const res = await itineraryplaninstance.get(
-  //       "/?itinerary_id=" + offbeat_ids[i]
-  //     );
-  //     if (res?.data?.message !== 'Not found') {
-  //       const data = {
-  //         id: offbeat_ids[i],
-  //         ...res.data
-  //       }
-  //       offbeat_experiences.push(data);
-  //     }
-  //   } catch (e) {
-  //     console.log("[ERROR][corporatespage:getStaticProps]: ", e.message);
-  //   }
-  // }
-
-  // for (let i = 0; i < getaway_ids.length; i++) {
-  //   try {
-  //     const res = await itineraryplaninstance.get(
-  //       "/?itinerary_id=" + getaway_ids[i]
-  //     );
-  //     if (res?.data?.message !== 'Not found') {
-  //       const data = {
-  //         id: getaway_ids[i],
-  //         ...res.data,
-  //       }
-
-  //       getaway_experiences.push(data);
-  //     }
-  //   } catch (e) {
-  //     console.log("[ERROR][corporatespage:getStaticProps]: ", e.message);
-  //   }
-  // }
-
   for (let i = 0; i < getaways_delhi_ids.length; i++) {
     try {
       const res = await itineraryplaninstance.get(
@@ -158,12 +130,32 @@ export async function getStaticProps() {
     }
   }
 
+  for (let i = 0; i < experiential_getaways.length; i++) {
+    try {
+      const res = await itineraryplaninstance.get(
+        "/?itinerary_id=" + experiential_getaways[i]
+      );
+
+      if (res?.data?.message !== 'Not found') {
+        const data = {
+          id: experiential_getaways[i],
+          ...res.data,
+        }
+
+        experiential_experiences.push(data);
+      }
+    } catch (e) {
+      console.log("[ERROR][corporatespage:getStaticProps]: ", e.message);
+    }
+  }
+
   return {
     props: {
       workcation_experience,
       offbeat_experiences,
       getaway_experiences,
       getaways_delhi_experiences,
+      experiential_experiences,
       locations
     },
   };
