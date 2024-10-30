@@ -8,7 +8,7 @@ import CheckboxFormComponent from "../../../FormComponents/CheckboxFormComponent
 import RangeSliderInput from "./RangeSlider";
 import { IoPerson } from "react-icons/io5";
 import { CiCirclePlus, CiCircleMinus } from "react-icons/ci";
-
+import { getIndianPrice } from "../../../../services/getIndianPrice";
 
 
 const SortContainer = styled.div`
@@ -44,15 +44,18 @@ export default function TemporaryDrawer(props) {
   const [maxPrice, setMaxPrice] = useState(props.filtersState.budget.price_upper_range)
 
   useEffect(() => {
-    const handler = setTimeout(() => {
-      props.setFiltersState(prev => ({
-        ...prev,
-        budget: {
-          price_lower_range: budget[0],
-          price_upper_range: budget[1]
-        }
-      }))
-    }, 2000);
+    let handler;
+    if (props.filtersState.budget.price_lower_range !== budget[0] || props.filtersState.budget.price_upper_range !== budget[1]) {
+      handler = setTimeout(() => {
+        props.setFiltersState(prev => ({
+          ...prev,
+          budget: {
+            price_lower_range: budget[0],
+            price_upper_range: budget[1]
+          }
+        }))
+      }, 2000);
+    }
 
     return () => {
       clearTimeout(handler);
@@ -130,11 +133,14 @@ export default function TemporaryDrawer(props) {
                 </div>
               </div>
 
-              <Travelers />
+              <Travelers
+                adults={props.plan?.number_of_adults}
+                children={props.plan?.number_of_children}
+              />
 
               <div className="w-[30%] flex flex-col justify-start items-baseline">
                 <div className="font-normal">Price range</div>
-                <div className="text-sm mb-3">Per Night</div>
+                <div className="text-sm mb-3">per night</div>
 
                 <div className="w-full flex flex-col gap-4">
                   <RangeSliderInput
@@ -186,13 +192,6 @@ export default function TemporaryDrawer(props) {
             </div>
           </div>
         )}
-
-        {props?.plan && props.plan?.number_of_adults ? (
-          <div className="mx-[20px] md:mx-[25px] mt-3">
-            <span className="font-bold">Pax: </span>{props.plan?.number_of_adults}{props.plan?.number_of_adults > 1 ? " adults" : " adult"}
-            {props.plan?.number_of_children ? `, ${props.plan?.number_of_children} children` : null}
-          </div>
-        ) : null}
 
         {!props.loading && props?.totalCount ? (
           <div className="text-sm font-normal w-[95%] ml-5 mt-3">
@@ -251,7 +250,7 @@ export default function TemporaryDrawer(props) {
             {isPageWide && (
               <button
                 onClick={() => props.setShowFilters(true)}
-                className="ml-2 border-2 border-black w-fit px-2 py-1 rounded-full hover:bg-black hover:text-white transition-all">Show Filters</button>
+                className="ml-2 border-2 border-black w-fit px-2 py-1 rounded-full hover:bg-black hover:text-white transition-all">Show more filters</button>
             )}
           </div>
         ) : null}
@@ -262,8 +261,51 @@ export default function TemporaryDrawer(props) {
 
 const Travelers = (props) => {
   const [travelers, setTravelers] = useState(1);
-  const [rooms, setRooms] = useState(1);
+  const [rooms, setRooms] = useState([{
+    adults: 1,
+    children: 0,
+    childAges: [],
+  }]);
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    let total = 0;
+    if (props.adults) total += props.adults;
+    if (props.children) total += props.children
+
+    setTravelers(total);
+    setRooms([{
+      adults: props.adults,
+      children: props.children,
+      childAges: Array(props.children).fill(null)
+    }])
+  }, [props.adults, props.children])
+
+  useEffect(() => {
+    let total = 0
+    for (let room of rooms) {
+      total += room.adults;
+      total += room.children;
+    }
+
+    setTravelers(total);
+  }, [rooms])
+
+  const handleAddRoom = () => {
+    if (rooms.length < 8) {
+      setRooms(prev => (
+        [...prev, {
+          adults: 1,
+          children: 0,
+          childAges: [],
+        }]
+      ))
+    }
+  }
+
+  const removeRoom = () => {
+    setRooms(prev => prev.slice(0, -1));
+  }
 
   return (
     <div className="relative h-fit border-2 flex flex-row items-center gap-2 px-3 py-2 rounded-lg cursor-pointer hover:border-black">
@@ -271,21 +313,29 @@ const Travelers = (props) => {
 
       <div onClick={() => setOpen(prev => !prev)} className="flex flex-col">
         <div className="text-sm">Travelers</div>
-        <div>{travelers} {travelers > 1 ? "travelers" : "traveler"}, {rooms} {rooms > 1 ? "rooms" : "room"}</div>
+        <div>{travelers} {travelers > 1 ? "travelers" : "traveler"}, {rooms.length} {rooms.length > 1 ? "rooms" : "room"}</div>
       </div>
 
       {open && (
-        <div className="absolute bg-white z-50 left-[50%] top-[65px] -translate-x-[50%] flex flex-col gap-3 drop-shadow-2xl rounded-lg p-4">
-          <div>
-            <Room />
+        <div className="absolute bg-white z-50 left-[50%] top-[65px] -translate-x-[50%] flex flex-col gap-3 drop-shadow-2xl rounded-lg p-4 overflow-auto max-h-[90vh] hide-scrollbar">
+          <div className="flex flex-col gap-3">
+            {rooms.map((room, index) => (
+              <Room key={index} index={index} data={room} setRooms={setRooms} />
+            ))}
+          </div>
+
+          {rooms.length > 1 && (
+            <div className="flex justify-end">
+              <button onClick={removeRoom} className="w-fit text-blue rounded-full px-2 py-1 hover:bg-[#ECF4FD] focus:outline-none">Remove room</button>
+            </div>
+          )}
+
+          <div className="flex justify-end">
+            <button onClick={handleAddRoom} className="w-fit text-blue rounded-full px-2 py-1 hover:bg-[#ECF4FD] focus:outline-none">Add another room</button>
           </div>
 
           <div className="flex justify-end">
-            <button className="w-fit text-blue rounded-full px-2 py-1 hover:bg-[#ECF4FD] focus:outline-none">Add another room</button>
-          </div>
-
-          <div className="flex justify-end">
-            <button onClick={() => setOpen(false)} className="px-3 py-1 bg-[#F7E700] rounded-lg">Done</button>
+            <button onClick={() => setOpen(false)} className="px-3 py-1 bg-[#F7E700] rounded-lg border-2 border-black hover:text-white hover:bg-black transition-all">Modify search</button>
           </div>
         </div>
       )}
@@ -293,33 +343,42 @@ const Travelers = (props) => {
   );
 }
 
-const Room = (props) => {
-  const [adults, setAdults] = useState(1)
-  const [children, setChildren] = useState(0);
+const Room = ({ index, data, setRooms }) => {
+  const [adults, setAdults] = useState(data.adults)
+  const [children, setChildren] = useState(data.children);
+  const [childAges, setChildAges] = useState(data.childAges);
+
+
+  useEffect(() => {
+    setRooms(prev => prev.map((room, i) => i === index ? {
+      ...room,
+      adults: adults,
+      children: children,
+      childAges: childAges
+    } : room));
+  }, [adults, children, childAges])
 
   const handleAdults = (type) => {
-    if (type === "plus") {
+    if (type === "plus" && adults < 14) {
       setAdults(prev => prev + 1);
-    } else {
-      if (adults >= 1) {
-        setAdults(prev => prev - 1);
-      }
+    } else if (type === 'minus' && adults > 1) {
+      setAdults(prev => prev - 1);
     }
   }
 
   const handleChildren = (type) => {
-    if (type === 'plus') {
+    if (type === 'plus' && children < 6) {
       setChildren(prev => prev + 1);
-    } else {
-      if (children >= 1) {
-        setChildren(prev => prev - 1);
-      }
+      setChildAges(prev => [...prev, null]);
+    } else if (type === 'minus' && children >= 1) {
+      setChildren(prev => prev - 1);
+      setChildAges(prev => prev.slice(0, -1));
     }
   }
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="font-semibold">Room 1</div>
+      <div className="font-semibold">Room {index + 1}</div>
       <div className="flex flex-row items-center justify-between gap-[100px]">
         <div className="text-sm">Adults</div>
         <div className="flex flex-row items-center gap-2">
@@ -329,14 +388,58 @@ const Room = (props) => {
         </div>
       </div>
 
-      <div className="flex flex-row items-center justify-between">
-        <div className="text-sm">Children</div>
-        <div className="flex flex-row items-center gap-2">
-          <CiCircleMinus onClick={() => handleChildren('minus')} className="text-2xl" />
-          <div>{children}</div>
-          <CiCirclePlus onClick={() => handleChildren('plus')} className="text-2xl" />
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row items-center justify-between">
+          <div className="text-sm">Children</div>
+          <div className="flex flex-row items-center gap-2">
+            <CiCircleMinus onClick={() => handleChildren('minus')} className="text-2xl" />
+            <div>{children}</div>
+            <CiCirclePlus onClick={() => handleChildren('plus')} className="text-2xl" />
+          </div>
         </div>
+
+        {children ? (
+          <div className="flex flex-col gap-2">
+            {childAges && childAges.map((age, i) => (
+              <ChildAge index={i} child={i + 1} age={age} setChildAges={setChildAges} />
+            ))}
+          </div>
+        ) : null}
       </div>
+    </div>
+  );
+}
+
+const ChildAge = ({ index, child, age, setChildAges }) => {
+  const [openAges, setOpenAges] = useState(false);
+  const [selectedAge, setSelectedAge] = useState(age);
+
+  useEffect(() => {
+    setChildAges(prev => prev.map((age, i) => i === index ? selectedAge : age))
+  }, [selectedAge])
+
+  const handleChildAge = (value) => {
+    setSelectedAge(value);
+    setOpenAges(false);
+  }
+
+  return (
+    <div className="relative">
+      <div onClick={() => setOpenAges(prev => !prev)} className="flex flex-row justify-between text-sm border-1 rounded-lg p-2">
+        <div>Child {child} age*</div>
+        <div>{selectedAge}</div>
+      </div>
+      {openAges && (
+        <div className="z-50 flex flex-col gap-1 absolute top-10 bg-white w-full border-1 border-black">
+
+          {Array(17).fill(null).map((_, i) => (
+            <div
+              onClick={() => handleChildAge(i + 1)}
+              className="hover:bg-gray-200 p-2">{i + 1}</div>
+
+          ))}
+        </div>
+      )}
     </div>
   );
 }

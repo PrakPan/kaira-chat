@@ -1,26 +1,39 @@
 import { useState } from "react";
 import { IoMdClose, IoMdStar } from "react-icons/io";
 import Drawer from "../../../ui/Drawer";
-import UiDropdown from "../../../UiDropdown";
 import ButtonYellow from "../../../ButtonYellow";
-
+import PropertyType from "./PropertyType";
+import Facilities from "./Facilities";
+import Tags from "./Tags";
 
 export default function Filters(props) {
-    const [selectedUserStar, setSelectedUserStar] = useState(-1);
-
-    const onUserStarSelect = (i, currentfilter) => {
-        if (selectedUserStar == i) {
-            setSelectedUserStar(-1);
-            props.updateUserStarHandler("");
-            return;
-        }
-        setSelectedUserStar(i);
-        props.updateUserStarHandler(currentfilter);
-    }
+    const [selectedUserStar, setSelectedUserStar] = useState([]);
+    const [selectedFacilities, setSelectedFacilities] = useState([]);
+    const [selectedTags, setSelectedTags] = useState([]);
+    const [type, setType] = useState(null);
 
     const handleSelectOption = (option) => {
-        props._addFilterHandler(option, "type");
+        setType(option);
     };
+
+    const handleUserStar = (star) => {
+        if (selectedUserStar.includes(star)) {
+            setSelectedUserStar(prev => prev.filter(item => item !== star));
+        } else {
+            setSelectedUserStar(prev => [...prev, star])
+        }
+    }
+
+    const isSelectedUserStar = (star) => {
+        return selectedUserStar.includes(star);
+    }
+
+    const handleApply = () => {
+        props.updateUserStarHandler(selectedUserStar);
+        props._addFilterHandler(selectedFacilities, "facilities");
+        props._addFilterHandler(type, "type");
+        props.setshowFilter(false)
+    }
 
     return (
         <Drawer
@@ -46,33 +59,41 @@ export default function Filters(props) {
                     </div>
 
                     <div className="flex flex-col justify-start items-baseline">
-                        <div className="mb-2 text-sm font-normal">User Ratings</div>
+                        <div className="mb-2 font-semibold">User Ratings</div>
                         <div className="flex flex-row gap-1">
-                            {props.FILTERS["user_ratings"].map((currentfilter, i) => (
+                            {props.FILTERS["user_ratings"].map((star, i) => (
                                 <button
-                                    onClick={() => onUserStarSelect(i, currentfilter)}
-                                    className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${selectedUserStar == i
+                                    onClick={() => handleUserStar(star)}
+                                    className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${isSelectedUserStar(star)
                                         ? "text-white border-0 bg-black "
                                         : "border-2 bg-white text-black"
                                         } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
                                     key={i}
                                 >
-                                    {currentfilter}
+                                    {star}
                                     <IoMdStar />
                                 </button>
                             ))}
                         </div>
                     </div>
 
-                    <div className="flex flex-col justify-start items-baseline">
-                        <div className="mb-2 text-sm font-normal">Property type</div>
-                        <div className="w-[12rem]">
-                            <UiDropdown
-                                options={props.FILTERS["type"]}
-                                onSelect={handleSelectOption}
-                            ></UiDropdown>
-                        </div>
-                    </div>
+                    {props.FILTERS.type.length ? (
+                        <PropertyType types={props.FILTERS.type} handleSelectOption={handleSelectOption} />
+                    ) : null}
+
+                    {props.FILTERS.facilities.length ? (
+                        <Facilities
+                            facilities={props.FILTERS.facilities}
+                            selectedFacilities={selectedFacilities}
+                            setSelectedFacilities={setSelectedFacilities} />
+                    ) : null}
+
+                    {props.FILTERS.tags.length ? (
+                        <Tags
+                            tags={props.FILTERS.tags}
+                            selectedTags={selectedTags}
+                            setSelectedTags={setSelectedTags} />
+                    ) : null}
                 </div>
 
                 <div className="w-full flex gap-3 flex-row justify-between mt-0">
@@ -85,7 +106,7 @@ export default function Filters(props) {
                     </ButtonYellow>
                     <ButtonYellow
                         className="w-1/2"
-                        onClick={() => props.setshowFilter(false)}
+                        onClick={handleApply}
                     >
                         <div className="text-[#01202B] ">Apply</div>
                     </ButtonYellow>

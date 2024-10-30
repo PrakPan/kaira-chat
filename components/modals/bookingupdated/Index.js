@@ -76,10 +76,12 @@ const Booking = (props) => {
       price_lower_range: 3000,
       price_upper_range: 8000,
     },
-    type: "",
-    star_category: "",
-    user_ratings: "",
-    sort: "recommended",
+    star_category: null,
+    sort: "price: low to high",
+    type: null,
+    user_ratings: null,
+    facilities: null,
+    tags: null,
   });
   const [viewMoreStatus, setViewMoreStatus] = useState(false);
   const [nextPage, setNextPage] = useState(1);
@@ -93,14 +95,16 @@ const Booking = (props) => {
   const [filtersObj, setFiltersObj] = useState({
     budget: ["Affordable", "Average", "Luxury", "Luxury+"],
     type: [],
-    star_category: ["3", "4", "5"],
-    user_ratings: ["3", "4", "5"],
+    star_category: [1, 2, 3, 4, 5],
+    user_ratings: [1, 2, 3, 4, 5],
     sort: [
+      "Price: low to high",
+      "Price: high to low",
       "Recommended",
       "Popular",
-      "Price: high to low",
-      "Price: low to high",
     ],
+    facilities: [],
+    tags: [],
   });
   const [selectSearch, setSelectedSearch] = useState("");
   const [showFilters, setShowFilters] = useState(false);
@@ -109,7 +113,15 @@ const Booking = (props) => {
   useEffect(() => {
     if (props?.showBookingModal) {
       fetchHotels();
-    } else {
+    }
+  }, [
+    filtersState,
+    props?.showBookingModal,
+    debouncedSearch,
+  ]);
+
+  useEffect(() => {
+    if (!props?.showBookingModal) {
       setFiltersState({
         free_breakfast: true,
         is_refundable: false,
@@ -117,28 +129,17 @@ const Booking = (props) => {
           price_lower_range: 3000,
           price_upper_range: 8000,
         },
-        type: "",
-        star_category: "",
-        user_ratings: "",
-        sort: "recommended",
+        type: null,
+        star_category: null,
+        user_ratings: null,
+        sort: "price: low to high",
+        facilities: null,
+        tags: null,
       });
       setNextPage(1);
       setProvider(null);
+      setSelectedSearch("");
     }
-  }, [
-    filtersState.budget,
-    filtersState.type,
-    filtersState.star_category,
-    filtersState.user_ratings,
-    filtersState.sort,
-    filtersState.free_breakfast,
-    filtersState.is_refundable,
-    props?.showBookingModal,
-    debouncedSearch,
-  ]);
-
-  useEffect(() => {
-    setSelectedSearch("");
   }, [props?.showBookingModal]);
 
   const handleClearSearch = () => {
@@ -176,65 +177,12 @@ const Booking = (props) => {
     setFiltersState((prev) => ({ ...prev, [heading]: oldfilters[heading] }));
   };
 
-  const _generateFilterKeys = (filtersState) => {
-    let budgetarr = filtersState.budget;
-    let typearr = filtersState.type;
-    let sort = filtersState.sort;
-
-    let type = [];
-    let price_lower_range = null;
-    let price_upper_range = null;
-    let sort_by = "price_order";
-    if (sort === "popular") sort_by = "popularity";
-    if (sort === "recommended") sort_by = "recommended";
-    if (sort === "price: high to low" || sort === "price: low to high")
-      sort_by = "price_order";
-
-    if (typearr.length) {
-      for (var i = 0; i < typearr.length; i++) {
-        if (typearr[i] !== "All") {
-          if (typearr[i] === "Unique") {
-            type.push("Speciality Lodging");
-            type.push("Boat / Cruise");
-            type.push("Holiday Park / Caravan Park");
-            type.push("Capsule Hotel");
-          } else type.push(typearr[i]);
-        }
-      }
-    }
-
-    if (budgetarr === "Affordable") {
-      price_lower_range = 0;
-      price_upper_range = 300000;
-    } else if (budgetarr === "Average") {
-      price_lower_range = 300000;
-      price_upper_range = 600000;
-    } else if (budgetarr === "Luxury") {
-      price_lower_range = 600000;
-      price_upper_range = 1000000;
-    } else if (budgetarr === "Luxury+") {
-      price_lower_range = 1000000;
-      price_upper_range = null;
-    } else {
-      price_lower_range: null;
-      price_upper_range: null;
-    }
-    return {
-      type: type,
-      price_lower_range: price_lower_range,
-      price_upper_range: price_upper_range,
-      sort_by: sort_by,
-    };
-  };
-
-  const setAccommodationsTypes = (accommodations) => {
-    let accommodation_types = Array.from(
-      new Set(accommodations)
-    );
-    accommodation_types = accommodation_types.filter(acc => acc !== 'Unknown')
+  const setDynamicFilters = (filters) => {
     setFiltersObj({
       ...filtersObj,
-      type: accommodation_types,
+      type: filters?.accommodation_types ? filters.accommodation_types : [],
+      facilities: filters?.facilities ? filters.facilities : [],
+      tags: filters?.tags ? filters.tags : []
     });
   }
 
@@ -264,8 +212,8 @@ const Booking = (props) => {
         sub_location_ids: null,
         free_breakfast: filtersState.free_breakfast,
         is_refundable: filtersState.is_refundable,
-        facilities: null,
-        tags: null,
+        facilities: filtersState.facilities,
+        tags: filtersState.tags,
         type: filtersState.type,
         star_category: filtersState.star_category ? [filtersState.star_category] : [1, 2, 3, 4, 5],
         user_ratings: filtersState.user_ratings ? [filtersState.user_ratings] : [1, 2, 3, 4, 5],
@@ -292,7 +240,6 @@ const Booking = (props) => {
         setNoResults(false);
 
         let options = [];
-        let accommodation_types = [];
         for (var i = 0; i < res.data.data.length; i++) {
           if (res.data.data[i].name !== props?.selectedBooking.name)
             if (
@@ -307,8 +254,6 @@ const Booking = (props) => {
                   break;
                 }
               }
-
-              accommodation_types.push(...res.data.data[i].accommodation_type);
 
               if (img)
                 options.push(
@@ -336,7 +281,11 @@ const Booking = (props) => {
             }
         }
 
-        setAccommodationsTypes(accommodation_types)
+        setDynamicFilters({
+          accommodation_types: res.data?.available_types,
+          facilities: res.data?.available_facilities,
+          tags: res.data?.tags
+        })
 
         if (res.data?.previous) {
           setMoreOptionsJSX(prev => [...prev, ...options]);
