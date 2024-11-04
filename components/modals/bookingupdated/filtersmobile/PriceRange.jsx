@@ -1,41 +1,13 @@
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import { IoMdStar } from "react-icons/io";
-import media from "../../../media";
-import UiDropdown from "../../../UiDropdown";
-import { FiChevronDown, FiChevronUp } from "react-icons/fi";
-import CheckboxFormComponent from "../../../FormComponents/CheckboxFormComponent";
+import React, { useState } from "react";
 import RangeSliderInput from "./RangeSlider";
-import { IoPerson } from "react-icons/io5";
-import { CiCirclePlus, CiCircleMinus } from "react-icons/ci";
 import { getIndianPrice } from "../../../../services/getIndianPrice";
 
 export default function PriceRange(props) {
-    const [budget, setBudget] = useState([props.filtersState.budget.price_lower_range, props.filtersState.budget.price_upper_range])
-    const [minPrice, setMinPrice] = useState(props.filtersState.budget.price_lower_range)
-    const [maxPrice, setMaxPrice] = useState(props.filtersState.budget.price_upper_range)
-
-    useEffect(() => {
-        let handler;
-        if (props.filtersState.budget.price_lower_range !== budget[0] || props.filtersState.budget.price_upper_range !== budget[1]) {
-            handler = setTimeout(() => {
-                props.setFiltersState(prev => ({
-                    ...prev,
-                    budget: {
-                        price_lower_range: budget[0],
-                        price_upper_range: budget[1]
-                    }
-                }))
-            }, 2000);
-        }
-
-        return () => {
-            clearTimeout(handler);
-        };
-    }, [budget])
+    const [minPrice, setMinPrice] = useState(props.budget[0])
+    const [maxPrice, setMaxPrice] = useState(props.budget[1])
 
     const handleBudgetChange = (value) => {
-        setBudget(value);
+        props.setBudget(value);
         setMinPrice(value[0]);
         setMaxPrice(value[1]);
     }
@@ -45,12 +17,12 @@ export default function PriceRange(props) {
             const min_price = parseInt(minPrice) < 700 ? 700 : parseInt(minPrice);
             const max_price = parseInt(maxPrice) > 10000 ? 10000 : parseInt(maxPrice);
 
-            setBudget([min_price, max_price])
+            props.setBudget([min_price, max_price])
             setMinPrice(min_price);
             setMaxPrice(max_price);
         } else {
-            setMinPrice(budget[0]);
-            setMaxPrice(budget[1]);
+            setMinPrice(props.budget[0]);
+            setMaxPrice(props.budget[1]);
         }
     }
 
@@ -61,8 +33,8 @@ export default function PriceRange(props) {
 
             <div className="w-full flex flex-col gap-4">
                 <RangeSliderInput
-                    defaultValue={budget}
-                    value={budget}
+                    defaultValue={props.budget}
+                    value={props.budget}
                     onChange={handleBudgetChange}
                 />
 

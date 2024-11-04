@@ -3,14 +3,16 @@ import styled from "styled-components";
 import FiltersMobile from "./filtersmobile/Index";
 import Drawer from "../../ui/Drawer";
 import { useState } from "react";
-import { IoMdClose, IoMdStar } from "react-icons/io";
-import UiDropdown from "../../UiDropdown";
+import { IoMdClose } from "react-icons/io";
 import ButtonYellow from "../../ButtonYellow";
 import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";
-import RangeSliderInput from "./filtersmobile/RangeSlider";
 import PriceRange from "./filtersmobile/PriceRange";
 import Facilities from "./filtersmobile/Facilities";
 import PropertyType from "./filtersmobile/PropertyType";
+import Tags from "./filtersmobile/Tags";
+import UserRatings from "./filtersmobile/UserRatings";
+import StarCategory from "./filtersmobile/StarCategory";
+import Travelers from "./filtersmobile/Travelers";
 
 const Container = styled.div`
   margin: 0;
@@ -19,61 +21,52 @@ const Container = styled.div`
 `;
 
 const Section = (props) => {
-  const [SelectedStar, setSelectedStar] = useState(-1);
+  const [selectedStarCategory, setSelectedStarCategory] = useState([]);
   const [selectedUserStar, setSelectedUserStar] = useState([]);
-  const [SelectedBudget, setSelectedBudget] = useState();
   const [refundable, setRefundable] = useState(false)
   const [freeBreakfast, setFreeBreakfast] = useState(true)
   const [selectedFacilities, setSelectedFacilities] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
   const [type, setType] = useState(null);
+  const [budget, setBudget] = useState([props.filtersState.budget.price_lower_range, props.filtersState.budget.price_upper_range])
 
-  const _OnstarSelect = (i, currentfilter) => {
-    if (SelectedStar == i) {
-      setSelectedStar(-1);
-      props._updateStarFilterHandler("");
-      return;
-    }
-    setSelectedStar(i);
-    props._updateStarFilterHandler(currentfilter);
-  };
+  const handleBudgetChange = () => {
+    props.setFiltersState(prev => ({
+      ...prev,
+      budget: {
+        price_lower_range: budget[0],
+        price_upper_range: budget[1]
+      }
+    }))
+  }
 
   const handleSelectOption = (option) => {
     setType(option);
   };
 
   const handleRefundable = () => {
-    setRefundable(prev => !prev);
     props.setFiltersState(prev => ({
       ...prev,
-      "is_refundable": !prev["is_refundable"]
+      "is_refundable": refundable
     }))
   }
 
   const handleFreeBreakfast = () => {
-    setFreeBreakfast(prev => !prev);
     props.setFiltersState(prev => ({
       ...prev,
-      "free_breakfast": !prev["free_breakfast"]
+      "free_breakfast": freeBreakfast
     }))
   }
 
-  const handleUserStar = (star) => {
-    if (selectedUserStar.includes(star)) {
-      setSelectedUserStar(prev => prev.filter(item => item !== star));
-    } else {
-      setSelectedUserStar(prev => [...prev, star])
-    }
-  }
-
-  const isSelectedUserStar = (star) => {
-    return selectedUserStar.includes(star);
-  }
-
   const handleApply = () => {
+    props._updateStarFilterHandler(selectedStarCategory);
     props.updateUserStarHandler(selectedUserStar);
     props._addFilterHandler(selectedFacilities, "facilities");
+    props._addFilterHandler(selectedTags, "tags");
     props._addFilterHandler(type, "type");
+    handleRefundable();
+    handleFreeBreakfast();
+    handleBudgetChange();
     props.setshowFilter(false)
   }
 
@@ -119,57 +112,34 @@ const Section = (props) => {
               <div className="text-2xl font-normal line-clamp-1">Filters</div>
             </div>
 
-            <div className="flex flex-col justify-start items-baseline">
-              <div className="mb-2 font-normal">Star category</div>
-              <div className="flex flex-row gap-1">
-                {props.FILTERS["star_category"].map((currentfilter, i) => (
-                  <button
-                    onClick={() => _OnstarSelect(i, currentfilter)}
-                    className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${SelectedStar == i
-                      ? "text-white border-0 bg-black "
-                      : "border-2 bg-white text-black"
-                      } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
-                    key={i}
-                  >
-                    {currentfilter}
-                    <IoMdStar />
-                  </button>
-                ))}
-              </div>
-            </div>
+            <StarCategory
+              starCategory={props.FILTERS.star_category}
+              selectedStarCategory={selectedStarCategory}
+              setSelectedStarCategory={setSelectedStarCategory}
+            />
 
-            <div className="flex flex-col justify-start items-baseline">
-              <div className="mb-2 font-normal">User Ratings</div>
-              <div className="flex flex-row gap-1">
-                {props.FILTERS["user_ratings"].map((star, i) => (
-                  <button
-                    key={i}
-                    onClick={() => handleUserStar(star)}
-                    className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${isSelectedUserStar(star)
-                      ? "text-white border-0 bg-black "
-                      : "border-2 bg-white text-black"
-                      } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
-                  >
-                    {star}
-                    <IoMdStar />
-                  </button>
-                ))}
-              </div>
-            </div>
+            <UserRatings
+              userRatings={props.FILTERS.user_ratings}
+              selectedUserStar={selectedUserStar}
+              setSelectedUserStar={setSelectedUserStar}
+            />
 
             <div className="flex flex-row gap-5">
-              <button onClick={handleRefundable} className="flex flex-row items-center gap-1 cursor-pointer">
+              <button onClick={() => setRefundable(prev => !prev)} className="flex flex-row items-center gap-1 cursor-pointer">
                 <CheckboxFormComponent checked={refundable} />
                 Refundable
               </button>
 
-              <button onClick={handleFreeBreakfast} className="flex flex-row items-center gap-1 cursor-pointer">
+              <button onClick={() => setFreeBreakfast(prev => !prev)} className="flex flex-row items-center gap-1 cursor-pointer">
                 <CheckboxFormComponent checked={freeBreakfast} />
                 Free Breakfast
               </button>
             </div>
 
-            <PriceRange filtersState={props.filtersState} setFiltersState={props.setFiltersState} />
+            <PriceRange
+              budget={budget}
+              setBudget={setBudget}
+            />
 
             {props.FILTERS.type.length ? (
               <PropertyType types={props.FILTERS.type} handleSelectOption={handleSelectOption} />
@@ -183,7 +153,7 @@ const Section = (props) => {
             ) : null}
 
             {props.FILTERS.tags.length ? (
-              <Facilities
+              <Tags
                 tags={props.FILTERS.tags}
                 selectedTags={selectedTags}
                 setSelectedTags={setSelectedTags} />

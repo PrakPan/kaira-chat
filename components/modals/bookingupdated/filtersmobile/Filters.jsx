@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { IoMdClose, IoMdStar } from "react-icons/io";
+import { IoMdClose } from "react-icons/io";
 import Drawer from "../../../ui/Drawer";
 import ButtonYellow from "../../../ButtonYellow";
 import PropertyType from "./PropertyType";
 import Facilities from "./Facilities";
 import Tags from "./Tags";
+import UserRatings from "./UserRatings";
 
 export default function Filters(props) {
     const [selectedUserStar, setSelectedUserStar] = useState([]);
@@ -16,21 +17,10 @@ export default function Filters(props) {
         setType(option);
     };
 
-    const handleUserStar = (star) => {
-        if (selectedUserStar.includes(star)) {
-            setSelectedUserStar(prev => prev.filter(item => item !== star));
-        } else {
-            setSelectedUserStar(prev => [...prev, star])
-        }
-    }
-
-    const isSelectedUserStar = (star) => {
-        return selectedUserStar.includes(star);
-    }
-
     const handleApply = () => {
         props.updateUserStarHandler(selectedUserStar);
         props._addFilterHandler(selectedFacilities, "facilities");
+        props._addFilterHandler(selectedTags, "tags");
         props._addFilterHandler(type, "type");
         props.setshowFilter(false)
     }
@@ -58,24 +48,11 @@ export default function Filters(props) {
                         <div className="text-2xl font-normal line-clamp-1">Filters</div>
                     </div>
 
-                    <div className="flex flex-col justify-start items-baseline">
-                        <div className="mb-2 font-semibold">User Ratings</div>
-                        <div className="flex flex-row gap-1">
-                            {props.FILTERS["user_ratings"].map((star, i) => (
-                                <button
-                                    onClick={() => handleUserStar(star)}
-                                    className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${isSelectedUserStar(star)
-                                        ? "text-white border-0 bg-black "
-                                        : "border-2 bg-white text-black"
-                                        } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
-                                    key={i}
-                                >
-                                    {star}
-                                    <IoMdStar />
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+                    <UserRatings
+                        userRatings={props.FILTERS.user_ratings}
+                        selectedUserStar={selectedUserStar}
+                        setSelectedUserStar={setSelectedUserStar}
+                    />
 
                     {props.FILTERS.type.length ? (
                         <PropertyType types={props.FILTERS.type} handleSelectOption={handleSelectOption} />

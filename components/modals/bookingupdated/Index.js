@@ -82,6 +82,12 @@ const Booking = (props) => {
     user_ratings: null,
     facilities: null,
     tags: null,
+    occupancies: [
+      {
+        num_adults: props?.selectedBooking?.pax?.number_of_adults,
+        child_ages: []
+      }
+    ]
   });
   const [viewMoreStatus, setViewMoreStatus] = useState(false);
   const [nextPage, setNextPage] = useState(1);
@@ -93,15 +99,12 @@ const Booking = (props) => {
   const [unauthorized, setUnauthorized] = useState(false);
   const [noResults, setNoResults] = useState(false);
   const [filtersObj, setFiltersObj] = useState({
-    budget: ["Affordable", "Average", "Luxury", "Luxury+"],
     type: [],
     star_category: [1, 2, 3, 4, 5],
     user_ratings: [1, 2, 3, 4, 5],
     sort: [
       "Price: low to high",
       "Price: high to low",
-      "Recommended",
-      "Popular",
     ],
     facilities: [],
     tags: [],
@@ -135,6 +138,12 @@ const Booking = (props) => {
         sort: "price: low to high",
         facilities: null,
         tags: null,
+        occupancies: [
+          {
+            num_adults: props?.selectedBooking?.pax?.number_of_adults,
+            child_ages: []
+          }
+        ]
       });
       setNextPage(1);
       setProvider(null);
@@ -199,12 +208,7 @@ const Booking = (props) => {
       check_in: getDate(props?.selectedBooking?.check_in),
       check_out: getDate(props?.selectedBooking?.check_out),
       city_id: props?.selectedBooking?.cityId,
-      occupancies: [
-        {
-          num_adults: props?.selectedBooking?.pax?.number_of_adults,
-          child_ages: []
-        }
-      ],
+      occupancies: filtersState.occupancies,
       filter_by: {
         price_lower_range: filtersState.budget.price_lower_range,
         price_upper_range: filtersState.budget.price_upper_range,
@@ -215,8 +219,8 @@ const Booking = (props) => {
         facilities: filtersState.facilities,
         tags: filtersState.tags,
         type: filtersState.type,
-        star_category: filtersState.star_category ? [filtersState.star_category] : [1, 2, 3, 4, 5],
-        user_ratings: filtersState.user_ratings ? [filtersState.user_ratings] : [1, 2, 3, 4, 5],
+        star_category: filtersState.star_category,
+        user_ratings: filtersState.user_ratings,
         page: nextPage
       },
       sort_by: {
