@@ -12,7 +12,6 @@ import PropertyType from "./filtersmobile/PropertyType";
 import Tags from "./filtersmobile/Tags";
 import UserRatings from "./filtersmobile/UserRatings";
 import StarCategory from "./filtersmobile/StarCategory";
-import Travelers from "./filtersmobile/Travelers";
 
 const Container = styled.div`
   margin: 0;
@@ -29,6 +28,7 @@ const Section = (props) => {
   const [selectedTags, setSelectedTags] = useState([]);
   const [type, setType] = useState(null);
   const [budget, setBudget] = useState([props.filtersState.budget.price_lower_range, props.filtersState.budget.price_upper_range])
+  const [selectedTypes, setSelectedTypes] = useState(["All"]);
 
   const handleBudgetChange = () => {
     props.setFiltersState(prev => ({
@@ -39,10 +39,6 @@ const Section = (props) => {
       }
     }))
   }
-
-  const handleSelectOption = (option) => {
-    setType(option);
-  };
 
   const handleRefundable = () => {
     props.setFiltersState(prev => ({
@@ -63,7 +59,7 @@ const Section = (props) => {
     props.updateUserStarHandler(selectedUserStar);
     props._addFilterHandler(selectedFacilities, "facilities");
     props._addFilterHandler(selectedTags, "tags");
-    props._addFilterHandler(type, "type");
+    props._addFilterHandler(selectedTypes, "type");
     handleRefundable();
     handleFreeBreakfast();
     handleBudgetChange();
@@ -142,7 +138,10 @@ const Section = (props) => {
             />
 
             {props.FILTERS.type.length ? (
-              <PropertyType types={props.FILTERS.type} handleSelectOption={handleSelectOption} />
+              <PropertyType types={props.FILTERS.type}
+                selectedTypes={selectedTypes}
+                setSelectedTypes={setSelectedTypes}
+              />
             ) : null}
 
             {props.FILTERS.facilities.length ? (

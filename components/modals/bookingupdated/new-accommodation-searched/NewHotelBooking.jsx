@@ -4,7 +4,7 @@ import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import { getDate } from "../../../../helper/ConvertDateFormat";
 import { getIndianPrice } from "../../../../services/getIndianPrice";
 import { logEvent } from "../../../../services/ga/Index";
-import ImageCarousel from "../../Carousel/ImageCarousel";
+import ImageCarousel, {Carousel} from "../../Carousel/ImageCarousel";
 
 export default function NewHotelBooking({
     currentBooking,
@@ -41,7 +41,7 @@ export default function NewHotelBooking({
             className={`flex gap-1 pt-4 flex-col justify-start`}
         >
             <div>
-                <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3 h-full w-full">
+                <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] hover:border-[#F7E700] shadow-[#ECEAEA] p-2 h-full w-full">
                     <div
                         onClick={() => {
                             handleViewHotel()

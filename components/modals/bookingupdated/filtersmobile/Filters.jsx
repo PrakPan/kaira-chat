@@ -11,17 +11,13 @@ export default function Filters(props) {
     const [selectedUserStar, setSelectedUserStar] = useState([]);
     const [selectedFacilities, setSelectedFacilities] = useState([]);
     const [selectedTags, setSelectedTags] = useState([]);
-    const [type, setType] = useState(null);
-
-    const handleSelectOption = (option) => {
-        setType(option);
-    };
+    const [selectedTypes, setSelectedTypes] = useState(["All"]);
 
     const handleApply = () => {
         props.updateUserStarHandler(selectedUserStar);
         props._addFilterHandler(selectedFacilities, "facilities");
         props._addFilterHandler(selectedTags, "tags");
-        props._addFilterHandler(type, "type");
+        props._addFilterHandler(selectedTypes, "type");
         props.setshowFilter(false)
     }
 
@@ -55,7 +51,11 @@ export default function Filters(props) {
                     />
 
                     {props.FILTERS.type.length ? (
-                        <PropertyType types={props.FILTERS.type} handleSelectOption={handleSelectOption} />
+                        <PropertyType
+                            types={props.FILTERS.type}
+                            selectedTypes={selectedTypes}
+                            setSelectedTypes={setSelectedTypes}
+                        />
                     ) : null}
 
                     {props.FILTERS.facilities.length ? (

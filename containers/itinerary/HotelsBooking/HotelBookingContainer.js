@@ -475,13 +475,6 @@ const HotelBookingContainer = ({
                   ) : (
                     <></>
                   )}
-
-                  {(
-                    <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
-                      <PiForkKnifeFill className="text-lg text-[#7A7A7A]" />
-                      <div className="text-sm font-[400]">Complimentary breakfast available</div>
-                    </div>
-                  )}
                 </div>
 
                 {currentBooking && booking?.price && (

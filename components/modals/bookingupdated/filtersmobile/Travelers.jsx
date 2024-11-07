@@ -82,16 +82,16 @@ export default function Travelers(props) {
     }
 
     return (
-        <div className="relative h-fit border-2 flex flex-row items-center gap-2 px-3 py-2 rounded-lg cursor-pointer hover:border-black">
+        <div className="relative w-fit md:w-full h-fit border-2 flex flex-row items-center gap-2 px-3 py-2 rounded-lg cursor-pointer hover:border-black">
             <IoPerson onClick={() => setOpen(prev => !prev)} className="text-2xl" />
 
             <div onClick={() => setOpen(prev => !prev)} className="flex flex-col">
-                <div className="text-sm">Travelers</div>
+                <div className="text-sm">Room Configuration</div>
                 <div>{travelers} {travelers > 1 ? "travelers" : "traveler"}, {rooms.length} {rooms.length > 1 ? "rooms" : "room"}</div>
             </div>
 
             {open && (
-                <div className="absolute bg-white z-50 left-0 top-[65px] flex flex-col gap-3 drop-shadow-2xl rounded-lg p-4 overflow-auto max-h-[90vh] hide-scrollbar">
+                <div className="absolute bg-white z-50 left-0 md:left-auto md:right-0 top-[65px] flex flex-col gap-3 drop-shadow-2xl rounded-lg p-4 overflow-auto max-h-[70vh] hide-scrollbar">
                     <div className="flex flex-col gap-3">
                         {rooms.map((room, index) => (
                             <Room key={index} index={index} data={room} setRooms={setRooms} showError={showError} />

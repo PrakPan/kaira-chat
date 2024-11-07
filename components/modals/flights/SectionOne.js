@@ -2,22 +2,15 @@ import React, { useState, useRef } from "react";
 import styled from "styled-components";
 import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im";
 import { IoMdClose, IoMdSunny } from "react-icons/io";
-import { TbArrowBack, TbSunset2 } from "react-icons/tb";
+import { TbArrowBack } from "react-icons/tb";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { FaMinus, FaPlus } from "react-icons/fa";
-import { LuSun } from "react-icons/lu";
-import { WiSunrise } from "react-icons/wi";
 import { MdNightsStay } from "react-icons/md";
 import media from "../../media";
 import Drawer from "../../ui/Drawer";
 import Button from "../../ui/button/Index";
 import { BsFillSunriseFill, BsSunsetFill } from "react-icons/bs";
-
-
-
-
-
-
+import { IoPerson } from "react-icons/io5";
 
 const Heading = styled.div`
   margin: 0;
@@ -47,13 +40,6 @@ const FlexBox = styled.div`
 
     grid-template-columns: 1fr 1fr;
   }
-`;
-
-const DropDownContainer = styled.div`
-  display: flex;
-  gap: 2%;
-  width: 95%;
-  margin-inline: auto;
 `;
 
 const ItemContainer = styled.div`
@@ -218,45 +204,51 @@ const Section = (props) => {
         </div>
       </FlexBox>
 
-      <div className="flex flex-col gap-3 px-[.5rem] md:flex-row md:items-center md:space-x-10 md:pl-6">
-        <div className="flex flex-col gap-1">
-          <div>Passengers & Class</div>
+      <div className="flex flex-col gap-3 px-[.5rem] md:flex-row md:items-center md:justify-between md:px-6">
+        <div className="flex flex-col gap-2">
+          {props.filtersState.non_stop_flights ? (
+            <div
+              onClick={() => {
+                _handleFilterChange("non_stop_flights", false);
+              }}
+              className="cursor-pointer"
+            >
+              <ImCheckboxChecked style={{ display: "inline" }} /> Nonstop
+            </div>
+          ) : (
+            <div
+              className="cursor-pointer"
+              onClick={() => {
+                _handleFilterChange("non_stop_flights", true);
+              }}
+            >
+              <ImCheckboxUnchecked style={{ display: "inline" }} /> Nonstop
+            </div>
+          )}
 
-          <div onClick={() => setShowPax(true)} className="relative w-fit px-3 py-1 rounded-lg border-2 cursor-pointer">
-            {props.pax.adults +
-              adult +
-              (props.pax.children
-                ? ", " + props.pax.children + child
-                : "") +
-              (props.pax.infants
-                ? ", " + props.pax.infants + infant
-                : "") + ("/" + props.classType.key)}
+          <div className="py-1">Departure Date: <span className="font-bold">{new Date(props.selectedBooking.check_in).toDateString()}</span>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <div onClick={() => setShowPax(true)} className="relative w-fit px-3 py-2 rounded-lg border-2 cursor-pointer hover:border-black transition-all flex flex-row items-center gap-2">
+            <IoPerson className="text-2xl" />
+
+            <div>
+              <div>Passengers & Class</div>
+
+              {props.pax.adults +
+                adult +
+                (props.pax.children
+                  ? ", " + props.pax.children + child
+                  : "") +
+                (props.pax.infants
+                  ? ", " + props.pax.infants + infant
+                  : "") + (", " + props.classType.key)}
+            </div>
           </div>
 
           {showPax && (<Pax setShowPax={setShowPax} pax={props.pax} setPax={props.setPax} classType={props.classType} setClassType={props.setClassType} />)}
-        </div>
-
-        {props.filtersState.non_stop_flights ? (
-          <div
-            onClick={() => {
-              _handleFilterChange("non_stop_flights", false);
-            }}
-            className="cursor-pointer"
-          >
-            <ImCheckboxChecked style={{ display: "inline" }} /> Nonstop
-          </div>
-        ) : (
-          <div
-            className="cursor-pointer"
-            onClick={() => {
-              _handleFilterChange("non_stop_flights", true);
-            }}
-          >
-            <ImCheckboxUnchecked style={{ display: "inline" }} /> Nonstop
-          </div>
-        )}
-
-        <div className="py-1">Departure Date: <span className="font-bold">{new Date(props.selectedBooking.check_in).toDateString()}</span>
         </div>
       </div>
     </div>
@@ -277,8 +269,6 @@ const Section = (props) => {
       {isPageWide ? FiltersSection : <></>}
 
       <TextContainer>
-
-
         Showing {props.flightCount} {props.text} {isPageWide ? "|" : <br />}{" "}
         Sort by:{" "}
         <div
@@ -478,7 +468,7 @@ const Pax = ({ setShowPax, pax, setPax, classType, setClassType }) => {
 
   return (
     <div onClick={handleClose} className="fixed inset-0 z-50">
-      <div ref={ref} className="absolute top-[270px] md:top-[200px] left-2 right-2 md:left-5 md:right-auto bg-neutral-200 shadow-2xl drop-shadow-2xl p-3 rounded-lg space-y-5 text-sm">
+      <div ref={ref} className="absolute top-[270px] md:top-[240px] left-2 right-2 md:right-5 md:left-auto bg-neutral-100 shadow-2xl drop-shadow-3xl p-3 rounded-lg space-y-5 text-sm">
         <div className="flex flex-col gap-1">
           <div>Adults (12y +)</div>
           <div className="flex flex-row items-center gap-2">
@@ -554,7 +544,7 @@ const Pax = ({ setShowPax, pax, setPax, classType, setClassType }) => {
         </div>
 
         <div className="border-t-2 border-t-white pt-2">
-          <button onClick={handleDone} className="bg-[#F8E000] py-2 px-3 rounded-lg">Done</button>
+          <button onClick={handleDone} className="bg-[#F8E000] py-2 px-4 rounded-lg border-2 transition-all border-black hover:bg-black hover:text-white">Done</button>
         </div>
       </div>
     </div>

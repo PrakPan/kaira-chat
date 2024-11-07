@@ -218,7 +218,7 @@ const Booking = (props) => {
         is_refundable: filtersState.is_refundable,
         facilities: filtersState.facilities,
         tags: filtersState.tags,
-        type: filtersState.type,
+        type: filtersState.type && filtersState.type[0] === "All" ? null : filtersState.type,
         star_category: filtersState.star_category,
         user_ratings: filtersState.user_ratings,
         page: nextPage

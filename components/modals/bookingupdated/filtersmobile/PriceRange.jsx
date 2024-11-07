@@ -27,9 +27,8 @@ export default function PriceRange(props) {
     }
 
     return (
-        <div className="md:w-[30%] flex flex-col justify-start items-baseline">
-            <div className="font-normal">Price range</div>
-            <div className="text-sm mb-3">per night</div>
+        <div className="flex flex-col gap-3 justify-start items-baseline">
+            <div className="font-normal">Price range <span className="text-sm">(per night)</span></div>
 
             <div className="w-full flex flex-col gap-4">
                 <RangeSliderInput

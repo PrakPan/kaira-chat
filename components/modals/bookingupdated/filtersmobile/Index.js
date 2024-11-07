@@ -90,96 +90,106 @@ export default function TemporaryDrawer(props) {
     <div>
       <React.Fragment key={"bottom"}>
         {isPageWide && (
-          <div className="w-[95%] mx-auto mt-4 flex flex-col gap-3">
-            <div className="flex lg:flex-row lg:gap-0 gap-3 flex-col justify-between flex-wrap">
+          <div className="w-[95%] mx-auto mt-4 flex flex-row justify-between gap-3 flex-wrap">
+            <div className="w-[50%] flex flex-col gap-3">
               <PriceRange
                 budget={budget}
                 setBudget={setBudget}
               />
 
-              <div className="flex flex-col justify-between" >
-                <StarCategory
-                  starCategory={props.filters.star_category}
-                  selectedStarCategory={selectedStarCategory}
-                  setSelectedStarCategory={setSelectedStarCategory}
-                />
+              <div className="w-fit flex flex-row gap-5">
+                <button onClick={handleRefundable} className="flex flex-row items-center gap-1 cursor-pointer">
+                  <CheckboxFormComponent checked={refundable} />
+                  Refundable
+                </button>
 
-                <div className="flex flex-row gap-5">
-                  <button onClick={handleRefundable} className="flex flex-row items-center gap-1 cursor-pointer">
-                    <CheckboxFormComponent checked={refundable} />
-                    Refundable
-                  </button>
-
-                  <button onClick={handleFreeBreakfast} className="flex flex-row items-center gap-1 cursor-pointer">
-                    <CheckboxFormComponent checked={freeBreakfast} />
-                    Free Breakfast
-                  </button>
-                </div>
+                <button onClick={handleFreeBreakfast} className="flex flex-row items-center gap-1 cursor-pointer">
+                  <CheckboxFormComponent checked={freeBreakfast} />
+                  Free Breakfast
+                </button>
               </div>
+            </div>
+
+            <div className="flex flex-col justify-between" >
+              <StarCategory
+                starCategory={props.filters.star_category}
+                selectedStarCategory={selectedStarCategory}
+                setSelectedStarCategory={setSelectedStarCategory}
+              />
+
+              <Travelers
+                adults={props.plan?.number_of_adults}
+                children={props.plan?.number_of_children}
+                setFiltersState={props.setFiltersState}
+              />
             </div>
           </div>
         )}
 
-        <div className="w-fit px-3 mt-4">
-          <Travelers
-            adults={props.plan?.number_of_adults}
-            children={props.plan?.number_of_children}
-            setFiltersState={props.setFiltersState}
-          />
-        </div>
+        {!isPageWide && (
+          <div className="w-[90%] mx-auto">
+            <Travelers
+              adults={props.plan?.number_of_adults}
+              children={props.plan?.number_of_children}
+              setFiltersState={props.setFiltersState}
+            />
+          </div>
+        )}
 
         {!props.loading && props?.totalCount ? (
-          <div className="text-sm font-normal w-[95%] ml-5 mt-3">
-            Showing {props?.No_of_stays ? `${props.No_of_stays} ` : null}
-            stays in {props.booking_city} {isPageWide ? "|" : <br />} Sort by:{" "}
-            <div
-              style={{
-                display: "inline",
-                position: "relative",
-                cursor: "pointer",
-              }}
-              onClick={() => {
-                setSortShow(!sortShow);
-              }}
-            >
-              <b>
-                {SelectedSort}
-                {sortShow ? (
-                  <FiChevronUp
-                    style={{
-                      display: "inline",
-                      fontWeight: 900,
-                      fontSize: "1.2rem",
-                    }}
-                  />
-                ) : (
-                  <FiChevronDown
-                    style={{
-                      display: "inline",
-                      fontWeight: 900,
-                      fontSize: "1.2rem",
-                    }}
-                  />
-                )}
-              </b>
-              {sortShow ? (
-                <SortContainer>
-                  {props.filters["sort"].map((e, i) => (
-                    <SortItem
-                      key={i}
-                      onClick={() => {
-                        setSelectedSort(e);
-                        props._addFilterHandler(e.toLowerCase(), "sort");
+          <div className="flex flex-row items-center justify-between px-4 mt-3">
+            <div className="text-sm font-normal w-[95%] md:w-fit">
+              Showing {props?.No_of_stays ? `${props.No_of_stays} ` : null}
+              stays in {props.booking_city} {isPageWide ? "|" : <br />} Sort by:{" "}
+              <div
+                style={{
+                  display: "inline",
+                  position: "relative",
+                  cursor: "pointer",
+                }}
+                onClick={() => {
+                  setSortShow(!sortShow);
+                }}
+              >
+                <b>
+                  {SelectedSort}
+                  {sortShow ? (
+                    <FiChevronUp
+                      style={{
+                        display: "inline",
+                        fontWeight: 900,
+                        fontSize: "1.2rem",
                       }}
-                      selected={e === SelectedSort}
-                    >
-                      {e}
-                    </SortItem>
-                  ))}
-                </SortContainer>
-              ) : (
-                <></>
-              )}
+                    />
+                  ) : (
+                    <FiChevronDown
+                      style={{
+                        display: "inline",
+                        fontWeight: 900,
+                        fontSize: "1.2rem",
+                      }}
+                    />
+                  )}
+                </b>
+                {sortShow ? (
+                  <SortContainer>
+                    {props.filters["sort"].map((e, i) => (
+                      <SortItem
+                        key={i}
+                        onClick={() => {
+                          setSelectedSort(e);
+                          props._addFilterHandler(e.toLowerCase(), "sort");
+                        }}
+                        selected={e === SelectedSort}
+                      >
+                        {e}
+                      </SortItem>
+                    ))}
+                  </SortContainer>
+                ) : (
+                  <></>
+                )}
+              </div>
             </div>
 
             {isPageWide && (

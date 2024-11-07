@@ -4,7 +4,7 @@ import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im";
 
 export default function PriceContainer({ data, isSelected, selectedBooking, _updateBookingHandler, provider }) {
     return (
-        <div className="lg:w-[20%] flex flex-row justify-between items-center">
+        <div className="flex md:flex-col justify-between items-center">
             <div className="flex flex-col gap-1">
                 <div className="text-lg font-bold">
                     {data.finalFare ? `₹${getIndianPrice(data.finalFare)}` : null}

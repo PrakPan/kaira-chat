@@ -39,7 +39,7 @@ const Plan = styled.div`
   transform: translate(-50%, -45%);
 `;
 
-export default function FlightDetails({ data, origin, destination, duration, isNonStop, numStops }) {
+export default function FlightDetails({ segments, data, origin, destination, duration, isNonStop, numStops }) {
     const [isHovered, setIsHovered] = useState(false);
 
     const popupStyle = {
@@ -47,11 +47,7 @@ export default function FlightDetails({ data, origin, destination, duration, isN
         backgroundColor: 'white',
         border: '1px solid #e5e7eb', // gray-200 equivalent
         borderRadius: '0.25rem',
-        padding: '4px 8px',
-        position: 'absolute',
-        bottom: '50%',
-        left: '50%',
-        // translate: '-70%',
+        padding: '15px 30px',
         boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
     };
 
@@ -59,8 +55,6 @@ export default function FlightDetails({ data, origin, destination, duration, isN
         if (totalMinutes) {
             const hours = Math.floor(totalMinutes / 60);
             const minutes = totalMinutes % 60;
-            const formattedHours = hours.toString().padStart(2, '0');
-            const formattedMinutes = minutes.toString().padStart(2, '0');
             return `${hours ? hours + 'h' : ''} ${minutes ? minutes + 'm' : ''}`;
         }
 
@@ -108,15 +102,23 @@ export default function FlightDetails({ data, origin, destination, duration, isN
                         <div
                             onMouseEnter={() => setIsHovered(true)}
                             onMouseLeave={() => setIsHovered(false)}
-                            className="">
+                            className="relative">
                             <div className="text-sm text-blue cursor-pointer">
                                 {numStops} stop{numStops !== 1 && 's'}
+                                {" via "}
+                                <span className="text-wrap">
+                                    {segments.map((segment, i) => (
+                                        i !== 0 && (
+                                            <span>{i !== 1 ? ", " : " "}{segment.origin?.city_name}</span>
+                                        )
+                                    ))}
+                                </span>
                             </div>
-                            <div style={popupStyle} className="z-50 translate-x-[-50%] md:translate-x-[-65%] text-sm text-center flex flex-col gap-2 bg-gray-200 drop-shadow-3xl">
+                            <div style={popupStyle} className="z-50 absolute bottom-100 left-1/2 translate-x-[-50%] text-sm text-center flex flex-col gap-2 bg-gray-200 drop-shadow-3xl">
                                 {data?.segments.map((segment, index) => {
                                     if (index == 0) return null;
                                     return (
-                                        <div>
+                                        <div className="border-b-2 mb-2">
                                             <div className="text-nowrap">Plane change ({segment.airline.name}, {segment.airline.code}-{segment.airline.flight_number})
                                             </div>
                                             <div className="text-nowrap">Via {segment?.origin?.city_name} ({segment.origin?.airport_code}) {getTime(segment?.ground_time)} layover
