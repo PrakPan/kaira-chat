@@ -222,7 +222,7 @@ const Section = (props) => {
                 _handleFilterChange("non_stop_flights", true);
               }}
             >
-              <ImCheckboxUnchecked style={{ display: "inline" }} /> Nonstop
+                <ImCheckboxUnchecked style={{ display: "inline" }} /> Non-stop flights only?
             </div>
           )}
 
