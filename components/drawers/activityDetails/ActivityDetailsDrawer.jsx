@@ -63,7 +63,7 @@ const ActivityDetailsDrawer = (props) => {
             trace_id: traceId,
         }
 
-        activityBooking.post("", requestData).then(res => {
+        activityBooking.post(`${router.query?.id}/bookings/activity/`, requestData).then(res => {
             props.getAccommodationAndActivitiesHandler();
             props.openNotification({
                 type: "success",

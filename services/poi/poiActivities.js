@@ -12,5 +12,5 @@ export const activityDetail = axios.create({
 });
 
 export const activityBooking = axios.create({
-  baseURL: MERCURY_HOST + '/api/v1/sales/bookings/activity/create/',
+  baseURL: MERCURY_HOST + '/api/v1/itinerary/',
 });

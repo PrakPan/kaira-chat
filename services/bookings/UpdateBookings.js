@@ -8,9 +8,9 @@ const fetchaccommodations = axios.create({
 export default fetchaccommodations;
 
 export const updateFlightBooking = axios.create({
-  baseURL: MERCURY_HOST + "/api/v1/sales/bookings/flight/create/",
+  baseURL: MERCURY_HOST + "/api/v1/itinerary/",
 });
 
 export const updateAccommodationBooking = axios.create({
-  baseURL: MERCURY_HOST + "/api/v1/sales/bookings/accommodation/create/",
+  baseURL: MERCURY_HOST + "/api/v1/itinerary/",
 });

@@ -127,7 +127,7 @@ const POI = (props) => {
       source: props.provider.toLowerCase()
     }
 
-    updateAccommodationBooking.post("", requestData).then(response => {
+    updateAccommodationBooking.post(`${router?.query?.id}/bookings/accommodation/`, requestData).then(response => {
       props._updateStayBookingHandler([response.data]);
       props.setUpdateBookingState(false);
       setTimeout(() => {
