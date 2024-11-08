@@ -2,7 +2,6 @@ import styled from "styled-components";
 import ImageLoader from "../../../../UpdatedBackgroundImageLoader";
 import { getIndianPrice } from "../../../../../services/getIndianPrice";
 import media from "../../../../media";
-import CheckboxFormComponent from "../../../../../components/FormComponents/CheckboxFormComponent";
 import { RxCross2 } from "react-icons/rx";
 import { dateFormat } from "../../../../../helper/DateUtils";
 import { useState } from "react";

@@ -228,7 +228,7 @@ export default function ActivityDetails(props) {
                     </div>
                 )}
 
-                {props.data.tips && props.data.tips.length ? (
+                {props.data?.tips && props.data?.tips?.length ? (
                     <div className="flex flex-col gap-2">
                         <div className="text-[18px] font-[800]">Tips</div>
                         <div className="text-[14px]">

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import RangeSliderInput from "./RangeSlider";
-import { getIndianPrice } from "../../../../services/getIndianPrice";
 
 export default function PriceRange(props) {
     const [minPrice, setMinPrice] = useState(props.budget[0])

@@ -39,7 +39,9 @@ const Plan = styled.div`
   transform: translate(-50%, -45%);
 `;
 
-export default function FlightDetails({ segments, data, origin, destination, duration, isNonStop, numStops }) {
+export default function FlightDetails({
+    segments, data, origin, destination, duration, isNonStop, numStops, setShowDetails
+}) {
     const [isHovered, setIsHovered] = useState(false);
 
     const popupStyle = {
@@ -102,6 +104,7 @@ export default function FlightDetails({ segments, data, origin, destination, dur
                         <div
                             onMouseEnter={() => setIsHovered(true)}
                             onMouseLeave={() => setIsHovered(false)}
+                            onClick={() => setShowDetails(prev => !prev)}
                             className="relative">
                             <div className="text-sm text-blue cursor-pointer">
                                 {numStops} stop{numStops !== 1 && 's'}

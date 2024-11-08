@@ -5,7 +5,8 @@ import FlightDetails from "./FlightDetails";
 import PriceContainer from "./PriceContainer";
 import { useState, useEffect } from "react";
 import { axiosFlightFareRule } from "../../../../services/bookings/FlightSearch";
-import { IoMdCloseCircle } from "react-icons/io";
+import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
+
 
 const Container = styled.div`
   width: 95%;
@@ -57,6 +58,7 @@ const Flight = (props) => {
           isNonStop={props.filtersState.non_stop_flights}
           numStops={props.data?.segments?.length - 1}
           segments={props.data?.segments}
+          setShowDetails={setShowDetails}
         />
 
         <PriceContainer
@@ -72,11 +74,17 @@ const Flight = (props) => {
         />
       </div>
 
-      <button className="text-sm text-blue hover:underline transition-all focus:outline-none"
+      <button className="text-sm text-blue flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg transition-all focus:outline-none"
         onClick={() => setShowDetails(prev => !prev)}
       >
         Flight Details
+        {showDetails ? (
+          <IoIosArrowUp className="text-lg" />
+        ) : (
+          <IoIosArrowDown className="text-lg" />
+        )}
       </button>
+
 
       {showDetails && (
         <Details
@@ -122,13 +130,9 @@ const Details = ({ segments, provider, resultIndex, setShowDetails }) => {
 
   return (
     <div className="relative flex flex-col gap-4 bg-gray-100 p-2 rounded-md">
-      <div className="absolute right-1 top-1 z-50">
-        <IoMdCloseCircle onClick={() => setShowDetails(false)} className="text-lg md:text-xl text-gray-400 cursor-pointer" />
-      </div>
-
       <div className="flex flex-col gap-2">
         <div
-          className="w-fit py-2 px-4 text-sm font-bold bg-[#F8E000] rounded-lg cursor-pointer">
+          className="w-fit py-2 text-lg font-bold">
           Flight Details
         </div>
 
@@ -140,7 +144,7 @@ const Details = ({ segments, provider, resultIndex, setShowDetails }) => {
       </div>) : fareRUlesError ? (<div className="text-sm text-center">Something went wrong, please try again</div>) : (
         <div className="flex flex-col">
           <div
-            className="w-fit py-2 px-4 mb-2 text-sm font-bold bg-[#F8E000] rounded-lg cursor-pointer">
+            className="w-fit py-2 mb-2 text-lg font-bold">
             Fare Details and Rules
           </div>
 
@@ -178,7 +182,7 @@ const FlightSegment = ({ segments }) => {
                 <span className="text-[#4a4a4a] bg-[#dfdfdf] block absolute text-xs left-[-50px] md:left-[-100px] h-[1px] w-[50px] md:w-[100px] md:top-[13.7px] top-[50%]"></span>
 
                 <div className="flex flex-col md:flex-row gap-2">
-                  <b className="font-black text-blue">Change of planes</b>
+                  <b className="font-black">Change of planes</b>
                   <b>
                     {getTime(segment?.ground_time)}
                     {" Layover in "}
@@ -212,7 +216,11 @@ const FlightSegment = ({ segments }) => {
                     {new Date(segment?.origin?.departure_time).toDateString()}
                   </p>
 
-                  <p className="text-xs m-0">{segment?.origin?.city_name}, {segment?.origin?.country_name}</p>
+                  <p className="text-xs m-0">{segment?.origin?.city_name} ({segment?.origin?.airport_code})</p>
+
+                  {segment?.origin?.terminal ? (
+                    <p className="text-xs">Terminal: {segment.origin.terminal}</p>
+                  ) : null}
                 </div>
 
                 <div className="flex-1 text-xs text-center">
@@ -228,23 +236,17 @@ const FlightSegment = ({ segments }) => {
                     {new Date(segment?.destination?.arrival_time).getMinutes().toString().padStart(2, '0')}
                   </p>
                   <p className="text-black text-xs font-bold mb-2">{new Date(segment?.destination?.arrival_time).toDateString()}</p>
-                  <p className="text-xs m-0">{segment?.destination?.city_name}, {segment?.destination?.country_name}</p>
+                  <p className="text-xs m-0">{segment?.destination?.city_name} ({segment?.destination?.airport_code})</p>
+                  {segment?.destination?.terminal ? (
+                    <p className="text-xs">Terminal: {segment.destination.terminal}</p>
+                  ) : null}
                 </div>
               </div>
 
               <div className="md:w-[50%] flex flex-row items-start justify-between text-xs">
                 <p className="flex flex-col gap-2">
                   <span className="text-sm font-bold text-left pr-2.5">
-                    BAGGAGE:
-                  </span>
-                  <span className="text-[#4a4a4a] text-left pr-2.5">
-                    ADULT
-                  </span>
-                </p>
-
-                <p className="flex flex-col gap-2">
-                  <span className="text-sm font-bold text-left pr-2.5">
-                    CHECK IN
+                    CHECK IN BAGGAGE
                   </span>
                   <span className="text-[#4a4a4a] text-left pr-2.5">
                     {segment?.baggage_allowance}
@@ -253,7 +255,7 @@ const FlightSegment = ({ segments }) => {
 
                 <p className="flex flex-col gap-2">
                   <span className="text-sm font-bold text-left pr-2.5">
-                    CABIN
+                    CABIN BAGGAGE
                   </span>
                   <span className="text-[#4a4a4a] text-left pr-2.5">
                     {segment?.cabin_baggage_allowance}

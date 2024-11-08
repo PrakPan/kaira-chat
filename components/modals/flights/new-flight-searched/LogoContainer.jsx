@@ -12,15 +12,18 @@ export default function LogoContainer({ data }) {
 
       <div className="flex flex-col gap-1">
         <div className="text-sm">
-          {data?.segments[0]?.airline.name}{data?.segments.length > 1 && data?.segments[0]?.airline.name !== data?.segments[1]?.airline.name && " +1"}
+          {data?.segments[0]?.airline.name}
         </div>
-        {data?.segments.map((value, index) => (
-          <div key={index} className="text-sm text-gray-600">
-            {value?.airline.code}-{value?.airline.flight_number}
-          </div>
-        ))}
-      </div>
+        <div className="text-sm text-gray-600">
+          {data?.segments[0]?.airline.code}-{data?.segments[0]?.airline.flight_number}
 
+          {data?.segments.length > 1 ? (
+            <div className="text-sm text-gray-600">
+              +{data?.segments?.length - 1} more
+            </div>
+          ) : null}
+        </div>
+      </div>
     </div>
   );
 }
