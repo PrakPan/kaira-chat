@@ -58,6 +58,10 @@ export default function TemporaryDrawer(props) {
   }, [budget])
 
   useEffect(() => {
+    if (props.filtersState.star_category === null && selectedStarCategory.length === 0) {
+      return;
+    }
+    
     let handler;
     if (props.filtersState.star_category !== selectedStarCategory) {
       handler = setTimeout(() => {

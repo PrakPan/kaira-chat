@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { IoPerson } from "react-icons/io5";
 import { CiCirclePlus, CiCircleMinus } from "react-icons/ci";
+import { RiArrowDropDownLine } from "react-icons/ri";
+
 
 export default function Travelers(props) {
     const [travelers, setTravelers] = useState(1);
@@ -164,7 +166,10 @@ const Room = ({ index, data, setRooms, showError }) => {
 
             <div className="flex flex-col gap-2">
                 <div className="flex flex-row items-center justify-between">
+                    <div className="flex flex-col">
                     <div className="text-sm">Children</div>
+                    <div className="text-xs">2 - 12 years</div>
+                    </div>
                     <div className="flex flex-row items-center gap-2">
                         <CiCircleMinus onClick={() => handleChildren('minus')} className="text-2xl" />
                         <div>{children}</div>
@@ -207,18 +212,19 @@ const ChildAge = ({ index, child, age, setChildAges, showError }) => {
             <div onClick={() => setOpenAges(prev => !prev)} className={`flex flex-row justify-between text-sm border-1 rounded-lg p-2 ${showError && !selectedAge ? "border-red-500" : ""}`}>
                 <div>Child {child} age*</div>
                 <div>{selectedAge}</div>
+                <RiArrowDropDownLine className="text-xl" />
             </div>
             {showError && !selectedAge && (
                 <div className="text-xs text-red-400">Provide the age of the child.</div>
             )}
 
             {openAges && (
-                <div className="z-50 flex flex-col gap-1 absolute top-10 bg-white w-full border-1 border-black">
+                <div className="z-50 flex flex-col gap-1 absolute top-10 bg-white w-full border-1 border-black drop-shadow-2xl">
 
-                    {Array(12).fill(null).map((_, i) => (
+                    {Array(11).fill(null).map((_, i) => (
                         <div
                             onClick={() => handleChildAge(i + 1)}
-                            className="hover:bg-gray-200 p-2">{i + 1}</div>
+                            className="hover:bg-gray-200 p-2">{i + 2}</div>
 
                     ))}
                 </div>

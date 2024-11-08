@@ -213,7 +213,7 @@ const Section = (props) => {
               }}
               className="cursor-pointer"
             >
-              <ImCheckboxChecked style={{ display: "inline" }} /> Nonstop
+              <ImCheckboxChecked style={{ display: "inline" }} /> Non-stop flights only?
             </div>
           ) : (
             <div

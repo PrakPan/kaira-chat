@@ -84,7 +84,7 @@ const Booking = (props) => {
     tags: null,
     occupancies: [
       {
-        num_adults: props?.selectedBooking?.pax?.number_of_adults,
+        num_adults: props?.plan?.number_of_adults,
         child_ages: []
       }
     ]
@@ -113,6 +113,8 @@ const Booking = (props) => {
   const [showFilters, setShowFilters] = useState(false);
   const debouncedSearch = useDebounce(selectSearch);
 
+  console.log("HERE >>>>", filtersState);
+
   useEffect(() => {
     if (props?.showBookingModal) {
       fetchHotels();
@@ -140,7 +142,7 @@ const Booking = (props) => {
         tags: null,
         occupancies: [
           {
-            num_adults: props?.selectedBooking?.pax?.number_of_adults,
+            num_adults: props?.plan?.number_of_adults,
             child_ages: []
           }
         ]
@@ -212,13 +214,13 @@ const Booking = (props) => {
       filter_by: {
         price_lower_range: filtersState.budget.price_lower_range,
         price_upper_range: filtersState.budget.price_upper_range,
-        hotel_name: debouncedSearch,
+        hotel_name: debouncedSearch ? debouncedSearch : null,
         sub_location_ids: null,
         free_breakfast: filtersState.free_breakfast,
         is_refundable: filtersState.is_refundable,
         facilities: filtersState.facilities,
         tags: filtersState.tags,
-        type: filtersState.type && filtersState.type[0] === "All" ? null : filtersState.type,
+        type: filtersState.type && filtersState.type[0] !== "All" ? filtersState.type : null,
         star_category: filtersState.star_category,
         user_ratings: filtersState.user_ratings,
         page: nextPage
