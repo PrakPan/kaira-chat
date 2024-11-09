@@ -8,12 +8,12 @@ import travelsupportcontent from "../../public/content/travelsupport";
 import Logos from "./Logos";
 import Enquiry from "./enquiry/Index";
 import BannerMobile from "./banner/Mobile";
-import Experiences from "../../components/containers/Experiences";
 import WhatWeOffer from "./WhatWeOffer";
 import Locations from "../../components/containers/plannerlocations/Index";
 import WhyChooseUs from "./WhyChooseUs";
 import OurCustomers from "./OurCustomers";
 import Faqs from "./Faqs";
+import Activities from "./Activities";
 
 
 const SetWidthContainer = styled.div`
@@ -156,21 +156,21 @@ const AffiliatePage = (props) => {
           </div>
         ) : null}
 
-        {props.getaways_delhi_experiences.length ? (
+        {props.corporate_gateways_activities.length ? (
           <div className="mt-5 flex flex-col gap-5">
             <div>
               <div className="flex flex-col pb-5 pl-3 pr-3 md:p-5 gap-3 items-center">
                 <div
                   className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]"
                 >
-                  Corporate Getaways from Delhi
+                  Corporate Getaways
                 </div>
                 <div className="text-[16px] font-[350] leading-[24px] text-center">Far from the busiest roads of the city, breathe in fresh air and relax in the lap of nature while staying productive. Discover a change that leaves you and your team feeling inspired and ready to achieve the next big goals.</div>
               </div>
 
-              <Experiences
-                experiences={props.getaways_delhi_experiences}
-              ></Experiences>
+              <Activities
+                activities={props.corporate_gateways_activities}
+              />
             </div>
 
             <button onClick={() => setEnquiryOpen(true)} className="border-2 border-black rounded-lg px-5 py-2 mx-auto hover:text-white hover:bg-black transition-all">Schedule a Callback Now!</button>
@@ -179,85 +179,121 @@ const AffiliatePage = (props) => {
           <></>
         )}
 
-        {props.workcation_experience.length ? (
+        {props.in_office_activities.length ? (
           <div className="mt-5 flex flex-col gap-5">
             <div>
               <div className="flex flex-col pb-5 pl-3 pr-3 md:p-5 gap-3 items-center">
                 <div
                   className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]"
                 >
-                  Workcation Itineraries for Corporates
+                  In Office Activations
                 </div>
-                <div className="text-[16px] font-[350] leading-[24px] text-center">There’s more to Business travel than just meetings! Step out of the routine, build connections, meet clients on their turf, and experience the energy that only in-person interactions can bring.</div>
+                <div className="text-[16px] font-[350] leading-[24px] text-center">Far from the busiest roads of the city, breathe in fresh air and relax in the lap of nature while staying productive. Discover a change that leaves you and your team feeling inspired and ready to achieve the next big goals.</div>
               </div>
 
-              <Experiences
-                experiences={props.workcation_experience}
-              ></Experiences>
+              <Activities
+                activities={props.in_office_activities}
+              />
             </div>
 
-            <button onClick={() => setEnquiryOpen(true)} className="border-2 border-black rounded-lg px-5 py-2 mx-auto hover:text-white hover:bg-black transition-all">Plan your Workcation Now!</button>
+            <button onClick={() => setEnquiryOpen(true)} className="border-2 border-black rounded-lg px-5 py-2 mx-auto hover:text-white hover:bg-black transition-all">Schedule a Callback Now!</button>
           </div>
         ) : (
           <></>
         )}
 
-        {props.experiential_experiences.length ? (
+        {props.team_outing_activities.length ? (
           <div className="mt-5 flex flex-col gap-5">
             <div>
               <div className="flex flex-col pb-5 pl-3 pr-3 md:p-5 gap-3 items-center">
                 <div
                   className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]"
                 >
-                  Experiential Corporate Getaways
+                  Team Outing Activities
                 </div>
-                <div className="text-[16px] font-[350] leading-[24px] text-center">There’s more to Business travel than just meetings! Step out of the routine, build connections, meet clients on their turf, and experience the energy that only in-person interactions can bring.</div>
+                <div className="text-[16px] font-[350] leading-[24px] text-center">Far from the busiest roads of the city, breathe in fresh air and relax in the lap of nature while staying productive. Discover a change that leaves you and your team feeling inspired and ready to achieve the next big goals.</div>
               </div>
 
-              <Experiences
-                experiences={props.experiential_experiences}
-              ></Experiences>
+              <Activities
+                activities={props.team_outing_activities}
+              />
             </div>
 
-            <button onClick={() => setEnquiryOpen(true)} className="border-2 border-black rounded-lg px-5 py-2 mx-auto hover:text-white hover:bg-black transition-all">Plan your Workcation Now!</button>
+            <button onClick={() => setEnquiryOpen(true)} className="border-2 border-black rounded-lg px-5 py-2 mx-auto hover:text-white hover:bg-black transition-all">Schedule a Callback Now!</button>
           </div>
         ) : (
           <></>
         )}
 
-        {props.getaway_experiences.length ? (
-          <div className="mt-5">
-            <div className="flex flex-col pb-5 pl-3 pr-3 md:p-5 gap-3 items-center">
-              <div
-                className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]"
-              >
-                Corporate getaways
+        {props.conference_activities.length ? (
+          <div className="mt-5 flex flex-col gap-5">
+            <div>
+              <div className="flex flex-col pb-5 pl-3 pr-3 md:p-5 gap-3 items-center">
+                <div
+                  className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]"
+                >
+                  Conference
+                </div>
+                <div className="text-[16px] font-[350] leading-[24px] text-center">Far from the busiest roads of the city, breathe in fresh air and relax in the lap of nature while staying productive. Discover a change that leaves you and your team feeling inspired and ready to achieve the next big goals.</div>
               </div>
-              <div className="text-[16px] font-[350] leading-[24px] text-center">Business travel is essential for building relationships and closing deals. Nothing compares to the impact of face-to-face interaction and a handshake. It’s key to developing partnerships and achieving a range of business objectives.</div>
+
+              <Activities
+                activities={props.conference_activities}
+              />
             </div>
 
-            <Experiences experiences={props.getaway_experiences}></Experiences>
+            <button onClick={() => setEnquiryOpen(true)} className="border-2 border-black rounded-lg px-5 py-2 mx-auto hover:text-white hover:bg-black transition-all">Schedule a Callback Now!</button>
           </div>
         ) : (
           <></>
         )}
 
-        {props.offbeat_experiences.length ? (
-          <div className="mt-5">
-            <div className="flex flex-col pb-5 pl-3 pr-3 md:p-5 gap-3 items-center">
-              <div
-                className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]"
-              >
-                Offbeat getaways
+        {props.weekend_excursions_activities.length ? (
+          <div className="mt-5 flex flex-col gap-5">
+            <div>
+              <div className="flex flex-col pb-5 pl-3 pr-3 md:p-5 gap-3 items-center">
+                <div
+                  className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]"
+                >
+                  Weekend Excursions
+                </div>
+                <div className="text-[16px] font-[350] leading-[24px] text-center">Far from the busiest roads of the city, breathe in fresh air and relax in the lap of nature while staying productive. Discover a change that leaves you and your team feeling inspired and ready to achieve the next big goals.</div>
               </div>
-              <div className="text-[16px] font-[350] leading-[24px] text-center">Business travel is essential for building relationships and closing deals. Nothing compares to the impact of face-to-face interaction and a handshake. It’s key to developing partnerships and achieving a range of business objectives.</div>
+
+              <Activities
+                activities={props.weekend_excursions_activities}
+              />
             </div>
 
-            <Experiences experiences={props.offbeat_experiences}></Experiences>
+            <button onClick={() => setEnquiryOpen(true)} className="border-2 border-black rounded-lg px-5 py-2 mx-auto hover:text-white hover:bg-black transition-all">Schedule a Callback Now!</button>
           </div>
         ) : (
           <></>
         )}
+
+        {props.add_on_activities.length ? (
+          <div className="mt-5 flex flex-col gap-5">
+            <div>
+              <div className="flex flex-col pb-5 pl-3 pr-3 md:p-5 gap-3 items-center">
+                <div
+                  className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]"
+                >
+                  Add On Activities
+                </div>
+                <div className="text-[16px] font-[350] leading-[24px] text-center">Far from the busiest roads of the city, breathe in fresh air and relax in the lap of nature while staying productive. Discover a change that leaves you and your team feeling inspired and ready to achieve the next big goals.</div>
+              </div>
+
+              <Activities
+                activities={props.add_on_activities}
+              />
+            </div>
+
+            <button onClick={() => setEnquiryOpen(true)} className="border-2 border-black rounded-lg px-5 py-2 mx-auto hover:text-white hover:bg-black transition-all">Schedule a Callback Now!</button>
+          </div>
+        ) : (
+          <></>
+        )}
+
 
         <div
           className="text-[27px] md:text-[40px] font-[700] md:leading-[60px] text-center mt-[100px] mb-4"

@@ -57,7 +57,7 @@ export default function ActivityCard(props) {
         {props?.data?.name}
       </div>
 
-      <div className="">
+      <div className="h-[45%]">
         <ImageLoader
           url={props?.data?.image}
           dimensions={{ width: 500, height: 250 }}
