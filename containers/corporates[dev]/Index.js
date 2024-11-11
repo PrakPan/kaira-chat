@@ -14,6 +14,7 @@ import WhyChooseUs from "./WhyChooseUs";
 import OurCustomers from "./OurCustomers";
 import Faqs from "./Faqs";
 import Activities from "./Activities";
+import DesktopBanner from "./banner/DesktopBanner";
 
 
 const SetWidthContainer = styled.div`
@@ -170,6 +171,7 @@ const AffiliatePage = (props) => {
 
               <Activities
                 activities={props.corporate_gateways_activities}
+                setEnquiryOpen={setEnquiryOpen}
               />
             </div>
 
@@ -193,6 +195,7 @@ const AffiliatePage = (props) => {
 
               <Activities
                 activities={props.in_office_activities}
+                setEnquiryOpen={setEnquiryOpen}
               />
             </div>
 
@@ -215,6 +218,7 @@ const AffiliatePage = (props) => {
               </div>
 
               <Activities
+                setEnquiryOpen={setEnquiryOpen}
                 activities={props.team_outing_activities}
               />
             </div>
@@ -238,6 +242,7 @@ const AffiliatePage = (props) => {
               </div>
 
               <Activities
+                setEnquiryOpen={setEnquiryOpen}
                 activities={props.conference_activities}
               />
             </div>
@@ -261,6 +266,7 @@ const AffiliatePage = (props) => {
               </div>
 
               <Activities
+                setEnquiryOpen={setEnquiryOpen}
                 activities={props.weekend_excursions_activities}
               />
             </div>
@@ -284,6 +290,7 @@ const AffiliatePage = (props) => {
               </div>
 
               <Activities
+                setEnquiryOpen={setEnquiryOpen}
                 activities={props.add_on_activities}
               />
             </div>
@@ -330,7 +337,12 @@ const AffiliatePage = (props) => {
         onhide={() => setEnquiryOpen(false)}
       ></Enquiry>
 
-      {!isPageWide && (
+
+      {isPageWide ? (
+        <DesktopBanner
+          onclick={() => setEnquiryOpen(true)}
+        />
+      ) : (
         <div>
           <BannerMobile
             onclick={() => setEnquiryOpen(true)}

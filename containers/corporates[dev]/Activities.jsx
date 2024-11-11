@@ -32,7 +32,9 @@ const Activities = (props) => {
             handleCloseDrawer={handleCloseDrawer}
             page={props?.page}
             city={props?.city}
-        />
+            setEnquiryOpen={props.setEnquiryOpen}
+        >
+        </ActivityCard>
     ));
 
     return (
