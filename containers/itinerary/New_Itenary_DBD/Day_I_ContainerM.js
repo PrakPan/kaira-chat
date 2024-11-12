@@ -274,6 +274,7 @@ const Day_I_ContainerM = (props) => {
                 props.getAccommodationAndActivitiesHandler
               }
               _GetInTouch={props._GetInTouch}
+              date={props?.Days?.date}
             ></ItineraryPoiElementM>
           );
           break;

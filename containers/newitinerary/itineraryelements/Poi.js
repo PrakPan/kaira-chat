@@ -626,22 +626,22 @@ const ItineraryPoiElement = (props) => {
               </div>
             </div>
 
-              <div className="md:w-[50%] flex flex-row items-center relative">
-                <IoMdSearch
-                  id={"icon"}
-                  onClick={searchHandler}
-                  className="absolute cursor-pointer left-4 text-2xl"
-                />
+            <div className="md:w-[50%] flex flex-row items-center relative">
+              <IoMdSearch
+                id={"icon"}
+                onClick={searchHandler}
+                className="absolute cursor-pointer left-4 text-2xl"
+              />
 
-                <input
-                  type="text"
-                  value={selectSearch}
-                  onChange={searchHandler}
-                  placeholder={`Search ${elementType === "POI" ? "attractions" : "activities"
-                    }`}
-                  className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
-                ></input>
-              </div>
+              <input
+                type="text"
+                value={selectSearch}
+                onChange={searchHandler}
+                placeholder={`Search ${elementType === "POI" ? "attractions" : "activities"
+                  }`}
+                className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
+              ></input>
+            </div>
           </div>
 
           {elementType === "POI" ? (
@@ -686,9 +686,14 @@ const ItineraryPoiElement = (props) => {
                 : null}
             </div>
 
-            <button
-              onClick={() => setShowDynamicfilters(true)}
-              className="ml-2 border-2 border-black w-fit px-2 py-1 rounded-full hover:bg-black hover:text-white transition-all">More filters</button>
+            {elementType !== "POI" && (
+              <button
+                onClick={() => setShowDynamicfilters(true)}
+                className="ml-2 border-2 border-black w-fit px-2 py-1 rounded-full hover:bg-black hover:text-white transition-all">
+                More filters
+              </button>
+            )}
+
           </div>
 
           <Navigation

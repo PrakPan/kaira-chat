@@ -224,27 +224,87 @@ export default function ActivityDetails(props) {
                     </div>
                 )}
 
-                {props.data?.timings && (
-                    <div className="h-[31px] py-[4px] px-[8px] border-[20px] text-white text-[14px] font-[600] absolute left-[10px] bottom-[10px] md:left-[300px]">
-                        <div className="text-[18px] font-[800]">Timings</div>
-                        <div className="text-[14px]">
-                            {
-                                <ul>
-                                    {props.data.timings.weekday_text?.map((e, i) => (
-                                        <li key={i}>{e}</li>
-                                    ))}
-                                </ul>
-                            }
-                        </div>
-                    </div>
-                )}
-
-                {props.data?.tips && props.data?.tips?.length ? (
+                {props.data?.tips_tricks && props.data?.tips_tricks?.length ? (
                     <div className="flex flex-col gap-2">
-                        <div className="text-[18px] font-[800]">Tips</div>
+                        <div className="text-[18px] font-[800]">Tips & Tricks</div>
                         <div className="text-[14px]">
                             <ul style={{ paddingLeft: "0.5rem" }}>
-                                {props.data.tips?.map((e, i) => (
+                                {props.data.tips_tricks?.map((e, i) => (
+                                    <li key={i}>- {e}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                ) : (
+                    <></>
+                )}
+
+                {props.data?.things_to_bring && props.data?.things_to_bring?.length ? (
+                    <div className="flex flex-col gap-2">
+                        <div className="text-[18px] font-[800]">Things to bring</div>
+                        <div className="text-[14px]">
+                            <ul style={{ paddingLeft: "0.5rem" }}>
+                                {props.data.things_to_bring?.map((e, i) => (
+                                    <li key={i}>- {e}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                ) : (
+                    <></>
+                )}
+
+                {props.data?.tags && props.data?.tags?.length ? (
+                    <div className="flex flex-col gap-2">
+                        <div className="text-[18px] font-[800]">Tags</div>
+                        <div className="text-[14px]">
+                            <ul style={{ paddingLeft: "0.5rem" }}>
+                                {props.data.tags?.map((e, i) => (
+                                    <li key={i}>- {e}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                ) : (
+                    <></>
+                )}
+
+                {props.data?.general_guidelines && props.data?.general_guidelines?.length ? (
+                    <div className="flex flex-col gap-2">
+                        <div className="text-[18px] font-[800]">General guidelines</div>
+                        <div className="text-[14px]">
+                            <ul style={{ paddingLeft: "0.5rem" }}>
+                                {props.data.general_guidelines?.map((e, i) => (
+                                    <li key={i}>- {e}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                ) : (
+                    <></>
+                )}
+
+                {props.data?.not_suitable_for && props.data?.not_suitable_for?.length ? (
+                    <div className="flex flex-col gap-2">
+                        <div className="text-[18px] font-[800]">Not suitable for</div>
+                        <div className="text-[14px]">
+                            <ul style={{ paddingLeft: "0.5rem" }}>
+                                {props.data.not_suitable_for?.map((e, i) => (
+                                    <li key={i}>- {e}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                ) : (
+                    <></>
+                )}
+
+                {props.data?.caution && props.data?.caution?.length ? (
+                    <div className="flex flex-col gap-2">
+                        <div className="text-[18px] font-[800]">Caution</div>
+                        <div className="text-[14px]">
+                            <ul style={{ paddingLeft: "0.5rem" }}>
+                                {props.data.caution?.map((e, i) => (
                                     <li key={i}>- {e}</li>
                                 ))}
                             </ul>

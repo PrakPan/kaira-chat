@@ -30,6 +30,7 @@ import useDebounce from "../../../hooks/useDebounce";
 import { logEvent } from "../../../services/ga/Index";
 import { getDate } from "../../../helper/DateUtils";
 import Filters from "../../../components/drawers/poiDetails/filters/Filters";
+import NewActivityBooking from "./NewActivityBooking";
 
 const GridContainer = styled.div`
   display: grid;
@@ -110,6 +111,7 @@ const GetInTouchContainer = styled.div`
 `;
 
 const ItineraryPoiElementM = (props) => {
+  const isDesktop = useMediaQuery("(min-width:1148px)");
   const [show, setShow] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
   const [showFilter, setshowFilter] = useState(false);
@@ -124,7 +126,6 @@ const ItineraryPoiElementM = (props) => {
   const [elementType, setElementType] = useState("POI");
   const [offSet, setOffSet] = useState(0);
   const drawerRef = useRef(null);
-  const isDesktop = useMediaQuery("(min-width:1148px)");
   const items = [
     { id: 1, label: "Point of Interest", link: "POIS" },
     { id: 2, label: "Activities", link: "Activitiess" },
