@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Drawer from "../../ui/Drawer";
 import { IoMdClose } from "react-icons/io";
-import { EXPERIENCE_FILTERS_BOX } from "../../../services/constants";
 import styled from "styled-components";
 import { Navigation } from "../../NewNavigation";
 import { activtySearch } from "../../../services/poi/reccommendedactivities";
@@ -18,13 +17,9 @@ import Button from "../../ui/button/Index";
 import ImageLoader from "../../../components/ImageLoader";
 import { logEvent } from "../../../services/ga/Index";
 import NewActivityBooking from "../../../containers/newitinerary/itineraryelements/NewActivityBooking";
+import Filters from "./filters/Filters";
+import { FaFilter } from "react-icons/fa";
 
-
-const FiltersContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-`;
 
 const EmptyMsg = styled.div`
   margin-top: 5rem;
@@ -44,23 +39,41 @@ const GetInTouchContainer = styled.div`
 const items = [{ id: 1, label: "Things To Do", link: "Activities" }];
 
 const ActivityAddDrawer = (props) => {
+  const isDesktop = useMediaQuery("(min-width:767px)");
   const [selectedExprience, setSelectedExprience] = useState(-1);
   const [elementType, setElementType] = useState("Activity");
   const [options, setOptions] = useState([]);
   const [totalResults, setTotalResults] = useState(null);
   const [showMoreResults, setShowMoreResults] = useState(false);
-  const [selectSearch, setSelectedSearch] = useState("");
+  const [selectSearch, setSelectedSearch] = useState(null);
   const debouncedSearch = useDebounce(selectSearch);
   const [loading, setLoading] = useState(true);
   const [offSet, setOffSet] = useState(0);
-  const isDesktop = useMediaQuery("(min-width:767px)");
+  const [showDynamicfilters, setShowDynamicfilters] = useState(false);
+  const [filterState, setFilterState] = useState({
+    recommended_only: false,
+    rating: [],
+    category: [],
+    tour_type: [],
+    guide: [],
+    pax: {
+      number_of_travelers: props.plan?.number_of_adults,
+      traveler_ages: Array(props.plan?.number_of_adults).fill(null),
+    }
+  })
+  const [filtersObj, setFiltersObj] = useState({
+    ratings: [1, 2, 3, 4, 5],
+    category: [],
+    tour_type: [],
+    guide: [],
+  });
 
   useEffect(() => {
     if (props.showDrawer) {
       setLoading(true);
       fetchData();
     }
-  }, [elementType, selectedExprience, props.showDrawer, debouncedSearch]);
+  }, [elementType, selectedExprience, props.showDrawer, debouncedSearch, filterState]);
 
   useEffect(() => {
     setSelectedSearch("");
@@ -150,15 +163,28 @@ const ActivityAddDrawer = (props) => {
     });
   };
 
+  const setDynamicFilters = (filters) => {
+    setFiltersObj(prev => ({
+      ...prev,
+      category: filters?.category,
+      tour_type: filters?.tour_type,
+      guide: filters?.guide
+    }))
+  }
+
   function fetchData(showMore = false) {
     const requestData = {
       city: props?.cityID,
       start_date: getDate(props.date),
-      number_of_adults: props.plan?.number_of_adults,
-      number_of_children: props.plan?.number_of_children,
-      child_ages: [], // Not getting accepted yet and assumed 18 for all adults, and 8 for children.
+      number_of_travelers: filterState.pax.number_of_travelers,
+      traveler_ages: filterState.pax.traveler_ages,
       filter_by: {
-        // Here, we have only dynamic filters. Static filters are just
+        name: debouncedSearch,
+        recommended_only: filterState.recommended_only,
+        rating: filterState.rating,
+        category: filterState.category && filterState.category[0] !== "All" ? filterState.category : null,
+        tour_type: filterState.tour_type && filterState.tour_type[0] !== "All" ? filterState.tour_type : null,
+        guide: filterState.guide && filterState.guide[0] !== "All" ? filterState.guide : null
       },
       sort_by: {
         // no sorting filters added yet.
@@ -169,6 +195,9 @@ const ActivityAddDrawer = (props) => {
       .then((res) => {
         if (res.data?.data?.activities?.length) {
           setTotalResults(res.data.results);
+          if (res.data?.data?.filter_by) {
+            setDynamicFilters(res.data.data.filter_by)
+          }
           let options = [];
 
           for (var i = 0; i < res.data.data.activities.length; i++) {
@@ -247,42 +276,62 @@ const ActivityAddDrawer = (props) => {
       width="50vw"
     >
       <div className="sticky px-2 top-0 bg-white z-[900] flex flex-col gap-3 py-4 pb-1 justify-start items-start mx-auto w-[98%]">
-        <div className="flex flex-row gap-3 my-0 justify-start items-center">
-          <IoMdClose
-            onClick={() => props.setShowDrawer(false)}
-            className="hover-pointer"
-            style={{
-              fontSize: "1.75rem",
-              textAlign: "right",
-            }}
-          ></IoMdClose>
-          <div className="line-clamp-1 text-2xl font-normal ">
-            Adding activity in {props.cityName}
+        <div className="flex flex-row gap-3 my-0 justify-between w-full items-center">
+          <div className="flex flex-row gap-3 items-center">
+            <IoMdClose
+              onClick={() => props.setShowDrawer(false)}
+              className="hover-pointer"
+              style={{
+                fontSize: "1.75rem",
+                textAlign: "right",
+              }}
+            ></IoMdClose>
+            <div className="line-clamp-1 text-2xl font-normal ">
+              Adding activity in {props.cityName}
+            </div>
           </div>
+
+          {isDesktop && (
+            <div className="md:w-[50%] flex flex-row items-center relative">
+              <IoMdSearch
+                id={"icon"}
+                onClick={searchHandler}
+                className="absolute cursor-pointer left-4 text-2xl"
+              />
+
+              <input
+                type="text"
+                value={selectSearch}
+                onChange={searchHandler}
+                placeholder={`Search ${elementType === "POI" ? "attractions" : "activities"
+                  }`}
+                className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
+              ></input>
+            </div>
+          )}
         </div>
 
-        <div className="flex flex-row justify-between mt-0">
-          <div className="flex flex-col justify-start items-baseline">
-            <div className="mb-2 text-sm font-normal">Experience Types</div>
-            <FiltersContainer>
-              {EXPERIENCE_FILTERS_BOX.map((currentfilter, i) => (
-                <button
-                  onClick={() => {
-                    if (selectedExprience !== i) setSelectedExprience(i);
-                    else setSelectedExprience(-1);
-                  }}
-                  className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${selectedExprience == i
-                      ? "text-white border-0 bg-black "
-                      : "border-2 bg-white text-black"
-                    } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
-                  key={i}
-                >
-                  {currentfilter.display}
-                </button>
-              ))}
-            </FiltersContainer>
+        <Filters
+          filters={filtersObj}
+          filterState={filterState}
+          showDynamicfilters={showDynamicfilters}
+          setShowDynamicfilters={setShowDynamicfilters}
+          setFilterState={setFilterState} />
+
+        {!isDesktop && (
+          <div className="absolute bottom-0 right-10 z-[1502]">
+            <div className="fixed bottom-[10px] right-[10px] bg-[#01202b] rounded-full w-[50px] h-[50px] flex items-center justify-center">
+              <FaFilter
+                className="text-white"
+                style={{ height: "18px", width: "18px" }}
+                cursor={"pointer"}
+                onClick={(e) => {
+                  setShowDynamicfilters(true);
+                }}
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         {!isDesktop && (
           <div className="w-full flex flex-row items-center relative">
@@ -310,23 +359,11 @@ const ActivityAddDrawer = (props) => {
             {totalResults ? ` out of ${totalResults}` : null}
             {props?.cityName ? ` in ${props?.cityName}` : null}
           </div>
-          {isDesktop && (
-            <div className="lg:w-[50%] md:w-[50%] flex flex-row items-center relative">
-              <IoMdSearch
-                id={"icon"}
-                onClick={searchHandler}
-                className="absolute cursor-pointer left-4 text-2xl"
-              />
 
-              <input
-                type="text"
-                value={selectSearch}
-                onChange={searchHandler}
-                placeholder={`Search ${elementType === "POI" ? "attractions" : "activities"
-                  }`}
-                className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
-              ></input>
-            </div>
+          {isDesktop && (
+            <button
+              onClick={() => setShowDynamicfilters(true)}
+              className="ml-2 border-2 border-black w-fit px-2 py-1 rounded-full hover:bg-black hover:text-white transition-all">More filters</button>
           )}
         </div>
 

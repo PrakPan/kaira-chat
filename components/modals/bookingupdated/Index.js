@@ -113,8 +113,6 @@ const Booking = (props) => {
   const [showFilters, setShowFilters] = useState(false);
   const debouncedSearch = useDebounce(selectSearch);
 
-  console.log("HERE >>>>", filtersState);
-
   useEffect(() => {
     if (props?.showBookingModal) {
       fetchHotels();

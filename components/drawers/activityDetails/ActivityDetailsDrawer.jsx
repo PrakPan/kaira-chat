@@ -14,10 +14,16 @@ const ActivityDetailsDrawer = (props) => {
     const [traceId, setTraceId] = useState(null);
     const [loading, setLoading] = useState(false);
     const [updateAmenities, setUpdateAmenities] = useState(false);
+    const [filterState, setFilterState] = useState({
+        pax: {
+            number_of_travelers: props.plan.number_of_adults,
+            traveler_ages: Array(props.plan.number_of_adults).fill(null),
+        }
+    })
 
     useEffect(() => {
         if (props.show) fetchData();
-    }, [props.show]);
+    }, [props.show, filterState]);
 
     const fetchData = (data) => {
         if (!data?.amenities) {
@@ -26,8 +32,10 @@ const ActivityDetailsDrawer = (props) => {
 
         let requestData = {
             start_date: getDate(props.date),
-            number_of_adults: props.plan.number_of_adults,
+            number_of_adults: filterState.pax.number_of_travelers,
             number_of_children: props.plan.number_of_children,
+            number_of_travelers: filterState.pax.number_of_travelers,
+            traveler_ages: filterState.pax.traveler_ages
         }
 
         if (data?.amenities) {
@@ -107,6 +115,8 @@ const ActivityDetailsDrawer = (props) => {
                     fetchData={fetchData}
                     updatedActivityBooking={updatedActivityBooking}
                     updateAmenities={updateAmenities}
+                    filterState={filterState}
+                    setFilterState={setFilterState}
                 />
             ) : (
                 <POIDetailsSkeleton

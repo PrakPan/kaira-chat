@@ -12,6 +12,7 @@ import { IoMdClose } from "react-icons/io";
 import { IoFastFood, IoTicket } from "react-icons/io5";
 import { MdTransferWithinAStation } from "react-icons/md";
 import { BiSolidCustomize } from "react-icons/bi";
+import Travelers from "../poiDetails/filters/Travelers";
 
 
 export default function ActivityDetails(props) {
@@ -164,15 +165,25 @@ export default function ActivityDetails(props) {
                         </div>
                     </div>
 
-                    {props.data?.experience_filters && (
-                        <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
-                            {props.data.experience_filters?.map((e, i) => (
-                                <span key={i} className="border-2 rounded-full px-2 py-1">
-                                    {e}
-                                </span>
-                            ))}
-                        </div>
-                    )}
+                    <div className="flex flex-col gap-3 md:flex-row md:items-center justify-between">
+                        {props.data?.experience_filters && (
+                            <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
+                                {props.data.experience_filters?.map((e, i) => (
+                                    <span key={i} className="border-2 rounded-full px-2 py-1">
+                                        {e}
+                                    </span>
+                                ))}
+                            </div>
+                        )}
+
+                        <Travelers
+                            travelers={props.filterState.pax.number_of_travelers}
+                            travelerAges={props.filterState.pax.traveler_ages}
+                            setFilterState={props.setFilterState}
+                        />
+
+                    </div>
+
                 </div>
 
                 <div className="flex flex-col md:flex-row md:items-center gap-2 justify-between">
@@ -200,7 +211,7 @@ export default function ActivityDetails(props) {
                         <button onClick={handleUpdate} className="bg-[#F7E700] py-2 px-4 border-2 border-black rounded-lg">
                             {props.data?.city ? `Add to ${props.data?.city} Itinerary` : 'Add to Itinerary'}
                         </button>
-                        <div className="text-sm px-2">on {dateFormat(props.date)}</div>
+                        <div className="text-sm px-2">{props.filterState.pax.number_of_travelers} {props.filterState.pax.number_of_travelers > 1 ? "tickets" : "ticket"} on {dateFormat(props.date)}</div>
                     </div>
                 </div>
 
