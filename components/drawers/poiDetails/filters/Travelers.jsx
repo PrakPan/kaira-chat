@@ -1,14 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { IoPerson } from "react-icons/io5";
 import { CiCirclePlus, CiCircleMinus } from "react-icons/ci";
 import { RiArrowDropDownLine } from "react-icons/ri";
 
 
 export default function Travelers(props) {
+    const containerRef = useRef(null);
     const [open, setOpen] = useState(false);
     const [showError, setShowError] = useState(false);
     const [travelers, setTravelers] = useState(props.travelers)
     const [travelerAges, setTravelerAges] = useState(props.travelerAges);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (containerRef.current && !containerRef.current.contains(event.target)) {
+                setOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [setOpen]);
 
     const handleAdults = (type) => {
         if (type === "plus" && travelers < 14) {
@@ -47,7 +62,7 @@ export default function Travelers(props) {
     }
 
     return (
-        <div className="relative w-fit h-fit border-2 flex flex-row items-center gap-2 px-3 py-2 rounded-lg cursor-pointer hover:border-black">
+        <div ref={containerRef} className="relative w-fit h-fit border-2 flex flex-row items-center gap-2 px-3 py-2 rounded-lg cursor-pointer hover:border-black">
             <IoPerson onClick={() => setOpen(prev => !prev)} className="text-2xl" />
 
             <div onClick={() => setOpen(prev => !prev)} className="flex flex-col">

@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { IoPerson } from "react-icons/io5";
 import { CiCirclePlus, CiCircleMinus } from "react-icons/ci";
 import { RiArrowDropDownLine } from "react-icons/ri";
 
 export default function Pax(props) {
+    const containerRef = useRef(null);
     const [travelers, setTravelers] = useState(2);
     const [rooms, setRooms] = useState([{
         adults: 2,
@@ -13,6 +14,20 @@ export default function Pax(props) {
     }]);
     const [open, setOpen] = useState(false);
     const [showError, setShowError] = useState(false);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (containerRef.current && !containerRef.current.contains(event.target)) {
+                setOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [setOpen]);
 
     useEffect(() => {
         let total = 0
@@ -78,7 +93,7 @@ export default function Pax(props) {
     }
 
     return (
-        <div className="relative w-fit md:w-full h-fit border-2 flex flex-row items-center gap-2 px-3 py-2 rounded-lg cursor-pointer hover:border-black">
+        <div ref={containerRef} className="relative w-fit md:w-full h-fit border-2 flex flex-row items-center gap-2 px-3 py-2 rounded-lg cursor-pointer hover:border-black">
             <IoPerson onClick={() => setOpen(prev => !prev)} className="text-2xl" />
 
             <div onClick={() => setOpen(prev => !prev)} className="w-full flex flex-col">

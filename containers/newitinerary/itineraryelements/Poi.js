@@ -25,6 +25,7 @@ import useDebounce from "../../../hooks/useDebounce";
 import { logEvent } from "../../../services/ga/Index";
 import { getDate } from "../../../helper/DateUtils";
 import NewActivityBooking from "./NewActivityBooking";
+import Filters from "../../../components/drawers/poiDetails/filters/Filters";
 
 
 const padding = {
@@ -124,6 +125,24 @@ const ItineraryPoiElement = (props) => {
     { id: 1, label: "Places To Visit", link: "" },
     { id: 2, label: "Things To Do", link: "" },
   ];
+  const [showDynamicfilters, setShowDynamicfilters] = useState(false);
+  const [filterState, setFilterState] = useState({
+    recommended_only: false,
+    rating: [],
+    category: [],
+    tour_type: [],
+    guide: [],
+    pax: {
+      number_of_travelers: props.plan?.number_of_adults,
+      traveler_ages: Array(props.plan?.number_of_adults).fill(null),
+    }
+  })
+  const [filtersObj, setFiltersObj] = useState({
+    ratings: [1, 2, 3, 4, 5],
+    category: [],
+    tour_type: [],
+    guide: [],
+  });
 
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
@@ -199,15 +218,28 @@ const ItineraryPoiElement = (props) => {
       });
   }
 
+  const setDynamicFilters = (filters) => {
+    setFiltersObj(prev => ({
+      ...prev,
+      category: filters?.category,
+      tour_type: filters?.tour_type,
+      guide: filters?.guide
+    }))
+  }
+
   const fetchActivities = (showMore = false) => {
     const requestData = {
       city: props?.city_id,
       start_date: getDate(props.date),
-      number_of_adults: props.plan?.number_of_adults,
-      number_of_children: props.plan?.number_of_children,
-      child_ages: [], // Not getting accepted yet and assumed 18 for all adults, and 8 for children.
+      number_of_travelers: filterState.pax.number_of_travelers,
+      traveler_ages: filterState.pax.traveler_ages,
       filter_by: {
-        // Here, we have only dynamic filters. Static filters are just
+        name: debouncedSearch,
+        recommended_only: filterState.recommended_only,
+        rating: filterState.rating,
+        category: filterState.category && filterState.category[0] !== "All" ? filterState.category : null,
+        tour_type: filterState.tour_type && filterState.tour_type[0] !== "All" ? filterState.tour_type : null,
+        guide: filterState.guide && filterState.guide[0] !== "All" ? filterState.guide : null
       },
       sort_by: {
         // no sorting filters added yet.
@@ -218,6 +250,10 @@ const ItineraryPoiElement = (props) => {
       .then((res) => {
         if (res.data?.data?.activities?.length) {
           setTotalResults(res.data.results);
+          if (res.data?.data?.filter_by) {
+            setDynamicFilters(res.data.data.filter_by)
+          }
+
           let options = [];
 
           for (var i = 0; i < res.data.data.activities.length; i++) {
@@ -252,6 +288,7 @@ const ItineraryPoiElement = (props) => {
         setFetchingPoi(false);
       })
       .catch((err) => {
+        console.log("ERROR: ", err);
         setFetchingPoi(false);
       });
   }
@@ -270,7 +307,7 @@ const ItineraryPoiElement = (props) => {
       setShowDrawer(true);
       fetchData();
     }
-  }, [showDrawer, elementType, SelectedExprience, debouncedSearch]);
+  }, [showDrawer, elementType, SelectedExprience, debouncedSearch, filterState]);
 
   useEffect(() => {
     setSelectedSearch("");
@@ -574,42 +611,71 @@ const ItineraryPoiElement = (props) => {
         width="50vw"
       >
         <div className="sticky px-2 top-0 bg-white z-[900] flex flex-col gap-3 py-4 pb-1 justify-start items-start mx-auto w-[98%]">
-          <div className="flex flex-row gap-3 my-0 justify-start items-center">
-            <IoMdClose
-              onClick={() => setShowDrawer(false)}
-              className="hover-pointer"
-              style={{
-                fontSize: "1.75rem",
-                textAlign: "right",
-              }}
-            ></IoMdClose>
-            <div className="line-clamp-1 text-2xl font-normal ">
-              Replacing {props.heading}
+          <div className="flex flex-row gap-3 my-0 justify-between items-center w-full">
+            <div className="flex flex-row gap-3 items-center">
+              <IoMdClose
+                onClick={() => setShowDrawer(false)}
+                className="hover-pointer"
+                style={{
+                  fontSize: "1.75rem",
+                  textAlign: "right",
+                }}
+              ></IoMdClose>
+              <div className="line-clamp-1 text-2xl font-normal ">
+                Replacing {props.heading}
+              </div>
             </div>
+
+              <div className="md:w-[50%] flex flex-row items-center relative">
+                <IoMdSearch
+                  id={"icon"}
+                  onClick={searchHandler}
+                  className="absolute cursor-pointer left-4 text-2xl"
+                />
+
+                <input
+                  type="text"
+                  value={selectSearch}
+                  onChange={searchHandler}
+                  placeholder={`Search ${elementType === "POI" ? "attractions" : "activities"
+                    }`}
+                  className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
+                ></input>
+              </div>
           </div>
 
-          <div className="flex flex-row justify-between mt-0">
-            <div className="flex flex-col justify-start items-baseline">
-              <div className="mb-2 text-sm font-normal">Experience Types</div>
-              <FiltersContainer>
-                {EXPERIENCE_FILTERS_BOX.map((currentfilter, i) => (
-                  <button
-                    onClick={() => {
-                      if (SelectedExprience !== i) SetSelectedExprience(i);
-                      else SetSelectedExprience(-1);
-                    }}
-                    className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${SelectedExprience == i
-                      ? "text-white border-0 bg-black "
-                      : "border-2 bg-white text-black"
-                      } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
-                    key={i}
-                  >
-                    {currentfilter.display}
-                  </button>
-                ))}
-              </FiltersContainer>
+          {elementType === "POI" ? (
+            <div className="flex flex-row justify-between mt-0">
+              <div className="flex flex-col justify-start items-baseline">
+                <div className="mb-2 text-sm font-normal">Experience Types</div>
+                <FiltersContainer>
+                  {EXPERIENCE_FILTERS_BOX.map((currentfilter, i) => (
+                    <button
+                      onClick={() => {
+                        if (SelectedExprience !== i) SetSelectedExprience(i);
+                        else SetSelectedExprience(-1);
+                      }}
+                      className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${SelectedExprience == i
+                        ? "text-white border-0 bg-black "
+                        : "border-2 bg-white text-black"
+                        } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
+                      key={i}
+                    >
+                      {currentfilter.display}
+                    </button>
+                  ))}
+                </FiltersContainer>
+              </div>
             </div>
-          </div>
+          ) : (
+            <Filters
+              filters={filtersObj}
+              filterState={filterState}
+              showDynamicfilters={showDynamicfilters}
+              setShowDynamicfilters={setShowDynamicfilters}
+              setFilterState={setFilterState} />
+          )}
+
           <div className="flex flex-row items-center justify-between w-full">
             <div>
               Showing {optionsJSX.length}
@@ -619,23 +685,12 @@ const ItineraryPoiElement = (props) => {
                 ? ` in ${props?.data?.activity_data?.city?.name}`
                 : null}
             </div>
-            <div className="lg:w-[50%] md:w-[50%] flex flex-row items-center relative">
-              <IoMdSearch
-                id={"icon"}
-                onClick={searchHandler}
-                className="absolute cursor-pointer left-4 text-2xl"
-              />
 
-              <input
-                type="text"
-                value={selectSearch}
-                onChange={searchHandler}
-                placeholder={`Search ${elementType === "POI" ? "attractions" : "activities"
-                  }`}
-                className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
-              ></input>
-            </div>
+            <button
+              onClick={() => setShowDynamicfilters(true)}
+              className="ml-2 border-2 border-black w-fit px-2 py-1 rounded-full hover:bg-black hover:text-white transition-all">More filters</button>
           </div>
+
           <Navigation
             items={items}
             BarName="TabsName"
