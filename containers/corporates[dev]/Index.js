@@ -9,11 +9,11 @@ import Logos from "./Logos";
 import Enquiry from "./enquiry/Index";
 import BannerMobile from "./banner/Mobile";
 import WhatWeOffer from "./WhatWeOffer";
-import Locations from "../../components/containers/plannerlocations/Index";
 import WhyChooseUs from "./WhyChooseUs";
 import OurCustomers from "./OurCustomers";
 import Faqs from "./Faqs";
 import Activities from "./Activities";
+import Locations from "./Locations";
 import DesktopBanner from "./banner/DesktopBanner";
 
 
@@ -152,6 +152,7 @@ const AffiliatePage = (props) => {
             <Locations
               locations={props.locations}
               page={"Corporates Page"}
+              setEnquiryOpen={setEnquiryOpen}
               viewall
             ></Locations>
           </div>

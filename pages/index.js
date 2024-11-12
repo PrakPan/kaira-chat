@@ -38,6 +38,8 @@ const Home = (props) => {
           content="ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, wanderlog, inspirock, tripit, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, hotels, flights, activities, transfers,"
         ></meta>
 
+        <meta name="google-site-verification" content="JBrEGecffz4oDnRTLJNj0Mxly-wVGeieQdS1k7NZvaY" />
+
         <link rel="canonical" href={`https://thetarzanway.com`}></link>
 
         <script

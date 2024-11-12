@@ -71,13 +71,17 @@ const POIDetailsDrawer = (props) => {
       onHide={props.handleCloseDrawer}
     >
       {!loading ? (
-        <POIDetails
-          itineraryDrawer={props.itineraryDrawer}
-          data={data}
-          handleCloseDrawer={props.handleCloseDrawer}
-        >
-          {props.children}
+        <>
+          <POIDetails
+            itineraryDrawer={props.itineraryDrawer}
+            data={data}
+            handleCloseDrawer={props.handleCloseDrawer}
+          >
+            {props.children}
           </POIDetails>
+
+          <div className="sticky z-50 bottom-4 w-full flex items-center justify-center">{props.children}</div>
+        </>
       ) : (
         <POIDetailsSkeleton
           itineraryDrawer={props.itineraryDrawer}
@@ -85,8 +89,6 @@ const POIDetailsDrawer = (props) => {
           handleCloseDrawer={props.handleCloseDrawer}
         />
       )}
-
-      <div className="sticky z-50 bottom-4 w-full flex items-center justify-center">{ props.children}</div>
     </Drawer>
   );
 };
