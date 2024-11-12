@@ -167,7 +167,9 @@ const AffiliatePage = (props) => {
                 >
                   Corporate Getaways
                 </div>
-                <div className="text-[16px] font-[350] leading-[24px] text-center">Far from the busiest roads of the city, breathe in fresh air and relax in the lap of nature while staying productive. Discover a change that leaves you and your team feeling inspired and ready to achieve the next big goals.</div>
+                <div className="text-[16px] font-[350] leading-[24px] text-center">
+                  Escape the office and rejuvenate with inspiring retreats designed to recharge teams and fuel fresh ideas in scenic, peaceful locations.
+                </div>
               </div>
 
               <Activities
@@ -191,7 +193,9 @@ const AffiliatePage = (props) => {
                 >
                   In Office Activations
                 </div>
-                <div className="text-[16px] font-[350] leading-[24px] text-center">Far from the busiest roads of the city, breathe in fresh air and relax in the lap of nature while staying productive. Discover a change that leaves you and your team feeling inspired and ready to achieve the next big goals.</div>
+                <div className="text-[16px] font-[350] leading-[24px] text-center">
+                  Bring the excitement to your workspace with dynamic activities that foster creativity, engagement, and team bonding, right within your office walls.
+                </div>
               </div>
 
               <Activities
@@ -215,7 +219,9 @@ const AffiliatePage = (props) => {
                 >
                   Team Outing Activities
                 </div>
-                <div className="text-[16px] font-[350] leading-[24px] text-center">Far from the busiest roads of the city, breathe in fresh air and relax in the lap of nature while staying productive. Discover a change that leaves you and your team feeling inspired and ready to achieve the next big goals.</div>
+                <div className="text-[16px] font-[350] leading-[24px] text-center">
+                  Strengthen bonds and inspire camaraderie with outdoor adventures and customized activities that make teamwork fun and unforgettable.
+                </div>
               </div>
 
               <Activities
@@ -237,9 +243,11 @@ const AffiliatePage = (props) => {
                 <div
                   className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]"
                 >
-                  Conference
+                  Conferences
                 </div>
-                <div className="text-[16px] font-[350] leading-[24px] text-center">Far from the busiest roads of the city, breathe in fresh air and relax in the lap of nature while staying productive. Discover a change that leaves you and your team feeling inspired and ready to achieve the next big goals.</div>
+                <div className="text-[16px] font-[350] leading-[24px] text-center">
+                  Elevate your corporate events with seamless planning and exceptional facilities for conferences that are as engaging as they are productive.
+                </div>
               </div>
 
               <Activities
@@ -263,7 +271,9 @@ const AffiliatePage = (props) => {
                 >
                   Weekend Excursions
                 </div>
-                <div className="text-[16px] font-[350] leading-[24px] text-center">Far from the busiest roads of the city, breathe in fresh air and relax in the lap of nature while staying productive. Discover a change that leaves you and your team feeling inspired and ready to achieve the next big goals.</div>
+                <div className="text-[16px] font-[350] leading-[24px] text-center">
+                  Step away from the daily routine with weekend escapes that blend relaxation, adventure, and team connection in unique destinations.
+                </div>
               </div>
 
               <Activities
@@ -287,7 +297,9 @@ const AffiliatePage = (props) => {
                 >
                   Add On Activities
                 </div>
-                <div className="text-[16px] font-[350] leading-[24px] text-center">Far from the busiest roads of the city, breathe in fresh air and relax in the lap of nature while staying productive. Discover a change that leaves you and your team feeling inspired and ready to achieve the next big goals.</div>
+                <div className="text-[16px] font-[350] leading-[24px] text-center">
+                  Enhance your event experience with curated add-ons, from wellness sessions to team-building games, tailored to enrich and energize your group.
+                </div>
               </div>
 
               <Activities
