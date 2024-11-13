@@ -11,8 +11,14 @@ export default function Filters({ filters, filterState, setFilterState, showDyna
     const [recommended, setRecommended] = useState(false)
 
     useEffect(() => {
+        // This will return true if arrays have different values, regardless of order
+        const hasRatingChanged =
+            filterState.rating.length !== selectedRating.length ||
+            filterState.rating.some(rating => !selectedRating.includes(rating)) ||
+            selectedRating.some(rating => !filterState.rating.includes(rating));
+
         let handler;
-        if (filterState.rating !== selectedRating) {
+        if (hasRatingChanged) {
             handler = setTimeout(() => {
                 setFilterState(prev => ({
                     ...prev,
