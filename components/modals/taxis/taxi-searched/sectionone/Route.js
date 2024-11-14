@@ -60,12 +60,12 @@ const Section = (props) => {
     return (
       <Container>
         <Heading>
-          {props.data.cab && props.data.cab.category ? (
+          {props.data?.taxi_category?.type ? (
             <>
-              {props.data.cab.category}{" "}
+              {props.data.taxi_category.type}{" "}
               <>
-                {props.data.cab.fuelType && isPageWide ? (
-                  `(${props.data.cab.fuelType})`
+                {props.data.taxi_category?.fuel_type && isPageWide ? (
+                  `(${props.data.taxi_category.fuel_type})`
                 ) : (
                   <></>
                 )}
@@ -77,7 +77,8 @@ const Section = (props) => {
             "One-way Taxi"
           )}
         </Heading>
-        {isPageWide && <ModelText>{props.data.cab.model}</ModelText>}
+
+        {isPageWide && <ModelText>{props.data?.taxi_category?.model_name}</ModelText>}
         <RouteContainer className="font-lexend">
           <Location className="font-lexend">
             {props.selectedBooking.city}
@@ -115,28 +116,28 @@ const Section = (props) => {
             leftalign
             noLazy
           ></ImageLoader>
+
           <div style={{ display: "flex", gap: "1rem" }}>
-            {props.data.distance ? (
+            {props.data?.distance?.text ? (
               <div>
                 <IconHeading className="font-lexend">
-                  {props.data.distance} kms
+                  {props.data.distance.text}
                 </IconHeading>
                 <Text className="font-nunito">Included</Text>
               </div>
             ) : null}
-            {props.data.estimatedDuration ? (
+
+            {props.data?.duration?.text ? (
               <div>
                 <IconHeading className="font-lexend">
-                  {Math.floor(props.data.estimatedDuration / 60) +
-                    "-" +
-                    (+Math.floor(props.data.estimatedDuration / 60) + 1)}{" "}
-                  Hours
+                  { props.data.duration.text}
                 </IconHeading>
                 <Text className="font-nunito">Included</Text>
               </div>
             ) : null}
           </div>
         </div>
+
         <SectionFour
           _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
           getPaymentHandler={props.getPaymentHandler}

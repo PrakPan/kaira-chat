@@ -222,7 +222,7 @@ const Section = (props) => {
                 _handleFilterChange("non_stop_flights", true);
               }}
             >
-                <ImCheckboxUnchecked style={{ display: "inline" }} /> Non-stop flights only?
+              <ImCheckboxUnchecked style={{ display: "inline" }} /> Non-stop flights only?
             </div>
           )}
 
@@ -257,13 +257,21 @@ const Section = (props) => {
 
   return (
     <Container>
-      <Heading className="font-lexend">
-        <IoMdClose
-          className="hover-pointer"
-          onClick={props.setHideFlightModal}
-          style={{ fontSize: "2rem" }}
-        ></IoMdClose>
-        <Text>{props.text}</Text>
+      <Heading className="font-lexend flex flex-col items-start md:flex-row md:items-end">
+        <div className="flex flex-row items-center gap-2">
+          <IoMdClose
+            className="hover-pointer"
+            onClick={props.setHideFlightModal}
+            style={{ fontSize: "2rem" }}
+          ></IoMdClose>
+          <Text>{props.text}</Text>
+        </div>
+
+        <button
+          onClick={(e) => {
+            props.handleTransferEdit(e);
+          }}
+          className="focus:outline-none text-blue md:ml-3">See more ways to travel</button>
       </Heading>
 
       {isPageWide ? FiltersSection : <></>}

@@ -84,7 +84,7 @@ const TransferEditDrawer = (props) => {
     filteredTransfers[0].recommended = true;
 
     const newTransfers = filteredTransfers.filter(
-      (route, index) => route.heading !== selectedTransferHeading
+      (route) => route.heading !== selectedTransferHeading
     );
     const selectedTransfer = getSelectedTransfer();
     if (selectedTransfer)
@@ -94,8 +94,8 @@ const TransferEditDrawer = (props) => {
 
   useEffect(() => {
     if (!loadingAlternates && !alternatesError && alternateRoutes?.routes) {
-      const filterdTransfers = filterAlternateRoutes();
-      setTransfers(filterdTransfers);
+      const filteredTransfers = filterAlternateRoutes();
+      setTransfers(filteredTransfers);
     }
   }, [loadingAlternates, alternateRoutes]);
 
@@ -256,6 +256,7 @@ const TransferEditDrawer = (props) => {
             from {origin} to {destination}{" "}
           </div>
         </div>
+
         {loadingAlternates ? (
           <div className="mt-10 w-full flex flex-col gap-3 items-center">
             <div className="w-full flex flex-row items-center gap-3 bg-gray-200 rounded-lg p-2 shadow-sm animate-pulse">
@@ -306,7 +307,7 @@ const TransferEditDrawer = (props) => {
               </div>
             </div>
           </div>
-        ) : alternatesError ? (
+        ) : alternatesError && props.roundTripSuggestions !== null ? (
           <div className="w-full flex flex-col space-y-5 items-center justify-center">
             <div className="flex items-center justify-center bg-red-500 text-white rounded p-2">
               {alternatesError}
@@ -449,9 +450,8 @@ const RouteContainer = (props) => {
 
   return (
     <div
-      className={`w-full flex flex-col gap-0 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm ${
-        transferIndex === 0 && transfer.isSelected ? "border-yellow-300" : ""
-      } border-x-2 border-t-2 border-b-4`}
+      className={`w-full flex flex-col gap-0 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm ${transferIndex === 0 && transfer.isSelected ? "border-yellow-300" : ""
+        } border-x-2 border-t-2 border-b-4`}
     >
       {transfer.recommended && (
         <ClippathComp className="text-sm font-semibold bg-[#F7E700] text-#090909 pl-2 pr-2 py-1 -ml-4 -mt-4 rounded-tl-2xl">
@@ -567,9 +567,8 @@ const MobileRouteContainer = (props) => {
 
   return (
     <div
-      className={`w-full flex flex-col gap-3 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm ${
-        transferIndex === 0 ? "border-yellow-300" : ""
-      } border-x-2 border-t-2 border-b-4`}
+      className={`w-full flex flex-col gap-3 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm ${transferIndex === 0 ? "border-yellow-300" : ""
+        } border-x-2 border-t-2 border-b-4`}
     >
       {transfer.recommended && (
         <ClippathComp className="text-sm font-semibold bg-[#F7E700] text-#090909 pl-2 pr-2 py-1 -ml-4 -mt-4 rounded-tl-2xl">
@@ -914,9 +913,8 @@ const RadioButton = ({ name, label, transferType, handleTransferType }) => {
       <div
         onClick={handleTransferType}
         id={name}
-        className={`flex items-center justify-center w-5 h-5 border-2 ${
-          transferType === name ? "border-black" : "border-[#636366]"
-        } rounded-full cursor-pointer`}
+        className={`flex items-center justify-center w-5 h-5 border-2 ${transferType === name ? "border-black" : "border-[#636366]"
+          } rounded-full cursor-pointer`}
       >
         {transferType === name && (
           <div id={name} className="p-1 w-3 h-3 rounded-full bg-black"></div>
@@ -1006,8 +1004,7 @@ const RoundTripSuggestion = ({
             <div className="text-[16px] font-medium">
               Intercity Round Trip{" "}
               {isDesktop &&
-                `(${routes[0]?.source?.shortName} to ${
-                  routes[routes.length - 1]?.destination?.shortName
+                `(${routes[0]?.source?.shortName} to ${routes[routes.length - 1]?.destination?.shortName
                 })`}
             </div>
             <div className="text-[#7A7A7A] text-[14px] font-normal">
@@ -1052,11 +1049,10 @@ const RoundTripSuggestion = ({
                   <div
                     id={price?.cab?.id}
                     onClick={handleSelectCab}
-                    className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${
-                      selectedCab == price?.cab?.id
+                    className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${selectedCab == price?.cab?.id
                         ? "border-black"
                         : "border-[#636366]"
-                    } `}
+                      } `}
                   >
                     {selectedCab == price?.cab?.id && (
                       <div
@@ -1229,11 +1225,10 @@ const MultiCityTripSuggestion = ({
                   <div
                     id={price?.cab?.id}
                     onClick={handleSelectCab}
-                    className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${
-                      selectedCab == price?.cab?.id
+                    className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${selectedCab == price?.cab?.id
                         ? "border-black"
                         : "border-[#636366]"
-                    } `}
+                      } `}
                   >
                     {selectedCab == price?.cab?.id && (
                       <div
@@ -1329,13 +1324,13 @@ const TransferItem = ({ transfer, transferIndex }) => {
         {transferIndex !== undefined
           ? transfer.modes[transferIndex]
           : transfer.modes.length > 1
-          ? transfer.modes.map((mode, index) => {
+            ? transfer.modes.map((mode, index) => {
               if (index === transfer.modes.length - 1) {
                 return mode;
               }
               return mode + ", ";
             })
-          : transfer.modes[0]}
+            : transfer.modes[0]}
       </div>
       <div className="text-sm text-gray-400">
         {transfer?.legs[transferIndex ?? 0]?.carrier &&
@@ -1354,7 +1349,7 @@ const TransferItem = ({ transfer, transferIndex }) => {
                   <span>{facility}</span>
                   {ind <
                     transfer?.legs[transferIndex ?? 0]?.facilities?.length -
-                      1 && " | "}
+                    1 && " | "}
                 </span>
               )
             )}

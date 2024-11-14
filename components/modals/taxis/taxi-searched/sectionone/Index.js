@@ -27,20 +27,20 @@ const Section = (props) => {
             borderStyle: "none solid none none",
           }}
         >
-          {props.data.cab && props.data.cab.image ? (
+          {props.data?.taxi_category?.image ? (
             <ImageLoader
               is_url
               noLazy
-              url={props.data.cab.image}
-              width="100%"
-              widthmobile="100%"
+              url={props.data.taxi_category.image}
+              width="80%"
+              widthmobile="70%"
               height="auto"
             ></ImageLoader>
           ) : (
             <ImageLoader
               url={"media/icons/bookings/car (2).png"}
-              width="100%"
-              widthmobile="100%"
+              width="80%"
+              widthmobile="70%"
               height="auto"
             ></ImageLoader>
           )}
@@ -52,7 +52,7 @@ const Section = (props) => {
             }}
             className="font-lexend text-center"
           >
-            {props.data.taxi_type}
+            {props.data.taxi_category.type}
           </p>
           <p
             style={{
@@ -62,7 +62,7 @@ const Section = (props) => {
             }}
             className="font-lexend text-center"
           >
-            {props.data.cab.seatingCapacity + "-seater"}
+            {props.data?.taxi_category?.seating_capacity + "-seater"}
           </p>
         </div>
         <Route

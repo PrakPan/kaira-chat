@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import media from "../../media";
 import { updateFlightBooking } from "../../../services/bookings/UpdateBookings";
+import routeAlternates from "../../../services/itinerary/brief/routeAlternates";
+import axiosRoundTripInstance from "../../../services/itinerary/brief/roundTripSuggestion";
 import { connect } from "react-redux";
 import axiosflightsearch, { axiosFlightSearch } from "../../../services/bookings/FlightSearch";
 import SectionOne from "./SectionOne";
@@ -13,6 +15,7 @@ import Skeleton from "./Skeleton";
 import { TbArrowBack } from "react-icons/tb";
 import { openNotification } from "../../../store/actions/notification";
 import { FaFilter } from "react-icons/fa";
+import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 
 const GridContainer = styled.div`
 min-height: 65vh;
@@ -105,6 +108,12 @@ const Booking = (props) => {
     key: 'Economy',
     value: 2
   });
+  const [showTransferEditDrawer, setShowTransferEditDrawer] = useState(false);
+  const [alternateRoutes, setAlternateRoutes] = useState({});
+  const [loadingAlternates, setLoadingAlternates] = useState(true);
+  const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
+  const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
+  const [alternatesError, setAlternatesError] = useState(null);
 
   useEffect(() => {
     if (!isPageWide && props.showFlightModal) _FetchFlightsHandler();
@@ -290,6 +299,66 @@ const Booking = (props) => {
       });
   };
 
+  const roundTripSuggestion = () => {
+    setLoadingAlternates(true);
+    axiosRoundTripInstance
+      .get(`?itinerary_id=${props?.itinerary_id}`)
+      .then((response) => {
+        const results = response.data;
+
+        for (let i = 0; i < results.length; i++) {
+          if (
+            results[i].success &&
+            results[i].transfer_type === "Intercity round-trip"
+          ) {
+            setRoundTripSuggestions(results[i]);
+          } else if (
+            results[i].success &&
+            results[i].transfer_type === "Multicity"
+          ) {
+            setMultiCitySuggestions(results[i]);
+          }
+        }
+        setLoadingAlternates(false);
+      })
+      .catch((err) => {
+        console.log("[ERROR][TransferEdit]: ", err);
+        setLoadingAlternates(false);
+      });
+  };
+
+  const handleTransferEdit = (e) => {
+    setAlternatesError(null)
+    setLoadingAlternates(true)
+    setShowTransferEditDrawer(true);
+    roundTripSuggestion();
+    routeAlternates
+      .get(`/?route_id=` + props.transferId, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response) => {
+        if (response.status === 200 && response.data.routes.length > 0) {
+          const data = response.data;
+          setAlternateRoutes(data);
+        } else {
+          setAlternatesError(
+            "No route found, please get in touch with us to complete this booking!"
+          );
+        }
+        setLoadingAlternates(false);
+      })
+      .catch((err) => {
+        setLoadingAlternates(false);
+        setAlternatesError(
+          "No Route Found, please get in touch with us to complete this booking!"
+        );
+      });
+  };
+
+
   if (props.token)
     return (
       <div>
@@ -318,6 +387,7 @@ const Booking = (props) => {
             setPax={setPax}
             classType={classType}
             setClassType={setClassType}
+            handleTransferEdit={handleTransferEdit}
           ></SectionOne>
 
           <GridContainer style={{ clear: "right" }}>
@@ -436,6 +506,26 @@ const Booking = (props) => {
             )}
           </GridContainer>
         </Drawer>
+
+        <TransferEditDrawer
+          itinerary_id={props?.itinerary_id}
+          showDrawer={showTransferEditDrawer}
+          setShowDrawer={setShowTransferEditDrawer}
+          selectedTransferHeading={props.selectedTransferHeading}
+          origin={props.selectedBooking?.city}
+          destination={props.selectedBooking?.destination_city}
+          alternateRoutes={alternateRoutes}
+          roundTripSuggestions={roundTripSuggestions}
+          multiCitySuggestions={multiCitySuggestions}
+          loadingAlternates={loadingAlternates}
+          alternatesError={alternatesError}
+          day_slab_index={props.daySlabIndex}
+          element_index={props.elementIndex}
+          fetchData={props?.fetchData}
+          setShowLoginModal={props?.setShowLoginModal}
+          check_in={props?.check_in}
+          _GetInTouch={props._GetInTouch}
+        />
       </div>
     );
 };
