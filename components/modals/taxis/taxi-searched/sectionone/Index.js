@@ -66,6 +66,7 @@ const Section = (props) => {
           </p>
         </div>
         <Route
+          setHideBookingModal={props.setHideBookingModal}
           _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
           getPaymentHandler={props.getPaymentHandler}
           selectedBooking={props.selectedBooking}

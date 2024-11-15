@@ -7,6 +7,9 @@ import routeAlternates from "../../../../services/itinerary/brief/routeAlternate
 import axiosRoundTripInstance from "../../../../services/itinerary/brief/roundTripSuggestion";
 import { logEvent } from "../../../../services/ga/Index";
 import { connect } from "react-redux";
+import TaxiModal from "../../../../components/modals/taxis/Index";
+import FlightModal from "../../../../components/modals/flights/Index";
+import { useEffect } from "react";
 
 const Container = styled.div`
   display: grid;
@@ -20,9 +23,9 @@ const Container = styled.div`
 const Line = styled.hr`
   background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
     ${(props) =>
-      props.pinColour
-        ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
-        : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
+    props.pinColour
+      ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
+      : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
 
   background-size: 12px 3px, 100% 3px;
   color: #c80000;
@@ -62,6 +65,44 @@ const MidSection = (props) => {
   const [loadingAlternates, setLoadingAlternates] = useState(true);
   const [alternatesError, setAlternatesError] = useState(null);
   const [addOrEdit, setAddOrEdit] = useState(null);
+  const [selectedBooking, setSelectedBooking] = useState(props.bookings[0]);
+  const [showFlightModal, setShowFlightModal] = useState(false);
+  const [showTaxiModal, setShowTaxiModal] = useState(false);
+
+  useEffect(() => {
+    if (props.flightBookings && props.transferBookings) {
+      const allBookings = [...props.flightBookings, ...props.transferBookings]
+      const booking = allBookings.find(book => book.id === props.bookings[0].id)
+      if (booking) {
+        setSelectedBooking({
+          ...selectedBooking,
+          name: booking["name"],
+          itinerary_id: booking["itinerary_id"],
+          id: booking["id"],
+          tailored_id: booking["tailored_itinerary"],
+          check_in: booking["check_in"],
+          check_out: booking["check_out"],
+          pax: {
+            number_of_adults: booking["number_of_adults"],
+            number_of_children: booking["number_of_children"],
+            number_of_infants: booking["number_of_infants"],
+          },
+          city: booking["city"],
+          itinerary_name: booking["itinerary_name"],
+          cost: Math.round(booking["booking_cost"] / 100),
+          costings_breakdown: booking["costings_breakdown"],
+          origin_iata: booking["origin_code"],
+          destination_iata: booking["destination_code"],
+          user_selected: props.bookings[0].user_selected,
+          destination_city: booking["destination_city"],
+          taxi_type: booking["taxi_type"],
+          transfer_type: booking["transfer_type"],
+          origin: booking["origin"],
+          destination: booking["destination"],
+        })
+      }
+    }
+  }, [props.flightBookings, props.transferBookings])
 
   let hidemidsection = props.hidemidsection;
   if (props?.route && props?.route?.modes && props?.route?.modes.length)
@@ -99,13 +140,14 @@ const MidSection = (props) => {
   };
 
   const handleTransferEdit = (e, label) => {
+    setAlternatesError(null)
+    setLoadingAlternates(true)
     setShowDrawer(true);
     setAddOrEdit(e.target.id);
     roundTripSuggestion();
     routeAlternates
       .get(
-        `/?route_id=${props?.route?.transfers?.id}&pax=${
-          props?.plan?.number_of_adults + props?.plan?.number_of_children
+        `/?route_id=${props?.route?.transfers?.id}&pax=${props?.plan?.number_of_adults + props?.plan?.number_of_children
         }`,
         {
           headers: {
@@ -143,6 +185,16 @@ const MidSection = (props) => {
     });
   };
 
+  const handleChangeTransfer = (e) => {
+    if (props.bookings[0].booking_type === "Flight") {
+      setShowFlightModal(true);
+    } else if (props.bookings[0].booking_type === "Taxi") {
+      setShowTaxiModal(true);
+    } else {
+      handleTransferEdit(e, "Edit Transfer");
+    }
+  }
+
   return (
     <Container className="font-lexend" hidemidsection={hidemidsection}>
       <div style={{ position: "relative" }}>
@@ -153,9 +205,9 @@ const MidSection = (props) => {
         <>
           {props.version == "v2" ? (
             props.route?.transfers &&
-            props.route?.transfers?.id &&
-            props.route?.transfers?.id !== "" &&
-            (!props.bookings || props.bookings.length === 0) ? (
+              props.route?.transfers?.id &&
+              props.route?.transfers?.id !== "" &&
+              (!props.bookings || props.bookings.length === 0) ? (
               <Text>
                 <button
                   id="transferAdd"
@@ -225,8 +277,8 @@ const MidSection = (props) => {
                 )}
 
                 {props.route?.modes &&
-                props.route?.modes.length &&
-                props.duration ? (
+                  props.route?.modes.length &&
+                  props.duration ? (
                   <div className="inline-flex items-center gap-2">
                     <div>: {props.duration}</div>
                   </div>
@@ -242,7 +294,7 @@ const MidSection = (props) => {
                     (props?.bookings && props?.bookings?.length)) && (
                     <div
                       id="transferEdit"
-                      onClick={(e) => handleTransferEdit(e, "Edit Transfer")}
+                      onClick={(e) => handleChangeTransfer(e)}
                       className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
                     >
                       <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
@@ -267,6 +319,49 @@ const MidSection = (props) => {
           )}
         </>
       )}
+
+      <FlightModal
+        showFlightModal={showFlightModal}
+        setShowFlightModal={setShowFlightModal}
+        setHideFlightModal={() => setShowFlightModal(false)}
+        setHideBookingModal={() => setShowFlightModal(false)}
+        getPaymentHandler={props.getPaymentHandler}
+        _updatePaymentHandler={props._updatePaymentHandler}
+        _updateFlightBookingHandler={props._updateFlightBookingHandler}
+        _updateBookingHandler={props._updateBookingHandler}
+        alternates={selectedBooking.id}
+        tailored_id={selectedBooking["tailored_itinerary"]}
+        // _updateFlightHandler={props._updateFlightHandler}
+        selectedBooking={selectedBooking}
+        itinerary_id={props?.itinerary_id}
+        selectedTransferHeading={props?.route?.heading}
+        fetchData={props?.fetchData}
+        setShowLoginModal={props?.setShowLoginModal}
+        check_in={props?.route?.check_in}
+        _GetInTouch={props._GetInTouch}
+        transferId={props?.route?.transfers?.id}
+        daySlabIndex={props?.route?.element_location?.day_slab_index}
+        elementIndex={props?.route?.element_index}
+      ></FlightModal>
+
+      <TaxiModal
+        showTaxiModal={showTaxiModal}
+        setHideBookingModal={() => setShowTaxiModal(false)}
+        setHideTaxiModal={() => setShowTaxiModal(false)}
+        getPaymentHandler={props.getPaymentHandler}
+        _updatePaymentHandler={props._updatePaymentHandler}
+        _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+        selectedBooking={selectedBooking}
+        itinerary_id={props?.itinerary_id}
+        selectedTransferHeading={props?.route?.heading}
+        fetchData={props?.fetchData}
+        setShowLoginModal={props?.setShowLoginModal}
+        check_in={props?.route?.check_in}
+        _GetInTouch={props._GetInTouch}
+        transferId={props?.route?.transfers?.id}
+        daySlabIndex={props?.route?.element_location?.day_slab_index}
+        elementIndex={props?.route?.element_index}
+      ></TaxiModal>
 
       <TransferEditDrawer
         addOrEdit={addOrEdit}
@@ -294,6 +389,8 @@ const MidSection = (props) => {
 const mapStateToPros = (state) => {
   return {
     ItineraryId: state.ItineraryId,
+    transferBookings: state.Bookings.transferBookings,
+    flightBookings: state.Bookings.flightBookings
   };
 };
 

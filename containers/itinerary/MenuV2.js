@@ -525,6 +525,16 @@ const SimpleTabsV2 = (props) => {
             travellerType={props.travellerType}
             editRoute={props.editRoute}
             setEditRoute={props.setEditRoute}
+            _updateFlightBookingHandler={props._updateFlightBookingHandler}
+            _updateBookingHandler={props._updateBookingHandler}
+            setHideFlightModal={_handleFlightModalClose}
+            _updatePaymentHandler={props._updatePaymentHandler}
+            setHideBookingModal={props.setHideBookingModal}
+            setShowFlightModal={_handleFlighModalShow}
+            showFlightModal={props.showFlightModal}
+            _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+            setShowTaxiModal={props.setShowTaxiModal}
+            showTaxiModal={props.showTaxiModal}
           ></Breif>
         )}
       </div>

@@ -134,6 +134,16 @@ const Route = (props) => {
               getPaymentHandler={props.getPaymentHandler}
               setShowLoginModal={props.setShowLoginModal}
               _GetInTouch={props._GetInTouch}
+              _updateFlightBookingHandler={props._updateFlightBookingHandler}
+              _updateBookingHandler={props._updateBookingHandler}
+              setHideFlightModal={props.setHideFlightModal}
+              _updatePaymentHandler={props._updatePaymentHandler}
+              setHideBookingModal={props.setHideBookingModal}
+              setShowFlightModal={props.setShowFlightModal}
+              showFlightModal={props.showFlightModal}
+              _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+              setShowTaxiModal={props.setShowTaxiModal}
+              showTaxiModal={props.showTaxiModal}
             ></MidSection>
           );
         }

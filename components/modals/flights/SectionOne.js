@@ -11,6 +11,7 @@ import Drawer from "../../ui/Drawer";
 import Button from "../../ui/button/Index";
 import { BsFillSunriseFill, BsSunsetFill } from "react-icons/bs";
 import { IoPerson } from "react-icons/io5";
+import { RiArrowRightSLine } from "react-icons/ri";
 
 const Heading = styled.div`
   margin: 0;
@@ -257,7 +258,7 @@ const Section = (props) => {
 
   return (
     <Container>
-      <Heading className="font-lexend flex flex-col items-start md:flex-row md:items-end">
+      <Heading className="font-lexend flex flex-col items-start">
         <div className="flex flex-row items-center gap-2">
           <IoMdClose
             className="hover-pointer"
@@ -267,11 +268,17 @@ const Section = (props) => {
           <Text>{props.text}</Text>
         </div>
 
-        <button
-          onClick={(e) => {
-            props.handleTransferEdit(e);
-          }}
-          className="focus:outline-none text-blue md:ml-3">See more ways to travel</button>
+        <div className="group text-blue md:ml-2 flex flex-row items-center cursor-pointer hover:translate-x-1 transition-all">
+          <button
+            onClick={(e) => {
+              props.handleTransferEdit(e);
+            }}
+            className="focus:outline-none">
+            See more ways to travel?
+          </button>
+
+          <RiArrowRightSLine className="text-xl group-hover:scale-110 group-hover:translate-x-1 transition-all" />
+        </div>
       </Heading>
 
       {isPageWide ? FiltersSection : <></>}

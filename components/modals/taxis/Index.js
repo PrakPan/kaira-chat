@@ -113,6 +113,7 @@ const Booking = (props) => {
         for (var i = 0; i < res.data?.data?.quotes?.length; i++) {
           options.push(
             <TaxiSearched
+              setHideBookingModal={props.setHideBookingModal}
               _updateSearchedTaxi={_updateSearchedTaxi}
               selectedBooking={props.selectedBooking}
               getPaymentHandler={props.getPaymentHandler}

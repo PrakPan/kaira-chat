@@ -537,6 +537,8 @@ const TransferModeContainer = (props) => {
 
   const handleTransferEdit = () => {
     setShowDrawer(true);
+    setLoadingAlternates(true)
+    setAlternatesError(null);
     roundTripSuggestion();
     routeAlternates
       .get(`/?route_id=` + props?.route?.transfers?.id, {

@@ -98,10 +98,12 @@ const TransfersContainer = (props) => {
     transfer_type,
     user_selected
   ) => {
+    
     ga.event({
       action: "Itinerary-bookings-flight_change",
       params: { name: name },
     });
+
     setSelectedBooking({
       ...selectedBooking,
       name: name,
@@ -122,6 +124,7 @@ const TransfersContainer = (props) => {
       taxi_type: taxi_type,
       transfer_type: transfer_type,
     });
+
     props.setShowFlightModal(true);
   };
 

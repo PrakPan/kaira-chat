@@ -19,6 +19,7 @@ const Booking = (props) => {
   return (
     <Container className="border" style={{ borderRadius: "10px" }}>
       <SectionOne
+        setHideBookingModal={props.setHideBookingModal}
         _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
         _updateSearchedTaxi={props._updateSearchedTaxi}
         getPaymentHandler={props.getPaymentHandler}

@@ -117,6 +117,10 @@ const Booking = (props) => {
 
   useEffect(() => {
     if (!isPageWide && props.showFlightModal) _FetchFlightsHandler();
+    if (!props.showFlightModal) {
+      setOptionsJSX([]);
+      setLoading(true);
+    }
   }, [props.showFlightModal]);
 
   useEffect(() => {
@@ -187,6 +191,12 @@ const Booking = (props) => {
             errorMsg: `Sorry, we could not find any flights from ${props?.selectedBooking?.city} to ${props?.selectedBooking?.destination_city} for given dates at the moment. Please contact us to complete this booking`,
           });
         });
+    } else {
+      setLoading(false);
+      setFetchingIsError({
+        error: true,
+        errorMsg: `Sorry, we could not find any flights from ${props?.selectedBooking?.city} to ${props?.selectedBooking?.destination_city} for given dates at the moment. Please contact us to complete this booking`,
+      });
     }
   };
 
@@ -231,6 +241,7 @@ const Booking = (props) => {
           text: "Flight updated successfully.",
           heading: "Sucess!",
         });
+        props.setHideFlightModal()
       })
       .catch((err) => {
         setUpdateBookingState(false);
@@ -240,6 +251,7 @@ const Booking = (props) => {
           text: "Oops, this action is not allowed on another user's itinerary.",
           heading: "Error!",
         });
+        props.setHideFlightModal()
       });
   };
 
