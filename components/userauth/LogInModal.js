@@ -155,7 +155,7 @@ const LogIn = React.memo((props) => {
     };
   };
 
-  const handleMobileBlur = (event) => {
+  const handleMobileBlur = () => {
     const phone = mobileRef.current.value;
     setMobile(phone);
   };
@@ -178,12 +178,9 @@ const LogIn = React.memo((props) => {
     const match = phoneNumber.match(pattern);
 
     if (match) {
-      const countryCode = match[1];
-      const number = match[2];
-
       return {
-        countryCode: countryCode,
-        number: number,
+        countryCode: match[1],
+        number: match[2],
       };
     } else {
       return null; // Invalid phone number format
@@ -414,7 +411,6 @@ const LogIn = React.memo((props) => {
                   props.CountryCodes ? props.CountryCodes[extension].img : ""
                 }
               ></CountryImg>
-
               <FiChevronDown />
             </div>
             {openCountryCodeOption && (
@@ -426,11 +422,13 @@ const LogIn = React.memo((props) => {
               />
             )}
             {mobileInput}
-          </MobileNumberContainer>
+            </MobileNumberContainer>
+
           <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
             {whatsapp ? <ImCheckboxChecked /> : <ImCheckboxUnchecked />} Receive
             booking updates via WhatsApp
-          </WhatsappCheckBox>
+            </WhatsappCheckBox>
+
           <Button
             onclick={_updatePhoneHandler}
             error={props.mobileFail ? true : false}
@@ -453,12 +451,8 @@ const LogIn = React.memo((props) => {
         <form noValidate>
           <MobileNumberContainer>
             <div
-              className="w-fit h-[50px] px-2 flex flex-row gap-3 items-center border-[1px] border-[#d0d5dd] rounded-lg"
-              onClick={() => {
-                if (props.otpSent) return;
-                setOpenCountryCodeOption(true)
-              }
-              }
+              className="w-fit px-2 flex flex-row gap-3 items-center border-[1px] border-[#d0d5dd] rounded-lg cursor-pointer"
+              onClick={() => setOpenCountryCodeOption(true)}
             >
               <CountryImg
                 height="30"

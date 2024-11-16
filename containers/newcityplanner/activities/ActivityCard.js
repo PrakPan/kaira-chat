@@ -50,14 +50,13 @@ export default function ActivityCard(props) {
       className="h-[420px] group relative cursor-pointer p-2 border-2 rounded-xl gap-3 flex flex-col mx-1 hover:border-yellow-300"
     >
       <div
-        className={`absolute transition w-fit flex place-self-center bottom-[60%] z-50 bg-gray-200 px-2 py-1 rounded-md drop-shadow-2xl text-sm ${
-          hover ? "opacity-100" : "opacity-0"
-        } `}
+        className={`absolute transition w-fit flex place-self-center bottom-[60%] z-50 bg-gray-200 px-2 py-1 rounded-md drop-shadow-2xl text-sm ${hover ? "opacity-100" : "opacity-0"
+          } `}
       >
         {props?.data?.name}
       </div>
 
-      <div className="">
+      <div className="h-[45%]">
         <ImageLoader
           url={props?.data?.image}
           dimensions={{ width: 500, height: 250 }}
@@ -117,7 +116,17 @@ export default function ActivityCard(props) {
         ActivityiconId={props.data.id}
         handleCloseDrawer={handleCloseDrawer}
         name={props.data.name}
-      />
+      >
+        {props.setEnquiryOpen ? (
+          <button
+            onClick={(e) => {
+              props.setEnquiryOpen(true)
+              handleCloseDrawer(e)
+            }
+            }
+            className="md:text-lg font-medium text-black bg-[#F7E700] px-4 py-2 rounded-full">Schedule a Callback Now!</button>
+        ) : null}
+      </POIDetailsDrawer>
     </div>
   );
 }

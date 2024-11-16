@@ -17,16 +17,6 @@ import media from "../media";
 import openTailoredModal from "../../services/openTailoredModal";
 import { logEvent } from "../../services/ga/Index";
 
-const NavItemsContainer = styled.div`
-  display: none;
-
-  @media screen and (min-width: 768px) {
-    margin-right: 0rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-`;
 
 const NavbarContainer = styled.div`
   position: relative;
@@ -64,21 +54,6 @@ const TTWLogoContainer = styled(CenterNav)`
   }
 `;
 
-const NavItem = styled.div`
-  color: white;
-  padding: 1rem 0rem 0.5rem 0rem;
-  @media screen and (min-width: 768px) {
-    cursor: pointer;
-    padding: 0rem;
-    margin: 0 1.5rem;
-    white-space: nowrap;
-    border: none;
-    transition: all 0.2s ease-in-out;
-    &:hover {
-      color: lightgrey;
-    }
-  }
-`;
 
 const Header = styled.div`
   position: ${(props) => (props.staticnav ? "static" : "fixed")} !important;
@@ -314,11 +289,9 @@ const Navbar = (props) => {
               <div></div>
             )}
 
-            <NavItemsContainer
-              style={{ marginRight: props.token ? "0rem" : "0" }}
+            <div
+              className="flex flex-row items-center justify-center"
             >
-              <NavItem style={{ paddingInline: "1.5rem" }}></NavItem>
-
               {!props.hidecta ? (
                 <Button
                   fontWeight="500"
@@ -365,7 +338,7 @@ const Navbar = (props) => {
                   headerColor={props.headerColor}
                 />
               )}
-            </NavItemsContainer>
+            </div>
           </CenterNav>
         </NavbarContainer>
 

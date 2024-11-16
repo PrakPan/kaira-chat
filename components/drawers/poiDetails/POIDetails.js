@@ -38,6 +38,7 @@ const Heading = styled.p`
 `;
 
 const Container = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -174,6 +175,7 @@ const POIDetails = (props) => {
               noLazy
             ></ImageLoader>
           </div>
+
           <div
             style={{
               display: !imageLoaded ? "initial" : "none",
@@ -191,6 +193,7 @@ const POIDetails = (props) => {
             </div>
           </div>
         </div>
+
         {props.data.ideal_duration_hours || props.data.ideal_duration_number ? (
           <TimeStamp>
             Approx Time :{" "}
@@ -202,6 +205,7 @@ const POIDetails = (props) => {
           <></>
         )}
       </ImageContainer>
+
       <div>
         <Title>{props.data.name}</Title>
         {props.data.address && (
@@ -210,6 +214,7 @@ const POIDetails = (props) => {
             {props.data.address}
           </div>
         )}
+
         <Reviews>
           {props.data.rating && (
             <div
@@ -235,6 +240,7 @@ const POIDetails = (props) => {
         </Reviews>
         {props.data.experience_filters && <Text>{experience_filters}</Text>}
       </div>
+
       {props.data?.cost ? (
         <div className="flex flex-row">
           Cost: <span className="font-semibold px-1">₹</span>{props.data.cost}{" /- "}{"Per person"}
@@ -244,6 +250,7 @@ const POIDetails = (props) => {
           Cost: Complimentary Activity
         </div>
       )}
+
       {props.data.short_description && (
         <div>
           <Heading>About</Heading>
@@ -252,12 +259,14 @@ const POIDetails = (props) => {
           </Text>
         </div>
       )}
+
       {props.data.getting_around && (
         <div>
           <Heading>Getting Around</Heading>
           <Text>{props.data.getting_around}</Text>
         </div>
       )}
+
       {props.data.timings && (
         <div>
           <Heading>Timings</Heading>
@@ -272,6 +281,7 @@ const POIDetails = (props) => {
           </Text>
         </div>
       )}
+
       {props.data.tips && props.data.tips.length ? (
         <div>
           <Heading>Tips</Heading>
