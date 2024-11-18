@@ -125,7 +125,7 @@ const Booking = (props) => {
 
   useEffect(() => {
     if (isPageWide && props.showFlightModal) _FetchFlightsHandler();
-  }, [props.selectedBooking, props.token, filtersState, pax, classType]);
+  }, [props.showFlightModal, props.token, filtersState, pax, classType]);
 
   const _FetchFlightsHandler = () => {
     let options = [];
@@ -141,7 +141,7 @@ const Booking = (props) => {
 
     if (props.selectedBooking && props.token) {
 
-      const data = {
+      const requestData = {
         adult_count: pax.adults,
         child_count: pax.children,
         infant_count: pax.infants,
@@ -154,7 +154,7 @@ const Booking = (props) => {
       }
 
       axiosFlightSearch
-        .post(`?${filtersState.sort_by}_order=${filtersState.order}${filtersState.departure_time_period ? '&departure_time_period=' + filtersState.departure_time_period : ''}${filtersState.arrival_time_period ? '&arrival_time_period=' + filtersState.arrival_time_period : ''}`, data, {
+        .post(`?${filtersState.sort_by}_order=${filtersState.order}${filtersState.departure_time_period ? '&departure_time_period=' + filtersState.departure_time_period : ''}${filtersState.arrival_time_period ? '&arrival_time_period=' + filtersState.arrival_time_period : ''}`, requestData, {
           headers: {
             Authorization: `Bearer ${props.token}`,
             "Content-Type": "application/json",
