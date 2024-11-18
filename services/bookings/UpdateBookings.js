@@ -14,3 +14,7 @@ export const updateFlightBooking = axios.create({
 export const updateAccommodationBooking = axios.create({
   baseURL: MERCURY_HOST + "/api/v1/itinerary/",
 });
+
+export const transferSearch = axios.create({
+  baseURL: MERCURY_HOST + "/api/v1/transfers/"
+})
