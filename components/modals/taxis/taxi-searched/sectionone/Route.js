@@ -72,6 +72,14 @@ const Section = (props) => {
   const [loading, setLoading] = useState(false);
 
   const handleUpdate = () => {
+    if (props.handleTaxiSelect) {
+      props.handleTaxiSelect({
+        trace_id: props.data.trace_id,
+        result_index: props.data.result_index
+      });
+      return;
+    }
+
     setLoading(true);
 
     const requestData = {

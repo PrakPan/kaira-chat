@@ -1,11 +1,15 @@
-import Drawer from "../../ui/Drawer";
 import { useEffect, useState } from "react";
+import { connect } from "react-redux";
+import styled from "styled-components";
+import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
+import { RiArrowRightSLine } from "react-icons/ri";
+import Drawer from "../../ui/Drawer";
 import transferEdit from "../../../services/itinerary/brief/transferEdit";
 import axiosRoundTripEditInstance from "../../../services/itinerary/brief/roudTripEdit";
-import { connect } from "react-redux";
+import { routeDetails } from "../../../services/itinerary/brief/transferEdit";
+import axiosRoundTripInstance from "../../../services/itinerary/brief/roundTripSuggestion";
 import { openNotification } from "../../../store/actions/notification";
 import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";
-import styled from "styled-components";
 import Button from "../../../components/ui/button/Index";
 import ImageLoader from "../../../components/ImageLoader";
 import { IoMdArrowRoundBack } from "react-icons/io";
@@ -13,7 +17,8 @@ import { getIndianPrice } from "../../../services/getIndianPrice";
 import useMediaQuery from "../../media";
 import TransfersIcon from "../../../helper/TransfersIcon";
 import { logEvent } from "../../../services/ga/Index";
-import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
+import TaxiModal from "../../../components/modals/taxis/Index";
+import FlightModal from "../../../components/modals/flights/Index";
 
 const ClippathComp = styled.div`
   clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 95% 50%, 100% 0%);
@@ -28,15 +33,15 @@ const GetInTouchContainer = styled.div`
 const TRANSFER_TYPES = {
   ONEWAYTRIP: {
     name: "one-way-trip",
-    label: "One-way Trip",
+    label: "One-way options",
   },
   ROUNDTRIP: {
     name: "round-trip",
-    label: "Round Trip",
+    label: "Round-trip options",
   },
   MULTICITYTRIP: {
     name: "multi-city-trip",
-    label: "Multi-city Trip",
+    label: "Multi-city options",
   },
 };
 
@@ -49,109 +54,156 @@ const TransferEditDrawer = (props) => {
     origin,
     destination,
     alternateRoutes,
-    roundTripSuggestions,
-    multiCitySuggestions,
-    loadingAlternates,
-    alternatesError,
     day_slab_index,
     element_index,
     openNotification,
     fetchData,
     setShowLoginModal,
     check_in,
+    routeId,
+    selectedBooking
   } = props;
-
+  const isDesktop = useMediaQuery("(min-width:768px)");
+  const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
+  const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
   const [transfers, setTransfers] = useState([]);
+  const [loadingTransfers, setLoadingTransfers] = useState(true);
+  const [transfersError, setTransfersError] = useState(null)
   const [selectLoading, setSelectLoading] = useState(false);
   const [transferType, setTransferType] = useState(
     TRANSFER_TYPES.ONEWAYTRIP.name
   );
-  const isDesktop = useMediaQuery("(min-width:768px)");
-
-  const getSelectedTransfer = () => {
-    const route = alternateRoutes?.routes?.find(
-      (route) => route.heading === selectedTransferHeading
-    );
-    return route;
-  };
-
-  const filterAlternateRoutes = () => {
-    const filteredTransfers = [
-      ...alternateRoutes?.routes?.sort(
-        (a, b) => a.inconvenience_score - b.inconvenience_score
-      ),
-    ];
-    filteredTransfers[0].recommended = true;
-
-    const newTransfers = filteredTransfers.filter(
-      (route) => route.heading !== selectedTransferHeading
-    );
-    const selectedTransfer = getSelectedTransfer();
-    if (selectedTransfer)
-      newTransfers.unshift({ ...selectedTransfer, isSelected: true });
-    return newTransfers;
-  };
+  const [showFlightModal, setShowFlightModal] = useState(false);
+  const [showTaxiModal, setShowTaxiModal] = useState(false);
+  const [selectedResult, setSelectedResult] = useState(null);
 
   useEffect(() => {
-    if (!loadingAlternates && !alternatesError && alternateRoutes?.routes) {
-      const filteredTransfers = filterAlternateRoutes();
-      setTransfers(filteredTransfers);
+    if (showDrawer) {
+      fetchRoutes();
     }
-  }, [loadingAlternates, alternateRoutes]);
 
-  const handleSelect = (routeIndex) => {
+  }, [showDrawer]);
+
+  const fetchRoutes = () => {
+    setLoadingTransfers(true);
+    setTransfersError(null);
+    roundTripSuggestion();
+
+    const requestData = {
+      start_datetime: "2024-11-25T00:00:00",
+      number_of_travellers: props?.plan?.number_of_adults + props?.plan?.number_of_children
+    }
+
+    routeDetails.get(`${routeId}/`, requestData).then(res => {
+      if (res.data.success && res.data.routes.data.length > 0) {
+        const data = res.data.routes.data;
+        setTransfers(data);
+      } else {
+        setTransfersError(
+          "No route found, please get in touch with us to complete this booking!"
+        );
+      }
+      setLoadingTransfers(false);
+    }).catch(err => {
+      setLoadingTransfers(false);
+      setTransfersError(
+        "No route found, please get in touch with us to complete this booking!"
+      );
+    })
+  }
+
+  const roundTripSuggestion = () => {
+    axiosRoundTripInstance
+      .get(`?itinerary_id=${props?.ItineraryId}`)
+      .then((response) => {
+        const results = response.data;
+
+        for (let i = 0; i < results.length; i++) {
+          if (
+            results[i].success &&
+            results[i].transfer_type === "Intercity round-trip"
+          ) {
+            setRoundTripSuggestions(results[i]);
+          } else if (
+            results[i].success &&
+            results[i].transfer_type === "Multicity"
+          ) {
+            setMultiCitySuggestions(results[i]);
+          }
+        }
+      })
+      .catch((err) => {
+        console.log("[ERROR][roundTripSuggestion]: ", err);
+      });
+  };
+
+  const handleSelect = (index, mode) => {
     const access_token = localStorage.getItem("access_token");
     if (!props.token) {
       setShowLoginModal(true);
       return;
     }
 
-    setSelectLoading(true);
-    const selectedRoute = transfers[routeIndex];
-    const data = {
-      itinerary_id: ItineraryId,
-      route_id: alternateRoutes.id,
-      day_slab_index: day_slab_index,
-      element_index: element_index,
-      route: selectedRoute,
-      check_in: check_in,
-    };
-    transferEdit
-      .post("", data, {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        if (response.status === 200) {
-          fetchData((scroll = false));
-          openNotification({
-            text: "Your Transfer updated successfully!",
-            heading: "Success!",
-            type: "success",
-          });
-        }
-        setSelectLoading(false);
-        setShowDrawer(false);
-      })
-      .catch((err) => {
-        setSelectLoading(false);
-        setShowDrawer(false);
-        if (err?.response?.status === 403) {
-          props.openNotification({
-            text: "You are not allowed to make changes to this itinerary",
-            heading: "Error!",
-            type: "error",
-          });
-        } else {
-          props.openNotification({
-            text: "There seems to be a problem, please try again!",
-            heading: "Error!",
-            type: "error",
-          });
-        }
-      });
+    switch (mode) {
+      case "Flight":
+        setSelectedResult({ transferIndex: index, mode: mode });
+        setShowFlightModal(true);
+        break;
+      case "Taxi":
+        setSelectedResult({ transferIndex: index, mode: mode });
+        setShowTaxiModal(true);
+        break;
+      default:
+        setSelectedResult({ transferIndex: index, mode: mode });
+        break;
+    }
+
+    // setSelectLoading(true);
+    // const selectedRoute = transfers[routeIndex];
+    // const data = {
+    //   itinerary_id: ItineraryId,
+    //   route_id: alternateRoutes.id,
+    //   day_slab_index: day_slab_index,
+    //   element_index: element_index,
+    //   route: selectedRoute,
+    //   check_in: check_in,
+    // };
+    // transferEdit
+    //   .post("", data, {
+    //     headers: {
+    //       Authorization: `Bearer ${access_token}`,
+    //       "Content-Type": "application/json",
+    //     },
+    //   })
+    //   .then((response) => {
+    //     if (response.status === 200) {
+    //       fetchData((scroll = false));
+    //       openNotification({
+    //         text: "Your Transfer updated successfully!",
+    //         heading: "Success!",
+    //         type: "success",
+    //       });
+    //     }
+    //     setSelectLoading(false);
+    //     setShowDrawer(false);
+    //   })
+    //   .catch((err) => {
+    //     setSelectLoading(false);
+    //     setShowDrawer(false);
+    //     if (err?.response?.status === 403) {
+    //       props.openNotification({
+    //         text: "You are not allowed to make changes to this itinerary",
+    //         heading: "Error!",
+    //         type: "error",
+    //       });
+    //     } else {
+    //       props.openNotification({
+    //         text: "There seems to be a problem, please try again!",
+    //         heading: "Error!",
+    //         type: "error",
+    //       });
+    //     }
+    //   });
 
     logEvent({
       action: "Transfer_Add_Change",
@@ -159,13 +211,22 @@ const TransferEditDrawer = (props) => {
         page: "Itinerary Page",
         event_category: "Button Click",
         event_label: `Select`,
-        evemt_value: selectedRoute?.legs[0]?.carrier
-          ? selectedRoute?.legs[0]?.carrier
-          : selectedRoute?.modes[0],
+        evemt_value: `Select ${mode}`,
         event_action: "Transfer Add/Change Drawer",
       },
     });
   };
+
+  const handleSelectResult = (result) => {
+    setSelectedResult(prev => {
+      return {
+        ...prev,
+        ...result
+      }
+    });
+    setShowFlightModal(false);
+    setShowTaxiModal(false);
+  }
 
   const handleRoundTripSelect = (trace_id, cab_id) => {
     console.log(trace_id);
@@ -257,7 +318,7 @@ const TransferEditDrawer = (props) => {
           </div>
         </div>
 
-        {loadingAlternates ? (
+        {loadingTransfers ? (
           <div className="mt-10 w-full flex flex-col gap-3 items-center">
             <div className="w-full flex flex-row items-center gap-3 bg-gray-200 rounded-lg p-2 shadow-sm animate-pulse">
               <div className="flex items-center justify-center">
@@ -307,10 +368,10 @@ const TransferEditDrawer = (props) => {
               </div>
             </div>
           </div>
-        ) : alternatesError && props.roundTripSuggestions !== null ? (
+        ) : transfersError && roundTripSuggestions === null && multiCitySuggestions === null ? (
           <div className="w-full flex flex-col space-y-5 items-center justify-center">
             <div className="flex items-center justify-center bg-red-500 text-white rounded p-2">
-              {alternatesError}
+              {transfersError}
             </div>
             <div className="flex">
               <GetInTouchContainer>
@@ -369,6 +430,7 @@ const TransferEditDrawer = (props) => {
                 />
               )}
             </div>
+
             {selectLoading && (
               <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                 <div className="mb-96">
@@ -376,6 +438,7 @@ const TransferEditDrawer = (props) => {
                 </div>
               </div>
             )}
+
             {transferType === TRANSFER_TYPES.ONEWAYTRIP.name ? (
               <>
                 <div className="w-full flex justify-start">
@@ -393,6 +456,7 @@ const TransferEditDrawer = (props) => {
                           transferIndex={index}
                           transfer={transfer}
                           handleSelect={handleSelect}
+                          selectedResult={selectedResult}
                         />
                       );
                     return (
@@ -420,6 +484,51 @@ const TransferEditDrawer = (props) => {
           </div>
         )}
       </div>
+
+      <FlightModal
+        handleFlightSelect={handleSelectResult}
+        showFlightModal={showFlightModal}
+        setShowFlightModal={setShowFlightModal}
+        setHideFlightModal={() => setShowFlightModal(false)}
+        setHideBookingModal={() => setShowFlightModal(false)}
+        getPaymentHandler={props.getPaymentHandler}
+        _updatePaymentHandler={props._updatePaymentHandler}
+        _updateFlightBookingHandler={props._updateFlightBookingHandler}
+        _updateBookingHandler={props._updateBookingHandler}
+        alternates={selectedBooking?.id}
+        tailored_id={selectedBooking?.tailored_itinerary}
+        // _updateFlightHandler={props._updateFlightHandler}
+        selectedBooking={selectedBooking}
+        itinerary_id={ItineraryId}
+        selectedTransferHeading={selectedTransferHeading}
+        fetchData={fetchData}
+        setShowLoginModal={setShowLoginModal}
+        check_in={check_in}
+        _GetInTouch={props._GetInTouch}
+        daySlabIndex={day_slab_index}
+        elementIndex={element_index}
+        routeId={routeId}
+      ></FlightModal>
+
+      <TaxiModal
+        handleTaxiSelect={handleSelectResult}
+        showTaxiModal={showTaxiModal}
+        setHideBookingModal={() => setShowTaxiModal(false)}
+        setHideTaxiModal={() => setShowTaxiModal(false)}
+        getPaymentHandler={props.getPaymentHandler}
+        _updatePaymentHandler={props._updatePaymentHandler}
+        _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+        selectedBooking={selectedBooking}
+        itinerary_id={ItineraryId}
+        selectedTransferHeading={selectedTransferHeading}
+        fetchData={fetchData}
+        setShowLoginModal={setShowLoginModal}
+        check_in={check_in}
+        _GetInTouch={props._GetInTouch}
+        daySlabIndex={day_slab_index}
+        elementIndex={element_index}
+        routeId={routeId}
+      ></TaxiModal>
     </Drawer>
   );
 };
@@ -429,6 +538,7 @@ const mapStateToPros = (state) => {
     notificationText: state.Notification.text,
     token: state.auth.token,
     ItineraryId: state.ItineraryId,
+    plan: state.Plan
   };
 };
 
@@ -441,8 +551,9 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(mapStateToPros, mapDispatchToProps)(TransferEditDrawer);
 
 const RouteContainer = (props) => {
-  const { transferIndex, transfer, handleSelect } = props;
+  const { transferIndex, transfer, handleSelect, selectedResult } = props;
   const [viewMore, setViewMore] = useState(false);
+  const [singleTransfer, setSingleTransfer] = useState(transfer[0]);
 
   const handleViewMore = () => {
     setViewMore((prev) => !prev);
@@ -450,16 +561,20 @@ const RouteContainer = (props) => {
 
   return (
     <div
-      className={`w-full flex flex-col gap-0 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm ${transferIndex === 0 && transfer.isSelected ? "border-yellow-300" : ""
+      className={`w-full flex flex-col gap-0 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm ${transferIndex === 0 && transfer[0]?.isSelected ? "border-yellow-300" : ""
         } border-x-2 border-t-2 border-b-4`}
     >
-      {transfer.recommended && (
+      {transfer[0]?.recommended && (
         <ClippathComp className="text-sm font-semibold bg-[#F7E700] text-#090909 pl-2 pr-2 py-1 -ml-4 -mt-4 rounded-tl-2xl">
           Recommended
         </ClippathComp>
       )}
 
-      {transfer.modes && transfer.modes.length > 1 ? (
+      {selectedResult && selectedResult.trace_id && selectedResult.transferIndex === transferIndex && (
+        <div className="text-sm text-green-900 pb-1">{selectedResult.mode} Selected</div>
+      )}
+
+      {transfer.length > 1 ? (
         viewMore ? (
           <div className="w-full flex flex-col items-center justify-center">
             <MultiModeContainer
@@ -476,8 +591,9 @@ const RouteContainer = (props) => {
           <div className="w-full flex flex-col items-center justify-center">
             <MultiRoute
               transferIndex={transferIndex}
-              transfer={transfer}
+              transfer={singleTransfer}
               handleSelect={handleSelect}
+              setViewMore={setViewMore}
             />
             <ViewMoreButton
               viewMore={viewMore}
@@ -491,9 +607,9 @@ const RouteContainer = (props) => {
             className={`w-[80px] h-[70px] px-2 bg-gray-100 rounded-xl flex items-center justify-center`}
           >
             <TransfersIcon
-              TransportMode={transfer.modes[0]}
+              TransportMode={singleTransfer.mode}
               Instyle={{
-                fontSize: transfer.modes[0] === "Bus" ? "2.5rem" : "3rem",
+                fontSize: singleTransfer.mode === "Bus" ? "2.5rem" : "3rem",
                 color: "black",
               }}
               classname={{ width: 80, height: 75 }}
@@ -502,12 +618,12 @@ const RouteContainer = (props) => {
 
           <div className="w-full flex flex-col gap-2 justify-center">
             <div className="flex flex-row items-center justify-between">
-              <TransferItem transfer={transfer} />
+              <TransferItem transfer={singleTransfer} />
 
               <div className="flex flex-col gap-2 items-end">
-                <EstimatedCost cost={transfer?.meta?.estimated_cost} />
+                <EstimatedCost cost={singleTransfer?.prices[0]?.price} />
                 <SelectButton
-                  transfer={transfer}
+                  transfer={singleTransfer}
                   transferIndex={transferIndex}
                   handleSelect={handleSelect}
                 />
@@ -521,7 +637,7 @@ const RouteContainer = (props) => {
 };
 
 const MultiRoute = (props) => {
-  const { transferIndex, transfer, handleSelect } = props;
+  const { transferIndex, transfer, handleSelect, setViewMore } = props;
 
   return (
     <div className="flex flex-row gap-2 w-full">
@@ -529,9 +645,9 @@ const MultiRoute = (props) => {
         className={`w-[80px] h-[70px] px-2 bg-gray-100 rounded-xl flex items-center justify-center`}
       >
         <TransfersIcon
-          TransportMode={transfer.modes[0]}
+          TransportMode={transfer.mode}
           Instyle={{
-            fontSize: transfer.modes[0] === "Bus" ? "2.5rem" : "3rem",
+            fontSize: transfer.modea === "Bus" ? "2.5rem" : "3rem",
             color: "black",
           }}
           classname={{ width: 80, height: 75 }}
@@ -540,10 +656,14 @@ const MultiRoute = (props) => {
 
       <div className="w-full flex flex-col gap-2 justify-center">
         <div className="flex flex-row items-center justify-between">
-          <TransferItem transfer={transfer} />
+          <div className="flex flex-row items-start gap-2">
+            <TransferItem transfer={transfer} />
+
+            <button onClick={() => setViewMore(prev => !prev)} className="w-fit h-fit text-blue -mt-[0.5rem]">+1 more</button>
+          </div>
 
           <div className="flex flex-col gap-2 items-end">
-            <EstimatedCost cost={transfer?.meta?.estimated_cost} />
+            <EstimatedCost cost={transfer?.prices[0]?.price} />
             <SelectButton
               transfer={transfer}
               transferIndex={transferIndex}
@@ -556,26 +676,116 @@ const MultiRoute = (props) => {
   );
 };
 
+const MultiModeContainer = ({ transferIndex, transfer, handleSelect }) => {
+  return (
+    <div className="w-full flex flex-col gap-0">
+      {transfer.map((singleTransfer, index) => (
+        <div key={index} className="flex flex-col gap-0 w-full">
+          {index === 0 ? (
+            <div className="flex flex-row items-center justify-between">
+              <div className={`flex flex-row gap-3 items-center justify-start`}>
+                <div className="w-[50px] flex items-center justify-center">
+                  <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center">
+                    <div className="w-2 h-2 bg-yellow rounded-full"></div>
+                  </div>
+                </div>
+
+                <div className="text-[16px] md:text-lg lg:text-lg font-semibold">
+                  {singleTransfer?.source?.name}
+                </div>
+              </div>
+            </div>
+          ) : null}
+
+          <div className="w-full flex flex-row gap-3 items-center justify-start">
+            <div className="w-[55px] flex flex-col gap-1 items-center justify-center">
+              <div className="w-[2px] h-3 rounded-full bg-green-100"></div>
+              <div className="w-[2px] h-3 rounded-full bg-green-200"></div>
+              <div className="w-[2px] h-3 rounded-full bg-green-300"></div>
+              <div className="w-[50px] flex items-center justify-center">
+                <TransfersIcon
+                  TransportMode={singleTransfer.mode}
+                  Instyle={{
+                    fontSize:
+                      singleTransfer.mode === "Bus" ? "3rem" : "3.5rem",
+                    color: "black",
+                  }}
+                  classname={{ width: 40, height: 40 }}
+                  Multimode
+                />
+              </div>
+              <div className="w-[2px] h-3 rounded-full bg-teal-500"></div>
+              <div className="w-[2px] h-3 rounded-full bg-teal-600"></div>
+              <div className="w-[2px] h-3 rounded-full bg-teal-700"></div>
+            </div>
+
+            <div className="w-full flex flex-col gap-2 items-center justify-center">
+              <div className="w-full flex flex-row items-center justify-between gap-0">
+                <TransferItem transfer={singleTransfer} transferIndex={index} />
+
+                <div className="flex flex-col gap-2 items-end">
+                  <EstimatedCost cost={singleTransfer?.prices[0]?.price} />
+                  <SelectButton
+                    transfer={singleTransfer}
+                    transferIndex={transferIndex}
+                    handleSelect={handleSelect}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-row items-center justify-between">
+            <div className={`flex flex-row gap-3 items-center justify-start`}>
+              <div className="w-[50px] flex items-center justify-center">
+                <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center">
+                  <div className="w-2 h-2 bg-yellow rounded-full"></div>
+                </div>
+              </div>
+
+              <div className="text-[16px] md:text-lg lg:text-lg font-semibold">
+                {singleTransfer?.destination?.name}
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const MobileRouteContainer = (props) => {
   const { transferIndex, transfer, handleSelect } = props;
-
   const [viewMore, setViewMore] = useState(false);
+  const [singleTransfer, setSingleTransfer] = useState(transfer[0]);
 
   const handleViewMore = () => {
     setViewMore((prev) => !prev);
   };
+
+  const getHours = () => {
+    const from = Math.floor(singleTransfer.duration / 60);
+    const to = Math.ceil(singleTransfer.duration / 60)
+
+    if (from) {
+      return `${from}-${to} hours`;
+    }
+
+    return `${to} hour`;
+  }
 
   return (
     <div
       className={`w-full flex flex-col gap-3 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm ${transferIndex === 0 ? "border-yellow-300" : ""
         } border-x-2 border-t-2 border-b-4`}
     >
-      {transfer.recommended && (
+      {singleTransfer[0]?.recommended && (
         <ClippathComp className="text-sm font-semibold bg-[#F7E700] text-#090909 pl-2 pr-2 py-1 -ml-4 -mt-4 rounded-tl-2xl">
           Recommended
         </ClippathComp>
       )}
-      {transfer.modes && transfer.modes.length > 1 ? (
+
+      {transfer.length > 1 ? (
         viewMore ? (
           <div className="w-full flex flex-col items-center justify-center">
             <MobileMultiModeContainer
@@ -592,8 +802,9 @@ const MobileRouteContainer = (props) => {
           <div className="w-full flex flex-col items-center justify-center">
             <MobileMultiRoute
               transferIndex={transferIndex}
-              transfer={transfer}
+              transfer={singleTransfer}
               handleSelect={handleSelect}
+              setViewMore={setViewMore}
             />
             <ViewMoreButton
               viewMore={viewMore}
@@ -608,9 +819,9 @@ const MobileRouteContainer = (props) => {
               className={`w-[50px] h-[50px] px-2 bg-gray-100 rounded-xl flex items-center justify-center`}
             >
               <TransfersIcon
-                TransportMode={transfer.modes[0]}
+                TransportMode={singleTransfer.mode}
                 Instyle={{
-                  fontSize: transfer.modes[0] === "Bus" ? "2rem" : "2.5rem",
+                  fontSize: singleTransfer.mode === "Bus" ? "2rem" : "2.5rem",
                   color: "black",
                 }}
                 classname={{ width: 50, height: 50 }}
@@ -618,25 +829,25 @@ const MobileRouteContainer = (props) => {
             </div>
             <div className="flex flex-col items-start gap-2">
               <div className="text-[16px] font-[600] leading-3">
-                {transfer.modes[0]}
+                {singleTransfer.text}
               </div>
+
               <div className="text-sm text-gray-400">
-                {transfer?.legs[0]?.carrier && `${transfer.legs[0].carrier} | `}
-                {transfer?.meta?.Time && `${transfer.meta.Time} | `}
-                {transfer?.meta?.Distance && `${transfer.meta.Distance} Kms`}
+                {singleTransfer?.duration && `${getHours()}`}
+                {singleTransfer?.distance && ` | ${singleTransfer.distance} Kms`}
               </div>
             </div>
           </div>
 
           <div className="w-full flex flex-col gap-4">
             <div className="flex flex-row items-center justify-between">
-              {transfer?.legs[0]?.facilities?.length ? (
+              {singleTransfer?.facilities?.length ? (
                 <div className="text-sm">
                   Facilities:{" "}
-                  {transfer?.legs[0]?.facilities?.map((facility, index) => (
+                  {singleTransfer.facilities?.map((facility, index) => (
                     <span key={index}>
                       <span key={index}>{facility}</span>
-                      {index < transfer?.legs[0]?.facilities?.length - 1 &&
+                      {index < singleTransfer.facilities?.length - 1 &&
                         " | "}
                     </span>
                   ))}
@@ -646,11 +857,11 @@ const MobileRouteContainer = (props) => {
 
             <div className="flex flex-row items-end justify-between mb-2">
               <div className="flex flex-col gap-2 items-start">
-                <EstimatedCost cost={transfer?.meta?.estimated_cost} />
+                <EstimatedCost cost={singleTransfer?.prices[0]?.price} />
               </div>
 
               <SelectButton
-                transfer={transfer}
+                transfer={singleTransfer}
                 transferIndex={transferIndex}
                 handleSelect={handleSelect}
               />
@@ -663,7 +874,18 @@ const MobileRouteContainer = (props) => {
 };
 
 const MobileMultiRoute = (props) => {
-  const { transferIndex, transfer, handleSelect } = props;
+  const { transferIndex, transfer, handleSelect, setViewMore } = props;
+
+  const getHours = () => {
+    const from = Math.floor(transfer.duration / 60);
+    const to = Math.ceil(transfer.duration / 60)
+
+    if (from) {
+      return `${from}-${to} hours`;
+    }
+
+    return `${to} hour`;
+  }
 
   return (
     <div className="flex flex-col gap-2 w-full">
@@ -672,42 +894,39 @@ const MobileMultiRoute = (props) => {
           className={`w-[50px] h-[50px] px-2 bg-gray-100 rounded-xl flex items-center justify-center`}
         >
           <TransfersIcon
-            TransportMode={transfer.modes[0]}
+            TransportMode={transfer.mode}
             Instyle={{
-              fontSize: transfer.modes[0] === "Bus" ? "2rem" : "2.5rem",
+              fontSize: transfer.mode === "Bus" ? "2rem" : "2.5rem",
               color: "black",
             }}
             classname={{ width: 50, height: 50 }}
           />
         </div>
         <div className="flex flex-col items-start gap-2">
-          <div className="text-[16px] font-[600] leading-3">
-            {transfer.modes.map((mode, index) => {
-              return (
-                <span key={index}>
-                  {mode}
-                  {index < transfer.modes.length - 1 && ", "}
-                </span>
-              );
-            })}
+          <div className="flex flex-col items-start gap-2">
+            <div className="text-[16px] font-[600] leading-3">
+              {transfer.text}
+            </div>
+
+            <button onClick={() => setViewMore(prev => !prev)} className="w-fit h-fit text-blue -mt-[0.5rem]">+1 more</button>
           </div>
+
           <div className="text-sm text-gray-400">
-            {transfer?.legs[0]?.carrier && `${transfer.legs[0].carrier} | `}
-            {transfer.meta.Time && `${transfer.meta.Time} | `}
-            {transfer.meta.Distance && ` | ${transfer.meta.Distance} Kms`}
+            {transfer?.duration && `${getHours()}`}
+            {transfer?.distance && ` | ${transfer.distance} Kms`}
           </div>
         </div>
       </div>
 
       <div className="w-full flex flex-col gap-4">
         <div className="flex flex-row items-center justify-between">
-          {transfer?.legs[0]?.facilities?.length ? (
+          {transfer?.facilities?.length ? (
             <div className="text-sm">
               Facilities:{" "}
-              {transfer?.legs[0]?.facilities?.map((facility, index) => (
+              {transfer.facilities?.map((facility, index) => (
                 <span key={index}>
                   <span key={index}>{facility}</span>
-                  {index < transfer?.legs[0]?.facilities?.length - 1 && " | "}
+                  {index < transfer.facilities?.length - 1 && " | "}
                 </span>
               ))}
             </div>
@@ -716,7 +935,7 @@ const MobileMultiRoute = (props) => {
 
         <div className="flex flex-row items-end justify-between mb-2">
           <div className="flex flex-col gap-2 items-start">
-            <EstimatedCost cost={transfer?.meta?.estimated_cost} />
+            <EstimatedCost cost={transfer?.prices[0]?.price} />
           </div>
           <SelectButton
             transfer={transfer}
@@ -729,85 +948,6 @@ const MobileMultiRoute = (props) => {
   );
 };
 
-const MultiModeContainer = ({ transferIndex, transfer, handleSelect }) => {
-  return (
-    <div className="w-full flex flex-col gap-0">
-      {transfer.modes.map((mode, index) => (
-        <div key={index} className="flex flex-col gap-0 w-full">
-          {index === 0 ? (
-            <div className="flex flex-row items-center justify-between">
-              <div className={`flex flex-row gap-3 items-center justify-start`}>
-                <div className="w-[50px] flex items-center justify-center">
-                  <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center">
-                    <div className="w-2 h-2 bg-yellow rounded-full"></div>
-                  </div>
-                </div>
-
-                <div className="text-[16px] md:text-lg lg:text-lg font-semibold">
-                  {transfer?.legs[index]?.origin?.shortName}
-                </div>
-              </div>
-              {index === 0 && (
-                <div className="flex flex-col gap-2 items-end">
-                  <EstimatedCost cost={transfer?.meta?.estimated_cost} />
-                </div>
-              )}
-            </div>
-          ) : null}
-
-          <div className="w-full flex flex-row gap-3 items-center justify-start">
-            <div className="w-[55px] flex flex-col gap-1 items-center justify-center">
-              <div className="w-[2px] h-3 rounded-full bg-green-100"></div>
-              <div className="w-[2px] h-3 rounded-full bg-green-200"></div>
-              <div className="w-[2px] h-3 rounded-full bg-green-300"></div>
-              <div className="w-[50px] flex items-center justify-center">
-                <TransfersIcon
-                  TransportMode={transfer?.modes[index]}
-                  Instyle={{
-                    fontSize:
-                      transfer?.modes[index] === "Bus" ? "3rem" : "3.5rem",
-                    color: "black",
-                  }}
-                  classname={{ width: 40, height: 40 }}
-                  Multimode
-                />
-              </div>
-              <div className="w-[2px] h-3 rounded-full bg-teal-500"></div>
-              <div className="w-[2px] h-3 rounded-full bg-teal-600"></div>
-              <div className="w-[2px] h-3 rounded-full bg-teal-700"></div>
-            </div>
-            <div className="w-full flex flex-col gap-2 items-center justify-center">
-              <div className="w-full flex flex-col items-start justify-start gap-0">
-                <TransferItem transfer={transfer} transferIndex={index} />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-row items-center justify-between">
-            <div className={`flex flex-row gap-3 items-center justify-start`}>
-              <div className="w-[50px] flex items-center justify-center">
-                <div className="w-6 h-6 bg-black rounded-full flex items-center justify-center">
-                  <div className="w-2 h-2 bg-yellow rounded-full"></div>
-                </div>
-              </div>
-              <div className="text-[16px] md:text-lg lg:text-lg font-semibold">
-                {transfer?.legs[index]?.destination?.shortName}
-              </div>
-            </div>
-            {index === transfer.modes.length - 1 && (
-              <SelectButton
-                transfer={transfer}
-                transferIndex={transferIndex}
-                handleSelect={handleSelect}
-              />
-            )}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-};
-
 const MobileMultiModeContainer = ({
   transferIndex,
   transfer,
@@ -815,7 +955,7 @@ const MobileMultiModeContainer = ({
 }) => {
   return (
     <div className="w-full flex flex-col gap-0">
-      {transfer.modes.map((mode, index) => (
+      {transfer.map((singleTransfer, index) => (
         <div key={index} className="flex flex-col gap-0 w-full">
           {index === 0 ? (
             <div className="flex flex-row items-center justify-between">
@@ -827,7 +967,7 @@ const MobileMultiModeContainer = ({
                 </div>
 
                 <div className="text-[16px] md:text-lg lg:text-lg font-semibold">
-                  {transfer?.legs[index]?.origin?.shortName}
+                  {singleTransfer?.source?.name}
                 </div>
               </div>
             </div>
@@ -840,10 +980,10 @@ const MobileMultiModeContainer = ({
               <div className="w-[2px] h-3 rounded-full bg-green-300"></div>
               <div className="w-[50px] flex items-center justify-center">
                 <TransfersIcon
-                  TransportMode={transfer?.modes[index]}
+                  TransportMode={singleTransfer?.mode}
                   Instyle={{
                     fontSize:
-                      transfer?.modes[index] === "Bus" ? "2rem" : "2.5rem",
+                      singleTransfer?.mode === "Bus" ? "2rem" : "2.5rem",
                     color: "black",
                   }}
                   classname={{ width: 40, height: 40 }}
@@ -854,9 +994,21 @@ const MobileMultiModeContainer = ({
               <div className="w-[2px] h-3 rounded-full bg-teal-600"></div>
               <div className="w-[2px] h-3 rounded-full bg-teal-700"></div>
             </div>
+
             <div className="w-full flex flex-col gap-2 items-center justify-center">
               <div className="w-full flex flex-col items-start justify-start gap-0">
-                <TransferItem transfer={transfer} transferIndex={index} />
+                <TransferItem transfer={singleTransfer} transferIndex={index} />
+
+                <div className="w-full flex flex-row items-center justify-between">
+                  <div className="flex flex-col gap-2 items-start">
+                    <EstimatedCost cost={singleTransfer.prices[0]?.price} />
+                  </div>
+                  <SelectButton
+                    transfer={singleTransfer}
+                    transferIndex={transferIndex}
+                    handleSelect={handleSelect}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -867,23 +1019,15 @@ const MobileMultiModeContainer = ({
                 <div className="w-2 h-2 bg-yellow rounded-full"></div>
               </div>
             </div>
+
             <div className="text-[16px] md:text-lg lg:text-lg font-semibold">
-              {transfer?.legs[index]?.destination?.shortName}
+              {singleTransfer?.destination?.name}
             </div>
           </div>
         </div>
       ))}
 
-      <div className="flex flex-row items-center justify-between mt-2 py-3">
-        <div className="flex flex-col gap-2 items-start">
-          <EstimatedCost cost={transfer?.meta?.estimated_cost} />
-        </div>
-        <SelectButton
-          transfer={transfer}
-          transferIndex={transferIndex}
-          handleSelect={handleSelect}
-        />
-      </div>
+
     </div>
   );
 };
@@ -965,6 +1109,7 @@ const RoundTripSuggestion = ({
       setSelectError(true);
     }
   };
+
   return (
     <div
       className={`w-full flex flex-row gap-2 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm border-x-2 border-t-2 border-b-4`}
@@ -1050,8 +1195,8 @@ const RoundTripSuggestion = ({
                     id={price?.cab?.id}
                     onClick={handleSelectCab}
                     className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${selectedCab == price?.cab?.id
-                        ? "border-black"
-                        : "border-[#636366]"
+                      ? "border-black"
+                      : "border-[#636366]"
                       } `}
                   >
                     {selectedCab == price?.cab?.id && (
@@ -1226,8 +1371,8 @@ const MultiCityTripSuggestion = ({
                     id={price?.cab?.id}
                     onClick={handleSelectCab}
                     className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${selectedCab == price?.cab?.id
-                        ? "border-black"
-                        : "border-[#636366]"
+                      ? "border-black"
+                      : "border-[#636366]"
                       } `}
                   >
                     {selectedCab == price?.cab?.id && (
@@ -1289,7 +1434,7 @@ const EstimatedCost = ({ cost }) => {
   if (estimatedCost !== "NaN" && parseInt(estimatedCost) > 0) {
     return (
       <>
-        <div className="text-[13px] font-[300] leading-3">Estimated cost</div>
+        <div className="text-[13px] font-[300] leading-3">Starting from</div>
         <div className="text-[18px] font-[800] leading-3">
           <span>₹ {estimatedCost}</span>
         </div>
@@ -1301,54 +1446,62 @@ const EstimatedCost = ({ cost }) => {
 };
 
 const SelectButton = ({ transferIndex, transfer, handleSelect }) => {
+  const getLabel = () => {
+    switch (transfer.mode) {
+      case "Flight":
+        return "Search Flights";
+      case "Taxi":
+        return "Search Taxis";
+      default:
+        return `Select a ${transfer.mode}`
+    }
+  }
+
   return (
-    <div
-      onClick={() => handleSelect(transferIndex)}
-      className="flex mt-2 flex-row gap-2 items-end justify-end cursor-pointer"
-    >
-      <CheckboxFormComponent
-        checked={transferIndex === 0 && transfer.isSelected}
-        className="mb-1"
-      />
-      <label className="text-center cursor-pointer">
-        {transferIndex === 0 && transfer.isSelected ? "Selected" : "Select"}
-      </label>
+    <div className="group text-blue flex flex-row items-center cursor-pointer hover:translate-x-1 transition-all">
+      <button
+        onClick={() => handleSelect(transferIndex, transfer.mode)}
+        className="focus:outline-none">
+        {getLabel()}
+      </button>
+
+      <RiArrowRightSLine className="text-xl group-hover:scale-110 group-hover:translate-x-1 transition-all" />
     </div>
   );
 };
 
 const TransferItem = ({ transfer, transferIndex }) => {
+  const getHours = () => {
+    const from = Math.floor(transfer.duration / 60);
+    const to = Math.ceil(transfer.duration / 60)
+
+    if (from) {
+      return `${from}-${to} hours`;
+    }
+
+    return `${to} hour`;
+  }
+
   return (
     <div className="flex flex-col items-start gap-2">
       <div className="text-lg font-[500] leading-3">
-        {transferIndex !== undefined
-          ? transfer.modes[transferIndex]
-          : transfer.modes.length > 1
-            ? transfer.modes.map((mode, index) => {
-              if (index === transfer.modes.length - 1) {
-                return mode;
-              }
-              return mode + ", ";
-            })
-            : transfer.modes[0]}
+        {transfer.text}
       </div>
       <div className="text-sm text-gray-400">
-        {transfer?.legs[transferIndex ?? 0]?.carrier &&
-          `${transfer.legs[transferIndex ?? 0].carrier} | `}
-        {transfer.meta.Time && `${transfer.meta.Time} | `}
-        {transfer.meta.Distance && `${transfer.meta.Distance} Kms`}
+        {transfer?.duration && `${getHours()} | `}
+        {transfer?.distance && `${transfer.distance} Kms`}
       </div>
 
       <div className="w-full">
-        {transfer?.legs[transferIndex ?? 0]?.facilities?.length ? (
+        {transfer?.facilities?.length ? (
           <div className="text-sm">
             Facilities:{" "}
-            {transfer?.legs[transferIndex ?? 0]?.facilities?.map(
+            {transfer.facilities?.map(
               (facility, ind) => (
                 <span key={ind}>
                   <span>{facility}</span>
                   {ind <
-                    transfer?.legs[transferIndex ?? 0]?.facilities?.length -
+                    transfer.facilities.length -
                     1 && " | "}
                 </span>
               )

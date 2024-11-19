@@ -98,7 +98,7 @@ const TransfersContainer = (props) => {
     transfer_type,
     user_selected
   ) => {
-    
+
     ga.event({
       action: "Itinerary-bookings-flight_change",
       params: { name: name },
@@ -604,6 +604,7 @@ const TransfersContainer = (props) => {
         transferId={transferId}
         daySlabIndex={daySlabIndex}
         elementIndex={elementIndex}
+        routeId={props?.route?.transfers?.id}
       ></FlightModal>
 
       <TaxiModal
@@ -623,6 +624,7 @@ const TransfersContainer = (props) => {
         transferId={transferId}
         daySlabIndex={daySlabIndex}
         elementIndex={elementIndex}
+        routeId={props?.route?.transfers?.id}
       ></TaxiModal>
 
       {(props?.transferBookings || props?.routes.length > 1) && (
@@ -697,6 +699,7 @@ const TransfersContainer = (props) => {
         setShowLoginModal={props?.setShowLoginModal}
         check_in={props?.route?.check_in}
         _GetInTouch={props._GetInTouch}
+        routeId={props?.route?.transfers?.id}
       />
     </Container>
   );

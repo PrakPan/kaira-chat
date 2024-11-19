@@ -1278,6 +1278,7 @@ const TransferModeContainer = (props) => {
         fetchData={props?.fetchData}
         setShowLoginModal={props?.setShowLoginModal}
         check_in={props?.route?.check_in}
+        routeId={props?.route?.transfers?.id}
       />
     </Container>
   );

@@ -26,6 +26,7 @@ const Booking = (props) => {
         setShowTaxiModal={props.setShowTaxiModal}
         selectedBooking={props.selectedBooking}
         data={props.data}
+        handleTaxiSelect={props.handleTaxiSelect}
       ></SectionOne>
     </Container>
   );

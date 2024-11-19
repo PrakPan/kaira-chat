@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import media from "../../media";
-import routeAlternates from "../../../services/itinerary/brief/routeAlternates";
-import axiosRoundTripInstance from "../../../services/itinerary/brief/roundTripSuggestion";
 import axiosTaxiSearch from "../../../services/bookings/TaxiSearch";
 import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
 import { connect } from "react-redux";
@@ -57,11 +55,6 @@ const Booking = (props) => {
   const [updateLoadingState, setUpdateLoadingState] = useState(false);
   const [noResults, setNoResults] = useState(false);
   const [showTransferEditDrawer, setShowTransferEditDrawer] = useState(false);
-  const [alternateRoutes, setAlternateRoutes] = useState({});
-  const [loadingAlternates, setLoadingAlternates] = useState(true);
-  const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
-  const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
-  const [alternatesError, setAlternatesError] = useState(null);
 
   useEffect(() => {
     if (props.showTaxiModal) {
@@ -124,6 +117,7 @@ const Booking = (props) => {
                 duration: res.data.data.duration,
                 trace_id: res.data.trace_id,
               }}
+              handleTaxiSelect={props.handleTaxiSelect}
             ></TaxiSearched>
           );
         }
@@ -153,6 +147,11 @@ const Booking = (props) => {
     duration,
     total_taxi,
   }) => {
+    if (props.handleTaxiSelect) {
+      props.handleTaxiSelect();
+      return;
+    }
+
     setUpdateBookingState(true);
 
     let updated_bookings_arr = [
@@ -195,155 +194,98 @@ const Booking = (props) => {
       });
   };
 
-  const roundTripSuggestion = () => {
-    setLoadingAlternates(true);
-    axiosRoundTripInstance
-      .get(`?itinerary_id=${props?.itinerary_id}`)
-      .then((response) => {
-        const results = response.data;
-
-        for (let i = 0; i < results.length; i++) {
-          if (
-            results[i].success &&
-            results[i].transfer_type === "Intercity round-trip"
-          ) {
-            setRoundTripSuggestions(results[i]);
-          } else if (
-            results[i].success &&
-            results[i].transfer_type === "Multicity"
-          ) {
-            setMultiCitySuggestions(results[i]);
-          }
-        }
-        setLoadingAlternates(false);
-      })
-      .catch((err) => {
-        console.log("[ERROR][TransferEdit]: ", err);
-        setLoadingAlternates(false);
-      });
-  };
-
   const handleTransferEdit = (e) => {
-    setAlternatesError(null)
-    setLoadingAlternates(true)
     setShowTransferEditDrawer(true);
-    roundTripSuggestion();
-    routeAlternates
-      .get(`/?route_id=` + props.transferId, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        if (response.status === 200 && response.data.routes.length > 0) {
-          const data = response.data;
-          setAlternateRoutes(data);
-        } else {
-          setAlternatesError(
-            "No route found, please get in touch with us to complete this booking!"
-          );
-        }
-        setLoadingAlternates(false);
-      })
-      .catch((err) => {
-        setLoadingAlternates(false);
-        setAlternatesError(
-          "No Route Found, please get in touch with us to complete this booking!"
-        );
-      });
   };
 
   if (props.token)
     return (
-      <>
-        <Drawer
-          anchor={"right"}
-          backdrop
-          style={{ zIndex: 1501 }}
-          className="font-lexend"
-          show={props.showTaxiModal}
-          onHide={props.setHideTaxiModal}
-          mobileWidth={"100%"}
-          width="50%"
-        >
-          <SectionOne
-            selectedBooking={props.selectedBooking}
-            setHideTaxiModal={props.setHideTaxiModal}
-            handleTransferEdit={handleTransferEdit}
-          ></SectionOne>
+      <Drawer
+        anchor={"right"}
+        backdrop
+        style={{ zIndex: 1501 }}
+        className="font-lexend"
+        show={props.showTaxiModal}
+        onHide={props.setHideTaxiModal}
+        mobileWidth={"100%"}
+        width="50%"
+      >
+        <SectionOne
+          selectedBooking={props.selectedBooking}
+          setHideTaxiModal={props.setHideTaxiModal}
+          handleTransferEdit={handleTransferEdit}
+        ></SectionOne>
 
-          <div>
-            <GridContainer style={{ clear: "right" }}>
-              <ContentContainer style={{ position: "relative" }}>
-                {updateBookingState ? (
-                  <div
-                    style={{
-                      width: "max-content",
-                      margin: "auto",
-                      height: isPageWide ? "80vh" : "40vh",
-                    }}
-                    className="center-div text-center font-lexend"
-                  >
-                    <LoadingLottie height="5rem" width="5rem" margin="none" />
-                    Please wait while we update your bookings
+        <div>
+          <GridContainer style={{ clear: "right" }}>
+            <ContentContainer style={{ position: "relative" }}>
+              {updateBookingState ? (
+                <div
+                  style={{
+                    width: "max-content",
+                    margin: "auto",
+                    height: isPageWide ? "80vh" : "40vh",
+                  }}
+                  className="center-div text-center font-lexend"
+                >
+                  <LoadingLottie height="5rem" width="5rem" margin="none" />
+                  Please wait while we update your bookings
+                </div>
+              ) : null}
+
+              {!noResults && !error && !updateBookingState ? (
+                <OptionsContainer id="options">
+                  <div style={{ clear: "right" }}>
+                    {optionsJSX.length
+                      ? optionsJSX
+                      : moreOptionsJSX.length
+                        ? moreOptionsJSX
+                        : null}
+                    {loading && !optionsJSX.length ? <Skeleton /> : null}
                   </div>
-                ) : null}
 
-                {!noResults && !error && !updateBookingState ? (
-                  <OptionsContainer id="options">
-                    <div style={{ clear: "right" }}>
-                      {optionsJSX.length
-                        ? optionsJSX
-                        : moreOptionsJSX.length
-                          ? moreOptionsJSX
-                          : null}
-                      {loading && !optionsJSX.length ? <Skeleton /> : null}
+                  {updateLoadingState ? (
+                    <div className="center-div" style={{}}>
+                      <LoadingLottie
+                        height="5rem"
+                        width="5rem"
+                        margin="1rem auto"
+                      />
                     </div>
+                  ) : null}
 
-                    {updateLoadingState ? (
-                      <div className="center-div" style={{}}>
-                        <LoadingLottie
-                          height="5rem"
-                          width="5rem"
-                          margin="1rem auto"
-                        />
-                      </div>
-                    ) : null}
+                  {viewMoreStatus && !optionsJSX.length ? (
+                    <Button
+                      boxShadow
+                      onclickparam={null}
+                      onclick={_loadAccommodationsHandler}
+                      margin="0.25rem auto"
+                      borderWidth="1px"
+                      borderRadius="2rem"
+                      padding="0.25rem 1rem"
+                    >
+                      View More
+                    </Button>
+                  ) : null}
+                </OptionsContainer>
+              ) : null}
 
-                    {viewMoreStatus && !optionsJSX.length ? (
-                      <Button
-                        boxShadow
-                        onclickparam={null}
-                        onclick={_loadAccommodationsHandler}
-                        margin="0.25rem auto"
-                        borderWidth="1px"
-                        borderRadius="2rem"
-                        padding="0.25rem 1rem"
-                      >
-                        View More
-                      </Button>
-                    ) : null}
-                  </OptionsContainer>
-                ) : null}
+              {noResults ? (
+                <OptionsContainer className="font-lexend center-div text-center">
+                  Oops, we couldn't find what you were searching but we are
+                  already adding new and approved accommodations to our
+                  database everyday!
+                </OptionsContainer>
+              ) : null}
 
-                {noResults ? (
-                  <OptionsContainer className="font-lexend center-div text-center">
-                    Oops, we couldn't find what you were searching but we are
-                    already adding new and approved accommodations to our
-                    database everyday!
-                  </OptionsContainer>
-                ) : null}
-
-                {error ? (
-                  <OptionsContainer className="font-lexend center-div text-center">
-                    Oops, There seems to be a problem, please try again later!
-                  </OptionsContainer>
-                ) : null}
-              </ContentContainer>
-            </GridContainer>
-          </div>
-        </Drawer>
+              {error ? (
+                <OptionsContainer className="font-lexend center-div text-center">
+                  Oops, There seems to be a problem, please try again later!
+                </OptionsContainer>
+              ) : null}
+            </ContentContainer>
+          </GridContainer>
+        </div>
 
         <TransferEditDrawer
           itinerary_id={props?.itinerary_id}
@@ -352,19 +294,16 @@ const Booking = (props) => {
           selectedTransferHeading={props.selectedTransferHeading}
           origin={props.selectedBooking?.city}
           destination={props.selectedBooking?.destination_city}
-          alternateRoutes={alternateRoutes}
-          roundTripSuggestions={roundTripSuggestions}
-          multiCitySuggestions={multiCitySuggestions}
-          loadingAlternates={loadingAlternates}
-          alternatesError={alternatesError}
           day_slab_index={props.daySlabIndex}
           element_index={props.elementIndex}
           fetchData={props?.fetchData}
           setShowLoginModal={props?.setShowLoginModal}
           check_in={props?.check_in}
           _GetInTouch={props._GetInTouch}
+          routeId={props.routeId}
+          selectedBooking={props.selectedBooking}
         />
-      </>
+      </Drawer>
     );
   else
     return (
