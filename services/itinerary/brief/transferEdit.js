@@ -10,3 +10,7 @@ export default transferEdit;
 export const routeDetails = axios.create({
   baseURL: MERCURY_HOST + '/api/v1/geos/route/'
 })
+
+export const otherTransferSearch = axios.create({
+  baseURL: MERCURY_HOST + '/api/v1/transfers/'
+})

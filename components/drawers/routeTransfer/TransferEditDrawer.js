@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { connect } from "react-redux";
 import styled from "styled-components";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
@@ -6,7 +6,7 @@ import { RiArrowRightSLine } from "react-icons/ri";
 import Drawer from "../../ui/Drawer";
 import transferEdit from "../../../services/itinerary/brief/transferEdit";
 import axiosRoundTripEditInstance from "../../../services/itinerary/brief/roudTripEdit";
-import { routeDetails } from "../../../services/itinerary/brief/transferEdit";
+import { routeDetails, otherTransferSearch } from "../../../services/itinerary/brief/transferEdit";
 import axiosRoundTripInstance from "../../../services/itinerary/brief/roundTripSuggestion";
 import { openNotification } from "../../../store/actions/notification";
 import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";
@@ -19,6 +19,7 @@ import TransfersIcon from "../../../helper/TransfersIcon";
 import { logEvent } from "../../../services/ga/Index";
 import TaxiModal from "../../../components/modals/taxis/Index";
 import FlightModal from "../../../components/modals/flights/Index";
+import { getDate } from "../../../helper/DateUtils";
 
 const ClippathComp = styled.div`
   clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 95% 50%, 100% 0%);
@@ -53,7 +54,6 @@ const TransferEditDrawer = (props) => {
     selectedTransferHeading,
     origin,
     destination,
-    alternateRoutes,
     day_slab_index,
     element_index,
     openNotification,
@@ -76,6 +76,7 @@ const TransferEditDrawer = (props) => {
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showTaxiModal, setShowTaxiModal] = useState(false);
   const [selectedResult, setSelectedResult] = useState(null);
+  const [showOtherTransfer, setShowOtherTrasfer] = useState(false);
 
   useEffect(() => {
     if (showDrawer) {
@@ -90,7 +91,7 @@ const TransferEditDrawer = (props) => {
     roundTripSuggestion();
 
     const requestData = {
-      start_datetime: "2024-11-25T00:00:00",
+      start_datetime: `${getDate(check_in)}T00:00:00`,
       number_of_travellers: props?.plan?.number_of_adults + props?.plan?.number_of_children
     }
 
@@ -137,24 +138,47 @@ const TransferEditDrawer = (props) => {
       });
   };
 
-  const handleSelect = (index, mode) => {
+  const handleSelect = (index, transfer, multimode) => {
     const access_token = localStorage.getItem("access_token");
     if (!props.token) {
       setShowLoginModal(true);
       return;
     }
 
-    switch (mode) {
+    // if (multimode) {
+    //   if (selectedResult && selectedResult.transferIndex === index) {
+    //     setSelectedResult(prev => {
+    //       return {
+    //         ...prev,
+    //         modes: [...prev.mode, { mode: transfer.mode }]
+    //       }
+    //     });
+    //   } else {
+    //     setSelectedResult({ multimode: multimode, transferIndex: index, modes: [{ mode: transfer.mode }] });
+    //   }
+
+    //   if (transfer.mode === "Flight") {
+    //     setShowFlightModal(true);
+    //   } else if (transfer.mode === "Taxi") {
+    //     setShowTaxiModal(true);
+    //   } else {
+    //     setShowOtherTrasfer(true);
+    //   }
+    //   return;
+    // }
+
+    switch (transfer.mode) {
       case "Flight":
-        setSelectedResult({ transferIndex: index, mode: mode });
+        setSelectedResult({ transferIndex: index, mode: transfer.mode });
         setShowFlightModal(true);
         break;
       case "Taxi":
-        setSelectedResult({ transferIndex: index, mode: mode });
+        setSelectedResult({ transferIndex: index, mode: transfer.mode });
         setShowTaxiModal(true);
         break;
       default:
-        setSelectedResult({ transferIndex: index, mode: mode });
+        setSelectedResult({ transferIndex: index, mode: transfer.mode, transfer: transfer });
+        setShowOtherTrasfer(true);
         break;
     }
 
@@ -211,7 +235,7 @@ const TransferEditDrawer = (props) => {
         page: "Itinerary Page",
         event_category: "Button Click",
         event_label: `Select`,
-        evemt_value: `Select ${mode}`,
+        evemt_value: `Select ${transfer.mode}`,
         event_action: "Transfer Add/Change Drawer",
       },
     });
@@ -219,6 +243,17 @@ const TransferEditDrawer = (props) => {
 
   const handleSelectResult = (result) => {
     setSelectedResult(prev => {
+      if (prev.multimode) {
+        return {
+          ...prev,
+          modes: [
+            ...prev.modes,
+            {
+              ...result,
+            }
+          ]
+        }
+      }
       return {
         ...prev,
         ...result
@@ -306,7 +341,7 @@ const TransferEditDrawer = (props) => {
       mobileWidth={"100vw"}
       width="50vw"
     >
-      <div className="sticky px-2 top-0 bg-white z-[900] flex flex-col gap-4 pt-4 pb-[100px] justify-start items-start mx-auto w-[98%]">
+      <div className="relative px-2 bg-white z-[900] flex flex-col gap-4 pt-4 pb-[100px] justify-start items-start mx-auto w-[98%] min-h-screen">
         <div className="flex flex-row gap-3 my-0 justify-start items-center">
           <IoMdArrowRoundBack
             onClick={() => setShowDrawer(false)}
@@ -317,6 +352,16 @@ const TransferEditDrawer = (props) => {
             from {origin} to {destination}{" "}
           </div>
         </div>
+
+        {showOtherTransfer && (
+          <OtherTransfer
+            setShowOtherTrasfer={setShowOtherTrasfer}
+            selectedResult={selectedResult}
+            setSelectedResult={setSelectedResult}
+            number_of_travellers={props?.plan?.number_of_adults + props?.plan?.number_of_children}
+            check_in={check_in}
+          />
+        )}
 
         {loadingTransfers ? (
           <div className="mt-10 w-full flex flex-col gap-3 items-center">
@@ -665,6 +710,7 @@ const MultiRoute = (props) => {
           <div className="flex flex-col gap-2 items-end">
             <EstimatedCost cost={transfer?.prices[0]?.price} />
             <SelectButton
+              multimode
               transfer={transfer}
               transferIndex={transferIndex}
               handleSelect={handleSelect}
@@ -726,6 +772,7 @@ const MultiModeContainer = ({ transferIndex, transfer, handleSelect }) => {
                 <div className="flex flex-col gap-2 items-end">
                   <EstimatedCost cost={singleTransfer?.prices[0]?.price} />
                   <SelectButton
+                    multimode
                     transfer={singleTransfer}
                     transferIndex={transferIndex}
                     handleSelect={handleSelect}
@@ -1445,7 +1492,7 @@ const EstimatedCost = ({ cost }) => {
   return null;
 };
 
-const SelectButton = ({ transferIndex, transfer, handleSelect }) => {
+const SelectButton = ({ multimode, transferIndex, transfer, handleSelect }) => {
   const getLabel = () => {
     switch (transfer.mode) {
       case "Flight":
@@ -1460,7 +1507,7 @@ const SelectButton = ({ transferIndex, transfer, handleSelect }) => {
   return (
     <div className="group text-blue flex flex-row items-center cursor-pointer hover:translate-x-1 transition-all">
       <button
-        onClick={() => handleSelect(transferIndex, transfer.mode)}
+        onClick={() => handleSelect(transferIndex, transfer, multimode)}
         className="focus:outline-none">
         {getLabel()}
       </button>
@@ -1512,3 +1559,82 @@ const TransferItem = ({ transfer, transferIndex }) => {
     </div>
   );
 };
+
+const OtherTransfer = ({ setShowOtherTrasfer, selectedResult, setSelectedResult, number_of_travellers, check_in }) => {
+  const ref = useRef(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [otherTransfer, setOtherTransfer] = useState(null);
+  const [traceId, setTraceId] = useState(null);
+
+  useEffect(() => {
+    getOtherTrasfer(selectedResult.transfer.mode);
+  }, [])
+
+  const handleClose = (e) => {
+    e.stopPropagation();
+    if (ref.current && !ref.current.contains(e.target)) {
+      setShowOtherTrasfer(false);
+    }
+  }
+
+  const handleSelectPrice = (index) => {
+    setSelectedResult(prev => {
+      return {
+        ...prev,
+        trace_id: traceId,
+        result_index: otherTransfer.prices[index].result_index
+      }
+    })
+
+    setShowOtherTrasfer(false);
+  }
+
+  const getOtherTrasfer = (mode) => {
+    setLoading(true);
+    const requestData = {
+      edge_id: selectedResult.transfer.id,
+      start_datetime: `${getDate(check_in)}T00:00:00`,
+      number_of_travellers: number_of_travellers
+    }
+
+    otherTransferSearch.post(`${mode.toLowerCase()}/search/`, requestData).then(res => {
+      if (res.data.success) {
+        setTraceId(res.data.trace_id);
+        setOtherTransfer(res.data.data);
+      } else {
+        setError("Prices not found at the moment, please try again!")
+      }
+
+      setLoading(false);
+    }).catch(err => {
+      setLoading(false);
+      setError("Something went wrong, please try again!")
+    })
+  }
+
+  return (
+    <div onClick={handleClose} className="absolute z-50 flex items-center justify-center bg-black bg-opacity-50 top-0 bottom-0 left-0 right-0 -mx-2">
+      <div ref={ref} className="bg-white w-fit p-3 rounded-lg space-y-5">
+        <div className="text-lg">Select your seat</div>
+
+        <div className="w-full flex items-center justify-center">
+          {loading ? (
+            <div className="flex items-center justify-center w-4 h-4 border-2 border-t-black rounded-full animate-spin"></div>
+          ) : error ? (
+            <div className="bg-red-500 text-white p-1 rounded-md">{error}</div>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {otherTransfer && otherTransfer.prices.map((price, i) => (
+                <div key={i} onClick={() => handleSelectPrice(i)} className="flex flex-row items-center justify-between gap-5 hover:bg-gray-200 cursor-pointer p-1 rounded-md">
+                  <div>{price.class ? price.class : 'Seater'}</div>
+                  <div className="font-semibold">₹{getIndianPrice(price.price)}/- </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
