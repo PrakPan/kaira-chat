@@ -88,6 +88,7 @@ export default function Pax(props) {
         props.setNumberOfAdults(adults);
         props.setNumberOfChildren(children);
         props.setNumberOfInfants(infants);
+        props.setRoomConfiguration(rooms);
 
         setOpen(false);
     }

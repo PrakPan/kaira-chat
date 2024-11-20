@@ -47,6 +47,7 @@ const SlideTwo = (props) => {
             setNumberOfChildren={props.setNumberOfChildren}
             numberOfInfants={props.numberOfInfants}
             setNumberOfInfants={props.setNumberOfInfants}
+            setRoomConfiguration={props.setRoomConfiguration}
           ></Pax>
         ) : (
           <GroupType
@@ -58,7 +59,11 @@ const SlideTwo = (props) => {
       </Section>
 
       <Section>
-        <BudgetSlider setShowPax={setShowPax} setBudget={props.setBudget}></BudgetSlider>
+        <BudgetSlider
+          setShowPax={setShowPax}
+          setBudget={props.setBudget}
+          setPriceRange={props.setPriceRange}
+        ></BudgetSlider>
       </Section>
 
       <div

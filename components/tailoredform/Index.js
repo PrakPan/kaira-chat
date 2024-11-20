@@ -102,6 +102,18 @@ const Enquiry = (props) => {
   const [numberOfChildren, setNumberOfChildren] = useState(0);
   const [numberOfInfants, setNumberOfInfants] = useState(0);
   const [budget, setBudget] = useState("Affordable");
+  const [roomConfiguration, setRoomConfiguration] = useState(
+    [{
+      adults: 2,
+      children: 0,
+      infants: 0,
+      childAges: [],
+    }]
+  )
+  const [priceRange, setPriceRange] = useState({
+    min_price: 0,
+    max_price: 3000
+  });
   const [selectedPreferences, setSelectedPreferences] = useState([]);
   const [showCities, setShowCities] = useState(false);
   const [showSearchStarting, setShowSearchStarting] = useState(false);
@@ -259,6 +271,8 @@ const Enquiry = (props) => {
           ? startingLocation.place_id
           : "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
       },
+      room_configuration: roomConfiguration,
+      price_range: priceRange,
     };
 
     if (selectedCities[0].destination_id) {
@@ -521,6 +535,8 @@ const Enquiry = (props) => {
               setSelectedPreferences={setSelectedPreferences}
               setSubmitSecondSlide={setSubmitSecondSlide}
               eventDates={props.eventDates}
+              setRoomConfiguration={setRoomConfiguration}
+              setPriceRange={setPriceRange}
             ></Flickity>
 
             {slideIndex === 0 ? (

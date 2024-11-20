@@ -12,6 +12,11 @@ export default function BudgetSlider(props) {
         setMinPrice(value[0]);
         setMaxPrice(value[1]);
 
+        props.setPriceRange({
+            min_price: value[0],
+            max_price: value[1]
+        });
+
         if (value[1] < 3000) {
             props.setBudget("Affordable");
         } else if (value[1] >= 3000 && value[1] < 6000) {
@@ -25,15 +30,12 @@ export default function BudgetSlider(props) {
 
     const handleValueFocusChange = () => {
         if (!isNaN(parseInt(minPrice)) && !isNaN(parseInt(maxPrice))) {
-            const min_price = parseInt(minPrice) < 700 ? 700 : parseInt(minPrice);
-            const max_price = parseInt(maxPrice) > 10000 ? 10000 : parseInt(maxPrice);
+            const min_price = parseInt(minPrice);
+            const max_price = parseInt(maxPrice);
 
-            props.setBudget([min_price, max_price])
-            setMinPrice(min_price);
-            setMaxPrice(max_price);
+            handleValueChange([min_price, max_price])
         } else {
-            setMinPrice(props.budget[0]);
-            setMaxPrice(props.budget[1]);
+            handleValueChange([0, 3000])
         }
     }
 
