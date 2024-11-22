@@ -72,7 +72,7 @@ const Booking = (props) => {
       trips: [
         {
           start_date: props.selectedBooking.check_in,
-          // start_time: "12:30",
+          number_of_travellers: props?.plan?.number_of_adults + props?.plan?.number_of_children,
           trip_type: "one-way",
           origin: {
             city_id: props.selectedBooking?.origin?.city_id,
@@ -116,6 +116,7 @@ const Booking = (props) => {
                 distance: res.data.data.distance,
                 duration: res.data.data.duration,
                 trace_id: res.data.trace_id,
+                source: res.data.data?.source,
               }}
               handleTaxiSelect={props.handleTaxiSelect}
             ></TaxiSearched>
@@ -325,6 +326,7 @@ const mapStateToPros = (state) => {
     emailfailmessage: state.auth.emailfailmessage,
     loginmessage: state.auth.loginmessage,
     hideloginclose: state.auth.hideloginclose,
+    plan: state.Plan,
   };
 };
 

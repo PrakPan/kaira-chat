@@ -601,10 +601,9 @@ const TransfersContainer = (props) => {
         setShowLoginModal={props?.setShowLoginModal}
         check_in={props?.route?.check_in}
         _GetInTouch={props._GetInTouch}
-        transferId={transferId}
         daySlabIndex={daySlabIndex}
         elementIndex={elementIndex}
-        routeId={props?.route?.transfers?.id}
+        routeId={transferId}
       ></FlightModal>
 
       <TaxiModal
@@ -621,10 +620,9 @@ const TransfersContainer = (props) => {
         setShowLoginModal={props?.setShowLoginModal}
         check_in={props?.route?.check_in}
         _GetInTouch={props._GetInTouch}
-        transferId={transferId}
         daySlabIndex={daySlabIndex}
         elementIndex={elementIndex}
-        routeId={props?.route?.transfers?.id}
+        routeId={transferId}
       ></TaxiModal>
 
       {(props?.transferBookings || props?.routes.length > 1) && (

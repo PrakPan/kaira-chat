@@ -83,6 +83,7 @@ const Section = (props) => {
     setLoading(true);
 
     const requestData = {
+      source: props.data.source,
       trace_id: props.data.trace_id,
       result_index: props.data.result_index
     }
