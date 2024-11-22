@@ -30,7 +30,7 @@ const RoomTypeGrid = styled.div`
 `;
 
 const HotelBookingContainer = ({
-  SelectedBookingin,
+  selectedBooking,
   currentBooking,
   booking,
   index,
@@ -181,7 +181,7 @@ const HotelBookingContainer = ({
           <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3">
             <div
               onClick={() => {
-                currentBooking || SelectedBookingin
+                currentBooking || selectedBooking
                   ? handleViewHotel()
                   : handleClick(index, booking.accommodation, booking, city_id);
               }}
@@ -207,8 +207,8 @@ const HotelBookingContainer = ({
                     widthmobile="100%"
                     noLazy
                     url={
-                      img && !imageFail
-                        ? img
+                      booking.image && !imageFail
+                        ? booking.image
                         : "media/icons/bookings/notfounds/noroom.png"
                     }
                     onfail={() => {
@@ -233,7 +233,7 @@ const HotelBookingContainer = ({
                 >
                   <Skeleton />
                 </div>
-                {booking.star_category ? (
+                {booking?.star_category ? (
                   <starHotel
                     starHotel
                     className={`text-white bg-[#01202B] lg:px-4 px-3 lg:py-3 py-2 m-2 text-sm font-[400]nsition-all shadow-slate-700/70 shadow-md hover:drop-shadow-xl   absolute top-0 rounded-3xl`}
@@ -254,7 +254,7 @@ const HotelBookingContainer = ({
                     </div>
 
                     {handleClick && (
-                      <div className={`ml-auto text-md font-semibold ${booking.user_selected ? 'text-[#277004]' : 'text-[#E00000]'}`}>
+                      <div className={`ml-auto text-md font-semibold ${booking?.user_selected ? 'text-[#277004]' : 'text-[#E00000]'}`}>
                         {booking.user_selected ? "Included" : "Excluded"}
                       </div>
                     )}
@@ -262,12 +262,12 @@ const HotelBookingContainer = ({
 
                   {booking && (
                     <div className="flex flex-col gap-1">
-                      {!currentBooking && (
+                      {!currentBooking && booking?.city && (
                         <div
                           className="text-sm font-normal"
                           style={{ marginTop: "-0.5rem" }}
                         >
-                          {booking?.city}
+                          {booking.city}
                         </div>
                       )}
                       {booking?.addr1 && (
@@ -338,7 +338,7 @@ const HotelBookingContainer = ({
                     ITINERARY_STATUSES.itinerary_prepared !==
                     plan?.itinerary_status ? (
                     <div className="flex flex-row gap-3 lg:mt-2 mt-0">
-                      {booking.check_in && (
+                      {booking?.check_in && (
                         <div className="flex flex-row gap-2 items-center">
                           <BsCalendar2 className="text-sm text-[#7A7A7A]" />
                           <div>
@@ -395,7 +395,7 @@ const HotelBookingContainer = ({
                     )
                   )}
 
-                  {booking.costings_breakdown ? (
+                  {booking?.costings_breakdown ? (
                     <>
                       <RoomTypeGrid>
                         <BiBed className="text-sm text-[#7A7A7A]" />
@@ -455,7 +455,7 @@ const HotelBookingContainer = ({
                     )
                   )}
 
-                  {booking.costings_breakdown &&
+                  {booking?.costings_breakdown &&
                     Addons(booking?.costings_breakdown[0]?.pricing_type) ? (
                     <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
                       <ImSpoonKnife className="text-sm text-[#7A7A7A]" />
