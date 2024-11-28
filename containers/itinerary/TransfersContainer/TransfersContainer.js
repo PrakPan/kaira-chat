@@ -464,6 +464,7 @@ const TransfersContainer = (props) => {
             }
             pinColour={props?.breif?.city_slabs[i]?.color}
             index={i}
+            key={i}
           ></PinSection>
         );
 

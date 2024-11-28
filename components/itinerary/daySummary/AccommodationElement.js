@@ -128,7 +128,7 @@ export default function AccommodationElement(props) {
               }`}
             >
               <div className={`${imageLoaded ? "visible" : "invisible"}`}>
-                {selectedBooking?.images[0]?.image !== "" && !imageFailed ? (
+                {selectedBooking?.image !== "" && !imageFailed ? (
                   <ImageLoader
                     dimensions={{ width: 300, height: 300 }}
                     dimensionsMobile={{ width: 300, height: 300 }}
@@ -139,7 +139,7 @@ export default function AccommodationElement(props) {
                     height="4rem"
                     leftalign
                     widthmobile="4rem"
-                    url={selectedBooking?.images[0]?.image}
+                    url={selectedBooking?.image}
                     noLazy
                     onfail={handleImageFailed}
                     onload={() => {

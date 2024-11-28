@@ -65,39 +65,50 @@ const MidSection = (props) => {
   const [showTaxiModal, setShowTaxiModal] = useState(false);
 
   useEffect(() => {
-    if (props.flightBookings && props.transferBookings) {
-      const allBookings = [...props.flightBookings, ...props.transferBookings]
-      const booking = allBookings.find(book => book.id === props.bookings[0].id)
-      if (booking) {
-        setSelectedBooking({
-          ...selectedBooking,
-          name: booking["name"],
-          itinerary_id: booking["itinerary_id"],
-          id: booking["id"],
-          tailored_id: booking["tailored_itinerary"],
-          check_in: booking["check_in"],
-          check_out: booking["check_out"],
-          pax: {
-            number_of_adults: booking["number_of_adults"],
-            number_of_children: booking["number_of_children"],
-            number_of_infants: booking["number_of_infants"],
-          },
-          city: booking["city"],
-          itinerary_name: booking["itinerary_name"],
-          cost: Math.round(booking["booking_cost"] / 100),
-          costings_breakdown: booking["costings_breakdown"],
-          origin_iata: booking["origin_code"],
-          destination_iata: booking["destination_code"],
-          user_selected: props.bookings[0].user_selected,
-          destination_city: booking["destination_city"],
-          taxi_type: booking["taxi_type"],
-          transfer_type: booking["transfer_type"],
-          origin: booking["origin"],
-          destination: booking["destination"],
-        })
-      }
+    const booking = getBooking(props.bookings[0].id)
+    if (booking) {
+      setSelectedBooking({
+        ...selectedBooking,
+        name: booking["name"],
+        itinerary_id: booking["itinerary_id"],
+        id: booking["id"],
+        tailored_id: booking["tailored_itinerary"],
+        check_in: booking["check_in"],
+        check_out: booking["check_out"],
+        pax: {
+          number_of_adults: booking["number_of_adults"],
+          number_of_children: booking["number_of_children"],
+          number_of_infants: booking["number_of_infants"],
+        },
+        city: booking["city"],
+        itinerary_name: booking["itinerary_name"],
+        cost: Math.round(booking["booking_cost"] / 100),
+        costings_breakdown: booking["costings_breakdown"],
+        origin_iata: booking["origin_code"],
+        destination_iata: booking["destination_code"],
+        user_selected: props.bookings[0].user_selected,
+        destination_city: booking["destination_city"],
+        taxi_type: booking["taxi_type"],
+        transfer_type: booking["transfer_type"],
+        origin: booking["origin"],
+        destination: booking["destination"],
+      })
     }
   }, [props.flightBookings, props.transferBookings])
+
+  const getBooking = (bookingId) => {
+    let booking = null;
+    if (props.flightBookings) {
+      booking = props.flightBookings.find(book => book.id === bookingId)
+    }
+
+    if (booking) return booking
+
+    if (props.transferBookings) {
+      booking = props.transferBookings.find(book => book.id === bookingId)
+    }
+    return booking
+  }
 
   let hidemidsection = props.hidemidsection;
   if (props?.route && props?.route?.modes && props?.route?.modes.length)
@@ -328,7 +339,8 @@ const mapStateToPros = (state) => {
   return {
     ItineraryId: state.ItineraryId,
     transferBookings: state.Bookings.transferBookings,
-    flightBookings: state.Bookings.flightBookings
+    flightBookings: state.Bookings.flightBookings,
+    _bookings: state.Bookings,
   };
 };
 

@@ -96,7 +96,7 @@ const POI = (props) => {
       num_adults: props?.pax?.number_of_adults,
       num_children: props?.pax?.number_of_children,
       currency: "INR",
-      source: props.provider.toLowerCase(),
+      source: props?.provider?.toLowerCase(),
     };
 
     hotelDetails.post("", requestData).then(res => {

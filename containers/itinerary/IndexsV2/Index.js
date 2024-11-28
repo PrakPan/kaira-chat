@@ -174,22 +174,14 @@ const Itinerary = (props) => {
     axiosGetAllBookings.get(`/${props.id}/bookings/`).then(res => {
       const data = res.data;
 
-      props.setBookings(prev => {
-        return {
-          ...prev,
-          stayBookings: data.accommodation_bookings,
-          activityBookings: data.activity_bookings.length
-            ? data.activity_bookings
-            : null,
-        }
-      });
+      props.setBookings({
+        ...props.bookings,
+        stayBookings: data.accommodation_bookings.length > 0 ? data.accommodation_bookings : null,
+        activityBookings: data.activity_bookings.length > 0 ? data.activity_bookings : null
+      })
 
       setStayBookings(data.accommodation_bookings)
-      if (data.activity_bookings.length) {
-        setActivityBookings(data.activity_bookings);
-      } else {
-        setActivityBookings(null);
-      }
+      setActivityBookings(data.activity_bookings.length ? data.activity_bookings : null);
     }).catch(err => {
       console.error("Error fetching all bookings", err.message);
     })
@@ -202,8 +194,6 @@ const Itinerary = (props) => {
     let flight_bookings = [];
 
     const access_token = localStorage.getItem("access_token");
-
-    getAllBookings();
 
     axiosBookingsInstance
       .get("?itinerary_id=" + props.id, {
@@ -229,30 +219,19 @@ const Itinerary = (props) => {
             }
           }
 
-          props.setBookings(prev => {
-            return {
-              ...prev,
-              flightBookings: flight_bookings.length ? flight_bookings : null,
-              transferBookings: transfer_bookings.length
-                ? transfer_bookings
-                : null,
-            }
-          });
+          props.setaBookings({
+            ...props.bookings,
+            flightBookings: flight_bookings.length > 0 ? flight_bookings : null,
+            transferBookings: transfer_bookings.length > 0 ? transfer_bookings : null
+          })
 
-          if (flight_bookings.length) {
-            setFlightBookings(flight_bookings);
-          } else {
-            setFlightBookings(null);
-          }
-
-          if (transfer_bookings.length) {
-            setTransferBookings(transfer_bookings);
-          } else {
-            setTransferBookings(null);
-          }
+          setFlightBookings(flight_bookings.length ? flight_bookings : null);
+          setTransferBookings(transfer_bookings.length ? transfer_bookings : null);
         }
       })
-      .catch((err) => { });
+      .catch((err) => {
+        console.error('ERROR: ', err);
+      });
   };
 
   async function getRoutes(itinaryId) {
@@ -316,6 +295,7 @@ const Itinerary = (props) => {
       })
       .catch((error) => { });
 
+    getAllBookings();
     getAccommodationAndActivitiesHandler();
   }
 

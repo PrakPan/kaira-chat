@@ -55,7 +55,7 @@ export default function TransferElement(props) {
         </div>
 
         {selectedBookings.map((selectedBooking, index) => (
-          <Booking mode={modes[index]} meta={meta} selectedBooking={selectedBooking} data={data} heading={heading} />
+          <Booking key={index} mode={modes[index]} meta={meta} selectedBooking={selectedBooking} data={data} heading={heading} />
         ))}
       </div>
     </Container>

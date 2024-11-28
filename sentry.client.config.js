@@ -1,8 +1,6 @@
 import * as Sentry from "@sentry/nextjs";
 import { SENTRY_DSN } from "./services/constants"
 
-console.log("HERE >>>", process.env.SENTRY_ENV);
-
 Sentry.init({
     dsn: SENTRY_DSN,
     // Replay may only be enabled for the client-side
