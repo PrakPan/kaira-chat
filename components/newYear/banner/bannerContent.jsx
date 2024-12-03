@@ -21,16 +21,21 @@ export default function BannerContent(props) {
 
     return (
         <div className="w-full h-full flex flex-row">
-            <div className="md:w-[50%] p-[5%] md:p-[10%]">
-                <div className="text-[#F7E700] font-[700] text-[36px] leading-[46px]">
+            <div
+                className="h-full md:w-[50%] p-[5%] md:p-[10%] flex flex-col items-center md:items-start gap-2 mt-[20%] md:mt-0">
+                <div
+                    style={{ textAlign: !isPageWide && "center" }}
+                    className="text-[#F7E700] font-[700] text-[22px] md:text-[36px] md:leading-[46px]">
                     Celebrate New Year, Your Way!
                 </div>
 
-                <div className="text-white font-[400] text-[36px] leading-[46px]">
+                <div
+                    style={{ textAlign: !isPageWide && "center" }}
+                    className="text-white font-[400] text-[22px] md:text-[36px] md:leading-[46px]">
                     Unique Trips, Unforgettable Memories, and Experiences to Match Your Vibe.
                 </div>
 
-                <button onClick={handlePlanButton} className="mt-7 bg-[#F7E700] rounded-lg px-4 py-2">Plan Itinerary Now!</button>
+                <button onClick={handlePlanButton} className="w-fit mt-7 bg-[#F7E700] rounded-lg px-4 py-2">Plan Itinerary Now!</button>
             </div>
 
             {isPageWide && (
@@ -79,7 +84,7 @@ export const Banner2Content = (props) => {
         <div className="w-full h-full flex flex-row">
             <div className="md:w-[50%] p-[5%] md:p-[10%]">
                 <div className="text-white font-[700] text-[36px] leading-[52px]">
-                    Plan Your Dream <br/> New Year Trip!
+                    Plan Your Dream <br /> New Year Trip!
                 </div>
 
                 <div className="text-white font-[400] text-[16px] leading-[26px]">

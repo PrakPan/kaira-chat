@@ -160,8 +160,8 @@ const Homepage = (props) => {
       <HeroBanner
         image={
           isPageWide
-            ? "media/website/banners/homepage-herobanner-3.webp"
-            : "media/website/banners/homepage-herobanner-mobile.webp"
+            ? "media/new-year/homepage-banner-2.png"
+            : "media/new-year/homescreen sample 2 mobile.png"
         }
         destinationType={"city-planner"}
         title={

@@ -101,6 +101,11 @@ export default function OurCustomers(props) {
             </div>
 
             <Carousel cards={cards} />
+
+            <Link
+                href={"/testimonials"}
+                className="no-underline text-gray-900 border-2 w-fit border-black px-3 py-1 rounded-lg mx-auto hover:text-white hover:bg-black transition-all"
+            >View All Reviews</Link>
         </div>
     )
 }

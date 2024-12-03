@@ -3,7 +3,7 @@ import BackgroundImageLoader from "../UpdatedBackgroundImageLoader";
 
 const Container = styled.div`
   width: 100%;
-  height: 30rem;
+  height: 25rem;
   @media screen and (min-width: 768px) {
     height: 20rem;
   }

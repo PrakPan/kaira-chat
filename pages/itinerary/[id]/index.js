@@ -35,7 +35,7 @@ const Itinerary = (props) => {
   };
 
   return (
-    <LayoutV2 staticnav itinerary page={"Itinerary Page"}>
+    <LayoutV2 newYear staticnav itinerary page={"Itinerary Page"}>
       <Head>
         <title> Tailored Itinerary | The Tarzan Way </title>
         <meta

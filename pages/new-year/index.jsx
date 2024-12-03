@@ -1,19 +1,11 @@
-import { useEffect } from "react";
-import { connect } from "react-redux";
 import Head from "next/head";
 import NewYearConatiner from "../../containers/newYear/index"
 import Layout from "../../components/Layout";
-import * as authaction from "../../store/actions/auth";
-import setHotLocationSearch from "../../store/actions/hotLocationSearch";
-import axiospagelistinstance from "../../services/pages/list";
-import axioscountrydetailsinstance from "../../services/pages/country";
-import axiosCountInstance from "../../services/itinerary/count";
-import axioslocationsinstance from "../../services/search/search";
 
 export default function Page(params) {
 
     return (
-        <Layout>
+        <Layout newYear>
             <Head>
                 <title>Travel Company | India | The Tarzan Way</title>
                 <meta

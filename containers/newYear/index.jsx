@@ -18,7 +18,7 @@ const NewYearPage = (props) => {
     let isPageWide = media("(min-width: 768px)");
 
     return (
-        <div className="space-y-[100px] mb-[100px]">
+        <div className="space-y-[50px] md:space-y-[100px] mb-[100px]">
             <NewYearBanner
                 heightmobile={"30rem"}
                 height={"40rem"}
@@ -30,7 +30,7 @@ const NewYearPage = (props) => {
                 <BannerContent />
             </NewYearBanner>
 
-            <div className="w-[85%] flex flex-col mx-auto gap-[100px]">
+            <div className="w-[85%] flex flex-col mx-auto gap-[50px] md:gap-[100px]">
                 <Packages />
 
                 <NewYearUnique />
@@ -38,28 +38,9 @@ const NewYearPage = (props) => {
                 <WhyUs />
 
                 <BannerCards />
-            </div>
 
-            <NewYearBanner
-                heightmobile={"30rem"}
-                height={"35rem"}
-                filter={"brightness(0.8)"}
-                zIndex={-1}
-                center={isPageWide ? false : true}
-                resizeMode={"fill"}
-                url={"media/new-year/banner2.png"}
-            >
-                <Banner2Content />
-            </NewYearBanner>
-
-            <div className="w-[85%] flex flex-col mx-auto gap-[100px]">
                 <OurCustomers />
             </div>
-
-            <DesktopBanner
-                onclick={() => openTailoredModal(router)}
-                text="Want to personalize your own experience?"
-            ></DesktopBanner>
 
             {!isPageWide && (
                 <div>

@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import media from "../media";
 import H2 from "../../components/heading/H2";
 import H7 from "../../components/heading/H7";
+import Image from "next/image";
 
 const Container = styled.div`
   height: 375px;
@@ -152,6 +153,24 @@ const Subscribe = (props) => {
 
       {isPageWide && (
         <Circle top={"-30%"} left={"-10%"} opacity={"0.5"}></Circle>
+      )}
+
+      {isPageWide && (
+        <Image
+          src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/join-asset-1.png`}
+          className="absolute top-0 left-0 z-50"
+          width={300}
+          height={300}
+        />
+      )}
+
+      {isPageWide && (
+        <Image
+          src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/join-asset-2.png`}
+          className="absolute top-0 right-0 z-50"
+          width={300}
+          height={300}
+        />
       )}
 
       {isPageWide && <Circle top={"65%"} left={"90%"}></Circle>}
