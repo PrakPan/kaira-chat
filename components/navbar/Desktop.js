@@ -173,10 +173,10 @@ const Navbar = (props) => {
                 <ImageLoader
                   hoverpointer
                   leftalign
-                  width="55px"
+                  width="160px"
                   widthmobile="55px"
                   margin="0.5rem 0.5rem 0.5rem 2rem"
-                  url={"media/website/logo-only.svg"}
+                  url={"media/new-year/new-year-logo.png"}
                   noPlaceholder={true}
                 ></ImageLoader>
               ) : props.headerColor === "black" ? (
@@ -189,10 +189,10 @@ const Navbar = (props) => {
                     onclick={
                       !props.PW ? _handleHomepageRedirect : _handlePWRedirect
                     }
-                    width="55px"
+                    width="160px"
                     widthmobile="55px"
                     leftalign
-                    url={"media/website/logowhite.svg"}
+                    url={"media/new-year/new-year-logo.png"}
                     margin="0.5rem 0.5rem 0.5rem 2rem"
                     noPlaceholder={true}
                   ></ImageLoader>
@@ -205,16 +205,16 @@ const Navbar = (props) => {
                       !props.PW ? _handleHomepageRedirect : _handlePWRedirect
                     }
                     leftalign
-                    width="55px"
+                    width="160px"
                     widthmobile="55px"
                     margin="0.5rem 0.5rem 0.5rem 2rem"
-                    url={"media/website/logo-only.svg"}
+                    url={"media/new-year/new-year-logo.png"}
                     noPlaceholder={true}
                   ></ImageLoader>
                 </Link>
               )}
 
-              <div>
+              {/* <div>
                 {props.hidehomecta ? (
                   <CompanyName
                     style={{
@@ -250,7 +250,7 @@ const Navbar = (props) => {
                     </CompanyName>
                   </Link>
                 )}
-              </div>
+              </div> */}
             </TTWLogoContainer>
 
             {props.itinerary || (!props.hidecta && !props.staticnav) ? (

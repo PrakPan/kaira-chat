@@ -300,29 +300,30 @@ const Mobile = (props) => {
           <div
             style={{
               position: "relative",
-              marginLeft: "-20%",
-              marginBlock: "auto",
+              // marginLeft: "-20%",
+              // marginBlock: "auto",
             }}
             onClick={_handleHomepageRedirect}
+            className="flex items-center justify-center"
           >
             <StyledLink
               href={!props.PW ? "/" : "/corporates/physicswallah"}
               style={{ textDecoration: "none" }}
             >
               <ImageLoader
-                dimensions={{ width: 122, height: 100 }}
-                dimensionsMobile={{ width: 122, height: 100 }}
+                // dimensions={{ width: 122, height: 100 }}
+                // dimensionsMobile={{ width: 122, height: 100 }}
                 hoverpointer
                 onclick={_handleHomepageRedirect}
                 width="3rem"
                 leftalign
-                widthmobile="52px"
-                url={"media/website/logo-only.svg"}
+                widthmobile="150px"
+                url={"media/new-year/new-year-logo.png"}
                 noPlaceholder={true}
               ></ImageLoader>
             </StyledLink>
 
-            {!props.hidecta && <CompanyName>thetarzanway</CompanyName>}
+            {/* {!props.hidecta && <CompanyName>thetarzanway</CompanyName>} */}
           </div>
         ) : (
           <div></div>

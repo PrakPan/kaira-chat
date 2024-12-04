@@ -1,5 +1,11 @@
+import { useRouter } from "next/router";
+import { useState } from "react";
 import styled from "styled-components";
 import BackgroundImageLoader from "../UpdatedBackgroundImageLoader";
+import TailoredFormMobileModal from "../modals/TailoredFomrMobile";
+import openTailoredModal from "../../services/openTailoredModal";
+import media from "../media"
+import Image from "next/image";
 
 const Container = styled.div`
   width: 100%;
@@ -12,13 +18,27 @@ const Container = styled.div`
 
 export default function BannerCards(props) {
     return (
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <Image src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/bg.png`}
+                width={350}
+                height={60}
+                className="absolute -top-[10rem] -left-[14rem]"
+            />
+
+            <Image src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/bg.png`}
+                width={350}
+                height={60}
+                className="absolute -bottom-[15rem] -right-[7rem]"
+            />
+
             <Card
                 url={"media/new-year/bannercard1.png"}
                 heading={"Celebrate New Year's Eve in Goa!"}
                 description={"Experience vibrant nightlife, electrifying beach parties, and iconic music festivals. Book now for an unforgettable start to the New Year!"}
                 nights={6}
                 days={7}
+                destination={"Goa"}
+                pageId={"17"}
             />
             <Card
                 url={"media/new-year/bannercard2.png"}
@@ -26,12 +46,26 @@ export default function BannerCards(props) {
                 description={"Escape to the serene beauty of Kasol this New Year—majestic mountains, cozy vibes, and unforgettable adventures await!"}
                 nights={4}
                 days={5}
+                destination={"Kasol"}
+                pageId={"144"}
             />
         </div>
     )
 }
 
 const Card = (props) => {
+    let isPageWide = media("(min-width: 768px)");
+    const router = useRouter();
+    const [showTailoredModal, setShowTailoredModal] = useState(false);
+
+    const handlePlanButton = () => {
+        if (isPageWide) {
+            setShowTailoredModal(true);
+        } else {
+            openTailoredModal(router, props.pageId, props.destination);
+        }
+    };
+
     return (
         <Container>
             <BackgroundImageLoader
@@ -63,10 +97,28 @@ const Card = (props) => {
                         <div className="flex flex-col gap-2">
                             <div className="text-[22px] font-bold">{props.heading}</div>
                             <div className="text-[16px]">{props.description}</div>
+                            <button
+                                onClick={handlePlanButton}
+                                className="w-fit bg-[#F7E700] rounded-lg text-[15px] text-black font-semibold text-center px-5 py-2">
+                                Plan a trip
+                            </button>
                         </div>
                     </div>
                 </div>
             </BackgroundImageLoader>
+
+            <TailoredFormMobileModal
+                destinationType={"city-planner"}
+                page_id={props.pageId}
+                children_cities={props.children_cities}
+                destination={props.destination}
+                cities={props.cities}
+                onHide={() => {
+                    setShowTailoredModal(false);
+                }}
+                show={showTailoredModal}
+                eventDates={props.eventDates}
+            />
         </Container>
     )
 }

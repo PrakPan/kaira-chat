@@ -22,7 +22,7 @@ const HomePageBanner = () => {
             const containerWidth = bannerRect.width;
             const textWidth = text.length * 16;
 
-            setPosition((position) => position - 5);
+            setPosition((position) => position - 3);
 
             if (position <= -textWidth / 2) {
                 setPosition(containerWidth);

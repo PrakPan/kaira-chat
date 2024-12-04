@@ -4,6 +4,7 @@ import TailoredForm from "../../tailoredform/Index";
 import media from "../../media"
 import TailoredFormMobileModal from "../../modals/TailoredFomrMobile";
 import openTailoredModal from "../../../services/openTailoredModal";
+import Image from "next/image";
 
 
 export default function BannerContent(props) {
@@ -20,7 +21,7 @@ export default function BannerContent(props) {
     };
 
     return (
-        <div className="w-full h-full flex flex-row">
+        <div className="relative w-full h-full flex flex-row">
             <div
                 className="h-full md:w-[50%] p-[5%] md:p-[10%] flex flex-col items-center md:items-start gap-2 mt-[20%] md:mt-0">
                 <div
@@ -31,7 +32,7 @@ export default function BannerContent(props) {
 
                 <div
                     style={{ textAlign: !isPageWide && "center" }}
-                    className="text-white font-[400] text-[22px] md:text-[36px] md:leading-[46px]">
+                    className="text-white font-[400] text-[22px] md:text-[26px] md:leading-[46px]">
                     Unique Trips, Unforgettable Memories, and Experiences to Match Your Vibe.
                 </div>
 
@@ -39,7 +40,7 @@ export default function BannerContent(props) {
             </div>
 
             {isPageWide && (
-                <div className="w-[50%] pt-[5%] px-[12%]">
+                <div className="w-[50%] mt-[2%] px-[12%]">
                     <TailoredForm
                         page_id={props.page_id}
                         children_cities={props.children_cities}
@@ -50,6 +51,30 @@ export default function BannerContent(props) {
                     ></TailoredForm>
                 </div>
             )}
+
+            <Image src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/Asset-2.png`}
+                width={isPageWide ? 100 : 50}
+                height={60}
+                className="absolute top-0 left-[3%]"
+            />
+
+            <Image src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/Asset-3.png`}
+                width={isPageWide ? 100 : 50}
+                height={60}
+                className="absolute top-0 right-[3%]"
+            />
+
+            <Image src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/Asset-4.png`}
+                width={isPageWide ? 130 : 70}
+                height={60}
+                className="absolute -bottom-[36%] md:-bottom-3 left-[3%]"
+            />
+
+            <Image src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/Asset-1.png`}
+                width={isPageWide ? 300 : 150}
+                height={60}
+                className="absolute -bottom-[36%] md:-bottom-3 right-[10%]"
+            />
 
             <TailoredFormMobileModal
                 destinationType={"city-planner"}

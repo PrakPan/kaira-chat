@@ -1,11 +1,10 @@
 import { useRouter } from "next/router";
 import "bootstrap/dist/css/bootstrap.min.css";
-import DesktopBanner from "../../components/containers/Banner";
 import Banner from "../homepage/banner/Mobile";
 import media from "../../components/media";
 import openTailoredModal from "../../services/openTailoredModal";
 import NewYearBanner from "../../components/newYear/banner/banner";
-import BannerContent, { Banner2Content } from "../../components/newYear/banner/bannerContent";
+import BannerContent from "../../components/newYear/banner/bannerContent";
 import Packages from "../../components/newYear/Packages";
 import NewYearUnique from "../../components/newYear/NewYearUnique";
 import WhyUs from "../../components/newYear/WhyUs";

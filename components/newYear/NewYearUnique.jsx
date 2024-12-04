@@ -10,6 +10,8 @@ import SwiperCarousel from "../SwiperCarousel";
 import { NEW_YEAR_UNIQUE } from "../../public/content/newyear";
 import TailoredFormMobileModal from "../modals/TailoredFomrMobile";
 import openTailoredModal from "../../services/openTailoredModal";
+import CraftNewTrip from "./CraftNewTrip";
+import Image from "next/image";
 
 
 const ImageFade = styled.div`
@@ -54,12 +56,27 @@ export default function NewYearUnique(props) {
     return (
         <div>
             <div className="flex flex-col gap-4">
-                <div className="font-bold text-[30px] md:text-[40px] text-center">Explore Unique New Year Traditions Across the World</div>
+
+                <div className="relative w-fit mx-auto font-bold text-[30px] md:text-[40px] text-center">
+                    <Image src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/bg.png`}
+                        width={350}
+                        height={60}
+                        className="absolute -top-10 -right-[14rem]"
+                    />
+
+                    <Image src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/cap.png`}
+                        width={60}
+                        height={60}
+                        className="absolute -top-4 left-2 md:-top-2 md:-left-5"
+                    />
+                    Explore Unique New Year Traditions Across the World</div>
                 <div className="text-[16px] text-center">
                     Discover diverse customs and celebrations that make New Year’s Eve unforgettable around the globe.
                 </div>
 
                 <Carousel handlePlanButton={handlePlanButton} packages={NEW_YEAR_UNIQUE} />
+
+                <CraftNewTrip />
             </div>
 
             <TailoredFormMobileModal
@@ -202,7 +219,7 @@ const Card = (props) => {
                             <span className="font-bold">
                                 ₹{getIndianPrice(props.budget)}
                             </span>
-                            /- per person
+                            /- per day
                         </div>
 
                     </div>

@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { IoMenu } from "react-icons/io5";
 import styled from "styled-components";
@@ -12,6 +12,8 @@ import SwiperCarousel from "../SwiperCarousel";
 import { DOMESTIC_PACKAGES, INTERNATIONAL_PACKAGES } from "../../public/content/newyear";
 import TailoredFormMobileModal from "../modals/TailoredFomrMobile";
 import openTailoredModal from "../../services/openTailoredModal";
+import CraftNewTrip from "./CraftNewTrip";
+import Image from "next/image";
 
 
 const ImageFade = styled.div`
@@ -57,7 +59,18 @@ export default function Packages(props) {
     };
 
     return (
-        <div className="flex flex-col gap-3">
+        <div className="relative flex flex-col gap-3">
+            <Image src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/bg.png`}
+                width={250}
+                height={60}
+                className="absolute top-[50%] -left-[15rem]"
+            />
+
+            <Image src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/cap.png`}
+                width={60}
+                height={60}
+                className="absolute -top-3 -left-6 md:-top-2 md:-left-5"
+            />
             <div className="font-bold text-[30px] md:text-[40px]">What’s Your Vibe Package</div>
 
             <Navigation
@@ -72,6 +85,8 @@ export default function Packages(props) {
                 packages={domestic ? DOMESTIC_PACKAGES : INTERNATIONAL_PACKAGES}
                 handlePlanButton={handlePlanButton}
             />
+
+            <CraftNewTrip />
 
             <TailoredFormMobileModal
                 destinationType={"city-planner"}
@@ -92,6 +107,29 @@ export default function Packages(props) {
 
 const Navigation = ({ activeTab, setActiveTab, domestic, setDomestic }) => {
     let isPageWide = media("(min-width: 768px)");
+    const menuRref = useRef(null);
+    const tabsRef = useRef(null);
+    const [showMenu, setShowMenu] = useState(false);
+    const [showTabs, setShowTabs] = useState(false);
+
+    useEffect(() => {
+        const checkIfClickedOutside = (e) => {
+            if (menuRref.current && !menuRref.current.contains(e.target)) {
+                setShowMenu(false);
+            }
+
+            if (tabsRef.current && !tabsRef.current.contains(e.target)) {
+                setShowTabs(false);
+            }
+        };
+
+        document.addEventListener("mousedown", checkIfClickedOutside);
+
+        return () => {
+            document.removeEventListener("mousedown", checkIfClickedOutside);
+        };
+    }, []);
+
     const Tabs = [
         { id: 1, name: "All" },
         { id: 2, name: "Party" },
@@ -100,8 +138,6 @@ const Navigation = ({ activeTab, setActiveTab, domestic, setDomestic }) => {
         { id: 5, name: "Adventure" },
         { id: 6, name: "Unique Experential" }
     ]
-    const [showMenu, setShowMenu] = useState(false);
-    const [showTabs, setShowTabs] = useState(false);
 
     const handleClick = (name) => {
         setActiveTab(name);
@@ -126,7 +162,7 @@ const Navigation = ({ activeTab, setActiveTab, domestic, setDomestic }) => {
     return (
         <div className="relative">
             {showTabs && (
-                <div className="z-50 absolute top-[100%] bg-white drop-shadow-2xl p-3 rounded-lg flex flex-col gap-2">
+                <div ref={tabsRef} className="z-50 absolute top-[100%] bg-white drop-shadow-2xl p-3 rounded-lg flex flex-col gap-2">
                     {Tabs.map(tab => (
                         <div key={tab.id}
                             onClick={() => handleClick(tab.name)}
@@ -138,7 +174,7 @@ const Navigation = ({ activeTab, setActiveTab, domestic, setDomestic }) => {
             )}
 
             {showMenu && (
-                <div className="z-50 md:px-5 md:py-3 flex flex-col gap-3 absolute right-0 top-[100%] bg-white drop-shadow-2xl p-3 rounded-lg cursor-pointer">
+                <div ref={menuRref} className="z-50 md:px-5 md:py-3 flex flex-col gap-3 absolute right-0 top-[100%] bg-white drop-shadow-2xl p-3 rounded-lg cursor-pointer">
                     <div onClick={() => handleMenu(false)} className="border-1 px-3 py-1 rounded-full">International</div>
                     <div onClick={() => handleMenu(true)} className="border-1 px-3 py-1 rounded-full">Domestic</div>
                 </div>
@@ -313,7 +349,7 @@ const Card = (props) => {
                             <span className="font-bold">
                                 ₹{getIndianPrice(props.budget)}
                             </span>
-                            /- per person
+                            /- per day
                         </div>
 
                     </div>
