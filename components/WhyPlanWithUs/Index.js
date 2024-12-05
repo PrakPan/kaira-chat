@@ -96,7 +96,7 @@ const WhyPlanWithUsOld = (props) => {
 
 const WhyPlanWithUs = (props) => {
   return (
-    <div className="flex flex-col items-center gap-5">
+    <div className="flex flex-col items-center gap-5 px-3 md:px-0">
       {/* <div className="flex flex-col items-center gap-3">
         <div className="text-[30px] md:text-[40px] font-bold">Why Choose Us?</div>
         <div className="text-[16]">Choose us for unforgettable experiences, expert guidance, and a commitment to making your journey memorable.</div>

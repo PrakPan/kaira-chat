@@ -55,19 +55,18 @@ export default function NewYearUnique(props) {
 
     return (
         <div>
-            <div className="flex flex-col gap-4">
+            <div className="relative flex flex-col gap-4">
+                <Image src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/bg.png`}
+                    width={350}
+                    height={60}
+                    className="absolute -top-10 -right-5 md:-right-[7rem]"
+                />
 
                 <div className="relative w-fit mx-auto font-bold text-[30px] md:text-[40px] text-center">
-                    <Image src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/bg.png`}
-                        width={350}
-                        height={60}
-                        className="absolute -top-10 -right-[14rem]"
-                    />
-
                     <Image src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/cap.png`}
                         width={60}
                         height={60}
-                        className="absolute -top-4 left-2 md:-top-2 md:-left-5"
+                        className="absolute -top-4 -left-2 md:-top-2 md:-left-5"
                     />
                     Explore Unique New Year Traditions Across the World</div>
                 <div className="text-[16px] text-center">

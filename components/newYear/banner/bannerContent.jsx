@@ -23,7 +23,7 @@ export default function BannerContent(props) {
     return (
         <div className="relative w-full h-full flex flex-row">
             <div
-                className="h-full md:w-[50%] p-[5%] md:p-[10%] flex flex-col items-center md:items-start gap-2 mt-[20%] md:mt-0">
+                className="h-full md:w-[50%] px-[5%] pt-[5%] pb-[10rem] md:p-[10%] flex flex-col items-center md:items-start gap-2 mt-[20%] md:mt-0">
                 <div
                     style={{ textAlign: !isPageWide && "center" }}
                     className="text-[#F7E700] font-[700] text-[22px] md:text-[36px] md:leading-[46px]">
@@ -55,7 +55,7 @@ export default function BannerContent(props) {
             <Image src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/Asset-2.png`}
                 width={isPageWide ? 100 : 50}
                 height={60}
-                className="absolute top-0 left-[3%]"
+                className="absolute -top-7 left-[3%]"
             />
 
             <Image src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/Asset-3.png`}
@@ -67,13 +67,13 @@ export default function BannerContent(props) {
             <Image src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/Asset-4.png`}
                 width={isPageWide ? 130 : 70}
                 height={60}
-                className="absolute -bottom-[36%] md:-bottom-3 left-[3%]"
+                className="absolute bottom-0 md:-bottom-3 left-[3%]"
             />
 
             <Image src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/Asset-1.png`}
                 width={isPageWide ? 300 : 150}
                 height={60}
-                className="absolute -bottom-[36%] md:-bottom-3 right-[10%]"
+                className="absolute bottom-0 md:-bottom-3 right-[10%]"
             />
 
             <TailoredFormMobileModal

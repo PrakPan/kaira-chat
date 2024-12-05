@@ -28,7 +28,7 @@ export default function BannerCards(props) {
             <Image src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/bg.png`}
                 width={350}
                 height={60}
-                className="absolute -bottom-[15rem] -right-[7rem]"
+                className="absolute -bottom-[15rem] md:-right-[7rem]"
             />
 
             <Card

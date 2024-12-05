@@ -69,12 +69,7 @@ export default function NewYearBanner(props) {
                     noLazy={props.noLazy}
                 >
                     <div
-                        style={{
-                            position: "absolute",
-                            zIndex: "5",
-                            width: "100%",
-                            height: "100%",
-                        }}
+                        className="absolute w-full h-full z-[5]"
                     >
                         {props.children}
                     </div>
