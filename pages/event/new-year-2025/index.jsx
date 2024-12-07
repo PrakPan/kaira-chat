@@ -1,6 +1,6 @@
 import Head from "next/head";
-import NewYearConatiner from "../../containers/newYear/index"
-import Layout from "../../components/Layout";
+import NewYearConatiner from "../../../containers/newYear/index"
+import Layout from "../../../components/Layout";
 
 export default function Page(params) {
 
