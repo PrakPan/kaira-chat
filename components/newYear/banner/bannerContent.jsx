@@ -20,7 +20,7 @@ export default function BannerContent(props) {
   };
 
   return (
-    <div className="relative w-full h-full flex flex-row">
+    <div className="relative w-full h-full flex flex-row overflow-hidden">
       <div className="h-full md:w-[50%] px-[5%] pt-[5%] pb-[10rem] md:p-[10%] flex flex-col items-center md:items-start gap-2 mt-[20%] md:mt-0">
         <div
           style={{ textAlign: !isPageWide && "center" }}
@@ -76,15 +76,23 @@ export default function BannerContent(props) {
         src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/Asset-4.png`}
         width={isPageWide ? 130 : 70}
         height={60}
-        className="absolute bottom-1 md:bottom-1 left-[3%]"
+        className="z-50 absolute bottom-0 left-0"
       />
 
       <Image
         src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/Asset-1.png`}
         width={isPageWide ? 300 : 150}
         height={60}
-        className="absolute bottom-1 md:bottom-1 right-[10%]"
+        className="z-50 absolute bottom-0 right-[10%]"
       />
+
+      <div className="absolute bottom-0 z-49 w-full h-[8rem]">
+        <Image
+          src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/banner-trees.png`}
+          fill
+          className="absolute bottom-0 object-fill"
+        />
+      </div>
 
       <TailoredFormMobileModal
         destinationType={"city-planner"}

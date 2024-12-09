@@ -159,7 +159,7 @@ const FullImgContent = (props) => {
       </PaddingContianer>
 
       {isPageWide && (
-        <div style={{ marginTop: "1.2rem" }}>
+        <div>
           <TailoredForm
             page_id={props.page_id}
             children_cities={props.children_cities}
@@ -171,47 +171,49 @@ const FullImgContent = (props) => {
         </div>
       )}
 
-      <IconsContainer>
-        <div>
-          <ImageLoader
-            height="2.5rem"
-            width="2.5rem"
-            widthmobile="2.5rem"
-            url="media/icons/general/travel.png"
-            noLazy
-          />
-          <IconText>
-            Free Personalized <br /> Itineraries
-          </IconText>
-        </div>
+      {props.page !== "Home Page" && (
+        <IconsContainer>
+          <div>
+            <ImageLoader
+              height="2.5rem"
+              width="2.5rem"
+              widthmobile="2.5rem"
+              url="media/icons/general/travel.png"
+              noLazy
+            />
+            <IconText>
+              Free Personalized <br /> Itineraries
+            </IconText>
+          </div>
 
-        <div>
-          <ImageLoader
-            height="2.5rem"
-            width="2.5rem"
-            widthmobile="2.5rem"
-            url="media/icons/general/booking.png"
-            noLazy
-          />
-          <IconText>
-            Affordable & <br />
-            Flexible Bookings
-          </IconText>
-        </div>
+          <div>
+            <ImageLoader
+              height="2.5rem"
+              width="2.5rem"
+              widthmobile="2.5rem"
+              url="media/icons/general/booking.png"
+              noLazy
+            />
+            <IconText>
+              Affordable & <br />
+              Flexible Bookings
+            </IconText>
+          </div>
 
-        <div>
-          <ImageLoader
-            height="2.5rem"
-            width="2.5rem"
-            widthmobile="2.5rem"
-            url="media/icons/general/money.png"
-            noLazy
-          />
-          <IconText>
-            Zero Hidden <br /> Charges
-          </IconText>
-        </div>
-      </IconsContainer>
+          <div>
+            <ImageLoader
+              height="2.5rem"
+              width="2.5rem"
+              widthmobile="2.5rem"
+              url="media/icons/general/money.png"
+              noLazy
+            />
+            <IconText>
+              Zero Hidden <br /> Charges
+            </IconText>
+          </div>
+        </IconsContainer>
+      )}
 
       <TailoredFormMobileModal
         destinationType={"city-planner"}
