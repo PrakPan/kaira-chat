@@ -42,7 +42,7 @@ export default function BannerCards(props) {
         nights={6}
         days={7}
         destination={"Goa"}
-        pageId={"17"}
+        pageId={"277"}
       />
       <Card
         url={"media/new-year/bannercard2.png"}

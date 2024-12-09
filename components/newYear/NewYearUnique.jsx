@@ -40,16 +40,13 @@ export default function NewYearUnique(props) {
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [showTailoredModal, setShowTailoredModal] = useState(false);
-  const [pageId, setPageId] = useState(null);
   const [destination, setDestination] = useState(null);
 
-  const handlePlanButton = (pageId, destination) => {
+  const handlePlanButton = (pageId, destination, type) => {
     if (isPageWide) {
-      setPageId(pageId);
-      setDestination(destination);
       setShowTailoredModal(true);
     } else {
-      openTailoredModal(router, pageId, destination);
+      openTailoredModal(router, pageId, destination, type);
     }
   };
 
@@ -79,6 +76,7 @@ export default function NewYearUnique(props) {
 
         <Carousel
           handlePlanButton={handlePlanButton}
+          setDestination={setDestination}
           packages={NEW_YEAR_UNIQUE}
         />
 
@@ -86,10 +84,10 @@ export default function NewYearUnique(props) {
       </div>
 
       <TailoredFormMobileModal
-        destinationType={"city-planner"}
-        page_id={pageId}
+        destinationType={destination?.type}
+        page_id={destination?.pageId}
         children_cities={props.children_cities}
-        destination={destination}
+        destination={destination?.name}
         cities={props.cities}
         onHide={() => {
           setShowTailoredModal(false);
@@ -123,6 +121,7 @@ const Carousel = (props) => {
           page={"New Year Page"}
           data={props.packages[i]}
           handlePlanButton={props.handlePlanButton}
+          setDestination={props.setDestination}
         ></Card>
       );
     }
@@ -165,8 +164,14 @@ const Carousel = (props) => {
 const Card = (props) => {
   const [loading, setLoading] = useState(true);
 
-  const handleImageClick = (pageId, destination) => {
-    props.handlePlanButton(pageId, destination);
+  const handleImageClick = (pageId, destination, type) => {
+    props.setDestination({
+      name: destination,
+      pageId: pageId,
+      type: type,
+    });
+
+    props.handlePlanButton(pageId, destination, type);
 
     logEvent({
       action: "View_Destination",
@@ -185,7 +190,9 @@ const Card = (props) => {
       className={`w-full hover-pointer group ${
         loading ? "bg-gray-200 animate-pulse" : ""
       }`}
-      onClick={() => handleImageClick(props.data.pageId, props.heading)}
+      onClick={() =>
+        handleImageClick(props.data?.pageId, props.heading, props.data?.type)
+      }
     >
       <ImageFade>
         <ImageLoader

@@ -6,6 +6,7 @@ export const INTERNATIONAL_PACKAGES = [
     image: "media/new-year/bangkok, thailand.png",
     category: "Party",
     pageId: "1561",
+    type: "City",
   },
   {
     heading: "Tokyo, Japan",
@@ -13,7 +14,8 @@ export const INTERNATIONAL_PACKAGES = [
     budget: 15947,
     image: "media/new-year/tokyo, japan.png",
     category: "Party",
-    pageId: "201",
+    pageId: "1669",
+    type: "City",
   },
   {
     heading: "Dubai, UAE",
@@ -22,6 +24,7 @@ export const INTERNATIONAL_PACKAGES = [
     image: "media/new-year/dubai, uae.png",
     category: "Party",
     pageId: "1666",
+    type: "City",
   },
   {
     heading: "Hongkong",
@@ -30,6 +33,7 @@ export const INTERNATIONAL_PACKAGES = [
     image: "media/new-year/hongkong.png",
     category: "Party",
     pageId: "1678",
+    type: "City",
   },
   {
     heading: "Bali",
@@ -37,7 +41,8 @@ export const INTERNATIONAL_PACKAGES = [
     budget: 16830,
     image: "media/new-year/bali.webp",
     category: "Serene",
-    pageId: "86",
+    pageId: "1489",
+    type: "City",
   },
   {
     heading: "Maldives",
@@ -47,6 +52,7 @@ export const INTERNATIONAL_PACKAGES = [
     image: "media/new-year/maldives.webp",
     category: "Serene",
     pageId: "c41427e2-cb53-4149-b629-7fd96327fabe",
+    type: "Country",
   },
   {
     heading: "Seychelles",
@@ -54,7 +60,8 @@ export const INTERNATIONAL_PACKAGES = [
     budget: 25000,
     image: "media/new-year/seychelles.webp",
     category: "Serene",
-    pageId: "35b2eb07-dfc3-43dc-b0a8-7982205cf3de",
+    pageId: "2093",
+    type: "City",
   },
   {
     heading: "Thailand",
@@ -64,6 +71,7 @@ export const INTERNATIONAL_PACKAGES = [
     image: "media/new-year/bangkok, thailand_across the worl.png",
     category: "Adventure",
     pageId: "86c0051c-1e99-46cf-b59a-d425a067319b",
+    type: "Country",
   },
   {
     heading: "Dubai",
@@ -73,6 +81,7 @@ export const INTERNATIONAL_PACKAGES = [
     image: "media/new-year/dubai.jpeg",
     category: "Adventure",
     pageId: "1666",
+    type: "City",
   },
   {
     heading: "Nepal",
@@ -81,6 +90,7 @@ export const INTERNATIONAL_PACKAGES = [
     image: "media/new-year/nepal.jpeg",
     category: "Adventure",
     pageId: "77e90715-3cd7-43ff-af00-0c676c44fc85",
+    type: "Country",
   },
   {
     heading: "Cappadocia",
@@ -88,7 +98,8 @@ export const INTERNATIONAL_PACKAGES = [
     budget: 17327,
     image: "media/new-year/cappadocia.jpeg",
     category: "Unique Experential",
-    pageId: "448",
+    pageId: "2099",
+    type: "City",
   },
   {
     heading: "Borneo, Turkey",
@@ -98,6 +109,7 @@ export const INTERNATIONAL_PACKAGES = [
     image: "media/new-year/borneo.jpeg",
     category: "Unique Experential",
     pageId: "0a0e1243-5d35-4074-81fd-974fae85b58e",
+    type: "Country",
   },
   {
     heading: "Wadi Rum, Jordan",
@@ -107,6 +119,7 @@ export const INTERNATIONAL_PACKAGES = [
     image: "media/new-year/jordan.jpeg",
     category: "Unique Experential",
     pageId: "d5e3ad57-8fba-4dd3-bbe9-6a305214bdfd",
+    type: "Country",
   },
 ];
 
@@ -118,8 +131,8 @@ export const DOMESTIC_PACKAGES = [
     budget: 25000,
     image: "media/new-year/goa.jpeg",
     category: "Party",
-    pageId: "17",
-    type: "State",
+    pageId: "277",
+    type: "City",
   },
   {
     heading: "Mumbai",
@@ -204,7 +217,7 @@ export const DOMESTIC_PACKAGES = [
     image: "media/new-year/andaman.jpeg",
     category: "Adventure",
     pageId: "278",
-    type: "State",
+    type: "City",
   },
   {
     heading: "Uttrakhand",
@@ -226,7 +239,7 @@ export const DOMESTIC_PACKAGES = [
     type: "State",
   },
   {
-    heading: "Sunderbans, India",
+    heading: "Sundarbans, India",
     tagline:
       "Experience thrilling boat safaris in the world’s largest mangrove forest, home to the Bengal tiger.",
     budget: 25000,
@@ -265,6 +278,7 @@ export const NEW_YEAR_UNIQUE = [
     budget: 15947,
     image: "media/new-year/japan.png",
     pageId: "ecf03b1d-6699-4717-ae40-c7194e5259b1",
+    type: "Country",
   },
   {
     heading: "Spain",
@@ -272,13 +286,15 @@ export const NEW_YEAR_UNIQUE = [
     budget: 14334,
     image: "media/new-year/spain.png",
     pageId: "d9abf8b5-10c1-48d1-885f-5ae0725f0b85",
+    type: "Country",
   },
   {
     heading: "Bangkok, Thailand",
     tagline: "Party at the vibrant Asiatique Riverfront.",
     budget: 13155,
     image: "media/new-year/bangkok, thailand.png",
-    pageId: "129",
+    pageId: "1561",
+    type: "City",
   },
   {
     heading: "Dubai",
@@ -286,20 +302,23 @@ export const NEW_YEAR_UNIQUE = [
     budget: 25912,
     image: "media/new-year/dubai, uae.png",
     pageId: "1666",
+    type: "City",
   },
   {
     heading: "Hong Kong",
     tagline: "Join the extravagant New Year’s Eve festivities and party scene.",
     budget: 14450,
     image: "media/new-year/hongkong.png",
-    pageId: "cc21a93c-200f-4f2b-be5f-2cad3dc5f697",
+    pageId: "1678",
+    type: "City",
   },
   {
     heading: "Bali, Indonesia",
     tagline: "Relax on serene beaches and take in lush landscapes.",
     budget: 9169,
     image: "media/new-year/bali.webp",
-    pageId: "86",
+    pageId: "1489",
+    type: "City",
   },
 ];
 

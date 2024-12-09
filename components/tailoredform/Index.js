@@ -163,6 +163,7 @@ const Enquiry = (props) => {
         id: routerquery.page_id || props.page_id,
         name: routerquery.destination || props.destination,
         input_id: initialInputId,
+        type: routerquery?.type ? routerquery.type : props?.destinationType,
       },
     ];
   }
