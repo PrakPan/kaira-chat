@@ -34,7 +34,7 @@ const HomePageBanner = () => {
     }, [text, position, containerWidth]);
 
     return (
-        <Link href={"/new-year"} className='text-black no-underline'>
+        <Link href={"/event/new-year-2025"} className='text-black no-underline'>
             <div
                 ref={bannerRef}
                 className="bg-[#F7E700] py-2 md:mt-[80px] overflow-hidden banner-container flex flex-row items-center justify-between">
