@@ -1,9 +1,9 @@
 import * as Sentry from "@sentry/nextjs";
-import { SENTRY_DSN, SENTRY_ENV } from "./services/constants";
+import { SENTRY_DSN, SENTRY_ENV, SENTRY_RELEASE } from "./services/constants";
 
 Sentry.init({
   dsn: SENTRY_DSN,
-  release: "thetarzanway-frontend@" + process.env.SENTRY_RELEASE,
+  release: "thetarzanway-frontend@" + SENTRY_RELEASE,
   environment: SENTRY_ENV,
 
   // Replay may only be enabled for the client-side

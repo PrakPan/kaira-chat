@@ -3,7 +3,7 @@ import { SENTRY_DSN, SENTRY_ENV } from "./services/constants";
 
 Sentry.init({
   dsn: SENTRY_DSN,
-  release: "thetarzanway-frontend@2.3.12",
+  release: "thetarzanway-frontend@" + process.env.BUILD_NUMBER,
   environment: SENTRY_ENV,
 
   // Set tracesSampleRate to 1.0 to capture 100%
