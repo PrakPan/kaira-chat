@@ -1,24 +1,28 @@
 import * as Sentry from "@sentry/nextjs";
-import { SENTRY_DSN } from "./services/constants"
+import { SENTRY_DSN, SENTRY_ENV } from "./services/constants";
 
 Sentry.init({
-    dsn: SENTRY_DSN,
-    // Replay may only be enabled for the client-side
-    integrations: [Sentry.replayIntegration()],
+  dsn: SENTRY_DSN,
+  release: "thetarzanway-frontend@" + process.env.SENTRY_RELEASE,
+  environment: SENTRY_ENV,
 
-    // Set tracesSampleRate to 1.0 to capture 100%
-    // of transactions for tracing.
-    // We recommend adjusting this value in production
-    tracesSampleRate: 1.0,
+  // Replay may only be enabled for the client-side
+  integrations: [
+    Sentry.browserTracingIntegration(),
+    Sentry.replayIntegration(),
+  ],
 
-    // Capture Replay for 10% of all sessions,
-    // plus for 100% of sessions with an error
-    replaysSessionSampleRate: 0.1,
-    replaysOnErrorSampleRate: 1.0,
+  // Set tracesSampleRate to 1.0 to capture 100%
+  // of transactions for tracing.
+  // We recommend adjusting this value in production
+  tracesSampleRate: 1.0,
 
-    // ...
+  // Capture Replay for 10% of all sessions,
+  // plus for 100% of sessions with an error
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1.0,
 
-    // Note: if you want to override the automatic release value, do not set a
-    // `release` value here - use the environment variable `SENTRY_RELEASE`, so
-    // that it will also get attached to your source maps
+  // Note: if you want to override the automatic release value, do not set a
+  // `release` value here - use the environment variable `SENTRY_RELEASE`, so
+  // that it will also get attached to your source maps
 });

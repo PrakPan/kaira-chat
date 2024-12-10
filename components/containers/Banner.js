@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Button from "../ui/button/Index";
 
 const Container = styled.div`
+  display: none;
   @media screen and (min-width: 768px) {
     display: initial;
     z-index: 998 !important;

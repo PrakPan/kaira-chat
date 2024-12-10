@@ -15,6 +15,8 @@ export const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 
 export const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN
 
+export const SENTRY_ENV = process.env.NEXT_PUBLIC_SENTRY_ENV
+
 export const ITINERARY_STATUSES = {
   itinerarary_under_preparation: "ITINERARY_UNDER_PREPARATION",
   itinerary_not_created: "ITINERARY_NOT_CREATED",

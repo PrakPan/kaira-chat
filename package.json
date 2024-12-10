@@ -1,6 +1,6 @@
 {
-  "name": "thetarzanway-frontend-ssr",
-  "version": "1.1.0",
+  "name": "thetarzanway-frontend",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=\"--max_old_space_size=8192\" next dev",
