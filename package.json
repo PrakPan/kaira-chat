@@ -1,10 +1,10 @@
 {
-  "name": "thetarzanway-frontend-ssr",
-  "version": "0.1.0",
+  "name": "thetarzanway-frontend",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=\"--max_old_space_size=8192\" next dev",
-    "prebuild": "node scripts/sitemap.xml.js",
+    "prebuild": "node scripts/sitemap.xml.js && export BUILD_NUMBER=$(date +%Y%m%d%H%M%S)",
     "build": "next build",
     "start": "next start -p 3002",
     "lint": "next lint"
