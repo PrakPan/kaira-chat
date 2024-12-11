@@ -50,13 +50,12 @@ const HeroBanner = (props) => {
               className="z-50 absolute -bottom-4 right-[10%]"
             />
 
-            <div className="absolute -bottom-3 w-full h-[8rem]">
-              <Image
-                src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/banner-trees.png`}
-                fill
-                className="absolute bottom-0 object-fill"
-              />
-            </div>
+            <Image
+              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/banner-trees.png`}
+              width={isDesktop ? 800 : 400}
+              height={200}
+              className="absolute -bottom-0 right-0"
+            />
           </>
         )}
       </div>
