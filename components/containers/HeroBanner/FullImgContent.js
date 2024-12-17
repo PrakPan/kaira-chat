@@ -124,37 +124,19 @@ const FullImgContent = (props) => {
         </div>
 
         {isPageWide ? (
-          <div>
-            <Button
-              padding="0.75rem 1rem"
-              fontSize="18px"
-              fontWeight="500"
-              bgColor="#f7e700"
-              borderRadius="7px"
-              color="black"
-              borderWidth="1px"
-              onclick={handlePlanButton}
-              margin="3vh 0 1vh 0"
-            >
-              Plan Itinerary For Free!
-            </Button>
-          </div>
+          <button
+            onClick={handlePlanButton}
+            className="mt-[3vh] mb-[1vh] px-[1rem] py-[0.7rem] font-[500] text-black bg-[#f7e700] border-[1px] rounded-[7px] border-black"
+          >
+            Plan Itinerary For Free!
+          </button>
         ) : (
-          <div>
-            <Button
-              padding="0.75rem 1rem"
-              fontSize="14px"
-              fontWeight="500"
-              bgColor="#f7e700"
-              borderRadius="10px"
-              color="black"
-              borderWidth="1px"
-              onclick={handlePlanButton}
-              margin="1rem auto 1rem auto"
-            >
-              Start Planning
-            </Button>
-          </div>
+          <button
+            onClick={handlePlanButton}
+            className="my-[1rem] mx-auto px-[1rem] py-[0.7rem] font-[500] text-sm text-black bg-[#f7e700] border-[1px] rounded-[10px] border-black"
+          >
+            Start Planning
+          </button>
         )}
       </PaddingContianer>
 
