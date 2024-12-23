@@ -77,13 +77,27 @@ const Experiences = (props) => {
           <>
             <Name className="font-lexend">{props.location}</Name>
             <Subtext className="font-lexend truncate">
-              {filters_to_show}
+              {filters_to_show
+                ? filters_to_show
+                : props.heading
+                ? props.heading
+                : null}
             </Subtext>
             {props.data?.budget && (
               <Subtext>
                 From{" "}
                 <span className="font-bold">
                   ₹{getIndianPrice(props.data.budget)}
+                </span>
+                /- per day
+              </Subtext>
+            )}
+
+            {props.data?.price && (
+              <Subtext>
+                From{" "}
+                <span className="font-bold">
+                  ₹{getIndianPrice(props.data.price)}
                 </span>
                 /- per day
               </Subtext>

@@ -4,7 +4,6 @@ import Layout from "../../components/Layout";
 import axiospagelistinstance from "../../services/pages/list";
 import activityDetail from "../../services/poi/poiActivities";
 
-
 const Covid = (props) => {
   return (
     <Layout>
@@ -69,27 +68,24 @@ export async function getStaticProps() {
     "2zjrgeMEe5BbB4dP",
     "Zy8FVvBXRRbqLoMm",
     "PC2rtR8Lpx0U4ql3",
-    "LMLqTtTdZBNPmAsh"
+    "LMLqTtTdZBNPmAsh",
   ];
 
   const conference = [
     "xfTmAutmruRWirxL",
     "pVAazCM6RBMrVbeB",
     "cs27nZbl5fzHVvov",
-    "bgtPQPT8xYhYR532"
+    "bgtPQPT8xYhYR532",
   ];
 
   const weekend_excursions = [
     "5EULhmJwouD5NN2A",
     "mB41NUAncHsprakh",
     "jaI9b4RopHpOvcoz",
-    "2nVXqISpq9quVrdD"
+    "2nVXqISpq9quVrdD",
   ];
 
-  const add_on = [
-    "M2BptKDkbjNmi5aO",
-    "agNqMJktHadqViPS"
-  ];
+  const add_on = ["M2BptKDkbjNmi5aO", "agNqMJktHadqViPS"];
 
   var locations = [];
 
@@ -189,7 +185,7 @@ export async function getStaticProps() {
       conference_activities,
       weekend_excursions_activities,
       add_on_activities,
-      locations
+      locations,
     },
   };
 }

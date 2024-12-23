@@ -1,73 +1,42 @@
 import React from "react";
-import styled from "styled-components";
+import { MdEventAvailable } from "react-icons/md";
+import { LuPhoneCall } from "react-icons/lu";
+import { RiGlobalFill } from "react-icons/ri";
+
 import Button from "../../components/ui/button/Index";
 import media from "../../components/media";
-
-const Container = styled.div`
-  text-align: center;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 33% 0 0 0;
-
-  @media screen and (min-width: 768px) {
-    padding: 10vh 10vh 0 10vh;
-    text-align: left;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-`;
-
-const Heading = styled.h1`
-  color: white;
-  width: 99%;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  font-size: 2rem;
-  @media screen and (min-width: 768px) {
-    font-size: 3rem;
-    font-weight: 700;
-  }
-`;
-
-const SubText = styled.h3`
-  color: white;
-  font-weight: 100;
-  width: 99%;
-  font-size: 1.25rem;
-  @media screen and (min-width: 768px) {
-    font-size: 2rem;
-  }
-`;
-
-const CompanyName = styled.h4`
-  color: white;
-  font-weight: 800;
-  width: 99%;
-  font-size: 1.5rem;
-  @media screen and (min-width: 768px) {
-    font-size: 1.75rem;
-  }
-`;
+import ScheduleCall from "./enquiry/ScheduleCall";
 
 const FullImgContent = (props) => {
   let isPageWide = media("(min-width: 768px)");
 
   return (
-      <div className="font-lexend text-white text-[27px] md:text-[40px] font-[300] md:leading-[56px] pl-[30px] md:pl-[120px] pt-[104px] md:pt-[304px]">
-        {isPageWide ? (
-          <div className="font-lexend">
-            <span className="text-[#F7E700] font-[700]">TheTarzanWay</span> For Business
+    <div className="font-lexend flex text-white text-[27px] md:text-[35px] font-[300] pl-[30px] md:pl-[120px] pt-[60px] md:pt-[104px]">
+      <div className="md:w-[50%]">
+        <div className="font-lexend">
+          <span className="text-[#F7E700] font-[600]">TheTarzanWay</span> For
+          Business
+        </div>
+
+        <div className="">
+          Give your team stories they will always treasure!
+        </div>
+
+        <div className="text-base font-medium space-y-3 mt-4">
+          <div className="flex items-center gap-3">
+            <MdEventAvailable className="text-2xl" />
+            <div>Unique Travel & Event Plans</div>
           </div>
-        ) : null}
 
-        <div className="font-[700]">Hassle-Free Business Travel Partner</div>
+          <div className="flex items-center gap-3">
+            <LuPhoneCall className="text-2xl" />
+            <div>End-to-End Support</div>
+          </div>
 
-        <div>
-          Workcations, Retreats, Conferences, Weekend Getaways and more
+          <div className="flex items-center gap-3">
+            <RiGlobalFill className="text-2xl" />
+            <div>Trusted Global Partners</div>
+          </div>
         </div>
 
         <Button
@@ -86,6 +55,13 @@ const FullImgContent = (props) => {
           Schedule a Callback
         </Button>
       </div>
+
+      {isPageWide && (
+        <div className="w-[50%] flex items-center justify-center">
+          <ScheduleCall />
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -35,14 +35,14 @@ const ImageSlider = (props) => {
 
   var image;
   if (isArr || props.images === null) {
-    if (props.images && props.images.length)
+    if (props.images && props.images.length) {
       for (let i = 0; i < props.images.length; i++) {
         if (props.images[i]) {
           image = props.images[i];
           break;
         }
       }
-    else image = props.images[0];
+    }
   } else image = props.images?.main_image;
 
   let LOCATIONS_TO_SHOW = "";

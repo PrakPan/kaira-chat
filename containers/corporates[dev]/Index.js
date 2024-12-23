@@ -6,7 +6,7 @@ import HowItWorks from "../../components/containers/HowItWorksSlideshow";
 import media from "../../components/media";
 import travelsupportcontent from "../../public/content/travelsupport";
 import Logos from "./Logos";
-import Enquiry from "./enquiry/Index";
+import Enquiry, { ScheduleCallModal } from "./enquiry/Index";
 import BannerMobile from "./banner/Mobile";
 import WhatWeOffer from "./WhatWeOffer";
 import WhyChooseUs from "./WhyChooseUs";
@@ -350,7 +350,7 @@ const AffiliatePage = (props) => {
         <div className="text-[27px] md:text-[40px] font-[700] md:leading-[60px] text-center mt-[100px] mb-4">
           Catered to every organisation's need
         </div>
-        
+
         <HowItWorksContainer>
           <HowItWorks
             nostart
@@ -376,10 +376,10 @@ const AffiliatePage = (props) => {
 
       <br></br>
 
-      <Enquiry
+      <ScheduleCallModal
         show={enquiryOpen}
         onhide={() => setEnquiryOpen(false)}
-      ></Enquiry>
+      ></ScheduleCallModal>
 
       {isPageWide ? (
         <DesktopBanner onclick={() => setEnquiryOpen(true)} />

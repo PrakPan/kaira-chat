@@ -2,7 +2,7 @@ export const INTERNATIONAL_PACKAGES = [
   {
     heading: "Bangkok, Thailand",
     tagline: "Famous for lively street parties and rooftop celebrations.",
-    budget: 13155,
+    budget: 6500,
     image: "media/new-year/bangkok, thailand.png",
     category: "Party",
     pageId: "1561",
@@ -20,7 +20,7 @@ export const INTERNATIONAL_PACKAGES = [
   {
     heading: "Dubai, UAE",
     tagline: "Known for grand fireworks and lavish parties at luxury hotels.",
-    budget: 25912,
+    budget: 8500,
     image: "media/new-year/dubai, uae.png",
     category: "Party",
     pageId: "1666",
@@ -38,7 +38,7 @@ export const INTERNATIONAL_PACKAGES = [
   {
     heading: "Bali",
     tagline: "Offers serene beaches, lush landscapes, and quiet retreats.",
-    budget: 16830,
+    budget: 9000,
     image: "media/new-year/bali.webp",
     category: "Serene",
     pageId: "1489",
@@ -77,7 +77,7 @@ export const INTERNATIONAL_PACKAGES = [
     heading: "Dubai",
     tagline:
       "Skydiving experiences with breathtaking views of the Palm Jumeirah.",
-    budget: 25912,
+    budget: 8500,
     image: "media/new-year/dubai.jpeg",
     category: "Adventure",
     pageId: "1666",
@@ -95,17 +95,17 @@ export const INTERNATIONAL_PACKAGES = [
   {
     heading: "Cappadocia",
     tagline: "Known for hot air balloon rides over breathtaking landscapes.",
-    budget: 17327,
+    budget: 9500,
     image: "media/new-year/cappadocia.jpeg",
     category: "Unique Experential",
     pageId: "2099",
     type: "City",
   },
   {
-    heading: "Borneo, Turkey",
+    heading: "Borneo, Malayasia",
     tagline:
       "Stay in bamboo cottages in the rainforest for an immersive experience.",
-    budget: 17327,
+    budget: 14500,
     image: "media/new-year/borneo.jpeg",
     category: "Unique Experential",
     pageId: "0a0e1243-5d35-4074-81fd-974fae85b58e",
@@ -115,7 +115,7 @@ export const INTERNATIONAL_PACKAGES = [
     heading: "Wadi Rum, Jordan",
     tagline:
       "Experience unique desert camps with stunning landscapes and stargazing.",
-    budget: 10961,
+    budget: 11000,
     image: "media/new-year/jordan.jpeg",
     category: "Unique Experential",
     pageId: "d5e3ad57-8fba-4dd3-bbe9-6a305214bdfd",
@@ -128,7 +128,7 @@ export const DOMESTIC_PACKAGES = [
     heading: "Goa",
     tagline:
       "Renowned for its vibrant nightlife, beach parties, and music festivals.",
-    budget: 25000,
+    budget: 9000,
     image: "media/new-year/goa.jpeg",
     category: "Party",
     pageId: "277",
@@ -137,7 +137,7 @@ export const DOMESTIC_PACKAGES = [
   {
     heading: "Mumbai",
     tagline: "Host to extravagant parties at upscale hotels and clubs.",
-    budget: 10474,
+    budget: 6500,
     image: "media/new-year/mumbai.jpeg",
     category: "Party",
     pageId: "19",
@@ -147,7 +147,7 @@ export const DOMESTIC_PACKAGES = [
     heading: "Kasol",
     tagline:
       "Famous for its lively parties, especially among backpackers and music.",
-    budget: 25000,
+    budget: 4500,
     image: "media/new-year/kasol.jpeg",
     category: "Party",
     pageId: "144",
@@ -186,7 +186,7 @@ export const DOMESTIC_PACKAGES = [
     heading: "Hampi",
     tagline:
       "Ancient ruins amidst serene landscapes, perfect for a peaceful retreat.",
-    budget: 25000,
+    budget: 5000,
     image: "media/new-year/hampi.jpeg",
     category: "Serene",
     pageId: "1095",
@@ -195,7 +195,7 @@ export const DOMESTIC_PACKAGES = [
   {
     heading: "Varanasi",
     tagline: "Experience the spiritual atmosphere and Ganga Aarti ceremonies.",
-    budget: 8943,
+    budget: 5500,
     image: "media/new-year/varanasi.jpeg",
     category: "Religious",
     pageId: "280",
@@ -204,7 +204,7 @@ export const DOMESTIC_PACKAGES = [
   {
     heading: "Rishikesh",
     tagline: "Renowned for yoga and spiritual retreats by the riverbank.",
-    budget: 7763,
+    budget: 5500,
     image: "media/new-year/rishikesh.jpeg",
     category: "Religious",
     pageId: "93",
@@ -213,7 +213,7 @@ export const DOMESTIC_PACKAGES = [
   {
     heading: "Andaman Islands",
     tagline: "Excellent scuba diving locations like Havelock and Neil Islands.",
-    budget: 25000,
+    budget: 7500,
     image: "media/new-year/andaman.jpeg",
     category: "Adventure",
     pageId: "278",
@@ -242,7 +242,7 @@ export const DOMESTIC_PACKAGES = [
     heading: "Sundarbans, India",
     tagline:
       "Experience thrilling boat safaris in the world’s largest mangrove forest, home to the Bengal tiger.",
-    budget: 25000,
+    budget: 3500,
     image: "media/new-year/sundarbans.jpeg",
     category: "Unique Experential",
     pageId: "1279",
@@ -291,7 +291,7 @@ export const NEW_YEAR_UNIQUE = [
   {
     heading: "Bangkok, Thailand",
     tagline: "Party at the vibrant Asiatique Riverfront.",
-    budget: 13155,
+    budget: 6500,
     image: "media/new-year/bangkok, thailand.png",
     pageId: "1561",
     type: "City",
@@ -299,7 +299,7 @@ export const NEW_YEAR_UNIQUE = [
   {
     heading: "Dubai",
     tagline: "Marvel at the grand fireworks and lavish celebrations.",
-    budget: 25912,
+    budget: 8500,
     image: "media/new-year/dubai, uae.png",
     pageId: "1666",
     type: "City",
@@ -315,7 +315,7 @@ export const NEW_YEAR_UNIQUE = [
   {
     heading: "Bali, Indonesia",
     tagline: "Relax on serene beaches and take in lush landscapes.",
-    budget: 9169,
+    budget: 9000,
     image: "media/new-year/bali.webp",
     pageId: "1489",
     type: "City",

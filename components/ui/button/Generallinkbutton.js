@@ -71,6 +71,7 @@ const Generalbuttonstyle = styled.button`
 const Generalbutton = (props) => {
   return (
     <Generalbuttonstyle
+      type="button"
       className="font-lexend"
       onClick={props.onclick}
       color={props.color}

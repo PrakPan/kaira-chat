@@ -34,12 +34,20 @@ const LocationsBlog = (props) => {
             cardsarr.push(
               <>
                 <Card
+                  key={props.locations[i].name}
                   data={props.locations[i]}
-                  key={props.locations[i].tagline}
                   location={props.locations[i].name}
-                  heading={props.locations[i].tagline}
+                  heading={
+                    props.locations[i]?.tagline
+                      ? props.locations[i].tagline
+                      : props.locations[i]?.text
+                  }
                   img={props.locations[i].image}
-                  path={props.locations[i].path}
+                  path={
+                    props.locations[i]?.path
+                      ? props.locations[i].path
+                      : props.locations[i].cta_path
+                  }
                   tags={
                     props.locations[i].tags
                       ? props.locations[i].tags

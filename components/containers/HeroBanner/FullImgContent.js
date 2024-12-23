@@ -214,4 +214,3 @@ const FullImgContent = (props) => {
 };
 
 export default FullImgContent;
-
