@@ -107,7 +107,7 @@ const Cost = (props) => {
       {props.starting_cost ? (
         <div style={{ display: "flex" }}>
           <div style={{ width: "max-content" }}>
-            {props.coupon_applied &&
+            {props.coupon_applied && props.discounted_cost &&
               (props.PW ? (
                 <StrikedCost>
                   {" "}

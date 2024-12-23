@@ -29,6 +29,8 @@ const Experiences = (props) => {
 
   useEffect(() => { }, [TextRefs]);
 
+  console.log("HERE >>>>>", props.experiences)
+
   useEffect(() => {
     let experiencecards = [];
 

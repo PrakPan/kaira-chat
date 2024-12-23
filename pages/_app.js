@@ -56,6 +56,7 @@ function MyApp({ Component, pageProps, store }) {
           name="viewport"
           content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5"
         ></meta>
+        <meta name="google-site-verification" content="JBrEGecffz4oDnRTLJNj0Mxly-wVGeieQdS1k7NZvaY" />
       </Head>
       <div ref={ref}>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
