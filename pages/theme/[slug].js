@@ -2,7 +2,7 @@ import Head from "next/head";
 import { useEffect } from "react";
 import { connect } from "react-redux";
 
-import ThemePage from "../../containers/travelplanner/ThemePaga";
+import ThemePage from "../../containers/travelplanner/ThemePage";
 import Layout from "../../components/Layout";
 import { axiosPageInstance } from "../../services/pages/travel-planner";
 import axiospagelistinstance, {
