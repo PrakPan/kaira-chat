@@ -12,14 +12,12 @@ import ExperienceCard from "../../components/cards/newitinerarycard-main/Experie
 import Overview from "./Overview";
 import Button from "../../components/ui/button/Index";
 import Locations from "../../components/containers/newplannerlocations/Index";
-import OldLocations from "../../components/containers/plannerlocations/Index";
 import MobileBanner from "./MobileBanner";
 import WhyPlanWithUs from "../../components/WhyPlanWithUs/PlanWithUsWithEnquiry";
 import HeroBanner from "../../components/containers/HeroBanner/HeroBanner";
 import openTailoredModal from "../../services/openTailoredModal";
 import dynamic from "next/dynamic";
 import AsSeenIn from "../testimonial/AsSeenIn";
-import PathNavigation from "./PathNavigation.js";
 import { logEvent } from "../../services/ga/Index";
 import H3 from "../../components/heading/H3";
 import SecondaryHeading from "../../components/heading/Secondary.jsx";
