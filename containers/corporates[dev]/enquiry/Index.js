@@ -307,7 +307,7 @@ export const ScheduleCallModal = ({ show, onhide }) => {
         onClick={(e) => handleClose(e)}
         className="fixed inset-0 z-[1999] bg-black bg-opacity-50 flex items-center justify-center"
       >
-        <div className={`w-full md:w-[50%]`}>
+        <div className={`w-full md:w-[30%]`}>
           <ScheduleCall modalRef={ref} />
         </div>
       </div>

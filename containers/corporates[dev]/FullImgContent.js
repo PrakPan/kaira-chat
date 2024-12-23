@@ -11,9 +11,9 @@ const FullImgContent = (props) => {
   let isPageWide = media("(min-width: 768px)");
 
   return (
-    <div className="font-lexend flex text-white text-[27px] md:text-[35px] font-[300] pl-[30px] md:pl-[120px] pt-[60px] md:pt-[104px]">
-      <div className="md:w-[50%]">
-        <div className="font-lexend">
+    <div className="font-lexend flex justify-between text-white text-[27px] md:text-[35px] font-[300] pl-[30px] md:px-[10%] pt-[60px] md:pt-[104px]">
+      <div className="md:w-[50%] md:my-auto md:space-y-10">
+        <div className="font-lexend text-[40px]">
           <span className="text-[#F7E700] font-[600]">TheTarzanWay</span> For
           Business
         </div>
@@ -22,7 +22,7 @@ const FullImgContent = (props) => {
           Give your team stories they will always treasure!
         </div>
 
-        <div className="text-base font-medium space-y-3 mt-4">
+        <div className="text-base font-medium space-y-6">
           <div className="flex items-center gap-3">
             <MdEventAvailable className="text-2xl" />
             <div>Unique Travel & Event Plans</div>
@@ -57,8 +57,8 @@ const FullImgContent = (props) => {
       </div>
 
       {isPageWide && (
-        <div className="w-[50%] flex items-center justify-center">
-          <ScheduleCall />
+        <div className="w-[40%]">
+          <ScheduleCall banner />
         </div>
       )}
     </div>

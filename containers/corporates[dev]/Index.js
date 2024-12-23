@@ -6,7 +6,7 @@ import HowItWorks from "../../components/containers/HowItWorksSlideshow";
 import media from "../../components/media";
 import travelsupportcontent from "../../public/content/travelsupport";
 import Logos from "./Logos";
-import Enquiry, { ScheduleCallModal } from "./enquiry/Index";
+import { ScheduleCallModal } from "./enquiry/Index";
 import BannerMobile from "./banner/Mobile";
 import WhatWeOffer from "./WhatWeOffer";
 import WhyChooseUs from "./WhyChooseUs";
