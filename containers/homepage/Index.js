@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { useRouter } from "next/router";
 import "bootstrap/dist/css/bootstrap.min.css";
 import styled from "styled-components";
@@ -160,8 +160,8 @@ const Homepage = (props) => {
       <HeroBanner
         image={
           isPageWide
-            ? "media/new-year/homepage-banner-2.png"
-            : "media/new-year/homescreen sample 2 mobile.png"
+            ? "media/website/banners/homepage-herobanner-3.webp"
+            : "media/website/banners/homepage-herobanner-mobile.webp"
         }
         destinationType={"city-planner"}
         title={

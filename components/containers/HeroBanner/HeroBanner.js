@@ -1,7 +1,6 @@
 import FullImgContent from "./FullImgContent";
 import FullImage from "../../FullImage";
 import useMediaQuery from "../../../hooks/useMedia";
-import Image from "next/image";
 
 const HeroBanner = (props) => {
   const isDesktop = useMediaQuery("(min-width:767px)");
@@ -33,31 +32,6 @@ const HeroBanner = (props) => {
           page={props.page}
           eventDates={props.eventDates}
         />
-
-        {props.page === "Home Page" && (
-          <>
-            <Image
-              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/Asset-4.png`}
-              width={isDesktop ? 130 : 70}
-              height={60}
-              className="z-50 absolute -bottom-3 left-0"
-            />
-
-            <Image
-              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/Asset-1.png`}
-              width={isDesktop ? 300 : 150}
-              height={60}
-              className="z-50 absolute -bottom-4 right-[10%]"
-            />
-
-            <Image
-              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/new-year/banner-trees.png`}
-              width={isDesktop ? 800 : 400}
-              height={200}
-              className="absolute -bottom-0 right-0"
-            />
-          </>
-        )}
       </div>
     </FullImage>
   );

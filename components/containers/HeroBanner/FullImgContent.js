@@ -124,24 +124,42 @@ const FullImgContent = (props) => {
         </div>
 
         {isPageWide ? (
-          <button
-            onClick={handlePlanButton}
-            className="mt-[3vh] mb-[1vh] px-[1rem] py-[0.7rem] font-[500] text-black bg-[#f7e700] border-[1px] rounded-[7px] border-black"
-          >
-            Plan Itinerary For Free!
-          </button>
+          <div>
+            <Button
+              padding="0.75rem 1rem"
+              fontSize="18px"
+              fontWeight="500"
+              bgColor="#f7e700"
+              borderRadius="7px"
+              color="black"
+              borderWidth="1px"
+              onclick={handlePlanButton}
+              margin="3vh 0 1vh 0"
+            >
+              Plan Itinerary For Free!
+            </Button>
+          </div>
         ) : (
-          <button
-            onClick={handlePlanButton}
-            className="my-[1rem] mx-auto px-[1rem] py-[0.7rem] font-[500] text-sm text-black bg-[#f7e700] border-[1px] rounded-[10px] border-black"
-          >
-            Start Planning
-          </button>
+          <div>
+            <Button
+              padding="0.75rem 1rem"
+              fontSize="14px"
+              fontWeight="500"
+              bgColor="#f7e700"
+              borderRadius="10px"
+              color="black"
+              borderWidth="1px"
+              onclick={handlePlanButton}
+              margin="1rem auto 1rem auto"
+            >
+              Start Planning
+            </Button>
+          </div>
         )}
       </PaddingContianer>
 
       {isPageWide && (
-        <div>
+        <div style={{ marginTop: "1.2rem" }}>
           <TailoredForm
             page_id={props.page_id}
             children_cities={props.children_cities}
@@ -153,49 +171,47 @@ const FullImgContent = (props) => {
         </div>
       )}
 
-      {props.page !== "Home Page" && (
-        <IconsContainer>
-          <div>
-            <ImageLoader
-              height="2.5rem"
-              width="2.5rem"
-              widthmobile="2.5rem"
-              url="media/icons/general/travel.png"
-              noLazy
-            />
-            <IconText>
-              Free Personalized <br /> Itineraries
-            </IconText>
-          </div>
+      <IconsContainer>
+        <div>
+          <ImageLoader
+            height="2.5rem"
+            width="2.5rem"
+            widthmobile="2.5rem"
+            url="media/icons/general/travel.png"
+            noLazy
+          />
+          <IconText>
+            Free Personalized <br /> Itineraries
+          </IconText>
+        </div>
 
-          <div>
-            <ImageLoader
-              height="2.5rem"
-              width="2.5rem"
-              widthmobile="2.5rem"
-              url="media/icons/general/booking.png"
-              noLazy
-            />
-            <IconText>
-              Affordable & <br />
-              Flexible Bookings
-            </IconText>
-          </div>
+        <div>
+          <ImageLoader
+            height="2.5rem"
+            width="2.5rem"
+            widthmobile="2.5rem"
+            url="media/icons/general/booking.png"
+            noLazy
+          />
+          <IconText>
+            Affordable & <br />
+            Flexible Bookings
+          </IconText>
+        </div>
 
-          <div>
-            <ImageLoader
-              height="2.5rem"
-              width="2.5rem"
-              widthmobile="2.5rem"
-              url="media/icons/general/money.png"
-              noLazy
-            />
-            <IconText>
-              Zero Hidden <br /> Charges
-            </IconText>
-          </div>
-        </IconsContainer>
-      )}
+        <div>
+          <ImageLoader
+            height="2.5rem"
+            width="2.5rem"
+            widthmobile="2.5rem"
+            url="media/icons/general/money.png"
+            noLazy
+          />
+          <IconText>
+            Zero Hidden <br /> Charges
+          </IconText>
+        </div>
+      </IconsContainer>
 
       <TailoredFormMobileModal
         destinationType={"city-planner"}

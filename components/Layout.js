@@ -7,7 +7,6 @@ import media from "./media";
 import NotificationPopup from "./ui/NotificationPopup";
 import { changeUserLocation } from "../store/actions/userLocation";
 import Cookies from "js-cookie";
-import HomePageBanner from "./newYear/banner/HomePageBanner";
 
 const Layout = React.memo((props) => {
   let isPageWide = media("(min-width: 768px)");
@@ -25,7 +24,7 @@ const Layout = React.memo((props) => {
         const res = await axios.get("https://api.ipify.org?format=json");
         const IpAddress = res.data.ip;
         if (IpAddress) getUserLocation(IpAddress);
-      } catch (e) { }
+      } catch (e) {}
     }
 
     async function getUserLocation(ip) {
@@ -39,7 +38,7 @@ const Layout = React.memo((props) => {
           Cookies.set("userLocation", JSON.stringify(data), { expires: 3 });
           props.changeUserLocation({ location: data });
         }
-      } catch (e) { }
+      } catch (e) {}
     }
   }, []);
 
@@ -103,9 +102,6 @@ const Layout = React.memo((props) => {
       <div
         style={{ marginTop: props.staticnav && !isPageWide ? "0px" : "72px" }}
       >
-        {!props.newYear && (
-          <HomePageBanner />
-        )}
         {props.children}
       </div>
 

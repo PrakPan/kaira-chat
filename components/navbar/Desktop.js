@@ -17,7 +17,6 @@ import media from "../media";
 import openTailoredModal from "../../services/openTailoredModal";
 import { logEvent } from "../../services/ga/Index";
 
-
 const NavbarContainer = styled.div`
   position: relative;
   color: black;
@@ -53,7 +52,6 @@ const TTWLogoContainer = styled(CenterNav)`
     justify-content: flex-start;
   }
 `;
-
 
 const Header = styled.div`
   position: ${(props) => (props.staticnav ? "static" : "fixed")} !important;
@@ -173,10 +171,10 @@ const Navbar = (props) => {
                 <ImageLoader
                   hoverpointer
                   leftalign
-                  width="160px"
+                  width="55px"
                   widthmobile="55px"
                   margin="0.5rem 0.5rem 0.5rem 2rem"
-                  url={"media/new-year/new-year-logo.png"}
+                  url={"media/website/logo-only.svg"}
                   noPlaceholder={true}
                 ></ImageLoader>
               ) : props.headerColor === "black" ? (
@@ -189,10 +187,10 @@ const Navbar = (props) => {
                     onclick={
                       !props.PW ? _handleHomepageRedirect : _handlePWRedirect
                     }
-                    width="160px"
+                    width="55px"
                     widthmobile="55px"
                     leftalign
-                    url={"media/new-year/new-year-logo.png"}
+                    url={"media/website/logowhite.svg"}
                     margin="0.5rem 0.5rem 0.5rem 2rem"
                     noPlaceholder={true}
                   ></ImageLoader>
@@ -205,16 +203,16 @@ const Navbar = (props) => {
                       !props.PW ? _handleHomepageRedirect : _handlePWRedirect
                     }
                     leftalign
-                    width="160px"
+                    width="55px"
                     widthmobile="55px"
                     margin="0.5rem 0.5rem 0.5rem 2rem"
-                    url={"media/new-year/new-year-logo.png"}
+                    url={"media/website/logo-only.svg"}
                     noPlaceholder={true}
                   ></ImageLoader>
                 </Link>
               )}
 
-              {/* <div>
+              <div>
                 {props.hidehomecta ? (
                   <CompanyName
                     style={{
@@ -250,7 +248,7 @@ const Navbar = (props) => {
                     </CompanyName>
                   </Link>
                 )}
-              </div> */}
+              </div>
             </TTWLogoContainer>
 
             {props.itinerary || (!props.hidecta && !props.staticnav) ? (
@@ -289,9 +287,7 @@ const Navbar = (props) => {
               <div></div>
             )}
 
-            <div
-              className="flex flex-row items-center justify-center"
-            >
+            <div className="flex flex-row items-center justify-center">
               {!props.hidecta ? (
                 <Button
                   fontWeight="500"
