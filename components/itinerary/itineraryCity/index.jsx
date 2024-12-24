@@ -13,10 +13,10 @@ const ItineraryCity = (props) => {
     <div
       data-city-id={props.city.id}
       ref={(el) => (props.cityRefs.current[props.city.id] = el)}
-      className="border-1 border-gray-200 p-3 rounded-lg space-y-2"
+      className="border-1 border-gray-200 p-3 rounded-lg flex flex-col space-y-2"
     >
       <div className="flex items-center justify-between">
-        <div className="text-base font-semibold">
+        <div className={`${viewMore ? "md:text-lg font-bold" : "text-base font-semibold"}`}>
           {convertDateFormat(props.city.start_date)},{" "}
           {getYear(props.city.start_date)} - {props.city.city.name}
         </div>

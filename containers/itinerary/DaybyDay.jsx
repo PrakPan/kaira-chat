@@ -12,7 +12,7 @@ const DaybyDay = (props) => {
   useEffect(() => {
     let array = [];
 
-    for (const city of props.itineraryDaybyDay.cities) {
+    for (const city of props.itineraryDaybyDay?.cities) {
       array.push({
         id: city.id,
         name: city.city.name,
@@ -24,13 +24,13 @@ const DaybyDay = (props) => {
   }, [props.itineraryDaybyDay]);
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-3 mt-5">
       <h1 className="text-[30px] font-bold">Day By Day Itinerary</h1>
 
       <CityNavigation cities={cities} cityRefs={cityRefs} />
 
-      <div className="space-y-5">
-        {props.itineraryDaybyDay.cities.map((city) => (
+      <div className="flex flex-col space-y-5">
+        {props.itineraryDaybyDay?.cities.map((city) => (
           <ItineraryCity key={city.id} city={city} cityRefs={cityRefs} />
         ))}
       </div>
