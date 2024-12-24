@@ -13,8 +13,11 @@ export const getDate = (dateString) => {
 
 export const getYear = (dateString) => {
   if (!dateString) return null;
-  const [day, month, year] = dateString.split("/");
-  if (!year) return null;
+  let [day, month, year] = dateString.split("/");
+  if (!year) {
+    [year, month, day] = dateString.split("-");
+    if (!year) return null;
+  }
   return year;
 };
 

@@ -40,6 +40,7 @@ import {
 } from "./booking1/SocialShare.js";
 import { BsShareFill } from "react-icons/bs";
 import { IoMdClose } from "react-icons/io";
+import DaybyDay from "./DaybyDay.jsx";
 
 const useStyles = {
   root: `
@@ -737,7 +738,7 @@ const SimpleTabsV2 = (props) => {
           rightWidth={4}
         >
           <div>
-            {isPageWide ? (
+            <DaybyDay/>
               <div id={"Itenary"}>
                 {props?.itinerary && (
                   <NewItenaryMain
@@ -760,25 +761,6 @@ const SimpleTabsV2 = (props) => {
                   ></NewItenaryMain>
                 )}
               </div>
-            ) : (
-              <div id={"Itenary"}>
-                <NewItenaryDBDMob
-                  plan={props.plan}
-                  payment={props.payment}
-                  token={props.token}
-                  setShowLoginModal={setShowLoginModal}
-                  city_slabs={props?.breif?.city_slabs}
-                  itinerary={props.itinerary}
-                  setItinerary={props.setItinerary}
-                  getPaymentHandler={props.getPaymentHandler}
-                  transferBookings={props.transferBookings}
-                  stayBookings={props.stayBookings}
-                  activityBookings={props.activityBookings}
-                  setShowBookingModal={() => props.setShowBookingModal(true)}
-                  _GetInTouch={_GetInTouch}
-                ></NewItenaryDBDMob>
-              </div>
-            )}
 
             {isGroup ? (
               <div id={"Stays"}>

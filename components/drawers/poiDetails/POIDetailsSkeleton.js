@@ -12,7 +12,7 @@ const POIDetailsSkeleton = (props) => {
     padding: 16px;
     width: 100vw;
     @media screen and (min-width: 768px) {
-      width: 50vw;
+      ${(props) => (props.width ? "width: " + props.width : "width: 50vm")}
     }
   `;
   const Title = styled.p`
@@ -40,7 +40,7 @@ const POIDetailsSkeleton = (props) => {
   let isPageWide = media("(min-width: 768px)");
 
   return (
-    <Container>
+    <Container width={props.width}>
       {!props.itineraryDrawer ? (
         <div onClick={props.handleCloseDrawer}>
           <TbArrowBack

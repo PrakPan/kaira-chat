@@ -3,8 +3,6 @@ import { useState } from "react";
 import { TransportIconFetcher } from "../../../../helper/TransportIconFetcher";
 import { MdEdit } from "react-icons/md";
 import TransferEditDrawer from "../../../../components/drawers/routeTransfer/TransferEditDrawer";
-import routeAlternates from "../../../../services/itinerary/brief/routeAlternates";
-import axiosRoundTripInstance from "../../../../services/itinerary/brief/roundTripSuggestion";
 import { logEvent } from "../../../../services/ga/Index";
 import { connect } from "react-redux";
 import TaxiModal from "../../../../components/modals/taxis/Index";
@@ -60,14 +58,19 @@ const Text = styled.div`
 const MidSection = (props) => {
   const [showDrawer, setShowDrawer] = useState(false);
   const [addOrEdit, setAddOrEdit] = useState(null);
-  const [selectedBooking, setSelectedBooking] = useState(props.bookings[0]);
+  const [selectedBooking, setSelectedBooking] = useState(props.Bookings ? props?.bookings[0] : {});
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showTaxiModal, setShowTaxiModal] = useState(false);
 
+
   useEffect(() => {
     if (props.flightBookings && props.transferBookings) {
-      const allBookings = [...props.flightBookings, ...props.transferBookings]
-      const booking = allBookings.find(book => book.id === props.bookings[0].id)
+      let booking = null;
+      if (props.bookings) {
+        const allBookings = [...props.flightBookings, ...props.transferBookings]
+        booking = allBookings.find(book => book.id === props?.bookings[0].id)
+
+      }
       if (booking) {
         setSelectedBooking({
           ...selectedBooking,
@@ -265,7 +268,7 @@ const MidSection = (props) => {
         _updatePaymentHandler={props._updatePaymentHandler}
         _updateFlightBookingHandler={props._updateFlightBookingHandler}
         _updateBookingHandler={props._updateBookingHandler}
-        alternates={selectedBooking.id}
+        alternates={selectedBooking?.id}
         tailored_id={selectedBooking["tailored_itinerary"]}
         // _updateFlightHandler={props._updateFlightHandler}
         selectedBooking={selectedBooking}
