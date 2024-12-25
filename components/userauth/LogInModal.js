@@ -134,17 +134,6 @@ const LogIn = React.memo((props) => {
   }, [otp]);
 
   const handleExtensionChangeOption = (country) => {
-    // const res = separateCountryCode(phone);
-    // if (res) {
-    //   setPhone(props.CountryCodes[country].label + res.number);
-    // } else {
-    //   if (phone.length === 10) {
-    //     setPhone(props.CountryCodes[country].label + phone);
-    //   } else {
-    //     setPhone(props.CountryCodes[country].label);
-    //   }
-    // }
-
     setExtension(country);
   };
 
@@ -158,12 +147,8 @@ const LogIn = React.memo((props) => {
 
   const handleMobileBlur = () => {
     const phone = mobileRef.current.value;
-    const res = separateCountryCode(phone);
-    if (res) {
-      setMobile(res.number);
-    } else {
-      setMobile(phone);
-    }
+    // setMobile(phone);
+    setPhone(phone);
   };
 
   const separateCountryCode = (phoneNumber) => {
@@ -195,7 +180,7 @@ const LogIn = React.memo((props) => {
 
       if (newUserValidity)
         props.onAuth(
-          props.CountryCodes[extension].label + mobile,
+          phone,
           otp,
           userDetails.userName,
           userDetails.email,
@@ -205,7 +190,7 @@ const LogIn = React.memo((props) => {
         );
     } else if (props.otpSent && !props.name) {
       props.onAuth(
-        props.CountryCodes[extension].label + mobile,
+        phone,
         otp,
         userDetails.userName,
         null,
@@ -214,7 +199,7 @@ const LogIn = React.memo((props) => {
       );
     } else if (props.otpSent && !props.name && !props.email) {
       props.onAuth(
-        props.CountryCodes[extension].label + mobile,
+        phone,
         otp,
         userDetails.userName,
         userDetails.email,
@@ -223,7 +208,7 @@ const LogIn = React.memo((props) => {
       );
     } else if (props.otpSent && !props.email) {
       props.onAuth(
-        props.CountryCodes[extension].label + mobile,
+        phone,
         otp,
         null,
         userDetails.email,
@@ -231,14 +216,7 @@ const LogIn = React.memo((props) => {
         props.itinary_id
       );
     } else {
-      props.onAuth(
-        props.CountryCodes[extension].label + mobile,
-        otp,
-        null,
-        null,
-        whatsapp,
-        props.itinary_id
-      );
+      props.onAuth(phone, otp, null, null, whatsapp, props.itinary_id);
     }
   };
 
@@ -254,13 +232,20 @@ const LogIn = React.memo((props) => {
 
   //Dispatch Action
   const otpHandler = () => {
-    props.onOtp(props.CountryCodes[extension].label + mobile);
+    const phoneNumber = phone.trim();
+    if (phoneNumber.length <= 10) {
+      setPhone(props.CountryCodes[extension].label + phoneNumber);
+      props.onOtp(props.CountryCodes[extension].label + phoneNumber);
+    } else {
+      setPhone(phoneNumber);
+      props.onOtp(phoneNumber);
+    }
   };
 
   //TEST
   const resetOtpHandler = () => {
     const authData = {
-      username: props.CountryCodes[extension].label + mobile,
+      username: phone,
     };
     axios
       .post("https://apis.tarzanway.com/user/resend/otp/", authData)
@@ -271,7 +256,7 @@ const LogIn = React.memo((props) => {
   //Update phone
   const _updatePhoneHandler = () => {
     props.onUpdate({
-      phone: props.CountryCodes[extension].label + mobile,
+      phone: phone,
       whatsapp_opt_in: whatsapp,
     });
   };
@@ -413,12 +398,12 @@ const LogIn = React.memo((props) => {
               />
             )}
             {mobileInput}
-            </MobileNumberContainer>
+          </MobileNumberContainer>
 
           <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
             {whatsapp ? <ImCheckboxChecked /> : <ImCheckboxUnchecked />} Receive
             booking updates via WhatsApp
-            </WhatsappCheckBox>
+          </WhatsappCheckBox>
 
           <Button
             onclick={_updatePhoneHandler}
