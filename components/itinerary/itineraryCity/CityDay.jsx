@@ -2,7 +2,7 @@ import SlabElement from "./SlabElement";
 
 const CityDay = (props) => {
   return (
-    <div className="p-2 rounded-lg flex flex-col">
+    <div className="py-2 rounded-lg flex flex-col">
       <div>
         <p className="md:text-lg font-semibold">
           Day {props.index + 1}{" "}

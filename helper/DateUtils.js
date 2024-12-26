@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { convertDateFormat } from "./ConvertDateFormat";
 
 export const getDate = (dateString) => {
   try {
@@ -56,4 +57,13 @@ export function dateFormat(dateString) {
 export const getDateString = (date) => {
   if (!date || isNaN(Date.parse(date))) return date;
   return format(date, "yyyy-MM-dd");
+};
+
+export const getCustomDateString = (date, offset) => {
+  if (!date || isNaN(Date.parse(date))) return date;
+
+  let newDate = new Date(date);
+  newDate.setDate(newDate.getDate() + offset);
+
+  return convertDateFormat(format(newDate, "yyyy-MM-dd"));
 };
