@@ -2,7 +2,7 @@ import SlabElement from "./SlabElement";
 
 const CityDay = (props) => {
   return (
-    <div className="bg-[#FEFAD8] p-2 rounded-lg flex flex-col">
+    <div className="p-2 rounded-lg flex flex-col">
       <div>
         <p className="md:text-lg font-semibold">
           Day {props.index + 1}{" "}
@@ -10,7 +10,7 @@ const CityDay = (props) => {
         </p>
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-[1px] bg-gray-200">
         {props.day?.slab_elements.map((element, index) => (
           <SlabElement key={index} element={element} />
         ))}

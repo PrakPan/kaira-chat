@@ -542,9 +542,7 @@ const SimpleTabsV2 = (props) => {
 
       {isPageWide ? null : (
         <>
-          <div id={"Itenary"}>
-            <DaybyDay />
-          </div>
+          <div id={"Itenary"}>{props.itineraryDaybyDay && <DaybyDay />}</div>
 
           <div id={"Stays"}>
             <HotelsBooking
@@ -721,7 +719,7 @@ const SimpleTabsV2 = (props) => {
           rightWidth={4}
         >
           <div>
-            <div id={"Itenary"}>{props?.itinerary && <DaybyDay />}</div>
+            <div id={"Itenary"}>{props?.itineraryDaybyDay && <DaybyDay />}</div>
 
             {isGroup ? (
               <div id={"Stays"}>
@@ -1111,6 +1109,7 @@ const mapStateToPros = (state) => {
     breif: state.Breif,
     itinerary_id: state.ItineraryId,
     tripsPage: state.TripsPage,
+    itineraryDaybyDay: state.ItineraryDaybyDay,
   };
 };
 
