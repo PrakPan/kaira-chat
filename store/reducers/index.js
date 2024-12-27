@@ -17,6 +17,7 @@ import Breif from "./Breif";
 import TripsPage from "./TripsPage";
 import HotLocationSearch from "./HotLocationSearch";
 import CountryCodes from "./CountryCodes";
+import ItineraryDaybyDay from "./ItineraryDaybyDay"
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -37,6 +38,7 @@ const rootReducer = combineReducers({
   TripsPage,
   HotLocationSearch,
   CountryCodes,
+  ItineraryDaybyDay
 });
 
 export default rootReducer;

@@ -40,6 +40,7 @@ import {
 } from "./booking1/SocialShare.js";
 import { BsShareFill } from "react-icons/bs";
 import { IoMdClose } from "react-icons/io";
+import DaybyDay from "./DaybyDay.jsx";
 
 const useStyles = {
   root: `
@@ -541,26 +542,7 @@ const SimpleTabsV2 = (props) => {
 
       {isPageWide ? null : (
         <>
-          <div id={"Itenary"}>
-            <NewItenaryDBDMob
-              plan={props.plan}
-              payment={props.payment}
-              token={props.token}
-              setShowLoginModal={setShowLoginModal}
-              city_slabs={props?.breif?.city_slabs}
-              itinerary={props.itinerary}
-              setItinerary={props.setItinerary}
-              getPaymentHandler={props.getPaymentHandler}
-              transferBookings={props.transferBookings}
-              stayBookings={props.stayBookings}
-              activityBookings={props.activityBookings}
-              getAccommodationAndActivitiesHandler={
-                props.getAccommodationAndActivitiesHandler
-              }
-              setShowBookingModal={() => props.setShowBookingModal(true)}
-              _GetInTouch={_GetInTouch}
-            ></NewItenaryDBDMob>
-          </div>
+          <div id={"Itenary"}>{props.itineraryDaybyDay && <DaybyDay />}</div>
 
           <div id={"Stays"}>
             <HotelsBooking
@@ -737,48 +719,7 @@ const SimpleTabsV2 = (props) => {
           rightWidth={4}
         >
           <div>
-            {isPageWide ? (
-              <div id={"Itenary"}>
-                {props?.itinerary && (
-                  <NewItenaryMain
-                    setShowLoginModal={setShowLoginModal}
-                    plan={props.plan}
-                    payment={props.payment}
-                    city_slabs={props?.breif?.city_slabs}
-                    itinerary={props?.itinerary}
-                    setItinerary={props.setItinerary}
-                    getPaymentHandler={props.getPaymentHandler}
-                    token={props.token}
-                    transferBookings={props.transferBookings}
-                    stayBookings={props.stayBookings}
-                    activityBookings={props.activityBookings}
-                    getAccommodationAndActivitiesHandler={
-                      props.getAccommodationAndActivitiesHandler
-                    }
-                    setShowBookingModal={() => props.setShowBookingModal(true)}
-                    _GetInTouch={_GetInTouch}
-                  ></NewItenaryMain>
-                )}
-              </div>
-            ) : (
-              <div id={"Itenary"}>
-                <NewItenaryDBDMob
-                  plan={props.plan}
-                  payment={props.payment}
-                  token={props.token}
-                  setShowLoginModal={setShowLoginModal}
-                  city_slabs={props?.breif?.city_slabs}
-                  itinerary={props.itinerary}
-                  setItinerary={props.setItinerary}
-                  getPaymentHandler={props.getPaymentHandler}
-                  transferBookings={props.transferBookings}
-                  stayBookings={props.stayBookings}
-                  activityBookings={props.activityBookings}
-                  setShowBookingModal={() => props.setShowBookingModal(true)}
-                  _GetInTouch={_GetInTouch}
-                ></NewItenaryDBDMob>
-              </div>
-            )}
+            <div id={"Itenary"}>{props?.itineraryDaybyDay && <DaybyDay />}</div>
 
             {isGroup ? (
               <div id={"Stays"}>
@@ -1168,6 +1109,7 @@ const mapStateToPros = (state) => {
     breif: state.Breif,
     itinerary_id: state.ItineraryId,
     tripsPage: state.TripsPage,
+    itineraryDaybyDay: state.ItineraryDaybyDay,
   };
 };
 

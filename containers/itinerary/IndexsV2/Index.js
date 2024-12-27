@@ -4,7 +4,9 @@ import styled from "styled-components";
 import Menu from "../MenuV2";
 import Spinner from "../../../containers/loaderbar/Index";
 import OldSpinner from "../../../components/LoadingPage";
-import axiosdaybydayinstance from "../../../services/itinerary/daybyday/preview";
+import axiosdaybydayinstance, {
+  axiosGetItinerary,
+} from "../../../services/itinerary/daybyday/preview";
 import axiosbreifinstance from "../../../services/itinerary/brief/preview";
 import * as authaction from "../../../store/actions/auth";
 import { connect, useDispatch } from "react-redux";
@@ -16,6 +18,7 @@ import Overview from "../../newitinerary/overview/Index";
 import { openNotification } from "../../../store/actions/notification";
 import { setItineraryStartDate } from "../../../store/actions/itineraryStartDate";
 import { setItineraryRoutes } from "../../../store/actions/itineraryRoutes";
+import setItineraryDaybyDay from "../../../store/actions/itineraryDaybyDay";
 import setItinerary from "../../../store/actions/itinerary";
 import setPlan from "../../../store/actions/plan";
 import { setBookings } from "../../../store/actions/bookings";
@@ -105,7 +108,7 @@ const Itinerary = (props) => {
               for (var i = 0; i < res.data.city_slabs.length; i++) {
                 if (res.data.city_slabs[i].duration)
                   setTotalduration(
-                    totalduration + parseInt(res.data.city_slabs[i].duration),
+                    totalduration + parseInt(res.data.city_slabs[i].duration)
                   );
               }
           }
@@ -135,7 +138,7 @@ const Itinerary = (props) => {
           headers: {
             Authorization: `Bearer ${props.token}`,
           },
-        },
+        }
       )
       .then((res) => {
         if (
@@ -264,6 +267,13 @@ const Itinerary = (props) => {
         setItineraryLoading(false);
       });
 
+      axiosGetItinerary.get(`/${props.id}`).then((res) => {
+        const data = res.data;
+        props.setItineraryDaybyDay(data);
+      }).catch(err => {
+        console.error("[ERROR]:axiosGetItinerary: ", err.message)
+      })
+
     getBreifHandler();
 
     getRoutes(props.id)
@@ -281,7 +291,7 @@ const Itinerary = (props) => {
           res.data.itinerary_status === ITINERARY_STATUSES.itinerary_not_created
         ) {
           alert(
-            "Looks like the response took too long, please refresh and try again.",
+            "Looks like the response took too long, please refresh and try again."
           );
         } else {
           setUserEmail(res.data.user_email);
@@ -318,7 +328,7 @@ const Itinerary = (props) => {
 
       // Check if the ID already exists in the combined array
       const existingElementIndex = combinedArray.findIndex(
-        (el) => el.id === newId,
+        (el) => el.id === newId
       );
 
       if (existingElementIndex !== -1) {
@@ -383,7 +393,7 @@ const Itinerary = (props) => {
     city_id,
     destination_city_id,
     duration,
-    check_in,
+    check_in
   ) => {
     let data = [];
     setCardUpdateLoading(booking_id);
@@ -421,7 +431,7 @@ const Itinerary = (props) => {
         setCardUpdateLoading(null);
 
         window.alert(
-          "You're not authorized to take this action, please contact your experience captain.",
+          "You're not authorized to take this action, please contact your experience captain."
         );
       });
   };
@@ -472,7 +482,7 @@ const Itinerary = (props) => {
           headers: {
             Authorization: `Bearer ${props.token}`,
           },
-        },
+        }
       )
       .then((res) => {
         setCardUpdateLoading(null);
@@ -488,7 +498,7 @@ const Itinerary = (props) => {
         setCardUpdateLoading(null);
 
         window.alert(
-          "You're not authorized to take this action, please contact your experience captain.",
+          "You're not authorized to take this action, please contact your experience captain."
         );
       });
   };
@@ -521,7 +531,7 @@ const Itinerary = (props) => {
           headers: {
             Authorization: `Bearer ${props.token}`,
           },
-        },
+        }
       )
       .then((res) => {
         setCardUpdateLoading(null);
@@ -537,7 +547,7 @@ const Itinerary = (props) => {
         setCardUpdateLoading(null);
 
         window.alert(
-          "You're not authorized to take this action, please contact your experience captain.",
+          "You're not authorized to take this action, please contact your experience captain."
         );
       });
   };
@@ -572,7 +582,7 @@ const Itinerary = (props) => {
           headers: {
             Authorization: `Bearer ${props.token}`,
           },
-        },
+        }
       )
       .then((res) => {
         setCardUpdateLoading(null);
@@ -632,7 +642,7 @@ const Itinerary = (props) => {
           headers: {
             Authorization: `Bearer ${props.token}`,
           },
-        },
+        }
       )
       .then((res) => {
         setCardUpdateLoading(null);
@@ -648,7 +658,7 @@ const Itinerary = (props) => {
         setCardUpdateLoading(null);
 
         window.alert(
-          "You're not authorized to take this action, please contact your experience captain.",
+          "You're not authorized to take this action, please contact your experience captain."
         );
       });
   };
@@ -797,10 +807,11 @@ const mapDispatchToProps = (dispatch) => {
     setItineraryActivities: (payload) =>
       dispatch(setItineraryActivities(payload)),
     setBreif: (payload) => dispatch(setBreif(payload)),
+    setItineraryDaybyDay: (payload) => dispatch(setItineraryDaybyDay(payload)),
   };
 };
 
 export default connect(
   mapStateToPros,
-  mapDispatchToProps,
+  mapDispatchToProps
 )(React.memo(Itinerary));
