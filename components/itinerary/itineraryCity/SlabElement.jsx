@@ -52,6 +52,7 @@ const Activity = (props) => {
             style={{
               width: isPageWide ? "120px" : "60px",
               height: isPageWide ? "120px" : "60px",
+              cursor: "pointer"
             }}
             url={props.element?.icon}
           />
@@ -60,7 +61,7 @@ const Activity = (props) => {
         <div className="md:w-[85%] flex flex-col gap-2">
           <div
             onClick={handleActivity}
-            className="font-semibold text-base cursor-pointer"
+            className="w-fit font-semibold text-base cursor-pointer"
           >
             {props.element.heading}
           </div>
