@@ -17,8 +17,6 @@ import { logEvent } from "../../../services/ga/Index";
 import { connect } from "react-redux";
 import { PiForkKnifeFill } from "react-icons/pi";
 
-
-
 const RoomTypeGrid = styled.div`
   display: grid;
   grid-template-columns: 1rem auto 5.5rem;
@@ -154,10 +152,15 @@ const HotelBookingContainer = ({
 
   let img = "";
   if (banner_image) img = banner_image;
-  if (booking && booking.images && booking.images.length && !banner_image)
-    for (let i = 0; i < booking.images.length; i++) {
-      if (booking.images[i].image) {
-        img = booking.images[i].image;
+  if (
+    booking &&
+    booking.hotel_details?.images &&
+    booking.hotel_details?.images.length &&
+    !banner_image
+  )
+    for (let i = 0; i < booking.hotel_details.images.length; i++) {
+      if (booking.hotel_details.images[i]) {
+        img = booking.hotel_details.images[i];
         break;
       }
     }
@@ -185,14 +188,16 @@ const HotelBookingContainer = ({
                   ? handleViewHotel()
                   : handleClick(index, booking.accommodation, booking, city_id);
               }}
-              className={`relative flex lg:flex-row w-full flex-col gap-4  ${isSelect || isSearchedBooking ? "grayscale-0" : "grayscale"
-                } `}
+              className={`relative flex lg:flex-row w-full flex-col gap-4  ${
+                isSelect || isSearchedBooking ? "grayscale-0" : "grayscale"
+              } `}
             >
               <div
-                className={`relative  ${currentBooking
-                  ? "lg:h-[12rem]"
-                  : `${handleClick ? "lg:h-[15rem]" : "lg:h-[12rem]"}`
-                  }  lg:w-[30%] w-full  h-[12rem]`}
+                className={`relative  ${
+                  currentBooking
+                    ? "lg:h-[12rem]"
+                    : `${handleClick ? "lg:h-[15rem]" : "lg:h-[12rem]"}`
+                }  lg:w-[30%] w-full  h-[12rem]`}
               >
                 <div style={{ display: imageLoaded ? "initial" : "none" }}>
                   <ImageLoader
@@ -207,8 +212,10 @@ const HotelBookingContainer = ({
                     widthmobile="100%"
                     noLazy
                     url={
-                      booking.image && !imageFail
+                      !imageFail && booking.image
                         ? booking.image
+                        : !imageFail && img
+                        ? img
                         : "media/icons/bookings/notfounds/noroom.png"
                     }
                     onfail={() => {
@@ -233,12 +240,12 @@ const HotelBookingContainer = ({
                 >
                   <Skeleton />
                 </div>
-                {booking?.star_category ? (
+                {booking.hotel_details?.star_category ? (
                   <starHotel
                     starHotel
                     className={`text-white bg-[#01202B] lg:px-4 px-3 lg:py-3 py-2 m-2 text-sm font-[400]nsition-all shadow-slate-700/70 shadow-md hover:drop-shadow-xl   absolute top-0 rounded-3xl`}
                   >
-                    {booking.star_category} star hotel
+                    {booking.hotel_details.star_category} star hotel
                   </starHotel>
                 ) : null}
               </div>
@@ -247,14 +254,21 @@ const HotelBookingContainer = ({
                 <div className="flex flex-col gap-2">
                   <div className="flex flex-row justify-between items-center">
                     <div
-                      className={`${currentBooking ? "text-2xl" : "text-2xl"
-                        } font-semibold `}
+                      className={`${
+                        currentBooking ? "text-2xl" : "text-2xl"
+                      } font-semibold `}
                     >
                       {booking?.name}
                     </div>
 
                     {handleClick && (
-                      <div className={`ml-auto text-md font-semibold ${booking?.user_selected ? 'text-[#277004]' : 'text-[#E00000]'}`}>
+                      <div
+                        className={`ml-auto text-md font-semibold ${
+                          booking?.user_selected
+                            ? "text-[#277004]"
+                            : "text-[#E00000]"
+                        }`}
+                      >
                         {booking.user_selected ? "Included" : "Excluded"}
                       </div>
                     )}
@@ -270,24 +284,28 @@ const HotelBookingContainer = ({
                           {booking.city}
                         </div>
                       )}
-                      {booking?.addr1 && (
+
+                      {booking.hotel_details?.addr1 && (
                         <div className="text-sm font-normal line-clamp-2">
-                          {booking?.addr1}{booking?.addr2 && `, ${booking.addr2}`}
+                          {booking.hotel_details?.addr1}
+                          {booking.hotel_details?.addr2 &&
+                            `, ${booking.hotel_details.addr2}`}
                         </div>
                       )}
 
-                      {booking?.user_rating && (
+                      {booking.hotel_details?.rating && (
                         <div className="gap-1 flex flex-row  items-center">
                           <div className="flex flex-row text-[#FFD201]">
-                            {starRating(booking?.user_rating)}
+                            {starRating(booking.hotel_details?.rating)}
                           </div>
                           <div>
-                            {booking?.user_rating}
+                            {booking.hotel_details?.rating}
                             {" . "}
                           </div>
-                          {booking?.number_of_reviews && (
+
+                          {booking.hotel_details?.num_reviews && (
                             <div className="text-sm text-[#7A7A7A] font-[400] underline">
-                              {booking.number_of_reviews}{" "}
+                              {booking.hotel_details.num_reviews}{" "}
                               {booking?.source === "Agoda"
                                 ? "user reviews"
                                 : "Google reviews"}
@@ -295,20 +313,6 @@ const HotelBookingContainer = ({
                           )}
                         </div>
                       )}
-
-                      {booking?.rating_ext ? (
-                        <div className="gap-1 flex flex-row  items-center">
-                          <div className="flex flex-row text-[#FFD201]">
-                            {starRating(booking?.rating_ext)}
-                          </div>
-                          <div>{booking?.rating_ext}</div>
-                          {booking?.num_reviews_ext && (
-                            <div className="text-sm text-[#7A7A7A] font-[400] underline">
-                              {booking?.num_reviews_ext} User reviews
-                            </div>
-                          )}
-                        </div>
-                      ) : null}
                     </div>
                   )}
 
@@ -320,7 +324,7 @@ const HotelBookingContainer = ({
                       </div>
 
                       {booking?.number_of_adults ||
-                        currentBooking?.number_of_adults ? (
+                      currentBooking?.number_of_adults ? (
                         <div className="text-sm font-[400] gap-2 flex flex-row items-center">
                           <BsPeopleFill className="text-sm text-[#7A7A7A]" />
                           <div className="text-sm font-[400] min-w-fit">
@@ -336,7 +340,7 @@ const HotelBookingContainer = ({
                     </div>
                   ) : booking?.check_in &&
                     ITINERARY_STATUSES.itinerary_prepared !==
-                    plan?.itinerary_status ? (
+                      plan?.itinerary_status ? (
                     <div className="flex flex-row gap-3 lg:mt-2 mt-0">
                       {booking?.check_in && (
                         <div className="flex flex-row gap-2 items-center">
@@ -351,7 +355,7 @@ const HotelBookingContainer = ({
                       )}
 
                       {booking?.number_of_adults ||
-                        currentBooking?.number_of_adults ? (
+                      currentBooking?.number_of_adults ? (
                         <div className="text-sm font-[400] gap-2 flex flex-row items-center">
                           <BsPeopleFill className="text-sm text-[#7A7A7A]" />
                           <div className="text-sm font-[400] min-w-fit">
@@ -368,7 +372,7 @@ const HotelBookingContainer = ({
                   ) : (
                     currentBooking &&
                     ITINERARY_STATUSES.itinerary_prepared !==
-                    plan?.itinerary_status && (
+                      plan?.itinerary_status && (
                       <div className="flex flex-row gap-3 lg:mt-2 mt-0">
                         {currentBooking?.check_in && (
                           <div className="flex flex-row gap-2 items-center">
@@ -395,35 +399,33 @@ const HotelBookingContainer = ({
                     )
                   )}
 
-                  {booking?.costings_breakdown ? (
+                  {booking?.hotel_details ? (
                     <>
                       <RoomTypeGrid>
                         <BiBed className="text-sm text-[#7A7A7A]" />
                         <div className="text-sm font-[400] line-clamp-1">
-                          {booking?.costings_breakdown[0]?.room_type}
+                          {booking?.hotel_details?.room_type_name}
                         </div>
-                        <div>
-                          {"("}
-                          {booking?.costings_breakdown[0]?.number_of_rooms}{" "}
-                          {booking?.costings_breakdown[0]?.number_of_rooms > 1
-                            ? "Rooms"
-                            : "Room"}
-                          {")"}
-                        </div>
+
+                        {booking?.hotel_details?.room_count ? (
+                          <div>
+                            {"("}
+                            {booking?.hotel_details?.room_count}{" "}
+                            {booking?.hotel_details?.room_count > 1
+                              ? "Rooms"
+                              : "Room"}
+                            {")"}
+                          </div>
+                        ) : null}
                       </RoomTypeGrid>
 
-                      {booking?.costings_breakdown[0]?.number_of_extra_beds &&
-                        booking?.costings_breakdown[0]?.number_of_extra_beds >
-                        0 ? (
+                      {booking?.hotel_details?.number_of_extra_beds &&
+                      booking?.hotel_details?.number_of_extra_beds > 0 ? (
                         <div className="flex flex-row items-center my-0">
                           <BsPlus className="text-md text-[#7A7A7A]" />
                           <div className="text-sm font-[400] line-clamp-1">
-                            {
-                              booking?.costings_breakdown[0]
-                                ?.number_of_extra_beds
-                            }{" "}
-                            {booking?.costings_breakdown[0]
-                              ?.number_of_extra_beds > 1
+                            {booking?.hotel_details?.number_of_extra_beds}{" "}
+                            {booking?.hotel_details?.number_of_extra_beds > 1
                               ? "Extra beds"
                               : "Extra bed"}
                           </div>
@@ -433,7 +435,8 @@ const HotelBookingContainer = ({
                       )}
                     </>
                   ) : (
-                    (booking?.room_count || booking?.room_type_name) && (
+                    (booking.hotel_details?.room_count ||
+                      booking.hotel_details?.room_type_name) && (
                       <>
                         <div
                           className={`flex ${"flex-row"} gap-3 lg:mt-2 mt-0`}
@@ -442,11 +445,15 @@ const HotelBookingContainer = ({
                             <BiBed className="text-sm text-[#7A7A7A]" />
                             <div className="text-sm font-[400] line-clamp-1">
                               {booking?.source &&
-                                booking?.source === "Agoda" &&
-                                booking?.room_type_name ? (
-                                <>{booking.room_type_name}</>
+                              booking?.source === "Agoda" &&
+                              booking.hotel_details?.room_type_name ? (
+                                <>{booking.hotel_details.room_type_name}</>
                               ) : (
-                                <> {booking?.room_count} room options</>
+                                <>
+                                  {" "}
+                                  {booking.hotel_details?.room_count} room
+                                  options
+                                </>
                               )}
                             </div>
                           </div>
@@ -456,7 +463,7 @@ const HotelBookingContainer = ({
                   )}
 
                   {booking?.costings_breakdown &&
-                    Addons(booking?.costings_breakdown[0]?.pricing_type) ? (
+                  Addons(booking?.costings_breakdown[0]?.pricing_type) ? (
                     <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
                       <ImSpoonKnife className="text-sm text-[#7A7A7A]" />
                       <div className="text-sm font-[400]">
@@ -466,8 +473,8 @@ const HotelBookingContainer = ({
                   ) : null}
 
                   {booking?.amenities &&
-                    booking?.amenities?.length &&
-                    booking?.amenities?.includes("WIFI") ? (
+                  booking?.amenities?.length &&
+                  booking?.amenities?.includes("WIFI") ? (
                     <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
                       <MdWifi className="text-sm text-[#7A7A7A]" />
                       <div className="text-sm font-[400]">WIFI available</div>
@@ -484,11 +491,11 @@ const HotelBookingContainer = ({
                       <div className="text-2xl font-bold">
                         {booking?.source === "Agoda"
                           ? "₹" +
-                          getIndianPrice(Math.round(+booking.price / 100)) +
-                          "/-"
+                            getIndianPrice(Math.round(+booking.price / 100)) +
+                            "/-"
                           : "₹" +
-                          getIndianPrice(Math.round(booking?.price)) +
-                          "/-"}
+                            getIndianPrice(Math.round(booking?.price)) +
+                            "/-"}
                       </div>
                       <div
                         className="font-normal text-base self-end"
@@ -510,10 +517,11 @@ const HotelBookingContainer = ({
 
                 {handleClick && (
                   <div
-                    className={`flex flex-row gap-2 items-end justify-end w-full ${payment?.paid_user || !payment?.user_allowed_to_pay
-                      ? "lh:mb-0 mb-2"
-                      : "lg:mb-0 mb-0"
-                      }`}
+                    className={`flex flex-row gap-2 items-end justify-end w-full ${
+                      payment?.paid_user || !payment?.user_allowed_to_pay
+                        ? "lh:mb-0 mb-2"
+                        : "lg:mb-0 mb-0"
+                    }`}
                   >
                     {isDesktop && (
                       <Button
@@ -556,14 +564,9 @@ const HotelBookingContainer = ({
 
             {currentBooking && (
               <div className="absolute bottom-[28px] right-8 -m-3">
-                <div
-                  className=" z-50"
-                  onClick={() => handleViewHotel()}
-                >
+                <div className=" z-50" onClick={() => handleViewHotel()}>
                   <div className="cursor-pointer bg-[#F7E700] px-4 py-2 rounded-lg hover:bg-black hover:text-white transition-all border-2 border-black">
-                    <label className="text-center">
-                      View Details
-                    </label>
+                    <label className="text-center">View Details</label>
                   </div>
                 </div>
               </div>
