@@ -27,20 +27,24 @@ const TravelPlanner = (props) => {
         </title>
         <meta
           name="description"
-          content={`Plan your dream trip to ${props.Data.destination} with The Tarzan Way's AI itinerary. Explore top attractions, local cuisine, and book your flights, accommodations, and transfers all in one go ${props.Data.destination}.`}
+          content={`${props.Data.meta_description}`}
         ></meta>
         <meta
           property="og:title"
-          content={`Plan Your Trip to ${props.Data.destination} | Trip Planner & Itinerary | The Tarzan Way`}
+          content={`${props.Data.social_share_title}`}
         />
         <meta
           property="og:description"
-          content={`Plan your dream trip to ${props.Data.destination} with The Tarzan Way's AI itinerary. Explore top attractions, local cuisine, and book your flights, accommodations, and transfers all in one go ${props.Data.destination}.`}
+          content={`${props.Data.meta_description}`}
         />
         <meta property="og:image" content="/logoblack.svg" />
         <meta
           property="keywords"
-          content={`${props.Data.destination} trip planner, ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, travel in ${props.Data.destination}, ${props.Data.destination} tour package, experience ${props.Data.destination} culture, ${props.Data.destination} holiday package, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, best places in ${props.Data.destination}, places to visit in ${props.Data.destination}, best activities in ${props.Data.destination}, things to do in ${props.Data.destination}, package for ${props.Data.destination}, top places in ${props.Data.destination}, wanderlog, inspirock, tripit, hotels, flights, activities, transfers, solo travel, family travel,`}
+          content={`${
+            Array.isArray(props?.Data?.meta_keywords)
+              ? props?.Data?.meta_keywords.join(", ")
+              : props?.Data?.meta_keywords
+          }`}
         ></meta>
 
         <link
@@ -80,7 +84,7 @@ export async function getStaticPaths() {
   } catch (err) {
     console.error(
       "[ERROR][statePage:axiossearchallinstance][/?type=State&fields=path]: ",
-      err.message,
+      err.message
     );
   }
 
@@ -99,13 +103,13 @@ export async function getStaticProps(context) {
 
   try {
     const res = await axiosTravelPlannerInstance.get(
-      `/?link=${context.params.state}`,
+      `/?link=${context.params.state}`
     );
     data = res.data;
   } catch (err) {
     console.log(
       `[ERROR][statePage:axiosTravelPlannerInstance][${context.params.state}]: `,
-      err.message,
+      err.message
     );
   }
 
@@ -117,19 +121,19 @@ export async function getStaticProps(context) {
 
   try {
     const loc = await axiospagelistinstance.get(
-      `/?country=${context.params.country}&page_type=Destination&fields=id,ancestors,path,destination,name,tagline,image,link,budget`,
+      `/?country=${context.params.country}&page_type=Destination&fields=id,ancestors,path,destination,name,tagline,image,link,budget`
     );
     locations = loc.data;
   } catch (err) {
     console.log(
       `[ERROR][statePage:axiospagelistinstance][${context.params.country}]: `,
-      err.message,
+      err.message
     );
   }
 
   try {
     const response = await axioslocationsinstance.get(
-      `hot_destinations/?state=${state}/`,
+      `hot_destinations/?state=${state}/`
     );
     if (response.data?.length) {
       hotLocationSearch = response.data;
@@ -137,7 +141,7 @@ export async function getStaticProps(context) {
   } catch (err) {
     console.log(
       `[ERROR][StatePage][axioslocationsinstance:/hot_destinations/?state=${state}/]`,
-      err.message,
+      err.message
     );
   }
 
