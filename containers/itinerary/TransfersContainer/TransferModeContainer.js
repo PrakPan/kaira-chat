@@ -619,15 +619,9 @@ const TransferModeContainer = (props) => {
                   >
                     <CheckboxFormComponent checked={addbooking} />{" "}
                   </div>
-                  {props.userSelected ? (
-                    <div className=" text-md font-semibold  text-[#277004] ">
-                      Included
-                    </div>
-                  ) : (
-                    <div className=" text-md font-semibold text-[#E00000]  ">
-                      Excluded
-                    </div>
-                  )}
+                  <div className=" text-md font-semibold  text-[#277004] ">
+                    Included
+                  </div>
                 </div>
               </div>
 
@@ -1057,15 +1051,9 @@ const TransferModeContainer = (props) => {
               <div className="flex flex-row w-full justify-between items-center">
                 <span className="font-medium  inline">{props.heading}</span>
                 <div className="flex flex-row gap-2 justify-center items-center">
-                  {props.userSelected ? (
-                    <div className=" text-md font-semibold  text-[#277004] ">
-                      Included
-                    </div>
-                  ) : (
-                    <div className=" text-md font-semibold text-[#E00000]  ">
-                      Excluded
-                    </div>
-                  )}
+                  <div className=" text-md font-semibold  text-[#277004] ">
+                    Included
+                  </div>
                 </div>
               </div>
 

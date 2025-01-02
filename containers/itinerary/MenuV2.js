@@ -566,7 +566,7 @@ const SimpleTabsV2 = (props) => {
             ></HotelsBooking>
           </div>
 
-          {props?.transferBookings || props?.routes?.length ? (
+          {props?.transferBookings ? (
             <div id={"Transfers"}>
               <TransfersContainer
                 setShowLoginModal={setShowLoginModal}
@@ -754,7 +754,7 @@ const SimpleTabsV2 = (props) => {
               </div>
             )}
 
-            {props.transferBookings || props?.routes?.length ? (
+            {props.transferBookings ? (
               <div id={"Transfers"}>
                 <TransfersContainer
                   setShowLoginModal={setShowLoginModal}

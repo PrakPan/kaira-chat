@@ -176,7 +176,6 @@ const Itinerary = (props) => {
   };
 
   const getAllBookings = () => {
-    let transfer_bookings = [];
     let flight_bookings = [];
 
     axiosGetAllBookings
@@ -186,7 +185,6 @@ const Itinerary = (props) => {
         const data = res.data;
 
         for (const book of data.transfer_bookings) {
-          transfer_bookings.push(book);
           if (book.booking_type === "Flight") {
             flight_bookings.push(book);
           }
@@ -202,16 +200,16 @@ const Itinerary = (props) => {
             data.activity_bookings.length > 0 ? data.activity_bookings : null,
           flightBookings: flight_bookings.length > 0 ? flight_bookings : null,
           transferBookings:
-            transfer_bookings.length > 0 ? transfer_bookings : null,
+            data.transfer_bookings.length > 0 ? data.transfer_bookings : null,
         });
 
         setStayBookings(data.accommodation_bookings);
         setActivityBookings(
           data.activity_bookings.length ? data.activity_bookings : null
         );
-        setFlightBookings(flight_bookings.length ? flight_bookings : null);
+        setFlightBookings(flight_bookings.length > 0 ? flight_bookings : null);
         setTransferBookings(
-          transfer_bookings.length ? transfer_bookings : null
+          data.transfer_bookings.length ? data.transfer_bookings : null
         );
       })
       .catch((err) => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import ImageLoader from "../../../components/ImageLoader";
 import { BsCalendar2, BsPeopleFill, BsPlus } from "react-icons/bs";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
@@ -9,13 +9,11 @@ import { getDate } from "../../../helper/ConvertDateFormat";
 import Button from "../../../components/ui/button/Index";
 import media from "../../../components/media";
 import styled from "styled-components";
-import { getIndianPrice } from "../../../services/getIndianPrice";
 import { getHumanDate } from "../../../services/getHumanDate";
 import { ITINERARY_STATUSES } from "../../../services/constants";
 import { MdWifi } from "react-icons/md";
 import { logEvent } from "../../../services/ga/Index";
 import { connect } from "react-redux";
-import { PiForkKnifeFill } from "react-icons/pi";
 
 const RoomTypeGrid = styled.div`
   display: grid;
@@ -28,7 +26,6 @@ const RoomTypeGrid = styled.div`
 `;
 
 const HotelBookingContainer = ({
-  selectedBooking,
   currentBooking,
   booking,
   index,
@@ -47,17 +44,8 @@ const HotelBookingContainer = ({
 }) => {
   let isDesktop = media("(min-width: 1147px)");
   let isPageWide = media("(min-width: 768px)");
-  const [isSelect, setisSelect] = useState(booking?.user_selected);
   const [imageFail, setImageFail] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [isSearchedBooking, setisSearchedBooking] = useState(
-    booking?.user_selected ? false : true
-  );
-
-  useEffect(() => {
-    setisSelect(booking?.user_selected);
-    setisSearchedBooking(booking?.user_selected ? false : true);
-  }, [booking]);
 
   function Addons(Shorthand) {
     switch (Shorthand) {
@@ -84,10 +72,6 @@ const HotelBookingContainer = ({
     if (Math.floor(rating) < rating) stars.push(<FaStarHalfAlt />);
     return stars;
   };
-
-  function handleSelectChange() {
-    setisSelect(!isSelect);
-  }
 
   const handleViewDetails = (value) => {
     handleClick(index, booking.accommodation, booking);
@@ -173,31 +157,19 @@ const HotelBookingContainer = ({
       {booking ? (
         <div>
           <div className="flex flex-row justify-between items-center">
-            {handleClick && (
-              <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
-                {cityName ? cityName : booking?.city}{" "}
-                <span>({booking ? booking?.duration : 1}N)</span>
-              </div>
-            )}
+            <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
+              {cityName ? cityName : booking?.city}{" "}
+              <span>({booking ? booking?.duration : 1}N)</span>
+            </div>
           </div>
 
           <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3">
             <div
-              onClick={() => {
-                currentBooking || selectedBooking
-                  ? handleViewHotel()
-                  : handleClick(index, booking.accommodation, booking, city_id);
-              }}
-              className={`relative flex lg:flex-row w-full flex-col gap-4  ${
-                isSelect || isSearchedBooking ? "grayscale-0" : "grayscale"
-              } `}
+              onClick={handleViewHotel}
+              className={`relative flex lg:flex-row w-full flex-col gap-4`}
             >
               <div
-                className={`relative  ${
-                  currentBooking
-                    ? "lg:h-[12rem]"
-                    : `${handleClick ? "lg:h-[15rem]" : "lg:h-[12rem]"}`
-                }  lg:w-[30%] w-full  h-[12rem]`}
+                className={`relative lg:w-[30%] w-full h-[12rem] lg:h-[15rem]`}
               >
                 <div style={{ display: imageLoaded ? "initial" : "none" }}>
                   <ImageLoader
@@ -240,6 +212,7 @@ const HotelBookingContainer = ({
                 >
                   <Skeleton />
                 </div>
+
                 {booking.hotel_details?.star_category ? (
                   <starHotel
                     starHotel
@@ -253,25 +226,19 @@ const HotelBookingContainer = ({
               <div className="flex flex-col gap-2 text-[#01202B] lg:w-[70%] w-full justify-between">
                 <div className="flex flex-col gap-2">
                   <div className="flex flex-row justify-between items-center">
-                    <div
-                      className={`${
-                        currentBooking ? "text-2xl" : "text-2xl"
-                      } font-semibold `}
-                    >
+                    <div className="text-2xl font-semibold">
                       {booking?.name}
                     </div>
 
-                    {handleClick && (
-                      <div
-                        className={`ml-auto text-md font-semibold ${
-                          booking?.user_selected
-                            ? "text-[#277004]"
-                            : "text-[#E00000]"
-                        }`}
-                      >
-                        {booking.user_selected ? "Included" : "Excluded"}
-                      </div>
-                    )}
+                    <div
+                      className={`ml-auto text-md font-semibold ${
+                        booking?.user_selected
+                          ? "text-[#277004]"
+                          : "text-[#E00000]"
+                      }`}
+                    >
+                      Included
+                    </div>
                   </div>
 
                   {booking && (
@@ -306,7 +273,7 @@ const HotelBookingContainer = ({
                           {booking.hotel_details?.num_reviews && (
                             <div className="text-sm text-[#7A7A7A] font-[400] underline">
                               {booking.hotel_details.num_reviews}{" "}
-                              {booking?.source === "Agoda"
+                              {booking?.booking_source === "Agoda"
                                 ? "user reviews"
                                 : "Google reviews"}
                             </div>
@@ -369,37 +336,9 @@ const HotelBookingContainer = ({
                         <></>
                       )}
                     </div>
-                  ) : (
-                    currentBooking &&
-                    ITINERARY_STATUSES.itinerary_prepared !==
-                      plan?.itinerary_status && (
-                      <div className="flex flex-row gap-3 lg:mt-2 mt-0">
-                        {currentBooking?.check_in && (
-                          <div className="flex flex-row gap-2 items-center">
-                            <BsCalendar2 className="text-sm text-[#7A7A7A]" />
-                            <div>
-                              <div className="text-sm font-[400] ">
-                                {getDate(currentBooking?.check_in)}-
-                                {getDate(currentBooking?.check_out)}
-                              </div>
-                            </div>
-                          </div>
-                        )}
+                  ) : null}
 
-                        <div className="text-sm font-[400] gap-2 flex flex-row items-center">
-                          <BsPeopleFill className="text-sm text-[#7A7A7A]" />
-                          <div className=" text-sm font-[400] min-w-fit">
-                            {booking?.number_of_adults
-                              ? booking.number_of_adults
-                              : currentBooking?.number_of_adults}{" "}
-                            Adults
-                          </div>
-                        </div>
-                      </div>
-                    )
-                  )}
-
-                  {booking?.hotel_details ? (
+                  {booking?.hotel_details?.room_type_name ? (
                     <>
                       <RoomTypeGrid>
                         <BiBed className="text-sm text-[#7A7A7A]" />
@@ -434,40 +373,14 @@ const HotelBookingContainer = ({
                         <></>
                       )}
                     </>
-                  ) : (
-                    (booking.hotel_details?.room_count ||
-                      booking.hotel_details?.room_type_name) && (
-                      <>
-                        <div
-                          className={`flex ${"flex-row"} gap-3 lg:mt-2 mt-0`}
-                        >
-                          <div className="text-sm font-[400] gap-2 flex flex-row items-center">
-                            <BiBed className="text-sm text-[#7A7A7A]" />
-                            <div className="text-sm font-[400] line-clamp-1">
-                              {booking?.source &&
-                              booking?.source === "Agoda" &&
-                              booking.hotel_details?.room_type_name ? (
-                                <>{booking.hotel_details.room_type_name}</>
-                              ) : (
-                                <>
-                                  {" "}
-                                  {booking.hotel_details?.room_count} room
-                                  options
-                                </>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </>
-                    )
-                  )}
+                  ) : null}
 
-                  {booking?.costings_breakdown &&
-                  Addons(booking?.costings_breakdown[0]?.pricing_type) ? (
+                  {booking?.hotel_details &&
+                  Addons(booking?.hotel_details?.pricing_type) ? (
                     <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
                       <ImSpoonKnife className="text-sm text-[#7A7A7A]" />
                       <div className="text-sm font-[400]">
-                        {Addons(booking?.costings_breakdown[0]?.pricing_type)}
+                        {Addons(booking.hotel_details.pricing_type)}
                       </div>
                     </div>
                   ) : null}
@@ -484,93 +397,46 @@ const HotelBookingContainer = ({
                   )}
                 </div>
 
-                {currentBooking && booking?.price && (
-                  <div>
-                    <div className="font-[300] text-sm">Starting from</div>
-                    <div className="flex flex-row gap-1 items-center w-full font-bold">
-                      <div className="text-2xl font-bold">
-                        {booking?.source === "Agoda"
-                          ? "₹" +
-                            getIndianPrice(Math.round(+booking.price / 100)) +
-                            "/-"
-                          : "₹" +
-                            getIndianPrice(Math.round(booking?.price)) +
-                            "/-"}
-                      </div>
-                      <div
-                        className="font-normal text-base self-end"
-                        style={{
-                          height: "auto",
-                          marginBottom: "0.15rem",
-                          fontWeight: 300,
-                        }}
-                      >
-                        {booking?.source === "Agoda" ? (
-                          <>per night</>
-                        ) : (
-                          <>for {currentBooking?.duration} nights</>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
+                <div
+                  className={`flex flex-row gap-2 items-end justify-end w-full ${
+                    payment?.paid_user || !payment?.user_allowed_to_pay
+                      ? "lh:mb-0 mb-2"
+                      : "lg:mb-0 mb-0"
+                  }`}
+                >
+                  {isDesktop && (
+                    <Button
+                      padding="0.6rem 2.2rem"
+                      borderRadius="8px"
+                      hoverColor="white"
+                      fontWeight="400"
+                      onclick={() => handleViewDetails(booking.name)}
+                    >
+                      View Detail
+                    </Button>
+                  )}
 
-                {handleClick && (
-                  <div
-                    className={`flex flex-row gap-2 items-end justify-end w-full ${
-                      payment?.paid_user || !payment?.user_allowed_to_pay
-                        ? "lh:mb-0 mb-2"
-                        : "lg:mb-0 mb-0"
-                    }`}
-                  >
-                    {isDesktop && (
+                  {payment?.is_registration_needed ? null : payment?.paid_user ||
+                    !payment?.user_allowed_to_pay ? null : (
+                    <div
+                      onClick={(e) =>
+                        handleChageHotel(e, "Change", booking?.name)
+                      }
+                    >
                       <Button
                         padding="0.6rem 2.2rem"
+                        bgColor={"#F7E700"}
                         borderRadius="8px"
-                        hoverColor="white"
                         fontWeight="400"
-                        onclick={() => handleViewDetails(booking.name)}
+                        onclick={() => console.log("")}
                       >
-                        View Detail
+                        Change
                       </Button>
-                    )}
-
-                    {payment?.is_registration_needed ? null : payment?.paid_user ||
-                      !payment?.user_allowed_to_pay ? null : (
-                      <div
-                        onClick={(e) =>
-                          handleChageHotel(
-                            e,
-                            `${!isSelect ? "Add Hotel" : "Change"}`,
-                            booking?.name
-                          )
-                        }
-                      >
-                        <Button
-                          padding="0.6rem 2.2rem"
-                          bgColor={"#F7E700"}
-                          borderRadius="8px"
-                          fontWeight="400"
-                          onclick={() => console.log("")}
-                        >
-                          {!isSelect ? "Add Hotel" : "Change"}
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {currentBooking && (
-              <div className="absolute bottom-[28px] right-8 -m-3">
-                <div className=" z-50" onClick={() => handleViewHotel()}>
-                  <div className="cursor-pointer bg-[#F7E700] px-4 py-2 rounded-lg hover:bg-black hover:text-white transition-all border-2 border-black">
-                    <label className="text-center">View Details</label>
-                  </div>
+                    </div>
+                  )}
                 </div>
               </div>
-            )}
+            </div>
           </div>
         </div>
       ) : (

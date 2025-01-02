@@ -12,6 +12,7 @@ import TransferContainerForMissing from "./TransferContainerForMissing";
 import TransferEditDrawer from "../../../components/drawers/routeTransfer/TransferEditDrawer";
 import routeAlternates from "../../../services/itinerary/brief/routeAlternates";
 import axiosRoundTripInstance from "../../../services/itinerary/brief/roundTripSuggestion";
+import TransferBooking from "./TransferBooking";
 
 const Container = styled.div`
   @media screen and (min-width: 768px) {
@@ -625,7 +626,22 @@ const TransfersContainer = (props) => {
         routeId={transferId}
       ></TaxiModal>
 
-      {(props?.transferBookings || props?.routes.length > 1) && (
+      {props?.transferBookings?.map((booking, index) => (
+        <TransferBooking
+          key={booking.id}
+          index={index}
+          booking={booking}
+          payment={props?.payment}
+          route={props?.routes[i + 1]}
+          itinerary_id={props?.itinerary_id}
+          fetchData={props.fetchData}
+          originCity={props.routes[i].city_name}
+          destinationCity={props.routes[i + 2]?.city_name}
+          setShowLoginModal={props?.setShowLoginModal}
+        />
+      ))}
+
+      {/* {(props?.transferBookings || props?.routes.length > 1) && (
         <>
           {locationsArr}
 
@@ -676,7 +692,7 @@ const TransfersContainer = (props) => {
             ></PinSection>
           )}
         </>
-      )}
+      )} */}
 
       <TransferEditDrawer
         addOrEdit={"transferAdd"}
@@ -715,6 +731,7 @@ const mapStateToPros = (state) => {
     emailfailmessage: state.auth.emailfailmessage,
     loginmessage: state.auth.loginmessage,
     hideloginclose: state.auth.hideloginclose,
+    // transferBookings: state.Bookings.transferBookings,
   };
 };
 
