@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { TransportIconFetcher } from "../../../helper/TransportIconFetcher";
 import ImageLoader from "../../../components/ImageLoader";
-import { differenceInMinutes, format, parseISO } from "date-fns";
 import { FaPlane } from "react-icons/fa";
 import useMediaQuery from "../../../components/media";
 import media from "../../../components/media";
@@ -15,9 +14,6 @@ import { connect } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import Button from "../../../components/ui/button/Index";
-import TransferEditDrawer from "../../../components/drawers/routeTransfer/TransferEditDrawer";
-import routeAlternates from "../../../services/itinerary/brief/routeAlternates";
-import axiosRoundTripInstance from "../../../services/itinerary/brief/roundTripSuggestion";
 import { logEvent } from "../../../services/ga/Index";
 
 const Plan = styled.div`
@@ -151,31 +147,70 @@ const FlexBox = styled.div`
   gap: 0.4rem;
 `;
 
+const Line = styled.hr`
+  background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
+    ${(props) =>
+      props.pinColour
+        ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
+        : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
+
+  background-size: 8px 3px, 100% 3px;
+
+  color: #c80000;
+  -webkit-transform: rotate(90deg);
+  position: absolute;
+
+  height: 1px;
+
+  border: 2px;
+
+  width: ${(props) => (props.Transfers ? `19rem` : `5rem`)};
+
+  top: ${(props) => (props.Transfers ? `128px` : `23px`)};
+  right: ${(props) => (props.Transfers ? `-134px` : `-25px`)};
+  opacity: initial;
+  z-index: -1;
+  @media screen and (min-width: 768px) {
+    width: 12.3rem;
+    height: 1px;
+    top: 81px;
+    right: -81px;
+  }
+`;
+
+const Container = styled.div`
+  display: grid;
+  width: 100%;
+  grid-template-columns: 30px auto;
+  min-height: 5rem;
+  @media screen and (min-width: 768px) {
+    min-height: 8rem;
+  }
+`;
+
 const TransferBooking = ({
-  booking,
-  notificationText,
-  plan,
-  tripsPage,
-  openNotification,
-  payment,
   index,
-  itinerary_id,
+  booking,
+  plan,
+  payment,
+  token,
   route,
-  originCity,
-  destinationCity,
-  fetchData,
+  tripsPage,
+  notificationText,
+  openNotification,
   setShowLoginModal,
+  _changeTaxiHandler,
+  setDaySlabIndex,
+  setElementIndex,
+  setTransferId,
+  _updateTaxiBookingHandler,
+  getPaymentHandler,
+  _changeFlightHandler,
 }) => {
   let isPageWide = media("(min-width: 768px)");
   const isDesktop = useMediaQuery("(min-width:1024px)");
   const [addbooking, setaddboking] = useState(booking.user_selected);
   const [loading, setLoading] = useState(false);
-  const [showDrawer, setShowDrawer] = useState(false);
-  const [alternateRoutes, setAlternateRoutes] = useState({});
-  const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
-  const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
-  const [loadingAlternates, setLoadingAlternates] = useState(true);
-  const [alternatesError, setAlternatesError] = useState(null);
   const [transferImageFailed, setTransferImageFailed] = useState(null);
 
   useEffect(() => {
@@ -187,17 +222,17 @@ const TransferBooking = ({
   };
 
   function handleCheckboxChange(e, label) {
-    if (!props.payment?.is_registration_needed) {
-      if (props.token && props.payment?.user_allowed_to_pay) {
+    if (!payment?.is_registration_needed) {
+      if (token && payment?.user_allowed_to_pay) {
         _updateSelectedTransfer();
         e.stopPropagation();
       } else {
-        props.openNotification({
+        openNotification({
           text: "Oops, this action is not allowed on another user's itinerary.",
           heading: "Error!",
           type: "error",
         });
-        props.setShowLoginModal();
+        setShowLoginModal();
         e.stopPropagation();
       }
     }
@@ -215,33 +250,33 @@ const TransferBooking = ({
   }
 
   function HandleTransport(i, label) {
-    if (!props.token) {
-      return props.setShowLoginModal(true);
+    if (!token) {
+      return setShowLoginModal(true);
     }
-    let name = props.booking["name"];
-    let costings_breakdown = props.booking["costings_breakdown"];
-    let cost = props.booking["booking_cost"];
-    let itinerary_id = props.booking["itinerary_id"];
-    let itinerary_name = props.booking["itinerary_name"];
-    let tailored_id = props.booking["tailored_itinerary"];
-    let id = props.booking["id"];
-    let check_in = props.booking["check_in"];
-    let check_out = props.booking["check_out"];
+    let name = booking["name"];
+    let costings_breakdown = booking["costings_breakdown"];
+    let cost = booking["booking_cost"];
+    let itinerary_id = booking["itinerary_id"];
+    let itinerary_name = booking["itinerary_name"];
+    let tailored_id = booking["tailored_itinerary"];
+    let id = booking["id"];
+    let check_in = booking["check_in"];
+    let check_out = booking["check_out"];
     let pax = {
-      number_of_adults: props.booking["number_of_adults"],
-      number_of_children: props.booking["number_of_children"],
-      number_of_infants: props.booking["number_of_infants"],
+      number_of_adults: booking["number_of_adults"],
+      number_of_children: booking["number_of_children"],
+      number_of_infants: booking["number_of_infants"],
     };
-    let city = props.booking["city"];
-    let taxi_type = props.booking["taxi_type"];
-    let transfer_type = props.booking["transfer_type"];
-    let destination_city = props.booking["destination_city"];
-    let origin_iata = props.booking["origin_city_iata_code"];
-    let destination_iata = props.booking["destination_city_iata_code"];
-    let origin = props.booking["origin"];
-    let destination = props.booking["destination"];
+    let city = booking["city"];
+    let taxi_type = booking["taxi_type"];
+    let transfer_type = booking["transfer_type"];
+    let destination_city = booking["destination_city"];
+    let origin_iata = booking["origin_city_iata_code"];
+    let destination_iata = booking["destination_city_iata_code"];
+    let origin = booking["origin"];
+    let destination = booking["destination"];
 
-    props._changeTaxiHandler(
+    _changeTaxiHandler(
       name,
       itinerary_id,
       tailored_id,
@@ -262,9 +297,9 @@ const TransferBooking = ({
       destination
     );
 
-    props.setDaySlabIndex(props?.route?.element_location?.day_slab_index);
-    props.setElementIndex(props?.route?.element_index);
-    props.setTransferId(props?.route?.transfers?.id);
+    setDaySlabIndex(route?.element_location?.day_slab_index);
+    setElementIndex(route?.element_index);
+    setTransferId(route?.transfers?.id);
 
     logEvent({
       action: "Transfer_Add_Change",
@@ -313,32 +348,32 @@ const TransferBooking = ({
 
     let updated_bookings_arr = [
       {
-        id: props.booking["id"],
-        booking_type: props.booking_type,
+        id: booking["id"],
+        booking_type: booking_type,
         itinerary_type: "Tailored",
-        user_selected: !props?.userSelected,
-        itinerary_id: props.booking["itinerary_id"],
-        taxi_type: props.booking["taxi_type"],
-        transfer_type: props.booking["transfer_type"],
+        user_selected: booking.user_selected,
+        itinerary_id: booking["itinerary_id"],
+        taxi_type: booking["taxi_type"],
+        transfer_type: booking["transfer_type"],
 
-        costings_breakdown: props.booking?.costings_breakdown,
+        costings_breakdown: booking?.costings_breakdown,
       },
     ];
     axiosbookingupdateinstance
       .post("?booking_type=Taxi,Bus,Ferry,Train,Flight", updated_bookings_arr, {
         headers: {
-          Authorization: `Bearer ${props.token}`,
+          Authorization: `Bearer ${token}`,
         },
       })
       .then((res) => {
-        props._updateTaxiBookingHandler(res.data.bookings);
+        _updateTaxiBookingHandler(res.data.bookings);
 
         setTimeout(function () {
-          props.getPaymentHandler();
+          getPaymentHandler();
         }, 1000);
         setaddboking(!addbooking);
         setLoading(false);
-        props.openNotification({
+        openNotification({
           text: "Your Booking updated successfully!",
           heading: "Success!",
           type: "success",
@@ -347,20 +382,20 @@ const TransferBooking = ({
       .catch((err) => {
         if (err.response) {
           if (err.response.status === 400) {
-            props.openNotification({
+            openNotification({
               text: err.response.data.message,
               heading: "Error!",
               type: "error",
             });
           } else
-            props.openNotification({
+            openNotification({
               text: "There seems to be a problem, please try again!",
               heading: "Error!",
               type: "error",
             });
         }
         setLoading(false);
-        props.openNotification({
+        openNotification({
           text: "There seems to be a problem, please try again!",
           heading: "Error!",
           type: "error",
@@ -368,83 +403,12 @@ const TransferBooking = ({
       });
   };
 
-  const roundTripSuggestion = () => {
-    setLoadingAlternates(true);
-    axiosRoundTripInstance
-      .get(`?itinerary_id=${props?.itinerary_id}`)
-      .then((response) => {
-        const results = response.data;
-
-        for (let i = 0; i < results.length; i++) {
-          if (
-            results[i].success &&
-            results[i].transfer_type === "Intercity round-trip"
-          ) {
-            setRoundTripSuggestions(results[i]);
-          } else if (
-            results[i].success &&
-            results[i].transfer_type === "Multicity"
-          ) {
-            setMultiCitySuggestions(results[i]);
-          }
-        }
-        setLoadingAlternates(false);
-      })
-      .catch((err) => {
-        console.log("[ERROR][TransferEdit]: ", err);
-      });
-  };
-
-  const handleTransferEdit = () => {
-    setShowDrawer(true);
-    setLoadingAlternates(true);
-    setAlternatesError(null);
-    roundTripSuggestion();
-    routeAlternates
-      .get(`/?route_id=` + props?.route?.transfers?.id, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        if (response.status === 200 && response.data.routes.length > 0) {
-          const data = response.data;
-          setAlternateRoutes(data);
-        } else {
-          setAlternatesError(
-            "No route found, please get in touch with us to complete this booking!"
-          );
-        }
-        setLoadingAlternates(false);
-      })
-      .catch((err) => {
-        setLoadingAlternates(false);
-        if (err.response.status === 404) {
-          setAlternatesError(
-            "No route found, please get in touch with us to complete this booking!"
-          );
-        } else {
-          setAlternatesError(
-            "There seems to be problem, please try again! adsfasdf"
-          );
-        }
-      });
-
-    logEvent({
-      action: "Transfer_Add_Change",
-      params: {
-        page: "Itinerary Page",
-        event_category: "Button Click",
-        event_label: "Add Transfer",
-        event_value: booking?.heading,
-        event_action: "Transfers",
-      },
-    });
-  };
-
   return (
-    <div>
+    <Container>
+      <div className="relative">
+        <Line pinColour={"black"} Transfers={true} />
+      </div>
+
       {booking.booking_type === "Flight" ? (
         <FlightBooking
           booking={booking}
@@ -454,9 +418,15 @@ const TransferBooking = ({
           openNotification={openNotification}
           payment={payment}
           index={index}
+          _changeFlightHandler={_changeFlightHandler}
+          token={token}
+          setShowLoginModal={setShowLoginModal}
+          setDaySlabIndex={setDaySlabIndex}
+          setElementIndex={setElementIndex}
+          setTransferId={setTransferId}
         />
       ) : (
-        <div className="mt-3 flex flex-col">
+        <div className="mt-3 ml-1 md:ml-7 flex flex-col">
           <div className="flex flex-row w-full justify-between items-center">
             <span className="font-medium  inline">{booking.name}</span>
             <div className="flex flex-row gap-2 justify-center items-center">
@@ -601,29 +571,7 @@ const TransferBooking = ({
           </div>
         </div>
       )}
-
-      <TransferEditDrawer
-        addOrEdit={"transferAdd"}
-        itinerary_id={itinerary_id}
-        showDrawer={showDrawer}
-        setShowDrawer={setShowDrawer}
-        selectedTransferHeading={route?.heading}
-        origin={originCity}
-        destination={destinationCity}
-        alternateRoutes={alternateRoutes}
-        roundTripSuggestions={roundTripSuggestions}
-        multiCitySuggestions={multiCitySuggestions}
-        loadingAlternates={loadingAlternates}
-        setLoadingAlternates={setLoadingAlternates}
-        alternatesError={alternatesError}
-        day_slab_index={route?.element_location?.day_slab_index}
-        element_index={route?.element_index}
-        fetchData={fetchData}
-        setShowLoginModal={setShowLoginModal}
-        check_in={route?.check_in}
-        routeId={route?.transfers?.id}
-      />
-    </div>
+    </Container>
   );
 };
 
@@ -645,94 +593,52 @@ export default connect(mapStateToPros, mapDispatchToProps)(TransferBooking);
 
 const FlightBooking = ({
   booking,
-  notificationText,
   plan,
   tripsPage,
-  openNotification,
   payment,
   index,
+  _changeFlightHandler,
+  token,
+  setShowLoginModal,
+  setDaySlabIndex,
+  setElementIndex,
+  setTransferId,
 }) => {
-  let isPageWide = media("(min-width: 768px)");
   const isDesktop = useMediaQuery("(min-width:1024px)");
-  const [addbooking, setaddboking] = useState(booking.user_selected);
-  const [loading, setLoading] = useState(false);
-  const [showDrawer, setShowDrawer] = useState(false);
-  const [alternateRoutes, setAlternateRoutes] = useState({});
-  const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
-  const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
-  const [loadingAlternates, setLoadingAlternates] = useState(true);
-  const [alternatesError, setAlternatesError] = useState(null);
   const [flightImageFailed, setFlightImageFailed] = useState(null);
-  const [transferImageFailed, setTransferImageFailed] = useState(null);
-
-  useEffect(() => {
-    setaddboking(props.userSelected);
-  }, [props.userSelected]);
 
   const handleFlightImageFailed = () => {
     setFlightImageFailed(true);
   };
 
-  const handleTransferImageFailed = () => {
-    setTransferImageFailed(true);
-  };
-
-  function handleCheckboxChange(e, label) {
-    if (!props.payment?.is_registration_needed) {
-      if (props.token && props.payment?.user_allowed_to_pay) {
-        _updateSelectedTransfer();
-        e.stopPropagation();
-      } else {
-        props.openNotification({
-          text: "Oops, this action is not allowed on another user's itinerary.",
-          heading: "Error!",
-          type: "error",
-        });
-        props.setShowLoginModal();
-        e.stopPropagation();
-      }
-    }
-
-    logEvent({
-      action: "Transfer_Add_Change",
-      params: {
-        page: "Itinerary Page",
-        event_category: "Button Click",
-        event_label: label,
-        event_value: booking?.heading,
-        event_action: "Transfers",
-      },
-    });
-  }
-
   function HandleFlights(i, label) {
-    if (!props.token) {
-      return props.setShowLoginModal(true);
+    if (!token) {
+      return setShowLoginModal(true);
     }
 
-    let name = props.booking["name"];
-    let costings_breakdown = props.booking["costings_breakdown"];
-    let cost = props.booking["booking_cost"];
-    let itinerary_id = props.booking["itinerary_id"];
-    let itinerary_name = props.booking["itinerary_name"];
-    let tailored_id = props.booking["tailored_itinerary"];
-    let id = props.booking["id"];
-    let check_in = props.booking["check_in"];
-    let check_out = props.booking["check_out"];
+    let name = booking["name"];
+    let costings_breakdown = booking["costings_breakdown"];
+    let cost = booking["booking_cost"];
+    let itinerary_id = booking["itinerary_id"];
+    let itinerary_name = booking["itinerary_name"];
+    let tailored_id = booking["tailored_itinerary"];
+    let id = booking["id"];
+    let check_in = booking["check_in"];
+    let check_out = booking["check_out"];
     let pax = {
-      number_of_adults: props.booking["number_of_adults"],
-      number_of_children: props.booking["number_of_children"],
-      number_of_infants: props.booking["number_of_infants"],
+      number_of_adults: booking["number_of_adults"],
+      number_of_children: booking["number_of_children"],
+      number_of_infants: booking["number_of_infants"],
     };
-    let city = props.booking["city"];
-    let taxi_type = props.booking["taxi_type"];
-    let transfer_type = props.booking["transfer_type"];
-    let destination_city = props.booking["destination_city"];
-    let origin_iata = props.booking["origin_code"];
-    let destination_iata = props.booking["destination_code"];
-    let user_selected = props.userSelected;
+    let city = booking["city"];
+    let taxi_type = booking["taxi_type"];
+    let transfer_type = booking["transfer_type"];
+    let destination_city = booking["destination_city"];
+    let origin_iata = booking["origin_code"];
+    let destination_iata = booking["destination_code"];
+    let user_selected = booking.user_selected;
 
-    props._changeFlightHandler(
+    _changeFlightHandler(
       name,
       itinerary_id,
       tailored_id,
@@ -752,9 +658,9 @@ const FlightBooking = ({
       user_selected
     );
 
-    props.setDaySlabIndex(props?.route?.element_location?.day_slab_index);
-    props.setElementIndex(props?.route?.element_index);
-    props.setTransferId(props?.route?.transfers?.id);
+    setDaySlabIndex(props?.route?.element_location?.day_slab_index);
+    setElementIndex(props?.route?.element_index);
+    setTransferId(props?.route?.transfers?.id);
 
     logEvent({
       action: "Transfer_Add_Change",
@@ -767,212 +673,6 @@ const FlightBooking = ({
       },
     });
   }
-
-  function HandleTransport(i, label) {
-    if (!props.token) {
-      return props.setShowLoginModal(true);
-    }
-    let name = props.booking["name"];
-    let costings_breakdown = props.booking["costings_breakdown"];
-    let cost = props.booking["booking_cost"];
-    let itinerary_id = props.booking["itinerary_id"];
-    let itinerary_name = props.booking["itinerary_name"];
-    let tailored_id = props.booking["tailored_itinerary"];
-    let id = props.booking["id"];
-    let check_in = props.booking["check_in"];
-    let check_out = props.booking["check_out"];
-    let pax = {
-      number_of_adults: props.booking["number_of_adults"],
-      number_of_children: props.booking["number_of_children"],
-      number_of_infants: props.booking["number_of_infants"],
-    };
-    let city = props.booking["city"];
-    let taxi_type = props.booking["taxi_type"];
-    let transfer_type = props.booking["transfer_type"];
-    let destination_city = props.booking["destination_city"];
-    let origin_iata = props.booking["origin_city_iata_code"];
-    let destination_iata = props.booking["destination_city_iata_code"];
-    let origin = props.booking["origin"];
-    let destination = props.booking["destination"];
-
-    props._changeTaxiHandler(
-      name,
-      itinerary_id,
-      tailored_id,
-      id,
-      check_in,
-      check_out,
-      pax,
-      city,
-      itinerary_name,
-      cost,
-      costings_breakdown,
-      origin_iata,
-      destination_iata,
-      destination_city,
-      taxi_type,
-      transfer_type,
-      origin,
-      destination
-    );
-
-    props.setDaySlabIndex(props?.route?.element_location?.day_slab_index);
-    props.setElementIndex(props?.route?.element_index);
-    props.setTransferId(props?.route?.transfers?.id);
-
-    logEvent({
-      action: "Transfer_Add_Change",
-      params: {
-        page: "Itinerary Page",
-        event_category: "Button Click",
-        event_label: label,
-        event_value: booking.heading,
-        event_action: "Transfers",
-      },
-    });
-  }
-
-  function truncateString(str, maxLength) {
-    if (str.length > maxLength) {
-      return str.slice(0, maxLength - 3) + "...";
-    }
-    return str;
-  }
-
-  const _updateSelectedTransfer = () => {
-    setLoading(true);
-
-    let updated_bookings_arr = [
-      {
-        id: props.booking["id"],
-        booking_type: props.booking_type,
-        itinerary_type: "Tailored",
-        user_selected: !props?.userSelected,
-        itinerary_id: props.booking["itinerary_id"],
-        taxi_type: props.booking["taxi_type"],
-        transfer_type: props.booking["transfer_type"],
-
-        costings_breakdown: props.booking?.costings_breakdown,
-      },
-    ];
-    axiosbookingupdateinstance
-      .post("?booking_type=Taxi,Bus,Ferry,Train,Flight", updated_bookings_arr, {
-        headers: {
-          Authorization: `Bearer ${props.token}`,
-        },
-      })
-      .then((res) => {
-        props._updateTaxiBookingHandler(res.data.bookings);
-
-        setTimeout(function () {
-          props.getPaymentHandler();
-        }, 1000);
-        setaddboking(!addbooking);
-        setLoading(false);
-        props.openNotification({
-          text: "Your Booking updated successfully!",
-          heading: "Success!",
-          type: "success",
-        });
-      })
-      .catch((err) => {
-        if (err.response) {
-          if (err.response.status === 400) {
-            props.openNotification({
-              text: err.response.data.message,
-              heading: "Error!",
-              type: "error",
-            });
-          } else
-            props.openNotification({
-              text: "There seems to be a problem, please try again!",
-              heading: "Error!",
-              type: "error",
-            });
-        }
-        setLoading(false);
-        props.openNotification({
-          text: "There seems to be a problem, please try again!",
-          heading: "Error!",
-          type: "error",
-        });
-      });
-  };
-
-  const roundTripSuggestion = () => {
-    setLoadingAlternates(true);
-    axiosRoundTripInstance
-      .get(`?itinerary_id=${props?.itinerary_id}`)
-      .then((response) => {
-        const results = response.data;
-
-        for (let i = 0; i < results.length; i++) {
-          if (
-            results[i].success &&
-            results[i].transfer_type === "Intercity round-trip"
-          ) {
-            setRoundTripSuggestions(results[i]);
-          } else if (
-            results[i].success &&
-            results[i].transfer_type === "Multicity"
-          ) {
-            setMultiCitySuggestions(results[i]);
-          }
-        }
-        setLoadingAlternates(false);
-      })
-      .catch((err) => {
-        console.log("[ERROR][TransferEdit]: ", err);
-      });
-  };
-
-  const handleTransferEdit = () => {
-    setShowDrawer(true);
-    setLoadingAlternates(true);
-    setAlternatesError(null);
-    roundTripSuggestion();
-    routeAlternates
-      .get(`/?route_id=` + props?.route?.transfers?.id, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        if (response.status === 200 && response.data.routes.length > 0) {
-          const data = response.data;
-          setAlternateRoutes(data);
-        } else {
-          setAlternatesError(
-            "No route found, please get in touch with us to complete this booking!"
-          );
-        }
-        setLoadingAlternates(false);
-      })
-      .catch((err) => {
-        setLoadingAlternates(false);
-        if (err.response.status === 404) {
-          setAlternatesError(
-            "No route found, please get in touch with us to complete this booking!"
-          );
-        } else {
-          setAlternatesError(
-            "There seems to be problem, please try again! adsfasdf"
-          );
-        }
-      });
-
-    logEvent({
-      action: "Transfer_Add_Change",
-      params: {
-        page: "Itinerary Page",
-        event_category: "Button Click",
-        event_label: "Add Transfer",
-        event_value: booking?.heading,
-        event_action: "Transfers",
-      },
-    });
-  };
 
   var adult;
   try {
@@ -984,18 +684,10 @@ const FlightBooking = ({
   } catch {}
 
   return (
-    <div className="mt-3 lg:ml-7">
+    <div className="mt-3 ml-1 md:ml-7">
       <div className="flex flex-row w-full justify-between items-center">
         <span className="font-medium  inline">{booking.heading}</span>
         <div className="flex flex-row gap-2 justify-center items-center ml-auto">
-          <div
-            className={`lg:bottom-[3.6rem] hidden`}
-            onClick={(e) => {
-              handleCheckboxChange(e);
-            }}
-          >
-            <CheckboxFormComponent checked={addbooking} />{" "}
-          </div>
           <div className=" text-md font-semibold  text-[#277004] ">
             Included
           </div>

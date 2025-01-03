@@ -627,18 +627,41 @@ const TransfersContainer = (props) => {
       ></TaxiModal>
 
       {props?.transferBookings?.map((booking, index) => (
-        <TransferBooking
-          key={booking.id}
-          index={index}
-          booking={booking}
-          payment={props?.payment}
-          route={props?.routes[i + 1]}
-          itinerary_id={props?.itinerary_id}
-          fetchData={props.fetchData}
-          originCity={props.routes[i].city_name}
-          destinationCity={props.routes[i + 2]?.city_name}
-          setShowLoginModal={props?.setShowLoginModal}
-        />
+        <>
+          <PinSection
+            key={index}
+            transfersPin
+            setCurrentPopup={false}
+            city={booking.source_address.shortName}
+            index={index}
+          ></PinSection>
+          <TransferBooking
+            key={booking.id}
+            index={index}
+            booking={booking}
+            payment={props?.payment}
+            token={props.token}
+            route={props?.routes[index + 1]}
+            setShowLoginModal={props?.setShowLoginModal}
+            _changeTaxiHandler={_changeTaxiHandler}
+            setDaySlabIndex={setDaySlabIndex}
+            setElementIndex={setElementIndex}
+            setTransferId={setTransferId}
+            _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+            getPaymentHandler={props.getPaymentHandler}
+            _changeFlightHandler={_changeFlightHandler}
+          />
+
+          {index === props.transferBookings.length - 1 && (
+            <PinSection
+              key={index}
+              transfersPin
+              setCurrentPopup={false}
+              city={booking.destination_address.shortName}
+              index={index}
+            ></PinSection>
+          )}
+        </>
       ))}
 
       {/* {(props?.transferBookings || props?.routes.length > 1) && (
