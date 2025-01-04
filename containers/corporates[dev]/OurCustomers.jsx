@@ -99,10 +99,10 @@ export default function OurCustomers(props) {
   return (
     <div className="flex flex-col gap-5 px-3">
       <div className="flex flex-col gap-3 items-center">
-        <div className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]">
+        <div className="text-center text-[27px] md:text-[40px] font-[700] md:leading-[60px]">
           What Our Customers Say About Us?
         </div>
-        <div className="text-[16px] font-[350] leading-[24px]">
+        <div className="text-center text-[16px] font-[350] leading-[24px]">
           Hear from our travelers! Discover how we've made their journeys
           unforgettable through personalized experiences and seamless service.
         </div>

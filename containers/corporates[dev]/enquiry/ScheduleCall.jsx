@@ -95,15 +95,25 @@ export default function ScheduleCall(props) {
   const [time, setTime] = useState("10:00");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [personError, setPersonError] = useState(false);
-  const [phoneError, setPhoneError] = useState(false);
-  const [companyError, setCompanyError] = useState(false);
-  const [emailError, setEmailError] = useState(false);
+  const [personError, setPersonError] = useState(null);
+  const [phoneError, setPhoneError] = useState(null);
+  const [companyError, setCompanyError] = useState(null);
+  const [emailError, setEmailError] = useState(null);
 
   const handleContinue = () => {
     resetErrors();
     setSubmitted(false);
     setLoading(true);
+
+    const validEmail = validateEmail(email);
+    const validPhone = validatePhone(phone);
+
+    if (!validEmail || !validPhone) {
+      setSubmitted(false);
+      setLoading(false);
+      return;
+    }
+
     axiosbdinstance
       .post("/", {
         organization_name: companyName,
@@ -141,11 +151,35 @@ export default function ScheduleCall(props) {
       });
   };
 
+  function validateEmail(email) {
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    if (!emailPattern.test(email)) {
+      setEmailError("Enter a valid email address.");
+      return false;
+    } else {
+      setEmailError(null);
+      return true;
+    }
+  }
+
+  function validatePhone(phone) {
+    const phonePattern = /^(\+?[0-9]{1,3} ?)?[0-9]{10}$/;
+
+    if (!phonePattern.test(phone)) {
+      setPhoneError("Enter a valid phone number.");
+      return false;
+    } else {
+      setPhoneError(null);
+      return true;
+    }
+  }
+
   function resetErrors() {
-    setPersonError(false);
-    setPhoneError(false);
-    setCompanyError(false);
-    setEmailError(false);
+    setPersonError(null);
+    setPhoneError(null);
+    setCompanyError(null);
+    setEmailError(null);
   }
 
   function resetForm() {
@@ -169,10 +203,14 @@ export default function ScheduleCall(props) {
   return (
     <div
       ref={props.modalRef}
-      className={`${props.banner ? 'bg-gray-100/60' : 'bg-gray-100'}  space-y-4 w-[90%] mx-auto text-sm text-black rounded-lg p-3`}
+      className={`${
+        props.banner ? "bg-gray-100/60" : "bg-gray-100"
+      }  space-y-4 w-[90%] mx-auto text-sm text-black rounded-lg p-3`}
     >
       <div>
-        <h1 className="text-lg font-bold border-b-2">Schedule a callback now!</h1>
+        <h1 className="text-lg font-bold border-b-2">
+          Schedule a callback now!
+        </h1>
       </div>
 
       <div className="">
@@ -189,7 +227,7 @@ export default function ScheduleCall(props) {
               onChange={(e) => setName(e.target.value)}
             ></input>
             {personError && (
-              <div className="text-red-500 text-sm">This feild is required</div>
+              <div className="text-red-500 text-sm">{personError}</div>
             )}
           </div>
 
@@ -197,25 +235,27 @@ export default function ScheduleCall(props) {
             <input
               className="w-full p-2 rounded-md focus:outline-none"
               type="email"
+              pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             ></input>
             {emailError && (
-              <div className="text-red-500 text-sm">This feild is required</div>
+              <div className="text-red-500 text-sm">{emailError}</div>
             )}
           </div>
 
           <div>
             <input
               className="w-full p-2 rounded-md focus:outline-none"
-              type="text"
+              type="tel"
+              pattern="(\+?[0-9]{1,3} ?)?[0-9]{10}"
               placeholder="Phone Number"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
             ></input>
             {phoneError && (
-              <div className="text-red-500 text-sm">This feild is required</div>
+              <div className="text-red-500 text-sm">{phoneError}</div>
             )}
           </div>
 
@@ -228,7 +268,7 @@ export default function ScheduleCall(props) {
               onChange={(e) => setCompanyName(e.target.value)}
             ></input>
             {companyError && (
-              <div className="text-red-500 text-sm">This feild is required</div>
+              <div className="text-red-500 text-sm">{companyError}</div>
             )}
           </div>
         </div>

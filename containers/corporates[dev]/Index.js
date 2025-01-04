@@ -141,7 +141,7 @@ const AffiliatePage = (props) => {
         {props.locations && props.locations.length ? (
           <div className="mt-5">
             <div className="flex flex-col pb-5 pl-3 pr-3 md:p-5 gap-3 items-center">
-              <div className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]">
+              <div className="text-center text-[27px] md:text-[40px] font-[700] md:leading-[60px]">
                 Destinations in India for Corporate Getaways
               </div>
               <SecondaryHeading className="text-center">

@@ -12,8 +12,8 @@ const FullImgContent = (props) => {
 
   return (
     <div className="font-lexend flex justify-between text-white text-[27px] md:text-[35px] font-[300] pl-[30px] md:px-[10%] pt-[60px] md:pt-[104px]">
-      <div className="md:w-[50%] md:my-auto md:space-y-10">
-        <div className="font-lexend text-[40px]">
+      <div className="md:w-[50%] md:my-auto space-y-3 md:space-y-10">
+        <div className="font-lexend text-[36px] md:text-[40px]">
           <span className="text-[#F7E700] font-[600]">TheTarzanWay</span> For
           Business
         </div>
