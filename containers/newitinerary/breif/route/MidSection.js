@@ -21,9 +21,9 @@ const Container = styled.div`
 const Line = styled.hr`
   background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
     ${(props) =>
-    props.pinColour
-      ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
-      : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
+      props.pinColour
+        ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
+        : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
 
   background-size: 12px 3px, 100% 3px;
   color: #c80000;
@@ -58,26 +58,30 @@ const Text = styled.div`
 const MidSection = (props) => {
   const [showDrawer, setShowDrawer] = useState(false);
   const [addOrEdit, setAddOrEdit] = useState(null);
-  const [selectedBooking, setSelectedBooking] = useState(props.Bookings ? props?.bookings[0] : {});
+  const [selectedBooking, setSelectedBooking] = useState(
+    props.Bookings ? props?.bookings[0] : {}
+  );
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showTaxiModal, setShowTaxiModal] = useState(false);
 
-
   useEffect(() => {
-    if (props.flightBookings && props.transferBookings) {
+    if (props.transferBookings) {
       let booking = null;
       if (props.bookings) {
-        const allBookings = [...props.flightBookings, ...props.transferBookings]
-        booking = allBookings.find(book => book.id === props?.bookings[0].id)
-
+        booking = props.transferBookings.find(
+          (book) => book.id === props?.bookings[0].id
+        );
       }
       if (booking) {
         setSelectedBooking({
           ...selectedBooking,
           name: booking["name"],
+          costings_breakdown: booking["transfer_details"],
+          cost: booking["price"],
           itinerary_id: booking["itinerary_id"],
-          id: booking["id"],
+          itinerary_name: booking["itinerary_name"],
           tailored_id: booking["tailored_itinerary"],
+          id: booking["id"],
           check_in: booking["check_in"],
           check_out: booking["check_out"],
           pax: {
@@ -86,35 +90,31 @@ const MidSection = (props) => {
             number_of_infants: booking["number_of_infants"],
           },
           city: booking["city"],
-          itinerary_name: booking["itinerary_name"],
-          cost: Math.round(booking["booking_cost"] / 100),
-          costings_breakdown: booking["costings_breakdown"],
-          origin_iata: booking["origin_code"],
-          destination_iata: booking["destination_code"],
-          user_selected: props.bookings[0].user_selected,
-          destination_city: booking["destination_city"],
           taxi_type: booking["taxi_type"],
           transfer_type: booking["transfer_type"],
-          origin: booking["origin"],
-          destination: booking["destination"],
-        })
+          destination_city: booking["destination_address"]["shortName"],
+          origin_iata: booking["origin_city_iata_code"],
+          destination_iata: booking["destination_city_iata_code"],
+          origin: booking["source_address"],
+          destination: booking["destination_address"],
+        });
       }
     }
-  }, [props.flightBookings, props.transferBookings])
+  }, [props.flightBookings, props.transferBookings]);
 
   const getBooking = (bookingId) => {
     let booking = null;
     if (props.flightBookings) {
-      booking = props.flightBookings.find(book => book.id === bookingId)
+      booking = props.flightBookings.find((book) => book.id === bookingId);
     }
 
-    if (booking) return booking
+    if (booking) return booking;
 
     if (props.transferBookings) {
-      booking = props.transferBookings.find(book => book.id === bookingId)
+      booking = props.transferBookings.find((book) => book.id === bookingId);
     }
-    return booking
-  }
+    return booking;
+  };
 
   let hidemidsection = props.hidemidsection;
   if (props?.route && props?.route?.modes && props?.route?.modes.length)
@@ -146,7 +146,7 @@ const MidSection = (props) => {
     } else {
       handleTransferEdit(e, "Edit Transfer");
     }
-  }
+  };
 
   return (
     <Container className="font-lexend" hidemidsection={hidemidsection}>
@@ -158,9 +158,9 @@ const MidSection = (props) => {
         <>
           {props.version == "v2" ? (
             props.route?.transfers &&
-              props.route?.transfers?.id &&
-              props.route?.transfers?.id !== "" &&
-              (!props.bookings || props.bookings.length === 0) ? (
+            props.route?.transfers?.id &&
+            props.route?.transfers?.id !== "" &&
+            (!props.bookings || props.bookings.length === 0) ? (
               <Text>
                 <button
                   id="transferAdd"
@@ -230,8 +230,8 @@ const MidSection = (props) => {
                 )}
 
                 {props.route?.modes &&
-                  props.route?.modes.length &&
-                  props.duration ? (
+                props.route?.modes.length &&
+                props.duration ? (
                   <div className="inline-flex items-center gap-2">
                     <div>: {props.duration}</div>
                   </div>

@@ -188,21 +188,27 @@ const Container = styled.div`
   }
 `;
 
+const CITY_COLOR_CODES = [
+  "#359EBF", // shade of blue
+  "#F0C631", // shade of yellow
+  "#BF3535", // shade of red
+  "#47691e", // shade of green
+  "#cc610a", // shade of orange
+  "#008080", // shade of teal
+  "#7d5e7d", // shade of purple
+];
+
 const TransferBooking = ({
   index,
   booking,
   plan,
   payment,
   token,
-  route,
   tripsPage,
   notificationText,
   openNotification,
   setShowLoginModal,
   _changeTaxiHandler,
-  setDaySlabIndex,
-  setElementIndex,
-  setTransferId,
   _updateTaxiBookingHandler,
   getPaymentHandler,
   _changeFlightHandler,
@@ -254,8 +260,8 @@ const TransferBooking = ({
       return setShowLoginModal(true);
     }
     let name = booking["name"];
-    let costings_breakdown = booking["costings_breakdown"];
-    let cost = booking["booking_cost"];
+    let costings_breakdown = booking["transfer_details"];
+    let cost = booking["price"];
     let itinerary_id = booking["itinerary_id"];
     let itinerary_name = booking["itinerary_name"];
     let tailored_id = booking["tailored_itinerary"];
@@ -270,11 +276,11 @@ const TransferBooking = ({
     let city = booking["city"];
     let taxi_type = booking["taxi_type"];
     let transfer_type = booking["transfer_type"];
-    let destination_city = booking["destination_city"];
+    let destination_city = booking["destination_address"]["shortName"];
     let origin_iata = booking["origin_city_iata_code"];
     let destination_iata = booking["destination_city_iata_code"];
-    let origin = booking["origin"];
-    let destination = booking["destination"];
+    let origin = booking["source_address"];
+    let destination = booking["destination_address"];
 
     _changeTaxiHandler(
       name,
@@ -296,10 +302,6 @@ const TransferBooking = ({
       origin,
       destination
     );
-
-    setDaySlabIndex(route?.element_location?.day_slab_index);
-    setElementIndex(route?.element_index);
-    setTransferId(route?.transfers?.id);
 
     logEvent({
       action: "Transfer_Add_Change",
@@ -406,7 +408,7 @@ const TransferBooking = ({
   return (
     <Container>
       <div className="relative">
-        <Line pinColour={"black"} Transfers={true} />
+        <Line pinColour={CITY_COLOR_CODES[index % 7]} Transfers={true} />
       </div>
 
       {booking.booking_type === "Flight" ? (
@@ -421,9 +423,6 @@ const TransferBooking = ({
           _changeFlightHandler={_changeFlightHandler}
           token={token}
           setShowLoginModal={setShowLoginModal}
-          setDaySlabIndex={setDaySlabIndex}
-          setElementIndex={setElementIndex}
-          setTransferId={setTransferId}
         />
       ) : (
         <div className="mt-3 ml-1 md:ml-7 flex flex-col">
@@ -600,9 +599,6 @@ const FlightBooking = ({
   _changeFlightHandler,
   token,
   setShowLoginModal,
-  setDaySlabIndex,
-  setElementIndex,
-  setTransferId,
 }) => {
   const isDesktop = useMediaQuery("(min-width:1024px)");
   const [flightImageFailed, setFlightImageFailed] = useState(null);
@@ -657,10 +653,6 @@ const FlightBooking = ({
       transfer_type,
       user_selected
     );
-
-    setDaySlabIndex(props?.route?.element_location?.day_slab_index);
-    setElementIndex(props?.route?.element_index);
-    setTransferId(props?.route?.transfers?.id);
 
     logEvent({
       action: "Transfer_Add_Change",

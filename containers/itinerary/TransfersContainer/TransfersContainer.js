@@ -61,6 +61,16 @@ const Line = styled.hr`
   }
 `;
 
+const CITY_COLOR_CODES = [
+  "#359EBF", // shade of blue
+  "#F0C631", // shade of yellow
+  "#BF3535", // shade of red
+  "#47691e", // shade of green
+  "#cc610a", // shade of orange
+  "#008080", // shade of teal
+  "#7d5e7d", // shade of purple
+];
+
 const TransfersContainer = (props) => {
   let locationsArr = [];
 
@@ -634,6 +644,7 @@ const TransfersContainer = (props) => {
             setCurrentPopup={false}
             city={booking.source_address.shortName}
             index={index}
+            pinColour={index === 0 ? null : CITY_COLOR_CODES[index % 7]}
           ></PinSection>
           <TransferBooking
             key={booking.id}
@@ -641,12 +652,8 @@ const TransfersContainer = (props) => {
             booking={booking}
             payment={props?.payment}
             token={props.token}
-            route={props?.routes[index + 1]}
             setShowLoginModal={props?.setShowLoginModal}
             _changeTaxiHandler={_changeTaxiHandler}
-            setDaySlabIndex={setDaySlabIndex}
-            setElementIndex={setElementIndex}
-            setTransferId={setTransferId}
             _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
             getPaymentHandler={props.getPaymentHandler}
             _changeFlightHandler={_changeFlightHandler}
@@ -659,63 +666,11 @@ const TransfersContainer = (props) => {
               setCurrentPopup={false}
               city={booking.destination_address.shortName}
               index={index}
+              pinColour={null}
             ></PinSection>
           )}
         </>
       ))}
-
-      {/* {(props?.transferBookings || props?.routes.length > 1) && (
-        <>
-          {locationsArr}
-
-          {props?.routes && props?.routes.length > 1 && (
-            <PinSection
-              transfersPin
-              setCurrentPopup={false}
-              dayId={
-                props.breif.city_slabs[props.breif.city_slabs.length - 1]
-                  .day_slab_location.start_day_slab_index
-              }
-              cityData={
-                props.breif.city_slabs[props.breif.city_slabs.length - 1]
-              }
-              dayslab={props.dayslab}
-              lat={
-                props.breif.city_slabs[props.breif.city_slabs.length - 1].lat
-              }
-              long={
-                props.breif.city_slabs[props.breif.city_slabs.length - 1].long
-              }
-              Mapid={
-                props.breif.city_slabs[props.breif.city_slabs.length - 1]
-                  .gmaps_place_id
-              }
-              city={
-                props.breif.city_slabs[props.breif.city_slabs.length - 1]
-                  .city_name
-              }
-              cityId={
-                props.breif.city_slabs[props.breif.city_slabs.length - 1]
-                  .city_id
-              }
-              duration={
-                props.breif.city_slabs[props.breif.city_slabs.length - 1]
-                  .duration
-                  ? props.breif.city_slabs[props.breif.city_slabs.length - 1]
-                      .duration +
-                    NoOfNights(
-                      props.breif.city_slabs[props.breif.city_slabs.length - 1]
-                        .duration
-                    )
-                  : null
-              }
-              pinColour={
-                props.breif.city_slabs[props.breif.city_slabs.length - 1].color
-              }
-            ></PinSection>
-          )}
-        </>
-      )} */}
 
       <TransferEditDrawer
         addOrEdit={"transferAdd"}
@@ -754,7 +709,6 @@ const mapStateToPros = (state) => {
     emailfailmessage: state.auth.emailfailmessage,
     loginmessage: state.auth.loginmessage,
     hideloginclose: state.auth.hideloginclose,
-    // transferBookings: state.Bookings.transferBookings,
   };
 };
 

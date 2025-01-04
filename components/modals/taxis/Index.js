@@ -72,74 +72,82 @@ const Booking = (props) => {
       trips: [
         {
           start_date: props.selectedBooking.check_in,
-          number_of_travellers: props?.plan?.number_of_adults + props?.plan?.number_of_children,
+          number_of_travellers:
+            props?.plan?.number_of_adults + props?.plan?.number_of_children,
           trip_type: "one-way",
           origin: {
             city_id: props.selectedBooking?.origin?.city_id,
             hub_id: null,
             gmaps_place_id: null,
-            address: props.selectedBooking?.origin?.city_name,
+            address: props.selectedBooking?.origin?.shortName
+              ? props.selectedBooking?.origin?.shortName
+              : props.selectedBooking?.origin?.city_name,
             coordinates: {
-              latitude: null,
-              longitude: null
-            }
+              latitude: props.selectedBooking?.origin?.lat ?? null,
+              longitude: props.selectedBooking?.origin?.lng ?? null,
+            },
           },
           destination: {
             city_id: props.selectedBooking?.destination?.city_id,
             hub_id: null,
             gmaps_place_id: null,
-            address: props.selectedBooking?.destination?.city_name,
+            address: props.selectedBooking?.destination?.shortName
+              ? props.selectedBooking?.destination?.shortName
+              : props.selectedBooking?.destination?.city_name,
             coordinates: {
-              latitude: null,
-              longitude: null
-            }
+              latitude: props.selectedBooking?.destination?.lat ?? null,
+              longitude: props.selectedBooking?.destination?.lng ?? null,
+            },
+          },
+        },
+      ],
+    };
+
+    axiosTaxiSearch
+      .post("", requestData)
+      .then((res) => {
+        if (res.data.success) {
+          setNoResults(false);
+
+          let options = [];
+          for (var i = 0; i < res.data?.data?.quotes?.length; i++) {
+            options.push(
+              <TaxiSearched
+                setHideBookingModal={props.setHideBookingModal}
+                _updateSearchedTaxi={_updateSearchedTaxi}
+                selectedBooking={props.selectedBooking}
+                getPaymentHandler={props.getPaymentHandler}
+                _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+                data={{
+                  ...res.data.data.quotes[i],
+                  distance: res.data.data.distance,
+                  duration: res.data.data.duration,
+                  trace_id: res.data.trace_id,
+                  source: res.data.data?.source,
+                }}
+                handleTaxiSelect={props.handleTaxiSelect}
+              ></TaxiSearched>
+            );
           }
+          if (!options.length) setNoResults(true);
+          setOptionsJSX(options);
+        } else {
+          setNoResults(true);
+          setViewMoreStatus(false);
+          setOptionsJSX([]);
         }
-      ]
-    }
-
-    axiosTaxiSearch.post("", requestData).then(res => {
-      if (res.data.success) {
-        setNoResults(false);
-
-        let options = [];
-        for (var i = 0; i < res.data?.data?.quotes?.length; i++) {
-          options.push(
-            <TaxiSearched
-              setHideBookingModal={props.setHideBookingModal}
-              _updateSearchedTaxi={_updateSearchedTaxi}
-              selectedBooking={props.selectedBooking}
-              getPaymentHandler={props.getPaymentHandler}
-              _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-              data={{
-                ...res.data.data.quotes[i],
-                distance: res.data.data.distance,
-                duration: res.data.data.duration,
-                trace_id: res.data.trace_id,
-                source: res.data.data?.source,
-              }}
-              handleTaxiSelect={props.handleTaxiSelect}
-            ></TaxiSearched>
-          );
-        }
-        if (!options.length) setNoResults(true);
-        setOptionsJSX(options);
-      } else {
-        setNoResults(true);
-        setViewMoreStatus(false);
-        setOptionsJSX([]);
-      }
-      setLoading(false);
-    }).catch(err => {
-      setLoading(false);
-      setError(true);
-      props.openNotification({
-        type: "error",
-        text: "There seems to be a problem, please try again later!",
-        heading: "Error!",
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        setError(true);
+        props.openNotification({
+          type: "error",
+          text: "There seems to be a problem, please try again later!",
+          heading: "Error!",
+        });
       });
-    })
-  }
+  };
 
   const _updateSearchedTaxi = ({
     itinerary_id,
@@ -240,8 +248,8 @@ const Booking = (props) => {
                     {optionsJSX.length
                       ? optionsJSX
                       : moreOptionsJSX.length
-                        ? moreOptionsJSX
-                        : null}
+                      ? moreOptionsJSX
+                      : null}
                     {loading && !optionsJSX.length ? <Skeleton /> : null}
                   </div>
 
@@ -274,8 +282,8 @@ const Booking = (props) => {
               {noResults ? (
                 <OptionsContainer className="font-lexend center-div text-center">
                   Oops, we couldn't find what you were searching but we are
-                  already adding new and approved accommodations to our
-                  database everyday!
+                  already adding new and approved accommodations to our database
+                  everyday!
                 </OptionsContainer>
               ) : null}
 
@@ -293,8 +301,8 @@ const Booking = (props) => {
           showDrawer={showTransferEditDrawer}
           setShowDrawer={setShowTransferEditDrawer}
           selectedTransferHeading={props.selectedTransferHeading}
-          origin={props.selectedBooking?.city}
-          destination={props.selectedBooking?.destination_city}
+          origin={props.selectedBooking?.origin?.shortName}
+          destination={props.selectedBooking?.destination?.shortName}
           day_slab_index={props.daySlabIndex}
           element_index={props.elementIndex}
           fetchData={props?.fetchData}
