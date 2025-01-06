@@ -109,7 +109,9 @@ const ActivitiesBookings = (props) => {
                       height="100%"
                       leftalign
                       widthmobile="100%"
-                      url={booking.images[0]?.image}
+                      url={
+                        booking.image ? booking.image : booking.activity.image
+                      }
                     ></ImageLoader>
                     {booking.star_category ? (
                       <div
@@ -123,25 +125,26 @@ const ActivitiesBookings = (props) => {
                     <div className="text-2xl font-semibold ">
                       {booking?.name}
                     </div>
+
                     <div className="flex flex-col gap-2 -mt-2">
                       <div className="text-sm font-normal">
-                        {booking?.costings_breakdown?.activity_data?.address}
+                        {booking?.activity?.address}
                       </div>
-                      {booking?.costings_breakdown?.activity_data?.rating ? (
+                      {booking?.activity?.rating ? (
                         <div className="gap-1 flex flex-row  items-center">
                           <div className="flex flex-row text-[#FFD201]">
                             {starRating(
-                              booking?.costings_breakdown?.activity_data?.rating
+                              booking?.activity?.rating
                             )}
                           </div>
                           <div>
-                            {booking?.costings_breakdown?.activity_data?.rating}
+                            {booking?.activity?.rating}
                           </div>
-                          {booking?.costings_breakdown?.activity_data
+                          {booking?.activity
                             ?.user_ratings_total && (
                             <div className="text-sm text-[#7A7A7A] font-medium underline">
                               {
-                                booking?.costings_breakdown?.activity_data
+                                booking?.activity
                                   ?.user_ratings_total
                               }{" "}
                               Reviews
@@ -163,11 +166,11 @@ const ActivitiesBookings = (props) => {
                         ))
                       ) : (
                         <div className="font-light">
-                          {booking?.costings_breakdown?.activity_data?.short_description.slice(
+                          {booking?.activity?.short_description.slice(
                             0,
                             250
                           )}
-                          {booking?.costings_breakdown?.activity_data
+                          {booking?.activity
                             ?.short_description.length ? (
                             <button
                               id={index}
@@ -193,7 +196,7 @@ const ActivitiesBookings = (props) => {
                           </div>
                         </div>
                       )}
-                      {booking?.ideal_duration_hours_text && (
+                      {booking.activity?.ideal_duration_hours_text && (
                         <div className="flex flex-row gap-1 items-center">
                           <BiTimeFive className="text-md font-[400] line-clamp-1 text-[#7A7A7A]" />
                           <div>
@@ -204,7 +207,7 @@ const ActivitiesBookings = (props) => {
                         </div>
                       )}
 
-                      {booking?.costings_breakdown?.no_of_tickets && (
+                      {/* {booking?.costings_breakdown?.no_of_tickets && (
                         <div>
                           <div className="flex flex-row gap-2 items-center">
                             <IoTicket className="text-sm font-[400] line-clamp-1 text-[#7A7A7A]" />
@@ -216,10 +219,10 @@ const ActivitiesBookings = (props) => {
                             </div>
                           </div>
                         </div>
-                      )}
+                      )} */}
                     </div>
 
-                    {booking.costings_breakdown[0] && (
+                    {/* {booking.costings_breakdown[0] && (
                       <div>
                         <div
                           className={`flex ${
@@ -255,7 +258,7 @@ const ActivitiesBookings = (props) => {
                           </div>
                         ) : null}
                       </div>
-                    )}
+                    )} */}
 
                     <div className="flex flex-row gap-3 items-center w-full">
                       {booking.accommodation && (

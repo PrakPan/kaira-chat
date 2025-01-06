@@ -15,6 +15,7 @@ import { openNotification } from "../../../store/actions/notification";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import Button from "../../../components/ui/button/Index";
 import { logEvent } from "../../../services/ga/Index";
+import { differenceInMinutes, format, parseISO } from "date-fns";
 
 const Plan = styled.div`
   position: absolute;
@@ -666,6 +667,47 @@ const FlightBooking = ({
     });
   }
 
+  function formatDate(dateString) {
+    const date = new parseISO(dateString);
+
+    if (isNaN(date.getTime())) {
+      return "";
+    }
+    return format(date, "EEE, dd MMM");
+  }
+
+  function createCacheKey(checkIn, checkOut) {
+    return `${checkIn}-${checkOut}`;
+  }
+
+  function processBookingTimes(checkIn, checkOut) {
+    const cache = processBookingTimes.cache || (processBookingTimes.cache = {});
+
+    const cacheKey = createCacheKey(checkIn, checkOut);
+    if (cache[cacheKey]) {
+      return cache[cacheKey];
+    }
+
+    const checkInTime = format(new Date(checkIn), "hh:mma");
+    const checkOutTime = format(new Date(checkOut), "hh:mma");
+
+    const durationInMinutes = differenceInMinutes(
+      new Date(checkOut),
+      new Date(checkIn)
+    );
+    const durationHours = Math.floor(durationInMinutes / 60);
+    const durationMinutes = durationInMinutes % 60;
+
+    const result = {
+      checkInTime: checkInTime,
+      checkOutTime: checkOutTime,
+      duration: `${durationHours}h ${durationMinutes}m`,
+    };
+
+    cache[cacheKey] = result;
+    return result;
+  }
+
   var adult;
   try {
     if (booking?.number_of_adults > 1) adult = " Adults";
@@ -678,7 +720,7 @@ const FlightBooking = ({
   return (
     <div className="mt-3 ml-1 md:ml-7">
       <div className="flex flex-row w-full justify-between items-center">
-        <span className="font-medium  inline">{booking.heading}</span>
+        <span className="font-medium  inline">{booking.name}</span>
         <div className="flex flex-row gap-2 justify-center items-center ml-auto">
           <div className=" text-md font-semibold  text-[#277004] ">
             Included
@@ -687,80 +729,73 @@ const FlightBooking = ({
       </div>
 
       <div
-        id={booking.booking.id}
-        className={`mb-4 mt-2 lg:block ${
-          !booking.user_selected
-            ? "mb-4 mt-3 lg:block flex flex-col-reverse p-3 py-4"
-            : "mb-4 mt-2 lg:block flex flex-col p-3 "
-        }    cursor-pointer relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA] lg:p-5 `}
+        id={booking.id}
+        className={`mb-4 mt-2 lg:block ${"mb-4 mt-2 lg:block flex flex-col p-3 "} cursor-pointer relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA] lg:p-5 `}
       >
-        <div className="flex flex-row gap-4    ">
-          {booking.user_selected && (
-            <LogoContainer>
-              <div className="">
-                {booking.booking?.airline_code && !flightImageFailed ? (
-                  <ImageContainer>
-                    <ImageLoader
-                      className=""
-                      url={`https://imgak.mmtcdn.com/flights/assets/media/dt/common/icons/${booking?.airline_code}.png`}
-                      leftalign
-                      dimensions={{ width: 800, height: 800 }}
-                      borderRadius="100%"
-                      height="4rem"
-                      width="4rem"
-                      widthmobile="4rem"
-                      onfail={handleFlightImageFailed}
-                    ></ImageLoader>
-                  </ImageContainer>
-                ) : (
-                  <TransportIconFetcher
-                    TransportMode={booking.booking_type}
-                    Instyle={{
-                      fontSize: "2.75rem",
-                      height: "3rem",
-                      width: "5rem",
-                      color: "black",
+        <div className="flex flex-row gap-4">
+          <LogoContainer>
+            <div className="">
+              {booking?.airline_code && !flightImageFailed ? (
+                <ImageContainer>
+                  <ImageLoader
+                    className=""
+                    url={`https://imgak.mmtcdn.com/flights/assets/media/dt/common/icons/${booking?.airline_code}.png`}
+                    leftalign
+                    dimensions={{ width: 800, height: 800 }}
+                    borderRadius="100%"
+                    height="4rem"
+                    width="4rem"
+                    widthmobile="4rem"
+                    onfail={handleFlightImageFailed}
+                  ></ImageLoader>
+                </ImageContainer>
+              ) : (
+                <TransportIconFetcher
+                  TransportMode={booking.booking_type}
+                  Instyle={{
+                    fontSize: "2.75rem",
+                    height: "3rem",
+                    width: "5rem",
+                    color: "black",
+                  }}
+                />
+              )}
+            </div>
+            <div>
+              {booking?.airline_code && (
+                <EllipsisTruncation
+                  text={booking.airline_name}
+                  maxCharacters={8}
+                  tooltipText={booking.airline_name}
+                  tooltipPosition="top"
+                />
+              )}
+
+              {!isDesktop && (
+                <div>
+                  <div
+                    className="min-w-max text-[0.8rem]"
+                    style={{
+                      textAlign: "center",
+                      marginTop: "-0.3rem",
+                      fontWeight: "300",
                     }}
-                  />
-                )}
-              </div>
-              <div>
-                {booking?.airline_code && (
-                  <EllipsisTruncation
-                    text={booking.airline_name}
-                    maxCharacters={8}
-                    tooltipText={booking.airline_name}
-                    tooltipPosition="top"
-                  />
-                )}
-                {!isDesktop && (
-                  <div>
-                    {booking.user_selected ? (
-                      <div
-                        className="min-w-max text-[0.8rem]"
-                        style={{
-                          textAlign: "center",
-                          marginTop: "-0.3rem",
-                          fontWeight: "300",
-                        }}
-                      >
-                        {booking?.airline_code && (
-                          <span className="ml-1">
-                            {booking.duration
-                              ? ` (${booking.duration}h)`
-                              : processBookingTimes(
-                                  booking.check_in,
-                                  booking.check_out
-                                ).duration}
-                          </span>
-                        )}
-                      </div>
-                    ) : null}
+                  >
+                    {booking?.airline_code && (
+                      <span className="ml-1">
+                        {booking.duration
+                          ? ` (${booking.duration}h)`
+                          : processBookingTimes(
+                              booking.check_in,
+                              booking.check_out
+                            ).duration}
+                      </span>
+                    )}
                   </div>
-                )}
-              </div>
-            </LogoContainer>
-          )}
+                </div>
+              )}
+            </div>
+          </LogoContainer>
 
           <div className="flex lg:flex-row flex-col lg:justify-between justify-center w-full">
             {isDesktop && (
@@ -799,7 +834,7 @@ const FlightBooking = ({
                       ITINERARY_STATUSES.itinerary_prepared !==
                         plan?.itinerary_status && (
                         <div className="min-w-max text-[0.8rem] -mt-1">
-                          {formatDate(props.booking.check_in)}
+                          {formatDate(booking.check_in)}
                         </div>
                       )}
 
@@ -978,7 +1013,7 @@ const FlightBooking = ({
                     className="min-w-max"
                     style={{ fontWeight: "400", fontSize: "0.8rem" }}
                   >
-                    {booking.booking.city}
+                    {booking.city}
                   </div>
                 </div>
 
