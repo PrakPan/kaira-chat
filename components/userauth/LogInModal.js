@@ -240,12 +240,14 @@ const LogIn = React.memo((props) => {
       setPhone(phoneNumber);
       props.onOtp(phoneNumber, token);
     }
+    recaptchaRef.current.reset();
   };
 
   //TEST
   const resetOtpHandler = (token) => {
     props.onOtp(phone, token);
     setOtpResent(true);
+    recaptchaRef.current.reset();
   };
 
   //Update phone
@@ -254,6 +256,30 @@ const LogIn = React.memo((props) => {
       phone: phone,
       whatsapp_opt_in: whatsapp,
     });
+  };
+
+  const _handlePhoneUpdate = () => {
+    props.onResetLogin();
+    mobileRef.current.focus();
+  };
+
+  const _handleGoogleLogin = useGoogleLogin({
+    onSuccess: (tokenResponse) => props.onGoogleAuth(tokenResponse),
+  });
+
+  const onRecaptchaChange = (value) => {
+    if (!props.otpSent) otpHandler(value);
+    else resetOtpHandler(value);
+  };
+
+  const verifyRecaptchaHandler = () => {
+    const recaptchaValue = recaptchaRef.current.getValue();
+    if (recaptchaValue) {
+      if (!props.otpSent) otpHandler(recaptchaValue);
+      else resetOtpHandler(recaptchaValue);
+    } else {
+      recaptchaRef.current.execute(); // Trigger the invisible ReCAPTCHA
+    }
   };
 
   //Mobile, name, email, password, JSX
@@ -320,24 +346,6 @@ const LogIn = React.memo((props) => {
       )}
     </>
   );
-
-  const _handlePhoneUpdate = () => {
-    props.onResetLogin();
-    mobileRef.current.focus();
-  };
-
-  const _handleGoogleLogin = useGoogleLogin({
-    onSuccess: (tokenResponse) => props.onGoogleAuth(tokenResponse),
-  });
-
-  const onRecaptchaChange = (value) => {
-    if (!props.otpSent) otpHandler(value);
-    else resetOtpHandler(value);
-  };
-
-  const verifyHandler = () => {
-    if (phone) recaptchaRef.current.execute();
-  };
 
   if (props.loadingsocial)
     return (
@@ -509,7 +517,7 @@ const LogIn = React.memo((props) => {
               }}
             >
               <u onClick={_handlePhoneUpdate}>Update Phone</u>
-              <ResendOtp onClick={verifyHandler}>
+              <ResendOtp onClick={verifyRecaptchaHandler}>
                 <u>Resend OTP</u>
               </ResendOtp>
             </UpdatePhone>
@@ -517,7 +525,7 @@ const LogIn = React.memo((props) => {
 
           {!props.otpSent ? (
             <Button
-              onclick={verifyHandler}
+              onclick={verifyRecaptchaHandler}
               margin={props.nospacing ? "0" : "0.5rem 0"}
               width="100%"
               bgColor="#F7E700"
