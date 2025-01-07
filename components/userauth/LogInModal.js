@@ -92,7 +92,6 @@ const LogIn = React.memo((props) => {
   let isPageWide = media("(min-width: 768px)");
 
   const mobileRef = useRef();
-  const [mobile, setMobile] = useState("");
   const [phone, setPhone] = useState("");
   const [otpResent, setOtpResent] = useState(false);
   const [whatsapp, setWhatsapp] = useState(true);
@@ -147,7 +146,6 @@ const LogIn = React.memo((props) => {
 
   const handleMobileBlur = () => {
     const phone = mobileRef.current.value;
-    // setMobile(phone);
     setPhone(phone);
   };
 
@@ -244,12 +242,7 @@ const LogIn = React.memo((props) => {
 
   //TEST
   const resetOtpHandler = () => {
-    const authData = {
-      username: phone,
-    };
-    axios
-      .post("https://apis.tarzanway.com/user/resend/otp/", authData)
-      .then((response) => {});
+    props.onOtp(phone);
     setOtpResent(true);
   };
 
