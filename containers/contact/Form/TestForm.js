@@ -9,6 +9,7 @@ import SuccessModal from "../../../components/modals/Success";
 import FloatingInput from "../../../components/ui/input/FloatingInput";
 import DropDown from "../../../components/ui/DropDown";
 import usePageLoaded from "../../../components/custom hooks/usePageLoaded";
+import { RECAPTCHA_SITE_KEY } from "../../../services/constants.js";
 
 const Container1 = styled.div`
   background-color: white;
@@ -257,7 +258,7 @@ export default function SignUp() {
 
         <ReCAPTCHA
           size="invisible"
-          sitekey="6LdcwZ8aAAAAAKzA37MqrCMV5epZ9jltfjKXQyZ_"
+          sitekey={RECAPTCHA_SITE_KEY}
           ref={myref}
           onChange={onRecaptchaChange}
         />

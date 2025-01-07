@@ -34,8 +34,9 @@ export const newUser = () => {
   };
 };
 
-export const getotp = (mobile) => {
+export const getotp = (mobile, token) => {
   const authData = {
+    "g-recaptcha-response": token,
     username: mobile,
   };
   {

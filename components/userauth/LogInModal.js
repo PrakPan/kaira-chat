@@ -3,7 +3,6 @@ import Button from "../ui/button/Index";
 import { connect } from "react-redux";
 import * as authaction from "../../store/actions/auth";
 import * as otpaction from "../../store/actions/getOtp";
-import axios from "axios";
 import Spinner from "../Spinner";
 import styled from "styled-components";
 import Link from "next/link";
@@ -18,7 +17,9 @@ import Image from "next/image";
 import media from "../media";
 import { useGoogleLogin } from "@react-oauth/google";
 import { getCountryCodes } from "../../store/actions/countryCodes";
+import ReCAPTCHA from "react-google-recaptcha";
 import ImageLoader from "../../components/ImageLoader";
+import { RECAPTCHA_SITE_KEY } from "../../services/constants";
 
 const MobileNumberContainer = styled.div`
   display: grid;
@@ -92,6 +93,7 @@ const LogIn = React.memo((props) => {
   let isPageWide = media("(min-width: 768px)");
 
   const mobileRef = useRef();
+  const recaptchaRef = useRef(null);
   const [phone, setPhone] = useState("");
   const [otpResent, setOtpResent] = useState(false);
   const [whatsapp, setWhatsapp] = useState(true);
@@ -229,20 +231,20 @@ const LogIn = React.memo((props) => {
   };
 
   //Dispatch Action
-  const otpHandler = () => {
+  const otpHandler = (token) => {
     const phoneNumber = phone.trim();
     if (phoneNumber.length <= 10) {
       setPhone(props.CountryCodes[extension].label + phoneNumber);
-      props.onOtp(props.CountryCodes[extension].label + phoneNumber);
+      props.onOtp(props.CountryCodes[extension].label + phoneNumber, token);
     } else {
       setPhone(phoneNumber);
-      props.onOtp(phoneNumber);
+      props.onOtp(phoneNumber, token);
     }
   };
 
   //TEST
-  const resetOtpHandler = () => {
-    props.onOtp(phone);
+  const resetOtpHandler = (token) => {
+    props.onOtp(phone, token);
     setOtpResent(true);
   };
 
@@ -327,6 +329,15 @@ const LogIn = React.memo((props) => {
   const _handleGoogleLogin = useGoogleLogin({
     onSuccess: (tokenResponse) => props.onGoogleAuth(tokenResponse),
   });
+
+  const onRecaptchaChange = (value) => {
+    if (!props.otpSent) otpHandler(value);
+    else resetOtpHandler(value);
+  };
+
+  const verifyHandler = () => {
+    if (phone) recaptchaRef.current.execute();
+  };
 
   if (props.loadingsocial)
     return (
@@ -498,7 +509,7 @@ const LogIn = React.memo((props) => {
               }}
             >
               <u onClick={_handlePhoneUpdate}>Update Phone</u>
-              <ResendOtp onClick={resetOtpHandler}>
+              <ResendOtp onClick={verifyHandler}>
                 <u>Resend OTP</u>
               </ResendOtp>
             </UpdatePhone>
@@ -506,7 +517,7 @@ const LogIn = React.memo((props) => {
 
           {!props.otpSent ? (
             <Button
-              onclick={otpHandler}
+              onclick={verifyHandler}
               margin={props.nospacing ? "0" : "0.5rem 0"}
               width="100%"
               bgColor="#F7E700"
@@ -623,6 +634,14 @@ const LogIn = React.memo((props) => {
               T&Cs and privacy policy
             </Link>
           </div>
+
+          <ReCAPTCHA
+            size="invisible"
+            sitekey={RECAPTCHA_SITE_KEY}
+            ref={recaptchaRef}
+            onChange={onRecaptchaChange}
+            className="hidden"
+          />
         </form>
       )}
 
