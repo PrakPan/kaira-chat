@@ -1,7 +1,5 @@
 export const CONTENT_SERVER_HOST = process.env.NEXT_PUBLIC_CONTENT_SERVER_HOST;
 
-export const MERCURY_HOST = process.env.NEXT_PUBLIC_MERCURY_HOST;
-
 export const MIS_SERVER_HOST = process.env.NEXT_PUBLIC_MIS_SERVER_HOST;
 
 export const MERCURY_HOST = process.env.NEXT_PUBLIC_MERCURY_HOST;
@@ -14,7 +12,8 @@ export const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
 export const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
 
-export const RECAPTCHA_SECRET_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SECRET_KEY;
+export const RECAPTCHA_SECRET_KEY =
+  process.env.NEXT_PUBLIC_RECAPTCHA_SECRET_KEY;
 
 export const FACEBOOK_PIXEL_ID = process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID;
 
