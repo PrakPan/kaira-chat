@@ -1,9 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { IoIosStar } from "react-icons/io";
-import { FaPlay } from "react-icons/fa";
-import TRAVELERS from "./NewCaseStudies/ReviewsData";
-import media from "../../components/media";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper";
 import "swiper/css";
@@ -12,7 +8,11 @@ import "swiper/css/navigation";
 import "swiper/swiper.min.css";
 import "swiper/swiper-bundle.min.css";
 import styled from "styled-components";
-import SecondaryHeading from "../../components/heading/Secondary";
+import { IoIosStar } from "react-icons/io";
+import TRAVELERS from "../../public/content/travelers";
+import media from "../../components/media";
+import Link from "next/link";
+import SecondaryHeading from "../heading/Secondary";
 
 const SwiperContainer = styled.div`
   position: relative;
@@ -88,7 +88,7 @@ export default function OurCustomers(props) {
           text={traveler.review}
           name={traveler.name}
           image={traveler.image}
-          company={traveler.company}
+          itineraryId={traveler.id}
         />
       );
     }
@@ -97,63 +97,28 @@ export default function OurCustomers(props) {
   }, []);
 
   return (
-    <div className="flex flex-col gap-5 px-3">
-      <div className="flex flex-col gap-3 items-center">
-        <div className="text-center text-[27px] md:text-[40px] font-[700] md:leading-[60px]">
+    <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-2">
+        <div className="font-bold text-[30px] md:text-[40px] text-center">
           What Our Customers Say About Us?
         </div>
-        <div className="text-center text-[16px] font-[350] leading-[24px]">
+        <SecondaryHeading className="text-center">
           Hear from our travelers! Discover how we've made their journeys
           unforgettable through personalized experiences and seamless service.
-        </div>
+        </SecondaryHeading>
       </div>
 
-      {/* <Video /> */}
-
       <Carousel cards={cards} />
+
+      <Link
+        href={"/testimonials"}
+        className="no-underline text-gray-900 border-2 w-fit border-black px-3 py-1 rounded-lg mx-auto hover:text-white hover:bg-black transition-all"
+      >
+        View All Reviews
+      </Link>
     </div>
   );
 }
-
-const Video = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const videoRef = useRef(null);
-
-  const togglePlay = () => {
-    if (videoRef.current.paused) {
-      videoRef.current.play();
-      setIsPlaying(true);
-    } else {
-      videoRef.current.pause();
-      setIsPlaying(false);
-    }
-  };
-
-  return (
-    <div className="relative h-[250px] md:mx-[10%] md:h-[500px] bg-gray-200 rounded-lg flex items-center justify-center ">
-      <video
-        ref={videoRef}
-        className="w-full h-full object-fill rounded-lg"
-        poster="/assets/icons/test.jpeg"
-        onClick={togglePlay}
-        playsInline
-      >
-        <source src="/assets/videos/ttw.mp4" type="video/mp4" />
-        {/* Your browser does not support the video tag. */}
-      </video>
-      {!isPlaying && (
-        <button
-          className="absolute inset-0 w-full h-full flex items-center justify-center"
-          onClick={togglePlay}
-        >
-          <div className="w-20 h-20 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
-            <FaPlay className="text-2xl text-white" />
-          </div>
-        </button>
-      )}
-    </div>
-  );
-};
 
 const Carousel = ({ cards }) => {
   let isPageWide = media("(min-width: 768px)");
@@ -200,37 +165,43 @@ const Carousel = ({ cards }) => {
   );
 };
 
-const Review = ({ text, name, image, company }) => {
+const Review = ({ text, name, image, itineraryId }) => {
   return (
-    <div className="h-[480px] flex flex-col justify-between bg-white p-4 rounded-lg">
+    <div className="h-[480px] md:h-[420px] flex flex-col justify-between bg-white p-4 rounded-lg">
       <SecondaryHeading>{text}</SecondaryHeading>
 
-      <div className="flex flex-row justify-between items-center">
-        <div className="flex flex-col gap-1 w-[75%]">
-          <div
-            className={`font-buffalo text-[#FB5F66] text-[40px] font-[400] leading-[56px] w-[90%] truncate`}
-          >
-            {name}
+      <div className="flex flex-col gap-2">
+        <Link
+          href={`/itinerary/${itineraryId}`}
+          className="bg-[#F7E700] w-fit px-3 py-1 rounded-lg no-underline text-black"
+        >
+          View Itinerary
+        </Link>
+        <div className="flex flex-row justify-between items-center">
+          <div className="flex flex-col gap-1 w-[75%]">
+            <div
+              className={`font-buffalo text-[#FB5F66] text-[40px] font-[400] leading-[56px] w-[90%] truncate`}
+            >
+              {name}
+            </div>
+
+            <div className="flex flex-row gap-1 items-center">
+              <IoIosStar className="text-lg text-[#FEB739]" />
+              <IoIosStar className="text-lg text-[#FEB739]" />
+              <IoIosStar className="text-lg text-[#FEB739]" />
+              <IoIosStar className="text-lg text-[#FEB739]" />
+              <IoIosStar className="text-lg text-[#FEB739]" />
+            </div>
           </div>
-          <div className={`text-lg font-[400] leading-[56px] truncate`}>
-            {company}
+          <div className="">
+            <Image
+              className="rounded-full"
+              src={`https://d31aoa0ehgvjdi.cloudfront.net/${image}`}
+              alt=""
+              width={64}
+              height={64}
+            />
           </div>
-          <div className="flex flex-row gap-1 items-center">
-            <IoIosStar className="text-lg text-[#FEB739]" />
-            <IoIosStar className="text-lg text-[#FEB739]" />
-            <IoIosStar className="text-lg text-[#FEB739]" />
-            <IoIosStar className="text-lg text-[#FEB739]" />
-            <IoIosStar className="text-lg text-[#FEB739]" />
-          </div>
-        </div>
-        <div className="">
-          <Image
-            className="rounded-full"
-            src={`https://d31aoa0ehgvjdi.cloudfront.net/${image}`}
-            alt=""
-            width={64}
-            height={64}
-          />
         </div>
       </div>
     </div>

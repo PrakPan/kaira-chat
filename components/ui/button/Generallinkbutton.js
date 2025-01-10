@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const Generalbuttonstyle = styled.div`
+const Generalbuttonstyle = styled.button`
   color: ${(props) => (props.color ? props.color : "black")};
 
   display: ${(props) => (props.display ? props.display : "block")};
@@ -71,6 +71,7 @@ const Generalbuttonstyle = styled.div`
 const Generalbutton = (props) => {
   return (
     <Generalbuttonstyle
+      type="button"
       className="font-lexend"
       onClick={props.onclick}
       color={props.color}

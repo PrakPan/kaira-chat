@@ -12,16 +12,15 @@ import ExperienceCard from "../../components/cards/newitinerarycard-main/Experie
 import Overview from "./Overview";
 import Button from "../../components/ui/button/Index";
 import Locations from "../../components/containers/newplannerlocations/Index";
-import OldLocations from "../../components/containers/plannerlocations/Index";
 import MobileBanner from "./MobileBanner";
 import WhyPlanWithUs from "../../components/WhyPlanWithUs/PlanWithUsWithEnquiry";
 import HeroBanner from "../../components/containers/HeroBanner/HeroBanner";
 import openTailoredModal from "../../services/openTailoredModal";
 import dynamic from "next/dynamic";
 import AsSeenIn from "../testimonial/AsSeenIn";
-import PathNavigation from "./PathNavigation.js";
 import { logEvent } from "../../services/ga/Index";
 import H3 from "../../components/heading/H3";
+import SecondaryHeading from "../../components/heading/Secondary.jsx";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -57,7 +56,7 @@ const MapContainer = styled.div`
   }
 `;
 
-const Homepage = (props) => {
+export default function ThemePage(props) {
   const router = useRouter();
   let isPageWide = media("(min-width: 768px)");
   const [userItineraries, setUserItineraries] = useState([]);
@@ -266,79 +265,6 @@ const Homepage = (props) => {
       />
 
       <SetWidthContainer>
-        <PathNavigation path={props.experienceData.path} />
-        <>
-          <H3
-            style={{
-              textAlign: isPageWide ? "left" : "center",
-              margin: isPageWide
-                ? "2.5rem 0 4.5rem 0"
-                : "2.5rem 0.5rem 1.5rem 0.5rem",
-            }}
-          >
-            {props.experienceData.destination
-              ? "Top locations across " + props.experienceData.destination
-              : "Top Locations"}
-          </H3>
-          <Locations
-            locations={props.experienceData.locations}
-            viewall
-            page={"State Page"}
-            state={props?.experienceData?.destination}
-          ></Locations>
-        </>
-
-        {headings.map((heading, index) => (
-          <div key={index}>
-            <H3
-              style={{
-                textAlign: isPageWide ? "left" : "center",
-                margin: isPageWide
-                  ? "2.5rem 0 2.5rem 0"
-                  : "2.5rem 0.5rem 1.5rem 0.5rem",
-              }}
-            >
-              {heading.name}
-            </H3>
-            <Experiences
-              experiences={heading?.itinerary_data}
-              page={"State Page"}
-            ></Experiences>
-
-            {index % 2 ? (
-              <Button
-                onclick={() => handlePlanButtonClick(heading.name)}
-                borderWidth="1px"
-                fontWeight="500"
-                borderRadius="6px"
-                margin="2rem auto"
-                padding="0.5rem 2rem"
-              >
-                Create your travel plan now!
-              </Button>
-            ) : null}
-          </div>
-        ))}
-
-        {userItineraries.length ? (
-          <>
-            <H3
-              style={{
-                textAlign: isPageWide ? "left" : "center",
-                margin: isPageWide
-                  ? "2.5rem 0 2.5rem 0"
-                  : "2.5rem 0.5rem 1.5rem 0.5rem",
-              }}
-            >
-              Trips by our users
-            </H3>
-            <Experiences
-              experiences={userItineraries}
-              page={"State Page"}
-            ></Experiences>
-          </>
-        ) : null}
-
         <MapGridContainer>
           <Overview
             locations={props.experienceData.locations}
@@ -358,22 +284,74 @@ const Homepage = (props) => {
             )}
           </MapContainer>
         </MapGridContainer>
-        <Button
-          onclick={() =>
-            handlePlanButtonClick(
-              `A little about ${props?.experienceData?.destination}`
-            )
-          }
-          borderWidth="1px"
-          fontWeight="500"
-          borderRadius="6px"
-          margin="2rem auto"
-          padding="0.5rem 2rem"
-        >
-          {props.experienceData.page_type !== "Theme"
-            ? `Craft a trip to ${props.experienceData.destination} now!`
-            : "Create your travel plan now!"}
-        </Button>
+
+        {headings.map((heading, index) => (
+          <div key={index}>
+            <div className="mb-5 space-y-3">
+              <H3
+                style={{
+                  textAlign: isPageWide ? "left" : "center",
+                  margin: isPageWide
+                    ? "2.5rem 0 0 0"
+                    : "2.5rem 0.5rem 0 0.5rem",
+                }}
+              >
+                {heading.name}
+              </H3>
+
+              <SecondaryHeading
+                style={{ textAlign: isPageWide ? "left" : "center" }}
+              >
+                {heading.text}
+              </SecondaryHeading>
+            </div>
+
+            {heading?.itineraries?.length ? (
+              <Experiences
+                experiences={heading.itineraries}
+                page={"Theme Page"}
+              ></Experiences>
+            ) : null}
+
+            {heading?.elements?.length ? (
+              heading?.carousel?.toLowerCase() === "type-1" ? (
+                <Locations
+                  locations={heading.elements}
+                  viewall
+                  page={"Theme Page"}
+                  state={props?.experienceData?.name}
+                ></Locations>
+              ) : heading?.carousel?.toLowerCase() === "type-2" ? (
+                <Locations
+                  locations={heading.elements}
+                  viewall
+                  page={"Theme Page"}
+                  state={props?.experienceData?.name}
+                ></Locations>
+              ) : (
+                heading?.carousel?.toLowerCase() === "type-3" && (
+                  <Locations
+                    locations={heading.elements}
+                    viewall
+                    page={"Theme Page"}
+                    state={props?.experienceData?.name}
+                  ></Locations>
+                )
+              )
+            ) : null}
+
+            <Button
+              onclick={() => handlePlanButtonClick(heading.name)}
+              borderWidth="1px"
+              fontWeight="500"
+              borderRadius="6px"
+              margin="2rem auto"
+              padding="0.5rem 2rem"
+            >
+              Create your travel plan now!
+            </Button>
+          </div>
+        ))}
       </SetWidthContainer>
 
       <SetWidthContainer>
@@ -385,74 +363,11 @@ const Homepage = (props) => {
         >
           How it works?
         </H3>
-        <div>
-          <BannerTwo
-            page_id={props.experienceData.id}
-            destination={props.experienceData.destination}
-            cities={props.experienceData.locations}
-          ></BannerTwo>
-        </div>
-
-        {TTWItineraries.length ? (
-          <>
-            <H3
-              style={{
-                textAlign: isPageWide ? "left" : "center",
-                margin: isPageWide
-                  ? "2.5rem 0 2.5rem 0"
-                  : "2.5rem 0.5rem 1.5rem 0.5rem",
-              }}
-            >
-              Tarzan Way Community Top Picks
-            </H3>
-            <Experiences
-              mobileGrid
-              experiences={
-                showMore ? TTWItineraries : TTWItineraries.slice(0, 4)
-              }
-              page={"State Page"}
-            ></Experiences>
-          </>
-        ) : null}
-
-        {!TTWItineraries.length || isPageWide ? null : showMore ? (
-          <Button
-            onclick={() =>
-              handlePlanButtonClick(`Tarzan Way Community Top Picks`)
-            }
-            borderWidth="1px"
-            fontWeight="500"
-            borderRadius="6px"
-            margin="2rem auto"
-            padding="0.5rem 2rem"
-          >
-            Unlock your adventure
-          </Button>
-        ) : (
-          <Button
-            onclick={() => setShowMore(true)}
-            borderWidth="1px"
-            fontWeight="500"
-            borderRadius="6px"
-            margin="2rem auto"
-            padding="0.5rem 2rem"
-          >
-            View more
-          </Button>
-        )}
-
-        {userItineraries.length ? (
-          <Button
-            onclick={() => handlePlanButtonClick(`Unlock your adventure`)}
-            borderWidth="1px"
-            fontWeight="500"
-            borderRadius="6px"
-            margin="2rem auto"
-            padding="0.5rem 2rem"
-          >
-            Unlock your adventure
-          </Button>
-        ) : null}
+        <BannerTwo
+          page_id={props.experienceData.id}
+          destination={props.experienceData.destination}
+          cities={props.experienceData.locations}
+        ></BannerTwo>
       </SetWidthContainer>
 
       <DesktopBanner
@@ -485,27 +400,6 @@ const Homepage = (props) => {
       </div>
 
       <SetWidthContainer>
-        {props.locations && props.locations.length ? (
-          <>
-            <H3
-              style={{
-                textAlign: isPageWide ? "left" : "center",
-                margin: isPageWide ? "3.5rem 0rem" : "1.5rem 0.5rem",
-              }}
-            >
-              Other Destinations
-            </H3>
-            <OldLocations
-              locations={props.locations}
-              page_id={props.experienceData.id}
-              destination={props.experienceData.destination}
-              viewall
-              country={country}
-              planner
-            ></OldLocations>
-          </>
-        ) : null}
-
         <H3
           style={{
             textAlign: isPageWide ? "left" : "center",
@@ -545,6 +439,4 @@ const Homepage = (props) => {
       </SetWidthContainer>
     </div>
   );
-};
-
-export default Homepage;
+}

@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
 import styled from "styled-components";
 import Modal from "../../../components/ui/Modal";
 import FloatingInput from "../../../components/ui/input/FloatingInput";
+import { RxCross2 } from "react-icons/rx";
 import TextField from "@mui/material/TextField";
 import Button from "../../../components/ui/button/Index";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -11,7 +12,7 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import Types from "./Type";
 import axiosbdinstance from "../../../services/leads/bd";
 import media from "../../../components/media";
-import { RxCross2 } from "react-icons/rx";
+import ScheduleCall from "./ScheduleCall";
 
 const Heading = styled.p`
   font-size: 1.35rem;
@@ -130,15 +131,15 @@ const Enquiry = (props) => {
         style={
           isPageWide
             ? {
-              padding: "0 18px 18px 18px",
-              width: "27rem",
-              borderRadius: "1rem",
-            }
+                padding: "0 18px 18px 18px",
+                width: "27rem",
+                borderRadius: "1rem",
+              }
             : {
-              padding: "0px 18px 18px 18px",
-              width: "95%",
-              borderRadius: "1rem",
-            }
+                padding: "0px 18px 18px 18px",
+                width: "95%",
+                borderRadius: "1rem",
+              }
         }
         zIndex={1298}
       >
@@ -155,12 +156,11 @@ const Enquiry = (props) => {
 
         {submitted ? (
           <div className="mt-3 text-lg md:text-xl font-medium md:font-semibold">
-            We have got your details and someone from our team will reach out to you regarding the next steps
+            We have got your details and someone from our team will reach out to
+            you regarding the next steps
           </div>
         ) : (
-          <Heading>
-            Let's Connect
-          </Heading>
+          <Heading>Let's Connect</Heading>
         )}
 
         {!submitted ? (
@@ -291,3 +291,27 @@ const Enquiry = (props) => {
 };
 
 export default Enquiry;
+
+export const ScheduleCallModal = ({ show, onhide }) => {
+  const ref = useRef(null);
+
+  const handleClose = (e) => {
+    if (ref.current && !ref.current.contains(e.target)) {
+      onhide();
+    }
+  };
+
+  if (show) {
+    return (
+      <div
+        onClick={(e) => handleClose(e)}
+        className="fixed inset-0 z-[1999] bg-black bg-opacity-50 flex items-center justify-center"
+      >
+        <div className={`w-full md:w-[30%]`}>
+          <ScheduleCall modalRef={ref} />
+        </div>
+      </div>
+    );
+  }
+  return null;
+};

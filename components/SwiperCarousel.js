@@ -56,7 +56,7 @@ const SwiperContainer = styled.div`
     }
   }
   .swiper-button-next::after {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     font-weight: 900;
     translate: 1px 0px;
     @media screen and (min-width: 768px) {
@@ -64,7 +64,7 @@ const SwiperContainer = styled.div`
     }
   }
   .swiper-button-prev::after {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     font-weight: 900;
     translate: -1px 0px;
     @media screen and (min-width: 768px) {

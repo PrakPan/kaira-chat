@@ -15,7 +15,7 @@ const GridContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   @media screen and (min-width: 768px) {
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
   }
 `;
 
@@ -42,9 +42,10 @@ const ContentContainer = styled.div`
 `;
 
 const ReviewHeading = styled.h3`
-  font-size: 1rem;
+  font-style: italic;
+  font-size: 0.8rem;
   text-align: center;
-  font-weight: 400;
+  font-weight: 300;
   line-height: 1.5;
   &:before {
     content: open-quote;
@@ -56,7 +57,7 @@ const ReviewHeading = styled.h3`
   }
   margin: 2rem;
   @media screen and (min-width: 768px) {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     &:before {
       content: open-quote;
       font-family: "Font Awesome 5 Free";
@@ -102,7 +103,6 @@ const AsSeenIn = (props) => {
   const [selected, setSelected] = useState(0);
 
   const Quotes = [
-    "In addition to providing worry-free travel as regards health concerns, The Tarzan Way does a complete surrender to nature along with teaching reasonable self-dependency, isolationist travel aligns nicely with responsible tourism.",
     "While creating a highly personalized experience, companies need to keep in mind the traveler’s purpose and what a particular location may have to offer, The Tarzan Way is doing a great job for that.",
     "The Tarzan Way wants to revamp the entire traveler experience by making it more streamlined and customer-friendly.",
     "A young team of entrepreneurs taking on the travel industry with The Tarzan Way is a travel & tech-based venture that aims at simplifying travel for its users and does so brilliantly.",
@@ -112,7 +112,6 @@ const AsSeenIn = (props) => {
   ];
 
   const Urls = [
-    "https://www.outlookindia.com/outlooktraveller/explore/story/70734/the-new-travel-trends-of-the-covid-19-era",
     "https://indianexpress.com/article/lifestyle/destination-of-the-week/travelling-in-the-new-normal-how-pandemic-has-changed-the-rules-of-the-game-7058162/",
     "https://www.phocuswire.com/startup-stage-the-tarzan-way-wants-to-celebrate-the-uniqueness-of-every-traveler",
     "https://www.brilliantread.com/interview-with-shikhar-chadha-founder-at-the-tarzan-way/",
@@ -136,7 +135,7 @@ const AsSeenIn = (props) => {
             <LogoContainer className="center-div">
               <NewImg
                 src={
-                  "https://d31aoa0ehgvjdi.cloudfront.net/eyJidWNrZXQiOiJ0aGV0YXJ6YW53YXktd2ViIiwia2V5IjoibWVkaWEvd2Vic2l0ZS9vdXRsb29rLnBuZyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6MTUwLCJoZWlnaHQiOjE1MCwiZml0IjoiY292ZXIifX19"
+                  "https://d31aoa0ehgvjdi.cloudfront.net/eyJidWNrZXQiOiJ0aGV0YXJ6YW53YXktd2ViIiwia2V5IjoibWVkaWEvd2Vic2l0ZS9pbmRpYW5leHByZXNzLnBuZyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6MTUwLCJoZWlnaHQiOjQxLCJmaXQiOiJjb250YWluIn19fQ=="
                 }
               />
             </LogoContainer>
@@ -152,7 +151,7 @@ const AsSeenIn = (props) => {
             <LogoContainer className="center-div">
               <NewImg
                 src={
-                  "https://d31aoa0ehgvjdi.cloudfront.net/eyJidWNrZXQiOiJ0aGV0YXJ6YW53YXktd2ViIiwia2V5IjoibWVkaWEvd2Vic2l0ZS9pbmRpYW5leHByZXNzLnBuZyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6MTUwLCJoZWlnaHQiOjQxLCJmaXQiOiJjb250YWluIn19fQ=="
+                  "https://d31aoa0ehgvjdi.cloudfront.net/eyJidWNrZXQiOiJ0aGV0YXJ6YW53YXktd2ViIiwia2V5IjoibWVkaWEvd2Vic2l0ZS9waG9jdXN3aXJlLnBuZyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6MTUwLCJoZWlnaHQiOjI5LCJmaXQiOiJjb3ZlciJ9fX0="
                 }
               />
             </LogoContainer>
@@ -168,7 +167,7 @@ const AsSeenIn = (props) => {
             <LogoContainer className="center-div">
               <NewImg
                 src={
-                  "https://d31aoa0ehgvjdi.cloudfront.net/eyJidWNrZXQiOiJ0aGV0YXJ6YW53YXktd2ViIiwia2V5IjoibWVkaWEvd2Vic2l0ZS9waG9jdXN3aXJlLnBuZyIsImVkaXRzIjp7InJlc2l6ZSI6eyJ3aWR0aCI6MTUwLCJoZWlnaHQiOjI5LCJmaXQiOiJjb3ZlciJ9fX0="
+                  "https://d31aoa0ehgvjdi.cloudfront.net/media/website/brilliant.png"
                 }
               />
             </LogoContainer>
@@ -185,7 +184,7 @@ const AsSeenIn = (props) => {
               <LogoContainer className="center-div">
                 <NewImg
                   src={
-                    "https://d31aoa0ehgvjdi.cloudfront.net/media/website/brilliant.png"
+                    "https://d31aoa0ehgvjdi.cloudfront.net/media/website/yourstory.png"
                   }
                 />
               </LogoContainer>
@@ -203,7 +202,7 @@ const AsSeenIn = (props) => {
               <LogoContainer className="center-div">
                 <NewImg
                   src={
-                    "https://d31aoa0ehgvjdi.cloudfront.net/media/website/yourstory.png"
+                    "https://d31aoa0ehgvjdi.cloudfront.net/media/website/economic-times.jpg"
                   }
                 />
               </LogoContainer>
@@ -216,24 +215,6 @@ const AsSeenIn = (props) => {
               onMouseEnter={() => setSelected(5)}
               style={{
                 borderColor: selected === 5 ? "#F7e700" : "transparent",
-              }}
-            >
-              <LogoContainer className="center-div">
-                <NewImg
-                  src={
-                    "https://d31aoa0ehgvjdi.cloudfront.net/media/website/economic-times.jpg"
-                  }
-                />
-              </LogoContainer>
-            </LogoOuterContainer>
-          ) : null}
-
-          {isPageWide ? (
-            <LogoOuterContainer
-              className="center-div"
-              onMouseEnter={() => setSelected(6)}
-              style={{
-                borderColor: selected === 6 ? "#F7e700" : "transparent",
               }}
             >
               <LogoContainer className="center-div">

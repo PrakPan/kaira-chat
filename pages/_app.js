@@ -53,6 +53,10 @@ function MyApp({ Component, pageProps, store }) {
     <>
       <Head>
         <meta
+          name="google-site-verification"
+          content="JBrEGecffz4oDnRTLJNj0Mxly-wVGeieQdS1k7NZvaY"
+        />
+        <meta
           name="viewport"
           content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5"
         ></meta>

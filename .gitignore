@@ -95,10 +95,10 @@ Dockerfile
 sentry-example-api.js
 sentry-example-page.jsx
 
-pm2-deploy.sh
+/analyze/
 ecosystem.config.js
 services/dump.rdb
+public/sitemap.xml
+pm2-deploy.sh
 s3-deploy.sh
 index_path.py
-/analyze/
-public/sitemap.xml

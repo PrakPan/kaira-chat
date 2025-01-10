@@ -12,9 +12,9 @@ import setHotLocationSearch from "../../../../../store/actions/hotLocationSearch
 
 const Experience = (props) => {
   const router = useRouter();
-   useEffect(() => {
-     props.setHotLocationSearch(props.hotLocationSearch);
-   }, []);
+  useEffect(() => {
+    props.setHotLocationSearch(props.hotLocationSearch);
+  }, []);
 
   const schemaData = {
     "@context": "https://schema.org/",
@@ -36,15 +36,15 @@ const Experience = (props) => {
       <Head>
         <meta
           name="description"
-          content={`Explore ${props.cityData.name} with The Tarzan Way's AI travel itinerary. Immerse yourself in iconic landmarks, hidden treasures of ${props.cityData.name}, and book your flights, accommodations, and transfers all in one go.`}
+          content={`${props.cityData.meta_description}`}
         />
         <meta
           property="og:title"
-          content={`Plan Your Trip to ${props.cityData.name} | Trip Planner & Itinerary | The Tarzan Way`}
+          content={`${props.cityData.social_share_title}`}
         />
         <meta
           property="og:description"
-          content={`Explore ${props.cityData.name} with The Tarzan Way's AI travel itinerary. Immerse yourself in iconic landmarks, hidden treasures of ${props.cityData.name}, and book your flights, accommodations, and transfers all in one go.`}
+          content={`${props.cityData.meta_description}`}
         />
         <meta property="og:image" content="/logoblack.svg" />
         <title>
@@ -53,7 +53,9 @@ const Experience = (props) => {
         </title>
         <meta
           property="keywords"
-          content={`${props?.cityData?.name} trip planner, ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, travel in ${props?.cityData?.name}, ${props?.cityData?.name} tour package, experience ${props?.cityData?.name} culture, ${props?.cityData?.name} holiday package, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, best places in ${props?.cityData?.name}, places to visit in ${props?.cityData?.name}, best activities in ${props?.cityData?.name}, things to do in ${props?.cityData?.name}, package for ${props?.cityData?.name}, top places in ${props?.cityData?.name}, wanderlog, inspirock, tripit, hotels, flights, activities, transfers, solo travel, family travel,`}
+          content={`${Array.isArray(props?.cityData?.meta_keywords)
+            ? props?.cityData?.meta_keywords.join(", ")
+            : props?.cityData?.meta_keywords}`}
         ></meta>
 
         <link

@@ -133,6 +133,7 @@ const ExperienceCard = (props) => {
           }
           starting_cost={props.starting_cost}
         ></Cost>
+
         <Button
           borderRadius="6px"
           onclick={_handleRedirect}
