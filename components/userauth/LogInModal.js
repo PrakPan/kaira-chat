@@ -151,19 +151,6 @@ const LogIn = React.memo((props) => {
     setPhone(phone);
   };
 
-  const combinePhoneNumber = (selectedCountryCode, phoneInput) => {
-    if (phoneInput.startsWith(selectedCountryCode)) {
-      // Phone input starts with the selected country code
-      return phoneInput;
-    } else if (phoneInput.startsWith('+')) {
-      // Phone input likely includes a country code, so return it as is
-      return phoneInput;
-    } else {
-      // Prepend the selected country code
-      return selectedCountryCode + phoneInput;
-    }
-  }
-
   const separateCountryCode = (phoneNumber) => {
     const pattern = /^(\+\d{1,3})(\d{10})$/;
     const match = phoneNumber.match(pattern);
@@ -185,7 +172,6 @@ const LogIn = React.memo((props) => {
   //Submit OTP
   const submitOtpHandler = () => {
     setUserNameError(false);
-    const countryCode = props.CountryCodes[extension].label;
 
     if (props.newUser) {
       const newUserValidity = checkNewUserData();
@@ -241,7 +227,7 @@ const LogIn = React.memo((props) => {
 
   //Set Mobile
   const handleMobileChange = (event) => {
-    setMobile(event.target.value);
+    setPhone(event.target.value);
   };
 
   //Dispatch Action
@@ -310,7 +296,7 @@ const LogIn = React.memo((props) => {
         label="Mobile Number"
         type="mobile"
         id="mobile"
-        value={mobile}
+        value={phone}
         onChange={handleMobileChange}
         onBlur={handleMobileBlur}
         className="loginform"

@@ -81,7 +81,7 @@ export const getotp = (mobile, token) => {
             dispatch(authMobileFail(err.response.data.username[0])); //Invalid mobile
             Sentry.captureException(
               new Error(
-                `[LogIn Error]: ${err.response.config.url} : ${err.response.config.data} : ${err.response.data.username[0]}`
+                `[LogIn Error]: ${err.response?.config?.url} : ${err.response?.config?.data} : ${err.response?.data?.username[0]}`
               )
             );
           }
