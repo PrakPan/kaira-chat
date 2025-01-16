@@ -635,7 +635,7 @@ const Enquiry = (props) => {
             </div>
           </div>
 
-          <div style={{ padding: "0 1rem 1rem 1rem", width: "100%" }}>
+          <div style={{ padding: "0 1rem", width: "100%" }}>
             <div
               style={{
                 borderStyle: "solid none none none",
@@ -691,36 +691,29 @@ const Enquiry = (props) => {
             ></Flickity>
 
             {slideIndex === 0 ? (
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                }}
+              <Button
+                fontSize="1rem"
+                width={!isPageWide ? "auto" : "100%"}
+                style={
+                  !isPageWide && isPageLoaded
+                    ? {
+                        position: "fixed",
+                        left: "1rem",
+                        right: "1rem",
+                        bottom: "0",
+                      }
+                    : {}
+                }
+                padding="0.5rem 2rem"
+                fontWeight="500"
+                margin="1rem 0"
+                borderRadius="5px"
+                borderWidth="1px"
+                bgColor="#f7e700"
+                onclick={() => _SlideOneSubmitHandler()}
               >
-                <Button
-                  fontSize="1rem"
-                  width={!isPageWide ? "auto" : "100%"}
-                  style={
-                    !isPageWide && isPageLoaded
-                      ? {
-                          position: "fixed",
-                          left: "1rem",
-                          right: "1rem",
-                          bottom: "0",
-                        }
-                      : {}
-                  }
-                  padding="0.5rem 2rem"
-                  fontWeight="500"
-                  margin="1rem 0"
-                  borderRadius="5px"
-                  borderWidth="1px"
-                  bgColor="#f7e700"
-                  onclick={() => _SlideOneSubmitHandler()}
-                >
-                  Continue
-                </Button>
-              </div>
+                Continue
+              </Button>
             ) : null}
 
             {slideIndex === 1 ? (

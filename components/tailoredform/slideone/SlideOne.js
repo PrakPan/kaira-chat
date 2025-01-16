@@ -142,8 +142,6 @@ const SlideOne = (props) => {
           ></Preferences>
         ) : null}
       </Section>
-
-      <Section style={{ marginBottom: "0.5rem" }}></Section>
     </Container>
   );
 };
