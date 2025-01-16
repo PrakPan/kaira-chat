@@ -15,7 +15,6 @@ import { ITINERARY_STATUSES } from "../../../services/constants";
 import { MdWifi } from "react-icons/md";
 import { logEvent } from "../../../services/ga/Index";
 import { connect } from "react-redux";
-import { PiForkKnifeFill } from "react-icons/pi";
 
 
 
