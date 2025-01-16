@@ -1,5 +1,4 @@
 import * as Sentry from "@sentry/nextjs";
-import { SENTRY_DSN } from "./services/constants"
 import { SENTRY_DSN, SENTRY_ENV, SENTRY_RELEASE } from "./services/constants";
 
 Sentry.init({
@@ -18,7 +17,7 @@ Sentry.init({
   // We recommend adjusting this value in production
   tracesSampleRate: 1.0,
 
-    environment: process.env.SENTRY_ENV,
+  environment: process.env.SENTRY_ENV,
   // Capture Replay for 10% of all sessions,
   // plus for 100% of sessions with an error
   replaysSessionSampleRate: 0.1,
