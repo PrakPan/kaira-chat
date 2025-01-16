@@ -258,7 +258,7 @@ const ChildAge = ({ index, child, age, setChildAges, showError }) => {
 
                     {Array(11).fill(null).map((_, i) => (
                         <div
-                            onClick={() => handleChildAge(i + 1)}
+                            onClick={() => handleChildAge(i + 2)}
                             className="hover:bg-gray-200 p-2">{i + 2}</div>
 
                     ))}
