@@ -43,8 +43,8 @@ const CityNavigation = (props) => {
           key={city.id}
           onClick={() => scrollToCity(city.id)}
           className={`${
-            activeCity === city.id && "bg-black text-white"
-          } font-medium text-nowrap border-1 border-gray-300 rounded-lg py-1 px-4 hover:bg-black hover:text-white cursor-pointer transition-all`}
+            activeCity === city.id && "bg-black text-[#F7E700]"
+          } font-normal text-nowrap border-2 border-gray-300 rounded-lg py-1 px-4 hover:bg-black hover:text-[#F7E700] cursor-pointer transition-all`}
         >
           {city.name} ({city.duration}N)
         </div>

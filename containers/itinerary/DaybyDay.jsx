@@ -29,7 +29,7 @@ const DaybyDay = (props) => {
 
       <CityNavigation cities={cities} cityRefs={cityRefs} />
 
-      <div className="flex flex-col space-y-5">
+      <div className="flex flex-col gap-[80px]">
         {props.itineraryDaybyDay?.cities.map((city) => (
           <ItineraryCity key={city.id} city={city} cityRefs={cityRefs} />
         ))}
