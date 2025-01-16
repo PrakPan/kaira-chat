@@ -41,6 +41,8 @@ const FlickityComp = (props) => {
             setValueStart={props.setValueStart}
             setValueEnd={props.setValueEnd}
             eventDates={props.eventDates}
+            selectedPreferences={props.selectedPreferences}
+            setSelectedPreferences={props.setSelectedPreferences}
           ></SlideOne>
         </Card>
       ) : null}

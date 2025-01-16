@@ -3,7 +3,10 @@ import styled, { keyframes } from "styled-components";
 import Button from "../ui/button/Index";
 import { format } from "date-fns";
 import media from "../media";
-import axiostailoredinstance from "../../services/leads/tailored";
+import axiostailoredinstance, {
+  itineraryInitiate,
+  itineraryComplete,
+} from "../../services/leads/tailored";
 import LoadingLottie from "../ui/LoadingLottie";
 import { useRouter } from "next/router";
 import { connect } from "react-redux";
@@ -99,17 +102,17 @@ const Enquiry = (props) => {
   const [numberOfChildren, setNumberOfChildren] = useState(0);
   const [numberOfInfants, setNumberOfInfants] = useState(0);
   const [budget, setBudget] = useState("Affordable");
-  const [roomConfiguration, setRoomConfiguration] = useState(
-    [{
+  const [roomConfiguration, setRoomConfiguration] = useState([
+    {
       adults: 2,
       children: 0,
       infants: 0,
       childAges: [],
-    }]
-  )
+    },
+  ]);
   const [priceRange, setPriceRange] = useState({
     min_price: 0,
-    max_price: 3000
+    max_price: 3000,
   });
   const [selectedPreferences, setSelectedPreferences] = useState([]);
   const [showCities, setShowCities] = useState(false);
@@ -130,6 +133,7 @@ const Enquiry = (props) => {
   const [showPopup, setShowPopup] = useState(popupObj);
   const [showBlack, setShowBlack] = useState(false);
   const [submitSecondSlide, setSubmitSecondSlide] = useState(false);
+  const [itineraryId, setItineraryId] = useState(null);
   let isPageWide = media("(min-width: 768px)");
 
   useEffect(() => {
@@ -285,44 +289,46 @@ const Enquiry = (props) => {
     if (end_date === "1970-01-01") data.end_date = "";
     if (startingLocation) data;
 
-    setLoading(true);
-    localStorage.removeItem("MyPlans");
+    completeItineraryCreate();
 
-    axiostailoredinstance
-      .post("", data, {
-        headers: {
-          Authorization: `Bearer ${props.token}`,
-        },
-      })
-      .then((response) => {
-        setSubmitted(true);
-        if (!response.data.auto_itinerary_created) {
-          router.push("/thank-you");
-        } else {
-          if (response.data.loader_time) {
-            window.location.href =
-              "/itinerary/" +
-              response.data.itinerary.itinerary_id +
-              "?t=" +
-              response.data.loader_time;
-          } else {
-            window.location.href =
-              "/itinerary/" + response.data.itinerary.itinerary_id;
-          }
-          setLoading(false);
+    // setLoading(true);
+    // localStorage.removeItem("MyPlans");
 
-          logEvent({
-            action: "conversion",
-            params: {
-              send_to: "AW-738037519/IF5rCMyxhL8ZEI-e9t8C",
-            },
-          });
-        }
-      })
-      .catch((err) => {
-        setLoading(false);
-        router.push("/thank-you");
-      });
+    // axiostailoredinstance
+    //   .post("", data, {
+    //     headers: {
+    //       Authorization: `Bearer ${props.token}`,
+    //     },
+    //   })
+    //   .then((response) => {
+    //     setSubmitted(true);
+    //     if (!response.data.auto_itinerary_created) {
+    //       router.push("/thank-you");
+    //     } else {
+    //       if (response.data.loader_time) {
+    //         window.location.href =
+    //           "/itinerary/" +
+    //           response.data.itinerary.itinerary_id +
+    //           "?t=" +
+    //           response.data.loader_time;
+    //       } else {
+    //         window.location.href =
+    //           "/itinerary/" + response.data.itinerary.itinerary_id;
+    //       }
+    //       setLoading(false);
+
+    //       logEvent({
+    //         action: "conversion",
+    //         params: {
+    //           send_to: "AW-738037519/IF5rCMyxhL8ZEI-e9t8C",
+    //         },
+    //       });
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     setLoading(false);
+    //     router.push("/thank-you");
+    //   });
   };
 
   const _prevSlideHandler = () => {
@@ -356,20 +362,169 @@ const Enquiry = (props) => {
     if (!selectedCities[0].destination_id && !selectedCities[0].id) {
       return setShowPopup({ ...showPopup, InputOne: true });
     }
-    if (!valueStart && !flexible)
+    if (!valueStart && !flexible) {
       return setShowPopup({ ...showPopup, dateStart: true });
-    if (!valueEnd && !flexible)
+    }
+    if (!valueEnd && !flexible) {
       return setShowPopup({ ...showPopup, dateEnd: true });
+    }
+
     setShowPopup(popupObj);
     setSlideIndex(slideIndex + 1);
-    if (props.HeroBanner && isPageWide)
+    if (props.HeroBanner && isPageWide) {
       window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    initiateItineraryCreate();
   };
 
   const _SlideTwoSubmitHandler = () => {
     if (!submitSecondSlide) return setShowPopup({ ...showPopup, group: true });
     setShowPopup(popupObj);
     setSlideIndex(slideIndex + 1);
+  };
+
+  const initiateItineraryCreate = () => {
+    const start_date = valueStart
+      ? format(new Date(valueStart), "yyyy-MM-dd")
+      : null;
+    const end_date = valueEnd ? format(new Date(valueEnd), "yyyy-MM-dd") : null;
+
+    let cityids = [];
+    let locations = [];
+    let stateIds = [];
+    let countryIds = [];
+    let continentIds = [];
+    let preferences = [];
+
+    for (var i = 0; i < selectedPreferences.length; i++) {
+      for (var j = 0; j < EXPERIENCE_FILTERS_BOX.length; j++) {
+        if (selectedPreferences[i] === EXPERIENCE_FILTERS_BOX[j].display) {
+          for (var k = 0; k < EXPERIENCE_FILTERS_BOX[j].actual.length; k++) {
+            preferences.push(EXPERIENCE_FILTERS_BOX[j].actual[k]);
+          }
+          break;
+        }
+      }
+    }
+
+    try {
+      for (var i = 0; i < selectedCities.length; i++) {
+        if (
+          cityids.indexOf(selectedCities[i].id) == -1 &&
+          selectedCities[i].id
+        ) {
+          if (selectedCities[i].type == "State")
+            stateIds.push(selectedCities[i].id);
+          else if (selectedCities[i].type == "Country")
+            countryIds.push(selectedCities[i].id);
+          else if (selectedCities[i].type == "Continent")
+            continentIds.push(selectedCities[i].id);
+          else {
+            cityids.push(selectedCities[i].id);
+          }
+          locations.push(selectedCities[i].name);
+        }
+      }
+    } catch {}
+
+    const data = {
+      source: {
+        path: router.asPath,
+      },
+      experience_filters_selected: preferences,
+      start_location: {
+        place_id: startingLocation
+          ? startingLocation.place_id
+          : "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
+      }, // Start location build itinerary from - Can be empty
+      cities: cityids, // City ids to build itinerary
+      pages: [], // Page ids (from web customization) to build itinerary - Theme pages and continent itineraries
+      states: stateIds, // State ids to build itinerary
+      countries: countryIds, // Country ids to build itinerary
+      end_location: {}, // If empty, it is same as start_location
+      start_date: start_date, // YYYY-MM-DD
+      end_date: end_date, // YYYY-MM-DD
+      flexible_dates: flexible, //  If this is true, then start and end dates are decided automatically
+    };
+
+    itineraryInitiate
+      .post("", data)
+      .then((res) => {
+        setItineraryId(res.data.itinerary_id);
+      })
+      .catch((err) => {
+        console.log("ERROR: ", err.message);
+      });
+  };
+
+  const completeItineraryCreate = () => {
+    let number_of_adults = 2;
+    let number_of_children = 0;
+    let number_of_infants = 0;
+
+    if (groupType === "Solo") {
+      number_of_adults = 1;
+    } else if (groupType === "Couple") {
+      number_of_adults = 2;
+    } else {
+      number_of_adults = numberOfAdults;
+      number_of_children = numberOfChildren;
+      number_of_infants = numberOfInfants;
+    }
+
+    const data = {
+      source: {
+        path: router.asPath,
+      },
+      itinerary_id: itineraryId,
+      group_type: groupType,
+      price_range: priceRange,
+      number_of_adults: number_of_adults,
+      number_of_children: number_of_children,
+      number_of_infants: number_of_infants,
+      room_configuration: roomConfiguration,
+    };
+
+    setLoading(true);
+    localStorage.removeItem("MyPlans");
+
+    itineraryComplete
+      .post("", data, {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+        },
+      })
+      .then((res) => {
+        setSubmitted(true);
+        if (!response.data.auto_itinerary_created) {
+          router.push("/thank-you");
+        } else {
+          if (response.data.loader_time) {
+            window.location.href =
+              "/itinerary/" +
+              response.data.itinerary.itinerary_id +
+              "?t=" +
+              response.data.loader_time;
+          } else {
+            window.location.href =
+              "/itinerary/" + response.data.itinerary.itinerary_id;
+          }
+
+          setLoading(false);
+
+          logEvent({
+            action: "conversion",
+            params: {
+              send_to: "AW-738037519/IF5rCMyxhL8ZEI-e9t8C",
+            },
+          });
+        }
+      })
+      .catch((err) => {
+        setLoading(false);
+        // router.push("/thank-you");
+      });
   };
 
   if (!loading && !submitted)
