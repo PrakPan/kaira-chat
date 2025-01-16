@@ -15,6 +15,8 @@ import { MdWifi } from "react-icons/md";
 import { logEvent } from "../../../services/ga/Index";
 import { connect } from "react-redux";
 
+
+
 const RoomTypeGrid = styled.div`
   display: grid;
   grid-template-columns: 1rem auto 5.5rem;

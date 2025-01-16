@@ -108,7 +108,7 @@ export default function Travelers(props) {
             </div>
 
             {open && (
-                <div className="absolute bg-white z-50 left-0 md:left-auto md:right-0 top-[65px] flex flex-col gap-3 drop-shadow-2xl rounded-lg p-4 overflow-auto max-h-[70vh] hide-scrollbar">
+                <div className="absolute bg-white z-50 left-0 md:left-auto md:right-0 top-[65px] flex flex-col gap-3 drop-shadow-2xl rounded-lg p-4 overflow-auto max-h-[60vh] hide-scrollbar">
                     <div className="flex flex-col gap-3">
                         {rooms.map((room, index) => (
                             <Room key={index} index={index} data={room} setRooms={setRooms} showError={showError} />
