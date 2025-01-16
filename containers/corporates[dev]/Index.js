@@ -6,7 +6,7 @@ import HowItWorks from "../../components/containers/HowItWorksSlideshow";
 import media from "../../components/media";
 import travelsupportcontent from "../../public/content/travelsupport";
 import Logos from "./Logos";
-import Enquiry from "./enquiry/Index";
+import { ScheduleCallModal } from "./enquiry/Index";
 import BannerMobile from "./banner/Mobile";
 import WhatWeOffer from "./WhatWeOffer";
 import WhyChooseUs from "./WhyChooseUs";
@@ -15,7 +15,7 @@ import Faqs from "./Faqs";
 import Activities from "./Activities";
 import Locations from "./Locations";
 import DesktopBanner from "./banner/DesktopBanner";
-
+import SecondaryHeading from "../../components/heading/Secondary";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -141,12 +141,15 @@ const AffiliatePage = (props) => {
         {props.locations && props.locations.length ? (
           <div className="mt-5">
             <div className="flex flex-col pb-5 pl-3 pr-3 md:p-5 gap-3 items-center">
-              <div
-                className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]"
-              >
+              <div className="text-center text-[27px] md:text-[40px] font-[700] md:leading-[60px]">
                 Destinations in India for Corporate Getaways
               </div>
-              <div className="text-[16px] font-[350] leading-[24px] text-center">Corporate Getaways are essential for building relationships and closing deals. Nothing compares to the impact of face-to-face interaction and a handshake. It’s key to developing partnerships and achieving a range of business objectives.</div>
+              <SecondaryHeading className="text-center">
+                Corporate Getaways are essential for building relationships and
+                closing deals. Nothing compares to the impact of face-to-face
+                interaction and a handshake. It’s key to developing partnerships
+                and achieving a range of business objectives.
+              </SecondaryHeading>
             </div>
 
             <Locations
@@ -162,14 +165,14 @@ const AffiliatePage = (props) => {
           <div className="mt-5 flex flex-col gap-5">
             <div>
               <div className="flex flex-col pb-5 pl-3 pr-3 md:p-5 gap-3 items-center">
-                <div
-                  className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]"
-                >
+                <div className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]">
                   Corporate Getaways
                 </div>
-                <div className="text-[16px] font-[350] leading-[24px] text-center">
-                  Escape the office and rejuvenate with inspiring retreats designed to recharge teams and fuel fresh ideas in scenic, peaceful locations.
-                </div>
+                <SecondaryHeading className="text-center">
+                  Escape the office and rejuvenate with inspiring retreats
+                  designed to recharge teams and fuel fresh ideas in scenic,
+                  peaceful locations.
+                </SecondaryHeading>
               </div>
 
               <Activities
@@ -178,7 +181,12 @@ const AffiliatePage = (props) => {
               />
             </div>
 
-            <button onClick={() => setEnquiryOpen(true)} className="border-2 border-black rounded-lg px-5 py-2 mx-auto hover:text-white hover:bg-black transition-all">Schedule a Callback Now!</button>
+            <button
+              onClick={() => setEnquiryOpen(true)}
+              className="border-2 border-black rounded-lg px-5 py-2 mx-auto hover:text-white hover:bg-black transition-all"
+            >
+              Schedule a Callback Now!
+            </button>
           </div>
         ) : (
           <></>
@@ -188,14 +196,14 @@ const AffiliatePage = (props) => {
           <div className="mt-5 flex flex-col gap-5">
             <div>
               <div className="flex flex-col pb-5 pl-3 pr-3 md:p-5 gap-3 items-center">
-                <div
-                  className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]"
-                >
+                <div className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]">
                   In Office Activations
                 </div>
-                <div className="text-[16px] font-[350] leading-[24px] text-center">
-                  Bring the excitement to your workspace with dynamic activities that foster creativity, engagement, and team bonding, right within your office walls.
-                </div>
+                <SecondaryHeading className="text-center">
+                  Bring the excitement to your workspace with dynamic activities
+                  that foster creativity, engagement, and team bonding, right
+                  within your office walls.
+                </SecondaryHeading>
               </div>
 
               <Activities
@@ -204,7 +212,12 @@ const AffiliatePage = (props) => {
               />
             </div>
 
-            <button onClick={() => setEnquiryOpen(true)} className="border-2 border-black rounded-lg px-5 py-2 mx-auto hover:text-white hover:bg-black transition-all">Schedule a Callback Now!</button>
+            <button
+              onClick={() => setEnquiryOpen(true)}
+              className="border-2 border-black rounded-lg px-5 py-2 mx-auto hover:text-white hover:bg-black transition-all"
+            >
+              Schedule a Callback Now!
+            </button>
           </div>
         ) : (
           <></>
@@ -214,14 +227,14 @@ const AffiliatePage = (props) => {
           <div className="mt-5 flex flex-col gap-5">
             <div>
               <div className="flex flex-col pb-5 pl-3 pr-3 md:p-5 gap-3 items-center">
-                <div
-                  className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]"
-                >
+                <div className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]">
                   Team Outing Activities
                 </div>
-                <div className="text-[16px] font-[350] leading-[24px] text-center">
-                  Strengthen bonds and inspire camaraderie with outdoor adventures and customized activities that make teamwork fun and unforgettable.
-                </div>
+                <SecondaryHeading className="text-center">
+                  Strengthen bonds and inspire camaraderie with outdoor
+                  adventures and customized activities that make teamwork fun
+                  and unforgettable.
+                </SecondaryHeading>
               </div>
 
               <Activities
@@ -230,7 +243,12 @@ const AffiliatePage = (props) => {
               />
             </div>
 
-            <button onClick={() => setEnquiryOpen(true)} className="border-2 border-black rounded-lg px-5 py-2 mx-auto hover:text-white hover:bg-black transition-all">Schedule a Callback Now!</button>
+            <button
+              onClick={() => setEnquiryOpen(true)}
+              className="border-2 border-black rounded-lg px-5 py-2 mx-auto hover:text-white hover:bg-black transition-all"
+            >
+              Schedule a Callback Now!
+            </button>
           </div>
         ) : (
           <></>
@@ -240,14 +258,14 @@ const AffiliatePage = (props) => {
           <div className="mt-5 flex flex-col gap-5">
             <div>
               <div className="flex flex-col pb-5 pl-3 pr-3 md:p-5 gap-3 items-center">
-                <div
-                  className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]"
-                >
+                <div className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]">
                   Conferences
                 </div>
-                <div className="text-[16px] font-[350] leading-[24px] text-center">
-                  Elevate your corporate events with seamless planning and exceptional facilities for conferences that are as engaging as they are productive.
-                </div>
+                <SecondaryHeading className="text-center">
+                  Elevate your corporate events with seamless planning and
+                  exceptional facilities for conferences that are as engaging as
+                  they are productive.
+                </SecondaryHeading>
               </div>
 
               <Activities
@@ -256,7 +274,12 @@ const AffiliatePage = (props) => {
               />
             </div>
 
-            <button onClick={() => setEnquiryOpen(true)} className="border-2 border-black rounded-lg px-5 py-2 mx-auto hover:text-white hover:bg-black transition-all">Schedule a Callback Now!</button>
+            <button
+              onClick={() => setEnquiryOpen(true)}
+              className="border-2 border-black rounded-lg px-5 py-2 mx-auto hover:text-white hover:bg-black transition-all"
+            >
+              Schedule a Callback Now!
+            </button>
           </div>
         ) : (
           <></>
@@ -266,14 +289,14 @@ const AffiliatePage = (props) => {
           <div className="mt-5 flex flex-col gap-5">
             <div>
               <div className="flex flex-col pb-5 pl-3 pr-3 md:p-5 gap-3 items-center">
-                <div
-                  className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]"
-                >
+                <div className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]">
                   Weekend Excursions
                 </div>
-                <div className="text-[16px] font-[350] leading-[24px] text-center">
-                  Step away from the daily routine with weekend escapes that blend relaxation, adventure, and team connection in unique destinations.
-                </div>
+                <SecondaryHeading className="text-center">
+                  Step away from the daily routine with weekend escapes that
+                  blend relaxation, adventure, and team connection in unique
+                  destinations.
+                </SecondaryHeading>
               </div>
 
               <Activities
@@ -282,7 +305,12 @@ const AffiliatePage = (props) => {
               />
             </div>
 
-            <button onClick={() => setEnquiryOpen(true)} className="border-2 border-black rounded-lg px-5 py-2 mx-auto hover:text-white hover:bg-black transition-all">Schedule a Callback Now!</button>
+            <button
+              onClick={() => setEnquiryOpen(true)}
+              className="border-2 border-black rounded-lg px-5 py-2 mx-auto hover:text-white hover:bg-black transition-all"
+            >
+              Schedule a Callback Now!
+            </button>
           </div>
         ) : (
           <></>
@@ -292,14 +320,14 @@ const AffiliatePage = (props) => {
           <div className="mt-5 flex flex-col gap-5">
             <div>
               <div className="flex flex-col pb-5 pl-3 pr-3 md:p-5 gap-3 items-center">
-                <div
-                  className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]"
-                >
+                <div className="text-[27px] md:text-[40px] font-[700] md:leading-[60px]">
                   Add On Activities
                 </div>
-                <div className="text-[16px] font-[350] leading-[24px] text-center">
-                  Enhance your event experience with curated add-ons, from wellness sessions to team-building games, tailored to enrich and energize your group.
-                </div>
+                <SecondaryHeading className="text-center">
+                  Enhance your event experience with curated add-ons, from
+                  wellness sessions to team-building games, tailored to enrich
+                  and energize your group.
+                </SecondaryHeading>
               </div>
 
               <Activities
@@ -308,18 +336,21 @@ const AffiliatePage = (props) => {
               />
             </div>
 
-            <button onClick={() => setEnquiryOpen(true)} className="border-2 border-black rounded-lg px-5 py-2 mx-auto hover:text-white hover:bg-black transition-all">Schedule a Callback Now!</button>
+            <button
+              onClick={() => setEnquiryOpen(true)}
+              className="border-2 border-black rounded-lg px-5 py-2 mx-auto hover:text-white hover:bg-black transition-all"
+            >
+              Schedule a Callback Now!
+            </button>
           </div>
         ) : (
           <></>
         )}
 
-
-        <div
-          className="text-[27px] md:text-[40px] font-[700] md:leading-[60px] text-center mt-[100px] mb-4"
-        >
+        <div className="text-[27px] md:text-[40px] font-[700] md:leading-[60px] text-center mt-[100px] mb-4">
           Catered to every organisation's need
         </div>
+
         <HowItWorksContainer>
           <HowItWorks
             nostart
@@ -345,16 +376,13 @@ const AffiliatePage = (props) => {
 
       <br></br>
 
-      <Enquiry
+      <ScheduleCallModal
         show={enquiryOpen}
         onhide={() => setEnquiryOpen(false)}
-      ></Enquiry>
-
+      ></ScheduleCallModal>
 
       {isPageWide ? (
-        <DesktopBanner
-          onclick={() => setEnquiryOpen(true)}
-        />
+        <DesktopBanner onclick={() => setEnquiryOpen(true)} />
       ) : (
         <div>
           <BannerMobile

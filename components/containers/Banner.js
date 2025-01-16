@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Button from "../ui/button/Index";
 
 const Container = styled.div`
+  display: none;
   @media screen and (min-width: 768px) {
     display: initial;
     z-index: 998 !important;
@@ -10,7 +11,7 @@ const Container = styled.div`
     position: fixed;
     left: 50%;
     transform: translateX(-50%);
-    bottom: 0;
+    ${(props) => props.newYear ? "bottom: 16px" : "bottom: 0"};
     margin-bottom: 1rem;
   }
 `;
@@ -58,7 +59,7 @@ const Banner = (props) => {
 
   if (showBanner)
     return (
-      <Container className="flex place-self-end">
+      <Container className="flex place-self-end" newYear={props.newYear}>
         <GridContainer>
           <div className="center-div">
             <Text className="font-lexend">{props.text}</Text>

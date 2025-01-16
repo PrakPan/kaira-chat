@@ -57,12 +57,9 @@ const Heading = styled.p`
   line-height: normal;
 
   @media screen and (min-width: 815px) {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     margin: 0.25rem 0 0.25rem 0;
     ${(props) => props.tailoredFormModal && "margin : 1rem 0"};
-
-    height: 1.8rem;
-    overflow: hidden;
   }
 `;
 
@@ -122,7 +119,7 @@ const Enquiry = (props) => {
   const [startingLocation, setStartingLocation] = useState(false);
   const isPageLoaded = usePageLoaded();
   const [destination, setDestination] = useState(
-    routerquery.destination || props.destination,
+    routerquery.destination || props.destination
   );
   const popupObj = {
     dateStart: false,
@@ -178,6 +175,7 @@ const Enquiry = (props) => {
         id: routerquery.page_id || props.page_id,
         name: routerquery.destination || props.destination,
         input_id: initialInputId,
+        type: routerquery?.type ? routerquery.type : props?.destinationType,
       },
     ];
   }
@@ -230,7 +228,7 @@ const Enquiry = (props) => {
           locations.push(selectedCities[i].name);
         }
       }
-    } catch { }
+    } catch {}
 
     const start_date = format(value_start, "yyyy-MM-dd");
     const end_date = format(value_end, "yyyy-MM-dd");
@@ -432,11 +430,9 @@ const Enquiry = (props) => {
           <div
             style={{
               padding: props.tailoredFormModal ? "0rem 1rem" : "0.5rem 1rem",
-              width: "100%",
               marginBottom: slideIndex === 2 ? "0rem" : "0rem",
-              display: props.tailoredFormModal ? "initial" : "grid",
-              gridTemplateColumns: "max-content auto",
             }}
+            className="w-full flex flex-row items-center"
           >
             {slideIndex && !props.tailoredFormModal ? (
               <div className="center-div">
@@ -450,7 +446,7 @@ const Enquiry = (props) => {
               <></>
             )}
 
-            <div style={{ width: "100%" }}>
+            <div className="w-full">
               {props.tailoredFormModal && (
                 <CloseIcon>
                   {slideIndex ? (
@@ -552,11 +548,11 @@ const Enquiry = (props) => {
                   style={
                     !isPageWide && isPageLoaded
                       ? {
-                        position: "fixed",
-                        left: "1rem",
-                        right: "1rem",
-                        bottom: "0",
-                      }
+                          position: "fixed",
+                          left: "1rem",
+                          right: "1rem",
+                          bottom: "0",
+                        }
                       : {}
                   }
                   padding="0.5rem 2rem"
@@ -581,11 +577,11 @@ const Enquiry = (props) => {
                     style={
                       !isPageWide
                         ? {
-                          position: "fixed",
-                          left: "1rem",
-                          right: "1rem",
-                          bottom: "0",
-                        }
+                            position: "fixed",
+                            left: "1rem",
+                            right: "1rem",
+                            bottom: "0",
+                          }
                         : {}
                     }
                     padding="0.5rem 2rem"
@@ -607,11 +603,11 @@ const Enquiry = (props) => {
                     style={
                       !isPageWide
                         ? {
-                          position: "fixed",
-                          left: "1rem",
-                          right: "1rem",
-                          bottom: "0",
-                        }
+                            position: "fixed",
+                            left: "1rem",
+                            right: "1rem",
+                            bottom: "0",
+                          }
                         : {}
                     }
                     padding="0.5rem 2rem"

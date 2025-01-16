@@ -17,7 +17,6 @@ import media from "../media";
 import openTailoredModal from "../../services/openTailoredModal";
 import { logEvent } from "../../services/ga/Index";
 
-
 const NavbarContainer = styled.div`
   position: relative;
   color: black;
@@ -53,7 +52,6 @@ const TTWLogoContainer = styled(CenterNav)`
     justify-content: flex-start;
   }
 `;
-
 
 const Header = styled.div`
   position: ${(props) => (props.staticnav ? "static" : "fixed")} !important;
@@ -289,9 +287,7 @@ const Navbar = (props) => {
               <div></div>
             )}
 
-            <div
-              className="flex flex-row items-center justify-center"
-            >
+            <div className="flex flex-row items-center justify-center">
               {!props.hidecta ? (
                 <Button
                   fontWeight="500"

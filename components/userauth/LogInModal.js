@@ -3,7 +3,6 @@ import Button from "../ui/button/Index";
 import { connect } from "react-redux";
 import * as authaction from "../../store/actions/auth";
 import * as otpaction from "../../store/actions/getOtp";
-import axios from "axios";
 import Spinner from "../Spinner";
 import styled from "styled-components";
 import Link from "next/link";
@@ -18,7 +17,9 @@ import Image from "next/image";
 import media from "../media";
 import { useGoogleLogin } from "@react-oauth/google";
 import { getCountryCodes } from "../../store/actions/countryCodes";
+import ReCAPTCHA from "react-google-recaptcha";
 import ImageLoader from "../../components/ImageLoader";
+import { RECAPTCHA_SITE_KEY } from "../../services/constants";
 
 const MobileNumberContainer = styled.div`
   display: grid;
@@ -92,7 +93,8 @@ const LogIn = React.memo((props) => {
   let isPageWide = media("(min-width: 768px)");
 
   const mobileRef = useRef();
-  const [mobile, setMobile] = useState("");
+  const recaptchaRef = useRef(null);
+  const [phone, setPhone] = useState("");
   const [otpResent, setOtpResent] = useState(false);
   const [whatsapp, setWhatsapp] = useState(true);
   const [extension, setExtension] = useState("India"); //store extension
@@ -133,17 +135,6 @@ const LogIn = React.memo((props) => {
   }, [otp]);
 
   const handleExtensionChangeOption = (country) => {
-    // const res = separateCountryCode(phone);
-    // if (res) {
-    //   setPhone(props.CountryCodes[country].label + res.number);
-    // } else {
-    //   if (phone.length === 10) {
-    //     setPhone(props.CountryCodes[country].label + phone);
-    //   } else {
-    //     setPhone(props.CountryCodes[country].label);
-    //   }
-    // }
-
     setExtension(country);
   };
 
@@ -157,21 +148,8 @@ const LogIn = React.memo((props) => {
 
   const handleMobileBlur = () => {
     const phone = mobileRef.current.value;
-    setMobile(phone);
+    setPhone(phone);
   };
-
-  const combinePhoneNumber = (selectedCountryCode, phoneInput) => {
-    if (phoneInput.startsWith(selectedCountryCode)) {
-      // Phone input starts with the selected country code
-      return phoneInput;
-    } else if (phoneInput.startsWith('+')) {
-      // Phone input likely includes a country code, so return it as is
-      return phoneInput;
-    } else {
-      // Prepend the selected country code
-      return selectedCountryCode + phoneInput;
-    }
-  }
 
   const separateCountryCode = (phoneNumber) => {
     const pattern = /^(\+\d{1,3})(\d{10})$/;
@@ -194,7 +172,6 @@ const LogIn = React.memo((props) => {
   //Submit OTP
   const submitOtpHandler = () => {
     setUserNameError(false);
-    const countryCode = props.CountryCodes[extension].label;
 
     if (props.newUser) {
       const newUserValidity = checkNewUserData();
@@ -203,7 +180,7 @@ const LogIn = React.memo((props) => {
 
       if (newUserValidity)
         props.onAuth(
-          combinePhoneNumber(countryCode, mobile),
+          phone,
           otp,
           userDetails.userName,
           userDetails.email,
@@ -213,7 +190,7 @@ const LogIn = React.memo((props) => {
         );
     } else if (props.otpSent && !props.name) {
       props.onAuth(
-        combinePhoneNumber(countryCode, mobile),
+        phone,
         otp,
         userDetails.userName,
         null,
@@ -222,7 +199,7 @@ const LogIn = React.memo((props) => {
       );
     } else if (props.otpSent && !props.name && !props.email) {
       props.onAuth(
-        combinePhoneNumber(countryCode, mobile),
+        phone,
         otp,
         userDetails.userName,
         userDetails.email,
@@ -231,7 +208,7 @@ const LogIn = React.memo((props) => {
       );
     } else if (props.otpSent && !props.email) {
       props.onAuth(
-        combinePhoneNumber(countryCode, mobile),
+        phone,
         otp,
         null,
         userDetails.email,
@@ -239,14 +216,7 @@ const LogIn = React.memo((props) => {
         props.itinary_id
       );
     } else {
-      props.onAuth(
-        combinePhoneNumber(countryCode, mobile),
-        otp,
-        null,
-        null,
-        whatsapp,
-        props.itinary_id
-      );
+      props.onAuth(phone, otp, null, null, whatsapp, props.itinary_id);
     }
   };
 
@@ -257,32 +227,59 @@ const LogIn = React.memo((props) => {
 
   //Set Mobile
   const handleMobileChange = (event) => {
-    setMobile(event.target.value);
+    setPhone(event.target.value);
   };
 
   //Dispatch Action
-  const otpHandler = () => {
-    const countryCode = props.CountryCodes[extension].label;
-    props.onOtp(combinePhoneNumber(countryCode, mobile));
+  const otpHandler = (token) => {
+    const phoneNumber = phone.trim();
+    if (phoneNumber.length <= 10) {
+      setPhone(props.CountryCodes[extension].label + phoneNumber);
+      props.onOtp(props.CountryCodes[extension].label + phoneNumber, token);
+    } else {
+      setPhone(phoneNumber);
+      props.onOtp(phoneNumber, token);
+    }
+    recaptchaRef.current.reset();
   };
 
   //TEST
-  const resetOtpHandler = () => {
-    const authData = {
-      username: props.CountryCodes[extension].label + mobile,
-    };
-    axios
-      .post("https://apis.tarzanway.com/user/resend/otp/", authData)
-      .then((response) => { });
+  const resetOtpHandler = (token) => {
+    props.onOtp(phone, token);
     setOtpResent(true);
+    recaptchaRef.current.reset();
   };
 
   //Update phone
   const _updatePhoneHandler = () => {
     props.onUpdate({
-      phone: props.CountryCodes[extension].label + mobile,
+      phone: phone,
       whatsapp_opt_in: whatsapp,
     });
+  };
+
+  const _handlePhoneUpdate = () => {
+    props.onResetLogin();
+    mobileRef.current.focus();
+  };
+
+  const _handleGoogleLogin = useGoogleLogin({
+    onSuccess: (tokenResponse) => props.onGoogleAuth(tokenResponse),
+  });
+
+  const onRecaptchaChange = (value) => {
+    if (!props.otpSent) otpHandler(value);
+    else resetOtpHandler(value);
+  };
+
+  const verifyRecaptchaHandler = () => {
+    const recaptchaValue = recaptchaRef.current.getValue();
+    if (recaptchaValue) {
+      if (!props.otpSent) otpHandler(recaptchaValue);
+      else resetOtpHandler(recaptchaValue);
+    } else {
+      recaptchaRef.current.execute(); // Trigger the invisible ReCAPTCHA
+    }
   };
 
   //Mobile, name, email, password, JSX
@@ -299,7 +296,7 @@ const LogIn = React.memo((props) => {
         label="Mobile Number"
         type="mobile"
         id="mobile"
-        value={mobile}
+        value={phone}
         onChange={handleMobileChange}
         onBlur={handleMobileBlur}
         className="loginform"
@@ -349,15 +346,6 @@ const LogIn = React.memo((props) => {
       )}
     </>
   );
-
-  const _handlePhoneUpdate = () => {
-    props.onResetLogin();
-    mobileRef.current.focus();
-  };
-
-  const _handleGoogleLogin = useGoogleLogin({
-    onSuccess: (tokenResponse) => props.onGoogleAuth(tokenResponse),
-  });
 
   if (props.loadingsocial)
     return (
@@ -422,12 +410,12 @@ const LogIn = React.memo((props) => {
               />
             )}
             {mobileInput}
-            </MobileNumberContainer>
+          </MobileNumberContainer>
 
           <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
             {whatsapp ? <ImCheckboxChecked /> : <ImCheckboxUnchecked />} Receive
             booking updates via WhatsApp
-            </WhatsappCheckBox>
+          </WhatsappCheckBox>
 
           <Button
             onclick={_updatePhoneHandler}
@@ -531,7 +519,7 @@ const LogIn = React.memo((props) => {
               }}
             >
               <u onClick={_handlePhoneUpdate}>Update Phone</u>
-              <ResendOtp onClick={resetOtpHandler}>
+              <ResendOtp onClick={verifyRecaptchaHandler}>
                 <u>Resend OTP</u>
               </ResendOtp>
             </UpdatePhone>
@@ -539,7 +527,7 @@ const LogIn = React.memo((props) => {
 
           {!props.otpSent ? (
             <Button
-              onclick={otpHandler}
+              onclick={verifyRecaptchaHandler}
               margin={props.nospacing ? "0" : "0.5rem 0"}
               width="100%"
               bgColor="#F7E700"
@@ -573,7 +561,7 @@ const LogIn = React.memo((props) => {
             </Button>
           )}
 
-          {/* <div
+          <div
             style={{
               position: "relative",
               marginBlock: isPageWide ? "3rem" : "2rem",
@@ -641,7 +629,7 @@ const LogIn = React.memo((props) => {
                 Sign in with Google
               </p>
             </div>
-          </Button> */}
+          </Button>
 
           <div
             className="text-center font-lexend"
@@ -656,6 +644,14 @@ const LogIn = React.memo((props) => {
               T&Cs and privacy policy
             </Link>
           </div>
+
+          <ReCAPTCHA
+            size="invisible"
+            sitekey={RECAPTCHA_SITE_KEY}
+            ref={recaptchaRef}
+            onChange={onRecaptchaChange}
+            className="hidden"
+          />
         </form>
       )}
 

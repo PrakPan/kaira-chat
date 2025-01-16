@@ -27,7 +27,7 @@ const Experiences = (props) => {
     useRef(null),
   ];
 
-  useEffect(() => { }, [TextRefs]);
+  useEffect(() => {}, [TextRefs]);
 
   useEffect(() => {
     let experiencecards = [];
@@ -50,7 +50,9 @@ const Experiences = (props) => {
             images={props.experiences[i].images}
             starting_cost={
               props.experiences[i]?.payment_info
-                ? props.experiences[i].payment_info?.show_per_person_cost ? props.experiences[i].payment_info.per_person_total_cost : props.experiences[i].payment_info?.total_cost
+                ? props.experiences[i].payment_info?.show_per_person_cost
+                  ? props.experiences[i].payment_info.per_person_total_cost
+                  : props.experiences[i].payment_info?.total_cost
                 : null
             }
             duration={

@@ -102,7 +102,7 @@ const Homepage = (props) => {
                 props.experienceData.itinerary_data[i].payment_info
                   ? props.experienceData.itinerary_data[i].payment_info.length
                     ? props.experienceData.itinerary_data[i].payment_info[0]
-                      .cost
+                        .cost
                     : null
                   : null
               }
@@ -118,7 +118,7 @@ const Homepage = (props) => {
               starting_cost={
                 props.experienceData.itinerary_data[i].payment_info
                   ? props.experienceData.itinerary_data[i].payment_info
-                    .per_person_total_cost
+                      .per_person_total_cost
                   : props.experienceData.itinerary_data[i].starting_price
               }
               images={props.experienceData.itinerary_data[i].images}
@@ -154,7 +154,7 @@ const Homepage = (props) => {
                 props.experienceData.itinerary_data[i].payment_info
                   ? props.experienceData.itinerary_data[i].payment_info.length
                     ? props.experienceData.itinerary_data[i].payment_info[0]
-                      .cost
+                        .cost
                     : null
                   : null
               }
@@ -170,23 +170,23 @@ const Homepage = (props) => {
               starting_cost={
                 props.experienceData.itinerary_data[i].payment_info
                   ? props.experienceData.itinerary_data[i].payment_info
-                    .per_person_total_cost
+                      .per_person_total_cost
                   : props.experienceData.itinerary_data[i].starting_price
               }
               images={props.experienceData.itinerary_data[i].images}
             ></ExperienceCard>
           );
       }
-    } catch { }
+    } catch {}
   }, []);
 
   useEffect(() => {
     if (props.experienceData?.headings) {
       let headings = props.experienceData?.headings;
-      headings.sort((a, b) => a?.priority - b?.priority)
+      headings.sort((a, b) => a?.priority - b?.priority);
       setHeadings(headings);
     }
-  }, [props.experienceData?.headings])
+  }, [props.experienceData?.headings]);
 
   useEffect(() => {
     const user = [];
@@ -260,57 +260,33 @@ const Homepage = (props) => {
         cities={props.experienceData.locations}
         children_cities={props.experienceData.children}
         title={props.experienceData.banner_heading}
+        subheading={props.experienceData.banner_text}
         page={"State Page"}
         eventDates={props.eventDates}
       />
 
       <SetWidthContainer>
-        {!props.themePage && <PathNavigation path={props.experienceData.path} />}
-
-        {props.experienceData.page_type == "Theme" && props.experienceData.overview_text && (
-          <MapGridContainer>
-            <Overview
-              locations={props.experienceData.locations}
-              overview_heading={overviewHeading}
-              overview_text={props.experienceData.overview_text}
-            ></Overview>
-            <MapContainer>
-              {props.experienceData.locations &&
-                props.experienceData.locations.length ? (
-                <MapBox
-                  InfoWindowContainer={InfoWindowContainer}
-                  locations={props.experienceData.locations}
-                  height="300px"
-                />
-              ) : (
-                <></>
-              )}
-            </MapContainer>
-          </MapGridContainer>
-        )}
-
-        {!props.themePage && props?.experienceData?.locations?.length ? (
-          <>
-            <H3
-              style={{
-                textAlign: isPageWide ? "left" : "center",
-                margin: isPageWide
-                  ? "2.5rem 0 4.5rem 0"
-                  : "2.5rem 0.5rem 1.5rem 0.5rem",
-              }}
-            >
-              {props.experienceData.destination
-                ? "Top locations across " + props.experienceData.destination
-                : "Top Locations"}
-            </H3>
-            <Locations
-              locations={props.experienceData.locations}
-              viewall
-              page={"State Page"}
-              state={props?.experienceData?.destination}
-            ></Locations>
-          </>
-        ) : null}
+        <PathNavigation path={props.experienceData.path} />
+        <>
+          <H3
+            style={{
+              textAlign: isPageWide ? "left" : "center",
+              margin: isPageWide
+                ? "2.5rem 0 4.5rem 0"
+                : "2.5rem 0.5rem 1.5rem 0.5rem",
+            }}
+          >
+            {props.experienceData.destination
+              ? "Top locations across " + props.experienceData.destination
+              : "Top Locations"}
+          </H3>
+          <Locations
+            locations={props.experienceData.locations}
+            viewall
+            page={"State Page"}
+            state={props?.experienceData?.destination}
+          ></Locations>
+        </>
 
         {headings.map((heading, index) => (
           <div key={index}>
@@ -331,9 +307,7 @@ const Homepage = (props) => {
 
             {index % 2 ? (
               <Button
-                onclick={() =>
-                  handlePlanButtonClick(heading.name)
-                }
+                onclick={() => handlePlanButtonClick(heading.name)}
                 borderWidth="1px"
                 fontWeight="500"
                 borderRadius="6px"
@@ -365,51 +339,25 @@ const Homepage = (props) => {
           </>
         ) : null}
 
-        {props.themePage && props?.experienceData?.locations?.length ? (
-          <>
-            <H3
-              style={{
-                textAlign: isPageWide ? "left" : "center",
-                margin: isPageWide
-                  ? "2.5rem 0 4.5rem 0"
-                  : "2.5rem 0.5rem 1.5rem 0.5rem",
-              }}
-            >
-              {props.experienceData.destination
-                ? "Top locations across " + props.experienceData.destination
-                : "Top Locations"}
-            </H3>
-            <Locations
-              locations={props.experienceData.locations}
-              viewall
-              page={"Theme Page"}
-              state={props?.experienceData?.destination}
-            ></Locations>
-          </>
-        ) : null}
-
-        {props.experienceData.page_type !== "Theme" && props.experienceData.overview_text && (
-          <MapGridContainer>
-            <Overview
-              locations={props.experienceData.locations}
-              overview_heading={overviewHeading}
-              overview_text={props.experienceData.overview_text}
-            ></Overview>
-            <MapContainer>
-              {props.experienceData.locations &&
-                props.experienceData.locations.length ? (
-                <MapBox
-                  InfoWindowContainer={InfoWindowContainer}
-                  locations={props.experienceData.locations}
-                  height="300px"
-                />
-              ) : (
-                <></>
-              )}
-            </MapContainer>
-          </MapGridContainer>
-        )}
-
+        <MapGridContainer>
+          <Overview
+            locations={props.experienceData.locations}
+            overview_heading={overviewHeading}
+            overview_text={props.experienceData.overview_text}
+          ></Overview>
+          <MapContainer>
+            {props.experienceData.locations &&
+            props.experienceData.locations.length ? (
+              <MapBox
+                InfoWindowContainer={InfoWindowContainer}
+                locations={props.experienceData.locations}
+                height="300px"
+              />
+            ) : (
+              <></>
+            )}
+          </MapContainer>
+        </MapGridContainer>
         <Button
           onclick={() =>
             handlePlanButtonClick(
@@ -506,6 +454,7 @@ const Homepage = (props) => {
           </Button>
         ) : null}
       </SetWidthContainer>
+
       <DesktopBanner
         loading={desktopBannerLoading}
         onclick={() =>
@@ -515,11 +464,13 @@ const Homepage = (props) => {
             props.experienceData.destination
           )
         }
-        text={`Craft a personalized itinerary${props.experienceData.destination
-          ? " to " + props.experienceData.destination + " now"
-          : ""
-          }!`}
+        text={`Craft a personalized itinerary${
+          props.experienceData.destination
+            ? " to " + props.experienceData.destination + " now"
+            : ""
+        }!`}
       ></DesktopBanner>
+
       <div className="hidden-desktop">
         <MobileBanner
           handleClick={() =>
@@ -532,6 +483,7 @@ const Homepage = (props) => {
           city={props.experienceData.destination}
         />
       </div>
+
       <SetWidthContainer>
         {props.locations && props.locations.length ? (
           <>

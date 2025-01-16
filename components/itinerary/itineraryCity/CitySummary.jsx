@@ -47,7 +47,7 @@ const CitySummary = (props) => {
   };
 
   return (
-    <div className="flex">
+    <div className="flex p-3">
       {activities && activities.length ? (
         <div className="text-sm font-normal flex flex-row items-center flex-wrap gap-1 w-full">
           <span className="text-[14px] font-medium leading-[22px]">

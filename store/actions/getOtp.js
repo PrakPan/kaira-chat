@@ -34,8 +34,9 @@ export const newUser = () => {
   };
 };
 
-export const getotp = (mobile) => {
+export const getotp = (mobile, token) => {
   const authData = {
+    "g-recaptcha-response": token,
     username: mobile,
   };
   {
@@ -73,12 +74,24 @@ export const getotp = (mobile) => {
         } else dispatch(authMobileFail()); //Invalid mobile
       })
       .catch((err) => {
-        if (err?.response?.data) {
-          Sentry.captureException(new Error(`[LogIn Error]: ${err.response.config.url} : ${err.response.config.data} : ${err.response.data.username[0]}`));
-          dispatch(authMobileFail(err.response.data.username[0])); //Invalid mobile
+        if (err?.response?.status === 400) {
+          if (err.response.data?.message) {
+            dispatch(authMobileFail(err.response.data.message));
+          } else {
+            dispatch(authMobileFail(err.response.data.username[0])); //Invalid mobile
+            Sentry.captureException(
+              new Error(
+                `[LogIn Error]: ${err.response?.config?.url} : ${err.response?.config?.data} : ${err.response?.data?.username[0]}`
+              )
+            );
+          }
         } else {
-          Sentry.captureException(new Error(`[LogIn Error]: ${err.response.config.url} : ${err.response.config.data}`));
-          dispatch(authMobileFail("Something went wrong!, please try again")); //Invalid mobile
+          dispatch(authMobileFail("OTP could not be sent"));
+          Sentry.captureException(
+            new Error(
+              `[LogIn Error]: ${err.response.config.url} : ${err.response.config.data}`
+            )
+          );
         }
       });
   };

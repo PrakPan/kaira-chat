@@ -3,7 +3,6 @@ import styled from "styled-components";
 import Pax from "./pax/Pax.jsx"
 import GroupType from "./GroupType";
 import Question from "../Question";
-import Budget from "./Budget";
 import BudgetSlider from "./preferences/BudgetSlider.jsx";
 import { AiFillCaretDown } from "react-icons/ai";
 import Preferences from "./preferences/Index";
