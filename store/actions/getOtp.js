@@ -34,10 +34,11 @@ export const newUser = () => {
   };
 };
 
-export const getotp = (mobile, token) => {
+export const getotp = (data) => {
   const authData = {
-    "g-recaptcha-response": token,
-    username: mobile,
+    "g-recaptcha-response": data.token,
+    username: data.mobile,
+    whatsapp_opt_in: data.whatsapp,
   };
   {
     process.env.NODE_ENV === "production" &&
