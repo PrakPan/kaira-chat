@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React, { useState, useEffect, useRef } from "react";
 import Button from "../ui/button/Index";
 import { connect } from "react-redux";
@@ -12,12 +13,12 @@ import { ImCheckboxUnchecked, ImCheckboxChecked } from "react-icons/im";
 import OTPInput from "react-otp-input";
 import FloatingInput from "../ui/input/FloatingInput";
 import { BiError } from "react-icons/bi";
+import { IoLogoWhatsapp } from "react-icons/io";
+import ReCAPTCHA from "react-google-recaptcha";
 import LoginLoadingIcon from "../ui/LoadingLottie";
-import Image from "next/image";
 import media from "../media";
 import { useGoogleLogin } from "@react-oauth/google";
 import { getCountryCodes } from "../../store/actions/countryCodes";
-import ReCAPTCHA from "react-google-recaptcha";
 import ImageLoader from "../../components/ImageLoader";
 import { RECAPTCHA_SITE_KEY } from "../../services/constants";
 
@@ -235,17 +236,32 @@ const LogIn = React.memo((props) => {
     const phoneNumber = phone.trim();
     if (phoneNumber.length <= 10) {
       setPhone(props.CountryCodes[extension].label + phoneNumber);
-      props.onOtp(props.CountryCodes[extension].label + phoneNumber, token);
+      const data = {
+        token: token,
+        mobile: props.CountryCodes[extension].label + phoneNumber,
+        whatsapp: whatsapp,
+      };
+      props.onOtp(data);
     } else {
       setPhone(phoneNumber);
-      props.onOtp(phoneNumber, token);
+      const data = {
+        token: token,
+        mobile: phoneNumber,
+        whatsapp: whatsapp,
+      };
+      props.onOtp(data);
     }
     recaptchaRef.current.reset();
   };
 
   //TEST
   const resetOtpHandler = (token) => {
-    props.onOtp(phone, token);
+    const data = {
+      token: token,
+      mobile: phone,
+      whatsapp: whatsapp,
+    };
+    props.onOtp(data);
     setOtpResent(true);
     recaptchaRef.current.reset();
   };
@@ -414,7 +430,8 @@ const LogIn = React.memo((props) => {
 
           <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
             {whatsapp ? <ImCheckboxChecked /> : <ImCheckboxUnchecked />} Receive
-            booking updates via WhatsApp
+            OTP on WhatsApp
+            <IoLogoWhatsapp className="text-lg text-[#4DA750]" />
           </WhatsappCheckBox>
 
           <Button
@@ -465,8 +482,9 @@ const LogIn = React.memo((props) => {
           </MobileNumberContainer>
 
           <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
-            {whatsapp ? <ImCheckboxChecked /> : <ImCheckboxUnchecked />} Receive
-            booking updates via WhatsApp
+            {whatsapp ? <ImCheckboxChecked /> : <ImCheckboxUnchecked />}
+            Receive OTP on WhatsApp
+            <IoLogoWhatsapp className="text-lg text-[#4DA750]" />
           </WhatsappCheckBox>
 
           {props.newUser || (props.otpSent && !props.name) ? (
