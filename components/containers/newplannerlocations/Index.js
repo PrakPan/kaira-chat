@@ -81,7 +81,7 @@ const LocationsBlog = (props) => {
       <div className="hidden-mobile new-planner-location">
         <SwiperCarousel
           navigationButtons={true}
-          slidesPerView={6}
+          slidesPerView={4}
           cards={cardsToShowJSX}
           navButtonsTop={"40%"}
         ></SwiperCarousel>
