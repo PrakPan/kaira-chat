@@ -495,7 +495,7 @@ const Pax = ({ setShowPax, pax, setPax, classType, setClassType }) => {
 
         <div className="flex flex-row gap-5">
           <div className="flex flex-col gap-1">
-            <div>Children (12y - 12y)</div>
+            <div>Children (2y - 12y)</div>
             <div className="flex flex-row items-center gap-2">
               <FaMinus onClick={() => handleMinus('children')} className="cursor-pointer" />
               <div className="bg-white px-2 py-1 rounded-md">{children}</div>
