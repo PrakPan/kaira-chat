@@ -106,7 +106,6 @@ const Enquiry = (props) => {
     {
       adults: 2,
       children: 0,
-      infants: 0,
       childAges: [],
     },
   ]);
@@ -135,6 +134,16 @@ const Enquiry = (props) => {
   const [submitSecondSlide, setSubmitSecondSlide] = useState(false);
   const [itineraryId, setItineraryId] = useState(null);
   let isPageWide = media("(min-width: 768px)");
+
+  useEffect(() => {
+    if (groupType === "Solo") {
+      setRoomConfiguration([{
+        adults: 1,
+        children: 0,
+        childAges: [],
+      }])
+    }
+  }, [groupType])
 
   useEffect(() => {
     if (slideIndex === 2 && props.token && props.phone !== "null") {
