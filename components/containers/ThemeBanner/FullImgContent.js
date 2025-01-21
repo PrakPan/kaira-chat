@@ -34,9 +34,8 @@ const PaddingContianer = styled.div`
     display: flex;
     padding: 1vh 0 0 0;
     flex-direction: column;
-    justify-content: center
+    justify-content: center;
   }
-  
 `;
 
 const IconText = styled.div`
@@ -96,9 +95,10 @@ const FullImgContent = (props) => {
           {props.subheading ? (
             <H7
               style={{
-                lineHeight: isPageWide ? "35px" : "20px",
+                lineHeight: isPageWide ? "35px" : "25px",
                 fontSize: isPageWide ? "25px" : "20px",
               }}
+              className="md:w-[60%] text-start ml-3"
             >
               {props.subheading}
             </H7>
@@ -127,39 +127,19 @@ const FullImgContent = (props) => {
           )}
         </div>
 
-        {isPageWide ? (
-          <div>
-            <Button
-              padding="0.75rem 1rem"
-              fontSize="18px"
-              fontWeight="500"
-              bgColor="#f7e700"
-              borderRadius="7px"
-              color="black"
-              borderWidth="1px"
-              onclick={handlePlanButton}
-              margin="3vh 0 1vh 0"
-            >
-              Plan Your Honeymoon!
-            </Button>
-          </div>
-        ) : (
-          <div>
-            <Button
-              padding="0.75rem 1rem"
-              fontSize="14px"
-              fontWeight="500"
-              bgColor="#f7e700"
-              borderRadius="10px"
-              color="black"
-              borderWidth="1px"
-              onclick={handlePlanButton}
-              margin="1rem auto 1rem auto"
-            >
-              Start Planning
-            </Button>
-          </div>
-        )}
+        <Button
+          padding="0.75rem 1rem"
+          fontSize="18px"
+          fontWeight="500"
+          bgColor="#f7e700"
+          borderRadius="7px"
+          color="black"
+          borderWidth="1px"
+          onclick={handlePlanButton}
+          margin="3vh 0 1vh 1rem"
+        >
+          Plan Your Honeymoon!
+        </Button>
       </PaddingContianer>
 
       {isPageWide && (
@@ -174,7 +154,6 @@ const FullImgContent = (props) => {
           ></TailoredForm>
         </div>
       )}
-
 
       <TailoredFormMobileModal
         destinationType={"city-planner"}
