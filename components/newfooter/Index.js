@@ -125,8 +125,6 @@ const NewFooter = (props) => {
   const router = useRouter();
   const [shadow, setShadow] = useState(false);
   const [showLogo, setShowLogo] = useState(false);
-  
- 
 
   useEffect(() => {
     setShowLogo(true);
@@ -163,8 +161,6 @@ const NewFooter = (props) => {
       <SubscribeBox className="font-lexend" onClick={() => setShadow(false)}>
         <Subscribe shadow={shadow} />
       </SubscribeBox>
-
-      
 
       <Container className="font-lexend">
         <SubContainer>

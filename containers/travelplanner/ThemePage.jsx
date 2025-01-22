@@ -11,27 +11,16 @@ import Reviews from "./CaseStudies/Index";
 import ExperienceCard from "../../components/cards/newitinerarycard-main/ExperienceCard";
 import Overview from "./Overview";
 import Button from "../../components/ui/button/Index";
-import Locations from "../themes/ThemeLocations.jsx";
+import Locations from "../../components/containers/newplannerlocations/Index";
 import MobileBanner from "./MobileBanner";
 import WhyPlanWithUs from "../../components/WhyPlanWithUs/PlanWithUsWithEnquiry";
-import ThemeBanner from "../../components/containers/ThemeBanner/ThemeBanner";
+import HeroBanner from "../../components/containers/HeroBanner/HeroBanner";
 import openTailoredModal from "../../services/openTailoredModal";
 import dynamic from "next/dynamic";
 import AsSeenIn from "../testimonial/AsSeenIn";
 import { logEvent } from "../../services/ga/Index";
 import H3 from "../../components/heading/H3";
 import SecondaryHeading from "../../components/heading/Secondary.jsx";
-import WhyChoosePackages from "../themes/WhyChoosePackages.jsx";
-import FeaturedPackage from "../themes/FeaturedPackage.jsx";
-import ActivityCard from "../themes/ActivityCard.jsx";
-import SwiperCarousel from "../../components/SwiperCarousel.js";
-import ThemeTestimonial from "../themes/ThemeTestimonial.jsx";
-import BannerCards from "../../components/newYear/BannerCards.jsx";
-import Recommendations from "../../components/theme/Recommendations.jsx";
-import Image from "next/image.js";
-import HoneymoonPackages from "../../components/theme/HoneymoonPackages.jsx";
-import ThemeBannerCards from "../../components/theme/ThemeBannerCards.jsx";
-import ThemeFaqs from "../themes/ThemeFaqs.jsx";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -257,108 +246,13 @@ export default function ThemePage(props) {
     });
   };
 
-  const activities = [
-    {
-      image: "https://d31aoa0ehgvjdi.cloudfront.net/media/themes/activity-1.png",
-      title: "Private Yacht Dinner Cruises",
-      description: "Savor a romantic dinner on the water, with stunning views and unmatched intimacy.",
-    },
-    {
-      image: "https://d31aoa0ehgvjdi.cloudfront.net/media/themes/activity-2.png",
-      title: "Couple Spa Treatments",
-      description: "Relax, unwind, and indulge in a soothing experience designed for two.",
-    },
-    {
-      image: "https://d31aoa0ehgvjdi.cloudfront.net/media/themes/activity-3.png",
-      title: "Hot Air Balloon Rides",
-      description: "Soar above stunning landscapes for a romantic, breathtaking adventure in the skies.",
-    },
-    {
-      image: "https://d31aoa0ehgvjdi.cloudfront.net/media/themes/activity-4.png",
-      title: "Stargazing Nights",
-      description: "Embrace the magic of the night sky, hand in hand, under a blanket of stars.",
-    },
-    {
-      image: "https://d31aoa0ehgvjdi.cloudfront.net/media/themes/activity-2.png",
-      title: "Couple Spa Treatments",
-      description: "Indulge in rejuvenating experiences...",
-    },
-    {
-      image: "https://d31aoa0ehgvjdi.cloudfront.net/media/themes/activity-2.png",
-      title: "Hot Air Balloon Rides",
-      description: "Fly high and create unforgettable moments...",
-    },
-    {
-      image: "https://d31aoa0ehgvjdi.cloudfront.net/media/themes/activity-2.png",
-      title: "Stargazing Nights",
-      description: "Escape into the magic of the night sky...",
-    },
-  ];
-
-  const packages = [
-    {
-      image: "media/website/logo-only.svg",
-      title: "Romantic Retreat – Tuscany & Amalfi Coast",
-      duration: "6 Nights/7 Days",
-    },
-    {
-      image: "media/themes/banner.png",
-      title: "Tropical Bliss – Maldives Escape",
-      duration: "4 Nights/5 Days",
-    },
-  ];
-
-  const testimonials = [
-    {
-      title: "Magical Honeymoon Experience",
-      description:
-        "Our honeymoon with The Tuscany Way was nothing short of magical! From the moment we arrived, everything was perfectly planned...",
-      name: "",
-      image: "media/themes/banner.png",
-      rating: 5,
-    },
-    {
-      title: "Perfect Blend of Adventure and Romance",
-      description:
-        "We wanted a honeymoon that combined adventure and relaxation, and Tuscany Way delivered beyond our expectations...",
-      name: "",
-      image: "media/themes/banner.png",
-      rating: 5,
-    },
-    {
-      title: "Seamless Planning, Unforgettable Memories",
-      description:
-        "Planning our honeymoon felt overwhelming, but Tuscany Way took care of everything with ease and precision...",
-      name: "",
-      image: "media/themes/banner.png",
-      rating: 5,
-    },
-    {
-      title: "Magical Honeymoon Experience",
-      description:
-        "Our honeymoon with The Tuscany Way was nothing short of magical! From the moment we arrived, everything was perfectly planned...",
-      name: "",
-      image: "media/themes/banner.png",
-      rating: 5,
-    },
-    {
-      title: "Perfect Blend of Adventure and Romance",
-      description:
-        "We wanted a honeymoon that combined adventure and relaxation, and Tuscany Way delivered beyond our expectations...",
-      name: "Kavita & Rajesh",
-      image: "media/themes/banner.png",
-      rating: 5,
-    },
-  ];
-
   return (
-    <div className="w-full overflow-x-hidden">
     <div
       className={"Homepage"}
       id="homepage-anchor"
       style={{ visibility: props.hidden ? "hidden" : "visible" }}
     >
-      <ThemeBanner
+      <HeroBanner
         image={props.experienceData.image}
         page_id={props.experienceData.id}
         destination={props.experienceData.destination}
@@ -369,150 +263,180 @@ export default function ThemePage(props) {
         page={"State Page"}
         eventDates={props.eventDates}
       />
-      <div className="relative ">
-        <div className="absolute -top-10 -z-10 w-full h-[10rem]">
-          <Image
-            src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/Hearts.png`}
-            fill
-            className="absolute bottom-0 object-fill"
-          />
-        </div>
+
+      <SetWidthContainer>
+        <MapGridContainer>
+          <Overview
+            locations={props.experienceData.locations}
+            overview_heading={overviewHeading}
+            overview_text={props.experienceData.overview_text}
+          ></Overview>
+          <MapContainer>
+            {props.experienceData.locations &&
+            props.experienceData.locations.length ? (
+              <MapBox
+                InfoWindowContainer={InfoWindowContainer}
+                locations={props.experienceData.locations}
+                height="300px"
+              />
+            ) : (
+              <></>
+            )}
+          </MapContainer>
+        </MapGridContainer>
+
+        {headings.map((heading, index) => (
+          <div key={index}>
+            <div className="mb-5 space-y-3">
+              <H3
+                style={{
+                  textAlign: isPageWide ? "left" : "center",
+                  margin: isPageWide
+                    ? "2.5rem 0 0 0"
+                    : "2.5rem 0.5rem 0 0.5rem",
+                }}
+              >
+                {heading.name}
+              </H3>
+
+              <SecondaryHeading
+                style={{ textAlign: isPageWide ? "left" : "center" }}
+              >
+                {heading.text}
+              </SecondaryHeading>
+            </div>
+
+            {heading?.itineraries?.length ? (
+              <Experiences
+                experiences={heading.itineraries}
+                page={"Theme Page"}
+              ></Experiences>
+            ) : null}
+
+            {heading?.elements?.length ? (
+              heading?.carousel?.toLowerCase() === "type-1" ? (
+                <Locations
+                  locations={heading.elements}
+                  viewall
+                  page={"Theme Page"}
+                  state={props?.experienceData?.name}
+                ></Locations>
+              ) : heading?.carousel?.toLowerCase() === "type-2" ? (
+                <Locations
+                  locations={heading.elements}
+                  viewall
+                  page={"Theme Page"}
+                  state={props?.experienceData?.name}
+                ></Locations>
+              ) : (
+                heading?.carousel?.toLowerCase() === "type-3" && (
+                  <Locations
+                    locations={heading.elements}
+                    viewall
+                    page={"Theme Page"}
+                    state={props?.experienceData?.name}
+                  ></Locations>
+                )
+              )
+            ) : null}
+
+            <Button
+              onclick={() => handlePlanButtonClick(heading.name)}
+              borderWidth="1px"
+              fontWeight="500"
+              borderRadius="6px"
+              margin="2rem auto"
+              padding="0.5rem 2rem"
+            >
+              Create your travel plan now!
+            </Button>
+          </div>
+        ))}
+      </SetWidthContainer>
+
+      <SetWidthContainer>
+        <H3
+          style={{
+            textAlign: isPageWide ? "left" : "center",
+            margin: isPageWide ? "3rem 0" : "2.5rem 0.5rem 0rem 0.5rem",
+          }}
+        >
+          How it works?
+        </H3>
+        <BannerTwo
+          page_id={props.experienceData.id}
+          destination={props.experienceData.destination}
+          cities={props.experienceData.locations}
+        ></BannerTwo>
+      </SetWidthContainer>
+
+      <DesktopBanner
+        loading={desktopBannerLoading}
+        onclick={() =>
+          openTailoredModal(
+            router,
+            props.experienceData.id,
+            props.experienceData.destination
+          )
+        }
+        text={`Craft a personalized itinerary${
+          props.experienceData.destination
+            ? " to " + props.experienceData.destination + " now"
+            : ""
+        }!`}
+      ></DesktopBanner>
+
+      <div className="hidden-desktop">
+        <MobileBanner
+          handleClick={() =>
+            openTailoredModal(
+              router,
+              props.experienceData.id,
+              props.experienceData.destination
+            )
+          }
+          city={props.experienceData.destination}
+        />
       </div>
 
       <SetWidthContainer>
-        {props.locations && props.locations.length ? (
-          <>
-            <div className="flex items-center justify-center">
-              <H3
-                style={{
-                  color: "black",
-                  margin: !isPageWide
-                    ? "auto" //"2.5rem 0.5rem 1.5rem 0.5rem"
-                    : "3rem 0 2rem 0",
-                  padding: "5px",
-                }}
-              >
-                Explore the World’s Most Romantic Getaways
-              </H3>
-            </div>
-            <HoneymoonPackages />
-          </>
-        ) : null}
+        <H3
+          style={{
+            textAlign: isPageWide ? "left" : "center",
+            margin: "3.5rem 0 3.5rem 0",
+          }}
+        >
+          Why plan with us?
+        </H3>
+        <WhyPlanWithUs
+          page_id={props.experienceData.id}
+          destination={props.experienceData.destination}
+          cities={props.experienceData.locations}
+        />
 
-        <WhyChoosePackages />
-
-        <div className="text-center my-6 mt-[4rem] ">
-          <h1 className="text-4xl font-bold">
-            Crafting Unforgettable Couple Activities
-          </h1>
-          <p className="text-gray-500 mt-2">
-            From intimate moments to thrilling adventures, we design unique
-            experiences that bring you closer together <br /> creating memories
-            you’ll cherish forever
-          </p>
-        </div>
-
-        <div className="">
-          <div className="my-8">
-            <SwiperCarousel
-              cards={activities.map((activity, index) => (
-                <ActivityCard key={index} {...activity} />
-              ))}
-              slidesPerView={4}
-              spaceBetween={20}
-              navigationButtons={true}
-              buttonSize={40}
-              navButtonBackground="#01202b"
-              navButtonColor="#fff"
-              navButtonsTop="30%"
-            />
-          </div>
-        </div>
-
-        {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6 px-4 mt-[4rem]">
-        {packages.map((pkg, index) => (
-          <FeaturedPackage key={index} {...pkg} />
-        ))}
-      </div> */}
-
-        <ThemeBannerCards />
-
-        <div className="flex flex-col mb-[4rem]">
-          <div className="flex items-center justify-start ">
-            <H3
-              style={{
-                color: "black",
-                margin: !isPageWide
-                  ? "auto" //"2.5rem 0.5rem 1.5rem 0.5rem"
-                  : "3rem 0 2rem 0",
-                padding: "5px",
-              }}
-            >
-              The Tarzan Way's Recommendations
-            </H3>
-          </div>
-          <Recommendations />
-        </div>
-
-        <div className="relative">
-          <div
-            className="absolute top-2 -right-20 w-[12rem] h-[16rem] overflow-hidden"
-            style={{ transform: "rotate(45deg)" }}
-          >
-            <Image
-              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/tilted-heart.png`}
-              className="object-fill"
-              alt="Tilted Hearts"
-              height={200}
-              width={200}
-            />
-          </div>
-        </div>
-        <div className="my-12">
-          {/* Title and Description */}
-          <h2 className="text-2xl font-bold text-center text-gray-800">
-            Stories of Love and Adventure
-          </h2>
-          <div className="text-center">
-            <p className="mt-4 text-center text-gray-600">
-              Hear from couples who've turned their dream honeymoons into
-              unforgettable memories.
-              <br />
-              Real stories, real experiences—each one an adventure in love.
-            </p>
-          </div>
-
-          <div className="mt-8">
-            <SwiperCarousel
-              slidesPerView={3}
-              spaceBetween={20}
-              navigationButtons={true}
-              cards={testimonials.map((testimonial, index) => (
-                <ThemeTestimonial key={index} {...testimonial} />
-              ))}
-            ></SwiperCarousel>
-          </div>
-        </div>
-        <div classname="mb-5">
-          <div className="relative">
-            <div
-              className="absolute -top-[6rem] w-[18rem] h-[18rem]"
-              style={{ transform: "rotate(-12deg)" }}
-            >
-              <Image
-                src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/tilted-heart.png`}
-                className="object-fill"
-                alt="Tilted Hearts"
-                height={200}
-                width={200}
-              />
-            </div>
-          </div>
-
-          <ThemeFaqs />
-        </div>
+        <H3
+          style={{
+            textAlign: isPageWide ? "left" : "center",
+            margin: "4rem 0 2.5rem 0",
+          }}
+        >
+          Happy Community of The Tarzan Way
+        </H3>
+        <Reviews></Reviews>
       </SetWidthContainer>
-    </div>
+
+      <SetWidthContainer>
+        <H3
+          style={{
+            textAlign: isPageWide ? "left" : "center",
+            margin: "4rem 0 2.5rem 0",
+          }}
+        >
+          What they say?
+        </H3>
+        <AsSeenIn />
+        <ChatWithUs planner page_id={props.experienceData.id}></ChatWithUs>
+      </SetWidthContainer>
     </div>
   );
 }
