@@ -138,38 +138,30 @@ export default function Reviews1Carousel(props) {
   );
 }
 
-const ThemeTestimonial = ({ heading, text, name, image, rating }) => {
+const Review = ({ heading, text, name, image, rating, itinerary_link }) => {
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md h-[350px] text-ellipsis flex flex-col justify-between">
-      <div className="flex flex-col">
-        <h3 className="text-sm font-semibold text-gray-800 flex-none">
-          {heading}
-        </h3>
-        <p className="mt-2 text-sm  text-gray-600 h-auto">{text}</p>
-      </div>
-      <div className="mt-6 flex items-center">
+    <div className="h-[400px] md:h-[400px] flex flex-col justify-between bg-white p-4 rounded-lg">
+      <div className="flex items-center gap-3">
         {/* Image Section */}
-        <div className="relative w-12 h-12 flex-shrink-0">
-          <ImageLoader url={image} borderRadius="100%" />
+        <div className="w-[65px] h-[65px]">
+          <ImageLoader
+            url={image}
+            width={"65px"}
+            height={"65px"}
+            borderRadius="100%"
+          />
         </div>
+
         {/* Text Section */}
-        <div className="ml-4 flex flex-col justify-center">
-          <p className="text-sm font-semibold text-gray-800 mb-0">
-            {"Kartik and Avani"}
-          </p>
+        <div className="h-12 flex flex-col">
+          <p className="text-sm font-semibold text-gray-800 mb-0">{name}</p>
           <p className="text-yellow-500">
             {"★".repeat(rating)}{" "}
             <span className="text-gray-400">{"☆".repeat(5 - rating)}</span>
           </p>
         </div>
       </div>
-    </div>
-  );
-};
 
-const Review = ({ heading, text, name, image, rating, itinerary_link }) => {
-  return (
-    <div className="h-[400px] md:h-[400px] flex flex-col justify-between bg-white p-4 rounded-lg">
       <div className="flex flex-col">
         <h3 className="text-sm font-semibold text-gray-800 flex-none">
           {heading}
@@ -180,28 +172,10 @@ const Review = ({ heading, text, name, image, rating, itinerary_link }) => {
       <div className="flex flex-col gap-2">
         <Link
           href={itinerary_link}
-          className="bg-[#F7E700] w-fit px-3 py-1 rounded-lg no-underline text-black focus:outline-none"
+          className="bg-[#F7E700] w-fit px-3 py-2 rounded-lg no-underline text-black border-2 border-black focus:outline-none"
         >
           View Itinerary
         </Link>
-        
-        <div className="mt-6 flex items-center gap-3">
-          {/* Image Section */}
-          <div className="w-[65px] h-[65px]">
-            <ImageLoader url={image} width={"65px"} height={"65px"} borderRadius="100%" />
-          </div>
-
-          {/* Text Section */}
-          <div className="h-12 flex flex-col">
-            <p className="text-sm font-semibold text-gray-800 mb-0">
-              {name}
-            </p>
-            <p className="text-yellow-500">
-              {"★".repeat(rating)}{" "}
-              <span className="text-gray-400">{"☆".repeat(5 - rating)}</span>
-            </p>
-          </div>
-        </div>
       </div>
     </div>
   );

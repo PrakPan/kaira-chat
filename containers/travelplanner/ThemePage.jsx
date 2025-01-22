@@ -2,21 +2,19 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import "bootstrap/dist/css/bootstrap.min.css";
 import styled from "styled-components";
-import DesktopBanner from "../../components/containers/Banner";
 import media from "../../components/media";
 import ThemeBanner from "../../components/containers/ThemeBanner/ThemeBanner";
 import openTailoredModal from "../../services/openTailoredModal";
 import { logEvent } from "../../services/ga/Index";
-import H3 from "../../components/heading/H3";
 import Overview from "../themes/Overview.jsx";
 import Image from "next/image.js";
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile";
-import HoneymoonPackages from "../../components/theme/HoneymoonPackages.jsx";
-import ThemeBannerCards from "../../components/theme/ThemeBannerCards.jsx";
 import ThemeFaqs from "../themes/ThemeFaqs.jsx";
 import Destination1Carousel from "../../components/theme/Destination1Carousel.jsx";
 import Activity1Carousel from "../../components/theme/Activity1Carousel.jsx";
 import Reviews1Carousel from "../../components/theme/Reviews1Carousel.jsx";
+import Itinerary2Carousel from "../../components/theme/Itinerary2Carousel.jsx";
+import Navigation from "../../components/theme/Navigation.jsx";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -29,17 +27,27 @@ const SetWidthContainer = styled.div`
 export default function ThemePage(props) {
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
-  const [headings, setHeadings] = useState([]);
+  const [components, setComponents] = useState([]);
+  const [navigationComponents, setNavigationComponents] = useState([]);
   const [showTailoredModal, setShowTailoredModal] = useState(false);
   const [destination, setDestination] = useState(null);
 
   useEffect(() => {
-    if (props.experienceData?.headings) {
-      let headings = props.experienceData?.headings;
-      headings.sort((a, b) => a?.priority - b?.priority);
-      setHeadings(headings);
+    if (props.experienceData?.components) {
+      let components = props.experienceData?.components;
+      components.sort((a, b) => a?.priority - b?.priority);
+
+      // Separate components based on `is_navigation_type`
+      const navComponents = components.filter(
+        (component) => component.is_navigation_type
+      );
+      const otherComponents = components.filter(
+        (component) => !component.is_navigation_type
+      );
+      setNavigationComponents(navComponents);
+      setComponents(otherComponents);
     }
-  }, [props.experienceData?.headings]);
+  }, [props.experienceData?.components]);
 
   const handlePlanButton = (pageId, destination, type) => {
     if (isPageWide) {
@@ -60,23 +68,20 @@ export default function ThemePage(props) {
   };
 
   return (
-    <div className="w-full overflow-x-hidden">
-      <div
-        className={"Homepage"}
-        id="homepage-anchor"
-        style={{ visibility: props.hidden ? "hidden" : "visible" }}
-      >
-        <ThemeBanner
-          image={props.experienceData.image}
-          page_id={props.experienceData.id}
-          destination={props.experienceData.destination}
-          cities={props.experienceData.locations}
-          children_cities={props.experienceData.children}
-          title={props.experienceData.banner_heading}
-          subheading={props.experienceData.banner_text}
-          page={"State Page"}
-          eventDates={props.eventDates}
-        />
+    <div className="mb-5">
+      <ThemeBanner
+        image={props.experienceData.image}
+        page_id={props.experienceData.id}
+        destination={props.experienceData.destination}
+        cities={props.experienceData.locations}
+        children_cities={props.experienceData.children}
+        title={props.experienceData.banner_heading}
+        subheading={props.experienceData.banner_text}
+        page={"State Page"}
+        slug={props.slug}
+      />
+
+      {props.slug === "honeymoon-2025" && (
         <div className="relative">
           <div className="absolute -top-10 left-0 -z-10 w-full md:w-[50%] h-[10rem]">
             <Image
@@ -96,64 +101,97 @@ export default function ThemePage(props) {
             </div>
           )}
         </div>
+      )}
 
-        <SetWidthContainer>
-          <div className="mt-5 mx-3">
-            <H3
-              style={{
-                color: "black",
-                margin: !isPageWide
-                  ? "auto" //"2.5rem 0.5rem 1.5rem 0.5rem"
-                  : "3rem 0 2rem 0",
-                padding: "5px",
-              }}
-            >
-              Explore the World’s Most Romantic Getaways
-            </H3>
-            <HoneymoonPackages />
-          </div>
+      <SetWidthContainer>
+        {navigationComponents.length ? (
+          <Navigation components={navigationComponents} />
+        ) : null}
 
-          <Overview
-            heading={props.experienceData.overview_heading}
-            text={props.experienceData.overview_text}
-            image={props.experienceData.overview_image}
-          />
+        <Overview
+          heading={props.experienceData.overview_heading}
+          text={props.experienceData.overview_text}
+          image={props.experienceData.overview_image}
+          slug={props.slug}
+        />
 
-          <div className="space-y-[100px]">
-            {headings.map((heading, index) => (
-              <div key={index} className="mx-3">
-                <div className="text-center my-6 mt-[4rem] ">
-                  <h1 className="md:text-4xl font-bold">{heading.name}</h1>
-                  <p className="text-gray-500 mt-2">{heading.text}</p>
-                </div>
-
-                {heading.carousel === "destination-1" ? (
-                  <Destination1Carousel
-                    handlePlanButton={handlePlanButton}
-                    setDestination={setDestination}
-                    packages={heading.elements}
-                  />
-                ) : heading.carousel === "destination-2" ? (
-                  <></>
-                ) : heading.carousel === "itinerary-1" ? (
-                  <></>
-                ) : heading.carousel === "activity-1" ? (
-                  <Activity1Carousel activities={heading.activities} />
-                ) : heading.carousel === "review-1" ? (
-                  <Reviews1Carousel reviews={heading.reviews} />
-                ) : null}
+        <div className="space-y-[100px]">
+          {components.map((component, index) => (
+            <div key={index} className="mx-3">
+              <div className="text-center my-6 mt-[4rem] ">
+                <h1 className="md:text-4xl font-bold">{component.heading}</h1>
+                <p className="text-gray-500 mt-2">{component.text}</p>
               </div>
-            ))}
-          </div>
 
-          <div className="my-[100px] mx-3">
-            <ThemeBannerCards />
-          </div>
+              {component.carousel === "destination-1" ? (
+                <Destination1Carousel
+                  handlePlanButton={handlePlanButton}
+                  setDestination={setDestination}
+                  packages={[...component.cities, ...component.countries]}
+                />
+              ) : component.carousel === "destination-2" ? (
+                <></>
+              ) : component.carousel === "itinerary-1" ? (
+                <></>
+              ) : component.carousel === "itinerary-2" ? (
+                <div className="w-full relative">
+                  {props.slug === "honeymoon-2025" && (
+                    <>
+                      <Image
+                        src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/red-hearts.png`}
+                        className="object-fill absolute -left-[1rem] top-[10rem] md:-left-[9rem] md:top-0"
+                        alt="Tilted Hearts"
+                        height={300}
+                        width={500}
+                        style={{
+                          opacity: "50%",
+                        }}
+                      />
 
+                      <Image
+                        src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/red-hearts.png`}
+                        className="object-fill absolute -right-[1rem] top-[35rem] md:-right-[9rem] md:top-0"
+                        alt="Tilted Hearts"
+                        height={300}
+                        width={500}
+                        style={{
+                          opacity: "50%",
+                        }}
+                      />
+                    </>
+                  )}
+
+                  <Itinerary2Carousel elements={component.elements} />
+                </div>
+              ) : component.carousel === "activity-1" ? (
+                <Activity1Carousel activities={component.activities} />
+              ) : component.carousel === "review-1" ? (
+                <div className="relative">
+                  {props.slug === "honeymoon-2025" && (
+                    <div className="-z-10 w-fit absolute -top-[16rem] right-0 md:-top-[9rem] overflow-hidden">
+                      <Image
+                        src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/tilted-heart.png`}
+                        className="object-fill"
+                        alt="Tilted Hearts"
+                        height={200}
+                        width={200}
+                        style={{ transform: "rotate(45deg)" }}
+                      />
+                    </div>
+                  )}
+
+                  <Reviews1Carousel reviews={component.reviews} />
+                </div>
+              ) : null}
+            </div>
+          ))}
+        </div>
+
+        {props.slug === "honeymoon-2025" && (
           <div className="relative">
             <div
-              className="absolute top-2 -right-20 w-[12rem] h-[16rem] overflow-hidden"
-              style={{ transform: "rotate(45deg)" }}
+              className="-z-10 absolute -top-[3rem] w-[18rem] h-[18rem]"
+              style={{ transform: "rotate(-12deg)" }}
             >
               <Image
                 src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/tilted-heart.png`}
@@ -164,40 +202,24 @@ export default function ThemePage(props) {
               />
             </div>
           </div>
+        )}
 
-          <div classname="mb-5">
-            <div className="relative">
-              <div
-                className="absolute -top-[6rem] w-[18rem] h-[18rem]"
-                style={{ transform: "rotate(-12deg)" }}
-              >
-                <Image
-                  src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/tilted-heart.png`}
-                  className="object-fill"
-                  alt="Tilted Hearts"
-                  height={200}
-                  width={200}
-                />
-              </div>
-            </div>
+        <div className="my-[100px]">
+          <ThemeFaqs faqs={props.experienceData.faq} />
+        </div>
+      </SetWidthContainer>
 
-            <ThemeFaqs />
-          </div>
-        </SetWidthContainer>
-
-        <TailoredFormMobileModal
-          destinationType={destination?.type}
-          page_id={destination?.pageId}
-          children_cities={props?.children_cities}
-          destination={destination?.name}
-          cities={props?.cities}
-          onHide={() => {
-            setShowTailoredModal(false);
-          }}
-          show={showTailoredModal}
-          eventDates={props?.eventDates}
-        />
-      </div>
+      <TailoredFormMobileModal
+        destinationType={destination?.type}
+        page_id={destination?.pageId}
+        children_cities={props?.children_cities}
+        destination={destination?.name}
+        cities={props?.cities}
+        onHide={() => {
+          setShowTailoredModal(false);
+        }}
+        show={showTailoredModal}
+      />
     </div>
   );
 }

@@ -3,7 +3,6 @@ import styled from "styled-components";
 import Button from "../../ui/button/Index";
 import media from "../../media";
 import TailoredForm from "../../tailoredform/Index";
-import ImageLoader from "../../ImageLoader";
 import openTailoredModal from "../../../services/openTailoredModal";
 import { useRouter } from "next/router";
 import TailoredFormMobileModal from "../../modals/TailoredFomrMobile";
@@ -138,7 +137,9 @@ const FullImgContent = (props) => {
           onclick={handlePlanButton}
           margin="3vh 0 1vh 1rem"
         >
-          Plan Your Honeymoon!
+          {props.slug === "honeymoon-2025"
+            ? "Plan Your Honeymoon!"
+            : "Plan Your Trip Now!"}
         </Button>
       </PaddingContianer>
 
@@ -150,7 +151,6 @@ const FullImgContent = (props) => {
             destination={props.destination}
             cities={props.cities}
             HeroBanner
-            eventDates={props.eventDates}
           ></TailoredForm>
         </div>
       )}
@@ -165,7 +165,6 @@ const FullImgContent = (props) => {
           setShowTailoredModal(false);
         }}
         show={showTailoredModal}
-        eventDates={props.eventDates}
       />
     </Container>
   );

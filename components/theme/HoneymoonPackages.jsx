@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
 import { useState, useEffect, useRef } from "react";
-import { RiArrowDropDownLine } from "react-icons/ri";
 import { IoMenu } from "react-icons/io5";
 import styled from "styled-components";
 import ImageLoader from "../ImageLoader";
@@ -15,7 +14,6 @@ import {
 } from "../../public/content/newyear";
 import TailoredFormMobileModal from "../modals/TailoredFomrMobile";
 import openTailoredModal from "../../services/openTailoredModal";
-import Image from "next/image";
 
 const ImageFade = styled.div`
   width: 100%;

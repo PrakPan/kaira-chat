@@ -1,8 +1,8 @@
-import { GoArrowRight } from "react-icons/go";
 import Button from "../../components/ui/button/Index";
 import ImageLoader from "../../components/ImageLoader";
 import media from "../../components/media";
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import openTailoredModal from "../../services/openTailoredModal";
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile";
@@ -32,15 +32,26 @@ export default function Overview(props) {
   };
 
   return (
-    <div className="mt-5 py-5 mx-3 flex flex-col gap-4 md:flex-row">
+    <div className="relative mt-5 py-5 mx-3 flex flex-col gap-4 md:flex-row">
+      {props.slug === "honeymoon-2025" && (
+        <div className="-z-10 absolute -top-[3rem] md:-top-[5rem] -right-3 overflow-hidden">
+          <Image
+            src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/tilted-heart.png`}
+            className="object-fill"
+            alt="Tilted Hearts"
+            height={200}
+            width={200}
+            style={{ transform: "rotate(45deg)" }}
+          />
+        </div>
+      )}
+
       <div className=" md:pt-0  flex flex-col gap-3">
         <div className="text-[27px] md:text-[40px] font-[700] leading-[56px]">
           {props.heading}
         </div>
         <div className="flex flex-col gap-3 text-[16px] font-[400] leading-[26px] justify-start">
-          <div className="">
-            {props.text}
-          </div>
+          <div className="">{props.text}</div>
           <div>
             <Button
               padding="0.75rem 1rem"
@@ -53,16 +64,33 @@ export default function Overview(props) {
               onclick={handlePlanButton}
               margin="3vh 0 1vh 0"
             >
-              Plan Your Honeymoon!
+              {props.slug === "honeymoon-2025"
+                ? "Plan Your Honeymoon!"
+                : "Plan Your Trip Now!"}
             </Button>
           </div>
+
+          {props.slug === "honeymoon-2025" && (
+            <div className="relative">
+              <div
+                className="-z-10 absolute -left-[5rem] -top-[10rem] w-[18rem] h-[18rem]"
+                style={{ transform: "rotate(-12deg)" }}
+              >
+                <Image
+                  src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/tilted-heart.png`}
+                  className="object-fill"
+                  alt="Tilted Hearts"
+                  height={200}
+                  width={200}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
       <div className="px-2 md:px-0">
         <ImageLoader
-          url={
-            props.image
-          }
+          url={props.image}
           width={isPageWide ? 560 : 290}
           height={isPageWide ? 536 : 300}
           borderRadius={8}

@@ -5,9 +5,7 @@ import { connect } from "react-redux";
 import ThemePage from "../../containers/travelplanner/ThemePage";
 import Layout from "../../components/Layout";
 import { axiosPageInstance } from "../../services/pages/travel-planner";
-import axiospagelistinstance, {
-  axiosPageList,
-} from "../../services/pages/list";
+import { axiosPageList } from "../../services/pages/list";
 import axioslocationsinstance from "../../services/search/search";
 import setHotLocationSearch from "../../store/actions/hotLocationSearch";
 
@@ -40,46 +38,59 @@ const TravelPlanner = (props) => {
   return (
     <Layout
       page_id={props.Data.id}
-      destination={props.Data.destination}
+      destination={props.Data.name}
       page={"State Page"}
     >
       <Head>
         <title>
-          Plan Your Trip to {props.Data.destination} | Trip Planner & Itinerary
-          | The Tarzan Way
+          {props.Data.social_share_title
+            ? props.Data.social_share_title
+            : "Plan Your Trip to  | Trip Planner & Itinerary | The Tarzan Way"}
         </title>
         <meta
           name="description"
-          content={`Plan your dream trip to ${props.Data.destination} with The Tarzan Way's AI itinerary. Explore top attractions, local cuisine, and book your flights, accommodations, and transfers all in one go ${props.Data.destination}.`}
+          content={
+            props.Data.meta_description
+              ? props.Data.meta_description
+              : `Plan your dream trip to ${props.Data.name} with The Tarzan Way's AI itinerary. Explore top attractions, local cuisine, and book your flights, accommodations, and transfers all in one go ${props.Data.destination}.`
+          }
         ></meta>
         <meta
           property="og:title"
-          content={`Plan Your Trip to ${props.Data.destination} | Trip Planner & Itinerary | The Tarzan Way`}
+          content={
+            props.Data.social_share_title
+              ? props.Data.social_share_title
+              : `Plan Your Trip to ${props.Data.name} | Trip Planner & Itinerary | The Tarzan Way`
+          }
         />
         <meta
           property="og:description"
-          content={`Plan your dream trip to ${props.Data.destination} with The Tarzan Way's AI itinerary. Explore top attractions, local cuisine, and book your flights, accommodations, and transfers all in one go ${props.Data.destination}.`}
+          content={
+            props.Data.meta_description
+              ? props.Data.meta_description
+              : `Plan your dream trip to ${props.Data.name} with The Tarzan Way's AI itinerary. Explore top attractions, local cuisine, and book your flights, accommodations, and transfers all in one go ${props.Data.name}.`
+          }
         />
         <meta property="og:image" content="/logoblack.svg" />
         <meta
           property="keywords"
-          content={`${props.Data.destination} trip planner, ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, travel in ${props.Data.destination}, ${props.Data.destination} tour package, experience ${props.Data.destination} culture, ${props.Data.destination} holiday package, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, best places in ${props.Data.destination}, places to visit in ${props.Data.destination}, best activities in ${props.Data.destination}, things to do in ${props.Data.destination}, package for ${props.Data.destination}, top places in ${props.Data.destination}, wanderlog, inspirock, tripit, hotels, flights, activities, transfers, solo travel, family travel,`}
+          content={
+            props.Data.meta_keywords
+              ? props.Data.meta_keywords
+              : `${props.Data.name} trip planner, ai trip planner, trip planner, itinerary, travel plan, ai itinerary, ai plan, craft a trip, travel in ${props.Data.name}, ${props.Data.name} tour package, experience ${props.Data.name} culture, ${props.Data.name} holiday package, local travel experience, customized trip planner, customized holiday packages, customized packages in computer, honeymoon travel packages, personalized travel package, best places in ${props.Data.name}, places to visit in ${props.Data.name}, best activities in ${props.Data.name}, things to do in ${props.Data.name}, package for ${props.Data.name}, top places in ${props.Data.name}, wanderlog, inspirock, tripit, hotels, flights, activities, transfers, solo travel, family travel,`
+          }
         ></meta>
 
         <link
           rel="canonical"
-          href={`https://thetarzanway.com/${props.path}`}
+          href={`https://thetarzanway.com/theme/${props.slug}`}
         ></link>
       </Head>
 
       <ThemePage
         themePage
         experienceData={props.Data}
-        locations={props.locations}
-        eventDates={
-          props.Data?.event_dates &&
-          Object.keys(props.Data.event_dates).length !== 0
-        }
+        slug={props.slug}
       ></ThemePage>
     </Layout>
   );
@@ -119,7 +130,6 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps(context) {
-  var locations = [];
   let data = null;
   let hotLocationSearch = [];
   const { slug } = context.params;
@@ -145,15 +155,6 @@ export async function getStaticProps(context) {
   }
 
   try {
-    const loc = await axiospagelistinstance.get(
-      `/?page_type=Destination&fields=id,ancestors,path,destination,name,tagline,image,link,budget`
-    );
-    locations = loc.data;
-  } catch (err) {
-    console.log(`[ERROR][themePage:axiospagelistinstance]: `, err.message);
-  }
-
-  try {
     const response = await axioslocationsinstance.get(
       `hot_destinations/?state=${slug}/`
     );
@@ -170,8 +171,8 @@ export async function getStaticProps(context) {
   return {
     props: {
       Data: data,
-      locations,
       hotLocationSearch,
+      slug,
     },
   };
 }

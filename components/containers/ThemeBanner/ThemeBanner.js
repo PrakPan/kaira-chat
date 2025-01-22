@@ -30,7 +30,7 @@ const ThemeBanner = (props) => {
           title={props.title}
           _startPlanningFunction={props._startPlanningFunction}
           page={props.page}
-          eventDates={props.eventDates}
+          slug={props.slug}
         />
       </div>
     </FullImage>

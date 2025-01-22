@@ -41,10 +41,11 @@ export default function Destination1Carousel(props) {
         <Card
           key={props.packages[i].id}
           heading={props.packages[i].name}
-          tagline={props.packages[i].text}
+          tagline={props.packages[i].tagline}
+          most_popular_for={props.packages[i].most_popular_for}
           img={props.packages[i].image}
           budget={props.packages[i].price}
-          page={"New Year Page"}
+          page={"Theme Page"}
           data={props.packages[i]}
           handlePlanButton={props.handlePlanButton}
           setDestination={props.setDestination}
@@ -117,7 +118,7 @@ const Card = (props) => {
         loading ? "bg-gray-200 animate-pulse" : ""
       }`}
       onClick={() =>
-        handleImageClick(props.data?.pageId, props.heading, props.data?.type)
+        handleImageClick(props.data?.id, props.heading, props.data?.type)
       }
     >
       <ImageFade>
@@ -151,14 +152,24 @@ const Card = (props) => {
                 {props.heading}
               </div>
 
-              <div className="text-white text-[15px]">{props.tagline}</div>
+              <div className="text-white text-[15px]">
+                {props.tagline
+                  ? props.tagline
+                  : props.most_popular_for
+                  ? props.most_popular_for.join(", ")
+                  : null}
+              </div>
             </div>
 
-            <div className="text-white text-[14px]">
-              From{" "}
-              <span className="font-bold">₹{getIndianPrice(props.budget)}</span>
-              /- per day
-            </div>
+            {props.budget && (
+              <div className="text-white text-[14px]">
+                From{" "}
+                <span className="font-bold">
+                  ₹{getIndianPrice(props.budget)}
+                </span>
+                /- per day
+              </div>
+            )}
           </div>
         )}
 
