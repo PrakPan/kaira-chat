@@ -84,10 +84,6 @@ const Subscribe = (props) => {
   const [subscribe, setSubscribe] = useState(false);
   let isPageWide = media("(min-width: 768px)");
 
-  const isTheme = window.location.href.includes("theme");
-
-  console.log("Theme", isTheme);
-
   function _handleChange(e) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   }
@@ -153,6 +149,7 @@ const Subscribe = (props) => {
       >
         Join The Tarzan Way Community
       </H2>
+
       <H7
         style={{
           textAlign: "center",
@@ -190,9 +187,7 @@ const Subscribe = (props) => {
       </Form>
 
       {isPageWide && (
-        <>
-          <Circle top={"-30%"} left={"-10%"} opacity={"0.5"}></Circle>
-        </>
+        <Circle top={"-30%"} left={"-10%"} opacity={"0.5"}></Circle>
       )}
 
       {isPageWide && <Circle top={"65%"} left={"90%"}></Circle>}
