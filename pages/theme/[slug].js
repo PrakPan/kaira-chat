@@ -13,29 +13,24 @@ import setHotLocationSearch from "../../store/actions/hotLocationSearch";
 
 const TravelPlanner = (props) => {
   useEffect(() => {
-    let locations = props.Data?.locations;
-    if (locations?.length) {
-      locations = locations.map((location) => {
-        return {
-          country: location?.state?.country,
-          is_active: true,
-          lat: location?.lat,
-          long: location?.long,
-          name: location?.name,
-          parent: location?.state?.country,
-          path: location?.path,
-          resource_id: location?.id,
-          type: "state",
-          start_date: props.Data?.event_dates[location.id]?.start_date,
-          end_date: props.Data?.event_dates[location.id]?.end_date,
-        };
-      });
-
-      props.setHotLocationSearch(locations);
-    } else {
-      props.setHotLocationSearch(props.hotLocationSearch);
+    let locations = props.Data?.locations || [];
+    if (locations.length) {
+      const mappedLocations = locations.map((location) => ({
+        country: location?.state?.country,
+        is_active: true,
+        lat: location?.lat,
+        long: location?.long,
+        name: location?.name,
+        parent: location?.state?.country,
+        path: location?.path,
+        resource_id: location?.id,
+        type: "state",
+        start_date: props.Data?.event_dates[location.id]?.start_date || null,
+        end_date: props.Data?.event_dates[location.id]?.end_date || null,
+      }));
+      props.setHotLocationSearch(mappedLocations);
     }
-  }, []);
+  }, [props.Data]);
 
   return (
     <Layout
@@ -85,93 +80,73 @@ const TravelPlanner = (props) => {
   );
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    setHotLocationSearch: (payload) => dispatch(setHotLocationSearch(payload)),
-  };
-};
+const mapDispatchToProps = (dispatch) => ({
+  setHotLocationSearch: (payload) => dispatch(setHotLocationSearch(payload)),
+});
 
 export default connect(null, mapDispatchToProps)(TravelPlanner);
 
 export async function getStaticPaths() {
-  let paths = [];
-
   try {
     const response = await axiosPageList.get("?page_type=Theme");
 
     if (response?.data?.success) {
-      paths = response.data.data.pages.map((path) => ({
-        params: {
-          slug: path.slug,
-        },
+      const paths = response.data.data.pages.map((path) => ({
+        params: { slug: path.slug },
       }));
+      return { paths, fallback: false };
     } else {
-      throw Error("API Failed");
+      console.error("Failed to fetch paths.");
+      return { paths: [], fallback: false };
     }
   } catch (err) {
-    console.log("[ERROR][themePage:getStaticPaths]: ", err.message);
+    console.error("[ERROR][getStaticPaths]: ", err.message);
+    return { paths: [], fallback: false };
   }
-
-  return {
-    paths: paths,
-    fallback: false,
-  };
 }
 
-export async function getStaticProps(context) {
-  var locations = [];
+export async function getStaticProps({ params }) {
+  const { slug } = params;
   let data = null;
+  let locations = [];
   let hotLocationSearch = [];
-  const { slug } = context.params;
 
   try {
     const res = await axiosPageInstance.get(`/${slug}`);
-    if (res.data?.success) {
+    console.log("slug",slug);
+    if (res?.data?.success) {
       data = res.data.data;
-    } else {
-      throw Error("API Failed");
+      console.log("response",res.data);
     }
   } catch (err) {
-    console.log(
-      `[ERROR][themePage:axiosTravelPlannerInstance][${slug}]: `,
-      err.message
+    console.error(`[ERROR][getStaticProps:slug:${slug}]: `, err.message);
+  }
+
+  try {
+    const locRes = await axiospagelistinstance.get(
+      "/?page_type=Destination&fields=id,ancestors,path,destination,name,tagline,image,link,budget"
     );
+    locations = locRes?.data || [];
+  } catch (err) {
+    console.error("[ERROR][getStaticProps:locations]: ", err.message);
+  }
+
+  try {
+    const hotDestRes = await axioslocationsinstance.get(
+      `hot_destinations/?state=${slug}/`
+    );
+    if (hotDestRes?.data?.length) {
+      hotLocationSearch = hotDestRes.data;
+    }
+  } catch (err) {
+    console.error("[ERROR][getStaticProps:hot_destinations]: ", err.message);
   }
 
   if (!data) {
-    return {
-      notFound: true,
-    };
-  }
-
-  try {
-    const loc = await axiospagelistinstance.get(
-      `/?page_type=Destination&fields=id,ancestors,path,destination,name,tagline,image,link,budget`
-    );
-    locations = loc.data;
-  } catch (err) {
-    console.log(`[ERROR][themePage:axiospagelistinstance]: `, err.message);
-  }
-
-  try {
-    const response = await axioslocationsinstance.get(
-      `hot_destinations/?state=${slug}/`
-    );
-    if (response.data?.length) {
-      hotLocationSearch = response.data;
-    }
-  } catch (err) {
-    console.log(
-      `[ERROR][ThemePage][axioslocationsinstance:/hot_destinations/?state=${slug}/]`,
-      err.message
-    );
+    return { notFound: true };
   }
 
   return {
-    props: {
-      Data: data,
-      locations,
-      hotLocationSearch,
-    },
+    props: { Data: data, locations, hotLocationSearch },
   };
 }

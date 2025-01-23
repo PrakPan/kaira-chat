@@ -33,13 +33,19 @@ export default function ThemePage(props) {
   const [showTailoredModal, setShowTailoredModal] = useState(false);
   const [destination, setDestination] = useState(null);
 
-  useEffect(() => {
-    if (props.experienceData?.headings) {
-      let headings = props.experienceData?.headings;
-      headings.sort((a, b) => a?.priority - b?.priority);
-      setHeadings(headings);
-    }
-  }, [props.experienceData?.headings]);
+  let hasNavigationRendered = false;
+
+  const components = props.experienceData?.components;
+
+  const sortedComponents = components.sort((a, b) => a.priority - b.priority);
+
+  // useEffect(() => {
+  //   if (props.experienceData?.headings) {
+  //     let headings = props.experienceData?.headings;
+  //     headings.sort((a, b) => a?.priority - b?.priority);
+  //     setHeadings(headings);
+  //   }
+  // }, [props.experienceData?.headings]);
 
   const handlePlanButton = (pageId, destination, type) => {
     if (isPageWide) {
@@ -98,62 +104,108 @@ export default function ThemePage(props) {
         </div>
 
         <SetWidthContainer>
-          <div className="mt-5 mx-3">
-            <H3
-              style={{
-                color: "black",
-                margin: !isPageWide
-                  ? "auto" //"2.5rem 0.5rem 1.5rem 0.5rem"
-                  : "3rem 0 2rem 0",
-                padding: "5px",
-              }}
-            >
-              Explore the World’s Most Romantic Getaways
-            </H3>
-            <HoneymoonPackages />
-          </div>
+          <div>
+            <Overview
+              heading={props.experienceData?.overview_heading}
+              text={props.experienceData?.overview_text}
+              image={props.experienceData?.overview_image}
+            />
 
-          <Overview
-            heading={props.experienceData.overview_heading}
-            text={props.experienceData.overview_text}
-            image={props.experienceData.overview_image}
-          />
+            {sortedComponents.map((component, index) => {
+              if (component.is_navigation_type && !hasNavigationRendered) {
+                hasNavigationRendered = true; // Mark as rendered
+                return (
+                  <div key={index} className="mt-5 mx-3">
+                    <h3
+                      style={{
+                        color: "black",
+                        margin: "3rem 0 2rem 0",
+                        padding: "5px",
+                      }}
+                    >
+                      {component.heading}
+                    </h3>
+                    <HoneymoonPackages
+                      countries={component.countries}
+                      cities={component.cities}
+                      state={component.state}
+                      data={sortedComponents}
+                    />
+                  </div>
+                );
+              }
 
-          <div className="space-y-[100px]">
-            {headings.map((heading, index) => (
-              <div key={index} className="mx-3">
-                <div className="text-center my-6 mt-[4rem] ">
-                  <h1 className="md:text-4xl font-bold">{heading.name}</h1>
-                  <p className="text-gray-500 mt-2">{heading.text}</p>
+              return (
+                <div key={index} className="mt-5 mx-3">
+                  <h3
+                    style={{
+                      color: "black",
+                      margin: "3rem 0 2rem 0",
+                      padding: "5px",
+                    }}
+                  >
+                    {!component.is_navigation_type ? component.heading : ""}
+                  </h3>
+                  {!component.is_navigation_type && (
+                    <div className="space-y-[100px]">
+                      <div className="mx-3">
+                        <div className="text-center my-6 mt-[4rem]">
+                          <h1 className="md:text-4xl font-bold">
+                            {component.name}
+                          </h1>
+                          <p className="text-gray-500 mt-2">{component.text}</p>
+                        </div>
+
+                        {component.carousel === "destination-1" ? (
+                          <Destination1Carousel
+                            handlePlanButton={handlePlanButton}
+                            setDestination={setDestination}
+                            packages={component.elements}
+                          />
+                        ) : component.carousel === "destination-2" ? (
+                          <></>
+                        ) : component.carousel === "itinerary-1" ? (
+                          <></>
+                        ) : component.carousel === "activity-1" ? (
+                          <Activity1Carousel
+                            activities={component.activities}
+                          />
+                        ) : component.carousel === "review-1" ? (
+                          <Reviews1Carousel reviews={component.reviews} />
+                        ) : null}
+                      </div>
+                    </div>
+                  )}
                 </div>
-
-                {heading.carousel === "destination-1" ? (
-                  <Destination1Carousel
-                    handlePlanButton={handlePlanButton}
-                    setDestination={setDestination}
-                    packages={heading.elements}
-                  />
-                ) : heading.carousel === "destination-2" ? (
-                  <></>
-                ) : heading.carousel === "itinerary-1" ? (
-                  <></>
-                ) : heading.carousel === "activity-1" ? (
-                  <Activity1Carousel activities={heading.activities} />
-                ) : heading.carousel === "review-1" ? (
-                  <Reviews1Carousel reviews={heading.reviews} />
-                ) : null}
-              </div>
-            ))}
+              );
+            })}
           </div>
+        </SetWidthContainer>
 
-          <div className="my-[100px] mx-3">
-            <ThemeBannerCards />
+        {/* <div className="my-[100px] mx-3">
+                  <ThemeBannerCards />
+                </div> */}
+
+        <div className="relative">
+          <div
+            className="absolute top-2 -right-20 w-[12rem] h-[16rem] overflow-hidden"
+            style={{ transform: "rotate(45deg)" }}
+          >
+            <Image
+              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/tilted-heart.png`}
+              className="object-fill"
+              alt="Tilted Hearts"
+              height={200}
+              width={200}
+            />
           </div>
+        </div>
 
+        <div classname="mb-5">
           <div className="relative">
             <div
-              className="absolute top-2 -right-20 w-[12rem] h-[16rem] overflow-hidden"
-              style={{ transform: "rotate(45deg)" }}
+              className="absolute -top-[6rem] w-[18rem] h-[18rem]"
+              style={{ transform: "rotate(-12deg)" }}
             >
               <Image
                 src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/tilted-heart.png`}
@@ -165,25 +217,8 @@ export default function ThemePage(props) {
             </div>
           </div>
 
-          <div classname="mb-5">
-            <div className="relative">
-              <div
-                className="absolute -top-[6rem] w-[18rem] h-[18rem]"
-                style={{ transform: "rotate(-12deg)" }}
-              >
-                <Image
-                  src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/tilted-heart.png`}
-                  className="object-fill"
-                  alt="Tilted Hearts"
-                  height={200}
-                  width={200}
-                />
-              </div>
-            </div>
-
-            <ThemeFaqs />
-          </div>
-        </SetWidthContainer>
+          <ThemeFaqs faq={props?.experienceData?.faq} />
+        </div>
 
         <TailoredFormMobileModal
           destinationType={destination?.type}

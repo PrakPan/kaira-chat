@@ -67,7 +67,7 @@ export default function ThemeFaqs(props) {
       </div>
 
       <div className="w-full flex flex-col gap-4">
-        {QUESTIONS.map((q, index) => (
+        {props.faq?.map((q, index) => (
           <Question key={index} question={q.question} answer={q.answer} />
         ))}
       </div>

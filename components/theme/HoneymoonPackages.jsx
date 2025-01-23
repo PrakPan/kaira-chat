@@ -47,6 +47,10 @@ export default function HoneymoonPackages(props) {
   const [domestic, setDomestic] = useState(true);
   const [destination, setDestination] = useState(null);
 
+  const dynamicTabs = props?.data
+    .filter((component) => component.is_navigation_type && component.carousel )
+    .map((component) => component.heading);
+
   const handlePlanButton = (pageId, destination, type) => {
     if (isPageWide) {
       setShowTailoredModal(true);
@@ -54,12 +58,20 @@ export default function HoneymoonPackages(props) {
       openTailoredModal(router, pageId, destination, type);
     }
   };
+  
+  const matchingComponent = props?.data?.find(
+    (component) => component.heading === activeTab && component.is_navigation_type
+  );
+
+  const { countries = [], cities = [], states = [] } = matchingComponent || {};
+
 
   return (
     <div className="relative flex flex-col gap-3">
       <Navigation
         activeTab={activeTab}
         setActiveTab={setActiveTab}
+        dynamicTabs={dynamicTabs} 
         domestic={domestic}
         setDomestic={setDomestic}
       />
@@ -67,6 +79,9 @@ export default function HoneymoonPackages(props) {
       <Carousel
         activeTab={activeTab}
         packages={domestic ? DOMESTIC_PACKAGES : INTERNATIONAL_PACKAGES}
+        countries={countries}
+        cities={cities}
+        state={states}
         handlePlanButton={handlePlanButton}
         setDestination={setDestination}
       />
@@ -88,159 +103,138 @@ export default function HoneymoonPackages(props) {
   );
 }
 
-const Navigation = ({ activeTab, setActiveTab, domestic, setDomestic }) => {
-  let isPageWide = media("(min-width: 768px)");
-  const menuRref = useRef(null);
+const Navigation = ({ activeTab, setActiveTab, dynamicTabs, domestic, setDomestic }) => {
+  const isPageWide = media("(min-width: 768px)");
   const tabsRef = useRef(null);
-  const [showMenu, setShowMenu] = useState(false);
   const [showTabs, setShowTabs] = useState(false);
 
-  useEffect(() => {
-    const checkIfClickedOutside = (e) => {
-      if (menuRref.current && !menuRref.current.contains(e.target)) {
-        setShowMenu(false);
-      }
+  const handleTabClick = (name) => {
+    setActiveTab(name);
+    if (name === "Religious" && !domestic) setDomestic(true);
+    setShowTabs(false);
+  };
 
+  useEffect(() => {
+    const handleClickOutside = (e) => {
       if (tabsRef.current && !tabsRef.current.contains(e.target)) {
         setShowTabs(false);
       }
     };
-
-    document.addEventListener("mousedown", checkIfClickedOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", checkIfClickedOutside);
-    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  const Tabs = [
-    { id: 1, name: "All" },
-    { id: 2, name: "Asia" },
-    { id: 3, name: "Europe" },
-    { id: 4, name: "North America" },
-    { id: 5, name: "South America" },
-    { id: 6, name: "Australia" },
-    { id: 6, name: "Africa" },
-  ];
-
-  const handleClick = (name) => {
-    setActiveTab(name);
-
-    if (name === "Religious" && !domestic) {
-      setDomestic(true);
-    }
-
-    setShowTabs(false);
-  };
-
-  
 
   return (
     <div className="relative flex flex-col gap-3">
       {showTabs && (
         <div
           ref={tabsRef}
-          className="z-50 absolute top-[100%] bg-white drop-shadow-2xl p-3 rounded-lg flex flex-col gap-2"
+          className="z-50 absolute top-[100%] bg-white shadow-2xl p-3 rounded-lg flex flex-col gap-2"
         >
-          {Tabs.map((tab) => (
+          {dynamicTabs.map((tab, index) => (
             <div
-              key={tab.id}
-              onClick={() => handleClick(tab.name)}
-              className={`text-nowrap cursor-pointer border-1 rounded-full px-3 md:px-5 py-2 md:py-3 font-semibold text-[15px] text-[#7C7C7C] ${
-                activeTab == tab.name
-                  ? "border-black bg-[#F7E700] text-black"
-                  : ""
+              key={index}
+              onClick={() => handleTabClick(tab)}
+              className={`cursor-pointer border rounded-full px-5 py-2 font-semibold text-sm ${
+                activeTab === tab ? "border-black bg-yellow-300 text-black" : ""
               }`}
             >
-              {tab.name}
+              {tab}
             </div>
           ))}
         </div>
       )}
 
-
-      <div className="flex gap-3 flex-row items-center justify-between overflow-auto hide-scrollbar">
+      <div className="flex items-center justify-between gap-3">
         {isPageWide ? (
-          <div className="w-full flex flex-row items-center gap-3 overflow-x-auto hide-scrollbar">
-            {Tabs.map((tab) => (
+          <div className="flex gap-3 overflow-x-auto">
+            {dynamicTabs.map((tab, index) => (
               <div
-                key={tab.id}
-                onClick={() => handleClick(tab.name)}
-                className={`text-nowrap cursor-pointer border-1 rounded-full px-3 md:px-5 py-2 md:py-3 font-semibold text-[15px] text-[#7C7C7C] ${
-                  activeTab == tab.name
-                    ? "border-black bg-[#F7E700] text-black"
-                    : ""
+                key={index}
+                onClick={() => handleTabClick(tab)}
+                className={`cursor-pointer border rounded-full px-5 py-2 font-semibold text-sm ${
+                  activeTab === tab ? "border-black bg-yellow-300 text-black" : ""
                 }`}
               >
-                {tab.name}
+                {tab}
               </div>
             ))}
           </div>
         ) : (
-          <div className=" flex flex-row items-center gap-2">
-            <IoMenu
-              onClick={() => setShowTabs((prev) => !prev)}
-              className="text-3xl"
-            />
-
-            {Tabs.map(
-              (tab) =>
-                activeTab === tab.name && (
-                  <div
-                    key={tab.id}
-                    onClick={() => handleClick(tab.name)}
-                    className={`text-nowrap cursor-pointer border-1 rounded-full px-3 md:px-5 py-2 md:py-3 font-semibold text-[15px] text-[#7C7C7C] ${
-                      activeTab == tab.name
-                        ? "border-black bg-[#F7E700] text-black"
-                        : ""
-                    }`}
-                  >
-                    {tab.name}
-                  </div>
-                )
-            )}
-          </div>
+          <IoMenu
+            onClick={() => setShowTabs(!showTabs)}
+            className="text-3xl cursor-pointer"
+          />
         )}
       </div>
     </div>
   );
 };
 
+
 const Carousel = (props) => {
-  let isPageWide = media("(min-width: 768px)");
-  const [MobilecardsToShowJSX, setMobileCardsToShowJSX] = useState([]);
+  const isPageWide = media("(min-width: 768px)");
   const [cards, setCards] = useState([]);
+  const [MobilecardsToShowJSX, setMobileCardsToShowJSX] = useState([]);
 
   useEffect(() => {
-    let cardsArr = [];
-    for (let i = 0; i < props.packages.length; i++) {
-      if (
-        props.activeTab === "All" ||
-        props.packages[i].category === props.activeTab
-      ) {
-        cardsArr.push(
-          <Card
-            key={props.packages[i].id}
-            // path={props.packages[i].path}
-            heading={props.packages[i].heading}
-            tagline={props.packages[i].tagline}
-            img={props.packages[i].image}
-            budget={props.packages[i].budget}
-            // slug={props.packages[i].link}
-            // link={props.packages[i].link}
-            // country={props.country}
-            page={"New Year Page"}
-            data={props.packages[i]}
-            handlePlanButton={props.handlePlanButton}
-            setDestination={props.setDestination}
-          ></Card>
-        );
-      }
-    }
+    const cardsArr = [];
+
+        // Add cards for cities
+        props?.cities?.forEach((city) => {
+          cardsArr.push(
+            <Card
+              key={city.id}
+              heading={city.name}
+              tagline={city.most_popular_for.join(", ")}
+              img={city.image}
+              page={props.activeTab}
+              data={city}
+              handlePlanButton={props.handlePlanButton}
+              setDestination={props.setDestination}
+            />
+          );
+        });
+
+        // Add cards for countries
+        props?.countries?.forEach((country) => {
+          cardsArr.push(
+            <Card
+              key={country.id}
+              heading={country.name}
+              tagline={country.tagline}
+              img={country.image}
+              page={props.activeTab}
+              data={country}
+              handlePlanButton={props.handlePlanButton}
+              setDestination={props.setDestination}
+            />
+          );
+        });
+
+        // Add cards for states
+        props?.states?.forEach((city) => {
+          const state = city.state;
+          if (state) {
+            cardsArr.push(
+              <Card
+                key={state.id}
+                heading={state.name}
+                tagline={`${state.country}, ${state.continent}`}
+                img={city.image} // Reuse city's image for the state card
+                page={props.activeTab}
+                data={state}
+                handlePlanButton={props.handlePlanButton}
+                setDestination={props.setDestination}
+              />
+            );
+          }
+        });
 
     setCards(cardsArr);
     setMobileCardsToShowJSX(cardsArr);
-  }, [props.activeTab, props.packages]);
+  }, [props.activeTab, props.cities,props.countries,props.states]);
+
 
   if (isPageWide)
     return (
@@ -250,7 +244,7 @@ const Carousel = (props) => {
             navigationButtons={true}
             slidesPerView={4}
             cards={cards}
-          ></SwiperCarousel>
+          />
         ) : null}
       </div>
     );
@@ -264,7 +258,7 @@ const Carousel = (props) => {
               slidesPerView={1}
               cards={MobilecardsToShowJSX}
               pageDots
-            ></SwiperCarousel>
+            />
           ) : (
             <MobileSkeleton />
           )}
@@ -272,6 +266,7 @@ const Carousel = (props) => {
       </div>
     );
 };
+
 
 const Card = (props) => {
   const [loading, setLoading] = useState(true);
@@ -340,11 +335,11 @@ const Card = (props) => {
               <div className="text-white text-[15px]">{props.tagline}</div>
             </div>
 
-            <div className="text-white text-[14px]">
+            {/* <div className="text-white text-[14px]">
               From{" "}
               <span className="font-bold">₹{getIndianPrice(props.budget)}</span>
               /- per day
-            </div>
+            </div> */}
           </div>
         )}
 
