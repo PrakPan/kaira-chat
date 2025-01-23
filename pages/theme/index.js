@@ -1,5 +1,5 @@
 import Head from "next/head";
-// import { useEffect } from "react";
+import { useEffect } from "react";
 // import { connect } from "react-redux";
 import ThemePage from "../../containers/travelplanner/ThemePage";
 import Layout from "../../components/Layout";
@@ -7,12 +7,49 @@ import Layout from "../../components/Layout";
 // import axiospagelistinstance, {
 //   axiosPageList,
 // } from "../../services/pages/list";
-// import axioslocationsinstance from "../../services/search/search";
-// import setHotLocationSearch from "../../store/actions/hotLocationSearch";
+import axioslocationsinstance from "../../services/search/search";
+import setHotLocationSearch from "../../store/actions/hotLocationSearch";
+
+
 
 
 
 const HoneymoonTheme = () => {
+
+  useEffect(() => {
+      getHotLocationsSearch();
+      getThemeComponents();
+    }, []);
+
+  const getHotLocationsSearch = async () => {
+      try {
+        const response = await axioslocationsinstance.get("hot_destinations/");
+        if (response.data?.length) {
+          const hotLocationSearch = response.data;
+          props.setHotLocationSearch(hotLocationSearch);
+        }
+      } catch (err) {
+        console.log(
+          `[ERROR][ItineraryPage][axioslocationsinstance:/hot_destinations]`
+        );
+      }
+    };
+
+    const getThemeComponents = async () => {
+      try {
+        const response = await axiosPageInstance.get("/1");
+        if (response.data?.length) {
+          const themeComponents = response.data;
+          console.log("themeComponents",themeComponents);
+        }
+      } catch (err) {
+        console.log(
+          `[ERROR][ThemePage][axiosPageInstance:/theme]`
+        );
+      }
+    };
+
+
   const locations =  [
       {
         name: "Paris",
@@ -710,3 +747,7 @@ const HoneymoonTheme = () => {
 }
 
 export default HoneymoonTheme;
+
+
+
+

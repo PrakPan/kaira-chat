@@ -34,6 +34,21 @@ const Itinerary = (props) => {
     }
   };
 
+  const getThemeComponents = async () => {
+    try {
+      const response = await axioslocationsinstance.get("");
+      if (response.data?.length) {
+        const hotLocationSearch = response.data;
+        props.setHotLocationSearch(hotLocationSearch);
+      }
+    } catch (err) {
+      console.log(
+        `[ERROR][ItineraryPage][axioslocationsinstance:/hot_destinations]`
+      );
+    }
+  };
+
+
   return (
     <LayoutV2 newYear staticnav itinerary page={"Itinerary Page"}>
       <Head>
