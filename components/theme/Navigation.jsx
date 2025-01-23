@@ -8,6 +8,7 @@ import Destination1Carousel from "./Destination1Carousel";
 import Itinerary2Carousel from "./Itinerary2Carousel";
 import Activity1Carousel from "./Activity1Carousel";
 import Reviews1Carousel from "./Reviews1Carousel";
+import PrimaryHeading from "../heading/PrimaryHeading";
 
 export default function Navigation({ components }) {
   let isPageWide = media("(min-width: 768px)");
@@ -40,7 +41,7 @@ export default function Navigation({ components }) {
     <div className="space-y-10 mx-3">
       {navItems && (
         <>
-          <h1 className="mt-5 md:text-4xl font-bold">{heading}</h1>
+          <PrimaryHeading className="mt-5">{heading}</PrimaryHeading>
 
           <NavigationMenu
             navItems={navItems}

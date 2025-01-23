@@ -10,7 +10,7 @@ const Container = styled.div`
   width: 100%;
   height: 25rem;
   @media screen and (min-width: 768px) {
-    height: 20rem;
+    height: 25rem;
   }
   position: relative;
 `;
@@ -47,7 +47,7 @@ const Card = (props) => {
   };
 
   return (
-    <Container>
+    <Container className="">
       <BackgroundImageLoader
         padding={props.padding}
         filter={"brightness(0.8)"}
@@ -56,7 +56,6 @@ const Card = (props) => {
         dimensionsMobile={{ width: 607, height: 810 }}
         style={{ position: "absolute" }}
         className="center"
-        resizeMode={"fill"}
         borderRadius={"10px"}
         noLazy={props.noLazy}
       >

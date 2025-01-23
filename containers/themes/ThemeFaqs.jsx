@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 import SecondaryHeading from "../../components/heading/Secondary";
+import PrimaryHeading from "../../components/heading/PrimaryHeading";
 
 export default function ThemeFaqs(props) {
   return (
     <div className="flex flex-col items-center gap-5 px-3 md:mb-10  md:px-8  md:flex md:flex-col md:justify-center md:items-center md:m-auto">
-      <div className="text-center text-[27px] md:text-[40px] font-[700] md:leading-[56px]">
+      <PrimaryHeading className="text-center">
         Frequently Asked Questions
-      </div>
+      </PrimaryHeading>
 
       <div className="w-full flex flex-col gap-4">
         {props.faqs.map((q, index) => (

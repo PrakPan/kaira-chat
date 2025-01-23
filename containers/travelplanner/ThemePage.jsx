@@ -15,6 +15,8 @@ import Activity1Carousel from "../../components/theme/Activity1Carousel.jsx";
 import Reviews1Carousel from "../../components/theme/Reviews1Carousel.jsx";
 import Itinerary2Carousel from "../../components/theme/Itinerary2Carousel.jsx";
 import Navigation from "../../components/theme/Navigation.jsx";
+import PrimaryHeading from "../../components/heading/PrimaryHeading.jsx";
+import SecondaryHeading from "../../components/heading/Secondary.jsx";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -115,12 +117,12 @@ export default function ThemePage(props) {
           slug={props.slug}
         />
 
-        <div className="space-y-[100px]">
+        <div className="space-y-[100px] mt-5">
           {components.map((component, index) => (
-            <div key={index} className="mx-3">
-              <div className="text-center my-6 mt-[4rem] ">
-                <h1 className="md:text-4xl font-bold">{component.heading}</h1>
-                <p className="text-gray-500 mt-2">{component.text}</p>
+            <div key={index} className="mx-3 space-y-12">
+              <div className="space-y-3">
+                <PrimaryHeading className="mx-auto text-center">{component.heading}</PrimaryHeading>
+                <SecondaryHeading className="mx-auto text-center">{component.text}</SecondaryHeading>
               </div>
 
               {component.carousel === "destination-1" ? (

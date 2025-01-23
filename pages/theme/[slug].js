@@ -34,7 +34,8 @@ const TravelPlanner = (props) => {
     <Layout
       page_id={props.Data.id}
       destination={props.Data.name}
-      page={"State Page"}
+      page={"Theme Page"}
+      slug={props.slug}
     >
       <Head>
         <title>
