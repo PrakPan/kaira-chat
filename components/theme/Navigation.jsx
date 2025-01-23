@@ -168,7 +168,11 @@ const ComponentDisplay = ({ component, handlePlanButton, setDestination }) => (
       <Destination1Carousel
         handlePlanButton={handlePlanButton}
         setDestination={setDestination}
-        packages={[...component.cities, ...component.countries]}
+        packages={[
+          ...component.cities,
+          ...component.states,
+          ...component.countries,
+        ]}
       />
     ) : component.carousel === "destination-2" ? (
       <></>

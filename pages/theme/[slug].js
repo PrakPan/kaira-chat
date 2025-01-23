@@ -124,10 +124,8 @@ export async function getStaticProps({ params }) {
 
   try {
     const res = await axiosPageInstance.get(`/${slug}`);
-    console.log("slug",slug);
     if (res?.data?.success) {
       data = res.data.data;
-      console.log("response",res.data);
     }
   } catch (err) {
     console.error(`[ERROR][getStaticProps:slug:${slug}]: `, err.message);

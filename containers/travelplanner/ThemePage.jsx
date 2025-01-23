@@ -121,15 +121,23 @@ export default function ThemePage(props) {
           {components.map((component, index) => (
             <div key={index} className="mx-3 space-y-12">
               <div className="space-y-3">
-                <PrimaryHeading className="mx-auto text-center">{component.heading}</PrimaryHeading>
-                <SecondaryHeading className="mx-auto text-center">{component.text}</SecondaryHeading>
+                <PrimaryHeading className="mx-auto text-center">
+                  {component.heading}
+                </PrimaryHeading>
+                <SecondaryHeading className="mx-auto text-center">
+                  {component.text}
+                </SecondaryHeading>
               </div>
 
               {component.carousel === "destination-1" ? (
                 <Destination1Carousel
                   handlePlanButton={handlePlanButton}
                   setDestination={setDestination}
-                  packages={[...component.cities, ...component.countries]}
+                  packages={[
+                    ...component.cities,
+                    ...component.states,
+                    ...component.countries,
+                  ]}
                 />
               ) : component.carousel === "destination-2" ? (
                 <></>
