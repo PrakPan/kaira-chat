@@ -194,9 +194,6 @@ const HotelBookingContainer = ({
                 <span>({booking ? booking?.duration : 1}N)</span>
               </div>
             )}
-            <div className={`ml-auto text-md font-semibold ${booking.user_selected ? 'text-[#277004]' : 'text-[#E00000]'}`}>
-              {booking.user_selected ? "Included" : "Excluded"}
-              </div>
           </div>
 
           <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3">
@@ -268,13 +265,28 @@ const HotelBookingContainer = ({
 
               <div className="flex flex-col gap-2 text-[#01202B] lg:w-[70%] w-full justify-between">
                 <div className="flex flex-col gap-2">
-                  <div
-                    className={`${
-                      currentBooking ? "text-lg" : "text-2xl"
-                    } font-semibold `}
-                  >
-                    {booking?.name}
+                  <div className="flex items-center">
+                    <div
+                      className={`${
+                        currentBooking ? "text-lg" : "text-2xl"
+                      } font-semibold `}
+                    >
+                      {booking?.name}
+                    </div>
+
+                    {handleClick && (
+                      <div
+                        className={`ml-auto text-md font-semibold ${
+                          booking.user_selected
+                            ? "text-[#277004]"
+                            : "text-[#E00000]"
+                        }`}
+                      >
+                        {booking.user_selected ? "Included" : "Excluded"}
+                      </div>
+                    )}
                   </div>
+
                   {booking && (
                     <div className="flex flex-col gap-1">
                       {!currentBooking && (
