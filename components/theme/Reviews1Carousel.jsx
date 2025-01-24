@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import ImageLoader from "../ImageLoader";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -10,6 +10,7 @@ import "swiper/swiper.min.css";
 import "swiper/swiper-bundle.min.css";
 import styled from "styled-components";
 import media from "../../components/media";
+import PrimaryButton from "../ui/PrimaryButton";
 
 const SwiperContainer = styled.div`
   position: relative;
@@ -140,6 +141,11 @@ export default function Reviews1Carousel(props) {
 }
 
 const Review = ({ heading, text, name, image, rating, itinerary_link }) => {
+  const router = useRouter();
+  const handleViewItinerary = () => {
+    router.push(itinerary_link);
+  };
+
   return (
     <div className="h-[450px] flex flex-col gap-4 bg-white p-4 rounded-lg">
       <div className="flex items-center gap-3">
@@ -165,20 +171,15 @@ const Review = ({ heading, text, name, image, rating, itinerary_link }) => {
 
       <div className="flex flex-col justify-between h-full">
         <div>
-          <h3 className="text-[16px] leading-[24px] font-[600]">
-            {heading}
-          </h3>
+          <h3 className="text-[16px] leading-[24px] font-[600]">{heading}</h3>
           <p className="text-[15px] leading-[24px] font-[350] text-[#323232] h-auto">
             {text}
           </p>
         </div>
 
-        <Link
-          href={itinerary_link}
-          className="bg-[#F7E700] w-fit px-4 py-[12px] rounded-lg no-underline text-[15px] font-[600] text-black border-[1px] border-black focus:outline-none"
-        >
+        <PrimaryButton onClick={handleViewItinerary}>
           View Itinerary
-        </Link>
+        </PrimaryButton>
       </div>
     </div>
   );
