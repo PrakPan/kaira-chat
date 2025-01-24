@@ -101,7 +101,7 @@ const FullImgContent = (props) => {
             >
               {props.subheading}
             </H7>
-          ) : isPageWide ? (
+          ) : isPageWide ? props.slug == "honeymoon-2025" ? null : (
             <H7
               style={{
                 lineHeight: isPageWide ? "35px" : "20px",

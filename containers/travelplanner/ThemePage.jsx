@@ -18,6 +18,7 @@ import Navigation from "../../components/theme/Navigation.jsx";
 import PrimaryHeading from "../../components/heading/PrimaryHeading.jsx";
 import SecondaryHeading from "../../components/heading/Secondary.jsx";
 import Itinerary1Carousel from "../../components/theme/Itinerary1Carousel.jsx";
+import Button from "../../components/ui/button/Index";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -42,17 +43,17 @@ export default function ThemePage(props) {
       let components = props.experienceData?.components;
       components.sort((a, b) => a?.priority - b?.priority);
 
+      setComponents(components);
+
       // Separate components based on `is_navigation_type`
-      const navComponents = components.filter(
-        (component) => component.parent == 1
-      );
-      const otherComponents = components.filter(
-        (component) => !component.is_navigation_type
-      );
-      setNavigationComponents(navComponents);
-      setComponents(otherComponents);
+
+      // const otherComponents = components.filter(
+      //   (component) => !component.is_navigation_type
+      // );
+      // // setNavigationComponents(navComponents);
+      // setComponents(otherComponents);
     }
-  }, [props.experienceData?.components]);
+  }, []);
 
   const handlePlanButton = (pageId, destination, type) => {
     if (isPageWide) {
@@ -109,10 +110,6 @@ export default function ThemePage(props) {
       )}
 
       <SetWidthContainer>
-        {navigationComponents.length ? (
-          <Navigation components={navigationComponents} />
-        ) : null}
-
         <Overview
           heading={props.experienceData.overview_heading}
           text={props.experienceData.overview_text}
@@ -120,84 +117,107 @@ export default function ThemePage(props) {
           slug={props.slug}
         />
 
-        <div className="space-y-[100px] mt-5">
-          { components.map((component, index) => (
-             !component.parent && <div key={index} className="mx-3 space-y-12">
-              <div className="space-y-3">
-                <PrimaryHeading className="mx-auto text-center">
-                  {component.heading}
-                </PrimaryHeading>
-                <SecondaryHeading className="mx-auto text-center">
-                  {component.text}
-                </SecondaryHeading>
-              </div>
+        <div className="mt-5">
+          {components &&
+            components.map((component, index) => {
+              if (component.type === "Menu" && !component.parent) {
+                const navComponents = components.filter(
+                  (childComponent) => childComponent.parent === component.id
+                );
 
-              {component.carousel === "destination-1" ? (
-                <Destination1Carousel
-                  handlePlanButton={handlePlanButton}
-                  setDestination={setDestination}
-                  packages={[
-                    ...component.cities,
-                    ...component.states,
-                    ...component.countries,
-                  ]}
-                />
-              ) : component.carousel === "destination-2" ? (
-                <></>
-              ) : component.carousel === "itinerary-1" ? (
-                <></>
-              ) : component.carousel === "itinerary-2" ? (
-                <div className="w-full relative">
-                  {props.slug === "honeymoon-2025" && (
-                    <>
-                      <Image
-                        src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/red-hearts.png`}
-                        className="object-fill absolute -left-[1rem] top-[10rem] md:-left-[9rem] md:top-0"
-                        alt="Tilted Hearts"
-                        height={300}
-                        width={500}
-                        style={{
-                          opacity: "50%",
-                        }}
-                      />
+                return navComponents.length > 0 ? (
+                  <React.Fragment key={index}>
+                    <PrimaryHeading> {component.heading}</PrimaryHeading>
+                    <Navigation components={navComponents} />
+                  </React.Fragment>
+                ) : null;
+              }
 
-                      <Image
-                        src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/red-hearts.png`}
-                        className="object-fill absolute -right-[1rem] top-[35rem] md:-right-[6rem] md:top-0"
-                        alt="Tilted Hearts"
-                        height={300}
-                        width={500}
-                        style={{
-                          opacity: "50%",
-                        }}
-                      />
-                    </>
-                  )}
-
-                  <Itinerary2Carousel elements={component.elements} />
-                </div>
-              ) : component.carousel === "activity-1" ? (
-                <Activity1Carousel activities={component.activities} />
-              ) : component.carousel === "review-1" ? (
-                <div className="relative">
-                  {props.slug === "honeymoon-2025" && (
-                    <div className="-z-10 w-fit absolute -top-[16rem] right-0 md:-top-[9rem] overflow-hidden">
-                      <Image
-                        src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/tilted-heart.png`}
-                        className="object-fill"
-                        alt="Tilted Hearts"
-                        height={200}
-                        width={200}
-                        style={{ transform: "rotate(45deg)" }}
-                      />
+              return (
+                !component.parent && (
+                  <div key={index} className="mx-3 space-y-12 mt-5">
+                    <div className="space-y-3">
+                      <PrimaryHeading className="mx-auto text-center">
+                        {component.heading}
+                      </PrimaryHeading>
+                      <SecondaryHeading className="mx-auto text-center">
+                        {component.text}
+                      </SecondaryHeading>
                     </div>
-                  )}
 
-                  <Reviews1Carousel reviews={component.reviews} />
-                </div>
-              ) : null}
-            </div>
-          ))}
+                    {/* Render specific carousel components based on type */}
+                    {component.carousel === "destination-1" ? (
+                      <>
+                      <Destination1Carousel
+                        handlePlanButton={handlePlanButton}
+                        setDestination={setDestination}
+                        packages={[
+                          ...component.cities,
+                          ...component.states,
+                          ...component.countries,
+                        ]}
+                      />
+                      <PlanYourTripButton/>
+                      </>
+                    ) : component.carousel === "destination-2" ? (
+                      <></>
+                    ) : component.carousel === "itinerary-1" ? (
+                      <></>
+                    ) : component.carousel === "itinerary-2" ? (
+                      <div className="w-full relative">
+                        {props.slug === "honeymoon-2025" && (
+                          <>
+                            <Image
+                              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/red-hearts.png`}
+                              className="object-fill absolute -left-[1rem] top-[10rem] md:-left-[9rem] md:top-0"
+                              alt="Tilted Hearts"
+                              height={300}
+                              width={500}
+                              style={{
+                                opacity: "50%",
+                              }}
+                            />
+
+                            <Image
+                              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/red-hearts.png`}
+                              className="object-fill absolute -right-[1rem] top-[35rem] md:-right-[6rem] md:top-0"
+                              alt="Tilted Hearts"
+                              height={300}
+                              width={500}
+                              style={{
+                                opacity: "50%",
+                              }}
+                            />
+                          </>
+                        )}
+
+                        <Itinerary2Carousel elements={component.elements} />
+                      </div>
+                    ) : component.carousel === "activity-1" ? (
+                      <><Activity1Carousel activities={component.activities} /> <PlanYourTripButton/></>
+                    ) : component.carousel === "review-1" ? (
+                      <div className="relative">
+                        {props.slug === "honeymoon-2025" && (
+                          <div className="-z-10 w-fit absolute -top-[16rem] right-0 md:-top-[9rem] overflow-hidden">
+                            <Image
+                              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/tilted-heart.png`}
+                              className="object-fill"
+                              alt="Tilted Hearts"
+                              height={200}
+                              width={200}
+                              style={{ transform: "rotate(45deg)" }}
+                            />
+                          </div>
+                        )}
+
+                        <Reviews1Carousel reviews={component.reviews} />
+                        <PlanYourTripButton />
+                      </div>
+                    ) : null}
+                  </div>
+                )
+              );
+            })}
         </div>
 
         {props.slug === "honeymoon-2025" && (
@@ -221,7 +241,7 @@ export default function ThemePage(props) {
           <ThemeFaqs faqs={props.experienceData.faq} />
         </div>
 
-        <Itinerary1Carousel/>
+        {/* <Itinerary1Carousel/> */}
       </SetWidthContainer>
 
       <TailoredFormMobileModal
@@ -237,4 +257,64 @@ export default function ThemePage(props) {
       />
     </div>
   );
+}
+
+
+const PlanYourTripButton = (props) =>{
+
+  let isPageWide = media("(min-width: 768px)");
+  const [showTailoredModal, setShowTailoredModal] = useState(false);
+  const router = useRouter();
+
+  const handlePlanButton = () => {
+    if (isPageWide) {
+      setShowTailoredModal(true);
+    } else {
+      openTailoredModal(router, props.page_id, props.destination);
+    }
+
+    logEvent({
+      action: "Plan_Itinerary",
+      params: {
+        page: props.page ? props.page : "",
+        event_category: "Button Click",
+        event_label: "Plan Itinerary For Free!",
+        event_action: "Banner",
+      },
+    });
+  };
+
+  return (
+
+          <div className="flex items-center justify-center mt-5">
+            <Button
+              padding="0.75rem 1rem"
+              fontSize="18px"
+              fontWeight="500"
+              bgColor="#f7e700"
+              borderRadius="7px"
+              color="black"
+              borderWidth="1px"
+              onclick={handlePlanButton}
+              margin="3vh 0 1vh 0"
+            >
+              {props.slug === "honeymoon-2025"
+                ? "Plan Your Honeymoon!"
+                : "Plan Your Trip Now!"}
+            </Button>
+
+            <TailoredFormMobileModal
+        destinationType={"city-planner"}
+        page_id={props.page_id}
+        children_cities={props.children_cities}
+        destination={props.destination}
+        cities={props.cities}
+        onHide={() => {
+          setShowTailoredModal(false);
+        }}
+        show={showTailoredModal}
+        eventDates={props.eventDates}
+      />
+          </div>
+  )
 }
