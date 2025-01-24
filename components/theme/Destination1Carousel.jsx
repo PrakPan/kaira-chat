@@ -6,6 +6,7 @@ import { getIndianPrice } from "../../services/getIndianPrice";
 import media from "../media";
 import { MobileSkeleton } from "../containers/plannerlocations/LocationSkeleton";
 import SwiperCarousel from "../SwiperCarousel";
+import SecondaryHeading from "../heading/Secondary";
 
 const ImageFade = styled.div`
   width: 100%;
@@ -156,13 +157,13 @@ const Card = (props) => {
                 {props.heading}
               </div>
 
-              <div className="text-white text-[15px]">
+              <SecondaryHeading className="text-white">
                 {props.tagline
                   ? props.tagline
                   : props.most_popular_for
                   ? props.most_popular_for.join(", ")
                   : null}
-              </div>
+              </SecondaryHeading>
             </div>
 
             {props.budget && (

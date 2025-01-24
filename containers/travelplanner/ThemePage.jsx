@@ -17,6 +17,7 @@ import Itinerary2Carousel from "../../components/theme/Itinerary2Carousel.jsx";
 import Navigation from "../../components/theme/Navigation.jsx";
 import PrimaryHeading from "../../components/heading/PrimaryHeading.jsx";
 import SecondaryHeading from "../../components/heading/Secondary.jsx";
+import Itinerary1Carousel from "../../components/theme/Itinerary1Carousel.jsx";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -43,7 +44,7 @@ export default function ThemePage(props) {
 
       // Separate components based on `is_navigation_type`
       const navComponents = components.filter(
-        (component) => component.is_navigation_type
+        (component) => component.parent == 1
       );
       const otherComponents = components.filter(
         (component) => !component.is_navigation_type
@@ -120,8 +121,8 @@ export default function ThemePage(props) {
         />
 
         <div className="space-y-[100px] mt-5">
-          {components.map((component, index) => (
-            <div key={index} className="mx-3 space-y-12">
+          { components.map((component, index) => (
+             !component.parent && <div key={index} className="mx-3 space-y-12">
               <div className="space-y-3">
                 <PrimaryHeading className="mx-auto text-center">
                   {component.heading}
@@ -162,7 +163,7 @@ export default function ThemePage(props) {
 
                       <Image
                         src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/red-hearts.png`}
-                        className="object-fill absolute -right-[1rem] top-[35rem] md:-right-[9rem] md:top-0"
+                        className="object-fill absolute -right-[1rem] top-[35rem] md:-right-[6rem] md:top-0"
                         alt="Tilted Hearts"
                         height={300}
                         width={500}
@@ -219,6 +220,8 @@ export default function ThemePage(props) {
         <div className="my-[100px]">
           <ThemeFaqs faqs={props.experienceData.faq} />
         </div>
+
+        <Itinerary1Carousel/>
       </SetWidthContainer>
 
       <TailoredFormMobileModal
