@@ -27,7 +27,7 @@ export default function Activity1Carousel(props) {
       buttonSize={40}
       navButtonBackground="#01202b"
       navButtonColor="#fff"
-      navButtonsTop="30%"
+      navButtonsTop="40%"
       pageDots={!isPageWide}
     />
   );
@@ -40,18 +40,18 @@ const ActivityCard = ({ image, name, short_description }) => {
     <Container>
       <div className="flex flex-col h-full gap-2">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-          <div className="relative h-[15rem] w-full overflow-hidden">
+          <div className="relative h-[15rem] w-full overflow-hidden rounded-[10px]">
             <ImageLoader
               url={image}
               width={"100%"}
-              height={"15rem"}
+              height={"18rem"}
               borderRadius="10px"
             />
           </div>
         </div>
         <div className="">
-          <h3 className="font-bold text-xs">{name}</h3>
-          <p className="text-gray-600 text-xs mt-1">{short_description}</p>
+          <h3 className="font-bold text-[16px]">{name}</h3>
+          <p className="font-[350] mt-1 text-[16px]">{short_description}</p>
         </div>
       </div>
     </Container>

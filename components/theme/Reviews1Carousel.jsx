@@ -140,8 +140,9 @@ export default function Reviews1Carousel(props) {
 
 const Review = ({ heading, text, name, image, rating, itinerary_link }) => {
   return (
-    <div className="h-[400px] md:h-[400px] flex flex-col justify-between bg-white p-4 rounded-lg">
-      <div className="flex items-center gap-3">
+    <div className="h-[400px] md:h-[400px] flex flex-col justify-between bg-white p-4 rounded-lg font-[300]">
+      <div className="flex flex-col gap-3">
+      <div className="flex items-center gap-3 mt-1">
         {/* Image Section */}
         <div className="w-[65px] h-[65px]">
           <ImageLoader
@@ -153,26 +154,27 @@ const Review = ({ heading, text, name, image, rating, itinerary_link }) => {
         </div>
 
         {/* Text Section */}
-        <div className="h-12 flex flex-col">
-          <p className="text-sm font-semibold text-gray-800 mb-0">{name}</p>
+        <div className="h-12 flex flex-col justify-center">
+          <p className="text-sm font-semibold mb-0">{name}</p>
           <p className="text-yellow-500">
             {"★".repeat(rating)}{" "}
-            <span className="text-gray-400">{"☆".repeat(5 - rating)}</span>
+            <span className="">{"☆".repeat(5 - rating)}</span>
           </p>
         </div>
       </div>
 
-      <div className="flex flex-col">
-        <h3 className="text-sm font-semibold text-gray-800 flex-none">
+      <div className="flex flex-col ">
+        <h3 className="text-sm font-semibold flex-none">
           {heading}
         </h3>
-        <p className="mt-2 text-sm  text-gray-600 h-auto">{text}</p>
+        <p className="mt-2 text-sm h-auto font-[300]">{text}</p>
       </div>
-
+      </div>
       <div className="flex flex-col gap-2">
         <Link
           href={itinerary_link}
-          className="bg-[#F7E700] w-fit px-3 py-2 rounded-lg no-underline text-black border-2 border-black focus:outline-none"
+          padding="0.75rem 1rem"
+          className="bg-[#F7E700] w-fit px-3 py-2 rounded-lg no-underline font-medium text-black border-1 border-black focus:outline-none"
         >
           View Itinerary
         </Link>
