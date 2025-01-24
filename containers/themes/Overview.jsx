@@ -7,6 +7,8 @@ import { useRouter } from "next/router";
 import openTailoredModal from "../../services/openTailoredModal";
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile";
 import { logEvent } from "../../services/ga/Index";
+import PrimaryHeading from "../../components/heading/PrimaryHeading";
+import SecondaryHeading from "../../components/heading/Secondary";
 
 export default function Overview(props) {
   let isPageWide = media("(min-width: 768px)");
@@ -32,7 +34,7 @@ export default function Overview(props) {
   };
 
   return (
-    <div className="relative mt-5 py-5 mx-4 flex flex-col gap-4 md:flex-row">
+    <div className="relative mt-5 py-5 mx-3 flex flex-col gap-4 md:flex-row md:items-center">
       {props.slug === "honeymoon-2025" && (
         <div className="-z-10 absolute -top-[3rem] md:-top-[5rem] -right-3 overflow-hidden">
           <Image
@@ -47,13 +49,12 @@ export default function Overview(props) {
       )}
  
 
-      <div className="flex flex-row gap-6 justify-between w-full">
+      <div className="flex flex-col md:flex-row gap-6 justify-between w-full">
       <div className=" md:pt-0  flex flex-col gap-3">
-        <div className="text-[27px] md:text-[40px] font-[700] leading-[56px]">
-          {props.heading}
-        </div>
-        <div className="flex flex-col gap-3 text-[16px] font-[350] leading-[26px] justify-start">
-          <div className="">{props.text}</div>
+        <PrimaryHeading className="">{props.heading}</PrimaryHeading>
+        <div className="flex flex-col gap-3 justify-start">
+          <SecondaryHeading className="">{props.text}</SecondaryHeading>
+
           <div>
             <Button
               padding="0.75rem 1rem"
@@ -90,6 +91,7 @@ export default function Overview(props) {
           )}
         </div>
       </div>
+
       <div className="px-2 md:px-0">
         <ImageLoader
           url={props.image}

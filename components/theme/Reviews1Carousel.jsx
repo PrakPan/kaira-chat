@@ -140,9 +140,8 @@ export default function Reviews1Carousel(props) {
 
 const Review = ({ heading, text, name, image, rating, itinerary_link }) => {
   return (
-    <div className="h-[400px] md:h-[400px] flex flex-col justify-between bg-white p-4 rounded-lg font-[300]">
-      <div className="flex flex-col gap-3">
-      <div className="flex items-center gap-3 mt-1">
+    <div className="h-[450px] flex flex-col gap-4 bg-white p-4 rounded-lg">
+      <div className="flex items-center gap-3">
         {/* Image Section */}
         <div className="w-[65px] h-[65px]">
           <ImageLoader
@@ -154,27 +153,28 @@ const Review = ({ heading, text, name, image, rating, itinerary_link }) => {
         </div>
 
         {/* Text Section */}
-        <div className="h-12 flex flex-col justify-center">
-          <p className="text-sm font-semibold mb-0">{name}</p>
-          <p className="text-yellow-500">
+        <div className="flex flex-col h-fit">
+          <p className="text-[18px] leading-[27px] font-[500] mb-0">{name}</p>
+          <div className="text-[#FEB739] text-xl">
             {"★".repeat(rating)}{" "}
-            <span className="">{"☆".repeat(5 - rating)}</span>
-          </p>
+            <span className="text-gray-400">{"☆".repeat(5 - rating)}</span>
+          </div>
         </div>
       </div>
 
-      <div className="flex flex-col ">
-        <h3 className="text-sm font-semibold flex-none">
-          {heading}
-        </h3>
-        <p className="mt-2 text-sm h-auto font-[300]">{text}</p>
-      </div>
-      </div>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col justify-between h-full">
+        <div>
+          <h3 className="text-[16px] leading-[24px] font-[600]">
+            {heading}
+          </h3>
+          <p className="text-[15px] leading-[24px] font-[350] text-[#323232] h-auto">
+            {text}
+          </p>
+        </div>
+
         <Link
           href={itinerary_link}
-          padding="0.75rem 1rem"
-          className="bg-[#F7E700] w-fit px-3 py-2 rounded-lg no-underline font-medium text-black border-1 border-black focus:outline-none"
+          className="bg-[#F7E700] w-fit px-4 py-[12px] rounded-lg no-underline text-[15px] font-[600] text-black border-[1px] border-black focus:outline-none"
         >
           View Itinerary
         </Link>

@@ -60,7 +60,7 @@ const QUESTIONS = [
 
 export default function Faqs(props) {
   return (
-    <div className="flex flex-col items-center gap-5 px-3 md:mb-10  md:px-8  md:flex md:flex-col md:justify-center md:items-center md:m-auto">
+    <div className="flex flex-col items-center gap-5 px-3">
       <div className="text-center text-[27px] md:text-[40px] font-[700] md:leading-[56px]">
         Frequently Asked Questions
       </div>

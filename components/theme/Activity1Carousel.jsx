@@ -6,9 +6,9 @@ import media from "../../components/media";
 
 const Container = styled.div`
   width: 100%;
-  height: 20rem;
+  // height: 24rem;
   @media screen and (min-width: 768px) {
-    height: 20rem;
+    // height: 24rem;
   }
   position: relative;
 `;
@@ -37,21 +37,24 @@ const ActivityCard = ({ image, name, short_description }) => {
   let isPageWide = media("(min-width: 768px)");
 
   return (
-    <Container>
-      <div className="flex flex-col h-full gap-2">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-          <div className="relative h-[15rem] w-full overflow-hidden rounded-[10px]">
-            <ImageLoader
-              url={image}
-              width={"100%"}
-              height={"18rem"}
-              borderRadius="10px"
-            />
-          </div>
+    <Container className="">
+      <div className="flex flex-col h-full gap-3">
+        <div className="relative md:h-[280px] md:w-[280px] overflow-hidden">
+          <ImageLoader
+            url={image}
+            width={isPageWide ? "280px" : "350px"}
+            height={isPageWide ? "280px" : "350px"}
+            borderRadius="10px"
+          />
         </div>
+
         <div className="">
-          <h3 className="font-bold text-[16px]">{name}</h3>
-          <p className="font-[350] mt-1 text-[16px]">{short_description}</p>
+          <h3 className="text-[16px] leading-[28px] font-[700] line-clamp-1">
+            {name}
+          </h3>
+          <p className="text-[15px] leading-[22px] font-[400] line-clamp-3">
+            {short_description}
+          </p>
         </div>
       </div>
     </Container>

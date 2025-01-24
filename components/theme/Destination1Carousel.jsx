@@ -36,17 +36,21 @@ export default function Destination1Carousel(props) {
 
   useEffect(() => {
     let cardsArr = [];
-    for (let i = 0; i < props.packages.length; i++) {
+    for (let component of props.packages) {
       cardsArr.push(
         <Card
-          key={props.packages[i].id}
-          heading={props.packages[i].name}
-          tagline={props.packages[i].tagline}
-          most_popular_for={props.packages[i].most_popular_for}
-          img={props.packages[i].image}
-          budget={props.packages[i].price}
+          key={component.id}
+          heading={
+            component.state
+              ? `${component.name}, ${component.state.country}`
+              : component.name
+          }
+          tagline={component.tagline}
+          most_popular_for={component.most_popular_for}
+          img={component.image}
+          budget={component.price}
           page={"Theme Page"}
-          data={props.packages[i]}
+          data={component}
           handlePlanButton={props.handlePlanButton}
           setDestination={props.setDestination}
         ></Card>
