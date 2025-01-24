@@ -27,7 +27,7 @@ export default function Activity1Carousel(props) {
       buttonSize={40}
       navButtonBackground="#01202b"
       navButtonColor="#fff"
-      navButtonsTop="30%"
+      navButtonsTop="40%"
       pageDots={!isPageWide}
     />
   );

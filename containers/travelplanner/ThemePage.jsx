@@ -21,8 +21,10 @@ import SecondaryHeading from "../../components/heading/Secondary.jsx";
 const SetWidthContainer = styled.div`
   width: 100%;
   margin: auto;
+  font-weight: 350px;
   @media screen and (min-width: 768px) {
     width: 85%;
+    font-weight: 350px;
   }
 `;
 

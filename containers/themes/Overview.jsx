@@ -47,7 +47,9 @@ export default function Overview(props) {
           />
         </div>
       )}
+ 
 
+      <div className="flex flex-col md:flex-row gap-6 justify-between w-full">
       <div className=" md:pt-0  flex flex-col gap-3">
         <PrimaryHeading className="">{props.heading}</PrimaryHeading>
         <div className="flex flex-col gap-3 justify-start">
@@ -97,6 +99,7 @@ export default function Overview(props) {
           height={isPageWide ? 536 : 300}
           borderRadius={8}
         />
+      </div>
       </div>
 
       <TailoredFormMobileModal

@@ -146,7 +146,7 @@ const Review = ({ heading, text, name, image, rating, itinerary_link }) => {
   };
 
   return (
-    <div className="h-[400px] flex flex-col gap-4 bg-white p-4 rounded-lg">
+    <div className="h-[450px] flex flex-col gap-4 bg-white p-4 rounded-lg">
       <div className="flex items-center gap-3">
         {/* Image Section */}
         <div className="w-[65px] h-[65px]">
