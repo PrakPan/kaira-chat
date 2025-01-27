@@ -57,9 +57,9 @@ export default function Overview(props) {
 
           <div>
             <Button
-              padding="0.75rem 1rem"
-              fontSize="18px"
-              fontWeight="500"
+              padding="0.5rem 1rem"
+              fontSize="15px"
+              fontWeight="400"
               bgColor="#f7e700"
               borderRadius="7px"
               color="black"

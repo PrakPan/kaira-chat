@@ -29,37 +29,12 @@ const Container = styled.div`
 const PaddingContianer = styled.div`
   padding: 5rem 0 2rem 0;
   flex-grow: 1;
+
   @media screen and (min-width: 768px) {
     display: flex;
     padding: 1vh 0 0 0;
     flex-direction: column;
     justify-content: center;
-  }
-`;
-
-const IconText = styled.div`
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  text-align: center;
-  color: black;
-  font-weight: 400;
-  margin-top: 7px;
-  @media screen and (min-width: 768px) {
-    font-size: 16px;
-  }
-`;
-
-const IconsContainer = styled.div`
-  display: flex;
-  filter: invert(100%);
-  justify-content: space-between;
-  position: absolute;
-  bottom: 20px;
-  width: 100%;
-  padding-inline: 10px;
-  @media screen and (min-width: 768px) {
-    width: 40%;
   }
 `;
 
@@ -88,7 +63,7 @@ const FullImgContent = (props) => {
 
   return (
     <Container className="font-lexend">
-      <PaddingContianer className="">
+      <PaddingContianer className="flex flex-col items-center md:items-start">
         <div className="">
           <H1 style={{ color: "#F7E700" }}>{props.title}</H1>
           {props.subheading ? (
@@ -101,18 +76,20 @@ const FullImgContent = (props) => {
             >
               {props.subheading}
             </H7>
-          ) : isPageWide ? props.slug == "honeymoon-2025" ? null : (
-            <H7
-              style={{
-                lineHeight: isPageWide ? "35px" : "20px",
-                fontSize: isPageWide ? "25px" : "20px",
-              }}
-            >
-              Bid farewell to generic holiday packages.
-              <br />
-              Get Your AI-Personalised Itineraries
-            </H7>
-          ) : (
+          ) : isPageWide ? (
+            props.slug == "honeymoon-2025" ? null : (
+              <H7
+                style={{
+                  lineHeight: isPageWide ? "35px" : "20px",
+                  fontSize: isPageWide ? "25px" : "20px",
+                }}
+              >
+                Bid farewell to generic holiday packages.
+                <br />
+                Get Your AI-Personalised Itineraries
+              </H7>
+            )
+          ) : props.slug == "honeymoon-2025" ? null : (
             <H7
               style={{
                 lineHeight: isPageWide ? "35px" : "20px",
@@ -127,9 +104,9 @@ const FullImgContent = (props) => {
         </div>
 
         <Button
-          padding="0.75rem 1rem"
-          fontSize="18px"
-          fontWeight="500"
+          padding="0.5rem 1rem"
+          fontSize="15px"
+          fontWeight="400"
           bgColor="#f7e700"
           borderRadius="7px"
           color="black"

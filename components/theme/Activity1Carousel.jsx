@@ -6,10 +6,6 @@ import media from "../../components/media";
 
 const Container = styled.div`
   width: 100%;
-  // height: 24rem;
-  @media screen and (min-width: 768px) {
-    // height: 24rem;
-  }
   position: relative;
 `;
 
@@ -22,12 +18,9 @@ export default function Activity1Carousel(props) {
         <ActivityCard key={index} {...activity} />
       ))}
       slidesPerView={isPageWide ? 4 : 1}
-      spaceBetween={20}
+      // spaceBetween={25}
       navigationButtons={true}
-      buttonSize={40}
-      navButtonBackground="#01202b"
-      navButtonColor="#fff"
-      navButtonsTop="30%"
+      navButtonsTop={isPageWide ? "140px" : "175px"}
       pageDots={!isPageWide}
     />
   );
@@ -37,9 +30,14 @@ const ActivityCard = ({ image, name, short_description }) => {
   let isPageWide = media("(min-width: 768px)");
 
   return (
-    <Container className="">
-      <div className="flex flex-col h-full gap-3 rounded-lg">
-        <div className="relative  overflow-hidden rounded-lg">
+    <Container
+      style={{
+        // width: isPageWide ? "282px" : "350px",
+      }}
+      className=""
+    >
+      <div className="flex flex-col h-full gap-3">
+        <div className="relative w-h-full overflow-hidden">
           <ImageLoader
             url={image}
             width={isPageWide ? "282px" : "350px"}
@@ -49,9 +47,7 @@ const ActivityCard = ({ image, name, short_description }) => {
         </div>
 
         <div className="">
-          <h3 className="text-[16px] leading-[28px] font-[700]">
-            {name}
-          </h3>
+          <h3 className="text-[16px] leading-[28px] font-[700]">{name}</h3>
           <p className="text-[15px] leading-[22px] font-[400] line-clamp-3">
             {short_description}
           </p>

@@ -72,24 +72,7 @@ const SwiperContainer = styled.div`
     width: 64px;
     height: 64px;
   }
-  
 `;
-
-const Container = styled.div`
-  @media screen and (min-width: 768px) and (max-width: 1024px) {
-    height: 500px;
-  }
-
-  @media screen and (min-width: 1025px) and (max-width: 1440px) {
-    height: 450px;
-  }
-
-  @media screen and (max-width: 768px) {
-    height: 500px;
-  }
-`;
-
-
 
 export default function Reviews1Carousel(props) {
   let isPageWide = media("(min-width: 768px)");
@@ -163,8 +146,7 @@ const Review = ({ heading, text, name, image, rating, itinerary_link }) => {
   };
 
   return (
-    <Container>
-    <div className="h-full flex flex-col gap-4 bg-white p-4 rounded-lg">
+    <div className="h-[500px] border-2 flex flex-col gap-4 bg-white p-4 rounded-lg">
       <div className="flex items-center gap-3">
         {/* Image Section */}
         <div className="w-[65px] h-[65px]">
@@ -199,6 +181,5 @@ const Review = ({ heading, text, name, image, rating, itinerary_link }) => {
         </PrimaryButton>
       </div>
     </div>
-    </Container>
   );
 };

@@ -126,10 +126,10 @@ export default function ThemePage(props) {
                 );
 
                 return navComponents.length > 0 ? (
-                  <React.Fragment key={index}>
-                    <PrimaryHeading> {component.heading}</PrimaryHeading>
+                  <div key={index}>
+                    <PrimaryHeading className="mx-3"> {component.heading}</PrimaryHeading>
                     <Navigation components={navComponents} />
-                  </React.Fragment>
+                  </div>
                 ) : null;
               }
 
@@ -148,16 +148,16 @@ export default function ThemePage(props) {
                     {/* Render specific carousel components based on type */}
                     {component.carousel === "destination-1" ? (
                       <>
-                      <Destination1Carousel
-                        handlePlanButton={handlePlanButton}
-                        setDestination={setDestination}
-                        packages={[
-                          ...component.cities,
-                          ...component.states,
-                          ...component.countries,
-                        ]}
-                      />
-                      <PlanYourTripButton/>
+                        <Destination1Carousel
+                          handlePlanButton={handlePlanButton}
+                          setDestination={setDestination}
+                          packages={[
+                            ...component.cities,
+                            ...component.states,
+                            ...component.countries,
+                          ]}
+                        />
+                        <PlanYourTripButton />
                       </>
                     ) : component.carousel === "destination-2" ? (
                       <></>
@@ -194,7 +194,10 @@ export default function ThemePage(props) {
                         <Itinerary2Carousel elements={component.elements} />
                       </div>
                     ) : component.carousel === "activity-1" ? (
-                      <><Activity1Carousel activities={component.activities} /> <PlanYourTripButton/></>
+                      <>
+                        <Activity1Carousel activities={component.activities} />{" "}
+                        <PlanYourTripButton />
+                      </>
                     ) : component.carousel === "review-1" ? (
                       <div className="relative">
                         {props.slug === "honeymoon-2025" && (
@@ -259,9 +262,7 @@ export default function ThemePage(props) {
   );
 }
 
-
-const PlanYourTripButton = (props) =>{
-
+const PlanYourTripButton = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [showTailoredModal, setShowTailoredModal] = useState(false);
   const router = useRouter();
@@ -285,25 +286,24 @@ const PlanYourTripButton = (props) =>{
   };
 
   return (
+    <div className="flex items-center justify-center mt-5">
+      <Button
+        padding="0.75rem 1rem"
+        fontSize="18px"
+        fontWeight="500"
+        bgColor="#f7e700"
+        borderRadius="7px"
+        color="black"
+        borderWidth="1px"
+        onclick={handlePlanButton}
+        margin="3vh 0 1vh 0"
+      >
+        {props.slug === "honeymoon-2025"
+          ? "Plan Your Honeymoon!"
+          : "Plan Your Trip Now!"}
+      </Button>
 
-          <div className="flex items-center justify-center mt-5">
-            <Button
-              padding="0.75rem 1rem"
-              fontSize="18px"
-              fontWeight="500"
-              bgColor="#f7e700"
-              borderRadius="7px"
-              color="black"
-              borderWidth="1px"
-              onclick={handlePlanButton}
-              margin="3vh 0 1vh 0"
-            >
-              {props.slug === "honeymoon-2025"
-                ? "Plan Your Honeymoon!"
-                : "Plan Your Trip Now!"}
-            </Button>
-
-            <TailoredFormMobileModal
+      <TailoredFormMobileModal
         destinationType={"city-planner"}
         page_id={props.page_id}
         children_cities={props.children_cities}
@@ -315,6 +315,6 @@ const PlanYourTripButton = (props) =>{
         show={showTailoredModal}
         eventDates={props.eventDates}
       />
-          </div>
-  )
-}
+    </div>
+  );
+};
