@@ -526,23 +526,36 @@ const SimpleTabsV2 = (props) => {
             travellerType={props.travellerType}
             editRoute={props.editRoute}
             setEditRoute={props.setEditRoute}
-            _updateFlightBookingHandler={props._updateFlightBookingHandler}
-            _updateBookingHandler={props._updateBookingHandler}
-            setHideFlightModal={_handleFlightModalClose}
-            _updatePaymentHandler={props._updatePaymentHandler}
-            setHideBookingModal={props.setHideBookingModal}
-            setShowFlightModal={_handleFlighModalShow}
-            showFlightModal={props.showFlightModal}
-            _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-            setShowTaxiModal={props.setShowTaxiModal}
-            showTaxiModal={props.showTaxiModal}
           ></Breif>
         )}
       </div>
 
       {isPageWide ? null : (
         <>
-          <div id={"Itenary"}>{props.itineraryDaybyDay && <DaybyDay />}</div>
+          <div id={"Itenary"}>
+            {props.mercuryItinerary ? (
+              props?.itineraryDaybyDay && <DaybyDay />
+            ) : (
+              <NewItenaryDBDMob
+                plan={props.plan}
+                payment={props.payment}
+                token={props.token}
+                setShowLoginModal={setShowLoginModal}
+                city_slabs={props?.breif?.city_slabs}
+                itinerary={props.itinerary}
+                setItinerary={props.setItinerary}
+                getPaymentHandler={props.getPaymentHandler}
+                transferBookings={props.transferBookings}
+                stayBookings={props.stayBookings}
+                activityBookings={props.activityBookings}
+                getAccommodationAndActivitiesHandler={
+                  props.getAccommodationAndActivitiesHandler
+                }
+                setShowBookingModal={() => props.setShowBookingModal(true)}
+                _GetInTouch={_GetInTouch}
+              ></NewItenaryDBDMob>
+            )}
+          </div>
 
           <div id={"Stays"}>
             <HotelsBooking
@@ -719,7 +732,32 @@ const SimpleTabsV2 = (props) => {
           rightWidth={4}
         >
           <div>
-            <div id={"Itenary"}>{props?.itineraryDaybyDay && <DaybyDay />}</div>
+            <div id={"Itenary"}>
+              {props.mercuryItinerary
+                ? props?.itineraryDaybyDay && <DaybyDay />
+                : props?.itinerary && (
+                    <NewItenaryMain
+                      setShowLoginModal={setShowLoginModal}
+                      plan={props.plan}
+                      payment={props.payment}
+                      city_slabs={props?.breif?.city_slabs}
+                      itinerary={props?.itinerary}
+                      setItinerary={props.setItinerary}
+                      getPaymentHandler={props.getPaymentHandler}
+                      token={props.token}
+                      transferBookings={props.transferBookings}
+                      stayBookings={props.stayBookings}
+                      activityBookings={props.activityBookings}
+                      getAccommodationAndActivitiesHandler={
+                        props.getAccommodationAndActivitiesHandler
+                      }
+                      setShowBookingModal={() =>
+                        props.setShowBookingModal(true)
+                      }
+                      _GetInTouch={_GetInTouch}
+                    ></NewItenaryMain>
+                  )}
+            </div>
 
             {isGroup ? (
               <div id={"Stays"}>

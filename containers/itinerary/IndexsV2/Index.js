@@ -269,13 +269,6 @@ const Itinerary = (props) => {
         setItineraryLoading(false);
       });
 
-      axiosGetItinerary.get(`/${props.id}`).then((res) => {
-        const data = res.data;
-        props.setItineraryDaybyDay(data);
-      }).catch(err => {
-        console.error("[ERROR]:axiosGetItinerary: ", err.message)
-      })
-
     getBreifHandler();
 
     getRoutes(props.id)
