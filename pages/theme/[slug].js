@@ -31,32 +31,34 @@ const TravelPlanner = ({ setHotLocationSearch }) => {
   }, [hotLocationSearch]);
 
   const fetchData = async () => {
-    try {
-      const res = await axiosPageInstance.get(`/${slug}`);
-      if (res?.data?.success) {
-        setData(res.data.data);
-      } else {
+    if (slug) {
+      try {
+        const res = await axiosPageInstance.get(`/${slug}/`);
+        if (res?.data?.success) {
+          setData(res.data.data);
+        } else {
+          router.replace("/404"); // Redirect to 404 if data is not found
+          return;
+        }
+      } catch (err) {
+        console.error(`[ERROR][getStaticProps:slug:${slug}]: `, err.message);
         router.replace("/404"); // Redirect to 404 if data is not found
         return;
       }
-    } catch (err) {
-      console.error(`[ERROR][getStaticProps:slug:${slug}]: `, err.message);
-      router.replace("/404"); // Redirect to 404 if data is not found
-      return;
-    }
 
-    try {
-      const hotDestRes = await axioslocationsinstance.get(
-        `hot_destinations/?state=${slug}/`
-      );
-      if (hotDestRes?.data?.length) {
-        sethotLocationSearch(hotDestRes.data);
+      try {
+        const hotDestRes = await axioslocationsinstance.get(
+          `hot_destinations/?state=${slug}/`
+        );
+        if (hotDestRes?.data?.length) {
+          sethotLocationSearch(hotDestRes.data);
+        }
+      } catch (err) {
+        console.error(
+          `[ERROR][ThemePage][axioslocationsinstance:/hot_destinations/?state=${slug}/]: `,
+          err.message
+        );
       }
-    } catch (err) {
-      console.error(
-        `[ERROR][ThemePage][axioslocationsinstance:/hot_destinations/?state=${slug}/]: `,
-        err.message
-      );
     }
   };
 
