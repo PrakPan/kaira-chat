@@ -4,17 +4,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import SwiperGallery from "../Swiper/SwiperGallery";
 
-const Container = styled.div`
-  height: 100vh;
-  width: 100%;
-  max-width: 100vw !important;
-  background-color: black;
-  padding-top: 0.5rem;
-  position: fixed;
-  top: 0;
-  left: 0;
-`;
-
 const Cross = styled.p`
   color: white;
   text-align: right;
@@ -25,7 +14,7 @@ const Cross = styled.p`
 
 const FullScreenGallery = (props) => {
   return (
-    <Container style={{ zIndex: "2000" }}>
+    <div className="fixed top-0 right-0 w-full md:w-[50%] h-[100vh] bg-black pt-[0.5rem]" style={{ zIndex: "2000" }}>
       <Cross>
         <FontAwesomeIcon
           icon={faTimes}
@@ -34,7 +23,7 @@ const FullScreenGallery = (props) => {
       </Cross>
 
       <SwiperGallery images={props.images}></SwiperGallery>
-    </Container>
+    </div>
   );
 };
 

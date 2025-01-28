@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
-import Overview from "./Overview/Overview";
-import styled from "styled-components";
-import axiosaccommodationinstance from "../../../services/bookings/FetchAccommodation";
 import { connect } from "react-redux";
+import styled from "styled-components";
+import { IoMdClose } from "react-icons/io";
 import { TbArrowBack } from "react-icons/tb";
 import media from "../../media";
+import Overview from "./Overview/Overview";
 import Drawer from "../../ui/Drawer";
 import Skeleton from "./Skeleton";
-import { IoMdClose } from "react-icons/io";
 import { openNotification } from "../../../store/actions/notification";
+import { hotelDetails } from "../../../services/bookings/FetchAccommodation";
+import { updateAccommodationBooking } from "../../../services/bookings/UpdateBookings";
+import { useRouter } from "next/router";
+
 
 const Container = styled.div`
   padding: 0 0.75rem 0.75rem 0.75rem;
@@ -63,52 +66,88 @@ const ErrorContainer = styled.div`
 `;
 
 const POI = (props) => {
+  let isPageWide = media("(min-width: 768px)");
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
   const [error, setError] = useState(false);
 
   useEffect(() => {
     if (props.show) {
-      setLoading(true);
-      setError(false);
-      let check_in = props.check_in;
-      let check_out = props.check_out;
-      if (props.check_in.includes("/")) {
-        check_in = props.check_in.split("/").reverse().join("-");
-        check_out = props.check_out.split("/").reverse().join("-");
-      }
-      let paramsObj = {
-        accommodation_id: props.id,
-        show_rooms: true,
-      };
-      if (
-        props.currentBooking &&
-        props.currentBooking.source &&
-        props.currentBooking.source == "Agoda"
-      ) {
-        paramsObj.check_in = check_in;
-        paramsObj.check_out = check_out;
-        paramsObj.source = "Agoda";
-      }
-      axiosaccommodationinstance
-        .get("", { params: paramsObj })
-        .then((res) => {
-          setLoading(false);
-          setData(res.data);
-        })
-        .catch((error) => {
-          setLoading(false);
-          setError(true);
-          props.openNotification({
-            type: "error",
-            text: "There seems to be a problem, please try again!",
-            heading: "Error!",
-          });
-        });
+      fetchDetails();
     }
-  }, [props.id, props.show]);
+  }, [props.id, props.show, props.provider])
 
-  let isPageWide = media("(min-width: 768px)");
+  const fetchDetails = () => {
+    setLoading(true);
+    setError(false);
+
+    let check_in = props.check_in;
+    let check_out = props.check_out;
+    if (props.check_in.includes("/")) {
+      check_in = props.check_in.split("/").reverse().join("-");
+      check_out = props.check_out.split("/").reverse().join("-");
+    }
+    const requestData = {
+      hotel_id: `${props.id}`,
+      trace_id: props.traceId,
+      check_in: check_in,
+      check_out: check_out,
+      num_adults: props?.pax?.number_of_adults,
+      num_children: props?.pax?.number_of_children,
+      currency: "INR",
+      source: props.provider.toLowerCase(),
+    };
+
+    hotelDetails.post("", requestData).then(res => {
+      setLoading(false);
+      setData(res.data);
+    }).catch(err => {
+      setLoading(false);
+      setError(true);
+      props.openNotification({
+        type: "error",
+        text: "There seems to be a problem, please try again!",
+        heading: "Error!",
+      });
+    })
+  }
+
+  const updateBooking = (recommendation_id, rates) => {
+    props.setUpdateBookingState(true);
+
+    const requestData = {
+      rates: rates,
+      itinerary_code: data?.itinerary_code,
+      items: data?.items,
+      recommendation_id: recommendation_id,
+      trace_id: props.traceId,
+      itinerary_id: router?.query?.id,
+      hotel_id: data?.id,
+      source: props.provider.toLowerCase()
+    }
+
+    updateAccommodationBooking.post(`${router?.query?.id}/bookings/accommodation/`, requestData).then(response => {
+      props._updateStayBookingHandler([response.data]);
+      props.setUpdateBookingState(false);
+      setTimeout(() => {
+        props.getPaymentHandler();
+      }, 1000);
+      props.openNotification({
+        type: "success",
+        text: "Hotel added successfully.",
+        heading: "Sucess!",
+      });
+    }).catch(err => {
+      props.setUpdateBookingState(false);
+      // props.setUnauthorized(true);
+      props.openNotification({
+        type: "error",
+        text: "Something went wrong! Please try after some time.",
+        heading: "Error!",
+      });
+    })
+  }
 
   return (
     <Drawer
@@ -138,7 +177,7 @@ const POI = (props) => {
                 currentBooking={props.currentBooking}
                 number_of_reviews={props.number_of_reviews}
                 data={data}
-                images={data.images ? data.images : []}
+                images={data?.images ? data.images : []}
                 experience_filters={
                   props.poi ? props.poi.experience_filters : null
                 }
@@ -147,6 +186,7 @@ const POI = (props) => {
                 BookingButton={props.BookingButton}
                 BookingButtonFun={props.BookingButtonFun}
                 payment={props.payment}
+                updateBooking={updateBooking}
               ></Overview>
             </div>
           ) : (
@@ -174,6 +214,7 @@ const POI = (props) => {
 const mapStateToPros = (state) => {
   return {
     token: state.auth.token,
+    itineraryId: state.itineraryId,
   };
 };
 

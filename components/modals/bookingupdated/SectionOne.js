@@ -20,7 +20,7 @@ const Text = styled.div`
 const Section = (props) => {
   const searchHandler = (e) => {
     if (props.selectSearch.trim().length > 0) {
-      props._updateOptionsHandlerWithFilter();
+      props.fetchHotels();
     }
   };
 

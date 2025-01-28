@@ -80,10 +80,13 @@ const POIDetailsDrawer = (props) => {
             {props.children}
           </POIDetails>
 
-          <div className="sticky z-50 bottom-4 w-full flex items-center justify-center">{props.children}</div>
+          <div className="sticky z-50 bottom-4 w-full flex items-center justify-center">
+            {props.children}
+          </div>
         </>
       ) : (
         <POIDetailsSkeleton
+          width={"500px"}
           itineraryDrawer={props.itineraryDrawer}
           name={props.name}
           handleCloseDrawer={props.handleCloseDrawer}

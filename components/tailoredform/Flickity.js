@@ -61,6 +61,8 @@ const FlickityComp = (props) => {
             selectedPreferences={props.selectedPreferences}
             setSelectedPreferences={props.setSelectedPreferences}
             setSubmitSecondSlide={props.setSubmitSecondSlide}
+            setRoomConfiguration={props.setRoomConfiguration}
+            setPriceRange={props.setPriceRange}
           ></SlideTwo>
         </Card>
       ) : null}

@@ -1,28 +1,40 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
 import RoomType from "./roomtype/Index";
 
-const Bar = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-row-gap: 1rem;
-  @media screen and (min-width: 768px) {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-`;
 
 const Rooms = (props) => {
   const [rooms, setRooms] = useState(null);
+  const [selectedRecommendation, setSelectedRecommendation] = useState(null);
+
+  const handleUpdateBooking = (index) => {
+    const rates = props.data[index].rates.map(rate => {
+      return {
+        rate_id: rate.id,
+        room_id: rate.rooms[0].id,
+        adults: rate.rooms[0].number_of_adults,
+        child_ages: []
+      }
+    })
+    props.updateBooking(props.data[index].id, rates)
+  }
 
   useEffect(() => {
     let rooms_arr = [];
-    if (props.data.rooms_available) {
-      for (var i = 0; i < props.data.rooms_available.length; i++) {
-        if (props.data.rooms_available[i].prices.min_price) {
+    if (props.data) {
+      for (var i = 0; i < props.data.length; i++) {
+        if (props.data[i]?.total_rate) {
           rooms_arr.push(
             <RoomType
-              data={props.data.rooms_available[i]}
-              images={props.data.rooms_available[i].images}
+              key={i}
+              index={i}
+              price={props.data[i].total_rate}
+              data={props.data[i].rates[0]}
+              rooms={getRooms(props.data[i].rates)}
+              handleUpdateBooking={handleUpdateBooking}
+              selectedRecommendation={selectedRecommendation && selectedRecommendation === i}
+              setSelectedRecommendation={setSelectedRecommendation}
+              checkInDate={props.checkInDate}
+              city={props.city}
             ></RoomType>
           );
         }
@@ -31,9 +43,20 @@ const Rooms = (props) => {
     }
   }, []);
 
+  const getRooms = (rates) => {
+    if (rates) {
+      let rooms = [];
+      for (const rate of rates) {
+        rooms.push(...rate?.rooms)
+      }
+      return rooms;
+    }
+    return [];
+  }
+
   return (
-    <div>
-      <Bar>{rooms}</Bar>
+    <div className="flex flex-col gap-3">
+      {rooms}
     </div>
   );
 };

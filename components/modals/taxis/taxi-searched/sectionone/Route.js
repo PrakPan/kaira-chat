@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import media from "../../../../media";
 import ImageLoader from "../../../../ImageLoader";
 import SectionFour from "../SectionFour";
+import { PulseLoader } from "react-spinners";
+import { getIndianPrice } from "../../../../../services/getIndianPrice";
+import { axiosTaxiBooking } from "../../../../../services/bookings/UpdateTaxiGozo";
 
 const Container = styled.div`
   padding: 0.75rem 0.5rem;
@@ -53,19 +56,69 @@ const ModelText = styled.div`
   margin: 0 0 0.5rem 0;
 `;
 
+const Cost = styled.p`
+  font-weight: 800;
+  font-size: 1rem;
+  line-height: 1;
+  margin: 0;
+
+  @media screen and (min-width: 768px) {
+    font-size: 1.25rem;
+  }
+`;
+
 const Section = (props) => {
   let isPageWide = media("(min-width: 768px)");
+  const [loading, setLoading] = useState(false);
+
+  const handleUpdate = () => {
+    if (props.handleTaxiSelect) {
+      props.handleTaxiSelect({
+        trace_id: props.data.trace_id,
+        result_index: props.data.result_index
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    const requestData = {
+      source: props.data.source,
+      trace_id: props.data.trace_id,
+      result_index: props.data.result_index
+    }
+
+    axiosTaxiBooking.post(`${props.selectedBooking.itinerary_id}/bookings/taxi/`, requestData).then(res => {
+      setLoading(false);
+      props.openNotification({
+        type: "success",
+        text: "Taxi changed successfully.",
+        heading: "Sucess!",
+      });
+      props._updateTaxiBookingHandler([res.data]);
+      props.getPaymentHandler();
+      props.setHideBookingModal()
+    }).catch(err => {
+      setLoading(false);
+      props.openNotification({
+        type: "error",
+        text: "There seems to be a problem, please try again after some time!",
+        heading: "Error!",
+      });
+      props.setHideBookingModal()
+    })
+  }
 
   if (props.data)
     return (
       <Container>
         <Heading>
-          {props.data.cab && props.data.cab.category ? (
+          {props.data?.taxi_category?.type ? (
             <>
-              {props.data.cab.category}{" "}
+              {props.data.taxi_category.type}{" "}
               <>
-                {props.data.cab.fuelType && isPageWide ? (
-                  `(${props.data.cab.fuelType})`
+                {props.data.taxi_category?.fuel_type && isPageWide ? (
+                  `(${props.data.taxi_category.fuel_type})`
                 ) : (
                   <></>
                 )}
@@ -77,7 +130,8 @@ const Section = (props) => {
             "One-way Taxi"
           )}
         </Heading>
-        {isPageWide && <ModelText>{props.data.cab.model}</ModelText>}
+
+        {isPageWide && <ModelText>{props.data?.taxi_category?.model_name}</ModelText>}
         <RouteContainer className="font-lexend">
           <Location className="font-lexend">
             {props.selectedBooking.city}
@@ -115,29 +169,49 @@ const Section = (props) => {
             leftalign
             noLazy
           ></ImageLoader>
-          <div style={{ display: "flex", gap: "1rem" }}>
-            {props.data.distance ? (
-              <div>
-                <IconHeading className="font-lexend">
-                  {props.data.distance} kms
-                </IconHeading>
-                <Text className="font-nunito">Included</Text>
+
+          <div style={{ display: "flex", gap: "1rem" }} className="flex flex-row justify-between w-full">
+            <div className="flex flex-row gap-[1rem]">
+              {props.data?.distance?.text ? (
+                <div>
+                  <IconHeading className="font-lexend">
+                    {props.data.distance.text}
+                  </IconHeading>
+                  <Text className="font-nunito">Included</Text>
+                </div>
+              ) : null}
+
+              {props.data?.duration?.text ? (
+                <div>
+                  <IconHeading className="font-lexend">
+                    {props.data.duration.text}
+                  </IconHeading>
+                  <Text className="font-nunito">Included</Text>
+                </div>
+              ) : null}
+            </div>
+
+            <div className="flex flex-col gap-2 items-end" >
+              <div className="center-div" style={{ marginRight: "0.5rem" }}>
+                <Cost>{"₹" + getIndianPrice(Math.ceil(props.data.price.total)) + "/-"}</Cost>
               </div>
-            ) : null}
-            {props.data.estimatedDuration ? (
+
               <div>
-                <IconHeading className="font-lexend">
-                  {Math.floor(props.data.estimatedDuration / 60) +
-                    "-" +
-                    (+Math.floor(props.data.estimatedDuration / 60) + 1)}{" "}
-                  Hours
-                </IconHeading>
-                <Text className="font-nunito">Included</Text>
+                {loading ? (
+                  <PulseLoader size={8} speedMultiplier={0.6} color="#111" />
+                ) : (
+                  <button
+                    onClick={handleUpdate}
+                    className="focus:outline-none border-2 border-black rounded-lg px-4 py-2 bg-[#F7E700] hover:bg-black hover:text-white transition-all"
+                  >Select</button>
+                )}
               </div>
-            ) : null}
+            </div>
           </div>
         </div>
+
         <SectionFour
+          setHideBookingModal={props.setHideBookingModal}
           _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
           getPaymentHandler={props.getPaymentHandler}
           selectedBooking={props.selectedBooking}

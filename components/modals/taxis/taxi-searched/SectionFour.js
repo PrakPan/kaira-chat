@@ -5,38 +5,14 @@ import Accordion, {
   AccordionSummary,
   AccordionDetails,
 } from "../../../ui/Accordion";
-import axiosgozotaxiupdateinstance from "../../../../services/bookings/UpdateTaxiGozo";
+import axiosgozotaxiupdateinstance, { axiosTaxiBooking } from "../../../../services/bookings/UpdateTaxiGozo";
 import { openNotification } from "../../../../store/actions/notification";
-import { ImCheckboxUnchecked } from "react-icons/im";
 import { connect } from "react-redux";
-import { PulseLoader } from "react-spinners";
+
 
 const Container = styled.div`
   margin: 0;
   @media screen and (min-width: 768px) {
-  }
-`;
-
-const GridContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  @media screen and (min-width: 768px) {
-    justify-content: flex-end;
-    gap: 0.5rem;
-    margin-right: 1rem;
-  }
-`;
-
-const Cost = styled.p`
-  font-weight: 800;
-  font-size: 1rem;
-  line-height: 1;
-  margin: 0;
-
-  @media screen and (min-width: 768px) {
-    font-size: 1.25rem;
   }
 `;
 
@@ -56,86 +32,13 @@ const AccordionText = styled.div`
   font-weight: 300;
 `;
 
-const SelectBox = styled.div`
-  justify-content: center;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  cursor: pointer;
-  @media screen and (min-width: 768px) {
-  }
-  span {
-    margin-top: 0.1rem;
-  }
-`;
-
 const Section = (props) => {
   const [open, setOpen] = useState(false);
   let isPageWide = media("(min-width: 768px)");
   const [loading, setLoading] = useState(false);
 
   let bagCapacity = 0;
-  if (props.data.cab.bagCapacity) bagCapacity += props.data.cab.bagCapacity;
-  if (props.data.cab.bigBagCapaCity)
-    bagCapacity += props.data.cab.bigBagCapaCity;
-
-  const _updateBookingHandler = () => {
-    setLoading(true);
-    axiosgozotaxiupdateinstance
-      .post("", {
-        itinerary_id: props.selectedBooking.itinerary_id,
-        trace_id: props.data.trace_id,
-        cab_id: props.data.cab.id,
-        booking_id: props.selectedBooking.id,
-        model: props.data.cab.model,
-        routes: [
-          {
-            source: props.selectedBooking.city,
-            destination: props.selectedBooking.destination_city,
-            startDate: props.selectedBooking.check_in,
-            startTime: "12:00:00",
-          },
-        ],
-        tripType: props.selectedBooking.transfer_type,
-        traveller: {
-          name: props.name,
-          primaryContact: {
-            number: props.phone,
-          },
-          email: props.email,
-        },
-        additionalInfo: {
-          specialInstructions: "",
-          noOfAdults: props.selectedBooking.pax.number_of_adults,
-          noOfChildren: props.selectedBooking.pax.number_of_children,
-          noOfInfants: props.selectedBooking.pax.number_of_infants,
-          noOfLargeBags: props.data.cab.bigBagCapaCity,
-          noOfSmallBags: props.data.cab.bagCapacity,
-          carrierRequired: 0,
-          kidsTravelling: props.selectedBooking.pax.number_of_children,
-          seniorCitizenTravelling: 0,
-          womanTravelling: 0,
-        },
-      })
-      .then((res) => {
-        setLoading(false);
-        props.openNotification({
-          type: "success",
-          text: "Taxi changed successfully.",
-          heading: "Sucess!",
-        });
-        props._updateTaxiBookingHandler([res.data]);
-        props.getPaymentHandler();
-      })
-      .catch((e) => {
-        setLoading(false);
-        props.openNotification({
-          type: "error",
-          text: "There seems to be a problem, please try again after some time!",
-          heading: "Error!",
-        });
-      });
-  };
+  if (props.data?.taxi_category?.bag_capacity) bagCapacity += props.data.taxi_category.bag_capacity;
 
   return (
     <Container className="font-lexend">
@@ -151,11 +54,12 @@ const Section = (props) => {
           >
             Facilities
           </AccordionSummary>
+
           <AccordionDetails style={!isPageWide ? { marginBottom: "1rem" } : {}}>
-            {props.data.cab.instructions &&
-            props.data.cab.instructions.length ? (
+            {props.data?.instructions &&
+              props.data?.instructions?.length ? (
               <AccordionText>
-                {props.data.cab.instructions.map((e) => (
+                {props.data.instructions.map((e) => (
                   <div style={{ marginLeft: isPageWide ? "0.75rem" : "" }}>
                     - {e}
                   </div>
@@ -164,6 +68,7 @@ const Section = (props) => {
             ) : (
               <></>
             )}
+
             {bagCapacity && (
               <AccordionText>
                 <div style={{ marginLeft: isPageWide ? "0.75rem" : "" }}>
@@ -173,23 +78,6 @@ const Section = (props) => {
             )}
           </AccordionDetails>
         </Accordion>
-        <GridContainer>
-          <div className="center-div" style={{ marginRight: "0.5rem" }}>
-            <Cost>{"₹" + props.data.fare.totalAmount + "/-"}</Cost>
-          </div>
-          <SelectBox>
-            {loading ? (
-              <PulseLoader size={8} speedMultiplier={0.6} color="#111" />
-            ) : (
-              <>
-                <div onClick={_updateBookingHandler}>
-                  <ImCheckboxUnchecked style={{ display: "inline" }} />
-                </div>
-                <span onClick={_updateBookingHandler}>Select </span>
-              </>
-            )}
-          </SelectBox>
-        </GridContainer>
       </FlexBox>
     </Container>
   );

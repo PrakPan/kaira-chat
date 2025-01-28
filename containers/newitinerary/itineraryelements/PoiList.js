@@ -369,6 +369,7 @@ const PoiList = (props) => {
           </div>
         )}
       </div>
+      
       <POIDetailsDrawer
         itineraryDrawer
         show={showDetails.show}

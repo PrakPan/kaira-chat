@@ -63,7 +63,6 @@ const HotelsBooking = (props) => {
   const [bookingId, setBookingId] = useState(null);
   const [images, setImages] = useState(null);
   const [currentBooking, setCurrentBooking] = useState(null);
-  const [alternates, setAlternates] = useState(null);
   const [bookingFunData, setBookingFunData] = useState(null);
   const [dates, setDates] = useState({ check_in: "", check_out: "" });
 
@@ -142,7 +141,7 @@ const HotelsBooking = (props) => {
       axiosbookingupdateinstance
         .patch(
           "update/?booking_type=Accommodation&itinerary_id=" +
-            props.stayBookings[index]["itinerary_id"],
+          props.stayBookings[index]["itinerary_id"],
           updated_bookings_arr[0],
           {
             headers: {
@@ -296,7 +295,6 @@ const HotelsBooking = (props) => {
   const HotelArray = [];
   if (props.breif.city_slabs[1]?.hasOwnProperty("accommodation_booking")) {
     if (props.breif.city_slabs) {
-      if (true) {
         for (var i = 0; i < props.breif.city_slabs.length - 1; i++) {
           if (props.breif.city_slabs[i].duration >= 1) {
             if (
@@ -394,7 +392,6 @@ const HotelsBooking = (props) => {
             }
           }
         }
-      }
     }
   }
 
@@ -433,7 +430,7 @@ const HotelsBooking = (props) => {
       {props.breif.city_slabs[1]?.hasOwnProperty("accommodation_booking")
         ? HotelArray
         : props.stayBookings
-        ? props.stayBookings.map((booking, index) => (
+          ? props.stayBookings.map((booking, index) => (
             <HotelBookingContainer
               setShowLoginModal={props.setShowLoginModal}
               booking={booking}
@@ -452,7 +449,7 @@ const HotelsBooking = (props) => {
               plan={props.plan}
             ></HotelBookingContainer>
           ))
-        : null}
+          : null}
 
       <AccommodationModal
         _setImagesHandler={_setImagesHandler}
@@ -475,6 +472,7 @@ const HotelsBooking = (props) => {
             bookingFunData.city_id
           )
         }
+        provider={currentBooking?.source}
       ></AccommodationModal>
 
       {showLoginModal && (
@@ -491,7 +489,6 @@ const HotelsBooking = (props) => {
         _setImagesHandler={_setImagesHandler}
         getPaymentHandler={props.getPaymentHandler}
         _updateStayBookingHandler={props._updateStayBookingHandler}
-        alternates={alternates}
         tailored_id={
           props.stayBookings && props.stayBookings[0]
             ? props.stayBookings[0]["tailored_itinerary"]

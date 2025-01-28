@@ -389,7 +389,7 @@ const LogIn = React.memo((props) => {
       ) : null}
 
       {(props.token && !props.phone) ||
-      (props.token && props.phone === "null") ? (
+        (props.token && props.phone === "null") ? (
         <p
           style={{ margin: "0 1rem 2rem 1rem", fontWeight: "200" }}
           className="font-lexend text-center"
@@ -400,7 +400,7 @@ const LogIn = React.memo((props) => {
       ) : null}
 
       {(props.token && !props.phone) ||
-      (props.token && props.phone == "null") ? (
+        (props.token && props.phone == "null") ? (
         <form noValidate>
           <MobileNumberContainer className="relative">
             <div
@@ -470,6 +470,7 @@ const LogIn = React.memo((props) => {
 
               <FiChevronDown />
             </div>
+
             {openCountryCodeOption && (
               <CountryCodeDropdown
                 onClose={() => setOpenCountryCodeOption(false)}
@@ -478,6 +479,7 @@ const LogIn = React.memo((props) => {
                 setOpenCountryCodeOption={setOpenCountryCodeOption}
               />
             )}
+
             {mobileInput}
           </MobileNumberContainer>
 

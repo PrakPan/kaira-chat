@@ -263,20 +263,20 @@ const Day_I_Container = (props) => {
           {
             !isJson(element.text)
               ? dayIcontainer.push(
-                  <RecomendationComponent
-                    icon={element.icon}
-                    recomendation={element.text}
-                    heading={element.heading}
-                  ></RecomendationComponent>
-                )
+                <RecomendationComponent
+                  icon={element.icon}
+                  recomendation={element.text}
+                  heading={element.heading}
+                ></RecomendationComponent>
+              )
               : JSON.parse(element.text)?.length >= 1 &&
-                dayIcontainer.push(
-                  <RecomendationComponent
-                    icon={element.icon}
-                    recomendation={element.text}
-                    heading={element.heading}
-                  ></RecomendationComponent>
-                );
+              dayIcontainer.push(
+                <RecomendationComponent
+                  icon={element.icon}
+                  recomendation={element.text}
+                  heading={element.heading}
+                ></RecomendationComponent>
+              );
           }
 
           break;
@@ -311,6 +311,7 @@ const Day_I_Container = (props) => {
               }
               setShowLoginModal={props?.setShowLoginModal}
               _GetInTouch={props._GetInTouch}
+              date={props?.Days?.date}
             ></ItineraryPoiElement>
           );
           break;
@@ -339,11 +340,10 @@ const Day_I_Container = (props) => {
       <DivDayContainerRow>
         <InnerDayLocationRow style={{ paddingRight: "2px" }}>
           <div
-            className={`${
-              viewMore
+            className={`${viewMore
                 ? "text-black text-2xl font-[500] leading-[22px] "
                 : "text-black text-[16px] font-[500] leading-[22px]"
-            }`}
+              }`}
           >
             {props.tripsPage ? (
               `Day ${props.indexDay + 1} - `
@@ -386,10 +386,10 @@ const Day_I_Container = (props) => {
                   {props.tripsPage
                     ? ` on Day ${props.indexDay + 1}`
                     : props?.Days?.date
-                    ? ` on ${convertDateFormat(props?.Days?.date)}`
-                    : props?.Days?.slab
-                    ? ` on ${convertDateFormat(props?.Days?.slab)}`
-                    : ""}
+                      ? ` on ${convertDateFormat(props?.Days?.date)}`
+                      : props?.Days?.slab
+                        ? ` on ${convertDateFormat(props?.Days?.slab)}`
+                        : ""}
                 </button>
               )}
             </div>
@@ -411,10 +411,10 @@ const Day_I_Container = (props) => {
                   {props.tripsPage
                     ? ` on Day ${props.indexDay + 1}`
                     : props?.Days?.date
-                    ? ` on ${convertDateFormat(props?.Days?.date)}`
-                    : props?.Days?.slab
-                    ? ` on ${convertDateFormat(props?.Days?.slab)}`
-                    : ""}
+                      ? ` on ${convertDateFormat(props?.Days?.date)}`
+                      : props?.Days?.slab
+                        ? ` on ${convertDateFormat(props?.Days?.slab)}`
+                        : ""}
                 </button>
               )}
             </div>

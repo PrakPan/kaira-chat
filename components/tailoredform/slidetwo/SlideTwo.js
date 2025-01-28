@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import Pax from "./pax/Index";
+import Pax from "./pax/Pax.jsx"
 import GroupType from "./GroupType";
 import Question from "../Question";
-import Budget from "./Budget";
+import BudgetSlider from "./preferences/BudgetSlider.jsx";
 import { AiFillCaretDown } from "react-icons/ai";
 import Preferences from "./preferences/Index";
 
@@ -33,7 +33,11 @@ const SlideTwo = (props) => {
   return (
     <Container>
       <Section style={{ marginBottom: "1.5rem" }}>
-        <Question>Your group type?</Question>
+        {showPax ? (
+          <Question>Group type: {props.groupType} <span onClick={() => setShowPax(false)} className="text-sm ml-2 text-blue cursor-pointer">Change</span></Question>
+        ) : (
+          <Question>Your group type?</Question>
+        )}
         {showPax ? (
           <Pax
             numberOfAdults={props.numberOfAdults}
@@ -42,6 +46,7 @@ const SlideTwo = (props) => {
             setNumberOfChildren={props.setNumberOfChildren}
             numberOfInfants={props.numberOfInfants}
             setNumberOfInfants={props.setNumberOfInfants}
+            setRoomConfiguration={props.setRoomConfiguration}
           ></Pax>
         ) : (
           <GroupType
@@ -53,8 +58,11 @@ const SlideTwo = (props) => {
       </Section>
 
       <Section>
-        <Question className="font-lexend">Budget per person?</Question>
-        <Budget setShowPax={setShowPax} setBudget={props.setBudget}></Budget>
+        <BudgetSlider
+          setShowPax={setShowPax}
+          setBudget={props.setBudget}
+          setPriceRange={props.setPriceRange}
+        ></BudgetSlider>
       </Section>
 
       <div
