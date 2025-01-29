@@ -21,12 +21,13 @@ export default function Itinerary2Carousel(props) {
       {props.elements.map((element, index) => (
         <Card
           key={index}
+          data={element}
           url={element.image}
           heading={element.name}
           description={element.text}
           tag={element.tag}
-          destination={"Goa"}
-          pageId={"277"}
+          destination={""}
+          pageId={""}
         />
       ))}
     </div>
@@ -38,23 +39,30 @@ const Card = (props) => {
   const router = useRouter();
   const [showTailoredModal, setShowTailoredModal] = useState(false);
 
-  const handlePlanButton = () => {
-    if (isPageWide) {
-      setShowTailoredModal(true);
+  const handleClick = () => {
+    if (props.data.trip_planner) {
+      if (isPageWide) {
+        setShowTailoredModal(true);
+      } else {
+        openTailoredModal(router, props.pageId, props.destination);
+      }
     } else {
-      openTailoredModal(router, props.pageId, props.destination);
+      router.push(props.data.cta_path);
     }
   };
 
   return (
-    <Container className="">
+    <Container
+      onClick={handleClick}
+      className="cursor-pointer hover:scale-105 transition-transform"
+    >
       <BackgroundImageLoader
         padding={props.padding}
         filter={"brightness(0.8)"}
         url={props.url}
         dimensions={{ width: 2240, height: 840 }}
         dimensionsMobile={{ width: 607, height: 810 }}
-        style={{ position: "absolute"}}
+        style={{ position: "absolute" }}
         className="center"
         borderRadius={"10px"}
         resizeMode={"cover"}

@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import { connect } from "react-redux";
 
 import ThemePage from "../../containers/travelplanner/ThemePage";
@@ -8,23 +9,27 @@ import { axiosPageInstance } from "../../services/pages/travel-planner";
 import { axiosPageList } from "../../services/pages/list";
 import axioslocationsinstance from "../../services/search/search";
 import setHotLocationSearch from "../../store/actions/hotLocationSearch";
-import { useRouter } from "next/router";
 
-const TravelPlanner = ({ setHotLocationSearch }) => {
-  const router = useRouter();
-  const [Data, setData] = useState(null);
-  const [hotLocationSearch, sethotLocationSearch] = useState([]);
-  const [slug, setSlug] = useState(null);
+const TravelPlanner = ({
+  Data,
+  hotLocationSearch,
+  slug,
+  setHotLocationSearch,
+}) => {
+  // const router = useRouter();
+  // const [Data, setData] = useState(null);
+  // const [hotLocationSearch, sethotLocationSearch] = useState([]);
+  // const [slug, setSlug] = useState(null);
 
-  useEffect(() => {
-    if (router.query.slug) {
-      setSlug(router.query.slug);
-    }
-  }, [router]);
+  // useEffect(() => {
+  //   if (router.query.slug) {
+  //     setSlug(router.query.slug);
+  //   }
+  // }, [router]);
 
-  useEffect(() => {
-    fetchData();
-  }, [slug]);
+  // useEffect(() => {
+  //   fetchData();
+  // }, [slug]);
 
   useEffect(() => {
     setHotLocationSearch(hotLocationSearch);
@@ -128,64 +133,64 @@ const mapDispatchToProps = (dispatch) => ({
 
 export default connect(null, mapDispatchToProps)(TravelPlanner);
 
-// export async function getStaticPaths() {
-//   try {
-//     const response = await axiosPageList.get("?page_type=Theme");
+export async function getStaticPaths() {
+  try {
+    const response = await axiosPageList.get("?page_type=Theme");
 
-//     if (response?.data?.success) {
-//       const paths = response.data.data.pages.map((path) => ({
-//         params: { slug: path.slug },
-//       }));
-//       return { paths, fallback: false };
-//     } else {
-//       console.error("Failed to fetch paths.");
-//       return { paths: [], fallback: false };
-//     }
-//   } catch (err) {
-//     console.error("[ERROR][getStaticPaths]: ", err.message);
-//     return { paths: [], fallback: false };
-//   }
-// }
+    if (response?.data?.success) {
+      const paths = response.data.data.pages.map((path) => ({
+        params: { slug: path.slug },
+      }));
+      return { paths, fallback: false };
+    } else {
+      console.error("Failed to fetch paths.");
+      return { paths: [], fallback: false };
+    }
+  } catch (err) {
+    console.error("[ERROR][getStaticPaths]: ", err.message);
+    return { paths: [], fallback: false };
+  }
+}
 
-// export async function getStaticProps({ params }) {
-//   const { slug } = params;
-//   let data = null;
-//   let hotLocationSearch = [];
+export async function getStaticProps({ params }) {
+  const { slug } = params;
+  let data = null;
+  let hotLocationSearch = [];
 
-//   try {
-//     const res = await axiosPageInstance.get(`/${slug}`);
-//     if (res?.data?.success) {
-//       data = res.data.data;
-//     }
-//   } catch (err) {
-//     console.error(`[ERROR][getStaticProps:slug:${slug}]: `, err.message);
-//   }
+  try {
+    const res = await axiosPageInstance.get(`/${slug}`);
+    if (res?.data?.success) {
+      data = res.data.data;
+    }
+  } catch (err) {
+    console.error(`[ERROR][getStaticProps:slug:${slug}]: `, err.message);
+  }
 
-//   try {
-//     const hotDestRes = await axioslocationsinstance.get(
-//       `hot_destinations/?state=${slug}/`
-//     );
-//     if (hotDestRes?.data?.length) {
-//       hotLocationSearch = hotDestRes.data;
-//     }
-//   } catch (err) {
-//     console.error(
-//       `[ERROR][ThemePage][axioslocationsinstance:/hot_destinations/?state=${slug}/]: `,
-//       err.message
-//     );
-//   }
+  try {
+    const hotDestRes = await axioslocationsinstance.get(
+      `hot_destinations/?state=${slug}/`
+    );
+    if (hotDestRes?.data?.length) {
+      hotLocationSearch = hotDestRes.data;
+    }
+  } catch (err) {
+    console.error(
+      `[ERROR][ThemePage][axioslocationsinstance:/hot_destinations/?state=${slug}/]: `,
+      err.message
+    );
+  }
 
-//   if (!data) {
-//     return {
-//       notFound: true,
-//     };
-//   }
+  if (!data) {
+    return {
+      notFound: true,
+    };
+  }
 
-//   return {
-//     props: {
-//       Data: data,
-//       hotLocationSearch,
-//       slug,
-//     },
-//   };
-// }
+  return {
+    props: {
+      Data: data,
+      hotLocationSearch,
+      slug,
+    },
+  };
+}

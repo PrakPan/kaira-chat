@@ -10,6 +10,7 @@ import { useState } from "react";
 import { logEvent } from "../../../services/ga/Index";
 import H1 from "../../heading/H1";
 import H7 from "../../heading/H7";
+import ImageLoader from "../../ImageLoader";
 
 const Container = styled.div`
   color: white;
@@ -38,6 +39,32 @@ const PaddingContianer = styled.div`
   }
 `;
 
+const IconsContainer = styled.div`
+  display: flex;
+  filter: invert(100%);
+  justify-content: space-between;
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+  padding-inline: 10px;
+  @media screen and (min-width: 768px) {
+    width: 40%;
+  }
+`;
+
+const IconText = styled.div`
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: black;
+  font-weight: 400;
+  margin-top: 7px;
+  @media screen and (min-width: 768px) {
+    font-size: 16px;
+  }
+`;
+
 const FullImgContent = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [showTailoredModal, setShowTailoredModal] = useState(false);
@@ -63,9 +90,10 @@ const FullImgContent = (props) => {
 
   return (
     <Container className="font-lexend">
-      <PaddingContianer className="flex flex-col items-center md:items-start">
-        <div className="">
-          <H1 style={{ color: "#F7E700" }}>{props.title}</H1>
+      <PaddingContianer className="flex flex-col items-start">
+        <div className="flex flex-col items-start">
+          <H1 style={{ color: "#F7E700" }} className="text-start ml-3">{props.title}</H1>
+
           {props.subheading ? (
             <H7
               style={{
@@ -77,7 +105,7 @@ const FullImgContent = (props) => {
               {props.subheading}
             </H7>
           ) : isPageWide ? (
-            props.slug == "honeymoon-2025" ? null : (
+            props.slug !== "honeymoon-2025" && (
               <H7
                 style={{
                   lineHeight: isPageWide ? "35px" : "20px",
@@ -89,17 +117,19 @@ const FullImgContent = (props) => {
                 Get Your AI-Personalised Itineraries
               </H7>
             )
-          ) : props.slug == "honeymoon-2025" ? null : (
-            <H7
-              style={{
-                lineHeight: isPageWide ? "35px" : "20px",
-                fontSize: isPageWide ? "25px" : "20px",
-              }}
-            >
-              Say goodbye to packages.
-              <br />
-              Get Your AI-Personalised Itineraries
-            </H7>
+          ) : (
+            props.slug !== "honeymoon-2025" && (
+              <H7
+                style={{
+                  lineHeight: isPageWide ? "35px" : "20px",
+                  fontSize: isPageWide ? "25px" : "20px",
+                }}
+              >
+                Say goodbye to packages.
+                <br />
+                Get Your AI-Personalised Itineraries
+              </H7>
+            )
           )}
         </div>
 
@@ -131,6 +161,48 @@ const FullImgContent = (props) => {
           ></TailoredForm>
         </div>
       )}
+
+      <IconsContainer>
+        <div>
+          <ImageLoader
+            height="2.5rem"
+            width="2.5rem"
+            widthmobile="2.5rem"
+            url="media/icons/general/travel.png"
+            noLazy
+          />
+          <IconText>
+            Free Personalized <br /> Itineraries
+          </IconText>
+        </div>
+
+        <div>
+          <ImageLoader
+            height="2.5rem"
+            width="2.5rem"
+            widthmobile="2.5rem"
+            url="media/icons/general/booking.png"
+            noLazy
+          />
+          <IconText>
+            Affordable & <br />
+            Flexible Bookings
+          </IconText>
+        </div>
+
+        <div>
+          <ImageLoader
+            height="2.5rem"
+            width="2.5rem"
+            widthmobile="2.5rem"
+            url="media/icons/general/money.png"
+            noLazy
+          />
+          <IconText>
+            Zero Hidden <br /> Charges
+          </IconText>
+        </div>
+      </IconsContainer>
 
       <TailoredFormMobileModal
         destinationType={"city-planner"}

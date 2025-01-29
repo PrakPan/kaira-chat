@@ -19,6 +19,9 @@ import PrimaryHeading from "../../components/heading/PrimaryHeading.jsx";
 import SecondaryHeading from "../../components/heading/Secondary.jsx";
 import Itinerary1Carousel from "../../components/theme/Itinerary1Carousel.jsx";
 import Button from "../../components/ui/button/Index";
+import DesktopPersonaliseBanner from "../../components/containers/Banner";
+import MobileBanner from "../city/Banner/Mobile";
+import validateTextSize from "../../services/textSizeValidator";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -75,6 +78,34 @@ export default function ThemePage(props) {
 
   return (
     <div className="mb-5">
+      {isPageWide ? (
+        <DesktopPersonaliseBanner
+          onclick={() =>
+            openTailoredModal(
+              router,
+              props.experienceData.id,
+              props.experienceData.destination
+            )
+          }
+          text={validateTextSize(
+            `Craft a personalized itinerary now!`,
+            9,
+            `Craft a trip now!`
+          )}
+        ></DesktopPersonaliseBanner>
+      ) : (
+        <MobileBanner
+          cityName={props.experienceData.destination ?? null}
+          onClick={() =>
+            openTailoredModal(
+              router,
+              props.experienceData.id,
+              props.experienceData.destination
+            )
+          }
+        />
+      )}
+
       <ThemeBanner
         image={props.experienceData.image}
         page_id={props.experienceData.id}
@@ -127,8 +158,13 @@ export default function ThemePage(props) {
 
                 return navComponents.length > 0 ? (
                   <div key={index}>
-                    <PrimaryHeading className="mx-3"> {component.heading}</PrimaryHeading>
+                    <PrimaryHeading className="mx-3">
+                      {" "}
+                      {component.heading}
+                    </PrimaryHeading>
                     <Navigation components={navComponents} />
+
+                    <PlanYourTripButton text={"Plan Itinerary For Free"} />
                   </div>
                 ) : null;
               }
@@ -157,12 +193,17 @@ export default function ThemePage(props) {
                             ...component.countries,
                           ]}
                         />
-                        <PlanYourTripButton />
+                        <PlanYourTripButton text={"Start your journey now!"} />
                       </>
                     ) : component.carousel === "destination-2" ? (
                       <></>
                     ) : component.carousel === "itinerary-1" ? (
-                      <></>
+                      <>
+                        <Itinerary1Carousel
+                          itineraries={component.itineraries}
+                        />
+                        <PlanYourTripButton />
+                      </>
                     ) : component.carousel === "itinerary-2" ? (
                       <div className="w-full relative">
                         {props.slug === "honeymoon-2025" && (
@@ -196,7 +237,9 @@ export default function ThemePage(props) {
                     ) : component.carousel === "activity-1" ? (
                       <>
                         <Activity1Carousel activities={component.activities} />{" "}
-                        <PlanYourTripButton />
+                        <PlanYourTripButton
+                          text={"Create your free itinerary"}
+                        />
                       </>
                     ) : component.carousel === "review-1" ? (
                       <div className="relative">
@@ -243,8 +286,6 @@ export default function ThemePage(props) {
         <div className="my-[100px]">
           <ThemeFaqs faqs={props.experienceData.faq} />
         </div>
-
-        {/* <Itinerary1Carousel/> */}
       </SetWidthContainer>
 
       <TailoredFormMobileModal
@@ -262,7 +303,7 @@ export default function ThemePage(props) {
   );
 }
 
-const PlanYourTripButton = (props) => {
+export const PlanYourTripButton = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [showTailoredModal, setShowTailoredModal] = useState(false);
   const router = useRouter();
@@ -298,7 +339,9 @@ const PlanYourTripButton = (props) => {
         onclick={handlePlanButton}
         margin="3vh 0 1vh 0"
       >
-        {props.slug === "honeymoon-2025"
+        {props.text
+          ? props.text
+          : props.slug === "honeymoon-2025"
           ? "Plan Your Honeymoon!"
           : "Plan Your Trip Now!"}
       </Button>

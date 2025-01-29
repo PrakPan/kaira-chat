@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import ImageLoader from "../../components/ImageLoader";
 import SwiperCarousel from "../../components/SwiperCarousel.js";
 import media from "../../components/media";
+import POIDetailsDrawer from "../../components/drawers/poiDetails/POIDetailsDrawer";
+import { logEvent } from "../../services/ga/Index";
+import { PlanYourTripButton } from "../../containers/travelplanner/ThemePage.jsx";
 
 const Container = styled.div`
   width: 100%;
@@ -26,15 +29,37 @@ export default function Activity1Carousel(props) {
   );
 }
 
-const ActivityCard = ({ image, name, short_description }) => {
+const ActivityCard = ({ id, image, name, short_description }) => {
   let isPageWide = media("(min-width: 768px)");
+  const [show, setShow] = useState(false);
+
+  const handleCloseDrawer = (e) => {
+    if (e) e.stopPropagation(e);
+    setShow(false);
+  };
+
+  const handleActivityClick = (e) => {
+    setShow(true);
+    logEvent({
+      action: "Details_View",
+      params: {
+        page: "Theme Page",
+        event_category: "Click",
+        event_value: name,
+        event_action: `Activity details ${name}`,
+      },
+    });
+  };
 
   return (
     <Container
-      style={{
-        // width: isPageWide ? "282px" : "350px",
-      }}
-      className=""
+      onClick={handleActivityClick}
+      style={
+        {
+          // width: isPageWide ? "282px" : "350px",
+        }
+      }
+      className="cursor-pointer"
     >
       <div className="flex flex-col h-full gap-3">
         <div className="relative w-h-full overflow-hidden">
@@ -53,6 +78,15 @@ const ActivityCard = ({ image, name, short_description }) => {
           </p>
         </div>
       </div>
+
+      <POIDetailsDrawer
+        show={show}
+        ActivityiconId={id}
+        handleCloseDrawer={handleCloseDrawer}
+        name={name}
+      >
+        <PlanYourTripButton />
+      </POIDetailsDrawer>
     </Container>
   );
 };
