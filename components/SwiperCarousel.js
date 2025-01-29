@@ -20,14 +20,14 @@ const SwiperContainer = styled.div`
     height: auto;
   }
   .swiper-button-prev {
-    left: -10px;
+    left: -20px;
     @media screen and (min-width: 768px) {
       ${(props) =>
         props.buttonSize ? `left: -${props.buttonSize / 2}px` : "left: -20px"};
     }
   }
   .swiper-button-next {
-    right: -10px;
+    right: -20px;
     @media screen and (min-width: 768px) {
       ${(props) =>
         props.buttonSize
@@ -44,8 +44,8 @@ const SwiperContainer = styled.div`
     ${(props) => props.navButtonColor && `color : ${props.navButtonColor}`};
     border: none;
     border-radius: 100%;
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     ${(props) => props.navButtonsTop && `top : ${props.navButtonsTop}`};
 
     @media screen and (min-width: 768px) {

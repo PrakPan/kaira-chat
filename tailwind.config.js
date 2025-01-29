@@ -17,6 +17,9 @@ module.exports = {
       fontFamily: {
         buffalo: ['Buffalo', 'sans-serif'],
       },
+      fontWeight: {
+        350: '350',
+      },
       height: {
         300: "300px",
         557: "557px",

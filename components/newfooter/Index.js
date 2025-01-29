@@ -159,7 +159,7 @@ const NewFooter = (props) => {
   return (
     <>
       <SubscribeBox className="font-lexend" onClick={() => setShadow(false)}>
-        <Subscribe shadow={shadow} />
+        <Subscribe shadow={shadow} page={props.page} slug={props.slug} />
       </SubscribeBox>
 
       <Container className="font-lexend">
