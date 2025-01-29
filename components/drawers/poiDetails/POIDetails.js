@@ -216,26 +216,27 @@ const POIDetails = (props) => {
         )}
 
         <Reviews>
-          {props.data.rating && (
+          {props.data.rating ? (
             <div
               style={{ color: "#FFD201", marginBottom: "0.3rem" }}
               className="flex flex-row gap-1"
             >
               {stars}
             </div>
-          )}
-          <div style={{ display: "flex", alignItems: "center" }}>
-            {props.data.rating && (
-              <p style={{ marginBlock: "auto" }}>{props.data.rating} · </p>
-            )}
+          ) : null}
 
-            {props.data.user_ratings_total && (
+          <div style={{ display: "flex", alignItems: "center" }}>
+            {props.data.rating ? (
+              <p style={{ marginBlock: "auto" }}>{props.data.rating} · </p>
+            ) : null}
+
+            {props.data.user_ratings_total ? (
               <u>
                 {" "}
                 {props.data.user_ratings_total}{" "}
                 {props.data.activity_type ? "user reviews" : "Google reviews"}
               </u>
-            )}
+            ) : null}
           </div>
         </Reviews>
         {props.data.experience_filters && <Text>{experience_filters}</Text>}
@@ -243,12 +244,20 @@ const POIDetails = (props) => {
 
       {props.data?.cost ? (
         <div className="flex flex-row">
-          Cost: <span className="font-semibold px-1">₹</span>{props.data.cost}{" /- "}{"Per person"}
+          Cost: <span className="font-semibold px-1">₹</span>
+          {props.data.cost}
+          {" /- "}
+          {"Per person"}
         </div>
+      ) : props.data?.pricing.total_price ? (
+        <>
+          Cost: <span className="font-semibold px-1">₹</span>
+          {props.data.cost}
+          {" /- "}
+          {"Per person"}
+        </>
       ) : (
-        <div className="flex flex-row">
-          Cost: Complimentary Activity
-        </div>
+        <div className="flex flex-row">Cost: Complimentary Activity</div>
       )}
 
       {props.data.short_description && (

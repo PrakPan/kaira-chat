@@ -16,7 +16,7 @@ const POIDetailsDrawer = (props) => {
 
   function fetchData() {
     setLoading(true);
-    if (props.ActivityiconId) {
+    if (props.ActivityiconId && !props.data) {
       axiosPOIActivityInstance
         .get(`/?id=${props.ActivityiconId}`)
         .then((res) => {
@@ -74,13 +74,15 @@ const POIDetailsDrawer = (props) => {
         <>
           <POIDetails
             itineraryDrawer={props.itineraryDrawer}
-            data={data}
+            data={props.data ? props.data : data}
             handleCloseDrawer={props.handleCloseDrawer}
           >
             {props.children}
           </POIDetails>
 
-          <div className="sticky z-50 bottom-4 w-full flex items-center justify-center">{props.children}</div>
+          <div className="sticky z-50 bottom-4 w-full flex items-center justify-center">
+            {props.children}
+          </div>
         </>
       ) : (
         <POIDetailsSkeleton

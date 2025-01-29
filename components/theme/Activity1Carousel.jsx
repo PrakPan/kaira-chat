@@ -19,7 +19,7 @@ export default function Activity1Carousel(props) {
   return (
     <SwiperCarousel
       cards={props.activities.map((activity, index) => (
-        <ActivityCard key={index} {...activity} />
+        <ActivityCard key={index} data={activity} {...activity} />
       ))}
       slidesPerView={isPageWide ? 4 : 1}
       // spaceBetween={25}
@@ -30,7 +30,7 @@ export default function Activity1Carousel(props) {
   );
 }
 
-const ActivityCard = ({ id, image, name, short_description }) => {
+const ActivityCard = ({ data, id, image, name, short_description }) => {
   let isPageWide = media("(min-width: 768px)");
   const [show, setShow] = useState(false);
 
@@ -85,6 +85,7 @@ const ActivityCard = ({ id, image, name, short_description }) => {
         ActivityiconId={id}
         handleCloseDrawer={handleCloseDrawer}
         name={name}
+        data={data}
       >
         <PlanYourTripButton />
       </POIDetailsDrawer>
