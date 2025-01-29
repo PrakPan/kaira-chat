@@ -577,7 +577,7 @@ const LogIn = React.memo((props) => {
             </Button>
           )}
 
-          <div
+          {/* <div
             style={{
               position: "relative",
               marginBlock: isPageWide ? "3rem" : "2rem",
@@ -645,7 +645,7 @@ const LogIn = React.memo((props) => {
                 Sign in with Google
               </p>
             </div>
-          </Button>
+          </Button> */}
 
           <div
             className="text-center font-lexend"
