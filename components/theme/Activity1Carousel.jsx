@@ -6,6 +6,7 @@ import media from "../../components/media";
 import POIDetailsDrawer from "../../components/drawers/poiDetails/POIDetailsDrawer";
 import { logEvent } from "../../services/ga/Index";
 import { PlanYourTripButton } from "../../containers/travelplanner/ThemePage.jsx";
+import SecondaryHeading from "../heading/Secondary.jsx";
 
 const Container = styled.div`
   width: 100%;
@@ -73,9 +74,9 @@ const ActivityCard = ({ id, image, name, short_description }) => {
 
         <div className="">
           <h3 className="text-[16px] leading-[28px] font-[700]">{name}</h3>
-          <p className="text-[15px] leading-[22px] font-[400] line-clamp-3">
+          <SecondaryHeading className="line-clamp-3">
             {short_description}
-          </p>
+          </SecondaryHeading>
         </div>
       </div>
 
