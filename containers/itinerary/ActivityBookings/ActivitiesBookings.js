@@ -110,7 +110,7 @@ const ActivitiesBookings = (props) => {
                       leftalign
                       widthmobile="100%"
                       url={
-                        booking.image ? booking.image : booking.activity.image
+                        booking?.image ? booking.image : booking.activity?.image
                       }
                     ></ImageLoader>
                     {booking.star_category ? (
