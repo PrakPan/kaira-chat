@@ -68,7 +68,7 @@ const MidSection = (props) => {
       let booking = null;
       if (props.bookings) {
         const allBookings = [...props.flightBookings, ...props.transferBookings]
-        booking = allBookings.find(book => book.id === props?.bookings[0].id)
+        booking = allBookings.find(book => book.id === props?.bookings[0]?.id)
 
       }
       if (booking) {
