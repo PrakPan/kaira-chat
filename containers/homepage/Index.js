@@ -162,7 +162,6 @@ const Homepage = (props) => {
           isPageWide
             ? "media/website/banners/sky.jpg"
             : "media/website/banners/sky.jpg"
-clear
         }
         destinationType={"city-planner"}
         title={
