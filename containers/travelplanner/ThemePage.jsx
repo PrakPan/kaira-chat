@@ -18,7 +18,6 @@ import Navigation from "../../components/theme/Navigation.jsx";
 import PrimaryHeading from "../../components/heading/PrimaryHeading.jsx";
 import SecondaryHeading from "../../components/heading/Secondary.jsx";
 import Itinerary1Carousel from "../../components/theme/Itinerary1Carousel.jsx";
-import Button from "../../components/ui/button/Index";
 import DesktopPersonaliseBanner from "../../components/containers/Banner";
 import MobileBanner from "../city/Banner/Mobile";
 import validateTextSize from "../../services/textSizeValidator";

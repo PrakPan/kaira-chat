@@ -38,17 +38,52 @@ const Card = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [showTailoredModal, setShowTailoredModal] = useState(false);
+  const [tripDestination, setTripDestination] = useState("");
+  const [destinationType, setDestinationType] = useState("");
+  const [pageId, setPageId] = useState("");
+
 
   const handleClick = () => {
     if (props.data.trip_planner) {
+      const { destination, id, value } = getParams(props.data.cta_path);
+
       if (isPageWide) {
+        setTripDestination(destination);
+        setDestinationType(id?.replace("_id", ""));
+        setPageId(value);
         setShowTailoredModal(true);
       } else {
-        openTailoredModal(router, props.pageId, props.destination);
+        openTailoredModal(router, value, destination, id?.replace("_id", ""));
       }
     } else {
       router.push(props.data.cta_path);
     }
+  };
+
+  const getParams = (params) => {
+    const urlParams = new URLSearchParams(params);
+
+    // Extract destination (always present)
+    const destination = urlParams.get("destination");
+
+    // Extract any of the possible IDs
+    const possibleIds = ["country_id", "state_id", "city_id", "page_id"];
+    let selectedId = null;
+    let selectedValue = null;
+
+    for (const id of possibleIds) {
+      if (urlParams.has(id)) {
+        selectedId = id;
+        selectedValue = urlParams.get(id);
+        break; // Stop after finding the first available ID
+      }
+    }
+
+    return {
+      destination,
+      id: selectedId,
+      value: selectedValue,
+    };
   };
 
   return (
@@ -91,10 +126,10 @@ const Card = (props) => {
       </BackgroundImageLoader>
 
       <TailoredFormMobileModal
-        destinationType={"city-planner"}
-        page_id={props.page_id}
+        destinationType={destinationType}
+        page_id={pageId}
         children_cities={props.children_cities}
-        destination={props.destination}
+        destination={tripDestination}
         cities={props.cities}
         onHide={() => {
           setShowTailoredModal(false);
