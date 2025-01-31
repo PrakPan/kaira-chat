@@ -106,7 +106,9 @@ const Layout = React.memo((props) => {
       </div>
 
       <NotificationPopup />
-      {!props.itinerary ? <Footer></Footer> : null}
+      {!props.itinerary ? (
+        <Footer page={props.page} slug={props.slug}></Footer>
+      ) : null}
     </div>
   );
 });

@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
-import Image from "next/image";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
+import ImageLoader from "../ImageLoader";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper";
 import "swiper/css";
@@ -8,11 +9,8 @@ import "swiper/css/navigation";
 import "swiper/swiper.min.css";
 import "swiper/swiper-bundle.min.css";
 import styled from "styled-components";
-import { IoIosStar } from "react-icons/io";
-import TRAVELERS from "../../public/content/travelers";
 import media from "../../components/media";
-import Link from "next/link";
-import SecondaryHeading from "../heading/Secondary";
+import PrimaryButton from "../ui/PrimaryButton";
 
 const SwiperContainer = styled.div`
   position: relative;
@@ -76,52 +74,28 @@ const SwiperContainer = styled.div`
   }
 `;
 
-export default function OurCustomers(props) {
+export default function Reviews1Carousel(props) {
+  let isPageWide = media("(min-width: 768px)");
   const [cards, setCards] = useState([]);
 
   useEffect(() => {
     let arr = [];
 
-    for (let traveler of TRAVELERS) {
+    for (let review of props.reviews) {
       arr.push(
         <Review
-          text={traveler.review}
-          name={traveler.name}
-          image={traveler.image}
-          itineraryId={traveler.id}
+          heading={review.heading}
+          text={review.text}
+          name={review.name}
+          image={review.image}
+          itinerary_link={review.itinerary_link}
+          rating={review.rating}
         />
       );
     }
 
     setCards(arr);
   }, []);
-
-  return (
-    <div className="flex flex-col gap-5">
-      <div className="flex flex-col gap-2">
-        <div className="font-bold text-[30px] md:text-[40px] text-center">
-          What Our Customers Say About Us?
-        </div>
-        <SecondaryHeading className="text-center">
-          Hear from our travelers! Discover how we've made their journeys
-          unforgettable through personalized experiences and seamless service.
-        </SecondaryHeading>
-      </div>
-
-      <Carousel cards={cards} />
-
-      <Link
-        href={"/testimonials"}
-        className="no-underline text-gray-900 border-2 w-fit border-black px-3 py-1 rounded-lg mx-auto hover:text-white hover:bg-black transition-all"
-      >
-        View All Reviews
-      </Link>
-    </div>
-  );
-}
-
-const Carousel = ({ cards }) => {
-  let isPageWide = media("(min-width: 768px)");
 
   const handlePrevClick = (swiper) => {
     const currentIndex = swiper.activeIndex + 1;
@@ -138,7 +112,7 @@ const Carousel = ({ cards }) => {
   };
 
   return (
-    <SwiperContainer className="relative drop-shadow-2xl">
+    <SwiperContainer className="relative drop-shadow-xl">
       <Swiper
         onInit={(swiper) => {
           swiper.params.navigation.nextEl.addEventListener("click", () =>
@@ -163,46 +137,48 @@ const Carousel = ({ cards }) => {
       </Swiper>
     </SwiperContainer>
   );
-};
+}
 
-const Review = ({ text, name, image, itineraryId }) => {
+const Review = ({ heading, text, name, image, rating, itinerary_link }) => {
+  const router = useRouter();
+  const handleViewItinerary = () => {
+    router.push(itinerary_link);
+  };
+
   return (
-    <div className="h-[480px] md:h-[420px] flex flex-col justify-between bg-white p-4 rounded-lg">
-      <SecondaryHeading>{text}</SecondaryHeading>
+    <div className="h-[500px] border-2 flex flex-col gap-4 bg-white p-4 rounded-lg">
+      <div className="flex items-center gap-3">
+        {/* Image Section */}
+        <div className="w-[65px] h-[65px]">
+          <ImageLoader
+            url={image}
+            width={"65px"}
+            height={"65px"}
+            borderRadius="100%"
+          />
+        </div>
 
-      <div className="flex flex-col gap-2">
-        <Link
-          href={`/itinerary/${itineraryId}`}
-          className="bg-[#F7E700] w-fit px-3 py-1 rounded-lg no-underline text-black"
-        >
-          View Itinerary
-        </Link>
-        <div className="flex flex-row justify-between items-center">
-          <div className="flex flex-col gap-1 w-[75%]">
-            <div
-              className={`font-buffalo text-[#FB5F66] text-[40px] font-[400] leading-[56px] w-[90%] truncate`}
-            >
-              {name}
-            </div>
-
-            <div className="flex flex-row gap-1 items-center">
-              <IoIosStar className="text-lg text-[#FEB739]" />
-              <IoIosStar className="text-lg text-[#FEB739]" />
-              <IoIosStar className="text-lg text-[#FEB739]" />
-              <IoIosStar className="text-lg text-[#FEB739]" />
-              <IoIosStar className="text-lg text-[#FEB739]" />
-            </div>
-          </div>
-          <div className="">
-            <Image
-              className="rounded-full"
-              src={`https://d31aoa0ehgvjdi.cloudfront.net/${image}`}
-              alt=""
-              width={64}
-              height={64}
-            />
+        {/* Text Section */}
+        <div className="flex flex-col h-fit">
+          <p className="text-[18px] leading-[27px] font-[500] mb-0">{name}</p>
+          <div className="text-[#FEB739] text-xl">
+            {"★".repeat(rating)}{" "}
+            <span className="text-gray-400">{"☆".repeat(5 - rating)}</span>
           </div>
         </div>
+      </div>
+
+      <div className="flex flex-col justify-between h-full">
+        <div>
+          <h3 className="text-[16px] leading-[24px] font-[600]">{heading}</h3>
+          <p className="text-[15px] leading-[24px] font-[350] text-[#323232] h-auto">
+            {text}
+          </p>
+        </div>
+
+        <PrimaryButton onClick={handleViewItinerary}>
+          View Itinerary
+        </PrimaryButton>
       </div>
     </div>
   );
