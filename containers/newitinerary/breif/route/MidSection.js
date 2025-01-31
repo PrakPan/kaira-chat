@@ -68,9 +68,9 @@ const MidSection = (props) => {
     if (props.transferBookings) {
       let booking = null;
       if (props.bookings) {
-        booking = props.transferBookings.find(
-          (book) => book.id === props?.bookings[0].id
-        );
+        const allBookings = [...props.flightBookings, ...props.transferBookings]
+        booking = allBookings.find(book => book.id === props?.bookings[0]?.id)
+
       }
       if (booking) {
         setSelectedBooking({
