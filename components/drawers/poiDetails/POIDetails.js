@@ -250,12 +250,12 @@ const POIDetails = (props) => {
           {"Per person"}
         </div>
       ) : props.data?.pricing.total_price ? (
-        <>
+        <div className="flex flex-row">
           Cost: <span className="font-semibold px-1">₹</span>
-          {props.data.cost}
+          {props.data.pricing.total_price}
           {" /- "}
           {"Per person"}
-        </>
+        </div>
       ) : (
         <div className="flex flex-row">Cost: Complimentary Activity</div>
       )}

@@ -26,8 +26,8 @@ export default function Itinerary2Carousel(props) {
           heading={element.name}
           description={element.text}
           tag={element.tag}
-          destination={""}
-          pageId={""}
+          destination={element.destination}
+          pageId={element.page_id}
         />
       ))}
     </div>
@@ -92,7 +92,7 @@ const Card = (props) => {
 
       <TailoredFormMobileModal
         destinationType={"city-planner"}
-        page_id={props.pageId}
+        page_id={props.page_id}
         children_cities={props.children_cities}
         destination={props.destination}
         cities={props.cities}

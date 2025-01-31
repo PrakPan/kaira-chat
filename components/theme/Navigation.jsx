@@ -38,7 +38,7 @@ export default function Navigation({ components }) {
   };
 
   return (
-    <div className="space-y-10 mt-3 mx-3">
+    <div className="space-y-10">
       {navItems && (
         <>
           <PrimaryHeading className="mt-5">{heading}</PrimaryHeading>

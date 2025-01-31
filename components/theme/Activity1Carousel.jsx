@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import ImageLoader from "../../components/ImageLoader";
 import SwiperCarousel from "../../components/SwiperCarousel.js";
 import media from "../../components/media";
@@ -33,6 +34,7 @@ export default function Activity1Carousel(props) {
 const ActivityCard = ({ data, id, image, name, short_description }) => {
   let isPageWide = media("(min-width: 768px)");
   const [show, setShow] = useState(false);
+  const [hover, setHover] = useState(false);
 
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
@@ -52,24 +54,45 @@ const ActivityCard = ({ data, id, image, name, short_description }) => {
     });
   };
 
+  var stars = [];
+  for (let i = 0; i < Math.floor(data.rating); i++) {
+    stars.push(<FaStar />);
+  }
+
+  if (Math.floor(data.rating) < data.rating) stars.push(<FaStarHalfAlt />);
+
   return (
     <Container
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
       onClick={handleActivityClick}
-      style={
-        {
-          // width: isPageWide ? "282px" : "350px",
-        }
-      }
-      className="cursor-pointer"
+      className="group cursor-pointer py-2"
     >
       <div className="flex flex-col h-full gap-3">
-        <div className="relative w-h-full overflow-hidden">
+        <div className="relative group h-full overflow-hidden group-hover:scale-105 transition-all">
           <ImageLoader
             url={image}
             width={isPageWide ? "282px" : "350px"}
             height={isPageWide ? "282px" : "350px"}
             borderRadius="10px"
           />
+
+          {data.rating ? (
+            <div
+              className={`${
+                hover ? "opacity-100" : "opacity-0"
+              } transition-opacity duration-500 absolute bottom-1 left-3 flex items-center gap-1 text-white text-sm bg-black bg-opacity-50 rounded-full p-2`}
+            >
+              <span className="text-[#FFD201] flex">{stars}</span>
+              <span>{data.rating}</span>
+
+              {data.user_ratings_total ? (
+                <span className="underline">
+                  . {data.user_ratings_total} Google reviews
+                </span>
+              ) : null}
+            </div>
+          ) : null}
         </div>
 
         <div className="">
