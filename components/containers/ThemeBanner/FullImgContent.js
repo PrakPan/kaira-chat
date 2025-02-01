@@ -28,7 +28,7 @@ const Container = styled.div`
 `;
 
 const PaddingContianer = styled.div`
-  padding: 5rem 0 2rem 0;
+  padding: 1rem 0 2rem 0;
   flex-grow: 1;
 
   @media screen and (min-width: 768px) {
@@ -90,15 +90,24 @@ const FullImgContent = (props) => {
 
   return (
     <Container className="font-lexend">
-      <PaddingContianer className="flex flex-col items-start">
+      <PaddingContianer className="flex flex-col items-start z-10">
         <div className="flex flex-col items-start">
-          <H1 style={{ color: "#F7E700" }} className="text-start ml-3">{props.title}</H1>
+          <H1
+            style={{
+              color: "#F7E700",
+              fontSize: !isPageWide ? "25px" : null,
+              fontWeight: !isPageWide && "600",
+            }}
+            className="text-start ml-3"
+          >
+            {props.title}
+          </H1>
 
           {props.subheading ? (
             <H7
               style={{
                 lineHeight: isPageWide ? "35px" : "25px",
-                fontSize: isPageWide ? "25px" : "20px",
+                fontSize: isPageWide ? "25px" : "18px",
               }}
               className="md:w-[60%] text-start ml-3"
             >
@@ -134,9 +143,9 @@ const FullImgContent = (props) => {
         </div>
 
         <Button
-          padding="0.75rem 1rem"
-          fontSize="18px"
-          fontWeight="500"
+          padding={isPageWide ? "0.75rem 1rem" : "0.5rem 0.75rem"}
+          fontSize={isPageWide ? "18px" : "15px"}
+          fontWeight={isPageWide ? "500" : "400"}
           bgColor="#f7e700"
           borderRadius="7px"
           color="black"

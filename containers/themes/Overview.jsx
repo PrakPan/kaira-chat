@@ -47,59 +47,58 @@ export default function Overview(props) {
           />
         </div>
       )}
- 
 
       <div className="flex flex-col md:flex-row gap-6 justify-between w-full">
-      <div className=" md:pt-0  flex flex-col gap-3">
-        <PrimaryHeading className="">{props.heading}</PrimaryHeading>
-        <div className="flex flex-col gap-3 justify-start">
-          <SecondaryHeading className="">{props.text}</SecondaryHeading>
+        <div className=" md:pt-0  flex flex-col gap-3">
+          <PrimaryHeading className="">{props.heading}</PrimaryHeading>
+          <div className="flex flex-col gap-3 justify-start">
+            <SecondaryHeading className="">{props.text}</SecondaryHeading>
 
-          <div>
-            <Button
-              padding="0.75rem 1rem"
-              fontSize="18px"
-              fontWeight="500"
-              bgColor="#f7e700"
-              borderRadius="7px"
-              color="black"
-              borderWidth="1px"
-              onclick={handlePlanButton}
-              margin="3vh 0 1vh 0"
-            >
-              {props.slug === "honeymoon-2025"
-                ? "Plan Your Honeymoon!"
-                : "Plan Your Trip Now!"}
-            </Button>
-          </div>
-
-          {props.slug === "honeymoon-2025" && (
-            <div className="relative">
-              <div
-                className="-z-10 absolute -left-[5rem] -top-[10rem] w-[18rem] h-[18rem]"
-                style={{ transform: "rotate(-12deg)" }}
+            <div>
+              <Button
+                padding={isPageWide ? "0.75rem 1rem" : "0.5rem 0.75rem"}
+                fontSize={isPageWide ? "18px" : "15px"}
+                fontWeight={isPageWide ? "500" : "400"}
+                bgColor="#f7e700"
+                borderRadius="7px"
+                color="black"
+                borderWidth="1px"
+                onclick={handlePlanButton}
+                margin="3vh 0 1vh 0"
               >
-                <Image
-                  src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/tilted-heart.png`}
-                  className="object-fill"
-                  alt="Tilted Hearts"
-                  height={200}
-                  width={200}
-                />
-              </div>
+                {props.slug === "honeymoon-2025"
+                  ? "Plan Your Honeymoon!"
+                  : "Plan Your Trip Now!"}
+              </Button>
             </div>
-          )}
-        </div>
-      </div>
 
-      <div className="px-2 md:px-0">
-        <ImageLoader
-          url={props.image}
-          width={isPageWide ? 560 : 290}
-          height={isPageWide ? 536 : 300}
-          borderRadius={8}
-        />
-      </div>
+            {props.slug === "honeymoon-2025" && (
+              <div className="relative">
+                <div
+                  className="-z-10 absolute -left-[5rem] -top-[10rem] w-[18rem] h-[18rem]"
+                  style={{ transform: "rotate(-12deg)" }}
+                >
+                  <Image
+                    src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/tilted-heart.png`}
+                    className="object-fill"
+                    alt="Tilted Hearts"
+                    height={200}
+                    width={200}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="px-2 md:px-0">
+          <ImageLoader
+            url={props.image}
+            width={isPageWide ? 560 : 290}
+            height={isPageWide ? 536 : 300}
+            borderRadius={8}
+          />
+        </div>
       </div>
 
       <TailoredFormMobileModal
