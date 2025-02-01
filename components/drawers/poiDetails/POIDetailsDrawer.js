@@ -4,7 +4,9 @@ import POIDetailsSkeleton from "./POIDetailsSkeleton";
 import POIDetails from "./POIDetails";
 import { useEffect } from "react";
 import axiosPOIdetailsInstance from "../../../services/poi/poidetails";
-import axiosPOIActivityInstance from "../../../services/poi/poiActivities";
+import axiosPOIActivityInstance, {
+  activityDetail,
+} from "../../../services/poi/poiActivities";
 
 const POIDetailsDrawer = (props) => {
   const [data, setData] = useState([]);
@@ -16,7 +18,28 @@ const POIDetailsDrawer = (props) => {
 
   function fetchData() {
     setLoading(true);
-    if (props.ActivityiconId && !props.data) {
+
+    if (props.ActivityiconId && props.themePage) {
+      activityDetail
+        .post(`${props.ActivityiconId}/`, {})
+        .then((res) => {
+          if (res.data.success) setData(res.data.data.activity);
+          else throw new Error(res.data?.message);
+          setLoading(false);
+        })
+        .catch((err) => {
+          if (props.data) {
+            setData(props.data);
+          } else {
+            setData({
+              name: props.name,
+              short_description: props.text,
+              image: props.image,
+            });
+          }
+          setLoading(false);
+        });
+    } else if (props.ActivityiconId) {
       axiosPOIActivityInstance
         .get(`/?id=${props.ActivityiconId}`)
         .then((res) => {

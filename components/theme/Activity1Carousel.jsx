@@ -104,6 +104,7 @@ const ActivityCard = ({ data, id, image, name, short_description }) => {
       </div>
 
       <POIDetailsDrawer
+        themePage
         show={show}
         ActivityiconId={id}
         handleCloseDrawer={handleCloseDrawer}
