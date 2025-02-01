@@ -141,6 +141,8 @@ export default function Reviews1Carousel(props) {
 
 const Review = ({ heading, text, name, image, rating, itinerary_link }) => {
   const router = useRouter();
+  const [viewMore, setViewMore] = useState(false);
+
   const handleViewItinerary = () => {
     router.push(itinerary_link);
   };
@@ -172,7 +174,14 @@ const Review = ({ heading, text, name, image, rating, itinerary_link }) => {
         <div>
           <h3 className="text-[16px] leading-[24px] font-[600]">{heading}</h3>
           <p className="text-[15px] leading-[24px] font-[350] text-[#323232] h-auto">
-            {text}
+            {viewMore ? text : text.substring(0, 480)}
+            {text.length > 480 ? (
+              viewMore ? (
+                <span onClick={() => setViewMore(false)} className="text-gray-400 cursor-pointer ml-1">less</span>
+              ) : (
+                <span onClick={() => setViewMore(true)} className="text-gray-400 cursor-pointer">..more</span>
+              )
+            ) : null}
           </p>
         </div>
 
