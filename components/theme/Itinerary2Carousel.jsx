@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import BackgroundImageLoader from "../UpdatedBackgroundImageLoader";
 import TailoredFormMobileModal from "../modals/TailoredFomrMobile";
@@ -41,7 +41,6 @@ const Card = (props) => {
   const [tripDestination, setTripDestination] = useState("");
   const [destinationType, setDestinationType] = useState("");
   const [pageId, setPageId] = useState("");
-
 
   const handleClick = () => {
     if (props.data.trip_planner) {
@@ -87,44 +86,47 @@ const Card = (props) => {
   };
 
   return (
-    <Container
-      onClick={handleClick}
-      className="cursor-pointer hover:scale-105 transition-transform"
-    >
-      <BackgroundImageLoader
-        padding={props.padding}
-        filter={"brightness(0.8)"}
-        url={props.url}
-        dimensions={{ width: 2240, height: 840 }}
-        dimensionsMobile={{ width: 607, height: 810 }}
-        style={{ position: "absolute" }}
-        className="center"
-        borderRadius={"10px"}
-        resizeMode={"cover"}
-        noLazy={props.noLazy}
+    <>
+      <Container
+        onClick={handleClick}
+        className="cursor-pointer hover:scale-105 transition-transform"
       >
-        <div
-          style={{
-            position: "absolute",
-            zIndex: "5",
-            width: "100%",
-            height: "100%",
-            color: "white",
-          }}
+        <BackgroundImageLoader
+          padding={props.padding}
+          filter={"brightness(0.8)"}
+          url={props.url}
+          dimensions={{ width: 2240, height: 840 }}
+          dimensionsMobile={{ width: 607, height: 810 }}
+          style={{ position: "absolute" }}
+          className="center"
+          borderRadius={"10px"}
+          resizeMode={"cover"}
+          noLazy={props.noLazy}
         >
-          <div className="h-full flex flex-col justify-between p-4">
-            <div className=" bg-[#F7E700] w-fit px-3 py-1 rounded-lg place-self-end text-black font-medium">
-              {props.tag}
-            </div>
+          <div
+            style={{
+              position: "absolute",
+              zIndex: "5",
+              width: "100%",
+              height: "100%",
+              color: "white",
+            }}
+          >
+            <div className="h-full flex flex-col justify-between p-4">
+              <div className=" bg-[#F7E700] w-fit px-3 py-1 rounded-lg place-self-end text-black font-medium">
+                {props.tag}
+              </div>
 
-            <div className="flex flex-col gap-2">
-              <div className="text-[22px] font-bold">{props.heading}</div>
-              <div className="text-[16px] font-[350]">{props.description}</div>
+              <div className="flex flex-col gap-2">
+                <div className="text-[22px] font-bold">{props.heading}</div>
+                <div className="text-[16px] font-[350]">
+                  {props.description}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </BackgroundImageLoader>
-
+        </BackgroundImageLoader>
+      </Container>
       <TailoredFormMobileModal
         destinationType={destinationType}
         page_id={pageId}
@@ -137,6 +139,6 @@ const Card = (props) => {
         show={showTailoredModal}
         eventDates={props.eventDates}
       />
-    </Container>
+    </>
   );
 };

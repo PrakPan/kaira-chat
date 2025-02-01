@@ -451,7 +451,9 @@ const Enquiry = (props) => {
                       cursor: "pointer",
                     }}
                     onClick={() => {
-                      !focusedDate ? props.onHide() : console.log("");
+                      if (!focusedDate) {
+                        props.onHide();
+                      }
                     }}
                   />
                 </CloseIcon>
