@@ -174,8 +174,8 @@ const Review = ({ heading, text, name, image, rating, itinerary_link }) => {
         <div>
           <h3 className="text-[16px] leading-[24px] font-[600]">{heading}</h3>
           <p className="text-[15px] leading-[24px] font-[350] text-[#323232] h-auto">
-            {viewMore ? text : text.substring(0, 480)}
-            {text.length > 480 ? (
+            {viewMore ? text : text.substring(0, 300)}
+            {text.length > 300 ? (
               viewMore ? (
                 <span onClick={() => setViewMore(false)} className="text-gray-400 cursor-pointer ml-1">less</span>
               ) : (

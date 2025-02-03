@@ -327,7 +327,7 @@ export const PlanYourTripButton = (props) => {
   };
 
   return (
-    <div className="flex items-center justify-center mt-5">
+    <div className="flex items-center justify-center mt-5 bg-white">
       <SecondaryButton onClick={handlePlanButton}>
         {props.text
           ? props.text
