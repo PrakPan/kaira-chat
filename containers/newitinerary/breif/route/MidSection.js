@@ -65,12 +65,16 @@ const MidSection = (props) => {
   const [showTaxiModal, setShowTaxiModal] = useState(false);
 
   useEffect(() => {
-    if (props.transferBookings) {
+    if (props.transferBookings && props.flightBookings) {
       let booking = null;
       if (props.bookings) {
-        const allBookings = [...props.flightBookings, ...props.transferBookings]
-        booking = allBookings.find(book => book.id === props?.bookings[0]?.id)
-
+        const allBookings = [
+          ...props.flightBookings,
+          ...props.transferBookings,
+        ];
+        booking = allBookings.find(
+          (book) => book.id === props?.bookings[0]?.id
+        );
       }
       if (booking) {
         setSelectedBooking({

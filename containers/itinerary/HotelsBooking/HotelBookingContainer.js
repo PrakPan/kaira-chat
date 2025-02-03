@@ -15,8 +15,6 @@ import { MdWifi } from "react-icons/md";
 import { logEvent } from "../../../services/ga/Index";
 import { connect } from "react-redux";
 
-
-
 const RoomTypeGrid = styled.div`
   display: grid;
   grid-template-columns: 1rem auto 5.5rem;
@@ -254,15 +252,13 @@ const HotelBookingContainer = ({
                         </div>
                       )}
 
-                      {booking.hotel_details?.addr1 && (
+                      {booking.hotel_details?.city_name && (
                         <div className="text-sm font-normal line-clamp-2">
-                          {booking.hotel_details?.addr1}
-                          {booking.hotel_details?.addr2 &&
-                            `, ${booking.hotel_details.addr2}`}
+                          {booking.hotel_details?.city_name}
                         </div>
                       )}
 
-                      {booking.hotel_details?.rating && (
+                      {booking.hotel_details?.rating ? (
                         <div className="gap-1 flex flex-row  items-center">
                           <div className="flex flex-row text-[#FFD201]">
                             {starRating(booking.hotel_details?.rating)}
@@ -281,7 +277,7 @@ const HotelBookingContainer = ({
                             </div>
                           )}
                         </div>
-                      )}
+                      ) : null}
                     </div>
                   )}
 
@@ -387,9 +383,9 @@ const HotelBookingContainer = ({
                     </div>
                   ) : null}
 
-                  {booking?.amenities &&
-                  booking?.amenities?.length &&
-                  booking?.amenities?.includes("WIFI") ? (
+                  {booking?.hotel_details?.amenities &&
+                  booking?.hotel_details?.amenities?.length &&
+                  booking?.hotel_details?.amenities?.includes("WIFI") ? (
                     <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
                       <MdWifi className="text-sm text-[#7A7A7A]" />
                       <div className="text-sm font-[400]">WIFI available</div>

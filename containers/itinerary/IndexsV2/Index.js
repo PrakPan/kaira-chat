@@ -346,7 +346,6 @@ const Itinerary = (props) => {
       .catch((error) => {});
 
     getAllBookings();
-    // getAccommodationAndActivitiesHandler();
   }
 
   useEffect(() => {

@@ -9,5 +9,5 @@ const fetchaccommodations = axios.create({
 export default fetchaccommodations;
 
 export const hotelDetails = axios.create({
-    baseURL: MERCURY_HOST + '/api/v1/hotels/detail/',
+    baseURL: MERCURY_HOST + '/api/v1/itinerary/',
 })
