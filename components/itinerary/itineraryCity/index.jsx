@@ -22,17 +22,17 @@ const ItineraryCity = (props) => {
             {props.city.duration === 1 ? "Night" : "Nights"}
           </div>
 
-          {props.city.hotels && (
+          {props.city?.hotels && props.city.hotels.length ? (
             <div className="flex flex-col gap-1">
               <div className="text-[14px] font-medium leading-0 underline">
-                {props.city.hotels[0].name}
+                {props.city.hotels[0]?.name}
               </div>
               <div className="text-[12px]">
                 {props.city.hotels[0].duration}
                 {props.city.hotels[0].duration > 1 ? " Nights" : " Night"}
               </div>
             </div>
-          )}
+          ) : null}
         </div>
 
         <button
