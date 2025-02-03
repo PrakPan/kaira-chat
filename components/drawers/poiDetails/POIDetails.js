@@ -206,7 +206,7 @@ const POIDetails = (props) => {
         )}
       </ImageContainer>
 
-      <div>
+      <div className="mt-3">
         <Title>{props.data.name}</Title>
         {props.data.address && (
           <div>
