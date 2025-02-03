@@ -12,7 +12,6 @@ import Button from "../../../ui/button/Index";
 import SkeletonCard from "../../../ui/SkeletonCard";
 import { connect } from "react-redux";
 
-
 const starRating = (rating) => {
   var stars = [];
   for (let i = 0; i < Math.floor(rating); i++) {
@@ -173,9 +172,9 @@ const Overview = (props) => {
   let images = [];
   try {
     for (var i = 0; i < props.images.length; i++) {
-      if (props.images[i].image) images.push(props.images[i]);
+      if (props.images[i]) images.push(props.images[i]);
     }
-  } catch { }
+  } catch {}
 
   return (
     <Container>
@@ -185,12 +184,12 @@ const Overview = (props) => {
           <Address>
             {props.data?.addr1 ? props.data.addr1 + ", " : ""}{" "}
             {props.data?.addr2 ? props.data.addr2 + ", " : ""}{" "}
-            {props.data?.city ? props.data.city : ""}
+            {props.data?.city_name ? props.data.city_name : ""}
           </Address>
         </div>
         {props.payment && props.token ? (
           props.payment?.is_registration_needed ? null : props.payment
-            ?.paid_user || !props.payment?.user_allowed_to_pay ? null : (
+              ?.paid_user || !props.payment?.user_allowed_to_pay ? null : (
             <Button
               padding="7px 25px"
               borderRadius="7px"
@@ -204,27 +203,27 @@ const Overview = (props) => {
         )}
       </FlexBox>
 
-      {props.data?.rating_ext && (
+      {props.data?.rating ? (
         <div className="gap-1 flex flex-row  items-center">
           <div className="flex flex-row text-[#FFD201]">
-            {starRating(props.data?.rating_ext)}
+            {starRating(props.data?.rating)}
           </div>
           <div>
-            {props.data?.rating_ext}
+            {props.data?.rating}
             {" . "}
           </div>
-          {props.data?.num_reviews_ext && (
+          {props.data?.num_reviews && (
             <div className="text-sm text-[#7A7A7A] font-[400] underline">
-              {props.data?.num_reviews_ext}{" "}
-              {props.data?.source === "agoda"
+              {props.data?.num_reviews}{" "}
+              {props.data?.agoda_accommodation
                 ? "user reviews"
                 : "Google reviews"}
             </div>
           )}
         </div>
-      )}
+      ) : null}
 
-      {props?.currentBooking.user_rating && (
+      {props?.currentBooking?.user_rating && (
         <div className="flex flex-col gap-1">
           {props?.currentBooking.user_rating && (
             <div className="gap-1 flex flex-row  items-center">
@@ -253,12 +252,15 @@ const Overview = (props) => {
           {images.length > 3 ? (
             <GridImage>
               <Child area="1 / 1 / 5 / 4" className="div1 ">
-                <div className="relative" style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
+                <div
+                  className="relative"
+                  style={{ display: ImagesLoaded[0] ? "initial" : "none" }}
+                >
                   <ImageLoader
                     url={
                       ImagesError[0]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[0].image
+                        : images[0]
                     }
                     width="100%"
                     height="100%"
@@ -268,7 +270,8 @@ const Overview = (props) => {
                   />
 
                   {images[0]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">{images[0]?.caption}
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                      {images[0]?.caption}
                     </div>
                   ) : null}
                 </div>
@@ -284,12 +287,15 @@ const Overview = (props) => {
               </Child>
 
               <Child area="1 / 8 / 5 / 11" className="div2 rounded-lg">
-                <div className="relative" style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
+                <div
+                  className="relative"
+                  style={{ display: ImagesLoaded[1] ? "initial" : "none" }}
+                >
                   <ImageLoader
                     url={
                       ImagesError[1]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[1].image
+                        : images[1]
                     }
                     fit="cover"
                     width="100%"
@@ -300,7 +306,8 @@ const Overview = (props) => {
                   />
 
                   {images[1]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">{images[1]?.caption}
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                      {images[1]?.caption}
                     </div>
                   ) : null}
                 </div>
@@ -316,12 +323,15 @@ const Overview = (props) => {
               </Child>
 
               <Child area="1 / 4 / 3 / 8" className="div3">
-                <div className="relative" style={{ display: ImagesLoaded[2] ? "initial" : "none" }}>
+                <div
+                  className="relative"
+                  style={{ display: ImagesLoaded[2] ? "initial" : "none" }}
+                >
                   <ImageLoader
                     url={
                       ImagesError[2]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[2].image
+                        : images[2]
                     }
                     fit="cover"
                     width="100%"
@@ -332,7 +342,8 @@ const Overview = (props) => {
                   />
 
                   {images[2]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">{images[2]?.caption}
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                      {images[2]?.caption}
                     </div>
                   ) : null}
                 </div>
@@ -348,12 +359,15 @@ const Overview = (props) => {
               </Child>
 
               <Child area="3 / 4 / 5 / 8" className="div4">
-                <div className="relative" style={{ display: ImagesLoaded[3] ? "initial" : "none" }}>
+                <div
+                  className="relative"
+                  style={{ display: ImagesLoaded[3] ? "initial" : "none" }}
+                >
                   <ImageLoader
                     url={
                       ImagesError[3]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[3].image
+                        : images[3]
                     }
                     fit="cover"
                     width="100%"
@@ -364,7 +378,8 @@ const Overview = (props) => {
                   />
 
                   {images[3]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">{images[3]?.caption}
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                      {images[3]?.caption}
                     </div>
                   ) : null}
                 </div>
@@ -382,13 +397,16 @@ const Overview = (props) => {
           ) : images.length == 3 ? (
             <GridImage>
               <Child area="1 / 1 / 5 / 4" className="div1 ">
-                <div className="relative" style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
+                <div
+                  className="relative"
+                  style={{ display: ImagesLoaded[0] ? "initial" : "none" }}
+                >
                   <ImageLoader
                     noLazy
                     url={
                       ImagesError[0]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[0].image
+                        : images[0]
                     }
                     width="100%"
                     height="100%"
@@ -397,7 +415,8 @@ const Overview = (props) => {
                   />
 
                   {images[0]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">{images[0]?.caption}
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                      {images[0]?.caption}
                     </div>
                   ) : null}
                 </div>
@@ -413,13 +432,16 @@ const Overview = (props) => {
               </Child>
 
               <Child area=" 1 / 4 / 5 / 7" className="div2 rounded-lg">
-                <div className="relative" style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
+                <div
+                  className="relative"
+                  style={{ display: ImagesLoaded[1] ? "initial" : "none" }}
+                >
                   <ImageLoader
                     noLazy
                     url={
                       ImagesError[1]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[1].image
+                        : images[1]
                     }
                     fit="cover"
                     width="100%"
@@ -429,7 +451,8 @@ const Overview = (props) => {
                   />
 
                   {images[1]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">{images[1]?.caption}
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                      {images[1]?.caption}
                     </div>
                   ) : null}
                 </div>
@@ -445,13 +468,16 @@ const Overview = (props) => {
               </Child>
 
               <Child area="1 / 7 / 5 / 11" className="div3">
-                <div className="relative" style={{ display: ImagesLoaded[2] ? "initial" : "none" }}>
+                <div
+                  className="relative"
+                  style={{ display: ImagesLoaded[2] ? "initial" : "none" }}
+                >
                   <ImageLoader
                     noLazy
                     url={
                       ImagesError[2]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[2].image
+                        : images[2]
                     }
                     fit="cover"
                     width="100%"
@@ -461,7 +487,8 @@ const Overview = (props) => {
                   />
 
                   {images[2]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">{images[2]?.caption}
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                      {images[2]?.caption}
                     </div>
                   ) : null}
                 </div>
@@ -479,7 +506,10 @@ const Overview = (props) => {
           ) : images.length == 2 ? (
             <GridImage>
               <Child area="1 / 1 / 5 / 6" className="div1 ">
-                <div className="relative" style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
+                <div
+                  className="relative"
+                  style={{ display: ImagesLoaded[0] ? "initial" : "none" }}
+                >
                   <ImageLoader
                     noLazy
                     url={
@@ -495,7 +525,8 @@ const Overview = (props) => {
                   />
 
                   {images[0]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">{images[0]?.caption}
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                      {images[0]?.caption}
                     </div>
                   ) : null}
                 </div>
@@ -511,7 +542,10 @@ const Overview = (props) => {
               </Child>
 
               <Child area="1 / 6 / 5 / 11" className="div2 rounded-lg">
-                <div className="relative" style={{ display: ImagesLoaded[1] ? "initial" : "none" }}>
+                <div
+                  className="relative"
+                  style={{ display: ImagesLoaded[1] ? "initial" : "none" }}
+                >
                   <ImageLoader
                     noLazy
                     url={
@@ -527,7 +561,8 @@ const Overview = (props) => {
                   />
 
                   {images[1]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">{images[1]?.caption}
+                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                      {images[1]?.caption}
                     </div>
                   ) : null}
                 </div>
@@ -544,13 +579,16 @@ const Overview = (props) => {
             </GridImage>
           ) : (
             <Child style={{ height: "19rem" }}>
-              <div className="relative" style={{ display: ImagesLoaded[0] ? "initial" : "none" }}>
+              <div
+                className="relative"
+                style={{ display: ImagesLoaded[0] ? "initial" : "none" }}
+              >
                 <ImageLoader
                   noLazy
                   url={
                     ImagesError[0]
                       ? "media/icons/bookings/notfounds/noroom.png"
-                      : images[0].image
+                      : images[0]
                   }
                   fit="cover"
                   width="100%"
@@ -561,7 +599,8 @@ const Overview = (props) => {
                 />
 
                 {images[0]?.caption ? (
-                  <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">{images[0]?.caption}
+                  <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                    {images[0]?.caption}
                   </div>
                 ) : null}
               </div>
@@ -608,7 +647,7 @@ const Overview = (props) => {
                       url={
                         ImagesError[0]
                           ? "media/icons/bookings/notfounds/noroom.png"
-                          : images[0].image
+                          : images[0]
                       }
                       fit="cover"
                       width="100%"
@@ -618,7 +657,8 @@ const Overview = (props) => {
                     />
 
                     {images[0]?.caption ? (
-                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">{images[0]?.caption}
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
+                        {images[0]?.caption}
                       </div>
                     ) : null}
                   </div>
@@ -643,7 +683,7 @@ const Overview = (props) => {
                       url={
                         ImagesError[1]
                           ? "media/icons/bookings/notfounds/noroom.png"
-                          : images[1].image
+                          : images[1]
                       }
                       fit="cover"
                       width="100%"
@@ -653,7 +693,8 @@ const Overview = (props) => {
                     />
 
                     {images[1]?.caption ? (
-                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">{images[1]?.caption}
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
+                        {images[1]?.caption}
                       </div>
                     ) : null}
                   </div>
@@ -688,7 +729,8 @@ const Overview = (props) => {
                     />
 
                     {images[2]?.caption ? (
-                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">{images[2]?.caption}
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
+                        {images[2]?.caption}
                       </div>
                     ) : null}
                   </div>
@@ -725,7 +767,8 @@ const Overview = (props) => {
                     />
 
                     {images[0]?.caption ? (
-                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">{images[0]?.caption}
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
+                        {images[0]?.caption}
                       </div>
                     ) : null}
                   </div>
@@ -760,7 +803,8 @@ const Overview = (props) => {
                     />
 
                     {images[1]?.caption ? (
-                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">{images[1]?.caption}
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
+                        {images[1]?.caption}
                       </div>
                     ) : null}
                   </div>
@@ -787,7 +831,7 @@ const Overview = (props) => {
                       url={
                         ImagesError[0]
                           ? "media/icons/bookings/notfounds/noroom.png"
-                          : images[0].image
+                          : images[0]
                       }
                       fit="cover"
                       width="100%"
@@ -797,7 +841,8 @@ const Overview = (props) => {
                     />
 
                     {images[0]?.caption ? (
-                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">{images[0]?.caption}
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
+                        {images[0]?.caption}
                       </div>
                     ) : null}
                   </div>
@@ -843,10 +888,12 @@ const Overview = (props) => {
         {props.data?.check_in?.begin_time && props.data?.check_out?.time ? (
           <CheckInText>
             <div className="">
-              Check in: {getHumanTime(props.data.check_in.begin_time.substring(0, 5))}
+              Check in:{" "}
+              {getHumanTime(props.data.check_in.begin_time.substring(0, 5))}
             </div>
             <div>
-              Check out: {getHumanTime(props.data.check_out.time.substring(0, 5))}
+              Check out:{" "}
+              {getHumanTime(props.data.check_out.time.substring(0, 5))}
             </div>
           </CheckInText>
         ) : (
@@ -857,9 +904,12 @@ const Overview = (props) => {
       {props.data?.check_in?.instructions?.length ? (
         <div className="flex flex-col gap-1">
           <div className="text-lg font-bold">About</div>
-          <div className="text-[14px] ml-[-30px]" dangerouslySetInnerHTML={{
-            __html: props.data?.check_in?.instructions[0]
-          }}></div>
+          <div
+            className="text-[14px] ml-[-30px]"
+            dangerouslySetInnerHTML={{
+              __html: props.data?.check_in?.instructions[0],
+            }}
+          ></div>
         </div>
       ) : null}
 
@@ -876,13 +926,16 @@ const Overview = (props) => {
 
       {props.data?.recommendations && props.data?.recommendations?.length ? (
         <>
-          <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Room Recommendations</Heading>
+          <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>
+            Room Recommendations
+          </Heading>
 
           <Rooms
             data={props.data?.recommendations}
-            checkInDate={props.data?.check_in?.date}
-            city={props.data?.city}
-            updateBooking={props.updateBooking}></Rooms>
+            checkInDate={props.data?.check_in}
+            city={props.data?.city_name}
+            updateBooking={props.updateBooking}
+          ></Rooms>
         </>
       ) : (
         <></>
@@ -894,7 +947,7 @@ const Overview = (props) => {
           <Address style={{ fontSize: "14px" }}>
             {props.data?.addr1 ? props.data.addr1 + ", " : ""}{" "}
             {props.data?.addr2 ? props.data.addr2 + ", " : ""}{" "}
-            {props.data?.city ? props.data.city : ""}
+            {props.data?.city_name ? props.data.city_name : ""}
           </Address>
           <div
             style={{
@@ -926,13 +979,14 @@ const Overview = (props) => {
             </a>
           </div>
         </div>
-      ) : props.data?.coordinates?.latitude && props.data?.coordinates?.longitude ? (
+      ) : props.data?.latitude &&
+        props.data?.longitude ? (
         <div>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Location</Heading>
           <Address style={{ fontSize: "14px" }}>
             {props.data?.addr1 ? props.data.addr1 + ", " : ""}{" "}
             {props.data?.addr2 ? props.data.addr2 + ", " : ""}{" "}
-            {props.data?.city ? props.data.city : ""}
+            {props.data?.city_name ? props.data.city_name : ""}
           </Address>
           <div
             style={{
@@ -956,8 +1010,11 @@ const Overview = (props) => {
               />
             </div>
             <a
-              href={`https://www.google.com/maps/search/?api=1&query=${props.data?.coordinates?.latitude
-                },${props.data.coordinates?.longitude}+(${props.data?.name?.split(" ").join("+")})`}
+              href={`https://www.google.com/maps/search/?api=1&query=${
+                props.data?.coordinates?.latitude
+              },${props.data.coordinates?.longitude}+(${props.data?.name
+                ?.split(" ")
+                .join("+")})`}
               target="_blank"
               style={{ color: "black", fontSize: "14px" }}
             >

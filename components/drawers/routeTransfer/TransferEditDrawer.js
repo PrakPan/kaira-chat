@@ -6,7 +6,10 @@ import { RiArrowRightSLine } from "react-icons/ri";
 import Drawer from "../../ui/Drawer";
 import transferEdit from "../../../services/itinerary/brief/transferEdit";
 import axiosRoundTripEditInstance from "../../../services/itinerary/brief/roudTripEdit";
-import { routeDetails, otherTransferSearch } from "../../../services/itinerary/brief/transferEdit";
+import {
+  routeDetails,
+  otherTransferSearch,
+} from "../../../services/itinerary/brief/transferEdit";
 import axiosRoundTripInstance from "../../../services/itinerary/brief/roundTripSuggestion";
 import { openNotification } from "../../../store/actions/notification";
 import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";
@@ -61,14 +64,14 @@ const TransferEditDrawer = (props) => {
     setShowLoginModal,
     check_in,
     routeId,
-    selectedBooking
+    selectedBooking,
   } = props;
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
   const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
   const [transfers, setTransfers] = useState([]);
   const [loadingTransfers, setLoadingTransfers] = useState(true);
-  const [transfersError, setTransfersError] = useState(null)
+  const [transfersError, setTransfersError] = useState(null);
   const [selectLoading, setSelectLoading] = useState(false);
   const [transferType, setTransferType] = useState(
     TRANSFER_TYPES.ONEWAYTRIP.name
@@ -82,7 +85,6 @@ const TransferEditDrawer = (props) => {
     if (showDrawer) {
       fetchRoutes();
     }
-
   }, [showDrawer]);
 
   const fetchRoutes = () => {
@@ -92,26 +94,30 @@ const TransferEditDrawer = (props) => {
 
     const requestData = {
       start_datetime: `${getDate(check_in)}T00:00:00`,
-      number_of_travellers: props?.plan?.number_of_adults + props?.plan?.number_of_children
-    }
+      number_of_travellers:
+        props?.plan?.number_of_adults + props?.plan?.number_of_children,
+    };
 
-    routeDetails.get(`${routeId}/`, requestData).then(res => {
-      if (res.data.success && res.data.routes.data.length > 0) {
-        const data = res.data.routes.data;
-        setTransfers(data);
-      } else {
+    routeDetails
+      .get(`${routeId}/`, requestData)
+      .then((res) => {
+        if (res.data.success && res.data.routes.data.length > 0) {
+          const data = res.data.routes.data;
+          setTransfers(data);
+        } else {
+          setTransfersError(
+            "No route found, please get in touch with us to complete this booking!"
+          );
+        }
+        setLoadingTransfers(false);
+      })
+      .catch((err) => {
+        setLoadingTransfers(false);
         setTransfersError(
           "No route found, please get in touch with us to complete this booking!"
         );
-      }
-      setLoadingTransfers(false);
-    }).catch(err => {
-      setLoadingTransfers(false);
-      setTransfersError(
-        "No route found, please get in touch with us to complete this booking!"
-      );
-    })
-  }
+      });
+  };
 
   const roundTripSuggestion = () => {
     axiosRoundTripInstance
@@ -145,28 +151,6 @@ const TransferEditDrawer = (props) => {
       return;
     }
 
-    // if (multimode) {
-    //   if (selectedResult && selectedResult.transferIndex === index) {
-    //     setSelectedResult(prev => {
-    //       return {
-    //         ...prev,
-    //         modes: [...prev.mode, { mode: transfer.mode }]
-    //       }
-    //     });
-    //   } else {
-    //     setSelectedResult({ multimode: multimode, transferIndex: index, modes: [{ mode: transfer.mode }] });
-    //   }
-
-    //   if (transfer.mode === "Flight") {
-    //     setShowFlightModal(true);
-    //   } else if (transfer.mode === "Taxi") {
-    //     setShowTaxiModal(true);
-    //   } else {
-    //     setShowOtherTrasfer(true);
-    //   }
-    //   return;
-    // }
-
     switch (transfer.mode) {
       case "Flight":
         setSelectedResult({ transferIndex: index, mode: transfer.mode });
@@ -177,57 +161,14 @@ const TransferEditDrawer = (props) => {
         setShowTaxiModal(true);
         break;
       default:
-        setSelectedResult({ transferIndex: index, mode: transfer.mode, transfer: transfer });
+        setSelectedResult({
+          transferIndex: index,
+          mode: transfer.mode,
+          transfer: transfer,
+        });
         setShowOtherTrasfer(true);
         break;
     }
-
-    // setSelectLoading(true);
-    // const selectedRoute = transfers[routeIndex];
-    // const data = {
-    //   itinerary_id: ItineraryId,
-    //   route_id: alternateRoutes.id,
-    //   day_slab_index: day_slab_index,
-    //   element_index: element_index,
-    //   route: selectedRoute,
-    //   check_in: check_in,
-    // };
-    // transferEdit
-    //   .post("", data, {
-    //     headers: {
-    //       Authorization: `Bearer ${access_token}`,
-    //       "Content-Type": "application/json",
-    //     },
-    //   })
-    //   .then((response) => {
-    //     if (response.status === 200) {
-    //       fetchData((scroll = false));
-    //       openNotification({
-    //         text: "Your Transfer updated successfully!",
-    //         heading: "Success!",
-    //         type: "success",
-    //       });
-    //     }
-    //     setSelectLoading(false);
-    //     setShowDrawer(false);
-    //   })
-    //   .catch((err) => {
-    //     setSelectLoading(false);
-    //     setShowDrawer(false);
-    //     if (err?.response?.status === 403) {
-    //       props.openNotification({
-    //         text: "You are not allowed to make changes to this itinerary",
-    //         heading: "Error!",
-    //         type: "error",
-    //       });
-    //     } else {
-    //       props.openNotification({
-    //         text: "There seems to be a problem, please try again!",
-    //         heading: "Error!",
-    //         type: "error",
-    //       });
-    //     }
-    //   });
 
     logEvent({
       action: "Transfer_Add_Change",
@@ -242,7 +183,7 @@ const TransferEditDrawer = (props) => {
   };
 
   const handleSelectResult = (result) => {
-    setSelectedResult(prev => {
+    setSelectedResult((prev) => {
       if (prev.multimode) {
         return {
           ...prev,
@@ -250,18 +191,18 @@ const TransferEditDrawer = (props) => {
             ...prev.modes,
             {
               ...result,
-            }
-          ]
-        }
+            },
+          ],
+        };
       }
       return {
         ...prev,
-        ...result
-      }
+        ...result,
+      };
     });
     setShowFlightModal(false);
     setShowTaxiModal(false);
-  }
+  };
 
   const handleRoundTripSelect = (trace_id, cab_id) => {
     console.log(trace_id);
@@ -358,7 +299,9 @@ const TransferEditDrawer = (props) => {
             setShowOtherTrasfer={setShowOtherTrasfer}
             selectedResult={selectedResult}
             setSelectedResult={setSelectedResult}
-            number_of_travellers={props?.plan?.number_of_adults + props?.plan?.number_of_children}
+            number_of_travellers={
+              props?.plan?.number_of_adults + props?.plan?.number_of_children
+            }
             check_in={check_in}
           />
         )}
@@ -413,7 +356,9 @@ const TransferEditDrawer = (props) => {
               </div>
             </div>
           </div>
-        ) : transfersError && roundTripSuggestions === null && multiCitySuggestions === null ? (
+        ) : transfersError &&
+          roundTripSuggestions === null &&
+          multiCitySuggestions === null ? (
           <div className="w-full flex flex-col space-y-5 items-center justify-center">
             <div className="flex items-center justify-center bg-red-500 text-white rounded p-2">
               {transfersError}
@@ -583,7 +528,7 @@ const mapStateToPros = (state) => {
     notificationText: state.Notification.text,
     token: state.auth.token,
     ItineraryId: state.ItineraryId,
-    plan: state.Plan
+    plan: state.Plan,
   };
 };
 
@@ -606,8 +551,11 @@ const RouteContainer = (props) => {
 
   return (
     <div
-      className={`w-full flex flex-col gap-0 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm ${transferIndex === 0 && transfer[0]?.isSelected ? "border-yellow-300" : ""
-        } border-x-2 border-t-2 border-b-4`}
+      className={`w-full flex flex-col gap-0 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm ${
+        transferIndex === 0 && transfer[0]?.isSelected
+          ? "border-yellow-300"
+          : ""
+      } border-x-2 border-t-2 border-b-4`}
     >
       {transfer[0]?.recommended && (
         <ClippathComp className="text-sm font-semibold bg-[#F7E700] text-#090909 pl-2 pr-2 py-1 -ml-4 -mt-4 rounded-tl-2xl">
@@ -615,9 +563,13 @@ const RouteContainer = (props) => {
         </ClippathComp>
       )}
 
-      {selectedResult && selectedResult.trace_id && selectedResult.transferIndex === transferIndex && (
-        <div className="text-sm text-green-900 pb-1">{selectedResult.mode} Selected</div>
-      )}
+      {selectedResult &&
+        selectedResult.trace_id &&
+        selectedResult.transferIndex === transferIndex && (
+          <div className="text-sm text-green-900 pb-1">
+            {selectedResult.mode} Selected
+          </div>
+        )}
 
       {transfer.length > 1 ? (
         viewMore ? (
@@ -704,7 +656,12 @@ const MultiRoute = (props) => {
           <div className="flex flex-row items-start gap-2">
             <TransferItem transfer={transfer} />
 
-            <button onClick={() => setViewMore(prev => !prev)} className="w-fit h-fit text-blue -mt-[0.5rem]">+1 more</button>
+            <button
+              onClick={() => setViewMore((prev) => !prev)}
+              className="w-fit h-fit text-blue -mt-[0.5rem]"
+            >
+              +1 more
+            </button>
           </div>
 
           <div className="flex flex-col gap-2 items-end">
@@ -752,8 +709,7 @@ const MultiModeContainer = ({ transferIndex, transfer, handleSelect }) => {
                 <TransfersIcon
                   TransportMode={singleTransfer.mode}
                   Instyle={{
-                    fontSize:
-                      singleTransfer.mode === "Bus" ? "3rem" : "3.5rem",
+                    fontSize: singleTransfer.mode === "Bus" ? "3rem" : "3.5rem",
                     color: "black",
                   }}
                   classname={{ width: 40, height: 40 }}
@@ -812,19 +768,20 @@ const MobileRouteContainer = (props) => {
 
   const getHours = () => {
     const from = Math.floor(singleTransfer.duration / 60);
-    const to = Math.ceil(singleTransfer.duration / 60)
+    const to = Math.ceil(singleTransfer.duration / 60);
 
     if (from) {
       return `${from}-${to} hours`;
     }
 
     return `${to} hour`;
-  }
+  };
 
   return (
     <div
-      className={`w-full flex flex-col gap-3 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm ${transferIndex === 0 ? "border-yellow-300" : ""
-        } border-x-2 border-t-2 border-b-4`}
+      className={`w-full flex flex-col gap-3 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm ${
+        transferIndex === 0 ? "border-yellow-300" : ""
+      } border-x-2 border-t-2 border-b-4`}
     >
       {singleTransfer[0]?.recommended && (
         <ClippathComp className="text-sm font-semibold bg-[#F7E700] text-#090909 pl-2 pr-2 py-1 -ml-4 -mt-4 rounded-tl-2xl">
@@ -881,7 +838,8 @@ const MobileRouteContainer = (props) => {
 
               <div className="text-sm text-gray-400">
                 {singleTransfer?.duration && `${getHours()}`}
-                {singleTransfer?.distance && ` | ${singleTransfer.distance} Kms`}
+                {singleTransfer?.distance &&
+                  ` | ${singleTransfer.distance} Kms`}
               </div>
             </div>
           </div>
@@ -894,8 +852,7 @@ const MobileRouteContainer = (props) => {
                   {singleTransfer.facilities?.map((facility, index) => (
                     <span key={index}>
                       <span key={index}>{facility}</span>
-                      {index < singleTransfer.facilities?.length - 1 &&
-                        " | "}
+                      {index < singleTransfer.facilities?.length - 1 && " | "}
                     </span>
                   ))}
                 </div>
@@ -925,14 +882,14 @@ const MobileMultiRoute = (props) => {
 
   const getHours = () => {
     const from = Math.floor(transfer.duration / 60);
-    const to = Math.ceil(transfer.duration / 60)
+    const to = Math.ceil(transfer.duration / 60);
 
     if (from) {
       return `${from}-${to} hours`;
     }
 
     return `${to} hour`;
-  }
+  };
 
   return (
     <div className="flex flex-col gap-2 w-full">
@@ -955,7 +912,12 @@ const MobileMultiRoute = (props) => {
               {transfer.text}
             </div>
 
-            <button onClick={() => setViewMore(prev => !prev)} className="w-fit h-fit text-blue -mt-[0.5rem]">+1 more</button>
+            <button
+              onClick={() => setViewMore((prev) => !prev)}
+              className="w-fit h-fit text-blue -mt-[0.5rem]"
+            >
+              +1 more
+            </button>
           </div>
 
           <div className="text-sm text-gray-400">
@@ -1073,8 +1035,6 @@ const MobileMultiModeContainer = ({
           </div>
         </div>
       ))}
-
-
     </div>
   );
 };
@@ -1104,8 +1064,9 @@ const RadioButton = ({ name, label, transferType, handleTransferType }) => {
       <div
         onClick={handleTransferType}
         id={name}
-        className={`flex items-center justify-center w-5 h-5 border-2 ${transferType === name ? "border-black" : "border-[#636366]"
-          } rounded-full cursor-pointer`}
+        className={`flex items-center justify-center w-5 h-5 border-2 ${
+          transferType === name ? "border-black" : "border-[#636366]"
+        } rounded-full cursor-pointer`}
       >
         {transferType === name && (
           <div id={name} className="p-1 w-3 h-3 rounded-full bg-black"></div>
@@ -1196,7 +1157,8 @@ const RoundTripSuggestion = ({
             <div className="text-[16px] font-medium">
               Intercity Round Trip{" "}
               {isDesktop &&
-                `(${routes[0]?.source?.shortName} to ${routes[routes.length - 1]?.destination?.shortName
+                `(${routes[0]?.source?.shortName} to ${
+                  routes[routes.length - 1]?.destination?.shortName
                 })`}
             </div>
             <div className="text-[#7A7A7A] text-[14px] font-normal">
@@ -1241,10 +1203,11 @@ const RoundTripSuggestion = ({
                   <div
                     id={price?.cab?.id}
                     onClick={handleSelectCab}
-                    className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${selectedCab == price?.cab?.id
-                      ? "border-black"
-                      : "border-[#636366]"
-                      } `}
+                    className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${
+                      selectedCab == price?.cab?.id
+                        ? "border-black"
+                        : "border-[#636366]"
+                    } `}
                   >
                     {selectedCab == price?.cab?.id && (
                       <div
@@ -1417,10 +1380,11 @@ const MultiCityTripSuggestion = ({
                   <div
                     id={price?.cab?.id}
                     onClick={handleSelectCab}
-                    className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${selectedCab == price?.cab?.id
-                      ? "border-black"
-                      : "border-[#636366]"
-                      } `}
+                    className={`w-5 h-5 flex items-center justify-center rounded-full border-2 cursor-pointer ${
+                      selectedCab == price?.cab?.id
+                        ? "border-black"
+                        : "border-[#636366]"
+                    } `}
                   >
                     {selectedCab == price?.cab?.id && (
                       <div
@@ -1500,15 +1464,16 @@ const SelectButton = ({ multimode, transferIndex, transfer, handleSelect }) => {
       case "Taxi":
         return "Search Taxis";
       default:
-        return `Select a ${transfer.mode}`
+        return `Select a ${transfer.mode}`;
     }
-  }
+  };
 
   return (
     <div className="group text-blue flex flex-row items-center cursor-pointer hover:translate-x-1 transition-all">
       <button
         onClick={() => handleSelect(transferIndex, transfer, multimode)}
-        className="focus:outline-none">
+        className="focus:outline-none"
+      >
         {getLabel()}
       </button>
 
@@ -1520,20 +1485,18 @@ const SelectButton = ({ multimode, transferIndex, transfer, handleSelect }) => {
 const TransferItem = ({ transfer, transferIndex }) => {
   const getHours = () => {
     const from = Math.floor(transfer.duration / 60);
-    const to = Math.ceil(transfer.duration / 60)
+    const to = Math.ceil(transfer.duration / 60);
 
     if (from) {
       return `${from}-${to} hours`;
     }
 
     return `${to} hour`;
-  }
+  };
 
   return (
     <div className="flex flex-col items-start gap-2">
-      <div className="text-lg font-[500] leading-3">
-        {transfer.text}
-      </div>
+      <div className="text-lg font-[500] leading-3">{transfer.text}</div>
       <div className="text-sm text-gray-400">
         {transfer?.duration && `${getHours()} | `}
         {transfer?.distance && `${transfer.distance} Kms`}
@@ -1543,16 +1506,12 @@ const TransferItem = ({ transfer, transferIndex }) => {
         {transfer?.facilities?.length ? (
           <div className="text-sm">
             Facilities:{" "}
-            {transfer.facilities?.map(
-              (facility, ind) => (
-                <span key={ind}>
-                  <span>{facility}</span>
-                  {ind <
-                    transfer.facilities.length -
-                    1 && " | "}
-                </span>
-              )
-            )}
+            {transfer.facilities?.map((facility, ind) => (
+              <span key={ind}>
+                <span>{facility}</span>
+                {ind < transfer.facilities.length - 1 && " | "}
+              </span>
+            ))}
           </div>
         ) : null}
       </div>
@@ -1560,7 +1519,13 @@ const TransferItem = ({ transfer, transferIndex }) => {
   );
 };
 
-const OtherTransfer = ({ setShowOtherTrasfer, selectedResult, setSelectedResult, number_of_travellers, check_in }) => {
+const OtherTransfer = ({
+  setShowOtherTrasfer,
+  selectedResult,
+  setSelectedResult,
+  number_of_travellers,
+  check_in,
+}) => {
   const ref = useRef(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -1569,52 +1534,58 @@ const OtherTransfer = ({ setShowOtherTrasfer, selectedResult, setSelectedResult,
 
   useEffect(() => {
     getOtherTrasfer(selectedResult.transfer.mode);
-  }, [])
+  }, []);
 
   const handleClose = (e) => {
     e.stopPropagation();
     if (ref.current && !ref.current.contains(e.target)) {
       setShowOtherTrasfer(false);
     }
-  }
+  };
 
   const handleSelectPrice = (index) => {
-    setSelectedResult(prev => {
+    setSelectedResult((prev) => {
       return {
         ...prev,
         trace_id: traceId,
-        result_index: otherTransfer.prices[index].result_index
-      }
-    })
+        result_index: otherTransfer.prices[index].result_index,
+      };
+    });
 
     setShowOtherTrasfer(false);
-  }
+  };
 
   const getOtherTrasfer = (mode) => {
     setLoading(true);
     const requestData = {
       edge_id: selectedResult.transfer.id,
       start_datetime: `${getDate(check_in)}T00:00:00`,
-      number_of_travellers: number_of_travellers
-    }
+      number_of_travellers: number_of_travellers,
+    };
 
-    otherTransferSearch.post(`${mode.toLowerCase()}/search/`, requestData).then(res => {
-      if (res.data.success) {
-        setTraceId(res.data.trace_id);
-        setOtherTransfer(res.data.data);
-      } else {
-        setError("Prices not found at the moment, please try again!")
-      }
+    otherTransferSearch
+      .post(`${mode.toLowerCase()}/search/`, requestData)
+      .then((res) => {
+        if (res.data.success) {
+          setTraceId(res.data.trace_id);
+          setOtherTransfer(res.data.data);
+        } else {
+          setError("Prices not found at the moment, please try again!");
+        }
 
-      setLoading(false);
-    }).catch(err => {
-      setLoading(false);
-      setError("Something went wrong, please try again!")
-    })
-  }
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        setError("Something went wrong, please try again!");
+      });
+  };
 
   return (
-    <div onClick={handleClose} className="absolute z-50 flex items-center justify-center bg-black bg-opacity-50 top-0 bottom-0 left-0 right-0 -mx-2">
+    <div
+      onClick={handleClose}
+      className="absolute z-50 flex items-center justify-center bg-black bg-opacity-50 top-0 bottom-0 left-0 right-0 -mx-2"
+    >
       <div ref={ref} className="bg-white w-fit p-3 rounded-lg space-y-5">
         <div className="text-lg">Select your seat</div>
 
@@ -1625,16 +1596,23 @@ const OtherTransfer = ({ setShowOtherTrasfer, selectedResult, setSelectedResult,
             <div className="bg-red-500 text-white p-1 rounded-md">{error}</div>
           ) : (
             <div className="flex flex-col gap-2">
-              {otherTransfer && otherTransfer.prices.map((price, i) => (
-                <div key={i} onClick={() => handleSelectPrice(i)} className="flex flex-row items-center justify-between gap-5 hover:bg-gray-200 cursor-pointer p-1 rounded-md">
-                  <div>{price.class ? price.class : 'Seater'}</div>
-                  <div className="font-semibold">₹{getIndianPrice(price.price)}/- </div>
-                </div>
-              ))}
+              {otherTransfer &&
+                otherTransfer.prices.map((price, i) => (
+                  <div
+                    key={i}
+                    onClick={() => handleSelectPrice(i)}
+                    className="flex flex-row items-center justify-between gap-5 hover:bg-gray-200 cursor-pointer p-1 rounded-md"
+                  >
+                    <div>{price.class ? price.class : "Seater"}</div>
+                    <div className="font-semibold">
+                      ₹{getIndianPrice(price.price)}/-{" "}
+                    </div>
+                  </div>
+                ))}
             </div>
           )}
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

@@ -143,13 +143,11 @@ const FacilityContainer = styled.div``;
 const Line = styled.hr`
   background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
     ${(props) =>
-    props.pinColour
-      ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
-      : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
+      props.pinColour
+        ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
+        : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
 
-  background-size:
-    8px 3px,
-    100% 3px;
+  background-size: 8px 3px, 100% 3px;
 
   color: #c80000;
   -webkit-transform: rotate(90deg);
@@ -222,7 +220,7 @@ function processBookingTimes(checkIn, checkOut) {
 
   const durationInMinutes = differenceInMinutes(
     new Date(checkOut),
-    new Date(checkIn),
+    new Date(checkIn)
   );
   const durationHours = Math.floor(durationInMinutes / 60);
   const durationMinutes = durationInMinutes % 60;
@@ -239,6 +237,7 @@ function processBookingTimes(checkIn, checkOut) {
 
 const TransferModeContainer = (props) => {
   let isPageWide = media("(min-width: 768px)");
+  const isDesktop = useMediaQuery("(min-width:1024px)");
   const [addbooking, setaddboking] = useState(props.userSelected);
   const [loading, setLoading] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
@@ -290,8 +289,6 @@ const TransferModeContainer = (props) => {
     });
   }
 
-  const isDesktop = useMediaQuery("(min-width:1024px)");
-
   function HandleFlights(i, label) {
     if (!props.token) {
       return props.setShowLoginModal(true);
@@ -336,12 +333,12 @@ const TransferModeContainer = (props) => {
       destination_city,
       taxi_type,
       transfer_type,
-      user_selected,
+      user_selected
     );
 
-    props.setDaySlabIndex(props?.route?.element_location?.day_slab_index)
-    props.setElementIndex(props?.route?.element_index)
-    props.setTransferId(props?.route?.transfers?.id)
+    props.setDaySlabIndex(props?.route?.element_location?.day_slab_index);
+    props.setElementIndex(props?.route?.element_index);
+    props.setTransferId(props?.route?.transfers?.id);
 
     logEvent({
       action: "Transfer_Add_Change",
@@ -380,7 +377,7 @@ const TransferModeContainer = (props) => {
     let origin_iata = props.booking["origin_city_iata_code"];
     let destination_iata = props.booking["destination_city_iata_code"];
     let origin = props.booking["origin"];
-    let destination = props.booking["destination"]
+    let destination = props.booking["destination"];
 
     props._changeTaxiHandler(
       name,
@@ -403,9 +400,9 @@ const TransferModeContainer = (props) => {
       destination
     );
 
-    props.setDaySlabIndex(props?.route?.element_location?.day_slab_index)
-    props.setElementIndex(props?.route?.element_index)
-    props.setTransferId(props?.route?.transfers?.id)
+    props.setDaySlabIndex(props?.route?.element_location?.day_slab_index);
+    props.setElementIndex(props?.route?.element_index);
+    props.setTransferId(props?.route?.transfers?.id);
 
     logEvent({
       action: "Transfer_Add_Change",
@@ -421,18 +418,19 @@ const TransferModeContainer = (props) => {
 
   const Facilities = [
     props.booking_type == "Taxi" || props.booking_type == "Bus"
-      ? props?.costings_breakdown.hasOwnProperty("luggage_bags") &&
+      ? props?.costings_breakdown?.hasOwnProperty("luggage_bags") &&
         props?.costings_breakdown?.luggage_bags > 0
         ? `${props?.costings_breakdown?.luggage_bags} Luggage bags`
         : "2 Luggage bags"
       : null,
 
     props?.costings_breakdown?.taxi_occupancy ||
-      props?.costings_breakdown?.no_of_seats
-      ? `${props?.costings_breakdown?.taxi_occupancy
-        ? props?.costings_breakdown?.taxi_occupancy
-        : props?.costings_breakdown?.no_of_seats
-      } Seats`
+    props?.costings_breakdown?.no_of_seats
+      ? `${
+          props?.costings_breakdown?.taxi_occupancy
+            ? props?.costings_breakdown?.taxi_occupancy
+            : props?.costings_breakdown?.no_of_seats
+        } Seats`
       : null,
     props?.booking?.transfer_type === "Intercity one-way"
       ? props?.costings_breakdown?.distance?.text
@@ -537,7 +535,7 @@ const TransferModeContainer = (props) => {
 
   const handleTransferEdit = () => {
     setShowDrawer(true);
-    setLoadingAlternates(true)
+    setLoadingAlternates(true);
     setAlternatesError(null);
     roundTripSuggestion();
     routeAlternates
@@ -553,7 +551,7 @@ const TransferModeContainer = (props) => {
           setAlternateRoutes(data);
         } else {
           setAlternatesError(
-            "No route found, please get in touch with us to complete this booking!",
+            "No route found, please get in touch with us to complete this booking!"
           );
         }
         setLoadingAlternates(false);
@@ -562,11 +560,11 @@ const TransferModeContainer = (props) => {
         setLoadingAlternates(false);
         if (err.response.status === 404) {
           setAlternatesError(
-            "No route found, please get in touch with us to complete this booking!",
+            "No route found, please get in touch with us to complete this booking!"
           );
         } else {
           setAlternatesError(
-            "There seems to be problem, please try again! adsfasdf",
+            "There seems to be problem, please try again! adsfasdf"
           );
         }
       });
@@ -590,12 +588,12 @@ const TransferModeContainer = (props) => {
     var child;
     if (props.booking.number_of_children > 1) child = " Childs";
     else child = " Child";
-  } catch { }
+  } catch {}
 
   return (
     <Container>
       {props.routes && props?.routes.length > 1 ? (
-        <div style={{ position: "relative" }}>
+        <div className="" style={{ position: "relative" }}>
           <Line pinColour={props.pinColour} Transfers={true} />
         </div>
       ) : (
@@ -610,34 +608,30 @@ const TransferModeContainer = (props) => {
                 <span className="font-medium  inline">{props.heading}</span>
                 <div className="flex flex-row gap-2 justify-center items-center ml-auto">
                   <div
-                    className={`${props.booking_type == "Train"
-                      ? "lg:bottom-4 hidden"
-                      : "lg:bottom-[3.6rem] hidden"
-                      } `}
+                    className={`${
+                      props.booking_type == "Train"
+                        ? "lg:bottom-4 hidden"
+                        : "lg:bottom-[3.6rem] hidden"
+                    } `}
                     onClick={(e) => {
                       handleCheckboxChange(e);
                     }}
                   >
                     <CheckboxFormComponent checked={addbooking} />{" "}
                   </div>
-                  {props.userSelected ? (
-                    <div className=" text-md font-semibold  text-[#277004] ">
-                      Included
-                    </div>
-                  ) : (
-                    <div className=" text-md font-semibold text-[#E00000]  ">
-                      Excluded
-                    </div>
-                  )}
+                  <div className=" text-md font-semibold  text-[#277004] ">
+                    Included
+                  </div>
                 </div>
               </div>
 
               <div
                 id={props.booking.id}
-                className={`mb-4 mt-2 lg:block ${!props.userSelected
-                  ? "mb-4 mt-3 lg:block flex flex-col-reverse p-3 py-4"
-                  : "mb-4 mt-2 lg:block flex flex-col p-3 "
-                  }    cursor-pointer relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA] lg:p-5 `}
+                className={`mb-4 mt-2 lg:block ${
+                  !props.userSelected
+                    ? "mb-4 mt-3 lg:block flex flex-col-reverse p-3 py-4"
+                    : "mb-4 mt-2 lg:block flex flex-col p-3 "
+                }    cursor-pointer relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA] lg:p-5 `}
               >
                 <div className="flex flex-row gap-4    ">
                   {props.userSelected && (
@@ -694,9 +688,9 @@ const TransferModeContainer = (props) => {
                                     {props.booking.duration
                                       ? ` (${props.booking.duration}h)`
                                       : processBookingTimes(
-                                        props.booking.check_in,
-                                        props.booking.check_out,
-                                      ).duration}
+                                          props.booking.check_in,
+                                          props.booking.check_out
+                                        ).duration}
                                   </span>
                                 )}
                               </div>
@@ -726,7 +720,7 @@ const TransferModeContainer = (props) => {
                                   {
                                     processBookingTimes(
                                       props.booking.check_in,
-                                      props.booking.check_out,
+                                      props.booking.check_out
                                     ).checkInTime
                                   }
                                 </span>
@@ -742,7 +736,7 @@ const TransferModeContainer = (props) => {
                             </div>
                             {!props.tripsPage &&
                               ITINERARY_STATUSES.itinerary_prepared !==
-                              props?.plan?.itinerary_status && (
+                                props?.plan?.itinerary_status && (
                                 <div className="min-w-max text-[0.8rem] -mt-1">
                                   {formatDate(props.booking.check_in)}
                                 </div>
@@ -780,12 +774,12 @@ const TransferModeContainer = (props) => {
                                 {props.booking?.airline_code && (
                                   <span className="ml-1">
                                     {props.booking.duration &&
-                                      props.booking.duration !== ""
+                                    props.booking.duration !== ""
                                       ? ` (${props.booking.duration}h)`
                                       : processBookingTimes(
-                                        props.booking.check_in,
-                                        props.booking.check_out,
-                                      ).duration}
+                                          props.booking.check_in,
+                                          props.booking.check_out
+                                        ).duration}
                                   </span>
                                 )}
                               </div>
@@ -800,7 +794,7 @@ const TransferModeContainer = (props) => {
                                     {
                                       processBookingTimes(
                                         props.booking.check_in,
-                                        props.booking.check_out,
+                                        props.booking.check_out
                                       ).checkOutTime
                                     }
                                   </span>
@@ -815,7 +809,7 @@ const TransferModeContainer = (props) => {
                               </div>
                               {!props.tripsPage &&
                                 ITINERARY_STATUSES.itinerary_prepared !==
-                                props?.plan?.itinerary_status && (
+                                  props?.plan?.itinerary_status && (
                                   <div className="min-w-max text-[0.8rem] -mt-1">
                                     {formatDate(props.booking.check_out)}
                                   </div>
@@ -841,7 +835,7 @@ const TransferModeContainer = (props) => {
                                     {
                                       processBookingTimes(
                                         props.booking.check_in,
-                                        props.booking.check_out,
+                                        props.booking.check_out
                                       ).duration
                                     }
                                     {props.booking.duration
@@ -902,7 +896,7 @@ const TransferModeContainer = (props) => {
                                 {
                                   processBookingTimes(
                                     props.booking.check_in,
-                                    props.booking.check_out,
+                                    props.booking.check_out
                                   ).checkInTime
                                 }
                               </span>
@@ -918,7 +912,7 @@ const TransferModeContainer = (props) => {
                           </div>
                           {!props.tripsPage &&
                             ITINERARY_STATUSES.itinerary_prepared !==
-                            props?.plan?.itinerary_status && (
+                              props?.plan?.itinerary_status && (
                               <div className="min-w-max text-[0.8rem] -mt-1">
                                 {formatDate(props.booking.check_in)}
                               </div>
@@ -956,7 +950,7 @@ const TransferModeContainer = (props) => {
                                   {
                                     processBookingTimes(
                                       props.booking.check_in,
-                                      props.booking.check_out,
+                                      props.booking.check_out
                                     ).checkOutTime
                                   }
                                 </span>
@@ -971,7 +965,7 @@ const TransferModeContainer = (props) => {
                             </div>
                             {!props.tripsPage &&
                               ITINERARY_STATUSES.itinerary_prepared !==
-                              props?.plan?.itinerary_status && (
+                                props?.plan?.itinerary_status && (
                                 <div className="min-w-max text-[0.8rem] -mt-1">
                                   {formatDate(props.booking.check_out)}
                                 </div>
@@ -993,12 +987,12 @@ const TransferModeContainer = (props) => {
                               <Cost className="font-lexend">
                                 {props.booking.booking_cost
                                   ? "₹" +
-                                  getIndianPrice(
-                                    Math.round(
-                                      props.booking.booking_cost / 100,
-                                    ),
-                                  ) +
-                                  "/-"
+                                    getIndianPrice(
+                                      Math.round(
+                                        props.booking.booking_cost / 100
+                                      )
+                                    ) +
+                                    "/-"
                                   : null}
                               </Cost>
                               {props.booking.number_of_adults > 0 && (
@@ -1008,8 +1002,8 @@ const TransferModeContainer = (props) => {
                                     adult +
                                     (props.booking.number_of_children
                                       ? ", " +
-                                      props.booking.number_of_children +
-                                      child
+                                        props.booking.number_of_children +
+                                        child
                                       : "") +
                                     ")"}
                                 </Text>
@@ -1057,29 +1051,9 @@ const TransferModeContainer = (props) => {
               <div className="flex flex-row w-full justify-between items-center">
                 <span className="font-medium  inline">{props.heading}</span>
                 <div className="flex flex-row gap-2 justify-center items-center">
-                  <div
-                    className={`${props.booking_type !== "Taxi"
-                      ? "lg:bottom-4 hidden"
-                      : "lg:bottom-[3.6rem] hidden"
-                      } `}
-                    onClick={(e) => {
-                      handleCheckboxChange(
-                        e,
-                        `${addbooking ? "Added Booking" : "Add Booking"}`,
-                      );
-                    }}
-                  >
-                    <CheckboxFormComponent checked={addbooking} />{" "}
+                  <div className=" text-md font-semibold  text-[#277004] ">
+                    Included
                   </div>
-                  {props.userSelected ? (
-                    <div className=" text-md font-semibold  text-[#277004] ">
-                      Included
-                    </div>
-                  ) : (
-                    <div className=" text-md font-semibold text-[#E00000]  ">
-                      Excluded
-                    </div>
-                  )}
                 </div>
               </div>
 
@@ -1088,64 +1062,51 @@ const TransferModeContainer = (props) => {
                 className="mb-4 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2"
               >
                 <div className="flex flex-row items-center space-x-3">
-                  {props.icon && (
-                    <div className="grid  place-items-center  lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem]  rounded-2xl">
-                      {props.booking_type === "Flight" ? (
-                        <TransportIconFetcher
-                          TransportMode={props.booking_type}
-                          Instyle={{
-                            fontSize: "2.75rem",
-                            marginRight: "0.8rem",
-                            color: "black",
-                          }}
-                        />
-                      ) : !transferImageFailed ? (
-                        props.icon && (
-                          <ImageLoader
-                            is_url={props.icon.includes("gozo")}
-                            className=" object-contain"
-                            url={props.icon}
-                            leftalign
-                            height={
-                              props.icon.includes("gozo") ? "3rem" : "4rem"
-                            }
-                            width={"4rem"}
-                            widthmobile="4rem"
-                            onfail={handleTransferImageFailed}
-                          ></ImageLoader>
-                        )
-                      ) : (
-                        <TransportIconFetcher
-                          TransportMode={props.booking_type}
-                          Instyle={{
-                            fontSize: "2.75rem",
-                            marginRight: "0.8rem",
-                            color: "black",
-                          }}
-                        />
-                      )}
-                    </div>
-                  )}
+                  {/* {props.icon && ( */}
+                  <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
+                    {!transferImageFailed ? (
+                      <ImageLoader
+                        is_url={props.icon?.includes("gozo")}
+                        className=" object-contain"
+                        url={props.icon}
+                        leftalign
+                        height={props.icon?.includes("gozo") ? "3rem" : "4rem"}
+                        width={"4rem"}
+                        widthmobile="4rem"
+                        onfail={handleTransferImageFailed}
+                      ></ImageLoader>
+                    ) : (
+                      <TransportIconFetcher
+                        TransportMode={props.booking_type}
+                        Instyle={{
+                          fontSize: "2.75rem",
+                          marginRight: "0.8rem",
+                          color: "black",
+                        }}
+                      />
+                    )}
+                  </div>
+                  {/* )} */}
 
                   <div className="flex flex-col lg:w-96">
                     <div className="sm:text-sm text-[0.85rem]">
                       {props.booking_type == "Taxi"
-                        ? props.booking.costings_breakdown &&
-                          props.booking.costings_breakdown.gozo &&
-                          props.booking.costings_breakdown.gozo.model
+                        ? props.costings_breakdown &&
+                          props.costings_breakdown.gozo &&
+                          props.costings_breakdown.gozo.model
                           ? isPageWide
-                            ? props.booking.costings_breakdown.gozo.model
+                            ? props.costings_breakdown.gozo.model
                             : truncateString(
-                              props.booking.costings_breakdown.gozo.model,
-                              25,
-                            )
+                                props.costings_breakdown.gozo.model,
+                                25
+                              )
                           : "Private transfer "
                         : props.booking_type}
+
                       {props.booking.transfer_type === "Intercity one-way" &&
-                        props?.booking?.costings_breakdown?.duration?.text && (
+                        props?.costings_breakdown?.duration?.text && (
                           <span className="ml-1">
-                            ({props.booking?.costings_breakdown?.duration?.text}
-                            )
+                            ({props?.costings_breakdown?.duration?.text})
                           </span>
                         )}
                     </div>
@@ -1172,7 +1133,7 @@ const TransferModeContainer = (props) => {
                                     <div className="">{data}</div>
                                   </div>
                                 </div>
-                              ),
+                              )
                           )}
                         </GridContainer>
                       </FacilityContainer>
@@ -1201,19 +1162,7 @@ const TransferModeContainer = (props) => {
                     )}
                   </div>
                 ) : (
-                  <div
-                    className={`absolute  ${true
-                      ? `${props.booking_type == "Taxi"
-                        ? "lg:bottom-[3.6rem]"
-                        : "lg:bottom-[3.6rem]"
-                      }  bottom-[1rem] `
-                      : `${props.payment?.paid_user ||
-                        !props.payment?.user_allowed_to_pay
-                        ? "lg:bottom-10 bottom-[1.2rem]"
-                        : "lg:bottom-10 bottom-[2.5rem]"
-                      }`
-                      } right-6 -m-3`}
-                  >
+                  <div className={`absolute bottom-[1rem] right-6 -m-3`}>
                     {loading && (
                       <PulseLoader
                         style={{
@@ -1232,7 +1181,7 @@ const TransferModeContainer = (props) => {
                       onClick={(e) => {
                         handleCheckboxChange(
                           e,
-                          `${addbooking ? "Added Booking" : "Add Booking"}`,
+                          `${addbooking ? "Added Booking" : "Add Booking"}`
                         );
                       }}
                       className="flex flex-row gap-1 items-center cursor-pointer"
@@ -1300,5 +1249,5 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(
   mapStateToPros,
-  mapDispatchToProps,
+  mapDispatchToProps
 )(TransferModeContainer);

@@ -3,7 +3,9 @@ import styled from "styled-components";
 import media from "../../media";
 import { updateFlightBooking } from "../../../services/bookings/UpdateBookings";
 import { connect } from "react-redux";
-import axiosflightsearch, { axiosFlightSearch } from "../../../services/bookings/FlightSearch";
+import axiosflightsearch, {
+  axiosFlightSearch,
+} from "../../../services/bookings/FlightSearch";
 import SectionOne from "./SectionOne";
 import Button from "../../ui/button/Index";
 import Flight from "./new-flight-searched/Index";
@@ -99,13 +101,19 @@ const Booking = (props) => {
   const [unauthorized, setUnauthorized] = useState(false);
   const [flightCount, setFlightsCount] = useState(0);
   const [pax, setPax] = useState({
-    adults: props.selectedBooking?.pax?.number_of_adults ? props.selectedBooking.pax.number_of_adults : 1,
-    children: props.selectedBooking?.pax?.number_of_children ? props.selectedBooking.pax.number_of_children : 0,
-    infants: props.selectedBooking?.pax?.number_of_infants ? props.selectedBooking.pax.number_of_infants : 0,
+    adults: props.selectedBooking?.pax?.number_of_adults
+      ? props.selectedBooking.pax.number_of_adults
+      : 1,
+    children: props.selectedBooking?.pax?.number_of_children
+      ? props.selectedBooking.pax.number_of_children
+      : 0,
+    infants: props.selectedBooking?.pax?.number_of_infants
+      ? props.selectedBooking.pax.number_of_infants
+      : 0,
   });
   const [classType, setClassType] = useState({
-    key: 'Economy',
-    value: 2
+    key: "Economy",
+    value: 2,
   });
   const [showTransferEditDrawer, setShowTransferEditDrawer] = useState(false);
 
@@ -134,28 +142,39 @@ const Booking = (props) => {
     });
 
     if (props.selectedBooking && props.token) {
-
       const requestData = {
         adult_count: pax.adults,
         child_count: pax.children,
         infant_count: pax.infants,
-        direct_flight: filtersState.non_stop_flights ? 'true' : 'false',
+        direct_flight: filtersState.non_stop_flights ? "true" : "false",
         journey_type: "1",
         origin: props.selectedBooking.origin_iata,
         destination: props.selectedBooking.destination_iata,
         preferred_departure_time: `${props.selectedBooking.check_in}T00:00:00`,
         flight_cabin_class: classType.value,
-      }
+      };
 
       axiosFlightSearch
-        .post(`?${filtersState.sort_by}_order=${filtersState.order}${filtersState.departure_time_period ? '&departure_time_period=' + filtersState.departure_time_period : ''}${filtersState.arrival_time_period ? '&arrival_time_period=' + filtersState.arrival_time_period : ''}`, requestData, {
-          headers: {
-            Authorization: `Bearer ${props.token}`,
-            "Content-Type": "application/json",
+        .post(
+          `?${filtersState.sort_by}_order=${filtersState.order}${
+            filtersState.departure_time_period
+              ? "&departure_time_period=" + filtersState.departure_time_period
+              : ""
+          }${
+            filtersState.arrival_time_period
+              ? "&arrival_time_period=" + filtersState.arrival_time_period
+              : ""
+          }`,
+          requestData,
+          {
+            headers: {
+              Authorization: `Bearer ${props.token}`,
+              "Content-Type": "application/json",
+            },
           }
-        })
+        )
         .then((res) => {
-          const provider = res.data.provider
+          const provider = res.data.provider;
           localStorage.setItem(`${provider}_trace_id`, res.data.trace_id);
 
           if (res.data?.results.length) {
@@ -171,7 +190,6 @@ const Booking = (props) => {
                   filtersState={filtersState}
                 ></Flight>
               );
-
             }
             setOptionsJSX(options);
             setFlightsCount(res.data.results.length);
@@ -198,12 +216,12 @@ const Booking = (props) => {
     booking_id,
     itinerary_id,
     result_index,
-    provider
+    provider,
   }) => {
     if (props.handleFlightSelect) {
       props.handleFlightSelect({
         trace_id: localStorage.getItem(`${provider}_trace_id`),
-        result_index: result_index
+        result_index: result_index,
       });
       return;
     }
@@ -226,7 +244,7 @@ const Booking = (props) => {
       source: provider.toLowerCase(),
       trace_id: localStorage.getItem(`${provider}_trace_id`),
       result_indices: [result_index],
-    }
+    };
 
     updateFlightBooking
       .post(`${itinerary_id}/bookings/flight/`, requestData, {
@@ -243,7 +261,7 @@ const Booking = (props) => {
           text: "Flight updated successfully.",
           heading: "Sucess!",
         });
-        props.setHideFlightModal()
+        props.setHideFlightModal();
       })
       .catch((err) => {
         setUpdateBookingState(false);
@@ -253,7 +271,7 @@ const Booking = (props) => {
           text: "Oops, this action is not allowed on another user's itinerary.",
           heading: "Error!",
         });
-        props.setHideFlightModal()
+        props.setHideFlightModal();
       });
   };
 
@@ -316,7 +334,6 @@ const Booking = (props) => {
   const handleTransferEdit = (e) => {
     setShowTransferEditDrawer(true);
   };
-
 
   if (props.token)
     return (
@@ -381,9 +398,7 @@ const Booking = (props) => {
             ) : !noResults && !updateLoadingState && !unauthorized ? (
               <OptionsContainer id="options">
                 <div style={{ clear: "right" }}>
-                  {optionsJSX.length && !updateBookingState
-                    ? optionsJSX
-                    : null}
+                  {optionsJSX.length && !updateBookingState ? optionsJSX : null}
 
                   {loading && !optionsJSX.length ? <Skeleton /> : null}
 
@@ -405,9 +420,9 @@ const Booking = (props) => {
                 {moreLoadingState ? <Skeleton /> : null}
 
                 {viewMoreStatus &&
-                  !updateBookingState &&
-                  !loading &&
-                  optionsJSX.length ? (
+                !updateBookingState &&
+                !loading &&
+                optionsJSX.length ? (
                   <Button
                     boxShadow
                     onclickparam={null}
@@ -484,9 +499,7 @@ const Booking = (props) => {
     );
 
   return (
-    <div>
-      <LogInModal show={true} onhide={props.setHideFlightModal}></LogInModal>
-    </div>
+    <LogInModal show={true} onhide={props.setHideFlightModal}></LogInModal>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import ImageLoader from "../../../components/ImageLoader";
 import { BsCalendar2, BsPeopleFill, BsPlus } from "react-icons/bs";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
@@ -9,14 +9,11 @@ import { getDate } from "../../../helper/ConvertDateFormat";
 import Button from "../../../components/ui/button/Index";
 import media from "../../../components/media";
 import styled from "styled-components";
-import { getIndianPrice } from "../../../services/getIndianPrice";
 import { getHumanDate } from "../../../services/getHumanDate";
 import { ITINERARY_STATUSES } from "../../../services/constants";
 import { MdWifi } from "react-icons/md";
 import { logEvent } from "../../../services/ga/Index";
 import { connect } from "react-redux";
-
-
 
 const RoomTypeGrid = styled.div`
   display: grid;
@@ -29,7 +26,6 @@ const RoomTypeGrid = styled.div`
 `;
 
 const HotelBookingContainer = ({
-  SelectedBookingin,
   currentBooking,
   booking,
   index,
@@ -48,17 +44,8 @@ const HotelBookingContainer = ({
 }) => {
   let isDesktop = media("(min-width: 1147px)");
   let isPageWide = media("(min-width: 768px)");
-  const [isSelect, setisSelect] = useState(booking?.user_selected);
   const [imageFail, setImageFail] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [isSearchedBooking, setisSearchedBooking] = useState(
-    booking?.user_selected ? false : true
-  );
-
-  useEffect(() => {
-    setisSelect(booking?.user_selected);
-    setisSearchedBooking(booking?.user_selected ? false : true);
-  }, [booking]);
 
   function Addons(Shorthand) {
     switch (Shorthand) {
@@ -85,10 +72,6 @@ const HotelBookingContainer = ({
     if (Math.floor(rating) < rating) stars.push(<FaStarHalfAlt />);
     return stars;
   };
-
-  function handleSelectChange() {
-    setisSelect(!isSelect);
-  }
 
   const handleViewDetails = (value) => {
     handleClick(index, booking.accommodation, booking);
@@ -153,10 +136,15 @@ const HotelBookingContainer = ({
 
   let img = "";
   if (banner_image) img = banner_image;
-  if (booking && booking.images && booking.images.length && !banner_image)
-    for (let i = 0; i < booking.images.length; i++) {
-      if (booking.images[i].image) {
-        img = booking.images[i].image;
+  if (
+    booking &&
+    booking.hotel_details?.images &&
+    booking.hotel_details?.images.length &&
+    !banner_image
+  )
+    for (let i = 0; i < booking.hotel_details.images.length; i++) {
+      if (booking.hotel_details.images[i]) {
+        img = booking.hotel_details.images[i];
         break;
       }
     }
@@ -169,29 +157,19 @@ const HotelBookingContainer = ({
       {booking ? (
         <div>
           <div className="flex flex-row justify-between items-center">
-            {handleClick && (
-              <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
-                {cityName ? cityName : booking?.city}{" "}
-                <span>({booking ? booking?.duration : 1}N)</span>
-              </div>
-            )}
+            <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
+              {cityName ? cityName : booking?.city}{" "}
+              <span>({booking ? booking?.duration : 1}N)</span>
+            </div>
           </div>
 
           <div className="cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3">
             <div
-              onClick={() => {
-                currentBooking || SelectedBookingin
-                  ? handleViewHotel()
-                  : handleClick(index, booking.accommodation, booking, city_id);
-              }}
-              className={`relative flex lg:flex-row w-full flex-col gap-4  ${isSelect || isSearchedBooking ? "grayscale-0" : "grayscale"
-                } `}
+              onClick={handleViewHotel}
+              className={`relative flex lg:flex-row w-full flex-col gap-4`}
             >
               <div
-                className={`relative  ${currentBooking
-                  ? "lg:h-[12rem]"
-                  : `${handleClick ? "lg:h-[15rem]" : "lg:h-[12rem]"}`
-                  }  lg:w-[30%] w-full  h-[12rem]`}
+                className={`relative lg:w-[30%] w-full h-[12rem] lg:h-[15rem]`}
               >
                 <div style={{ display: imageLoaded ? "initial" : "none" }}>
                   <ImageLoader
@@ -206,7 +184,9 @@ const HotelBookingContainer = ({
                     widthmobile="100%"
                     noLazy
                     url={
-                      img && !imageFail
+                      !imageFail && booking.image
+                        ? booking.image
+                        : !imageFail && img
                         ? img
                         : "media/icons/bookings/notfounds/noroom.png"
                     }
@@ -232,85 +212,68 @@ const HotelBookingContainer = ({
                 >
                   <Skeleton />
                 </div>
-                {booking.star_category ? (
+
+                {booking.hotel_details?.star_category ? (
                   <starHotel
                     starHotel
                     className={`text-white bg-[#01202B] lg:px-4 px-3 lg:py-3 py-2 m-2 text-sm font-[400]nsition-all shadow-slate-700/70 shadow-md hover:drop-shadow-xl   absolute top-0 rounded-3xl`}
                   >
-                    {booking.star_category} star hotel
+                    {booking.hotel_details.star_category} star hotel
                   </starHotel>
                 ) : null}
               </div>
 
               <div className="flex flex-col gap-2 text-[#01202B] lg:w-[70%] w-full justify-between">
                 <div className="flex flex-col gap-2">
-                  <div className="flex items-center">
-                    <div
-                      className={`${
-                        currentBooking ? "text-lg" : "text-2xl"
-                      } font-semibold `}
-                    >
+                  <div className="flex flex-row justify-between items-center">
+                    <div className="text-2xl font-semibold">
                       {booking?.name}
                     </div>
 
-                    {handleClick && (
-                      <div
-                        className={`ml-auto text-md font-semibold ${
-                          booking.user_selected
-                            ? "text-[#277004]"
-                            : "text-[#E00000]"
-                        }`}
-                      >
-                        {booking.user_selected ? "Included" : "Excluded"}
-                      </div>
-                    )}
+                    <div
+                      className={`ml-auto text-md font-semibold ${
+                        booking?.user_selected
+                          ? "text-[#277004]"
+                          : "text-[#E00000]"
+                      }`}
+                    >
+                      Included
+                    </div>
                   </div>
 
                   {booking && (
                     <div className="flex flex-col gap-1">
-                      {!currentBooking && (
+                      {!currentBooking && booking?.city && (
                         <div
                           className="text-sm font-normal"
                           style={{ marginTop: "-0.5rem" }}
                         >
-                          {booking?.city}
-                        </div>
-                      )}
-                      {booking?.addr1 && (
-                        <div className="text-sm font-normal line-clamp-2">
-                          {booking?.addr1}{booking?.addr2 && `, ${booking.addr2}`}
+                          {booking.city}
                         </div>
                       )}
 
-                      {booking?.user_rating && (
+                      {booking.hotel_details?.city_name && (
+                        <div className="text-sm font-normal line-clamp-2">
+                          {booking.hotel_details?.city_name}
+                        </div>
+                      )}
+
+                      {booking.hotel_details?.rating ? (
                         <div className="gap-1 flex flex-row  items-center">
                           <div className="flex flex-row text-[#FFD201]">
-                            {starRating(booking?.user_rating)}
+                            {starRating(booking.hotel_details?.rating)}
                           </div>
                           <div>
-                            {booking?.user_rating}
+                            {booking.hotel_details?.rating}
                             {" . "}
                           </div>
-                          {booking?.number_of_reviews && (
+
+                          {booking.hotel_details?.num_reviews && (
                             <div className="text-sm text-[#7A7A7A] font-[400] underline">
-                              {booking.number_of_reviews}{" "}
-                              {booking?.source === "Agoda"
+                              {booking.hotel_details.num_reviews}{" "}
+                              {booking?.booking_source === "Agoda"
                                 ? "user reviews"
                                 : "Google reviews"}
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {booking?.rating_ext ? (
-                        <div className="gap-1 flex flex-row  items-center">
-                          <div className="flex flex-row text-[#FFD201]">
-                            {starRating(booking?.rating_ext)}
-                          </div>
-                          <div>{booking?.rating_ext}</div>
-                          {booking?.num_reviews_ext && (
-                            <div className="text-sm text-[#7A7A7A] font-[400] underline">
-                              {booking?.num_reviews_ext} User reviews
                             </div>
                           )}
                         </div>
@@ -326,7 +289,7 @@ const HotelBookingContainer = ({
                       </div>
 
                       {booking?.number_of_adults ||
-                        currentBooking?.number_of_adults ? (
+                      currentBooking?.number_of_adults ? (
                         <div className="text-sm font-[400] gap-2 flex flex-row items-center">
                           <BsPeopleFill className="text-sm text-[#7A7A7A]" />
                           <div className="text-sm font-[400] min-w-fit">
@@ -342,9 +305,9 @@ const HotelBookingContainer = ({
                     </div>
                   ) : booking?.check_in &&
                     ITINERARY_STATUSES.itinerary_prepared !==
-                    plan?.itinerary_status ? (
+                      plan?.itinerary_status ? (
                     <div className="flex flex-row gap-3 lg:mt-2 mt-0">
-                      {booking.check_in && (
+                      {booking?.check_in && (
                         <div className="flex flex-row gap-2 items-center">
                           <BsCalendar2 className="text-sm text-[#7A7A7A]" />
                           <div>
@@ -357,7 +320,7 @@ const HotelBookingContainer = ({
                       )}
 
                       {booking?.number_of_adults ||
-                        currentBooking?.number_of_adults ? (
+                      currentBooking?.number_of_adults ? (
                         <div className="text-sm font-[400] gap-2 flex flex-row items-center">
                           <BsPeopleFill className="text-sm text-[#7A7A7A]" />
                           <div className="text-sm font-[400] min-w-fit">
@@ -371,65 +334,35 @@ const HotelBookingContainer = ({
                         <></>
                       )}
                     </div>
-                  ) : (
-                    currentBooking &&
-                    ITINERARY_STATUSES.itinerary_prepared !==
-                    plan?.itinerary_status && (
-                      <div className="flex flex-row gap-3 lg:mt-2 mt-0">
-                        {currentBooking?.check_in && (
-                          <div className="flex flex-row gap-2 items-center">
-                            <BsCalendar2 className="text-sm text-[#7A7A7A]" />
-                            <div>
-                              <div className="text-sm font-[400] ">
-                                {getDate(currentBooking?.check_in)}-
-                                {getDate(currentBooking?.check_out)}
-                              </div>
-                            </div>
-                          </div>
-                        )}
+                  ) : null}
 
-                        <div className="text-sm font-[400] gap-2 flex flex-row items-center">
-                          <BsPeopleFill className="text-sm text-[#7A7A7A]" />
-                          <div className=" text-sm font-[400] min-w-fit">
-                            {booking?.number_of_adults
-                              ? booking.number_of_adults
-                              : currentBooking?.number_of_adults}{" "}
-                            Adults
-                          </div>
-                        </div>
-                      </div>
-                    )
-                  )}
-
-                  {booking.costings_breakdown ? (
+                  {booking?.hotel_details?.room_type_name ? (
                     <>
                       <RoomTypeGrid>
                         <BiBed className="text-sm text-[#7A7A7A]" />
                         <div className="text-sm font-[400] line-clamp-1">
-                          {booking?.costings_breakdown[0]?.room_type}
+                          {booking?.hotel_details?.room_type_name}
                         </div>
-                        <div>
-                          {"("}
-                          {booking?.costings_breakdown[0]?.number_of_rooms}{" "}
-                          {booking?.costings_breakdown[0]?.number_of_rooms > 1
-                            ? "Rooms"
-                            : "Room"}
-                          {")"}
-                        </div>
+
+                        {booking?.hotel_details?.room_count ? (
+                          <div>
+                            {"("}
+                            {booking?.hotel_details?.room_count}{" "}
+                            {booking?.hotel_details?.room_count > 1
+                              ? "Rooms"
+                              : "Room"}
+                            {")"}
+                          </div>
+                        ) : null}
                       </RoomTypeGrid>
 
-                      {booking?.costings_breakdown[0]?.number_of_extra_beds &&
-                        booking?.costings_breakdown[0]?.number_of_extra_beds >
-                        0 ? (
+                      {booking?.hotel_details?.number_of_extra_beds &&
+                      booking?.hotel_details?.number_of_extra_beds > 0 ? (
                         <div className="flex flex-row items-center my-0">
                           <BsPlus className="text-md text-[#7A7A7A]" />
                           <div className="text-sm font-[400] line-clamp-1">
-                            {
-                              booking?.costings_breakdown[0]
-                                ?.number_of_extra_beds
-                            }{" "}
-                            {booking?.costings_breakdown[0]
-                              ?.number_of_extra_beds > 1
+                            {booking?.hotel_details?.number_of_extra_beds}{" "}
+                            {booking?.hotel_details?.number_of_extra_beds > 1
                               ? "Extra beds"
                               : "Extra bed"}
                           </div>
@@ -438,42 +371,21 @@ const HotelBookingContainer = ({
                         <></>
                       )}
                     </>
-                  ) : (
-                    (booking?.room_count || booking?.room_type_name) && (
-                      <>
-                        <div
-                          className={`flex ${"flex-row"} gap-3 lg:mt-2 mt-0`}
-                        >
-                          <div className="text-sm font-[400] gap-2 flex flex-row items-center">
-                            <BiBed className="text-sm text-[#7A7A7A]" />
-                            <div className="text-sm font-[400] line-clamp-1">
-                              {booking?.source &&
-                                booking?.source === "Agoda" &&
-                                booking?.room_type_name ? (
-                                <>{booking.room_type_name}</>
-                              ) : (
-                                <> {booking?.room_count} room options</>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </>
-                    )
-                  )}
+                  ) : null}
 
-                  {booking.costings_breakdown &&
-                    Addons(booking?.costings_breakdown[0]?.pricing_type) ? (
+                  {booking?.hotel_details &&
+                  Addons(booking?.hotel_details?.pricing_type) ? (
                     <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
                       <ImSpoonKnife className="text-sm text-[#7A7A7A]" />
                       <div className="text-sm font-[400]">
-                        {Addons(booking?.costings_breakdown[0]?.pricing_type)}
+                        {Addons(booking.hotel_details.pricing_type)}
                       </div>
                     </div>
                   ) : null}
 
-                  {booking?.amenities &&
-                    booking?.amenities?.length &&
-                    booking?.amenities?.includes("WIFI") ? (
+                  {booking?.hotel_details?.amenities &&
+                  booking?.hotel_details?.amenities?.length &&
+                  booking?.hotel_details?.amenities?.includes("WIFI") ? (
                     <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
                       <MdWifi className="text-sm text-[#7A7A7A]" />
                       <div className="text-sm font-[400]">WIFI available</div>
@@ -483,97 +395,46 @@ const HotelBookingContainer = ({
                   )}
                 </div>
 
-                {currentBooking && booking?.price && (
-                  <div>
-                    <div className="font-[300] text-sm">Starting from</div>
-                    <div className="flex flex-row gap-1 items-center w-full font-bold">
-                      <div className="text-2xl font-bold">
-                        {booking?.source === "Agoda"
-                          ? "₹" +
-                          getIndianPrice(Math.round(+booking.price / 100)) +
-                          "/-"
-                          : "₹" +
-                          getIndianPrice(Math.round(booking?.price)) +
-                          "/-"}
-                      </div>
-                      <div
-                        className="font-normal text-base self-end"
-                        style={{
-                          height: "auto",
-                          marginBottom: "0.15rem",
-                          fontWeight: 300,
-                        }}
-                      >
-                        {booking?.source === "Agoda" ? (
-                          <>per night</>
-                        ) : (
-                          <>for {currentBooking?.duration} nights</>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {handleClick && (
-                  <div
-                    className={`flex flex-row gap-2 items-end justify-end w-full ${payment?.paid_user || !payment?.user_allowed_to_pay
+                <div
+                  className={`flex flex-row gap-2 items-end justify-end w-full ${
+                    payment?.paid_user || !payment?.user_allowed_to_pay
                       ? "lh:mb-0 mb-2"
                       : "lg:mb-0 mb-0"
-                      }`}
-                  >
-                    {isDesktop && (
+                  }`}
+                >
+                  {isDesktop && (
+                    <Button
+                      padding="0.6rem 2.2rem"
+                      borderRadius="8px"
+                      hoverColor="white"
+                      fontWeight="400"
+                      onclick={() => handleViewDetails(booking.name)}
+                    >
+                      View Detail
+                    </Button>
+                  )}
+
+                  {payment?.is_registration_needed ? null : payment?.paid_user ||
+                    !payment?.user_allowed_to_pay ? null : (
+                    <div
+                      onClick={(e) =>
+                        handleChageHotel(e, "Change", booking?.name)
+                      }
+                    >
                       <Button
                         padding="0.6rem 2.2rem"
+                        bgColor={"#F7E700"}
                         borderRadius="8px"
-                        hoverColor="white"
                         fontWeight="400"
-                        onclick={() => handleViewDetails(booking.name)}
+                        onclick={() => console.log("")}
                       >
-                        View Detail
+                        Change
                       </Button>
-                    )}
-
-                    {payment?.is_registration_needed ? null : payment?.paid_user ||
-                      !payment?.user_allowed_to_pay ? null : (
-                      <div
-                        onClick={(e) =>
-                          handleChageHotel(
-                            e,
-                            `${!isSelect ? "Add Hotel" : "Change"}`,
-                            booking?.name
-                          )
-                        }
-                      >
-                        <Button
-                          padding="0.6rem 2.2rem"
-                          bgColor={"#F7E700"}
-                          borderRadius="8px"
-                          fontWeight="400"
-                          onclick={() => console.log("")}
-                        >
-                          {!isSelect ? "Add Hotel" : "Change"}
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {currentBooking && (
-              <div className="absolute bottom-[28px] right-8 -m-3">
-                <div
-                  className=" z-50"
-                  onClick={() => handleViewHotel()}
-                >
-                  <div className="cursor-pointer bg-[#F7E700] px-4 py-2 rounded-lg hover:bg-black hover:text-white transition-all border-2 border-black">
-                    <label className="text-center">
-                      View Details
-                    </label>
-                  </div>
+                    </div>
+                  )}
                 </div>
               </div>
-            )}
+            </div>
           </div>
         </div>
       ) : (
