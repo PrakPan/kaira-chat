@@ -42,6 +42,7 @@ import { BsShareFill } from "react-icons/bs";
 import { IoMdClose } from "react-icons/io";
 import DaybyDay from "./DaybyDay.jsx";
 import StaysContainer from "./Stays/StaysContainer.jsx";
+import TransferBookings from "./TransfersContainer/TransferBookings.jsx";
 
 const useStyles = {
   root: `
@@ -818,38 +819,59 @@ const SimpleTabsV2 = (props) => {
 
             {props.transferBookings || props?.routes?.length ? (
               <div id={"Transfers"}>
-                <TransfersContainer
-                  setShowLoginModal={setShowLoginModal}
-                  plan={props.plan}
-                  dayslab={props?.itinerary?.day_slabs}
-                  breif={props?.breif}
-                  showTaxiModal={props.showTaxiModal}
-                  routesData={RoutesData}
-                  transfers={TransfersData}
-                  routes={props.routes}
-                  _updateFlightBookingHandler={
-                    props._updateFlightBookingHandler
-                  }
-                  setShowTaxiModal={props.setShowTaxiModal}
-                  getPaymentHandler={props.getPaymentHandler}
-                  _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-                  _updatePaymentHandler={props._updatePaymentHandler}
-                  _updateBookingHandler={props._updateBookingHandler}
-                  showFlightModal={props.showFlightModal}
-                  setShowFlightModal={_handleFlighModalShow}
-                  setHideFlightModal={_handleFlightModalClose}
-                  setShowBookingModal={() => props.setShowBookingModal(true)}
-                  setHideBookingModal={props.setHideBookingModal}
-                  payment={props.payment}
-                  transferBookings={props?.transferBookings}
-                  itinerary_id={props.itinerary_id}
-                  fetchData={props.fetchData}
-                  _GetInTouch={_GetInTouch}
-                />
+                {props.mercuryItinerary ? (
+                  <TransferBookings
+                    setShowLoginModal={setShowLoginModal}
+                    showTaxiModal={props.showTaxiModal}
+                    _updateFlightBookingHandler={
+                      props._updateFlightBookingHandler
+                    }
+                    setShowTaxiModal={props.setShowTaxiModal}
+                    getPaymentHandler={props.getPaymentHandler}
+                    _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+                    _updatePaymentHandler={props._updatePaymentHandler}
+                    _updateBookingHandler={props._updateBookingHandler}
+                    showFlightModal={props.showFlightModal}
+                    setShowFlightModal={_handleFlighModalShow}
+                    setHideFlightModal={_handleFlightModalClose}
+                    setShowBookingModal={() => props.setShowBookingModal(true)}
+                    setHideBookingModal={props.setHideBookingModal}
+                    payment={props.payment}
+                    fetchData={props.fetchData}
+                    _GetInTouch={_GetInTouch}
+                  />
+                ) : (
+                  <TransfersContainer
+                    setShowLoginModal={setShowLoginModal}
+                    plan={props.plan}
+                    dayslab={props?.itinerary?.day_slabs}
+                    breif={props?.breif}
+                    showTaxiModal={props.showTaxiModal}
+                    routesData={RoutesData}
+                    transfers={TransfersData}
+                    routes={props.routes}
+                    _updateFlightBookingHandler={
+                      props._updateFlightBookingHandler
+                    }
+                    setShowTaxiModal={props.setShowTaxiModal}
+                    getPaymentHandler={props.getPaymentHandler}
+                    _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+                    _updatePaymentHandler={props._updatePaymentHandler}
+                    _updateBookingHandler={props._updateBookingHandler}
+                    showFlightModal={props.showFlightModal}
+                    setShowFlightModal={_handleFlighModalShow}
+                    setHideFlightModal={_handleFlightModalClose}
+                    setShowBookingModal={() => props.setShowBookingModal(true)}
+                    setHideBookingModal={props.setHideBookingModal}
+                    payment={props.payment}
+                    transferBookings={props?.transferBookings}
+                    itinerary_id={props.itinerary_id}
+                    fetchData={props.fetchData}
+                    _GetInTouch={_GetInTouch}
+                  />
+                )}
               </div>
-            ) : (
-              <></>
-            )}
+            ) : null}
 
             {props.activityBookings && (
               <div id={"Activities"}>
