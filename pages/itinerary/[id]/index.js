@@ -2,7 +2,6 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { connect } from "react-redux";
-// import ItineraryContainer from "../../../containers/itinerary/IndexsV2/Index";
 import LayoutV2 from "../../../components/Layout";
 import * as authaction from "../../../store/actions/auth";
 import setItineraryId from "../../../store/actions/itineraryId";

@@ -41,6 +41,7 @@ import {
 import { BsShareFill } from "react-icons/bs";
 import { IoMdClose } from "react-icons/io";
 import DaybyDay from "./DaybyDay.jsx";
+import StaysContainer from "./Stays/StaysContainer.jsx";
 
 const useStyles = {
   root: `
@@ -558,25 +559,33 @@ const SimpleTabsV2 = (props) => {
           </div>
 
           <div id={"Stays"}>
-            <HotelsBooking
-              setShowLoginModal={setShowLoginModal}
-              plan={props.plan}
-              hasUserPaid={
-                props.payment ? (props.payment.paid_user ? true : false) : false
-              }
-              budget={props.budget}
-              breif={props.breif}
-              stayBookings={props.stayBookings}
-              _updateBookingHandler={props._updateBookingHandler}
-              _updateStayBookingHandler={props._updateStayBookingHandler}
-              _updatePaymentHandler={props._updatePaymentHandler}
-              getPaymentHandler={props.getPaymentHandler}
-              setShowBookingModal={() => props.setShowBookingModal(true)}
-              showBookingModal={props.showBookingModal}
-              setHideBookingModal={props.setHideBookingModal}
-              payment={props.payment}
-              booking={props.booking}
-            ></HotelsBooking>
+            {props.mercuryItinerary ? (
+              <StaysContainer />
+            ) : (
+              <HotelsBooking
+                setShowLoginModal={setShowLoginModal}
+                plan={props.plan}
+                hasUserPaid={
+                  props.payment
+                    ? props.payment.paid_user
+                      ? true
+                      : false
+                    : false
+                }
+                budget={props.budget}
+                breif={props.breif}
+                stayBookings={props.stayBookings}
+                _updateBookingHandler={props._updateBookingHandler}
+                _updateStayBookingHandler={props._updateStayBookingHandler}
+                _updatePaymentHandler={props._updatePaymentHandler}
+                getPaymentHandler={props.getPaymentHandler}
+                setShowBookingModal={() => props.setShowBookingModal(true)}
+                showBookingModal={props.showBookingModal}
+                setHideBookingModal={props.setHideBookingModal}
+                payment={props.payment}
+                booking={props.booking}
+              ></HotelsBooking>
+            )}
           </div>
 
           {props?.transferBookings || props?.routes?.length ? (
@@ -765,30 +774,45 @@ const SimpleTabsV2 = (props) => {
               </div>
             ) : (
               <div id={"Stays"}>
-                <HotelsBooking
-                  setShowLoginModal={setShowLoginModal}
-                  plan={props.plan}
-                  hasUserPaid={
-                    props.payment
-                      ? props.payment.paid_user
-                        ? true
+                {props.mercuryItinerary ? (
+                  <StaysContainer
+                    payment={props.payment}
+                    _updateBookingHandler={props._updateBookingHandler}
+                    _updateStayBookingHandler={props._updateStayBookingHandler}
+                    _updatePaymentHandler={props._updatePaymentHandler}
+                    getPaymentHandler={props.getPaymentHandler}
+                    setShowBookingModal={() => props.setShowBookingModal(true)}
+                    showBookingModal={props.showBookingModal}
+                    setHideBookingModal={props.setHideBookingModal}
+                    setShowLoginModal={setShowLoginModal}
+                    _GetInTouch={_GetInTouch}
+                  />
+                ) : (
+                  <HotelsBooking
+                    setShowLoginModal={setShowLoginModal}
+                    plan={props.plan}
+                    hasUserPaid={
+                      props.payment
+                        ? props.payment.paid_user
+                          ? true
+                          : false
                         : false
-                      : false
-                  }
-                  breif={props.breif}
-                  budget={props.budget}
-                  stayBookings={props.stayBookings}
-                  _updateBookingHandler={props._updateBookingHandler}
-                  _updateStayBookingHandler={props._updateStayBookingHandler}
-                  _updatePaymentHandler={props._updatePaymentHandler}
-                  getPaymentHandler={props.getPaymentHandler}
-                  setShowBookingModal={() => props.setShowBookingModal(true)}
-                  showBookingModal={props.showBookingModal}
-                  setHideBookingModal={props.setHideBookingModal}
-                  payment={props.payment}
-                  booking={props.booking}
-                  _GetInTouch={_GetInTouch}
-                ></HotelsBooking>
+                    }
+                    breif={props.breif}
+                    budget={props.budget}
+                    stayBookings={props.stayBookings}
+                    _updateBookingHandler={props._updateBookingHandler}
+                    _updateStayBookingHandler={props._updateStayBookingHandler}
+                    _updatePaymentHandler={props._updatePaymentHandler}
+                    getPaymentHandler={props.getPaymentHandler}
+                    setShowBookingModal={() => props.setShowBookingModal(true)}
+                    showBookingModal={props.showBookingModal}
+                    setHideBookingModal={props.setHideBookingModal}
+                    payment={props.payment}
+                    booking={props.booking}
+                    _GetInTouch={_GetInTouch}
+                  ></HotelsBooking>
+                )}
               </div>
             )}
 
