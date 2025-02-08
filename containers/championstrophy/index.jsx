@@ -14,7 +14,7 @@ import Destination1Carousel from "../../components/theme/Destination1Carousel.js
 import Activity1Carousel from "../../components/theme/Activity1Carousel.jsx";
 import Reviews1Carousel from "../../components/theme/Reviews1Carousel.jsx";
 import Itinerary2Carousel from "../../components/theme/Itinerary2Carousel.jsx";
-import Navigation from "../../components/theme/Navigation.jsx";
+import Navigation from "../../components/championsTrophy/Navigation.jsx";
 import PrimaryHeading from "../../components/heading/PrimaryHeading.jsx";
 import SecondaryHeading from "../../components/heading/Secondary.jsx";
 import Itinerary1Carousel from "../../components/theme/Itinerary1Carousel.jsx";
@@ -24,6 +24,8 @@ import validateTextSize from "../../services/textSizeValidator";
 import SecondaryButton from "../../components/ui/SecondaryButton.jsx";
 import BannerMobile from "../city/Banner/Mobile";
 import DesktopBanner from "../../components/containers/Banner";
+import ICCBanner from "../../components/containers/ICCBanner/ICCBanner.js";
+import WhyChooseUs from "../../components/championsTrophy/WhyChooseUs.jsx";
 
 
 
@@ -110,7 +112,7 @@ export default function ChampionsTrophy(props) {
         />
       )} */}
 
-      <ThemeBanner
+      <ICCBanner
         image={props.experienceData.image}
         page_id={props.experienceData.id}
         destination={props.experienceData.destination}
@@ -148,11 +150,11 @@ export default function ChampionsTrophy(props) {
 
                 return navComponents.length > 0 ? (
                   <div key={index} className="mx-3 space-y-12 mt-5">
-                    <PrimaryHeading>
+                    <PrimaryHeading className="m-auto">
                       {" "}
                       {component.heading}
                     </PrimaryHeading>
-                    <Navigation components={navComponents} />
+                    <Navigation components={navComponents} className="m-auto" />
 
                     <PlanYourTripButton text={"Plan Itinerary For Free"} />
                   </div>
@@ -164,12 +166,16 @@ export default function ChampionsTrophy(props) {
                   <div key={index} className="mx-3 space-y-12 mt-5">
                     <div className="space-y-3">
                       <PrimaryHeading className="mx-auto text-center">
-                        {component.heading}
+                        {component.heading }
                       </PrimaryHeading>
                       <SecondaryHeading className="mx-auto text-center">
                         {component.text}
                       </SecondaryHeading>
                     </div>
+
+                    {
+                      component?.heading == "Why Choose Us?" ? <WhyChooseUs heading={component?.heading}/> : null
+                    }
 
                     {/* Render specific carousel components based on type */}
                     {component.carousel === "destination-1" ? (
