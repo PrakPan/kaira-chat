@@ -127,7 +127,7 @@ const FullImgContent = (props) => {
               </H7>
             )
           ) : (
-            props.slug !== "honeymoon-2025" && (
+            props.slug !== "icc-champions-trophy-2025" && (
               <H7
                 style={{
                   lineHeight: isPageWide ? "35px" : "20px",

@@ -140,6 +140,74 @@ const Subscribe = (props) => {
           </>
         )}
 
+        {isPageWide &&
+        props.slug === "icc-champions-trophy-2025" && (
+          <>
+            <div className="absolute bottom-0 left-0 w-full flex justify-between items-end overflow-hidden z-50">
+  {/* First Image */}
+  <div className="w-[30%] h-[10%]">
+    <Image
+      src="https://d31aoa0ehgvjdi.cloudfront.net/media/event/dubai-skyline-white-background 2.png"
+      alt="Dubai Skyline"
+      height={100}
+      width={100}
+      className="object-cover object-left"
+      style={{
+        width: "40rem", // Larger width
+        height: "9rem",
+      }}
+    />
+  </div>
+
+  {/* Second Image */}
+  <div className="w-[40%] h-[10%]">
+    <Image
+      src="https://d31aoa0ehgvjdi.cloudfront.net/media/event/dubai-skyline-white-background 2.png"
+      alt="Dubai Skyline"
+      height={100}
+      width={100}
+      className="object-cover object-left"
+      style={{
+        width: "40rem",
+        height: "9rem",
+      }}
+    />
+  </div>
+
+  {/* Third Image */}
+  <div className="w-[40%] h-[10%]">
+    <Image
+      src="https://d31aoa0ehgvjdi.cloudfront.net/media/event/dubai-skyline-white-background 2.png"
+      alt="Dubai Skyline"
+      height={100}
+      width={100}
+      className="object-cover object-left"
+      style={{
+        width: "40rem",
+        height: "9rem",
+      }}
+    />
+  </div>
+
+  <div className="w-[30%] h-[10%]">
+    <Image
+      src="https://d31aoa0ehgvjdi.cloudfront.net/media/event/dubai-skyline-white-background 2.png"
+      alt="Dubai Skyline"
+      height={100}
+      width={100}
+      className="object-cover object-left"
+      style={{
+        width: "40rem", // Larger width
+        height: "9rem",
+      }}
+    />
+  </div>
+</div>
+
+
+</>
+        )}
+
       <H2
         style={{
           color: "black",
