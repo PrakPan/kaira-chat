@@ -1,32 +1,32 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import { connect, useDispatch } from "react-redux";
 import styled from "styled-components";
-import Menu from "../MenuV2";
-import Spinner from "../../../containers/loaderbar/Index";
-import OldSpinner from "../../../components/LoadingPage";
+import Menu from "./MenuV2";
 import axiosdaybydayinstance, {
   axiosGetItinerary,
-} from "../../../services/itinerary/daybyday/preview";
-import axiosbreifinstance from "../../../services/itinerary/brief/preview";
-import * as authaction from "../../../store/actions/auth";
-import { connect, useDispatch } from "react-redux";
-import { ITINERARY_STATUSES } from "../../../services/constants";
-import { TRAVELER_ITINERARIES } from "../../../services/constants";
-import axiosPoiRoutes from "../../../services/itinerary/brief/route";
-import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
-import Overview from "../../newitinerary/overview/Index";
-import { openNotification } from "../../../store/actions/notification";
-import { setItineraryStartDate } from "../../../store/actions/itineraryStartDate";
-import { setItineraryRoutes } from "../../../store/actions/itineraryRoutes";
-import setItineraryDaybyDay from "../../../store/actions/itineraryDaybyDay";
-import setItinerary from "../../../store/actions/itinerary";
-import setPlan from "../../../store/actions/plan";
-import { setBookings } from "../../../store/actions/bookings";
-import { setItineraryActivities } from "../../../store/actions/itineraryActivities";
-import setBreif from "../../../store/actions/breif";
-import axiosPaymentInstance from "../../../services/itinerary/payment";
-import axiosBookingsInstance from "../../../services/itinerary/bookings";
-import axiosPlanInstance from "../../../services/itinerary/plan";
+} from "../../services/itinerary/daybyday/preview";
+import axiosbreifinstance from "../../services/itinerary/brief/preview";
+import * as authaction from "../../store/actions/auth";
+import { ITINERARY_STATUSES } from "../../services/constants";
+import { TRAVELER_ITINERARIES } from "../../services/constants";
+import axiosPoiRoutes from "../../services/itinerary/brief/route";
+import axiosbookingupdateinstance from "../../services/bookings/UpdateBookings";
+import Overview from "../newitinerary/overview/Index";
+import { openNotification } from "../../store/actions/notification";
+import { setItineraryStartDate } from "../../store/actions/itineraryStartDate";
+import { setItineraryRoutes } from "../../store/actions/itineraryRoutes";
+import setItineraryDaybyDay from "../../store/actions/itineraryDaybyDay";
+import setItinerary from "../../store/actions/itinerary";
+import setPlan from "../../store/actions/plan";
+import { setBookings } from "../../store/actions/bookings";
+import { setItineraryActivities } from "../../store/actions/itineraryActivities";
+import setBreif from "../../store/actions/breif";
+import axiosPaymentInstance from "../../services/itinerary/payment";
+import axiosBookingsInstance, {
+  axiosGetAllBookings,
+} from "../../services/itinerary/bookings";
+import axiosPlanInstance from "../../services/itinerary/plan";
 
 const Container = styled.div`
   width: 90%;
@@ -37,7 +37,7 @@ const Container = styled.div`
   }
 `;
 
-const Itinerary = (props) => {
+const ItineraryContainer = (props) => {
   const router = useRouter();
   const [totalduration, setTotalduration] = useState(0);
   const [itineraryReleased, setItineraryReleased] = useState(false);
@@ -205,17 +205,6 @@ const Itinerary = (props) => {
             }
           }
 
-          props.setBookings({
-            stayBookings: stay_bookings,
-            activityBookings: activity_bookings.length
-              ? activity_bookings
-              : null,
-            flightBookings: flight_bookings.length ? flight_bookings : null,
-            transferBookings: transfer_bookings.length
-              ? transfer_bookings
-              : null,
-          });
-
           setStayBookings(stay_bookings);
           if (activity_bookings.length) {
             setActivityBookings(activity_bookings);
@@ -237,6 +226,48 @@ const Itinerary = (props) => {
         }
       })
       .catch((err) => {});
+  };
+
+  const getAllBookings = () => {
+    let flight_bookings = [];
+
+    axiosGetAllBookings
+      .get(`/${props.id}/bookings/`)
+      .then((res) => {
+        getPaymentHandler();
+        const data = res.data;
+
+        for (const book of data.transfer_bookings) {
+          if (book.booking_type === "Flight") {
+            flight_bookings.push(book);
+          }
+        }
+
+        props.setBookings({
+          ...props.bookings,
+          stayBookings:
+            data.accommodation_bookings.length > 0
+              ? data.accommodation_bookings
+              : null,
+          activityBookings:
+            data.activity_bookings.length > 0 ? data.activity_bookings : null,
+          flightBookings: flight_bookings.length > 0 ? flight_bookings : null,
+          transferBookings:
+            data.transfer_bookings.length > 0 ? data.transfer_bookings : null,
+        });
+
+        // setStayBookings(data.accommodation_bookings);
+        // setActivityBookings(
+        //   data.activity_bookings.length ? data.activity_bookings : null
+        // );
+        // setFlightBookings(flight_bookings.length > 0 ? flight_bookings : null);
+        // setTransferBookings(
+        //   data.transfer_bookings.length ? data.transfer_bookings : null
+        // );
+      })
+      .catch((err) => {
+        console.error("Error fetching all bookings", err.message);
+      });
   };
 
   async function getRoutes(itinaryId) {
@@ -267,6 +298,16 @@ const Itinerary = (props) => {
       })
       .catch((error) => {
         setItineraryLoading(false);
+      });
+
+    axiosGetItinerary
+      .get(`/${props.id}/`)
+      .then((res) => {
+        const data = res.data;
+        props.setItineraryDaybyDay(data);
+      })
+      .catch((err) => {
+        console.error("[ERROR]:axiosGetItinerary: ", err.message);
       });
 
     getBreifHandler();
@@ -300,18 +341,12 @@ const Itinerary = (props) => {
       })
       .catch((error) => {});
 
+    getAllBookings();
     getAccommodationAndActivitiesHandler();
   }
 
   useEffect(() => {
-    var IntervalTiming;
-    if (router.query.t) IntervalTiming = (+router.query.t + 2) * 1000;
-    if (!IntervalTiming) {
-      fetchData();
-    } else
-      setTimeout(() => {
-        fetchData();
-      }, [IntervalTiming]);
+    fetchData();
   }, []);
 
   const _updateTransferBooking = (arr1, arr2) => {
@@ -669,111 +704,93 @@ const Itinerary = (props) => {
     setShowPoiModal(false);
   };
 
-  if (props.breif && !itineraryLoading)
-    return (
-      <Container>
-        <Overview
-          title={props.itinerary.name}
+  if (!props.breif || itineraryLoading) return null;
+
+  return (
+    <Container>
+      <Overview
+        title={props.itinerary.name}
+        group_type={group_type}
+        duration_time={duration_time}
+        images={props.itinerary.images}
+        travellerType={travellerType}
+        start_date={props?.plan ? props.plan.start_date : null}
+        end_date={props?.plan ? props.plan.end_date : null}
+        duration={
+          props?.plan
+            ? props.plan.duration_number + " " + props.plan.duration_unit
+            : null
+        }
+        budget={props?.plan ? props.plan?.budget : null}
+        number_of_adults={props?.plan ? props.plan?.number_of_adults : null}
+        number_of_children={props?.plan ? props.plan?.number_of_children : null}
+        number_of_infants={props?.plan ? props.plan?.number_of_infants : null}
+        setEditRoute={setEditRoute}
+      ></Overview>
+
+      <div id="itinerary-anchor">
+        <Menu
+          mercuryItinerary
+          hasUserPaid={hasUserPaid}
+          isDatePresent={isDatePresent}
+          _updateTaxiBookingHandler={_updateTaxiBookingHandler}
+          showTaxiModal={showTaxiModal}
+          setShowTaxiModal={setShowTaxiModal}
+          paymentLoading={paymentLoading}
+          budget={props?.plan ? props.plan.budget : null}
+          _deselectActivityBookingHandler={_deselectActivityBookingHandler}
+          activityFlickityIndex={activityFlickityIndex}
+          transferFlickityIndex={transferFlickityIndex}
+          stayFlickityIndex={stayFlickityIndex}
+          setStayFlickityIndex={setStayFlickityIndex}
+          selectingBooking={selectingBooking}
+          _deselectTransferBookingHandler={_deselectTransferBookingHandler}
+          _deselectFlightBookingHandler={_deselectFlightBookingHandler}
+          flightFlickityIndex={flightFlickityIndex}
+          _deselectStayBookingHandler={_deselectStayBookingHandler}
+          getPaymentHandler={getPaymentHandler}
+          flightBookings={flightBookings}
+          cardUpdateLoading={cardUpdateLoading}
+          _selectTaxiHandler={_selectTaxiHandler}
+          _updateTransferHandler={_updateTransferBookingHandler}
+          _updateStayBookingHandler={_updateStayBookingHandler}
+          activityBookings={activityBookings}
+          transferBookings={transferBookings}
+          stayBookings={stayBookings}
+          user_email={userEmail}
+          setItinerary={props.setItinerary}
+          traveleritinerary={isPastTravelerItinerary}
+          id={props.id}
+          is_stock={is_stock}
+          _updatePaymentHandler={_updatePaymentHandler}
+          setHidePoiModal={setHidePoiModal}
+          setHideBookingModal={setHideBookingModal}
+          setShowPoiModal={setShowPoiModal}
+          setShowBookingModal={setShowBookingModal}
+          _updateFlightBookingHandler={_updateFlightBookingHandler}
+          showFlightModal={showFlightModal}
+          setShowFlightModal={setShowFlightModal}
+          showPoiModal={showPoiModal}
+          showBookingModal={showBookingModal}
+          _updateBookingHandler={_updateBookingHandler}
+          itineraryReleased={itineraryReleased}
+          itineraryDate={itineraryDate}
+          payment={payment}
+          booking={booking}
+          token={props.token}
+          fetchData={fetchData}
+          getAccommodationAndActivitiesHandler={
+            getAccommodationAndActivitiesHandler
+          }
           group_type={group_type}
           duration_time={duration_time}
-          images={props.itinerary.images}
           travellerType={travellerType}
-          start_date={props?.plan ? props.plan.start_date : null}
-          end_date={props?.plan ? props.plan.end_date : null}
-          duration={
-            props?.plan
-              ? props.plan.duration_number + " " + props.plan.duration_unit
-              : null
-          }
-          budget={props?.plan ? props.plan?.budget : null}
-          number_of_adults={props?.plan ? props.plan?.number_of_adults : null}
-          number_of_children={
-            props?.plan ? props.plan?.number_of_children : null
-          }
-          number_of_infants={props?.plan ? props.plan?.number_of_infants : null}
+          editRoute={editRoute}
           setEditRoute={setEditRoute}
-        ></Overview>
-
-        <div id="itinerary-anchor">
-          <Menu
-            hasUserPaid={hasUserPaid}
-            isDatePresent={isDatePresent}
-            _updateTaxiBookingHandler={_updateTaxiBookingHandler}
-            showTaxiModal={showTaxiModal}
-            setShowTaxiModal={setShowTaxiModal}
-            paymentLoading={paymentLoading}
-            budget={props?.plan ? props.plan.budget : null}
-            _deselectActivityBookingHandler={_deselectActivityBookingHandler}
-            activityFlickityIndex={activityFlickityIndex}
-            transferFlickityIndex={transferFlickityIndex}
-            stayFlickityIndex={stayFlickityIndex}
-            setStayFlickityIndex={setStayFlickityIndex}
-            selectingBooking={selectingBooking}
-            _deselectTransferBookingHandler={_deselectTransferBookingHandler}
-            _deselectFlightBookingHandler={_deselectFlightBookingHandler}
-            flightFlickityIndex={flightFlickityIndex}
-            _deselectStayBookingHandler={_deselectStayBookingHandler}
-            getPaymentHandler={getPaymentHandler}
-            flightBookings={flightBookings}
-            cardUpdateLoading={cardUpdateLoading}
-            _selectTaxiHandler={_selectTaxiHandler}
-            _updateTransferHandler={_updateTransferBookingHandler}
-            _updateStayBookingHandler={_updateStayBookingHandler}
-            activityBookings={activityBookings}
-            transferBookings={transferBookings}
-            stayBookings={stayBookings}
-            user_email={userEmail}
-            setItinerary={props.setItinerary}
-            traveleritinerary={isPastTravelerItinerary}
-            id={props.id}
-            is_stock={is_stock}
-            _updatePaymentHandler={_updatePaymentHandler}
-            setHidePoiModal={setHidePoiModal}
-            setHideBookingModal={setHideBookingModal}
-            setShowPoiModal={setShowPoiModal}
-            setShowBookingModal={setShowBookingModal}
-            _updateFlightBookingHandler={_updateFlightBookingHandler}
-            showFlightModal={showFlightModal}
-            setShowFlightModal={setShowFlightModal}
-            showPoiModal={showPoiModal}
-            showBookingModal={showBookingModal}
-            _updateBookingHandler={_updateBookingHandler}
-            itineraryReleased={itineraryReleased}
-            itineraryDate={itineraryDate}
-            payment={payment}
-            booking={booking}
-            token={props.token}
-            fetchData={fetchData}
-            getAccommodationAndActivitiesHandler={
-              getAccommodationAndActivitiesHandler
-            }
-            group_type={group_type}
-            duration_time={duration_time}
-            travellerType={travellerType}
-            editRoute={editRoute}
-            setEditRoute={setEditRoute}
-          ></Menu>
-        </div>
-      </Container>
-    );
-  else if (isPastTravelerItinerary)
-    return (
-      <div>
-        <OldSpinner></OldSpinner>
+        ></Menu>
       </div>
-    );
-  else if (router.query.payment_status) {
-    return (
-      <div>
-        <OldSpinner></OldSpinner>
-      </div>
-    );
-  } else
-    return (
-      <div>
-        <Spinner></Spinner>
-      </div>
-    );
+    </Container>
+  );
 };
 
 const mapStateToPros = (state) => {
@@ -805,7 +822,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(
-  mapStateToPros,
-  mapDispatchToProps
-)(React.memo(Itinerary));
+export default connect(mapStateToPros, mapDispatchToProps)(ItineraryContainer);

@@ -2,238 +2,68 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import "bootstrap/dist/css/bootstrap.min.css";
 import styled from "styled-components";
-import DesktopBanner from "../../components/containers/Banner";
-import Experiences from "../../components/containers/Experiences";
 import media from "../../components/media";
-import BannerTwo from "./BannerTwo";
-import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs";
-import Reviews from "./CaseStudies/Index";
-import ExperienceCard from "../../components/cards/newitinerarycard-main/ExperienceCard";
-import Overview from "./Overview";
-import Button from "../../components/ui/button/Index";
-import Locations from "../../components/containers/newplannerlocations/Index";
-import MobileBanner from "./MobileBanner";
-import WhyPlanWithUs from "../../components/WhyPlanWithUs/PlanWithUsWithEnquiry";
-import HeroBanner from "../../components/containers/HeroBanner/HeroBanner";
+import ThemeBanner from "../../components/containers/ThemeBanner/ThemeBanner";
 import openTailoredModal from "../../services/openTailoredModal";
-import dynamic from "next/dynamic";
-import AsSeenIn from "../testimonial/AsSeenIn";
 import { logEvent } from "../../services/ga/Index";
-import H3 from "../../components/heading/H3";
+import Overview from "../themes/Overview.jsx";
+import Image from "next/image.js";
+import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile";
+import ThemeFaqs from "../themes/ThemeFaqs.jsx";
+import Destination1Carousel from "../../components/theme/Destination1Carousel.jsx";
+import Activity1Carousel from "../../components/theme/Activity1Carousel.jsx";
+import Reviews1Carousel from "../../components/theme/Reviews1Carousel.jsx";
+import Itinerary2Carousel from "../../components/theme/Itinerary2Carousel.jsx";
+import Navigation from "../../components/theme/Navigation.jsx";
+import PrimaryHeading from "../../components/heading/PrimaryHeading.jsx";
 import SecondaryHeading from "../../components/heading/Secondary.jsx";
-const MapBox = dynamic(() => import("../../components/Map.js"), {
-  ssr: false,
-});
+import Itinerary1Carousel from "../../components/theme/Itinerary1Carousel.jsx";
+import DesktopPersonaliseBanner from "../../components/containers/Banner";
+import MobileBanner from "../city/Banner/Mobile";
+import validateTextSize from "../../services/textSizeValidator";
+import SecondaryButton from "../../components/ui/SecondaryButton.jsx";
 
 const SetWidthContainer = styled.div`
   width: 100%;
   margin: auto;
+  font-weight: 350px;
   @media screen and (min-width: 768px) {
     width: 85%;
-  }
-`;
-
-const MapInfo = styled.div`
-  b {
-    font-weight: 600;
-  }
-`;
-
-const MapGridContainer = styled.div`
-  display: grid;
-  grid-gap: 30px;
-  @media screen and (min-width: 768px) {
-    width: 100%;
-    grid-template-columns: auto 500px;
-    grid-gap: 40px;
-    margin: 0 auto 0 auto;
-  }
-`;
-
-const MapContainer = styled.div`
-  @media screen and (min-width: 768px) {
-    padding-top: 116px;
+    font-weight: 350px;
   }
 `;
 
 export default function ThemePage(props) {
-  const router = useRouter();
   let isPageWide = media("(min-width: 768px)");
-  const [userItineraries, setUserItineraries] = useState([]);
-  const [TTWItineraries, setTTWItineraries] = useState([]);
-  const [showMore, setShowMore] = useState(false);
-  const [desktopBannerLoading, setDesktopBannerLoading] = useState(false);
-  const [overviewHeading, setOverviewHeading] = useState(null);
-  const [headings, setHeadings] = useState([]);
+  const router = useRouter();
+  const [components, setComponents] = useState([]);
+  const [navigationComponents, setNavigationComponents] = useState([]);
+  const [showTailoredModal, setShowTailoredModal] = useState(false);
+  const [destination, setDestination] = useState(null);
 
   useEffect(() => {
-    let iti_exclusive = [];
-    let iti_customer = [];
-    try {
-      for (var i = 0; i < props.experienceData.itinerary_data.length; i++) {
-        if (props.experienceData.itinerary_data[i].owner === "TTW")
-          iti_exclusive.push(
-            <ExperienceCard
-              data={props.experienceData.itinerary_data[i]}
-              key={props.experienceData.itinerary_data[i].short_text}
-              hardcoded={
-                props.experienceData.itinerary_data[i].payment_info
-                  ? true
-                  : false
-              }
-              filter={
-                props.experienceData.itinerary_data[i].experience_filters
-                  ? props.experienceData.itinerary_data[i].experience_filters[0]
-                  : null
-              }
-              rating={props.experienceData.itinerary_data[i].rating}
-              slug={props.experienceData.itinerary_data[i].slug}
-              id={props.experienceData.itinerary_data[i].id}
-              number_of_adults={
-                props.experienceData.itinerary_data[i].number_of_adults
-              }
-              locations={
-                props.experienceData.itinerary_data[i]["itinerary_locations"]
-              }
-              text={props.experienceData.itinerary_data[i].short_text}
-              experience={props.experienceData.itinerary_data[i].name}
-              cost={
-                props.experienceData.itinerary_data[i].payment_info
-                  ? props.experienceData.itinerary_data[i].payment_info.length
-                    ? props.experienceData.itinerary_data[i].payment_info[0]
-                        .cost
-                    : null
-                  : null
-              }
-              duration_number={
-                props.experienceData.itinerary_data[i].duration_number
-              }
-              duration_unit={
-                props.experienceData.itinerary_data[i].duration_unit
-              }
-              location={
-                props.experienceData.itinerary_data[i]["experience_region"]
-              }
-              starting_cost={
-                props.experienceData.itinerary_data[i].payment_info
-                  ? props.experienceData.itinerary_data[i].payment_info
-                      .per_person_total_cost
-                  : props.experienceData.itinerary_data[i].starting_price
-              }
-              images={props.experienceData.itinerary_data[i].images}
-            ></ExperienceCard>
-          );
-        else
-          iti_customer.push(
-            <ExperienceCard
-              data={props.experienceData.itinerary_data[i]}
-              key={props.experienceData.itinerary_data[i].short_text}
-              hardcoded={
-                props.experienceData.itinerary_data[i].payment_info
-                  ? true
-                  : false
-              }
-              filter={
-                props.experienceData.itinerary_data[i].experience_filters
-                  ? props.experienceData.itinerary_data[i].experience_filters[0]
-                  : null
-              }
-              rating={props.experienceData.itinerary_data[i].rating}
-              slug={props.experienceData.itinerary_data[i].slug}
-              id={props.experienceData.itinerary_data[i].id}
-              number_of_adults={
-                props.experienceData.itinerary_data[i].number_of_adults
-              }
-              locations={
-                props.experienceData.itinerary_data[i]["itinerary_locations"]
-              }
-              text={props.experienceData.itinerary_data[i].short_text}
-              experience={props.experienceData.itinerary_data[i].name}
-              cost={
-                props.experienceData.itinerary_data[i].payment_info
-                  ? props.experienceData.itinerary_data[i].payment_info.length
-                    ? props.experienceData.itinerary_data[i].payment_info[0]
-                        .cost
-                    : null
-                  : null
-              }
-              duration_number={
-                props.experienceData.itinerary_data[i].duration_number
-              }
-              duration_unit={
-                props.experienceData.itinerary_data[i].duration_unit
-              }
-              location={
-                props.experienceData.itinerary_data[i]["experience_region"]
-              }
-              starting_cost={
-                props.experienceData.itinerary_data[i].payment_info
-                  ? props.experienceData.itinerary_data[i].payment_info
-                      .per_person_total_cost
-                  : props.experienceData.itinerary_data[i].starting_price
-              }
-              images={props.experienceData.itinerary_data[i].images}
-            ></ExperienceCard>
-          );
-      }
-    } catch {}
+    if (props.experienceData?.components) {
+      let components = props.experienceData?.components;
+      components.sort((a, b) => a?.priority - b?.priority);
+
+      setComponents(components);
+
+      // Separate components based on `is_navigation_type`
+
+      // const otherComponents = components.filter(
+      //   (component) => !component.is_navigation_type
+      // );
+      // // setNavigationComponents(navComponents);
+      // setComponents(otherComponents);
+    }
   }, []);
 
-  useEffect(() => {
-    if (props.experienceData?.headings) {
-      let headings = props.experienceData?.headings;
-      headings.sort((a, b) => a?.priority - b?.priority);
-      setHeadings(headings);
+  const handlePlanButton = (pageId, destination, type) => {
+    if (isPageWide) {
+      setShowTailoredModal(true);
+    } else {
+      openTailoredModal(router, pageId, destination, type);
     }
-  }, [props.experienceData?.headings]);
-
-  useEffect(() => {
-    const user = [];
-    const ttw = [];
-    if (props.experienceData.itinerary_data) {
-      props.experienceData.itinerary_data.map((e) => {
-        if (e.owner !== "TTW") user.push(e);
-        else ttw.push(e);
-      });
-    }
-    setUserItineraries(user);
-    setTTWItineraries(ttw);
-  }, [props.experienceData.itinerary_data]);
-
-  useEffect(() => {
-    // The counter changed!
-    setOverviewHeading(props.experienceData.overview_heading);
-    return () => setOverviewHeading(null);
-  }, [router.query.link, props.experienceData]);
-
-  var country;
-  if (props.experienceData.ancestors) {
-    if (
-      props.experienceData.ancestors.length &&
-      props.experienceData.ancestors[0].level == "Country" &&
-      props.experienceData.ancestors[0].name
-    ) {
-      country = props.experienceData.ancestors[0].name;
-    }
-  }
-
-  const InfoWindowContainer = (location) => (
-    <MapInfo>
-      <b>{location.name}</b>
-      <div>
-        {location.most_popular_for?.map((e, i) =>
-          i != 0 ? <span key={i}>{", " + e}</span> : <span key={i}>{e}</span>
-        )}
-      </div>
-    </MapInfo>
-  );
-
-  const handlePlanButtonClick = (location) => {
-    openTailoredModal(
-      router,
-      props.experienceData.id,
-      props.experienceData.destination
-    );
 
     logEvent({
       action: "Plan_Itinerary",
@@ -247,12 +77,36 @@ export default function ThemePage(props) {
   };
 
   return (
-    <div
-      className={"Homepage"}
-      id="homepage-anchor"
-      style={{ visibility: props.hidden ? "hidden" : "visible" }}
-    >
-      <HeroBanner
+    <div className="mb-5">
+      {isPageWide ? (
+        <DesktopPersonaliseBanner
+          onclick={() =>
+            openTailoredModal(
+              router,
+              props.experienceData.id,
+              props.experienceData.destination
+            )
+          }
+          text={validateTextSize(
+            `Craft a personalized itinerary now!`,
+            9,
+            `Craft a trip now!`
+          )}
+        ></DesktopPersonaliseBanner>
+      ) : (
+        <MobileBanner
+          cityName={props.experienceData.destination ?? null}
+          onClick={() =>
+            openTailoredModal(
+              router,
+              props.experienceData.id,
+              props.experienceData.destination
+            )
+          }
+        />
+      )}
+
+      <ThemeBanner
         image={props.experienceData.image}
         page_id={props.experienceData.id}
         destination={props.experienceData.destination}
@@ -261,182 +115,239 @@ export default function ThemePage(props) {
         title={props.experienceData.banner_heading}
         subheading={props.experienceData.banner_text}
         page={"State Page"}
-        eventDates={props.eventDates}
+        slug={props.slug}
       />
 
-      <SetWidthContainer>
-        <MapGridContainer>
-          <Overview
-            locations={props.experienceData.locations}
-            overview_heading={overviewHeading}
-            overview_text={props.experienceData.overview_text}
-          ></Overview>
-          <MapContainer>
-            {props.experienceData.locations &&
-            props.experienceData.locations.length ? (
-              <MapBox
-                InfoWindowContainer={InfoWindowContainer}
-                locations={props.experienceData.locations}
-                height="300px"
-              />
-            ) : (
-              <></>
-            )}
-          </MapContainer>
-        </MapGridContainer>
-
-        {headings.map((heading, index) => (
-          <div key={index}>
-            <div className="mb-5 space-y-3">
-              <H3
-                style={{
-                  textAlign: isPageWide ? "left" : "center",
-                  margin: isPageWide
-                    ? "2.5rem 0 0 0"
-                    : "2.5rem 0.5rem 0 0.5rem",
-                }}
-              >
-                {heading.name}
-              </H3>
-
-              <SecondaryHeading
-                style={{ textAlign: isPageWide ? "left" : "center" }}
-              >
-                {heading.text}
-              </SecondaryHeading>
-            </div>
-
-            {heading?.itineraries?.length ? (
-              <Experiences
-                experiences={heading.itineraries}
-                page={"Theme Page"}
-              ></Experiences>
-            ) : null}
-
-            {heading?.elements?.length ? (
-              heading?.carousel?.toLowerCase() === "type-1" ? (
-                <Locations
-                  locations={heading.elements}
-                  viewall
-                  page={"Theme Page"}
-                  state={props?.experienceData?.name}
-                ></Locations>
-              ) : heading?.carousel?.toLowerCase() === "type-2" ? (
-                <Locations
-                  locations={heading.elements}
-                  viewall
-                  page={"Theme Page"}
-                  state={props?.experienceData?.name}
-                ></Locations>
-              ) : (
-                heading?.carousel?.toLowerCase() === "type-3" && (
-                  <Locations
-                    locations={heading.elements}
-                    viewall
-                    page={"Theme Page"}
-                    state={props?.experienceData?.name}
-                  ></Locations>
-                )
-              )
-            ) : null}
-
-            <Button
-              onclick={() => handlePlanButtonClick(heading.name)}
-              borderWidth="1px"
-              fontWeight="500"
-              borderRadius="6px"
-              margin="2rem auto"
-              padding="0.5rem 2rem"
-            >
-              Create your travel plan now!
-            </Button>
+      {props.slug === "honeymoon-2025" && (
+        <div className="relative">
+          <div className="absolute -top-10 left-0 -z-10 w-full md:w-[50%] h-[10rem]">
+            <Image
+              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/Hearts.png`}
+              fill
+              className="absolute bottom-0 object-fill"
+            />
           </div>
-        ))}
-      </SetWidthContainer>
+
+          {isPageWide && (
+            <div className="absolute -top-10 right-0 -z-10 w-[50%] h-[10rem]">
+              <Image
+                src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/Hearts.png`}
+                fill
+                className="absolute bottom-0 object-fill"
+              />
+            </div>
+          )}
+        </div>
+      )}
 
       <SetWidthContainer>
-        <H3
-          style={{
-            textAlign: isPageWide ? "left" : "center",
-            margin: isPageWide ? "3rem 0" : "2.5rem 0.5rem 0rem 0.5rem",
-          }}
-        >
-          How it works?
-        </H3>
-        <BannerTwo
-          page_id={props.experienceData.id}
-          destination={props.experienceData.destination}
-          cities={props.experienceData.locations}
-        ></BannerTwo>
-      </SetWidthContainer>
-
-      <DesktopBanner
-        loading={desktopBannerLoading}
-        onclick={() =>
-          openTailoredModal(
-            router,
-            props.experienceData.id,
-            props.experienceData.destination
-          )
-        }
-        text={`Craft a personalized itinerary${
-          props.experienceData.destination
-            ? " to " + props.experienceData.destination + " now"
-            : ""
-        }!`}
-      ></DesktopBanner>
-
-      <div className="hidden-desktop">
-        <MobileBanner
-          handleClick={() =>
-            openTailoredModal(
-              router,
-              props.experienceData.id,
-              props.experienceData.destination
-            )
-          }
-          city={props.experienceData.destination}
-        />
-      </div>
-
-      <SetWidthContainer>
-        <H3
-          style={{
-            textAlign: isPageWide ? "left" : "center",
-            margin: "3.5rem 0 3.5rem 0",
-          }}
-        >
-          Why plan with us?
-        </H3>
-        <WhyPlanWithUs
-          page_id={props.experienceData.id}
-          destination={props.experienceData.destination}
-          cities={props.experienceData.locations}
+        <Overview
+          heading={props.experienceData.overview_heading}
+          text={props.experienceData.overview_text}
+          image={props.experienceData.overview_image}
+          slug={props.slug}
         />
 
-        <H3
-          style={{
-            textAlign: isPageWide ? "left" : "center",
-            margin: "4rem 0 2.5rem 0",
-          }}
-        >
-          Happy Community of The Tarzan Way
-        </H3>
-        <Reviews></Reviews>
+        <div className="mt-5">
+          {components &&
+            components.map((component, index) => {
+              if (component.type === "Menu" && !component.parent) {
+                const navComponents = components.filter(
+                  (childComponent) => childComponent.parent === component.id
+                );
+
+                return navComponents.length > 0 ? (
+                  <div key={index} className="mx-3 space-y-12 mt-5">
+                    <PrimaryHeading>
+                      {" "}
+                      {component.heading}
+                    </PrimaryHeading>
+                    <Navigation components={navComponents} />
+
+                    <PlanYourTripButton text={"Plan Itinerary For Free"} />
+                  </div>
+                ) : null;
+              }
+
+              return (
+                !component.parent && (
+                  <div key={index} className="mx-3 space-y-12 mt-5">
+                    <div className="space-y-3">
+                      <PrimaryHeading className="mx-auto text-center">
+                        {component.heading}
+                      </PrimaryHeading>
+                      <SecondaryHeading className="mx-auto text-center">
+                        {component.text}
+                      </SecondaryHeading>
+                    </div>
+
+                    {/* Render specific carousel components based on type */}
+                    {component.carousel === "destination-1" ? (
+                      <>
+                        <Destination1Carousel
+                          handlePlanButton={handlePlanButton}
+                          setDestination={setDestination}
+                          packages={[
+                            ...component.cities,
+                            ...component.states,
+                            ...component.countries,
+                          ]}
+                        />
+                        <PlanYourTripButton text={"Start your journey now!"} />
+                      </>
+                    ) : component.carousel === "destination-2" ? (
+                      <></>
+                    ) : component.carousel === "itinerary-1" ? (
+                      <>
+                        <Itinerary1Carousel
+                          itineraries={component.itineraries}
+                        />
+                        <PlanYourTripButton />
+                      </>
+                    ) : component.carousel === "itinerary-2" ? (
+                      <div className="w-full relative">
+                        {props.slug === "honeymoon-2025" && (
+                          <>
+                            <Image
+                              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/red-hearts.png`}
+                              className="object-fill absolute -left-[1rem] top-[10rem] md:-left-[9rem] md:top-0"
+                              alt="Tilted Hearts"
+                              height={300}
+                              width={500}
+                              style={{
+                                opacity: "50%",
+                              }}
+                            />
+
+                            <Image
+                              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/red-hearts.png`}
+                              className="object-fill absolute -right-[1rem] top-[35rem] md:-right-[6rem] md:top-0"
+                              alt="Tilted Hearts"
+                              height={300}
+                              width={500}
+                              style={{
+                                opacity: "50%",
+                              }}
+                            />
+                          </>
+                        )}
+
+                        <Itinerary2Carousel elements={component.elements} />
+                      </div>
+                    ) : component.carousel === "activity-1" ? (
+                      <>
+                        <Activity1Carousel activities={component.activities} />{" "}
+                        <PlanYourTripButton
+                          text={"Create your free itinerary"}
+                        />
+                      </>
+                    ) : component.carousel === "review-1" ? (
+                      <div className="relative">
+                        {props.slug === "honeymoon-2025" && (
+                          <div className="-z-10 w-fit absolute -top-[16rem] right-0 md:-top-[9rem] overflow-hidden">
+                            <Image
+                              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/tilted-heart.png`}
+                              className="object-fill"
+                              alt="Tilted Hearts"
+                              height={200}
+                              width={200}
+                              style={{ transform: "rotate(45deg)" }}
+                            />
+                          </div>
+                        )}
+
+                        <Reviews1Carousel reviews={component.reviews} />
+                        <PlanYourTripButton />
+                      </div>
+                    ) : null}
+                  </div>
+                )
+              );
+            })}
+        </div>
+
+        {props.slug === "honeymoon-2025" && (
+          <div className="relative">
+            <div
+              className="-z-10 absolute -top-[3rem] w-[18rem] h-[18rem]"
+              style={{ transform: "rotate(-12deg)" }}
+            >
+              <Image
+                src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/tilted-heart.png`}
+                className="object-fill"
+                alt="Tilted Hearts"
+                height={200}
+                width={200}
+              />
+            </div>
+          </div>
+        )}
+
+        <div className="my-[100px]">
+          <ThemeFaqs faqs={props.experienceData.faq} />
+        </div>
       </SetWidthContainer>
 
-      <SetWidthContainer>
-        <H3
-          style={{
-            textAlign: isPageWide ? "left" : "center",
-            margin: "4rem 0 2.5rem 0",
-          }}
-        >
-          What they say?
-        </H3>
-        <AsSeenIn />
-        <ChatWithUs planner page_id={props.experienceData.id}></ChatWithUs>
-      </SetWidthContainer>
+      <TailoredFormMobileModal
+        destinationType={destination?.type}
+        page_id={destination?.pageId}
+        children_cities={props?.children_cities}
+        destination={destination?.name}
+        cities={props?.cities}
+        onHide={() => {
+          setShowTailoredModal(false);
+        }}
+        show={showTailoredModal}
+      />
     </div>
   );
 }
+
+export const PlanYourTripButton = (props) => {
+  let isPageWide = media("(min-width: 768px)");
+  const [showTailoredModal, setShowTailoredModal] = useState(false);
+  const router = useRouter();
+
+  const handlePlanButton = () => {
+    if (isPageWide) {
+      setShowTailoredModal(true);
+    } else {
+      openTailoredModal(router, props.page_id, props.destination);
+    }
+
+    logEvent({
+      action: "Plan_Itinerary",
+      params: {
+        page: props.page ? props.page : "",
+        event_category: "Button Click",
+        event_label: "Plan Itinerary For Free!",
+        event_action: "Banner",
+      },
+    });
+  };
+
+  return (
+    <div className="flex items-center justify-center mt-5">
+      <SecondaryButton onClick={handlePlanButton}>
+        {props.text
+          ? props.text
+          : props.slug === "honeymoon-2025"
+          ? "Plan Your Honeymoon!"
+          : "Plan Your Trip Now!"}
+      </SecondaryButton>
+
+      <TailoredFormMobileModal
+        destinationType={"city-planner"}
+        page_id={props.page_id}
+        children_cities={props.children_cities}
+        destination={props.destination}
+        cities={props.cities}
+        onHide={() => {
+          setShowTailoredModal(false);
+        }}
+        show={showTailoredModal}
+        eventDates={props.eventDates}
+      />
+    </div>
+  );
+};

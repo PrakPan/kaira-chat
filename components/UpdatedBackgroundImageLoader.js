@@ -1,10 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import ImageLoader from "./ImageLoader";
 
 const SaifBackgroundImageLoader = (props) => {
+  const [loaded, setLoaded] = useState(false);
+
+  const handleImageLoad = () => {
+    setLoaded(true);
+  };
+
   return (
     <>
       <div
+        className={loaded ? "" : "bg-gray-50"}
         style={{
           position: "static",
           zIndex: "0",
@@ -28,19 +35,21 @@ const SaifBackgroundImageLoader = (props) => {
           borderRadius={props.borderRadius ? props.borderRadius : "0"}
           noPlaceholder={props.noPlaceholder}
           resizeMode={props.resizeMode}
-          onload={props.onload}
+          onload={props.onload ? props.onload : handleImageLoad}
         />
       </div>
 
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          padding: props.padding,
-        }}
-      >
-        {props.children}
-      </div>
+      {loaded && (
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            padding: props.padding,
+          }}
+        >
+          {props.children}
+        </div>
+      )}
     </>
   );
 };

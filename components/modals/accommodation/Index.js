@@ -8,10 +8,13 @@ import Overview from "./Overview/Overview";
 import Drawer from "../../ui/Drawer";
 import Skeleton from "./Skeleton";
 import { openNotification } from "../../../store/actions/notification";
-import { hotelDetails } from "../../../services/bookings/FetchAccommodation";
+import {
+  hotelDetails,
+  bookingDetails,
+} from "../../../services/bookings/FetchAccommodation";
 import { updateAccommodationBooking } from "../../../services/bookings/UpdateBookings";
 import { useRouter } from "next/router";
-
+import HotelBookingDetails from "./Overview/HotelBookingDetails";
 
 const Container = styled.div`
   padding: 0 0.75rem 0.75rem 0.75rem;
@@ -76,42 +79,63 @@ const POI = (props) => {
     if (props.show) {
       fetchDetails();
     }
-  }, [props.id, props.show, props.provider])
+  }, [props.id, props.show, props.provider]);
 
   const fetchDetails = () => {
     setLoading(true);
     setError(false);
 
-    let check_in = props.check_in;
-    let check_out = props.check_out;
-    if (props.check_in.includes("/")) {
-      check_in = props.check_in.split("/").reverse().join("-");
-      check_out = props.check_out.split("/").reverse().join("-");
-    }
-    const requestData = {
-      hotel_id: `${props.id}`,
-      trace_id: props.traceId,
-      check_in: check_in,
-      check_out: check_out,
-      num_adults: props?.pax?.number_of_adults,
-      num_children: props?.pax?.number_of_children,
-      currency: "INR",
-      source: props.provider.toLowerCase(),
-    };
+    if (props.mercury) {
+      bookingDetails
+        .get(`/${props.itineraryId}/bookings/accommodation/${props.id}/`)
+        .then((res) => {
+          setLoading(false);
+          setData(res.data);
+        })
+        .catch((err) => {
+          setLoading(false);
+          setError(true);
+          props.openNotification({
+            type: "error",
+            text: "There seems to be a problem, please try again!",
+            heading: "Error!",
+          });
+        });
+    } else {
+      let check_in = props.check_in;
+      let check_out = props.check_out;
+      if (props.check_in.includes("/")) {
+        check_in = props.check_in.split("/").reverse().join("-");
+        check_out = props.check_out.split("/").reverse().join("-");
+      }
+      const requestData = {
+        hotel_id: `${props.id}`,
+        trace_id: props.traceId,
+        check_in: check_in,
+        check_out: check_out,
+        num_adults: props?.pax?.number_of_adults,
+        num_children: props?.pax?.number_of_children,
+        currency: "INR",
+        source: props.provider.toLowerCase(),
+      };
 
-    hotelDetails.post("", requestData).then(res => {
-      setLoading(false);
-      setData(res.data);
-    }).catch(err => {
-      setLoading(false);
-      setError(true);
-      props.openNotification({
-        type: "error",
-        text: "There seems to be a problem, please try again!",
-        heading: "Error!",
-      });
-    })
-  }
+      hotelDetails
+        .post("", requestData)
+        .then((res) => {
+          setLoading(false);
+          setData(res.data);
+        })
+        .catch((err) => {
+          setLoading(false);
+          setError(true);
+          props.openNotification({
+            type: "error",
+            text: "There seems to be a problem, please try again!",
+            heading: "Error!",
+          });
+        });
+    }
+  };
 
   const updateBooking = (recommendation_id, rates) => {
     props.setUpdateBookingState(true);
@@ -124,30 +148,33 @@ const POI = (props) => {
       trace_id: props.traceId,
       itinerary_id: router?.query?.id,
       hotel_id: data?.id,
-      source: props.provider.toLowerCase()
-    }
+      source: props.provider.toLowerCase(),
+    };
 
-    updateAccommodationBooking.post(`${router?.query?.id}/bookings/accommodation/`, requestData).then(response => {
-      props._updateStayBookingHandler([response.data]);
-      props.setUpdateBookingState(false);
-      setTimeout(() => {
-        props.getPaymentHandler();
-      }, 1000);
-      props.openNotification({
-        type: "success",
-        text: "Hotel added successfully.",
-        heading: "Sucess!",
+    updateAccommodationBooking
+      .post(`${router?.query?.id}/bookings/accommodation/`, requestData)
+      .then((response) => {
+        props._updateStayBookingHandler([response.data]);
+        props.setUpdateBookingState(false);
+        setTimeout(() => {
+          props.getPaymentHandler();
+        }, 1000);
+        props.openNotification({
+          type: "success",
+          text: "Hotel added successfully.",
+          heading: "Sucess!",
+        });
+      })
+      .catch((err) => {
+        props.setUpdateBookingState(false);
+        // props.setUnauthorized(true);
+        props.openNotification({
+          type: "error",
+          text: "Something went wrong! Please try after some time.",
+          heading: "Error!",
+        });
       });
-    }).catch(err => {
-      props.setUpdateBookingState(false);
-      // props.setUnauthorized(true);
-      props.openNotification({
-        type: "error",
-        text: "Something went wrong! Please try after some time.",
-        heading: "Error!",
-      });
-    })
-  }
+  };
 
   return (
     <Drawer
@@ -171,23 +198,46 @@ const POI = (props) => {
           </BackContainer>
           {!error ? (
             <div>
-              <Overview
-                _setImagesHandler={props._setImagesHandler}
-                user_rating={props.user_rating}
-                currentBooking={props.currentBooking}
-                number_of_reviews={props.number_of_reviews}
-                data={data}
-                images={data?.images ? data.images : []}
-                experience_filters={
-                  props.poi ? props.poi.experience_filters : null
-                }
-                name={props.poi ? props.poi.name : null}
-                duration={props.poi ? props.poi.ideal_duration_hours : null}
-                BookingButton={props.BookingButton}
-                BookingButtonFun={props.BookingButtonFun}
-                payment={props.payment}
-                updateBooking={updateBooking}
-              ></Overview>
+              {" "}
+              {props.mercury ? (
+                <HotelBookingDetails
+                  _setImagesHandler={props._setImagesHandler}
+                  user_rating={props.user_rating}
+                  currentBooking={props.currentBooking}
+                  number_of_reviews={props.number_of_reviews}
+                  data={data}
+                  images={
+                    data?.hotel_details?.images ? data.hotel_details.images : []
+                  }
+                  experience_filters={
+                    props.poi ? props.poi.experience_filters : null
+                  }
+                  name={props.poi ? props.poi.name : null}
+                  duration={props.poi ? props.poi.ideal_duration_hours : null}
+                  BookingButton={props.BookingButton}
+                  BookingButtonFun={props.BookingButtonFun}
+                  payment={props.payment}
+                  updateBooking={updateBooking}
+                />
+              ) : (
+                <Overview
+                  _setImagesHandler={props._setImagesHandler}
+                  user_rating={props.user_rating}
+                  currentBooking={props.currentBooking}
+                  number_of_reviews={props.number_of_reviews}
+                  data={data}
+                  images={data?.images ? data.images : []}
+                  experience_filters={
+                    props.poi ? props.poi.experience_filters : null
+                  }
+                  name={props.poi ? props.poi.name : null}
+                  duration={props.poi ? props.poi.ideal_duration_hours : null}
+                  BookingButton={props.BookingButton}
+                  BookingButtonFun={props.BookingButtonFun}
+                  payment={props.payment}
+                  updateBooking={updateBooking}
+                ></Overview>
+              )}
             </div>
           ) : (
             <ErrorContainer>
@@ -214,7 +264,7 @@ const POI = (props) => {
 const mapStateToPros = (state) => {
   return {
     token: state.auth.token,
-    itineraryId: state.itineraryId,
+    itineraryId: state.ItineraryId,
   };
 };
 

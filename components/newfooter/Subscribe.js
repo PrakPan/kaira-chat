@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { useState } from "react";
 import styled from "styled-components";
 import axiosSubscribeInstance from "../../services/subscribe/subscribe";
@@ -104,6 +105,41 @@ const Subscribe = (props) => {
 
   return (
     <Container shadow={props.shadow}>
+      {isPageWide &&
+        props.page === "Theme Page" &&
+        props.slug === "honeymoon-2025" && (
+          <>
+            <div className="w-[20%] h-[70%] absolute left-0 top-0 z-50 overflow-hidden">
+              <Image
+                src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/join-hearts.png`}
+                alt="Tilted Hearts"
+                height={100}
+                width={100}
+                className="absolute left-[-1rem] top-[-1rem] object-cover object-left"
+                style={{
+                  width: "28rem", // Set width larger than parent
+                  height: "28rem", // Set height larger than parent
+                }}
+              />
+            </div>
+
+            <div className="w-[20%] h-[70%] absolute right-0 bottom-0 z-50 overflow-hidden">
+              <Image
+                src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/join-hearts.png`}
+                alt="Tilted Hearts"
+                // fill
+                height={100}
+                width={100}
+                className="absolute right-[-1rem] bottom-[-1rem] object-cover object-right"
+                style={{
+                  width: "28rem", // Set width larger than parent
+                  height: "28rem", // Set height larger than parent
+                }}
+              />
+            </div>
+          </>
+        )}
+
       <H2
         style={{
           color: "black",

@@ -22,10 +22,10 @@ const CityDay = (props) => {
   return (
     <div className="flex flex-col md:flex-row md:border-b-2">
       <div
-        className={`md:w-[15%] text-[14px] md:text-[16px] font-semibold py-2 px-3  md:border-r-2 md:text-center text-nowrap md:text-[#7A7A7A] bg-[#ECECEC] md:bg-white`}
+        className={`md:w-[15%] text-[14px] md:text-[16px] font-semibold py-2 px-1  md:border-r-2 md:text-center md:text-[#7A7A7A] bg-[#ECECEC] md:bg-white`}
       >
         Day {props.index + 1}
-        {isPageWide ? <div>Feb 03</div> : <span>, Feb 03</span>}
+        {isPageWide ? <span>, Feb 03</span> : <span>, Feb 03</span>}
       </div>
 
       <div className="flex flex-col p-3 md:w-[85%]">

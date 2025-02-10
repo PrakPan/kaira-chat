@@ -4,7 +4,7 @@ export default function H7(props) {
       style={{
         ...props.style,
       }}
-      className="text-[22px] font-light"
+      className={"text-[22px] font-light " + props.className}
     >
       {props.children}
     </h2>

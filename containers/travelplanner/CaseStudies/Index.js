@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import media from "../../../components/media";
 import Card from "./Card";
 import TRAVELERS from "../../../public/content/travelers";
 import Button from "../../../components/ui/button/Index";
 import SwiperCarousel from "../../../components/SwiperCarousel";
+import Reviews1Carousel from "../../../components/theme/Reviews1Carousel";
 
 const Container = styled.div`
   padding: 0 0.5rem;
@@ -19,6 +20,23 @@ const Container = styled.div`
 
 const FullImgContent = (props) => {
   let isPageWide = media("(min-width: 768px)");
+  const [reviews, setReviews] = useState(null);
+
+  useEffect(() => {
+    let travelers = [];
+
+    for (let traveler of TRAVELERS) {
+      travelers.push({
+        name: traveler.name,
+        image: traveler.image,
+        text: traveler.review,
+        rating: 5,
+        itinerary_link: "https://thetarzanway.com/itinerary/" + traveler.id,
+      });
+    }
+
+    setReviews(travelers);
+  }, [TRAVELERS]);
 
   const cards = [
     <Card
@@ -60,15 +78,11 @@ const FullImgContent = (props) => {
   ];
 
   return (
-    <div>
-      {isPageWide ? (
-        <>
-          <Container>
-            {cards.map((e, i) => (
-              <div key={i}>{e}</div>
-            ))}
-          </Container>
+    <div className="mx-3 mb-5">
+      {reviews && <Reviews1Carousel reviews={reviews} />}
 
+      {isPageWide && (
+        <div className="mt-3">
           <Button
             link={"/testimonials"}
             onclickparams={null}
@@ -81,13 +95,7 @@ const FullImgContent = (props) => {
           >
             View All
           </Button>
-        </>
-      ) : (
-        <SwiperCarousel
-          slidesPerView={1}
-          pageDots
-          cards={cards}
-        ></SwiperCarousel>
+        </div>
       )}
     </div>
   );
