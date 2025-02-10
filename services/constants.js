@@ -4,6 +4,10 @@ export const MIS_SERVER_HOST = process.env.NEXT_PUBLIC_MIS_SERVER_HOST;
 
 export const MERCURY_HOST = process.env.NEXT_PUBLIC_MERCURY_HOST;
 
+export const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID;
+
+export const CLIENT_SECRET = process.env.NEXT_PUBLIC_CLIENT_SECRET;
+
 export const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
 export const GOOGLE_ANALTICS_ID = process.env.NEXT_PUBLIC_GOOGLE_ANALTICS_ID;

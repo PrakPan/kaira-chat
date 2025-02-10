@@ -137,13 +137,15 @@ const Enquiry = (props) => {
 
   useEffect(() => {
     if (groupType === "Solo") {
-      setRoomConfiguration([{
-        adults: 1,
-        children: 0,
-        childAges: [],
-      }])
+      setRoomConfiguration([
+        {
+          adults: 1,
+          children: 0,
+          childAges: [],
+        },
+      ]);
     }
-  }, [groupType])
+  }, [groupType]);
 
   useEffect(() => {
     if (slideIndex === 2 && props.token && props.phone !== "null") {
@@ -504,35 +506,31 @@ const Enquiry = (props) => {
           Authorization: `Bearer ${props.token}`,
         },
       })
-      .then((res) => {
+      .then((response) => {
         setSubmitted(true);
-        if (!response.data.auto_itinerary_created) {
-          router.push("/thank-you");
+        // if (!response.data?.auto_itinerary_created) {
+        //   router.push("/thank-you");
+        // } else {
+        if (response.data.time) {
+          router.push(`/itinerary/${itineraryId}?t=45`);
         } else {
-          if (response.data.loader_time) {
-            window.location.href =
-              "/itinerary/" +
-              response.data.itinerary.itinerary_id +
-              "?t=" +
-              response.data.loader_time;
-          } else {
-            window.location.href =
-              "/itinerary/" + response.data.itinerary.itinerary_id;
-          }
-
-          setLoading(false);
-
-          logEvent({
-            action: "conversion",
-            params: {
-              send_to: "AW-738037519/IF5rCMyxhL8ZEI-e9t8C",
-            },
-          });
+          router.push(`/itinerary/${itineraryId}`);
         }
+
+        setLoading(false);
+
+        logEvent({
+          action: "conversion",
+          params: {
+            send_to: "AW-738037519/IF5rCMyxhL8ZEI-e9t8C",
+          },
+        });
+        // }
       })
       .catch((err) => {
+        console.log("ERROR >>>", err);
         setLoading(false);
-        // router.push("/thank-you");
+        router.push("/thank-you");
       });
   };
 
