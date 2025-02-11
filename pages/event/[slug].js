@@ -30,6 +30,8 @@ const TravelPlanner = ({
   //   fetchData();
   // }, [slug]);
 
+
+
   useEffect(() => {
     setHotLocationSearch(hotLocationSearch);
   }, [hotLocationSearch]);
@@ -174,7 +176,7 @@ export async function getStaticProps({ params }) {
     }
   } catch (err) {
     console.error(
-      `[ERROR][ThemePage][axioslocationsinstance:/hot_destinations/?state=${slug}/]: `,
+      `[ERROR][EventPage][axioslocationsinstance:/hot_destinations/?state=${slug}/]: `,
       err.message
     );
   }
