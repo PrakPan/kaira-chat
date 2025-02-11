@@ -120,7 +120,7 @@ const ItineraryContainer = (props) => {
                 setTimeout(getBreifHandler, 3000);
       })
       .catch((error) => {
-        window.location.href = "/thank-you";
+        // window.location.href = "/thank-you";
       });
   };
 
@@ -304,6 +304,11 @@ const ItineraryContainer = (props) => {
       .get(`/${props.id}/`)
       .then((res) => {
         const data = res.data;
+        if (res.data?.version === "v1") {
+          router.push(`/itinerary/v1/${props.id}`);
+          return;
+        }
+
         props.setItineraryDaybyDay(data);
       })
       .catch((err) => {
