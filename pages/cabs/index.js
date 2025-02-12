@@ -4,7 +4,7 @@ import { SingleDatePicker } from "react-dates";
 import "react-dates/lib/css/_datepicker.css";
 import moment from "moment";
 import Button from "../../components/ui/button/Index";
-import AirportSearch from "../../components/flights/airportSearch";
+import CabSearch from "./cabSearch";
 import { FaMinus, FaPlus } from "react-icons/fa";
 import styled from "styled-components";
 import { NumToClass } from "../../public/content/flights";
@@ -101,14 +101,14 @@ const Flight = () => {
     tripType: "oneWay",
     from: { city: "Delhi", country: "India", code: "DEL" },
     to: { city: "Chennai", country: "India", code: "MAA" },
-    departure: moment(today).format("YYYY-MM-DD") ,
-    returnDate: "",
+    departure: moment(today),
+    returnDate: moment(today),
     adults: 1,
     children: 0,
     infants: 0,
     flightCabinClass: 1,
   });
-  const [returnDate, setReturnDate] = useState(null);
+  const [returnDate, setReturnDate] = useState(moment(today));
   const [returnFocused, setReturnFocused] = useState(false);
   const [showPax, setShowPax] = useState(false);
   const handleChange = (e) => {
@@ -204,11 +204,11 @@ const Flight = () => {
 
           <div className="flex gap-1 py-4">
             <div className="h-[150px]">
-              <AirportSearch input={input} setInput={setInput} name="from" />
+              <CabSearch input={input} setInput={setInput} name="from" />
             </div>
 
             <div>
-              <AirportSearch input={input} setInput={setInput} name="to" />
+              <CabSearch input={input} setInput={setInput} name="to" />
             </div>
 
             <div className="w-[160px]">
@@ -309,7 +309,7 @@ const Flight = () => {
   );
 };
 
-export const Pax = ({ setShowPax, pax, setPax }) => {
+const Pax = ({ setShowPax, pax, setPax }) => {
   const ref = useRef(null);
   console.log(pax);
   const [adults, setAdults] = useState(pax.adults ? pax.adults : 1);

@@ -4,12 +4,12 @@ import { SingleDatePicker } from "react-dates";
 import "react-dates/lib/css/_datepicker.css";
 import moment from "moment";
 import Button from "../../components/ui/button/Index";
-import AirportSearch from "../../components/flights/airportSearch";
+import RoomsGuests from "./roomsGuests";
 import { FaMinus, FaPlus } from "react-icons/fa";
 import styled from "styled-components";
-import { NumToClass } from "../../public/content/flights";
 import Layout from "../../components/Layout";
 import { useRouter } from "next/navigation";
+import PriceRange from "./priceRange";
 const Container = styled.div`
   position: relative;
 
@@ -99,16 +99,15 @@ const Flight = () => {
   const router = useRouter();
   const [input, setInput] = useState({
     tripType: "oneWay",
-    from: { city: "Delhi", country: "India", code: "DEL" },
-    to: { city: "Chennai", country: "India", code: "MAA" },
-    departure: moment(today).format("YYYY-MM-DD") ,
-    returnDate: "",
+    city: { city: "Mumbai", country: "India" },
+    checkIn: moment(today),
+    checkOut: moment(today),
+    rooms: 1,
     adults: 1,
     children: 0,
-    infants: 0,
-    flightCabinClass: 1,
+    price: "₹0-₹1500",
   });
-  const [returnDate, setReturnDate] = useState(null);
+  const [returnDate, setReturnDate] = useState(moment(today));
   const [returnFocused, setReturnFocused] = useState(false);
   const [showPax, setShowPax] = useState(false);
   const handleChange = (e) => {
@@ -123,21 +122,14 @@ const Flight = () => {
     return (
       <>
         <div
-          className="w-[230px] h-[100px] text-bold border border-gray-300 rounded-md py-2 px-2 hover:bg-blue-200 focus:ring-2 focus:ring-blue-500 outline-none"
+          className="w-[210px] h-[100px] text-bold border border-gray-300 rounded-md py-2 px-2 hover:bg-blue-200 focus:ring-2 focus:ring-blue-500 outline-none"
           onClick={() => setShowPax(true)}
         >
           <label className="block text-gray-600 font-medium mb-1">
-            Traveller & Class
+            Rooms & Guests
           </label>
           <div name={name} className="text-2xl w-full">
-            {input.adults + input.children + input.infants} Travellers
-          </div>
-          <div name={name} className="text-xl w-full">
-            {
-              NumToClass.filter(
-                (item) => item.label === input.flightCabinClass
-              )[0].value
-            }
+            {input.rooms} Room {input.adults} Adults
           </div>
         </div>
         {showPax && (
@@ -148,7 +140,7 @@ const Flight = () => {
   };
   return (
     <>
-      <Layout page="Flight">
+      <Layout page="Hotels">
         <form className="mt-8 relative bg-white shadow-lg rounded-lg p-6 max-w-5xl mx-auto z-[1002]">
           <div className="flex gap-3">
             <div
@@ -176,45 +168,15 @@ const Flight = () => {
               Cabs
             </div>
           </div>
-          <div className="flex gap-6 border-b border-gray-200 pb-4">
-            <label className="flex items-center gap-2 cursor-pointer text-gray-700 font-medium">
-              <input
-                type="radio"
-                name="tripType"
-                value="oneWay"
-                className="accent-blue-600"
-                checked={input.tripType === "oneWay"}
-                onChange={handleChange}
-                onClick={() => setReturnDate(() => null)}
-              />
-              One Way
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer text-gray-700 font-medium">
-              <input
-                type="radio"
-                name="tripType"
-                value="roundTrip"
-                className="accent-blue-600"
-                checked={input.tripType === "roundTrip"}
-                onChange={handleChange}
-              />
-              Round Trip
-            </label>
-          </div>
-
           <div className="flex gap-1 py-4">
             <div className="h-[150px]">
-              <AirportSearch input={input} setInput={setInput} name="from" />
-            </div>
-
-            <div>
-              <AirportSearch input={input} setInput={setInput} name="to" />
+              <RoomsGuests input={input} setInput={setInput} name="city" />
             </div>
 
             <div className="w-[160px]">
               <div className=" h-[100px] flex flex-col gap-2 border border-gray-300 rounded-md py-2 px-2 focus:ring-2 focus:ring-blue-500 outline-none ">
                 <label className="block text-gray-600 font-medium mb-1">
-                  Departure
+                  Check-In
                 </label>
                 <Container>
                   <SingleDatePicker
@@ -223,7 +185,7 @@ const Flight = () => {
                       setDate(newDate);
                       setInput((prev) => ({
                         ...prev,
-                        departure: newDate ? newDate.format("YYYY-MM-DD") : "",
+                        checkIn: newDate ? newDate.format("YYYY-MM-DD") : "",
                       }));
                     }}
                     focused={focused}
@@ -240,7 +202,7 @@ const Flight = () => {
             <div className="!w-[160px]">
               <div className="h-[100px] flex flex-col gap-2 border border-gray-300 rounded-md py-2 px-2 focus:ring-2 focus:ring-blue-500 outline-none">
                 <label className="block text-gray-600 font-medium mb-1">
-                  Return
+                  Check-Out
                 </label>
                 <Container>
                   <SingleDatePicker
@@ -249,7 +211,7 @@ const Flight = () => {
                       setReturnDate(newDate);
                       setInput((prev) => ({
                         ...prev,
-                        returnDate: newDate ? newDate.format("YYYY-MM-DD") : "",
+                        checkOut: newDate ? newDate.format("YYYY-MM-DD") : "",
                         tripType: "roundTrip",
                       }));
                     }}
@@ -267,10 +229,14 @@ const Flight = () => {
 
             <div>
               <SimpleInputComp
-                name="traveller"
+                name="rooms"
                 ipt={input}
                 handleChange={handleChange}
               />
+            </div>
+
+            <div className="h-[150px]">
+              <PriceRange input={input} setInput={setInput} name="price" />
             </div>
           </div>
 
@@ -288,14 +254,10 @@ const Flight = () => {
                   pathname: "/flight/searchflights",
                   query: {
                     tripType: input.tripType,
-                    from: input.from.code,
-                    to: input.to.code,
-                    departure: input.departure,
-                    returnDate: input.returnDate,
+                    checkIn: input.checkIn,
+                    checkOut: input.checkOut,
                     adults: input.adults,
                     children: input.children,
-                    infants: input.infants,
-                    flightCabinClass: input.flightCabinClass,
                   },
                 })
               }
@@ -309,13 +271,12 @@ const Flight = () => {
   );
 };
 
-export const Pax = ({ setShowPax, pax, setPax }) => {
+const Pax = ({ setShowPax, pax, setPax }) => {
   const ref = useRef(null);
   console.log(pax);
   const [adults, setAdults] = useState(pax.adults ? pax.adults : 1);
   const [children, setChildren] = useState(pax.children ? pax.children : 0);
-  const [infants, setInfants] = useState(pax.infants ? pax.infants : 0);
-  const [cabinClass, setCabinClass] = useState(pax.flightCabinClass);
+  const [rooms, setRooms] = useState(pax.rooms);
 
   const handleMinus = (type) => {
     switch (type) {
@@ -356,8 +317,8 @@ export const Pax = ({ setShowPax, pax, setPax }) => {
       case "children":
         setChildren((prev) => prev + 1);
         break;
-      case "infants":
-        setInfants((prev) => prev + 1);
+      case "rooms":
+        setRooms((prev) => prev + 1);
         break;
       default:
         break;
@@ -375,10 +336,8 @@ export const Pax = ({ setShowPax, pax, setPax }) => {
       ...prev,
       adults,
       children,
-      infants,
-      flightCabinClass: cabinClass,
+      rooms,
     }));
-    console.log(cabinClass);
 
     setShowPax(false);
   };
@@ -390,93 +349,47 @@ export const Pax = ({ setShowPax, pax, setPax }) => {
         className="absolute top-[270px] md:top-[240px] left-2 right-2 md:right-5 md:left-auto bg-neutral-100 shadow-2xl drop-shadow-3xl p-3 rounded-lg space-y-5 text-sm"
       >
         <div className="flex flex-col gap-1">
-          <div>Adults (12y +)</div>
+          <div>Rooms</div>
           <div className="flex flex-row items-center gap-2">
             <FaMinus
-              onClick={() => handleMinus("adult")}
+              onClick={() => handleMinus("rooms")}
               className="cursor-pointer"
             />
-            <div className="bg-white px-2 py-1 rounded-md">{adults}</div>
+            <div className="bg-white px-2 py-1 rounded-md">{rooms}</div>
             <FaPlus
-              onClick={() => handlePlus("adult")}
+              onClick={() => handlePlus("rooms")}
               className="cursor-pointer"
             />
           </div>
-        </div>
-
-        <div className="flex flex-row gap-5">
           <div className="flex flex-col gap-1">
-            <div>Children (2y - 12y)</div>
+            <div>Adults (12y +)</div>
             <div className="flex flex-row items-center gap-2">
               <FaMinus
-                onClick={() => handleMinus("children")}
+                onClick={() => handleMinus("adult")}
                 className="cursor-pointer"
               />
-              <div className="bg-white px-2 py-1 rounded-md">{children}</div>
+              <div className="bg-white px-2 py-1 rounded-md">{adults}</div>
               <FaPlus
-                onClick={() => handlePlus("children")}
+                onClick={() => handlePlus("adult")}
                 className="cursor-pointer"
               />
             </div>
           </div>
 
-          <div className="flex flex-col gap-1">
-            <div>Infants (below 2y)</div>
-            <div className="flex flex-row items-center gap-2">
-              <FaMinus
-                onClick={() => handleMinus("infants")}
-                className="cursor-pointer"
-              />
-              <div className="bg-white px-2 py-1 rounded-md">{infants}</div>
-              <FaPlus
-                onClick={() => handlePlus("infants")}
-                className="cursor-pointer"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <div>Choose Travel Class</div>
-          <div className="w-fit flex flex-col md:flex-row border-2 border-gray-400 rounded-lg">
-            <div
-              onClick={() => setCabinClass(1)}
-              style={{ backgroundColor: cabinClass === 1 ? "#F8E000" : "" }}
-              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#F8E000]"
-            >
-              Economy
-            </div>
-
-            <div
-              onClick={() => setCabinClass(2)}
-              style={{ backgroundColor: cabinClass === 2 ? "#F8E000" : "" }}
-              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#F8E000]"
-            >
-              Premium Economy
-            </div>
-
-            <div
-              onClick={() => setCabinClass(3)}
-              style={{ backgroundColor: cabinClass === 3 ? "#F8E000" : "" }}
-              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#F8E000]"
-            >
-              Business
-            </div>
-
-            <div
-              onClick={() => setCabinClass(4)}
-              style={{ backgroundColor: cabinClass === 4 ? "#F8E000" : "" }}
-              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#F8E000]"
-            >
-              Premium Business
-            </div>
-
-            <div
-              onClick={() => setCabinClass(5)}
-              style={{ backgroundColor: cabinClass === 5 ? "#F8E000" : "" }}
-              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#F8E000]"
-            >
-              First Class
+          <div className="flex flex-row gap-5">
+            <div className="flex flex-col gap-1">
+              <div>Children (2y - 12y)</div>
+              <div className="flex flex-row items-center gap-2">
+                <FaMinus
+                  onClick={() => handleMinus("children")}
+                  className="cursor-pointer"
+                />
+                <div className="bg-white px-2 py-1 rounded-md">{children}</div>
+                <FaPlus
+                  onClick={() => handlePlus("children")}
+                  className="cursor-pointer"
+                />
+              </div>
             </div>
           </div>
         </div>

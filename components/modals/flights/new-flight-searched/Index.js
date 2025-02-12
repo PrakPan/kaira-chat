@@ -55,7 +55,7 @@ const Flight = (props) => {
           origin={props.data?.segments[0]?.origin}
           destination={props.data?.segments[props.data?.segments?.length - 1]?.destination}
           duration={props.data?.total_duration}
-          isNonStop={props.filtersState.non_stop_flights}
+          isNonStop={props?.filtersState?.non_stop_flights}
           numStops={props.data?.segments?.length - 1}
           segments={props.data?.segments}
           setShowDetails={setShowDetails}

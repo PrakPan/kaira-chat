@@ -12,9 +12,32 @@ export const popularCities = [
 ];
 
 export const NumToClass=[
-    {label:1,value:"Economy"},
-    {label:2,value:"Premium Economy"},
-    {label:3,value:"Business"},
-    {label:4,value:"Premium Buisness"},
-    {label:5,value:"First Class"}
+    {label:1,value:"All"},
+    {label:2,value:"Economy"},
+    {label:3,value:"Premium Economy"},
+    {label:4,value:"Business"},
+    {label:5,value:"Premium Buisness"},
+    {label:6,value:"First Class"}
 ]
+
+
+export const cities=[
+    { "city": "Mumbai", "country": "India" },
+    { "city": "Delhi", "country": "India" },
+    { "city": "Bengaluru", "country": "India" },
+    { "city": "Hyderabad", "country": "India" },
+    { "city": "Chennai", "country": "India" },
+    { "city": "Kolkata", "country": "India" },
+    { "city": "Pune", "country": "India" },
+    { "city": "Ahmedabad", "country": "India" },
+    { "city": "Jaipur", "country": "India" },
+    { "city": "Lucknow", "country": "India" }
+]
+
+export const pricerange=[
+    { "label": "₹0-₹1500", "value": "₹0-₹1500" },
+    { "label": "₹1500-₹3000", "value": "₹1500-₹3000" },
+    { "label": "₹3000-₹5000", "value": "₹3000-₹5000" },
+    { "label": "₹5000+", "value": "₹5000+" }
+]
+  
