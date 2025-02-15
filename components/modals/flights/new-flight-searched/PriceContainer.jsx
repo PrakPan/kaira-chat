@@ -11,7 +11,7 @@ export default function PriceContainer({ data, isSelected, selectedBooking, _upd
                 </div>
             </div>
 
-            <div>
+            {_updateBookingHandler&&<div>
                 {isSelected ? (
                     <div className="flex items-center gap-1">
                         <ImCheckboxChecked className="inline" /> Selected
@@ -31,7 +31,7 @@ export default function PriceContainer({ data, isSelected, selectedBooking, _upd
                         <ImCheckboxUnchecked className="inline" /> Select
                     </div>
                 )}
-            </div>
+            </div>}
         </div>
     );
 }

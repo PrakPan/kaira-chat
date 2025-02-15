@@ -5,9 +5,10 @@ import FlightDetails from "./FlightDetails";
 import PriceContainer from "./PriceContainer";
 import { useState, useEffect } from "react";
 import { axiosFlightFareRule } from "../../../../services/bookings/FlightSearch";
-import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
-
-
+import GlobalModal from "../../GlobalModal";
+import { MERCURY_HOST } from "../../../../services/constants";
+import axios from "axios";
+import { useRouter } from "next/router";
 const Container = styled.div`
   width: 95%;
   background-color: white;
@@ -31,6 +32,7 @@ const ClippathComp = styled.div`
 `;
 
 const Flight = (props) => {
+  const router=useRouter()
   const [showDetails, setShowDetails] = useState(false);
 
   return (
@@ -46,14 +48,14 @@ const Flight = (props) => {
       ) : null}
 
       <div className="flex flex-col gap-1 lg:flex-row lg:items-center lg:justify-between">
-        <LogoContainer
-          data={props.data}
-        />
+        <LogoContainer data={props.data} />
 
         <FlightDetails
           data={props.data}
           origin={props.data?.segments[0]?.origin}
-          destination={props.data?.segments[props.data?.segments?.length - 1]?.destination}
+          destination={
+            props.data?.segments[props.data?.segments?.length - 1]?.destination
+          }
           duration={props.data?.total_duration}
           isNonStop={props?.filtersState?.non_stop_flights}
           numStops={props.data?.segments?.length - 1}
@@ -65,7 +67,7 @@ const Flight = (props) => {
           data={{
             resultIndex: props.data?.result_index,
             finalFare: props.data?.final_fare,
-            isRefundable: props.data?.is_refundable
+            isRefundable: props.data?.is_refundable,
           }}
           isSelected={props.isSelected}
           selectedBooking={props.selectedBooking}
@@ -73,41 +75,66 @@ const Flight = (props) => {
           provider={props.provider}
         />
       </div>
+      <div className="flex justify-end">
+        <button
+          className="text-sm font-medium text-yellow-500 border border-yellow-500 rounded-lg px-3 py-1 transition-all 
+             hover:bg-yellow-500 hover:text-black focus:outline-none"
+          onClick={() => setShowDetails((prev) => !prev)}
+        >
+          Flight Details
+        </button>
 
-      <button className="text-sm text-blue flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg transition-all focus:outline-none"
-        onClick={() => setShowDetails(prev => !prev)}
-      >
-        Flight Details
-        {showDetails ? (
-          <IoIosArrowUp className="text-lg" />
-        ) : (
-          <IoIosArrowDown className="text-lg" />
-        )}
-      </button>
-
-
-      {showDetails && (
-        <Details
-          segments={props.data?.segments}
-          provider={props.provider}
-          resultIndex={props.data?.result_index}
-          setShowDetails={setShowDetails}
+        <GlobalModal
+          isOpen={showDetails}
+          onClose={() => setShowDetails(false)}
+          children={
+            <>
+    <Details
+      segments={props.data?.segments}
+      provider={props.provider}
+      resultIndex={props.data?.result_index}
+      setShowDetails={setShowDetails}
+    />
+    <button
+      onClick={() => {
+        const getResult = async () => {
+          const res = await axios.post(
+            MERCURY_HOST +
+              "/api/v1/itinerary/jhjgjhk/bookings/flight/",
+            {
+              trace_id: localStorage.getItem(
+                `${props.provider}_trace_id`
+              ),
+              result_indices: [props.data?.result_index],
+            }
+          );
+          console.log(res.data.id);
+          router.push(`/flights/book/${res.data.id}`);
+        };
+        getResult();
+      }}
+    >
+      Submit
+    </button>
+  </>
+          }
         />
-      )}
+      </div>
     </Container>
   );
 };
 
 export default Flight;
 
+
 const Details = ({ segments, provider, resultIndex, setShowDetails }) => {
   const [fareRules, setFareRules] = useState(null);
-  const [fareRulesLoading, setFareRulesLoading] = useState(false)
+  const [fareRulesLoading, setFareRulesLoading] = useState(false);
   const [fareRUlesError, setFareRulesError] = useState(false);
 
   useEffect(() => {
     getFareRules();
-  }, [])
+  }, []);
 
   const getFareRules = () => {
     setFareRulesLoading(true);
@@ -116,35 +143,40 @@ const Details = ({ segments, provider, resultIndex, setShowDetails }) => {
     const traceId = localStorage.getItem(`${provider}_trace_id`);
     const data = {
       trace_id: traceId,
-      result_index: resultIndex
-    }
+      result_index: resultIndex,
+    };
 
-    axiosFlightFareRule.post('', data).then(response => {
-      setFareRules(response.data.results[0].fare_rule_detail)
-      setFareRulesLoading(false);
-    }).catch(err => {
-      setFareRulesError(true);
-      setFareRulesLoading(false);
-    })
-  }
+    axiosFlightFareRule
+      .post("", data)
+      .then((response) => {
+        setFareRules(response.data.results[0].fare_rule_detail);
+        setFareRulesLoading(false);
+      })
+      .catch((err) => {
+        setFareRulesError(true);
+        setFareRulesLoading(false);
+      });
+  };
 
   return (
     <div className="relative flex flex-col gap-4 bg-gray-100 p-2 rounded-md">
       <div className="flex flex-col gap-2">
-        <div
-          className="w-fit py-2 text-lg font-bold">
-          Flight Details
-        </div>
+        <div className="w-fit py-2 text-lg font-bold">Flight Details</div>
 
         <FlightSegment segments={segments} />
       </div>
 
-      {fareRulesLoading ? (<div className="flex items-center justify-center">
-        <div className="w-5 h-5 border-4 border-t-[#F8E000] rounded-full animate-spin"></div>
-      </div>) : fareRUlesError ? (<div className="text-sm text-center">Something went wrong, please try again</div>) : (
+      {fareRulesLoading ? (
+        <div className="flex items-center justify-center">
+          <div className="w-5 h-5 border-4 border-t-[#F8E000] rounded-full animate-spin"></div>
+        </div>
+      ) : fareRUlesError ? (
+        <div className="text-sm text-center">
+          Something went wrong, please try again
+        </div>
+      ) : (
         <div className="flex flex-col">
-          <div
-            className="w-fit py-2 mb-2 text-lg font-bold">
+          <div className="w-fit py-2 mb-2 text-lg font-bold">
             Fare Details and Rules
           </div>
 
@@ -153,20 +185,19 @@ const Details = ({ segments, provider, resultIndex, setShowDetails }) => {
               __html: fareRules,
             }}
             className="flex flex-col gap-1 text-sm"
-          >
-          </div>
+          ></div>
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-const FlightSegment = ({ segments }) => {
+export const FlightSegment = ({ segments }) => {
   function getTime(totalMinutes) {
     if (totalMinutes) {
       const hours = Math.floor(totalMinutes / 60);
       const minutes = totalMinutes % 60;
-      return `${hours ? hours + 'h' : ''} ${minutes ? minutes + 'm' : ''}`;
+      return `${hours ? hours + "h" : ""} ${minutes ? minutes + "m" : ""}`;
     }
 
     return totalMinutes;
@@ -199,8 +230,12 @@ const FlightSegment = ({ segments }) => {
             <div className="flex flex-row gap-3 items-center mb-3">
               <Logo src={segment?.airline?.code} />
               <span className="space-x-2">
-                <span className="text-black font-bold">{segment?.airline?.name}</span>
-                <span className="text-[#6d7278]">{segment?.airline?.code}-{segment?.airline?.flight_number}</span>
+                <span className="text-black font-bold">
+                  {segment?.airline?.name}
+                </span>
+                <span className="text-[#6d7278]">
+                  {segment?.airline?.code}-{segment?.airline?.flight_number}
+                </span>
               </span>
             </div>
 
@@ -208,23 +243,37 @@ const FlightSegment = ({ segments }) => {
               <div className="md:w-[50%] flex flex-row gap-3 justify-between">
                 <div className="flex-1">
                   <p className="text-black text-lg font-bold m-0">
-                    {new Date(segment?.origin?.departure_time).getHours().toString().padStart(2, '0')}:
-                    {new Date(segment?.origin?.departure_time).getMinutes().toString().padStart(2, '0')}
+                    {new Date(segment?.origin?.departure_time)
+                      .getHours()
+                      .toString()
+                      .padStart(2, "0")}
+                    :
+                    {new Date(segment?.origin?.departure_time)
+                      .getMinutes()
+                      .toString()
+                      .padStart(2, "0")}
                   </p>
 
                   <p className="text-black text-xs font-bold mb-2">
                     {new Date(segment?.origin?.departure_time).toDateString()}
                   </p>
 
-                  <p className="text-xs m-0">{segment?.origin?.city_name} ({segment?.origin?.airport_code})</p>
+                  <p className="text-xs m-0">
+                    {segment?.origin?.city_name} (
+                    {segment?.origin?.airport_code})
+                  </p>
 
                   {segment?.origin?.terminal ? (
-                    <p className="text-xs">Terminal: {segment.origin.terminal}</p>
+                    <p className="text-xs">
+                      Terminal: {segment.origin.terminal}
+                    </p>
                   ) : null}
                 </div>
 
                 <div className="flex-1 text-xs text-center">
-                  <div className="text-sm text-gray-600">{getTime(segment?.duration)}</div>
+                  <div className="text-sm text-gray-600">
+                    {getTime(segment?.duration)}
+                  </div>
                   <div className="relative h-4">
                     <p className="h-[3px] absolute left-0 right-0 top-0.5 bottom-0 z-[1] border-t-[3px] border-[#F7E700]"></p>
                   </div>
@@ -232,13 +281,29 @@ const FlightSegment = ({ segments }) => {
 
                 <div className="flex-1">
                   <p className="text-black text-lg font-bold m-0">
-                    {new Date(segment?.destination?.arrival_time).getHours().toString().padStart(2, '0')}:
-                    {new Date(segment?.destination?.arrival_time).getMinutes().toString().padStart(2, '0')}
+                    {new Date(segment?.destination?.arrival_time)
+                      .getHours()
+                      .toString()
+                      .padStart(2, "0")}
+                    :
+                    {new Date(segment?.destination?.arrival_time)
+                      .getMinutes()
+                      .toString()
+                      .padStart(2, "0")}
                   </p>
-                  <p className="text-black text-xs font-bold mb-2">{new Date(segment?.destination?.arrival_time).toDateString()}</p>
-                  <p className="text-xs m-0">{segment?.destination?.city_name} ({segment?.destination?.airport_code})</p>
+                  <p className="text-black text-xs font-bold mb-2">
+                    {new Date(
+                      segment?.destination?.arrival_time
+                    ).toDateString()}
+                  </p>
+                  <p className="text-xs m-0">
+                    {segment?.destination?.city_name} (
+                    {segment?.destination?.airport_code})
+                  </p>
                   {segment?.destination?.terminal ? (
-                    <p className="text-xs">Terminal: {segment.destination.terminal}</p>
+                    <p className="text-xs">
+                      Terminal: {segment.destination.terminal}
+                    </p>
                   ) : null}
                 </div>
               </div>
@@ -268,4 +333,4 @@ const FlightSegment = ({ segments }) => {
       ))}
     </div>
   );
-}
+};

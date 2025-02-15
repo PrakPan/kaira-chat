@@ -154,7 +154,7 @@ const Flight = () => {
             <div
               className="hover:cursor-pointer"
               onClick={() => {
-                router.push("/flight");
+                router.push("/flights");
               }}
             >
               Flights
@@ -285,7 +285,7 @@ const Flight = () => {
               borderWidth="1px"
               onclick={() =>
                 router.push({
-                  pathname: "/flight/searchflights",
+                  pathname: "/flights/searchflights",
                   query: {
                     tripType: input.tripType,
                     from: input.from.code,

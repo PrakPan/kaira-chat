@@ -4,20 +4,9 @@ import axios from "axios";
 import Flight from "../../../components/modals/flights/new-flight-searched/Index";
 import { FilterComponent } from "../../../components/flights/filterComponent";
 import Layout from "../../../components/Layout";
-import styled from "styled-components";
 import FlightSearchSmall from "../../../components/flights/flightSearchSmall";
-const Container = styled.div`
-  width: 100%;
-  display: grid;
-  text-align: center;
-  @media screen and (min-width: 768px) {
-    padding: 0;
-    width: 85%;
-    text-align: left;
-    margin: auto;
-    margin-top: 2vh;
-  }
-`;
+import { Container } from "../../../components/modals/flights/new-flight-searched/FlightStyles";
+import { MERCURY_HOST } from "../../../services/constants";
 const SearchFlights = () => {
   const router = useRouter();
   const [results, setResults] = useState([]);
@@ -51,21 +40,21 @@ const SearchFlights = () => {
 
   useEffect(() => {
     if (!router.isReady) return; // Wait until router is ready
-
+    console.log("query is",router.query)
     const FetchResults = async () => {
       try {
         const res = await axios.post(
-          "https://mercury.tarzanway.com/api/v1/transfers/flight/search/",
+          `${MERCURY_HOST}/api/v1/transfers/flight/search/`,
           {
-            adult_count: Number(filters.adults),
-            child_count: Number(filters.children),
-            infant_count: Number(filters.infants),
+            adult_count: Number(adults),
+            child_count: Number(children),
+            infant_count: Number(infants),
             direct_flight: "true",
             journey_type: "1",
             origin: from,
             destination: to,
             preferred_departure_time: departure + "T00:00:00",
-            flight_cabin_class: Number(filters.flightCabinClass),
+            flight_cabin_class: Number(flightCabinClass),
           },
           {
             params: {
@@ -76,6 +65,7 @@ const SearchFlights = () => {
             },
           }
         );
+        localStorage.setItem(res.data?.provider+"_trace_id",res.data?.trace_id);
 
         if (res.data?.results.length) {
           let options = res.data.results.map((flightData) => (
@@ -108,12 +98,12 @@ const SearchFlights = () => {
     console.log(flightCabinClass);
 
     FetchResults();
-  }, [router.isReady,filters.adults]);
+  }, [router.isReady,router.query]);
   useEffect(() => {
     const FetchResults = async () => {
       try {
         const res = await axios.post(
-          "https://mercury.tarzanway.com/api/v1/transfers/flight/search/",
+          `${MERCURY_HOST}/api/v1/transfers/flight/search/`,
           {
             adult_count: Number(filters.adults),
             child_count: Number(filters.children),
@@ -134,6 +124,7 @@ const SearchFlights = () => {
             },
           }
         );
+        localStorage.setItem(res.data?.provider+"_trace_id",res.data?.trace_id);
 
         if (res.data?.results.length) {
           let options = res.data.results.map((flightData) => (
