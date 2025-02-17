@@ -409,7 +409,7 @@ const TransferModeContainer = (props) => {
 
   const Facilities = [
     props.booking_type == "Taxi" || props.booking_type == "Bus"
-      ? props?.costings_breakdown.hasOwnProperty("luggage_bags") &&
+      ? props?.costings_breakdown?.hasOwnProperty("luggage_bags") &&
         props?.costings_breakdown?.luggage_bags > 0
         ? `${props?.costings_breakdown?.luggage_bags} Luggage bags`
         : "2 Luggage bags"
