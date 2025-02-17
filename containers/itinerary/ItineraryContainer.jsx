@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { connect, useDispatch } from "react-redux";
 import styled from "styled-components";
 import Menu from "./MenuV2";
+import Spinner from "../../containers/loaderbar/Index";
 import axiosdaybydayinstance, {
   axiosGetItinerary,
 } from "../../services/itinerary/daybyday/preview";
@@ -310,9 +311,11 @@ const ItineraryContainer = (props) => {
         }
 
         props.setItineraryDaybyDay(data);
+        setItineraryLoading(false);
       })
       .catch((err) => {
         console.error("[ERROR]:axiosGetItinerary: ", err.message);
+        setItineraryLoading(false);
       });
 
     getBreifHandler();
@@ -347,7 +350,6 @@ const ItineraryContainer = (props) => {
       .catch((error) => {});
 
     getAllBookings();
-    getAccommodationAndActivitiesHandler();
   }
 
   useEffect(() => {
@@ -709,7 +711,9 @@ const ItineraryContainer = (props) => {
     setShowPoiModal(false);
   };
 
-  if (!props.breif || itineraryLoading) return null;
+  if (itineraryLoading) {
+    return <Spinner></Spinner>;
+  }
 
   return (
     <Container>

@@ -141,7 +141,7 @@ const HotelsBooking = (props) => {
       axiosbookingupdateinstance
         .patch(
           "update/?booking_type=Accommodation&itinerary_id=" +
-          props.stayBookings[index]["itinerary_id"],
+            props.stayBookings[index]["itinerary_id"],
           updated_bookings_arr[0],
           {
             headers: {
@@ -170,27 +170,6 @@ const HotelsBooking = (props) => {
     });
   };
 
-  const findObjectByDate = (array, date) =>
-    array.find((obj) => obj.check_in === date);
-
-  const isObjectByDate = (array, date) => {
-    if (array) {
-      const booking = findObjectByDate(array, date);
-      if (booking) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-  };
-
-  const findObjectById = (array, id) => array.find((obj) => obj.id === id);
-  const findIndexById = (array, id) => {
-    const result_id = array.findIndex((obj) => obj.check_in === id);
-    if (result_id === -1) return 0;
-    else return result_id;
-  };
-
   function handleClickAc(i, data, city_id) {
     let name = props.stayBookings[i]["name"];
     let itinerary_id = props.stayBookings[i]["itinerary_id"];
@@ -203,12 +182,9 @@ const HotelsBooking = (props) => {
     let check_in = props.stayBookings[i]["check_in"];
     let check_out = props.stayBookings[i]["check_out"];
     let pax = {
-      number_of_adults:
-        props.stayBookings[i].costings_breakdown[0]["number_of_adults"],
-      number_of_children:
-        props.stayBookings[i].costings_breakdown[0]["number_of_children"],
-      number_of_infants:
-        props.stayBookings[i].costings_breakdown[0]["number_of_infants"],
+      number_of_adults: props.stayBookings[i]["number_of_adults"],
+      number_of_children: props.stayBookings[i]["number_of_children"],
+      number_of_infants: props.stayBookings[i]["number_of_infants"],
     };
     let city = props.stayBookings[i]["city"];
     let cityId = city_id;
@@ -254,23 +230,6 @@ const HotelsBooking = (props) => {
     props.setShowBookingModal();
   };
 
-  function handleClickNewAc(i, data, city_id) {
-    let check_in = data.checkin_date;
-    let check_out = data.checkout_date;
-    let pax = {
-      number_of_adults: props.payment.meta_info["number_of_adults"],
-      number_of_children: props.payment.meta_info["number_of_children"],
-      number_of_infants: props.payment.meta_info["number_of_infants"],
-    };
-    let city = data.city_name;
-
-    let cityId = data.city_id;
-
-    _changeBookingNewHandler(check_in, check_out, pax, city, cityId);
-    setCurrentBooking(data);
-    props.setShowBookingModal;
-  }
-
   function handleClick(i, id, data, city_id) {
     let check_in = props.stayBookings[i]["check_in"];
     let check_out = props.stayBookings[i]["check_out"];
@@ -289,109 +248,6 @@ const HotelsBooking = (props) => {
       const parsedDate = parse(dateString, "dd/MM/yyyy", new Date());
       const formattedDate = format(parsedDate, "yyyy-MM-dd");
       return formattedDate;
-    }
-  }
-
-  const HotelArray = [];
-  if (props.breif.city_slabs[1]?.hasOwnProperty("accommodation_booking")) {
-    if (props.breif.city_slabs) {
-        for (var i = 0; i < props.breif.city_slabs.length - 1; i++) {
-          if (props.breif.city_slabs[i].duration >= 1) {
-            if (
-              props.breif.city_slabs[i]?.accommodation_booking == null ||
-              props.breif.city_slabs[i]?.accommodation_booking == ""
-            ) {
-              if (
-                isObjectByDate(
-                  props.stayBookings,
-                  convertDateFormat(props.breif.city_slabs[i]?.checkin_date)
-                )
-              ) {
-                const foundObject = findObjectByDate(
-                  props.stayBookings,
-                  convertDateFormat(props.breif.city_slabs[i]?.checkin_date)
-                );
-                HotelArray.push(
-                  <HotelBookingContainer
-                    booking={foundObject}
-                    setShowLoginModal={props.setShowLoginModal}
-                    index={findIndexById(
-                      props.stayBookings,
-                      convertDateFormat(props.breif.city_slabs[i]?.checkin_date)
-                    )}
-                    cityName={props.breif.city_slabs[i].city_name}
-                    key={i}
-                    handleClick={handleClick}
-                    handleClickAc={handleClickAc}
-                    _SelectedBookingHandler={_SelectedBookingHandler}
-                    setHideBookingModal={props.setHideBookingModal}
-                    city_id={props.breif.city_slabs[i].city_id}
-                    loginModal={showLoginModal}
-                    setLoginModal={setShowLoginModal}
-                    token={props.token}
-                    payment={props.payment}
-                    plan={props.plan}
-                  ></HotelBookingContainer>
-                );
-              } else {
-                if (props.breif.city_slabs[i]?.duration != 0) {
-                  HotelArray.push(
-                    <HotelBookingContainer
-                      booking={null}
-                      index={i - 1}
-                      key={i}
-                      setShowLoginModal={props.setShowLoginModal}
-                      handleClick={handleClick}
-                      cityName={props.breif.city_slabs[i].city_name}
-                      handleClickAc={handleClickNewAc}
-                      _SelectedBookingHandler={_SelectedBookingHandler}
-                      setHideBookingModal={props.setHideBookingModal}
-                      loginModal={showLoginModal}
-                      city_id={props.breif.city_slabs[i].city_id}
-                      cityData={props.breif.city_slabs[i]}
-                      setLoginModal={setShowLoginModal}
-                      token={props.token}
-                      payment={props.payment}
-                      plan={props.plan}
-                    ></HotelBookingContainer>
-                  );
-                }
-              }
-            } else {
-              if (props.stayBookings) {
-                const idsArray =
-                  props.breif.city_slabs[i]?.accommodation_booking.split(",");
-                idsArray.map((item) => {
-                  const foundObject = findObjectById(props.stayBookings, item);
-                  HotelArray.push(
-                    <HotelBookingContainer
-                      booking={foundObject}
-                      setShowLoginModal={props.setShowLoginModal}
-                      index={findIndexById(
-                        props.stayBookings,
-                        convertDateFormat(
-                          props.breif.city_slabs[i]?.checkin_date
-                        )
-                      )}
-                      cityName={props.breif.city_slabs[i].city_name}
-                      key={i}
-                      handleClick={handleClick}
-                      handleClickAc={handleClickAc}
-                      _SelectedBookingHandler={_SelectedBookingHandler}
-                      setHideBookingModal={props.setHideBookingModal}
-                      city_id={props.breif.city_slabs[i].city_id}
-                      loginModal={showLoginModal}
-                      setLoginModal={setShowLoginModal}
-                      token={props.token}
-                      payment={props.payment}
-                      plan={props.plan}
-                    ></HotelBookingContainer>
-                  );
-                });
-              }
-            }
-          }
-        }
     }
   }
 
@@ -427,10 +283,8 @@ const HotelsBooking = (props) => {
         )}
       </div>
 
-      {props.breif.city_slabs[1]?.hasOwnProperty("accommodation_booking")
-        ? HotelArray
-        : props.stayBookings
-          ? props.stayBookings.map((booking, index) => (
+      {props.stayBookings
+        ? props.stayBookings.map((booking, index) => (
             <HotelBookingContainer
               setShowLoginModal={props.setShowLoginModal}
               booking={booking}
@@ -439,7 +293,8 @@ const HotelsBooking = (props) => {
               handleClick={handleClick}
               handleClickAc={handleClickAc}
               selectedBooking={booking}
-              city_id={props?.breif?.city_slabs[index]?.city_id}
+              city_id={props?.breif?.city_slabs[index + 1]?.city_id}
+              cityName={props?.breif?.city_slabs[index + 1]?.city_name}
               _SelectedBookingHandler={_SelectedBookingHandler}
               setHideBookingModal={props.setHideBookingModal}
               loginModal={showLoginModal}
@@ -447,9 +302,14 @@ const HotelsBooking = (props) => {
               token={props.token}
               payment={props.payment}
               plan={props.plan}
+              openDetails={() => {
+                setBookingId(booking.id);
+                setCurrentBooking(booking);
+                setShowDetails(true);
+              }}
             ></HotelBookingContainer>
           ))
-          : null}
+        : null}
 
       <AccommodationModal
         _setImagesHandler={_setImagesHandler}

@@ -67,7 +67,7 @@ const Enquiry = (props) => {
   }, [myref]);
 
   useEffect(() => {
-    if (props.token && props.phone) if (props.onhide) props.onhide();
+    if (props.token && props.phone && props.onhide) props.onhide();
   }, [props.token, props.onhide, props.phone]);
 
   useEffect(() => {
@@ -87,82 +87,78 @@ const Enquiry = (props) => {
 
   if (isPageWide)
     return (
-      <div className="font-lexend">
-        <Modal
-          centered
-          closeIcon
-          backdrop={props.hideloginclose ? "static" : true}
-          show={props.show}
-          onHide={props.hideloginclose ? null : props.onhide}
-          borderRadius="20px"
-          width={modalWidth + "%"}
-        >
-          <div style={{ display: "grid", gridTemplateColumns: "50% 50%" }}>
-            <div
-              style={{
-                backgroundColor: "#2C2C2C",
-                height: "100%",
-                width: "100%",
-                borderRadius: "20px 0 0 20px",
-                display: showImage ? "none" : "block",
-              }}
-            ></div>
+      <Modal
+        centered
+        closeIcon
+        backdrop={props.hideloginclose ? "static" : true}
+        show={props.show}
+        onHide={props.hideloginclose ? null : props.onhide}
+        borderRadius="20px"
+        width={modalWidth + "%"}
+      >
+        <div style={{ display: "grid", gridTemplateColumns: "50% 50%" }}>
+          <div
+            style={{
+              backgroundColor: "#2C2C2C",
+              height: "100%",
+              width: "100%",
+              borderRadius: "20px 0 0 20px",
+              display: showImage ? "none" : "block",
+            }}
+          ></div>
 
-            <ImgContainer style={{ display: showImage ? "block" : "none" }}>
-              <ImageLoader
-                noLazy
-                url={"media/website/login-background.png"}
-                height="100%"
-                width="100%"
-                onload={() => setShowImage(true)}
-                borderRadius="20px 0 0 20px"
-              ></ImageLoader>
+          <ImgContainer style={{ display: showImage ? "block" : "none" }}>
+            <ImageLoader
+              noLazy
+              url={"media/website/login-background.png"}
+              height="100%"
+              width="100%"
+              onload={() => setShowImage(true)}
+              borderRadius="20px 0 0 20px"
+            ></ImageLoader>
 
-              <ImgTagsContainer>
-                {TagsContent.map((e, i) => (
-                  <TagItem key={i}>
-                    <ImageLoader
-                      noLazy
-                      borderRadius={"0.4rem 0 0 0.4rem"}
-                      url={e.icon}
-                      dimensions={{ width: 200, height: 200 }}
-                      noPlaceholder={true}
-                    />
-                    <p className="font-lexend">{e.text}</p>
-                  </TagItem>
-                ))}
-              </ImgTagsContainer>
-            </ImgContainer>
+            <ImgTagsContainer>
+              {TagsContent.map((e, i) => (
+                <TagItem key={i}>
+                  <ImageLoader
+                    noLazy
+                    borderRadius={"0.4rem 0 0 0.4rem"}
+                    url={e.icon}
+                    dimensions={{ width: 200, height: 200 }}
+                    noPlaceholder={true}
+                  />
+                  <p className="font-lexend">{e.text}</p>
+                </TagItem>
+              ))}
+            </ImgTagsContainer>
+          </ImgContainer>
 
-            <div style={{ padding: "20px" }}>
-              <Login
-                ref={myref}
-                onhide={props.onhide}
-                itinary_id={props.itinary_id}
-              ></Login>
-            </div>
+          <div style={{ padding: "20px" }}>
+            <Login
+              ref={myref}
+              onhide={props.onhide}
+              itinary_id={props.itinary_id}
+            ></Login>
           </div>
-        </Modal>
-      </div>
+        </div>
+      </Modal>
     );
   else
     return (
-      <div>
-        <Modal
-          centered
-          backdrop={props.hideloginclose ? "static" : true}
-          show={props.show}
-          onHide={props.hideloginclose ? null : props.onhide}
-          width={modalWidth + "%"}
-          borderRadius={"12px"}
-          token={props.token}
-          itinary_id={props.itinary_id}
-        >
-          <div style={{ padding: "20px" }}>
-            <Login onhide={props.onhide} itinary_id={props.itinary_id}></Login>
-          </div>
-        </Modal>
-      </div>
+      <Modal
+        centered
+        backdrop={props.hideloginclose ? "static" : true}
+        show={props.show}
+        onHide={props.hideloginclose ? null : props.onhide}
+        width={modalWidth + "%"}
+        borderRadius={"12px"}
+        token={props.token}
+        itinary_id={props.itinary_id}
+      >
+        <div style={{ padding: "20px" }}>
+          <Login onhide={props.onhide} itinary_id={props.itinary_id}></Login>
+        </div>
+      </Modal>
     );
 };
 

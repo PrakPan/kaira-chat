@@ -589,7 +589,7 @@ const SimpleTabsV2 = (props) => {
             )}
           </div>
 
-          {props?.transferBookings || props?.routes?.length ? (
+          {props?.transferBookings ? (
             <div id={"Transfers"}>
               <TransfersContainer
                 setShowLoginModal={setShowLoginModal}
@@ -817,7 +817,7 @@ const SimpleTabsV2 = (props) => {
               </div>
             )}
 
-            {props.transferBookings || props?.routes?.length ? (
+            {props.transferBookings ? (
               <div id={"Transfers"}>
                 {props.mercuryItinerary ? (
                   <TransferBookings
@@ -1223,34 +1223,38 @@ function newFunction(
       long: destination.long,
     };
   }
-  if (props.breif)
-    if (props.breif.city_slabs)
+  if (props?.breif) {
+    if (props.breif.city_slabs) {
       for (var j = 0; j < props.breif.city_slabs.length; j++) {
         if (!props.breif.city_slabs[j].is_trip_terminated) {
           totalcityslabs += 1;
         }
       }
+    }
+  }
 
   async function processRoutes2(props) {
-    for (var i = 0; i < props.breif.city_slabs.length; i++) {
-      if (props.breif.city_slabs[i].long) {
-        CityDataTemp.push(props.breif.city_slabs[i]);
-      } else {
-        if (
-          props.breif.city_slabs[i].city_id &&
-          props.breif.city_slabs[i].duration > "0"
-        ) {
-          try {
-            const data = await getCityDetails(
-              props.breif.city_slabs[i].city_id
-            );
-            const updatedRoutes = replaceLatLong(
-              props.breif.city_slabs[i],
-              data
-            );
-            CityDataTemp.push(updatedRoutes);
-          } catch (error) {
-            console.error(error);
+    if (props?.breif) {
+      for (var i = 0; i < props.breif.city_slabs.length; i++) {
+        if (props.breif.city_slabs[i].long) {
+          CityDataTemp.push(props.breif.city_slabs[i]);
+        } else {
+          if (
+            props.breif.city_slabs[i].city_id &&
+            props.breif.city_slabs[i].duration > "0"
+          ) {
+            try {
+              const data = await getCityDetails(
+                props.breif.city_slabs[i].city_id
+              );
+              const updatedRoutes = replaceLatLong(
+                props.breif.city_slabs[i],
+                data
+              );
+              CityDataTemp.push(updatedRoutes);
+            } catch (error) {
+              console.error(error);
+            }
           }
         }
       }

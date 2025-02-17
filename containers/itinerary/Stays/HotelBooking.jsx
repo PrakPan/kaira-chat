@@ -194,7 +194,7 @@ const HotelBooking = ({
                   className="text-sm font-normal"
                   style={{ marginTop: "-0.5rem" }}
                 >
-                  {booking?.hotel_details.city_name}
+                  {booking?.hotel_details?.city_name}
                 </div>
 
                 {booking?.rating && (
