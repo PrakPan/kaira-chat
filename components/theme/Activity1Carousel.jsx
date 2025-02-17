@@ -8,6 +8,8 @@ import POIDetailsDrawer from "../../components/drawers/poiDetails/POIDetailsDraw
 import { logEvent } from "../../services/ga/Index";
 import { PlanYourTripButton } from "../../containers/travelplanner/ThemePage.jsx";
 import SecondaryHeading from "../heading/Secondary.jsx";
+import TertiaryHeading from "../heading/Tertiary.jsx";
+import { Scale } from "@mui/icons-material";
 
 const Container = styled.div`
   width: 100%;
@@ -20,7 +22,7 @@ export default function Activity1Carousel(props) {
   return (
     <SwiperCarousel
       cards={props.activities.map((activity, index) => (
-        <ActivityCard key={index} data={activity} {...activity} />
+        <ActivityCard key={index} scale={props.scale} data={activity} {...activity} />
       ))}
       slidesPerView={isPageWide ? 4 : 1}
       // spaceBetween={25}
@@ -31,7 +33,8 @@ export default function Activity1Carousel(props) {
   );
 }
 
-const ActivityCard = ({ data, id, image, name, short_description }) => {
+const ActivityCard = ({ data, scale, id, image, name, short_description }) => {
+  
   let isPageWide = media("(min-width: 768px)");
   const [show, setShow] = useState(false);
   const [hover, setHover] = useState(false);
@@ -69,13 +72,15 @@ const ActivityCard = ({ data, id, image, name, short_description }) => {
       className="group cursor-pointer py-2"
     >
       <div className="flex flex-col h-full gap-3">
-        <div className="relative group h-full overflow-hidden group-hover:scale-105 transition-all">
+      <div className="relative group h-full overflow-hidden rounded-lg">
+      <div className={`w-full h-full ${scale ? "hover:scale-110" : "group-hover:scale-105"} transition-all`}>
           <ImageLoader
             url={image}
             width={isPageWide ? "282px" : "350px"}
             height={isPageWide ? "282px" : "350px"}
             borderRadius="10px"
           />
+      </div>
 
           {data.rating ? (
             <div
@@ -97,9 +102,9 @@ const ActivityCard = ({ data, id, image, name, short_description }) => {
 
         <div className="">
           <h3 className="text-[16px] leading-[28px] font-[700]">{name}</h3>
-          <SecondaryHeading className="line-clamp-3">
+          <TertiaryHeading className="line-clamp-3">
             {short_description}
-          </SecondaryHeading>
+          </TertiaryHeading>
         </div>
       </div>
 

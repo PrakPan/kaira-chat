@@ -47,6 +47,7 @@ export default function ChampionsTrophy(props) {
   const [showTailoredModal, setShowTailoredModal] = useState(false);
   const [destination, setDestination] = useState(null);
 
+  
   useEffect(() => {
     if (props.experienceData?.components) {
       let components = props.experienceData?.components;
@@ -56,7 +57,7 @@ export default function ChampionsTrophy(props) {
 
       // Separate components based on `is_navigation_type`
 
-      // const otherComponents = components.filter(
+      //  t otherComponents = components.filter(
       //   (component) => !component.is_navigation_type
       // );
       // // setNavigationComponents(navComponents);
@@ -233,9 +234,9 @@ export default function ChampionsTrophy(props) {
                       </div>
                     ) : component.carousel === "activity-1" ? (
                       <>
-                        <Activity1Carousel activities={component.activities} />{" "}
+                        <Activity1Carousel activities={component.activities} scale={true}/>
                         <PlanYourTripButton
-                          text={"Create your free itinerary"}
+                          text={"Create your free itinerary"} 
                         />
                       </>
                     ) : component.carousel === "review-1" ? (
