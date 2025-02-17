@@ -46,7 +46,7 @@ const Socials = (props) => {
 
       <IconContainer
         hoverbg={"#3b5998"}
-        href="https://twitter.com/thetarzanway"
+        href="https://www.facebook.com/thetarzanway"
       >
         <FaFacebookF />
       </IconContainer>

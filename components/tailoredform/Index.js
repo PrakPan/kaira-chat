@@ -319,7 +319,7 @@ const Enquiry = (props) => {
     if (props.tailoredFormModal && focusedDate) {
       if (focusedDate == "startDate") return "Please select start date.";
       if (focusedDate == "endDate") return "Please select end date.";
-    } else return "Get your free travel plan now";
+    } else return "Get Your Free Travel Plan Now!";
   };
 
   const [selectedCities, setSelectedCities] = useState(selectedObj);

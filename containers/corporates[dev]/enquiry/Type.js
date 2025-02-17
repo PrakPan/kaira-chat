@@ -52,7 +52,7 @@ const QueryType = (props) => {
       <FormControl className={classes.fullWidth} variant="outlined">
         <DropDown
           native={true ? true : false}
-          label="Topic of interest"
+          label="Topic of Interest"
           value={props.queryType || ""}
           onChange={_handleQueryTypeChange}
           fontSize={"0.9rem"}
