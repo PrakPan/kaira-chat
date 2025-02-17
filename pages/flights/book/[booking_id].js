@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import PassengerDetails from "../../../components/forms/PassengerDetails";
-import PassengerDetailsInternational from "../../../components/forms/PassengerDetailsInternational";
 import Button from "../../../components/ui/button/Index";
 import Layout from "../../../components/Layout";
 import { useRouter } from "next/router";
@@ -12,8 +11,6 @@ import {
   BookingContainer,
   Count,
   Divider,
-  Input,
-  PassengerForm,
   PriceCard,
   Section,
   SectionHeader,
@@ -41,11 +38,12 @@ export default function Book() {
     trace_id: "",
     is_domestic: true,
   });
-  const [gstDetails, setGstDetails] = useState({});
+  const [ssr, setSsr] = useState({});
 
   const [priceDetails, setPriceDetails] = useState({
     baseFare: 0,
     taxAndSubCharge: 0,
+    addOns: 0,
     totalAmount: 0,
   });
 
@@ -76,6 +74,13 @@ export default function Book() {
         taxAndSubCharge:
           res?.data?.flight_details?.price_details?.tax_and_surcharge,
         totalAmount: res?.data?.flight_details?.price_details?.total_amount,
+        addOns: 0,
+      });
+
+      setSsr({
+        meal: res?.data?.flight_details?.items[0]?.meal,
+        seats: res?.data?.flight_details?.items[0]?.seats,
+        baggage: res?.data?.flight_details?.items[0]?.baggage,
       });
 
       if (res?.data?.flight_details?.is_domestic === false) {
@@ -87,15 +92,6 @@ export default function Book() {
     };
     getResponse();
   }, [router.isReady]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    const updatedForm = {
-      ...gstDetails,
-      [name]: value,
-    };
-    setGstDetails(updatedForm);
-  };
 
   const handleCountChange = (type) => {
     if (type === "adults" && adultsData.length < count.adults) {
@@ -118,41 +114,41 @@ export default function Book() {
 
   const handleSubmit = async () => {
     try {
-    var res = await axios.get(
-      `${MERCURY_HOST}/api/v1/itinerary/jhjkhkj/bookings/flight/${booking_id}`
-    );
-    if (
-      res?.data?.flight_details?.price_details?.total_amount !==
-      priceDetails.totalAmount
-    ) {
-      console.log(res?.data?.flight_details?.price_details?.total_amount);
-      setPriceDetails({
-        baseFare: res?.data?.flight_details?.price_details?.base_fare,
-        taxAndSubCharge:
-          res?.data?.flight_details?.price_details?.tax_and_surcharge,
-        totalAmount: res?.data?.flight_details?.price_details?.total_amount,
-      });
-      setIsPriceUpdated(true);
-      return;
-    }
-
-    res = await axios.post(
-      `${MERCURY_HOST}/api/v1/itinerary/bookings/flight/new/add-travellers/`,
-      {
-        source: metaData.source,
-        booking_id: metaData.booking_id,
-        travellers: [...adultsData, ...childrenData, ...infantsData],
-        is_domestic: metaData.is_domestic,
-        gst_company_address: gstDetails.gst_company_address,
-        gst_company_contact_number: gstDetails.gst_company_contact_number,
-        gst_company_email: gstDetails.gst_company_email,
-        gst_company_name: gstDetails.gst_company_name,
-        gst_number: gstDetails.gst_number,
+      var res = await axios.get(
+        `${MERCURY_HOST}/api/v1/itinerary/jhjkhkj/bookings/flight/${booking_id}`
+      );
+      if (
+        res?.data?.flight_details?.price_details?.total_amount !==
+        priceDetails.totalAmount
+      ) {
+        console.log(res?.data?.flight_details?.price_details?.total_amount);
+        setPriceDetails({
+          baseFare: res?.data?.flight_details?.price_details?.base_fare,
+          taxAndSubCharge:
+            res?.data?.flight_details?.price_details?.tax_and_surcharge,
+          totalAmount: res?.data?.flight_details?.price_details?.total_amount,
+        });
+        setIsPriceUpdated(true);
+        return;
       }
-    );} catch (error) {
-      toast.error(error.response?.data?.errors[0]?.message[0])
+
+      res = await axios.post(
+        `${MERCURY_HOST}/api/v1/itinerary/bookings/flight/travellers/add/`,
+        {
+          source: metaData.source,
+          booking_id: metaData.booking_id,
+          travellers: [...adultsData, ...childrenData, ...infantsData],
+          is_domestic: metaData.is_domestic,
+        }
+      );
+    } catch (error) {
+      toast.error(error.response?.data?.errors[0]?.message[0]);
     }
   };
+
+  useEffect(() => {
+    console.log(priceDetails);
+  }, [priceDetails]);
 
   return (
     <Layout page="Book Flights">
@@ -178,23 +174,17 @@ export default function Book() {
               <Divider />
               {adultsData.map((_, index) => (
                 <>
-                  {metaData.is_domestic ? (
-                    <PassengerDetails
-                      key={index}
-                      index={index}
-                      data={adultsData}
-                      setData={setAdultsData}
-                      name={"Adult"}
-                    />
-                  ) : (
-                    <PassengerDetailsInternational
-                      key={index}
-                      index={index}
-                      data={adultsData}
-                      setData={setAdultsData}
-                      name={"Adult"}
-                    />
-                  )}
+                  <PassengerDetails
+                    key={index}
+                    index={index}
+                    data={adultsData}
+                    setData={setAdultsData}
+                    name={"Adult"}
+                    ssr={ssr}
+                    isDomestic={metaData.is_domestic}
+                    setPrice={setPriceDetails}
+                    price={priceDetails}
+                  />
                   <Divider />
                 </>
               ))}
@@ -213,23 +203,17 @@ export default function Book() {
               <Divider />
               {childrenData.map((_, index) => (
                 <>
-                  {metaData.is_domestic ? (
-                    <PassengerDetails
-                      key={index}
-                      index={index}
-                      data={childrenData}
-                      setData={setChildrenData}
-                      name={"Children"}
-                    />
-                  ) : (
-                    <PassengerDetailsInternational
-                      key={index}
-                      index={index}
-                      data={childrenData}
-                      setData={setChildrenData}
-                      name={"Children"}
-                    />
-                  )}
+                  <PassengerDetails
+                    key={index}
+                    index={index}
+                    data={childrenData}
+                    setData={setChildrenData}
+                    name={"Children"}
+                    ssr={ssr}
+                    isDomestic={metaData.is_domestic}
+                    setPrice={setPriceDetails}
+                    price={priceDetails}
+                  />
                   <Divider />
                 </>
               ))}
@@ -246,60 +230,22 @@ export default function Book() {
                 </Count>
               </SectionHeader>
               {infantsData.map((_, index) => (
-                <>
-                  {metaData.is_domestic ? (
-                    <PassengerDetails
-                      key={index}
-                      index={index}
-                      data={infantsData}
-                      setData={setInfantsData}
-                      name={"Infant"}
-                    />
-                  ) : (
-                    <PassengerDetailsInternational
-                      key={index}
-                      index={index}
-                      data={infantsData}
-                      setData={setInfantsData}
-                      name={"Infant"}
-                    />
-                  )}
-                </>
+                <PassengerDetails
+                  key={index}
+                  index={index}
+                  data={infantsData}
+                  setData={setInfantsData}
+                  name={"Infant"}
+                  ssr={ssr}
+                  isDomestic={metaData.is_domestic}
+                  setPrice={setPriceDetails}
+                  price={priceDetails}
+                />
               ))}
               <AddButton onClick={() => handleCountChange("infants")}>
                 + Add Infant
               </AddButton>
             </Section>
-            <PassengerForm>
-              <Input
-                type="text"
-                name="gst_company_address"
-                value={gstDetails.gst_company_address}
-                onChange={handleChange}
-                placeholder="Enter Company address(Optional)"
-              />
-              <Input
-                type="text"
-                name="gst_company_email"
-                value={gstDetails.gst_company_email}
-                onChange={handleChange}
-                placeholder="Enter Company address(Optional)"
-              />
-              <Input
-                type="text"
-                name="gst_company_name"
-                value={gstDetails.gst_company_name}
-                onChange={handleChange}
-                placeholder="Enter Company Email(Optional)"
-              />
-              <Input
-                type="text"
-                name="gst_number"
-                value={gstDetails.gst_number}
-                onChange={handleChange}
-                placeholder="Enter GST Number(Optional)"
-              />
-            </PassengerForm>
           </BookingContainer>
         </div>
         <PriceCard>
@@ -313,22 +259,29 @@ export default function Book() {
             <p>{priceDetails.taxAndSubCharge}</p>
           </div>
           <div className="w-full  flex justify-between">
+            <SectionTitle>Add Ons</SectionTitle>
+            <p>{priceDetails.addOns}</p>
+          </div>
+          <div className="w-full  flex justify-between">
             <SectionTitle>Total Amount</SectionTitle>
             <p>{priceDetails.totalAmount}</p>
           </div>
-
-          <Button
-            padding="0.75rem 1rem"
-            fontSize="18px"
-            fontWeight="500"
-            bgColor="#f7e700"
-            borderRadius="7px"
-            color="black"
-            borderWidth="1px"
-            onclick={handleSubmit}
-          >
-            Book
-          </Button>
+          <div className="w-full">
+            <Button
+              padding="0.75rem 1rem"
+              fontSize="18px"
+              fontWeight="500"
+              bgColor="#f7e700"
+              borderRadius="7px"
+              color="black"
+              borderWidth="1px"
+              onclick={handleSubmit}
+              width="100%"
+              zIndex="1002"
+            >
+              Book
+            </Button>
+          </div>
         </PriceCard>
       </div>
       {isPriceUpdated && (
@@ -340,7 +293,7 @@ export default function Book() {
           }
         />
       )}
-      <ToastContainer/>
+      <ToastContainer />
     </Layout>
   );
 }

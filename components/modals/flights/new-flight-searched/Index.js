@@ -32,7 +32,7 @@ const ClippathComp = styled.div`
 `;
 
 const Flight = (props) => {
-  const router=useRouter()
+  const router = useRouter();
   const [showDetails, setShowDetails] = useState(false);
 
   return (
@@ -89,34 +89,34 @@ const Flight = (props) => {
           onClose={() => setShowDetails(false)}
           children={
             <>
-    <Details
-      segments={props.data?.segments}
-      provider={props.provider}
-      resultIndex={props.data?.result_index}
-      setShowDetails={setShowDetails}
-    />
-    <button
-      onClick={() => {
-        const getResult = async () => {
-          const res = await axios.post(
-            MERCURY_HOST +
-              "/api/v1/itinerary/jhjgjhk/bookings/flight/",
-            {
-              trace_id: localStorage.getItem(
-                `${props.provider}_trace_id`
-              ),
-              result_indices: [props.data?.result_index],
-            }
-          );
-          console.log(res.data.id);
-          router.push(`/flights/book/${res.data.id}`);
-        };
-        getResult();
-      }}
-    >
-      Submit
-    </button>
-  </>
+              <Details
+                segments={props.data?.segments}
+                provider={props.provider}
+                resultIndex={props.data?.result_index}
+                setShowDetails={setShowDetails}
+              />
+              <button
+                onClick={async () => {
+                  try {
+                    const res = await axios.post(
+                      MERCURY_HOST +
+                        "/api/v1/itinerary/jhjgjhk/bookings/flight/",
+                      {
+                        trace_id: localStorage.getItem(
+                          `${props.provider}_trace_id`
+                        ),
+                        result_indices: [props.data?.result_index],
+                      }
+                    );
+                    router.push(`/flights/book/${res.data.id}`);
+                  } catch (error) {
+                    console.log("error in redirecting", error);
+                  }
+                }}
+              >
+                Book
+              </button>
+            </>
           }
         />
       </div>
@@ -125,7 +125,6 @@ const Flight = (props) => {
 };
 
 export default Flight;
-
 
 const Details = ({ segments, provider, resultIndex, setShowDetails }) => {
   const [fareRules, setFareRules] = useState(null);
