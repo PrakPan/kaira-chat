@@ -53,7 +53,7 @@ const QueryType = (props) => {
             disabled={true ? false : true}
             onClick={props.token ? null : () => setShowLoginModal(true)}
             native={true ? true : false}
-            label="Topic of interest"
+            label="Topic of Interest"
             value={queryType}
             onChange={_handleQueryTypeChange}
             style={{ position: "relative" }}

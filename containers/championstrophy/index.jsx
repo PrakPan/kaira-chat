@@ -166,7 +166,7 @@ export default function ChampionsTrophy(props) {
                 !component.parent && (
                   <div key={index} className="mx-3 space-y-12 mt-5">
                     <div className="space-y-3">
-                      <PrimaryHeading className="mx-auto text-center">
+                      <PrimaryHeading className="mx-auto text-center relative z-10">
                         {component.heading }
                       </PrimaryHeading>
                       <SecondaryHeading className="mx-auto text-center">

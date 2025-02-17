@@ -4,7 +4,7 @@ import media from "../media";
 import Image from "next/image";
 
 const WhyChooseUs = () => {
-  let isPageWide = media("(min-width: 770px)");
+  let isPageWide = media("(min-width: 768px)"); // Targeting md screens
 
   const features = [
     { id: 1, title: "Premium Match Tickets", description: "Get the best seats to witness every six, wicket, and victory roar!" },
@@ -18,7 +18,7 @@ const WhyChooseUs = () => {
       key={feature.id}
       className="bg-white rounded-xl p-6 w-full max-w-sm mx-auto text-left border border-black hover:border-yellow-400 transition-colors"
       style={{
-        height: "300px", // Ensures uniform height
+        height: "300px",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
@@ -31,25 +31,36 @@ const WhyChooseUs = () => {
   ));
 
   return (
-    <div className="relative py-2 px-4">
-      {/* Background Images */}
-      <Image
-        src="https://d31aoa0ehgvjdi.cloudfront.net/media/event/icc-why-choose-us.png"
-        className="object-fill absolute -left-[1rem] top-[0rem] md:-left-[6rem] md:-top-[6rem]"
-        alt="Tilted Hearts"
-        height={400}
-        width={400}
-        style={{ opacity: "80%" }}
-      />
+    <div
+      className="relative py-2 px-4 overflow-x-visible"
+      style={
+        isPageWide
+          ? { clipPath: "inset(-30% -20% 0px -25%)" } 
+          : { }
+      }
+    >
 
-      <Image
-        src="https://d31aoa0ehgvjdi.cloudfront.net/media/event/icc-why-choose-us.png"
-        className="object-fill absolute -right-[1rem] top-[35rem] md:-right-[6rem] md:-top-[3rem]"
-        alt="Tilted Hearts"
-        height={300}
-        width={500}
-        style={{ opacity: "80%", transform: "scaleX(-1)" }}
-      />
+      {/* Background Images */}
+      <div className="absolute inset-0 overflow-x-visible -z-10">
+        {isPageWide && <> <Image
+          src="https://d31aoa0ehgvjdi.cloudfront.net/media/event/icc-why-choose-us.png"
+          className="object-cover absolute -left-[1rem] top-[2rem] md:-left-[7rem] md:-top-[12rem]"
+          alt="Tilted Hearts"
+          height={400}
+          width={600}
+          style={{ opacity: "80%" }}
+        />
+
+        <Image
+          src="https://d31aoa0ehgvjdi.cloudfront.net/media/event/icc-why-choose-us.png"
+          className="object-cover absolute -right-[1rem] top-[5rem] md:-right-[7rem] md:top-[4.5rem] rotate-180"
+          alt="Tilted Hearts"
+          height={300}
+          width={800}
+          style={{ opacity: "80%" }}
+        />
+        </>}
+      </div>
 
       <SwiperCarousel
         slidesPerView={isPageWide ? 4 : 1}
