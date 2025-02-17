@@ -194,7 +194,7 @@ const POIDetails = (props) => {
           </div>
         </div>
 
-        {props.data.ideal_duration_hours || props.data.ideal_duration_number ? (
+        {props.data?.ideal_duration_hours || props.data?.ideal_duration_number ? (
           <TimeStamp>
             Approx Time :{" "}
             {props.data.ideal_duration_hours ||
@@ -208,7 +208,7 @@ const POIDetails = (props) => {
 
       <div className="mt-3">
         <Title>{props.data.name}</Title>
-        {props.data.address && (
+        {props.data?.address && (
           <div>
             <span className="font-bold pr-1">Address:</span>{" "}
             {props.data.address}
@@ -226,11 +226,11 @@ const POIDetails = (props) => {
           ) : null}
 
           <div style={{ display: "flex", alignItems: "center" }}>
-            {props.data.rating ? (
+            {props.data?.rating ? (
               <p style={{ marginBlock: "auto" }}>{props.data.rating} · </p>
             ) : null}
 
-            {props.data.user_ratings_total ? (
+            {props.data?.user_ratings_total ? (
               <u>
                 {" "}
                 {props.data.user_ratings_total}{" "}
@@ -239,7 +239,7 @@ const POIDetails = (props) => {
             ) : null}
           </div>
         </Reviews>
-        {props.data.experience_filters && <Text>{experience_filters}</Text>}
+        {props.data?.experience_filters && <Text>{experience_filters}</Text>}
       </div>
 
       {props.data?.cost ? (
@@ -249,7 +249,7 @@ const POIDetails = (props) => {
           {" /- "}
           {"Per person"}
         </div>
-      ) : props.data?.pricing.total_price ? (
+      ) : props.data?.pricing?.total_price ? (
         <div className="flex flex-row">
           Cost: <span className="font-semibold px-1">₹</span>
           {props.data.pricing.total_price}
@@ -260,7 +260,7 @@ const POIDetails = (props) => {
         <div className="flex flex-row">Cost: Complimentary Activity</div>
       )}
 
-      {props.data.short_description && (
+      {props.data?.short_description && (
         <div>
           <Heading>About</Heading>
           <Text onClick={() => setAboutText(props.data.short_description)}>
@@ -269,14 +269,14 @@ const POIDetails = (props) => {
         </div>
       )}
 
-      {props.data.getting_around && (
+      {props.data?.getting_around && (
         <div>
           <Heading>Getting Around</Heading>
           <Text>{props.data.getting_around}</Text>
         </div>
       )}
 
-      {props.data.timings && (
+      {props.data?.timings && (
         <div>
           <Heading>Timings</Heading>
           <Text>
@@ -291,7 +291,7 @@ const POIDetails = (props) => {
         </div>
       )}
 
-      {props.data.tips && props.data.tips.length ? (
+      {props.data?.tips && props.data?.tips.length ? (
         <div>
           <Heading>Tips</Heading>
           <Text>{tips}</Text>
