@@ -514,7 +514,7 @@ const Pax = ({ setShowPax, pax, setPax, classType, setClassType }) => {
         </div>
 
         <div className="flex flex-col gap-1">
-          <div>Chose Travel Class</div>
+          <div>Choose Travel Class</div>
           <div className="w-fit flex flex-col md:flex-row border-2 border-gray-400 rounded-lg">
             <div
               onClick={() => setCabinClass({ key: 'Economy', value: 2 })}

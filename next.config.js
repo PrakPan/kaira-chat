@@ -64,6 +64,10 @@ const nextConfig = {
 module.exports = withSentryConfig(nextConfig, {
   org: "the-tarzan-way",
   project: "front-end",
+  experimental:{
+    workerThreads: true,
+    cpus:2,
+  },
 
   // An auth token is required for uploading source maps.
   authToken: process.env.SENTRY_AUTH_TOKEN,

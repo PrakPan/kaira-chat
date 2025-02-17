@@ -42,6 +42,7 @@ const Plan = styled.div`
 export default function FlightDetails({
     segments, data, origin, destination, duration, isNonStop, numStops, setShowDetails
 }) {
+    console.log(origin)
     const [isHovered, setIsHovered] = useState(false);
 
     const popupStyle = {
@@ -72,6 +73,10 @@ export default function FlightDetails({
                 </div>
                 <div className="w-full text-sm truncate text-center">
                     {origin.city_name}
+                </div>
+
+                <div className="w-full text-xs text-gray-600 truncate text-center">
+                    ({origin.city_code})
                 </div>
             </div>
 
@@ -145,6 +150,9 @@ export default function FlightDetails({
                     {destination.city_name}
                 </div>
 
+                <div className="w-full text-xs text-gray-600 truncate text-center">
+                    ({destination.city_code})
+                </div>
             </div>
         </div>
     );
