@@ -11,3 +11,7 @@ export default fetchaccommodations;
 export const hotelDetails = axios.create({
     baseURL: MERCURY_HOST + '/api/v1/itinerary/',
 })
+
+export const bookingDetails = axios.create({
+    baseURL: MERCURY_HOST + "/api/v1/itinerary/"
+})

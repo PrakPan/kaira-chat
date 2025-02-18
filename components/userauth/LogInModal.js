@@ -137,6 +137,17 @@ const LogIn = React.memo((props) => {
 
   const handleExtensionChangeOption = (country) => {
     setExtension(country);
+    if (phone.length <= 10) {
+      setPhone(props.CountryCodes[country].label + phone);
+      return;
+    }
+
+    const mobile = separateCountryCode(phone);
+    if (mobile) {
+      setPhone(props.CountryCodes[country].label + mobile.number);
+    } else {
+      setPhone(props.CountryCodes[country].label);
+    }
   };
 
   //Change user details on key press
@@ -389,7 +400,7 @@ const LogIn = React.memo((props) => {
       ) : null}
 
       {(props.token && !props.phone) ||
-        (props.token && props.phone === "null") ? (
+      (props.token && props.phone === "null") ? (
         <p
           style={{ margin: "0 1rem 2rem 1rem", fontWeight: "200" }}
           className="font-lexend text-center"
@@ -400,7 +411,7 @@ const LogIn = React.memo((props) => {
       ) : null}
 
       {(props.token && !props.phone) ||
-        (props.token && props.phone == "null") ? (
+      (props.token && props.phone == "null") ? (
         <form noValidate>
           <MobileNumberContainer className="relative">
             <div

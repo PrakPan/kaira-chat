@@ -14,7 +14,10 @@ const Cross = styled.p`
 
 const FullScreenGallery = (props) => {
   return (
-    <div className="fixed top-0 right-0 w-full md:w-[50%] h-[100vh] bg-black pt-[0.5rem]" style={{ zIndex: "2000" }}>
+    <div
+      className="fixed top-0 right-0 w-full md:w-[50%] h-[100vh] bg-black pt-[0.5rem]"
+      style={{ zIndex: "2000" }}
+    >
       <Cross>
         <FontAwesomeIcon
           icon={faTimes}
@@ -22,7 +25,10 @@ const FullScreenGallery = (props) => {
         ></FontAwesomeIcon>
       </Cross>
 
-      <SwiperGallery images={props.images}></SwiperGallery>
+      <SwiperGallery
+        images={props.images}
+        mercury={props.mercury}
+      ></SwiperGallery>
     </div>
   );
 };

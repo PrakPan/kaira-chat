@@ -27,8 +27,13 @@ const SwiperGallery = (props) => {
         {props.images.map((image, index) => (
           <>
             <SwiperSlide className="relative" key={index}>
-              <ImageLoader url={image} fit="cover" />
-              <div className="bg-black text-white bg-opacity-50 py-1 px-2 text-lg absolute bottom-0 right-[50%] translate-x-[50%] mx-auto z-50">{ image.caption}</div>
+              <ImageLoader
+                url={props.mercury ? image : image.image}
+                fit="cover"
+              />
+              <div className="bg-black text-white bg-opacity-50 py-1 px-2 text-lg absolute bottom-0 right-[50%] translate-x-[50%] mx-auto z-50">
+                {image?.caption}
+              </div>
             </SwiperSlide>
           </>
         ))}
@@ -45,7 +50,10 @@ const SwiperGallery = (props) => {
       >
         {props.images.map((image, index) => (
           <SwiperSlide key={index}>
-            <ImageLoader url={image} fit="cover" />
+            <ImageLoader
+              url={props.mercury ? image : image.image}
+              fit="cover"
+            />
           </SwiperSlide>
         ))}
       </Swiper>

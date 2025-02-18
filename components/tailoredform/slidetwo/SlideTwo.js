@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import Pax from "./pax/Pax.jsx"
+import Pax from "./pax/Pax.jsx";
 import GroupType from "./GroupType";
 import Question from "../Question";
 import BudgetSlider from "./preferences/BudgetSlider.jsx";
-import { AiFillCaretDown } from "react-icons/ai";
-import Preferences from "./preferences/Index";
 
 const Container = styled.div`
   color: black;
@@ -20,7 +18,6 @@ const Section = styled.div`
 
 const SlideTwo = (props) => {
   const [showPax, setShowPax] = useState(false);
-  const [showPreferences, setShowPreferences] = useState(false);
 
   const _handleShowPax = (grouptype) => {
     props.setGroupType(grouptype);
@@ -34,7 +31,15 @@ const SlideTwo = (props) => {
     <Container>
       <Section style={{ marginBottom: "1.5rem" }}>
         {showPax ? (
-          <Question>Group type: {props.groupType} <span onClick={() => setShowPax(false)} className="text-sm ml-2 text-blue cursor-pointer">Change</span></Question>
+          <Question>
+            Group type: {props.groupType}{" "}
+            <span
+              onClick={() => setShowPax(false)}
+              className="text-sm ml-2 text-blue cursor-pointer"
+            >
+              Change
+            </span>
+          </Question>
         ) : (
           <Question>Your group type?</Question>
         )}
@@ -64,29 +69,6 @@ const SlideTwo = (props) => {
           setPriceRange={props.setPriceRange}
         ></BudgetSlider>
       </Section>
-
-      <div
-        style={{ display: "flex" }}
-        onClick={() => setShowPreferences(!showPreferences)}
-      >
-        <Question hover_pointer>Activity Preferences?</Question>
-        <div style={{ flexGrow: "1", textAlign: "right" }}>
-          <AiFillCaretDown
-            style={{ verticalAlign: "initial" }}
-            className="hover-pointer"
-          >
-            {" "}
-          </AiFillCaretDown>
-        </div>
-      </div>
-
-      {showPreferences || props.tailoredFormModal ? (
-        <Preferences
-          tailoredFormModal={props.tailoredFormModal}
-          selectedPreferences={props.selectedPreferences}
-          setSelectedPreferences={props.setSelectedPreferences}
-        ></Preferences>
-      ) : null}
     </Container>
   );
 };

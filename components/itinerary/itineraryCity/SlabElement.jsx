@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { MdOutlineStar } from "react-icons/md";
 import { RiArrowDropDownLine, RiArrowDropUpLine } from "react-icons/ri";
+import { FaLocationDot } from "react-icons/fa6";
 import ImageLoader from "../../ImageLoader";
 import { isJson } from "../../../services/isJSON";
 import media from "../../media";
@@ -88,15 +89,12 @@ const Activity = (props) => {
                 2450 Google reviews
               </div>
             </div>
-            {/* <div className="text-xs border-2 border-gray-400 w-fit p-1 rounded-md text-gray-500">
-              {props.element?.poi ? "Self Exploration" : "Activity"}
-            </div> */}
           </div>
         </div>
 
         <button
           onClick={handleActivity}
-          className="w-fit text-[12px] font-semibold border-2 border-black hover:bg-black hover:text-white rounded-lg p-2 text-nowrap"
+          className="w-fit text-[12px] font-semibold border-2 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
         >
           View Details
         </button>
@@ -146,18 +144,13 @@ const Recommendation = (props) => {
 
       <div className="w-[90%] flex flex-col gap-2 text-sm">
         <div className="font-medium text-[16px]">{props.element.heading}</div>
-        {/* {props.element.type ? (
-          <div className="text-xs border-2 border-gray-400 w-fit p-1 rounded-md text-gray-500">
-            {props.element.type}
-          </div>
-        ) : null} */}
 
         {props.element.text ? (
           isJson(props.element.text) ? (
             <>
               <div
                 className={`${
-                  viewMore ? "" : "h-[90px]"
+                  viewMore ? "" : "h-[100px]"
                 } overflow-hidden grid md:grid-cols-2 gap-4`}
               >
                 {JSON.parse(props.element.text).map((res, index) => (
@@ -210,12 +203,6 @@ const MealRecommendation = (props) => {
 
       <div className="w-[90%] flex flex-col gap-2 text-sm">
         <div className="font-medium text-[16px]">{props.element.heading}</div>
-        {/* {props.element.type ? (
-          <div className="text-xs border-2 border-gray-400 w-fit p-1 rounded-md text-gray-500">
-            {props.element.type}
-          </div>
-        ) : null} */}
-        {/* <p className="line-clamp-3">{props.element.text}</p> */}
       </div>
     </div>
   );
@@ -241,6 +228,12 @@ const Restaurant = (props) => {
 
       <div className="">
         <div className="font-medium md:text-[14px]">{props.element.name}</div>
+        <div className="flex items-center gap-1">
+          <FaLocationDot className="text-2xl" />
+          <span className="text-[12px] line-clamp-1">
+            {props.element.address}
+          </span>
+        </div>
         <div className="line-clamp-3 text-[12px] text-[#7A7A7A]">
           {props.element.description}
         </div>

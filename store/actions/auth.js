@@ -5,8 +5,8 @@ import axiosfbauthinstance from "../../services/user/fbAuth";
 import axiosClaims from "../../services/sales/itinerary/Claim";
 import axiosuserinstance from "../../services/user/info";
 import * as ga from "../../services/ga/Index";
-import { CONTENT_SERVER_HOST } from "../../services/constants";
 import { logEvent } from "../../services/ga/Index";
+import { CLIENT_ID, CLIENT_SECRET } from "../../services/constants";
 
 //Open login modal
 export const authShowLogin = () => {
@@ -78,7 +78,7 @@ export const setUserDetails = (userdetails) => {
     userdetails.email_last_verified_on &&
       localStorage.setItem(
         "email_last_verified_on",
-        userdetails.email_last_verified_on,
+        userdetails.email_last_verified_on
       );
 
     if (userdetails.profile_pic) {
@@ -204,13 +204,13 @@ export const checkAuthState = () => {
           image: localStorage.getItem("user_image"),
           whatsapp_opt_in: JSON.parse(localStorage.getItem("whatsapp_opt_in")),
           is_phone_verified: JSON.parse(
-            localStorage.getItem("is_phone_verified"),
+            localStorage.getItem("is_phone_verified")
           ),
           is_email_verified: JSON.parse(
-            localStorage.getItem("is_email_verified"),
+            localStorage.getItem("is_email_verified")
           ),
           email_last_verified_on: localStorage.getItem(
-            "email_last_verified_on",
+            "email_last_verified_on"
           ),
         };
         //Update redux with token and user details
@@ -219,8 +219,8 @@ export const checkAuthState = () => {
         //Start logout /refresh  timer -> logout /refresh  after new token expiration time
         dispatch(
           checkAuthTimeout(
-            (expirationDate.getTime() - new Date().getTime()) / 1000,
-          ),
+            (expirationDate.getTime() - new Date().getTime()) / 1000
+          )
         );
         //Auth check completed (for checkAuth HOC)
         dispatch(authCheckCompleted());
@@ -244,9 +244,8 @@ export const auth = (mobile, password, name, email, whatsapp, country) => {
     grant_type: "password",
     username: mobile,
     password: password,
-    client_id: "59Fj160UxJ4LJ1fyu20nsxzbyGhpWXHaIqmUMCVJ",
-    client_secret:
-      "5k5E6w6nqaMxwxaJunZq14lzv84CNZ434YIlJlEmOwZzX6UU0DDY3dlgv88qpqTgQjkcVm3fmN38eZNfZ9BsfpEGGJ84g5LKjie8xbDFYvnb3k7Nu02xx8SAxRTvExT2",
+    client_id: CLIENT_ID,
+    client_secret: CLIENT_SECRET,
     otp: true,
     name: name,
     email: email,
@@ -255,17 +254,19 @@ export const auth = (mobile, password, name, email, whatsapp, country) => {
     dispatch(authStartLoading()); //Start spinner
     dispatch(authResetOtpFail()); //Set otp fail false
     let updatedauthdata = { ...authData };
-    if (getState().auth.newUser)
+    if (getState().auth.newUser) {
       updatedauthdata = {
         ...updatedauthdata,
         is_new_user: true,
         whatsapp_opt_in: whatsapp,
         country,
       };
+    }
+
     axiosauthinstance
       .post("/complete/", updatedauthdata)
       .then((response) => {
-        if (response.status === 200) {
+        if (response.data.success) {
           logEvent({
             action: "number-login-success",
             params: {
@@ -273,17 +274,20 @@ export const auth = (mobile, password, name, email, whatsapp, country) => {
             },
           });
 
+          const responseData = response.data;
+
           const userdata = {
-            name: response.data.name,
-            country: response.data.country,
-            phone: response.data.phone,
-            email: response.data.email,
-            id: response.data.id,
-            image: response.data.profile_pic,
-            whatsapp_opt_in: response.data.whatsapp_opt_in,
-            is_phone_verified: response.data.is_phone_verified,
-            is_email_verified: response.data.is_email_verified,
-            email_last_verified_on: response.data.email_last_verified_on,
+            name: responseData.data.user?.name,
+            country: responseData.data.user?.country ?? "",
+            phone: responseData.data.user?.phone,
+            email: responseData.data.user?.email,
+            id: responseData.data.user?.id,
+            image: responseData.data.user?.profile_pic,
+            whatsapp_opt_in: responseData.data.user?.whatsapp_opt_in,
+            is_phone_verified: responseData.data.user?.is_phone_verified,
+            is_email_verified: responseData.data.user?.is_email_verified,
+            email_last_verified_on:
+              responseData.data.user?.email_last_verified_on,
           };
           //Store user details in local storage
           localStorage.setItem("name", userdata.name);
@@ -297,27 +301,28 @@ export const auth = (mobile, password, name, email, whatsapp, country) => {
           localStorage.setItem("is_email_verified", userdata.is_email_verified);
           localStorage.setItem(
             "email_last_verified_on",
-            userdata.email_last_verified_on,
+            userdata.email_last_verified_on
           );
 
           //Store token expiration date in local storage
           const expirationDate = new Date(
-            new Date().getTime() + response.data.oauth.expires_in * 1000,
+            new Date().getTime() +
+              responseData.data.user?.oauth?.expires_in * 1000
           );
-          dispatch(authSuccess(response.data.oauth.access_token)); //Store token
+          dispatch(authSuccess(responseData.data.user?.oauth?.access_token)); //Store toke  n
           dispatch(setUserDetails(userdata)); //Store user name and email
-          dispatch(checkAuthTimeout(response.data.oauth.expires_in)); //Start logout /refresh timer -> logout /refresh  after token expiration time
-          // dispatch(authCloseLogin()); //close login modal
+          dispatch(checkAuthTimeout(responseData.data.user?.oauth?.expires_in)); //Start logout /refresh timer -> logout /refresh  after token expiration time
+          dispatch(authCloseLogin()); //close login modal
           //store token details in local storage
           localStorage.setItem(
             "access_token",
-            response.data.oauth.access_token,
+            responseData.data.user?.oauth?.access_token
           );
           localStorage.setItem("expirationDate", expirationDate);
         }
       })
       .catch((err) => {
-        if (err.response.data.email) {
+        if (err.response.data?.errors[0].email) {
           logEvent({
             action: "number-login-email_fail",
             params: {
@@ -325,7 +330,7 @@ export const auth = (mobile, password, name, email, whatsapp, country) => {
             },
           });
 
-          dispatch(authEmailFail(err.response.data.email[0]));
+          dispatch(authEmailFail(err.response.data?.errors[0].email[0]));
         } else {
           logEvent({
             action: "number-login-otp_fail",
@@ -393,12 +398,12 @@ export const googleAuth = (response) => {
           localStorage.setItem("is_email_verified", userdata.is_email_verified);
           localStorage.setItem(
             "email_last_verified_on",
-            userdata.email_last_verified_on,
+            userdata.email_last_verified_on
           );
 
           //Store token expiration date in local storage
           const expirationDate = new Date(
-            new Date().getTime() + res.data.oauth.expires_in * 1000,
+            new Date().getTime() + res.data.oauth.expires_in * 1000
           );
 
           dispatch(authSuccess(res.data.oauth.access_token)); //Store token
@@ -442,7 +447,7 @@ export const fbAuth = (response) => {
 
           //Store token expiration date in local storage
           const expirationDate = new Date(
-            new Date().getTime() + res.data.oauth.expires_in * 1000,
+            new Date().getTime() + res.data.oauth.expires_in * 1000
           );
           dispatch(authSuccess(res.data.oauth.access_token)); //Store token
           dispatch(setUserDetails(userdata)); //Store user name and email
@@ -466,23 +471,34 @@ export const changeUserDetails = (userdetails) => {
   return (dispatch, getState) => {
     const token = getState().auth.token;
     axiosuserinstance
-      .patch("/info/", userdetails, {
+      .get("", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
       .then((res) => {
-        localStorage.setItem("name", res.data.name);
-        localStorage.setItem("email", res.data.email);
-        localStorage.setItem("phone", res.data.phone);
-        localStorage.setItem("user_id", res.data.id);
-        localStorage.setItem("user_image", res.data.profile_pic);
-        localStorage.setItem("whatsapp_opt_in", res.data.whatsapp_opt_in);
-        localStorage.setItem("is_phone_verified", res.data.is_phone_verified);
-        localStorage.setItem("is_email_verified", res.data.is_email_verified);
+        const responseData = res.data;
+
+        localStorage.setItem("name", responseData.data.user?.name);
+        localStorage.setItem("email", responseData.data.user?.email);
+        localStorage.setItem("phone", responseData.data.user?.phone);
+        localStorage.setItem("user_id", responseData.data.user?.id);
+        localStorage.setItem("user_image", responseData.data.user?.profile_pic);
+        localStorage.setItem(
+          "whatsapp_opt_in",
+          responseData.data.user?.whatsapp_opt_in
+        );
+        localStorage.setItem(
+          "is_phone_verified",
+          responseData.data.user?.is_phone_verified
+        );
+        localStorage.setItem(
+          "is_email_verified",
+          responseData.data.user?.is_email_verified
+        );
         localStorage.setItem(
           "email_last_verified_on",
-          res.data.email_last_verified_on,
+          responseData.data.email_last_verified_on
         );
         dispatch(setUserDetails(userdetails));
         dispatch(authSetLoginMessage(null));
@@ -490,8 +506,8 @@ export const changeUserDetails = (userdetails) => {
       })
       .catch((err) => {
         //set error
-        if (err?.response?.data?.phone)
-          dispatch(authMobileFail(err.response.data.phone[0]));
+        if (err?.response?.data?.errors[0]?.phone)
+          dispatch(authMobileFail(err.response.data.errors[0].phone[0]));
         //Invalid / already taken  mobile
         else dispatch(authMobileFail()); //Invalid / already taken  mobile
       });
@@ -509,7 +525,7 @@ export const uploadProfilePic = (image) => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        },
+        }
       )
       .then((res) => {
         dispatch(setProiflePic(true));
@@ -533,7 +549,7 @@ export const ClaimItinary = (itinaryId, token) => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        },
+        }
       )
       .then((res) => {
         resolve(res.data); //

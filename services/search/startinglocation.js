@@ -1,8 +1,8 @@
-import axios from 'axios';
-import {CONTENT_SERVER_HOST} from '../constants';
+import axios from "axios";
+import { MERCURY_HOST } from "../constants";
 
 const axiossearchstartinginstance = axios.create({
-    baseURL: CONTENT_SERVER_HOST+"/search/start_locations/"
-})
+  baseURL: MERCURY_HOST + "/api/v1/geos/search/start_locations/",
+});
 
 export default axiossearchstartinginstance;

@@ -7,7 +7,6 @@ import CityNavigation from "../../components/itinerary/itineraryCity/CityNavigat
 const DaybyDay = (props) => {
   const cityRefs = useRef({});
   const [cities, setCities] = useState([]);
-  
 
   useEffect(() => {
     let array = [];
@@ -25,7 +24,10 @@ const DaybyDay = (props) => {
 
   return (
     <div className="flex flex-col gap-3 mt-5">
-      <h1 className="text-[30px] font-bold">Day By Day Itinerary</h1>
+      <h1 className="text-[#262626] text-3xl font-bold cursor-pointer group transition duration-300 max-w-fit">
+        Day By Day Itinerary
+        <span className="mt-1 block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
+      </h1>
 
       <CityNavigation cities={cities} cityRefs={cityRefs} />
 

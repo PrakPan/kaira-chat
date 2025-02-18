@@ -226,19 +226,18 @@ const HotelBookingContainer = ({
               <div className="flex flex-col gap-2 text-[#01202B] lg:w-[70%] w-full justify-between">
                 <div className="flex flex-col gap-2">
                   <div className="flex flex-row justify-between items-center">
-                    <div className="text-2xl font-semibold">
+                    <div
+                      className={`${currentBooking ? "text-2xl" : "text-2xl"
+                        } font-semibold `}
+                    >
                       {booking?.name}
                     </div>
 
-                    <div
-                      className={`ml-auto text-md font-semibold ${
-                        booking?.user_selected
-                          ? "text-[#277004]"
-                          : "text-[#E00000]"
-                      }`}
-                    >
-                      Included
-                    </div>
+                    {handleClick && (
+                      <div className={`ml-auto text-md font-semibold ${booking.user_selected ? 'text-[#277004]' : 'text-[#E00000]'}`}>
+                        {booking.user_selected ? "Included" : "Excluded"}
+                      </div>
+                    )}
                   </div>
 
                   {booking && (
