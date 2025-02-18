@@ -108,7 +108,7 @@ const Flight = (props) => {
                         result_indices: [props.data?.result_index],
                       }
                     );
-                    router.push(`/flights/book/${res.data.id}`);
+                    window.location.href=`/flights/book/${res.data.id}`;
                   } catch (error) {
                     console.log("error in redirecting", error);
                   }

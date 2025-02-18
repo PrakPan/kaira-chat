@@ -118,15 +118,15 @@ export default function Book() {
         `${MERCURY_HOST}/api/v1/itinerary/jhjkhkj/bookings/flight/${booking_id}`
       );
       if (
-        res?.data?.flight_details?.price_details?.total_amount !==
-        priceDetails.totalAmount
+        res?.data?.flight_details?.price_details?.base_fare !==
+        priceDetails.baseFare
       ) {
-        console.log(res?.data?.flight_details?.price_details?.total_amount);
         setPriceDetails({
           baseFare: res?.data?.flight_details?.price_details?.base_fare,
           taxAndSubCharge:
             res?.data?.flight_details?.price_details?.tax_and_surcharge,
-          totalAmount: res?.data?.flight_details?.price_details?.total_amount,
+          addOns:priceDetails?.addOns,
+          totalAmount: res?.data?.flight_details?.price_details?.total_amount+priceDetails?.addOns,
         });
         setIsPriceUpdated(true);
         return;
@@ -141,6 +141,8 @@ export default function Book() {
           is_domestic: metaData.is_domestic,
         }
       );
+      console.log(res?.data?.message)
+      toast.success(res?.data?.message)
     } catch (error) {
       toast.error(error.response?.data?.errors[0]?.message[0]);
     }

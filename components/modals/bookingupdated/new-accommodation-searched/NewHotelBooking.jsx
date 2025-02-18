@@ -134,13 +134,15 @@ export default function NewHotelBooking({
                                     <div className="font-[300] text-sm">Starting from</div>
                                     <div className="flex flex-col md:flex-row gap-1 md:items-center w-full font-bold">
                                         <div className="text-2xl font-bold">
-                                            {booking?.source === "Agoda"
-                                                ? "₹" +
-                                                getIndianPrice(Math.round(+booking.price / 100)) +
-                                                "/-"
-                                                : "₹" +
-                                                getIndianPrice(Math.round(booking?.price)) +
-                                                "/-"}
+                                            {booking?.source === "Agoda"&&
+                                            <>₹ {booking.price}</>
+                                                // ? "₹" +
+                                                // getIndianPrice(Math.round(+booking.price / 100)) +
+                                                // "/-"
+                                                // : "₹" +
+                                                // getIndianPrice(Math.round(booking?.price)) +
+                                                // "/-"
+                                            }
                                         </div>
                                         <div
                                             className="font-normal text-base md:self-end"

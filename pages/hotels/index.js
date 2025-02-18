@@ -98,14 +98,16 @@ const Flight = () => {
   const [focused, setFocused] = useState(false);
   const router = useRouter();
   const [input, setInput] = useState({
-    tripType: "oneWay",
     city: { city: "Mumbai", country: "India" },
+    city_id:"e431b4db-ebcb-42ed-a2cb-24ed9f9611fc",
     checkIn: moment(today),
     checkOut: moment(today),
     rooms: 1,
     adults: 1,
     children: 0,
-    price: "₹0-₹1500",
+    childAges:[],
+    price_lower_range:0,
+    price_upper_range:1500
   });
   const [returnDate, setReturnDate] = useState(moment(today));
   const [returnFocused, setReturnFocused] = useState(false);
@@ -138,6 +140,9 @@ const Flight = () => {
       </>
     );
   };
+  useEffect(()=>{
+    console.log(input)
+  },[input])
   return (
     <>
       <Layout page="Hotels">
@@ -251,13 +256,13 @@ const Flight = () => {
               borderWidth="1px"
               onclick={() =>
                 router.push({
-                  pathname: "/flight/searchflights",
+                  pathname: "/hotels/searchhotels",
                   query: {
-                    tripType: input.tripType,
+                    city: input.city_id,
                     checkIn: input.checkIn,
                     checkOut: input.checkOut,
-                    adults: input.adults,
-                    children: input.children,
+                    ppl:input.adults+"t"+input.children+"t"+input.childAges.join("t"),
+                    price:input.price_lower_range+"t"+input.price_upper_range
                   },
                 })
               }
@@ -277,6 +282,7 @@ const Pax = ({ setShowPax, pax, setPax }) => {
   const [adults, setAdults] = useState(pax.adults ? pax.adults : 1);
   const [children, setChildren] = useState(pax.children ? pax.children : 0);
   const [rooms, setRooms] = useState(pax.rooms);
+  const [childAges,setChildAges]=useState(pax.childAges);
 
   const handleMinus = (type) => {
     switch (type) {
@@ -316,6 +322,7 @@ const Pax = ({ setShowPax, pax, setPax }) => {
         break;
       case "children":
         setChildren((prev) => prev + 1);
+        setChildAges([...childAges,0]);
         break;
       case "rooms":
         setRooms((prev) => prev + 1);
@@ -337,6 +344,7 @@ const Pax = ({ setShowPax, pax, setPax }) => {
       adults,
       children,
       rooms,
+      childAges
     }));
 
     setShowPax(false);
@@ -346,7 +354,7 @@ const Pax = ({ setShowPax, pax, setPax }) => {
     <div onClick={handleClose} className="fixed inset-0 z-50">
       <div
         ref={ref}
-        className="absolute top-[270px] md:top-[240px] left-2 right-2 md:right-5 md:left-auto bg-neutral-100 shadow-2xl drop-shadow-3xl p-3 rounded-lg space-y-5 text-sm"
+        className="absolute w-[250px] top-[270px] md:top-[240px] left-2 right-2 md:right-5 md:left-auto bg-neutral-100 shadow-2xl drop-shadow-3xl p-3 rounded-lg space-y-5 text-sm"
       >
         <div className="flex flex-col gap-1">
           <div>Rooms</div>
@@ -392,6 +400,23 @@ const Pax = ({ setShowPax, pax, setPax }) => {
               </div>
             </div>
           </div>
+          {Array.from({ length: children }, (_, index) => {
+            console.log(index)
+            return (
+              <div key={index}>
+                <div>Children {index + 1} age</div>
+                <select onChange={(e)=>{
+                  const updatedAges=childAges;
+                  updatedAges[index]=e.target.value;
+                  setChildAges(updatedAges)
+                }}>
+                  {Array.from({length:17},(_,index)=>(
+                    <option value={index+1}>{index+1}</option>
+                  ))}
+                </select>
+              </div>
+            );
+          })}
         </div>
 
         <div className="border-t-2 border-t-white pt-2">
