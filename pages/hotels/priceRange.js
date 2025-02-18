@@ -11,9 +11,11 @@ const SelectWithSearch = ({ input,setOpen, options, setInput, name }) => {
 
 
   const handleSelect = (option) => {
+    console.log("price range selected",option)
     setInput((prev) => ({
       ...prev,
-      [name]: option.label,
+      price_lower_range:option?.value?.price_lower_range,
+      price_upper_range:option?.value?.price_upper_range
     }));
     setOpen(false);
   };
@@ -59,7 +61,7 @@ const SelectWithSearch = ({ input,setOpen, options, setInput, name }) => {
                 }`}
               >
                 <div>
-                  <span className="font-semibold">{option.value}</span>
+                  <span className="font-semibold">{option.label}</span>
                 </div>
               </li>
             ))
@@ -105,7 +107,7 @@ const PriceRange = ({ input, setInput, name }) => {
           onClick={() => setOpen((prev) => !prev)}
           className="flex flex-col gap-2"
         >
-          <div className="text-bold text-2xl !text-black">{input[name]}</div>
+          <div className="text-bold text-2xl !text-black">₹{input.price_lower_range}-₹{input.price_upper_range}</div>
         </div>
       )}
     </div>

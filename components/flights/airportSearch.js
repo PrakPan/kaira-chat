@@ -2,22 +2,21 @@ import React, { useState, useEffect, useRef } from "react";
 import { popularCities } from "../../public/content/flights";
 import { FaPlaneDeparture } from "react-icons/fa"; // Flight icon
 import { MdLocationOn } from "react-icons/md"; // Location pin icon
+import axios from "axios";
+import { MERCURY_HOST } from "../../services/constants";
 
-const SelectWithSearch = ({ setOpen, options, setInput, name }) => {
+export const SelectWithSearch = ({ setOpen, options, setInput, name }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredOptions, setFilteredOptions] = useState(options);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
-    setFilteredOptions(
-      options.filter(
-        (opt) =>
-          opt.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          opt.country.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          opt.code.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    );
+      const getResponse=async()=>{
+        const res=await axios.get(`${MERCURY_HOST}/api/v1/geos/search/hubs/airport?q=${searchTerm}`)
+        setFilteredOptions(res?.data?.results);
+      }
+      getResponse();
     setSelectedIndex(-1);
   }, [searchTerm, options]);
 
@@ -72,7 +71,7 @@ const SelectWithSearch = ({ setOpen, options, setInput, name }) => {
               >
                 <FaPlaneDeparture className="text-blue-500 text-lg mr-3" />
                 <div>
-                  <span className="font-semibold">{option.city}, {option.country}</span>
+                  <span className="font-semibold">{option.city_name}</span>
                   <p className="text-gray-500 text-sm">({option.code})</p>
                 </div>
               </li>
@@ -89,6 +88,16 @@ const SelectWithSearch = ({ setOpen, options, setInput, name }) => {
 const AirportSearch = ({ input, setInput, name }) => {
   const [isOpen, setOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const [filteredResults,setFilteredResults]=useState([]);
+  useEffect(()=>{
+    const getResponse=async()=>{
+      const res=await axios.get(`${MERCURY_HOST}/api/v1/geos/search/hubs/airport?q=`)
+      setFilteredResults(res?.data?.results);
+      console.log(res?.data?.results)
+    }
+    getResponse();
+  },[])
+
 
   // ✅ Close dropdown when clicking outside
   useEffect(() => {
@@ -107,7 +116,7 @@ const AirportSearch = ({ input, setInput, name }) => {
       <div>{name[0].toUpperCase() + name.slice(1)}</div>
       {isOpen ? (
         <SelectWithSearch
-          options={popularCities}
+          options={filteredResults}
           setInput={setInput}
           name={name}
           setOpen={setOpen}
@@ -120,7 +129,7 @@ const AirportSearch = ({ input, setInput, name }) => {
           value={input[name].code}
           className="flex flex-col gap-2"
         >
-          <div className="text-bold text-2xl !text-black">{input[name].city}, {input[name].country}</div>
+          <div className="text-bold text-2xl !text-black">{input[name].city_name}</div>
           <div>{input[name].code}</div>
         </div>
       )}
