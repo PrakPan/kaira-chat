@@ -11,6 +11,7 @@ export default function NewHotelBooking({
     booking,
     banner_image,
     openDetails,
+    duration
 }) {
     const starRating = (rating) => {
         var stars = [];
@@ -134,15 +135,15 @@ export default function NewHotelBooking({
                                     <div className="font-[300] text-sm">Starting from</div>
                                     <div className="flex flex-col md:flex-row gap-1 md:items-center w-full font-bold">
                                         <div className="text-2xl font-bold">
-                                            {booking?.source === "Agoda"&&
+                                            {/* {booking?.source === "Agoda" */}
                                             <>₹ {booking.price}</>
-                                                // ? "₹" +
+                                                {/* // ? "₹" +
                                                 // getIndianPrice(Math.round(+booking.price / 100)) +
                                                 // "/-"
                                                 // : "₹" +
                                                 // getIndianPrice(Math.round(booking?.price)) +
                                                 // "/-"
-                                            }
+                                            } */}
                                         </div>
                                         <div
                                             className="font-normal text-base md:self-end"
@@ -155,7 +156,7 @@ export default function NewHotelBooking({
                                             {booking?.source === "Agoda" ? (
                                                 <>per night</>
                                             ) : (
-                                                <>for {currentBooking?.duration} nights</>
+                                                <>for {currentBooking?.duration || duration} nights</>
                                             )}
                                         </div>
                                     </div>

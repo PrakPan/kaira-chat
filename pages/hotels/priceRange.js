@@ -74,7 +74,7 @@ const SelectWithSearch = ({ input,setOpen, options, setInput, name }) => {
   );
 };
 
-const PriceRange = ({ input, setInput, name }) => {
+const PriceRange = ({ input, setInput, name, small}) => {
   const [isOpen, setOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -90,8 +90,8 @@ const PriceRange = ({ input, setInput, name }) => {
   }, []);
 
   return (
-    <div ref={dropdownRef} className="w-[180px] h-[100px] block text-gray-600 px-2 py-2 font-medium mb-1 border border-gray-300 rounded-md hover:bg-blue-200 focus:ring-2 focus:ring-blue-500 outline-none">
-      <div>Price</div>
+    <div ref={dropdownRef} className={`${small==true?"h-[65px] w-[120px]":"h-[100px] w-[290px]"}  block text-gray-600 px-2 py-2 font-medium mb-1 border border-gray-300 rounded-md hover:bg-blue-200 focus:ring-2 focus:ring-blue-500 outline-none`}>
+      <div className={`${small==true&&"text-xs"} mb-2`}>Price</div>
       {isOpen ? (
         <SelectWithSearch
           options={pricerange}
@@ -107,7 +107,7 @@ const PriceRange = ({ input, setInput, name }) => {
           onClick={() => setOpen((prev) => !prev)}
           className="flex flex-col gap-2"
         >
-          <div className="text-bold text-2xl !text-black">₹{input.price_lower_range}-₹{input.price_upper_range}</div>
+          <div className={`text-bold ${small==true?"text-xs":"text-2xl"} text-2xl !text-black`}>₹{input.price_lower_range}-₹{input.price_upper_range}</div>
         </div>
       )}
     </div>
