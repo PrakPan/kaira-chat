@@ -275,27 +275,27 @@ const TransferBookings = (props) => {
         />
       )}
 
-      <div>
+      {<div>
         {props?.transferBookings?.map((booking, index) => (
           <>
             <PinSection
               key={index}
               transfersPin
               setCurrentPopup={false}
-              city={booking.source_address.shortName}
+              city={booking?.source_address?.shortName || booking?.source_address?.city_name}
               index={index}
               pinColour={index === 0 ? null : CITY_COLOR_CODES[index % 7]}
             ></PinSection>
             <TransferBooking
-              key={booking.id}
+              key={booking?.id}
               index={index}
               booking={booking}
               payment={props?.payment}
-              token={props.token}
+              token={props?.token}
               setShowLoginModal={props?.setShowLoginModal}
               _changeTaxiHandler={_changeTaxiHandler}
-              _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-              getPaymentHandler={props.getPaymentHandler}
+              _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
+              getPaymentHandler={props?.getPaymentHandler}
               _changeFlightHandler={_changeFlightHandler}
             />
 
@@ -304,17 +304,17 @@ const TransferBookings = (props) => {
                 key={index}
                 transfersPin
                 setCurrentPopup={false}
-                city={booking.destination_address.shortName}
+                city={booking?.destination_address?.shortName}
                 index={index}
                 pinColour={null}
               ></PinSection>
             )}
           </>
         ))}
-      </div>
+      </div>}
 
       <FlightModal
-        getPaymentHandler={props.getPaymentHandler}
+        getPaymentHandler={props?.getPaymentHandler}
         _updateFlightBookingHandler={props._updateFlightBookingHandler}
         _updateBookingHandler={props._updateBookingHandler}
         setHideFlightModal={props.setHideFlightModal}
@@ -324,8 +324,8 @@ const TransferBookings = (props) => {
         _updateFlightHandler={props._updateFlightHandler}
         setHideBookingModal={props.setHideBookingModal}
         selectedBooking={selectedBooking}
-        setShowFlightModal={props.setShowFlightModal}
-        showFlightModal={props.showFlightModal}
+        setShowFlightModal={props?.setShowFlightModal}
+        showFlightModal={props?.showFlightModal}
         itinerary_id={props?.itinerary_id}
         selectedTransferHeading={props?.route?.heading}
         fetchData={props?.fetchData}

@@ -430,9 +430,9 @@ const TransferBooking = ({
           <div className="flex flex-row w-full justify-between items-center">
             <span className="font-medium  inline">{booking.name}</span>
             <div className="flex flex-row gap-2 justify-center items-center">
-              <div className=" text-md font-semibold  text-[#277004] ">
+              {/* <div className=" text-md font-semibold  text-[#277004] ">
                 Included
-              </div>
+              </div> */}
             </div>
           </div>
 
@@ -722,9 +722,9 @@ const FlightBooking = ({
       <div className="flex flex-row w-full justify-between items-center">
         <span className="font-medium  inline">{booking.name}</span>
         <div className="flex flex-row gap-2 justify-center items-center ml-auto">
-          <div className=" text-md font-semibold  text-[#277004] ">
+          {/* <div className=" text-md font-semibold  text-[#277004] ">
             Included
-          </div>
+          </div> */}
         </div>
       </div>
 

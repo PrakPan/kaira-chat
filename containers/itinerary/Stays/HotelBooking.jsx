@@ -114,7 +114,7 @@ const HotelBooking = ({
   return (
     <div>
       <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
-        {booking.hotel_details?.city_name}
+        {booking.hotel_details?.city}
         <span className="ml-1">
           ({booking?.duration ? booking.duration : 1}N)
         </span>
@@ -140,7 +140,7 @@ const HotelBooking = ({
                 noLazy
                 url={
                   hotel_image && !imageFail
-                    ? hotel_image
+                    ? hotel_image?.image
                     : "media/icons/bookings/notfounds/noroom.png"
                 }
                 onfail={() => {
@@ -185,7 +185,7 @@ const HotelBooking = ({
                     booking?.user_selected ? "text-[#277004]" : "text-[#E00000]"
                   }`}
                 >
-                  {booking?.user_selected ? "Included" : "Excluded"}
+                  {/* {booking?.user_selected ? "Included" : "Excluded"} */}
                 </div>
               </div>
 
@@ -332,8 +332,11 @@ const HotelBooking = ({
                 </Button>
               )}
 
-              {payment?.is_registration_needed ? null : payment?.paid_user ||
-                !payment?.user_allowed_to_pay ? null : (
+              {payment?.is_registration_needed ? null : 
+              // payment?.paid_user 
+              // || !payment?.user_allowed_to_pay ? null 
+              // : 
+              (
                 <div
                   onClick={(e) => handleChageHotel(e, "Change", booking?.name)}
                 >

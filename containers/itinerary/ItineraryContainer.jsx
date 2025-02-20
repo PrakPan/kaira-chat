@@ -23,7 +23,7 @@ import setPlan from "../../store/actions/plan";
 import { setBookings } from "../../store/actions/bookings";
 import { setItineraryActivities } from "../../store/actions/itineraryActivities";
 import setBreif from "../../store/actions/breif";
-import axiosPaymentInstance from "../../services/itinerary/payment";
+import axiosPaymentInstance, { axiosGetPaymentInfo } from "../../services/itinerary/payment";
 import axiosBookingsInstance, {
   axiosGetAllBookings,
 } from "../../services/itinerary/bookings";
@@ -71,27 +71,45 @@ const ItineraryContainer = (props) => {
   const [is_stock, setIsStock] = useState(false);
   const hasRendered = useRef(false);
   const [editRoute, setEditRoute] = useState(false);
+  const [showMercuryItinerary,setShowMercuryItinerary] = useState(false);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (hasRendered.current) {
-      if (props.token) getPaymentHandler();
-    } else hasRendered.current = true;
-  }, [props.token]);
 
-  useEffect(() => {
-    if (props.itinerary.name !== "Loading Itinerary") {
-      const activities = getItineraryActivities();
-      props.setItineraryActivities(activities);
-    }
-  }, [props.itinerary]);
+  // useEffect(() => {
+  //   if (hasRendered.current) {
+  //     if (props.token) getPaymentHandler();
+  //   } else hasRendered.current = true;
+  // }, [props.token]);
+
+  // useEffect(() => {
+  //   if (props.itinerary.name !== "Loading Itinerary") {
+  //     let activities =[];
+  //     if(props?.mercuryItinerary)
+  //      activities = getItineraryActivities();
+  //     else
+  //     activities = getItineraryActivitiesOld();
+  //     props.setItineraryActivities(activities);
+  //   }
+  // }, [props.itinerary]);
 
   const getItineraryActivities = () => {
     let itenaryActivities = [];
-    props.itinerary?.day_slabs.map((day_slab, index) => {
-      day_slab?.slab_elements.map((element, index) => {
+    props.itinerary?.cities?.map((day_slab, index) => {
+      day_slab?.day_by_day?.slab_elements?.map((element, index) => {
         if (element.element_type === "activity") {
-          itenaryActivities.push({ activity: element, date: day_slab.slab });
+          itenaryActivities.push({ activity: element, date: day_slab.day_by_day?.start_date });
+        }
+      });
+    });
+    return itenaryActivities;
+  };
+
+  const getItineraryActivitiesOld = () => {
+    let itenaryActivities = [];
+    props.itinerary?.day_slabs?.map((day_slab, index) => {
+      day_slab?.slab_elements?.map((element, index) => {
+        if (element.element_type === "activity") {
+          itenaryActivities?.push({ activity: element, date: day_slab.slab });
         }
       });
     });
@@ -174,6 +192,70 @@ const ItineraryContainer = (props) => {
       });
   };
 
+
+const getPaymentInfo = () =>{
+let stay_data = {};
+let activity_data = {};
+let transfer_data = {};
+let flight_data = {};
+
+
+    axiosGetPaymentInfo.
+    get(props.id + '/cart/')
+    .then((res)=>{
+      let data = res.data;
+      setPayment(data);
+      
+
+for (let category in data.summary) {
+    let categoryData = data.summary[category];
+
+    if (category === "Stays") {
+        stay_data = { ...categoryData };
+    } else if (category === "Activities") {
+        activity_data = { ...categoryData };
+    } else if (category === "Transfers") {
+        transfer_data = { ...categoryData };
+    } else if (category === "Flights") {
+        flight_data = { ...categoryData };
+    }
+}
+
+console.log("Stay Data:", stay_data);
+console.log("Activity Data:", activity_data);
+console.log("Transfer Data:", transfer_data);
+console.log("Flight Data:", flight_data);
+
+// setStayBookings(stay_data);
+// setActivityBookings(activity_data);
+// setTransferBookings(transfer_data);
+// setFlightBookings(flight_data);
+
+    // setStayBookings(stay_bookings);
+    //       if (activity_bookings.length) {
+    //         setActivityBookings(activity_bookings);
+    //       } else {
+    //         setActivityBookings(null);
+    //       }
+
+    //       if (flight_bookings.length) {
+    //         setFlightBookings(flight_bookings);
+    //       } else {
+    //         setFlightBookings(null);
+    //       }
+
+    //       if (transfer_bookings.length) {
+    //         setTransferBookings(transfer_bookings);
+    //       } else {
+    //         setTransferBookings(null);
+    //       }
+    })
+    .catch((error)=>{
+      console.log("ERROR[PaymentInfo][Itinerary]",error)
+      setPaymentLoading(false);
+    })
+  }
+
   const getAccommodationAndActivitiesHandler = () => {
     let stay_bookings = [];
     let activity_bookings = [];
@@ -235,6 +317,7 @@ const ItineraryContainer = (props) => {
     axiosGetAllBookings
       .get(`/${props.id}/bookings/`)
       .then((res) => {
+        console.log("Response",res.data);
         getPaymentHandler();
         const data = res.data;
 
@@ -262,9 +345,9 @@ const ItineraryContainer = (props) => {
         //   data.activity_bookings.length ? data.activity_bookings : null
         // );
         // setFlightBookings(flight_bookings.length > 0 ? flight_bookings : null);
-        // setTransferBookings(
-        //   data.transfer_bookings.length ? data.transfer_bookings : null
-        // );
+        setTransferBookings(
+          data.transfer_bookings.length ? data.transfer_bookings : null
+        );
       })
       .catch((err) => {
         console.error("Error fetching all bookings", err.message);
@@ -282,75 +365,97 @@ const ItineraryContainer = (props) => {
     if (TRAVELER_ITINERARIES.includes(props.id))
       setIsPastTravelerItinerary(true);
 
-    axiosdaybydayinstance
-      .get(`/?itinerary_id=` + props.id)
-      .then((res) => {
-        if (res.data.day_slabs.length) {
-          if (res.data.is_stock) setIsStock(true);
+    console.log("MercuryItinerary",props?.mercuryItinerary);
+    // axiosdaybydayinstance
+    //   .get(`/?itinerary_id=` + props.id)
+    //   .then((res) => {
+    //     if (res.data.day_slabs.length) {
+    //       if (res.data.is_stock) setIsStock(true);
 
-          props.setItinerary({
-            ...res.data,
-            images: res.data.images.filter((value) => value),
-          });
+    //       props.setItinerary({
+    //         ...res.data,
+    //         images: res.data.images.filter((value) => value),
+    //       });
 
-          setItineraryLoading(false);
-        } else {
-        }
-      })
-      .catch((error) => {
-        setItineraryLoading(false);
-      });
+    //       setItineraryLoading(false);
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     setItineraryLoading(false);
+    //   });
+
+    //   getBreifHandler();
+
+    //   getRoutes(props.id)
+    //     .then((res) => {
+    //       props.setItineraryRoutes(res);
+    //     })
+    //     .catch((err) => {});
+
+    //     axiosPlanInstance
+    //     .get("?itinerary_id=" + props.id)
+    //     .then((res) => {
+    //       props.setPlan(res.data);
+    //       dispatch(setItineraryStartDate({ date: res.data.start_date }));
+    //       if (
+    //         res.data.itinerary_status === ITINERARY_STATUSES.itinerary_not_created
+    //       ) {
+    //         alert(
+    //           "Looks like the response took too long, please refresh and try again."
+    //         );
+    //       } else {
+    //         setUserEmail(res.data.user_email);
+    //         settravellerType(res.data.experience_filters_selected);
+    //         if (res.data.start_date) setIsDatePresent(true);
+    //         setgroup_type(res.data.group_type);
+    //         setduration_time(res.data.duration_number);
+    //         setItineraryReleased(res.data.is_released_for_customer);
+    //         setItineraryDate(res.data.created_at);
+    //       }
+
+
+    //     })
+    //     .catch((error) => {});
+
+    //     getAccommodationAndActivitiesHandler();
+    
 
     axiosGetItinerary
       .get(`/${props.id}/`)
       .then((res) => {
         const data = res.data;
-        if (res.data?.version === "v1") {
+
+        if (res.data?.version === "v1" || !res?.data) {
+          setShowMercuryItinerary(false);
           router.push(`/itinerary/v1/${props.id}`);
           return;
+        }else {
+          setShowMercuryItinerary(true);
         }
 
+        props.setItinerary(data);
         props.setItineraryDaybyDay(data);
+        props.setBreif(data)
         setItineraryLoading(false);
+        getPaymentInfo();
+        getAllBookings();
+        setItineraryDate(data.start_date);
+
+
+        let activities =[];
+        activities = getItineraryActivities();
+        props.setItineraryActivities(activities);
+
+
       })
       .catch((err) => {
         console.error("[ERROR]:axiosGetItinerary: ", err.message);
         setItineraryLoading(false);
       });
 
-    getBreifHandler();
-
-    getRoutes(props.id)
-      .then((res) => {
-        props.setItineraryRoutes(res);
-      })
-      .catch((err) => {});
-
-    axiosPlanInstance
-      .get("?itinerary_id=" + props.id)
-      .then((res) => {
-        props.setPlan(res.data);
-        dispatch(setItineraryStartDate({ date: res.data.start_date }));
-        if (
-          res.data.itinerary_status === ITINERARY_STATUSES.itinerary_not_created
-        ) {
-          alert(
-            "Looks like the response took too long, please refresh and try again."
-          );
-        } else {
-          setUserEmail(res.data.user_email);
-          settravellerType(res.data.experience_filters_selected);
-          if (res.data.start_date) setIsDatePresent(true);
-          setgroup_type(res.data.group_type);
-          setduration_time(res.data.duration_number);
-          setItineraryReleased(res.data.is_released_for_customer);
-          setItineraryDate(res.data.created_at);
-        }
-      })
-      .catch((error) => {});
-
-    getAllBookings();
-  }
+      
+    }
+    
 
   useEffect(() => {
     fetchData();
@@ -740,6 +845,7 @@ const ItineraryContainer = (props) => {
       <div id="itinerary-anchor">
         <Menu
           mercuryItinerary
+          showMercuryItinerary={showMercuryItinerary}
           hasUserPaid={hasUserPaid}
           isDatePresent={isDatePresent}
           _updateTaxiBookingHandler={_updateTaxiBookingHandler}
@@ -796,6 +902,7 @@ const ItineraryContainer = (props) => {
           travellerType={travellerType}
           editRoute={editRoute}
           setEditRoute={setEditRoute}
+          getPaymentInfo={getPaymentInfo}
         ></Menu>
       </div>
     </Container>
@@ -825,7 +932,7 @@ const mapDispatchToProps = (dispatch) => {
     setPlan: (payload) => dispatch(setPlan(payload)),
     setBookings: (payload) => dispatch(setBookings(payload)),
     setItineraryActivities: (payload) =>
-      dispatch(setItineraryActivities(payload)),
+    dispatch(setItineraryActivities(payload)),
     setBreif: (payload) => dispatch(setBreif(payload)),
     setItineraryDaybyDay: (payload) => dispatch(setItineraryDaybyDay(payload)),
   };

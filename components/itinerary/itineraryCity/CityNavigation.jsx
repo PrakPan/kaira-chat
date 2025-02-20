@@ -36,8 +36,10 @@ const CityNavigation = (props) => {
     element.scrollIntoView({ behavior: "smooth" });
   };
 
+  console.log("CITIES",props?.cities);
+
   return (
-    <div className="sticky top-11 z-50 pt-1 flex flex-row items-center gap-2 bg-white overflow-auto hide-scrollbar">
+    <div className="sticky top-11 z-50 pt-1 flex flex-row flex-wrap items-center gap-2 bg-white overflow-auto hide-scrollbar">
       {props.cities.map((city) => (
         <div
           key={city.id}

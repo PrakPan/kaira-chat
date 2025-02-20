@@ -43,6 +43,7 @@ import { IoMdClose } from "react-icons/io";
 import DaybyDay from "./DaybyDay.jsx";
 import StaysContainer from "./Stays/StaysContainer.jsx";
 import TransferBookings from "./TransfersContainer/TransferBookings.jsx";
+import NewSummaryContainers from "./NewSummaryContainers.js";
 
 const useStyles = {
   root: `
@@ -338,8 +339,8 @@ const SimpleTabsV2 = (props) => {
                   <div>
                     <span className="font-bold">
                       ₹{" "}
-                      {props?.payment?.pay_only_for_one ||
-                      props?.payment?.show_per_person_cost
+                      { !props?.mercuryItinerary ? (props?.payment?.pay_only_for_one ||
+                      props?.payment?.show_per_person_cost 
                         ? getIndianPrice(
                             Math.round(
                               Math.round(
@@ -349,9 +350,22 @@ const SimpleTabsV2 = (props) => {
                           )
                         : getIndianPrice(
                             Math.round(
-                              Math.round(props.payment.discounted_cost) / 100
+                              Math.round(props.payment.discounted_cost)
                             )
-                          )}
+                          )) : (props?.payment?.pay_only_for_one ||
+                            props?.payment?.show_per_person_cost 
+                              ? getIndianPrice(
+                                  Math.round(
+                                    Math.round(
+                                      props.payment.per_person_discounted_cost
+                                    ) 
+                                  )
+                                )
+                              : getIndianPrice(
+                                  Math.round(
+                                    Math.round(props.payment.discounted_cost)
+                                  )
+                                ))}
                       {"/-"}
                     </span>
                   </div>
@@ -673,7 +687,7 @@ const SimpleTabsV2 = (props) => {
                   onClick={() => setShowFooterBannerMobile(false)}
                 />
 
-                {!props.payment.is_registration_needed ? (
+                {!props.payment.is_registration_needed ? !props?.mercuryItinerary ? (
                   <SummaryContainer
                     setUserDetails={props.setUserDetails}
                     id={props.id}
@@ -695,7 +709,7 @@ const SimpleTabsV2 = (props) => {
                     plan={props.plan}
                     _GetInTouch={() => _GetInTouch()}
                   ></SummaryContainer>
-                ) : (
+                ) :  <NewSummaryContainers payment={props?.payment} itineraryDate={props?.itineraryDate} mercuryItinerary={props?.mercuryItinerary}/> : (
                   <div>
                     <GITSummaryContainer
                       hasUserPaid={
@@ -901,8 +915,8 @@ const SimpleTabsV2 = (props) => {
               </div>
             )}
           </div>
-
-          {props.payment ? (
+          {console.log("MERCURY",props?.showMercuryItinerary)}
+          {!props?.mercuryItinerary  ? (
             <div
               id="Booking_container"
               className="sticky top-[6rem] mt-40 ml-4 flex flex-col gap-3"
@@ -929,7 +943,7 @@ const SimpleTabsV2 = (props) => {
                 _GetInTouch={() => _GetInTouch()}
               ></SummaryContainer>
             </div>
-          ) : null}
+          ) : props?.mercuryItinerary ? <NewSummaryContainers payment={props?.payment} itineraryDate={props?.itineraryDate} mercuryItinerary={props?.mercuryItinerary}/> :null}
         </SplitScreen>
       ) : null}
 
@@ -948,7 +962,7 @@ const SimpleTabsV2 = (props) => {
               <div>
                 <span className="font-bold">
                   ₹{" "}
-                  {props?.payment?.pay_only_for_one ||
+                  { !props?.mercuryItinerary ? (props?.payment?.pay_only_for_one ||
                   props?.payment?.show_per_person_cost
                     ? getIndianPrice(
                         Math.round(
@@ -960,7 +974,18 @@ const SimpleTabsV2 = (props) => {
                         Math.round(
                           Math.round(props.payment.discounted_cost) / 100
                         )
-                      )}
+                      )) : (props?.payment?.pay_only_for_one ||
+                        props?.payment?.show_per_person_cost
+                          ? getIndianPrice(
+                              Math.round(
+                                Math.round(props.payment.per_person_discounted_cost)
+                              )
+                            )
+                          : getIndianPrice(
+                              Math.round(
+                                Math.round(props.payment.discounted_cost)
+                              )
+                            ))}
                   {"/-"}
                 </span>
               </div>
@@ -1005,10 +1030,10 @@ const SimpleTabsV2 = (props) => {
               ) : null}
 
               {props.payment && props.token ? (
-                props.payment.itinerary_status ===
-                  ITINERARY_STATUSES.itinerary_finalized &&
-                !props.payment.paid_user &&
-                props.payment.user_allowed_to_pay ? (
+                props.payment?.itinerary_status ===
+                  ITINERARY_STATUSES?.itinerary_finalized &&
+                !props.payment?.paid_user &&
+                props.payment?.user_allowed_to_pay ? (
                   props.payment.total_cost > 0 ? (
                     <div className="">
                       <Button
@@ -1219,8 +1244,8 @@ function newFunction(
   function replaceLatLong(source, destination) {
     return {
       ...source,
-      lat: destination.lat,
-      long: destination.long,
+      lat: destination.lat || '34.5539',
+      long: destination.long || '76.1349',
     };
   }
   if (props?.breif) {
@@ -1234,7 +1259,7 @@ function newFunction(
   }
 
   async function processRoutes2(props) {
-    if (props?.breif) {
+    if (props?.breif && !props.mercuryItinerary) {
       for (var i = 0; i < props.breif.city_slabs.length; i++) {
         if (props.breif.city_slabs[i].long) {
           CityDataTemp.push(props.breif.city_slabs[i]);

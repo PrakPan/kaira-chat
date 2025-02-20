@@ -187,7 +187,7 @@ const HotelBookingContainer = ({
                       !imageFail && booking.image
                         ? booking.image
                         : !imageFail && img
-                        ? img
+                        ? img : !imageFail && booking.images ? booking?.images[0]
                         : "media/icons/bookings/notfounds/noroom.png"
                     }
                     onfail={() => {
