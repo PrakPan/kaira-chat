@@ -276,13 +276,68 @@ const Route = (props) => {
       }
   }
 
+
+if (props?.CityData) {
+        for (var i = 0; i < props?.CityData?.length; i++) {
+          locationsArr.push(
+            <PinSection
+              startingCity={i === 0}
+              endingCity={i === props.CityData.length - 1}
+              setCurrentPopup={props.setCurrentPopup}
+              handlemap={handlemap}
+              dayId={
+                // props.breif.city_slabs[i]?.day_slab_location?.start_day_slab_index 
+                '12'
+              }
+              setShowDrawer={props.setShowDrawer}
+              setShowDrawerData={props.setShowDrawerData}
+              cityData={props.CityData[i]}
+              dayslab={props.day_by_day}
+              lat={props.CityData[i]?.city?.latitude}
+              long={props.CityData[i]?.city?.longitude}
+              Mapid={props.CityData[i]?.gmaps_place_id || 'ChIJ78XjhlaF4TgRxgXjwXxLJGY'}
+              city={props.CityData[i]?.city?.name}
+              cityId={props.CityData[i].city?.id}
+              duration={
+                props.CityData[i].duration
+                  ? props.CityData[i].duration
+                  : null
+              }
+              pinColour={props.CityData[i]?.color || 'green'}
+              data={order[i]}
+              _moveDownHandler={_moveDownHandler}
+              _moveUpHandler={_moveUpHandler}
+              index={i}
+            ></PinSection>
+          );
+          if (i < props.CityData.length - 1) {
+            locationsArr.push(
+              <MidSection
+                pinColour={props.CityData[i]?.color || 'yellow'}
+                modes={
+                  props?.transfers[i + 1]?.modes
+                    ? props?.transfers[i + 1]?.modes[0]
+                    : "Taxi"
+                }
+                hidemidsection={true}
+                icon={null}
+                routesData={props.routesData}
+                version={"v1"}
+                transportMode={props.CityData[i]?.transfers}
+                duration={props.CityData[i]?.duration}
+                _GetInTouch={props._GetInTouch}
+              ></MidSection>
+            );
+          }
+        }
+      }
   return (
     <Container>
       <div className="flex flex-row justify-between items-end">
         <div className="font-lexend mb-4 lg:mb-10  lg:mt-[4rem] mt-[2rem] font-bold text-4xl">
           Route
         </div>
-        {!props.plan?.is_released_for_customer &&
+        {/* {!props.plan?.is_released_for_customer &&
         props.plan?.itinerary_status !== "ITINERARY_PREPARED" &&
         props?.routes &&
         props.routes.length > 0 ? (
@@ -292,7 +347,7 @@ const Route = (props) => {
           >
             Edit Route
           </button>
-        ) : null}
+        ) : null} */}
       </div>
 
       {locationsArr}

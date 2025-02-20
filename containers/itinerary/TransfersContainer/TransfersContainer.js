@@ -358,7 +358,7 @@ const TransfersContainer = (props) => {
                             transportMode={
                               props?.routes[i + 1].bookings[index]?.booking_type
                             }
-                            duration={props?.breif?.city_slabs[i]?.duration}
+                            duration={!props?.breif?.city_slabs ? null : props?.breif?.city_slabs[i]?.duration}
                             route={props?.routes[i + 1]}
                             itinerary_id={props?.itinerary_id}
                             fetchData={props.fetchData}
@@ -383,7 +383,7 @@ const TransfersContainer = (props) => {
                             token={props.token}
                             payment={props?.payment}
                             booking_type={CurrentBooking?.booking_type}
-                            pinColour={props?.breif?.city_slabs[i]?.color}
+                            pinColour={!props?.breif?.city_slabs ? null : props?.breif?.city_slabs[i]?.color}
                             costings_breakdown={
                               CurrentBooking?.transfer_details
                             }
@@ -403,7 +403,7 @@ const TransfersContainer = (props) => {
                             transportMode={
                               props?.routes[i + 1].bookings[index]?.booking_type
                             }
-                            duration={props?.breif?.city_slabs[i]?.duration}
+                            duration={!props?.breif?.city_slabs ? null :props?.breif?.city_slabs[i]?.duration}
                             route={props?.routes[i + 1]}
                             itinerary_id={props?.itinerary_id}
                             fetchData={props.fetchData}
@@ -421,7 +421,7 @@ const TransfersContainer = (props) => {
             ? locationsArr.push(
                 <TransContainer>
                   <div style={{ position: "relative" }}>
-                    <Line pinColour={props?.breif?.city_slabs[i]?.color} />
+                    <Line pinColour={!props?.breif?.city_slabs ? null : props?.breif?.city_slabs[i]?.color} />
                   </div>
                   <div className="w-full h-full flex items-center justify-start ml-4">
                     {props?.routes[i + 1]?.transfers?.id !== "" && (
@@ -441,7 +441,7 @@ const TransfersContainer = (props) => {
                 <TransContainer>
                   <div style={{ position: "relative" }}>
                     <Line
-                      pinColour={props?.breif?.city_slabs[0]?.color}
+                      pinColour={!props?.breif?.city_slabs ? null :props?.breif?.city_slabs[0]?.color}
                       Transfers={true}
                     />
                   </div>
@@ -467,12 +467,12 @@ const TransfersContainer = (props) => {
             // city={props?.transferBookings[i - 1]?.destination_city}
             city={props.transferBookings[i] && props.transferBookings[i].city}
             duration={
-              props?.breif?.city_slabs[i]?.duration
+              !props?.breif?.city_slabs ? null : props?.breif?.city_slabs[i]?.duration
                 ? props?.breif?.city_slabs[i]?.duration +
                   NoOfNights(props?.breif?.city_slabs[i]?.duration)
                 : null
             }
-            pinColour={props?.breif?.city_slabs[i]?.color}
+            pinColour={!props?.breif?.city_slabs ? null : props?.breif?.city_slabs[i]?.color}
             index={i}
             key={i}
           ></PinSection>
@@ -492,7 +492,7 @@ const TransfersContainer = (props) => {
                     token={props.token}
                     payment={props?.payment}
                     booking_type={props?.transferBookings[i]?.booking_type}
-                    pinColour={props?.breif?.city_slabs[i]?.color}
+                    pinColour={!props?.breif?.city_slabs ?null : props?.breif?.city_slabs[i]?.color}
                     costings_breakdown={
                       props?.transferBookings[i]?.costings_breakdown
                     }
@@ -510,7 +510,7 @@ const TransfersContainer = (props) => {
                     transportMode={getTransportationType(
                       props?.transfers[i]?.icon
                     )}
-                    duration={props?.breif?.city_slabs[i]?.duration}
+                    duration={!props?.breif?.city_slabs ? null : props?.breif?.city_slabs[i]?.duration}
                   ></TransferModeContainer>
                 </div>
               )
@@ -525,7 +525,7 @@ const TransfersContainer = (props) => {
                     token={props.token}
                     payment={props?.payment}
                     booking_type={props?.transferBookings[i]?.booking_type}
-                    pinColour={props?.breif?.city_slabs[i]?.color}
+                    pinColour={!props?.breif?.city_slabs ? null : props?.breif?.city_slabs[i]?.color}
                     costings_breakdown={
                       props?.transferBookings[i]?.costings_breakdown
                     }
@@ -543,7 +543,7 @@ const TransfersContainer = (props) => {
                     transportMode={getTransportationType(
                       props?.transfers[i]?.icon
                     )}
-                    duration={props?.breif?.city_slabs[i]?.duration}
+                    duration={!props?.breif?.city_slabs ? null : props?.breif?.city_slabs[i]?.duration}
                   ></TransferModeContainer>
                 )
               );

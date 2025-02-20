@@ -303,9 +303,9 @@ const HotelBooking = ({
                 </div>
               ) : null}
 
-              {booking?.hotel_details?.amenities &&
-              booking?.hotel_details?.amenities?.length &&
-              booking?.hotel_details?.amenities?.includes("WIFI") ? (
+              {booking?.hotel_details?.rates &&
+              booking?.hotel_details?.rates?.length &&
+              booking?.hotel_details?.rates[0]?.includes.includes("WIFI") ? (
                 <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
                   <MdWifi className="text-sm text-[#7A7A7A]" />
                   <div className="text-sm font-[400]">WIFI available</div>

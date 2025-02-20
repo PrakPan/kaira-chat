@@ -120,7 +120,7 @@ const SimpleTabsV2 = (props) => {
       RoutesData,
       TransfersData
     );
-  }, [props.breif, props.routes]);
+  }, [props.breif, props.routes,props.cities]);
 
   const _GetInTouch = () => {
     setLoading(true);
@@ -524,13 +524,15 @@ const SimpleTabsV2 = (props) => {
       <div id={"Brief"}>
         {citydatadone && (
           <Breif
+           mercuryItinerary={props?.mercuryItinerary}
             plan={props.plan}
             routesData={RoutesData}
             transfersData={TransfersData}
             routes={props.routes}
             payment={props.payment}
             traveleritinerary={props.traveleritinerary}
-            CityData={CityData}
+            // CityData={CityData}
+            CityData={props?.cities}
             itinerary={props.itinerary}
             breif={props.breif}
             fetchData={props.fetchData}
@@ -1244,8 +1246,25 @@ function newFunction(
   function replaceLatLong(source, destination) {
     return {
       ...source,
-      lat: destination.lat || '34.5539',
-      long: destination.long || '76.1349',
+      lat: destination.lat,
+      long: destination.long,
+    };
+  }
+  if (props?.breif) {
+    if (props.breif.city_slabs) {
+      for (var j = 0; j < props.breif.city_slabs.length; j++) {
+        if (!props.breif.city_slabs[j].is_trip_terminated) {
+          totalcityslabs += 1;
+        }
+      }
+    }
+  }
+
+  function replaceLatLong1(source, destination) {
+    return {
+      ...source,
+      lat: destination.latitude,
+      long: destination.longitude,
     };
   }
   if (props?.breif) {
@@ -1288,6 +1307,39 @@ function newFunction(
     setCityData(CityDataTemp);
   }
   processRoutes2(props);
+
+  async function processRoutes3(props) {
+    console.log("CIT MER",props.cities,props.mercuryItinerary)
+
+      for (var i = 0; i < props.cities.length; i++) {
+        if (props.cities[i]?.city.longitude) {
+          CityDataTemp.push(props.cities[i].city.longitude);
+          RoutesData.push(props.cities[i].city);
+        } else {
+          if (
+            props.cities[i].city?.id &&
+            props.cities[i].city?.duration > "0"
+          ) {
+            try {
+              const data = await getCityDetails(
+                props.cities[i].city?.id
+              );
+              const updatedRoutes = replaceLatLong1(
+                props.cities[i].city,
+                data
+              );
+              RoutesData.push(updatedRoutes);
+              CityDataTemp.push(updatedRoutes);
+            } catch (error) {
+              console.error(error);
+            }
+          }
+        }
+      }
+    setcitydatadone(true);
+    setCityData(CityDataTemp);
+  }
+  processRoutes3(props);
 
   if (props.routes) {
     async function processRoutes(props) {

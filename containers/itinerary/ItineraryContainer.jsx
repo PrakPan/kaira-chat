@@ -72,6 +72,7 @@ const ItineraryContainer = (props) => {
   const hasRendered = useRef(false);
   const [editRoute, setEditRoute] = useState(false);
   const [showMercuryItinerary,setShowMercuryItinerary] = useState(false);
+  const [cities, setCities] = useState([]);
   const dispatch = useDispatch();
 
 
@@ -440,6 +441,7 @@ console.log("Flight Data:", flight_data);
         getPaymentInfo();
         getAllBookings();
         setItineraryDate(data.start_date);
+        setCities(data?.cities);
 
 
         let activities =[];
@@ -823,6 +825,7 @@ console.log("Flight Data:", flight_data);
   return (
     <Container>
       <Overview
+        mercuryItinerary
         title={props.itinerary.name}
         group_type={group_type}
         duration_time={duration_time}
@@ -840,6 +843,7 @@ console.log("Flight Data:", flight_data);
         number_of_children={props?.plan ? props.plan?.number_of_children : null}
         number_of_infants={props?.plan ? props.plan?.number_of_infants : null}
         setEditRoute={setEditRoute}
+        cities = {props?.cities}
       ></Overview>
 
       <div id="itinerary-anchor">
@@ -903,6 +907,7 @@ console.log("Flight Data:", flight_data);
           editRoute={editRoute}
           setEditRoute={setEditRoute}
           getPaymentInfo={getPaymentInfo}
+          cities={cities}
         ></Menu>
       </div>
     </Container>

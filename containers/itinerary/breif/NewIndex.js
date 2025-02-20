@@ -68,8 +68,10 @@ const Details = (props) => {
           });
         }
       }
-    } else {
+    } 
+    else {
       if (props.CityData.length >= 1) {
+        console.log("CityData",props.CityData);
         for (var i = 0; i < props.CityData.length; i++) {
           var postion = props.CityData[i];
           if (
@@ -79,16 +81,18 @@ const Details = (props) => {
             postion.duration !== "0"
           ) {
             Locationlatlong.push({
-              dayId: getdayId(postion.day_slab_location.start_day_slab_index),
+              // dayId: getdayId(postion?.day_slab_location?.start_day_slab_index || '12'),
+              dayId:'12',
               cityData: postion,
-              id: postion.gmaps_place_id,
-              city_id: postion.city_id,
-              lat: postion.lat,
-              long: postion.long,
-              name: postion.city_name,
+              id: postion?.gmaps_place_id || 'ChIJ78XjhlaF4TgRxgXjwXxLJGY',
+              city_id: postion.city?.id,
+              lat: postion.city?.latitude,
+              long: postion.city?.longitude,
+              name: postion.city?.city,
               duration: postion.duration,
-              color: postion.color,
-              date: getdateId(postion.day_slab_location.start_day_slab_index),
+              color: postion.color || 'green',
+              // date: getdateId(postion?.day_slab_location?.start_day_slab_index || '12'),
+              date: postion.start_date
             });
           }
         }
@@ -141,10 +145,12 @@ const Details = (props) => {
         <RouteComponent>
           <div id="route">
             <Route
+              mercuryItinerary={props?.mercuryItinerary}
               payment={props.payment}
               dayslab={props.itinerary?.day_slabs}
               breif={props.breif}
               routesData={props.routesData}
+              CityData={props?.CityData}
               transfers={props.transfersData}
               setPlaceID={setActive}
               active={active}
