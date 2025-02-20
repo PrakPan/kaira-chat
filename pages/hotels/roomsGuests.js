@@ -85,7 +85,7 @@ const SelectWithSearch = ({ setOpen, options, setInput, name }) => {
   );
 };
 
-const RoomsGuests = ({ input, setInput, name }) => {
+const RoomsGuests = ({ input, setInput, name ,small}) => {
   const [isOpen, setOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -102,8 +102,8 @@ const RoomsGuests = ({ input, setInput, name }) => {
   }, []);
 
   return (
-    <div ref={dropdownRef} className="w-[290px] h-[100px] block text-gray-600 px-2 py-2 font-medium mb-1 border border-gray-300 rounded-md hover:bg-blue-200 focus:ring-2 focus:ring-blue-500 outline-none">
-      <div>City, Property Name Or Locations</div>
+    <div ref={dropdownRef} className={`${small==true?"h-[65px] w-[250px]":"h-[100px] w-[290px]"} block text-gray-600 px-2 py-2 font-medium mb-1 border border-gray-300 rounded-md hover:bg-blue-200 focus:ring-2 focus:ring-blue-500 outline-none`}>
+      <div className={`${small==true&&"text-xs mb-2"}`}>City, Property Name Or Locations</div>
       {isOpen ? (
         <SelectWithSearch
           options={cities}
@@ -116,10 +116,10 @@ const RoomsGuests = ({ input, setInput, name }) => {
           type="text"
           name={name}
           onClick={() => setOpen((prev) => !prev)}
-          className="flex flex-col gap-2"
+          className="flex flex-col"
         >
-          <div className="text-bold text-2xl !text-black">{input[name].city}</div>
-          <div>{input[name].country}</div>
+          <div className={`text-bold ${small==true?"text-xs":"xl mb-2"} !text-black`}>{input[name].city}</div>
+          <div className={`${small==true&&"text-xs"}`}>{input[name].country}</div>
         </div>
       )}
     </div>
