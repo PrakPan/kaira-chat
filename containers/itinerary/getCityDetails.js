@@ -15,6 +15,8 @@ export const getCityDetails = (() => {
     const data = res.data;
     // Cache the city details for future use
     cache[city_id] = data;
+
+    console.log("CITY DATA",data);
     return data;
   };
 })();
