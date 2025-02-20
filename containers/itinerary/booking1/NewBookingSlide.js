@@ -76,7 +76,7 @@ const Details = (props) => {
   };
 
   const [date, setDate] = useState(
-    getCurrentDateIfOlder(props?.plan?.start_date),
+    getCurrentDateIfOlder(props?.itineraryDate),
   );
 
   const _handleVerificationSuccess = () => {
@@ -178,7 +178,7 @@ const Details = (props) => {
                           Math.ceil(
                             props.payment.costings_breakdown[booking][
                               "booking_cost"
-                            ] / 100,
+                            ],
                           ),
                         )}
                     </p>
@@ -244,7 +244,7 @@ const Details = (props) => {
                           Math.ceil(
                             props.payment.costings_breakdown[booking][
                               "booking_cost"
-                            ] / 100,
+                            ],
                           ),
                         )}
                     </p>
@@ -480,17 +480,17 @@ const Details = (props) => {
             {props.iscouponApplied &&
             props.payment?.discounted_cost != props.payment.total_cost &&
             props.payment?.show_per_person_cost !=
-              props.payment.per_person_discounted_cost ? (
+              props.payment?.per_person_discounted_cost ? (
               <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
                 <span>₹</span>
                 <div>
                   {props.payment.show_per_person_cost ||
                   props.payment.pay_only_for_one
                     ? getIndianPrice(
-                        Math.round(props.payment.per_person_total_cost / 100),
+                        Math.round(props.payment.per_person_total_cost ),
                       )
                     : getIndianPrice(
-                        Math.round(props.payment.total_cost / 100),
+                        Math.round(props.payment.total_cost),
                       )}
                   {"/-"}
                 </div>
@@ -509,7 +509,7 @@ const Details = (props) => {
             {props?.payment && (
               <div className="flex flex-row gap-1">
                 <div
-                  show_per_person_cost={props.payment?.show_per_person_cost}
+                  show_per_person_cost={props.payment.show_per_person_cost}
                   className={
                     props.blur
                       ? "font-lexend blurry-text"
@@ -523,20 +523,20 @@ const Details = (props) => {
                       ? getIndianPrice(
                           Math.round(
                             Math.round(
-                              props.payment?.per_person_discounted_cost,
-                            ) / 100,
+                              props.payment.per_person_discounted_cost,
+                            ),
                           ),
                         )
                       : getIndianPrice(
                           Math.round(
-                            Math.round(props.payment?.discounted_cost) / 100,
+                            Math.round(props.payment.discounted_cost),
                           ),
                         )}
                     {"/-"}
                   </div>
                 </div>
 
-                {props.payment.paid_user ? (
+                {props.payment?.paid_user ? (
                   <div className="font-[400] pl-2 text-base self-end">PAID</div>
                 ) : (
                   <div className="font-medium text-base self-end">
@@ -545,7 +545,7 @@ const Details = (props) => {
                       ? "Per Person Cost"
                       : props.payment?.is_estimated_price
                         ? `${
-                            props.payment.total_cost == 0
+                            props.payment?.total_cost == 0
                               ? ""
                               : "Estimated Price"
                           }`
@@ -580,7 +580,7 @@ const Details = (props) => {
             )}
 
             {props.payment?.itinerary_status ===
-              ITINERARY_STATUSES?.itinerary_finalized ||
+              ITINERARY_STATUSES.itinerary_finalized ||
             props?.plan?.featured ? null : (
               <div></div>
             )}
@@ -616,6 +616,7 @@ const Details = (props) => {
                 activityBookings={props.activityBookings}
                 transferBookings={props.transferBookings}
                 payment={props.payment}
+                mercuryItinerary={props?.mercuryItinerary}
               ></Accordion>
 
               {!oldaccommodation && !props.payment.are_prices_hidden ? (
@@ -636,13 +637,9 @@ const Details = (props) => {
                         : "font-lexend text-enter "
                     }
                   >
-                    {/* {"₹ " +
+                    {"₹ " +
                       getIndianPrice(
-                        Math.round(props.payment.total_service_fee / 100),
-                      )} */}
-                       {"₹ " +
-                      getIndianPrice(
-                        Math.round(props.payment.surcharges_and_taxes / 100),
+                        Math.round(props.payment?.surcharges_and_taxes),
                       )}
                   </div>
                 </div>
@@ -672,8 +669,7 @@ const Details = (props) => {
                                 ? props?.payment?.coupon_usage?.discount
                                   ? `(INR ${getIndianPrice(
                                       Math.round(
-                                        props?.payment?.coupon_usage?.discount /
-                                          100,
+                                        props?.payment?.coupon_usage?.discount,
                                       ),
                                     )}  OFF!)`
                                   : props.payment.coupon.discount_value
@@ -697,7 +693,7 @@ const Details = (props) => {
                             {"₹" +
                               getIndianPrice(
                                 Math.round(
-                                  props?.payment?.coupon_usage?.discount / 100,
+                                  props?.payment?.coupon_usage?.discount,
                                 ),
                               )}
                           </div>
@@ -721,7 +717,7 @@ const Details = (props) => {
             <BsCalendar2 className="text-md text-[#7A7A7A]" />
             <div className="text-md font-medium text-black flex flex-row items-center gap-2">
               {props.tripsPage ? (
-                <div>{props.plan.duration_number + " Nights"}</div>
+                <div>{props.plan?.duration_number + " Nights"}</div>
               ) : (
                 <div>
                   {props.plan
@@ -754,7 +750,7 @@ const Details = (props) => {
               )}
 
               {props.payment?.itinerary_status ===
-              ITINERARY_STATUSES.itinerary_prepared ? (
+              ITINERARY_STATUSES?.itinerary_prepared ? (
                 <>
                   <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 group-hover:text-blue-500 group-hover:scale-110  active:scale-90">
                     <MdEdit
@@ -783,18 +779,18 @@ const Details = (props) => {
             <div>
               {pax} {pluralDetector("Adult", pax)}{" "}
             </div>
-            {/* {props.payment?.meta_info.number_of_children ? (
-              <div>, {props.payment?.meta_info.number_of_children} Children</div>
+            {props.payment?.number_of_children ? (
+              <div>, {props.payment?.number_of_children} Children</div>
             ) : null}
-            {props.payment?.meta_info.number_of_infants ? (
+            {props.payment?.number_of_infants ? (
               <div>
-                , {props.payment?.meta_info.number_of_infants}{" "}
+                , {props.payment?.number_of_infants}{" "}
                 {pluralDetector(
                   "Infant",
-                  props.payment?.meta_info.number_of_infants,
+                  props.payment?.number_of_infants,
                 )}
               </div>
-            ) : null} */}
+            ) : null}
             {props.payment?.itinerary_status ===
             ITINERARY_STATUSES?.itinerary_finalized ? null : (
               <>
@@ -927,7 +923,7 @@ const Details = (props) => {
                     width="100%"
                     borderRadius="8px"
                     bgColor="#f8e000"
-                    padding="12px"
+                    padding="12px" 
                     onclick={handleGetInTouch}
                   >
                     <div

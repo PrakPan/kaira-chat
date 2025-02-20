@@ -101,10 +101,12 @@ const FAQs = (props) => {
               style={{ fontWeight: "700", fontSize: "0.80rem", margin: "0" }}
             >
               <div className="flex flex-row gap-1">
-                {key} ({props.payment.meta_info.number_of_adults}
-                {props.payment.meta_info.number_of_adults == 1
+                {key} ({!props?.mercuryItinerary ? props.payment?.meta_info.number_of_adults : props.payment?.number_of_adults}
+                {!props?.mercuryItinerary ? (props.payment?.meta_info.number_of_adults == 1
                   ? " Adult"
-                  : " Adults"}
+                  : " Adults") : (props.payment?.number_of_adults == 1
+                    ? " Adult"
+                    : " Adults")}
                 )
               </div>
             </Typography>
@@ -121,12 +123,17 @@ const FAQs = (props) => {
                 marginRight: "1.5rem",
               }}
             >
-              {!props.payment.are_prices_hidden
+              {!props?.mercuryItinerary ? (!props.payment.are_prices_hidden
                 ? "₹ " +
                   getIndianPrice(
                     Math.round(props.payment.summary[key].cost / 100)
                   )
-                : null}
+                : null):  (!props.payment.are_prices_hidden
+                  ? "₹ " +
+                    getIndianPrice(
+                      Math.round(props.payment.summary[key].cost)
+                    )
+                  : null)}
             </Typography>
           </AccordionSummary>
 

@@ -29,6 +29,7 @@ import axiosBookingsInstance, {
   axiosGetAllBookings,
 } from "../../../services/itinerary/bookings";
 import axiosPlanInstance from "../../../services/itinerary/plan";
+import bookings from "../../../services/itinerary/bookings";
 
 const Container = styled.div`
   width: 90%;
@@ -89,10 +90,10 @@ const Itinerary = (props) => {
 
   const getItineraryActivities = () => {
     let itenaryActivities = [];
-    props.itinerary?.day_slabs.map((day_slab, index) => {
-      day_slab?.slab_elements.map((element, index) => {
-        if (element.element_type === "activity") {
-          itenaryActivities.push({ activity: element, date: day_slab.slab });
+    props.itinerary?.day_slabs?.map((day_slab, index) => {
+      day_slab?.slab_elements?.map((element, index) => {
+        if (element?.element_type === "activity") {
+          itenaryActivities.push({ activity: element, date: day_slab?.slab });
         }
       });
     });
@@ -178,7 +179,7 @@ const Itinerary = (props) => {
   const getAllBookings = () => {
     let flight_bookings = [];
 
-    axiosGetAllBookings
+    axiosBookingsInstance
       .get(`/${props.id}/bookings/`)
       .then((res) => {
         getPaymentHandler();
@@ -335,7 +336,7 @@ const Itinerary = (props) => {
       })
       .catch((error) => {});
 
-    getAllBookings();
+      getAccommodationAndActivitiesHandler();
   }
 
   useEffect(() => {

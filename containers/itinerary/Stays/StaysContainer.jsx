@@ -69,7 +69,7 @@ const StaysContainer = (props) => {
       room_type: room_type,
 
       itinerary_name: itinerary_name,
-      cost: Math.round(cost / 100),
+      cost: Math.round(cost),
       costings_breakdown: costings_breakdown,
       images: images,
     });

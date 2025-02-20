@@ -642,7 +642,7 @@ const TransfersContainer = (props) => {
             key={index}
             transfersPin
             setCurrentPopup={false}
-            city={booking.source_address.shortName}
+            city={booking.source_address?.shortName}
             index={index}
             pinColour={index === 0 ? null : CITY_COLOR_CODES[index % 7]}
           ></PinSection>
@@ -664,7 +664,7 @@ const TransfersContainer = (props) => {
               key={index}
               transfersPin
               setCurrentPopup={false}
-              city={booking.destination_address.shortName}
+              city={booking.destination_address?.shortName}
               index={index}
               pinColour={null}
             ></PinSection>
