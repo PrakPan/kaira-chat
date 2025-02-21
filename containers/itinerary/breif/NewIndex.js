@@ -71,6 +71,7 @@ const Details = (props) => {
     } 
     else {
       if (props.CityData.length >= 1) {
+        console.log("CityData",props.CityData);
         for (var i = 0; i < props.CityData.length; i++) {
           var postion = props.CityData[i];
           if (
