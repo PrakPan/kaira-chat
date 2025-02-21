@@ -3,6 +3,19 @@ import { connect } from "react-redux";
 
 import ItineraryCity from "../../components/itinerary/itineraryCity";
 import CityNavigation from "../../components/itinerary/itineraryCity/CityNavigation";
+import styled from "styled-components";
+import CityItem from "./VerticalLayout"
+
+
+const CITY_COLOR_CODES = [
+  "#359EBF", // shade of blue
+  "#F0C631", // shade of yellow
+  "#BF3535", // shade of red
+  "#47691e", // shade of green
+  "#cc610a", // shade of orange
+  "#008080", // shade of teal
+  "#7d5e7d", // shade of purple
+];
 
 const DaybyDay = (props) => {
   const cityRefs = useRef({});
@@ -31,10 +44,17 @@ const DaybyDay = (props) => {
 
       <CityNavigation cities={cities} cityRefs={cityRefs} />
 
-      <div className="flex flex-col gap-[80px]">
-        {props.itineraryDaybyDay?.cities.map((city) => (
-          <ItineraryCity key={city.id} city={city} cityRefs={cityRefs} />
-        ))}
+      <div className="flex flex-col">
+        {props.itineraryDaybyDay?.cities.map((city, index) => {
+          return (
+            <>
+              <ItineraryCity key={city.id} city={city} cityRefs={cityRefs} />
+              {index!=props.itineraryDaybyDay?.cities.length-1&&<div>
+                <CityItem key={city.id} city={city?.transfers?.["one-way"]?.from?.[0]?.name} duration={city?.transfers?.["one-way"]?.from?.[0]?.duration} booking_type={city?.transfers?.["one-way"]?.from?.[0]?.booking_type} pinColour={CITY_COLOR_CODES[index % 7]} onClick={() => alert(`Clicked on ${transfer.city}`)}/>
+              </div>}
+            </>
+          );
+        })}
       </div>
     </div>
   );

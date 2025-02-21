@@ -48,7 +48,9 @@ const ItineraryCity = (props) => {
       </div>
 
       {viewMore ? (
+        <>
         <CityDaybyDay city={props.city} />
+        </>
       ) : (
         <CitySummary city={props.city} setViewMore={setViewMore} />
       )}

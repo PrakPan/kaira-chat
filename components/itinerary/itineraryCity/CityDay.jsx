@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import SlabElement from "./SlabElement";
 import media from "../../media";
 import ActivityAddDrawer from "../../drawers/poiDetails/activityAddDrawer";
+import { convertDateFormat } from "../../../helper/ConvertDateFormat";
 
 const CityDay = (props) => {
   let isPageWide = media("(min-width: 768px)");
@@ -25,7 +26,7 @@ const CityDay = (props) => {
         className={`md:w-[15%] text-[14px] md:text-[16px] font-semibold py-2 px-1  md:border-r-2 md:text-center md:text-[#7A7A7A] bg-[#ECECEC] md:bg-white`}
       >
         Day {props.index + 1}
-        {isPageWide ? <span>, Feb 03</span> : <span>, Feb 03</span>}
+        {isPageWide ? <span>, {convertDateFormat(props?.day?.date)}</span> : <span>, {convertDateFormat(props?.day?.date)}</span>}
       </div>
 
       <div className="flex flex-col p-3 md:w-[85%]">
