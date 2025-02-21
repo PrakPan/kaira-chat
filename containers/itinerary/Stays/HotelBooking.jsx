@@ -111,6 +111,8 @@ const HotelBooking = ({
     }
   }
 
+  console.log("Bookings Data",booking);
+
   return (
     <div>
       <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">

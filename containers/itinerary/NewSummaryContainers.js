@@ -257,6 +257,7 @@ const NewSummaryContainer = (props) => {
     </div>
   );
 
+  console.log("Iti1",props?.itinerary)
   return (
     <SummaryContainer
       className="font-lexend ml-4 flex flex-col rounded-xl shadow-md  border-2 border-[#ECEAEA] shadow-[#ECEAEA]"
@@ -275,6 +276,7 @@ const NewSummaryContainer = (props) => {
       ) : (
         <NewBookingSlide
           {...props}
+          itinerary={props?.itinerary}
           openCouponSlide={() => setCouponSlide(true)}
           setiscouponApplied={setiscouponApplied}
           iscouponApplied={iscouponApplied}

@@ -29,6 +29,19 @@ const Route = (props) => {
     },
   };
 
+  const CITY_COLOR_CODES = [
+    '#359EBF',  // shade of blue
+    '#F0C631',  // shade of yellow
+    '#BF3535',  // shade of red
+    '#47691e',  // shade of green
+    '#cc610a',  // shade of orange
+    '#008080',  // shade of teal
+    '#7d5e7d',  // shade of purple
+]
+  let color_index = 0
+
+
+
   let locationsArr = [];
   const [order, setOrder] = useState(initialorder);
 
@@ -278,7 +291,9 @@ const Route = (props) => {
 
 
 if (props?.CityData) {
+        console.log("CITY DATAAA",props?.CityData)
         for (var i = 0; i < props?.CityData?.length; i++) {
+          let color = CITY_COLOR_CODES[i%7];
           locationsArr.push(
             <PinSection
               startingCity={i === 0}
@@ -293,17 +308,17 @@ if (props?.CityData) {
               setShowDrawerData={props.setShowDrawerData}
               cityData={props.CityData[i]}
               dayslab={props.day_by_day}
-              lat={props.CityData[i]?.city?.latitude}
-              long={props.CityData[i]?.city?.longitude}
+              lat={props.CityData[i]?.city?.latitude || props.CityData[i]?.latitude}
+              long={props.CityData[i]?.city?.longitude || props.CityData[i]?.longitude}
               Mapid={props.CityData[i]?.gmaps_place_id || 'ChIJ78XjhlaF4TgRxgXjwXxLJGY'}
-              city={props.CityData[i]?.city?.name}
+              city={props.CityData[i]?.city?.name || props.CityData[i]?.city_name}
               cityId={props.CityData[i].city?.id}
               duration={
                 props.CityData[i].duration
                   ? props.CityData[i].duration
                   : null
               }
-              pinColour={props.CityData[i]?.color || 'green'}
+              pinColour={props.CityData[i]?.color || color}
               data={order[i]}
               _moveDownHandler={_moveDownHandler}
               _moveUpHandler={_moveUpHandler}
@@ -313,7 +328,7 @@ if (props?.CityData) {
           if (i < props.CityData.length - 1) {
             locationsArr.push(
               <MidSection
-                pinColour={props.CityData[i]?.color || 'yellow'}
+                pinColour={props.CityData[i]?.color || color}
                 modes={
                   props?.transfers[i + 1]?.modes
                     ? props?.transfers[i + 1]?.modes[0]

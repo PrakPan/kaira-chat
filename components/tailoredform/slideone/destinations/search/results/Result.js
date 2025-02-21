@@ -48,6 +48,8 @@ const Result = (props) => {
     props.setFocusSearch(false);
   };
 
+  console.log("Prop Result",props?.result);
+
   return (
     <Container
       className="font-lexend"
