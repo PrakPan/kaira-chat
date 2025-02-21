@@ -395,22 +395,22 @@ const RouteEditSection = (props) => {
       <Header
         setEdit={props.setEdit}
         title={props?.itinerary.name}
-        group_type={props?.group_type}
-        duration_time={props?.duration_time}
+        group_type={props?.group_type || props?.itinerary?.group_type}
+        duration_time={props?.duration_time || props?.itinerary?.duration}
         travellerType={props?.travellerType}
-        start_date={props?.plan ? props?.plan.start_date : null}
-        end_date={props?.plan ? props?.plan.end_date : null}
+        start_date={props?.plan ? props?.plan.start_date : props?.itinerary ? props?.itinerary?.start_date : null}
+        end_date={props?.plan ? props?.plan.end_date : props?.itinerary ? props?.itinerary?.end_date : null}
         duration={
           props?.plan
             ? props?.plan.duration_number + " " + props?.plan.duration_unit
-            : null
+            : props?.itinerary ? props?.itinerary?.duration + " " + "nights" : null
         }
-        budget={props?.plan ? props?.plan?.budget : null}
-        number_of_adults={props?.plan ? props?.plan?.number_of_adults : null}
+        budget={props?.plan ? props?.plan?.budget : props?.itinerary ? props?.itinerary?.budget : null}
+        number_of_adults={props?.plan ? props?.plan?.number_of_adults : props?.itinerary ? props?.itinerary?.number_of_adults : null }
         number_of_children={
-          props?.plan ? props?.plan?.number_of_children : null
+          props?.plan ? props?.plan?.number_of_children : props?.itinerary ? props?.itinerary?.number_of_children : null
         }
-        number_of_infants={props?.plan ? props?.plan?.number_of_infants : null}
+        number_of_infants={props?.plan ? props?.plan?.number_of_infants : props?.itinerary ? props?.itinerary?.number_of_infants : null }
         setEditDestination={setEditDestination}
       />
 
@@ -528,10 +528,10 @@ const Header = (props) => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-1">
+        {props?.budget && <div className="flex flex-col gap-1">
           <div className="text-sm text-gray-500">Budget</div>
           <div>{props?.budget}</div>
-        </div>
+        </div>}
 
         <div className="flex flex-row gap-4 items-center">
           <div className="flex flex-col gap-1">

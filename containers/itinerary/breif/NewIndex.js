@@ -39,6 +39,16 @@ const Details = (props) => {
   const [showDrawerData, setShowDrawerData] = useState(false);
   const [currentPopup, setCurrentPopup] = useState(false);
   const [locationsLatLong, setLocationsLatLong] = useState([]);
+  
+  const CITY_COLOR_CODES = [
+    '#359EBF',  //  # shade of blue
+    '#F0C631',  //# shade of yellow
+    '#BF3535',  //# shade of red
+    '#47691e',  //# shade of green
+    '#cc610a',  //# shade of orange
+    '#008080',  //# shade of teal
+    '#7d5e7d',  //# shade of purple
+];
 
   useEffect(() => {
     const Locationlatlong = [];
@@ -71,8 +81,10 @@ const Details = (props) => {
     } 
     else {
       if (props.CityData.length >= 1) {
+        let color;
         console.log("CityData",props.CityData);
         for (var i = 0; i < props.CityData.length; i++) {
+          color = CITY_COLOR_CODES[i%7];
           var postion = props.CityData[i];
           if (
             !postion.is_departure_only &&
@@ -88,9 +100,9 @@ const Details = (props) => {
               city_id: postion.city?.id,
               lat: postion.city?.latitude,
               long: postion.city?.longitude,
-              name: postion.city?.city,
+              name: postion.city?.name || postion?.city_name,
               duration: postion.duration,
-              color: postion.color || 'green',
+              color: color,
               // date: getdateId(postion?.day_slab_location?.start_day_slab_index || '12'),
               date: postion.start_date
             });

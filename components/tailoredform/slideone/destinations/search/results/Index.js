@@ -70,6 +70,8 @@ const SearchResults = (props) => {
         {[skeleton, skeleton, skeleton, skeleton, skeleton]}
       </AbsoluteContainer>
     );
+
+    console.log("Resul",props?.results, props)
   return (
     <AbsoluteContainer
       className={props?.results?.length && "border"}
