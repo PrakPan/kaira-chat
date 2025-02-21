@@ -39,6 +39,7 @@ const Overview = (props) => {
       </GridContainer>
       <div className="flex flex-row justify-between">
         <Details
+          mercuryItinerary={props?.mercuryItinerary}
           group_type={props.group_type}
           duration_time={props.duration_time}
           travellerType={props.travellerType}

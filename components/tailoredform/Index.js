@@ -168,6 +168,7 @@ const Enquiry = (props) => {
   var selectedObj;
 
   if (routerquery.state && !routerquery.city) {
+    console.log("PROPS",props)
     selectedObj = [
       {
         destination_id: routerquery.page_id || props.page_id,
@@ -176,6 +177,7 @@ const Enquiry = (props) => {
       },
     ];
   } else if (routerquery.country) {
+    console.log("PROPS2",props)
     selectedObj = [
       {
         id: routerquery.page_id || props.page_id,
@@ -185,6 +187,7 @@ const Enquiry = (props) => {
       },
     ];
   } else {
+    console.log("PROPS3",props)
     selectedObj = [
       {
         id: routerquery.page_id || props.page_id,
@@ -194,6 +197,8 @@ const Enquiry = (props) => {
       },
     ];
   }
+
+  console.log("SelectedObj",selectedObj,routerquery);
 
   const _handleHideBlack = () => {
     setShowBlack(false);
@@ -227,6 +232,7 @@ const Enquiry = (props) => {
 
     try {
       for (var i = 0; i < selectedCities.length; i++) {
+        console.log("Selected Cities",selectedCities);
         if (
           cityids.indexOf(selectedCities[i].id) == -1 &&
           selectedCities[i].id
@@ -421,6 +427,7 @@ const Enquiry = (props) => {
 
     try {
       for (var i = 0; i < selectedCities.length; i++) {
+        console.log("Selected Cities",selectedCities);
         if (
           cityids.indexOf(selectedCities[i].id) == -1 &&
           selectedCities[i].id

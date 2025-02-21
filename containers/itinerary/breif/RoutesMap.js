@@ -30,10 +30,10 @@ export default function RoutesMap({
 
   const InfoWindowContainer = (location) => (
     <div className="w-full flex flex-row gap-3">
-      {location?.cityData?.image && (
+      {(location?.cityData?.image || location?.cityData?.city?.image[0]?.image)&& (
         <ImageLoader
           borderRadius="8px"
-          url={location?.cityData?.image}
+          url={location?.cityData?.image || location?.cityData?.city?.image[0]?.image}
           height={150}
           width={150}
           heightMobile="auto"

@@ -442,6 +442,7 @@ console.log("Flight Data:", flight_data);
         getAllBookings();
         setItineraryDate(data.start_date);
         setCities(data?.cities);
+        setStayBookings(data?.cities);
 
 
         let activities =[];
@@ -827,21 +828,21 @@ console.log("Flight Data:", flight_data);
       <Overview
         mercuryItinerary
         title={props.itinerary.name}
-        group_type={group_type}
-        duration_time={duration_time}
+        group_type={group_type || props.itinerary?.group_type}
+        duration_time={duration_time || props.itinerary?.duration_time}
         images={props.itinerary.images}
         travellerType={travellerType}
-        start_date={props?.plan ? props.plan.start_date : null}
-        end_date={props?.plan ? props.plan.end_date : null}
+        start_date={props?.plan ? props.plan.start_date : props.itinerary.start_date ? props.itinerary.start_date : null}
+        end_date={props?.plan ? props.plan.end_date : props.itinerary.end_date ? props.itinerary.end_date : null}
         duration={
           props?.plan
-            ? props.plan.duration_number + " " + props.plan.duration_unit
-            : null
+            ? props.plan.duration_number + " " + props?.plan?.duration_unit || "nights"
+            : props.itinerary?.duration ? props.itinerary?.duration + " " + "nights" : null 
         }
-        budget={props?.plan ? props.plan?.budget : null}
-        number_of_adults={props?.plan ? props.plan?.number_of_adults : null}
-        number_of_children={props?.plan ? props.plan?.number_of_children : null}
-        number_of_infants={props?.plan ? props.plan?.number_of_infants : null}
+        budget={props?.plan ? props.plan?.budget : props.itinerary?.budget ? props.itinerary?.budget : null }
+        number_of_adults={props?.plan ? props.plan?.number_of_adults : props.itinerary.number_of_adults ? props.itinerary.number_of_adults : null}
+        number_of_children={props?.plan ? props.plan?.number_of_children : props.itinerary.number_of_children ? props.itinerary.number_of_children : null}
+        number_of_infants={props?.plan ? props.plan?.number_of_infants : props.itinerary.number_of_infants ? props.itinerary.number_of_infants : null}
         setEditRoute={setEditRoute}
         cities = {props?.cities}
       ></Overview>
@@ -856,7 +857,7 @@ console.log("Flight Data:", flight_data);
           showTaxiModal={showTaxiModal}
           setShowTaxiModal={setShowTaxiModal}
           paymentLoading={paymentLoading}
-          budget={props?.plan ? props.plan.budget : null}
+          budget={props?.plan ? props.plan.budget : props.budget ? props.budget : null}
           _deselectActivityBookingHandler={_deselectActivityBookingHandler}
           activityFlickityIndex={activityFlickityIndex}
           transferFlickityIndex={transferFlickityIndex}
@@ -908,6 +909,7 @@ console.log("Flight Data:", flight_data);
           setEditRoute={setEditRoute}
           getPaymentInfo={getPaymentInfo}
           cities={cities}
+          itinerary={props?.itinerary}
         ></Menu>
       </div>
     </Container>

@@ -14,7 +14,7 @@ import axiossalecreateinstance from "../../../services/sales/itinerary/SaleCreat
 import axios from "axios";
 import Accordion from "./Accordion";
 import { BsCalendar2, BsPeopleFill } from "react-icons/bs";
-import { add, addDays, format, isBefore, startOfDay } from "date-fns";
+import { add, addDays, format, isBefore, parseISO, startOfDay } from "date-fns";
 import MakeYourPersonalised from "../../../components/MakeYourPersonalised";
 import { scroller } from "react-scroll";
 import { pluralDetector } from "../../../helper/shortHelpers";
@@ -41,7 +41,7 @@ const Details = (props) => {
   const [acoordianceOpen, setAcordianOpen] = useState(false);
   const [showVerification, setShowVerification] = useState(false);
   const [showRegistration, setShowRegistartion] = useState(false);
-  const [pax, setPax] = useState(props?.payment?.meta_info?.number_of_adults);
+  const [pax, setPax] = useState(props?.itinerary?.number_of_adults);
   const [focus, setFocus] = useState(false);
   const [DropdownOpen, setDropdownOpen] = useState(false);
   const router = useRouter();
@@ -53,6 +53,8 @@ const Details = (props) => {
     const formattedDate = format(newDate, "yyyy-MM-dd");
     return formattedDate;
   };
+
+  console.log("Iti",props?.itinerary);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -75,8 +77,17 @@ const Details = (props) => {
     return dateString;
   };
 
+  const convertDFormat = (dt) => {
+    if(dt){
+    const date = parseISO(dt);
+    const formattedDate = format(date, "MMMM do");
+    return formattedDate;
+    }
+    else return;
+  };
+
   const [date, setDate] = useState(
-    getCurrentDateIfOlder(props?.itineraryDate),
+    getCurrentDateIfOlder(props?.itinerary?.start_date),
   );
 
   const _handleVerificationSuccess = () => {
@@ -717,11 +728,11 @@ const Details = (props) => {
             <BsCalendar2 className="text-md text-[#7A7A7A]" />
             <div className="text-md font-medium text-black flex flex-row items-center gap-2">
               {props.tripsPage ? (
-                <div>{props.plan?.duration_number + " Nights"}</div>
+                <div>{props?.itinerary?.duration + " Nights"}</div>
               ) : (
                 <div>
-                  {props.plan
-                    ? props.plan
+                  {/* {props.itinerary
+                    ? props.itinerary
                       ? date ? getHumanDateWithYear(
                           format(new Date(date), "dd-mm-yyyy").replaceAll(
                             "-",
@@ -729,23 +740,37 @@ const Details = (props) => {
                           ),
                         ) :null
                       : null
-                    : null}
+                    : null} */}
+                  {/* {props?.itinerary?.start_date ? getHumanDateWithYear(
+                                            (props?.itinerary?.start_date).replaceAll(
+                                              "-",
+                                              "/",
+                                            ),
+                                          ):  null}
                   {" - "}
-                  {date
+                  {props?.itinerary?.end_date ? getHumanDateWithYear(
+                                            (props?.itinerary?.end_date).replaceAll(
+                                              "-",
+                                              "/",
+                                            ),
+                                          ):  null} */}
+                                          {convertDFormat(props?.itinerary?.start_date ? props?.itinerary?.start_date : null)} -{" "}
+                                          {convertDFormat(props?.itinerary?.end_date ? props?.itinerary?.end_date : null )}
+                  {/* {date
                     ? getHumanDateWithYear(
                         format(
                           new Date(
                             addDaysToDate(
                               date,
-                              props?.plan?.duration_number
-                                ? props?.plan?.duration_number
+                              props?.itinerary?.duration
+                                ? props?.itinerary?.duration
                                 : 4,
                             ),
                           ),
                           "dd-MM-yyyy",
                         ).replaceAll("-", "/"),
                       )
-                    : null}
+                    : null} */}
                 </div>
               )}
 
@@ -779,15 +804,15 @@ const Details = (props) => {
             <div>
               {pax} {pluralDetector("Adult", pax)}{" "}
             </div>
-            {props.payment?.number_of_children ? (
-              <div>, {props.payment?.number_of_children} Children</div>
+            {props.itinerary?.number_of_children ? (
+              <div>, {props.itinerary?.number_of_children} Children</div>
             ) : null}
-            {props.payment?.number_of_infants ? (
+            {props.itinerary?.number_of_infants ? (
               <div>
-                , {props.payment?.number_of_infants}{" "}
+                , {props.itinerary?.number_of_infants}{" "}
                 {pluralDetector(
                   "Infant",
-                  props.payment?.number_of_infants,
+                  props.itinerary?.number_of_infants,
                 )}
               </div>
             ) : null}
@@ -995,10 +1020,7 @@ const Details = (props) => {
 
       <RegistrationModal
         number_of_adults={
-          props.payment
-            ? props.payment.meta_info
-              ? props.payment.meta_info.number_of_adults
-              : 5
+          props?.itinerary ? props?.itinerary?.number_of_adults
             : 5
         }
         payment={props.payment}

@@ -72,6 +72,8 @@ const SimpleTabsV2 = (props) => {
   const [shareMobile, setShareMobile] = useState(false);
   const isDesktop = useMediaQuery("(min-width:1148px)");
 
+  console.log("Iti2",props?.itinerary);
+
   useEffect(() => {
     if (router.query.payment_status) {
       if (isPageWide) window.scrollTo(0, window.innerHeight);
@@ -531,8 +533,8 @@ const SimpleTabsV2 = (props) => {
             routes={props.routes}
             payment={props.payment}
             traveleritinerary={props.traveleritinerary}
-            // CityData={CityData}
-            CityData={props?.cities}
+            CityData={CityData}
+            // CityData={props?.cities}
             itinerary={props.itinerary}
             breif={props.breif}
             fetchData={props.fetchData}
@@ -552,7 +554,7 @@ const SimpleTabsV2 = (props) => {
         <>
           <div id={"Itenary"}>
             {props.mercuryItinerary ? (
-              props?.itineraryDaybyDay && <DaybyDay />
+              props?.itineraryDaybyDay && <DaybyDay itinerary={props.itinerary} />
             ) : (
               <NewItenaryDBDMob
                 plan={props.plan}
@@ -577,7 +579,7 @@ const SimpleTabsV2 = (props) => {
 
           <div id={"Stays"}>
             {props.mercuryItinerary ? (
-              <StaysContainer />
+              <StaysContainer stayBookings={props?.stayBookings}/>
             ) : (
               <HotelsBooking
                 setShowLoginModal={setShowLoginModal}
@@ -711,7 +713,7 @@ const SimpleTabsV2 = (props) => {
                     plan={props.plan}
                     _GetInTouch={() => _GetInTouch()}
                   ></SummaryContainer>
-                ) :  <NewSummaryContainers payment={props?.payment} itineraryDate={props?.itineraryDate} mercuryItinerary={props?.mercuryItinerary}/> : (
+                ) :  <NewSummaryContainers payment={props?.payment} itineraryDate={props?.itineraryDate} mercuryItinerary={props?.mercuryItinerary} itinerary={props.itinerary}/> : (
                   <div>
                     <GITSummaryContainer
                       hasUserPaid={
@@ -803,6 +805,7 @@ const SimpleTabsV2 = (props) => {
                     setHideBookingModal={props.setHideBookingModal}
                     setShowLoginModal={setShowLoginModal}
                     _GetInTouch={_GetInTouch}
+                    stayBookings={props?.stayBookings}
                   />
                 ) : (
                   <HotelsBooking
@@ -945,7 +948,7 @@ const SimpleTabsV2 = (props) => {
                 _GetInTouch={() => _GetInTouch()}
               ></SummaryContainer>
             </div>
-          ) : props?.mercuryItinerary ? <NewSummaryContainers payment={props?.payment} itineraryDate={props?.itineraryDate} mercuryItinerary={props?.mercuryItinerary}/> :null}
+          ) : props?.mercuryItinerary ? <NewSummaryContainers payment={props?.payment} itineraryDate={props?.itineraryDate} mercuryItinerary={props?.mercuryItinerary} itinerary={props.itinerary} /> :null}
         </SplitScreen>
       ) : null}
 
@@ -1309,11 +1312,13 @@ function newFunction(
   processRoutes2(props);
 
   async function processRoutes3(props) {
-    console.log("CIT MER",props.cities,props.mercuryItinerary)
 
+    console.log("CIT MER",props.cities,props.mercuryItinerary,props)
+    CityDataTemp.push(props?.itinerary?.start_city);
+    RoutesData.push(props?.itinerary?.start_city);
       for (var i = 0; i < props.cities.length; i++) {
         if (props.cities[i]?.city.longitude) {
-          CityDataTemp.push(props.cities[i].city.longitude);
+          CityDataTemp.push(props.cities[i]);
           RoutesData.push(props.cities[i].city);
         } else {
           if (
@@ -1336,6 +1341,9 @@ function newFunction(
           }
         }
       }
+    
+      CityDataTemp.push(props?.itinerary?.end_city);
+      RoutesData.push(props?.itinerary?.end_city);
     setcitydatadone(true);
     setCityData(CityDataTemp);
   }
