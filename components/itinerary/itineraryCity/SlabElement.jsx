@@ -74,7 +74,7 @@ const Activity = (props) => {
             />
           </div>
 
-          <div className="flex flex-col">
+          <div className="flex flex-col md:ml-[10px]">
             <div
               onClick={handleActivity}
               className="w-fit font-medium text-[16px] cursor-pointer"
@@ -83,11 +83,11 @@ const Activity = (props) => {
             </div>
 
             <div className="flex flex-row gap-2 items-center text-sm">
-              <div className="flex flex-row items-center">{getStars(4.5)}</div>
-              <div className="text-[#7A7A7A] text-[12px]">4.5</div>
-              <div className="text-[#7A7A7A] text-[12px] underline">
-                2450 Google reviews
-              </div>
+              <div className="flex flex-row items-center">{getStars(props.element?.rating)}</div>
+              <div className="text-[#7A7A7A] text-[12px]">{props.element?.rating}</div>
+              {props.element?.user_ratings_total&&<div className="text-[#7A7A7A] text-[12px] underline">
+                {props.element?.user_ratings_total} Google reviews
+              </div>}
             </div>
           </div>
         </div>
