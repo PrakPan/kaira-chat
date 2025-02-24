@@ -8,6 +8,18 @@ import media from "../../media";
 import POIDetailsDrawer from "../../drawers/poiDetails/POIDetailsDrawer";
 import { logEvent } from "../../../services/ga/Index";
 
+const getStars = (rating) => {
+  const stars = [];
+  for (let i = 0; i < Math.floor(rating); i++) {
+    stars.push(<MdOutlineStar className="text-[#FFD201]" />);
+  }
+  if (Math.floor(rating) < rating) {
+    stars.push(<MdOutlineStar className="text-[#E3E3E3]" />);
+  }
+
+  return stars;
+};
+
 const SlabElement = (props) => {
   return (
     <div className="">
@@ -25,26 +37,26 @@ export default SlabElement;
 const Activity = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [showDrawer, setShowDrawer] = useState(false);
-
-  const getStars = (rating) => {
-    const stars = [];
-    for (let i = 0; i < Math.floor(rating); i++) {
-      stars.push(<MdOutlineStar className="text-[#FFD201]" />);
-    }
-    if (Math.floor(rating) < rating) {
-      stars.push(<MdOutlineStar className="text-[#E3E3E3]" />);
-    }
-
-    return stars;
-  };
+  const [activityData, setActivityData] = useState({
+    id: "",
+    type: "",
+  });
 
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
     setShowDrawer(false);
   };
 
-  const handleActivity = (e) => {
+  const handleActivity = async (poi, type) => {
+    // if (type=="activity"){
+    //   const res=await axios.get(`${MERCURY_HOST}/api/v1/geos/poi/${poi}/`)
+    // setActivityData(res?.data?.data?.poi)
+    // }
     setShowDrawer(true);
+    setActivityData(() => ({
+      id: poi,
+      type: type,
+    }));
 
     logEvent({
       action: "Details_View",
@@ -61,7 +73,15 @@ const Activity = (props) => {
     <>
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="w-full flex flex-row items-center gap-3 bg-white">
-          <div onClick={handleActivity} className="md:w-[12%] cursor-pointer">
+          <div
+            onClick={() =>
+              handleActivity(
+                props?.element?.poi || props?.element?.activity,
+                props?.element?.element_type
+              )
+            }
+            className="md:w-[12%] cursor-pointer"
+          >
             <ImageLoader
               borderRadius={"5px"}
               style={{
@@ -76,24 +96,40 @@ const Activity = (props) => {
 
           <div className="flex flex-col md:ml-[10px]">
             <div
-              onClick={handleActivity}
+              onClick={() =>
+                handleActivity(
+                  props?.element?.poi || props?.element?.activity,
+                  props?.element?.element_type
+                )
+              }
               className="w-fit font-medium text-[16px] cursor-pointer"
             >
               {props.element.heading}
             </div>
 
             <div className="flex flex-row gap-2 items-center text-sm">
-              <div className="flex flex-row items-center">{getStars(props.element?.rating)}</div>
-              <div className="text-[#7A7A7A] text-[12px]">{props.element?.rating}</div>
-              {props.element?.user_ratings_total&&<div className="text-[#7A7A7A] text-[12px] underline">
-                {props.element?.user_ratings_total} Google reviews
-              </div>}
+              <div className="flex flex-row items-center">
+                {getStars(props.element?.rating)}
+              </div>
+              <div className="text-[#7A7A7A] text-[12px]">
+                {props.element?.rating}
+              </div>
+              {props.element?.user_ratings_total && (
+                <div className="text-[#7A7A7A] text-[12px] underline">
+                  {props.element?.user_ratings_total} Google reviews
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         <button
-          onClick={handleActivity}
+          onClick={() =>
+            handleActivity(
+              props?.element?.poi || props?.element?.activity,
+              props?.element?.element_type
+            )
+          }
           className="w-fit text-[12px] font-semibold border-2 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
         >
           View Details
@@ -111,6 +147,7 @@ const Activity = (props) => {
         image={props.element.icon}
         text={props.element?.text}
         Topheading={"Select Our Point Of Interest"}
+        activityData={activityData}
       />
     </>
   );
@@ -126,56 +163,54 @@ const Recommendation = (props) => {
 
   return (
     <div className="flex items-center gap-3 bg-white">
-      <div className="w-[10%] h-full">
+        <div
+            // onClick={() =>
+            //   handleActivity(
+            //     props?.element?.poi || props?.element?.activity,
+            //     props?.element?.element_type
+            //   )
+            // }
+            className="md:w-[12%] cursor-pointer"
+          >
         <ImageLoader
+          borderRadius={"5px"}
           style={{
-            width: isPageWide ? "40px" : "30px",
-            height: isPageWide ? "40px" : "30px",
-            filter: "grayscale(100%) brightness(0%) contrast(100%)",
+            width: isPageWide ? "60px" : "50px",
+            height: isPageWide ? "60px" : "50px",
+            cursor: "pointer",
             margin: "auto",
           }}
-          url={
-            props.element?.icon
-              ? props.element.icon
-              : "media/icons/default/recommendation.svg"
-          }
+          url={props.element?.icon}
         />
       </div>
 
       <div className="w-[90%] flex flex-col gap-2 text-sm">
         <div className="font-medium text-[16px]">{props.element.heading}</div>
 
-        {props.element.text ? (
-          isJson(props.element.text) ? (
-            <>
-              <div
-                className={`${
-                  viewMore ? "" : "h-[100px]"
-                } overflow-hidden grid md:grid-cols-2 gap-4`}
-              >
-                {JSON.parse(props.element.text).map((res, index) => (
-                  <Restaurant key={index} element={res} />
-                ))}
+        {props.element?.type === "Restaurant Recommendation"}
+        {
+          <div className="flex flex-row gap-2 items-center text-sm">
+            <div className="flex flex-row items-center">
+              {getStars(props.element?.restaurants[0]?.rating)}
+            </div>
+            <div className="text-[#7A7A7A] text-[12px]">
+              {props.element?.restaurants[0]?.rating}
+            </div>
+            {props.element?.restaurants[0]?.user_ratings_total && (
+              <div className="text-[#7A7A7A] text-[12px] underline">
+                {props.element?.restaurants[0]?.user_ratings_total} Google
+                reviews
               </div>
-
-              <button
-                onClick={() => setViewMore((prev) => !prev)}
-                className="w-fit mx-auto flex items-center cursor-pointer"
-              >
-                {viewMore ? (
-                  <>
-                    View Less <RiArrowDropUpLine className="text-2xl" />
-                  </>
-                ) : (
-                  <>
-                    View More <RiArrowDropDownLine className="text-2xl" />
-                  </>
-                )}
-              </button>
-            </>
-          ) : null
-        ) : null}
+            )}
+          </div>
+        }
       </div>
+      <button
+        // onClick={()=>handleActivity(props?.element?.poi|| props?.element?.activity,props?.element?.element_type)}
+        className="w-fit text-[12px] font-semibold border-2 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+      >
+        View Details
+      </button>
     </div>
   );
 };
