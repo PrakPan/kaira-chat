@@ -43,7 +43,7 @@ const BackText = styled.div`
   line-height: 2rem;
 `;
 
-const FloatingView = styled.div`
+const FloatingVContaineriew = styled.div`
   position: sticky;
   bottom: 10px;
   background: #f7e700;

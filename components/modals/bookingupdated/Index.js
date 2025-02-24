@@ -84,7 +84,7 @@ const Booking = (props) => {
     tags: null,
     occupancies: [
       {
-        num_adults: props?.plan?.number_of_adults,
+        num_adults: props?.plan?.number_of_adults || 1,
         child_ages: []
       }
     ]

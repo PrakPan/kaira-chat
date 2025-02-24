@@ -14,7 +14,7 @@ const GlobalModal = ({ isOpen, onClose, children }) => {
             &times;
           </button>
         </div>
-        <div className="modal-content">{children}</div>
+        <div className="modal-content z-[1030]">{children}</div>
       </div>
     </div>
   );

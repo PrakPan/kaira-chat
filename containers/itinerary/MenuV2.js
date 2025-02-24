@@ -556,7 +556,7 @@ const SimpleTabsV2 = (props) => {
         <>
           <div id={"Itenary"}>
             {props.mercuryItinerary ? (
-              props?.itineraryDaybyDay && <DaybyDay itinerary={props.itinerary} />
+              props?.itineraryDaybyDay && <DaybyDay itinerary={props.itinerary} trasferBookings={props?.transferBookings}/>
             ) : (
               <NewItenaryDBDMob
                 plan={props.plan}
@@ -764,7 +764,7 @@ const SimpleTabsV2 = (props) => {
           <div>
             <div id={"Itenary"}>
               {props.mercuryItinerary
-                ? props?.itineraryDaybyDay && <DaybyDay />
+                ? props?.itineraryDaybyDay && <DaybyDay transferBookings={props?.transferBookings}/>
                 : props?.itinerary && (
                     <NewItenaryMain
                       setShowLoginModal={setShowLoginModal}
@@ -922,7 +922,6 @@ const SimpleTabsV2 = (props) => {
               </div>
             )}
           </div>
-          {console.log("MERCURY",props?.showMercuryItinerary)}
           {!props?.mercuryItinerary  ? (
             <div
               id="Booking_container"
@@ -1315,7 +1314,6 @@ function newFunction(
 
   async function processRoutes3(props) {
 
-    console.log("CIT MER",props.cities,props.mercuryItinerary,props)
     CityDataTemp.push(props?.itinerary?.start_city);
     RoutesData.push(props?.itinerary?.start_city);
       for (var i = 0; i < props.cities.length; i++) {

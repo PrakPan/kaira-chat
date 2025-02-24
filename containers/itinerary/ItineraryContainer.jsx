@@ -353,6 +353,9 @@ for (let category in data.summary) {
         // setTransferBookings(
         //   data.transfer_bookings.length ? data.transfer_bookings : null
         // );
+        // setTransferBookings(
+        //   data.transfer_bookings.length ? data.transfer_bookings : null
+        // );
       })
       .catch((err) => {
         console.error("Error fetching all bookings", err.message);
@@ -383,7 +386,6 @@ for (let category in data.summary) {
     if (TRAVELER_ITINERARIES.includes(props.id))
       setIsPastTravelerItinerary(true);
 
-    // console.log("MercuryItinerary",props?.mercuryItinerary);
     // axiosdaybydayinstance
     //   .get(`/?itinerary_id=` + props.id)
     //   .then((res) => {
@@ -506,7 +508,7 @@ for (let category in data.summary) {
 
   const _updateFlightBookingHandler = (json) => {
     setShowFlightModal(false);
-    setTransferBookings(_updateTransferBooking(transferBookings, json));
+   // setTransferBookings(_updateTransferBooking(transferBookings, json));
   };
 
   const _updateBookingHandler = (json) => {
@@ -532,12 +534,14 @@ for (let category in data.summary) {
   const _updateTransferBookingHandler = (json) => {
     setShowBookingModal(false);
     setShowFlightModal(false);
+   // setTransferBookings(json);
     // setTransferBookings(json);
   };
 
   const _updateTaxiBookingHandler = (json) => {
     setShowTaxiModal(false);
 
+   // setTransferBookings(_updateTransferBooking(transferBookings, json));
     // setTransferBookings(_updateTransferBooking(transferBookings, json));
   };
 
