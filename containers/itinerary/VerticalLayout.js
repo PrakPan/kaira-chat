@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import React from "react";
-import { MdNavigateNext } from "react-icons/md";
+import { IoIosArrowForward } from "react-icons/io";
 import Pin from "../newitinerary/breif/route/Pin";
 import { IoCar } from "react-icons/io5";
 import { MdOutlineFlightTakeoff } from "react-icons/md";
@@ -46,7 +46,7 @@ const IconContainer = styled.div`
   transition: right 0.2s ease;
 `;
 
-const CityItem = ({ city, duration, pinColour, onClick, booking_type }) => {
+const CityItem = ({ city, duration, pinColour, onClick, booking_type,upPresent,downPresent }) => {
   const correctIcon = (TransportMode) => {
     switch (TransportMode) {
       case "Flight":
@@ -66,28 +66,25 @@ const CityItem = ({ city, duration, pinColour, onClick, booking_type }) => {
   };
 
   return (
-    <Container onClick={onClick} className="flex items-stretch">
-      <PinWrapper>
-        <VerticalLine height="30px" gradient="top"/>
-        <Pin />
-        <VerticalLine height="30px" gradient="bottom"/>
-      </PinWrapper>
-
-      <div className="flex items-center justify-center gap-2 p-0 h-full">
-        <div className="h-full]">
-          {correctIcon(booking_type)}
-        </div>
-
-        <div className="flex flex-col justify-between h-full">
-          <div className="font-medium text-black text-[16px] h-[22px] relative">
-            {city}
-          </div>
-          {duration && <div className="text-[12px] font-medium h-[16px]">
-            Duration: {duration}
-          </div>}
-        </div>
+    <Container onClick={onClick}>
+    <PinWrapper>
+      {upPresent && <VerticalLine height="40px" gradient="top" />}
+      <Pin />
+      {downPresent && <VerticalLine height="40px" gradient="bottom" />}
+    </PinWrapper>
+  
+    <div className={`flex items-center gap-2 ${!downPresent&&upPresent&&"mt-[41px]"} ${!upPresent&&downPresent&&"mb-[41px]"}`}>
+      <div>{correctIcon(booking_type)}</div>
+  
+      <div className="flex flex-col">
+        <div className="font-medium text-black text-[16px] flex gap-1 items-center">{city}</div>
+        {duration && (
+          <div className="text-[12px] font-medium">Duration: {duration}</div>
+        )}
       </div>
-    </Container>
+    </div>
+  </Container>
+  
   );
 };
 

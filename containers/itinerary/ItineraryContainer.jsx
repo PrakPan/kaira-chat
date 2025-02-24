@@ -26,6 +26,7 @@ import setBreif from "../../store/actions/breif";
 import axiosPaymentInstance, { axiosGetPaymentInfo } from "../../services/itinerary/payment";
 import axiosBookingsInstance, {
   axiosGetAllBookings,
+  axiosGetTransfers,
 } from "../../services/itinerary/bookings";
 import axiosPlanInstance from "../../services/itinerary/plan";
 
@@ -222,10 +223,6 @@ for (let category in data.summary) {
     }
 }
 
-console.log("Stay Data:", stay_data);
-console.log("Activity Data:", activity_data);
-console.log("Transfer Data:", transfer_data);
-console.log("Flight Data:", flight_data);
 
 // setStayBookings(stay_data);
 // setActivityBookings(activity_data);
@@ -346,13 +343,24 @@ console.log("Flight Data:", flight_data);
         //   data.activity_bookings.length ? data.activity_bookings : null
         // );
         // setFlightBookings(flight_bookings.length > 0 ? flight_bookings : null);
-        setTransferBookings(
-          data.transfer_bookings.length ? data.transfer_bookings : null
-        );
+        // setTransferBookings(
+        //   data.transfer_bookings.length ? data.transfer_bookings : null
+        // );
       })
       .catch((err) => {
         console.error("Error fetching all bookings", err.message);
       });
+
+      axiosGetTransfers
+      .get(`/${props.id}/bookings/transfers/`)
+      .then((res)=>{
+        const data = res.data;
+        setTransferBookings(data);
+
+      })
+      .catch(err =>{
+        console.error("Error fetching all bookings", err.message);
+      })
   };
 
   async function getRoutes(itinaryId) {
@@ -366,7 +374,6 @@ console.log("Flight Data:", flight_data);
     if (TRAVELER_ITINERARIES.includes(props.id))
       setIsPastTravelerItinerary(true);
 
-    console.log("MercuryItinerary",props?.mercuryItinerary);
     // axiosdaybydayinstance
     //   .get(`/?itinerary_id=` + props.id)
     //   .then((res) => {
@@ -489,7 +496,7 @@ console.log("Flight Data:", flight_data);
 
   const _updateFlightBookingHandler = (json) => {
     setShowFlightModal(false);
-    setTransferBookings(_updateTransferBooking(transferBookings, json));
+   // setTransferBookings(_updateTransferBooking(transferBookings, json));
   };
 
   const _updateBookingHandler = (json) => {
@@ -515,13 +522,13 @@ console.log("Flight Data:", flight_data);
   const _updateTransferBookingHandler = (json) => {
     setShowBookingModal(false);
     setShowFlightModal(false);
-    setTransferBookings(json);
+   // setTransferBookings(json);
   };
 
   const _updateTaxiBookingHandler = (json) => {
     setShowTaxiModal(false);
 
-    setTransferBookings(_updateTransferBooking(transferBookings, json));
+   // setTransferBookings(_updateTransferBooking(transferBookings, json));
   };
 
   const _selectTaxiHandler = (

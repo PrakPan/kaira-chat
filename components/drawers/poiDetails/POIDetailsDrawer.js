@@ -7,19 +7,25 @@ import axiosPOIdetailsInstance from "../../../services/poi/poidetails";
 import axiosPOIActivityInstance, {
   activityDetail,
 } from "../../../services/poi/poiActivities";
+import axios from "axios";
+import { MERCURY_HOST } from "../../../services/constants";
 
 const POIDetailsDrawer = (props) => {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(props?.data || []);
   const [loading, setLoading] = useState(false);
-
   useEffect(() => {
     if (props.show) fetchData();
   }, [props.show]);
 
-  function fetchData() {
+  const fetchData = async () => {
     setLoading(true);
-
-    if (props.ActivityiconId && props.themePage) {
+    if (props?.activityData?.type == "activity") {
+      const res = await axios.get(
+        `${MERCURY_HOST}/api/v1/geos/poi/${props?.activityData?.id}/`
+      );
+      setData(res?.data?.data?.poi);
+      setLoading(false);
+    } else if (props.ActivityiconId && props.themePage) {
       activityDetail
         .post(`${props.ActivityiconId}/`, {})
         .then((res) => {
@@ -81,7 +87,8 @@ const POIDetailsDrawer = (props) => {
         setLoading(false);
       }
     }
-  }
+  };
+
 
   return (
     <Drawer
@@ -97,7 +104,7 @@ const POIDetailsDrawer = (props) => {
         <>
           <POIDetails
             itineraryDrawer={props.itineraryDrawer}
-            data={props.data ? props.data : data}
+            data={data}
             handleCloseDrawer={props.handleCloseDrawer}
           >
             {props.children}
