@@ -74,8 +74,11 @@ const ItineraryContainer = (props) => {
   const [editRoute, setEditRoute] = useState(false);
   const [showMercuryItinerary,setShowMercuryItinerary] = useState(false);
   const [cities, setCities] = useState([]);
+  const [cityTransferBookings, setCityTransferBookings] = useState(null);
+  const [hotelStayBookings, setHotelStayBookings] =useState(null);
   const dispatch = useDispatch();
 
+  console.log("Stays",stayBookings);
 
   // useEffect(() => {
   //   if (hasRendered.current) {
@@ -223,6 +226,10 @@ for (let category in data.summary) {
     }
 }
 
+// console.log("Stay Data:", stay_data);
+// console.log("Activity Data:", activity_data);
+// console.log("Transfer Data:", transfer_data);
+// console.log("Flight Data:", flight_data);
 
 // setStayBookings(stay_data);
 // setActivityBookings(activity_data);
@@ -286,7 +293,7 @@ for (let category in data.summary) {
             }
           }
 
-          setStayBookings(stay_bookings);
+          // setStayBookings(stay_bookings);
           if (activity_bookings.length) {
             setActivityBookings(activity_bookings);
           } else {
@@ -299,11 +306,11 @@ for (let category in data.summary) {
             setFlightBookings(null);
           }
 
-          if (transfer_bookings.length) {
-            setTransferBookings(transfer_bookings);
-          } else {
-            setTransferBookings(null);
-          }
+          // if (transfer_bookings.length) {
+          //   setTransferBookings(transfer_bookings);
+          // } else {
+          //   setTransferBookings(null);
+          // }
         }
       })
       .catch((err) => {});
@@ -315,7 +322,7 @@ for (let category in data.summary) {
     axiosGetAllBookings
       .get(`/${props.id}/bookings/`)
       .then((res) => {
-        console.log("Response",res.data);
+        // console.log("Response",res.data);
         getPaymentHandler();
         const data = res.data;
 
@@ -346,6 +353,9 @@ for (let category in data.summary) {
         // setTransferBookings(
         //   data.transfer_bookings.length ? data.transfer_bookings : null
         // );
+        // setTransferBookings(
+        //   data.transfer_bookings.length ? data.transfer_bookings : null
+        // );
       })
       .catch((err) => {
         console.error("Error fetching all bookings", err.message);
@@ -354,8 +364,10 @@ for (let category in data.summary) {
       axiosGetTransfers
       .get(`/${props.id}/bookings/transfers/`)
       .then((res)=>{
+        // console.log("Transfers",res.data);
         const data = res.data;
         setTransferBookings(data);
+        setCityTransferBookings(data);
 
       })
       .catch(err =>{
@@ -450,7 +462,7 @@ for (let category in data.summary) {
         setItineraryDate(data.start_date);
         setCities(data?.cities);
         setStayBookings(data?.cities);
-
+         
 
         let activities =[];
         activities = getItineraryActivities();
@@ -523,12 +535,14 @@ for (let category in data.summary) {
     setShowBookingModal(false);
     setShowFlightModal(false);
    // setTransferBookings(json);
+    // setTransferBookings(json);
   };
 
   const _updateTaxiBookingHandler = (json) => {
     setShowTaxiModal(false);
 
    // setTransferBookings(_updateTransferBooking(transferBookings, json));
+    // setTransferBookings(_updateTransferBooking(transferBookings, json));
   };
 
   const _selectTaxiHandler = (
@@ -883,6 +897,7 @@ for (let category in data.summary) {
           _updateStayBookingHandler={_updateStayBookingHandler}
           activityBookings={activityBookings}
           transferBookings={transferBookings}
+          cityTransferBookings={cityTransferBookings}
           stayBookings={stayBookings}
           user_email={userEmail}
           setItinerary={props.setItinerary}

@@ -266,7 +266,7 @@ const HotelBookingDetails = (props) => {
                     url={
                       ImagesError[0]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[0]
+                        : images[0]?.image
                     }
                     width="100%"
                     height="100%"
@@ -301,7 +301,7 @@ const HotelBookingDetails = (props) => {
                     url={
                       ImagesError[1]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[1]
+                        : images[1]?.image
                     }
                     fit="cover"
                     width="100%"
@@ -337,7 +337,7 @@ const HotelBookingDetails = (props) => {
                     url={
                       ImagesError[2]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[2]
+                        : images[2]?.image
                     }
                     fit="cover"
                     width="100%"
@@ -373,7 +373,7 @@ const HotelBookingDetails = (props) => {
                     url={
                       ImagesError[3]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[3]
+                        : images[3]?.image
                     }
                     fit="cover"
                     width="100%"
@@ -412,7 +412,7 @@ const HotelBookingDetails = (props) => {
                     url={
                       ImagesError[0]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[0]
+                        : images[0]?.image
                     }
                     width="100%"
                     height="100%"
@@ -447,7 +447,7 @@ const HotelBookingDetails = (props) => {
                     url={
                       ImagesError[1]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[1]
+                        : images[1]?.image
                     }
                     fit="cover"
                     width="100%"
@@ -483,7 +483,7 @@ const HotelBookingDetails = (props) => {
                     url={
                       ImagesError[2]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[2]
+                        : images[2]?.image
                     }
                     fit="cover"
                     width="100%"
@@ -521,7 +521,7 @@ const HotelBookingDetails = (props) => {
                     url={
                       ImagesError[0]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[0]
+                        : images[0]?.image
                     }
                     fit="cover"
                     width="100%"
@@ -557,7 +557,7 @@ const HotelBookingDetails = (props) => {
                     url={
                       ImagesError[1]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[1]
+                        : images[1]?.image
                     }
                     fit="cover"
                     width="100%"
@@ -594,7 +594,7 @@ const HotelBookingDetails = (props) => {
                   url={
                     ImagesError[0]
                       ? "media/icons/bookings/notfounds/noroom.png"
-                      : images[0]
+                      : images[0]?.image
                   }
                   fit="cover"
                   width="100%"
@@ -653,7 +653,7 @@ const HotelBookingDetails = (props) => {
                       url={
                         ImagesError[0]
                           ? "media/icons/bookings/notfounds/noroom.png"
-                          : images[0]
+                          : images[0]?.image
                       }
                       fit="cover"
                       width="100%"
@@ -689,7 +689,7 @@ const HotelBookingDetails = (props) => {
                       url={
                         ImagesError[1]
                           ? "media/icons/bookings/notfounds/noroom.png"
-                          : images[1]
+                          : images[1]?.image
                       }
                       fit="cover"
                       width="100%"
@@ -725,7 +725,7 @@ const HotelBookingDetails = (props) => {
                       url={
                         ImagesError[2]
                           ? "media/icons/bookings/notfounds/noroom.png"
-                          : images[2]
+                          : images[2]?.image
                       }
                       fit="cover"
                       width="100%"
@@ -763,7 +763,7 @@ const HotelBookingDetails = (props) => {
                       url={
                         ImagesError[0]
                           ? "media/icons/bookings/notfounds/noroom.png"
-                          : images[0]
+                          : images[0]?.image
                       }
                       fit="cover"
                       width="100%"
@@ -799,7 +799,7 @@ const HotelBookingDetails = (props) => {
                       url={
                         ImagesError[1]
                           ? "media/icons/bookings/notfounds/noroom.png"
-                          : images[1]
+                          : images[1]?.image
                       }
                       fit="cover"
                       width="100%"
@@ -837,7 +837,7 @@ const HotelBookingDetails = (props) => {
                       url={
                         ImagesError[0]
                           ? "media/icons/bookings/notfounds/noroom.png"
-                          : images[0]
+                          : images[0]?.image
                       }
                       fit="cover"
                       width="100%"

@@ -55,7 +55,7 @@ const Text = styled.div`
   margin: 0rem 0 0rem 1rem;
 `;
 
-const MidSection = (props) => {
+const MidSectionV2 = (props) => {
   const [showDrawer, setShowDrawer] = useState(false);
   const [addOrEdit, setAddOrEdit] = useState(null);
   const [selectedBooking, setSelectedBooking] = useState(
@@ -64,15 +64,15 @@ const MidSection = (props) => {
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showTaxiModal, setShowTaxiModal] = useState(false);
 
-  console.log("Mid Section ",props?.transferBookings)
+  console.log("Mid Section ",props?.cityTransferBookings)
 
   useEffect(() => {
-    if (props.transferBookings && props.flightBookings) {
+    if (props.cityTransferBookings && props.flightBookings) {
       let booking = null;
       if (props.bookings) {
         const allBookings = [
           ...props.flightBookings,
-          ...props.transferBookings,
+          ...props.cityTransferBookings,
         ];
         booking = allBookings.find(
           (book) => book.id === props?.bookings[0]?.id
@@ -107,7 +107,7 @@ const MidSection = (props) => {
         });
       }
     }
-  }, [props.flightBookings, props.transferBookings]);
+  }, [props.flightBookings, props.cityTransferBookings]);
 
   const getBooking = (bookingId) => {
     let booking = null;
@@ -161,27 +161,14 @@ const MidSection = (props) => {
         <Line pinColour={props.pinColour} hidemidsection={hidemidsection} />
       </div>
 
-      {!hidemidsection && (
-        <>
+      {hidemidsection && (
+        <> 
           {props.version == "v2" ? (
-            props.route?.transfers &&
-            props.route?.transfers?.id &&
-            props.route?.transfers?.id !== "" &&
-            (!props.bookings || props.bookings.length === 0) ? (
+            (
               <Text>
-                <button
-                  id="transferAdd"
-                  onClick={(e) => handleTransferEdit(e, "Add Transfer")}
-                  className="text-blue hover:underline"
-                >
-                  + Add Transfer
-                </button>
-              </Text>
-            ) : (
-              <Text>
-                {props.route?.modes && props.route?.modes.length ? (
+                {props.cityTransferBookings ? (
                   <TransportIconFetcher
-                    TransportMode={props.route?.modes[0]}
+                    TransportMode={props.cityTransferBookings?.booking_type}
                     Instyle={{
                       fontSize:
                         props.route?.modes[0] === "Bus" ? "1.2rem" : "1.4rem",
@@ -189,26 +176,11 @@ const MidSection = (props) => {
                       color: "#4d4d4d",
                     }}
                   />
-                ) : props.bookings &&
-                  props.bookings.length &&
-                  props.bookings[0].booking_type ? (
-                  <TransportIconFetcher
-                    TransportMode={props.bookings[0].booking_type}
-                    Instyle={{
-                      fontSize:
-                        props.bookings[0].booking_type === "Bus"
-                          ? "1.2rem"
-                          : "1.4rem",
+                ) 
+                
+                : null}
 
-                      marginRight: "0.8rem",
-                      color: "#4d4d4d",
-                    }}
-                  />
-                ) : (
-                  <></>
-                )}
-
-                {props.bookings && props.bookings.length ? (
+                {/* {props.bookings && props.bookings.length ? (
                   props?.bookings?.map((element, index) => (
                     <div className="flex flex-row" key={index}>
                       <div className="flex flex-row pr-0">
@@ -234,13 +206,14 @@ const MidSection = (props) => {
                   ))
                 ) : (
                   <></>
-                )}
+                )} */}
 
-                {props.route?.modes &&
-                props.route?.modes.length &&
-                props.duration ? (
+                {
+                // props.route?.modes &&
+                // props.route?.modes.length &&
+                props.cityTransferBookings ? (
                   <div className="inline-flex items-center gap-2">
-                    <div>: {props.duration}</div>
+                    <div>: {props.cityTransferBookings?.duration}</div>
                   </div>
                 ) : (
                   <></>
@@ -280,129 +253,8 @@ const MidSection = (props) => {
         </>
       )}
 
-      {!hidemidsection && (
-        <>
-           There
-          {props.version == "v2" ? (
-            props.transferBookings
-            //  &&
-            // props.route?.transfers?.id &&
-            // props.route?.transfers?.id !== "" &&
-            // (!props.bookings || props.bookings.length === 0) 
-            ? (
-              <Text>
-                <button
-                  id="transferAdd"
-                  onClick={(e) => handleTransferEdit(e, "Add Transfer")}
-                  className="text-blue hover:underline"
-                >
-                  + Add Transfer
-                </button>
-              </Text>
-            ) : (
-              <Text>
-                {props.route?.modes && props.route?.modes.length ? (
-                  <TransportIconFetcher
-                    TransportMode={props.route?.modes[0]}
-                    Instyle={{
-                      fontSize:
-                        props.route?.modes[0] === "Bus" ? "1.2rem" : "1.4rem",
-                      marginRight: "0.8rem",
-                      color: "#4d4d4d",
-                    }}
-                  />
-                ) : props.bookings &&
-                  props.bookings.length &&
-                  props.bookings[0].booking_type ? (
-                  <TransportIconFetcher
-                    TransportMode={props.bookings[0].booking_type}
-                    Instyle={{
-                      fontSize:
-                        props.bookings[0].booking_type === "Bus"
-                          ? "1.2rem"
-                          : "1.4rem",
 
-                      marginRight: "0.8rem",
-                      color: "#4d4d4d",
-                    }}
-                  />
-                ) : (
-                  <></>
-                )}
-
-                {props.bookings && props.bookings.length ? (
-                  props?.bookings?.map((element, index) => (
-                    <div className="flex flex-row" key={index}>
-                      <div className="flex flex-row pr-0">
-                        {element.booking_type}
-                        {index !== props?.bookings.length - 1 && (
-                          <span className="pr-2">,</span>
-                        )}
-                      </div>
-                    </div>
-                  ))
-                ) : props.route &&
-                  props.route.modes &&
-                  props.route.modes.length ? (
-                  props.route.modes.map((element, index) => (
-                    <div className="flex flex-row" key={index}>
-                      <div className="flex flex-row pr-0">
-                        {element}
-                        {index !== props.route.modes.length - 1 && (
-                          <span className="pr-2">,</span>
-                        )}
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <></>
-                )}
-
-                {props.route?.modes &&
-                props.route?.modes.length &&
-                props.duration ? (
-                  <div className="inline-flex items-center gap-2">
-                    <div>: {props.duration}</div>
-                  </div>
-                ) : (
-                  <></>
-                )}
-
-                {props?.route?.transfers &&
-                  props?.route?.transfers?.id &&
-                  props?.route?.transfers?.id !== "" &&
-                  !props?.plan?.round_trip_taxi_added &&
-                  ((props?.route?.modes && props?.route?.modes?.length) ||
-                    (props?.bookings && props?.bookings?.length)) && (
-                    <div
-                      id="transferEdit"
-                      onClick={(e) => handleChangeTransfer(e)}
-                      className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
-                    >
-                      <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
-                    </div>
-                  )}
-              </Text>
-            )
-          ) : (
-            <Text>
-              {props.modes && (
-                <TransportIconFetcher
-                  TransportMode={props.modes}
-                  Instyle={{
-                    fontSize: props.modes === "Bus" ? "1.2rem" : "1.4rem",
-                    marginRight: "0.8rem",
-                    color: "#4d4d4d",
-                  }}
-                />
-              )}
-              {props.modes ? `${props.modes} :` : null} {props.duration}
-            </Text>
-          )}
-        </>
-      )}
-
-      <FlightModal
+      {/* <FlightModal
         showFlightModal={showFlightModal}
         setShowFlightModal={setShowFlightModal}
         setHideFlightModal={() => setShowFlightModal(false)}
@@ -465,7 +317,7 @@ const MidSection = (props) => {
         _updateFlightBookingHandler={props._updateFlightBookingHandler}
         _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
         _updateBookingHandler={props._updateBookingHandler}
-      />
+      /> */}
     </Container>
   );
 };
@@ -473,10 +325,10 @@ const MidSection = (props) => {
 const mapStateToPros = (state) => {
   return {
     ItineraryId: state.ItineraryId,
-    transferBookings: state.Bookings.transferBookings,
+    // transferBookings: state.Bookings.transferBookings,
     flightBookings: state.Bookings.flightBookings,
     _bookings: state.Bookings,
   };
 };
 
-export default connect(mapStateToPros)(MidSection);
+export default connect(mapStateToPros)(MidSectionV2);

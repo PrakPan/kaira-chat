@@ -97,7 +97,7 @@ const Details = (props) => {
               dayId:'12',
               cityData: postion,
               id: postion?.gmaps_place_id || 'ChIJ78XjhlaF4TgRxgXjwXxLJGY',
-              city_id: postion.city?.id,
+              city_id: postion.city?.id || postion?.gmaps_place_id,
               lat: postion.city?.latitude,
               long: postion.city?.longitude,
               name: postion.city?.name || postion?.city_name,
@@ -135,6 +135,7 @@ const Details = (props) => {
     return null; // Return null if city_id is not found in the array
   }
 
+  console.log("Inside Brief New Index",props?.transferBookings);
   return (
     <div id="brief" className="mt-16">
       <DetailsContainer>
@@ -164,6 +165,7 @@ const Details = (props) => {
               routesData={props.routesData}
               CityData={props?.CityData}
               transfers={props.transfersData}
+              cityTransferBookings={props.cityTransferBookings}
               setPlaceID={setActive}
               active={active}
               setCurrentPopup={setCurrentPopup}
@@ -196,6 +198,7 @@ const Details = (props) => {
           group_type={props.group_type}
           duration_time={props.duration_time}
           travellerType={props.travellerType}
+          transferBookings={props?.transferBookings}
           fetchData={props.fetchData}
           setShowLoginModal={props.setShowLoginModal}
           setLocationsLatLong={setLocationsLatLong}
@@ -237,4 +240,4 @@ const Details = (props) => {
   );
 };
 
-export default React.memo(Details);
+  export default React.memo(Details);
