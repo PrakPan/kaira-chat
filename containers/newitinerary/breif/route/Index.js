@@ -5,6 +5,7 @@ import MidSection from "./MidSection";
 import { ITINERARY_VERSION } from "../../../../services/constants";
 import { connect } from "react-redux";
 import { logEvent } from "../../../../services/ga/Index";
+import MidSectionV2 from "./MidSectionV2";
 
 const Container = styled.div`
   @media screen and (min-width: 768px) {
@@ -40,6 +41,8 @@ const Route = (props) => {
 ]
   let color_index = 0
 
+
+ console.log("Transfer Data inside brief",props?.cityTransferBookings)
 
 
   let locationsArr = [];
@@ -318,7 +321,7 @@ if (props?.CityData) {
                   ? props.CityData[i].duration
                   : null
               }
-              pinColour={props.CityData[i]?.color || color}
+              pinColour={i=== 0 || i === props.CityData.length - 1 ? 'black' : (props.CityData[i]?.color || color)}
               data={order[i]}
               _moveDownHandler={_moveDownHandler}
               _moveUpHandler={_moveUpHandler}
@@ -326,9 +329,16 @@ if (props?.CityData) {
             ></PinSection>
           );
           if (i < props.CityData.length - 1) {
+            let key;
+            if(i+1 < props.CityData.length - 1){
+            key = `${(props?.CityData[i]?.gmaps_place_id ? props?.CityData[i]?.gmaps_place_id : props.CityData[i].id) + ":" + props?.CityData[i+1]?.id}`;
+            }else {
+              key = `${(props?.CityData[i]?.gmaps_place_id ? props?.CityData[i]?.gmaps_place_id : props.CityData[i].id) + ":" + "None"}`;
+            }
+            console.log("PROPPP",props?.CityData,key,props?.cityTransferBookings?.intercity[key])
             locationsArr.push(
-              <MidSection
-                pinColour={props.CityData[i]?.color || color}
+              <MidSectionV2
+                pinColour={i===0 || i === props.CityData.length - 1? 'black' : (props.CityData[i]?.color || color)}
                 modes={
                   props?.transfers[i + 1]?.modes
                     ? props?.transfers[i + 1]?.modes[0]
@@ -337,11 +347,12 @@ if (props?.CityData) {
                 hidemidsection={true}
                 icon={null}
                 routesData={props.routesData}
-                version={"v1"}
+                cityTransferBookings={props?.cityTransferBookings?.intercity[key]}
+                version={"v2"}
                 transportMode={props.CityData[i]?.transfers}
                 duration={props.CityData[i]?.duration}
                 _GetInTouch={props._GetInTouch}
-              ></MidSection>
+              ></MidSectionV2>
             );
           }
         }
