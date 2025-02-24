@@ -26,6 +26,7 @@ import setBreif from "../../store/actions/breif";
 import axiosPaymentInstance, { axiosGetPaymentInfo } from "../../services/itinerary/payment";
 import axiosBookingsInstance, {
   axiosGetAllBookings,
+  axiosGetTransfers,
 } from "../../services/itinerary/bookings";
 import axiosPlanInstance from "../../services/itinerary/plan";
 
@@ -353,6 +354,17 @@ console.log("Flight Data:", flight_data);
       .catch((err) => {
         console.error("Error fetching all bookings", err.message);
       });
+
+      axiosGetTransfers
+      .get(`/${props.id}/bookings/transfers/`)
+      .then((res)=>{
+        console.log("Transfers",res.data);
+        const data = res.data;
+
+      })
+      .catch(err =>{
+        console.error("Error fetching all bookings", err.message);
+      })
   };
 
   async function getRoutes(itinaryId) {
