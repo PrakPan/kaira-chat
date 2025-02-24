@@ -10,3 +10,7 @@ export default bookings;
 export const axiosGetAllBookings = axios.create({
   baseURL: MERCURY_HOST + "/api/v1/itinerary/"
 })
+
+export const axiosGetTransfers = axios.create({
+  baseURL: MERCURY_HOST + "/api/v1/itinerary/"
+})
