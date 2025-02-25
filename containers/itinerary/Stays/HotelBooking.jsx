@@ -114,7 +114,7 @@ const HotelBooking = ({
   console.log("Bookings Data",booking);
 
   return (
-    <div>
+    <div className="max-w-[54vw]">
       <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
         {booking.hotel_details?.city}
         <span className="ml-1">
@@ -168,12 +168,12 @@ const HotelBooking = ({
               <Skeleton />
             </div>
             {booking?.star_category ? (
-              <starHotel
+              <div
                 starHotel
                 className={`text-white bg-[#01202B] lg:px-4 px-3 lg:py-3 py-2 m-2 text-sm font-[400]nsition-all shadow-slate-700/70 shadow-md hover:drop-shadow-xl   absolute top-0 rounded-3xl`}
               >
                 {booking.star_category} star hotel
-              </starHotel>
+              </div>
             ) : null}
           </div>
 
@@ -310,6 +310,14 @@ const HotelBooking = ({
                 <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
                   <MdWifi className="text-sm text-[#7A7A7A]" />
                   <div className="text-sm font-[400]"> {booking.wifi}</div>
+                </div>
+              )}
+
+              {booking &&
+              booking?.meals && (
+                <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
+                  <ImSpoonKnife className="text-sm text-[#7A7A7A]" />
+                  <div className="text-sm font-[400]"> {booking.meals}</div>
                 </div>
               )}
             </div>

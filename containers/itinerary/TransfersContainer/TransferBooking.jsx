@@ -184,6 +184,7 @@ const Container = styled.div`
   width: 100%;
   grid-template-columns: 30px auto;
   min-height: 5rem;
+  max-width: 54vw;
   @media screen and (min-width: 768px) {
     min-height: 8rem;
   }

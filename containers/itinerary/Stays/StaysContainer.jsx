@@ -165,7 +165,7 @@ const StaysContainer = (props) => {
         check_out={dates.check_out}
         show={showDetails}
         payment={props.payment}
-        plan={props.plan}
+        plan={props.stayBookings}
         BookingButton={
           !isDateOlderThanCurrent(props?.plan?.start_date) ? true : false
         }
@@ -181,10 +181,11 @@ const StaysContainer = (props) => {
       ></AccommodationModal>
 
       <BookingModal
+        mercury
         showFilter={showFilter}
         setshowFilter={setshowFilter}
         payment={props.payment}
-        plan={props.plan}
+        plan={props.stayBookings}
         _setImagesHandler={_setImagesHandler}
         getPaymentHandler={props.getPaymentHandler}
         _updateStayBookingHandler={props._updateStayBookingHandler}

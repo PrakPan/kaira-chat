@@ -113,6 +113,7 @@ const Booking = (props) => {
   const [showFilters, setShowFilters] = useState(false);
   const debouncedSearch = useDebounce(selectSearch);
 
+  console.log("PLAN & bookings",props?.plan,props?.bookings);
   useEffect(() => {
     if (props?.showBookingModal) {
       fetchHotels();
@@ -140,7 +141,7 @@ const Booking = (props) => {
         tags: null,
         occupancies: [
           {
-            num_adults: props?.plan?.number_of_adults,
+            num_adults: props?.plan?.number_of_adults || 1,
             child_ages: []
           }
         ]
@@ -377,7 +378,7 @@ const Booking = (props) => {
                   booking_city={props?.selectedBooking?.city}
                   No_of_stays={totalCount}
                   payment={props?.payment}
-                  plan={props?.plan}
+                  plan={props?.plan || props?.booking}
                   TotalCount={totalCount}
                   setFiltersState={setFiltersState}
                   setShowFilters={setShowFilters}

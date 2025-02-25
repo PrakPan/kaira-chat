@@ -15,6 +15,8 @@ export default function Travelers(props) {
     const [open, setOpen] = useState(false);
     const [showError, setShowError] = useState(false);
 
+    console.log("Adults,Children, Infants",props.adults,props.children,props.infants);
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (containerRef.current && !containerRef.current.contains(event.target)) {
