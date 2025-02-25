@@ -3,7 +3,6 @@ import { MdOutlineStar } from "react-icons/md";
 import { RiArrowDropDownLine, RiArrowDropUpLine } from "react-icons/ri";
 import { FaLocationDot } from "react-icons/fa6";
 import ImageLoader from "../../ImageLoader";
-import { isJson } from "../../../services/isJSON";
 import media from "../../media";
 import POIDetailsDrawer from "../../drawers/poiDetails/POIDetailsDrawer";
 import { logEvent } from "../../../services/ga/Index";
@@ -155,64 +154,135 @@ const Activity = (props) => {
 
 const Recommendation = (props) => {
   let isPageWide = media("(min-width: 768px)");
-  const [viewMore, setViewMore] = useState(false);
+
+  const [showDrawer, setShowDrawer] = useState(false);
+  const [activityData, setActivityData] = useState({
+    id: "",
+    type: "",
+  });
+
+  const handleCloseDrawer = (e) => {
+    if (e) e.stopPropagation(e);
+    setShowDrawer(false);
+  };
+
+  const handleActivity = async (poi, type) => {
+    // if (type=="activity"){
+    //   const res=await axios.get(`${MERCURY_HOST}/api/v1/geos/poi/${poi}/`)
+    // setActivityData(res?.data?.data?.poi)
+    // }
+    setShowDrawer(true);
+    setActivityData(() => ({
+      id: poi,
+      type: type,
+    }));
+
+    logEvent({
+      action: "Details_View",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Click",
+        event_value: props.element.heading,
+        event_action: "Day by Day Itinerary",
+      },
+    });
+  };
 
   if (props.element.type === "Meal Recommendation") {
     return <MealRecommendation element={props.element} />;
   }
 
   return (
-    <div className="flex items-center gap-3 bg-white">
-        <div
-            // onClick={() =>
-            //   handleActivity(
-            //     props?.element?.poi || props?.element?.activity,
-            //     props?.element?.element_type
-            //   )
-            // }
+    <>
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="w-full flex flex-row items-center gap-3 bg-white">
+          <div
+            onClick={() =>
+              handleActivity(props.element?.restaurants?.[0]?.id, "restaurant")
+
+            }
             className="md:w-[12%] cursor-pointer"
           >
-        <ImageLoader
-          borderRadius={"5px"}
-          style={{
-            width: isPageWide ? "60px" : "50px",
-            height: isPageWide ? "60px" : "50px",
-            cursor: "pointer",
-            margin: "auto",
-          }}
-          url={props.element?.icon}
-        />
-      </div>
+            <ImageLoader
+              borderRadius={"5px"}
+              style={{
+                width: isPageWide ? "60px" : "50px",
+                height: isPageWide ? "60px" : "50px",
+                cursor: "pointer",
+                margin: "auto",
+              }}
+              url={props.element?.icon}
+            />
+          </div>
+  
+          <div className="flex flex-col md:ml-[10px]">
+            <div
+              onClick={() =>
+                handleActivity(props.element?.restaurants?.[0]?.id, "restaurant")
 
-      <div className="w-[90%] flex flex-col gap-2 text-sm">
-        <div className="font-medium text-[16px]">{props.element.heading}</div>
-
-        {props.element?.type === "Restaurant Recommendation"}
-        {
-          <div className="flex flex-row gap-2 items-center text-sm">
-            <div className="flex flex-row items-center">
-              {getStars(props.element?.restaurants[0]?.rating)}
+              }
+              className="w-fit font-medium text-[16px] cursor-pointer"
+            >
+              {props.element.heading}
             </div>
-            <div className="text-[#7A7A7A] text-[12px]">
-              {props.element?.restaurants[0]?.rating}
-            </div>
-            {props.element?.restaurants[0]?.user_ratings_total && (
-              <div className="text-[#7A7A7A] text-[12px] underline">
-                {props.element?.restaurants[0]?.user_ratings_total} Google
-                reviews
+  
+            {props.element?.type === "Restaurant Recommendation" ? (
+              <div className="flex flex-row gap-2 items-center text-sm">
+                <div className="flex flex-row items-center">
+                  {getStars(props.element?.restaurants?.[0]?.rating)}
+                </div>
+                <div className="text-[#7A7A7A] text-[12px]">
+                  {props.element?.restaurants?.[0]?.rating}
+                </div>
+                {props.element?.restaurants?.[0]?.user_ratings_total && (
+                  <div className="text-[#7A7A7A] text-[12px] underline">
+                    {props.element?.restaurants?.[0]?.user_ratings_total} Google reviews
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex flex-row gap-2 items-center text-sm">
+                <div className="flex flex-row items-center">
+                  {getStars(props.element?.rating)}
+                </div>
+                <div className="text-[#7A7A7A] text-[12px]">
+                  {props.element?.rating}
+                </div>
+                {props.element?.user_ratings_total && (
+                  <div className="text-[#7A7A7A] text-[12px] underline">
+                    {props.element?.user_ratings_total} Google reviews
+                  </div>
+                )}
               </div>
             )}
           </div>
-        }
+        </div>
+  
+        <button
+          onClick={() =>
+            handleActivity(props.element?.restaurants?.[0]?.id, "restaurant")
+          }
+          className="w-fit text-[12px] font-semibold border-2 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+        >
+          View Details
+        </button>
       </div>
-      <button
-        // onClick={()=>handleActivity(props?.element?.poi|| props?.element?.activity,props?.element?.element_type)}
-        className="w-fit text-[12px] font-semibold border-2 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
-      >
-        View Details
-      </button>
-    </div>
+  
+      <POIDetailsDrawer
+        itineraryDrawer
+        show={showDrawer}
+        iconId={props.element?.poi || props.element?.activity}
+        handleCloseDrawer={handleCloseDrawer}
+        name={props.element.heading}
+        image={props.element.icon}
+        text={props.element?.text}
+        Topheading={"Select Our Point Of Interest"}
+        activityData={activityData}
+      />
+    </>
   );
+  
+
 };
 
 const MealRecommendation = (props) => {

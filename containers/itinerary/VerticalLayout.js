@@ -1,18 +1,22 @@
 import styled from "styled-components";
 import React from "react";
-import { IoIosArrowForward } from "react-icons/io";
 import Pin from "../newitinerary/breif/route/Pin";
 import { IoCar } from "react-icons/io5";
 import { MdOutlineFlightTakeoff } from "react-icons/md";
 import { IoMdTrain, IoMdBoat } from "react-icons/io";
-import { FaBus } from "react-icons/fa";
-import TransfersIcon from "../../helper/TransfersIcon";
+import { FaBus, FaPen } from "react-icons/fa";
+import axios from "axios";
+import { MERCURY_HOST } from "../../services/constants";
+import { useState } from "react";
+import Drawer from "../../components/ui/Drawer";
+import { Details } from "../../components/modals/flights/new-flight-searched/Index";
+import VehicleDetailModal from "../../components/modals/daybyday/VehicleModal";
+import FlightDetailModal from "../../components/modals/daybyday/FlightDetailModal";
 const Container = styled.div`
   display: flex;
   align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  margin-left: 25px;
+  gap: 12px;
+  margin-left: 6%;
 `;
 
 const VerticalLine = styled.div`
@@ -24,7 +28,6 @@ const VerticalLine = styled.div`
       : "linear-gradient(to bottom, #359EBF, transparent)"};
   background-size: 10px 10px;
 `;
-
 
 const PinWrapper = styled.div`
   display: flex;
@@ -46,45 +49,108 @@ const IconContainer = styled.div`
   transition: right 0.2s ease;
 `;
 
-const CityItem = ({ city, duration, pinColour, onClick, booking_type,upPresent,downPresent }) => {
+const CityItem = ({
+  city,
+  duration,
+  pinColour,
+  // onClick,
+  booking_type,
+  upPresent,
+  downPresent,
+  booking_id,
+  width
+}) => {
   const correctIcon = (TransportMode) => {
     switch (TransportMode) {
       case "Flight":
-        return <MdOutlineFlightTakeoff className="text-2xl" />;
+        return <MdOutlineFlightTakeoff className="text-2xl" size={32} />;
       case "Taxi":
       case "Car":
-        return <IoCar className="text-2xl" />;
+        return <IoCar className="text-2xl" size={32} />;
       case "Train":
-        return <IoMdTrain className="text-2xl" />;
+        return <IoMdTrain className="text-2xl" size={32} />;
       case "Ferry":
-        return <IoMdBoat className="text-2xl" />;
+        return <IoMdBoat className="text-2xl" size={32} />;
       case "Bus":
-        return <FaBus className="text-2xl" />;
+        return <FaBus className="text-2xl" size={32} />;
       default:
         return null;
     }
   };
+  const [handleShow, setHandleShow] = useState(false);
+  const [data, setData] = useState({});
+
+  const handleEdit = async () => {
+    const res = await axios.get(
+      `${MERCURY_HOST}/api/v1/itinerary/ytui89/bookings/${booking_type.toLowerCase()}/${booking_id}`
+    );
+    console.log("response is:", res?.data?.flight_details?.items?.[0]);
+    setData(res?.data);
+    setHandleShow(true);
+  };
 
   return (
-    <Container onClick={onClick}>
-    <PinWrapper>
-      {upPresent && <VerticalLine height="40px" gradient="top" />}
-      <Pin />
-      {downPresent && <VerticalLine height="40px" gradient="bottom" />}
-    </PinWrapper>
-  
-    <div className={`flex items-center gap-2 ${!downPresent&&upPresent&&"mt-[41px]"} ${!upPresent&&downPresent&&"mb-[41px]"}`}>
-      <div>{correctIcon(booking_type)}</div>
-  
-      <div className="flex flex-col">
-        <div className="font-medium text-black text-[16px] flex gap-1 items-center">{city}</div>
-        {duration && (
-          <div className="text-[12px] font-medium">Duration: {duration}</div>
-        )}
+    <Container>
+      <PinWrapper>
+        {upPresent && <VerticalLine height="40px" gradient="top" />}
+        <Pin />
+        {downPresent && <VerticalLine height="40px" gradient="bottom" />}
+      </PinWrapper>
+
+      <div
+        className={`flex items-center gap-3 ${
+          !downPresent && upPresent && "mt-[41px]"
+        } ${!upPresent && downPresent && "mb-[41px]"}`}
+      >
+        <div>{correctIcon(booking_type)}</div>
+
+        <div className="flex flex-col">
+          <div className="font-[Poppins] text-[16px] font-[500] flex gap-2 items-center">
+            {city}{" "}
+            {upPresent && downPresent && (
+              <div
+                className="hover:cursor-pointer"
+                onClick={() => handleEdit()}
+              >
+                <FaPen size={12} />
+              </div>
+            )}
+          </div>
+          {duration && (
+            <div className="font-[Poppins] font-[400] text-[12px] ">
+              Duration: {duration}
+            </div>
+          )}
+        </div>
       </div>
+      <Drawer
+        show={handleShow}
+        anchor="right"
+        width={"500px"}
+        style={1503}
+        className="font-lexend"
+        onHide={setHandleShow}
+      >
+        {booking_type === "Flight" ? (
+  <>
+    <div className="font-[Poppins] text-[32px] font-[700] flex gap-2 items-center bg-gray-100 p-2">
+      {city}
     </div>
-  </Container>
-  
+    <FlightDetailModal
+      segments={data?.flight_details?.items?.[0]?.segments}
+      fareRule={data?.flight_details?.items?.[0]?.fare_rule?.[0]}
+    />
+  </>
+) : booking_type === "Car" ? (
+  <></>
+) : (
+  <>
+  <VehicleDetailModal data={data}/>
+  </>
+)}
+
+      </Drawer>
+    </Container>
   );
 };
 

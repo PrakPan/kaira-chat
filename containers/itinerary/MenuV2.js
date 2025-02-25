@@ -58,6 +58,7 @@ const GetInTouchContainer = styled.div`
 `;
 
 const SimpleTabsV2 = (props) => {
+  console.log("transfer booing in menu is:",props?.transferBookings)
   let isPageWide = media("(min-width: 768px)");
   const [isGroup, setIsGroup] = useState(false);
   const router = useRouter();
@@ -72,7 +73,8 @@ const SimpleTabsV2 = (props) => {
   const [shareMobile, setShareMobile] = useState(false);
   const isDesktop = useMediaQuery("(min-width:1148px)");
 
-  console.log("Iti2",props?.itinerary);
+
+  console.log("transfer booking is",props?.transferBookings );
 
   useEffect(() => {
     if (router.query.payment_status) {
@@ -836,7 +838,7 @@ const SimpleTabsV2 = (props) => {
               </div>
             )}
 
-            {props.transferBookings ? (
+            {props?.transferBookings ? (
               <div id={"Transfers"}>
                 {props.mercuryItinerary ? (
                   <TransferBookings
@@ -883,7 +885,7 @@ const SimpleTabsV2 = (props) => {
                     setShowBookingModal={() => props.setShowBookingModal(true)}
                     setHideBookingModal={props.setHideBookingModal}
                     payment={props.payment}
-                    transferBookings={props?.transferBookings}
+                    transferBookings={props.transferBookings}
                     itinerary_id={props.itinerary_id}
                     fetchData={props.fetchData}
                     _GetInTouch={_GetInTouch}
