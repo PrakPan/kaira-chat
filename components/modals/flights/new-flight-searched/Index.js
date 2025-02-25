@@ -126,13 +126,15 @@ const Flight = (props) => {
 
 export default Flight;
 
-const Details = ({ segments, provider, resultIndex, setShowDetails }) => {
-  const [fareRules, setFareRules] = useState(null);
+export const Details = ({ segments, provider, resultIndex, setShowDetails ,fareRule}) => {
+  const [fareRules, setFareRules] = useState(fareRule?.fareRuleDetail);
   const [fareRulesLoading, setFareRulesLoading] = useState(false);
   const [fareRUlesError, setFareRulesError] = useState(false);
 
   useEffect(() => {
-    getFareRules();
+    if(fareRules==null){
+      getFareRules();
+    }
   }, []);
 
   const getFareRules = () => {
