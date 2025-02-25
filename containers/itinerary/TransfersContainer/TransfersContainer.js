@@ -636,7 +636,7 @@ const TransfersContainer = (props) => {
         routeId={transferId}
       ></TaxiModal>
 
-      {!props?.mercuryItinerary && props?.transferBookings?.map((booking, index) => (
+      {props?.transferBookings?.map((booking, index) => (
         <>
           <PinSection
             key={index}

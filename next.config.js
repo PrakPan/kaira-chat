@@ -66,7 +66,7 @@ module.exports = withSentryConfig(nextConfig, {
   project: "front-end",
   experimental:{
     workerThreads: true,
-    cpus:2,
+    cpus:3,
   },
 
   // An auth token is required for uploading source maps.
