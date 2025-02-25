@@ -2,8 +2,6 @@ import { useEffect, useState, useRef } from "react";
 import { connect } from "react-redux";
 
 import ItineraryCity from "../../components/itinerary/itineraryCity";
-import CityNavigation from "../../components/itinerary/itineraryCity/CityNavigation";
-import styled from "styled-components";
 import CityItem from "./VerticalLayout";
 
 const CITY_COLOR_CODES = [
@@ -16,9 +14,8 @@ const CITY_COLOR_CODES = [
   "#7d5e7d", // shade of purple
 ];
 
-const DaybyDay = ({ itineraryDaybyDay, transferBookings }) => {
+const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width}) => {
   const cityRefs = useRef({});
-  const [cities, setCities] = useState([]);
   let startCity = itineraryDaybyDay?.start_city;
   let endCity = itineraryDaybyDay?.end_city;
 
@@ -33,7 +30,6 @@ const DaybyDay = ({ itineraryDaybyDay, transferBookings }) => {
       });
     }
 
-    setCities(array);
   }, [itineraryDaybyDay]);
 
   return (
@@ -47,8 +43,41 @@ const DaybyDay = ({ itineraryDaybyDay, transferBookings }) => {
       {/* <CityNavigation cities={cities} cityRefs={cityRefs} /> */}
 
       <div className="flex flex-col">
-      <CityItem key={startCity?.place_id} city={startCity?.city_name}  pinColour={CITY_COLOR_CODES[0 % 7]} onClick={() => alert(`Clicked`)} downPresent={false} upPresent={false}/>
-      <CityItem key={startCity?.place_id} city={transferBookings?.intercity?.[startCity?.place_id+":"+itineraryDaybyDay?.cities[0]?.id]?.name} pinColour={CITY_COLOR_CODES[0 % 7]} onClick={() => alert(`Clicked`)} downPresent={true} upPresent={true}/>
+        <CityItem
+          key={startCity?.place_id}
+          city={startCity?.city_name}
+          pinColour={CITY_COLOR_CODES[0 % 7]}
+          onClick={() => alert(`Clicked`)}
+          downPresent={false}
+          upPresent={false}
+          width={width}
+        />
+        <CityItem
+          key={startCity?.gmaps_place_id}
+          city={
+            transferBookings?.intercity?.[
+              startCity?.gmaps_place_id + ":" + itineraryDaybyDay?.cities[0]?.id
+            ]?.name
+          }
+          duration={
+            transferBookings?.intercity?.[
+              startCity?.gmaps_place_id + ":" + itineraryDaybyDay?.cities[0]?.id
+            ]?.duration
+          }
+          booking_type={
+            transferBookings?.intercity?.[
+              startCity?.gmaps_place_id + ":" + itineraryDaybyDay?.cities[0]?.id
+            ]?.booking_type
+          }
+          pinColour={CITY_COLOR_CODES[0 % 7]}
+          onClick={() => alert(`Clicked`)}
+          downPresent={true}
+          upPresent={true}
+          booking_id={transferBookings?.intercity?.[
+            startCity?.gmaps_place_id + ":" + itineraryDaybyDay?.cities[0]?.id
+          ]?.id}
+          width={width}
+        />
         {itineraryDaybyDay?.cities.map((city, index) => {
           var idMapping =
             city?.id + ":" + itineraryDaybyDay?.cities[index + 1]?.id;
@@ -70,15 +99,53 @@ const DaybyDay = ({ itineraryDaybyDay, transferBookings }) => {
                     onClick={() => alert(`Clicked`)}
                     upPresent={true}
                     downPresent={true}
+                    booking_id={transferBookings?.intercity?.[idMapping]?.id}
+                    width={width}
                   />
                 </div>
               )}
             </>
           );
         })}
-        <CityItem key={endCity?.place_id} city={transferBookings?.intercity?.[itineraryDaybyDay?.cities[itineraryDaybyDay?.cities.length-1]?.id+":"+endCity?.place_id]?.name}  booking_type={transferBookings?.intercity?.[itineraryDaybyDay?.cities[itineraryDaybyDay?.cities.length-1]?.id+":"+endCity?.place_id]?.booking_type} pinColour={CITY_COLOR_CODES[0 % 7]} onClick={() => alert(`Clicked`)} upPresent={true} downPresent={true}/>
-        <CityItem key={endCity?.place_id} city={endCity?.city_name}  pinColour={CITY_COLOR_CODES[0 % 7]} onClick={() => alert(`Clicked`)} downPresent={false} upPresent={false}/>
-
+        <CityItem
+          key={endCity?.gmaps_place_id}
+          city={
+            transferBookings?.intercity?.[
+              itineraryDaybyDay?.cities[itineraryDaybyDay?.cities.length - 1]
+                ?.id +
+                ":" +
+                endCity?.gmaps_place_id
+            ]?.name
+          }
+          booking_type={
+            transferBookings?.intercity?.[
+              itineraryDaybyDay?.cities[itineraryDaybyDay?.cities.length - 1]
+                ?.id +
+                ":" +
+                endCity?.gmaps_place_id
+            ]?.booking_type
+          }
+          pinColour={CITY_COLOR_CODES[0 % 7]}
+          onClick={() => alert(`Clicked`)}
+          upPresent={true}
+          downPresent={true}
+          booking_id={transferBookings?.intercity?.[
+            itineraryDaybyDay?.cities[itineraryDaybyDay?.cities.length - 1]
+              ?.id +
+              ":" +
+              endCity?.gmaps_place_id
+          ]?.id}
+          width={width}
+        />
+        <CityItem
+          key={endCity?.place_id}
+          city={endCity?.city_name}
+          pinColour={CITY_COLOR_CODES[0 % 7]}
+          onClick={() => alert(`Clicked`)}
+          downPresent={false}
+          upPresent={false}
+          width={width}
+        />
       </div>
     </div>
   );
