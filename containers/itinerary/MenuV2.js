@@ -72,7 +72,7 @@ const SimpleTabsV2 = (props) => {
   const [shareMobile, setShareMobile] = useState(false);
   const isDesktop = useMediaQuery("(min-width:1148px)");
 
-  console.log("Iti2",props?.itinerary);
+  console.log("Iti2",props?.itinerary,props?.stayBookings);
 
   useEffect(() => {
     if (router.query.payment_status) {

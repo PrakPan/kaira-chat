@@ -66,7 +66,7 @@ const HotelBooking = ({
   }
 
   const handleViewDetails = (value) => {
-    handleClick(index, booking.id, booking, booking.hotel_details.city);
+    handleClick(index, booking.id, booking, booking.city_name);
 
     logEvent({
       action: "Hotel_Details",
@@ -82,7 +82,7 @@ const HotelBooking = ({
 
   const handleChageHotel = (e, label, value) => {
     e.stopPropagation();
-    if (token) handleClickAc(index, booking, booking.hotel_details.city);
+    if (token) handleClickAc(index, booking, booking.city_id);
     else setShowLoginModal(true);
 
     logEvent({
@@ -100,12 +100,12 @@ const HotelBooking = ({
   let hotel_image = "";
   if (
     booking &&
-    booking?.hotel_details?.images &&
-    booking?.hotel_details?.images.length
+    booking?.images &&
+    booking?.images.length
   ) {
-    for (let i = 0; i < booking.hotel_details.images.length; i++) {
-      if (booking.hotel_details.images[i]) {
-        hotel_image = booking.hotel_details.images[i];
+    for (let i = 0; i < booking.images.length; i++) {
+      if (booking.images[i]) {
+        hotel_image = booking.images[i]?.image;
         break;
       }
     }
@@ -167,12 +167,12 @@ const HotelBooking = ({
             >
               <Skeleton />
             </div>
-            {booking.hotel_details?.star_category ? (
+            {booking?.star_category ? (
               <starHotel
                 starHotel
                 className={`text-white bg-[#01202B] lg:px-4 px-3 lg:py-3 py-2 m-2 text-sm font-[400]nsition-all shadow-slate-700/70 shadow-md hover:drop-shadow-xl   absolute top-0 rounded-3xl`}
               >
-                {booking.hotel_details.star_category} star hotel
+                {booking.star_category} star hotel
               </starHotel>
             ) : null}
           </div>
@@ -196,7 +196,7 @@ const HotelBooking = ({
                   className="text-sm font-normal"
                   style={{ marginTop: "-0.5rem" }}
                 >
-                  {booking?.hotel_details?.city_name}
+                  {booking?.city_name}
                 </div>
 
                 {booking?.rating && (
@@ -305,14 +305,13 @@ const HotelBooking = ({
                 </div>
               ) : null}
 
-              {booking?.hotel_details?.rates &&
-              booking?.hotel_details?.rates?.length &&
-              booking?.hotel_details?.rates[0]?.includes.includes("WIFI") ? (
+              {booking &&
+              booking?.wifi && (
                 <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
                   <MdWifi className="text-sm text-[#7A7A7A]" />
-                  <div className="text-sm font-[400]">WIFI available</div>
+                  <div className="text-sm font-[400]"> {booking.wifi}</div>
                 </div>
-              ) : null}
+              )}
             </div>
 
             <div
