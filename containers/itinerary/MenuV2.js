@@ -529,9 +529,11 @@ const SimpleTabsV2 = (props) => {
         {citydatadone && (
           <Breif
            mercuryItinerary={props?.mercuryItinerary}
+
             plan={props.plan}
             routesData={RoutesData}
             transfersData={TransfersData}
+            cityTransferBookings={props.cityTransferBookings}
             routes={props.routes}
             payment={props.payment}
             traveleritinerary={props.traveleritinerary}

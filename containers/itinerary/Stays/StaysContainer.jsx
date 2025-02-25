@@ -127,6 +127,8 @@ const StaysContainer = (props) => {
     setShowDetails(true);
   }
 
+  console.log("Stays Booking",props?.staysBookings);
+
   return (
     <div id="stays" className="mt-16">
       <div
@@ -229,4 +231,4 @@ const mapStateToPros = (state) => {
   };
 };
 
-export default connect(mapStateToPros)(StaysContainer);
+ export default connect(mapStateToPros)(StaysContainer);
