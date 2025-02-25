@@ -252,7 +252,7 @@ const TransferBookings = (props) => {
   };
 
   return (
-    <div id="transfers" className="mt-16">
+    <div id="transfers" className="mt-16 max-w-[54vw]" >
       <div
         id="Transfer_Container"
         className="cursor-pointer font-lexend mb-8  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit"

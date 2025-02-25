@@ -18,6 +18,8 @@ const Accommodation = (props) => {
         selectedBooking={props.selectedBooking}
         openDetails={() => setShowDetails(true)}
         banner_image={props.banner_image}
+        handleClick={props?.handleClick}
+        key={props?.key}
       />
 
       <AccommodationModal
@@ -35,6 +37,7 @@ const Accommodation = (props) => {
         setUnauthorized={props.setUnauthorized}
         _updateStayBookingHandler={props._updateStayBookingHandler}
         getPaymentHandler={props.getPaymentHandler}
+        handleClick={props?.handleClick}
       ></AccommodationModal>
     </div>
   );

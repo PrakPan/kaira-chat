@@ -15,6 +15,8 @@ export default function Travelers(props) {
     const [open, setOpen] = useState(false);
     const [showError, setShowError] = useState(false);
 
+    console.log("Adults,Children, Infants",props.adults,props.children,props.infants);
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (containerRef.current && !containerRef.current.contains(event.target)) {
@@ -45,8 +47,8 @@ export default function Travelers(props) {
     useEffect(() => {
         let total = 0
         for (let room of rooms) {
-            total += room.adults;
-            total += room.children;
+            total += room?.adults ? room.adults : 0;
+            total += room?.children ? room.children : 0;
         }
 
         setTravelers(total);

@@ -334,10 +334,10 @@ for (let category in data.summary) {
 
         props.setBookings({
           ...props.bookings,
-          stayBookings:
-            data.accommodation_bookings.length > 0
-              ? data.accommodation_bookings
-              : null,
+          // stayBookings:
+            // data.accommodation_bookings.length > 0
+            //   ? data.accommodation_bookings
+            //   : null,
           activityBookings:
             data.activity_bookings.length > 0 ? data.activity_bookings : null,
           flightBookings: flight_bookings.length > 0 ? flight_bookings : null,
@@ -461,7 +461,22 @@ for (let category in data.summary) {
         getAllBookings();
         setItineraryDate(data.start_date);
         setCities(data?.cities);
-        setStayBookings(data?.cities);
+        let stays = [];
+for (let i = 0; i < data?.cities.length; i++) {
+    let hotels = data?.cities[i]?.hotels;
+    let city_name = data?.cities[i]?.city?.name;
+    let city_id = data?.cities[i]?.city?.id
+    
+    for (let hotel of hotels) {
+        hotel.city_name = city_name;  
+        hotel.city_id= city_id;
+        stays.push(hotel);
+    }
+}
+        setStayBookings(stays);
+        props.setBookings({...props.bookings,
+          stayBookings: data?.cities ? data?.cities : null})
+        
          
 
         let activities =[];
@@ -520,11 +535,11 @@ for (let category in data.summary) {
   const _updateStayBookingHandler = (json) => {
     setShowBookingModal(false);
     setShowFlightModal(false);
-    setStayBookings(_updateTransferBooking(stayBookings, json));
-    props.setBookings({
-      ...props.bookings,
-      stayBookings: _updateTransferBooking(props.bookings.stayBookings, json),
-    });
+    // setStayBookings(_updateTransferBooking(stayBookings, json));
+    // props.setBookings({
+    //   ...props.bookings,
+    //   stayBookings: _updateTransferBooking(props.bookings.stayBookings, json),
+    // });
   };
 
   const _updateActivityBookingHandler = (json) => {

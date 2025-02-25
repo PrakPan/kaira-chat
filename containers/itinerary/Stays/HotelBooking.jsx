@@ -66,7 +66,7 @@ const HotelBooking = ({
   }
 
   const handleViewDetails = (value) => {
-    handleClick(index, booking.id, booking, booking.hotel_details.city);
+    handleClick(index, booking.id, booking, booking.city_name);
 
     logEvent({
       action: "Hotel_Details",
@@ -82,7 +82,7 @@ const HotelBooking = ({
 
   const handleChageHotel = (e, label, value) => {
     e.stopPropagation();
-    if (token) handleClickAc(index, booking, booking.hotel_details.city);
+    if (token) handleClickAc(index, booking, booking.city_id);
     else setShowLoginModal(true);
 
     logEvent({
@@ -100,12 +100,12 @@ const HotelBooking = ({
   let hotel_image = "";
   if (
     booking &&
-    booking?.hotel_details?.images &&
-    booking?.hotel_details?.images.length
+    booking?.images &&
+    booking?.images.length
   ) {
-    for (let i = 0; i < booking.hotel_details.images.length; i++) {
-      if (booking.hotel_details.images[i]) {
-        hotel_image = booking.hotel_details.images[i];
+    for (let i = 0; i < booking.images.length; i++) {
+      if (booking.images[i]) {
+        hotel_image = booking.images[i]?.image;
         break;
       }
     }
@@ -114,9 +114,9 @@ const HotelBooking = ({
   console.log("Bookings Data",booking);
 
   return (
-    <div>
+    <div className="max-w-[54vw]">
       <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
-        {booking.hotel_details?.city}
+        {booking?.city_name}
         <span className="ml-1">
           ({booking?.duration ? booking.duration : 1}N)
         </span>
@@ -142,7 +142,7 @@ const HotelBooking = ({
                 noLazy
                 url={
                   hotel_image && !imageFail
-                    ? hotel_image?.image
+                    ? hotel_image
                     : "media/icons/bookings/notfounds/noroom.png"
                 }
                 onfail={() => {
@@ -167,13 +167,13 @@ const HotelBooking = ({
             >
               <Skeleton />
             </div>
-            {booking.hotel_details?.star_category ? (
-              <starHotel
+            {booking?.star_category ? (
+              <div
                 starHotel
                 className={`text-white bg-[#01202B] lg:px-4 px-3 lg:py-3 py-2 m-2 text-sm font-[400]nsition-all shadow-slate-700/70 shadow-md hover:drop-shadow-xl   absolute top-0 rounded-3xl`}
               >
-                {booking.hotel_details.star_category} star hotel
-              </starHotel>
+                {booking.star_category} star hotel
+              </div>
             ) : null}
           </div>
 
@@ -196,7 +196,7 @@ const HotelBooking = ({
                   className="text-sm font-normal"
                   style={{ marginTop: "-0.5rem" }}
                 >
-                  {booking?.hotel_details?.city_name}
+                  {booking?.city_name}
                 </div>
 
                 {booking?.rating && (
@@ -270,25 +270,25 @@ const HotelBooking = ({
               <RoomTypeGrid>
                 <BiBed className="text-sm text-[#7A7A7A]" />
                 <div className="text-sm font-[400] line-clamp-1">
-                  {booking?.hotel_details?.room_type_name}
+                  {booking?.room}
                 </div>
                 <div>
                   {"("}
-                  {booking?.hotel_details?.room_count
-                    ? booking.hotel_details.room_count
+                  {booking?.room
+                    ? booking.room
                     : 1}{" "}
-                  {booking?.hotel_details?.room_count > 1 ? "Rooms" : "Room"}
+                  {booking?.room > 1 ? "Rooms" : "Room"}
                   {")"}
                 </div>
               </RoomTypeGrid>
 
-              {booking?.hotel_details?.number_of_extra_beds &&
-              booking?.hotel_details?.number_of_extra_beds > 0 ? (
+              {booking?.number_of_extra_beds &&
+              booking?.number_of_extra_beds > 0 ? (
                 <div className="flex flex-row items-center my-0">
                   <BsPlus className="text-md text-[#7A7A7A]" />
                   <div className="text-sm font-[400] line-clamp-1">
-                    {booking?.hotel_details?.number_of_extra_beds}{" "}
-                    {booking?.hotel_details?.number_of_extra_beds > 1
+                    {booking?.number_of_extra_beds}{" "}
+                    {booking?.number_of_extra_beds > 1
                       ? "Extra beds"
                       : "Extra bed"}
                   </div>
@@ -305,14 +305,21 @@ const HotelBooking = ({
                 </div>
               ) : null}
 
-              {booking?.hotel_details?.rates &&
-              booking?.hotel_details?.rates?.length &&
-              booking?.hotel_details?.rates[0]?.includes.includes("WIFI") ? (
+              {booking &&
+              booking?.wifi && (
                 <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
                   <MdWifi className="text-sm text-[#7A7A7A]" />
-                  <div className="text-sm font-[400]">WIFI available</div>
+                  <div className="text-sm font-[400]"> {booking.wifi}</div>
                 </div>
-              ) : null}
+              )}
+
+              {booking &&
+              booking?.meals && (
+                <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
+                  <ImSpoonKnife className="text-sm text-[#7A7A7A]" />
+                  <div className="text-sm font-[400]"> {booking.meals}</div>
+                </div>
+              )}
             </div>
 
             <div

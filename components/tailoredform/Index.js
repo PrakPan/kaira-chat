@@ -280,7 +280,7 @@ const Enquiry = (props) => {
       budget: budget,
       start_date: start_date,
       end_date: end_date,
-      group_type: groupType,
+      group_type: groupType || 'Solo',
       number_of_adults: number_of_adults,
       number_of_children: number_of_children,
       number_of_infants: number_of_infants,
@@ -452,7 +452,7 @@ const Enquiry = (props) => {
       },
       experience_filters_selected: preferences,
       start_location: {
-        place_id: startingLocation
+        gmaps_place_id: startingLocation
           ? startingLocation.place_id
           : "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
       }, // Start location build itinerary from - Can be empty
@@ -496,7 +496,7 @@ const Enquiry = (props) => {
         path: router.asPath,
       },
       itinerary_id: itineraryId,
-      group_type: groupType,
+      group_type: groupType || 'Solo',
       price_range: priceRange,
       number_of_adults: number_of_adults,
       number_of_children: number_of_children,

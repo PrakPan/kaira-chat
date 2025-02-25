@@ -64,7 +64,6 @@ const MidSectionV2 = (props) => {
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showTaxiModal, setShowTaxiModal] = useState(false);
 
-  console.log("Mid Section ",props?.cityTransferBookings)
 
   useEffect(() => {
     if (props.cityTransferBookings && props.flightBookings) {

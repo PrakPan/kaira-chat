@@ -122,8 +122,9 @@ export default function TemporaryDrawer(props) {
               />
 
               <Travelers
-                adults={props.plan?.number_of_adults}
-                children={props.plan?.number_of_children}
+                adults={props.plan?.number_of_adults || props.plan[0]?.number_of_adults}
+                children={props.plan?.number_of_children || props.plan[0]?.number_of_children}
+                infants={props?.plan?.number_of_infants || props?.plan[0]?.number_of_infants}
                 setFiltersState={props.setFiltersState}
               />
             </div>

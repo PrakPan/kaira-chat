@@ -33,7 +33,7 @@ const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width}) => {
   }, [itineraryDaybyDay]);
 
   return (
-    <div className="flex flex-col gap-3 mt-5 max-w-[60vw]">
+    <div className="flex flex-col gap-3 mt-5 max-w-[54vw]">
       <h1 className="text-[#262626] text-3xl font-bold cursor-pointer group transition duration-300 max-w-fit">
         Day By Day Itinerary
         <span className="mt-1 block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>

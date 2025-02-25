@@ -332,10 +332,10 @@ if (props?.CityData) {
             let key;
             if(i+1 < props.CityData.length - 1){
             key = `${(props?.CityData[i]?.gmaps_place_id ? props?.CityData[i]?.gmaps_place_id : props.CityData[i].id) + ":" + props?.CityData[i+1]?.id}`;
-            }else {
-              key = `${(props?.CityData[i]?.gmaps_place_id ? props?.CityData[i]?.gmaps_place_id : props.CityData[i].id) + ":" + "None"}`;
             }
-            console.log("PROPPP",props?.CityData,key,props?.cityTransferBookings?.intercity[key])
+            else {
+              key = `${(props?.CityData[i]?.gmaps_place_id ? props?.CityData[i]?.gmaps_place_id : props.CityData[i].id) + ":" + (props?.CityData[i+1]?.gmaps_place_id ? props?.CityData[i+1]?.gmaps_place_id : props?.CityData[i+1]?.id)}`;
+            }
             locationsArr.push(
               <MidSectionV2
                 pinColour={i===0 || i === props.CityData.length - 1? 'black' : (props.CityData[i]?.color || color)}

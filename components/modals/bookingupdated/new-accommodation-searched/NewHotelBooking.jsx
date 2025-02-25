@@ -11,7 +11,9 @@ export default function NewHotelBooking({
     booking,
     banner_image,
     openDetails,
-    duration
+    duration,
+    handleClick,
+    key
 }) {
     const starRating = (rating) => {
         var stars = [];
@@ -23,6 +25,7 @@ export default function NewHotelBooking({
     };
 
     const handleViewHotel = () => {
+        handleClick(key, booking.id, booking, booking.city_id);
         openDetails();
 
         logEvent({
@@ -55,12 +58,12 @@ export default function NewHotelBooking({
                             <ImageCarousel images={booking.images} />
 
                             {booking.star_category ? (
-                                <starHotel
+                                <div
                                     starHotel
                                     className={`text-white bg-[#01202B] lg:px-4 px-3 lg:py-3 py-2 m-2 text-sm font-[400]nsition-all shadow-slate-700/70 shadow-md hover:drop-shadow-xl absolute top-0 rounded-3xl`}
                                 >
                                     {booking.star_category} star hotel
-                                </starHotel>
+                                </div>
                             ) : null}
                         </div>
 

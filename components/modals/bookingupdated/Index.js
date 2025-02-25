@@ -113,6 +113,7 @@ const Booking = (props) => {
   const [showFilters, setShowFilters] = useState(false);
   const debouncedSearch = useDebounce(selectSearch);
 
+  console.log("PLAN & bookings",props?.plan,props?.bookings);
   useEffect(() => {
     if (props?.showBookingModal) {
       fetchHotels();
@@ -140,7 +141,7 @@ const Booking = (props) => {
         tags: null,
         occupancies: [
           {
-            num_adults: props?.plan?.number_of_adults,
+            num_adults: props?.plan?.number_of_adults || 1,
             child_ages: []
           }
         ]
@@ -262,6 +263,7 @@ const Booking = (props) => {
               if (img)
                 options.push(
                   <AccommodationSearched
+                    handleClick={props?.handleClick}
                     payment={props.payment}
                     plan={props.plan}
                     currentBooking={props.currentBooking}
@@ -377,7 +379,7 @@ const Booking = (props) => {
                   booking_city={props?.selectedBooking?.city}
                   No_of_stays={totalCount}
                   payment={props?.payment}
-                  plan={props?.plan}
+                  plan={props?.plan || props?.booking}
                   TotalCount={totalCount}
                   setFiltersState={setFiltersState}
                   setShowFilters={setShowFilters}
@@ -573,6 +575,7 @@ const Booking = (props) => {
               />
 
               <AccommodationModal
+                mercury
                 check_in={props?.selectedBooking.check_in}
                 check_out={props?.selectedBooking.check_out}
                 _setImagesHandler={props?._setImagesHandler}
@@ -580,6 +583,7 @@ const Booking = (props) => {
                 id={props?.currentBooking?.agoda_accommodation}
                 currentBooking={props?.currentBooking}
                 show={showDetails}
+                handleClick={props?.handleClick}
               ></AccommodationModal>
             </>
           ) : (

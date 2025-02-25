@@ -24,6 +24,8 @@ const StaysContainer = (props) => {
   const [bookingFunData, setBookingFunData] = useState(null);
   const [dates, setDates] = useState({ check_in: "", check_out: "" });
 
+  console.log("STAYS Container",props?.stayBookings);
+
   const _setImagesHandler = (images) => {
     setImages(images);
   };
@@ -77,12 +79,12 @@ const StaysContainer = (props) => {
   };
 
   function handleClickAc(i, data, city_id) {
-    let name = props.stayBookings[i]["name"];
+    let name = props.stayBookings[i]?.["name"];
     let itinerary_id = props.stayBookings[i]["itinerary_id"];
     let itinerary_name = props.stayBookings[i]["itinerary_name"];
     let accommodation = props.stayBookings[i]["accommodation"];
     let tailored_id = props.stayBookings[i]["tailored_itinerary"];
-    let user_rating = props.stayBookings[i]?.rating;
+    let user_rating = props.stayBookings[i]?.star_category;
     let number_of_reviews = props.stayBookings[i]?.user_ratings_total;
     let id = props.stayBookings[i]["id"];
     let check_in = props.stayBookings[i]["check_in"];
@@ -92,9 +94,9 @@ const StaysContainer = (props) => {
       number_of_children: props.stayBookings[i]["number_of_children"],
       number_of_infants: props.stayBookings[i]["number_of_infants"],
     };
-    let city = props.stayBookings[i].hotel_details["city_name"];
+    let city = props.stayBookings[i]["city_name"];
     let cityId = city_id;
-    let room_type = props.stayBookings[i].hotel_details["room_type_name"];
+    let room_type = props.stayBookings[i]["room"];
 
     _changeBookingHandler(
       name,
@@ -127,7 +129,6 @@ const StaysContainer = (props) => {
     setShowDetails(true);
   }
 
-  console.log("Stays Booking",props?.staysBookings);
 
   return (
     <div id="stays" className="mt-16">
@@ -143,7 +144,8 @@ const StaysContainer = (props) => {
         {props.stayBookings &&
           props.stayBookings.map((booking, index) => (
             <HotelBooking
-              key={bookings.id}
+              
+              key={booking.id}
               index={index}
               booking={booking}
               payment={props.payment}
@@ -164,7 +166,7 @@ const StaysContainer = (props) => {
         check_out={dates.check_out}
         show={showDetails}
         payment={props.payment}
-        plan={props.plan}
+        plan={props.stayBookings}
         BookingButton={
           !isDateOlderThanCurrent(props?.plan?.start_date) ? true : false
         }
@@ -180,10 +182,11 @@ const StaysContainer = (props) => {
       ></AccommodationModal>
 
       <BookingModal
+        mercury
         showFilter={showFilter}
         setshowFilter={setshowFilter}
         payment={props.payment}
-        plan={props.plan}
+        plan={props.stayBookings}
         _setImagesHandler={_setImagesHandler}
         getPaymentHandler={props.getPaymentHandler}
         _updateStayBookingHandler={props._updateStayBookingHandler}
@@ -201,6 +204,7 @@ const StaysContainer = (props) => {
         setHideBookingModal={props.setHideBookingModal}
         AddHotel={AddHotel}
         _GetInTouch={props._GetInTouch}
+        handleClick={handleClick}
       ></BookingModal>
 
       {images ? (
@@ -227,7 +231,7 @@ const mapStateToPros = (state) => {
     emailfailmessage: state.auth.emailfailmessage,
     loginmessage: state.auth.loginmessage,
     hideloginclose: state.auth.hideloginclose,
-    stayBookings: state.Bookings.stayBookings,
+    // stayBookings: state.Bookings.stayBookings,
   };
 };
 

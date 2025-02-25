@@ -260,7 +260,7 @@ const NewSummaryContainer = (props) => {
   console.log("Iti1",props?.itinerary)
   return (
     <SummaryContainer
-      className="font-lexend ml-4 flex flex-col rounded-xl shadow-md  border-2 border-[#ECEAEA] shadow-[#ECEAEA]"
+      className="font-lexend ml-4 flex flex-col rounded-xl shadow-md  border-2 border-[#ECEAEA] shadow-[#ECEAEA] mt-5"
       style={{ marginBottom: props.traveleritinerary ? "12.5vh" : "0" }}
       couponSlide={couponSlide}
     >
