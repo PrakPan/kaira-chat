@@ -47,8 +47,8 @@ export default function Travelers(props) {
     useEffect(() => {
         let total = 0
         for (let room of rooms) {
-            total += room.adults;
-            total += room.children;
+            total += room?.adults ? room.adults : 0;
+            total += room?.children ? room.children : 0;
         }
 
         setTravelers(total);

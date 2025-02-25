@@ -11,7 +11,9 @@ export default function NewHotelBooking({
     booking,
     banner_image,
     openDetails,
-    duration
+    duration,
+    handleClick,
+    key
 }) {
     const starRating = (rating) => {
         var stars = [];
@@ -23,6 +25,7 @@ export default function NewHotelBooking({
     };
 
     const handleViewHotel = () => {
+        handleClick(key, booking.id, booking, booking.city_id);
         openDetails();
 
         logEvent({

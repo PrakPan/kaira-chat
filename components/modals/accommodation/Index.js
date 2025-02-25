@@ -218,6 +218,7 @@ const POI = (props) => {
                   BookingButtonFun={props.BookingButtonFun}
                   payment={props.payment}
                   updateBooking={updateBooking}
+                  handleClick={props?.handleClick}
                 />
               ) : (
                 <Overview

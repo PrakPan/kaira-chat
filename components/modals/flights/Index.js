@@ -150,8 +150,10 @@ const Booking = (props) => {
         journey_type: "1",
         origin: props.selectedBooking.origin_iata,
         destination: props.selectedBooking.destination_iata,
-        preferred_departure_time: `${props.selectedBooking.check_in}T00:00:00`,
+        preferred_departure_time: `${new Date(props.selectedBooking.check_in.replace(' ', 'T')).toISOString().slice(0, 19)}`,
         flight_cabin_class: classType.value,
+        origin:"DEL",
+        destination:"BOM"
       };
 
       axiosFlightSearch
@@ -294,6 +296,7 @@ const Booking = (props) => {
           destination_city_code: props.selectedBooking.destination_iata,
           flight_cabin_class: "1",
           trace_id: trace_id,
+
         },
       })
       .then((res) => {

@@ -263,6 +263,7 @@ const Booking = (props) => {
               if (img)
                 options.push(
                   <AccommodationSearched
+                    handleClick={props?.handleClick}
                     payment={props.payment}
                     plan={props.plan}
                     currentBooking={props.currentBooking}
@@ -574,6 +575,7 @@ const Booking = (props) => {
               />
 
               <AccommodationModal
+                mercury
                 check_in={props?.selectedBooking.check_in}
                 check_out={props?.selectedBooking.check_out}
                 _setImagesHandler={props?._setImagesHandler}
@@ -581,6 +583,7 @@ const Booking = (props) => {
                 id={props?.currentBooking?.agoda_accommodation}
                 currentBooking={props?.currentBooking}
                 show={showDetails}
+                handleClick={props?.handleClick}
               ></AccommodationModal>
             </>
           ) : (

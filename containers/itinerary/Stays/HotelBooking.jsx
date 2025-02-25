@@ -116,7 +116,7 @@ const HotelBooking = ({
   return (
     <div className="max-w-[54vw]">
       <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
-        {booking.hotel_details?.city}
+        {booking?.city_name}
         <span className="ml-1">
           ({booking?.duration ? booking.duration : 1}N)
         </span>
@@ -142,7 +142,7 @@ const HotelBooking = ({
                 noLazy
                 url={
                   hotel_image && !imageFail
-                    ? hotel_image?.image
+                    ? hotel_image
                     : "media/icons/bookings/notfounds/noroom.png"
                 }
                 onfail={() => {
@@ -270,25 +270,25 @@ const HotelBooking = ({
               <RoomTypeGrid>
                 <BiBed className="text-sm text-[#7A7A7A]" />
                 <div className="text-sm font-[400] line-clamp-1">
-                  {booking?.hotel_details?.room_type_name}
+                  {booking?.room}
                 </div>
                 <div>
                   {"("}
-                  {booking?.hotel_details?.room_count
-                    ? booking.hotel_details.room_count
+                  {booking?.room
+                    ? booking.room
                     : 1}{" "}
-                  {booking?.hotel_details?.room_count > 1 ? "Rooms" : "Room"}
+                  {booking?.room > 1 ? "Rooms" : "Room"}
                   {")"}
                 </div>
               </RoomTypeGrid>
 
-              {booking?.hotel_details?.number_of_extra_beds &&
-              booking?.hotel_details?.number_of_extra_beds > 0 ? (
+              {booking?.number_of_extra_beds &&
+              booking?.number_of_extra_beds > 0 ? (
                 <div className="flex flex-row items-center my-0">
                   <BsPlus className="text-md text-[#7A7A7A]" />
                   <div className="text-sm font-[400] line-clamp-1">
-                    {booking?.hotel_details?.number_of_extra_beds}{" "}
-                    {booking?.hotel_details?.number_of_extra_beds > 1
+                    {booking?.number_of_extra_beds}{" "}
+                    {booking?.number_of_extra_beds > 1
                       ? "Extra beds"
                       : "Extra bed"}
                   </div>
