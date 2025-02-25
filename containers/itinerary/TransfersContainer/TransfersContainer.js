@@ -636,7 +636,7 @@ const TransfersContainer = (props) => {
         routeId={transferId}
       ></TaxiModal>
 
-      {props?.transferBookings?.map((booking, index) => (
+      {props?.transferBookings && Bprops?.transferBookings?.map((booking, index) => (
         <>
           <PinSection
             key={index}
