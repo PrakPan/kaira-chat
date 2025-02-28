@@ -11,14 +11,15 @@ const Container = styled.div`
 
 const InnerContainer = styled.div`
   border-radius: 50%;
-
   background-color: ${(props) =>
-    props.index === 0 || props.index === props.length - 1 ? "yellow" : "white"};
+    props.index === 0 || (props.length && props.index === props.length - 1)
+      ? "white"
+      : "yellow"};
   width: 7px;
   height: 7px;
 `;
 
-const Pin = (props) => {
+const  Pin = (props) => {
   console.log("Length",props?.length,props?.index)
   useEffect(() => {}, []);
 

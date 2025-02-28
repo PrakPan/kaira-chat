@@ -56,6 +56,8 @@ const Section = (props) => {
         <button
           onClick={(e) => {
             props.handleTransferEdit(e);
+            if(props?.mercury)
+            props.setIsMercury(true)
           }}
           className="focus:outline-none">
           See more ways to travel?

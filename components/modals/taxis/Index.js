@@ -56,6 +56,9 @@ const Booking = (props) => {
   const [updateLoadingState, setUpdateLoadingState] = useState(false);
   const [noResults, setNoResults] = useState(false);
   const [showTransferEditDrawer, setShowTransferEditDrawer] = useState(false);
+  const [isMercury, setIsMercury] = useState(false);
+
+  console.log("OCity,D",props?.oCityData,props?.dCityData);
 
   useEffect(() => {
     if (props.showTaxiModal) {
@@ -74,35 +77,44 @@ const Booking = (props) => {
       .post("",{origin: props?.origin, destination: props?.destination, top_only:"false"})
     }
 
+    const now = new Date();
+    let start_date = now.toISOString().split("T")[0];
+
+    const hours = now.getHours().toString().padStart(2, "0");
+    const minutes = now.getMinutes().toString().padStart(2, "0");
+    const start_time = `${hours}:${minutes}`;
+
     const requestData = {
       trips: [
         {
-          start_date: props.selectedBooking.check_in,
+          start_date: props.selectedBooking.check_in || start_date,
+          start_time: start_time,
           number_of_travellers:
-            props?.plan?.number_of_adults + props?.plan?.number_of_children,
+            props?.plan?.number_of_adults + props?.plan?.number_of_children || 1,
           trip_type: "one-way",
           origin: {
-            city_id: props.selectedBooking?.origin?.city_id,
+            city_id: props.selectedBooking?.origin?.city_id || props?.oCityData?.gmaps_place_id || props?.oCityData?.city?.id,
             hub_id: null,
             gmaps_place_id: null,
             address: props.selectedBooking?.origin?.shortName
               ? props.selectedBooking?.origin?.shortName
-              : props.selectedBooking?.origin?.city_name,
+              : props.selectedBooking?.origin?.city_name ? props.selectedBooking?.origin?.city_name : (props?.oCityData.city_name || props?.oCityData?.city?.name),
             coordinates: {
-              latitude: props.selectedBooking?.origin?.lat ?? null,
-              longitude: props.selectedBooking?.origin?.lng ?? null,
+              latitude: props.selectedBooking?.origin?.lat ? props.selectedBooking?.origin?.lat : props?.oCityData?.latitude || props?.oCityData?.city?.latitude,
+              longitude: props.selectedBooking?.origin?.lng ? props.selectedBooking?.origin?.lng : props?.oCityData?.longitude || props?.oCityData?.city?.longitude,
             },
           },
           destination: {
-            city_id: props.selectedBooking?.destination?.city_id,
+            city_id: props.selectedBooking?.destination?.city_id || props?.dCityData?.gmaps_place_id || props?.dCityData?.city?.id,
             hub_id: null,
             gmaps_place_id: null,
             address: props.selectedBooking?.destination?.shortName
               ? props.selectedBooking?.destination?.shortName
-              : props.selectedBooking?.destination?.city_name,
+              : props.selectedBooking?.destination?.city_name ? props.selectedBooking?.destination?.city_name :
+              (props?.dCityData.city_name || props?.dCityData?.city?.name),
             coordinates: {
-              latitude: props.selectedBooking?.destination?.lat ?? null,
-              longitude: props.selectedBooking?.destination?.lng ?? null,
+              latitude: props.selectedBooking?.destination?.lat ? props.selectedBooking?.origin?.lat : props?.dCityData?.latitude || props?.dCityData?.city?.latitude,
+              longitude: props.selectedBooking?.destination?.lng ? props.selectedBooking?.origin?.lng : props?.dCityData?.longitude || props?.dCityData?.city?.longitude,
             },
           },
         },
@@ -231,6 +243,10 @@ const Booking = (props) => {
           selectedBooking={props.selectedBooking}
           setHideTaxiModal={props.setHideTaxiModal}
           handleTransferEdit={handleTransferEdit}
+          oCityData={props?.oCityData}
+          dCityData={props?.dCityData}
+          mercury={props?.mercury}
+          setIsMercury={setIsMercury}
         ></SectionOne>
 
         <div>
@@ -309,8 +325,8 @@ const Booking = (props) => {
           showDrawer={showTransferEditDrawer}
           setShowDrawer={setShowTransferEditDrawer}
           selectedTransferHeading={props.selectedTransferHeading}
-          origin={props.selectedBooking?.origin?.shortName}
-          destination={props.selectedBooking?.destination?.shortName}
+          origin={props.selectedBooking?.origin?.shortName || props?.oCityData?.gmaps_place_id || props?.oCityData?.city?.id}
+          destination={props.selectedBooking?.destination?.shortName || props?.dCityData?.gmaps_place_id || props?.dCityData?.city?.id}
           day_slab_index={props.daySlabIndex}
           element_index={props.elementIndex}
           fetchData={props?.fetchData}
@@ -321,6 +337,9 @@ const Booking = (props) => {
           selectedBooking={props.selectedBooking}
           city={props?.city}
           dcity={props?.dcity}
+          oCityData={props?.oCityData}
+          dCityData={props?.dCityData}
+          isMercury={isMercury}
         /> 
         :
         <TransferEditDrawer
@@ -338,6 +357,11 @@ const Booking = (props) => {
           _GetInTouch={props._GetInTouch}
           routeId={props.routeId}
           selectedBooking={props.selectedBooking}
+          isMercury={isMercury}
+          city={props?.city}
+          dcity={props?.dcity}
+          oCityData={props?.oCityData}
+          dCityData={props?.dCityData}
         />}
       </Drawer>
     );

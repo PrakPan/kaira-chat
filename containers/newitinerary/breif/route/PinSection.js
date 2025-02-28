@@ -38,10 +38,11 @@ const PinSection = (props) => {
     props.setShowDrawer(true);
     props.setShowDrawerData(props.cityData);
   };
+  
 
   return (
     <Container className="cursor-pointer w-fit" onClick={() => handleClick()}>
-      <Pin duration={props.duration} pinColour={props.pinColour} index={props?.index} length={props?.length}></Pin>
+      <Pin mercury={props?.mercury} duration={props.duration} pinColour={props.pinColour} index={props?.index} length={props?.length}></Pin>
       <Heading
         pinColour={props.pinColour}
         className={`${

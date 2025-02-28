@@ -46,6 +46,7 @@ const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width}) => {
 
       <div className="flex flex-col">
         <CityItem
+
           key={startCity?.place_id}
           city={startCity?.city_name}
           pinColour={CITY_COLOR_CODES[0 % 7]}
@@ -53,6 +54,7 @@ const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width}) => {
           downPresent={false}
           upPresent={false}
           width={width}
+          length={itineraryDaybyDay?.cities?.length}
         />
         <CityItem
           key={startCity?.gmaps_place_id}
@@ -79,6 +81,7 @@ const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width}) => {
             startCity?.gmaps_place_id + ":" + itineraryDaybyDay?.cities[0]?.id
           ]?.id}
           width={width}
+          length={itineraryDaybyDay?.cities?.length}
         />
         {itineraryDaybyDay?.cities.map((city, index) => {
           var idMapping =
@@ -89,6 +92,7 @@ const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width}) => {
               {index != itineraryDaybyDay?.cities.length - 1 && (
                 <div>
                   <CityItem
+                    mercury
                     key={city.id}
                     city={transferBookings?.intercity?.[idMapping]?.name}
                     duration={
@@ -103,6 +107,7 @@ const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width}) => {
                     downPresent={true}
                     booking_id={transferBookings?.intercity?.[idMapping]?.id}
                     width={width}
+                    length={itineraryDaybyDay?.cities?.length}
                   />
                 </div>
               )}
@@ -138,6 +143,7 @@ const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width}) => {
               endCity?.gmaps_place_id
           ]?.id}
           width={width}
+          length={itineraryDaybyDay?.cities?.length}
         />
         <CityItem
           key={endCity?.place_id}
@@ -147,6 +153,7 @@ const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width}) => {
           downPresent={false}
           upPresent={false}
           width={width}
+          length={itineraryDaybyDay?.cities?.length}
         />
       </div>
     </div>

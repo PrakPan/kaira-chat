@@ -292,6 +292,8 @@ const MidSectionV2 = (props) => {
         routeId={props?.route?.transfers?.id}
         city={props?.city}
         dcity={props?.dcity}
+        oCityData={props?.oCityData}
+        dCityData={props?.dCityData}
       ></FlightModal>
 
       <TaxiModal
@@ -316,6 +318,8 @@ const MidSectionV2 = (props) => {
         destination={props?.destinationCity}
         city={props?.city}
         dcity={props?.dcity}
+        oCityData={props?.oCityData}
+        dCityData={props?.dCityData}
       ></TaxiModal>
 
       <TransferEditDrawer
@@ -341,6 +345,8 @@ const MidSectionV2 = (props) => {
         _updateBookingHandler={props._updateBookingHandler}
         city={props?.city}
         dcity={props?.dcity}
+        oCityData={props?.oCityData}
+        dCityData={props?.dCityData}
       /> 
     </Container>
   );
