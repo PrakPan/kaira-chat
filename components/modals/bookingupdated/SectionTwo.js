@@ -12,6 +12,8 @@ import PropertyType from "./filtersmobile/PropertyType";
 import Tags from "./filtersmobile/Tags";
 import UserRatings from "./filtersmobile/UserRatings";
 import StarCategory from "./filtersmobile/StarCategory";
+import { useDispatch } from "react-redux";
+import { setItineraryFilters } from "../../../store/actions/setItineraryFilters";
 
 const Container = styled.div`
   margin: 0;
@@ -26,32 +28,28 @@ const Section = (props) => {
   const [freeBreakfast, setFreeBreakfast] = useState(true)
   const [selectedFacilities, setSelectedFacilities] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
-  const [type, setType] = useState(null);
   const [budget, setBudget] = useState([props.filtersState.budget.price_lower_range, props.filtersState.budget.price_upper_range])
   const [selectedTypes, setSelectedTypes] = useState(["All"]);
-
+  const dispatch=useDispatch();
   const handleBudgetChange = () => {
-    props.setFiltersState(prev => ({
-      ...prev,
+    dispatch(setItineraryFilters({ 
       budget: {
         price_lower_range: budget[0],
         price_upper_range: budget[1]
       }
-    }))
+    }));
   }
 
   const handleRefundable = () => {
-    props.setFiltersState(prev => ({
-      ...prev,
+    dispatch(setItineraryFilters({ 
       "is_refundable": refundable
-    }))
+    }));
   }
 
   const handleFreeBreakfast = () => {
-    props.setFiltersState(prev => ({
-      ...prev,
+    dispatch(setItineraryFilters({ 
       "free_breakfast": freeBreakfast
-    }))
+    }));
   }
 
   const handleApply = () => {
@@ -81,7 +79,6 @@ const Section = (props) => {
         booking_city={props.booking_chandleBudgetChangeity}
         No_of_stays={props.No_of_stays}
         totalCount={props.TotalCount}
-        setFiltersState={props.setFiltersState}
         plan={props?.plan[0]}
         setShowFilters={props.setShowFilters}
       ></FiltersMobile>

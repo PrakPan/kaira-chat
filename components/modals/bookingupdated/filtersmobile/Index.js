@@ -6,6 +6,8 @@ import CheckboxFormComponent from "../../../FormComponents/CheckboxFormComponent
 import StarCategory from "./StarCategory";
 import PriceRange from "./PriceRange";
 import Travelers from "./Travelers";
+import { useDispatch } from "react-redux";
+import { setItineraryFilters } from "../../../../store/actions/setItineraryFilters";
 
 
 const SortContainer = styled.div`
@@ -37,18 +39,18 @@ export default function TemporaryDrawer(props) {
   const [freeBreakfast, setFreeBreakfast] = useState(true)
   const [budget, setBudget] = useState([props.filtersState.budget.price_lower_range, props.filtersState.budget.price_upper_range])
   const [sortShow, setSortShow] = useState(false);
+  const dispatch=useDispatch();
 
   useEffect(() => {
     let handler;
     if (props.filtersState.budget.price_lower_range !== budget[0] || props.filtersState.budget.price_upper_range !== budget[1]) {
       handler = setTimeout(() => {
-        props.setFiltersState(prev => ({
-          ...prev,
+        dispatch(setItineraryFilters({ 
           budget: {
             price_lower_range: budget[0],
             price_upper_range: budget[1]
           }
-        }))
+        }));
       }, 2000);
     }
 
@@ -76,18 +78,16 @@ export default function TemporaryDrawer(props) {
 
   const handleRefundable = () => {
     setRefundable(prev => !prev);
-    props.setFiltersState(prev => ({
-      ...prev,
+    dispatch(setItineraryFilters({ 
       "is_refundable": !prev["is_refundable"]
-    }))
+    }));
   }
 
   const handleFreeBreakfast = () => {
     setFreeBreakfast(prev => !prev);
-    props.setFiltersState(prev => ({
-      ...prev,
+    dispatch(setItineraryFilters({ 
       "free_breakfast": !prev["free_breakfast"]
-    }))
+    }));
   }
 
   return (
@@ -125,7 +125,6 @@ export default function TemporaryDrawer(props) {
                 adults={props.plan?.number_of_adults || props.plan[0]?.number_of_adults}
                 children={props.plan?.number_of_children || props.plan[0]?.number_of_children}
                 infants={props?.plan?.number_of_infants || props?.plan[0]?.number_of_infants}
-                setFiltersState={props.setFiltersState}
               />
             </div>
           </div>
@@ -136,7 +135,6 @@ export default function TemporaryDrawer(props) {
             <Travelers
               adults={props.plan?.number_of_adults}
               children={props.plan?.number_of_children}
-              setFiltersState={props.setFiltersState}
             />
           </div>
         )}

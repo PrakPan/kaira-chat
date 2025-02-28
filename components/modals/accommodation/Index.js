@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import styled from "styled-components";
 import { IoMdClose } from "react-icons/io";
 import { TbArrowBack } from "react-icons/tb";
@@ -74,6 +74,8 @@ const POI = (props) => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
   const [error, setError] = useState(false);
+  const accommodationBookings=useSelector((state)=>state.Bookings.accommodationBookings)
+  const itineraryFilters=useSelector((state)=>state.ItineraryFilters)
 
   useEffect(() => {
     if (props.show) {
@@ -109,14 +111,16 @@ const POI = (props) => {
         check_out = props.check_out.split("/").reverse().join("-");
       }
       const requestData = {
+        trace_id:localStorage.getItem('trace_id'),
         hotel_id: `${props.id}`,
-        trace_id: props.traceId,
-        check_in: check_in,
-        check_out: check_out,
-        num_adults: props?.pax?.number_of_adults,
-        num_children: props?.pax?.number_of_children,
+        // trace_id: props.traceId,
+        check_in: new  Date(check_in).toISOString().split('T')[0],
+        check_out: new Date(check_out).toISOString().split('T')[0],
+        // num_adults: props?.pax?.number_of_adults,
+        // num_children: props?.pax?.number_of_children,
         currency: "INR",
-        source: props.provider.toLowerCase(),
+        source: props.provider,
+        occupancies: itineraryFilters.occupancies
       };
 
       hotelDetails
@@ -148,7 +152,7 @@ const POI = (props) => {
       trace_id: props.traceId,
       itinerary_id: router?.query?.id,
       hotel_id: data?.id,
-      source: props.provider.toLowerCase(),
+      source: props.provider,
     };
 
     updateAccommodationBooking

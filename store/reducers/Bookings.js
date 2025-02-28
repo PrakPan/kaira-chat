@@ -6,13 +6,14 @@ const initialState = {
   activityBookings: null,
   transferBookings: null,
   flightBookings: null,
+  accommodationBookings:null
 };
 
 // Define reducer
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.SET_BOOKINGS:
-      return action.payload;
+      return { ...state, ...action.payload };
     default:
       return state;
   }

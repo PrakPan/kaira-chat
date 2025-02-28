@@ -28,6 +28,7 @@ const RoomType = (props) => {
 
     return null;
   }
+  console.log("city:",props?.city)
 
 
   return (
@@ -64,7 +65,7 @@ const RoomType = (props) => {
             </button>
 
             <div className="text-sm">
-              on {dateFormat(props.checkInDate)} ({props.city})
+              on {props.checkInDate} ({props.city})
             </div>
           </div>
         </div>

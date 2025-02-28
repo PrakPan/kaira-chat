@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { connect, useDispatch } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import Menu from "./MenuV2";
 import Spinner from "../../containers/loaderbar/Index";
@@ -76,9 +76,10 @@ const ItineraryContainer = (props) => {
   const [cities, setCities] = useState([]);
   const [cityTransferBookings, setCityTransferBookings] = useState(null);
   const [hotelStayBookings, setHotelStayBookings] =useState(null);
+  const bookings=useSelector((state)=>state.Bookings)
+
   const dispatch = useDispatch();
 
-  console.log("Stays",stayBookings);
 
   // useEffect(() => {
   //   if (hasRendered.current) {
@@ -323,6 +324,7 @@ for (let category in data.summary) {
   const getAllBookings = () => {
     let flight_bookings = [];
 
+    console.log('inside get all bookings')
     axiosGetAllBookings
       .get(`/${props.id}/bookings/`)
       .then((res) => {
@@ -335,6 +337,19 @@ for (let category in data.summary) {
             flight_bookings.push(book);
           }
         }
+        try {
+          dispatch(setBookings({
+            activityBookings:
+            data.activity_bookings.length > 0 ? data.activity_bookings : null,
+          flightBookings: flight_bookings.length > 0 ? flight_bookings : null,
+          transferBookings:
+            data.transfer_bookings.length > 0 ? data.transfer_bookings : null,
+          accommodationBookings:data.accommodation_bookings
+          }))
+        } catch (error) {
+          console.log("inside get all bookings",error)
+        }
+
 
         props.setBookings({
           ...props.bookings,
@@ -347,7 +362,9 @@ for (let category in data.summary) {
           flightBookings: flight_bookings.length > 0 ? flight_bookings : null,
           transferBookings:
             data.transfer_bookings.length > 0 ? data.transfer_bookings : null,
+          accommodationBookings:data.accommodation_bookings>0?data.accommodation_bookings:null
         });
+
 
         // setStayBookings(data.accommodation_bookings);
         // setActivityBookings(
@@ -360,6 +377,7 @@ for (let category in data.summary) {
         // setTransferBookings(
         //   data.transfer_bookings.length ? data.transfer_bookings : null
         // );
+
       })
       .catch((err) => {
         console.error("Error fetching all bookings", err.message);
@@ -474,6 +492,7 @@ for (let i = 0; i < data?.cities.length; i++) {
     for (let hotel of hotels) {
         hotel.city_name = city_name;  
         hotel.city_id= city_id;
+        hotel.source=hotel?.images?.[0]?.source
         stays.push(hotel);
     }
 }
@@ -978,7 +997,7 @@ const mapDispatchToProps = (dispatch) => {
     setItineraryRoutes: (payload) => dispatch(setItineraryRoutes(payload)),
     setItinerary: (payload) => dispatch(setItinerary(payload)),
     setPlan: (payload) => dispatch(setPlan(payload)),
-    setBookings: (payload) => dispatch(setBookings(payload)),
+    // setBookings: (payload) => dispatch(setBookings(payload)),
     setItineraryActivities: (payload) =>
     dispatch(setItineraryActivities(payload)),
     setBreif: (payload) => dispatch(setBreif(payload)),
