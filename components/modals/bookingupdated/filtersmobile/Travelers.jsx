@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { IoPerson } from "react-icons/io5";
 import { CiCirclePlus, CiCircleMinus } from "react-icons/ci";
 import { RiArrowDropDownLine } from "react-icons/ri";
+import { useDispatch } from "react-redux";
+import { setItineraryFilters } from "../../../../store/actions/setItineraryFilters";
 
 
 export default function Travelers(props) {
@@ -14,6 +16,7 @@ export default function Travelers(props) {
     }]);
     const [open, setOpen] = useState(false);
     const [showError, setShowError] = useState(false);
+    const dispatch=useDispatch();
 
     console.log("Adults,Children, Infants",props.adults,props.children,props.infants);
 
@@ -88,15 +91,14 @@ export default function Travelers(props) {
 
         setShowError(false);
 
-        props.setFiltersState(prev => ({
-            ...prev,
+        dispatch(setItineraryFilters({ 
             'occupancies': rooms.map(room => {
                 return {
                     num_adults: room.adults,
                     child_ages: room.childAges
                 }
             })
-        }))
+          }));
         setOpen(false);
     }
 

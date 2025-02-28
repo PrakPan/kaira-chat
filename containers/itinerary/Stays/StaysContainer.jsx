@@ -23,7 +23,7 @@ const StaysContainer = (props) => {
   const [bookingFunData, setBookingFunData] = useState(null);
   const [dates, setDates] = useState({ check_in: "", check_out: "" });
   const accommodationBookings=useSelector((state)=>state.Bookings.accommodationBookings)
-
+  const itineraryFilter=useSelector((state)=>state.ItineraryFilters)
   const _setImagesHandler = (images) => {
     setImages(images);
   };
@@ -117,8 +117,8 @@ const StaysContainer = (props) => {
   }
 
   function handleClick(i, id, data, city_id) {
-    let check_in = props.stayBookings[i]["check_in"];
-    let check_out = props.stayBookings[i]["check_out"];
+    let check_in = itineraryFilter.check_in;
+    let check_out = itineraryFilter.check_out;
     setDates({ check_in, check_out });
 
     setBookingId(id);

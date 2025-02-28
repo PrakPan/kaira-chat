@@ -891,15 +891,15 @@ const HotelBookingDetails = (props) => {
       )}
 
       <DetailsContainer>
-        {props.data?.check_in?.begin_time && props.data?.check_out?.time ? (
+        {props.data?.hotel_details?.check_in?.begin_time && props.data?.hotel_details?.check_out?.time ? (
           <CheckInText>
             <div className="">
               Check in:{" "}
-              {getHumanTime(props.data.check_in.begin_time.substring(0, 5))}
+              {props.data.hotel_details.check_in.date},{getHumanTime(props.data.hotel_details.check_in.begin_time)}
             </div>
             <div>
               Check out:{" "}
-              {getHumanTime(props.data.check_out.time.substring(0, 5))}
+              {props.data.hotel_details.check_out.date},{getHumanTime(props.data.hotel_details.check_out.time)}
             </div>
           </CheckInText>
         ) : (
@@ -907,25 +907,25 @@ const HotelBookingDetails = (props) => {
         )}
       </DetailsContainer>
 
-      {props.data?.check_in?.instructions?.length ? (
+      {props.data?.hotel_details?.check_in?.instructions?.length ? (
         <div className="flex flex-col gap-1">
           <div className="text-lg font-bold">About</div>
           <div
             className="text-[14px] ml-[-30px]"
             dangerouslySetInnerHTML={{
-              __html: props.data?.check_in?.instructions[0],
+              __html: props.data?.hotel_details.check_in?.instructions[0],
             }}
           ></div>
         </div>
       ) : null}
 
-      {props.data?.hotel_details?.description && (
+      {props.data?.hotel_details?.rates?.[0]?.rooms?.[0]?.description && (
         <>
           <Heading>About</Heading>
           <MoreText>
             <DescriptionText
               dangerouslySetInnerHTML={{
-                __html: props.data.hotel_details.description,
+                __html: props.data?.hotel_details?.rates?.[0]?.rooms?.[0]?.description,
               }}
             ></DescriptionText>
           </MoreText>
@@ -987,8 +987,8 @@ const HotelBookingDetails = (props) => {
             </a>
           </div>
         </div>
-      ) : props.data?.hotel_details?.latitude &&
-        props.data?.hotel_details?.longitude ? (
+      ) : props.data?.hotel_details?.coordinates?.latitude &&
+      props.data?.hotel_details?.coordinates?.longitude ? (
         <div>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Location</Heading>
           <Address style={{ fontSize: "14px" }}>
@@ -1025,8 +1025,8 @@ const HotelBookingDetails = (props) => {
             </div>
             <a
               href={`https://www.google.com/maps/search/?api=1&query=${
-                props.data?.hotel_details?.latitude
-              },${props.data.hotel_details?.longitude}+(${props.data?.name
+                props.data?.hotel_details?.coordinates?.latitude
+              },${props.data?.hotel_details?.coordinates?.longitude}+(${props.data?.name
                 ?.split(" ")
                 .join("+")})`}
               target="_blank"

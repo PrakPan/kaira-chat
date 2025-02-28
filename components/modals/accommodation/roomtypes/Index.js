@@ -5,7 +5,7 @@ import RoomType from "./roomtype/Index";
 const Rooms = (props) => {
   const [rooms, setRooms] = useState(null);
   const [selectedRecommendation, setSelectedRecommendation] = useState(null);
-
+  console.log("city:",props)
   const handleUpdateBooking = (index) => {
     const rates = props.data[index].rates.map(rate => {
       return {
@@ -33,7 +33,7 @@ const Rooms = (props) => {
               handleUpdateBooking={handleUpdateBooking}
               selectedRecommendation={selectedRecommendation && selectedRecommendation === i}
               setSelectedRecommendation={setSelectedRecommendation}
-              checkInDate={props.checkInDate}
+              checkInDate={props.checkInDate?.date}
               city={props.city}
             ></RoomType>
           );

@@ -4,7 +4,7 @@ import media from "../../media";
 import AccommodationSearched from "./new-accommodation-searched/Index";
 import AccommodationModal from "../accommodation/Index";
 import { hotelSearch } from "../../../services/bookings/FetchAccommodations";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import Button from "../../ui/button/Index";
 import LogInModal from "../Login";
 import SectionOne from "./SectionOne";
@@ -18,6 +18,7 @@ import useDebounce from "../../../hooks/useDebounce";
 import ImageLoader from "../../../components/ImageLoader";
 import { getDate } from "../../../helper/DateUtils";
 import Filters from "./filtersmobile/Filters";
+import { setItineraryFilters } from "../../../store/actions/setItineraryFilters";
 
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
@@ -69,26 +70,26 @@ const Booking = (props) => {
     errorMsg: "",
   });
   const [loading, setLoading] = useState(false);
-  const [filtersState, setFiltersState] = useState({
-    free_breakfast: true,
-    is_refundable: false,
-    budget: {
-      price_lower_range: 3000,
-      price_upper_range: 8000,
-    },
-    star_category: null,
-    sort: "price: low to high",
-    type: null,
-    user_ratings: null,
-    facilities: null,
-    tags: null,
-    occupancies: [
-      {
-        num_adults: props?.plan?.number_of_adults || 1,
-        child_ages: []
-      }
-    ]
-  });
+  // const [filtersState, setItineraryFilters] = useState({
+  //   free_breakfast: true,
+  //   is_refundable: false,
+  //   budget: {
+  //     price_lower_range: 3000,
+  //     price_upper_range: 8000,
+  //   },
+  //   star_category: null,
+  //   sort: "price: low to high",
+  //   type: null,
+  //   user_ratings: null,
+  //   facilities: null,
+  //   tags: null,
+  //   occupancies: [
+  //     {
+  //       num_adults: props?.plan?.number_of_adults || 1,
+  //       child_ages: []
+  //     }
+  //   ]
+  // });
   const [viewMoreStatus, setViewMoreStatus] = useState(false);
   const [nextPage, setNextPage] = useState(1);
   const [traceId, setTraceID] = useState("");
@@ -112,6 +113,8 @@ const Booking = (props) => {
   const [selectSearch, setSelectedSearch] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const debouncedSearch = useDebounce(selectSearch);
+  const dispatch=useDispatch();
+  const filtersState=useSelector((state)=>state.ItineraryFilters)
 
   console.log("PLAN & bookings",props?.plan,props?.bookings);
   useEffect(() => {
@@ -126,26 +129,26 @@ const Booking = (props) => {
 
   useEffect(() => {
     if (!props?.showBookingModal) {
-      setFiltersState({
-        free_breakfast: true,
-        is_refundable: false,
-        budget: {
-          price_lower_range: 3000,
-          price_upper_range: 8000,
-        },
-        type: null,
-        star_category: null,
-        user_ratings: null,
-        sort: "price: low to high",
-        facilities: null,
-        tags: null,
-        occupancies: [
-          {
-            num_adults: props?.plan?.number_of_adults || 1,
-            child_ages: []
-          }
-        ]
-      });
+      // setItineraryFilters({
+      //   free_breakfast: true,
+      //   is_refundable: false,
+      //   budget: {
+      //     price_lower_range: 3000,
+      //     price_upper_range: 8000,
+      //   },
+      //   type: null,
+      //   star_category: null,
+      //   user_ratings: null,
+      //   sort: "price: low to high",
+      //   facilities: null,
+      //   tags: null,
+      //   occupancies: [
+      //     {
+      //       num_adults: props?.plan?.number_of_adults || 1,
+      //       child_ages: []
+      //     }
+      //   ]
+      // });
       setNextPage(1);
       setProvider(null);
       setSelectedSearch("");
@@ -157,24 +160,15 @@ const Booking = (props) => {
   };
 
   const _addFilterHandler = (filter, heading) => {
-    setFiltersState((prevState) => ({
-      ...prevState,
-      [heading]: filter,
-    }));
+    dispatch(setItineraryFilters({ [heading]: filter }));
   };
 
   const _updateStarFilterHandler = (star) => {
-    setFiltersState((prevState) => ({
-      ...prevState,
-      star_category: star,
-    }));
+    dispatch(setItineraryFilters({ star_category: star }));
   };
 
   const updateUserStarHandler = (star) => {
-    setFiltersState((prevState) => ({
-      ...prevState,
-      user_ratings: star,
-    }));
+    dispatch(setItineraryFilters({ user_ratings: star }));
   }
 
   const _removeFilterHandler = (heading) => {
@@ -184,7 +178,7 @@ const Booking = (props) => {
       star_category: "",
       sort: "recommended",
     };
-    setFiltersState((prev) => ({ ...prev, [heading]: oldfilters[heading] }));
+    dispatch(setItineraryFilters({ [heading]: oldfilters[heading] }));
   };
 
   const setDynamicFilters = (filters) => {
@@ -204,6 +198,7 @@ const Booking = (props) => {
       error: false,
       errorMsg: "",
     });
+    console.log('bookingupdated:',filtersState)
 
     const requestData = {
       check_in: getDate(props?.selectedBooking?.check_in),
@@ -224,6 +219,7 @@ const Booking = (props) => {
         user_ratings: filtersState.user_ratings,
         page: nextPage
       },
+      occupancies:filtersState.occupancies,
       sort_by: {
         price_order: filtersState.sort === "price: high to low" ? "desc" : "asc"
       },
@@ -234,9 +230,9 @@ const Booking = (props) => {
       setUpdateLoadingState(false);
 
       setProvider(res.data?.source);
-
-      if (res.data?.trace__details?.id) {
-        setTraceID(res.data.trace__details.id)
+      
+      if (res.data?.trace_details?.id) {
+        localStorage.setItem("trace_id", res?.data?.trace_details?.id );
       }
 
       if (res.data?.data?.length) {
@@ -381,7 +377,6 @@ const Booking = (props) => {
                   payment={props?.payment}
                   plan={props?.plan || props?.booking}
                   TotalCount={totalCount}
-                  setFiltersState={setFiltersState}
                   setShowFilters={setShowFilters}
                 ></SectionTwo>
               </div>

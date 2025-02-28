@@ -184,7 +184,7 @@ const Overview = (props) => {
           <Address>
             {props.data?.addr1 ? props.data.addr1 + ", " : ""}{" "}
             {props.data?.addr2 ? props.data.addr2 + ", " : ""}{" "}
-            {props.data?.city_name ? props.data.city_name : ""}
+            {props.data?.city ? props.data.city : ""}
           </Address>
         </div>
         {props.payment && props.token ? (
@@ -933,7 +933,7 @@ const Overview = (props) => {
           <Rooms
             data={props.data?.recommendations}
             checkInDate={props.data?.check_in}
-            city={props.data?.city_name}
+            city={props.data?.city}
             updateBooking={props.updateBooking}
           ></Rooms>
         </>
@@ -947,7 +947,7 @@ const Overview = (props) => {
           <Address style={{ fontSize: "14px" }}>
             {props.data?.addr1 ? props.data.addr1 + ", " : ""}{" "}
             {props.data?.addr2 ? props.data.addr2 + ", " : ""}{" "}
-            {props.data?.city_name ? props.data.city_name : ""}
+            {props.data?.city ? props.data.city : ""}
           </Address>
           <div
             style={{
@@ -986,7 +986,7 @@ const Overview = (props) => {
           <Address style={{ fontSize: "14px" }}>
             {props.data?.addr1 ? props.data.addr1 + ", " : ""}{" "}
             {props.data?.addr2 ? props.data.addr2 + ", " : ""}{" "}
-            {props.data?.city_name ? props.data.city_name : ""}
+            {props.data?.city ? props.data.city : ""}
           </Address>
           <div
             style={{
