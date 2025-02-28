@@ -58,7 +58,6 @@ const GetInTouchContainer = styled.div`
 `;
 
 const SimpleTabsV2 = (props) => {
-  console.log("transfer booing in menu is:",props?.transferBookings)
   let isPageWide = media("(min-width: 768px)");
   const [isGroup, setIsGroup] = useState(false);
   const router = useRouter();

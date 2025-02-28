@@ -1,4 +1,4 @@
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import bookings from "../../../services/itinerary/bookings";
 import HotelBooking from "./HotelBooking";
 import React, { useState } from "react";
@@ -9,7 +9,6 @@ import AccommodationModal from "../../../components/modals/accommodation/Index";
 import { isDateOlderThanCurrent } from "../../../helper/isDateOlderThanCurrent";
 import { format, parse } from "date-fns";
 import { CONTENT_SERVER_HOST } from "../../../services/constants";
-
 const StaysContainer = (props) => {
   const [selectedBooking, setSelectedBooking] = useState({
     id: null,
@@ -23,8 +22,7 @@ const StaysContainer = (props) => {
   const [currentBooking, setCurrentBooking] = useState(null);
   const [bookingFunData, setBookingFunData] = useState(null);
   const [dates, setDates] = useState({ check_in: "", check_out: "" });
-
-  console.log("STAYS Container",props?.stayBookings);
+  const accommodationBookings=useSelector((state)=>state.Bookings.accommodationBookings)
 
   const _setImagesHandler = (images) => {
     setImages(images);
@@ -178,7 +176,7 @@ const StaysContainer = (props) => {
             bookingFunData.city_id
           )
         }
-        provider={currentBooking?.booking_source}
+        provider={currentBooking?.source}
       ></AccommodationModal>
 
       <BookingModal
@@ -232,7 +230,8 @@ const mapStateToPros = (state) => {
     loginmessage: state.auth.loginmessage,
     hideloginclose: state.auth.hideloginclose,
     // stayBookings: state.Bookings.stayBookings,
+    // bookings: state.Bookings,
   };
 };
 
- export default connect(mapStateToPros)(StaysContainer);
+export default connect(mapStateToPros)(StaysContainer);

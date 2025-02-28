@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import styled from "styled-components";
 import { IoMdClose } from "react-icons/io";
 import { TbArrowBack } from "react-icons/tb";
@@ -74,6 +74,7 @@ const POI = (props) => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
   const [error, setError] = useState(false);
+  const accommodationBookings=useSelector((state)=>state.Bookings.accommodationBookings)
 
   useEffect(() => {
     if (props.show) {
@@ -86,22 +87,23 @@ const POI = (props) => {
     setError(false);
 
     if (props.mercury) {
-      bookingDetails
-        .get(`/${props.itineraryId}/bookings/accommodation/${props.id}/`)
-        .then((res) => {
-          setLoading(false);
-          setData(res.data);
-        })
-        .catch((err) => {
-          setLoading(false);
-          setError(true);
-          props.openNotification({
-            type: "error",
-            text: "There seems to be a problem, please try again!",
-            heading: "Error!",
-          });
-        });
-    } else {
+    //   bookingDetails
+    //     .get(`/${props.itineraryId}/bookings/accommodation/${props.id}/`)
+    //     .then((res) => {
+    //       setLoading(false);
+    //       setData(res.data);
+    //     })
+    //     .catch((err) => {
+    //       setLoading(false);
+    //       setError(true);
+    //       props.openNotification({
+    //         type: "error",
+    //         text: "There seems to be a problem, please try again!",
+    //         heading: "Error!",
+    //       });
+    //     });
+    // } else {
+    console.log('accommodation bookings:',accommodationBookings.filter((item)=>item.id==props.id)?.[0]?.hotel_details)
       let check_in = props.check_in;
       let check_out = props.check_out;
       if (props.check_in.includes("/")) {
@@ -109,14 +111,15 @@ const POI = (props) => {
         check_out = props.check_out.split("/").reverse().join("-");
       }
       const requestData = {
+        trace_id:accommodationBookings.filter((item)=>item.id==props.id)?.[0]?.hotel_details.trace_details.id,
         hotel_id: `${props.id}`,
-        trace_id: props.traceId,
-        check_in: check_in,
-        check_out: check_out,
+        // trace_id: props.traceId,
+        check_in: new  Date(check_in).toISOString().split('T')[0],
+        check_out: new Date(check_out).toISOString().split('T')[0],
         num_adults: props?.pax?.number_of_adults,
         num_children: props?.pax?.number_of_children,
         currency: "INR",
-        source: props.provider.toLowerCase(),
+        source: props.provider,
       };
 
       hotelDetails
@@ -148,7 +151,7 @@ const POI = (props) => {
       trace_id: props.traceId,
       itinerary_id: router?.query?.id,
       hotel_id: data?.id,
-      source: props.provider.toLowerCase(),
+      source: props.provider,
     };
 
     updateAccommodationBooking
