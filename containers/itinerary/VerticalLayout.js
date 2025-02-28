@@ -58,7 +58,8 @@ const CityItem = ({
   upPresent,
   downPresent,
   booking_id,
-  width
+  width,
+  length
 }) => {
   const correctIcon = (TransportMode) => {
     switch (TransportMode) {
@@ -93,7 +94,7 @@ const CityItem = ({
     <Container>
       <PinWrapper>
         {upPresent && <VerticalLine height="40px" gradient="top" />}
-        <Pin />
+        <Pin length={length}/>
         {downPresent && <VerticalLine height="40px" gradient="bottom" />}
       </PinWrapper>
 
