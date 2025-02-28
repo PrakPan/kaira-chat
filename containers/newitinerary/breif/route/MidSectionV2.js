@@ -37,10 +37,10 @@ const Line = styled.hr`
   opacity: initial;
 
   @media screen and (min-width: 768px) {
-    width: ${(props) => (props.hidemidsection ? "6rem" : "8rem")};
-    height: 1.7px;
-    top: ${(props) => (props.hidemidsection ? "22px" : "46px")};
-    right: ${(props) => (props.hidemidsection ? "-31px" : "-46px")};
+        width: 8rem;
+        height: 1.7px;
+        top: 46px;
+        right: -46px;
   }
 `;
 
@@ -49,10 +49,10 @@ const Text = styled.div`
   font-style: normal;
   font-weight: 300;
   font-size: 18px;
-  line-height: 28px;
+  line-height: 3.5rem;
   display: flex;
   align-items: center;
-  margin: 0rem 0 0rem 1rem;
+  margin: 1.5rem;
 `;
 
 const MidSectionV2 = (props) => {
@@ -63,6 +63,12 @@ const MidSectionV2 = (props) => {
   );
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showTaxiModal, setShowTaxiModal] = useState(false);
+  
+
+  console.log("Modes",props?.originCity,props?.destinationCity);
+
+  // let routeKey = props?.routeKey;
+  // let parts = routeKey ? routeKey.split(":") : [null, null];
 
 
   useEffect(() => {
@@ -145,9 +151,9 @@ const MidSectionV2 = (props) => {
   };
 
   const handleChangeTransfer = (e) => {
-    if (props.bookings[0].booking_type === "Flight") {
+    if (props.cityTransferBookings.modes === "Flight") {
       setShowFlightModal(true);
-    } else if (props.bookings[0].booking_type === "Taxi") {
+    } else if (props.modes === "Taxi") {
       setShowTaxiModal(true);
     } else {
       handleTransferEdit(e, "Edit Transfer");
@@ -165,7 +171,7 @@ const MidSectionV2 = (props) => {
           {props.version == "v2" ? (
             (
               <Text>
-                {props.cityTransferBookings ? (
+                {props.cityTransferBookings && props.cityTransferBookings?.duration ? (
                   <TransportIconFetcher
                     TransportMode={props.cityTransferBookings?.booking_type}
                     Instyle={{
@@ -177,7 +183,15 @@ const MidSectionV2 = (props) => {
                   />
                 ) 
                 
-                : null}
+                : 
+                (
+                  <button
+                    onClick={(e) => handleChangeTransfer(e)}
+                    className="text-[14px] font-[600] leading-[22px] text-blue hover:underline"
+                  >
+                    +Add Transfer
+                  </button>
+                )}
 
                 {/* {props.bookings && props.bookings.length ? (
                   props?.bookings?.map((element, index) => (
@@ -210,28 +224,29 @@ const MidSectionV2 = (props) => {
                 {
                 // props.route?.modes &&
                 // props.route?.modes.length &&
-                props.cityTransferBookings ? (
+               
+                props.cityTransferBookings && props.cityTransferBookings?.duration ? (
                   <div className="inline-flex items-center gap-2">
-                    <div>: {props.cityTransferBookings?.duration}</div>
+                    <div> {props.modes}: {props.cityTransferBookings?.duration}</div>
                   </div>
                 ) : (
                   <></>
                 )}
 
-                {props?.route?.transfers &&
+                {/* {props?.route?.transfers &&
                   props?.route?.transfers?.id &&
                   props?.route?.transfers?.id !== "" &&
                   !props?.plan?.round_trip_taxi_added &&
                   ((props?.route?.modes && props?.route?.modes?.length) ||
-                    (props?.bookings && props?.bookings?.length)) && (
-                    <div
+                    (props?.bookings && props?.bookings?.length)) && ( */}
+                    {props.cityTransferBookings && props.cityTransferBookings?.duration && <div
                       id="transferEdit"
                       onClick={(e) => handleChangeTransfer(e)}
                       className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
                     >
                       <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
-                    </div>
-                  )}
+                    </div>}
+                  {/* )} */}
               </Text>
             )
           ) : (
@@ -253,7 +268,7 @@ const MidSectionV2 = (props) => {
       )}
 
 
-      {/* <FlightModal
+       <FlightModal
         showFlightModal={showFlightModal}
         setShowFlightModal={setShowFlightModal}
         setHideFlightModal={() => setShowFlightModal(false)}
@@ -275,9 +290,12 @@ const MidSectionV2 = (props) => {
         daySlabIndex={props?.route?.element_location?.day_slab_index}
         elementIndex={props?.route?.element_index}
         routeId={props?.route?.transfers?.id}
+        city={props?.city}
+        dcity={props?.dcity}
       ></FlightModal>
 
       <TaxiModal
+        mercury
         showTaxiModal={showTaxiModal}
         setHideBookingModal={() => setShowTaxiModal(false)}
         setHideTaxiModal={() => setShowTaxiModal(false)}
@@ -294,15 +312,20 @@ const MidSectionV2 = (props) => {
         daySlabIndex={props?.route?.element_location?.day_slab_index}
         elementIndex={props?.route?.element_index}
         routeId={props?.route?.transfers?.id}
+        origin={props?.originCity}
+        destination={props?.destinationCity}
+        city={props?.city}
+        dcity={props?.dcity}
       ></TaxiModal>
 
       <TransferEditDrawer
+      mercury
         addOrEdit={addOrEdit}
         showDrawer={showDrawer}
         setShowDrawer={setShowDrawer}
         selectedTransferHeading={props?.route?.heading}
-        origin={props.originCity}
-        destination={props.destinationCity}
+        origin={props?.originCity}
+        destination={props?.destinationCity}
         day_slab_index={props?.route?.element_location?.day_slab_index}
         element_index={props?.route?.element_index}
         fetchData={props?.fetchData}
@@ -316,7 +339,9 @@ const MidSectionV2 = (props) => {
         _updateFlightBookingHandler={props._updateFlightBookingHandler}
         _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
         _updateBookingHandler={props._updateBookingHandler}
-      /> */}
+        city={props?.city}
+        dcity={props?.dcity}
+      /> 
     </Container>
   );
 };

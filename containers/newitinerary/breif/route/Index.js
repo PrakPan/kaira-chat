@@ -292,8 +292,8 @@ const Route = (props) => {
       }
   }
 
-
 if (props?.CityData) {
+        let length = props?.CityData?.length;    
         console.log("CITY DATAAA",props?.CityData)
         for (var i = 0; i < props?.CityData?.length; i++) {
           let color = CITY_COLOR_CODES[i%7];
@@ -326,23 +326,24 @@ if (props?.CityData) {
               _moveDownHandler={_moveDownHandler}
               _moveUpHandler={_moveUpHandler}
               index={i}
+              length={length}
             ></PinSection>
           );
           if (i < props.CityData.length - 1) {
             let key;
             if(i+1 < props.CityData.length - 1){
             key = `${(props?.CityData[i]?.gmaps_place_id ? props?.CityData[i]?.gmaps_place_id : props.CityData[i].id) + ":" + props?.CityData[i+1]?.id}`;
+            console.log("Generated key: ", key);
             }
             else {
               key = `${(props?.CityData[i]?.gmaps_place_id ? props?.CityData[i]?.gmaps_place_id : props.CityData[i].id) + ":" + (props?.CityData[i+1]?.gmaps_place_id ? props?.CityData[i+1]?.gmaps_place_id : props?.CityData[i+1]?.id)}`;
+              console.log("Generated key: ", key);
             }
             locationsArr.push(
               <MidSectionV2
                 pinColour={i===0 || i === props.CityData.length - 1? 'black' : (props.CityData[i]?.color || color)}
                 modes={
-                  props?.transfers[i + 1]?.modes
-                    ? props?.transfers[i + 1]?.modes[0]
-                    : "Taxi"
+                    props?.cityTransferBookings?.intercity[key] ? props?.cityTransferBookings?.intercity[key]?.booking_type : "Taxi"
                 }
                 hidemidsection={true}
                 icon={null}
@@ -352,6 +353,10 @@ if (props?.CityData) {
                 transportMode={props.CityData[i]?.transfers}
                 duration={props.CityData[i]?.duration}
                 _GetInTouch={props._GetInTouch}
+                originCity={props.CityData[i]?.gmaps_place_id ? props.CityData[i]?.gmaps_place_id : props.CityData[i].city?.id}
+                city={props.CityData[i]?.city?.name || props.CityData[i]?.city_name}
+                destinationCity={props.CityData[i+1]?.gmaps_place_id ? props.CityData[i+1]?.gmaps_place_id : props.CityData[i+1].city?.id}
+                dcity={props.CityData[i+1]?.city?.name || props.CityData[i+1]?.city_name}
               ></MidSectionV2>
             );
           }
