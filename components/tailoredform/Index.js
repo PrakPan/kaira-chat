@@ -514,24 +514,28 @@ const Enquiry = (props) => {
         },
       })
       .then((response) => {
-        setSubmitted(true);
-        // if (!response.data?.auto_itinerary_created) {
-        //   router.push("/thank-you");
-        // } else {
-        if (response.data.time) {
-          router.push(`/itinerary/${itineraryId}?t=45`);
-        } else {
-          router.push(`/itinerary/${itineraryId}`);
-        }
 
-        setLoading(false);
-
-        logEvent({
-          action: "conversion",
-          params: {
-            send_to: "AW-738037519/IF5rCMyxhL8ZEI-e9t8C",
-          },
-        });
+        setTimeout(()=>{
+          setSubmitted(true);
+          // if (!response.data?.auto_itinerary_created) {
+          //   router.push("/thank-you");
+          // } else {
+          if (response.data.time) {
+            router.push(`/itinerary/${itineraryId}?t=45`);
+          } else {
+            router.push(`/itinerary/${itineraryId}`);
+          }
+  
+        
+  
+          logEvent({
+            action: "conversion",
+            params: {
+              send_to: "AW-738037519/IF5rCMyxhL8ZEI-e9t8C",
+            },
+          });
+        }, 60000)
+        
         // }
       })
       .catch((err) => {

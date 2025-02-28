@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 
 import ItineraryCity from "../../components/itinerary/itineraryCity";
 import CityItem from "./VerticalLayout";
+import media from "../../components/media";
 
 const CITY_COLOR_CODES = [
   "#359EBF", // shade of blue
@@ -15,6 +16,7 @@ const CITY_COLOR_CODES = [
 ];
 
 const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width}) => {
+  let isPageWide = media("(min-width: 768px)");
   const cityRefs = useRef({});
   let startCity = itineraryDaybyDay?.start_city;
   let endCity = itineraryDaybyDay?.end_city;
@@ -33,7 +35,7 @@ const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width}) => {
   }, [itineraryDaybyDay]);
 
   return (
-    <div className="flex flex-col gap-3 mt-5 max-w-[54vw]">
+    <div className={`flex flex-col gap-3 mt-5 ${!isPageWide ? "max-w-fit" : "max-w-[54vw]"}`}>
       <h1 className="text-[#262626] text-3xl font-bold cursor-pointer group transition duration-300 max-w-fit">
         Day By Day Itinerary
         <span className="mt-1 block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>

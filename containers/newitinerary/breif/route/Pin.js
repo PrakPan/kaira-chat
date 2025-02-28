@@ -12,16 +12,18 @@ const Container = styled.div`
 const InnerContainer = styled.div`
   border-radius: 50%;
 
-  background-color: ${(props) => (props.pinColour ? "white" : "#f7e700")};
+  background-color: ${(props) =>
+    props.index === 0 || props.index === props.length - 1 ? "yellow" : "white"};
   width: 7px;
   height: 7px;
 `;
 
 const Pin = (props) => {
+  console.log("Length",props?.length,props?.index)
   useEffect(() => {}, []);
 
   return (
-    <Container className="center-div" pinColour={props.pinColour}>
+    <Container className="center-div" pinColour={props.pinColour} index={props?.index} length={props?.length}>
       <InnerContainer
         duration={props.duration}
         pinColour={props.pinColour}

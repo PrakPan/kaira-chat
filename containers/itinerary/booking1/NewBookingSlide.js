@@ -80,7 +80,7 @@ const Details = (props) => {
   const convertDFormat = (dt) => {
     if(dt){
     const date = parseISO(dt);
-    const formattedDate = format(date, "MMMM do");
+    const formattedDate = format(date, "MMMM do, yyyy");
     return formattedDate;
     }
     else return;
@@ -856,7 +856,8 @@ const Details = (props) => {
         >
           Craft a new trip!
         </Button>
-      ) : (
+      ) 
+      : (
         <>
           {props.payment && props.token ? (
             props.payment?.itinerary_status ===
@@ -878,7 +879,8 @@ const Details = (props) => {
                 >
                   Pay Now & Book
                 </Button>
-              ) : (
+              )
+               : (
                 <Button
                   color="#111"
                   fontWeight="500"
@@ -893,8 +895,12 @@ const Details = (props) => {
                   Add Hotels
                 </Button>
               )
-            ) : props?.payment?.is_registration_needed ? (
-              props?.payment?.email_reverification_needed ? (
+            ) 
+            : 
+            // props?.payment?.is_registration_needed ? ( 
+            //   props?.payment?.email_reverification_needed ? (
+              props.payment?.user_allowed_to_pay ? (
+                props.payment?.user_allowed_to_pay ? (
                 <Button
                   color="#111"
                   fontWeight="500"
