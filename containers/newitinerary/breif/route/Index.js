@@ -299,6 +299,7 @@ if (props?.CityData) {
           let color = CITY_COLOR_CODES[i%7];
           locationsArr.push(
             <PinSection
+              mercury
               startingCity={i === 0}
               endingCity={i === props.CityData.length - 1}
               setCurrentPopup={props.setCurrentPopup}
@@ -357,6 +358,8 @@ if (props?.CityData) {
                 city={props.CityData[i]?.city?.name || props.CityData[i]?.city_name}
                 destinationCity={props.CityData[i+1]?.gmaps_place_id ? props.CityData[i+1]?.gmaps_place_id : props.CityData[i+1].city?.id}
                 dcity={props.CityData[i+1]?.city?.name || props.CityData[i+1]?.city_name}
+                oCityData={props?.CityData[i]}
+                dCityData={props?.CityData[i+1]}
               ></MidSectionV2>
             );
           }

@@ -67,7 +67,9 @@ const TransferEditDrawer = (props) => {
     routeId,
     selectedBooking,
     city,
-    dcity
+    dcity,
+    oCityData,
+    dCityData
   } = props;
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
@@ -104,7 +106,7 @@ const TransferEditDrawer = (props) => {
     };
 
 
-    {props?.mercury ?
+    {props?.mercury || props?.isMercury ?
       fetchTransferMode
       .post("",{origin: props?.origin, destination: props?.destination, top_only:"false"})
       .then((res) => {
@@ -126,7 +128,7 @@ const TransferEditDrawer = (props) => {
       })
 
       : 
-
+      
       routeDetails
       .get(`${routeId}/`, requestData)
       .then((res) => {
@@ -1592,8 +1594,8 @@ const OtherTransfer = ({
     setLoading(true);
     const requestData = {
       edge_id: selectedResult.transfer.id,
-      start_datetime: `${getDate(check_in)}T00:00:00`,
-      number_of_travellers: number_of_travellers,
+      start_datetime: `${getDate(check_in || new Date()?.toISOString().split("T")[0])}T00:00:00`,
+      number_of_travellers: number_of_travellers || 1,
     };
 
     otherTransferSearch
