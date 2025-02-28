@@ -23,6 +23,7 @@ import { logEvent } from "../../../services/ga/Index";
 import TaxiModal from "../../../components/modals/taxis/Index";
 import FlightModal from "../../../components/modals/flights/Index";
 import { getDate } from "../../../helper/DateUtils";
+import { fetchTransferMode } from "../../../services/bookings/FetchTaxiRecommendations";
 
 const ClippathComp = styled.div`
   clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 95% 50%, 100% 0%);
@@ -65,6 +66,8 @@ const TransferEditDrawer = (props) => {
     check_in,
     routeId,
     selectedBooking,
+    city,
+    dcity
   } = props;
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
@@ -92,13 +95,39 @@ const TransferEditDrawer = (props) => {
     setTransfersError(null);
     roundTripSuggestion();
 
+    
+
     const requestData = {
       start_datetime: `${getDate(check_in)}T00:00:00`,
       number_of_travellers:
         props?.plan?.number_of_adults + props?.plan?.number_of_children,
     };
 
-    routeDetails
+
+    {props?.mercury ?
+      fetchTransferMode
+      .post("",{origin: props?.origin, destination: props?.destination, top_only:"false"})
+      .then((res) => {
+        if (res.data.success && res.data.routes.data.length > 0) {
+          const data = res.data.routes.data;
+          setTransfers(data);
+        } else {
+          setTransfersError(
+            "No route found, please get in touch with us to complete this booking!"
+          );
+        }
+        setLoadingTransfers(false);
+      })
+      .catch((err) => {
+        setLoadingTransfers(false);
+        setTransfersError(
+          "No route found, please get in touch with us to complete this booking!"
+        );
+      })
+
+      : 
+
+      routeDetails
       .get(`${routeId}/`, requestData)
       .then((res) => {
         if (res.data.success && res.data.routes.data.length > 0) {
@@ -117,10 +146,13 @@ const TransferEditDrawer = (props) => {
           "No route found, please get in touch with us to complete this booking!"
         );
       });
+    }
+
+    
   };
 
   const roundTripSuggestion = () => {
-    axiosRoundTripInstance
+    !props?.mercury && axiosRoundTripInstance
       .get(`?itinerary_id=${props?.ItineraryId}`)
       .then((response) => {
         const results = response.data;
@@ -218,7 +250,7 @@ const TransferEditDrawer = (props) => {
       trace_id,
       cab_id,
     };
-    axiosRoundTripEditInstance
+    !props?.mercury && axiosRoundTripEditInstance
       .post("", data, {
         headers: {
           Authorization: `Bearer ${access_token}`,
@@ -290,7 +322,7 @@ const TransferEditDrawer = (props) => {
           />
           <div className="text-lg md:text-2xl lg:text-2xl font-semibold">
             {props.addOrEdit === "transferAdd" ? "Adding" : "Changing"} transfer
-            from {origin} to {destination}{" "}
+            from {city} to {dcity}{" "}
           </div>
         </div>
 
@@ -435,7 +467,7 @@ const TransferEditDrawer = (props) => {
                   {transfers.length < 2
                     ? `${transfers.length} way`
                     : `${transfers.length} ways`}{" "}
-                  to travel from {origin} to {destination}
+                  to travel from {city} to {dcity}
                 </div>
                 <div className="w-full flex flex-col items-center gap-3">
                   {transfers.map((transfer, index) => {
@@ -549,6 +581,7 @@ const RouteContainer = (props) => {
     setViewMore((prev) => !prev);
   };
 
+  
   return (
     <div
       className={`w-full flex flex-col gap-0 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm ${

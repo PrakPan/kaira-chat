@@ -203,10 +203,14 @@ let stay_data = {};
 let activity_data = {};
 let transfer_data = {};
 let flight_data = {};
-
+const token = localStorage.getItem('access_token');
 
     axiosGetPaymentInfo.
-    get(props.id + '/cart/')
+    get(props.id + '/cart/',{
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
     .then((res)=>{
       let data = res.data;
       setPayment(data);

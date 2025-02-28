@@ -114,7 +114,7 @@ const HotelBooking = ({
   console.log("Bookings Data",booking);
 
   return (
-    <div className="max-w-[54vw]">
+    <div className={`${!isPageWide ? "max-w-fit" : "max-w-[54vw]"}`}>
       <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
         {booking?.city_name}
         <span className="ml-1">

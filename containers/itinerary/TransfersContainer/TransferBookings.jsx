@@ -13,6 +13,7 @@ import TransferEditDrawer from "../../../components/drawers/routeTransfer/Transf
 import routeAlternates from "../../../services/itinerary/brief/routeAlternates";
 import axiosRoundTripInstance from "../../../services/itinerary/brief/roundTripSuggestion";
 import TransferBooking from "./TransferBooking";
+import media from "../../../components/media";
 
 const Container = styled.div`
   @media screen and (min-width: 768px) {
@@ -72,6 +73,7 @@ const CITY_COLOR_CODES = [
 ];
 
 const TransferBookings = (props) => {
+  let isPageWide = media("(min-width: 768px)");
   const [selectedBooking, setSelectedBooking] = useState({
     id: null,
     name: null,
@@ -252,7 +254,7 @@ const TransferBookings = (props) => {
   };
 
   return (
-    <div id="transfers" className="mt-16 max-w-[54vw]" >
+    <div id="transfers" className={`mt-16 ${!isPageWide ? "max-w-fit" : "max-w-[54vw]"}`} >
       <div
         id="Transfer_Container"
         className="cursor-pointer font-lexend mb-8  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit"

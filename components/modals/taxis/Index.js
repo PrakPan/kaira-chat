@@ -13,6 +13,7 @@ import Drawer from "../../ui/Drawer";
 import { openNotification } from "../../../store/actions/notification";
 import Skeleton from "./Skeleton";
 import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
+import { fetchTransferMode } from "../../../services/bookings/FetchTaxiRecommendations";
 
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
@@ -67,6 +68,11 @@ const Booking = (props) => {
     setLoading(true);
     setUpdateLoadingState(false);
     setOptionsJSX([]);
+
+    {props?.mercury && 
+      fetchTransferMode
+      .post("",{origin: props?.origin, destination: props?.destination, top_only:"false"})
+    }
 
     const requestData = {
       trips: [
@@ -180,6 +186,8 @@ const Booking = (props) => {
         },
       },
     ];
+
+
     axiosbookingupdateinstance
       .post("?booking_type=Taxi,Bus,Ferry", updated_bookings_arr, {
         headers: {
@@ -296,6 +304,25 @@ const Booking = (props) => {
           </GridContainer>
         </div>
 
+        {props?.mercury ? <TransferEditDrawer
+          itinerary_id={props?.itinerary_id}
+          showDrawer={showTransferEditDrawer}
+          setShowDrawer={setShowTransferEditDrawer}
+          selectedTransferHeading={props.selectedTransferHeading}
+          origin={props.selectedBooking?.origin?.shortName}
+          destination={props.selectedBooking?.destination?.shortName}
+          day_slab_index={props.daySlabIndex}
+          element_index={props.elementIndex}
+          fetchData={props?.fetchData}
+          setShowLoginModal={props?.setShowLoginModal}
+          check_in={props?.check_in}
+          _GetInTouch={props._GetInTouch}
+          routeId={props.routeId}
+          selectedBooking={props.selectedBooking}
+          city={props?.city}
+          dcity={props?.dcity}
+        /> 
+        :
         <TransferEditDrawer
           itinerary_id={props?.itinerary_id}
           showDrawer={showTransferEditDrawer}
@@ -311,7 +338,7 @@ const Booking = (props) => {
           _GetInTouch={props._GetInTouch}
           routeId={props.routeId}
           selectedBooking={props.selectedBooking}
-        />
+        />}
       </Drawer>
     );
   else

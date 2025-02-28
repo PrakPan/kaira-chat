@@ -184,7 +184,6 @@ const Container = styled.div`
   width: 100%;
   grid-template-columns: 30px auto;
   min-height: 5rem;
-  max-width: 54vw;
   @media screen and (min-width: 768px) {
     min-height: 8rem;
   }
@@ -408,7 +407,7 @@ const TransferBooking = ({
   };
 
   return (
-    <Container>
+    <Container className={`${!isPageWide ? "max-w-fit" : "max-w-[54vw]"}`}>
       <div className="relative">
         <Line pinColour={CITY_COLOR_CODES[index % 7]} Transfers={true} />
       </div>
@@ -427,7 +426,7 @@ const TransferBooking = ({
           setShowLoginModal={setShowLoginModal}
         />
       ) : (
-        <div className="mt-3 ml-1 md:ml-7 flex flex-col">
+        <div className="mt-3 ml-1 md:ml-7 flex flex-col w-full">
           <div className="flex flex-row w-full justify-between items-center">
             <span className="font-medium  inline">{booking.name}</span>
             <div className="flex flex-row gap-2 justify-center items-center">
@@ -439,7 +438,7 @@ const TransferBooking = ({
 
           <div
             id={booking?.id}
-            className="mb-4 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 max-w-[54vw]"
+            className={`mb-4 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ${!isPageWide ? "w-full" : "max-w-[54vw]"}`}
           >
             <div className="flex flex-row items-center justify-between gap-1">
               <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
