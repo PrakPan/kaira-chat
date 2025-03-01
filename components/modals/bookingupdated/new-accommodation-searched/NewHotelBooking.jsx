@@ -25,7 +25,7 @@ export default function NewHotelBooking({
     };
 
     const handleViewHotel = () => {
-        handleClick(key, booking.id, booking, booking.city_id);
+        // handleClick(key, booking.id, booking, booking.city_id);
         openDetails();
 
         logEvent({

@@ -931,6 +931,7 @@ const Overview = (props) => {
           </Heading>
 
           <Rooms
+          currentBooking={props?.currentBooking}
             data={props.data?.recommendations}
             checkInDate={props.data?.check_in}
             city={props.data?.city}
