@@ -34,6 +34,8 @@ const ClippathComp = styled.div`
 const Flight = (props) => {
   const router = useRouter();
   const [showDetails, setShowDetails] = useState(false);
+  console.log("itinerary id:",router?.query?.id)
+
 
   return (
     <Container
@@ -100,7 +102,7 @@ const Flight = (props) => {
                   try {
                     const res = await axios.post(
                       MERCURY_HOST +
-                        "/api/v1/itinerary/jhjgjhk/bookings/flight/",
+                        `/api/v1/itinerary/${router?.query?.id}/bookings/flight/`,
                       {
                         trace_id: localStorage.getItem(
                           `${props.provider}_trace_id`

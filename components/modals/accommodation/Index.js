@@ -74,7 +74,6 @@ const POI = (props) => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
   const [error, setError] = useState(false);
-  const accommodationBookings=useSelector((state)=>state.Bookings.accommodationBookings)
   const itineraryFilters=useSelector((state)=>state.ItineraryFilters)
 
   useEffect(() => {
@@ -111,15 +110,12 @@ const POI = (props) => {
         check_out = props.check_out.split("/").reverse().join("-");
       }
       const requestData = {
-        trace_id:localStorage.getItem('trace_id'),
+        trace_id:props.traceId,
         hotel_id: `${props.id}`,
-        // trace_id: props.traceId,
         check_in: new  Date(check_in).toISOString().split('T')[0],
         check_out: new Date(check_out).toISOString().split('T')[0],
-        // num_adults: props?.pax?.number_of_adults,
-        // num_children: props?.pax?.number_of_children,
         currency: "INR",
-        source: props.provider,
+        source:props.provider,
         occupancies: itineraryFilters.occupancies
       };
 
@@ -149,7 +145,7 @@ const POI = (props) => {
       itinerary_code: data?.itinerary_code,
       items: data?.items,
       recommendation_id: recommendation_id,
-      trace_id: props.traceId,
+      trace_id: localStorage.getItem("trace_id"),
       itinerary_id: router?.query?.id,
       hotel_id: data?.id,
       source: props.provider,

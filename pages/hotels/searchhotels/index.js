@@ -190,6 +190,7 @@ const SearchHotels = () => {
         },
       });
       setData(res?.data?.data);
+      
     } catch (err) {
       const errorMessage =
         err?.response?.data?.errors?.[0]?.detail?.[0]?.message ||

@@ -58,6 +58,7 @@ const GetInTouchContainer = styled.div`
 `;
 
 const Booking = (props) => {
+  console.log("props in booking:",props)
   let isPageWide = media("(min-width: 768px)");
   const [showDetails, setShowDetails] = useState(false);
   const [moreOptionsJSX, setMoreOptionsJSX] = useState([]);
@@ -150,7 +151,7 @@ const Booking = (props) => {
       //   ]
       // });
       setNextPage(1);
-      setProvider(null);
+      // setProvider(null);
       setSelectedSearch("");
     }
   }, [props?.showBookingModal]);
@@ -198,7 +199,7 @@ const Booking = (props) => {
       error: false,
       errorMsg: "",
     });
-    console.log('bookingupdated:',filtersState)
+    console.log('bookingupdated provider is:',provider)
 
     const requestData = {
       check_in: getDate(props?.selectedBooking?.check_in),
@@ -230,6 +231,7 @@ const Booking = (props) => {
       setUpdateLoadingState(false);
 
       setProvider(res.data?.source);
+      console.log("booking updated source from response is:",res?.data?.source)
       
       if (res.data?.trace_details?.id) {
         localStorage.setItem("trace_id", res?.data?.trace_details?.id );
@@ -272,8 +274,8 @@ const Booking = (props) => {
                     images={res.data.data[i].images}
                     banner_image={img}
                     bookings={props.bookings}
-                    traceId={res.data?.trace__details?.id ? res.data.trace__details.id : ""}
-                    provider={res.data?.source}
+                    traceId={res.data?.trace_details?.id ? res.data.trace_details.id : ""}
+                    provider={res.data?.data?.[0]?.source}
                     setUpdateBookingState={setUpdateBookingState}
                     setUnauthorized={setUnauthorized}
                     _updateStayBookingHandler={props._updateStayBookingHandler}
@@ -309,6 +311,7 @@ const Booking = (props) => {
       setLoading(false);
 
     }).catch(err => {
+      console.log("error on booking updated:",err)
       setLoading(false);
       setFetchingIsError({
         error: true,
