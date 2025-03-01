@@ -6,12 +6,14 @@ import { getHumanTime } from "../../../../services/getHumanTime";
 import Rooms from "../roomtypes/Index";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import useMediaQuery from "../../../media";
-import MoreText from "../../../ui/MoreText";
 import { FiChevronRight } from "react-icons/fi";
 import Button from "../../../ui/button/Index";
 import SkeletonCard from "../../../ui/SkeletonCard";
 import { connect } from "react-redux";
-
+import { getIndianPrice } from "../../../../services/getIndianPrice";
+import Tag from "../../../cards/bookings/activitybooking/imagecontainer/Tag";
+import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import ImageCarousel from "../../Carousel/ImageCarousel";
 const starRating = (rating) => {
   var stars = [];
   for (let i = 0; i < Math.floor(rating); i++) {
@@ -131,6 +133,17 @@ const DescriptionText = styled.div`
     margin-bottom: 12px;
   }
 `;
+const getRoomImage = (images) => {
+  if (images && images.length) {
+    for (let image of images) {
+      if (image?.image) {
+        return image.image;
+      }
+    }
+  }
+
+  return null;
+}
 
 const HotelBookingDetails = (props) => {
   const isDesktop = useMediaQuery("(min-width:1148px)");
@@ -148,6 +161,7 @@ const HotelBookingDetails = (props) => {
     2: false,
     3: false,
   });
+  const [open,setOpen]=useState(false)
 
   function OnImageLoad(i) {
     if (!ImagesLoaded[i]) {
@@ -906,6 +920,91 @@ const HotelBookingDetails = (props) => {
           <></>
         )}
       </DetailsContainer>
+      <div className="text-lg font-bold">₹{getIndianPrice(props?.data?.price)}</div>
+
+      {props.data?.hotel_details?.rates?.map((room, index) => (
+        <div key={index} className="flex flex-col gap-3 bg-white p-2 rounded-lg">
+          <div className="flex flex-row gap-3">
+            {getRoomImage(room?.images) && (
+              <ImageContainer>
+                <ImageLoader
+                  noLazy
+                  height={isPageWide ? "85px" : "75px"}
+                  width={isPageWide ? "85px" : "75px"}
+                  borderRadius="10px"
+                  dimensions={{ height: 200, width: 200 }}
+                  url={getRoomImage(room?.images)}
+                />
+              </ImageContainer>
+            )}
+
+            <div className="w-full">
+              {room.name ? (<div
+                className="w-full text-[14px] font-[400] md:text-lg md:font-semibold"
+              >
+                {room.name} <span><RxCross2 className="inline" /> 1 room</span>
+              </div>) : null}
+
+              {room?.number_of_adults && room?.number_of_adults !== '0' ? (
+                <div className="flex flex-row gap-1">
+                  <div className="text-md font-semibold">Sleeps</div>
+                  <div>
+                    {room.number_of_adults > 1 ? `${room.number_of_adults} Adults` : `${room.number_of_adults} Adult`}
+                    {room?.number_of_children && room?.number_of_children !== '0' ? `, ${room.number_of_children} Children` : null}
+                  </div>
+                </div>
+              ) : null}
+
+              {props.data?.hotel_details?.rates?.length === 1 && (<div className="text-blue">
+                {open ? (
+                  <div className="w-fit flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer" onClick={()=>setOpen(false)}>
+                    <div>Hide details</div>
+                    <IoIosArrowUp className="text-xl" />
+                  </div>
+                ) :
+                  (
+                    <div className="w-fit flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer" onClick={()=>setOpen(true)}>
+                      <div>See details</div>
+                      <IoIosArrowDown className="text-xl" />
+                    </div>
+                  )}
+              </div>)}
+            </div>
+          </div>
+
+          {open && (
+            <div className="flex flex-col gap-3">
+              {props.data?.hotel_details?.rates?.[0]?.rooms.map((room, index) => (
+                <div key={index} className="flex flex-col gap-3">
+                  <div key={index} className="flex flex-col md:flex-row gap-1 justify-between">
+                    {room?.description ? (
+                      <div dangerouslySetInnerHTML={{
+                        __html: room.description
+                      }} className=""></div>
+                    ) : null}
+                    <div className="flex flex-col items-center justify-center gap-3 md:w-[40%] h-[250px]">
+                      <ImageCarousel images={room?.images} />
+                    </div>
+                  </div>
+
+                  {room?.facilities ? (
+                    <div className="flex flex-col gap-2">
+                      <div className="text-lg font-semibold">Room Amenities</div>
+                      <div className="text-[14px]">
+                        {room.facilities.map((item, index) => (
+                          <span key={index}>{item}
+                            {index < room.facilities.length - 1 && " . "}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
 
       {props.data?.hotel_details?.check_in?.instructions?.length ? (
         <div className="flex flex-col gap-1">
@@ -921,16 +1020,17 @@ const HotelBookingDetails = (props) => {
 
       {props.data?.hotel_details?.rates?.[0]?.rooms?.[0]?.description && (
         <>
-          <Heading>About</Heading>
-          <MoreText>
+          <Heading>Room Information</Heading>
+          <div className=" font-bold">{props.data?.hotel_details?.rates?.[0]?.rooms?.[0]?.name}, {props.data?.hotel_details?.rates?.[0]?.rooms?.[0]?.views?.[0]}</div>
             <DescriptionText
               dangerouslySetInnerHTML={{
                 __html: props.data?.hotel_details?.rates?.[0]?.rooms?.[0]?.description,
               }}
             ></DescriptionText>
-          </MoreText>
         </>
       )}
+      {/* <Tag tag={props.data?.hotel_details?.rates?.[0]?.rooms?.[0]?.facilities?.[0]}/>
+      <Tag tag={props.data?.hotel_details?.rates?.[0]?.facilities?.[1]}/> */}
 
       {props.data?.recommendations && props.data?.recommendations?.length ? (
         <>

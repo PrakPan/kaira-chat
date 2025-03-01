@@ -12,6 +12,7 @@ import Drawer from "../../components/ui/Drawer";
 import { Details } from "../../components/modals/flights/new-flight-searched/Index";
 import VehicleDetailModal from "../../components/modals/daybyday/VehicleModal";
 import FlightDetailModal from "../../components/modals/daybyday/FlightDetailModal";
+import { useRouter } from "next/router";
 const Container = styled.div`
   display: flex;
   align-items: center;
@@ -80,10 +81,11 @@ const CityItem = ({
   };
   const [handleShow, setHandleShow] = useState(false);
   const [data, setData] = useState({});
+  const router=useRouter();
 
   const handleEdit = async () => {
     const res = await axios.get(
-      `${MERCURY_HOST}/api/v1/itinerary/ytui89/bookings/${booking_type.toLowerCase()}/${booking_id}`
+      `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/${booking_type.toLowerCase()}/${booking_id}`
     );
     console.log("response is:", res?.data?.flight_details?.items?.[0]);
     setData(res?.data);

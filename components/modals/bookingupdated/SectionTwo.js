@@ -76,7 +76,7 @@ const Section = (props) => {
         _removeFilterHandler={props._removeFilterHandler}
         _addFilterHandler={props._addFilterHandler}
         filters={props.FILTERS}
-        booking_city={props.booking_chandleBudgetChangeity}
+        booking_city={props.booking_city}
         No_of_stays={props.No_of_stays}
         totalCount={props.TotalCount}
         plan={props?.plan[0]}

@@ -5,7 +5,6 @@ import RoomType from "./roomtype/Index";
 const Rooms = (props) => {
   const [rooms, setRooms] = useState(null);
   const [selectedRecommendation, setSelectedRecommendation] = useState(null);
-  console.log("city:",props)
   const handleUpdateBooking = (index) => {
     const rates = props.data[index].rates.map(rate => {
       return {
@@ -25,6 +24,7 @@ const Rooms = (props) => {
         if (props.data[i]?.total_rate) {
           rooms_arr.push(
             <RoomType
+            currentBooking={props?.currentBooking}
               key={i}
               index={i}
               price={props.data[i].total_rate}

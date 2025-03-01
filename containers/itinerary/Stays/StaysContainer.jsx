@@ -22,7 +22,6 @@ const StaysContainer = (props) => {
   const [currentBooking, setCurrentBooking] = useState(null);
   const [bookingFunData, setBookingFunData] = useState(null);
   const [dates, setDates] = useState({ check_in: "", check_out: "" });
-  const accommodationBookings=useSelector((state)=>state.Bookings.accommodationBookings)
   const itineraryFilter=useSelector((state)=>state.ItineraryFilters)
   const _setImagesHandler = (images) => {
     setImages(images);

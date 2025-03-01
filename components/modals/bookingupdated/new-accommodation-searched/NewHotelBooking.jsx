@@ -25,7 +25,7 @@ export default function NewHotelBooking({
     };
 
     const handleViewHotel = () => {
-        handleClick(key, booking.id, booking, booking.city_id);
+        // handleClick(key, booking.id, booking, booking.city_id);
         openDetails();
 
         logEvent({
@@ -57,7 +57,7 @@ export default function NewHotelBooking({
                         >
                             <ImageCarousel images={booking.images} />
 
-                            {booking.star_category ? (
+                            {(booking.star_category && booking.star_category!="0") ? (
                                 <div
                                     starHotel
                                     className={`text-white bg-[#01202B] lg:px-4 px-3 lg:py-3 py-2 m-2 text-sm font-[400]nsition-all shadow-slate-700/70 shadow-md hover:drop-shadow-xl absolute top-0 rounded-3xl`}
@@ -139,7 +139,7 @@ export default function NewHotelBooking({
                                     <div className="flex flex-col md:flex-row gap-1 md:items-center w-full font-bold">
                                         <div className="text-2xl font-bold">
                                             {/* {booking?.source === "Agoda" */}
-                                            <>₹ {booking.price}</>
+                                            <>₹ {getIndianPrice(booking.price)}</>
                                                 {/* // ? "₹" +
                                                 // getIndianPrice(Math.round(+booking.price / 100)) +
                                                 // "/-"

@@ -28,7 +28,6 @@ const RoomType = (props) => {
 
     return null;
   }
-  console.log("city:",props?.city)
 
 
   return (
