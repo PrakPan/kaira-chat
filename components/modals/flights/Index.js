@@ -156,6 +156,8 @@ const Booking = (props) => {
         destination:"BOM"
       };
 
+      console.log("Requested Data",requestData)
+
       axiosFlightSearch
         .post(
           `?${filtersState.sort_by}_order=${filtersState.order}${
