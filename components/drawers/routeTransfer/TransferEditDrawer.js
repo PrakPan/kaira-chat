@@ -24,6 +24,8 @@ import TaxiModal from "../../../components/modals/taxis/Index";
 import FlightModal from "../../../components/modals/flights/Index";
 import { getDate } from "../../../helper/DateUtils";
 import { fetchTransferMode } from "../../../services/bookings/FetchTaxiRecommendations";
+import { PulseLoader } from "react-spinners";
+import { FaMapMarkerAlt } from "react-icons/fa";
 
 const ClippathComp = styled.div`
   clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 95% 50%, 100% 0%);
@@ -69,8 +71,11 @@ const TransferEditDrawer = (props) => {
     city,
     dcity,
     oCityData,
-    dCityData
+    dCityData,
+    mercury
   } = props;
+
+  console.log("Props Mer",mercury)
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
   const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
@@ -85,6 +90,8 @@ const TransferEditDrawer = (props) => {
   const [showTaxiModal, setShowTaxiModal] = useState(false);
   const [selectedResult, setSelectedResult] = useState(null);
   const [showOtherTransfer, setShowOtherTrasfer] = useState(false);
+  const [showMercuryTransfer, setShowMercuryTransfer] = useState(false);
+  const [selectedMercuryTransfer, setSelectedMercuryTransfer] = useState(null);
 
   useEffect(() => {
     if (showDrawer) {
@@ -106,9 +113,9 @@ const TransferEditDrawer = (props) => {
     };
 
 
-    {props?.mercury || props?.isMercury ?
+    {mercury || props?.isMercury ?
       fetchTransferMode
-      .post("",{origin: props?.origin, destination: props?.destination, top_only:"false"})
+      .post("",{origin: props?.origin, destination: props?.destination, number_of_adults: 1, number_of_children: 1, number_of_infants:3, top_only:"false"})
       .then((res) => {
         if (res.data.success && res.data.routes.data.length > 0) {
           const data = res.data.routes.data;
@@ -154,7 +161,7 @@ const TransferEditDrawer = (props) => {
   };
 
   const roundTripSuggestion = () => {
-    !props?.mercury && axiosRoundTripInstance
+    !mercury && axiosRoundTripInstance
       .get(`?itinerary_id=${props?.ItineraryId}`)
       .then((response) => {
         const results = response.data;
@@ -252,7 +259,7 @@ const TransferEditDrawer = (props) => {
       trace_id,
       cab_id,
     };
-    !props?.mercury && axiosRoundTripEditInstance
+    !mercury && axiosRoundTripEditInstance
       .post("", data, {
         headers: {
           Authorization: `Bearer ${access_token}`,
@@ -328,8 +335,9 @@ const TransferEditDrawer = (props) => {
           </div>
         </div>
 
-        {showOtherTransfer && (
+        {mercury ? showOtherTransfer && (
           <OtherTransfer
+            showOtherTransfer={showOtherTransfer}
             setShowOtherTrasfer={setShowOtherTrasfer}
             selectedResult={selectedResult}
             setSelectedResult={setSelectedResult}
@@ -337,8 +345,13 @@ const TransferEditDrawer = (props) => {
               props?.plan?.number_of_adults + props?.plan?.number_of_children
             }
             check_in={check_in}
-          />
-        )}
+          /> ): showMercuryTransfer && (
+            <MercuryTransfer
+            transfer={selectedMercuryTransfer}
+            setShowMercuryTransfer={setShowMercuryTransfer}
+            />
+        )
+      }
 
         {loadingTransfers ? (
           <div className="mt-10 w-full flex flex-col gap-3 items-center">
@@ -430,6 +443,7 @@ const TransferEditDrawer = (props) => {
           </div>
         ) : (
           <div className="w-full flex flex-col items-center gap-3">
+            
             <div className="w-full flex flex-row gap-4 px-2 whitespace-nowrap overflow-x-auto hide-scrollbar">
               <RadioButton
                 name={TRANSFER_TYPES.ONEWAYTRIP.name}
@@ -481,6 +495,9 @@ const TransferEditDrawer = (props) => {
                           transfer={transfer}
                           handleSelect={handleSelect}
                           selectedResult={selectedResult}
+                          setShowMercuryTransfer={setShowMercuryTransfer}
+                          setSelectedMercuryTransfer={setSelectedMercuryTransfer}
+                          mercury={true}
                         />
                       );
                     return (
@@ -552,6 +569,11 @@ const TransferEditDrawer = (props) => {
         daySlabIndex={day_slab_index}
         elementIndex={element_index}
         routeId={routeId}
+        oCityData={oCityData}
+        dCityData={dCityData}
+        mercury={mercury}
+        origin={selectedBooking?.origin?.shortName || oCityData?.gmaps_place_id || oCityData?.city?.id}
+        destination={selectedBooking?.destination?.shortName || dCityData?.gmaps_place_id || dCityData?.city?.id}
       ></TaxiModal>
     </Drawer>
   );
@@ -651,14 +673,16 @@ const RouteContainer = (props) => {
           <div className="w-full flex flex-col gap-2 justify-center">
             <div className="flex flex-row items-center justify-between">
               <TransferItem transfer={singleTransfer} />
-
               <div className="flex flex-col gap-2 items-end">
                 <EstimatedCost cost={singleTransfer?.prices[0]?.price} />
+                {/* {
+                singleTransfer?.mode === "Bus" || singleTransfer?.mode === "Train" || singleTransfer?.mode === "Ferry" || singleTransfer?.mode === "Car" ? <MercurySelectButton transfer={singleTransfer} setShowMercuryTransfer={props?.setShowMercuryTransfer} setSelectedMercuryTransfer={props?.setSelectedMercuryTransfer}/>: */}
                 <SelectButton
-                  transfer={singleTransfer}
-                  transferIndex={transferIndex}
-                  handleSelect={handleSelect}
-                />
+                transfer={singleTransfer}
+                transferIndex={transferIndex}
+                handleSelect={handleSelect}
+              />
+              {/* } */}
               </div>
             </div>
           </div>
@@ -1554,12 +1578,69 @@ const TransferItem = ({ transfer, transferIndex }) => {
   );
 };
 
+
+const Container = styled.div`
+  padding: 0.75rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+`;
+
+
+const Heading = styled.p`
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 0.2rem 0;
+  line-height: 1;
+`;
+
+const Location = styled.p`
+  font-size: 13px;
+  font-weight: 400;
+  margin: 0;
+`;
+
+const IconHeading = styled.p`
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1;
+`;
+
+const Text = styled.p`
+  font-size: 13px;
+  font-weight: 300;
+  margin: 0;
+  letter-spacing: 1px;
+  color: rgba(91, 89, 89, 1);
+`;
+
+const ModelText = styled.div`
+  font-size: 0.8rem;
+  color: #888080;
+  font-weight: 300;
+  margin: 0 0 0.5rem 0;
+`;
+
+const Cost = styled.p`
+  font-weight: 800;
+  font-size: 1rem;
+  line-height: 1;
+  margin: 0;
+
+  @media screen and (min-width: 768px) {
+    font-size: 1.25rem;
+  }
+`;
+
+
 const OtherTransfer = ({
   setShowOtherTrasfer,
   selectedResult,
   setSelectedResult,
   number_of_travellers,
   check_in,
+  showOtherTransfer
 }) => {
   const ref = useRef(null);
   const [loading, setLoading] = useState(true);
@@ -1568,7 +1649,8 @@ const OtherTransfer = ({
   const [traceId, setTraceId] = useState(null);
 
   useEffect(() => {
-    getOtherTrasfer(selectedResult.transfer.mode);
+    // getOtherTrasfer(selectedResult.transfer.mode);
+    getOtherTrasfer(selectedResult.transfer);
   }, []);
 
   const handleClose = (e) => {
@@ -1590,34 +1672,48 @@ const OtherTransfer = ({
     setShowOtherTrasfer(false);
   };
 
-  const getOtherTrasfer = (mode) => {
-    setLoading(true);
-    const requestData = {
-      edge_id: selectedResult.transfer.id,
-      start_datetime: `${getDate(check_in || new Date()?.toISOString().split("T")[0])}T00:00:00`,
-      number_of_travellers: number_of_travellers || 1,
-    };
+  // const getOtherTrasfer = (mode) => {
+    // setLoading(true);
+    // const requestData = {
+    //   edge_id: selectedResult.transfer.id,
+    //   start_datetime: `${getDate(check_in || new Date()?.toISOString().split("T")[0])}T00:00:00`,
+    //   number_of_travellers: number_of_travellers || 1,
+    // };
 
-    otherTransferSearch
-      .post(`${mode.toLowerCase()}/search/`, requestData)
-      .then((res) => {
-        if (res.data.success) {
-          setTraceId(res.data.trace_id);
-          setOtherTransfer(res.data.data);
-        } else {
-          setError("Prices not found at the moment, please try again!");
-        }
+    // otherTransferSearch
+    //   .post(`${mode.toLowerCase()}/search/`, requestData)
+    //   .then((res) => {
+    //     if (res.data.success) {
+    //       setTraceId(res.data.trace_id);
+    //       setOtherTransfer(res.data.data);
+    //     } else {
+    //       setError("Prices not found at the moment, please try again!");
+    //     }
 
-        setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-        setError("Something went wrong, please try again!");
-      });
+    //     setLoading(false);
+    //   })
+    //   .catch((err) => {
+    //     setLoading(false);
+    //     setError("Something went wrong, please try again!");
+    //   });
+    const getOtherTrasfer = (transfer) => {
+      setLoading(false);
+    setOtherTransfer(transfer);
   };
 
   return (
-    <div
+    
+    <Drawer
+      show={showOtherTransfer}
+      anchor={"right"}
+      backdrop
+      style={{ zIndex: 1502 }} 
+      className="font-lexend"
+      onHide={() => setShowOtherTrasfer(false)}
+      mobileWidth={"100vw"}
+      width="50vw"
+    >
+    {/* <div
       onClick={handleClose}
       className="absolute z-50 flex items-center justify-center bg-black bg-opacity-50 top-0 bottom-0 left-0 right-0 -mx-2"
     >
@@ -1648,6 +1744,124 @@ const OtherTransfer = ({
           )}
         </div>
       </div>
+    </div> */}
+            <Container>
+          <div className="flex flex-row gap-3 my-0 justify-start items-center">
+          <IoMdArrowRoundBack
+            onClick={() => setShowOtherTrasfer(false)}
+            className="hover-pointer text-3xl font-semibold"
+          />
+        </div>
+          {otherTransfer &&
+           otherTransfer.prices.map((price, i) => (
+            <div key={i} className="flex items-center p-4 border rounded-lg shadow-md w-full max-w-full mb-3">
+            <div className="flex items-center gap-4 justify-between w-full ">
+              <TransfersIcon
+                TransportMode={otherTransfer.mode}
+                Instyle={{
+                  fontSize: otherTransfer.mode === "Bus" ? "2.5rem" : "3rem",
+                  color: "black",
+                }}
+                classname={{ width: 80, height: 75 }}
+              />
+              <div className="flex-1">
+                <Heading>{otherTransfer.mode} (Any)</Heading>
+                <ModelText>Swift Dzire or similar</ModelText>
+                <div className="flex items-center gap-2 mt-2 text-gray-600">
+                  <FaMapMarkerAlt />
+                  <Text>{otherTransfer.distance}</Text>
+                  <span>&#8226;</span>
+                  <Text>4-5 hours</Text>
+                </div>
+              </div>
+              <div className="text-right">
+                <Cost>{"₹" + getIndianPrice(Math.ceil(price.price)) + "/-"}</Cost>
+                <button className="mt-2 bg-yellow-400 text-black px-4 py-2 rounded hover:bg-black hover:text-white transition-all">
+                  Select
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+    </Container>
+    </Drawer>
+    
+  );
+};
+
+
+
+const MercuryTransfer = ({transfer,setShowMercuryTransfer}) => {
+  console.log("Transfer Data",transfer);
+
+
+  // const handleSelectPrice = (index) => {
+  //   setSelectedResult((prev) => {
+  //     return {
+  //       ...prev,
+  //       trace_id: traceId,
+  //       result_index: otherTransfer.prices[index].result_index,
+  //     };
+  //   });
+
+  //   setShowOtherTrasfer(false);
+  // };
+
+
+  return (
+    <div
+      onClick={(e) => {
+    e.stopPropagation();
+    setShowMercuryTransfer(false);
+  }}
+      className="absolute z-50 flex items-center justify-center bg-black bg-opacity-50 top-0 bottom-0 left-0 right-0 -mx-2"
+    >
+      <div className="bg-white w-fit p-3 rounded-lg space-y-5">
+        <div className="text-lg">Select your seat</div>
+
+        <div className="w-full flex items-center justify-center">
+
+            <div className="flex flex-col gap-2">
+              {transfer &&
+                transfer.prices.map((price, i) => (
+                  <div
+                    key={i}
+                    onClick={() => handleSelectPrice(i)}
+                    className="flex flex-row items-center justify-between gap-5 hover:bg-gray-200 cursor-pointer p-1 rounded-md"
+                  >
+                    <div>{price.class ? price.class : "Seater"}</div>
+                    <div className="font-semibold">
+                      ₹{getIndianPrice(price.price)}/-{" "}
+                    </div>
+                  </div>
+                ))}
+            </div>
+        </div>
+      </div>
     </div>
   );
 };
+
+
+const MercurySelectButton = ({transfer, setShowMercuryTransfer,setSelectedMercuryTransfer }) => {
+  const getLabel = () => {
+        return `Select a ${transfer.mode}`;
+  };
+
+  return (
+    <div className="group text-blue flex flex-row items-center cursor-pointer hover:translate-x-1 transition-all">
+      <button
+        onClick={() => {setShowMercuryTransfer(true)
+          setSelectedMercuryTransfer(transfer)
+        }}
+        className="focus:outline-none"
+      >
+        {getLabel()}
+      </button>
+
+      <RiArrowRightSLine className="text-xl group-hover:scale-110 group-hover:translate-x-1 transition-all" />
+    </div>
+  );
+};
+
+
