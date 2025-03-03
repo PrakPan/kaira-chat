@@ -920,7 +920,6 @@ const HotelBookingDetails = (props) => {
           <></>
         )}
       </DetailsContainer>
-      <div className="text-lg font-bold">₹{getIndianPrice(props?.data?.price)}</div>
 
       {props.data?.hotel_details?.rates?.map((room, index) => (
         <div key={index} className="flex flex-col gap-3 bg-white p-2 rounded-lg">
@@ -955,25 +954,27 @@ const HotelBookingDetails = (props) => {
                 </div>
               ) : null}
 
-              {props.data?.hotel_details?.rates?.length === 1 && (<div className="text-blue">
-                {open ? (
-                  <div className="w-fit flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer" onClick={()=>setOpen(false)}>
-                    <div>Hide details</div>
-                    <IoIosArrowUp className="text-xl" />
-                  </div>
-                ) :
-                  (
-                    <div className="w-fit flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer" onClick={()=>setOpen(true)}>
-                      <div>See details</div>
-                      <IoIosArrowDown className="text-xl" />
-                    </div>
-                  )}
-              </div>)}
             </div>
           </div>
+        </div>
+      ))}
 
-          {open && (
-            <div className="flex flex-col gap-3">
+      {props.data?.hotel_details?.check_in?.instructions?.length ? (
+        <div className="flex flex-col gap-1">
+          <div className="text-lg font-bold">About</div>
+          <div
+            className="text-[14px] ml-[-30px]"
+            dangerouslySetInnerHTML={{
+              __html: props.data?.hotel_details.check_in?.instructions[0],
+            }}
+          ></div>
+        </div>
+      ) : null}
+
+      {props.data?.hotel_details?.rates?.[0]?.rooms?.[0]?.description && (
+        <>
+          <Heading>Room Information</Heading>
+          <div className="flex flex-col gap-3">
               {props.data?.hotel_details?.rates?.[0]?.rooms.map((room, index) => (
                 <div key={index} className="flex flex-col gap-3">
                   <div key={index} className="flex flex-col md:flex-row gap-1 justify-between">
@@ -1002,31 +1003,6 @@ const HotelBookingDetails = (props) => {
                 </div>
               ))}
             </div>
-          )}
-        </div>
-      ))}
-
-      {props.data?.hotel_details?.check_in?.instructions?.length ? (
-        <div className="flex flex-col gap-1">
-          <div className="text-lg font-bold">About</div>
-          <div
-            className="text-[14px] ml-[-30px]"
-            dangerouslySetInnerHTML={{
-              __html: props.data?.hotel_details.check_in?.instructions[0],
-            }}
-          ></div>
-        </div>
-      ) : null}
-
-      {props.data?.hotel_details?.rates?.[0]?.rooms?.[0]?.description && (
-        <>
-          <Heading>Room Information</Heading>
-          <div className=" font-bold">{props.data?.hotel_details?.rates?.[0]?.rooms?.[0]?.name}, {props.data?.hotel_details?.rates?.[0]?.rooms?.[0]?.views?.[0]}</div>
-            <DescriptionText
-              dangerouslySetInnerHTML={{
-                __html: props.data?.hotel_details?.rates?.[0]?.rooms?.[0]?.description,
-              }}
-            ></DescriptionText>
         </>
       )}
       {/* <Tag tag={props.data?.hotel_details?.rates?.[0]?.rooms?.[0]?.facilities?.[0]}/>

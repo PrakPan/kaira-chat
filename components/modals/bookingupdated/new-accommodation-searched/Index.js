@@ -29,6 +29,7 @@ const Accommodation = (props) => {
         _setImagesHandler={props._setImagesHandler}
         onHide={() => setShowDetails(false)}
         id={props.accommodation.id}
+        bookingId={props.selectedBooking.id}
         currentBooking={props.accommodation}
         show={showDetails}
         traceId={props.traceId}
