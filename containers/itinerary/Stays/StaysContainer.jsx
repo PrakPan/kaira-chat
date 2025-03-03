@@ -141,13 +141,13 @@ const StaysContainer = (props) => {
         {props.stayBookings &&
           props.stayBookings.map((booking, index) => (
             <HotelBooking
-              
               key={booking.id}
               index={index}
               booking={booking}
               payment={props.payment}
               handleClick={handleClick}
               handleClickAc={handleClickAc}
+              setBookingId={setBookingId}
               setShowLoginModal={props.setShowLoginModal}
             />
           ))}

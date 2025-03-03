@@ -936,6 +936,7 @@ const Overview = (props) => {
             checkInDate={props.data?.check_in}
             city={props.data?.city}
             updateBooking={props.updateBooking}
+            bookingId={props?.bookingId}
           ></Rooms>
         </>
       ) : (

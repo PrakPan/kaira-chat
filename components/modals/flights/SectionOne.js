@@ -13,7 +13,7 @@ import { BsFillSunriseFill, BsSunsetFill } from "react-icons/bs";
 import { IoPerson } from "react-icons/io5";
 import { RiArrowRightSLine } from "react-icons/ri";
 
-const Heading = styled.div`
+export const Heading = styled.div`
   margin: 0;
   display: flex;
   gap: 0.5rem;
@@ -22,7 +22,7 @@ const Heading = styled.div`
   }
 `;
 
-const Text = styled.div`
+export const Text = styled.div`
   font-size: 1.5rem;
   line-height: 2rem;
 `;

@@ -5,10 +5,12 @@ import FlightDetails from "./FlightDetails";
 import PriceContainer from "./PriceContainer";
 import { useState, useEffect } from "react";
 import { axiosFlightFareRule } from "../../../../services/bookings/FlightSearch";
-import GlobalModal from "../../GlobalModal";
 import { MERCURY_HOST } from "../../../../services/constants";
 import axios from "axios";
 import { useRouter } from "next/router";
+import Drawer from "../../../ui/Drawer";
+import {Text,Heading} from "../SectionOne"
+import { IoMdClose } from "react-icons/io";
 const Container = styled.div`
   width: 95%;
   background-color: white;
@@ -31,11 +33,80 @@ const ClippathComp = styled.div`
   clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
 `;
 
+const Generalbuttonstyle = styled.button`
+  color: ${(props) => (props.color ? props.color : "black")};
+
+  z-index:1600;
+
+  display: ${(props) => (props.display ? props.display : "block")};
+
+  border-radius: ${(props) => (props.borderRadius ? props.borderRadius : "0")};
+
+  background-color: ${(props) =>
+    props.bgColor ? props.bgColor : "transparent"};
+
+  text-decoration: ${(props) => (props.textDecor ? props.textDecor : "none")};
+
+  margin: ${(props) =>
+    props.marginMobile
+      ? props.marginMobile
+      : props.margin
+      ? props.margin
+      : "0"};
+  line-height: ${(props) => (props.lineHeight ? props.lineHeight : "normal")};
+
+  padding: ${(props) => (props.padding ? props.padding : "0.5rem 0.75rem")};
+
+  width: ${(props) => (props.width ? props.width : "max-content")};
+
+  height: ${(props) => (props.height ? props.height : "max-content")};
+
+  font-size: ${(props) => (props.fontSize ? props.fontSize : "1rem")};
+  border-style: ${(props) => (props.borderStyle ? props.borderStyle : "solid")};
+
+  border-width: ${(props) => (props.borderWidth ? props.borderWidth : "2px")};
+
+  border-color: ${(props) => (props.borderColor ? props.borderColor : "black")};
+
+  font-weight: ${(props) => (props.fontWeight ? props.fontWeight : "400")};
+  box-shadow: ${(props) =>
+    props.boxShadow
+      ? "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)"
+      : "none"};
+  text-align: ${(props) => (props.textAlign ? props.textAlign : "center")};
+
+  @media screen and (min-width: 768px) {
+    align-items: ${(props) => (props.center ? "center" : "normal")};
+
+    justify-content: ${(props) => (props.center ? "center" : "normal")};
+    margin: ${(props) => (props.margin ? props.margin : "0")};
+
+    font-size: ${(props) =>
+      props.fontSizeDesktop ? props.fontSizeDesktop : "1rem"};
+    &:hover {
+      color: ${(props) => (props.hoverColor ? props.hoverColor : "white")};
+
+      background-color: ${(props) =>
+        props.hoverBgColor ? props.hoverBgColor : "black"};
+      border-color: ${(props) =>
+        props.hoverBrColor ? props.hoverBrColor : "black"};
+      cursor: pointer;
+      transition: background-color 0.3s ease-in-out;
+    }
+  }
+  &:focus {
+    outline: none;
+  }
+
+  &:active {
+    transform: translateY(2px);
+  }
+`;
+
+
 const Flight = (props) => {
   const router = useRouter();
   const [showDetails, setShowDetails] = useState(false);
-  console.log("itinerary id:",router?.query?.id)
-
 
   return (
     <Container
@@ -77,7 +148,7 @@ const Flight = (props) => {
           provider={props.provider}
         />
       </div>
-      <div className="flex justify-end">
+      <div className="flex justify-center items-center">
         <button
           className="text-sm font-medium text-yellow-500 border border-yellow-500 rounded-lg px-3 py-1 transition-all 
              hover:bg-yellow-500 hover:text-black focus:outline-none"
@@ -86,41 +157,25 @@ const Flight = (props) => {
           Flight Details
         </button>
 
-        <GlobalModal
-          isOpen={showDetails}
-          onClose={() => setShowDetails(false)}
-          children={
-            <>
-              <Details
-                segments={props.data?.segments}
-                provider={props.provider}
-                resultIndex={props.data?.result_index}
-                setShowDetails={setShowDetails}
-              />
-              <button
-                onClick={async () => {
-                  try {
-                    const res = await axios.post(
-                      MERCURY_HOST +
-                        `/api/v1/itinerary/${router?.query?.id}/bookings/flight/`,
-                      {
-                        trace_id: localStorage.getItem(
-                          `${props.provider}_trace_id`
-                        ),
-                        result_indices: [props.data?.result_index],
-                      }
-                    );
-                    window.location.href=`/flights/book/${res.data.id}`;
-                  } catch (error) {
-                    console.log("error in redirecting", error);
-                  }
-                }}
-              >
-                Book
-              </button>
-            </>
-          }
-        />
+        <Drawer
+          show={showDetails}
+          anchor={"right"}
+          backdrop
+          width={"50%"}
+          mobileWidth={"100%"}
+          style={{ zIndex: props.itineraryDrawer ? 1503 : 1501 }}
+          className={`font-lexend ${window.innerWidth < 768 ? 'w-full' : 'w-[50%]'}`}          onHide={() => setShowDetails(false)}
+        >
+          <>
+            <Details
+              segments={props.data?.segments}
+              provider={props.provider}
+              resultIndex={props.data?.result_index}
+              setShowDetails={setShowDetails}
+            />
+            
+          </>
+        </Drawer>
       </div>
     </Container>
   );
@@ -128,13 +183,19 @@ const Flight = (props) => {
 
 export default Flight;
 
-export const Details = ({ segments, provider, resultIndex, setShowDetails ,fareRule}) => {
+export const Details = ({
+  segments,
+  provider,
+  resultIndex,
+  setShowDetails,
+  fareRule,
+}) => {
   const [fareRules, setFareRules] = useState(fareRule?.fareRuleDetail);
   const [fareRulesLoading, setFareRulesLoading] = useState(false);
   const [fareRUlesError, setFareRulesError] = useState(false);
 
   useEffect(() => {
-    if(fareRules==null){
+    if (fareRules == null) {
       getFareRules();
     }
   }, []);
@@ -162,10 +223,18 @@ export const Details = ({ segments, provider, resultIndex, setShowDetails ,fareR
   };
 
   return (
-    <div className="relative flex flex-col gap-4 bg-gray-100 p-2 rounded-md">
+    <div className="relative flex flex-col gap-4 p-2 rounded-md">
       <div className="flex flex-col gap-2">
-        <div className="w-fit py-2 text-lg font-bold">Flight Details</div>
-
+      <Heading className="font-lexend flex flex-col items-start">
+        <div className="flex flex-row items-center gap-2">
+          <IoMdClose
+            className="hover-pointer"
+            onClick={() => setShowDetails((prev) => !prev)}
+            style={{ fontSize: "2rem" }}
+          ></IoMdClose>
+          <Text>Flight Details</Text>
+        </div>
+      </Heading>
         <FlightSegment segments={segments} />
       </div>
 
@@ -191,6 +260,35 @@ export const Details = ({ segments, provider, resultIndex, setShowDetails ,fareR
           ></div>
         </div>
       )}
+      <Generalbuttonstyle
+              width="150px"
+              borderRadius="0 0 10px 10px"
+              borderStyle="solid none none none"
+              borderColor="rgba(222, 222, 222, 1)"
+              borderWidth="1px"
+              bgColor="#f7e700"
+              onclickparam={null}
+              onClick={async () => {
+                try {
+                  const res = await axios.post(
+                    MERCURY_HOST +
+                      `/api/v1/itinerary/${router?.query?.id}/bookings/flight/`,
+                    {
+                      trace_id: localStorage.getItem(
+                        `${props.provider}_trace_id`
+                      ),
+                      result_indices: [props.data?.result_index],
+                    }
+                  );
+                  window.location.href = `/flights/book/${res.data.id}`;
+                } catch (error) {
+                  console.log("error in redirecting", error);
+                }
+              }}
+              className="z-[1600]"
+            >
+              Book Now
+            </Generalbuttonstyle>
     </div>
   );
 };
@@ -214,121 +312,52 @@ export const FlightSegment = ({ segments }) => {
             <div className="text-center my-[25px]">
               <div className="text-[#4a4a4a] bg-[#f4f4f4] inline-block relative text-xs rounded px-2.5 py-1.5">
                 <span className="text-[#4a4a4a] bg-[#dfdfdf] block absolute text-xs left-[-50px] md:left-[-100px] h-[1px] w-[50px] md:w-[100px] md:top-[13.7px] top-[50%]"></span>
-
                 <div className="flex flex-col md:flex-row gap-2">
                   <b className="font-black">Change of planes</b>
-                  <b>
-                    {getTime(segment?.ground_time)}
-                    {" Layover in "}
-                    {segment?.origin?.city_name}
-                  </b>
+                  <b>{`${getTime(segment?.ground_time)} Layover in ${segment?.origin?.city_name}`}</b>
                 </div>
-
                 <span className="text-[#4a4a4a] bg-[#dfdfdf] block absolute text-xs right-[-50px] md:right-[-100px] h-[1px] w-[50px] md:w-[100px] md:top-[13.7px] top-[50%]"></span>
               </div>
             </div>
           )}
-
           <div>
             <div className="flex flex-row gap-3 items-center mb-3">
               <Logo src={segment?.airline?.code} />
               <span className="space-x-2">
-                <span className="text-black font-bold">
-                  {segment?.airline?.name}
-                </span>
-                <span className="text-[#6d7278]">
-                  {segment?.airline?.code}-{segment?.airline?.flight_number}
-                </span>
+                <span className="text-black font-bold">{segment?.airline?.name}</span>
+                <span className="text-[#6d7278]">{`${segment?.airline?.code}-${segment?.airline?.flight_number}`}</span>
               </span>
             </div>
-
             <div className="flex flex-col md:flex-row gap-5">
               <div className="md:w-[50%] flex flex-row gap-3 justify-between">
-                <div className="flex-1">
-                  <p className="text-black text-lg font-bold m-0">
-                    {new Date(segment?.origin?.departure_time)
-                      .getHours()
-                      .toString()
-                      .padStart(2, "0")}
-                    :
-                    {new Date(segment?.origin?.departure_time)
-                      .getMinutes()
-                      .toString()
-                      .padStart(2, "0")}
-                  </p>
-
-                  <p className="text-black text-xs font-bold mb-2">
-                    {new Date(segment?.origin?.departure_time).toDateString()}
-                  </p>
-
-                  <p className="text-xs m-0">
-                    {segment?.origin?.city_name} (
-                    {segment?.origin?.airport_code})
-                  </p>
-
-                  {segment?.origin?.terminal ? (
-                    <p className="text-xs">
-                      Terminal: {segment.origin.terminal}
+                {['origin', 'destination'].map((key) => (
+                  <div key={key} className="flex-1">
+                    <p className="text-black text-lg font-bold m-0">
+                      {new Date(segment[key]?.departure_time || segment[key]?.arrival_time).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
                     </p>
-                  ) : null}
-                </div>
-
-                <div className="flex-1 text-xs text-center">
-                  <div className="text-sm text-gray-600">
-                    {getTime(segment?.duration)}
+                    <p className="text-black text-xs font-bold mb-2">
+                      {new Date(segment[key]?.departure_time || segment[key]?.arrival_time).toDateString()}
+                    </p>
+                    <p className="text-xs m-0">
+                      {segment[key]?.city_name} ({segment[key]?.airport_code})
+                    </p>
+                    {segment[key]?.terminal && <p className="text-xs">Terminal: {segment[key].terminal}</p>}
                   </div>
+                ))}
+                <div className="flex-1 text-xs text-center">
+                  <div className="text-sm text-gray-600">{getTime(segment?.duration)}</div>
                   <div className="relative h-4">
                     <p className="h-[3px] absolute left-0 right-0 top-0.5 bottom-0 z-[1] border-t-[3px] border-[#F7E700]"></p>
                   </div>
                 </div>
-
-                <div className="flex-1">
-                  <p className="text-black text-lg font-bold m-0">
-                    {new Date(segment?.destination?.arrival_time)
-                      .getHours()
-                      .toString()
-                      .padStart(2, "0")}
-                    :
-                    {new Date(segment?.destination?.arrival_time)
-                      .getMinutes()
-                      .toString()
-                      .padStart(2, "0")}
-                  </p>
-                  <p className="text-black text-xs font-bold mb-2">
-                    {new Date(
-                      segment?.destination?.arrival_time
-                    ).toDateString()}
-                  </p>
-                  <p className="text-xs m-0">
-                    {segment?.destination?.city_name} (
-                    {segment?.destination?.airport_code})
-                  </p>
-                  {segment?.destination?.terminal ? (
-                    <p className="text-xs">
-                      Terminal: {segment.destination.terminal}
-                    </p>
-                  ) : null}
-                </div>
               </div>
-
               <div className="md:w-[50%] flex flex-row items-start justify-between text-xs">
-                <p className="flex flex-col gap-2">
-                  <span className="text-sm font-bold text-left pr-2.5">
-                    CHECK IN BAGGAGE
-                  </span>
-                  <span className="text-[#4a4a4a] text-left pr-2.5">
-                    {segment?.baggage_allowance}
-                  </span>
-                </p>
-
-                <p className="flex flex-col gap-2">
-                  <span className="text-sm font-bold text-left pr-2.5">
-                    CABIN BAGGAGE
-                  </span>
-                  <span className="text-[#4a4a4a] text-left pr-2.5">
-                    {segment?.cabin_baggage_allowance}
-                  </span>
-                </p>
+                {['baggage_allowance', 'cabin_baggage_allowance'].map((key) => (
+                  <p key={key} className="flex flex-col gap-2">
+                    <span className="text-sm font-bold text-left pr-2.5">{key.toUpperCase().replace('_', ' ')}</span>
+                    <span className="text-[#4a4a4a] text-left pr-2.5">{segment[key]}</span>
+                  </p>
+                ))}
               </div>
             </div>
           </div>
@@ -336,4 +365,5 @@ export const FlightSegment = ({ segments }) => {
       ))}
     </div>
   );
+  
 };

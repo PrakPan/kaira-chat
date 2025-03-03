@@ -213,7 +213,7 @@ const HotelBookingContainer = ({
                   <Skeleton />
                 </div>
 
-                {booking.hotel_details?.star_category ? (
+                {(booking.hotel_details?.star_category && booking?.hotel_details?.star_category!="0")? (
                   <div
                     starHotel
                     className={`text-white bg-[#01202B] lg:px-4 px-3 lg:py-3 py-2 m-2 text-sm font-[400]nsition-all shadow-slate-700/70 shadow-md hover:drop-shadow-xl   absolute top-0 rounded-3xl`}

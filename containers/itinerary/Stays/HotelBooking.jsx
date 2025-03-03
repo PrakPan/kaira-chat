@@ -25,6 +25,8 @@ const RoomTypeGrid = styled.div`
 `;
 
 const HotelBooking = ({
+  key,
+  setBookingId,
   index,
   booking,
   tripsPage,
@@ -84,6 +86,7 @@ const HotelBooking = ({
     e.stopPropagation();
     if (token) handleClickAc(index, booking, booking.city_id);
     else setShowLoginModal(true);
+    setBookingId(key)
 
     logEvent({
       action: "Hotel_Add_Change",
@@ -111,7 +114,6 @@ const HotelBooking = ({
     }
   }
 
-  console.log("Bookings Data",booking);
 
   return (
     <div className={`${!isPageWide ? "max-w-fit" : "max-w-[54vw]"}`}>
@@ -167,7 +169,7 @@ const HotelBooking = ({
             >
               <Skeleton />
             </div>
-            {booking?.star_category ? (
+            {(booking?.star_category && booking?.star_category!="0") ? (
               <div
                 starHotel
                 className={`text-white bg-[#01202B] lg:px-4 px-3 lg:py-3 py-2 m-2 text-sm font-[400]nsition-all shadow-slate-700/70 shadow-md hover:drop-shadow-xl   absolute top-0 rounded-3xl`}

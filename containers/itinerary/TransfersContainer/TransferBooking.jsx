@@ -438,7 +438,9 @@ const TransferBooking = ({
 
           <div
             id={booking?.id}
-            className={`mb-4 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ${!isPageWide ? "w-full" : "max-w-[54vw]"}`}
+            className={`mb-4 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ${
+              !isPageWide ? "w-full" : "max-w-[54vw]"
+            }`}
           >
             <div className="flex flex-row items-center justify-between gap-1">
               <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
@@ -732,7 +734,7 @@ const FlightBooking = ({
         id={booking.id}
         className={`mb-4 mt-2 lg:block ${"mb-4 mt-2 lg:block flex flex-col p-3 "} cursor-pointer relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA] lg:p-5 `}
       >
-        <div className="flex flex-row gap-4">
+        <div className="flex items-center justify-center gap-4">
           <LogoContainer>
             <div className="">
               {booking?.airline_code && !flightImageFailed ? (
@@ -761,6 +763,7 @@ const FlightBooking = ({
                 />
               )}
             </div>
+
             <div>
               {booking?.airline_code && (
                 <EllipsisTruncation
@@ -809,7 +812,7 @@ const FlightBooking = ({
                       : "1fr 2fr 1fr",
                   }}
                 >
-                  <div className="flex flex-col">
+                  <div className="flex flex-col justify-center items-center">
                     <div className="text-[#01202B] text-lg font-medium min-w-max">
                       {booking?.airline_code && (
                         <span>
@@ -838,7 +841,12 @@ const FlightBooking = ({
                         </div>
                       )}
 
-                    <div className="min-w-max">{booking.city}</div>
+                    <div className="min-w-max">
+                      {booking?.source_address?.city_name}
+                    </div>
+                    <div className="min-w-max text-xs">
+                      ({booking?.source_address?.code})
+                    </div>
                   </div>
 
                   <div
@@ -879,8 +887,7 @@ const FlightBooking = ({
                     ) : null}
                   </div>
 
-                  <div className="flex flex-row justify-between w-full">
-                    <div>
+                  <div className="flex flex-col justify-between items-center w-full">
                       <div className="text-[#01202B] text-lg font-medium min-w-max">
                         {booking?.airline_code && (
                           <span>
@@ -909,13 +916,79 @@ const FlightBooking = ({
                         )}
 
                       <div className="min-w-max">
-                        {booking.destination_city}
+                        {booking?.destination_address?.city_name}
+                      </div>
+                      <div className="min-w-max text-xs">
+                        ({booking?.destination_address?.code})
                       </div>
                     </div>
-                  </div>
                 </div>
               </InfoContainer>
             )}
+            <LogoContainer>
+              <div className="">
+                {booking?.airline_code && !flightImageFailed ? (
+                  <ImageContainer>
+                    <ImageLoader
+                      className=""
+                      url={`https://imgak.mmtcdn.com/flights/assets/media/dt/common/icons/${booking?.airline_code}.png`}
+                      leftalign
+                      dimensions={{ width: 800, height: 800 }}
+                      borderRadius="100%"
+                      height="4rem"
+                      width="4rem"
+                      widthmobile="4rem"
+                      onfail={handleFlightImageFailed}
+                    ></ImageLoader>
+                  </ImageContainer>
+                ) : (
+                  <TransportIconFetcher
+                    TransportMode={booking.booking_type}
+                    Instyle={{
+                      fontSize: "2.75rem",
+                      height: "3rem",
+                      width: "5rem",
+                      color: "black",
+                    }}
+                  />
+                )}
+              </div>
+
+              <div>
+                {booking?.airline_code && (
+                  <EllipsisTruncation
+                    text={booking.airline_name}
+                    maxCharacters={8}
+                    tooltipText={booking.airline_name}
+                    tooltipPosition="top"
+                  />
+                )}
+
+                {!isDesktop && (
+                  <div>
+                    <div
+                      className="min-w-max text-[0.8rem]"
+                      style={{
+                        textAlign: "center",
+                        marginTop: "-0.3rem",
+                        fontWeight: "300",
+                      }}
+                    >
+                      {booking?.airline_code && (
+                        <span className="ml-1">
+                          {booking.duration
+                            ? ` (${booking.duration}h)`
+                            : processBookingTimes(
+                                booking.check_in,
+                                booking.check_out
+                              ).duration}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </LogoContainer>
 
             {isDesktop && (
               <>

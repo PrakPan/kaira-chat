@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { connect, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { IoMdClose } from "react-icons/io";
 import { TbArrowBack } from "react-icons/tb";
@@ -15,6 +15,7 @@ import {
 import { updateAccommodationBooking } from "../../../services/bookings/UpdateBookings";
 import { useRouter } from "next/router";
 import HotelBookingDetails from "./Overview/HotelBookingDetails";
+import { setBookings } from "../../../store/actions/bookings";
 
 const Container = styled.div`
   padding: 0 0.75rem 0.75rem 0.75rem;
@@ -76,16 +77,16 @@ const POI = (props) => {
   const [error, setError] = useState(false);
   const itineraryFilters = useSelector((state) => state.ItineraryFilters);
   const [drawerWidth, setDrawerWidth] = useState("50%");
-
+  const dispatch = useDispatch();
+  const accommodationBooking = useSelector((state) => state.Bookings.accommodationBookings);
   useEffect(() => {
     const handleResize = () => {
       setDrawerWidth(window.innerWidth <= 986 ? "100%" : "50%");
     };
-    console.log('window size',window.innerWidth)
 
-    handleResize(); 
+    handleResize();
     window.addEventListener("resize", handleResize);
-    
+
     return () => window.removeEventListener("resize", handleResize);
   }, []);
   useEffect(() => {
@@ -161,7 +162,7 @@ const POI = (props) => {
       itinerary_id: router?.query?.id,
       hotel_id: data?.id,
       source: props.provider,
-      booking_id:props?.currentBooking?.id
+      booking_id: props?.bookingId,
     };
 
     updateAccommodationBooking
@@ -175,12 +176,27 @@ const POI = (props) => {
         props.openNotification({
           type: "success",
           text: "Hotel added successfully.",
-          heading: "Sucess!",
+          heading: "Success!",
         });
+
+        const idx = accommodationBooking.findIndex(
+          (item) => item.id === props?.bookingId
+        );
+
+        if (idx !== -1) {
+          const updatedBookings = [
+            ...accommodationBooking.slice(0, idx),
+            response.data,
+            ...accommodationBooking.slice(idx + 1),
+          ];
+
+          dispatch(setBookings({
+            accommodationBookings: updatedBookings,
+          }));
+        }
       })
       .catch((err) => {
         props.setUpdateBookingState(false);
-        // props.setUnauthorized(true);
         props.openNotification({
           type: "error",
           text: "Something went wrong! Please try after some time.",
@@ -188,6 +204,7 @@ const POI = (props) => {
         });
       });
   };
+
 
   return (
     <Drawer
@@ -249,6 +266,7 @@ const POI = (props) => {
                   BookingButtonFun={props.BookingButtonFun}
                   payment={props.payment}
                   updateBooking={updateBooking}
+                  bookingId={props?.bookingId}
                 ></Overview>
               )}
             </div>
