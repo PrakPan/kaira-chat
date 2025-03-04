@@ -107,7 +107,8 @@ const TransferBookings = (props) => {
     destination_city,
     taxi_type,
     transfer_type,
-    user_selected
+    user_selected,
+    booking_id
   ) => {
     ga.event({
       action: "Itinerary-bookings-flight_change",
@@ -133,6 +134,7 @@ const TransferBookings = (props) => {
       destination_city: destination_city,
       taxi_type: taxi_type,
       transfer_type: transfer_type,
+      booking_id:booking_id
     });
 
     props.setShowFlightModal(true);
@@ -337,6 +339,7 @@ const TransferBookings = (props) => {
         daySlabIndex={daySlabIndex}
         elementIndex={elementIndex}
         routeId={transferId}
+        booking_id={selectedBooking?.booking_id}
       ></FlightModal>
 
       <TaxiModal

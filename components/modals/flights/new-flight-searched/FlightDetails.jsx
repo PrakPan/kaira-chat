@@ -42,7 +42,6 @@ const Plan = styled.div`
 export default function FlightDetails({
     segments, data, origin, destination, duration, isNonStop, numStops, setShowDetails
 }) {
-    console.log(origin)
     const [isHovered, setIsHovered] = useState(false);
 
     const popupStyle = {
@@ -65,7 +64,7 @@ export default function FlightDetails({
     }
 
     return (
-        <div className="lg:w-[50%] flex flex-row gap-2 items-center justify-between">
+        <div className="lg:w-[100%] flex flex-row gap-2 items-center justify-between">
             <div className="w-[20%] flex flex-col items-center">
                 <div className="text-lg font-bold">
                     {new Date(origin.departure_time).getHours().toString().padStart(2, '0')}:

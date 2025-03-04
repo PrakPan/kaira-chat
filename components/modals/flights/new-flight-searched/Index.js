@@ -105,7 +105,6 @@ const Generalbuttonstyle = styled.button`
 
 
 const Flight = (props) => {
-  const router = useRouter();
   const [showDetails, setShowDetails] = useState(false);
 
   return (
@@ -172,6 +171,8 @@ const Flight = (props) => {
               provider={props.provider}
               resultIndex={props.data?.result_index}
               setShowDetails={setShowDetails}
+              individual={props?.individuall}
+              booking_id={props?.booking_id}
             />
             
           </>
@@ -189,7 +190,11 @@ export const Details = ({
   resultIndex,
   setShowDetails,
   fareRule,
+  individual,
+  booking_id
 }) => {
+  console.log('booking id is:',booking_id)
+  const router = useRouter();
   const [fareRules, setFareRules] = useState(fareRule?.fareRuleDetail);
   const [fareRulesLoading, setFareRulesLoading] = useState(false);
   const [fareRUlesError, setFareRulesError] = useState(false);
@@ -200,26 +205,35 @@ export const Details = ({
     }
   }, []);
 
-  const getFareRules = () => {
+  const getFareRules = async() => {
     setFareRulesLoading(true);
     setFareRulesError(false);
 
-    const traceId = localStorage.getItem(`${provider}_trace_id`);
-    const data = {
-      trace_id: traceId,
-      result_index: resultIndex,
-    };
-
-    axiosFlightFareRule
-      .post("", data)
-      .then((response) => {
-        setFareRules(response.data.results[0].fare_rule_detail);
-        setFareRulesLoading(false);
-      })
-      .catch((err) => {
-        setFareRulesError(true);
-        setFareRulesLoading(false);
-      });
+    let traceId;
+    if(booking_id){
+      const res = await axios.get(
+        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/flight/${booking_id}`
+      );
+      setFareRules(res?.data?.flight_details?.items?.[0]?.fare_rule?.[0]?.fareRuleDetail)
+      setFareRulesLoading(false);
+    }
+    else{
+      const data = {
+        trace_id: traceId,
+        result_index: resultIndex,
+      };
+  
+      axiosFlightFareRule
+        .post("", data)
+        .then((response) => {
+          setFareRules(response.data.results[0].fare_rule_detail);
+          setFareRulesLoading(false);
+        })
+        .catch((err) => {
+          setFareRulesError(true);
+          setFareRulesLoading(false);
+        });
+    }
   };
 
   return (
@@ -260,7 +274,7 @@ export const Details = ({
           ></div>
         </div>
       )}
-      <Generalbuttonstyle
+      {provider&&<Generalbuttonstyle
               width="150px"
               borderRadius="0 0 10px 10px"
               borderStyle="solid none none none"
@@ -270,25 +284,40 @@ export const Details = ({
               onclickparam={null}
               onClick={async () => {
                 try {
+                  if(individual==true){
                   const res = await axios.post(
                     MERCURY_HOST +
                       `/api/v1/itinerary/${router?.query?.id}/bookings/flight/`,
                     {
                       trace_id: localStorage.getItem(
-                        `${props.provider}_trace_id`
+                        `${provider}_trace_id`
                       ),
-                      result_indices: [props.data?.result_index],
+                      result_indices: [resultIndex],
                     }
                   );
-                  window.location.href = `/flights/book/${res.data.id}`;
+                    window.location.href = `/flights/book/${res.data.id}`;
+                }
+                else{
+                  const res = await axios.post(
+                    MERCURY_HOST +
+                    `/api/v1/itinerary/${router?.query?.id}/bookings/flight/`,
+                    {
+                      trace_id: localStorage.getItem(
+                        `${provider}_trace_id`
+                      ),
+                      result_indices: [resultIndex],
+                      booking_id:booking_id
+                    }
+                  );
+                }
                 } catch (error) {
                   console.log("error in redirecting", error);
                 }
               }}
               className="z-[1600]"
             >
-              Book Now
-            </Generalbuttonstyle>
+              {individual?<>Book Now</>:<>Change</>}
+            </Generalbuttonstyle>}
     </div>
   );
 };
