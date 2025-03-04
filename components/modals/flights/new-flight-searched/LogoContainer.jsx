@@ -5,6 +5,7 @@ import SkeletonCard from "../../../ui/SkeletonCard";
 import media from '../../../media';
 
 export default function LogoContainer({ data }) {
+  console.log("data is:",data)
 
   return (
     <div className="flex flex-row gap-2 items-center">

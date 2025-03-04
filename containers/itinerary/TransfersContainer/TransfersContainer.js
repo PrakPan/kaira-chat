@@ -615,6 +615,7 @@ const TransfersContainer = (props) => {
         daySlabIndex={daySlabIndex}
         elementIndex={elementIndex}
         routeId={transferId}
+        individual={false}
       ></FlightModal>
 
       <TaxiModal

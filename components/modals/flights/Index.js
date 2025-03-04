@@ -192,6 +192,7 @@ const Booking = (props) => {
                   isSelected={false}
                   provider={res.data?.provider}
                   filtersState={filtersState}
+                  booking_id={props.selectedBooking?.booking_id}
                 ></Flight>
               );
             }
@@ -316,6 +317,7 @@ const Booking = (props) => {
                 data={res.data.Results[i]}
                 selectedBooking={props.selectedBooking}
                 _updateBookingHandler={_newUpdateBookingHandler}
+                individual={props?.individual}
               ></Flight>
             );
           }
