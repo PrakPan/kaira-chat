@@ -14,6 +14,7 @@ const StaysContainer = (props) => {
     id: null,
     name: null,
   });
+  console.log("index is 1:",props.setStayBookings)
   const [showFilter, setshowFilter] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [AddHotel, setAddHotel] = useState(false);
@@ -149,6 +150,8 @@ const StaysContainer = (props) => {
               handleClickAc={handleClickAc}
               setBookingId={setBookingId}
               setShowLoginModal={props.setShowLoginModal}
+              plan={props.stayBookings}
+              setStayBookings={props.setStayBookings}
             />
           ))}
       </div>
@@ -176,6 +179,7 @@ const StaysContainer = (props) => {
           )
         }
         provider={currentBooking?.source}
+        setStayBookings={props.setStayBookings}
       ></AccommodationModal>
 
       <BookingModal
@@ -202,6 +206,8 @@ const StaysContainer = (props) => {
         AddHotel={AddHotel}
         _GetInTouch={props._GetInTouch}
         handleClick={handleClick}
+        stayBookings={props?.stayBookings}
+        setStayBookings={props.setStayBookings}
       ></BookingModal>
 
       {images ? (

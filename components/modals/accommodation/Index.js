@@ -179,6 +179,29 @@ const POI = (props) => {
           heading: "Success!",
         });
 
+        let stayBookings=props.plan;
+        const index = stayBookings.findIndex(item => item.id == props?.bookingId);
+        stayBookings[index]={
+          check_in:response?.data?.check_in,
+          check_out:response?.data?.check_out,
+          city_id:props.plan[index].city_id,
+          city_name:props.plan[index].city_name,
+          duration:response?.data?.duration,
+          id:response?.data?.id,
+          images:response?.data?.hotel_details?.images,
+          name:response?.data?.name,
+          number_of_adults:response?.data?.number_of_adults,
+          number_of_children:response?.data?.number_of_children,
+          number_of_infants:response?.data?.number_of_infants,
+          rating:response?.data?.rating,
+          room:response?.data?.room,
+          source:response?.data?.booking_source,
+          star_category:response?.data?.hotel_details?.star_category,
+          user_ratings_total:response?.data?.user_ratings_total,
+          wifi:response?.data?.wifi
+        }
+        console.log("index is:",stayBookings)
+        props?.setStayBookings(stayBookings)
         const idx = accommodationBooking.findIndex(
           (item) => item.id === props?.bookingId
         );
@@ -196,6 +219,7 @@ const POI = (props) => {
         }
       })
       .catch((err) => {
+        console.log('index is:',err)
         props.setUpdateBookingState(false);
         props.openNotification({
           type: "error",

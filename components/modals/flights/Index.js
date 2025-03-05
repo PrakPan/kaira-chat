@@ -150,7 +150,7 @@ const Booking = (props) => {
         journey_type: "1",
         origin: props.selectedBooking.origin_iata,
         destination: props.selectedBooking.destination_iata,
-        preferred_departure_time: `${new Date(props?.selectedBooking?.check_in?.replace(' ', 'T')).toISOString().slice(0, 19)}`,
+        preferred_departure_time: `${new Date(props?.selectedBooking?.check_in?.replace(' ', 'T'))?.toISOString()?.slice(0, 19)}`,
         flight_cabin_class: classType.value,
         origin:"DEL",
         destination:"BOM"

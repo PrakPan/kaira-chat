@@ -71,10 +71,6 @@ const SimpleTabsV2 = (props) => {
   const [share, setShare] = useState(false);
   const [shareMobile, setShareMobile] = useState(false);
   const isDesktop = useMediaQuery("(min-width:1148px)");
-
-
-  console.log("transfer booking is",props?.transferBookings );
-
   useEffect(() => {
     if (router.query.payment_status) {
       if (isPageWide) window.scrollTo(0, window.innerHeight);
@@ -582,7 +578,7 @@ const SimpleTabsV2 = (props) => {
 
           <div id={"Stays"}>
             {props.mercuryItinerary ? (
-              <StaysContainer stayBookings={props?.stayBookings}/>
+              <StaysContainer stayBookings={props?.stayBookings} setStayBookings={props.setStayBookings}/>
             ) : (
               <HotelsBooking
                 setShowLoginModal={setShowLoginModal}
@@ -829,6 +825,7 @@ const SimpleTabsV2 = (props) => {
                     setShowLoginModal={setShowLoginModal}
                     _GetInTouch={_GetInTouch}
                     stayBookings={props?.stayBookings}
+                    setStayBookings={props.setStayBookings}
                   />
                 ) : (
                   <HotelsBooking

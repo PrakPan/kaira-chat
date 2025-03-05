@@ -13,8 +13,7 @@ import styled from "styled-components";
 import { IoMdClose } from "react-icons/io";
 import ImageLoader from "../../../components/ImageLoader";
 import SkeletonCard from "../../../components/ui/SkeletonCard";
-import { useDispatch, useSelector } from "react-redux";
-import { setItineraryFilters } from "../../../store/actions/setItineraryFilters";
+import { useDispatch } from "react-redux";
 
 const Title = styled.p`
   font-weight: 800;
@@ -80,15 +79,6 @@ const FloatingVContaineriew = styled.div`
   cursor: pointer;
 `;
 
-const ErrorContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  width: 90%;
-  margin: auto;
-  text-align: center;
-`;
 const ImageContainer = styled.div`
   position: relative;
 `;

@@ -23,7 +23,9 @@ import setPlan from "../../store/actions/plan";
 import { setBookings } from "../../store/actions/bookings";
 import { setItineraryActivities } from "../../store/actions/itineraryActivities";
 import setBreif from "../../store/actions/breif";
-import axiosPaymentInstance, { axiosGetPaymentInfo } from "../../services/itinerary/payment";
+import axiosPaymentInstance, {
+  axiosGetPaymentInfo,
+} from "../../services/itinerary/payment";
 import axiosBookingsInstance, {
   axiosGetAllBookings,
   axiosGetTransfers,
@@ -70,16 +72,12 @@ const ItineraryContainer = (props) => {
   const [hasUserPaid, setHasUserPaid] = useState(false);
   const [isPastTravelerItinerary, setIsPastTravelerItinerary] = useState(false);
   const [is_stock, setIsStock] = useState(false);
-  const hasRendered = useRef(false);
   const [editRoute, setEditRoute] = useState(false);
-  const [showMercuryItinerary,setShowMercuryItinerary] = useState(false);
+  const [showMercuryItinerary, setShowMercuryItinerary] = useState(false);
   const [cities, setCities] = useState([]);
   const [cityTransferBookings, setCityTransferBookings] = useState(null);
-  const [hotelStayBookings, setHotelStayBookings] =useState(null);
-  const bookings=useSelector((state)=>state.Bookings)
 
   const dispatch = useDispatch();
-
 
   // useEffect(() => {
   //   if (hasRendered.current) {
@@ -103,7 +101,10 @@ const ItineraryContainer = (props) => {
     props.itinerary?.cities?.map((day_slab, index) => {
       day_slab?.day_by_day?.slab_elements?.map((element, index) => {
         if (element.element_type === "activity") {
-          itenaryActivities.push({ activity: element, date: day_slab.day_by_day?.start_date });
+          itenaryActivities.push({
+            activity: element,
+            date: day_slab.day_by_day?.start_date,
+          });
         }
       });
     });
@@ -198,73 +199,71 @@ const ItineraryContainer = (props) => {
       });
   };
 
+  const getPaymentInfo = () => {
+    let stay_data = {};
+    let activity_data = {};
+    let transfer_data = {};
+    let flight_data = {};
+    const token = localStorage.getItem("access_token");
 
-const getPaymentInfo = () =>{
-let stay_data = {};
-let activity_data = {};
-let transfer_data = {};
-let flight_data = {};
-const token = localStorage.getItem('access_token');
+    axiosGetPaymentInfo
+      .get(props.id + "/cart/", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        let data = res.data;
+        setPayment(data);
 
-    axiosGetPaymentInfo.
-    get(props.id + '/cart/',{
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    })
-    .then((res)=>{
-      let data = res.data;
-      setPayment(data);
-      
+        for (let category in data.summary) {
+          let categoryData = data.summary[category];
 
-for (let category in data.summary) {
-    let categoryData = data.summary[category];
+          if (category === "Stays") {
+            stay_data = { ...categoryData };
+          } else if (category === "Activities") {
+            activity_data = { ...categoryData };
+          } else if (category === "Transfers") {
+            transfer_data = { ...categoryData };
+          } else if (category === "Flights") {
+            flight_data = { ...categoryData };
+          }
+        }
 
-    if (category === "Stays") {
-        stay_data = { ...categoryData };
-    } else if (category === "Activities") {
-        activity_data = { ...categoryData };
-    } else if (category === "Transfers") {
-        transfer_data = { ...categoryData };
-    } else if (category === "Flights") {
-        flight_data = { ...categoryData };
-    }
-}
+        // console.log("Stay Data:", stay_data);
+        // console.log("Activity Data:", activity_data);
+        // console.log("Transfer Data:", transfer_data);
+        // console.log("Flight Data:", flight_data);
 
-// console.log("Stay Data:", stay_data);
-// console.log("Activity Data:", activity_data);
-// console.log("Transfer Data:", transfer_data);
-// console.log("Flight Data:", flight_data);
+        // setStayBookings(stay_data);
+        // setActivityBookings(activity_data);
+        // setTransferBookings(transfer_data);
+        // setFlightBookings(flight_data);
 
-// setStayBookings(stay_data);
-// setActivityBookings(activity_data);
-// setTransferBookings(transfer_data);
-// setFlightBookings(flight_data);
+        // setStayBookings(stay_bookings);
+        //       if (activity_bookings.length) {
+        //         setActivityBookings(activity_bookings);
+        //       } else {
+        //         setActivityBookings(null);
+        //       }
 
-    // setStayBookings(stay_bookings);
-    //       if (activity_bookings.length) {
-    //         setActivityBookings(activity_bookings);
-    //       } else {
-    //         setActivityBookings(null);
-    //       }
+        //       if (flight_bookings.length) {
+        //         setFlightBookings(flight_bookings);
+        //       } else {
+        //         setFlightBookings(null);
+        //       }
 
-    //       if (flight_bookings.length) {
-    //         setFlightBookings(flight_bookings);
-    //       } else {
-    //         setFlightBookings(null);
-    //       }
-
-    //       if (transfer_bookings.length) {
-    //         setTransferBookings(transfer_bookings);
-    //       } else {
-    //         setTransferBookings(null);
-    //       }
-    })
-    .catch((error)=>{
-      console.log("ERROR[PaymentInfo][Itinerary]",error)
-      setPaymentLoading(false);
-    })
-  }
+        //       if (transfer_bookings.length) {
+        //         setTransferBookings(transfer_bookings);
+        //       } else {
+        //         setTransferBookings(null);
+        //       }
+      })
+      .catch((error) => {
+        console.log("ERROR[PaymentInfo][Itinerary]", error);
+        setPaymentLoading(false);
+      });
+  };
 
   const getAccommodationAndActivitiesHandler = () => {
     let stay_bookings = [];
@@ -324,7 +323,7 @@ for (let category in data.summary) {
   const getAllBookings = () => {
     let flight_bookings = [];
 
-    console.log('inside get all bookings')
+    console.log("inside get all bookings");
     axiosGetAllBookings
       .get(`/${props.id}/bookings/`)
       .then((res) => {
@@ -338,33 +337,41 @@ for (let category in data.summary) {
           }
         }
         try {
-          dispatch(setBookings({
-            activityBookings:
-            data.activity_bookings.length > 0 ? data.activity_bookings : null,
-          flightBookings: flight_bookings.length > 0 ? flight_bookings : null,
-          transferBookings:
-            data.transfer_bookings.length > 0 ? data.transfer_bookings : null,
-          accommodationBookings:data.accommodation_bookings
-          }))
+          dispatch(
+            setBookings({
+              activityBookings:
+                data.activity_bookings.length > 0
+                  ? data.activity_bookings
+                  : null,
+              flightBookings:
+                flight_bookings.length > 0 ? flight_bookings : null,
+              transferBookings:
+                data.transfer_bookings.length > 0
+                  ? data.transfer_bookings
+                  : null,
+              accommodationBookings: data.accommodation_bookings,
+            })
+          );
         } catch (error) {
-          console.log("inside get all bookings",error)
+          console.log("inside get all bookings", error);
         }
-
 
         props.setBookings({
           ...props.bookings,
           // stayBookings:
-            // data.accommodation_bookings.length > 0
-            //   ? data.accommodation_bookings
-            //   : null,
+          // data.accommodation_bookings.length > 0
+          //   ? data.accommodation_bookings
+          //   : null,
           activityBookings:
             data.activity_bookings.length > 0 ? data.activity_bookings : null,
           flightBookings: flight_bookings.length > 0 ? flight_bookings : null,
           transferBookings:
             data.transfer_bookings.length > 0 ? data.transfer_bookings : null,
-          accommodationBookings:data.accommodation_bookings>0?data.accommodation_bookings:null
+          accommodationBookings:
+            data.accommodation_bookings > 0
+              ? data.accommodation_bookings
+              : null,
         });
-
 
         // setStayBookings(data.accommodation_bookings);
         // setActivityBookings(
@@ -377,24 +384,22 @@ for (let category in data.summary) {
         // setTransferBookings(
         //   data.transfer_bookings.length ? data.transfer_bookings : null
         // );
-
       })
       .catch((err) => {
         console.error("Error fetching all bookings", err.message);
       });
 
-      axiosGetTransfers
+    axiosGetTransfers
       .get(`/${props.id}/bookings/transfers/`)
-      .then((res)=>{
+      .then((res) => {
         // console.log("Transfers",res.data);
         const data = res.data;
         setTransferBookings(data);
         setCityTransferBookings(data);
-
       })
-      .catch(err =>{
+      .catch((err) => {
         console.error("Error fetching all bookings", err.message);
-      })
+      });
   };
 
   async function getRoutes(itinaryId) {
@@ -455,12 +460,10 @@ for (let category in data.summary) {
     //         setItineraryDate(res.data.created_at);
     //       }
 
-
     //     })
     //     .catch((error) => {});
 
     //     getAccommodationAndActivitiesHandler();
-    
 
     axiosGetItinerary
       .get(`/${props.id}/`)
@@ -471,51 +474,46 @@ for (let category in data.summary) {
           setShowMercuryItinerary(false);
           router.push(`/itinerary/v1/${props.id}`);
           return;
-        }else {
+        } else {
           setShowMercuryItinerary(true);
         }
 
         props.setItinerary(data);
         props.setItineraryDaybyDay(data);
-        props.setBreif(data)
+        props.setBreif(data);
         setItineraryLoading(false);
         getPaymentInfo();
         getAllBookings();
         setItineraryDate(data.start_date);
         setCities(data?.cities);
         let stays = [];
-for (let i = 0; i < data?.cities.length; i++) {
-    let hotels = data?.cities[i]?.hotels;
-    let city_name = data?.cities[i]?.city?.name;
-    let city_id = data?.cities[i]?.city?.id
-    
-    for (let hotel of hotels) {
-        hotel.city_name = city_name;  
-        hotel.city_id= city_id;
-        hotel.source=hotel?.images?.[0]?.source
-        stays.push(hotel);
-    }
-}
-        setStayBookings(stays);
-        props.setBookings({...props.bookings,
-          stayBookings: data?.cities ? data?.cities : null})
-        
-         
+        for (let i = 0; i < data?.cities.length; i++) {
+          let hotels = data?.cities[i]?.hotels;
+          let city_name = data?.cities[i]?.city?.name;
+          let city_id = data?.cities[i]?.city?.id;
 
-        let activities =[];
+          for (let hotel of hotels) {
+            hotel.city_name = city_name;
+            hotel.city_id = city_id;
+            hotel.source = hotel?.images?.[0]?.source;
+            stays.push(hotel);
+          }
+        }
+        setStayBookings(stays);
+        props.setBookings({
+          ...props.bookings,
+          stayBookings: data?.cities ? data?.cities : null,
+        });
+
+        let activities = [];
         activities = getItineraryActivities();
         props.setItineraryActivities(activities);
-
-
       })
       .catch((err) => {
         console.error("[ERROR]:axiosGetItinerary: ", err.message);
         setItineraryLoading(false);
       });
-
-      
-    }
-    
+  }
 
   useEffect(() => {
     fetchData();
@@ -546,7 +544,7 @@ for (let i = 0; i < data?.cities.length; i++) {
 
   const _updateFlightBookingHandler = (json) => {
     setShowFlightModal(false);
-   // setTransferBookings(_updateTransferBooking(transferBookings, json));
+    // setTransferBookings(_updateTransferBooking(transferBookings, json));
   };
 
   const _updateBookingHandler = (json) => {
@@ -572,14 +570,14 @@ for (let i = 0; i < data?.cities.length; i++) {
   const _updateTransferBookingHandler = (json) => {
     setShowBookingModal(false);
     setShowFlightModal(false);
-   // setTransferBookings(json);
+    // setTransferBookings(json);
     // setTransferBookings(json);
   };
 
   const _updateTaxiBookingHandler = (json) => {
     setShowTaxiModal(false);
 
-   // setTransferBookings(_updateTransferBooking(transferBookings, json));
+    // setTransferBookings(_updateTransferBooking(transferBookings, json));
     // setTransferBookings(_updateTransferBooking(transferBookings, json));
   };
 
@@ -891,19 +889,58 @@ for (let i = 0; i < data?.cities.length; i++) {
         duration_time={duration_time || props.itinerary?.duration_time}
         images={props.itinerary.images}
         travellerType={travellerType}
-        start_date={props?.plan ? props.plan.start_date : props.itinerary.start_date ? props.itinerary.start_date : null}
-        end_date={props?.plan ? props.plan.end_date : props.itinerary.end_date ? props.itinerary.end_date : null}
+        start_date={
+          props?.plan
+            ? props.plan.start_date
+            : props.itinerary.start_date
+            ? props.itinerary.start_date
+            : null
+        }
+        end_date={
+          props?.plan
+            ? props.plan.end_date
+            : props.itinerary.end_date
+            ? props.itinerary.end_date
+            : null
+        }
         duration={
           props?.plan
-            ? props.plan.duration_number + " " + props?.plan?.duration_unit || "nights"
-            : props.itinerary?.duration ? props.itinerary?.duration + " " + "nights" : null 
+            ? props.plan.duration_number + " " + props?.plan?.duration_unit ||
+              "nights"
+            : props.itinerary?.duration
+            ? props.itinerary?.duration + " " + "nights"
+            : null
         }
-        budget={props?.plan ? props.plan?.budget : props.itinerary?.budget ? props.itinerary?.budget : null }
-        number_of_adults={props?.plan ? props.plan?.number_of_adults : props.itinerary.number_of_adults ? props.itinerary.number_of_adults : null}
-        number_of_children={props?.plan ? props.plan?.number_of_children : props.itinerary.number_of_children ? props.itinerary.number_of_children : null}
-        number_of_infants={props?.plan ? props.plan?.number_of_infants : props.itinerary.number_of_infants ? props.itinerary.number_of_infants : null}
+        budget={
+          props?.plan
+            ? props.plan?.budget
+            : props.itinerary?.budget
+            ? props.itinerary?.budget
+            : null
+        }
+        number_of_adults={
+          props?.plan
+            ? props.plan?.number_of_adults
+            : props.itinerary.number_of_adults
+            ? props.itinerary.number_of_adults
+            : null
+        }
+        number_of_children={
+          props?.plan
+            ? props.plan?.number_of_children
+            : props.itinerary.number_of_children
+            ? props.itinerary.number_of_children
+            : null
+        }
+        number_of_infants={
+          props?.plan
+            ? props.plan?.number_of_infants
+            : props.itinerary.number_of_infants
+            ? props.itinerary.number_of_infants
+            : null
+        }
         setEditRoute={setEditRoute}
-        cities = {props?.cities}
+        cities={props?.cities}
       ></Overview>
 
       <div id="itinerary-anchor">
@@ -916,7 +953,9 @@ for (let i = 0; i < data?.cities.length; i++) {
           showTaxiModal={showTaxiModal}
           setShowTaxiModal={setShowTaxiModal}
           paymentLoading={paymentLoading}
-          budget={props?.plan ? props.plan.budget : props.budget ? props.budget : null}
+          budget={
+            props?.plan ? props.plan.budget : props.budget ? props.budget : null
+          }
           _deselectActivityBookingHandler={_deselectActivityBookingHandler}
           activityFlickityIndex={activityFlickityIndex}
           transferFlickityIndex={transferFlickityIndex}
@@ -970,6 +1009,7 @@ for (let i = 0; i < data?.cities.length; i++) {
           getPaymentInfo={getPaymentInfo}
           cities={cities}
           itinerary={props?.itinerary}
+          setStayBookings={setStayBookings}
         ></Menu>
       </div>
     </Container>
@@ -999,7 +1039,7 @@ const mapDispatchToProps = (dispatch) => {
     setPlan: (payload) => dispatch(setPlan(payload)),
     // setBookings: (payload) => dispatch(setBookings(payload)),
     setItineraryActivities: (payload) =>
-    dispatch(setItineraryActivities(payload)),
+      dispatch(setItineraryActivities(payload)),
     setBreif: (payload) => dispatch(setBreif(payload)),
     setItineraryDaybyDay: (payload) => dispatch(setItineraryDaybyDay(payload)),
   };

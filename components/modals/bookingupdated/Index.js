@@ -58,7 +58,7 @@ const GetInTouchContainer = styled.div`
 `;
 
 const Booking = (props) => {
-  console.log("props in booking:",props)
+  console.log("index is 3:",props.setStayBookings)
   let isPageWide = media("(min-width: 768px)");
   const [showDetails, setShowDetails] = useState(false);
   const [moreOptionsJSX, setMoreOptionsJSX] = useState([]);
@@ -280,6 +280,7 @@ const Booking = (props) => {
                     setUnauthorized={setUnauthorized}
                     _updateStayBookingHandler={props._updateStayBookingHandler}
                     getPaymentHandler={props.getPaymentHandler}
+                    setStayBookings={props.setStayBookings}
                   ></AccommodationSearched>
                 );
             }
