@@ -4,7 +4,7 @@ import NewHotelBooking from "./NewHotelBooking";
 
 const Accommodation = (props) => {
   const [showDetails, setShowDetails] = useState(false);
-
+  console.log("index is:",props.setStayBookings)
   return (
     <div>
       <NewHotelBooking
@@ -39,6 +39,8 @@ const Accommodation = (props) => {
         _updateStayBookingHandler={props._updateStayBookingHandler}
         getPaymentHandler={props.getPaymentHandler}
         handleClick={props?.handleClick}
+        plan={props?.plan}
+        setStayBookings={props.setStayBookings}
       ></AccommodationModal>
     </div>
   );

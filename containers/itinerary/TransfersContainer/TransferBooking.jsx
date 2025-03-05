@@ -15,7 +15,7 @@ import FlightLogoContainer from "../../../components/modals/flights/new-flight-s
 import FlightDetails from "../../../components/modals/flights/new-flight-searched/FlightDetails";
 import Drawer from "../../../components/ui/Drawer";
 import { Details } from "../../../components/modals/flights/new-flight-searched/Index";
-
+import { FaArrowRight } from "react-icons/fa6";
 const GridContainer = styled.div`
   width: auto;
   overflow: auto;
@@ -559,7 +559,11 @@ const FlightBooking = ({
         id={booking.id}
         className={`mb-2 mt-2  w-full lg:block ${"mb-2 mt-2 lg:block flex flex-col p-3 "} cursor-pointer relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA] lg:p-5 `}
       >
-        <div className={` w-full ${window.innerWidth >= 1000&&'flex justify-between items-center '}`}>
+        <div
+          className={` w-full ${
+            window.innerWidth >= 1000 && "flex justify-between items-center "
+          }`}
+        >
           <FlightLogoContainer
             data={booking?.transfer_details?.itinerary_items?.[0]}
           />
@@ -581,78 +585,85 @@ const FlightBooking = ({
               segments={
                 booking?.transfer_details?.itinerary_items?.[0]?.segments
               }
+              numStops={booking?.transfer_details?.itinerary_items?.[0]?.stop_count?.stops}
               setShowDetails={setShowDetails}
             />
           </div>
-          {window.innerWidth >= 1000 && <div className="w-[131.95px]">
-            <Button
-              bgColor={"#F7E700"}
-              borderRadius="8px"
-              fontWeight="400"
-              padding="0.6rem 0.6rem"
-              hoverColor="white"
-              margin="auto 0px"
-              onclick={() => {
-                HandleFlights(index, "Change Flight");
-              }}
-            >
-              Change Flight
-            </Button>
-          </div>}
+          {window.innerWidth >= 1000 && (
+            <div className="w-[131.95px]">
+              <Button
+                bgColor={"#F7E700"}
+                borderRadius="8px"
+                fontWeight="400"
+                padding="0.6rem 0.6rem"
+                hoverColor="white"
+                margin="auto 0px"
+                onclick={() => {
+                  HandleFlights(index, "Change Flight");
+                }}
+              >
+                Change Flight
+              </Button>
+            </div>
+          )}
         </div>
-        <div className={`flex ${window.innerWidth < 1000?'justify-between':'justify-center' } items-center`}>
-            <button
-              className="text-sm font-medium text-yellow-500 border border-yellow-500 rounded-lg px-3 py-1 transition-all 
-             hover:bg-yellow-500 hover:text-black focus:outline-none"
-              onClick={() => setShowDetails((prev) => !prev)}
-            >
-              Flight Details
-            </button>
-            {window.innerWidth < 1000 && <div className="w-[131.95px]">
-            <Button
-              bgColor={"#F7E700"}
-              borderRadius="8px"
-              fontWeight="400"
-              padding="0.6rem 0.6rem"
-              hoverColor="white"
-              margin="auto 0px"
-              onclick={() => {
-                HandleFlights(index, "Change Flight");
-              }}
-            >
-              Change Flight
-            </Button>
-          </div>}
-
-            <Drawer
-              show={showDetails}
-              anchor={"right"}
-              backdrop
-              width={"50%"}
-              mobileWidth={"100%"}
-              style={{ zIndex: 1503 }}
-              className={`font-lexend ${
-                window.innerWidth < 768 ? "w-full" : "w-[50%]"
-              }`}
-              onHide={() => setShowDetails(false)}
-            >
-              <>
-                <Details
-                  segments={
-                    booking?.transfer_details?.itinerary_items?.[0]?.segments
-                  }
-                  resultIndex={
-                    booking?.transfer_details?.itinerary_items?.[0]
-                      ?.result_index
-                  }
-                  setShowDetails={setShowDetails}
-                  individual={false}
-                  booking_id={booking?.id}
-                />
-              </>
-            </Drawer>
+        <div
+          className={`flex ${
+            window.innerWidth < 1000 ? "justify-between" : "justify-center"
+          } items-center`}
+        >
+          <button
+            className="text-sm flex flex-row gap-1 items-center justify-center hover:bg-black hover:text-white rounded-lg px-2 py-1"
+            onClick={() => setShowDetails((prev) => !prev)}
+          >
+            Flight Details
+            <span>
+              <FaArrowRight />
+            </span>
+          </button>
+          {window.innerWidth < 1000 && (
+            <div className="w-[131.95px]">
+              <Button
+                bgColor={"#F7E700"}
+                borderRadius="8px"
+                fontWeight="400"
+                padding="0.6rem 0.6rem"
+                hoverColor="white"
+                margin="auto 0px"
+                onclick={() => {
+                  HandleFlights(index, "Change Flight");
+                }}
+              >
+                Change Flight
+              </Button>
+            </div>
+          )}
         </div>
       </div>
+      <Drawer
+        show={showDetails}
+        anchor={"right"}
+        backdrop
+        width={"50%"}
+        mobileWidth={"100%"}
+        style={{ zIndex: 1503 }}
+        className={`font-lexend ${
+          window.innerWidth < 768 ? "w-full" : "w-[50%]"
+        }`}
+        onHide={() => setShowDetails(false)}
+      >
+        <Details
+          segments={booking?.transfer_details?.itinerary_items?.[0]?.segments}
+          resultIndex={
+            booking?.transfer_details?.itinerary_items?.[0]?.result_index
+          }
+          setShowDetails={setShowDetails}
+          individual={false}
+          booking_id={booking?.id}
+          drawer={true}
+          name={booking?.name}
+        />
+      </Drawer>
     </div>
   );
 };
