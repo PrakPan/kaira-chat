@@ -31,7 +31,9 @@ import SwiperLocations from "../../components/containers/SwiperLocations/Index";
 import Button from "../../components/ui/button/Index";
 import OldLocations from "../../components/containers/plannerlocations/Index";
 import Locations from "../../components/containers/newplannerlocations/Index";
-import Activity from "../newcityplanner/activities/Index.js";
+import Activity2 from "../newcityplanner/activities/Index.js";
+import Poi from "../newcityplanner/pois/Index";
+import PathNavigation from "./PathNavigation.js";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -151,6 +153,7 @@ export default function ThemePage(props) {
       )}
 
       <SetWidthContainer>
+        <PathNavigation path={"asia/japan"} />
         <Overview
           heading={props.experienceData.overview_heading}
           text={props.experienceData.overview_text}
@@ -183,7 +186,7 @@ export default function ThemePage(props) {
                 !component.parent && (
                   <div key={index} className="mx-3 space-y-12 mt-5">
                     <div className="space-y-3">
-                      <PrimaryHeading className="mx-auto text-center">
+                      <PrimaryHeading className={` ${props?.slug !='japan-cherry-blossom' ? "mx-auto text-center" : "mt-7"}`}>
                         {component.heading}
                       </PrimaryHeading>
                       <SecondaryHeading className="mx-auto text-center">
@@ -202,27 +205,7 @@ export default function ThemePage(props) {
             </div>
             }
 
-            {component.type === 'Plan your trip to anywhere in the world' && 
-             <>
-              
-              <Continentcarousel
-              data={props?.continetCarousel}
-              page={"Continent Page"}
-            ></Continentcarousel>
-            <Button
-              onclick={() => {}
-                // handlePlanButtonClick("Plan your trip anywhere in the world")
-              }
-              borderWidth="1px"
-              fontWeight="500"
-              borderRadius="6px"
-              margin="2rem auto"
-              padding="0.5rem 2rem"
-            >
-              Create your free itinerary
-            </Button>
-            </>
-            }
+            
 
             {component.type ==='Generic' && component.heading === 'Why plan with us?' &&
             <WhyPlanWithUs page_id={props.experienceData?.id} />
@@ -372,9 +355,9 @@ export default function ThemePage(props) {
               </div>
               </>
               : 
-              component.carousel === "" ?
+              component.carousel === "Activity-2" ?
               <>
-               <Activity
+               <Activity2
                 data={component.activities}
                 activities={component?.activities}
                 city={component?.name}
@@ -382,6 +365,40 @@ export default function ThemePage(props) {
                 // {handlePlanButtonClick}
                 page={"Country Page"}
               />
+              </>
+              :
+              
+              component.carousel === "destination-5" ?
+              <>
+               <Poi
+            elevation={component?.elevation}
+            data={component?.data}
+            thingsToDoPage={component?.thingsToDoPage}
+            pois={component?.pois}
+            city={component?.name}
+          />
+          </>
+              :
+              component.carousel === "destination-6" ?
+              <>
+              <Continentcarousel
+                data={props.continetCarousel}
+                page={"Country Page"}
+              ></Continentcarousel>
+              <Button
+                onclick={() =>{}
+                  // handlePlanButtonClick(
+                  //   `Plan your trip to anywhere in the world`
+                  // )
+                }
+                borderWidth="1px"  
+                fontWeight="500"
+                borderRadius="6px"
+                margin="2rem auto"
+                padding="0.5rem 2rem"
+              >
+                Create your travel plan now!
+              </Button>
               </>
               :null}
                   </div>
