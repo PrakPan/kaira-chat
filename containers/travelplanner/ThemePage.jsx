@@ -22,6 +22,16 @@ import DesktopPersonaliseBanner from "../../components/containers/Banner";
 import MobileBanner from "../city/Banner/Mobile";
 import validateTextSize from "../../services/textSizeValidator";
 import SecondaryButton from "../../components/ui/SecondaryButton.jsx";
+import BannerTwo from "./BannerTwo.js";
+import Continentcarousel from "../../components/continentcarousel/continentcarousel.js";
+import WhyPlanWithUs from "../../components/WhyPlanWithUs/Index.js";
+import AsSeenIn from "../testimonial/AsSeenIn.js";
+import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs.js";
+import SwiperLocations from "../../components/containers/SwiperLocations/Index";
+import Button from "../../components/ui/button/Index";
+import OldLocations from "../../components/containers/plannerlocations/Index";
+import Locations from "../../components/containers/newplannerlocations/Index";
+import Activity from "../newcityplanner/activities/Index.js";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -181,7 +191,45 @@ export default function ThemePage(props) {
                       </SecondaryHeading>
                     </div>
 
+                    {/* Rendering Static Components */}
+
+            {component.type === 'How it works?' && 
+              <div>
+              <BannerTwo
+                page_id={props.experienceData?.id}
+                destination={props.experienceData?.destination}
+              ></BannerTwo>
+            </div>
+            }
+
+            {component.type === 'Plan your trip to anywhere in the world' && 
+             <>
+              
+              <Continentcarousel
+              data={props?.continetCarousel}
+              page={"Continent Page"}
+            ></Continentcarousel>
+            <Button
+              onclick={() => {}
+                // handlePlanButtonClick("Plan your trip anywhere in the world")
+              }
+              borderWidth="1px"
+              fontWeight="500"
+              borderRadius="6px"
+              margin="2rem auto"
+              padding="0.5rem 2rem"
+            >
+              Create your free itinerary
+            </Button>
+            </>
+            }
+
+            {component.type ==='Generic' && component.heading === 'Why plan with us?' &&
+            <WhyPlanWithUs page_id={props.experienceData?.id} />
+            }
+
                     {/* Render specific carousel components based on type */}
+
                     {component.carousel === "destination-1" ? (
                       <>
                         <Destination1Carousel
@@ -259,11 +307,89 @@ export default function ThemePage(props) {
                         <Reviews1Carousel reviews={component.reviews} />
                         <PlanYourTripButton />
                       </div>
-                    ) : null}
+                    ) :
+                    component.carousel === "destination-3" ? (
+                      <>
+                        <SwiperLocations
+                locations={component?.countries}
+                page_id={component?.id}
+                destination={component?.name}
+                viewall
+                country
+                page={"Country Page"}
+                continent={component?.countries}
+              ></SwiperLocations>
+              <Button
+                onclick={() =>{}
+                  // handlePlanButtonClick(
+                  //   `Other destinations to explore in ${props.data.continent}`
+                  // )
+                }
+                borderWidth="1px"
+                fontWeight="500"
+                borderRadius="6px"
+                margin="2rem auto"
+                padding="0.5rem 2rem"
+              >
+                Create your travel plan now!
+              </Button>
+                      </>) :
+              component.carousel === "state-1" ?
+                      <>
+                      <OldLocations
+                locations={component?.states}
+                page_id={component?.id}
+                destination={component?.name}
+                viewall
+                country={component?.name}
+                planner
+                page={"Country Page"}
+              ></OldLocations>
+              <Button
+                onclick={() =>{}
+                  // handlePlanButtonClick(
+                  //   `Trending destinations across ${props.data.name}`
+                  // )
+                }
+                borderWidth="1px"
+                fontWeight="500"
+                borderRadius="6px"
+                margin="2rem auto"
+                padding="0.5rem 2rem"
+              >
+                Create your travel plan now!
+              </Button>
+                      </>
+              
+              : component.carousel === "destination-4" ?
+              <>
+                <div className="space-y-4">
+                <Locations
+                locations={component?.cities}
+                page={"Continent Page"}
+                viewall
+              ></Locations>
+              </div>
+              </>
+              : 
+              component.carousel === "" ?
+              <>
+               <Activity
+                data={component.activities}
+                activities={component?.activities}
+                city={component?.name}
+                handlePlanButtonClick={()=>{}}
+                // {handlePlanButtonClick}
+                page={"Country Page"}
+              />
+              </>
+              :null}
                   </div>
                 )
               );
             })}
+
+            
         </div>
 
         {props.slug === "honeymoon-2025" && (
@@ -284,8 +410,19 @@ export default function ThemePage(props) {
         )}
 
         <div className="my-[100px]">
-          <ThemeFaqs faqs={props.experienceData.faq} />
+         {props.experienceData.faq.length > 0 && <ThemeFaqs faqs={props.experienceData.faq} />}
         </div>
+
+        {props?.experienceData?.slug === 'japan-cherry-blossom' && <>
+
+          <div className="space-y-3">
+                      <PrimaryHeading className="mx-auto text-center">
+                      What they say?
+                      </PrimaryHeading>
+          </div>
+        <AsSeenIn />
+        <ChatWithUs planner page_id={props.experienceData?.id}></ChatWithUs>
+        </>}
       </SetWidthContainer>
 
       <TailoredFormMobileModal
