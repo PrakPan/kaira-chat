@@ -565,27 +565,27 @@ const FlightBooking = ({
           }`}
         >
           <FlightLogoContainer
-            data={booking?.transfer_details?.itinerary_items?.[0]}
+            data={booking?.transfer_details?.items?.[0]}
           />
           <div className="flex-grow">
             <FlightDetails
-              data={booking?.transfer_details?.itinerary_items?.[0]}
+              data={booking?.transfer_details?.items?.[0]}
               origin={
-                booking?.transfer_details?.itinerary_items?.[0]?.segments[0]
+                booking?.transfer_details?.items?.[0]?.segments[0]
                   ?.origin
               }
               destination={
-                booking?.transfer_details?.itinerary_items?.[0]?.segments[0]
+                booking?.transfer_details?.items?.[0]?.segments[0]
                   ?.destination
               }
               duration={
-                booking?.transfer_details?.itinerary_items?.[0]?.segments[0]
+                booking?.transfer_details?.items?.[0]?.segments[0]
                   ?.duration
               }
               segments={
-                booking?.transfer_details?.itinerary_items?.[0]?.segments
+                booking?.transfer_details?.items?.[0]?.segments
               }
-              numStops={booking?.transfer_details?.itinerary_items?.[0]?.stop_count?.stops}
+              numStops={booking?.transfer_details?.items?.[0]?.stop_count?.stops}
               setShowDetails={setShowDetails}
             />
           </div>
@@ -653,9 +653,9 @@ const FlightBooking = ({
         onHide={() => setShowDetails(false)}
       >
         <Details
-          segments={booking?.transfer_details?.itinerary_items?.[0]?.segments}
+          segments={booking?.transfer_details?.items?.[0]?.segments}
           resultIndex={
-            booking?.transfer_details?.itinerary_items?.[0]?.result_index
+            booking?.transfer_details?.items?.[0]?.result_index
           }
           setShowDetails={setShowDetails}
           individual={false}

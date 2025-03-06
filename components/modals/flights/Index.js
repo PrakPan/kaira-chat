@@ -17,6 +17,7 @@ import { openNotification } from "../../../store/actions/notification";
 import { FaFilter } from "react-icons/fa";
 import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 import LogInModal from "../Login";
+import { toast, ToastContainer } from "react-toastify";
 
 const GridContainer = styled.div`
 min-height: 65vh;
@@ -267,6 +268,7 @@ const Booking = (props) => {
           heading: "Sucess!",
         });
         props.setHideFlightModal();
+        toast.success("flight updated successfuly");
       })
       .catch((err) => {
         setUpdateBookingState(false);
@@ -277,6 +279,7 @@ const Booking = (props) => {
           heading: "Error!",
         });
         props.setHideFlightModal();
+        toast.error("some error occured")
       });
   };
 
@@ -354,6 +357,7 @@ const Booking = (props) => {
         mobileWidth={"100%"}
         width={"50%"}
       >
+        <ToastContainer/>
         <SectionOne
           _FetchFlightsHandler={_FetchFlightsHandler}
           setHideBookingModal={props.setHideBookingModal}

@@ -4,8 +4,8 @@ import { useEffect } from "react";
 const Container = styled.div`
   border-radius: 50%;
   background-color: ${(props) => (props.pinColour ? props.pinColour : "black")};
-  width: 25px;
-  height: 25px;
+  width: 24px;
+  height: 24px;
   z-index: 0;
 `;
 
@@ -21,7 +21,6 @@ const InnerContainer = styled.div`
 
 const  Pin = (props) => {
   console.log("Length",props?.length,props?.index)
-  useEffect(() => {}, []);
 
   return (
     <Container className="center-div" pinColour={props.pinColour} index={props?.index} length={props?.length}>

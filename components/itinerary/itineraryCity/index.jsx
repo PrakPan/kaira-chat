@@ -3,6 +3,8 @@ import { RiArrowDropDownLine, RiArrowDropUpLine } from "react-icons/ri";
 
 import CitySummary from "./CitySummary";
 import CityDaybyDay from "./CityDaybyDay";
+import { MdOutlineStar } from "react-icons/md";
+import { getStars } from "./SlabElement";
 
 const ItineraryCity = (props) => {
   const [viewMore, setViewMore] = useState(false);
@@ -27,9 +29,12 @@ const ItineraryCity = (props) => {
               <div className="text-[14px] font-medium leading-0 underline">
                 {props.city.hotels[0]?.name}
               </div>
-              <div className="text-[12px]">
-                {props.city.hotels[0].duration}
-                {props.city.hotels[0].duration > 1 ? " Nights" : " Night"}
+              <div className="flex flex-row items-center">
+                {getStars(props.city.hotels[0]?.rating)}{" "}
+                <div className="text-[#7A7A7A] text-[12px] ml-1">
+                  {props.city.hotels[0]?.rating} ·{" "}
+                </div>
+                <div className="text-[#7A7A7A] text-[12px] ml-1 underline">{props.city.hotels[0]?.user_ratings_total} Google reviews</div>
               </div>
             </div>
           ) : null}
@@ -49,7 +54,7 @@ const ItineraryCity = (props) => {
 
       {viewMore ? (
         <>
-        <CityDaybyDay city={props.city} />
+          <CityDaybyDay city={props.city} />
         </>
       ) : (
         <CitySummary city={props.city} setViewMore={setViewMore} />
