@@ -8,7 +8,7 @@ import { axiosFlightFareRule } from "../../../../services/bookings/FlightSearch"
 import { MERCURY_HOST } from "../../../../services/constants";
 import axios from "axios";
 import { useRouter } from "next/router";
-import Drawer from "../../../ui/Drawer";
+import { toast, ToastContainer } from "react-toastify";
 import { Text, Heading } from "../SectionOne";
 import { IoMdClose } from "react-icons/io";
 import ViewMoreButton from "../../../itinerary/daySummary/ViewMoreButton";
@@ -323,6 +323,7 @@ export const Details = ({
                       result_indices: [resultIndex],
                     }
                   );
+                  toast.success("Added booking Successfuly")
                   window.location.href = `/flights/book/${res.data.id}`;
                 } else {
                   const res = await axios.post(
@@ -334,9 +335,10 @@ export const Details = ({
                       booking_id: booking_id,
                     }
                   );
+                  toast.success("Updated booking Successfuly")
                 }
               } catch (error) {
-                console.log("error in redirecting", error);
+                toast.error("Some error occured")
               }
             }}
             className="z-[1600]"
@@ -345,6 +347,7 @@ export const Details = ({
           </Generalbuttonstyle>
         </div>
       )}
+      <ToastContainer/>
     </div>
   );
 };

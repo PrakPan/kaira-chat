@@ -7,7 +7,7 @@ import media from "../../media";
 import POIDetailsDrawer from "../../drawers/poiDetails/POIDetailsDrawer";
 import { logEvent } from "../../../services/ga/Index";
 
-const getStars = (rating) => {
+export const getStars = (rating) => {
   const stars = [];
   for (let i = 0; i < Math.floor(rating); i++) {
     stars.push(<MdOutlineStar className="text-[#FFD201]" />);

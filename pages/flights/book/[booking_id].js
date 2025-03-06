@@ -141,7 +141,6 @@ export default function Book() {
           is_domestic: metaData.is_domestic,
         }
       );
-      console.log(res?.data?.message)
       toast.success(res?.data?.message)
     } catch (error) {
       toast.error(error.response?.data?.errors[0]?.message[0]);
