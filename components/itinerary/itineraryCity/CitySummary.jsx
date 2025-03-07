@@ -51,11 +51,11 @@ const CitySummary = (props) => {
   return (
     <div className="p-3 flex flex-col gap-3">
       {dayByDay && dayByDay.length ? (
-        <div className="text-sm font-normal grid grid-cols-[80px,1fr] gap-1 w-auto">
-          <div className="text-[14px] font-medium leading-[22px]">
+        <div className="text-sm font-normal flex flex-col gap-1 w-auto md:flex-row">
+        <div className="text-[14px] font-medium leading-[22px] w-[80px]">
             Explore:{" "}
           </div>
-          <div className="text-sm font-normal flex flex-row items-center flex-wrap gap-1 w-full">
+          <div className="text-sm font-normal flex flex-row items-center flex-wrap gap-1 w-[]">
             {dayByDay.map(
               (poi, index) =>
                 index < 3 && (
@@ -78,8 +78,8 @@ const CitySummary = (props) => {
           </div>
         </div>
       ) : null}
-      <div className="text-sm font-normal grid grid-cols-[80px,1fr] gap-1">
-        <div className="text-[14px] font-medium leading-[22px]">{activities?.length>0&&<>Activity:</>} </div>
+<div className="text-sm font-normal flex flex-col gap-1 w-auto md:flex-row">
+<div className="text-[14px] font-medium leading-[22px] w-[80px]">{activities?.length>0&&<>Activity:</>} </div>
         <div className="flex flex-col gap-2">
           <div className="flex-wrap gap-2">
             {activities?.map((item) => (

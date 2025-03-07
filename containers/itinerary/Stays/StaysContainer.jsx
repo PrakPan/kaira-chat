@@ -14,7 +14,7 @@ const StaysContainer = (props) => {
     id: null,
     name: null,
   });
-  console.log("index is 1:",props.setStayBookings)
+  console.log("index is 1:",props.stayBookings)
   const [showFilter, setshowFilter] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [AddHotel, setAddHotel] = useState(false);
