@@ -65,7 +65,6 @@ const MidSectionV2 = (props) => {
   const [showTaxiModal, setShowTaxiModal] = useState(false);
   
 
-  console.log("Modes",props?.originCity,props?.destinationCity);
 
   // let routeKey = props?.routeKey;
   // let parts = routeKey ? routeKey.split(":") : [null, null];
@@ -355,7 +354,7 @@ const MidSectionV2 = (props) => {
 const mapStateToPros = (state) => {
   return {
     ItineraryId: state.ItineraryId,
-    // transferBookings: state.Bookings.transferBookings,
+    // transferBookings: gs.transferBookings,
     flightBookings: state.Bookings.flightBookings,
     _bookings: state.Bookings,
   };

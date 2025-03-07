@@ -20,7 +20,6 @@ const InnerContainer = styled.div`
 `;
 
 const  Pin = (props) => {
-  console.log("Length",props?.length,props?.index)
 
   return (
     <Container className="center-div" pinColour={props.pinColour} index={props?.index} length={props?.length}>

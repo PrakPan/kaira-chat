@@ -82,7 +82,6 @@ const Details = (props) => {
     else {
       if (props.CityData.length >= 1) {
         let color;
-        console.log("CityData",props.CityData);
         for (var i = 0; i < props.CityData.length; i++) {
           color = CITY_COLOR_CODES[i%7];
           var postion = props.CityData[i];
@@ -135,7 +134,6 @@ const Details = (props) => {
     return null; // Return null if city_id is not found in the array
   }
 
-  console.log("Inside Brief New Index",props?.transferBookings);
   return (
     <div id="brief" className="mt-16">
       <DetailsContainer>

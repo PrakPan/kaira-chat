@@ -67,15 +67,15 @@ export default function FlightDetails({
         <div className="lg:w-[100%] flex flex-row gap-2 items-center justify-between">
             <div className="w-[20%] flex flex-col items-center">
                 <div className="text-lg font-bold">
-                    {new Date(origin.departure_time).getHours().toString().padStart(2, '0')}:
-                    {new Date(origin.departure_time).getMinutes().toString().padStart(2, '0')}
+                    {new Date(origin?.departure_time).getHours().toString().padStart(2, '0')}:
+                    {new Date(origin?.departure_time).getMinutes().toString().padStart(2, '0')}
                 </div>
                 <div className="w-full text-sm truncate text-center">
-                    {origin.city_name}
+                    {origin?.city_name}
                 </div>
 
                 <div className="w-full text-xs text-gray-600 truncate text-center">
-                    ({origin.city_code})
+                    ({origin?.city_code})
                 </div>
             </div>
 
@@ -114,9 +114,9 @@ export default function FlightDetails({
                                 {numStops} stop{numStops !== 1 && 's'}
                                 {" via "}
                                 <span className="text-wrap">
-                                    {segments.map((segment, i) => (
+                                    {segments?.map((segment, i) => (
                                         i !== 0 && (
-                                            <span>{i !== 1 ? ", " : " "}{segment.origin?.city_name}</span>
+                                            <span>{i !== 1 ? ", " : " "}{segment?.origin?.city_name}</span>
                                         )
                                     ))}
                                 </span>
@@ -126,7 +126,7 @@ export default function FlightDetails({
                                     if (index == 0) return null;
                                     return (
                                         <div className="border-b-2 mb-2">
-                                            <div className="text-nowrap">Plane change ({segment.airline.name}, {segment.airline.code}-{segment.airline.flight_number})
+                                            <div className="text-nowrap">Plane change ({segment?.airline.name}, {segment?.airline.code}-{segment?.airline.flight_number})
                                             </div>
                                             <div className="text-nowrap">Via {segment?.origin?.city_name} ({segment.origin?.airport_code}) {getTime(segment?.ground_time)} layover
                                             </div>
@@ -141,16 +141,16 @@ export default function FlightDetails({
 
             <div className="w-[20%] flex flex-col items-center">
                 <div className="text-lg font-bold">
-                    {new Date(destination.arrival_time).getHours().toString().padStart(2, '0')}:
-                    {new Date(destination.arrival_time).getMinutes().toString().padStart(2, '0')}
+                    {new Date(destination?.arrival_time).getHours().toString().padStart(2, '0')}:
+                    {new Date(destination?.arrival_time).getMinutes().toString().padStart(2, '0')}
                 </div>
 
                 <div className="w-full text-sm truncate text-center">
-                    {destination.city_name}
+                    {destination?.city_name}
                 </div>
 
                 <div className="w-full text-xs text-gray-600 truncate text-center">
-                    ({destination.city_code})
+                    ({destination?.city_code})
                 </div>
             </div>
         </div>

@@ -323,11 +323,9 @@ const ItineraryContainer = (props) => {
   const getAllBookings = () => {
     let flight_bookings = [];
 
-    console.log("inside get all bookings");
     axiosGetAllBookings
       .get(`/${props.id}/bookings/`)
       .then((res) => {
-        // console.log("Response",res.data);
         getPaymentHandler();
         const data = res.data;
 
@@ -392,7 +390,6 @@ const ItineraryContainer = (props) => {
     axiosGetTransfers
       .get(`/${props.id}/bookings/transfers/`)
       .then((res) => {
-        // console.log("Transfers",res.data);
         const data = res.data;
         setTransferBookings(data);
         setCityTransferBookings(data);
@@ -1025,7 +1022,7 @@ const mapStateToPros = (state) => {
     breif: state.Breif,
     plan: state.Plan,
     routes: state.ItineraryRoutes,
-    bookings: state.Bookings,
+    // bookings: gs,
     itineraryActivities: state.itineraryActivities,
   };
 };
@@ -1037,7 +1034,7 @@ const mapDispatchToProps = (dispatch) => {
     setItineraryRoutes: (payload) => dispatch(setItineraryRoutes(payload)),
     setItinerary: (payload) => dispatch(setItinerary(payload)),
     setPlan: (payload) => dispatch(setPlan(payload)),
-    // setBookings: (payload) => dispatch(setBookings(payload)),
+    setBookings: (payload) => dispatch(setBookings(payload)),
     setItineraryActivities: (payload) =>
       dispatch(setItineraryActivities(payload)),
     setBreif: (payload) => dispatch(setBreif(payload)),

@@ -238,7 +238,7 @@ export const Details = ({
         `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/flight/${booking_id}`
       );
       setFareRules(
-        res?.data?.flight_details?.items?.[0]?.fare_rule?.[0]?.fareRuleDetail
+        res?.data?.transfer_details?.items?.[0]?.fare_rule?.[0]?.fareRuleDetail
       );
       setFareRulesLoading(false);
     } else {
