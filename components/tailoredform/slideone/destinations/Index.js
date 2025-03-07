@@ -50,7 +50,8 @@ const Destinations = (props) => {
           setValueStart={props.setValueStart}
           setValueEnd={props.setValueEnd}
           eventDates={props.eventDates}
-        ></SelectedDestination>,
+          updatedData={updatedData}
+        ></SelectedDestination>
       );
     }
     setDestinations(des);
@@ -74,7 +75,7 @@ const Destinations = (props) => {
         setValueStart={props.setValueStart}
         setValueEnd={props.setValueEnd}
         eventDates={props.eventDates}
-      ></SelectedDestination>,
+      ></SelectedDestination>
     );
     setDestinations(dest.slice());
     props.selectedCities.push({ input_id: id });
@@ -103,11 +104,11 @@ const Destinations = (props) => {
   useEffect(() => {
     if (deletedId) {
       const newDestinations = destinations.filter(
-        (e) => e.props.inbox_id != deletedId,
+        (e) => e.props.inbox_id != deletedId
       );
       setDestinations(newDestinations.slice());
       const selected = props.selectedCities.filter(
-        (e) => e.input_id != deletedId,
+        (e) => e.input_id != deletedId
       );
       props.setSelectedCities(selected.slice());
     }

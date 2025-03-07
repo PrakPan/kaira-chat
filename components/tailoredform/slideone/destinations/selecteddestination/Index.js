@@ -54,9 +54,9 @@ const SelectedDestination = (props) => {
             ? () => props.setShowCities(false)
             : () => _handleShowSearchStarting()
           : () => {
-            setShowDestination(false);
-            _handleFocusSearch();
-          }
+              setShowDestination(false);
+              _handleFocusSearch();
+            }
       }
       className="font-lexend hover-pointer"
       style={{
@@ -160,6 +160,7 @@ const SelectedDestination = (props) => {
             setValueStart={props.setValueStart}
             setValueEnd={props.setValueEnd}
             eventDates={props.eventDates}
+            updatedData={props.updatedData}
           ></SearchInput>
         )}
       </div>

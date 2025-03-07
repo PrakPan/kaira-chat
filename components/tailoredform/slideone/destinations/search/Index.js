@@ -22,7 +22,7 @@ const Search = (props) => {
   const { query } = useRouter();
 
   const _handleKey = (value) => {
-    if (value)
+    if (value && !props.searchFinalized)
       if (value.length > 1) {
         setShowHotLocations(false);
         setShowResults(true);
@@ -79,6 +79,7 @@ const Search = (props) => {
           setShowDestination={props.setShowDestination}
           showHotLocations={showHotLocations}
           destination={props.destination}
+          setDestination={props.setDestination}
           onfocus={() => {
             props.onfocus();
             setTimeout(() => {
