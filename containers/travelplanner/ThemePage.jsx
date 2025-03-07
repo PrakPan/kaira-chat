@@ -153,7 +153,7 @@ export default function ThemePage(props) {
       )}
 
       <SetWidthContainer>
-        <PathNavigation path={"asia/japan"} />
+        {props?.slug === "japan-cherry-blossom" && <PathNavigation path={"asia/japan"} />}
         <Overview
           heading={props.experienceData.overview_heading}
           text={props.experienceData.overview_text}
@@ -302,20 +302,7 @@ export default function ThemePage(props) {
                 page={"Country Page"}
                 continent={component?.countries}
               ></SwiperLocations>
-              <Button
-                onclick={() =>{}
-                  // handlePlanButtonClick(
-                  //   `Other destinations to explore in ${props.data.continent}`
-                  // )
-                }
-                borderWidth="1px"
-                fontWeight="500"
-                borderRadius="6px"
-                margin="2rem auto"
-                padding="0.5rem 2rem"
-              >
-                Create your travel plan now!
-              </Button>
+              <PlanYourTripButton text={"Create your travel plan now!"} />
                       </>) :
               component.carousel === "state-1" ?
                       <>
@@ -328,20 +315,7 @@ export default function ThemePage(props) {
                 planner
                 page={"Country Page"}
               ></OldLocations>
-              <Button
-                onclick={() =>{}
-                  // handlePlanButtonClick(
-                  //   `Trending destinations across ${props.data.name}`
-                  // )
-                }
-                borderWidth="1px"
-                fontWeight="500"
-                borderRadius="6px"
-                margin="2rem auto"
-                padding="0.5rem 2rem"
-              >
-                Create your travel plan now!
-              </Button>
+              <PlanYourTripButton text={"Create your travel plan now!"} />
                       </>
               
               : component.carousel === "destination-4" ?
@@ -361,10 +335,13 @@ export default function ThemePage(props) {
                 data={component.activities}
                 activities={component?.activities}
                 city={component?.name}
-                handlePlanButtonClick={()=>{}}
+                // handlePlanButtonClick={()=>{}}
                 // {handlePlanButtonClick}
+                slug={props?.slug}
+
                 page={"Country Page"}
               />
+              <PlanYourTripButton text={"Plan Itinerary For Free"} />
               </>
               :
               
@@ -385,20 +362,7 @@ export default function ThemePage(props) {
                 data={props.continetCarousel}
                 page={"Country Page"}
               ></Continentcarousel>
-              <Button
-                onclick={() =>{}
-                  // handlePlanButtonClick(
-                  //   `Plan your trip to anywhere in the world`
-                  // )
-                }
-                borderWidth="1px"  
-                fontWeight="500"
-                borderRadius="6px"
-                margin="2rem auto"
-                padding="0.5rem 2rem"
-              >
-                Create your travel plan now!
-              </Button>
+              <PlanYourTripButton text={"Create your travel plan now!"} />
               </>
               :null}
                   </div>

@@ -357,7 +357,7 @@ const Index = (props) => {
                     `Plan your trip to anywhere in the world`
                   )
                 }
-                borderWidth="1px"
+                borderWidth="1px"  
                 fontWeight="500"
                 borderRadius="6px"
                 margin="2rem auto"

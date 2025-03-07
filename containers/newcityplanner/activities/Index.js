@@ -66,7 +66,7 @@ const Activity = (props) => {
           spaceBetween={10}
         ></SwiperCarousel>
 
-        <Button
+        {props?.slug != "japan-cherry-blossom" && <Button
           onClick={() => {
             props?.data
               ? props.handlePlanButtonClick(
@@ -80,12 +80,12 @@ const Activity = (props) => {
             8,
             "Craft a trip now!"
           )}
-        </Button>
+        </Button>}
       </div>
 
       <div className="hidden-desktop">
         <SwiperCarousel slidesPerView={1} pageDots noPadding cards={cards} />
-        <Button
+        {props?.slug != "japan-cherry-blossom" && <Button
           onClick={() => {
             props?.data
               ? openTailoredModal(router, props.data.id, props.data.name)
@@ -97,7 +97,7 @@ const Activity = (props) => {
             8,
             "Craft a trip now!"
           )}
-        </Button>
+        </Button>}
       </div>
     </div>
   );

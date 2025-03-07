@@ -208,6 +208,54 @@ const Subscribe = (props) => {
 </>
         )}
 
+{isPageWide &&
+        props.slug === "japan-cherry-blossom" && (
+          <>
+            <div className="absolute bottom-0 left-0 w-full flex justify-between items-end overflow-hidden z-10">
+  {/* First Image */}
+  <div className="w-[100%] h-[10%]">
+    <Image
+      src="https://d31aoa0ehgvjdi.cloudfront.net/media/themes/japan-footer.png"
+      alt="Dubai Skyline"
+      height={100}
+      width={100}
+      className="object-cover object-left"
+      style={{
+        width: "75rem", // Larger width
+        height: "22rem",
+      }}
+    />
+  </div>
+</div>
+
+
+</>
+        )}
+
+{isPageWide &&
+        props.slug === "perfect-proposals-2025" && (
+          <>
+            <div className="absolute bottom-0 left-0 w-full flex justify-between items-end overflow-hidden z-10">
+  {/* First Image */}
+  <div className="w-[100%] h-[10%]">
+    <Image
+      src="https://d31aoa0ehgvjdi.cloudfront.net/media/themes/Proposal-footer.png"
+      alt="Dubai Skyline"
+      height={100}
+      width={100}
+      className="object-cover object-left"
+      style={{
+        width: "75rem", // Larger width
+        height: "22rem",
+      }}
+    />
+  </div>
+</div>
+
+
+</>
+        )}
+
       <H2
         style={{
           color: "black",
@@ -254,11 +302,11 @@ const Subscribe = (props) => {
         </Button>
       </Form>
 
-      {isPageWide && (
+      {isPageWide && !props.slug === "japan-cherry-blossom" && (
         <Circle top={"-30%"} left={"-10%"} opacity={"0.5"}></Circle>
       )}
 
-      {isPageWide && <Circle top={"65%"} left={"90%"}></Circle>}
+      {isPageWide && !props.slug === "japan-cherry-blossom" && <Circle top={"65%"} left={"90%"}></Circle>}
     </Container>
   );
 };
