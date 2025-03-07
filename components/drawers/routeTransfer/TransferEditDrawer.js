@@ -75,7 +75,6 @@ const TransferEditDrawer = (props) => {
     mercury
   } = props;
 
-  console.log("Props Mer",mercury)
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
   const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);

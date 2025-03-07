@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import React, { useState } from "react";
-import { connect } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { connect, useSelector } from "react-redux";
 import * as ga from "../../../services/ga/Index";
 import TransferModeContainer from "./TransferModeContainer";
 import TaxiModal from "../../../components/modals/taxis/Index";
@@ -73,22 +73,23 @@ const CITY_COLOR_CODES = [
 ];
 
 const TransferBookings = (props) => {
+  const transferBookingsIntercity = useSelector((state) => state.TransferBookings.transferBookings).intercity;
   let isPageWide = media("(min-width: 768px)");
   const [selectedBooking, setSelectedBooking] = useState({
     id: null,
     name: null,
   });
   const [showDrawer, setShowDrawer] = useState(false);
-  const [alternateRoutes, setAlternateRoutes] = useState({});
-  const [loadingAlternates, setLoadingAlternates] = useState(true);
-  const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
-  const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
-  const [alternatesError, setAlternatesError] = useState(null);
-  const [originCity, setOriginCity] = useState(null);
-  const [destinationCity, setDestinationCity] = useState(null);
-  const [daySlabIndex, setDaySlabIndex] = useState(null);
-  const [elementIndex, setElementIndex] = useState(null);
-  const [transferId, setTransferId] = useState(null);
+  const alternateRoutes = {};
+  const loadingAlternates = true;
+  const roundTripSuggestions = null;
+  const multiCitySuggestions = null;
+  const alternatesError = null
+  const originCity = null;
+  const destinationCity= null
+  const daySlabIndex = null;
+  const elementIndex = null;
+  const transferId = null;
 
   const _changeFlightHandler = (
     name,
@@ -190,70 +191,6 @@ const TransferBookings = (props) => {
     props.setShowTaxiModal(true);
   };
 
-  const roundTripSuggestion = () => {
-    setLoadingAlternates(true);
-    axiosRoundTripInstance
-      .get(`?itinerary_id=${props?.itinerary_id}`)
-      .then((response) => {
-        const results = response.data;
-
-        for (let i = 0; i < results.length; i++) {
-          if (
-            results[i].success &&
-            results[i].transfer_type === "Intercity round-trip"
-          ) {
-            setRoundTripSuggestions(results[i]);
-          } else if (
-            results[i].success &&
-            results[i].transfer_type === "Multicity"
-          ) {
-            setMultiCitySuggestions(results[i]);
-          }
-        }
-        setLoadingAlternates(false);
-      })
-      .catch((err) => {
-        console.log("[ERROR][TransferEdit]: ", err);
-        setLoadingAlternates(false);
-      });
-  };
-
-  const handleTransferEdit = (e) => {
-    setOriginCity(props?.routes[+e.target.id - 1]?.city_name);
-    setDestinationCity(props?.routes[+e.target.id + 1]?.city_name);
-    setDaySlabIndex(
-      props?.routes[+e.target.id]?.element_location?.day_slab_index
-    );
-    setElementIndex(props?.routes[+e.target.id]?.element_index);
-    setAlternatesError(null);
-    setLoadingAlternates(true);
-    setShowDrawer(true);
-    roundTripSuggestion();
-    routeAlternates
-      .get(`/?route_id=` + props?.routes[+e.target.id]?.transfers?.id, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        if (response.status === 200 && response.data.routes.length > 0) {
-          const data = response.data;
-          setAlternateRoutes(data);
-        } else {
-          setAlternatesError(
-            "No route found, please get in touch with us to complete this booking!"
-          );
-        }
-        setLoadingAlternates(false);
-      })
-      .catch((err) => {
-        setLoadingAlternates(false);
-        setAlternatesError(
-          "No Route Found, please get in touch with us to complete this booking!"
-        );
-      });
-  };
 
   return (
     <div id="transfers" className={`mt-16 ${!isPageWide ? "max-w-fit" : "max-w-[54vw]"}`} >
@@ -279,43 +216,47 @@ const TransferBookings = (props) => {
         />
       )}
 
-      {<div>
-        {props?.transferBookings?.map((booking, index) => (
-          <>
-            <PinSection
-              key={index}
-              transfersPin
-              setCurrentPopup={false}
-              city={booking?.source_address?.shortName || booking?.source_address?.city_name}
-              index={index}
-              pinColour={index === 0 ? null : CITY_COLOR_CODES[index % 7]}
-            ></PinSection>
-            <TransferBooking
-              key={booking?.id}
-              index={index}
-              booking={booking}
-              payment={props?.payment}
-              token={props?.token}
-              setShowLoginModal={props?.setShowLoginModal}
-              _changeTaxiHandler={_changeTaxiHandler}
-              _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
-              getPaymentHandler={props?.getPaymentHandler}
-              _changeFlightHandler={_changeFlightHandler}
-            />
+<div>
+  {Object.keys(transferBookingsIntercity)?.map((key, index) => 
+    transferBookingsIntercity[key]?.id ? (
+      <>
+        <PinSection
+          key={index}
+          transfersPin
+          setCurrentPopup={false}
+          city={transferBookingsIntercity[key]?.transfers_details?.source?.name}
+          index={index}
+          pinColour={index === 0 ? null : CITY_COLOR_CODES[index % 7]}
+        />
+        
+        <TransferBooking
+          key={transferBookingsIntercity[key]?.id}
+          index={index}
+          booking={transferBookingsIntercity[key]}
+          payment={props?.payment}
+          token={props?.token}
+          setShowLoginModal={props?.setShowLoginModal}
+          _changeTaxiHandler={_changeTaxiHandler}
+          _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
+          getPaymentHandler={props?.getPaymentHandler}
+          _changeFlightHandler={_changeFlightHandler}
+        />
 
-            {index === props.transferBookings.length - 1 && (
-              <PinSection
-                key={index}
-                transfersPin
-                setCurrentPopup={false}
-                city={booking?.destination_address?.shortName}
-                index={index}
-                pinColour={null}
-              ></PinSection>
-            )}
-          </>
-        ))}
-      </div>}
+        {index === Object.keys(transferBookingsIntercity).length - 1 && (
+          <PinSection
+            key={`last-${index}`}
+            transfersPin
+            setCurrentPopup={false}
+            city={transferBookingsIntercity[key]?.destination?.name}
+            index={index}
+            pinColour={null}
+          />
+        )}
+      </>
+    ) : null
+  )}
+</div>
+
 
       <FlightModal
         getPaymentHandler={props?.getPaymentHandler}

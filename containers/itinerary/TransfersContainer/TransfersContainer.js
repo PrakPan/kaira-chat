@@ -73,7 +73,6 @@ const CITY_COLOR_CODES = [
 
 const TransfersContainer = (props) => {
   let locationsArr = [];
-
   const [selectedBooking, setSelectedBooking] = useState({
     id: null,
     name: null,

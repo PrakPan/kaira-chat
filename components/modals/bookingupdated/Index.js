@@ -58,7 +58,6 @@ const GetInTouchContainer = styled.div`
 `;
 
 const Booking = (props) => {
-  console.log("index is 3:",props.setStayBookings)
   let isPageWide = media("(min-width: 768px)");
   const [showDetails, setShowDetails] = useState(false);
   const [moreOptionsJSX, setMoreOptionsJSX] = useState([]);
@@ -117,7 +116,6 @@ const Booking = (props) => {
   const dispatch=useDispatch();
   const filtersState=useSelector((state)=>state.ItineraryFilters)
 
-  console.log("PLAN & bookings",props?.plan,props?.bookings);
   useEffect(() => {
     if (props?.showBookingModal) {
       fetchHotels();

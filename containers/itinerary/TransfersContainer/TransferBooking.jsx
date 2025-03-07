@@ -16,6 +16,7 @@ import FlightDetails from "../../../components/modals/flights/new-flight-searche
 import Drawer from "../../../components/ui/Drawer";
 import { Details } from "../../../components/modals/flights/new-flight-searched/Index";
 import { FaArrowRight } from "react-icons/fa6";
+import { useRouter } from "next/router";
 const GridContainer = styled.div`
   width: auto;
   overflow: auto;
@@ -482,21 +483,22 @@ const FlightBooking = ({
   setShowLoginModal,
 }) => {
   const [showDetails, setShowDetails] = useState(false);
-  console.log("booking is:", booking);
+  const router=useRouter()
   function HandleFlights(i, label) {
     if (!token) {
       return setShowLoginModal(true);
     }
 
     let name = booking["name"];
-    let costings_breakdown = booking["costings_breakdown"];
-    let cost = booking["booking_cost"];
-    let itinerary_id = booking["itinerary_id"];
-    let itinerary_name = booking["itinerary_name"];
-    let tailored_id = booking["tailored_itinerary"];
+    let costings_breakdown = booking["costings_breakdown"]; //not prsent
+    let cost = booking["booking_cost"]; //not present
+    let itinerary_id = router.query.id; // not present
+    let itinerary_name = booking["name"]; // not present
+    let tailored_id = booking["tailored_itinerary"]; // not present
     let id = booking["id"];
-    let check_in = booking["check_in"];
-    let check_out = booking["check_out"];
+    let check_in = booking?.transfers_details?.items?.[0]?.segments[0]
+    ?.origin?.departure_time;
+    let check_out = booking["check_out"]; // not present
     let pax = {
       number_of_adults: booking["number_of_adults"],
       number_of_children: booking["number_of_children"],
@@ -506,8 +508,8 @@ const FlightBooking = ({
     let taxi_type = booking["taxi_type"];
     let transfer_type = booking["transfer_type"];
     let destination_city = booking["destination_city"];
-    let origin_iata = booking["origin_code"];
-    let destination_iata = booking["destination_code"];
+    let origin_iata = booking["source"];
+    let destination_iata = booking["destination"];
     let user_selected = booking.user_selected;
     _changeFlightHandler(
       name,
@@ -565,27 +567,27 @@ const FlightBooking = ({
           }`}
         >
           <FlightLogoContainer
-            data={booking?.transfer_details?.items?.[0]}
+            data={booking?.transfers_details?.items?.[0]}
           />
           <div className="flex-grow">
             <FlightDetails
-              data={booking?.transfer_details?.items?.[0]}
+              data={booking?.transfers_details?.items?.[0]}
               origin={
-                booking?.transfer_details?.items?.[0]?.segments[0]
+                booking?.transfers_details?.items?.[0]?.segments[0]
                   ?.origin
               }
               destination={
-                booking?.transfer_details?.items?.[0]?.segments[0]
+                booking?.transfers_details?.items?.[0]?.segments[0]
                   ?.destination
               }
               duration={
-                booking?.transfer_details?.items?.[0]?.segments[0]
+                booking?.transfers_details?.items?.[0]?.segments[0]
                   ?.duration
               }
               segments={
-                booking?.transfer_details?.items?.[0]?.segments
+                booking?.transfers_details?.items?.[0]?.segments
               }
-              numStops={booking?.transfer_details?.items?.[0]?.stop_count?.stops}
+              numStops={booking?.transfers_details?.items?.[0]?.stop_count?.stops}
               setShowDetails={setShowDetails}
             />
           </div>
@@ -614,7 +616,7 @@ const FlightBooking = ({
         >
           <button
             className="text-sm flex flex-row gap-1 items-center justify-center hover:bg-black hover:text-white rounded-lg px-2 py-1"
-            onClick={() => setShowDetails((prev) => !prev)}
+            onClick={() => {setShowDetails((prev) => !prev)}}
           >
             Flight Details
             <span>
@@ -653,15 +655,16 @@ const FlightBooking = ({
         onHide={() => setShowDetails(false)}
       >
         <Details
-          segments={booking?.transfer_details?.items?.[0]?.segments}
+          segments={booking?.transfers_details?.items?.[0]?.segments}
           resultIndex={
-            booking?.transfer_details?.items?.[0]?.result_index
+            booking?.transfers_details?.items?.[0]?.result_index
           }
           setShowDetails={setShowDetails}
           individual={false}
           booking_id={booking?.id}
           drawer={true}
           name={booking?.name}
+          fareRule={booking?.transfer_details?.items?.fare_rule}
         />
       </Drawer>
     </div>

@@ -54,7 +54,6 @@ const Details = (props) => {
     return formattedDate;
   };
 
-  console.log("Iti",props?.itinerary);
 
   useEffect(() => {
     const script = document.createElement("script");
