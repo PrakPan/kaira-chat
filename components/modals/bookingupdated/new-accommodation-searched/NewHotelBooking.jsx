@@ -156,11 +156,8 @@ export default function NewHotelBooking({
                                                 fontWeight: 300,
                                             }}
                                         >
-                                            {booking?.source === "Agoda" ? (
-                                                <>per night</>
-                                            ) : (
+                                            
                                                 <>for {currentBooking?.duration || duration} nights</>
-                                            )}
                                         </div>
                                     </div>
                                 </div>
