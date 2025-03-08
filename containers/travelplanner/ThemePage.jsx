@@ -241,7 +241,7 @@ export default function ThemePage(props) {
                         <div className="relative w-full">
                           <div className="absolute -left-[9vw] md:-left-[9vw] -top-[20rem] -z-10 w-full md:w-[50%] h-[100rem]">
                             <Image
-                              src="${imgUrlEndPoint}media/themes/japan-places-destination.png"
+                              src={`${imgUrlEndPoint}media/themes/japan-places-destination.png`}
                               fill
                               className="absolute bottom-0 object-fill"
                             />
@@ -255,7 +255,7 @@ export default function ThemePage(props) {
                         <div className="relative w-full">
                           <div className="absolute -left-[20vw] -top-[10rem] -z-10 w-full md:w-[28%] h-[20rem]">
                             <Image
-                              src="${imgUrlEndPoint}media/themes/other-destination.png"
+                              src={`${imgUrlEndPoint}media/themes/other-destination.png`}
                               fill
                               className="absolute bottom-0 object-fill"
                             />
@@ -269,7 +269,7 @@ export default function ThemePage(props) {
                         <div className="relative w-full">
                           <div className="absolute -right-[8vw] -top-[10rem] -z-10 w-full md:w-[20%] h-[10rem]">
                             <Image
-                              src="${imgUrlEndPoint}media/themes/japan-corner.png"
+                              src={`${imgUrlEndPoint}media/themes/japan-corner.png`}
                               fill
                               className="absolute bottom-0 object-fill"
                             />
@@ -283,7 +283,7 @@ export default function ThemePage(props) {
                         <div className="relative w-full">
                           <div className="absolute -right-[9vw] -top-[12rem] -z-10 w-full md:w-[20%] h-[30rem]">
                             <Image
-                              src="${imgUrlEndPoint}media/themes/other-destination.png"
+                              src={`${imgUrlEndPoint}media/themes/other-destination.png`}
                               fill
                               className="absolute bottom-0 object-fill"
                             />
@@ -291,7 +291,7 @@ export default function ThemePage(props) {
 
                           <div className="absolute -left-[9vw] top-[3rem] -z-10 w-full md:w-[28%] h-[30rem]">
                             <Image
-                              src="${imgUrlEndPoint}media/themes/other-destination.png"
+                              src={`${imgUrlEndPoint}media/themes/other-destination.png`}
                               fill
                               className="absolute bottom-0 object-fill"
                             />
@@ -503,7 +503,7 @@ export default function ThemePage(props) {
               <div className="relative w-full">
                 <div className="absolute -left-[8vw] top-[28rem] -z-10 w-full md:w-[20%] h-[10rem] ">
                   <Image
-                    src="${imgUrlEndPoint}media/themes/japan-corner.png"
+                    src={`${imgUrlEndPoint}media/themes/japan-corner.png`}
                     fill
                     className="absolute bottom-0 object-fill transform scale-x-[-1]"
                   />
