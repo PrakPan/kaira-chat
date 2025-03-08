@@ -13,10 +13,11 @@ import { ITINERARY_STATUSES } from "../../../services/constants";
 import { MdWifi } from "react-icons/md";
 import { logEvent } from "../../../services/ga/Index";
 import { connect } from "react-redux";
+import { getHumanDate } from "../../../services/getHumanDate";
 
 const RoomTypeGrid = styled.div`
   display: grid;
-  grid-template-columns: 1rem auto 5.5rem;
+  grid-template-columns: 1rem auto auto;
   gap: 0.4rem;
   align-items: center;
   font-size: 14px;
@@ -117,6 +118,7 @@ const HotelBooking = ({
 
   return (
     <div className={`${!isPageWide ? "max-w-fit" : "max-w-[54vw]"}`}>
+      {booking?.user_ratings_total?<>
       <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
         {booking?.city_name}
         <span className="ml-1">
@@ -212,10 +214,7 @@ const HotelBooking = ({
                     </div>
                     {booking?.user_ratings_total && (
                       <div className="text-sm text-[#7A7A7A] font-[400] underline">
-                        {booking.user_ratings_total}{" "}
-                        {booking?.booking_source === "Agoda"
-                          ? "user reviews"
-                          : "Google reviews"}
+                        {booking.user_ratings_total} reviews
                       </div>
                     )}
                   </div>
@@ -274,14 +273,14 @@ const HotelBooking = ({
                 <div className="text-sm font-[400] line-clamp-1">
                   {booking?.room}
                 </div>
-                <div>
+                {/* <div>
                   {"("}
                   {booking?.room
                     ? booking.room
                     : 1}{" "}
                   {booking?.room > 1 ? "Rooms" : "Room"}
                   {")"}
-                </div>
+                </div> */}
               </RoomTypeGrid>
 
               {booking?.number_of_extra_beds &&
@@ -311,7 +310,7 @@ const HotelBooking = ({
               booking?.wifi && (
                 <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
                   <MdWifi className="text-sm text-[#7A7A7A]" />
-                  <div className="text-sm font-[400]"> {booking.wifi}</div>
+                  <div className="text-sm font-[400]"> Free Wifi</div>
                 </div>
               )}
 
@@ -366,6 +365,46 @@ const HotelBooking = ({
           </div>
         </div>
       </div>
+      </>:
+      <div>
+          <div className="flex lg:flex-row flex-col justify-between lg:items-center items-start cursor-pointer relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] p-3 ">
+            <div className="flex flex-col">
+              <div className="font-medium  inline">
+                <div className="font-bold flex flex-row lg:text-2xl text-xl lg:pb-2 pb-1 text-[#01202B]">
+                  <div>
+                    {booking?.city_name}{" "}
+                    <span>({booking?.duration}N)</span>
+                  </div>
+                </div>
+              </div>
+              {booking?.start_date && (
+                <div className="font-medium  inline">
+                  <div className="flex flex-row gap-2 items-center">
+                    <BsCalendar2 className="text-sm text-[#7A7A7A]" />
+                    <div>
+                      <div className="text-sm font-[400] ">
+                        {getHumanDate(booking?.start_date)} -{" "}
+                        {getHumanDate(String(new Date(new Date(booking?.start_date).getTime() + booking?.duration * 24 * 60 * 60 * 1000).toISOString().split("T")[0]))}
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <Button
+              bgColor={"#F7E700"}
+              borderRadius="8px"
+              fontWeight="400"
+              padding="0.6rem 2.2rem"
+              hoverColor="white"
+              margin={!isPageWide ? "0.75rem 0 0 0" : "0"}
+              onclick={() =>(console.log("added"))}
+            >
+              Add Stay in {booking?.city_name}
+            </Button>
+          </div>
+        </div>}
     </div>
   );
 };

@@ -489,6 +489,15 @@ const ItineraryContainer = (props) => {
           let city_name = data?.cities[i]?.city?.name;
           let city_id = data?.cities[i]?.city?.id;
 
+          if(hotels.length==0){
+            stays.push({
+              city_name:city_name,
+              city_id:city_id,
+              duration:data?.cities[i]?.duration,
+              start_date:data?.cities[i]?.start_date
+            })
+          }
+
           for (let hotel of hotels) {
             hotel.city_name = city_name;
             hotel.city_id = city_id;
