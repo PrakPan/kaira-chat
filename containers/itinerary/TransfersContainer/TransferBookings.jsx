@@ -227,6 +227,7 @@ const TransferBookings = (props) => {
           city={transferBookingsIntercity[key]?.transfers_details?.source?.name}
           index={index}
           pinColour={index === 0 ? null : CITY_COLOR_CODES[index % 7]}
+          length={transferBookingsIntercity?.length}
         />
         
         <TransferBooking
@@ -250,6 +251,7 @@ const TransferBookings = (props) => {
             city={transferBookingsIntercity[key]?.destination?.name}
             index={index}
             pinColour={null}
+            length={transferBookingsIntercity?.length}
           />
         )}
       </>
