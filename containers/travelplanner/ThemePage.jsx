@@ -130,6 +130,29 @@ export default function ThemePage(props) {
         slug={props.slug}
       />
 
+
+      {props.slug === "japan-cherry-blossom" && (
+        <div className="relative">
+          {isPageWide && <div className="absolute  left-0 -z-10 w-full md:w-[9.3%] h-[10rem]">
+            <Image
+              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/japan-banner-right.png`}
+              fill
+              className="absolute bottom-0 object-fill"
+            />
+          </div>}
+
+          {isPageWide && (
+            <div className="absolute -top-1 right-0 -z-10 w-[10%] h-[10rem]">
+              <Image
+                src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/japan-banner-right.png`}
+                fill
+                className="absolute bottom-0 object-fill"
+              />
+            </div>
+          )}
+        </div>
+      )}
+
       {props.slug === "honeymoon-2025" && (
         <div className="relative">
           <div className="absolute -top-10 left-0 -z-10 w-full md:w-[50%] h-[10rem]">
@@ -193,6 +216,62 @@ export default function ThemePage(props) {
                         {component.text}
                       </SecondaryHeading>
                     </div>
+
+                    {props.slug === "japan-cherry-blossom" && component?.priority == 4 && isPageWide && (
+  <div className="relative w-full">
+    <div className="absolute -left-[9vw] md:-left-[9vw] -top-[20rem] -z-10 w-full md:w-[50%] h-[100rem]">
+      <Image
+        src="https://d31aoa0ehgvjdi.cloudfront.net/media/themes/japan-places-destination.png"
+        fill
+        className="absolute bottom-0 object-fill"
+      />
+    </div>
+  </div>
+)}
+
+{props.slug === "japan-cherry-blossom" && component?.priority == 1 && isPageWide && (
+  <div className="relative w-full">
+    <div className="absolute -left-[20vw] -top-[10rem] -z-10 w-full md:w-[28%] h-[20rem]">
+      <Image
+        src="https://d31aoa0ehgvjdi.cloudfront.net/media/themes/other-destination.png"
+        fill
+        className="absolute bottom-0 object-fill"
+      />
+    </div>
+  </div>
+)}
+
+{props.slug === "japan-cherry-blossom" && component?.priority == 8 && isPageWide && (
+  <div className="relative w-full">
+    <div className="absolute -right-[8vw] -top-[10rem] -z-10 w-full md:w-[20%] h-[10rem]">
+      <Image
+        src="https://d31aoa0ehgvjdi.cloudfront.net/media/themes/japan-corner.png"
+        fill
+        className="absolute bottom-0 object-fill"
+      />
+    </div>
+  </div>
+)}
+
+{props.slug === "japan-cherry-blossom" && component?.priority == 7 && isPageWide && (
+  <div className="relative w-full">
+    <div className="absolute -right-[9vw] -top-[12rem] -z-10 w-full md:w-[20%] h-[30rem]">
+      <Image
+        src="https://d31aoa0ehgvjdi.cloudfront.net/media/themes/other-destination.png"
+        fill
+        className="absolute bottom-0 object-fill"
+      />
+    </div>
+
+    <div className="absolute -left-[9vw] top-[3rem] -z-10 w-full md:w-[28%] h-[30rem]">
+      <Image
+        src="https://d31aoa0ehgvjdi.cloudfront.net/media/themes/other-destination.png"
+        fill
+        className="absolute bottom-0 object-fill"
+      />
+    </div>
+  </div>
+)}
 
                     {/* Rendering Static Components */}
 
@@ -395,6 +474,17 @@ export default function ThemePage(props) {
         </div>
 
         {props?.experienceData?.slug === 'japan-cherry-blossom' && <>
+
+          
+  {isPageWide && <div className="relative w-full">
+    <div className="absolute -left-[8vw] top-[28rem] -z-10 w-full md:w-[20%] h-[10rem] ">
+      <Image
+        src="https://d31aoa0ehgvjdi.cloudfront.net/media/themes/japan-corner.png"
+        fill
+        className="absolute bottom-0 object-fill transform scale-x-[-1]"
+      />
+    </div>
+  </div>}
 
           <div className="space-y-3">
                       <PrimaryHeading className="mx-auto text-center">
