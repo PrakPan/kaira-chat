@@ -55,7 +55,7 @@ const QueryType = (props) => {
         </InputLabel>
         <Select
           native={true ? true : false}
-          label="Topic of interest"
+          label="Topic of Interest"
           value={queryType}
           id="contact-query-select"
           onChange={_handleQueryTypeChange}

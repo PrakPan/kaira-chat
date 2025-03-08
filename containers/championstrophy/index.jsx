@@ -14,7 +14,7 @@ import Destination1Carousel from "../../components/theme/Destination1Carousel.js
 import Activity1Carousel from "../../components/theme/Activity1Carousel.jsx";
 import Reviews1Carousel from "../../components/theme/Reviews1Carousel.jsx";
 import Itinerary2Carousel from "../../components/theme/Itinerary2Carousel.jsx";
-import Navigation from "../../components/theme/Navigation.jsx";
+import Navigation from "../../components/championsTrophy/Navigation.jsx";
 import PrimaryHeading from "../../components/heading/PrimaryHeading.jsx";
 import SecondaryHeading from "../../components/heading/Secondary.jsx";
 import Itinerary1Carousel from "../../components/theme/Itinerary1Carousel.jsx";
@@ -22,18 +22,12 @@ import DesktopPersonaliseBanner from "../../components/containers/Banner";
 import MobileBanner from "../city/Banner/Mobile";
 import validateTextSize from "../../services/textSizeValidator";
 import SecondaryButton from "../../components/ui/SecondaryButton.jsx";
-import BannerTwo from "./BannerTwo.js";
-import Continentcarousel from "../../components/continentcarousel/continentcarousel.js";
-import WhyPlanWithUs from "../../components/WhyPlanWithUs/Index.js";
-import AsSeenIn from "../testimonial/AsSeenIn.js";
-import ChatWithUs from "../../components/containers/ChatWithUs/ChatWithUs.js";
-import SwiperLocations from "../../components/containers/SwiperLocations/Index";
-import Button from "../../components/ui/button/Index";
-import OldLocations from "../../components/containers/plannerlocations/Index";
-import Locations from "../../components/containers/newplannerlocations/Index";
-import Activity2 from "../newcityplanner/activities/Index.js";
-import Poi from "../newcityplanner/pois/Index";
-import PathNavigation from "./PathNavigation.js";
+import BannerMobile from "../city/Banner/Mobile";
+import DesktopBanner from "../../components/containers/Banner";
+import ICCBanner from "../../components/containers/ICCBanner/ICCBanner.js";
+import WhyChooseUs from "../../components/championsTrophy/WhyChooseUs.jsx";
+
+
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -45,7 +39,7 @@ const SetWidthContainer = styled.div`
   }
 `;
 
-export default function ThemePage(props) {
+export default function ChampionsTrophy(props) {
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [components, setComponents] = useState([]);
@@ -53,6 +47,7 @@ export default function ThemePage(props) {
   const [showTailoredModal, setShowTailoredModal] = useState(false);
   const [destination, setDestination] = useState(null);
 
+  
   useEffect(() => {
     if (props.experienceData?.components) {
       let components = props.experienceData?.components;
@@ -62,7 +57,7 @@ export default function ThemePage(props) {
 
       // Separate components based on `is_navigation_type`
 
-      // const otherComponents = components.filter(
+      //  t otherComponents = components.filter(
       //   (component) => !component.is_navigation_type
       // );
       // // setNavigationComponents(navComponents);
@@ -90,7 +85,7 @@ export default function ThemePage(props) {
 
   return (
     <div className="mb-5">
-      {isPageWide ? (
+      {/* {isPageWide ? (
         <DesktopPersonaliseBanner
           onclick={() =>
             openTailoredModal(
@@ -116,9 +111,9 @@ export default function ThemePage(props) {
             )
           }
         />
-      )}
+      )} */}
 
-      <ThemeBanner
+      <ICCBanner
         image={props.experienceData.image}
         page_id={props.experienceData.id}
         destination={props.experienceData.destination}
@@ -130,53 +125,15 @@ export default function ThemePage(props) {
         slug={props.slug}
       />
 
+      {isPageWide ? <DesktopBanner
+        newYear
+        onclick={() => openTailoredModal(router)}
+        text="Want to personalize your own experience?"
+      ></DesktopBanner> : <BannerMobile onclick={() => openTailoredModal(router)}/>}
 
-      {props.slug === "japan-cherry-blossom" && (
-        <div className="relative">
-          {isPageWide && <div className="absolute  left-0 -z-10 w-full md:w-[9.3%] h-[10rem]">
-            <Image
-              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/japan-banner-right.png`}
-              fill
-              className="absolute bottom-0 object-fill"
-            />
-          </div>}
 
-          {isPageWide && (
-            <div className="absolute -top-1 right-0 -z-10 w-[10%] h-[10rem]">
-              <Image
-                src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/japan-banner-right.png`}
-                fill
-                className="absolute bottom-0 object-fill"
-              />
-            </div>
-          )}
-        </div>
-      )}
-
-      {props.slug === "honeymoon-2025" && (
-        <div className="relative">
-          <div className="absolute -top-10 left-0 -z-10 w-full md:w-[50%] h-[10rem]">
-            <Image
-              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/Hearts.png`}
-              fill
-              className="absolute bottom-0 object-fill"
-            />
-          </div>
-
-          {isPageWide && (
-            <div className="absolute -top-10 right-0 -z-10 w-[50%] h-[10rem]">
-              <Image
-                src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/Hearts.png`}
-                fill
-                className="absolute bottom-0 object-fill"
-              />
-            </div>
-          )}
-        </div>
-      )}
 
       <SetWidthContainer>
-        {props?.slug === "japan-cherry-blossom" && <PathNavigation path={"asia/japan"} />}
         <Overview
           heading={props.experienceData.overview_heading}
           text={props.experienceData.overview_text}
@@ -194,11 +151,11 @@ export default function ThemePage(props) {
 
                 return navComponents.length > 0 ? (
                   <div key={index} className="mx-3 space-y-12 mt-5">
-                    <PrimaryHeading>
+                    <PrimaryHeading className="m-auto">
                       {" "}
                       {component.heading}
                     </PrimaryHeading>
-                    <Navigation components={navComponents} />
+                    <Navigation components={navComponents} className="m-auto" />
 
                     <PlanYourTripButton text={"Plan Itinerary For Free"} />
                   </div>
@@ -209,89 +166,19 @@ export default function ThemePage(props) {
                 !component.parent && (
                   <div key={index} className="mx-3 space-y-12 mt-5">
                     <div className="space-y-3">
-                      <PrimaryHeading className={` ${props?.slug !='japan-cherry-blossom' ? "mx-auto text-center" : "mt-7"}`}>
-                        {component.heading}
+                      <PrimaryHeading className="mx-auto text-center relative z-10">
+                        {component.heading }
                       </PrimaryHeading>
                       <SecondaryHeading className="mx-auto text-center">
                         {component.text}
                       </SecondaryHeading>
                     </div>
 
-                    {props.slug === "japan-cherry-blossom" && component?.priority == 4 && isPageWide && (
-  <div className="relative w-full">
-    <div className="absolute -left-[9vw] md:-left-[9vw] -top-[20rem] -z-10 w-full md:w-[50%] h-[100rem]">
-      <Image
-        src="https://d31aoa0ehgvjdi.cloudfront.net/media/themes/japan-places-destination.png"
-        fill
-        className="absolute bottom-0 object-fill"
-      />
-    </div>
-  </div>
-)}
-
-{props.slug === "japan-cherry-blossom" && component?.priority == 1 && isPageWide && (
-  <div className="relative w-full">
-    <div className="absolute -left-[20vw] -top-[10rem] -z-10 w-full md:w-[28%] h-[20rem]">
-      <Image
-        src="https://d31aoa0ehgvjdi.cloudfront.net/media/themes/other-destination.png"
-        fill
-        className="absolute bottom-0 object-fill"
-      />
-    </div>
-  </div>
-)}
-
-{props.slug === "japan-cherry-blossom" && component?.priority == 8 && isPageWide && (
-  <div className="relative w-full">
-    <div className="absolute -right-[8vw] -top-[10rem] -z-10 w-full md:w-[20%] h-[10rem]">
-      <Image
-        src="https://d31aoa0ehgvjdi.cloudfront.net/media/themes/japan-corner.png"
-        fill
-        className="absolute bottom-0 object-fill"
-      />
-    </div>
-  </div>
-)}
-
-{props.slug === "japan-cherry-blossom" && component?.priority == 7 && isPageWide && (
-  <div className="relative w-full">
-    <div className="absolute -right-[9vw] -top-[12rem] -z-10 w-full md:w-[20%] h-[30rem]">
-      <Image
-        src="https://d31aoa0ehgvjdi.cloudfront.net/media/themes/other-destination.png"
-        fill
-        className="absolute bottom-0 object-fill"
-      />
-    </div>
-
-    <div className="absolute -left-[9vw] top-[3rem] -z-10 w-full md:w-[28%] h-[30rem]">
-      <Image
-        src="https://d31aoa0ehgvjdi.cloudfront.net/media/themes/other-destination.png"
-        fill
-        className="absolute bottom-0 object-fill"
-      />
-    </div>
-  </div>
-)}
-
-                    {/* Rendering Static Components */}
-
-            {component.type === 'How it works?' && 
-              <div>
-              <BannerTwo
-                page_id={props.experienceData?.id}
-                destination={props.experienceData?.destination}
-              ></BannerTwo>
-            </div>
-            }
-
-            
-
-            {component.type ==='Generic' && component.heading === 'Why plan with us?' &&
-            <WhyPlanWithUs page_id={props.experienceData?.id} />
-            }
+                    {
+                      component?.heading == "Why Choose Us?" ? <WhyChooseUs heading={component?.heading}/> : null
+                    }
 
                     {/* Render specific carousel components based on type */}
-
                     {component.carousel === "destination-1" ? (
                       <>
                         <Destination1Carousel
@@ -318,6 +205,7 @@ export default function ThemePage(props) {
                       <div className="w-full relative">
                         {props.slug === "honeymoon-2025" && (
                           <>
+                          
                             <Image
                               src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/red-hearts.png`}
                               className="object-fill absolute -left-[1rem] top-[10rem] md:-left-[9rem] md:top-0"
@@ -346,9 +234,9 @@ export default function ThemePage(props) {
                       </div>
                     ) : component.carousel === "activity-1" ? (
                       <>
-                        <Activity1Carousel activities={component.activities} />{" "}
+                        <Activity1Carousel activities={component.activities} scale={true}/>
                         <PlanYourTripButton
-                          text={"Create your free itinerary"}
+                          text={"Create your free itinerary"} 
                         />
                       </>
                     ) : component.carousel === "review-1" ? (
@@ -369,87 +257,11 @@ export default function ThemePage(props) {
                         <Reviews1Carousel reviews={component.reviews} />
                         <PlanYourTripButton />
                       </div>
-                    ) :
-                    component.carousel === "destination-3" ? (
-                      <>
-                        <SwiperLocations
-                locations={component?.countries}
-                page_id={component?.id}
-                destination={component?.name}
-                viewall
-                country
-                page={"Country Page"}
-                continent={component?.countries}
-              ></SwiperLocations>
-              <PlanYourTripButton text={"Create your travel plan now!"} />
-                      </>) :
-              component.carousel === "state-1" ?
-                      <>
-                      <OldLocations
-                locations={component?.states}
-                page_id={component?.id}
-                destination={component?.name}
-                viewall
-                country={component?.name}
-                planner
-                page={"Country Page"}
-              ></OldLocations>
-              <PlanYourTripButton text={"Create your travel plan now!"} />
-                      </>
-              
-              : component.carousel === "destination-4" ?
-              <>
-                <div className="space-y-4">
-                <Locations
-                locations={component?.cities}
-                page={"Continent Page"}
-                viewall
-              ></Locations>
-              </div>
-              </>
-              : 
-              component.carousel === "Activity-2" ?
-              <>
-               <Activity2
-                data={component.activities}
-                activities={component?.activities}
-                city={component?.name}
-                // handlePlanButtonClick={()=>{}}
-                // {handlePlanButtonClick}
-                slug={props?.slug}
-
-                page={"Country Page"}
-              />
-              <PlanYourTripButton text={"Plan Itinerary For Free"} />
-              </>
-              :
-              
-              component.carousel === "destination-5" ?
-              <>
-               <Poi
-            elevation={component?.elevation}
-            data={component?.data}
-            thingsToDoPage={component?.thingsToDoPage}
-            pois={component?.pois}
-            city={component?.name}
-          />
-          </>
-              :
-              component.carousel === "destination-6" ?
-              <>
-              <Continentcarousel
-                data={props.continetCarousel}
-                page={"Country Page"}
-              ></Continentcarousel>
-              <PlanYourTripButton text={"Create your travel plan now!"} />
-              </>
-              :null}
+                    ) : null}
                   </div>
                 )
               );
             })}
-
-            
         </div>
 
         {props.slug === "honeymoon-2025" && (
@@ -470,30 +282,8 @@ export default function ThemePage(props) {
         )}
 
         <div className="my-[100px]">
-         {props.experienceData.faq.length > 0 && <ThemeFaqs faqs={props.experienceData.faq} />}
+          <ThemeFaqs faqs={props.experienceData.faq} />
         </div>
-
-        {props?.experienceData?.slug === 'japan-cherry-blossom' && <>
-
-          
-  {isPageWide && <div className="relative w-full">
-    <div className="absolute -left-[8vw] top-[28rem] -z-10 w-full md:w-[20%] h-[10rem] ">
-      <Image
-        src="https://d31aoa0ehgvjdi.cloudfront.net/media/themes/japan-corner.png"
-        fill
-        className="absolute bottom-0 object-fill transform scale-x-[-1]"
-      />
-    </div>
-  </div>}
-
-          <div className="space-y-3">
-                      <PrimaryHeading className="mx-auto text-center">
-                      What they say?
-                      </PrimaryHeading>
-          </div>
-        <AsSeenIn />
-        <ChatWithUs planner page_id={props.experienceData?.id}></ChatWithUs>
-        </>}
       </SetWidthContainer>
 
       <TailoredFormMobileModal

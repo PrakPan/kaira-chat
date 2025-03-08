@@ -2,13 +2,14 @@ import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { IoMenu } from "react-icons/io5";
 import media from "../media";
-import openTailoredModal from "../../services/openTailoredModal";
-import TailoredFormMobileModal from "../modals/TailoredFomrMobile";
-import Destination1Carousel from "./Destination1Carousel";
-import Itinerary2Carousel from "./Itinerary2Carousel";
-import Activity1Carousel from "./Activity1Carousel";
-import Reviews1Carousel from "./Reviews1Carousel";
 import PrimaryHeading from "../heading/PrimaryHeading";
+import TailoredFormMobileModal from "../modals/TailoredFomrMobile";
+import Destination1Carousel from "../theme/Destination1Carousel";
+import Itinerary2Carousel from "../theme/Itinerary2Carousel";
+import Reviews1Carousel from "../theme/Reviews1Carousel";
+import Activity1Carousel from "../theme/Activity1Carousel";
+import openTailoredModal from "../../services/openTailoredModal";
+
 
 export default function Navigation({ components }) {
   let isPageWide = media("(min-width: 768px)");
@@ -70,7 +71,7 @@ export default function Navigation({ components }) {
   );
 }
 
-const NavigationMenu = ({ navItems, activeTab, setActiveTab}) => {
+const NavigationMenu = ({ navItems, activeTab, setActiveTab }) => {
   let isPageWide = media("(min-width: 768px)");
   const tabsRef = useRef(null);
   const [showTabs, setShowTabs] = useState(false);
@@ -117,7 +118,7 @@ const NavigationMenu = ({ navItems, activeTab, setActiveTab}) => {
 
       <div className="flex gap-3 flex-row items-center justify-between overflow-auto hide-scrollbar">
         {isPageWide ? (
-          <div className="w-full flex flex-row items-center gap-3 overflow-x-auto hide-scrollbar">
+          <div className="w-full flex flex-row items-center justify-center gap-3 overflow-x-auto hide-scrollbar">
             {navItems.map((tab, index) => (
               <div
                 key={tab.heading}
