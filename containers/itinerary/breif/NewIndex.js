@@ -39,6 +39,8 @@ const Details = (props) => {
   const [showDrawerData, setShowDrawerData] = useState(false);
   const [currentPopup, setCurrentPopup] = useState(false);
   const [locationsLatLong, setLocationsLatLong] = useState([]);
+
+  console.log("Show Drawer Data",showDrawerData);
   
   const CITY_COLOR_CODES = [
     '#359EBF',  //  # shade of blue
@@ -213,8 +215,8 @@ const Details = (props) => {
       <Drawer
         show={showDrawer}
         onHide={() => setShowDrawer(false)}
-        city_id={showDrawerData.city_id}
-        dayId={findDayIdByCityId(showDrawerData.city_id)}
+        city_id={showDrawerData?.city_id ? showDrawerData?.city_id : showDrawerData?.id}
+        dayId={findDayIdByCityId(showDrawerData?.city_id ? showDrawerData?.city_id : showDrawerData?.id)}
       ></Drawer>
 
       {props.traveleritinerary ? (
