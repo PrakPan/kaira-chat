@@ -10,7 +10,7 @@ import Activity1Carousel from "./Activity1Carousel";
 import Reviews1Carousel from "./Reviews1Carousel";
 import PrimaryHeading from "../heading/PrimaryHeading";
 
-export default function Navigation({ components }) {
+export default function Navigation({ components,slug }) {
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
@@ -47,6 +47,7 @@ export default function Navigation({ components }) {
             navItems={navItems}
             activeTab={activeIndex}
             setActiveTab={setActiveIndex}
+            slug={slug}
           />
 
           <ComponentDisplay
@@ -70,7 +71,7 @@ export default function Navigation({ components }) {
   );
 }
 
-const NavigationMenu = ({ navItems, activeTab, setActiveTab}) => {
+const NavigationMenu = ({ navItems, activeTab, setActiveTab,slug}) => {
   let isPageWide = media("(min-width: 768px)");
   const tabsRef = useRef(null);
   const [showTabs, setShowTabs] = useState(false);
@@ -107,7 +108,7 @@ const NavigationMenu = ({ navItems, activeTab, setActiveTab}) => {
               onClick={() => handleClick(index)}
               className={`text-nowrap cursor-pointer border-1 rounded-full px-3 md:px-5 py-2 md:py-3 font-semibold text-[15px] text-[#7C7C7C] ${
                 activeTab == index ? "border-black bg-[#F7E700] text-black" : ""
-              }`}
+              }  ${slug === "perfect-proposals-2025" ? "mx-auto" :""}` }
             >
               {tab.heading}
             </div>
@@ -115,9 +116,9 @@ const NavigationMenu = ({ navItems, activeTab, setActiveTab}) => {
         </div>
       )}
 
-      <div className="flex gap-3 flex-row items-center justify-between overflow-auto hide-scrollbar">
+      <div className={`flex gap-3 flex-row items-center ${slug === "perfect-proposals-2025" ? "" :"justify-between"} overflow-auto hide-scrollbar`}>
         {isPageWide ? (
-          <div className="w-full flex flex-row items-center gap-3 overflow-x-auto hide-scrollbar">
+          <div className={` flex flex-row items-center ${slug === "perfect-proposals-2025" ? "gap-1 w-[60vw] mx-auto" :"gap-3 w-full"}  overflow-x-auto hide-scrollbar`}>
             {navItems.map((tab, index) => (
               <div
                 key={tab.heading}
@@ -126,7 +127,7 @@ const NavigationMenu = ({ navItems, activeTab, setActiveTab}) => {
                   activeTab == index
                     ? "border-black bg-[#F7E700] text-black"
                     : ""
-                }`}
+                } ${slug === "perfect-proposals-2025" ? "mx-auto" :""} `}
               >
                 {tab.heading}
               </div>
