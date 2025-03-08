@@ -13,8 +13,8 @@ const CityDetailsDrawer = (props) => {
   const getCityData = async () => {
     try {
       // const res = await axioscitydatainstance.get("?city_id=" + props.city_id);
-      const res = await cityDetail.get("?city_id=" + props.city_id);
-      setData(res.data.city);
+      const res = await cityDetail.get(`${props?.city_id}`);
+      setData(res.data?.data?.city);
     } catch (err) {
       console.log("[ERROR][CityDetailsDrawer:getCityData]: ", err.message);
     }

@@ -48,8 +48,9 @@ const PinSection = (props) => {
       const res = await axiosCityDataById.get(`/${props?.cityId}`);
       const data = res.data;
       console.log("City Data",data);
+      props.setShowDrawerData(data?.data?.city);
       props.setShowDrawer(true);
-    props.setShowDrawerData(data.city);
+    
       }
     }
   };
