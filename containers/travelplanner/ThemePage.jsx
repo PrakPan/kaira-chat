@@ -34,6 +34,8 @@ import Locations from "../../components/containers/newplannerlocations/Index";
 import Activity2 from "../newcityplanner/activities/Index.js";
 import Poi from "../newcityplanner/pois/Index";
 import PathNavigation from "./PathNavigation.js";
+import ThemeBackground from "../../components/theme/ThemeBackgroundImages.jsx";
+import { imgUrlEndPoint } from "../../components/theme/ThemeConstants.js";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -130,21 +132,22 @@ export default function ThemePage(props) {
         slug={props.slug}
       />
 
-
       {props.slug === "japan-cherry-blossom" && (
         <div className="relative">
-          {isPageWide && <div className="absolute  left-0 -z-10 w-full md:w-[9.3%] h-[10rem]">
-            <Image
-              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/japan-banner-right.png`}
-              fill
-              className="absolute bottom-0 object-fill"
-            />
-          </div>}
+          {isPageWide && (
+            <div className="absolute  left-0 -z-10 w-full md:w-[9.3%] h-[10rem]">
+              <Image
+                src={`${imgUrlEndPoint}media/themes/japan-banner-right.png`}
+                fill
+                className="absolute bottom-0 object-fill"
+              />
+            </div>
+          )}
 
           {isPageWide && (
             <div className="absolute -top-1 right-0 -z-10 w-[10%] h-[10rem]">
               <Image
-                src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/japan-banner-right.png`}
+                src={`${imgUrlEndPoint}media/themes/japan-banner-right.png`}
                 fill
                 className="absolute bottom-0 object-fill"
               />
@@ -157,7 +160,7 @@ export default function ThemePage(props) {
         <div className="relative">
           <div className="absolute -top-10 left-0 -z-10 w-full md:w-[50%] h-[10rem]">
             <Image
-              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/Hearts.png`}
+              src={`${imgUrlEndPoint}media/themes/Hearts.png`}
               fill
               className="absolute bottom-0 object-fill"
             />
@@ -166,7 +169,7 @@ export default function ThemePage(props) {
           {isPageWide && (
             <div className="absolute -top-10 right-0 -z-10 w-[50%] h-[10rem]">
               <Image
-                src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/Hearts.png`}
+                src={`${imgUrlEndPoint}media/themes/Hearts.png`}
                 fill
                 className="absolute bottom-0 object-fill"
               />
@@ -176,7 +179,9 @@ export default function ThemePage(props) {
       )}
 
       <SetWidthContainer>
-        {props?.slug === "japan-cherry-blossom" && <PathNavigation path={"asia/japan"} />}
+        {props?.slug === "japan-cherry-blossom" && (
+          <PathNavigation path={"asia/japan"} />
+        )}
         <Overview
           heading={props.experienceData.overview_heading}
           text={props.experienceData.overview_text}
@@ -193,14 +198,19 @@ export default function ThemePage(props) {
                 );
 
                 return navComponents.length > 0 ? (
-                  <div key={index} className="mx-3 space-y-12 mt-5">
-                    <PrimaryHeading>
-                      {" "}
-                      {component.heading}
-                    </PrimaryHeading>
-                    <Navigation components={navComponents} />
+                  <div key={index} className={`mx-3 space-y-12 mt-5`}>
+                    {
+                      props?.slug === "perfect-proposals-2025" ? 
+                      <>
+                        <ThemeBackground component={component} slug={props?.slug}/>
+                      </> 
+                      : <PrimaryHeading> {component.heading}</PrimaryHeading>
+                    }
+                    
+                    <Navigation slug={props?.slug} components={navComponents} />
 
                     <PlanYourTripButton text={"Plan Itinerary For Free"} />
+                    
                   </div>
                 ) : null;
               }
@@ -209,86 +219,101 @@ export default function ThemePage(props) {
                 !component.parent && (
                   <div key={index} className="mx-3 space-y-12 mt-5">
                     <div className="space-y-3">
-                      <PrimaryHeading className={` ${props?.slug !='japan-cherry-blossom' ? "mx-auto text-center" : "mt-7"}`}>
+                      {props?.slug === "perfect-proposals-2025" && (component?.priority == 13 || component?.priority == 9) ? "" :<PrimaryHeading
+                        className={` ${
+                          props?.slug != "japan-cherry-blossom"
+                            ? "mx-auto text-center"
+                            : "mt-7"
+                        }`}
+                      >
                         {component.heading}
-                      </PrimaryHeading>
+                      </PrimaryHeading>}
                       <SecondaryHeading className="mx-auto text-center">
                         {component.text}
                       </SecondaryHeading>
                     </div>
 
-                    {props.slug === "japan-cherry-blossom" && component?.priority == 4 && isPageWide && (
-  <div className="relative w-full">
-    <div className="absolute -left-[9vw] md:-left-[9vw] -top-[20rem] -z-10 w-full md:w-[50%] h-[100rem]">
-      <Image
-        src="https://d31aoa0ehgvjdi.cloudfront.net/media/themes/japan-places-destination.png"
-        fill
-        className="absolute bottom-0 object-fill"
-      />
-    </div>
-  </div>
-)}
+                    <ThemeBackground component={component} slug={props?.slug}/>
 
-{props.slug === "japan-cherry-blossom" && component?.priority == 1 && isPageWide && (
-  <div className="relative w-full">
-    <div className="absolute -left-[20vw] -top-[10rem] -z-10 w-full md:w-[28%] h-[20rem]">
-      <Image
-        src="https://d31aoa0ehgvjdi.cloudfront.net/media/themes/other-destination.png"
-        fill
-        className="absolute bottom-0 object-fill"
-      />
-    </div>
-  </div>
-)}
+                    {props.slug === "japan-cherry-blossom" &&
+                      component?.priority == 4 &&
+                      isPageWide && (
+                        <div className="relative w-full">
+                          <div className="absolute -left-[9vw] md:-left-[9vw] -top-[20rem] -z-10 w-full md:w-[50%] h-[100rem]">
+                            <Image
+                              src={`${imgUrlEndPoint}media/themes/japan-places-destination.png`}
+                              fill
+                              className="absolute bottom-0 object-fill"
+                            />
+                          </div>
+                        </div>
+                      )}
 
-{props.slug === "japan-cherry-blossom" && component?.priority == 8 && isPageWide && (
-  <div className="relative w-full">
-    <div className="absolute -right-[8vw] -top-[10rem] -z-10 w-full md:w-[20%] h-[10rem]">
-      <Image
-        src="https://d31aoa0ehgvjdi.cloudfront.net/media/themes/japan-corner.png"
-        fill
-        className="absolute bottom-0 object-fill"
-      />
-    </div>
-  </div>
-)}
+                    {props.slug === "japan-cherry-blossom" &&
+                      component?.priority == 1 &&
+                      isPageWide && (
+                        <div className="relative w-full">
+                          <div className="absolute -left-[20vw] -top-[10rem] -z-10 w-full md:w-[28%] h-[20rem]">
+                            <Image
+                              src={`${imgUrlEndPoint}media/themes/other-destination.png`}
+                              fill
+                              className="absolute bottom-0 object-fill"
+                            />
+                          </div>
+                        </div>
+                      )}
 
-{props.slug === "japan-cherry-blossom" && component?.priority == 7 && isPageWide && (
-  <div className="relative w-full">
-    <div className="absolute -right-[9vw] -top-[12rem] -z-10 w-full md:w-[20%] h-[30rem]">
-      <Image
-        src="https://d31aoa0ehgvjdi.cloudfront.net/media/themes/other-destination.png"
-        fill
-        className="absolute bottom-0 object-fill"
-      />
-    </div>
+                    {props.slug === "japan-cherry-blossom" &&
+                      component?.priority == 8 &&
+                      isPageWide && (
+                        <div className="relative w-full">
+                          <div className="absolute -right-[8vw] -top-[10rem] -z-10 w-full md:w-[20%] h-[10rem]">
+                            <Image
+                              src={`${imgUrlEndPoint}media/themes/japan-corner.png`}
+                              fill
+                              className="absolute bottom-0 object-fill"
+                            />
+                          </div>
+                        </div>
+                      )}
 
-    <div className="absolute -left-[9vw] top-[3rem] -z-10 w-full md:w-[28%] h-[30rem]">
-      <Image
-        src="https://d31aoa0ehgvjdi.cloudfront.net/media/themes/other-destination.png"
-        fill
-        className="absolute bottom-0 object-fill"
-      />
-    </div>
-  </div>
-)}
+                    {props.slug === "japan-cherry-blossom" &&
+                      component?.priority == 7 &&
+                      isPageWide && (
+                        <div className="relative w-full">
+                          <div className="absolute -right-[9vw] -top-[12rem] -z-10 w-full md:w-[20%] h-[30rem]">
+                            <Image
+                              src={`${imgUrlEndPoint}media/themes/other-destination.png`}
+                              fill
+                              className="absolute bottom-0 object-fill"
+                            />
+                          </div>
+
+                          <div className="absolute -left-[9vw] top-[3rem] -z-10 w-full md:w-[28%] h-[30rem]">
+                            <Image
+                              src={`${imgUrlEndPoint}media/themes/other-destination.png`}
+                              fill
+                              className="absolute bottom-0 object-fill"
+                            />
+                          </div>
+                        </div>
+                      )}
 
                     {/* Rendering Static Components */}
 
-            {component.type === 'How it works?' && 
-              <div>
-              <BannerTwo
-                page_id={props.experienceData?.id}
-                destination={props.experienceData?.destination}
-              ></BannerTwo>
-            </div>
-            }
+                    {component.type === "How it works?" && (
+                      <div>
+                        <BannerTwo
+                          page_id={props.experienceData?.id}
+                          destination={props.experienceData?.destination}
+                        ></BannerTwo>
+                      </div>
+                    )}
 
-            
-
-            {component.type ==='Generic' && component.heading === 'Why plan with us?' &&
-            <WhyPlanWithUs page_id={props.experienceData?.id} />
-            }
+                    {component.type === "Generic" &&
+                      component.heading === "Why plan with us?" && (
+                        <WhyPlanWithUs page_id={props.experienceData?.id} />
+                      )}
 
                     {/* Render specific carousel components based on type */}
 
@@ -319,7 +344,7 @@ export default function ThemePage(props) {
                         {props.slug === "honeymoon-2025" && (
                           <>
                             <Image
-                              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/red-hearts.png`}
+                              src={`${imgUrlEndPoint}media/themes/red-hearts.png`}
                               className="object-fill absolute -left-[1rem] top-[10rem] md:-left-[9rem] md:top-0"
                               alt="Tilted Hearts"
                               height={300}
@@ -330,7 +355,7 @@ export default function ThemePage(props) {
                             />
 
                             <Image
-                              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/red-hearts.png`}
+                              src={`${imgUrlEndPoint}media/themes/red-hearts.png`}
                               className="object-fill absolute -right-[1rem] top-[35rem] md:-right-[6rem] md:top-0"
                               alt="Tilted Hearts"
                               height={300}
@@ -356,7 +381,7 @@ export default function ThemePage(props) {
                         {props.slug === "honeymoon-2025" && (
                           <div className="-z-10 w-fit absolute -top-[16rem] right-0 md:-top-[9rem] overflow-hidden">
                             <Image
-                              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/tilted-heart.png`}
+                              src={`${imgUrlEndPoint}media/themes/tilted-heart.png`}
                               className="object-fill"
                               alt="Tilted Hearts"
                               height={200}
@@ -369,87 +394,84 @@ export default function ThemePage(props) {
                         <Reviews1Carousel reviews={component.reviews} />
                         <PlanYourTripButton />
                       </div>
-                    ) :
-                    component.carousel === "destination-3" ? (
+                    ) : component.carousel === "destination-3" ? (
                       <>
                         <SwiperLocations
-                locations={component?.countries}
-                page_id={component?.id}
-                destination={component?.name}
-                viewall
-                country
-                page={"Country Page"}
-                continent={component?.countries}
-              ></SwiperLocations>
-              <PlanYourTripButton text={"Create your travel plan now!"} />
-                      </>) :
-              component.carousel === "state-1" ?
-                      <>
-                      <OldLocations
-                locations={component?.states}
-                page_id={component?.id}
-                destination={component?.name}
-                viewall
-                country={component?.name}
-                planner
-                page={"Country Page"}
-              ></OldLocations>
-              <PlanYourTripButton text={"Create your travel plan now!"} />
+                          locations={component?.countries}
+                          page_id={component?.id}
+                          destination={component?.name}
+                          viewall
+                          country
+                          page={"Country Page"}
+                          continent={component?.countries}
+                        ></SwiperLocations>
+                        <PlanYourTripButton
+                          text={"Create your travel plan now!"}
+                        />
                       </>
-              
-              : component.carousel === "destination-4" ?
-              <>
-                <div className="space-y-4">
-                <Locations
-                locations={component?.cities}
-                page={"Continent Page"}
-                viewall
-              ></Locations>
-              </div>
-              </>
-              : 
-              component.carousel === "Activity-2" ?
-              <>
-               <Activity2
-                data={component.activities}
-                activities={component?.activities}
-                city={component?.name}
-                // handlePlanButtonClick={()=>{}}
-                // {handlePlanButtonClick}
-                slug={props?.slug}
-
-                page={"Country Page"}
-              />
-              <PlanYourTripButton text={"Plan Itinerary For Free"} />
-              </>
-              :
-              
-              component.carousel === "destination-5" ?
-              <>
-               <Poi
-            elevation={component?.elevation}
-            data={component?.data}
-            thingsToDoPage={component?.thingsToDoPage}
-            pois={component?.pois}
-            city={component?.name}
-          />
-          </>
-              :
-              component.carousel === "destination-6" ?
-              <>
-              <Continentcarousel
-                data={props.continetCarousel}
-                page={"Country Page"}
-              ></Continentcarousel>
-              <PlanYourTripButton text={"Create your travel plan now!"} />
-              </>
-              :null}
+                    ) : component.carousel === "state-1" ? (
+                      <>
+                        <OldLocations
+                          locations={component?.states}
+                          page_id={component?.id}
+                          destination={component?.name}
+                          viewall
+                          country={component?.name}
+                          planner
+                          page={"Country Page"}
+                        ></OldLocations>
+                        <PlanYourTripButton
+                          text={"Create your travel plan now!"}
+                        />
+                      </>
+                    ) : component.carousel === "destination-4" ? (
+                      <>
+                        <div className="space-y-4">
+                          <Locations
+                            locations={component?.cities}
+                            page={"Continent Page"}
+                            viewall
+                          ></Locations>
+                        </div>
+                      </>
+                    ) : component.carousel === "Activity-2" ? (
+                      <>
+                        <Activity2
+                          data={component.activities}
+                          activities={component?.activities}
+                          city={component?.name}
+                          // handlePlanButtonClick={()=>{}}
+                          // {handlePlanButtonClick}
+                          slug={props?.slug}
+                          page={"Country Page"}
+                        />
+                        <PlanYourTripButton text={"Plan Itinerary For Free"} />
+                      </>
+                    ) : component.carousel === "destination-5" ? (
+                      <>
+                        <Poi
+                          elevation={component?.elevation}
+                          data={component?.data}
+                          thingsToDoPage={component?.thingsToDoPage}
+                          pois={component?.pois}
+                          city={component?.name}
+                        />
+                      </>
+                    ) : component.carousel === "destination-6" ? (
+                      <>
+                        <Continentcarousel
+                          data={props.continetCarousel}
+                          page={"Country Page"}
+                        ></Continentcarousel>
+                        <PlanYourTripButton
+                          text={"Create your travel plan now!"}
+                        />
+                      </>
+                    ) : null}
                   </div>
                 )
               );
             })}
-
-            
         </div>
 
         {props.slug === "honeymoon-2025" && (
@@ -459,7 +481,7 @@ export default function ThemePage(props) {
               style={{ transform: "rotate(-12deg)" }}
             >
               <Image
-                src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/tilted-heart.png`}
+                src={`${imgUrlEndPoint}media/themes/tilted-heart.png`}
                 className="object-fill"
                 alt="Tilted Hearts"
                 height={200}
@@ -470,30 +492,37 @@ export default function ThemePage(props) {
         )}
 
         <div className="my-[100px]">
-         {props.experienceData.faq.length > 0 && <ThemeFaqs faqs={props.experienceData.faq} />}
+          {props.experienceData.faq.length > 0 && (
+            <ThemeFaqs faqs={props.experienceData.faq} />
+          )}
         </div>
 
-        {props?.experienceData?.slug === 'japan-cherry-blossom' && <>
+        {props?.experienceData?.slug === "japan-cherry-blossom" && (
+          <>
+            {isPageWide && (
+              <div className="relative w-full">
+                <div className="absolute -left-[8vw] top-[28rem] -z-10 w-full md:w-[20%] h-[10rem] ">
+                  <Image
+                    src={`${imgUrlEndPoint}media/themes/japan-corner.png`}
+                    fill
+                    className="absolute bottom-0 object-fill transform scale-x-[-1]"
+                  />
+                </div>
+              </div>
+            )}
 
-          
-  {isPageWide && <div className="relative w-full">
-    <div className="absolute -left-[8vw] top-[28rem] -z-10 w-full md:w-[20%] h-[10rem] ">
-      <Image
-        src="https://d31aoa0ehgvjdi.cloudfront.net/media/themes/japan-corner.png"
-        fill
-        className="absolute bottom-0 object-fill transform scale-x-[-1]"
-      />
-    </div>
-  </div>}
+            <div className="space-y-3">
+              <PrimaryHeading className="mx-auto text-center">
+                What they say?
+              </PrimaryHeading>
+            </div>
+            <AsSeenIn />
+            <ChatWithUs planner page_id={props.experienceData?.id}></ChatWithUs>
+          </>
+        )}
 
-          <div className="space-y-3">
-                      <PrimaryHeading className="mx-auto text-center">
-                      What they say?
-                      </PrimaryHeading>
-          </div>
-        <AsSeenIn />
-        <ChatWithUs planner page_id={props.experienceData?.id}></ChatWithUs>
-        </>}
+
+
       </SetWidthContainer>
 
       <TailoredFormMobileModal

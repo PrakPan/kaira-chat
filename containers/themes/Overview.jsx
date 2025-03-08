@@ -35,7 +35,7 @@ export default function Overview(props) {
 
   return (
     <div className="relative mt-5 py-5 mx-3 flex flex-col gap-4 md:flex-row md:items-center">
-      {props.slug === "honeymoon-2025" && (
+      {(props.slug === "honeymoon-2025" || props.slug === "perfect-proposals-2025") && (
         <div className="-z-10 absolute -top-[3rem] md:-top-[5rem] -right-3 overflow-hidden">
           <Image
             src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/tilted-heart.png`}
