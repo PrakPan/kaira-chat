@@ -151,6 +151,7 @@ const ItineraryContainer = (props) => {
   };
 
   const getPaymentHandler = () => {
+    if(!props?.mercuryItinerary){
     setPaymentLoading(true);
 
     axiosPaymentInstance
@@ -197,6 +198,8 @@ const ItineraryContainer = (props) => {
       .catch((error) => {
         setPaymentLoading(false);
       });
+
+    }
   };
 
   const getPaymentInfo = () => {

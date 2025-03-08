@@ -6,6 +6,7 @@ import ImageLoader from "../../ImageLoader";
 import media from "../../media";
 import POIDetailsDrawer from "../../drawers/poiDetails/POIDetailsDrawer";
 import { logEvent } from "../../../services/ga/Index";
+import Image from "next/image";
 
 export const getStars = (rating) => {
   const stars = [];
@@ -107,7 +108,20 @@ const Activity = (props) => {
             </div>
 
             <div className="flex flex-row gap-2 items-center text-sm">
+            {props?.element?.poi ? (
+                <div className="flex flex-row items-center bg-[#FAFAFA]  text-[#7A7A7A] opacity-[70%] text-[12px] px-1 rounded-sm">
+                 Self Exploration
+                </div> )
+                :
+                <>
+                <div className="flex flex-row items-center bg-[#F5FFF7]  text-[#10A317] text-[12px] px-1 rounded-sm">
+                 Activity 
+                </div>
+                </>
+            }
+              
               <div className="flex flex-row items-center">
+
                 {getStars(props.element?.rating)}
               </div>
               <div className="text-[#7A7A7A] text-[12px]">
@@ -118,6 +132,7 @@ const Activity = (props) => {
                   {props.element?.user_ratings_total} Google reviews
                 </div>
               )}
+              
             </div>
           </div>
         </div>
@@ -228,6 +243,14 @@ const Recommendation = (props) => {
   
             {props.element?.type === "Restaurant Recommendation" ? (
               <div className="flex flex-row gap-2 items-center text-sm">
+                <div className="flex flex-row items-center bg-[#FCE3DB] text-[#EE724B] text-[12px] px-1 gap-2 rounded-sm">
+                <div className="flex items-center"><Image
+                              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/restaurant-icon.png`}
+                              height={12}
+                              width={12}
+                              className="object-contain"
+                            /></div><div>Restaurant</div>
+                </div>
                 <div className="flex flex-row items-center">
                   {getStars(props.element?.restaurants?.[0]?.rating)}
                 </div>
@@ -242,6 +265,7 @@ const Recommendation = (props) => {
               </div>
             ) : (
               <div className="flex flex-row gap-2 items-center text-sm">
+              
                 <div className="flex flex-row items-center">
                   {getStars(props.element?.rating)}
                 </div>

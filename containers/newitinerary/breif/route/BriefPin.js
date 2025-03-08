@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import { useEffect } from "react";
 
 const Container = styled.div`
   border-radius: 50%;
@@ -12,25 +11,25 @@ const Container = styled.div`
 const InnerContainer = styled.div`
   border-radius: 50%;
   background-color: ${(props) =>
-    props.index === 0 || (props.length && props.index === props.length - 1)
-      ? "white"
-      : "yellow"};
+    props.index === 0 || props.index === (props.length ? props.length - 1 : 0)
+      ? "yellow"
+      : "white"};
   width: 7px;
   height: 7px;
 `;
 
-const  Pin = (props) => {
-
-  console.log("Pin",props?.index,props?.length);
+const BriefPin = (props) => {
+  console.log("Pin2", props?.index, props?.length);
 
   return (
     <Container className="center-div" pinColour={props.pinColour} index={props?.index} length={props?.length}>
       <InnerContainer
-        duration={props.duration}
         pinColour={props.pinColour}
+        index={props.index}      
+        length={props.length}     
       ></InnerContainer>
     </Container>
   );
 };
 
-export default Pin;
+export default BriefPin;

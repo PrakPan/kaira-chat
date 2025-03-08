@@ -5,6 +5,7 @@ import CitySummary from "./CitySummary";
 import CityDaybyDay from "./CityDaybyDay";
 import { MdOutlineStar } from "react-icons/md";
 import { getStars } from "./SlabElement";
+import Image from "next/image";
 
 const ItineraryCity = (props) => {
   const [viewMore, setViewMore] = useState(false);
@@ -26,15 +27,25 @@ const ItineraryCity = (props) => {
 
           {props.city?.hotels && props.city.hotels.length ? (
             <div className="flex flex-col gap-1">
-              <div className="text-[14px] font-medium leading-0 underline">
-                {props.city.hotels[0]?.name}
-              </div>
+              <div className="flex items-center gap-2"> 
+    <Image
+      src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/Vector.png`}
+      height={22}
+      width={22}
+      className="object-contain" 
+      alt="Hotel Icon" 
+    />
+    <div className="text-[14px] font-medium leading-0 underline">
+      {props.city.hotels[0]?.name}
+    </div>
+  </div>
               <div className="flex flex-row items-center">
                 {getStars(props.city.hotels[0]?.rating)}{" "}
                 <div className="text-[#7A7A7A] text-[12px] ml-1">
                   {props.city.hotels[0]?.rating} ·{" "}
                 </div>
                 <div className="text-[#7A7A7A] text-[12px] ml-1 underline">{props.city.hotels[0]?.user_ratings_total} Google reviews</div>
+
               </div>
             </div>
           ) : null}

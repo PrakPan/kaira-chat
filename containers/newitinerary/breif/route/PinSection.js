@@ -3,6 +3,7 @@ import React from "react";
 import Pin from "./Pin";
 import { MdNavigateNext } from "react-icons/md";
 import { axiosCityDataById } from "../../../../services/itinerary/brief/route";
+import BriefPin from "./BriefPin";
 
 const Container = styled.div`
   cursor: pointer;
@@ -58,7 +59,7 @@ const PinSection = (props) => {
 
   return (
     <Container className="cursor-pointer w-fit" onClick={() => handleClick()}>
-      <Pin mercury={props?.mercury} duration={props.duration} pinColour={props.pinColour} index={props?.index} length={props?.length}></Pin>
+      {props?.mercury ? <BriefPin duration={props.duration} pinColour={props.pinColour} index={props?.index} length={props?.length}/> : <Pin duration={props.duration} pinColour={props.pinColour} index={props?.index} length={props?.length}></Pin>}
       <Heading
         pinColour={props.pinColour}
         className={`${

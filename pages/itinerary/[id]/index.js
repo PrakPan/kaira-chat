@@ -60,7 +60,7 @@ const Itinerary = (props) => {
       </Head>
 
       {router.query.id && (
-        <ItineraryContainer id={router.query.id}></ItineraryContainer>
+        <ItineraryContainer mercuryItinerary id={router.query.id}></ItineraryContainer>
       )}
     </LayoutV2>
   );
