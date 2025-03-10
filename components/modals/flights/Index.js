@@ -76,6 +76,8 @@ const ContentContainer = styled.div`
 `;
 
 const Booking = (props) => {
+
+  console.log("Selected Transfr",props?.mercuryTransfer);
   let isPageWide = media("(min-width: 768px)");
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -143,6 +145,7 @@ const Booking = (props) => {
     });
 
     if (props.selectedBooking && props.token) {
+      console.log("Selected Booking",props?.selectedBooking)
       const requestData = {
         adult_count: pax.adults,
         child_count: pax.children,
@@ -151,8 +154,10 @@ const Booking = (props) => {
         journey_type: "1",
         origin: props.selectedBooking.origin_iata,
         destination: props.selectedBooking.destination_iata,
-        preferred_departure_time: `${new Date(props?.selectedBooking?.check_in?.replace(' ', 'T'))?.toISOString()?.slice(0, 19)}`,
+        preferred_departure_time: `${props?.selectedBooking?.check_in ? new Date(props?.selectedBooking?.check_in.replace(' ', 'T'))?.toISOString()?.slice(0, 19) : new Date()?.toISOString()?.slice(0, 19)}`,
         flight_cabin_class: classType.value,
+        origin: props?.mercuryTransfer?.source?.code,
+        destination:props?.mercuryTransfer?.destination?.code
       };
 
       console.log("Requested Data",requestData)
@@ -204,14 +209,14 @@ const Booking = (props) => {
           setLoading(false);
           setFetchingIsError({
             error: true,
-            errorMsg: `Sorry, we could not find any flights from ${props?.selectedBooking?.city} to ${props?.selectedBooking?.destination_city} for given dates at the moment. Please contact us to complete this booking`,
+            errorMsg: `Sorry, we could not find any flights from ${props?.selectedBooking?.city || props?.mercuryTransfer?.source?.city_name} to ${props?.selectedBooking?.destination_city || props?.mercuryTransfer?.destination?.city_name} for given dates at the moment. Please contact us to complete this booking`,
           });
         });
     } else {
       setLoading(false);
       setFetchingIsError({
         error: true,
-        errorMsg: `Sorry, we could not find any flights from ${props?.selectedBooking?.city} to ${props?.selectedBooking?.destination_city} for given dates at the moment. Please contact us to complete this booking`,
+        errorMsg: `Sorry, we could not find any flights from ${props?.selectedBooking?.city || props?.mercuryTransfer?.source?.city_name} to ${props?.selectedBooking?.destination_city || props?.mercuryTransfer?.destination?.city_name} for given dates at the moment. Please contact us to complete this booking`,
       });
     }
   };
@@ -372,6 +377,7 @@ const Booking = (props) => {
           classType={classType}
           setClassType={setClassType}
           handleTransferEdit={handleTransferEdit}
+          mercuryTransfer={props?.mercuryTransfer}
         ></SectionOne>
 
         <GridContainer style={{ clear: "right" }}>
@@ -503,6 +509,8 @@ const Booking = (props) => {
           _GetInTouch={props._GetInTouch}
           routeId={props.routeId}
           selectedBooking={props.selectedBooking}
+          mercuryTransfer={props?.mercuryTransfer}
+          mercury={true}
         />
       </Drawer>
     );

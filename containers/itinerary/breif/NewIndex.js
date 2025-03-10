@@ -39,8 +39,6 @@ const Details = (props) => {
   const [showDrawerData, setShowDrawerData] = useState(false);
   const [currentPopup, setCurrentPopup] = useState(false);
   const [locationsLatLong, setLocationsLatLong] = useState([]);
-
-  console.log("Show Drawer Data",showDrawerData);
   
   const CITY_COLOR_CODES = [
     '#359EBF',  //  # shade of blue
@@ -84,6 +82,7 @@ const Details = (props) => {
     else {
       if (props.CityData.length >= 1) {
         let color;
+        console.log("CityData",props.CityData);
         for (var i = 0; i < props.CityData.length; i++) {
           color = CITY_COLOR_CODES[i%7];
           var postion = props.CityData[i];
@@ -136,6 +135,7 @@ const Details = (props) => {
     return null; // Return null if city_id is not found in the array
   }
 
+  console.log("Inside Brief New Index",props?.transferBookings);
   return (
     <div id="brief" className="mt-16">
       <DetailsContainer>
@@ -215,8 +215,8 @@ const Details = (props) => {
       <Drawer
         show={showDrawer}
         onHide={() => setShowDrawer(false)}
-        city_id={showDrawerData?.city_id ? showDrawerData?.city_id : showDrawerData?.id}
-        dayId={findDayIdByCityId(showDrawerData?.city_id ? showDrawerData?.city_id : showDrawerData?.id)}
+        city_id={showDrawerData.city_id}
+        dayId={findDayIdByCityId(showDrawerData.city_id)}
       ></Drawer>
 
       {props.traveleritinerary ? (
