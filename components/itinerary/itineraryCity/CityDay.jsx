@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import SlabElement from "./SlabElement";
 import media from "../../media";
 import ActivityAddDrawer from "../../drawers/poiDetails/activityAddDrawer";
-import { convertDateFormat } from "../../../helper/ConvertDateFormat";
+import { IoTimeOutline } from "react-icons/io5";
+import { RiTimeLine } from "react-icons/ri";
+// import { convertDateFormat } from "../../../helper/ConvertDateFormat";
 
 const CityDay = (props) => {
   let isPageWide = media("(min-width: 768px)");
@@ -20,13 +22,63 @@ const CityDay = (props) => {
     setElements(elements);
   }, [props.day?.slab_elements]);
 
+  function convertDateFormat(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  }
+
   return (
     <div className="flex flex-col md:flex-row md:border-b-2">
       <div
-        className={`md:w-[15%] text-[14px] md:text-[16px] font-semibold py-2 px-1  md:border-r-2 md:text-center md:text-[#7A7A7A] bg-[#ECECEC] md:bg-white`}
+        className={`md:w-[20%] text-[14px] md:text-[16px] font-semibold py-2 px-1  md:border-r-2 md:text-center md:text-black bg-[#ECECEC] md:bg-white`}
       >
-        Day {props.index + 1}
-        {isPageWide ? <span>, {convertDateFormat(props?.day?.date)}</span> : <span>, {convertDateFormat(props?.day?.date)}</span>}
+       
+        {isPageWide ? <span> {convertDateFormat(props?.day?.date)}</span> : <span>, {convertDateFormat(props?.day?.date)}</span>}
+        <span className="text-[#ABABAB]"> (Day {props.index + 1})</span>
+        
+        {/* {elements.map((element, index) => (
+          <>
+            
+            <div className="w-16 flex flex-col items-center py-4">
+              <span className="text-xs text-gray-500">10:30 AM</span>
+              <div className="h-6 w-6 flex items-center justify-center mt-1">
+                <RiTimeLine className="text-gray-400" size={18} />
+              </div>
+            </div>
+          </>
+        ))} */}
+        <div className="flex flex-col items-center mt-1">
+  {elements.map((time, index) => (
+    <div key={index} className="flex items-start">
+      {/* Left Section - Clock + Vertical Line */}
+      <div className="flex flex-col items-center">
+        {/* Clock Icon */}
+        <div className="h-6 w-6 flex items-center justify-center">
+          <RiTimeLine className="text-gray-400" size={25} />
+        </div>
+
+        {/* Vertical Line (except for last item) */}
+        {index !== elements.length - 1 && (
+          <div
+          style={{
+            width: "2px",
+            height: "4.5rem",
+            backgroundImage:
+        "repeating-linear-gradient(transparent 0px, transparent 6px, gray 6px, gray 8px)",
+            opacity: 0.5,
+          }}
+        ></div>
+        )}
+      </div>
+
+      {/* Right Section - Time */}
+      <span className="ml-2 text-xs text-gray-500">10:30 AM</span>
+    </div>
+  ))}
+</div>
+
+
+
       </div>
 
       <div className="flex flex-col p-3 md:w-[85%]">
@@ -44,6 +96,12 @@ const CityDay = (props) => {
         >
           +Add activities
         </button>
+
+        <div className=" px-6 py-3">
+          <button className="bg-[#F7E700] text-black text-sm font-medium py-1 px-3 rounded border-2 border-black">
+            Add Taxi
+          </button>
+        </div>
       </div>
 
       <ActivityAddDrawer

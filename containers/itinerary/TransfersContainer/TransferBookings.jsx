@@ -73,7 +73,7 @@ const CITY_COLOR_CODES = [
 ];
 
 const TransferBookings = (props) => {
-  const transferBookingsIntercity = useSelector((state) => state.TransferBookings.transferBookings).intercity;
+  const transferBookingsIntercity = useSelector((state) => state.TransferBookings?.transferBookings)?.intercity;
   let isPageWide = media("(min-width: 768px)");
   const [selectedBooking, setSelectedBooking] = useState({
     id: null,
@@ -217,7 +217,7 @@ const TransferBookings = (props) => {
       )}
 
 <div>
-  {Object.keys(transferBookingsIntercity)?.map((key, index) => 
+  {transferBookingsIntercity && Object?.keys(transferBookingsIntercity)?.map((key, index) => 
     transferBookingsIntercity[key]?.id ? (
       <>
         <PinSection

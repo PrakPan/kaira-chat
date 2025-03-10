@@ -58,6 +58,7 @@ const Booking = (props) => {
   const [showTransferEditDrawer, setShowTransferEditDrawer] = useState(false);
   const [isMercury, setIsMercury] = useState(false);
 
+  console.log("OCity,D",props?.oCityData,props?.dCityData);
 
   const handleTransferEdit = (e) => {
     setShowTransferEditDrawer(true);
