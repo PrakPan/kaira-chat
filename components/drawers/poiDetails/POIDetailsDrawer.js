@@ -9,17 +9,26 @@ import axiosPOIActivityInstance, {
 } from "../../../services/poi/poiActivities";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
+import { useRouter } from "next/router";
 
 const POIDetailsDrawer = (props) => {
   const [data, setData] = useState(props?.data || []);
   const [loading, setLoading] = useState(false);
+  const router=useRouter();
   useEffect(() => {
     if (props.show) fetchData();
   }, [props.show]);
 
   const fetchData = async () => {
     setLoading(true);
-    if (props?.activityData?.type == "activity") {
+    if(props?.activityData?.type=="activity"){
+      const res = await axios.get(
+        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/activity/${props?.activityData?.id}/`
+      );
+      setData(res?.data?.activity);
+      setLoading(false);
+    }
+    else if (props?.activityData?.type == "poi") {
       const res = await axios.get(
         `${MERCURY_HOST}/api/v1/geos/poi/${props?.activityData?.id}/`
       );
@@ -102,7 +111,8 @@ const POIDetailsDrawer = (props) => {
       show={props.show}
       anchor={"right"}
       backdrop
-      width={props.width}
+      width={"50%"}
+      mobileWidth={"100%"}
       style={{ zIndex: props.itineraryDrawer ? 1503 : 1501 }}
       className="font-lexend"
       onHide={props.handleCloseDrawer}
@@ -123,7 +133,7 @@ const POIDetailsDrawer = (props) => {
         </>
       ) : (
         <POIDetailsSkeleton
-          width={"500px"}
+          width={"100%"}
           itineraryDrawer={props.itineraryDrawer}
           name={props.name}
           handleCloseDrawer={props.handleCloseDrawer}

@@ -3,13 +3,33 @@ import { useState, useEffect } from "react";
 import POIDetailsDrawer from "../../drawers/poiDetails/POIDetailsDrawer";
 import { logEvent } from "../../../services/ga/Index";
 import ImageLoader from "../../ImageLoader";
+import ActivityAddDrawer from "../../drawers/poiDetails/activityAddDrawer";
+import { useRouter } from "next/router";
 
 const CitySummary = (props) => {
+  const router=useRouter();
   const [dayByDay, setDayByDay] = useState(null);
   const [showDrawer, setShowDrawer] = useState(false);
   const [poi, setPoi] = useState(0);
   const [activities, setActivities] = useState(null);
+  const [showAddDrawer, setShowAddDrawer] = useState(false);
+  const [activityData, setActivityData] = useState({
+    id: "",
+    type: "",
+  });
 
+  const handleView = async (poi, type) => {
+    try {
+      setShowDrawer(true);
+      setActivityData(() => ({
+        id: poi,
+        type: type,
+      }));
+    } catch (error) {
+      console.log("error is:",error)
+    }
+
+  };  
   useEffect(() => {
     let dayByDayArray = [];
 
@@ -52,7 +72,7 @@ const CitySummary = (props) => {
     <div className="p-3 flex flex-col gap-3">
       {dayByDay && dayByDay.length ? (
         <div className="text-sm font-normal flex flex-col gap-1 w-auto md:flex-row">
-        <div className="text-[14px] font-medium leading-[22px] w-[80px]">
+          <div className="text-[14px] font-medium leading-[22px] w-[80px]">
             Explore:{" "}
           </div>
           <div className="text-sm font-normal flex flex-row items-center flex-wrap gap-1 w-[]">
@@ -73,23 +93,30 @@ const CitySummary = (props) => {
               onClick={handleSeeMore}
               className="ml-2 text-blue hover:underline font-[600] text-[12px] leading-[22px] cursor-pointer"
             >
-              {dayByDay.length > 3 && `+${dayByDay?.length-3} more`}
+              {dayByDay.length > 3 && `+${dayByDay?.length - 3} more`}
             </span>
           </div>
         </div>
       ) : null}
-<div className="text-sm font-normal flex flex-col gap-1 w-auto md:flex-row">
-<div className="text-[14px] font-medium leading-[22px] w-[80px]">{activities?.length>0&&<>Activity:</>} </div>
+      <div className="text-sm font-normal flex flex-col gap-1 w-auto md:flex-row">
+        <div className="text-[14px] font-medium leading-[22px] w-[80px]">
+          {activities?.length > 0 && <>Activity:</>}{" "}
+        </div>
         <div className="flex flex-col gap-2">
           <div className="flex-wrap gap-2">
             {activities?.map((item) => (
-              <div className="flex gap-2 max-w-[300px] p-2 border rounded-lg shadow-none">
+              <div className="flex gap-2 w-[333px] h-[78px] p-[10px] border-[2px] rounded-[12px] shadow-none hover:cursor-pointer" onClick={() =>
+                handleView(
+                  item.id,
+                  "activity"
+                )
+              }>
                 <div className="w-[50px]">
                   <ImageLoader
                     borderRadius={"5px"}
                     style={{
-                      width: "50px",
-                      height: "50px",
+                      width: "48px",
+                      height: "48px",
                       cursor: "pointer",
                       margin: "auto",
                     }}
@@ -97,10 +124,10 @@ const CitySummary = (props) => {
                   />
                 </div>
                 <div>
-                  <div className="w-fit font-medium text-[16px] cursor-pointer">
+                  <div className="w-fit font-semibold font-[Poppins] text-[12px] cursor-pointer">
                     {item?.name}
                   </div>
-                  <div className="flex gap-3">
+                  <div className="flex gap-3 text-[12px] font-[Poppins]">
                     <div className="w-auto flex items-center gap-1">
                       <svg
                         width="14"
@@ -136,7 +163,10 @@ const CitySummary = (props) => {
               </div>
             ))}
           </div>
-          <button className="bg-black text-white w-[120px] h-[38px] rounded-md px-[12px] py-[6px]">
+          <button
+            className="bg-black text-white w-[120px] h-[38px] rounded-md px-[12px] py-[6px]"
+            onClick={() => setShowAddDrawer(true)}
+          >
             Add Activity
           </button>
         </div>
@@ -149,12 +179,20 @@ const CitySummary = (props) => {
             dayByDay[poi]?.poi ? dayByDay[poi]?.poi : dayByDay[poi]?.activity
           }
           handleCloseDrawer={handleCloseDrawer}
-          name={dayByDay[poi].heading}
+          name={dayByDay?.[poi].heading }
           image={dayByDay[poi].icon}
-          text={dayByDay[poi]?.text}
+          text={dayByDay[poi]?.text }
           Topheading={"Select Our Point Of Interest"}
+          activityData={activityData}
         />
       ) : null}
+      <ActivityAddDrawer
+        showDrawer={showAddDrawer}
+        setShowDrawer={setShowAddDrawer}
+        cityName={props.city.city.name}
+        cityID={props.city.city.id}
+
+      ></ActivityAddDrawer>
     </div>
   );
 };

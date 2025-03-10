@@ -1,5 +1,4 @@
 import { connect, useSelector } from "react-redux";
-import bookings from "../../../services/itinerary/bookings";
 import HotelBooking from "./HotelBooking";
 import React, { useState } from "react";
 import FullScreenGallery from "../../../components/fullscreengallery/Index";
@@ -14,7 +13,6 @@ const StaysContainer = (props) => {
     id: null,
     name: null,
   });
-  console.log("index is 1:",props.stayBookings)
   const [showFilter, setshowFilter] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [AddHotel, setAddHotel] = useState(false);
@@ -43,7 +41,8 @@ const StaysContainer = (props) => {
     itinerary_name,
     cost,
     costings_breakdown,
-    images
+    images,
+    clickType
   ) => {
     {
       process.env.NODE_ENV === "production" &&
@@ -72,11 +71,12 @@ const StaysContainer = (props) => {
       cost: Math.round(cost),
       costings_breakdown: costings_breakdown,
       images: images,
+      clickType:clickType
     });
     props.setShowBookingModal();
   };
 
-  function handleClickAc(i, data, city_id) {
+  function handleClickAc(i, data, city_id,clickType) {
     let name = props.stayBookings[i]?.["name"];
     let itinerary_id = props.stayBookings[i]["itinerary_id"];
     let itinerary_name = props.stayBookings[i]["itinerary_name"];
@@ -95,7 +95,6 @@ const StaysContainer = (props) => {
     let city = props.stayBookings[i]["city_name"];
     let cityId = city_id;
     let room_type = props.stayBookings[i]["room"];
-
     _changeBookingHandler(
       name,
       itinerary_id,
@@ -110,8 +109,10 @@ const StaysContainer = (props) => {
       room_type,
       user_rating,
       number_of_reviews,
-      itinerary_name
+      itinerary_name,
+      clickType
     );
+    data.clickType=clickType
     setCurrentBooking(data);
     props.setShowBookingModal();
   }
@@ -234,8 +235,6 @@ const mapStateToPros = (state) => {
     emailfailmessage: state.auth.emailfailmessage,
     loginmessage: state.auth.loginmessage,
     hideloginclose: state.auth.hideloginclose,
-    // stayBookings: state.Bookings.stayBookings,
-    // bookings: state.Bookings,
   };
 };
 

@@ -59,7 +59,6 @@ const GetInTouchContainer = styled.div`
 
 const SimpleTabsV2 = (props) => {
   const dispatch = useDispatch();
-  console.log("transfer booking parent:",props.transferBookings)
   dispatch(setTransferBookings(props.transferBookings))
   let isPageWide = media("(min-width: 768px)");
   const [isGroup, setIsGroup] = useState(false);

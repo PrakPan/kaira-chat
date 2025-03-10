@@ -42,7 +42,7 @@ const CityDay = (props) => {
           onClick={() => setShowAddDrawer(true)}
           className="mt-3 ml-4 w-fit text-[14px] text-blue underline font-semibold"
         >
-          +Add activities
+          +Add activities on {convertDateFormat(props?.day?.date)}
         </button>
       </div>
 
@@ -51,7 +51,7 @@ const CityDay = (props) => {
         setShowDrawer={setShowAddDrawer}
         cityName={props.city.name}
         cityID={props.city.id}
-        // date={props?.Days?.date}
+        date={props?.day?.date}
         // day_slab_index={props?.indexDay}
         // getPaymentHandler={props?.getPaymentHandler}
         // getAccommodationAndActivitiesHandler={

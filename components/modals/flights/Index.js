@@ -153,8 +153,6 @@ const Booking = (props) => {
         destination: props.selectedBooking.destination_iata,
         preferred_departure_time: `${new Date(props?.selectedBooking?.check_in?.replace(' ', 'T'))?.toISOString()?.slice(0, 19)}`,
         flight_cabin_class: classType.value,
-        origin:"DEL",
-        destination:"BOM"
       };
 
       console.log("Requested Data",requestData)

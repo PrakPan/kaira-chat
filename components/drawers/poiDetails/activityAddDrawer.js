@@ -8,7 +8,7 @@ import axiosaddActivityinstance from "../../../services/poi/addActivities";
 import { BiErrorCircle } from "react-icons/bi";
 import PoiListSkeleton from "../../../containers/newitinerary/itineraryelements/PoiListSkeleton";
 import { getDate } from "../../../helper/DateUtils";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
 import { IoMdSearch } from "react-icons/io";
 import useMediaQuery from "../../../hooks/useMedia";
@@ -50,6 +50,8 @@ const ActivityAddDrawer = (props) => {
   const [loading, setLoading] = useState(true);
   const [offSet, setOffSet] = useState(0);
   const [showDynamicfilters, setShowDynamicfilters] = useState(false);
+  const itineraryFilters = useSelector((state) => state.ItineraryFilters);
+  const num_adults = itineraryFilters.occupancies.reduce((sum, item) => sum + item.num_adults, 0);
   const [filterState, setFilterState] = useState({
     recommended_only: false,
     rating: [],
@@ -57,8 +59,8 @@ const ActivityAddDrawer = (props) => {
     tour_type: [],
     guide: [],
     pax: {
-      number_of_travelers: props.plan?.number_of_adults,
-      traveler_ages: Array(props.plan?.number_of_adults).fill(null),
+      number_of_travelers: num_adults,
+      traveler_ages: Array(num_adults).fill(null),
     }
   })
   const [filtersObj, setFiltersObj] = useState({

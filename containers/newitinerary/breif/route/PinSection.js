@@ -59,7 +59,8 @@ const PinSection = (props) => {
 
   return (
     <Container className="cursor-pointer w-fit" onClick={() => handleClick()}>
-      {props?.mercury ? <BriefPin duration={props.duration} pinColour={props.pinColour} index={props?.index} length={props?.length}/> : <Pin duration={props.duration} pinColour={props.pinColour} index={props?.index} length={props?.length}></Pin>}
+      {props?.mercury ?
+       <BriefPin duration={props.duration} pinColour={props.pinColour} index={props?.index} length={props?.length}/> : <Pin duration={props.duration} pinColour={props.pinColour} index={props?.index} length={props?.length}></Pin>}
       <Heading
         pinColour={props.pinColour}
         className={`${

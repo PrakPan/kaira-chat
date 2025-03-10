@@ -17,6 +17,7 @@ import Drawer from "../../../components/ui/Drawer";
 import { Details } from "../../../components/modals/flights/new-flight-searched/Index";
 import { FaArrowRight } from "react-icons/fa6";
 import { useRouter } from "next/router";
+import TransferEditDrawer from "../../../components/drawers/routeTransfer/TransferEditDrawer";
 const GridContainer = styled.div`
   width: auto;
   overflow: auto;
@@ -54,8 +55,34 @@ const Line = styled.hr`
   @media screen and (min-width: 768px) {
     width: 12.3rem;
     height: 1px;
-    top: 81px;
+    top: ${(props) => (props.end ? `1rem` : `5rem`)};
     right: -81px;
+  }
+`;
+
+const Line2 = styled.hr`
+  background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
+    ${(props) =>
+      props.pinColour
+        ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
+        : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
+
+  background-size: 8px 3px, 100% 3px;
+  color: #c80000;
+  -webkit-transform: rotate(90deg);
+  position: absolute;
+  height: 1px;
+  border: 2px;
+  width: ${(props) => (props?.Transfers ? `16rem` : `5rem`)};
+  top: ${(props) => (props?.lastend ? `101px` : `23px`)};
+  right: ${(props) => (props?.Transfers ? `-110px` : `-22px`)};
+  opacity: initial;
+  z-index: -1;
+  @media screen and (min-width: 768px) {
+    width: 8.4rem;
+    height: 1px;
+    top: 40px;
+    right: -50px;
   }
 `;
 
@@ -93,15 +120,24 @@ const TransferBooking = ({
   _updateTaxiBookingHandler,
   getPaymentHandler,
   _changeFlightHandler,
+  origin,
+  destination,
+  id,
+  check_in,
+  end,
+  Transfer,
+  lastend
 }) => {
+  console.log("transfer:",Transfer)
   let isPageWide = media("(min-width: 768px)");
   const isDesktop = useMediaQuery("(min-width:1024px)");
-  const [addbooking, setaddboking] = useState(booking.user_selected);
+  const [addbooking, setaddboking] = useState(booking?.user_selected);
   const [loading, setLoading] = useState(false);
   const [transferImageFailed, setTransferImageFailed] = useState(null);
+  const [showDrawer, setShowDrawer] = useState(false);
   useEffect(() => {
-    setaddboking(booking.user_selected);
-  }, [booking.user_selected]);
+    setaddboking(booking?.user_selected);
+  }, [booking?.user_selected]);
 
   const handleTransferImageFailed = () => {
     setTransferImageFailed(true);
@@ -157,8 +193,8 @@ const TransferBooking = ({
     let taxi_type = booking["taxi_type"];
     let transfer_type = booking["transfer_type"];
     let destination_city = booking["destination_address"]["shortName"];
-    let origin_iata = booking["origin_city_iata_code"];
-    let destination_iata = booking["destination_city_iata_code"];
+    let origin_iata = booking?.transfer_details?.items?.[0]?.segments?.[0]?.origin?.city_code;
+    let destination_iata = booking?.transfer_details?.items?.[0]?.segments?.[booking?.transfer_details?.items?.[0].segments?.length-1]?.destination?.city_code;
     let origin = booking["source_address"];
     let destination = booking["destination_address"];
 
@@ -189,14 +225,14 @@ const TransferBooking = ({
         page: "Itinerary Page",
         event_category: "Button Click",
         event_label: label,
-        event_value: booking.heading,
+        event_value: booking?.heading,
         event_action: "Transfers",
       },
     });
   }
 
   const Facilities = [
-    booking.booking_type == "Taxi" || booking.booking_type == "Bus"
+    booking?.booking_type == "Taxi" || booking?.booking_type == "Bus"
       ? booking?.transfer_details?.hasOwnProperty("luggage_bags") &&
         booking?.transfer_details?.luggage_bags > 0
         ? `${booking?.transfer_details?.luggage_bags} Luggage bags`
@@ -233,7 +269,7 @@ const TransferBooking = ({
         id: booking["id"],
         booking_type: booking_type,
         itinerary_type: "Tailored",
-        user_selected: booking.user_selected,
+        user_selected: booking?.user_selected,
         itinerary_id: booking["itinerary_id"],
         taxi_type: booking["taxi_type"],
         transfer_type: booking["transfer_type"],
@@ -286,173 +322,203 @@ const TransferBooking = ({
   };
 
   return (
-    <Container className={`${!isPageWide ? "max-w-fit" : "max-w-[54vw]"}`}>
-      <div className="relative">
-        <Line pinColour={CITY_COLOR_CODES[index % 7]} Transfers={true} />
-      </div>
-
-      {booking.booking_type === "Flight" ? (
-        <FlightBooking
-          booking={booking}
-          notificationText={notificationText}
-          plan={plan}
-          tripsPage={tripsPage}
-          openNotification={openNotification}
-          payment={payment}
-          index={index}
-          _changeFlightHandler={_changeFlightHandler}
-          token={token}
-          setShowLoginModal={setShowLoginModal}
-        />
-      ) : (
-        <div className="mt-3 ml-1 md:ml-7 flex flex-col w-full">
-          <div className="flex flex-row w-full justify-between items-center">
-            <span className="font-medium  inline">{booking.name}</span>
-            <div className="flex flex-row gap-2 justify-center items-center">
-              {/* <div className=" text-md font-semibold  text-[#277004] ">
+    <>
+      {booking?.id ? (
+        <Container className={`${!isPageWide ? "max-w-fit" : "max-w-[54vw]"}`}>
+          <div className="relative">
+            <Line pinColour={CITY_COLOR_CODES[index % 7]} Transfers={Transfer} />
+          </div>
+          {booking?.booking_type === "Flight" ? (
+            <FlightBooking
+              booking={booking}
+              notificationText={notificationText}
+              plan={plan}
+              tripsPage={tripsPage}
+              openNotification={openNotification}
+              payment={payment}
+              index={index}
+              _changeFlightHandler={_changeFlightHandler}
+              token={token}
+              setShowLoginModal={setShowLoginModal}
+            />
+          ) : (
+            <div className="mt-3 ml-1 md:ml-7 flex flex-col w-full">
+              <div className="flex flex-row w-full justify-between items-center">
+                <span className="font-medium  inline">{booking?.name}</span>
+                <div className="flex flex-row gap-2 justify-center items-center">
+                  {/* <div className=" text-md font-semibold  text-[#277004] ">
                 Included
               </div> */}
-            </div>
-          </div>
-
-          <div
-            id={booking?.id}
-            className={`mb-2 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ${
-              !isPageWide ? "w-full" : "max-w-[54vw]"
-            }`}
-          >
-            <div className="flex flex-row items-center justify-between gap-1">
-              <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
-                {!transferImageFailed ? (
-                  <ImageLoader
-                    is_url={booking.image?.includes("gozo")}
-                    className=" object-contain"
-                    url={booking.image}
-                    leftalign
-                    height={booking.image?.includes("gozo") ? "3rem" : "4rem"}
-                    width={"4rem"}
-                    widthmobile="4rem"
-                    onfail={handleTransferImageFailed}
-                  ></ImageLoader>
-                ) : (
-                  <TransportIconFetcher
-                    TransportMode={booking.booking_type}
-                    Instyle={{
-                      fontSize: "2.75rem",
-                      marginRight: "0.8rem",
-                      color: "black",
-                    }}
-                  />
-                )}
+                </div>
               </div>
 
-              <div className="flex flex-col lg:w-60">
-                <div className="sm:text-sm text-[0.85rem]">
-                  {booking.booking_type == "Taxi"
-                    ? booking.transfer_details &&
-                      booking.transfer_details.gozo &&
-                      booking.transfer_details.gozo.model
-                      ? isPageWide
-                        ? booking.transfer_details.gozo.model
-                        : truncateString(
-                            booking.transfer_details.gozo.model,
-                            25
-                          )
-                      : "Private transfer "
-                    : booking.booking_type}
-
-                  {booking.transfer_type === "Intercity one-way" &&
-                    booking?.transfer_details?.duration?.text && (
-                      <span className="ml-1">
-                        ({booking?.transfer_details?.duration?.text})
-                      </span>
+              <div
+                id={booking?.id}
+                className={`mb-2 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ${
+                  !isPageWide ? "w-full" : "max-w-[54vw]"
+                }`}
+              >
+                <div className="flex flex-row items-center justify-between gap-1">
+                  <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
+                    {!transferImageFailed ? (
+                      <ImageLoader
+                        is_url={booking?.image?.includes("gozo")}
+                        className=" object-contain"
+                        url={booking?.image}
+                        leftalign
+                        height={
+                          booking?.image?.includes("gozo") ? "3rem" : "4rem"
+                        }
+                        width={"4rem"}
+                        widthmobile="4rem"
+                        onfail={handleTransferImageFailed}
+                      ></ImageLoader>
+                    ) : (
+                      <TransportIconFetcher
+                        TransportMode={booking?.booking_type}
+                        Instyle={{
+                          fontSize: "2.75rem",
+                          marginRight: "0.8rem",
+                          color: "black",
+                        }}
+                      />
                     )}
+                  </div>
+
+                  <div className="flex flex-col lg:w-60">
+                    <div className="sm:text-sm text-[0.85rem]">
+                      {booking?.booking_type == "Taxi"
+                        ? booking?.transfer_details &&
+                          booking?.transfer_details.gozo &&
+                          booking?.transfer_details.gozo.model
+                          ? isPageWide
+                            ? booking?.transfer_details.gozo.model
+                            : truncateString(
+                                booking?.transfer_details.gozo.model,
+                                25
+                              )
+                          : "Private transfer "
+                        : booking?.booking_type}
+
+                      {booking?.transfer_type === "Intercity one-way" &&
+                        booking?.transfer_details?.duration?.text && (
+                          <span className="ml-1">
+                            ({booking?.transfer_details?.duration?.text})
+                          </span>
+                        )}
+                    </div>
+                    <div className="flex sm:text-sm text-[0.93rem] flex-row text-[#7A7A7A] font-light items-center">
+                      {booking?.taxi_type && <div>{booking?.taxi_type}</div>}
+                    </div>
+
+                    {booking?.transfer_details && (
+                      <div className="text-[#01202B] font-normal flex flex-row justify-start items-center mt-1 flex-wrap">
+                        <span className="pr-1 sm:text-sm text-[0.82rem]">
+                          Facilities:
+                        </span>
+
+                        <GridContainer className="">
+                          {Facilities.filter(Boolean).map(
+                            (data, index) =>
+                              data !== null && (
+                                <div className="gap-1">
+                                  <div className="flex flex-row flex-wrap sm:text-sm text-[0.74rem] font-normal">
+                                    {index !== 0 && data != null ? (
+                                      <span className="px-1">|</span>
+                                    ) : null}
+
+                                    <div className="">{data}</div>
+                                  </div>
+                                </div>
+                              )
+                          )}
+                        </GridContainer>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="flex sm:text-sm text-[0.93rem] flex-row text-[#7A7A7A] font-light items-center">
-                  {booking.taxi_type && <div>{booking.taxi_type}</div>}
-                </div>
 
-                {booking?.transfer_details && (
-                  <div className="text-[#01202B] font-normal flex flex-row justify-start items-center mt-1 flex-wrap">
-                    <span className="pr-1 sm:text-sm text-[0.82rem]">
-                      Facilities:
-                    </span>
+                {!payment?.paid_user && booking?.booking_type === "Taxi" ? (
+                  <div className="w-full flex flex-row items-center justify-end cursor-pointer pr-2">
+                    {addbooking ? (
+                      <button
+                        onClick={() => HandleTransport(index, "Change Taxi")}
+                        className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
+                      >
+                        {isDesktop ? "Change Taxi" : "Change"}
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => HandleTransport(index, "Add Taxi")}
+                        className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
+                      >
+                        Add Taxi
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <div className={`absolute bottom-[1rem] right-6 -m-3`}>
+                    {loading && (
+                      <PulseLoader
+                        style={{
+                          position: "absolute",
+                          top: "-25%",
+                          left: "50%",
+                          transform: "translate(-50% , -50%)",
+                        }}
+                        size={6}
+                        speedMultiplier={0.6}
+                        color="#111"
+                      />
+                    )}
 
-                    <GridContainer className="">
-                      {Facilities.filter(Boolean).map(
-                        (data, index) =>
-                          data !== null && (
-                            <div className="gap-1">
-                              <div className="flex flex-row flex-wrap sm:text-sm text-[0.74rem] font-normal">
-                                {index !== 0 && data != null ? (
-                                  <span className="px-1">|</span>
-                                ) : null}
-
-                                <div className="">{data}</div>
-                              </div>
-                            </div>
-                          )
-                      )}
-                    </GridContainer>
+                    <div
+                      onClick={(e) => {
+                        handleCheckboxChange(
+                          e,
+                          `${addbooking ? "Added Booking" : "Add Booking"}`
+                        );
+                      }}
+                      className="flex flex-row gap-1 items-center cursor-pointer"
+                    >
+                      <CheckboxFormComponent checked={addbooking} />
+                      <label className="text-center sm:text-sm text-[0.7rem]">
+                        {addbooking ? "Added Booking" : "Add Booking"}
+                      </label>
+                    </div>
                   </div>
                 )}
               </div>
             </div>
-
-            {!payment?.paid_user && booking.booking_type === "Taxi" ? (
-              <div className="w-full flex flex-row items-center justify-end cursor-pointer pr-2">
-                {addbooking ? (
-                  <button
-                    onClick={() => HandleTransport(index, "Change Taxi")}
-                    className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
-                  >
-                    {isDesktop ? "Change Taxi" : "Change"}
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => HandleTransport(index, "Add Taxi")}
-                    className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
-                  >
-                    Add Taxi
-                  </button>
-                )}
-              </div>
-            ) : (
-              <div className={`absolute bottom-[1rem] right-6 -m-3`}>
-                {loading && (
-                  <PulseLoader
-                    style={{
-                      position: "absolute",
-                      top: "-25%",
-                      left: "50%",
-                      transform: "translate(-50% , -50%)",
-                    }}
-                    size={6}
-                    speedMultiplier={0.6}
-                    color="#111"
-                  />
-                )}
-
-                <div
-                  onClick={(e) => {
-                    handleCheckboxChange(
-                      e,
-                      `${addbooking ? "Added Booking" : "Add Booking"}`
-                    );
-                  }}
-                  className="flex flex-row gap-1 items-center cursor-pointer"
-                >
-                  <CheckboxFormComponent checked={addbooking} />
-                  <label className="text-center sm:text-sm text-[0.7rem]">
-                    {addbooking ? "Added Booking" : "Add Booking"}
-                  </label>
-                </div>
-              </div>
-            )}
+          )}
+        </Container>
+      ) : (
+        <div className="grid w-full grid-cols-[30px_120px] min-h-[5rem] md:min-h-[8rem]">
+          <div className="relative">
+          <Line pinColour={CITY_COLOR_CODES[index % 7]} Transfers={Transfer} end={end}/>
           </div>
+          <button
+            onClick={() => setShowDrawer(true)}
+            className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
+          >
+            +Add Transfer
+          </button>
+          <TransferEditDrawer
+            mercury
+            addOrEdit={"transferAdd"}
+            showDrawer={showDrawer}
+            setShowDrawer={setShowDrawer}
+            selectedTransferHeading={origin}
+            origin={origin?.id!=undefined? origin?.id: id}
+            destination={destination.id!=undefined? destination.id: id}
+            check_in={check_in}
+            routeId={id}
+            city={origin?.name!=undefined? origin?.name: origin?.city_name}
+            dcity={destination.name!=undefined? destination.name: destination?.city_name}
+          />
         </div>
       )}
-    </Container>
+    </>
   );
 };
 
@@ -483,7 +549,7 @@ const FlightBooking = ({
   setShowLoginModal,
 }) => {
   const [showDetails, setShowDetails] = useState(false);
-  const router=useRouter()
+  const router = useRouter();
   function HandleFlights(i, label) {
     if (!token) {
       return setShowLoginModal(true);
@@ -496,8 +562,9 @@ const FlightBooking = ({
     let itinerary_name = booking["name"]; // not present
     let tailored_id = booking["tailored_itinerary"]; // not present
     let id = booking["id"];
-    let check_in = booking?.transfers_details?.items?.[0]?.segments[0]
-    ?.origin?.departure_time;
+    let check_in =
+      booking?.transfers_details?.items?.[0]?.segments[0]?.origin
+        ?.departure_time;
     let check_out = booking["check_out"]; // not present
     let pax = {
       number_of_adults: booking["number_of_adults"],
@@ -508,9 +575,9 @@ const FlightBooking = ({
     let taxi_type = booking["taxi_type"];
     let transfer_type = booking["transfer_type"];
     let destination_city = booking["destination_city"];
-    let origin_iata = booking["source"];
-    let destination_iata = booking["destination"];
-    let user_selected = booking.user_selected;
+    let origin_iata = booking?.transfers_details?.items?.[0]?.segments?.[0]?.origin?.city_code;
+    let destination_iata = booking?.transfers_details?.items?.[0]?.segments?.[booking?.transfers_details?.items?.[0].segments?.length-1]?.destination?.city_code;
+    let user_selected = booking?.user_selected;
     _changeFlightHandler(
       name,
       itinerary_id,
@@ -538,7 +605,7 @@ const FlightBooking = ({
         page: "Itinerary Page",
         event_category: "Button Click",
         event_label: label,
-        event_value: booking.heading,
+        event_value: booking?.heading,
         event_action: "Transfers",
       },
     });
@@ -548,17 +615,17 @@ const FlightBooking = ({
     if (booking?.number_of_adults > 1) adult = " Adults";
     else adult = " Adult";
     var child;
-    if (booking.number_of_children > 1) child = " Childs";
+    if (booking?.number_of_children > 1) child = " Childs";
     else child = " Child";
   } catch {}
 
   return (
     <div className="ml-1 md:ml-7">
       <div className="flex flex-row w-full justify-between items-center">
-        <span className="font-medium  inline">{booking.name}</span>
+        <span className="font-medium  inline">{booking?.name}</span>
       </div>
       <div
-        id={booking.id}
+        id={booking?.id}
         className={`mb-2 mt-2  w-full lg:block ${"mb-2 mt-2 lg:block flex flex-col p-3 "} cursor-pointer relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA] lg:p-5 `}
       >
         <div
@@ -566,28 +633,23 @@ const FlightBooking = ({
             window.innerWidth >= 1000 && "flex justify-between items-center "
           }`}
         >
-          <FlightLogoContainer
-            data={booking?.transfers_details?.items?.[0]}
-          />
+          <FlightLogoContainer data={booking?.transfers_details?.items?.[0]} />
           <div className="flex-grow">
             <FlightDetails
               data={booking?.transfers_details?.items?.[0]}
               origin={
-                booking?.transfers_details?.items?.[0]?.segments[0]
-                  ?.origin
+                booking?.transfers_details?.items?.[0]?.segments[0]?.origin
               }
               destination={
-                booking?.transfers_details?.items?.[0]?.segments[0]
-                  ?.destination
+                booking?.transfers_details?.items?.[0]?.segments[booking?.transfers_details?.items?.[0]?.segments.length-1]?.destination
               }
               duration={
-                booking?.transfers_details?.items?.[0]?.segments[0]
-                  ?.duration
+                booking?.duration
               }
-              segments={
-                booking?.transfers_details?.items?.[0]?.segments
+              segments={booking?.transfers_details?.items?.[0]?.segments}
+              numStops={
+                booking?.transfers_details?.items?.[0]?.stop_count?.stops
               }
-              numStops={booking?.transfers_details?.items?.[0]?.stop_count?.stops}
               setShowDetails={setShowDetails}
             />
           </div>
@@ -616,7 +678,9 @@ const FlightBooking = ({
         >
           <button
             className="text-sm flex flex-row gap-1 items-center justify-center hover:bg-black hover:text-white rounded-lg px-2 py-1"
-            onClick={() => {setShowDetails((prev) => !prev)}}
+            onClick={() => {
+              setShowDetails((prev) => !prev);
+            }}
           >
             Flight Details
             <span>
@@ -656,9 +720,7 @@ const FlightBooking = ({
       >
         <Details
           segments={booking?.transfers_details?.items?.[0]?.segments}
-          resultIndex={
-            booking?.transfers_details?.items?.[0]?.result_index
-          }
+          resultIndex={booking?.transfers_details?.items?.[0]?.result_index}
           setShowDetails={setShowDetails}
           individual={false}
           booking_id={booking?.id}

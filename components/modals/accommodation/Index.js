@@ -12,10 +12,9 @@ import {
   hotelDetails,
   bookingDetails,
 } from "../../../services/bookings/FetchAccommodation";
-import { updateAccommodationBooking } from "../../../services/bookings/UpdateBookings";
 import { useRouter } from "next/router";
 import HotelBookingDetails from "./Overview/HotelBookingDetails";
-import { setBookings } from "../../../store/actions/bookings";
+import { updateAccommodationBooking } from "../../../services/bookings/UpdateBookings";
 
 const Container = styled.div`
   padding: 0 0.75rem 0.75rem 0.75rem;
@@ -77,8 +76,6 @@ const POI = (props) => {
   const [error, setError] = useState(false);
   const itineraryFilters = useSelector((state) => state.ItineraryFilters);
   const [drawerWidth, setDrawerWidth] = useState("50%");
-  const dispatch = useDispatch();
-  const accommodationBooking = useSelector((state) => state.Bookings.accommodationBookings);
   useEffect(() => {
     const handleResize = () => {
       setDrawerWidth(window.innerWidth <= 986 ? "100%" : "50%");
@@ -152,6 +149,8 @@ const POI = (props) => {
 
   const updateBooking = (recommendation_id, rates) => {
     props.setUpdateBookingState(true);
+    let stayBookings=props.plan;
+    const index = stayBookings.findIndex(item => item.id == props?.bookingId);
 
     const requestData = {
       rates: rates,
@@ -163,6 +162,7 @@ const POI = (props) => {
       hotel_id: data?.id,
       source: props.provider,
       booking_id: props?.bookingId,
+      city_id:props.plan[index].city_id
     };
 
     updateAccommodationBooking
@@ -179,12 +179,10 @@ const POI = (props) => {
           heading: "Success!",
         });
 
-        let stayBookings=props.plan;
-        const index = stayBookings.findIndex(item => item.id == props?.bookingId);
         stayBookings[index]={
           check_in:response?.data?.check_in,
           check_out:response?.data?.check_out,
-          city_id:props.plan[index].city_id,
+          city_id:props.plan[index].itinerary_city,
           city_name:props.plan[index].city_name,
           duration:response?.data?.duration,
           id:response?.data?.id,
@@ -200,33 +198,15 @@ const POI = (props) => {
           user_ratings_total:response?.data?.user_ratings_total,
           wifi:response?.data?.wifi
         }
-        console.log("index is:",stayBookings)
         props?.setStayBookings(stayBookings)
-        const idx = accommodationBooking.findIndex(
-          (item) => item.id === props?.bookingId
-        );
-
-        if (idx !== -1) {
-          const updatedBookings = [
-            ...accommodationBooking.slice(0, idx),
-            response.data,
-            ...accommodationBooking.slice(idx + 1),
-          ];
-
-          dispatch(setBookings({
-            accommodationBookings: updatedBookings,
-          }));
-        }
-      })
       .catch((err) => {
-        console.log('index is:',err)
         props.setUpdateBookingState(false);
         props.openNotification({
           type: "error",
           text: "Something went wrong! Please try after some time.",
           heading: "Error!",
         });
-      });
+      })});
   };
 
 

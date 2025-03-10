@@ -18,7 +18,6 @@ export default function Travelers(props) {
     const [showError, setShowError] = useState(false);
     const dispatch=useDispatch();
 
-    console.log("Adults,Children, Infants",props.adults,props.children,props.infants);
 
     useEffect(() => {
         const handleClickOutside = (event) => {

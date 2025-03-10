@@ -70,26 +70,6 @@ const Booking = (props) => {
     errorMsg: "",
   });
   const [loading, setLoading] = useState(false);
-  // const [filtersState, setItineraryFilters] = useState({
-  //   free_breakfast: true,
-  //   is_refundable: false,
-  //   budget: {
-  //     price_lower_range: 3000,
-  //     price_upper_range: 8000,
-  //   },
-  //   star_category: null,
-  //   sort: "price: low to high",
-  //   type: null,
-  //   user_ratings: null,
-  //   facilities: null,
-  //   tags: null,
-  //   occupancies: [
-  //     {
-  //       num_adults: props?.plan?.number_of_adults || 1,
-  //       child_ages: []
-  //     }
-  //   ]
-  // });
   const [viewMoreStatus, setViewMoreStatus] = useState(false);
   const [nextPage, setNextPage] = useState(1);
   const [traceId, setTraceID] = useState("");
@@ -197,7 +177,6 @@ const Booking = (props) => {
       error: false,
       errorMsg: "",
     });
-    console.log('bookingupdated provider is:',provider)
 
     const requestData = {
       check_in: getDate(props?.selectedBooking?.check_in),
@@ -229,7 +208,6 @@ const Booking = (props) => {
       setUpdateLoadingState(false);
 
       setProvider(res.data?.source);
-      console.log("booking updated source from response is:",res?.data?.source)
       
       if (res.data?.trace_details?.id) {
         localStorage.setItem("trace_id", res?.data?.trace_details?.id );
@@ -362,6 +340,7 @@ const Booking = (props) => {
                   fetchHotels={
                     fetchHotels
                   }
+                  clickType={props?.currentBooking?.clickType}
                 ></SectionOne>
 
                 <SectionTwo
@@ -581,6 +560,7 @@ const Booking = (props) => {
                 currentBooking={props?.currentBooking}
                 show={showDetails}
                 handleClick={props?.handleClick}
+                setStayBookings={props?.setStayBookings}
               ></AccommodationModal>
             </>
           ) : (

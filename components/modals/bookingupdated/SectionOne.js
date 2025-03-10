@@ -33,7 +33,7 @@ const Section = (props) => {
           style={{ fontSize: "2rem" }}
         ></IoMdClose>
         <Text>
-          Changing Stays in {props?.booking_city ? props?.booking_city : "City"}
+          {props?.clickType=="Add"?"Add":"Changing"} Stays in {props?.booking_city ? props?.booking_city : "City"}
         </Text>
       </div>
       <div className="lg:w-[50%] md:w-[50%] flex flex-row items-center relative">
