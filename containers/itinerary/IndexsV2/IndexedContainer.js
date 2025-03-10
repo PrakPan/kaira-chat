@@ -874,6 +874,7 @@ const Itinerary = (props) => {
             setEditRoute={setEditRoute}
             social_title={props?.social_title}
             social_description={props?.social_description}
+            setStayBookings={setStayBookings}
           ></Menu>
         </div>
       </Container>
@@ -890,7 +891,6 @@ const mapStateToPros = (state) => {
     breif: state.Breif,
     plan: state.Plan,
     routes: state.ItineraryRoutes,
-    bookings: state.Bookings,
     itineraryActivities: state.itineraryActivities,
   };
 };
@@ -902,7 +902,6 @@ const mapDispatchToProps = (dispatch) => {
     setItineraryRoutes: (payload) => dispatch(setItineraryRoutes(payload)),
     setItinerary: (payload) => dispatch(setItinerary(payload)),
     setPlan: (payload) => dispatch(setPlan(payload)),
-    setBookings: (payload) => dispatch(setBookings(payload)),
     setItineraryActivities: (payload) =>
       dispatch(setItineraryActivities(payload)),
     setBreif: (payload) => dispatch(setBreif(payload)),
