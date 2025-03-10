@@ -15,7 +15,6 @@ import axiosPoiRoutes from "../../services/itinerary/brief/route";
 import axiosbookingupdateinstance from "../../services/bookings/UpdateBookings";
 import Overview from "../newitinerary/overview/Index";
 import { openNotification } from "../../store/actions/notification";
-import { setItineraryStartDate } from "../../store/actions/itineraryStartDate";
 import { setItineraryRoutes } from "../../store/actions/itineraryRoutes";
 import setItineraryDaybyDay from "../../store/actions/itineraryDaybyDay";
 import setItinerary from "../../store/actions/itinerary";
@@ -27,10 +26,8 @@ import axiosPaymentInstance, {
   axiosGetPaymentInfo,
 } from "../../services/itinerary/payment";
 import axiosBookingsInstance, {
-  axiosGetAllBookings,
   axiosGetTransfers,
 } from "../../services/itinerary/bookings";
-import axiosPlanInstance from "../../services/itinerary/plan";
 
 const Container = styled.div`
   width: 90%;
@@ -76,8 +73,6 @@ const ItineraryContainer = (props) => {
   const [showMercuryItinerary, setShowMercuryItinerary] = useState(false);
   const [cities, setCities] = useState([]);
   const [cityTransferBookings, setCityTransferBookings] = useState(null);
-
-  const dispatch = useDispatch();
 
   // useEffect(() => {
   //   if (hasRendered.current) {
@@ -324,71 +319,6 @@ const ItineraryContainer = (props) => {
   };
 
   const getAllBookings = () => {
-    let flight_bookings = [];
-
-    axiosGetAllBookings
-      .get(`/${props.id}/bookings/`)
-      .then((res) => {
-        getPaymentHandler();
-        const data = res.data;
-
-        for (const book of data.transfer_bookings) {
-          if (book.booking_type === "Flight") {
-            flight_bookings.push(book);
-          }
-        }
-        try {
-          dispatch(
-            setBookings({
-              activityBookings:
-                data.activity_bookings.length > 0
-                  ? data.activity_bookings
-                  : null,
-              flightBookings:
-                flight_bookings.length > 0 ? flight_bookings : null,
-              transferBookings:
-                data.transfer_bookings.length > 0
-                  ? data.transfer_bookings
-                  : null,
-              accommodationBookings: data.accommodation_bookings,
-            })
-          );
-        } catch (error) {
-          console.log("inside get all bookings", error);
-        }
-
-        props.setBookings({
-          ...props.bookings,
-          // stayBookings:
-          // data.accommodation_bookings.length > 0
-          //   ? data.accommodation_bookings
-          //   : null,
-          activityBookings:
-            data.activity_bookings.length > 0 ? data.activity_bookings : null,
-          flightBookings: flight_bookings.length > 0 ? flight_bookings : null,
-          transferBookings:
-            data.transfer_bookings.length > 0 ? data.transfer_bookings : null,
-          accommodationBookings:
-            data.accommodation_bookings > 0
-              ? data.accommodation_bookings
-              : null,
-        });
-
-        // setStayBookings(data.accommodation_bookings);
-        // setActivityBookings(
-        //   data.activity_bookings.length ? data.activity_bookings : null
-        // );
-        // setFlightBookings(flight_bookings.length > 0 ? flight_bookings : null);
-        // setTransferBookings(
-        //   data.transfer_bookings.length ? data.transfer_bookings : null
-        // );
-        // setTransferBookings(
-        //   data.transfer_bookings.length ? data.transfer_bookings : null
-        // );
-      })
-      .catch((err) => {
-        console.error("Error fetching all bookings", err.message);
-      });
 
     axiosGetTransfers
       .get(`/${props.id}/bookings/transfers/`)
@@ -496,8 +426,10 @@ const ItineraryContainer = (props) => {
             stays.push({
               city_name:city_name,
               city_id:city_id,
+              trace_city_id:data?.cities[i]?.id,
               duration:data?.cities[i]?.duration,
-              start_date:data?.cities[i]?.start_date
+              check_in:data?.cities[i]?.start_date,
+              check_out:String(new Date(new Date(data?.cities[i]?.start_date).getTime() + data?.cities[i]?.duration * 24 * 60 * 60 * 1000).toISOString().split("T")[0])
             })
           }
 

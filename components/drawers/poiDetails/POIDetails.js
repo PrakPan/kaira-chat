@@ -43,10 +43,6 @@ const Container = styled.div`
   flex-direction: column;
   gap: 1rem;
   padding: ${(props) => (props.itineraryDrawer ? "0 1rem 1rem 1rem" : "1rem")};
-  width: 100vw;
-  @media screen and (min-width: 768px) {
-    width: 500px;
-  }
 `;
 
 const TimeStamp = styled.span`
@@ -58,12 +54,9 @@ const TimeStamp = styled.span`
   font-size: 14px;
   font-weight: 600;
   position: absolute;
-  left: 10px;
-  bottom: 10px;
   @media screen and (min-width: 768px) {
-    bottom: 10px;
-
-    left: 300px;
+    bottom: 0px;
+    top:0px;
   }
 `;
 

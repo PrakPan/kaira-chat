@@ -788,6 +788,7 @@ const Itinerary = (props) => {
             travellerType={travellerType}
             editRoute={editRoute}
             setEditRoute={setEditRoute}
+            setStayBookings={setStayBookings}
           ></Menu>
         </div>
       </Container>

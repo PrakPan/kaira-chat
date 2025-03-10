@@ -83,9 +83,10 @@ const HotelBooking = ({
     });
   };
 
-  const handleChageHotel = (e, label, value) => {
+  const handleChangeHotel = (e, label, value,clickType) => {
+    // console.log("clicktype is:",clickType)
     e.stopPropagation();
-    if (token) handleClickAc(index, booking, booking.city_id);
+    if (token) handleClickAc(index, booking, booking.city_id,clickType);
     else setShowLoginModal(true);
     setBookingId(key)
 
@@ -348,7 +349,7 @@ const HotelBooking = ({
               // : 
               (
                 <div
-                  onClick={(e) => handleChageHotel(e, "Change", booking?.name)}
+                  onClick={(e) => handleChangeHotel(e, "Change", booking?.name)}
                 >
                   <Button
                     padding="0.6rem 2.2rem"
@@ -377,21 +378,23 @@ const HotelBooking = ({
                   </div>
                 </div>
               </div>
-              {booking?.start_date && (
+              {booking?.check_in && (
                 <div className="font-medium  inline">
                   <div className="flex flex-row gap-2 items-center">
                     <BsCalendar2 className="text-sm text-[#7A7A7A]" />
                     <div>
                       <div className="text-sm font-[400] ">
-                        {getHumanDate(booking?.start_date)} -{" "}
-                        {getHumanDate(String(new Date(new Date(booking?.start_date).getTime() + booking?.duration * 24 * 60 * 60 * 1000).toISOString().split("T")[0]))}
+                        {getHumanDate(booking?.check_in)} -{" "}
+                        {getHumanDate(booking?.check_out)}
                         </div>
                     </div>
                   </div>
                 </div>
               )}
             </div>
-
+            <div
+                  onClick={(e) => handleChangeHotel(e, "Change", booking?.city_name,"Add")}
+                >
             <Button
               bgColor={"#F7E700"}
               borderRadius="8px"
@@ -399,10 +402,11 @@ const HotelBooking = ({
               padding="0.6rem 2.2rem"
               hoverColor="white"
               margin={!isPageWide ? "0.75rem 0 0 0" : "0"}
-              onclick={() =>(console.log("added"))}
+              onclick={() => console.log("")}
             >
               Add Stay in {booking?.city_name}
             </Button>
+            </div>
           </div>
         </div>}
     </div>

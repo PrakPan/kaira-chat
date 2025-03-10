@@ -637,7 +637,6 @@ const TransfersContainer = (props) => {
         routeId={transferId}
       ></TaxiModal>
 
-      {console.log("Transfer Bookings",props?.transferBookings)}
 
       {props?.transferBookings && props?.transferBookings?.map((booking, index) => (
         <>

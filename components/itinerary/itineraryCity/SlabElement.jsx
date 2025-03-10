@@ -48,10 +48,7 @@ const Activity = (props) => {
   };
 
   const handleActivity = async (poi, type) => {
-    // if (type=="activity"){
-    //   const res=await axios.get(`${MERCURY_HOST}/api/v1/geos/poi/${poi}/`)
-    // setActivityData(res?.data?.data?.poi)
-    // }
+    console.log("poi is:",type)
     setShowDrawer(true);
     setActivityData(() => ({
       id: poi,
@@ -77,7 +74,7 @@ const Activity = (props) => {
             onClick={() =>
               handleActivity(
                 props?.element?.poi || props?.element?.activity,
-                props?.element?.element_type
+                props?.element?.poi !="undefined"?"poi":props?.element?.element_type
               )
             }
             className="md:w-[12%] cursor-pointer"
@@ -140,8 +137,8 @@ const Activity = (props) => {
         <button
           onClick={() =>
             handleActivity(
-              props?.element?.poi || props?.element?.activity,
-              props?.element?.element_type
+              props?.element?.poi || props?.element?.booking?.id,
+              props?.element?.poi!=null?"poi":"activity"
             )
           }
           className="w-fit text-[12px] font-semibold border-2 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"

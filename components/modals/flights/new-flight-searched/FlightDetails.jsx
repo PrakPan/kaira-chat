@@ -81,7 +81,7 @@ export default function FlightDetails({
 
             <div className="w-[60%] flex flex-col items-center gap-2">
                 {duration ? (
-                    <div className="text-sm text-gray-600">{getTime(duration)}</div>
+                    <div className="text-sm text-gray-600">{duration}</div>
                 ) : null}
 
                 <div
