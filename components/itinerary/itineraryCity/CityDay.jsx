@@ -48,7 +48,7 @@ const CityDay = (props) => {
           </>
         ))} */}
         <div className="flex flex-col items-center mt-1">
-  {elements.map((time, index) => (
+  {isPageWide && elements.map((time, index) => (
     <div key={index} className="flex items-start">
       {/* Left Section - Clock + Vertical Line */}
       <div className="flex flex-col items-center">
@@ -72,7 +72,7 @@ const CityDay = (props) => {
       </div>
 
       {/* Right Section - Time */}
-      <span className="ml-2 text-xs text-gray-500">10:30 AM</span>
+      <span className="ml-2 text-xs text-gray-500"></span>
     </div>
   ))}
 </div>

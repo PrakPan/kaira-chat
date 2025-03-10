@@ -25,7 +25,7 @@ import FlightModal from "../../../components/modals/flights/Index";
 import { getDate } from "../../../helper/DateUtils";
 import { fetchTransferMode } from "../../../services/bookings/FetchTaxiRecommendations";
 import { PulseLoader } from "react-spinners";
-import { FaMapMarkerAlt } from "react-icons/fa";
+import { FaClock, FaMapMarkerAlt } from "react-icons/fa";
 
 const ClippathComp = styled.div`
   clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 95% 50%, 100% 0%);
@@ -72,10 +72,11 @@ const TransferEditDrawer = (props) => {
     dcity,
     oCityData,
     dCityData,
-    mercury
+    mercury,
+    mercuryTransfer
   } = props;
 
-  console.log("Props Mer",mercury)
+  console.log("Props Mer",mercuryTransfer)
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
   const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
@@ -115,7 +116,7 @@ const TransferEditDrawer = (props) => {
 
     {mercury || props?.isMercury ?
       fetchTransferMode
-      .post("",{origin: props?.origin, destination: props?.destination, number_of_adults: 1, number_of_children: 1, number_of_infants:3, top_only:"false"})
+      .post("",{origin: props?.origin || mercuryTransfer?.source?.city, destination: props?.destination || mercuryTransfer?.destination?.city, number_of_adults: props?.plan?.number_of_adults || 1, number_of_children: props?.plan?.number_of_children || 1, number_of_infants:props?.plan?.number_of_infants || 1, top_only:"false"})
       .then((res) => {
         if (res.data.success && res.data.routes.data.length > 0) {
           const data = res.data.routes.data;
@@ -207,6 +208,7 @@ const TransferEditDrawer = (props) => {
           mode: transfer.mode,
           transfer: transfer,
         });
+        // setShowDrawer(false);
         setShowOtherTrasfer(true);
         break;
     }
@@ -331,7 +333,7 @@ const TransferEditDrawer = (props) => {
           />
           <div className="text-lg md:text-2xl lg:text-2xl font-semibold">
             {props.addOrEdit === "transferAdd" ? "Adding" : "Changing"} transfer
-            from {city} to {dcity}{" "}
+            from {city || mercuryTransfer?.source?.city_name} to {dcity || mercuryTransfer?.destination?.city_name}{" "}
           </div>
         </div>
 
@@ -345,10 +347,12 @@ const TransferEditDrawer = (props) => {
               props?.plan?.number_of_adults + props?.plan?.number_of_children
             }
             check_in={check_in}
+            mercuryTransfer={mercuryTransfer}
           /> ): showMercuryTransfer && (
             <MercuryTransfer
             transfer={selectedMercuryTransfer}
             setShowMercuryTransfer={setShowMercuryTransfer}
+            mercuryTransfer={mercuryTransfer}
             />
         )
       }
@@ -483,7 +487,7 @@ const TransferEditDrawer = (props) => {
                   {transfers.length < 2
                     ? `${transfers.length} way`
                     : `${transfers.length} ways`}{" "}
-                  to travel from {city} to {dcity}
+                  to travel from {city || mercuryTransfer?.source?.city_name} to {dcity || mercuryTransfer?.destination?.city_name}
                 </div>
                 <div className="w-full flex flex-col items-center gap-3">
                   {transfers.map((transfer, index) => {
@@ -549,6 +553,7 @@ const TransferEditDrawer = (props) => {
         daySlabIndex={day_slab_index}
         elementIndex={element_index}
         routeId={routeId}
+        mercuryTransfer={selectedMercuryTransfer}
       ></FlightModal>
 
       <TaxiModal
@@ -597,7 +602,7 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(mapStateToPros, mapDispatchToProps)(TransferEditDrawer);
 
 const RouteContainer = (props) => {
-  const { transferIndex, transfer, handleSelect, selectedResult } = props;
+  const { transferIndex, transfer, handleSelect, selectedResult,setSelectedMercuryTransfer } = props;
   const [viewMore, setViewMore] = useState(false);
   const [singleTransfer, setSingleTransfer] = useState(transfer[0]);
 
@@ -681,6 +686,7 @@ const RouteContainer = (props) => {
                 transfer={singleTransfer}
                 transferIndex={transferIndex}
                 handleSelect={handleSelect}
+                setSelectedMercuryTransfer={setSelectedMercuryTransfer}
               />
               {/* } */}
               </div>
@@ -1515,7 +1521,8 @@ const EstimatedCost = ({ cost }) => {
   return null;
 };
 
-const SelectButton = ({ multimode, transferIndex, transfer, handleSelect }) => {
+const SelectButton = ({ multimode, transferIndex, transfer, handleSelect,setSelectedMercuryTransfer }) => {
+  setSelectedMercuryTransfer(transfer);
   const getLabel = () => {
     switch (transfer.mode) {
       case "Flight":
@@ -1640,13 +1647,16 @@ const OtherTransfer = ({
   setSelectedResult,
   number_of_travellers,
   check_in,
-  showOtherTransfer
+  showOtherTransfer,
+  mercuryTransfer
 }) => {
   const ref = useRef(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [otherTransfer, setOtherTransfer] = useState(null);
   const [traceId, setTraceId] = useState(null);
+
+  console.log("Mercury Ta",mercuryTransfer)
 
   useEffect(() => {
     // getOtherTrasfer(selectedResult.transfer.mode);
@@ -1707,7 +1717,7 @@ const OtherTransfer = ({
       show={showOtherTransfer}
       anchor={"right"}
       backdrop
-      style={{ zIndex: 1502 }} 
+      style={{ zIndex: 1501 }} 
       className="font-lexend"
       onHide={() => setShowOtherTrasfer(false)}
       mobileWidth={"100vw"}
@@ -1745,12 +1755,13 @@ const OtherTransfer = ({
         </div>
       </div>
     </div> */}
-            <Container>
+      <Container>
           <div className="flex flex-row gap-3 my-0 justify-start items-center">
           <IoMdArrowRoundBack
             onClick={() => setShowOtherTrasfer(false)}
             className="hover-pointer text-3xl font-semibold"
           />
+          <Heading >Changing Transfer from {otherTransfer?.source?.city_name || mercuryTransfer?.source?.city_name} to {otherTransfer?.destination?.city_name || mercuryTransfer?.destination?.city_name}</Heading>
         </div>
           {otherTransfer &&
            otherTransfer.prices.map((price, i) => (
@@ -1765,20 +1776,45 @@ const OtherTransfer = ({
                 classname={{ width: 80, height: 75 }}
               />
               <div className="flex-1">
-                <Heading>{otherTransfer.mode} (Any)</Heading>
-                <ModelText>Swift Dzire or similar</ModelText>
+                <Heading>{otherTransfer.mode}</Heading>
+                <ModelText>{price?.class}</ModelText>
                 <div className="flex items-center gap-2 mt-2 text-gray-600">
-                  <FaMapMarkerAlt />
-                  <Text>{otherTransfer.distance}</Text>
-                  <span>&#8226;</span>
-                  <Text>4-5 hours</Text>
+                <ImageLoader
+              url="media/icons/bookings/distance.png"
+              leftalign
+              dimensions={{ width: 200, height: 200 }}
+              width="1.25rem"
+              widthmobile="1.25rem"
+              noLazy
+            ></ImageLoader>
+                  <Text>{otherTransfer.distance} km</Text>
+                  <span><FaClock/></span>
+                  <Text>{Math.floor(Number(otherTransfer.duration)/60) + "-" + Math.ceil((Number(otherTransfer.duration+1)/60 ) ) + "hours"}</Text>
                 </div>
+                <div className="flex">
+                <Location className="font-lexend">
+            {otherTransfer?.source?.city_name}
+          </Location>
+          <div style={{ margin: "0 2px" }}>
+            <ImageLoader
+              url="media/icons/bookings/next.png"
+              leftalign
+              dimensions={{ width: 200, height: 200 }}
+              width="1.25rem"
+              widthmobile="1.25rem"
+              noLazy
+            ></ImageLoader>
+          </div>
+          <Location className="font-lexend">
+            {otherTransfer?.destination?.city_name}
+          </Location>
+          </div>
               </div>
+
               <div className="text-right">
                 <Cost>{"₹" + getIndianPrice(Math.ceil(price.price)) + "/-"}</Cost>
-                <button className="mt-2 bg-yellow-400 text-black px-4 py-2 rounded hover:bg-black hover:text-white transition-all">
-                  Select
-                </button>
+                <Text>Per Person</Text>
+                <button class="focus:outline-none border-2 border-black rounded-lg px-4 py-2 mt-2 bg-[#F7E700] hover:bg-black hover:text-white transition-all">Select</button>
               </div>
             </div>
           </div>

@@ -178,7 +178,7 @@ const Section = (props) => {
     <div className="flex flex-col gap-3">
       <FlexBox>
         <div>
-          <P>Departure from {props.selectedBooking?.city}</P>
+          <P>Departure from {props.selectedBooking?.city || props?.mercuryTransfer?.source?.city_name}</P>
           <ItemContainer>
             {ItemArr.map((e) => (
               <Item
@@ -191,7 +191,7 @@ const Section = (props) => {
           </ItemContainer>
         </div>
         <div>
-          <P>Arrival at {props.selectedBooking?.destination_city}</P>
+          <P>Arrival at {props.selectedBooking?.destination_city || props?.mercuryTransfer?.destination?.city_name}</P>
           <ItemContainer>
             {ItemArr.map((e) => (
               <Item
@@ -227,7 +227,7 @@ const Section = (props) => {
             </div>
           )}
 
-          <div className="py-1">Departure Date: <span className="font-bold">{new Date(props.selectedBooking.check_in).toDateString()}</span>
+          <div className="py-1">Departure Date: <span className="font-bold">{props.selectedBooking?.check_in ? new Date(props.selectedBooking?.check_in).toDateString() :  props?.mercuryTransfer?.start_datetime ? new Date(props?.mercuryTransfer?.start_datetime).toDateString() : new Date().toDateString()}</span>
           </div>
         </div>
 
