@@ -19,7 +19,6 @@ import HotLocationSearch from "./HotLocationSearch";
 import CountryCodes from "./CountryCodes";
 import ItineraryDaybyDay from "./ItineraryDaybyDay"
 import  ItineraryFilters  from "./ItineraryFilters";
-import TransferBookings from "./transferBookingsReducer";
 const rootReducer = combineReducers({
   auth: authReducer,
   experience: experience,
@@ -40,8 +39,7 @@ const rootReducer = combineReducers({
   HotLocationSearch,
   CountryCodes,
   ItineraryDaybyDay,
-  ItineraryFilters,
-  TransferBookings
+  ItineraryFilters
 });
 
 export default rootReducer;
