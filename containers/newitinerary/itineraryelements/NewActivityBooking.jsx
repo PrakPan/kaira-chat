@@ -12,6 +12,8 @@ import {
 import { MdDoneAll } from "react-icons/md";
 import { convertDateFormat } from "../../../helper/ConvertDateFormat";
 import Button from "../../../components/ui/button/Index";
+import axios from "axios";
+import { MERCURY_HOST } from "../../../services/constants";
 const ClippathComp = styled.div`
   clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
 `;
@@ -42,6 +44,11 @@ export default function NewActivityBooking(props) {
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
     setShowDetails({ show: false, data: {} });
+  };
+
+  const handleClick=async(e,id)=>{
+    // e.preventDefault();
+    const res=await axios.get(`${MERCURY_HOST}/api/v1/ancillaries/activity/${id}`)
   };
 
   return (
@@ -110,7 +117,7 @@ export default function NewActivityBooking(props) {
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 text-[#01202B] lg:w-[67%] w-full h-fit justify-start">
+          <div className="flex flex-col gap-2 text-[#01202B]  w-full h-fit justify-start">
             <div className="flex flex-col justify-between">
               <div className="flex flex-row justify-between">
                 <div className="text-2xl font-bold">
@@ -180,12 +187,12 @@ export default function NewActivityBooking(props) {
                     fontWeight="500"
                     fontSize="0.85rem"
                     width="100%"
-                    onclick={() => router.push("/itinerary/" + props.id)}
+                    onclick={(e) => console.log('clicked')}
                     borderRadius="10px"
                     bgColor="#f8e000"
                     borderWidth="1px"
                   >
-                    View Details
+                    Add to Itinerary
                   </Button>
                 </div>
               )}
