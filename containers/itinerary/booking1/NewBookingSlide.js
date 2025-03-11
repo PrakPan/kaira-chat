@@ -28,6 +28,7 @@ import Link from "next/link";
 import ImageLoader from "../../../components/ImageLoader";
 import { logEvent } from "../../../services/ga/Index";
 import openTailoredModal from "../../../services/openTailoredModal";
+import CountdownTimer from "../../../components/countdownTimer/CountdownTimer";
 
 const GetInTouchContainer = styled.div`
   &:hover img {
@@ -839,6 +840,10 @@ const Details = (props) => {
               </>
             )}
           </div>
+        </div>
+
+        <div>
+          <CountdownTimer priceValidUntil={props?.payment?.price_valid_until}/>
         </div>
       </div>
 
