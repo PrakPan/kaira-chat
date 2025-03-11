@@ -104,6 +104,12 @@ const Generalbuttonstyle = styled.button`
   }
 `;
 
+function convertMinutesToHours(minutes) {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return `${hours}h ${mins}m`;
+}
+
 const Flight = (props) => {
   const [showDetails, setShowDetails] = useState(false);
   const [viewMore, setViewMore] = useState(false);
@@ -131,7 +137,7 @@ const Flight = (props) => {
           destination={
             props.data?.segments[props.data?.segments?.length - 1]?.destination
           }
-          duration={props.data?.total_duration}
+          duration={typeof(props.data?.total_duration)=="number"?convertMinutesToHours(props.data?.total_duration):props.data?.total_duration}
           isNonStop={props?.filtersState?.non_stop_flights}
           numStops={props.data?.segments?.length - 1}
           segments={props.data?.segments}

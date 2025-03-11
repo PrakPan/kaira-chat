@@ -47,18 +47,18 @@ const CityDay = (props) => {
             </div>
           </>
         ))} */}
-        <div className="flex flex-col items-center mt-1">
+        {/* <div className="flex flex-col items-center mt-1">
   {isPageWide && elements.map((time, index) => (
     <div key={index} className="flex items-start">
       {/* Left Section - Clock + Vertical Line */}
-      <div className="flex flex-col items-center">
+      {/* <div className="flex flex-col items-center"> */}
         {/* Clock Icon */}
-        <div className="h-6 w-6 flex items-center justify-center">
+        {/* <div className="h-6 w-6 flex items-center justify-center">
           <RiTimeLine className="text-gray-400" size={25} />
-        </div>
+        </div> */}
 
         {/* Vertical Line (except for last item) */}
-        {index !== elements.length - 1 && (
+        {/* {index !== elements.length - 1 && (
           <div
           style={{
             width: "2px",
@@ -72,10 +72,10 @@ const CityDay = (props) => {
       </div>
 
       {/* Right Section - Time */}
-      <span className="ml-2 text-xs text-gray-500"></span>
-    </div>
-  ))}
-</div>
+      {/* <span className="ml-2 text-xs text-gray-500"></span>
+    </div> */}
+  {/* ))}  */}
+{/* </div>  */}
 
 
 
