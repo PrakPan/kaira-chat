@@ -235,9 +235,7 @@ const HotelBookingDetails = (props) => {
           {props.data?.user_ratings_total && (
             <div className="text-sm text-[#7A7A7A] font-[400] underline">
               {props.data?.user_ratings_total}{" "}
-              {props.data?.booking_source === "Agoda"
-                ? "user reviews"
-                : "Google reviews"}
+              reviews
             </div>
           )}
         </div>
@@ -984,6 +982,7 @@ const HotelBookingDetails = (props) => {
                       }} className=""></div>
                     ) : null}
                     <div className="flex flex-col items-center justify-center gap-3 md:w-[40%] h-[250px]">
+                      <div>{room?.caption}</div>
                       <ImageCarousel images={room?.images} />
                     </div>
                   </div>

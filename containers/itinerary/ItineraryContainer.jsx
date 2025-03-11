@@ -408,6 +408,13 @@ const ItineraryContainer = (props) => {
           setShowMercuryItinerary(true);
         }
 
+        setItineraryLoading(true);
+
+    setTimeout(() => {
+      setItineraryLoading(false); 
+    }, 60000); 
+
+
         props.setItinerary(data);
         props.setItineraryDaybyDay(data);
         props.setBreif(data);

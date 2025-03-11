@@ -387,7 +387,7 @@ const Enquiry = (props) => {
     }
 
     setShowPopup(popupObj);
-    setSlideIndex(slideIndex + 1);
+    // setSlideIndex(slideIndex + 1);
     if (props.HeroBanner && isPageWide) {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -470,6 +470,7 @@ const Enquiry = (props) => {
       .post("", data)
       .then((res) => {
         setItineraryId(res.data.itinerary_id);
+        setSlideIndex(slideIndex + 1);
       })
       .catch((err) => {
         console.log("ERROR: ", err.message);
@@ -514,14 +515,13 @@ const Enquiry = (props) => {
         },
       })
       .then((response) => {
-
-        setTimeout(()=>{
           setSubmitted(true);
           // if (!response.data?.auto_itinerary_created) {
           //   router.push("/thank-you");
           // } else {
           if (response.data.time) {
-            router.push(`/itinerary/${itineraryId}?t=45`);
+            // router.push(`/itinerary/${itineraryId}?t=60`);
+            router.push(`/itinerary/${itineraryId}`);
           } else {
             router.push(`/itinerary/${itineraryId}`);
           }
@@ -534,7 +534,6 @@ const Enquiry = (props) => {
               send_to: "AW-738037519/IF5rCMyxhL8ZEI-e9t8C",
             },
           });
-        }, 60000)
         
         // }
       })

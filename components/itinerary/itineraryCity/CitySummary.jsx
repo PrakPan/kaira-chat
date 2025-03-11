@@ -191,7 +191,7 @@ const CitySummary = (props) => {
         setShowDrawer={setShowAddDrawer}
         cityName={props.city.city.name}
         cityID={props.city.city.id}
-
+        date={props?.city?.start_date}
       ></ActivityAddDrawer>
     </div>
   );

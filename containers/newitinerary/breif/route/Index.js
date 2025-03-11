@@ -356,6 +356,7 @@ if (props?.CityData) {
                 dcity={props?.CityData[i+1]?.city?.name || props?.CityData[i+1]?.city_name}
                 oCityData={props?.CityData[i]}
                 dCityData={props?.CityData[i+1]}
+                setShowLoginModal={props?.setShowLoginModal}
               ></MidSectionV2>
             );
           }
