@@ -77,7 +77,6 @@ const ContentContainer = styled.div`
 
 const Booking = (props) => {
 
-  console.log("Selected Transfr",props?.mercuryTransfer);
   let isPageWide = media("(min-width: 768px)");
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [loading, setLoading] = useState(true);

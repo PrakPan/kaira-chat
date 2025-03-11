@@ -46,40 +46,44 @@ export default function NewActivityBooking(props) {
     setShowDetails({ show: false, data: {} });
   };
 
-  const handleClick=async(e,id)=>{
-    // e.preventDefault();
+  const handleClick=async(id)=>{
     const res=await axios.get(`${MERCURY_HOST}/api/v1/ancillaries/activity/${id}`)
+    setShowDetails({
+      show:true,
+      data:res?.data?.data?.activity
+    })
+    console.log('data is:',res?.data?.data?.activity)
   };
 
   return (
-    <>
+    <div className="border rounded-[16px] w-[98%] p-2 mb-3"  >
       <div
-        className={`flex gap-1 lg:w-[50vw] w-[100vw] py-2 px-3 flex-col justify-start`}
+        className={`flex gap-1  flex-col justify-start`}
       >
         <div
           style={{
             display: "grid",
-            gridGap: "0.5rem",
-            gridTemplateColumns: "1fr 2fr",
-            marginBottom: "0.75rem",
+            gridGap: "1rem",
+            gridTemplateColumns: "auto 2fr",
+            // marginBottom: "0.75rem",
           }}
           id="Activity"
         >
           <div>
             {" "}
-            <div style={{ width: "100%", height: "100%" }}>
+            <div className="h-[220px] w-[251px]" style={{
+      display: imageLoaded ? "block" : "none",
+    }}>
               <ImageLoader
-                height="100%"
-                width="100%"
-                //   widthmobile="1.5rem"
+                height="220px"
+                width="251px"
+                  widthmobile="1.5rem"
                 dimensions={{ width: 1600, height: 900 }}
                 dimensionsMobile={{ width: 1600, height: 900 }}
                 borderRadius={"16px"}
                 fit="cover"
                 onload={() => {
-                  setTimeout(() => {
-                    setImageLoaded(true);
-                  }, 1000);
+                  setImageLoaded(true)
                 }}
                 onfail={() => {
                   setImageFail(true);
@@ -91,23 +95,11 @@ export default function NewActivityBooking(props) {
                     : "media/icons/bookings/notfounds/noroom.png"
                 }
               ></ImageLoader>
-              {/* {props.data?.ideal_duration_number &&
-                props.data?.ideal_duration_unit ? (
-                  <div className=" bottom-2 right-2 bg-[#000000bf] text-white p-2 rounded-lg flex flex-row items-center gap-1">
-                    <FaClock />
-                    {props.data.ideal_duration_number}{" "}
-                    {props.data.ideal_duration_number > 1
-                      ? props.data?.ideal_duration_unit.toLowerCase()
-                      : props.data?.ideal_duration_unit
-                          .toLowerCase()
-                          .slice(0, -1)}
-                  </div>
-                )
-                 : null} */}
             </div>
             <div
               style={{
-                height: "100%",
+                height:"220px",
+                width:"251px",
                 overflow: "hidden",
                 borderRadius: "16px",
                 display: !imageLoaded ? "block" : "none",
@@ -187,12 +179,12 @@ export default function NewActivityBooking(props) {
                     fontWeight="500"
                     fontSize="0.85rem"
                     width="100%"
-                    onclick={(e) => console.log('clicked')}
+                    onclick={() => handleClick(props.data?.id)}
                     borderRadius="10px"
                     bgColor="#f8e000"
                     borderWidth="1px"
                   >
-                    Add to Itinerary
+                    View Details
                   </Button>
                 </div>
               )}
@@ -212,6 +204,6 @@ export default function NewActivityBooking(props) {
           props.getAccommodationAndActivitiesHandler
         }
       />
-    </>
+    </div>
   );
 }

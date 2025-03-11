@@ -20,7 +20,6 @@ import NewActivityBooking from "../../../containers/newitinerary/itineraryelemen
 import Filters from "./filters/Filters";
 import { FaFilter } from "react-icons/fa";
 
-
 const EmptyMsg = styled.div`
   margin-top: 5rem;
   text-align: center;
@@ -51,7 +50,10 @@ const ActivityAddDrawer = (props) => {
   const [offSet, setOffSet] = useState(0);
   const [showDynamicfilters, setShowDynamicfilters] = useState(false);
   const itineraryFilters = useSelector((state) => state.ItineraryFilters);
-  const num_adults = itineraryFilters.occupancies.reduce((sum, item) => sum + item.num_adults, 0);
+  const num_adults = itineraryFilters.occupancies.reduce(
+    (sum, item) => sum + item.num_adults,
+    0
+  );
   const [filterState, setFilterState] = useState({
     recommended_only: false,
     rating: [],
@@ -61,8 +63,8 @@ const ActivityAddDrawer = (props) => {
     pax: {
       number_of_travelers: num_adults,
       traveler_ages: Array(num_adults).fill(null),
-    }
-  })
+    },
+  });
   const [filtersObj, setFiltersObj] = useState({
     ratings: [1, 2, 3, 4, 5],
     category: [],
@@ -75,7 +77,13 @@ const ActivityAddDrawer = (props) => {
       setLoading(true);
       fetchData();
     }
-  }, [elementType, selectedExprience, props.showDrawer, debouncedSearch, filterState]);
+  }, [
+    elementType,
+    selectedExprience,
+    props.showDrawer,
+    debouncedSearch,
+    filterState,
+  ]);
 
   useEffect(() => {
     setSelectedSearch("");
@@ -166,13 +174,13 @@ const ActivityAddDrawer = (props) => {
   };
 
   const setDynamicFilters = (filters) => {
-    setFiltersObj(prev => ({
+    setFiltersObj((prev) => ({
       ...prev,
       category: filters?.category,
       tour_type: filters?.tour_type,
-      guide: filters?.guide
-    }))
-  }
+      guide: filters?.guide,
+    }));
+  };
 
   function fetchData(showMore = false) {
     const requestData = {
@@ -184,21 +192,30 @@ const ActivityAddDrawer = (props) => {
         name: debouncedSearch,
         recommended_only: filterState.recommended_only,
         rating: filterState.rating,
-        category: filterState.category && filterState.category[0] !== "All" ? filterState.category : null,
-        tour_type: filterState.tour_type && filterState.tour_type[0] !== "All" ? filterState.tour_type : null,
-        guide: filterState.guide && filterState.guide[0] !== "All" ? filterState.guide : null
+        category:
+          filterState.category && filterState.category[0] !== "All"
+            ? filterState.category
+            : null,
+        tour_type:
+          filterState.tour_type && filterState.tour_type[0] !== "All"
+            ? filterState.tour_type
+            : null,
+        guide:
+          filterState.guide && filterState.guide[0] !== "All"
+            ? filterState.guide
+            : null,
       },
       sort_by: {
         // no sorting filters added yet.
-      }
-    }
+      },
+    };
     activtySearch
       .post(`/?limit=30&offset=${offSet}`, requestData)
       .then((res) => {
         if (res.data?.data?.activities?.length) {
           setTotalResults(res.data.results);
           if (res.data?.data?.filter_by) {
-            setDynamicFilters(res.data.data.filter_by)
+            setDynamicFilters(res.data.data.filter_by);
           }
           let options = [];
 
@@ -212,7 +229,9 @@ const ActivityAddDrawer = (props) => {
                 data={res.data.data.activities[i]}
                 setLoginModal={props.setShowLoginModal}
                 date={props.date}
-                getAccommodationAndActivitiesHandler={props.getAccommodationAndActivitiesHandler}
+                getAccommodationAndActivitiesHandler={
+                  props.getAccommodationAndActivitiesHandler
+                }
               ></NewActivityBooking>
             );
           }
@@ -277,7 +296,8 @@ const ActivityAddDrawer = (props) => {
       mobileWidth={"100vw"}
       width="50vw"
     >
-      <div className="sticky px-2 top-0 bg-white z-[900] flex flex-col gap-3 py-4 pb-1 justify-start items-start mx-auto w-[98%]">
+      <div className="px-2 py-4">
+      <div className="sticky  top-0 bg-white z-[900] flex flex-col gap-3  pb-1 justify-start items-start mx-auto w-[98%]">
         <div className="flex flex-row gap-3 my-0 justify-between w-full items-center">
           <div className="flex flex-row gap-3 items-center">
             <IoMdClose
@@ -305,8 +325,9 @@ const ActivityAddDrawer = (props) => {
                 type="text"
                 value={selectSearch}
                 onChange={searchHandler}
-                placeholder={`Search ${elementType === "POI" ? "attractions" : "activities"
-                  }`}
+                placeholder={`Search ${
+                  elementType === "POI" ? "attractions" : "activities"
+                }`}
                 className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
               ></input>
             </div>
@@ -318,7 +339,8 @@ const ActivityAddDrawer = (props) => {
           filterState={filterState}
           showDynamicfilters={showDynamicfilters}
           setShowDynamicfilters={setShowDynamicfilters}
-          setFilterState={setFilterState} />
+          setFilterState={setFilterState}
+        />
 
         {!isDesktop && (
           <div className="absolute bottom-0 right-10 z-[1502]">
@@ -347,8 +369,9 @@ const ActivityAddDrawer = (props) => {
               type="text"
               value={selectSearch}
               onChange={searchHandler}
-              placeholder={`Search ${elementType === "POI" ? "attractions" : "activities"
-                }`}
+              placeholder={`Search ${
+                elementType === "POI" ? "attractions" : "activities"
+              }`}
               className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
             ></input>
           </div>
@@ -365,7 +388,10 @@ const ActivityAddDrawer = (props) => {
           {isDesktop && (
             <button
               onClick={() => setShowDynamicfilters(true)}
-              className="ml-2 border-2 border-black w-fit px-2 py-1 rounded-full hover:bg-black hover:text-white transition-all">More filters</button>
+              className="ml-2 border-2 border-black w-fit px-2 py-1 rounded-full hover:bg-black hover:text-white transition-all"
+            >
+              More filters
+            </button>
           )}
         </div>
 
@@ -458,6 +484,7 @@ const ActivityAddDrawer = (props) => {
       ) : (
         <PoiListSkeleton />
       )}
+      </div>
     </Drawer>
   );
 };
@@ -467,7 +494,7 @@ const mapStateToPros = (state) => {
     notificationText: state.Notification.text,
     itineraryActivities: state.itineraryActivities,
     itinerary_id: state.ItineraryId,
-    plan: state.Plan
+    plan: state.Plan,
   };
 };
 
