@@ -18,32 +18,6 @@ const Container = styled.div`
   }
 `;
 
-
-// const Line = styled.hr`
-//   background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
-//     ${(props) =>
-//       props.pinColour
-//         ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
-//         : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
-
-//   background-size: 12px 3px, 100% 3px;
-//   color: #c80000;
-//   -webkit-transform: rotate(90deg);
-//   position: absolute;
-//   width: 2px;
-//   height: 1.7px;
-//   top: 23px;
-//   right: -22px;
-//   border: 2px;
-//   opacity: initial;
-
-//   @media screen and (min-width: 768px) {
-//         width: 8rem;
-//         height: 1.7px;
-//         top: 46px;
-//         right: -46px;
-//   }
-// `;
 const Line = styled.hr`
   background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
     ${(props) =>
@@ -51,22 +25,22 @@ const Line = styled.hr`
         ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
         : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
 
-  background-size: 8px 3px, 100% 3px;
+  background-size: 12px 3px, 100% 3px;
   color: #c80000;
   -webkit-transform: rotate(90deg);
   position: absolute;
-  height: 1px;
+  width: 5rem;
+  height: 1.7px;
+  top: 23px;
+  right: -22px;
   border: 2px;
-  width: ${(props) => (props?.Transfers ? `16rem` : `5rem`)};
-  top: ${(props) => (props?.Transfers ? `101px` : `23px`)};
-  right: ${(props) => (props?.Transfers ? `-110px` : `-22px`)};
   opacity: initial;
-  z-index: -1;
+
   @media screen and (min-width: 768px) {
-    width: 8.4rem;
-    height: 1px;
-    top: 40px;
-    right: -50px;
+        width: 8rem;
+        height: 1.7px;
+        top: 46px;
+        right: -46px;
   }
 `;
 
@@ -91,6 +65,7 @@ const MidSectionV2 = (props) => {
   const [showTaxiModal, setShowTaxiModal] = useState(false);
   
 
+  console.log("Modes",props?.originCity,props?.destinationCity);
 
   // let routeKey = props?.routeKey;
   // let parts = routeKey ? routeKey.split(":") : [null, null];
@@ -380,7 +355,7 @@ const MidSectionV2 = (props) => {
 const mapStateToPros = (state) => {
   return {
     ItineraryId: state.ItineraryId,
-    // transferBookings: gs.transferBookings,
+    // transferBookings: state.Bookings.transferBookings,
     flightBookings: state.Bookings.flightBookings,
     _bookings: state.Bookings,
   };

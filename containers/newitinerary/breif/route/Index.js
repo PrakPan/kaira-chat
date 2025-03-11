@@ -338,7 +338,6 @@ if (props?.CityData) {
             }
             locationsArr.push(
               <MidSectionV2
-                briefPin={true}
                 pinColour={i===0 || i === props?.CityData.length - 1? 'black' : (props?.CityData[i]?.color || color)}
                 modes={
                     props?.cityTransferBookings?.intercity[key] ? props?.cityTransferBookings?.intercity[key].booking_type : "Taxi"

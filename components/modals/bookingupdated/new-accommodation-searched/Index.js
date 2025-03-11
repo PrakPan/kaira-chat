@@ -4,6 +4,7 @@ import NewHotelBooking from "./NewHotelBooking";
 
 const Accommodation = (props) => {
   const [showDetails, setShowDetails] = useState(false);
+  console.log("index is:",props.setStayBookings)
   return (
     <div>
       <NewHotelBooking

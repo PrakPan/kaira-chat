@@ -176,6 +176,47 @@ const Itinerary = (props) => {
       });
   };
 
+  const getAllBookings = () => {
+    let flight_bookings = [];
+
+    axiosBookingsInstance
+      .get(`/${props.id}/bookings/`)
+      .then((res) => {
+        getPaymentHandler();
+        const data = res.data;
+
+        for (const book of data.transfer_bookings) {
+          if (book.booking_type === "Flight") {
+            flight_bookings.push(book);
+          }
+        }
+
+        props.setBookings({
+          ...props.bookings,
+          stayBookings:
+            data.accommodation_bookings.length > 0
+              ? data.accommodation_bookings
+              : null,
+          activityBookings:
+            data.activity_bookings.length > 0 ? data.activity_bookings : null,
+          flightBookings: flight_bookings.length > 0 ? flight_bookings : null,
+          transferBookings:
+            data.transfer_bookings.length > 0 ? data.transfer_bookings : null,
+        });
+
+        setStayBookings(data.accommodation_bookings);
+        setActivityBookings(
+          data.activity_bookings.length ? data.activity_bookings : null
+        );
+        setFlightBookings(flight_bookings.length > 0 ? flight_bookings : null);
+        setTransferBookings(
+          data.transfer_bookings.length ? data.transfer_bookings : null
+        );
+      })
+      .catch((err) => {
+        console.error("Error fetching all bookings", err.message);
+      });
+  };
 
   const getAccommodationAndActivitiesHandler = () => {
     let stay_bookings = [];
@@ -781,7 +822,7 @@ const mapStateToPros = (state) => {
     breif: state.Breif,
     plan: state.Plan,
     routes: state.ItineraryRoutes,
-    bookings: gs,
+    bookings: state.Bookings,
     itineraryActivities: state.itineraryActivities,
   };
 };
