@@ -2,6 +2,7 @@ import styled from "styled-components";
 import React from "react";
 import Pin from "./Pin";
 import { MdNavigateNext } from "react-icons/md";
+import BriefPin from "./BriefPin";
 
 const Container = styled.div`
   cursor: pointer;
