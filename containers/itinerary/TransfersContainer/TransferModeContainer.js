@@ -236,8 +236,6 @@ function processBookingTimes(checkIn, checkOut) {
 }
 
 const TransferModeContainer = (props) => {
-  console.log("props are:",props)
-
   let isPageWide = media("(min-width: 768px)");
   const isDesktop = useMediaQuery("(min-width:1024px)");
   const [addbooking, setaddboking] = useState(props.userSelected);
@@ -1230,6 +1228,7 @@ const TransferModeContainer = (props) => {
         setShowLoginModal={props?.setShowLoginModal}
         check_in={props?.route?.check_in}
         routeId={props?.route?.transfers?.id}
+        selec
       />
     </Container>
   );

@@ -12,6 +12,8 @@ import { toast, ToastContainer } from "react-toastify";
 import { Text, Heading } from "../SectionOne";
 import { IoMdClose } from "react-icons/io";
 import ViewMoreButton from "../../../itinerary/daySummary/ViewMoreButton";
+import { useDispatch, useSelector } from "react-redux";
+import { setTransferBookings } from "../../../../store/actions/transferBookingsStore";
 const Container = styled.div`
   width: 95%;
   background-color: white;
@@ -137,8 +139,12 @@ const Flight = (props) => {
           destination={
             props.data?.segments[props.data?.segments?.length - 1]?.destination
           }
-          duration={typeof(props.data?.total_duration)=="number"?convertMinutesToHours(props.data?.total_duration):props.data?.total_duration}
-          isNonStop={props?.filtersState?.non_stop_flights}
+          duration={
+            typeof props.data?.total_duration == "number"
+              ? convertMinutesToHours(props.data?.total_duration)
+              : props.data?.total_duration
+          }
+          isNonStop={props.data?.segments?.length === 1}
           numStops={props.data?.segments?.length - 1}
           segments={props.data?.segments}
           setShowDetails={setShowDetails}
@@ -222,7 +228,13 @@ export const Details = ({
   booking_id,
   drawer,
   name,
+  setTransferBookingsIntercity
 }) => {
+  console.log("settransferbooking 2:",setTransferBookingsIntercity)
+  const transferBookings = useSelector(
+    (state) => state.TransferBookings.transferBookings
+  );
+  const dispatch=useDispatch();
   const router = useRouter();
   const [fareRules, setFareRules] = useState(fareRule?.fareRuleDetail);
   const [fareRulesLoading, setFareRulesLoading] = useState(false);
@@ -249,7 +261,7 @@ export const Details = ({
       setFareRulesLoading(false);
     } else {
       const data = {
-        trace_id: traceId,
+        trace_id: localStorage.getItem(`${provider}_trace_id`),
         result_index: resultIndex,
       };
 
@@ -329,7 +341,7 @@ export const Details = ({
                       result_indices: [resultIndex],
                     }
                   );
-                  toast.success("Added booking Successfuly")
+                  toast.success("Added booking Successfuly");
                   window.location.href = `/flights/book/${res.data.id}`;
                 } else {
                   const res = await axios.post(
@@ -341,10 +353,18 @@ export const Details = ({
                       booking_id: booking_id,
                     }
                   );
-                  toast.success("Updated booking Successfuly")
+                  transferBookings.intercity[
+                    res?.data?.source_address?.hub_id +
+                      ":" +
+                      res?.data?.destination_address?.hub_id
+                  ] = res?.data;
+                  dispatch(setTransferBookings(transferBookings));
+                  setTransferBookingsIntercity(transferBookings.intercity)
+                  toast.success("Updated booking Successfuly");
                 }
               } catch (error) {
-                toast.error("Some error occured")
+                console.log("error is:",error)
+                toast.error("Some error occured");
               }
             }}
             className="z-[1600]"
@@ -353,7 +373,7 @@ export const Details = ({
           </Generalbuttonstyle>
         </div>
       )}
-      <ToastContainer/>
+      <ToastContainer />
     </div>
   );
 };

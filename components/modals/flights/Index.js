@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import media from "../../media";
 import { updateFlightBooking } from "../../../services/bookings/UpdateBookings";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import axiosflightsearch, {
   axiosFlightSearch,
 } from "../../../services/bookings/FlightSearch";
@@ -76,7 +76,6 @@ const ContentContainer = styled.div`
 `;
 
 const Booking = (props) => {
-
   let isPageWide = media("(min-width: 768px)");
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -144,7 +143,6 @@ const Booking = (props) => {
     });
 
     if (props.selectedBooking && props.token) {
-      console.log("Selected Booking",props?.selectedBooking)
       const requestData = {
         adult_count: pax.adults,
         child_count: pax.children,
@@ -154,12 +152,8 @@ const Booking = (props) => {
         origin: props.selectedBooking.origin_iata,
         destination: props.selectedBooking.destination_iata,
         preferred_departure_time: `${props?.selectedBooking?.check_in ? new Date(props?.selectedBooking?.check_in.replace(' ', 'T'))?.toISOString()?.slice(0, 19) : new Date()?.toISOString()?.slice(0, 19)}`,
-        flight_cabin_class: classType.value,
-        origin: props?.mercuryTransfer?.source?.code,
-        destination:props?.mercuryTransfer?.destination?.code
+        flight_cabin_class: classType.value
       };
-
-      console.log("Requested Data",requestData)
 
       axiosFlightSearch
         .post(
@@ -208,14 +202,14 @@ const Booking = (props) => {
           setLoading(false);
           setFetchingIsError({
             error: true,
-            errorMsg: `Sorry, we could not find any flights from ${props?.selectedBooking?.city || props?.mercuryTransfer?.source?.city_name} to ${props?.selectedBooking?.destination_city || props?.mercuryTransfer?.destination?.city_name} for given dates at the moment. Please contact us to complete this booking`,
+            errorMsg: `Sorry, we could not find any flights from ${props.selectedBooking.origin_iata} to ${props.selectedBooking.destination_iata} for given dates at the moment. Please contact us to complete this booking`,
           });
         });
     } else {
       setLoading(false);
       setFetchingIsError({
         error: true,
-        errorMsg: `Sorry, we could not find any flights from ${props?.selectedBooking?.city || props?.mercuryTransfer?.source?.city_name} to ${props?.selectedBooking?.destination_city || props?.mercuryTransfer?.destination?.city_name} for given dates at the moment. Please contact us to complete this booking`,
+        errorMsg: `Sorry, we could not find any flights from ${props.selectedBooking.origin_iata} to ${props.selectedBooking.destination_iata} for given dates at the moment. Please contact us to complete this booking`,
       });
     }
   };

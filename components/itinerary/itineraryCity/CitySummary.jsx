@@ -192,6 +192,7 @@ const CitySummary = (props) => {
         cityName={props.city.city.name}
         cityID={props.city.city.id}
         date={props?.city?.start_date}
+        itinerary_city_id={props?.city?.id}
       ></ActivityAddDrawer>
     </div>
   );

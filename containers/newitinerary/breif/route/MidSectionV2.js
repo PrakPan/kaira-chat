@@ -63,13 +63,6 @@ const MidSectionV2 = (props) => {
   );
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showTaxiModal, setShowTaxiModal] = useState(false);
-  
-
-  console.log("Modes",props?.originCity,props?.destinationCity);
-
-  // let routeKey = props?.routeKey;
-  // let parts = routeKey ? routeKey.split(":") : [null, null];
-
 
   useEffect(() => {
     if (props.cityTransferBookings && props.flightBookings) {

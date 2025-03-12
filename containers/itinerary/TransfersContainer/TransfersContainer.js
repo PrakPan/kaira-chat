@@ -694,6 +694,7 @@ const TransfersContainer = (props) => {
         check_in={props?.route?.check_in}
         _GetInTouch={props._GetInTouch}
         routeId={props?.route?.transfers?.id}
+        selectedBooking={selectedBooking}
       />
     </Container>
   );

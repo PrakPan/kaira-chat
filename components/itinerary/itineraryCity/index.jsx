@@ -9,7 +9,6 @@ import Image from "next/image";
 
 const ItineraryCity = (props) => {
   const [viewMore, setViewMore] = useState(false);
-
   return (
     <div
       data-city-id={props.city.id}

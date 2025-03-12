@@ -232,6 +232,8 @@ const ActivityAddDrawer = (props) => {
                 getAccommodationAndActivitiesHandler={
                   props.getAccommodationAndActivitiesHandler
                 }
+                cityId={props?.cityID}
+                itinerary_city_id={props?.itinerary_city_id}
               ></NewActivityBooking>
             );
           }

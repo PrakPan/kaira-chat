@@ -14,10 +14,11 @@ import { logEvent } from "../../../services/ga/Index";
 import FlightLogoContainer from "../../../components/modals/flights/new-flight-searched/LogoContainer";
 import FlightDetails from "../../../components/modals/flights/new-flight-searched/FlightDetails";
 import Drawer from "../../../components/ui/Drawer";
-import { Details } from "../../../components/modals/flights/new-flight-searched/Index";
 import { FaArrowRight } from "react-icons/fa6";
 import { useRouter } from "next/router";
 import TransferEditDrawer from "../../../components/drawers/routeTransfer/TransferEditDrawer";
+import { setTransferBookings } from "../../../store/actions/transferBookingsStore";
+import Details  from "./FlightDetail";
 const GridContainer = styled.div`
   width: auto;
   overflow: auto;
@@ -126,9 +127,10 @@ const TransferBooking = ({
   check_in,
   end,
   Transfer,
-  lastend
+  lastend,
+  selectedBooking,
+  setTransferBookingsIntercity
 }) => {
-  console.log("transfer:",Transfer)
   let isPageWide = media("(min-width: 768px)");
   const isDesktop = useMediaQuery("(min-width:1024px)");
   const [addbooking, setaddboking] = useState(booking?.user_selected);
@@ -216,7 +218,8 @@ const TransferBooking = ({
       taxi_type,
       transfer_type,
       origin,
-      destination
+      destination,
+      selectedBooking
     );
 
     logEvent({
@@ -340,6 +343,7 @@ const TransferBooking = ({
               _changeFlightHandler={_changeFlightHandler}
               token={token}
               setShowLoginModal={setShowLoginModal}
+              setTransferBookingsIntercity={setTransferBookingsIntercity}
             />
           ) : (
             <div className="mt-3 ml-1 md:ml-7 flex flex-col w-full">
@@ -515,6 +519,7 @@ const TransferBooking = ({
             routeId={id}
             city={origin?.name!=undefined? origin?.name: origin?.city_name}
             dcity={destination.name!=undefined? destination.name: destination?.city_name}
+            selectedBooking={selectedBooking}
           />
         </div>
       )}
@@ -547,7 +552,9 @@ const FlightBooking = ({
   _changeFlightHandler,
   token,
   setShowLoginModal,
+  setTransferBookingsIntercity
 }) => {
+  console.log('settransferbooking:',setTransferBookingsIntercity)
   const [showDetails, setShowDetails] = useState(false);
   const router = useRouter();
   function HandleFlights(i, label) {
@@ -718,6 +725,7 @@ const FlightBooking = ({
         }`}
         onHide={() => setShowDetails(false)}
       >
+        {setTransferBookingsIntercity!=undefined&&<>
         <Details
           segments={booking?.transfers_details?.items?.[0]?.segments}
           resultIndex={booking?.transfers_details?.items?.[0]?.result_index}
@@ -727,7 +735,8 @@ const FlightBooking = ({
           drawer={true}
           name={booking?.name}
           fareRule={booking?.transfer_details?.items?.fare_rule}
-        />
+          transferBookingProp={setTransferBookingsIntercity} 
+        /></>}
       </Drawer>
     </div>
   );
