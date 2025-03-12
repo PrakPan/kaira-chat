@@ -19,7 +19,6 @@ const ClippathComp = styled.div`
 `;
 
 export default function NewActivityBooking(props) {
-  console.log("image data is:",props.data.image)
   const [imageFail, setImageFail] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [stars, setStars] = useState(null);
@@ -88,6 +87,10 @@ export default function NewActivityBooking(props) {
                 borderRadius={"16px"}
                 fit="cover"
                 onload={() => {
+                  setImageLoaded(true)
+                }}
+                onfail={() => {
+                  setImageFail(true);
                   setImageLoaded(true);
                 }}
                 // onfail={() => {
