@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 export default function CountdownTimer({ priceValidUntil }) {
-  const targetTime = priceValidUntil ? new Date(priceValidUntil.replace(" ", "T")).getTime() : "";
+  const targetTime = new Date(priceValidUntil?.replace(" ", "T")).getTime();
   const currentTime = new Date().getTime();
 
   if (targetTime <= currentTime) {

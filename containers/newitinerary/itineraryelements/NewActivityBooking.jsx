@@ -19,7 +19,7 @@ const ClippathComp = styled.div`
 `;
 
 export default function NewActivityBooking(props) {
-  const [isSelect, setisSelect] = useState(false);
+  console.log("image data is:",props.data.image)
   const [imageFail, setImageFail] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [stars, setStars] = useState(null);
@@ -46,20 +46,19 @@ export default function NewActivityBooking(props) {
     setShowDetails({ show: false, data: {} });
   };
 
-  const handleClick=async(id)=>{
-    const res=await axios.get(`${MERCURY_HOST}/api/v1/ancillaries/activity/${id}`)
+  const handleClick = async (id) => {
+    const res = await axios.get(
+      `${MERCURY_HOST}/api/v1/ancillaries/activity/${id}`
+    );
     setShowDetails({
-      show:true,
-      data:res?.data?.data?.activity
-    })
-    console.log('data is:',res?.data?.data?.activity)
+      show: true,
+      data: res?.data?.data?.activity,
+    });
   };
 
   return (
-    <div className="border rounded-[16px] w-[98%] p-2 mb-3"  >
-      <div
-        className={`flex gap-1  flex-col justify-start`}
-      >
+    <div className="border rounded-[16px] w-[98%] p-2 mb-3">
+      <div className={`flex gap-1  flex-col justify-start`}>
         <div
           style={{
             display: "grid",
@@ -71,35 +70,41 @@ export default function NewActivityBooking(props) {
         >
           <div>
             {" "}
-            <div className="h-[220px] w-[251px]" style={{
-      display: imageLoaded ? "block" : "none",
-    }}>
+            <div
+              style={{
+                height: "220px",
+                width: "251px",
+                overflow: "hidden",
+                borderRadius: "16px",
+                display: imageLoaded ? "block" : "none",
+              }}
+            >
               <ImageLoader
                 height="220px"
                 width="251px"
-                  widthmobile="1.5rem"
+                widthmobile="1.5rem"
                 dimensions={{ width: 1600, height: 900 }}
                 dimensionsMobile={{ width: 1600, height: 900 }}
                 borderRadius={"16px"}
                 fit="cover"
                 onload={() => {
-                  setImageLoaded(true)
-                }}
-                onfail={() => {
-                  setImageFail(true);
                   setImageLoaded(true);
                 }}
+                // onfail={() => {
+                //   setImageFail(true);
+                //   setImageLoaded(true);
+                // }}
                 url={
-                  props.data?.image && !imageFail
-                    ? props.data.image
-                    : "media/icons/bookings/notfounds/noroom.png"
+                  props.data?.image 
+                    // ? props.data.image
+                    // : "media/icons/bookings/notfounds/noroom.png"
                 }
               ></ImageLoader>
             </div>
             <div
               style={{
-                height:"220px",
-                width:"251px",
+                height: "220px",
+                width: "251px",
                 overflow: "hidden",
                 borderRadius: "16px",
                 display: !imageLoaded ? "block" : "none",
@@ -136,8 +141,12 @@ export default function NewActivityBooking(props) {
 
             <div className="my-2">
               <div className="font-light text-sm text-[#01202B] line-clamp-3">
-                {props.data.short_description}
+                {props.data.short_description
+                  .split(" ")
+                  .slice(0, 20)
+                  .join(" ")}
               </div>
+
               <div className="font-bold text-gray-500"> ...more</div>
             </div>
             <div className="flex flex-row items-center justify-between">
@@ -203,6 +212,8 @@ export default function NewActivityBooking(props) {
         getAccommodationAndActivitiesHandler={
           props.getAccommodationAndActivitiesHandler
         }
+        cityId={props?.cityId}
+        itinerary_city_id={props?.itinerary_city_id}
       />
     </div>
   );

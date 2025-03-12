@@ -68,9 +68,10 @@ const CITY_COLOR_CODES = [
 ];
 
 const TransferBookings = (props) => {
-  const transferBookingsIntercity = useSelector(
+  const transferBookings = useSelector(
     (state) => state.TransferBookings.transferBookings
-  ).intercity;
+  );
+  const[transferBookingsIntercity,setTransferBookingsIntercity]=useState(transferBookings.intercity)
   let isPageWide = media("(min-width: 768px)");
   const [selectedBooking, setSelectedBooking] = useState({
     id: null,
@@ -108,7 +109,6 @@ const TransferBookings = (props) => {
     user_selected,
     booking_id
   ) => {
-    console.log("origin city:",origin_iata)
     ga.event({
       action: "Itinerary-bookings-flight_change",
       params: { name: name },
@@ -259,6 +259,8 @@ const TransferBookings = (props) => {
             destination={itineraries?.cities[0].city}
             id={itineraries?.start_city?.gmaps_place_id}
             check_in={itineraries?.start_date}
+            selectedBooking={selectedBooking}
+            setTransferBookingsIntercity={setTransferBookingsIntercity}
           />
         </>
         {itineraries?.cities?.map((item, index) => (
@@ -298,6 +300,8 @@ const TransferBookings = (props) => {
                   destination={itineraries?.cities[index + 1].city}
                   id={item.id}
                   check_in={item.start_date}
+                  selectedBooking={selectedBooking}
+                  setTransferBookingsIntercity={setTransferBookingsIntercity}
         />
               </>
             )}
@@ -340,7 +344,8 @@ const TransferBookings = (props) => {
           id={itineraries?.end_city?.gmaps_place_id}
           check_in={itineraries?.end_date}
           end={true}
-          // Transfer={true}
+          selectedBooking={selectedBooking}
+          setTransferBookingsIntercity={setTransferBookingsIntercity}
         />
         <PinSection
           key={itineraries?.cities.length}
@@ -417,6 +422,7 @@ const TransferBookings = (props) => {
         check_in={props?.route?.check_in}
         _GetInTouch={props._GetInTouch}
         routeId={props?.route?.transfers?.id}
+        selectedBooking={selectedBooking}
       />
     </div>
   );

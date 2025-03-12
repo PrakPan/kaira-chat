@@ -111,6 +111,7 @@ const Heading = styled.div`
 const Address = styled.div`
   font-weight: 400;
   font-size: 14px;
+  font-family: poppins;
 `;
 
 const CheckInText = styled.div`
@@ -143,7 +144,7 @@ const getRoomImage = (images) => {
   }
 
   return null;
-}
+};
 
 const HotelBookingDetails = (props) => {
   const isDesktop = useMediaQuery("(min-width:1148px)");
@@ -161,7 +162,7 @@ const HotelBookingDetails = (props) => {
     2: false,
     3: false,
   });
-  const [open,setOpen]=useState(false)
+  const [open, setOpen] = useState(false);
 
   function OnImageLoad(i) {
     if (!ImagesLoaded[i]) {
@@ -234,8 +235,7 @@ const HotelBookingDetails = (props) => {
           </div>
           {props.data?.user_ratings_total && (
             <div className="text-sm text-[#7A7A7A] font-[400] underline">
-              {props.data?.user_ratings_total}{" "}
-              reviews
+              {props.data?.user_ratings_total} reviews
             </div>
           )}
         </div>
@@ -903,15 +903,16 @@ const HotelBookingDetails = (props) => {
       )}
 
       <DetailsContainer>
-        {props.data?.hotel_details?.check_in?.begin_time && props.data?.hotel_details?.check_out?.time ? (
+        {props.data?.hotel_details?.check_in?.begin_time &&
+        props.data?.hotel_details?.check_out?.time ? (
           <CheckInText>
             <div className="">
-              Check in:{" "}
-              {props.data.hotel_details.check_in.date},{getHumanTime(props.data.hotel_details.check_in.begin_time)}
+              Check in: {props.data.hotel_details.check_in.date},
+              {getHumanTime(props.data.hotel_details.check_in.begin_time)}
             </div>
             <div>
-              Check out:{" "}
-              {props.data.hotel_details.check_out.date},{getHumanTime(props.data.hotel_details.check_out.time)}
+              Check out: {props.data.hotel_details.check_out.date},
+              {getHumanTime(props.data.hotel_details.check_out.time)}
             </div>
           </CheckInText>
         ) : (
@@ -920,7 +921,10 @@ const HotelBookingDetails = (props) => {
       </DetailsContainer>
 
       {props.data?.hotel_details?.rates?.map((room, index) => (
-        <div key={index} className="flex flex-col gap-3 bg-white p-2 rounded-lg">
+        <div
+          key={index}
+          className="flex flex-col gap-3 bg-white p-2 rounded-lg"
+        >
           <div className="flex flex-row gap-3">
             {getRoomImage(room?.images) && (
               <ImageContainer>
@@ -936,22 +940,29 @@ const HotelBookingDetails = (props) => {
             )}
 
             <div className="w-full">
-              {room.name ? (<div
-                className="w-full text-[14px] font-[400] md:text-lg md:font-semibold"
-              >
-                {room.name} <span><RxCross2 className="inline" /> 1 room</span>
-              </div>) : null}
-
-              {room?.number_of_adults && room?.number_of_adults !== '0' ? (
-                <div className="flex flex-row gap-1">
-                  <div className="text-md font-semibold">Sleeps</div>
-                  <div>
-                    {room.number_of_adults > 1 ? `${room.number_of_adults} Adults` : `${room.number_of_adults} Adult`}
-                    {room?.number_of_children && room?.number_of_children !== '0' ? `, ${room.number_of_children} Children` : null}
-                  </div>
+              {room.name ? (
+                <div className="w-full text-[14px] font-[400] md:text-lg md:font-semibold">
+                  {room.name}{" "}
+                  <span>
+                    <RxCross2 className="inline" /> 1 room
+                  </span>
                 </div>
               ) : null}
 
+              {room?.number_of_adults && room?.number_of_adults !== "0" ? (
+                <div className="flex flex-row gap-1">
+                  <div className="text-md font-semibold">Sleeps</div>
+                  <div>
+                    {room.number_of_adults > 1
+                      ? `${room.number_of_adults} Adults`
+                      : `${room.number_of_adults} Adult`}
+                    {room?.number_of_children &&
+                    room?.number_of_children !== "0"
+                      ? `, ${room.number_of_children} Children`
+                      : null}
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
@@ -973,35 +984,44 @@ const HotelBookingDetails = (props) => {
         <>
           <Heading>Room Information</Heading>
           <div className="flex flex-col gap-3">
-              {props.data?.hotel_details?.rates?.[0]?.rooms.map((room, index) => (
-                <div key={index} className="flex flex-col gap-3">
-                  <div key={index} className="flex flex-col md:flex-row gap-1 justify-between">
-                    {room?.description ? (
-                      <div dangerouslySetInnerHTML={{
-                        __html: room.description
-                      }} className=""></div>
-                    ) : null}
-                    <div className="flex flex-col items-center justify-center gap-3 md:w-[40%] h-[250px]">
-                      <div>{room?.caption}</div>
-                      <ImageCarousel images={room?.images} />
-                    </div>
+            {props.data?.hotel_details?.rates?.[0]?.rooms.map((room, index) => (
+              <div key={index} className="flex flex-col gap-3">
+                <div
+                  key={index}
+                  className="flex flex-col md:flex-row gap-1 justify-between"
+                >
+                  {room?.description ? (
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: room.description,
+                      }}
+                      className=""
+                    ></div>
+                  ) : null}
+                  <div className="flex flex-col items-center justify-center gap-3 md:w-[40%] h-[250px]">
+                    <ImageCarousel images={room?.images} />
                   </div>
+                </div>
 
-                  {room?.facilities ? (
-                    <div className="flex flex-col gap-2">
-                      <div className="text-lg font-semibold">Room Amenities</div>
-                      <div className="text-[14px]">
+                {room?.facilities ? (
+                  <div className="flex flex-col gap-2">
+                    <div className="text-lg font-semibold">Ammenties</div>
+                    <div className="text-[14px]">
+                      <div className="flex flex-wrap gap-2">
                         {room.facilities.map((item, index) => (
-                          <span key={index}>{item}
-                            {index < room.facilities.length - 1 && " . "}
-                          </span>
+                          <div key={index}>
+                            <div className="bg-[#FAFAFA] p-[8px] rounded-[10px]">
+                              {item}
+                            </div>
+                          </div>
                         ))}
                       </div>
                     </div>
-                  ) : null}
-                </div>
-              ))}
-            </div>
+                  </div>
+                ) : null}
+              </div>
+            ))}
+          </div>
         </>
       )}
       {/* <Tag tag={props.data?.hotel_details?.rates?.[0]?.rooms?.[0]?.facilities?.[0]}/>
@@ -1063,20 +1083,85 @@ const HotelBookingDetails = (props) => {
           </div>
         </div>
       ) : props.data?.hotel_details?.coordinates?.latitude &&
-      props.data?.hotel_details?.coordinates?.longitude ? (
+        props.data?.hotel_details?.coordinates?.longitude ? (
         <div>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Location</Heading>
-          <Address style={{ fontSize: "14px" }}>
-            {props.data?.hotel_details?.addr1
-              ? props.data.hotel_details.addr1 + ", "
-              : ""}{" "}
-            {props.data?.hotel_details?.addr2
-              ? props.data.hotel_details.addr2 + ", "
-              : ""}{" "}
-            {props.data?.hotel_details?.city_name
-              ? props.data.hotel_details.city_name
-              : ""}
-          </Address>
+          <div className="flex gap-2">
+            <div>
+              <svg
+                width="23"
+                height="24"
+                viewBox="0 0 23 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <g clip-path="url(#clip0_9135_4118)">
+                  <rect
+                    y="0.800781"
+                    width="22.4"
+                    height="22.4"
+                    rx="4"
+                    fill="#169873"
+                    fill-opacity="0.09"
+                  />
+                  <path
+                    d="M13.2 18L9.20001 16.6L6.10001 17.8C5.87779 17.8889 5.67223 17.8639 5.48335 17.725C5.29446 17.5861 5.20001 17.4 5.20001 17.1667V7.83333C5.20001 7.68889 5.24168 7.56111 5.32501 7.45C5.40835 7.33889 5.52223 7.25556 5.66668 7.2L9.20001 6L13.2 7.4L16.3 6.2C16.5222 6.11111 16.7278 6.13611 16.9167 6.275C17.1056 6.41389 17.2 6.6 17.2 6.83333V16.1667C17.2 16.3111 17.1583 16.4389 17.075 16.55C16.9917 16.6611 16.8778 16.7444 16.7333 16.8L13.2 18ZM12.5333 16.3667V8.56667L9.86668 7.63333V15.4333L12.5333 16.3667ZM13.8667 16.3667L15.8667 15.7V7.8L13.8667 8.56667V16.3667ZM6.53335 16.2L8.53335 15.4333V7.63333L6.53335 8.3V16.2Z"
+                    fill="#169873"
+                  />
+                </g>
+                <defs>
+                  <clipPath id="clip0_9135_4118">
+                    <rect
+                      y="0.800781"
+                      width="22.4"
+                      height="22.4"
+                      rx="4"
+                      fill="white"
+                    />
+                  </clipPath>
+                </defs>
+                <g
+                  xmlns="http://www.w3.org/2000/svg"
+                  clip-path="url(#clip0_9135_4118)"
+                >
+                  <rect
+                    y="0.800781"
+                    width="22.4"
+                    height="22.4"
+                    rx="4"
+                    fill="#169873"
+                    fill-opacity="0.09"
+                  />
+                  <path
+                    d="M13.2 18L9.20001 16.6L6.10001 17.8C5.87779 17.8889 5.67223 17.8639 5.48335 17.725C5.29446 17.5861 5.20001 17.4 5.20001 17.1667V7.83333C5.20001 7.68889 5.24168 7.56111 5.32501 7.45C5.40835 7.33889 5.52223 7.25556 5.66668 7.2L9.20001 6L13.2 7.4L16.3 6.2C16.5222 6.11111 16.7278 6.13611 16.9167 6.275C17.1056 6.41389 17.2 6.6 17.2 6.83333V16.1667C17.2 16.3111 17.1583 16.4389 17.075 16.55C16.9917 16.6611 16.8778 16.7444 16.7333 16.8L13.2 18ZM12.5333 16.3667V8.56667L9.86668 7.63333V15.4333L12.5333 16.3667ZM13.8667 16.3667L15.8667 15.7V7.8L13.8667 8.56667V16.3667ZM6.53335 16.2L8.53335 15.4333V7.63333L6.53335 8.3V16.2Z"
+                    fill="#169873"
+                  />
+                </g>
+                <defs xmlns="http://www.w3.org/2000/svg">
+                  <clipPath id="clip0_9135_4118">
+                    <rect
+                      y="0.800781"
+                      width="22.4"
+                      height="22.4"
+                      rx="4"
+                      fill="white"
+                    />
+                  </clipPath>
+                </defs>
+              </svg>
+            </div>
+            <Address style={{ fontSize: "14px" }}>
+              {props.data?.hotel_details?.addr1
+                ? props.data.hotel_details.addr1 + ", "
+                : ""}{" "}
+              {props.data?.hotel_details?.addr2
+                ? props.data.hotel_details.addr2 + ", "
+                : ""}{" "}
+              {props.data?.hotel_details?.city_name
+                ? props.data.hotel_details.city_name
+                : ""}
+            </Address>
+          </div>
           <div
             style={{
               display: "flex",
@@ -1086,36 +1171,17 @@ const HotelBookingDetails = (props) => {
               marginTop: "0.5rem",
             }}
           >
-            <div style={{ height: "30px", width: "30px" }}>
-              <Image
-                noLazy
-                url={
-                  ImagesError[i]
-                    ? "media/icons/bookings/notfounds/noroom.png"
-                    : "media/icons/google-maps.png"
-                }
-                height="30px"
-                width="30px"
-              />
-            </div>
             <a
               href={`https://www.google.com/maps/search/?api=1&query=${
                 props.data?.hotel_details?.coordinates?.latitude
-              },${props.data?.hotel_details?.coordinates?.longitude}+(${props.data?.name
-                ?.split(" ")
-                .join("+")})`}
+              },${
+                props.data?.hotel_details?.coordinates?.longitude
+              }+(${props.data?.name?.split(" ").join("+")})`}
               target="_blank"
-              style={{ color: "black", fontSize: "14px" }}
+              style={{ color: "#0000EE", fontSize: "14px" }}
             >
               View on Google Map
             </a>
-            <FiChevronRight
-              style={{
-                fontSize: "1rem",
-                margin: "4px 0px 0px -12px",
-                display: "inline",
-              }}
-            />
           </div>
         </div>
       ) : (

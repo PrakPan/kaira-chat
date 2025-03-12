@@ -80,7 +80,7 @@ const ActivityDetailsDrawer = (props) => {
 
   const updatedActivityBooking = () => {
     const requestData = {
-      itinerary_id: router.query?.id,
+      itinerary_city_id: props?.itinerary_city_id,
       trace_id: traceId,
     };
 
