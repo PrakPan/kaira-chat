@@ -188,7 +188,7 @@ const TransferEditDrawer = (props) => {
 
   const handleSelect = (index, transfer, multimode) => {
     const access_token = localStorage.getItem("access_token");
-    if (!props.token || access_token) {
+    if (!props.token) {
       setShowLoginModal(true);
       return;
     }
