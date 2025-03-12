@@ -11,7 +11,7 @@ import { IoMdClose } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { setTransferBookings } from "../../../store/actions/transferBookingsStore";
 
-export default Details = ({
+const Details = ({
     segments,
     provider,
     resultIndex,
@@ -299,3 +299,4 @@ export default Details = ({
     );
   };
   
+export default Details;
