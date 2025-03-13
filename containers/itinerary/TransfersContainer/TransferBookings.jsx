@@ -10,52 +10,6 @@ import TransferEditDrawer from "../../../components/drawers/routeTransfer/Transf
 import TransferBooking from "./TransferBooking";
 import media from "../../../components/media";
 import Pin from "../../newitinerary/breif/route/Pin";
-const Container = styled.div`
-  @media screen and (min-width: 768px) {
-    width: 100%;
-  }
-  @media screen and (min-width: 360px) {
-    width: 100%;
-    margin: 0 -0.4rem 0 0rem;
-  }
-  margin-bottom: 1.5rem;
-`;
-
-const TransContainer = styled.div`
-  display: grid;
-  width: 100%;
-  grid-template-columns: 30px auto;
-  min-height: 5rem;
-  @media screen and (min-width: 768px) {
-    min-height: 7rem;
-  }
-`;
-
-const Line = styled.hr`
-  background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
-    ${(props) =>
-      props.pinColour
-        ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
-        : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
-
-  background-size: 8px 3px, 100% 3px;
-  color: #c80000;
-  -webkit-transform: rotate(90deg);
-  position: absolute;
-  height: 1px;
-  border: 2px;
-  width: ${(props) => (props.Transfers ? `16rem` : `5rem`)};
-  top: ${(props) => (props.Transfers ? `101px` : `23px`)};
-  right: ${(props) => (props.Transfers ? `-110px` : `-22px`)};
-  opacity: initial;
-  z-index: -1;
-  @media screen and (min-width: 768px) {
-    width: 8.4rem;
-    height: 1px;
-    top: 40px;
-    right: -50px;
-  }
-`;
 
 const CITY_COLOR_CODES = [
   "#359EBF", // shade of blue
@@ -67,11 +21,9 @@ const CITY_COLOR_CODES = [
   "#7d5e7d", // shade of purple
 ];
 
+
+
 const TransferBookings = (props) => {
-  const transferBookings = useSelector(
-    (state) => state.TransferBookings.transferBookings
-  );
-  const[transferBookingsIntercity,setTransferBookingsIntercity]=useState(transferBookings.intercity)
   let isPageWide = media("(min-width: 768px)");
   const [selectedBooking, setSelectedBooking] = useState({
     id: null,
@@ -230,7 +182,7 @@ const TransferBookings = (props) => {
 
           <TransferBooking
             key={
-              transferBookingsIntercity[
+              props.transferBookings.intercity[
                 `${
                   itineraries?.start_city?.gmaps_place_id +
                   ":" +
@@ -240,7 +192,7 @@ const TransferBookings = (props) => {
             }
             index={-1}
             booking={
-              transferBookingsIntercity[
+              props.transferBookings.intercity[
                 `${
                   itineraries?.start_city?.gmaps_place_id +
                   ":" +
@@ -260,7 +212,7 @@ const TransferBookings = (props) => {
             id={itineraries?.start_city?.gmaps_place_id}
             check_in={itineraries?.start_date}
             selectedBooking={selectedBooking}
-            setTransferBookingsIntercity={setTransferBookingsIntercity}
+            
           />
         </>
         {itineraries?.cities?.map((item, index) => (
@@ -279,13 +231,13 @@ const TransferBookings = (props) => {
 
                 <TransferBooking
                   key={
-                    transferBookingsIntercity[
+                    props.transferBookings.intercity[
                       `${item.id + ":" + itineraries?.cities[index + 1].id}`
                     ]?.id
                   }
                   index={index}
                   booking={
-                    transferBookingsIntercity[
+                    props.transferBookings.intercity[
                       `${item.id + ":" + itineraries?.cities[index + 1].id}`
                     ]
                   }
@@ -301,7 +253,7 @@ const TransferBookings = (props) => {
                   id={item.id}
                   check_in={item.start_date}
                   selectedBooking={selectedBooking}
-                  setTransferBookingsIntercity={setTransferBookingsIntercity}
+                  
         />
               </>
             )}
@@ -318,7 +270,7 @@ const TransferBookings = (props) => {
         />
         <TransferBooking
           key={
-            transferBookingsIntercity[
+            props.transferBookings.intercity[
               `${itineraries?.cities[itineraries?.cities.length - 1]?.id}:${
                 itineraries?.end_city?.gmaps_place_id
               }`
@@ -326,7 +278,7 @@ const TransferBookings = (props) => {
           }
           index={itineraries?.cities.length-1}
           booking={
-            transferBookingsIntercity[
+            props.transferBookings.intercity[
               `${itineraries?.cities[itineraries?.cities.length - 1]?.id}:${
                 itineraries?.end_city?.gmaps_place_id
               }`
@@ -345,7 +297,7 @@ const TransferBookings = (props) => {
           check_in={itineraries?.end_date}
           end={true}
           selectedBooking={selectedBooking}
-          setTransferBookingsIntercity={setTransferBookingsIntercity}
+          
         />
         <PinSection
           key={itineraries?.cities.length}
@@ -428,7 +380,7 @@ const TransferBookings = (props) => {
   );
 };
 
-const mapStateToPros = (state) => {
+const mapStateToProps = (state) => {
   return {
     name: state.auth.name,
     emailFail: state.auth.emailFail,
@@ -442,7 +394,10 @@ const mapStateToPros = (state) => {
     loginmessage: state.auth.loginmessage,
     hideloginclose: state.auth.hideloginclose,
     itinerary_id: state.ItineraryId,
+    transferBookings: state.TransferBookings.transferBookings,
   };
 };
 
-export default connect(mapStateToPros)(TransferBookings);
+
+
+export default connect(mapStateToProps)(TransferBookings);

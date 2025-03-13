@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const Generalbuttonstyle = styled.button`
+export const Generalbuttonstyle = styled.button`
   color: ${(props) => (props.color ? props.color : "black")};
 
   display: ${(props) => (props.display ? props.display : "block")};

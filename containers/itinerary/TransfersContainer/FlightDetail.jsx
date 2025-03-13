@@ -8,8 +8,11 @@ import { useRouter } from "next/router";
 import { toast, ToastContainer } from "react-toastify";
 import { Text, Heading } from "../../../components/modals/flights/SectionOne";
 import { IoMdClose } from "react-icons/io";
-import { useDispatch, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { setTransferBookings } from "../../../store/actions/transferBookingsStore";
+import { Generalbuttonstyle } from "../../../components/ui/button/Generallinkbutton";
+import { Logo } from "../../../components/modals/flights/new-flight-searched/LogoContainer";
+import { render } from "nprogress";
 
 const Details = ({
     segments,
@@ -21,12 +24,9 @@ const Details = ({
     booking_id,
     drawer,
     name,
-    transferBookingProp
+    transferBookings,
+    setTransferBookings
   }) => {
-    console.log("settransferbooking 2:",transferBookingProp)
-    const transferBookings = useSelector(
-      (state) => state.TransferBookings.transferBookings
-    );
     const dispatch=useDispatch();
     const router = useRouter();
     const [fareRules, setFareRules] = useState(fareRule?.fareRuleDetail);
@@ -146,17 +146,19 @@ const Details = ({
                         booking_id: booking_id,
                       }
                     );
-                    transferBookings.intercity[
-                      res?.data?.source_address?.hub_id +
-                        ":" +
-                        res?.data?.destination_address?.hub_id
-                    ] = res?.data;
-                    dispatch(setTransferBookings(transferBookings));
-                    setTransferBookingsIntercity(transferBookings.intercity)
+                    const updatedTransferBookings = {
+                      ...transferBookings,
+                      intercity: {
+                        ...transferBookings.intercity,
+                        [res?.data?.source_address?.hub_id + ":" + res?.data?.destination_address?.hub_id]: res?.data
+                      }
+                    };
+                    setTransferBookings(updatedTransferBookings); 
+                    
                     toast.success("Updated booking Successfuly");
                   }
                 } catch (error) {
-                  console.log("error is:",error)
+                  console.log('error is:',error)
                   toast.error("Some error occured");
                 }
               }}
@@ -298,5 +300,15 @@ const Details = ({
       </div>
     );
   };
+
+  const mapStateToProps = (state) => ({
+    transferBookings: state.TransferBookings.transferBookings,
+  });
+
+
   
-export default Details;
+  const mapDispatchToProps = {
+    setTransferBookings,
+  };
+  
+  export default connect(mapStateToProps, mapDispatchToProps)(Details);
