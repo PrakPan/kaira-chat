@@ -70,7 +70,6 @@ const TransferEditDrawer = (props) => {
     mercury,
     mercuryTransfer,
   } = props;
-  console.log("selectedbooking is:",selectedBooking)
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
   const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);

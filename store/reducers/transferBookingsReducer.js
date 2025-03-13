@@ -1,10 +1,7 @@
 import * as actionTypes from "../actions/actionsTypes";
 
 const initialState = {
-  intercity: null,
-  intracity: null,
-  airport: null,
-  transferBookings: null,  // ✅ Add this line
+  transferBookings: null, 
 };
 
 

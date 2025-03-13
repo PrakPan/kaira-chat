@@ -128,8 +128,7 @@ const TransferBooking = ({
   end,
   Transfer,
   lastend,
-  selectedBooking,
-  setTransferBookingsIntercity
+  selectedBooking
 }) => {
   let isPageWide = media("(min-width: 768px)");
   const isDesktop = useMediaQuery("(min-width:1024px)");
@@ -343,7 +342,6 @@ const TransferBooking = ({
               _changeFlightHandler={_changeFlightHandler}
               token={token}
               setShowLoginModal={setShowLoginModal}
-              setTransferBookingsIntercity={setTransferBookingsIntercity}
             />
           ) : (
             <div className="mt-3 ml-1 md:ml-7 flex flex-col w-full">
@@ -552,9 +550,7 @@ const FlightBooking = ({
   _changeFlightHandler,
   token,
   setShowLoginModal,
-  setTransferBookingsIntercity
 }) => {
-  console.log('settransferbooking:',setTransferBookingsIntercity)
   const [showDetails, setShowDetails] = useState(false);
   const router = useRouter();
   function HandleFlights(i, label) {
@@ -725,7 +721,6 @@ const FlightBooking = ({
         }`}
         onHide={() => setShowDetails(false)}
       >
-        {setTransferBookingsIntercity!=undefined&&<>
         <Details
           segments={booking?.transfers_details?.items?.[0]?.segments}
           resultIndex={booking?.transfers_details?.items?.[0]?.result_index}
@@ -735,8 +730,7 @@ const FlightBooking = ({
           drawer={true}
           name={booking?.name}
           fareRule={booking?.transfer_details?.items?.fare_rule}
-          transferBookingProp={setTransferBookingsIntercity} 
-        /></>}
+        />
       </Drawer>
     </div>
   );
