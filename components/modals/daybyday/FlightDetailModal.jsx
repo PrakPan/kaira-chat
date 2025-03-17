@@ -48,7 +48,7 @@ const FlightDetailModal = ({ segments ,fareRule}) => {
   
     return (
       <div className="w-full max-w-full p-3 bg-[#FAFBFC] text-[rgba(0,0,0,0.85)] text-sm leading-[21px] rounded-md">
-        {segments.map((segment, i) => (
+        {segments?.map((segment, i) => (
           <div key={i}>
             {i !== 0 && (
               <div className="text-center my-[25px]">
