@@ -4,7 +4,6 @@ import NewHotelBooking from "./NewHotelBooking";
 
 const Accommodation = (props) => {
   const [showDetails, setShowDetails] = useState(false);
-  console.log("index is:",props.setStayBookings)
   return (
     <div>
       <NewHotelBooking
@@ -16,6 +15,7 @@ const Accommodation = (props) => {
         booking={props.accommodation}
         alternates={props.alternates}
         selectedBooking={props.selectedBooking}
+        num_adults={props.num_adults}
         openDetails={() => setShowDetails(true)}
         banner_image={props.banner_image}
         handleClick={props?.handleClick}

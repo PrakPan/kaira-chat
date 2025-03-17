@@ -132,6 +132,10 @@ const Flight = (props) => {
             setShowDetails={setShowDetails}
             individual={props?.individuall}
             booking_id={props?.booking_id}
+
+          originCityId={props.originCityId}
+          destinationCityId={props.destinationCityId}
+          setTransferBookingsIntercity={props.setTransferBookingsIntercity}
           />
         </div>
       )}

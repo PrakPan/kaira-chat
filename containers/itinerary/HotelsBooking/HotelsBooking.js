@@ -115,6 +115,7 @@ const HotelsBooking = (props) => {
   };
 
   const _setImagesHandler = (images) => {
+    console.log("setting images:",images)
     setImages(images);
   };
 

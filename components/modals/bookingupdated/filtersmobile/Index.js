@@ -34,7 +34,7 @@ const SortItem = styled.div`
 export default function TemporaryDrawer(props) {
   let isPageWide = media("(min-width: 768px)");
   const [selectedStarCategory, setSelectedStarCategory] = useState([]);
-  const [SelectedSort, setSelectedSort] = useState(props.filters.sort[0]);
+  const [SelectedSort, setSelectedSort] = useState(props.FILTERS.sort[0]);
   const [refundable, setRefundable] = useState(false)
   const [freeBreakfast, setFreeBreakfast] = useState(true)
   const [budget, setBudget] = useState([props.filtersState.budget.price_lower_range, props.filtersState.budget.price_upper_range])
@@ -45,12 +45,14 @@ export default function TemporaryDrawer(props) {
     let handler;
     if (props.filtersState.budget.price_lower_range !== budget[0] || props.filtersState.budget.price_upper_range !== budget[1]) {
       handler = setTimeout(() => {
-        dispatch(setItineraryFilters({ 
+        props.setFilters((prev)=>({
+          ...prev,
           budget: {
             price_lower_range: budget[0],
             price_upper_range: budget[1]
-          }
-        }));
+          },
+          applyFilter:!props.filters.applyFilter
+        }))
       }, 2000);
     }
 
@@ -116,15 +118,14 @@ export default function TemporaryDrawer(props) {
 
             <div className="flex flex-col justify-between" >
               <StarCategory
-                starCategory={props.filters.star_category}
+                starCategory={props.FILTERS.star_category}
                 selectedStarCategory={selectedStarCategory}
                 setSelectedStarCategory={setSelectedStarCategory}
               />
 
               <Travelers
-                adults={props.plan?.number_of_adults || props.plan[0]?.number_of_adults}
-                children={props.plan?.number_of_children || props.plan[0]?.number_of_children}
-                infants={props?.plan?.number_of_infants || props?.plan[0]?.number_of_infants}
+                filters={props.filters}
+                setFilters={props.setFilters}
               />
             </div>
           </div>
@@ -133,8 +134,8 @@ export default function TemporaryDrawer(props) {
         {!isPageWide && (
           <div className="w-[90%] mx-auto">
             <Travelers
-              adults={props.plan?.number_of_adults}
-              children={props.plan?.number_of_children}
+              filters={props.filters}
+              setFilters={props.setFilters}
             />
           </div>
         )}
@@ -176,7 +177,7 @@ export default function TemporaryDrawer(props) {
                 </b>
                 {sortShow ? (
                   <SortContainer>
-                    {props.filters["sort"].map((e, i) => (
+                    {props.FILTERS["sort"].map((e, i) => (
                       <SortItem
                         key={i}
                         onClick={() => {
@@ -197,8 +198,8 @@ export default function TemporaryDrawer(props) {
 
             {isPageWide && (
               <button
-                onClick={() => props.setShowFilters(true)}
-                className="ml-2 border-2 border-black w-fit px-2 py-1 rounded-full hover:bg-black hover:text-white transition-all">More filters</button>
+                onClick={() => props.setShowFILTERS(true)}
+                className="ml-2 border-2 border-black w-fit px-2 py-1 rounded-full hover:bg-black hover:text-white transition-all">More FILTERS</button>
             )}
           </div>
         ) : null}

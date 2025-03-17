@@ -151,8 +151,14 @@ const Booking = (props) => {
         journey_type: "1",
         origin: props.selectedBooking.origin_iata,
         destination: props.selectedBooking.destination_iata,
-        preferred_departure_time: `${props?.selectedBooking?.check_in ? new Date(props?.selectedBooking?.check_in.replace(' ', 'T'))?.toISOString()?.slice(0, 19) : new Date()?.toISOString()?.slice(0, 19)}`,
-        flight_cabin_class: classType.value
+        preferred_departure_time: `${
+          props?.selectedBooking?.check_in
+            ? new Date(props?.selectedBooking?.check_in.replace(" ", "T"))
+                ?.toISOString()
+                ?.slice(0, 19)
+            : new Date()?.toISOString()?.slice(0, 19)
+        }`,
+        flight_cabin_class: classType.value,
       };
 
       axiosFlightSearch
@@ -190,6 +196,9 @@ const Booking = (props) => {
                   provider={res.data?.provider}
                   filtersState={filtersState}
                   booking_id={props.selectedBooking?.booking_id}
+                  originCityId={props.selectedBooking.originCityId}
+                  destinationCityId={props.selectedBooking.destinationCityId}
+                  setTransferBookingsIntercity={props.setTransferBookingsIntercity}
                 ></Flight>
               );
             }
@@ -275,7 +284,7 @@ const Booking = (props) => {
           heading: "Error!",
         });
         props.setHideFlightModal();
-        toast.error("some error occured")
+        toast.error("some error occured");
       });
   };
 
@@ -298,7 +307,6 @@ const Booking = (props) => {
           destination_city_code: props.selectedBooking.destination_iata,
           flight_cabin_class: "1",
           trace_id: trace_id,
-
         },
       })
       .then((res) => {
@@ -317,6 +325,8 @@ const Booking = (props) => {
                 selectedBooking={props.selectedBooking}
                 _updateBookingHandler={_newUpdateBookingHandler}
                 individual={props?.individual}
+                originCityId={props.selectedBooking.originCityId}
+                destinationCityId={props.selectedBooking.destinationCityId}
               ></Flight>
             );
           }
@@ -353,7 +363,7 @@ const Booking = (props) => {
         mobileWidth={"100%"}
         width={"50%"}
       >
-        <ToastContainer/>
+        <ToastContainer />
         <SectionOne
           _FetchFlightsHandler={_FetchFlightsHandler}
           setHideBookingModal={props.setHideBookingModal}

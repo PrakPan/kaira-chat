@@ -12,8 +12,6 @@ import PropertyType from "./filtersmobile/PropertyType";
 import Tags from "./filtersmobile/Tags";
 import UserRatings from "./filtersmobile/UserRatings";
 import StarCategory from "./filtersmobile/StarCategory";
-import { useDispatch } from "react-redux";
-import { setItineraryFilters } from "../../../store/actions/setItineraryFilters";
 
 const Container = styled.div`
   margin: 0;
@@ -28,28 +26,33 @@ const Section = (props) => {
   const [freeBreakfast, setFreeBreakfast] = useState(true)
   const [selectedFacilities, setSelectedFacilities] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
-  const [budget, setBudget] = useState([props.filtersState.budget.price_lower_range, props.filtersState.budget.price_upper_range])
+  const [budget, setBudget] = useState([props.filters.budget.price_lower_range, props.filters.budget.price_upper_range])
   const [selectedTypes, setSelectedTypes] = useState(["All"]);
-  const dispatch=useDispatch();
   const handleBudgetChange = () => {
-    dispatch(setItineraryFilters({ 
-      budget: {
-        price_lower_range: budget[0],
-        price_upper_range: budget[1]
-      }
-    }));
+    props.setFilters((prev)=>({
+      ...prev,
+      budget:{
+        price_lower_range:budget[0],
+        price_upper_range:budget[1]
+      },
+      applyFilter:!props.filters.applyFilter
+    }))
   }
 
   const handleRefundable = () => {
-    dispatch(setItineraryFilters({ 
-      "is_refundable": refundable
-    }));
+    props.setFilters((prev)=>({
+      ...prev,
+      "is_refundable": refundable,
+      applyFilter:!props.filters.applyFilter
+    }))
   }
 
   const handleFreeBreakfast = () => {
-    dispatch(setItineraryFilters({ 
-      "free_breakfast": freeBreakfast
-    }));
+    props.setFilters((prev)=>({
+      ...prev,
+      "free_breakfast": freeBreakfast,
+      applyFilter:!props.filters.applyFilter
+    }))
   }
 
   const handleApply = () => {
@@ -75,12 +78,14 @@ const Section = (props) => {
         updateUserStarHandler={props.updateUserStarHandler}
         _removeFilterHandler={props._removeFilterHandler}
         _addFilterHandler={props._addFilterHandler}
-        filters={props.FILTERS}
+        FILTERS={props.FILTERS}
         booking_city={props.booking_city}
         No_of_stays={props.No_of_stays}
         totalCount={props.TotalCount}
         plan={props?.plan[0]}
         setShowFilters={props.setShowFilters}
+        filters={props.filters}
+        setFilters={props.setFilters}
       ></FiltersMobile>
 
       <Drawer

@@ -2,21 +2,15 @@ import React, { useEffect, useRef, useState } from "react";
 import { IoPerson } from "react-icons/io5";
 import { CiCirclePlus, CiCircleMinus } from "react-icons/ci";
 import { RiArrowDropDownLine } from "react-icons/ri";
-import { useDispatch } from "react-redux";
-import { setItineraryFilters } from "../../../../store/actions/setItineraryFilters";
-
 
 export default function Travelers(props) {
     const containerRef = useRef(null);
-    const [travelers, setTravelers] = useState(1);
-    const [rooms, setRooms] = useState([{
-        adults: 1,
-        children: 0,
-        childAges: [],
-    }]);
+    const [travelers, setTravelers] = useState(
+        props.filters.occupancies.reduce((sum, room) => sum + room.num_adults + (room.child_ages ? room.child_ages.length : 0), 0)
+    );
+    const [rooms, setRooms] = useState(props.filters.occupancies || []);
     const [open, setOpen] = useState(false);
     const [showError, setShowError] = useState(false);
-    const dispatch=useDispatch();
 
 
     useEffect(() => {
@@ -33,23 +27,11 @@ export default function Travelers(props) {
         };
     }, [setOpen]);
 
-    useEffect(() => {
-        let total = 0;
-        if (props.adults) total += props.adults;
-        if (props.children) total += props.children
-
-        setTravelers(total);
-        setRooms([{
-            adults: props.adults,
-            children: props.children,
-            childAges: Array(props.children).fill(null)
-        }])
-    }, [props.adults, props.children])
 
     useEffect(() => {
         let total = 0
         for (let room of rooms) {
-            total += room?.adults ? room.adults : 0;
+            total += room?.num_adults ? room.num_adults : 0;
             total += room?.children ? room.children : 0;
         }
 
@@ -60,9 +42,9 @@ export default function Travelers(props) {
         if (rooms.length < 8) {
             setRooms(prev => (
                 [...prev, {
-                    adults: 1,
+                    num_adults: 1,
                     children: 0,
-                    childAges: [],
+                    child_ages: [],
                 }]
             ))
         }
@@ -74,7 +56,7 @@ export default function Travelers(props) {
 
     const checkError = () => {
         for (let room of rooms) {
-            if (room.childAges.includes(null)) {
+            if (room.child_ages.includes(null)) {
                 return true;
             }
         }
@@ -89,15 +71,23 @@ export default function Travelers(props) {
         }
 
         setShowError(false);
-
-        dispatch(setItineraryFilters({ 
+        console.log("set filters are:",rooms.map(room => {
+            return {
+                num_adults: room.num_adults,
+                child_ages: room.child_ages
+            }
+        }))
+        props.setFilters((prev)=>({
+            ...prev,
             'occupancies': rooms.map(room => {
                 return {
-                    num_adults: room.adults,
-                    child_ages: room.childAges
+                    num_adults: room.num_adults,
+                    child_ages: room.child_ages
                 }
-            })
-          }));
+            }),
+            applyFilter:!props.filters.applyFilter
+        }))
+
         setOpen(false);
     }
 
@@ -138,35 +128,35 @@ export default function Travelers(props) {
 }
 
 const Room = ({ index, data, setRooms, showError }) => {
-    const [adults, setAdults] = useState(data.adults)
-    const [children, setChildren] = useState(data.children);
-    const [childAges, setChildAges] = useState(data.childAges);
+    const [num_adults, setnum_adults] = useState(data.num_adults)
+    const [children, setChildren] = useState(data?.children||0);
+    const [child_ages, setchild_ages] = useState(data.child_ages);
 
 
     useEffect(() => {
         setRooms(prev => prev.map((room, i) => i === index ? {
             ...room,
-            adults: adults,
+            num_adults: num_adults,
             children: children,
-            childAges: childAges
+            child_ages: child_ages
         } : room));
-    }, [adults, children, childAges])
+    }, [num_adults, children, child_ages])
 
     const handleAdults = (type) => {
-        if (type === "plus" && adults < 14) {
-            setAdults(prev => prev + 1);
-        } else if (type === 'minus' && adults > 1) {
-            setAdults(prev => prev - 1);
+        if (type === "plus" && num_adults < 14) {
+            setnum_adults(prev => prev + 1);
+        } else if (type === 'minus' && num_adults > 1) {
+            setnum_adults(prev => prev - 1);
         }
     }
 
     const handleChildren = (type) => {
         if (type === 'plus' && children < 6) {
             setChildren(prev => prev + 1);
-            setChildAges(prev => [...prev, null]);
+            setchild_ages(prev => [...prev, null]);
         } else if (type === 'minus' && children >= 1) {
             setChildren(prev => prev - 1);
-            setChildAges(prev => prev.slice(0, -1));
+            setchild_ages(prev => prev.slice(0, -1));
         }
     }
 
@@ -177,7 +167,7 @@ const Room = ({ index, data, setRooms, showError }) => {
                 <div className="text-sm">Adults</div>
                 <div className="flex flex-row items-center gap-2">
                     <CiCircleMinus onClick={() => handleAdults('minus')} className="text-2xl" />
-                    <div>{adults}</div>
+                    <div>{num_adults}</div>
                     <CiCirclePlus onClick={() => handleAdults('plus')} className="text-2xl" />
                 </div>
             </div>
@@ -197,12 +187,12 @@ const Room = ({ index, data, setRooms, showError }) => {
 
                 {children ? (
                     <div className="flex flex-col gap-2">
-                        {childAges && childAges.map((age, i) => (
+                        {child_ages && child_ages.map((age, i) => (
                             <ChildAge
                                 index={i}
                                 child={i + 1}
                                 age={age}
-                                setChildAges={setChildAges}
+                                setchild_ages={setchild_ages}
                                 showError={showError} />
                         ))}
                     </div>
@@ -212,12 +202,12 @@ const Room = ({ index, data, setRooms, showError }) => {
     );
 }
 
-const ChildAge = ({ index, child, age, setChildAges, showError }) => {
+const ChildAge = ({ index, child, age, setchild_ages, showError }) => {
     const [openAges, setOpenAges] = useState(false);
     const [selectedAge, setSelectedAge] = useState(age);
 
     useEffect(() => {
-        setChildAges(prev => prev.map((age, i) => i === index ? selectedAge : age))
+        setchild_ages(prev => prev.map((age, i) => i === index ? selectedAge : age))
     }, [selectedAge])
 
     const handleChildAge = (value) => {

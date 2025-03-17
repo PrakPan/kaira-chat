@@ -18,7 +18,7 @@ import { FaArrowRight } from "react-icons/fa6";
 import { useRouter } from "next/router";
 import TransferEditDrawer from "../../../components/drawers/routeTransfer/TransferEditDrawer";
 import { setTransferBookings } from "../../../store/actions/transferBookingsStore";
-import Details  from "./FlightDetail";
+import Details from "./FlightDetail";
 const GridContainer = styled.div`
   width: auto;
   overflow: auto;
@@ -128,7 +128,9 @@ const TransferBooking = ({
   end,
   Transfer,
   lastend,
-  selectedBooking
+  selectedBooking,
+  originCityId,
+  destinationCityId,
 }) => {
   let isPageWide = media("(min-width: 768px)");
   const isDesktop = useMediaQuery("(min-width:1024px)");
@@ -194,8 +196,12 @@ const TransferBooking = ({
     let taxi_type = booking["taxi_type"];
     let transfer_type = booking["transfer_type"];
     let destination_city = booking["destination_address"]["shortName"];
-    let origin_iata = booking?.transfer_details?.items?.[0]?.segments?.[0]?.origin?.city_code;
-    let destination_iata = booking?.transfer_details?.items?.[0]?.segments?.[booking?.transfer_details?.items?.[0].segments?.length-1]?.destination?.city_code;
+    let origin_iata =
+      booking?.transfer_details?.items?.[0]?.segments?.[0]?.origin?.city_code;
+    let destination_iata =
+      booking?.transfer_details?.items?.[0]?.segments?.[
+        booking?.transfer_details?.items?.[0].segments?.length - 1
+      ]?.destination?.city_code;
     let origin = booking["source_address"];
     let destination = booking["destination_address"];
 
@@ -328,7 +334,10 @@ const TransferBooking = ({
       {booking?.id ? (
         <Container className={`${!isPageWide ? "max-w-fit" : "max-w-[54vw]"}`}>
           <div className="relative">
-            <Line pinColour={CITY_COLOR_CODES[index % 7]} Transfers={Transfer} />
+            <Line
+              pinColour={CITY_COLOR_CODES[index % 7]}
+              Transfers={Transfer}
+            />
           </div>
           {booking?.booking_type === "Flight" ? (
             <FlightBooking
@@ -342,6 +351,8 @@ const TransferBooking = ({
               _changeFlightHandler={_changeFlightHandler}
               token={token}
               setShowLoginModal={setShowLoginModal}
+              originCityId={originCityId}
+              destinationCityId={destinationCityId}
             />
           ) : (
             <div className="mt-3 ml-1 md:ml-7 flex flex-col w-full">
@@ -506,7 +517,11 @@ const TransferBooking = ({
       ) : (
         <div className="grid w-full grid-cols-[30px_120px] min-h-[5rem] md:min-h-[8rem]">
           <div className="relative">
-          <Line pinColour={CITY_COLOR_CODES[index % 7]} Transfers={Transfer} end={end}/>
+            <Line
+              pinColour={CITY_COLOR_CODES[index % 7]}
+              Transfers={Transfer}
+              end={end}
+            />
           </div>
           <button
             onClick={() => setShowDrawer(true)}
@@ -520,12 +535,16 @@ const TransferBooking = ({
             showDrawer={showDrawer}
             setShowDrawer={setShowDrawer}
             selectedTransferHeading={origin}
-            origin={origin?.id!=undefined? origin?.id: id}
-            destination={destination.id!=undefined? destination.id: id}
+            origin={origin?.id != undefined ? origin?.id : id}
+            destination={destination.id != undefined ? destination.id : id}
             check_in={check_in}
             routeId={id}
-            city={origin?.name!=undefined? origin?.name: origin?.city_name}
-            dcity={destination.name!=undefined? destination.name: destination?.city_name}
+            city={origin?.name != undefined ? origin?.name : origin?.city_name}
+            dcity={
+              destination.name != undefined
+                ? destination.name
+                : destination?.city_name
+            }
             selectedBooking={selectedBooking}
           />
         </div>
@@ -559,6 +578,8 @@ const FlightBooking = ({
   _changeFlightHandler,
   token,
   setShowLoginModal,
+  originCityId,
+  destinationCityId,
 }) => {
   const [showDetails, setShowDetails] = useState(false);
   const router = useRouter();
@@ -575,7 +596,7 @@ const FlightBooking = ({
     let tailored_id = booking["tailored_itinerary"]; // not present
     let id = booking["id"];
     let check_in =
-      booking?.transfers_details?.items?.[0]?.segments[0]?.origin
+      booking?.transfer_details?.items?.[0]?.segments[0]?.origin
         ?.departure_time;
     let check_out = booking["check_out"]; // not present
     let pax = {
@@ -587,8 +608,12 @@ const FlightBooking = ({
     let taxi_type = booking["taxi_type"];
     let transfer_type = booking["transfer_type"];
     let destination_city = booking["destination_city"];
-    let origin_iata = booking?.transfers_details?.items?.[0]?.segments?.[0]?.origin?.city_code;
-    let destination_iata = booking?.transfers_details?.items?.[0]?.segments?.[booking?.transfers_details?.items?.[0].segments?.length-1]?.destination?.city_code;
+    let origin_iata =
+      booking?.transfer_details?.items?.[0]?.segments?.[0]?.origin?.city_code;
+    let destination_iata =
+      booking?.transfer_details?.items?.[0]?.segments?.[
+        booking?.transfer_details?.items?.[0].segments?.length - 1
+      ]?.destination?.city_code;
     let user_selected = booking?.user_selected;
     _changeFlightHandler(
       name,
@@ -608,7 +633,9 @@ const FlightBooking = ({
       taxi_type,
       transfer_type,
       user_selected,
-      booking?.id
+      booking?.id,
+      originCityId,
+      destinationCityId
     );
 
     logEvent({
@@ -645,23 +672,21 @@ const FlightBooking = ({
             window.innerWidth >= 1000 && "flex justify-between items-center "
           }`}
         >
-          <FlightLogoContainer data={booking?.transfers_details?.items?.[0]} />
+          <FlightLogoContainer data={booking?.transfer_details?.items?.[0]} />
           <div className="flex-grow">
             <FlightDetails
-              data={booking?.transfers_details?.items?.[0]}
+              data={booking?.transfer_details?.items?.[0]}
               origin={
-                booking?.transfers_details?.items?.[0]?.segments[0]?.origin
+                booking?.transfer_details?.items?.[0]?.segments[0]?.origin
               }
               destination={
-                booking?.transfers_details?.items?.[0]?.segments[booking?.transfers_details?.items?.[0]?.segments.length-1]?.destination
+                booking?.transfer_details?.items?.[0]?.segments[
+                  booking?.transfer_details?.items?.[0]?.segments.length - 1
+                ]?.destination
               }
-              duration={
-                booking?.duration
-              }
-              segments={booking?.transfers_details?.items?.[0]?.segments}
-              numStops={
-                booking?.transfers_details?.items?.[0]?.stop_count?.stops
-              }
+              duration={booking?.duration}
+              segments={booking?.transfer_details?.items?.[0]?.segments}
+              numStops={booking?.transfer_details?.items?.[0]?.segments.length}
               setShowDetails={setShowDetails}
             />
           </div>
@@ -730,16 +755,38 @@ const FlightBooking = ({
         }`}
         onHide={() => setShowDetails(false)}
       >
-        <Details
-          segments={booking?.transfers_details?.items?.[0]?.segments}
-          resultIndex={booking?.transfers_details?.items?.[0]?.result_index}
-          setShowDetails={setShowDetails}
-          individual={false}
-          booking_id={booking?.id}
-          drawer={true}
-          name={booking?.name}
-          fareRule={booking?.transfer_details?.items?.fare_rule}
-        />
+        {originCityId !== undefined && destinationCityId !== undefined && (
+          <>
+           {console.log(
+              "Segments:",
+              booking?.transfer_details?.items?.[0]?.segments
+            )}
+            {console.log(
+              "Result Index:",
+              booking?.transfer_details?.items?.[0]?.result_index
+            )}
+            {console.log(
+              "Fare Rule:",
+              booking?.transfer_details?.items?.[0]?.fare_rule
+            )}
+            {console.log("Booking ID:", booking?.id)}
+            {console.log("Name:", booking?.name)}
+            {console.log("Origin City ID:", originCityId)}
+            {console.log("Destination City ID:", destinationCityId)}
+            <Details
+              segments={booking?.transfer_details?.items?.[0]?.segments}
+              resultIndex={booking?.transfer_details?.items?.[0]?.result_index}
+              setShowDetails={setShowDetails}
+              individual={false}
+              booking_id={booking?.id}
+              drawer={true}
+              name={booking?.name}
+              fareRule={booking?.transfer_details?.items?.[0]?.fare_rule}
+              originCityId={"karan"}
+              destinationCityId={destinationCityId}
+            />
+          </>
+        )}
       </Drawer>
     </div>
   );
