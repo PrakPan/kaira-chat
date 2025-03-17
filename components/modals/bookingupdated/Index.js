@@ -58,7 +58,6 @@ const GetInTouchContainer = styled.div`
 `;
 
 const Booking = (props) => {
-  console.log("index is 3:",props.setStayBookings)
   let isPageWide = media("(min-width: 768px)");
   const [showDetails, setShowDetails] = useState(false);
   const [moreOptionsJSX, setMoreOptionsJSX] = useState([]);
@@ -73,13 +72,14 @@ const Booking = (props) => {
   const [loading, setLoading] = useState(false);
   const [viewMoreStatus, setViewMoreStatus] = useState(false);
   const [nextPage, setNextPage] = useState(1);
-  const [traceId, setTraceID] = useState("");
   const [provider, setProvider] = useState(null);
   const [updateBookingState, setUpdateBookingState] = useState(false);
   const [updateLoadingState, setUpdateLoadingState] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
   const [unauthorized, setUnauthorized] = useState(false);
   const [noResults, setNoResults] = useState(false);
+  const filtersState=useSelector((state)=>state.ItineraryFilters)
+  const[filters,setFilters]=useState({...filtersState,applyFilter:false})
   const [filtersObj, setFiltersObj] = useState({
     type: [],
     star_category: [1, 2, 3, 4, 5],
@@ -95,15 +95,14 @@ const Booking = (props) => {
   const [showFilters, setShowFilters] = useState(false);
   const debouncedSearch = useDebounce(selectSearch);
   const dispatch=useDispatch();
-  const filtersState=useSelector((state)=>state.ItineraryFilters)
 
-  console.log("PLAN & bookings",props?.plan,props?.bookings);
+
   useEffect(() => {
     if (props?.showBookingModal) {
       fetchHotels();
     }
   }, [
-    filtersState,
+    filters.applyFilter,
     props?.showBookingModal,
     debouncedSearch,
   ]);
@@ -141,15 +140,27 @@ const Booking = (props) => {
   };
 
   const _addFilterHandler = (filter, heading) => {
-    dispatch(setItineraryFilters({ [heading]: filter }));
+    setFilters((prev)=>({
+      ...prev,
+      [heading]: filter ,
+      applyFilter:!filters.applyFilter
+    }))
   };
 
   const _updateStarFilterHandler = (star) => {
-    dispatch(setItineraryFilters({ star_category: star }));
+    setFilters((prev)=>({
+      ...prev,
+      star_category: star,
+      applyFilter:!filters.applyFilter
+    }))
   };
 
   const updateUserStarHandler = (star) => {
-    dispatch(setItineraryFilters({ user_ratings: star }));
+    setFilters((prev)=>({
+      ...prev,
+      user_ratings: star ,
+      applyFilter:!filters.applyFilter
+    }))
   }
 
   const _removeFilterHandler = (heading) => {
@@ -184,24 +195,24 @@ const Booking = (props) => {
       check_in: getDate(props?.selectedBooking?.check_in),
       check_out: getDate(props?.selectedBooking?.check_out),
       city_id: props?.selectedBooking?.cityId,
-      occupancies: filtersState.occupancies,
+      occupancies: filters.occupancies,
       filter_by: {
-        price_lower_range: filtersState.budget.price_lower_range,
-        price_upper_range: filtersState.budget.price_upper_range,
+        price_lower_range: filters.budget.price_lower_range,
+        price_upper_range: filters.budget.price_upper_range,
         hotel_name: debouncedSearch ? debouncedSearch : null,
         sub_location_ids: null,
-        free_breakfast: filtersState.free_breakfast,
-        is_refundable: filtersState.is_refundable,
-        facilities: filtersState.facilities,
-        tags: filtersState.tags,
-        type: filtersState.type && filtersState.type[0] !== "All" ? filtersState.type : null,
-        star_category: filtersState.star_category,
-        user_ratings: filtersState.user_ratings,
+        free_breakfast: filters.free_breakfast,
+        is_refundable: filters.is_refundable,
+        facilities: filters.facilities,
+        tags: filters.tags,
+        type: filters.type && filters.type[0] !== "All" ? filters.type : null,
+        star_category: filters.star_category,
+        user_ratings: filters.user_ratings,
         page: nextPage
       },
-      occupancies:filtersState.occupancies,
+      occupancies:filters.occupancies,
       sort_by: {
-        price_order: filtersState.sort === "price: high to low" ? "desc" : "asc"
+        price_order: filters.sort === "price: high to low" ? "desc" : "asc"
       },
       source: provider
     }
@@ -252,6 +263,8 @@ const Booking = (props) => {
                     images={res.data.data[i].images}
                     banner_image={img}
                     bookings={props.bookings}
+                    num_adults={filters.occupancies.reduce((sum, room) => sum + room.num_adults, 0)
+                    }
                     traceId={res.data?.trace_details?.id ? res.data.trace_details.id : ""}
                     provider={res.data?.data?.[0]?.source}
                     setUpdateBookingState={setUpdateBookingState}
@@ -290,7 +303,6 @@ const Booking = (props) => {
       setLoading(false);
 
     }).catch(err => {
-      console.log("error on booking updated:",err)
       setLoading(false);
       setFetchingIsError({
         error: true,
@@ -361,6 +373,8 @@ const Booking = (props) => {
                   plan={props?.plan || props?.booking}
                   TotalCount={totalCount}
                   setShowFilters={setShowFilters}
+                  filters={filters}
+                  setFilters={setFilters}
                 ></SectionTwo>
               </div>
 

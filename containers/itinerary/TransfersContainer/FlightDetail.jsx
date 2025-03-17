@@ -15,6 +15,8 @@ import { Logo } from "../../../components/modals/flights/new-flight-searched/Log
 import { render } from "nprogress";
 
 const Details = ({
+  originCityId,
+    destinationCityId,
     segments,
     provider,
     resultIndex,
@@ -25,11 +27,15 @@ const Details = ({
     drawer,
     name,
     transferBookings,
-    setTransferBookings
+    setTransferBookings,
+    setTransferBookingsIntercity
   }) => {
-    const dispatch=useDispatch();
+    useEffect(() => {
+      console.log("originCityId in Details:", destinationCityId);
+      console.log("destinationCityId in Details:", destinationCityId);
+    }, [originCityId, destinationCityId]);
     const router = useRouter();
-    const [fareRules, setFareRules] = useState(fareRule?.fareRuleDetail);
+    const [fareRules, setFareRules] = useState(fareRule?.[0]?.fareRuleDetail);
     const [fareRulesLoading, setFareRulesLoading] = useState(false);
     const [fareRUlesError, setFareRulesError] = useState(false);
   
@@ -49,7 +55,7 @@ const Details = ({
           `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/flight/${booking_id}`
         );
         setFareRules(
-          res?.data?.flight_details?.items?.[0]?.fare_rule?.[0]?.fareRuleDetail
+          res?.data?.transfer_details?.items?.[0]?.fare_rule?.[0]?.fareRuleDetail	
         );
         setFareRulesLoading(false);
       } else {
@@ -150,16 +156,16 @@ const Details = ({
                       ...transferBookings,
                       intercity: {
                         ...transferBookings.intercity,
-                        [res?.data?.source_address?.hub_id + ":" + res?.data?.destination_address?.hub_id]: res?.data
+                        [originCityId + ":" + destinationCityId]: res?.data
                       }
                     };
-                    setTransferBookings(updatedTransferBookings); 
+                    setTransferBookings(updatedTransferBookings);
+                    setTransferBookingsIntercity(updatedTransferBookings.intercity)
                     
                     toast.success("Updated booking Successfuly");
                   }
                 } catch (error) {
-                  console.log('error is:',error)
-                  toast.error("Some error occured");
+                  toast.error(error.response?.data?.errors[0]?.message[0]);
                 }
               }}
               className="z-[1600]"
@@ -307,8 +313,8 @@ const Details = ({
 
 
   
-  const mapDispatchToProps = {
-    setTransferBookings,
+  const mapDispatchToProps =(dispatch)=> {
+    return{setTransferBookings:(payload)=>dispatch(setTransferBookings(payload))}
   };
   
   export default connect(mapStateToProps, mapDispatchToProps)(Details);
