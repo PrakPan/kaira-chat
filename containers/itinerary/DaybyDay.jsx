@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import ItineraryCity from "../../components/itinerary/itineraryCity";
 import CityItem from "./VerticalLayout";
 import media from "../../components/media";
+import Drawer from "../../components/ui/Drawer";
 
 const CITY_COLOR_CODES = [
   "#359EBF", // shade of blue
@@ -156,6 +157,16 @@ const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width}) => {
           length={itineraryDaybyDay?.cities?.length}
         />
       </div>
+      <Drawer
+              show={handleShow}
+              anchor="right"
+              width={"500px"}
+              style={1503}
+              className="font-lexend"
+              onHide={setHandleShow}
+            >
+            
+            </Drawer>
     </div>
   );
 };

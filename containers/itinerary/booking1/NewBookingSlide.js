@@ -817,7 +817,7 @@ const Details = (props) => {
                 )}
               </div>
             ) : null}
-            {props.payment?.itinerary_status ===
+            {/* {props.payment?.itinerary_status ===
             ITINERARY_STATUSES?.itinerary_finalized ? null : (
               <>
                 <div className="cursor-pointer pl-2 w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90">
@@ -838,7 +838,7 @@ const Details = (props) => {
                   scrollable={true}
                 ></UiDropdown>
               </>
-            )}
+            )} */}
           </div>
         </div>
 

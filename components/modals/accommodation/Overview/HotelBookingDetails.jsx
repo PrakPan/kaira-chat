@@ -190,7 +190,7 @@ const HotelBookingDetails = (props) => {
       if (props.images[i]) images.push(props.images[i]);
     }
   } catch {}
-
+  console.log("images are",images)
   return (
     <Container>
       <FlexBox>
@@ -268,6 +268,7 @@ const HotelBookingDetails = (props) => {
       {isDesktop ? (
         <ImageContainer>
           {images.length > 3 ? (
+            <>
             <GridImage>
               <Child area="1 / 1 / 5 / 4" className="div1 ">
                 <div
@@ -412,6 +413,7 @@ const HotelBookingDetails = (props) => {
                 </div>
               </Child>
             </GridImage>
+            </>
           ) : images.length == 3 ? (
             <GridImage>
               <Child area="1 / 1 / 5 / 4" className="div1 ">
@@ -1005,7 +1007,7 @@ const HotelBookingDetails = (props) => {
 
                 {room?.facilities ? (
                   <div className="flex flex-col gap-2">
-                    <div className="text-lg font-semibold">Ammenties</div>
+                    <div className="text-lg font-semibold">Amenities</div>
                     <div className="text-[14px]">
                       <div className="flex flex-wrap gap-2">
                         {room.facilities.map((item, index) => (
