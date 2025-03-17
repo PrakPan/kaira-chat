@@ -4,12 +4,8 @@ import styled from "styled-components";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 import { RiArrowRightSLine } from "react-icons/ri";
 import Drawer from "../../ui/Drawer";
-import transferEdit from "../../../services/itinerary/brief/transferEdit";
 import axiosRoundTripEditInstance from "../../../services/itinerary/brief/roudTripEdit";
-import {
-  routeDetails,
-  otherTransferSearch,
-} from "../../../services/itinerary/brief/transferEdit";
+import { routeDetails } from "../../../services/itinerary/brief/transferEdit";
 import axiosRoundTripInstance from "../../../services/itinerary/brief/roundTripSuggestion";
 import { openNotification } from "../../../store/actions/notification";
 import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";
@@ -24,8 +20,7 @@ import TaxiModal from "../../../components/modals/taxis/Index";
 import FlightModal from "../../../components/modals/flights/Index";
 import { getDate } from "../../../helper/DateUtils";
 import { fetchTransferMode } from "../../../services/bookings/FetchTaxiRecommendations";
-import { PulseLoader } from "react-spinners";
-import { FaClock, FaMapMarkerAlt } from "react-icons/fa";
+import { FaClock } from "react-icons/fa";
 
 const ClippathComp = styled.div`
   clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 95% 50%, 100% 0%);
@@ -73,10 +68,8 @@ const TransferEditDrawer = (props) => {
     oCityData,
     dCityData,
     mercury,
-    mercuryTransfer
+    mercuryTransfer,
   } = props;
-
-  console.log("Props Mer",mercuryTransfer)
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
   const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
@@ -105,90 +98,93 @@ const TransferEditDrawer = (props) => {
     setTransfersError(null);
     roundTripSuggestion();
 
-    
-
     const requestData = {
       start_datetime: `${getDate(check_in)}T00:00:00`,
       number_of_travellers:
         props?.plan?.number_of_adults + props?.plan?.number_of_children,
     };
 
-
-    {mercury || props?.isMercury ?
-      fetchTransferMode
-      .post("",{origin: props?.origin || mercuryTransfer?.source?.city, destination: props?.destination || mercuryTransfer?.destination?.city, number_of_adults: props?.plan?.number_of_adults || 1, number_of_children: props?.plan?.number_of_children || 1, number_of_infants:props?.plan?.number_of_infants || 1, top_only:"false"})
-      .then((res) => {
-        if (res.data.success && res.data.routes.data.length > 0) {
-          const data = res.data.routes.data;
-          setTransfers(data);
-        } else {
-          setTransfersError(
-            "No route found, please get in touch with us to complete this booking!"
-          );
-        }
-        setLoadingTransfers(false);
-      })
-      .catch((err) => {
-        setLoadingTransfers(false);
-        setTransfersError(
-          "No route found, please get in touch with us to complete this booking!"
-        );
-      })
-
-      : 
-      
-      routeDetails
-      .get(`${routeId}/`, requestData)
-      .then((res) => {
-        if (res.data.success && res.data.routes.data.length > 0) {
-          const data = res.data.routes.data;
-          setTransfers(data);
-        } else {
-          setTransfersError(
-            "No route found, please get in touch with us to complete this booking!"
-          );
-        }
-        setLoadingTransfers(false);
-      })
-      .catch((err) => {
-        setLoadingTransfers(false);
-        setTransfersError(
-          "No route found, please get in touch with us to complete this booking!"
-        );
-      });
+    {
+      mercury || props?.isMercury
+        ? fetchTransferMode
+            .post("", {
+              origin: props?.origin || mercuryTransfer?.source?.city,
+              destination:
+                props?.destination || mercuryTransfer?.destination?.city,
+              number_of_adults: props?.plan?.number_of_adults || 1,
+              number_of_children: props?.plan?.number_of_children || 1,
+              number_of_infants: props?.plan?.number_of_infants || 1,
+              top_only: "false",
+            })
+            .then((res) => {
+              if (res.data.success && res.data.routes.data.length > 0) {
+                const data = res.data.routes.data;
+                setTransfers(data);
+              } else {
+                setTransfersError(
+                  "No route found, please get in touch with us to complete this booking!"
+                );
+              }
+              setLoadingTransfers(false);
+            })
+            .catch((err) => {
+              setLoadingTransfers(false);
+              setTransfersError(
+                "No route found, please get in touch with us to complete this booking!"
+              );
+            })
+        : routeDetails
+            .get(`${routeId}/`, requestData)
+            .then((res) => {
+              if (res.data.success && res.data.routes.data.length > 0) {
+                const data = res.data.routes.data;
+                setTransfers(data);
+              } else {
+                setTransfersError(
+                  "No route found, please get in touch with us to complete this booking!"
+                );
+              }
+              setLoadingTransfers(false);
+            })
+            .catch((err) => {
+              setLoadingTransfers(false);
+              setTransfersError(
+                "No route found, please get in touch with us to complete this booking!"
+              );
+            });
     }
-
-    
   };
 
   const roundTripSuggestion = () => {
-    !mercury && axiosRoundTripInstance
-      .get(`?itinerary_id=${props?.ItineraryId}`)
-      .then((response) => {
-        const results = response.data;
+    !mercury &&
+      axiosRoundTripInstance
+        .get(`?itinerary_id=${props?.ItineraryId}`)
+        .then((response) => {
+          const results = response.data;
 
-        for (let i = 0; i < results.length; i++) {
-          if (
-            results[i].success &&
-            results[i].transfer_type === "Intercity round-trip"
-          ) {
-            setRoundTripSuggestions(results[i]);
-          } else if (
-            results[i].success &&
-            results[i].transfer_type === "Multicity"
-          ) {
-            setMultiCitySuggestions(results[i]);
+          for (let i = 0; i < results.length; i++) {
+            if (
+              results[i].success &&
+              results[i].transfer_type === "Intercity round-trip"
+            ) {
+              setRoundTripSuggestions(results[i]);
+            } else if (
+              results[i].success &&
+              results[i].transfer_type === "Multicity"
+            ) {
+              setMultiCitySuggestions(results[i]);
+            }
           }
-        }
-      })
-      .catch((err) => {
-        console.log("[ERROR][roundTripSuggestion]: ", err);
-      });
+        })
+        .catch((err) => {
+          console.log("[ERROR][roundTripSuggestion]: ", err);
+        });
   };
 
   const handleSelect = (index, transfer, multimode) => {
-    const access_token = localStorage.getItem("access_token");
-    if (!props.token || access_token) {
+    selectedBooking.origin_iata=transfer?.source?.code;
+    selectedBooking.destination_iata=transfer?.destination?.code;
+    if (!props.token) {
       setShowLoginModal(true);
       return;
     }
@@ -261,42 +257,43 @@ const TransferEditDrawer = (props) => {
       trace_id,
       cab_id,
     };
-    !mercury && axiosRoundTripEditInstance
-      .post("", data, {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((response) => {
-        if (response.status === 201) {
-          fetchData((scroll = false));
-          openNotification({
-            text: "Your Transfer updated successfully!",
-            heading: "Success!",
-            type: "success",
-          });
-        }
-        setSelectLoading(false);
-        setShowDrawer(false);
-      })
-      .catch((err) => {
-        setSelectLoading(false);
-        setShowDrawer(false);
-        if (err.response.status === 403) {
-          props.openNotification({
-            text: "You are not allowed to make changes to this itinerary",
-            heading: "Error!",
-            type: "error",
-          });
-        } else {
-          props.openNotification({
-            text: "There seems to be a problem, please try again!",
-            heading: "Error!",
-            type: "error",
-          });
-        }
-      });
+    !mercury &&
+      axiosRoundTripEditInstance
+        .post("", data, {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+            "Content-Type": "application/json",
+          },
+        })
+        .then((response) => {
+          if (response.status === 201) {
+            fetchData((scroll = false));
+            openNotification({
+              text: "Your Transfer updated successfully!",
+              heading: "Success!",
+              type: "success",
+            });
+          }
+          setSelectLoading(false);
+          setShowDrawer(false);
+        })
+        .catch((err) => {
+          setSelectLoading(false);
+          setShowDrawer(false);
+          if (err.response.status === 403) {
+            props.openNotification({
+              text: "You are not allowed to make changes to this itinerary",
+              heading: "Error!",
+              type: "error",
+            });
+          } else {
+            props.openNotification({
+              text: "There seems to be a problem, please try again!",
+              heading: "Error!",
+              type: "error",
+            });
+          }
+        });
 
     logEvent({
       action: "Transfer_Add_Change",
@@ -333,29 +330,33 @@ const TransferEditDrawer = (props) => {
           />
           <div className="text-lg md:text-2xl lg:text-2xl font-semibold">
             {props.addOrEdit === "transferAdd" ? "Adding" : "Changing"} transfer
-            from {city || mercuryTransfer?.source?.city_name} to {dcity || mercuryTransfer?.destination?.city_name}{" "}
+            from {city || mercuryTransfer?.source?.city_name} to{" "}
+            {dcity || mercuryTransfer?.destination?.city_name}{" "}
           </div>
         </div>
 
-        {mercury ? showOtherTransfer && (
-          <OtherTransfer
-            showOtherTransfer={showOtherTransfer}
-            setShowOtherTrasfer={setShowOtherTrasfer}
-            selectedResult={selectedResult}
-            setSelectedResult={setSelectedResult}
-            number_of_travellers={
-              props?.plan?.number_of_adults + props?.plan?.number_of_children
-            }
-            check_in={check_in}
-            mercuryTransfer={mercuryTransfer}
-          /> ): showMercuryTransfer && (
-            <MercuryTransfer
-            transfer={selectedMercuryTransfer}
-            setShowMercuryTransfer={setShowMercuryTransfer}
-            mercuryTransfer={mercuryTransfer}
-            />
-        )
-      }
+        {mercury
+          ? showOtherTransfer && (
+              <OtherTransfer
+                showOtherTransfer={showOtherTransfer}
+                setShowOtherTrasfer={setShowOtherTrasfer}
+                selectedResult={selectedResult}
+                setSelectedResult={setSelectedResult}
+                number_of_travellers={
+                  props?.plan?.number_of_adults +
+                  props?.plan?.number_of_children
+                }
+                check_in={check_in}
+                mercuryTransfer={mercuryTransfer}
+              />
+            )
+          : showMercuryTransfer && (
+              <MercuryTransfer
+                transfer={selectedMercuryTransfer}
+                setShowMercuryTransfer={setShowMercuryTransfer}
+                mercuryTransfer={mercuryTransfer}
+              />
+            )}
 
         {loadingTransfers ? (
           <div className="mt-10 w-full flex flex-col gap-3 items-center">
@@ -447,7 +448,6 @@ const TransferEditDrawer = (props) => {
           </div>
         ) : (
           <div className="w-full flex flex-col items-center gap-3">
-            
             <div className="w-full flex flex-row gap-4 px-2 whitespace-nowrap overflow-x-auto hide-scrollbar">
               <RadioButton
                 name={TRANSFER_TYPES.ONEWAYTRIP.name}
@@ -487,7 +487,8 @@ const TransferEditDrawer = (props) => {
                   {transfers.length < 2
                     ? `${transfers.length} way`
                     : `${transfers.length} ways`}{" "}
-                  to travel from {city || mercuryTransfer?.source?.city_name} to {dcity || mercuryTransfer?.destination?.city_name}
+                  to travel from {city || mercuryTransfer?.source?.city_name} to{" "}
+                  {dcity || mercuryTransfer?.destination?.city_name}
                 </div>
                 <div className="w-full flex flex-col items-center gap-3">
                   {transfers.map((transfer, index) => {
@@ -500,7 +501,9 @@ const TransferEditDrawer = (props) => {
                           handleSelect={handleSelect}
                           selectedResult={selectedResult}
                           setShowMercuryTransfer={setShowMercuryTransfer}
-                          setSelectedMercuryTransfer={setSelectedMercuryTransfer}
+                          setSelectedMercuryTransfer={
+                            setSelectedMercuryTransfer
+                          }
                           mercury={true}
                         />
                       );
@@ -577,8 +580,16 @@ const TransferEditDrawer = (props) => {
         oCityData={oCityData}
         dCityData={dCityData}
         mercury={mercury}
-        origin={selectedBooking?.origin?.shortName || oCityData?.gmaps_place_id || oCityData?.city?.id}
-        destination={selectedBooking?.destination?.shortName || dCityData?.gmaps_place_id || dCityData?.city?.id}
+        origin={
+          selectedBooking?.origin?.shortName ||
+          oCityData?.gmaps_place_id ||
+          oCityData?.city?.id
+        }
+        destination={
+          selectedBooking?.destination?.shortName ||
+          dCityData?.gmaps_place_id ||
+          dCityData?.city?.id
+        }
       ></TaxiModal>
     </Drawer>
   );
@@ -602,7 +613,13 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(mapStateToPros, mapDispatchToProps)(TransferEditDrawer);
 
 const RouteContainer = (props) => {
-  const { transferIndex, transfer, handleSelect, selectedResult,setSelectedMercuryTransfer } = props;
+  const {
+    transferIndex,
+    transfer,
+    handleSelect,
+    selectedResult,
+    setSelectedMercuryTransfer,
+  } = props;
   const [viewMore, setViewMore] = useState(false);
   const [singleTransfer, setSingleTransfer] = useState(transfer[0]);
 
@@ -610,7 +627,6 @@ const RouteContainer = (props) => {
     setViewMore((prev) => !prev);
   };
 
-  
   return (
     <div
       className={`w-full flex flex-col gap-0 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm ${
@@ -683,12 +699,12 @@ const RouteContainer = (props) => {
                 {/* {
                 singleTransfer?.mode === "Bus" || singleTransfer?.mode === "Train" || singleTransfer?.mode === "Ferry" || singleTransfer?.mode === "Car" ? <MercurySelectButton transfer={singleTransfer} setShowMercuryTransfer={props?.setShowMercuryTransfer} setSelectedMercuryTransfer={props?.setSelectedMercuryTransfer}/>: */}
                 <SelectButton
-                transfer={singleTransfer}
-                transferIndex={transferIndex}
-                handleSelect={handleSelect}
-                setSelectedMercuryTransfer={setSelectedMercuryTransfer}
-              />
-              {/* } */}
+                  transfer={singleTransfer}
+                  transferIndex={transferIndex}
+                  handleSelect={handleSelect}
+                  setSelectedMercuryTransfer={setSelectedMercuryTransfer}
+                />
+                {/* } */}
               </div>
             </div>
           </div>
@@ -1521,7 +1537,13 @@ const EstimatedCost = ({ cost }) => {
   return null;
 };
 
-const SelectButton = ({ multimode, transferIndex, transfer, handleSelect,setSelectedMercuryTransfer }) => {
+const SelectButton = ({
+  multimode,
+  transferIndex,
+  transfer,
+  handleSelect,
+  setSelectedMercuryTransfer,
+}) => {
   setSelectedMercuryTransfer(transfer);
   const getLabel = () => {
     switch (transfer.mode) {
@@ -1585,14 +1607,12 @@ const TransferItem = ({ transfer, transferIndex }) => {
   );
 };
 
-
 const Container = styled.div`
   padding: 0.75rem 0.5rem;
   display: flex;
   flex-direction: column;
   max-width: 100%;
 `;
-
 
 const Heading = styled.p`
   font-size: 15px;
@@ -1640,7 +1660,6 @@ const Cost = styled.p`
   }
 `;
 
-
 const OtherTransfer = ({
   setShowOtherTrasfer,
   selectedResult,
@@ -1648,7 +1667,7 @@ const OtherTransfer = ({
   number_of_travellers,
   check_in,
   showOtherTransfer,
-  mercuryTransfer
+  mercuryTransfer,
 }) => {
   const ref = useRef(null);
   const [loading, setLoading] = useState(true);
@@ -1656,7 +1675,7 @@ const OtherTransfer = ({
   const [otherTransfer, setOtherTransfer] = useState(null);
   const [traceId, setTraceId] = useState(null);
 
-  console.log("Mercury Ta",mercuryTransfer)
+  console.log("Mercury Ta", mercuryTransfer);
 
   useEffect(() => {
     // getOtherTrasfer(selectedResult.transfer.mode);
@@ -1683,47 +1702,46 @@ const OtherTransfer = ({
   };
 
   // const getOtherTrasfer = (mode) => {
-    // setLoading(true);
-    // const requestData = {
-    //   edge_id: selectedResult.transfer.id,
-    //   start_datetime: `${getDate(check_in || new Date()?.toISOString().split("T")[0])}T00:00:00`,
-    //   number_of_travellers: number_of_travellers || 1,
-    // };
+  // setLoading(true);
+  // const requestData = {
+  //   edge_id: selectedResult.transfer.id,
+  //   start_datetime: `${getDate(check_in || new Date()?.toISOString().split("T")[0])}T00:00:00`,
+  //   number_of_travellers: number_of_travellers || 1,
+  // };
 
-    // otherTransferSearch
-    //   .post(`${mode.toLowerCase()}/search/`, requestData)
-    //   .then((res) => {
-    //     if (res.data.success) {
-    //       setTraceId(res.data.trace_id);
-    //       setOtherTransfer(res.data.data);
-    //     } else {
-    //       setError("Prices not found at the moment, please try again!");
-    //     }
+  // otherTransferSearch
+  //   .post(`${mode.toLowerCase()}/search/`, requestData)
+  //   .then((res) => {
+  //     if (res.data.success) {
+  //       setTraceId(res.data.trace_id);
+  //       setOtherTransfer(res.data.data);
+  //     } else {
+  //       setError("Prices not found at the moment, please try again!");
+  //     }
 
-    //     setLoading(false);
-    //   })
-    //   .catch((err) => {
-    //     setLoading(false);
-    //     setError("Something went wrong, please try again!");
-    //   });
-    const getOtherTrasfer = (transfer) => {
-      setLoading(false);
+  //     setLoading(false);
+  //   })
+  //   .catch((err) => {
+  //     setLoading(false);
+  //     setError("Something went wrong, please try again!");
+  //   });
+  const getOtherTrasfer = (transfer) => {
+    setLoading(false);
     setOtherTransfer(transfer);
   };
 
   return (
-    
     <Drawer
       show={showOtherTransfer}
       anchor={"right"}
       backdrop
-      style={{ zIndex: 1501 }} 
+      style={{ zIndex: 1501 }}
       className="font-lexend"
       onHide={() => setShowOtherTrasfer(false)}
       mobileWidth={"100vw"}
       width="50vw"
     >
-    {/* <div
+      {/* <div
       onClick={handleClose}
       className="absolute z-50 flex items-center justify-center bg-black bg-opacity-50 top-0 bottom-0 left-0 right-0 -mx-2"
     >
@@ -1756,81 +1774,96 @@ const OtherTransfer = ({
       </div>
     </div> */}
       <Container>
-          <div className="flex flex-row gap-3 my-0 justify-start items-center">
+        <div className="flex flex-row gap-3 my-0 justify-start items-center">
           <IoMdArrowRoundBack
             onClick={() => setShowOtherTrasfer(false)}
             className="hover-pointer text-3xl font-semibold"
           />
-          <Heading >Changing Transfer from {otherTransfer?.source?.city_name || mercuryTransfer?.source?.city_name} to {otherTransfer?.destination?.city_name || mercuryTransfer?.destination?.city_name}</Heading>
+          <Heading>
+            Changing Transfer from{" "}
+            {otherTransfer?.source?.city_name ||
+              mercuryTransfer?.source?.city_name}{" "}
+            to{" "}
+            {otherTransfer?.destination?.city_name ||
+              mercuryTransfer?.destination?.city_name}
+          </Heading>
         </div>
-          {otherTransfer &&
-           otherTransfer.prices.map((price, i) => (
-            <div key={i} className="flex items-center p-4 border rounded-lg shadow-md w-full max-w-full mb-3">
-            <div className="flex items-center gap-4 justify-between w-full ">
-              <TransfersIcon
-                TransportMode={otherTransfer.mode}
-                Instyle={{
-                  fontSize: otherTransfer.mode === "Bus" ? "2.5rem" : "3rem",
-                  color: "black",
-                }}
-                classname={{ width: 80, height: 75 }}
-              />
-              <div className="flex-1">
-                <Heading>{otherTransfer.mode}</Heading>
-                <ModelText>{price?.class}</ModelText>
-                <div className="flex items-center gap-2 mt-2 text-gray-600">
-                <ImageLoader
-              url="media/icons/bookings/distance.png"
-              leftalign
-              dimensions={{ width: 200, height: 200 }}
-              width="1.25rem"
-              widthmobile="1.25rem"
-              noLazy
-            ></ImageLoader>
-                  <Text>{otherTransfer.distance} km</Text>
-                  <span><FaClock/></span>
-                  <Text>{Math.floor(Number(otherTransfer.duration)/60) + "-" + Math.ceil((Number(otherTransfer.duration+1)/60 ) ) + "hours"}</Text>
+        {otherTransfer &&
+          otherTransfer.prices.map((price, i) => (
+            <div
+              key={i}
+              className="flex items-center p-4 border rounded-lg shadow-md w-full max-w-full mb-3"
+            >
+              <div className="flex items-center gap-4 justify-between w-full ">
+                <TransfersIcon
+                  TransportMode={otherTransfer.mode}
+                  Instyle={{
+                    fontSize: otherTransfer.mode === "Bus" ? "2.5rem" : "3rem",
+                    color: "black",
+                  }}
+                  classname={{ width: 80, height: 75 }}
+                />
+                <div className="flex-1">
+                  <Heading>{otherTransfer.mode}</Heading>
+                  <ModelText>{price?.class}</ModelText>
+                  <div className="flex items-center gap-2 mt-2 text-gray-600">
+                    <ImageLoader
+                      url="media/icons/bookings/distance.png"
+                      leftalign
+                      dimensions={{ width: 200, height: 200 }}
+                      width="1.25rem"
+                      widthmobile="1.25rem"
+                      noLazy
+                    ></ImageLoader>
+                    <Text>{otherTransfer.distance} km</Text>
+                    <span>
+                      <FaClock />
+                    </span>
+                    <Text>
+                      {Math.floor(Number(otherTransfer.duration) / 60) +
+                        "-" +
+                        Math.ceil(Number(otherTransfer.duration + 1) / 60) +
+                        "hours"}
+                    </Text>
+                  </div>
+                  <div className="flex">
+                    <Location className="font-lexend">
+                      {otherTransfer?.source?.city_name}
+                    </Location>
+                    <div style={{ margin: "0 2px" }}>
+                      <ImageLoader
+                        url="media/icons/bookings/next.png"
+                        leftalign
+                        dimensions={{ width: 200, height: 200 }}
+                        width="1.25rem"
+                        widthmobile="1.25rem"
+                        noLazy
+                      ></ImageLoader>
+                    </div>
+                    <Location className="font-lexend">
+                      {otherTransfer?.destination?.city_name}
+                    </Location>
+                  </div>
                 </div>
-                <div className="flex">
-                <Location className="font-lexend">
-            {otherTransfer?.source?.city_name}
-          </Location>
-          <div style={{ margin: "0 2px" }}>
-            <ImageLoader
-              url="media/icons/bookings/next.png"
-              leftalign
-              dimensions={{ width: 200, height: 200 }}
-              width="1.25rem"
-              widthmobile="1.25rem"
-              noLazy
-            ></ImageLoader>
-          </div>
-          <Location className="font-lexend">
-            {otherTransfer?.destination?.city_name}
-          </Location>
-          </div>
-              </div>
 
-              <div className="text-right">
-                <Cost>{"₹" + getIndianPrice(Math.ceil(price.price)) + "/-"}</Cost>
-                <Text>Per Person</Text>
-                <button class="focus:outline-none border-2 border-black rounded-lg px-4 py-2 mt-2 bg-[#F7E700] hover:bg-black hover:text-white transition-all">Select</button>
+                <div className="text-right">
+                  <Cost>
+                    {"₹" + getIndianPrice(Math.ceil(price.price)) + "/-"}
+                  </Cost>
+                  <Text>Per Person</Text>
+                  <button class="focus:outline-none border-2 border-black rounded-lg px-4 py-2 mt-2 bg-[#F7E700] hover:bg-black hover:text-white transition-all">
+                    Select
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-    </Container>
+          ))}
+      </Container>
     </Drawer>
-    
   );
 };
 
-
-
-const MercuryTransfer = ({transfer,setShowMercuryTransfer}) => {
-  console.log("Transfer Data",transfer);
-
-
+const MercuryTransfer = ({ transfer, setShowMercuryTransfer }) => {
   // const handleSelectPrice = (index) => {
   //   setSelectedResult((prev) => {
   //     return {
@@ -1843,52 +1876,54 @@ const MercuryTransfer = ({transfer,setShowMercuryTransfer}) => {
   //   setShowOtherTrasfer(false);
   // };
 
-
   return (
     <div
       onClick={(e) => {
-    e.stopPropagation();
-    setShowMercuryTransfer(false);
-  }}
+        e.stopPropagation();
+        setShowMercuryTransfer(false);
+      }}
       className="absolute z-50 flex items-center justify-center bg-black bg-opacity-50 top-0 bottom-0 left-0 right-0 -mx-2"
     >
       <div className="bg-white w-fit p-3 rounded-lg space-y-5">
         <div className="text-lg">Select your seat</div>
 
         <div className="w-full flex items-center justify-center">
-
-            <div className="flex flex-col gap-2">
-              {transfer &&
-                transfer.prices.map((price, i) => (
-                  <div
-                    key={i}
-                    onClick={() => handleSelectPrice(i)}
-                    className="flex flex-row items-center justify-between gap-5 hover:bg-gray-200 cursor-pointer p-1 rounded-md"
-                  >
-                    <div>{price.class ? price.class : "Seater"}</div>
-                    <div className="font-semibold">
-                      ₹{getIndianPrice(price.price)}/-{" "}
-                    </div>
+          <div className="flex flex-col gap-2">
+            {transfer &&
+              transfer.prices.map((price, i) => (
+                <div
+                  key={i}
+                  onClick={() => handleSelectPrice(i)}
+                  className="flex flex-row items-center justify-between gap-5 hover:bg-gray-200 cursor-pointer p-1 rounded-md"
+                >
+                  <div>{price.class ? price.class : "Seater"}</div>
+                  <div className="font-semibold">
+                    ₹{getIndianPrice(price.price)}/-{" "}
                   </div>
-                ))}
-            </div>
+                </div>
+              ))}
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-
-const MercurySelectButton = ({transfer, setShowMercuryTransfer,setSelectedMercuryTransfer }) => {
+const MercurySelectButton = ({
+  transfer,
+  setShowMercuryTransfer,
+  setSelectedMercuryTransfer,
+}) => {
   const getLabel = () => {
-        return `Select a ${transfer.mode}`;
+    return `Select a ${transfer.mode}`;
   };
 
   return (
     <div className="group text-blue flex flex-row items-center cursor-pointer hover:translate-x-1 transition-all">
       <button
-        onClick={() => {setShowMercuryTransfer(true)
-          setSelectedMercuryTransfer(transfer)
+        onClick={() => {
+          setShowMercuryTransfer(true);
+          setSelectedMercuryTransfer(transfer);
         }}
         className="focus:outline-none"
       >
@@ -1899,5 +1934,3 @@ const MercurySelectButton = ({transfer, setShowMercuryTransfer,setSelectedMercur
     </div>
   );
 };
-
-

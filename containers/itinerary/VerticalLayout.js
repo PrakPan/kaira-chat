@@ -13,6 +13,8 @@ import { Details } from "../../components/modals/flights/new-flight-searched/Ind
 import VehicleDetailModal from "../../components/modals/daybyday/VehicleModal";
 import FlightDetailModal from "../../components/modals/daybyday/FlightDetailModal";
 import { useRouter } from "next/router";
+import { ToastContainer, toast} from "react-toastify";
+import { axiosDeleteBooking } from "../../services/itinerary/bookings";
 const Container = styled.div`
   display: flex;
   align-items: center;
@@ -45,6 +47,9 @@ const CityItem = ({
   booking_id,
   length,
 }) => {
+
+  console.log("City Name",city);
+  const [show,setShow] =useState(false);
   const correctIcon = (TransportMode) => {
     switch (TransportMode) {
       case "Flight":
@@ -76,6 +81,8 @@ const CityItem = ({
   };
   const [handleShow, setHandleShow] = useState(false);
   const [data, setData] = useState({});
+  const [visible,setVisible] = useState(false);
+  const [loading,setLoading] = useState(false);
   const router = useRouter();
 
   const handleEdit = async () => {
@@ -88,8 +95,29 @@ const CityItem = ({
     setHandleShow(true);
   };
 
+  const handleDelete = async () => {
+      try {
+          setLoading(true);  
+          const response = await axiosDeleteBooking.delete(`${data?.itinerary_id}/bookings/${data?.booking_type?.toLowerCase()}/${data?.id}/`);
+          
+          if (response.status === 204) {  
+              setLoading(false);
+              toast.success("Booking deleted successfuly");
+              setVisible(true);
+              setHandleShow(false);
+              console.log("Deleted Booking");
+          }
+      } catch (err) {
+          console.log("[ERROR][ItineraryPage][axiosDeleteBooking:/Delete_Booking]", err);
+          toast.error("Error",err.message);
+          setLoading(false); 
+      }
+  };
+  
+
   return (
     <Container>
+      <ToastContainer/>
       <PinWrapper>
         {upPresent && <VerticalLine height="40px" gradient="top" />}
         {upPresent && downPresent ? (
@@ -137,7 +165,7 @@ const CityItem = ({
         } ${!upPresent && downPresent && "mb-[41px]"}`}
       >
         <div className="font-[Poppins] text-[16px] font-[500] flex gap-1">
-          <div className="mt-[4px]">{correctIcon(booking_type)}</div>
+          {(booking_id || city) && !visible ? <> <div className="mt-[4px]">{correctIcon(booking_type)}</div>
           <div className="flex flex-col">
             <div className="flex gap-2 items-center">
               {city}{" "}
@@ -155,10 +183,18 @@ const CityItem = ({
                 Duration: {duration}
               </div>
             )}
-          </div>
+          </div> </> : 
+          <button
+          onClick={() =>{}
+            // setShowDrawer(true)
+            }
+          className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
+        >
+          +Add Transfer
+        </button>}
         </div>
       </div>
-      <Drawer
+      {/* <Drawer
         show={handleShow}
         anchor="right"
         width={"500px"}
@@ -180,10 +216,37 @@ const CityItem = ({
           <></>
         ) : (
           <>
-            <VehicleDetailModal data={data} />
+            <VehicleDetailModal data={data} setHandleShow={setHandleShow} handleDelete={handleDelete} loading={loading}/>
           </>
         )}
       </Drawer>
+      <Drawer
+              show={show}
+              anchor="right"
+              width={"500px"}
+              style={1503}
+              className="font-lexend"
+              onHide={setShow}
+            >
+            <TransferEditDrawer
+          itinerary_id={props?.itinerary_id}
+          showDrawer={show}
+          setShowDrawer={setShowTransferEditDrawer}
+          selectedTransferHeading={props.selectedTransferHeading}
+          origin={props.selectedBooking?.city}
+          destination={props.selectedBooking?.destination_city}
+          day_slab_index={props.daySlabIndex}
+          element_index={props.elementIndex}
+          fetchData={props?.fetchData}
+          setShowLoginModal={props?.setShowLoginModal}
+          check_in={props?.check_in}
+          _GetInTouch={props._GetInTouch}
+          routeId={props.routeId}
+          selectedBooking={props.selectedBooking}
+          mercuryTransfer={props?.mercuryTransfer}
+          mercury={true}
+        />
+            </Drawer> */}
     </Container>
   );
 };

@@ -157,7 +157,7 @@ export default function ActivityDetails(props) {
                                 <p className="text-[12px] text-[#7a7a7a]" style={{ marginBlock: "auto" }}>{props.data.rating} ·</p>
                             )}
 
-                            {props.data?.user_ratings_total && (
+                            {props.data?.user_ratings_total>=0 && (
                                 <u className="text-[12px] text-[#7a7a7a]">
                                     {props.data.user_ratings_total}{" user reviews"}
                                 </u>

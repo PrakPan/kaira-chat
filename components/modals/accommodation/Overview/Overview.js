@@ -133,6 +133,7 @@ const DescriptionText = styled.div`
 `;
 
 const Overview = (props) => {
+
   const isDesktop = useMediaQuery("(min-width:1148px)");
 
   const [ImagesLoaded, setImagesLoaded] = useState({
@@ -175,6 +176,7 @@ const Overview = (props) => {
       if (props.images[i]) images.push(props.images[i]);
     }
   } catch {}
+
 
   return (
     <Container>
@@ -831,7 +833,7 @@ const Overview = (props) => {
                       url={
                         ImagesError[0]
                           ? "media/icons/bookings/notfounds/noroom.png"
-                          : images[0]
+                          : images[0].image
                       }
                       fit="cover"
                       width="100%"

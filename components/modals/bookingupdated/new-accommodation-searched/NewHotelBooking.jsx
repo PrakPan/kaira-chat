@@ -12,6 +12,7 @@ export default function NewHotelBooking({
     banner_image,
     openDetails,
     duration,
+    num_adults,
     handleClick,
     key
 }) {
@@ -118,7 +119,7 @@ export default function NewHotelBooking({
                                         <div className="text-sm font-[400] gap-2 flex flex-row items-center">
                                             <BsPeopleFill className="text-sm text-[#7A7A7A]" />
                                             <div className=" text-sm font-[400] min-w-fit">
-                                                {currentBooking?.number_of_adults}{" "}
+                                                {num_adults}{" "}
                                                 Adults
                                             </div>
                                         </div>
@@ -138,15 +139,7 @@ export default function NewHotelBooking({
                                     <div className="font-[300] text-sm">Starting from</div>
                                     <div className="flex flex-col md:flex-row gap-1 md:items-center w-full font-bold">
                                         <div className="text-2xl font-bold">
-                                            {/* {booking?.source === "Agoda" */}
-                                            <>₹ {getIndianPrice(booking.price)}</>
-                                                {/* // ? "₹" +
-                                                // getIndianPrice(Math.round(+booking.price / 100)) +
-                                                // "/-"
-                                                // : "₹" +
-                                                // getIndianPrice(Math.round(booking?.price)) +
-                                                // "/-"
-                                            } */}
+                                            <>₹ {getIndianPrice(Math.ceil(booking.price))}</>
                                         </div>
                                         <div
                                             className="font-normal text-base md:self-end"

@@ -28,7 +28,7 @@ const SwiperGallery = (props) => {
           <>
             <SwiperSlide className="relative" key={index}>
               <ImageLoader
-                url={props.mercury ? image : image.image}
+                url={image.image}
                 fit="cover"
               />
               <div className="bg-black text-white bg-opacity-50 py-1 px-2 text-lg absolute bottom-0 right-[50%] translate-x-[50%] mx-auto z-50">

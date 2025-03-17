@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import media from "../../media";
 import { updateFlightBooking } from "../../../services/bookings/UpdateBookings";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import axiosflightsearch, {
   axiosFlightSearch,
 } from "../../../services/bookings/FlightSearch";
@@ -76,7 +76,6 @@ const ContentContainer = styled.div`
 `;
 
 const Booking = (props) => {
-
   let isPageWide = media("(min-width: 768px)");
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -144,7 +143,6 @@ const Booking = (props) => {
     });
 
     if (props.selectedBooking && props.token) {
-      console.log("Selected Booking",props?.selectedBooking)
       const requestData = {
         adult_count: pax.adults,
         child_count: pax.children,
@@ -153,13 +151,15 @@ const Booking = (props) => {
         journey_type: "1",
         origin: props.selectedBooking.origin_iata,
         destination: props.selectedBooking.destination_iata,
-        preferred_departure_time: `${props?.selectedBooking?.check_in ? new Date(props?.selectedBooking?.check_in.replace(' ', 'T'))?.toISOString()?.slice(0, 19) : new Date()?.toISOString()?.slice(0, 19)}`,
+        preferred_departure_time: `${
+          props?.selectedBooking?.check_in
+            ? new Date(props?.selectedBooking?.check_in.replace(" ", "T"))
+                ?.toISOString()
+                ?.slice(0, 19)
+            : new Date()?.toISOString()?.slice(0, 19)
+        }`,
         flight_cabin_class: classType.value,
-        origin: props?.mercuryTransfer?.source?.code,
-        destination:props?.mercuryTransfer?.destination?.code
       };
-
-      console.log("Requested Data",requestData)
 
       axiosFlightSearch
         .post(
@@ -196,6 +196,9 @@ const Booking = (props) => {
                   provider={res.data?.provider}
                   filtersState={filtersState}
                   booking_id={props.selectedBooking?.booking_id}
+                  originCityId={props.selectedBooking.originCityId}
+                  destinationCityId={props.selectedBooking.destinationCityId}
+                  setTransferBookingsIntercity={props.setTransferBookingsIntercity}
                 ></Flight>
               );
             }
@@ -208,14 +211,14 @@ const Booking = (props) => {
           setLoading(false);
           setFetchingIsError({
             error: true,
-            errorMsg: `Sorry, we could not find any flights from ${props?.selectedBooking?.city || props?.mercuryTransfer?.source?.city_name} to ${props?.selectedBooking?.destination_city || props?.mercuryTransfer?.destination?.city_name} for given dates at the moment. Please contact us to complete this booking`,
+            errorMsg: `Sorry, we could not find any flights from ${props.selectedBooking.origin_iata} to ${props.selectedBooking.destination_iata} for given dates at the moment. Please contact us to complete this booking`,
           });
         });
     } else {
       setLoading(false);
       setFetchingIsError({
         error: true,
-        errorMsg: `Sorry, we could not find any flights from ${props?.selectedBooking?.city || props?.mercuryTransfer?.source?.city_name} to ${props?.selectedBooking?.destination_city || props?.mercuryTransfer?.destination?.city_name} for given dates at the moment. Please contact us to complete this booking`,
+        errorMsg: `Sorry, we could not find any flights from ${props.selectedBooking.origin_iata} to ${props.selectedBooking.destination_iata} for given dates at the moment. Please contact us to complete this booking`,
       });
     }
   };
@@ -281,7 +284,7 @@ const Booking = (props) => {
           heading: "Error!",
         });
         props.setHideFlightModal();
-        toast.error("some error occured")
+        toast.error("some error occured");
       });
   };
 
@@ -304,7 +307,6 @@ const Booking = (props) => {
           destination_city_code: props.selectedBooking.destination_iata,
           flight_cabin_class: "1",
           trace_id: trace_id,
-
         },
       })
       .then((res) => {
@@ -323,6 +325,8 @@ const Booking = (props) => {
                 selectedBooking={props.selectedBooking}
                 _updateBookingHandler={_newUpdateBookingHandler}
                 individual={props?.individual}
+                originCityId={props.selectedBooking.originCityId}
+                destinationCityId={props.selectedBooking.destinationCityId}
               ></Flight>
             );
           }
@@ -359,7 +363,7 @@ const Booking = (props) => {
         mobileWidth={"100%"}
         width={"50%"}
       >
-        <ToastContainer/>
+        <ToastContainer />
         <SectionOne
           _FetchFlightsHandler={_FetchFlightsHandler}
           setHideBookingModal={props.setHideBookingModal}

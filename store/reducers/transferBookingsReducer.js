@@ -1,10 +1,7 @@
 import * as actionTypes from "../actions/actionsTypes";
 
 const initialState = {
-  intercity: null,
-  intracity: null,
-  airport: null,
-  transferBookings: null,  // ✅ Add this line
+  transferBookings: null, 
 };
 
 
@@ -21,6 +18,11 @@ const reducer = (state = initialState, action) => {
         ...state,
         transferBookings: null,
       };
+
+    case actionTypes.UPDTATE_TRANSFER_BOOKINGS:
+      return {
+       ...state
+      }
 
     default:
       return state;

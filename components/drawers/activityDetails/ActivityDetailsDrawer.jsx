@@ -80,21 +80,22 @@ const ActivityDetailsDrawer = (props) => {
 
   const updatedActivityBooking = () => {
     const requestData = {
-      itinerary_id: router.query?.id,
+      itinerary_city_id: props?.itinerary_city_id,
       trace_id: traceId,
     };
 
     activityBooking
       .post(`${router.query?.id}/bookings/activity/`, requestData)
       .then((res) => {
-        props.getAccommodationAndActivitiesHandler();
-        props.openNotification({
+        props?.getAccommodationAndActivitiesHandler();
+        props?.openNotification({
           type: "success",
           text: "Activity added successfully.",
           heading: "Sucess!",
         });
       })
       .catch((err) => {
+        console.log("error is:",err)
         if (err?.response?.status === 403) {
           props.openNotification({
             text: "You are not allowed to make changes to this itinerary",
