@@ -474,7 +474,7 @@ const TransferBooking = ({
                       />
                     )}
 
-                    <div
+                    {/* <div
                       onClick={(e) => {
                         handleCheckboxChange(
                           e,
@@ -487,7 +487,16 @@ const TransferBooking = ({
                       <label className="text-center sm:text-sm text-[0.7rem]">
                         {addbooking ? "Added Booking" : "Add Booking"}
                       </label>
-                    </div>
+                    </div> */}
+                    <Button
+                                          padding="0.6rem 2.2rem"
+                                          borderRadius="8px"
+                                          hoverColor="white"
+                                          fontWeight="400"
+                                          onclick={() => handleViewDetails(booking.name)}
+                                        >
+                                          View Detail
+                                        </Button>
                   </div>
                 )}
               </div>
