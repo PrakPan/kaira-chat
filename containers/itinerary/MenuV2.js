@@ -45,7 +45,7 @@ import DaybyDay from "./DaybyDay.jsx";
 import StaysContainer from "./Stays/StaysContainer.jsx";
 import TransferBookings from "./TransfersContainer/TransferBookings.jsx";
 import NewSummaryContainers from "./NewSummaryContainers.js";
-import { setTransferBookings } from "../../store/actions/transferBookingsStore.js";
+import { setTransfersBookings } from "../../store/actions/transferBookingsStore.js";
 const useStyles = {
   root: `
     flex-grow-1
@@ -60,7 +60,7 @@ const GetInTouchContainer = styled.div`
 
 const SimpleTabsV2 = (props) => {
   const dispatch = useDispatch();
-  dispatch(setTransfersBookings(props.transferBookings));
+  dispatch(setTransfersBookings(props.transferBookings))
   let isPageWide = media("(min-width: 768px)");
   const [isGroup, setIsGroup] = useState(false);
   const router = useRouter();

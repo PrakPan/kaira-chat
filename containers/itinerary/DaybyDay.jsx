@@ -16,7 +16,7 @@ const CITY_COLOR_CODES = [
   "#7d5e7d", // shade of purple
 ];
 
-const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width,setItinerary,activityBookings,setActivityBookings, itinerary}) => {
+const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width,setItinerary,activityBookings,setActivityBookings,itinerary}) => {
   let isPageWide = media("(min-width: 768px)");
   console.log("Inside DaybyDay Itinerary",itinerary);
   const cityRefs = useRef({});
