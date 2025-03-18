@@ -14,6 +14,8 @@ import { axiosDeleteBooking } from "../../services/itinerary/bookings";
 import { setTransferBookings, updateTransferBookings } from "../../store/actions/transferBookingsStore";
 import { useDispatch } from "react-redux";
 import TransferEditDrawer from "../../components/drawers/routeTransfer/TransferEditDrawer";
+import VehicleDetailModal from "../../components/modals/daybyday/VehicleModal";
+import Drawer from "../../components/ui/Drawer";
 const Container = styled.div`
   display: flex;
   align-items: center;
