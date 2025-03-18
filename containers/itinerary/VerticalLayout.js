@@ -16,6 +16,7 @@ import { useDispatch } from "react-redux";
 import TransferEditDrawer from "../../components/drawers/routeTransfer/TransferEditDrawer";
 import VehicleDetailModal from "../../components/modals/daybyday/VehicleModal";
 import Drawer from "../../components/ui/Drawer";
+import FlightDetailModal from "../../components/modals/daybyday/FlightDetailModal";
 const Container = styled.div`
   display: flex;
   align-items: center;
