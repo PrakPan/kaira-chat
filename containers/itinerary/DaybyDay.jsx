@@ -16,7 +16,7 @@ const CITY_COLOR_CODES = [
   "#7d5e7d", // shade of purple
 ];
 
-const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width, itinerary}) => {
+const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width,setItinerary,activityBookings,setActivityBookings,itinerary}) => {
   let isPageWide = media("(min-width: 768px)");
   console.log("Inside DaybyDay Itinerary",itinerary);
   const cityRefs = useRef({});
@@ -48,7 +48,6 @@ const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width, itinerary}) => {
 
       <div className="flex flex-col">
         <CityItem
-
           key={startCity?.place_id}
           city={startCity?.city_name}
           pinColour={CITY_COLOR_CODES[0 % 7]}
@@ -95,7 +94,7 @@ const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width, itinerary}) => {
             city?.id + ":" + itineraryDaybyDay?.cities[index + 1]?.id;
           return (
             <>
-              <ItineraryCity key={city.id} city={city} cityRefs={cityRefs} />
+              <ItineraryCity key={city.id} city={city} cityRefs={cityRefs} setItinerary={setItinerary} activityBookings={activityBookings} setActivityBookings={setActivityBookings}/>
               {index != itineraryDaybyDay?.cities.length - 1 && (
                 <div>
                   <CityItem

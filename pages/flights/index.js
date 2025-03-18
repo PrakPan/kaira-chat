@@ -101,7 +101,7 @@ const Flight = () => {
     tripType: "oneWay",
     from: { city: "Delhi", country: "India", code: "DEL" },
     to: { city: "Chennai", country: "India", code: "MAA" },
-    departure: moment(today).format("YYYY-MM-DD") ,
+    departure: moment(today).format("YYYY-MM-DD"),
     returnDate: "",
     adults: 1,
     children: 0,
@@ -439,6 +439,15 @@ export const Pax = ({ setShowPax, pax, setPax }) => {
         <div className="flex flex-col gap-1">
           <div>Choose Travel Class</div>
           <div className="w-fit flex flex-col md:flex-row border-2 border-gray-400 rounded-lg">
+            <div
+              onClick={() => setCabinClass({ key: "All", value: 1 })}
+              style={{
+                backgroundColor: cabinClass.value === 1 ? "#F8E000" : "",
+              }}
+              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#F8E000]"
+            >
+              All
+            </div>
             <div
               onClick={() => setCabinClass(1)}
               style={{ backgroundColor: cabinClass === 1 ? "#F8E000" : "" }}

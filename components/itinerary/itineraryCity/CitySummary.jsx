@@ -102,10 +102,12 @@ const CitySummary = (props) => {
         <div className="text-[14px] font-medium leading-[22px] w-[80px]">
           {activities?.length > 0 && <>Activity:</>}{" "}
         </div>
-        <div className="flex flex-col gap-2">
-          <div className="flex-wrap gap-2">
+        <div className="flex flex-col gap-2 w-full">
+          <div className="flex flex-wrap gap-2">
             {activities?.map((item) => (
-              <div className="flex gap-2 w-[333px] h-[78px] p-[10px] border-[2px] rounded-[12px] shadow-none hover:cursor-pointer" onClick={() =>
+              <div 
+              key={item.id}
+              className="flex gap-2 group w-[333px] h-[78px] p-[10px] border-[2px] rounded-[12px] shadow-none hover:cursor-pointer" onClick={() =>
                 handleView(
                   item.id,
                   "activity"
@@ -124,8 +126,14 @@ const CitySummary = (props) => {
                   />
                 </div>
                 <div>
+                  <div className="flex gap-1">
                   <div className="w-fit font-semibold font-[Poppins] text-[12px] cursor-pointer">
                     {item?.name}
+                  </div>
+                  <div className="hidden group-hover:!block">
+                  <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" class="mt-1" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill="none" d="M0 0h24v24H0z"></path><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 000-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg> 
+
+                  </div>
                   </div>
                   <div className="flex gap-3 text-[12px] font-[Poppins]">
                     <div className="w-auto flex items-center gap-1">
@@ -193,6 +201,10 @@ const CitySummary = (props) => {
         cityID={props.city.city.id}
         date={props?.city?.start_date}
         itinerary_city_id={props?.city?.id}
+        setActivities={setActivities}
+        activities={activities}
+        activityBookings={props?.activityBookings}
+        setActivityBookings={props?.setActivityBookings}
       ></ActivityAddDrawer>
     </div>
   );

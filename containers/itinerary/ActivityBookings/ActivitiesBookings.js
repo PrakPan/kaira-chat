@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import ImageLoader from "../../../components/ImageLoader";
 import { BsCalendar2, BsPeopleFill } from "react-icons/bs";
 import { FaBed, FaStar, FaStarHalfAlt } from "react-icons/fa";
-import { IoTicket } from "react-icons/io5";
-import { ImSpoonKnife } from "react-icons/im";
 import FullScreenGallery from "../../../components/fullscreengallery/Index";
 import * as ga from "../../../services/ga/Index";
 import ButtonYellow from "../../../components/ButtonYellow";
@@ -117,9 +115,9 @@ const ActivitiesBookings = (props) => {
                       <div
                         className={`text-white bg-[#01202B] lg:px-3 px-2 lg:py-2 py-1 m-2 shadow-sm shadow-[#00000060] absolute top-0 rounded-2xl`}
                       >
-                        {booking.star_category} star hotel
+                        {booking?.star_category} star hotel
                       </div>
-                    ) : null}
+                    ) : <>0 star hotel</>}
                   </div>
                   <div className="flex flex-col gap-4 text-[#01202B] lg:w-[70%]">
                     <div className="text-2xl font-semibold ">

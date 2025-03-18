@@ -26,25 +26,26 @@ const ItineraryCity = (props) => {
 
           {props.city?.hotels && props.city.hotels.length ? (
             <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-2"> 
-    <Image
-      src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/Vector.png`}
-      height={22}
-      width={22}
-      className="object-contain" 
-      alt="Hotel Icon" 
-    />
-    <div className="text-[14px] font-medium leading-0 underline cursor-pointer hover:text-blue">
-      {props.city.hotels[0]?.name}
-    </div>
-  </div>
+              <div className="flex items-center gap-2">
+                <Image
+                  src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/Vector.png`}
+                  height={22}
+                  width={22}
+                  className="object-contain"
+                  alt="Hotel Icon"
+                />
+                <div className="text-[14px] font-medium leading-0 underline cursor-pointer hover:text-blue">
+                  {props.city.hotels[0]?.name}
+                </div>
+              </div>
               <div className="flex flex-row items-center">
                 {getStars(props.city.hotels[0]?.rating)}{" "}
                 <div className="text-[#7A7A7A] text-[12px] ml-1">
                   {props.city.hotels[0]?.rating} ·{" "}
                 </div>
-                <div className="text-[#7A7A7A] text-[12px] ml-1 underline">{props.city.hotels[0]?.user_ratings_total} Google reviews</div>
-
+                <div className="text-[#7A7A7A] text-[12px] ml-1 underline">
+                  {props.city.hotels[0]?.user_ratings_total} Google reviews
+                </div>
               </div>
             </div>
           ) : null}
@@ -64,10 +65,10 @@ const ItineraryCity = (props) => {
 
       {viewMore ? (
         <>
-          <CityDaybyDay city={props.city} />
+          <CityDaybyDay city={props.city} setItinerary={props?.setItinerary} />
         </>
       ) : (
-        <CitySummary city={props.city} setViewMore={setViewMore} />
+        <CitySummary city={props.city} setViewMore={setViewMore} activityBookings={props?.activityBookings} setActivityBookings={props?.setActivityBookings}/>
       )}
     </div>
   );

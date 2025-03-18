@@ -440,6 +440,15 @@ const Pax = ({ setShowPax, pax, setPax }) => {
           <div>Choose Travel Class</div>
           <div className="w-fit flex flex-col md:flex-row border-2 border-gray-400 rounded-lg">
             <div
+              onClick={() => setCabinClass({ key: "All", value: 1 })}
+              style={{
+                backgroundColor: cabinClass.value === 1 ? "#F8E000" : "",
+              }}
+              className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#F8E000]"
+            >
+              All
+            </div>
+            <div
               onClick={() => setCabinClass(1)}
               style={{ backgroundColor: cabinClass === 1 ? "#F8E000" : "" }}
               className="px-3 py-2 rounded-lg cursor-pointer hover:bg-[#F8E000]"

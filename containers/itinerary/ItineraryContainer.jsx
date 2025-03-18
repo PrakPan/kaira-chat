@@ -421,6 +421,30 @@ const ItineraryContainer = (props) => {
       setItineraryLoading(false); 
     }, 60000); 
 
+    setActivityBookings(
+      data.cities
+        .map((item) =>
+          item.activities.map((activity) => ({
+            ...activity, 
+            city: item.city.name, 
+            duration: item.duration, 
+          }))
+        )
+        .flat() // Flatten the array
+    );
+    
+    setActivityBookings(
+      data.cities
+        .map((item) =>
+          item.activities.map((activity) => ({
+            ...activity, 
+            city: item.city.name, 
+            duration: item.duration, 
+          }))
+        )
+        .flat() // Flatten the array
+    );
+    
 
         props.setItinerary(data);
         props.setItineraryDaybyDay(data);
@@ -929,7 +953,8 @@ const ItineraryContainer = (props) => {
           _updateStayBookingHandler={_updateStayBookingHandler}
           activityBookings={activityBookings}
           transferBookings={transferBookings}
-          cityTransferBookings={transferBooking || cityTransferBookings}
+          setTransferBookings={setTransferBookings}
+          cityTransferBookings={cityTransferBookings}
           stayBookings={stayBookings}
           user_email={userEmail}
           setItinerary={props.setItinerary}
@@ -965,6 +990,7 @@ const ItineraryContainer = (props) => {
           cities={cities}
           itinerary={props?.itinerary}
           setStayBookings={setStayBookings}
+          setActivityBookings={setActivityBookings}
         ></Menu>
       </div>
     </Container>

@@ -31,6 +31,7 @@ import {
 import { getCityDetails } from "./getCityDetails";
 import ImageLoader from "../../components/ImageLoader";
 import { connect, useDispatch, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { openNotification } from "../../store/actions/notification";
 import { logEvent } from "../../services/ga/Index";
 import openTailoredModal from "../../services/openTailoredModal";
@@ -44,7 +45,7 @@ import DaybyDay from "./DaybyDay.jsx";
 import StaysContainer from "./Stays/StaysContainer.jsx";
 import TransferBookings from "./TransfersContainer/TransferBookings.jsx";
 import NewSummaryContainers from "./NewSummaryContainers.js";
-import { setTransfersBookings } from "../../store/actions/transferBookingsStore.js"
+import { setTransfersBookings } from "../../store/actions/transferBookingsStore.js";
 const useStyles = {
   root: `
     flex-grow-1
@@ -59,6 +60,7 @@ const GetInTouchContainer = styled.div`
 
 const SimpleTabsV2 = (props) => {
   const dispatch = useDispatch();
+  dispatch(setTransfersBookings(props.transferBookings))
   let isPageWide = media("(min-width: 768px)");
   const [isGroup, setIsGroup] = useState(false);
   const router = useRouter();
@@ -73,8 +75,8 @@ const SimpleTabsV2 = (props) => {
   const [shareMobile, setShareMobile] = useState(false);
   const isDesktop = useMediaQuery("(min-width:1148px)");
   // const transferBooking = useSelector((sta 
-  // const transferBooking = useSelector((state) => state.TransferBookings)?.transferBookings
-  // console.log("Transfer Booking",transferBooking);
+  const transferBooking = useSelector((state) => state.TransferBookings)?.transferBookings
+  console.log("Transfer Booking",transferBooking);
 
   useEffect(() => {
     if (router.query.payment_status) {
@@ -561,8 +563,12 @@ const SimpleTabsV2 = (props) => {
             {props.mercuryItinerary ? (
               props?.itineraryDaybyDay && (
                 <DaybyDay
+                  activityBookings={props?.activityBookings}
+                  setActivityBookings={props?.setActivityBookings}
                   itinerary={props.itinerary}
                   transferBookings={props?.transferBookings}
+                  setTransferBookings={props?.setTransferBookings}
+                  setItinerary={props?.setItinerary}
                 />
               )
             ) : (
@@ -651,29 +657,50 @@ const SimpleTabsV2 = (props) => {
             </div>
           ) : (
             <>
-              {props.transferBookings &&
-                (
-                  <TransferBookings
-                    setShowLoginModal={setShowLoginModal}
-                    showTaxiModal={props.showTaxiModal}
-                    _updateFlightBookingHandler={
-                      props._updateFlightBookingHandler
-                    }
-                    setShowTaxiModal={props.setShowTaxiModal}
-                    getPaymentHandler={props.getPaymentHandler}
-                    _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-                    _updatePaymentHandler={props._updatePaymentHandler}
-                    _updateBookingHandler={props._updateBookingHandler}
-                    showFlightModal={props.showFlightModal}
-                    setShowFlightModal={_handleFlighModalShow}
-                    setHideFlightModal={_handleFlightModalClose}
-                    setShowBookingModal={() => props.setShowBookingModal(true)}
-                    setHideBookingModal={props.setHideBookingModal}
-                    payment={props.payment}
-                    fetchData={props.fetchData}
-                    _GetInTouch={_GetInTouch}
-                  />
-                )}
+              {props.transferBookings && (
+                <TransferBookings
+                  setShowLoginModal={setShowLoginModal}
+                  showTaxiModal={props.showTaxiModal}
+                  _updateFlightBookingHandler={
+                    props._updateFlightBookingHandler
+                  }
+                  setShowTaxiModal={props.setShowTaxiModal}
+                  getPaymentHandler={props.getPaymentHandler}
+                  _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+                  _updatePaymentHandler={props._updatePaymentHandler}
+                  _updateBookingHandler={props._updateBookingHandler}
+                  showFlightModal={props.showFlightModal}
+                  setShowFlightModal={_handleFlighModalShow}
+                  setHideFlightModal={_handleFlightModalClose}
+                  setShowBookingModal={() => props.setShowBookingModal(true)}
+                  setHideBookingModal={props.setHideBookingModal}
+                  payment={props.payment}
+                  fetchData={props.fetchData}
+                  _GetInTouch={_GetInTouch}
+                />
+              )}
+              {props.transferBookings && (
+                <TransferBookings
+                  setShowLoginModal={setShowLoginModal}
+                  showTaxiModal={props.showTaxiModal}
+                  _updateFlightBookingHandler={
+                    props._updateFlightBookingHandler
+                  }
+                  setShowTaxiModal={props.setShowTaxiModal}
+                  getPaymentHandler={props.getPaymentHandler}
+                  _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+                  _updatePaymentHandler={props._updatePaymentHandler}
+                  _updateBookingHandler={props._updateBookingHandler}
+                  showFlightModal={props.showFlightModal}
+                  setShowFlightModal={_handleFlighModalShow}
+                  setHideFlightModal={_handleFlightModalClose}
+                  setShowBookingModal={() => props.setShowBookingModal(true)}
+                  setHideBookingModal={props.setHideBookingModal}
+                  payment={props.payment}
+                  fetchData={props.fetchData}
+                  _GetInTouch={_GetInTouch}
+                />
+              )}
             </>
           )}
 
@@ -809,7 +836,14 @@ const SimpleTabsV2 = (props) => {
             <div id={"Itenary"}>
               {props.mercuryItinerary
                 ? props?.itineraryDaybyDay && (
-                    <DaybyDay transferBookings={props?.transferBookings} itinerary={props?.itinerary}/>
+                    <DaybyDay
+                      activityBookings={props?.activityBookings}
+                      setActivityBookings={props?.setActivityBookings}
+                      transferBookings={props?.transferBookings}
+                      setTransferBookings={props?.setTransferBookings}
+                      setItinerary={props?.setItinerary}
+                      itinerary={props?.itinerary}
+                    />
                   )
                 : props?.itinerary && (
                     <NewItenaryMain
@@ -915,8 +949,10 @@ const SimpleTabsV2 = (props) => {
                           fetchData={props.fetchData}
                           _GetInTouch={_GetInTouch}
                         />
-                        </>
-                      ):<>Loading Data ...</>}
+                      </>
+                    ) : (
+                      <>Loading Data ...</>
+                    )}
                   </>
                 ) : (
                   <TransfersContainer

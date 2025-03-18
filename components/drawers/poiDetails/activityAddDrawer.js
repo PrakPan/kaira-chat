@@ -234,6 +234,11 @@ const ActivityAddDrawer = (props) => {
                 }
                 cityId={props?.cityID}
                 itinerary_city_id={props?.itinerary_city_id}
+                setActivities={props?.setActivities}
+                activities={props?.activities}
+                setItinerary={props?.setItinerary}
+                activityBookings={props?.activityBookings}
+                setActivityBookings={props?.setActivityBookings}
               ></NewActivityBooking>
             );
           }

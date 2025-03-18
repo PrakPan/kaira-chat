@@ -8,16 +8,14 @@ import { FaBus, FaPen } from "react-icons/fa";
 import axios from "axios";
 import { MERCURY_HOST } from "../../services/constants";
 import { useState } from "react";
-import Drawer from "../../components/ui/Drawer";
-import { Details } from "../../components/modals/flights/new-flight-searched/Index";
-import VehicleDetailModal from "../../components/modals/daybyday/VehicleModal";
-import FlightDetailModal from "../../components/modals/daybyday/FlightDetailModal";
 import { useRouter } from "next/router";
 import { ToastContainer, toast} from "react-toastify";
 import { axiosDeleteBooking } from "../../services/itinerary/bookings";
 import { setTransferBookings, updateTransferBookings } from "../../store/actions/transferBookingsStore";
 import { useDispatch } from "react-redux";
 import TransferEditDrawer from "../../components/drawers/routeTransfer/TransferEditDrawer";
+import VehicleDetailModal from "../../components/modals/daybyday/VehicleModal";
+import Drawer from "../../components/ui/Drawer";
 const Container = styled.div`
   display: flex;
   align-items: center;

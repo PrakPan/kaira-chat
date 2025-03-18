@@ -31,8 +31,7 @@ const Details = ({
     setTransferBookingsIntercity
   }) => {
     useEffect(() => {
-      console.log("originCityId in Details:", destinationCityId);
-      console.log("destinationCityId in Details:", destinationCityId);
+      console.log("originCityId in Details:", segments);
     }, [originCityId, destinationCityId]);
     const router = useRouter();
     const [fareRules, setFareRules] = useState(fareRule?.[0]?.fareRuleDetail);
@@ -200,7 +199,7 @@ const Details = ({
                   <div className="flex flex-col md:flex-row gap-2">
                     <b className="font-black">Change of planes</b>
                     <b>{`${getTime(segment?.ground_time)} Layover in ${
-                      segment?.origin?.city_name
+                      segment?.origin?.airport_name	
                     }`}</b>
                   </div>
                   <span className="text-[#4a4a4a] bg-[#dfdfdf] block absolute text-xs right-[-50px] md:right-[-100px] h-[1px] w-[50px] md:w-[100px] md:top-[13.7px] top-[50%]"></span>
@@ -237,7 +236,7 @@ const Details = ({
                         ).toDateString()}
                       </p>
                       <p className="text-xs m-0">
-                        {segment[key]?.city_name} ({segment[key]?.airport_code})
+                        {segment[key]?.airport_name	} ({segment[key]?.airport_code})
                       </p>
                       {segment[key]?.terminal && (
                         <p className="text-xs">
@@ -248,7 +247,7 @@ const Details = ({
                   ))}
                   <div className="flex-1 text-xs text-center">
                     <div className="text-sm text-gray-600">
-                      {getTime(segment?.duration)}
+                      {getTime(segment?.accumulated_duration)}
                     </div>
                     <div className=" h-4">
                       <p className="h-[3px]  z-[1] border-t-[3px] border-[#F7E700]"></p>
@@ -276,7 +275,7 @@ const Details = ({
                           ).toDateString()}
                         </p>
                         <p className="text-xs m-0">
-                          {segment[key]?.city_name} ({segment[key]?.airport_code})
+                          {segment[key]?.airport_name} ({segment[key]?.airport_code})
                         </p>
                         {segment[key]?.terminal && (
                           <p className="text-xs">
@@ -287,7 +286,7 @@ const Details = ({
                     </div>
                   ))}
                 </div>
-                <div className="flex  items-start justify-between text-xs ">
+                <div className="flex  items-start justify-between text-xs mt-4">
                   {["baggage_allowance", "cabin_baggage_allowance"].map((key) => (
                     <p key={key} className="flex flex-col gap-2">
                       <span className="text-sm font-bold text-left pr-2.5">
