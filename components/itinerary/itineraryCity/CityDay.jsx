@@ -34,7 +34,7 @@ const CityDay = (props) => {
       >
        
         {isPageWide ? <span> {convertDateFormat(props?.day?.date)}</span> : <span>, {convertDateFormat(props?.day?.date)}</span>}
-        <span className="text-[#ABABAB]"> (Day {props.index + 1})</span>
+        <span className="text-[#ABABAB] font-normal"> (Day {props.index + 1})</span>
         
         {/* {elements.map((element, index) => (
           <>
@@ -92,14 +92,14 @@ const CityDay = (props) => {
 
         <button
           onClick={() => setShowAddDrawer(true)}
-          className="mt-3 ml-4 w-fit text-[14px] text-blue underline font-semibold"
+          className="mt-3  w-fit text-[14px] text-blue underline font-semibold"
         >
           +Add activities on {convertDateFormat(props?.day?.date)}
         </button>
 
-        <div className=" px-6 py-3">
-          <button className="bg-[#F7E700] text-black text-sm font-medium py-1 px-3 rounded border-2 border-black">
-            Add Taxi
+        <div className="py-3">
+          <button className="bg-[#F7E700] text-black text-sm font-normal py-1 px-3 rounded border-1 border-black">
+            + Add Siteseeing Taxi
           </button>
         </div>
       </div>

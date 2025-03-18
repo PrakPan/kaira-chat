@@ -73,8 +73,8 @@ const SimpleTabsV2 = (props) => {
   const [shareMobile, setShareMobile] = useState(false);
   const isDesktop = useMediaQuery("(min-width:1148px)");
   // const transferBooking = useSelector((sta 
-  const transferBooking = useSelector((state) => state.TransferBookings)?.transferBookings
-  console.log("Transfer Booking",transferBooking);
+  // const transferBooking = useSelector((state) => state.TransferBookings)?.transferBookings
+  // console.log("Transfer Booking",transferBooking);
 
   useEffect(() => {
     if (router.query.payment_status) {
@@ -475,7 +475,7 @@ const SimpleTabsV2 = (props) => {
                             color="#111"
                             fontWeight="400"
                             fontSize="0.45rem"
-                            borderWidth="2px"
+                            borderWidth="1px"
                             width="12rem"
                             borderRadius="10px"
                             bgColor="#F7E700"

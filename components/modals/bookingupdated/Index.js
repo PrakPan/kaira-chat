@@ -425,7 +425,7 @@ const Booking = (props) => {
                             color="#111"
                             fontWeight="500"
                             fontSize="1rem"
-                            borderWidth="2px"
+                            borderWidth="1px"
                             width="100%"
                             borderRadius="8px"
                             bgColor="#f8e000"

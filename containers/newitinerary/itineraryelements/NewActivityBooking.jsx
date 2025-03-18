@@ -192,7 +192,7 @@ export default function NewActivityBooking(props) {
                     fontSize="0.85rem"
                     width="100%"
                     onclick={() => handleClick(props.data?.id)}
-                    borderRadius="10px"
+                    borderRadius="7px"
                     bgColor="#f8e000"
                     borderWidth="1px"
                   >

@@ -141,7 +141,7 @@ const Activity = (props) => {
               props?.element?.poi!=null?"poi":"activity"
             )
           }
-          className="w-fit text-[12px] font-semibold border-2 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+          className="w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
         >
           View Details
         </button>
@@ -283,7 +283,7 @@ const Recommendation = (props) => {
           onClick={() =>
             handleActivity(props.element?.restaurants?.[0]?.id, "restaurant")
           }
-          className="w-fit text-[12px] font-semibold border-2 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+          className="w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
         >
           View Details
         </button>
