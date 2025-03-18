@@ -9,7 +9,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { Text, Heading } from "../../../components/modals/flights/SectionOne";
 import { IoMdClose } from "react-icons/io";
 import { connect, useDispatch, useSelector } from "react-redux";
-import { setTransferBookings } from "../../../store/actions/transferBookingsStore";
+import { setTransfersBookings } from "../../../store/actions/transferBookingsStore";
 import { Generalbuttonstyle } from "../../../components/ui/button/Generallinkbutton";
 import { Logo } from "../../../components/modals/flights/new-flight-searched/LogoContainer";
 import { render } from "nprogress";
@@ -313,7 +313,7 @@ const Details = ({
 
   
   const mapDispatchToProps =(dispatch)=> {
-    return{setTransferBookings:(payload)=>dispatch(setTransferBookings(payload))}
+    return{setTransfersBookings:(payload)=>dispatch(setTransferBookings(payload))}
   };
   
   export default connect(mapStateToProps, mapDispatchToProps)(Details);

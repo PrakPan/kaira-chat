@@ -76,8 +76,8 @@ const ItineraryContainer = (props) => {
   const [cities, setCities] = useState([]);
   const [cityTransferBookings, setCityTransferBookings] = useState(null);
 
-   const transferBooking = useSelector((state) => state.TransferBookings)?.transferBookings
-    console.log("Transfer Booking",transferBooking);
+  //  const transferBooking = useSelector((state) => state.TransferBookings)?.transferBookings
+  //   console.log("Transfer Booking",transferBooking);
 
   // useEffect(() => {
   //   if (hasRendered.current) {
@@ -433,17 +433,17 @@ const ItineraryContainer = (props) => {
         .flat() // Flatten the array
     );
     
-    setActivityBookings(
-      data.cities
-        .map((item) =>
-          item.activities.map((activity) => ({
-            ...activity, 
-            city: item.city.name, 
-            duration: item.duration, 
-          }))
-        )
-        .flat() // Flatten the array
-    );
+    // setActivityBookings(
+    //   data.cities
+    //     .map((item) =>
+    //       item.activities.map((activity) => ({
+    //         ...activity, 
+    //         city: item.city.name, 
+    //         duration: item.duration, 
+    //       }))
+    //     )
+    //     .flat() // Flatten the array
+    // );
     
 
         props.setItinerary(data);
