@@ -10,8 +10,10 @@ import {
 } from "../../../services/poi/poiActivities";
 import { getDate } from "../../../helper/DateUtils";
 import { openNotification } from "../../../store/actions/notification";
+import { toast } from "react-toastify";
 
 const ActivityDetailsDrawer = (props) => {
+  console.log("day by day:",props?.setItinerary)
   const router = useRouter();
   const [data, setData] = useState(null);
   const [traceId, setTraceId] = useState(null);
@@ -87,12 +89,9 @@ const ActivityDetailsDrawer = (props) => {
     activityBooking
       .post(`${router.query?.id}/bookings/activity/`, requestData)
       .then((res) => {
-        props?.getAccommodationAndActivitiesHandler();
-        props?.openNotification({
-          type: "success",
-          text: "Activity added successfully.",
-          heading: "Sucess!",
-        });
+        props.setActivities([...props?.activities,res?.data])
+        props.setActivityBookings([...props?.activityBookings,res?.data])
+        toast.success("Added activity in itinerary")
       })
       .catch((err) => {
         console.log("error is:",err)

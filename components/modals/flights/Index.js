@@ -113,8 +113,8 @@ const Booking = (props) => {
       : 0,
   });
   const [classType, setClassType] = useState({
-    key: "Economy",
-    value: 2,
+    key: "All",
+    value: 1,
   });
   const [showTransferEditDrawer, setShowTransferEditDrawer] = useState(false);
 

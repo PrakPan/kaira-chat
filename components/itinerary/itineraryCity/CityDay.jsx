@@ -2,11 +2,9 @@ import { useEffect, useState } from "react";
 import SlabElement from "./SlabElement";
 import media from "../../media";
 import ActivityAddDrawer from "../../drawers/poiDetails/activityAddDrawer";
-import { IoTimeOutline } from "react-icons/io5";
-import { RiTimeLine } from "react-icons/ri";
-// import { convertDateFormat } from "../../../helper/ConvertDateFormat";
 
 const CityDay = (props) => {
+  console.log('day by day:',props?.setItinerary)
   let isPageWide = media("(min-width: 768px)");
   const [showAddDrawer, setShowAddDrawer] = useState(false);
   const [elements, setElements] = useState([]);
@@ -110,6 +108,7 @@ const CityDay = (props) => {
         cityName={props.city.name}
         cityID={props.city.id}
         date={props?.day?.date}
+        setItinerary={props?.setItinerary}
         // day_slab_index={props?.indexDay}
         // getPaymentHandler={props?.getPaymentHandler}
         // getAccommodationAndActivitiesHandler={

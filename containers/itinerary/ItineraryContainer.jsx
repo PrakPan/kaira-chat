@@ -929,6 +929,7 @@ const ItineraryContainer = (props) => {
           _updateStayBookingHandler={_updateStayBookingHandler}
           activityBookings={activityBookings}
           transferBookings={transferBookings}
+          setTransferBookings={setTransferBookings}
           cityTransferBookings={transferBooking || cityTransferBookings}
           stayBookings={stayBookings}
           user_email={userEmail}
@@ -965,6 +966,7 @@ const ItineraryContainer = (props) => {
           cities={cities}
           itinerary={props?.itinerary}
           setStayBookings={setStayBookings}
+          setActivityBookings={setActivityBookings}
         ></Menu>
       </div>
     </Container>

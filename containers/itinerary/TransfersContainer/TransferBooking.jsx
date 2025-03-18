@@ -17,7 +17,6 @@ import Drawer from "../../../components/ui/Drawer";
 import { FaArrowRight } from "react-icons/fa6";
 import { useRouter } from "next/router";
 import TransferEditDrawer from "../../../components/drawers/routeTransfer/TransferEditDrawer";
-import { setTransferBookings } from "../../../store/actions/transferBookingsStore";
 import Details from "./FlightDetail";
 const GridContainer = styled.div`
   width: auto;
@@ -500,14 +499,14 @@ const TransferBooking = ({
                       </label>
                     </div> */}
                     <Button
-                                          padding="0.6rem 2.2rem"
-                                          borderRadius="8px"
-                                          hoverColor="white"
-                                          fontWeight="400"
-                                          onclick={() => handleViewDetails(booking.name)}
-                                        >
-                                          View Detail
-                                        </Button>
+                      padding="0.6rem 2.2rem"
+                      borderRadius="8px"
+                      hoverColor="white"
+                      fontWeight="400"
+                      onclick={() => handleViewDetails(booking.name)}
+                    >
+                      View Detail
+                    </Button>
                   </div>
                 )}
               </div>
@@ -686,7 +685,9 @@ const FlightBooking = ({
               }
               duration={booking?.duration}
               segments={booking?.transfer_details?.items?.[0]?.segments}
-              numStops={booking?.transfer_details?.items?.[0]?.segments.length}
+              numStops={
+                booking?.transfer_details?.items?.[0]?.stop_count?.stops
+              }
               setShowDetails={setShowDetails}
             />
           </div>
@@ -757,22 +758,6 @@ const FlightBooking = ({
       >
         {originCityId !== undefined && destinationCityId !== undefined && (
           <>
-           {console.log(
-              "Segments:",
-              booking?.transfer_details?.items?.[0]?.segments
-            )}
-            {console.log(
-              "Result Index:",
-              booking?.transfer_details?.items?.[0]?.result_index
-            )}
-            {console.log(
-              "Fare Rule:",
-              booking?.transfer_details?.items?.[0]?.fare_rule
-            )}
-            {console.log("Booking ID:", booking?.id)}
-            {console.log("Name:", booking?.name)}
-            {console.log("Origin City ID:", originCityId)}
-            {console.log("Destination City ID:", destinationCityId)}
             <Details
               segments={booking?.transfer_details?.items?.[0]?.segments}
               resultIndex={booking?.transfer_details?.items?.[0]?.result_index}

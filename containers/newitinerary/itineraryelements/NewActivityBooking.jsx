@@ -19,8 +19,7 @@ const ClippathComp = styled.div`
 `;
 
 export default function NewActivityBooking(props) {
-  const [imageFail, setImageFail] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
+  console.log("set activity bookings is:",props.activityBookings)
   const [stars, setStars] = useState(null);
   const [showDetails, setShowDetails] = useState({
     show: false,
@@ -75,36 +74,46 @@ export default function NewActivityBooking(props) {
                 width: "251px",
                 overflow: "hidden",
                 borderRadius: "16px",
-                display: imageLoaded ? "block" : "none",
+                // display: imageLoaded ? "block" : "none",
               }}
             >
               <ImageLoader
-                height="220px"
-                width="251px"
-                widthmobile="1.5rem"
-                dimensions={{ width: 1600, height: 900 }}
-                dimensionsMobile={{ width: 1600, height: 900 }}
-                borderRadius={"16px"}
                 fit="cover"
-                onload={() => {
-                  setImageLoaded(true)
-                }}
-                onfail={() => {
-                  setImageFail(true);
-                  setImageLoaded(true);
-                }}
-                // onfail={() => {
-                //   setImageFail(true);
-                //   setImageLoaded(true);
-                // }}
                 url={
-                  props.data?.image 
-                    // ? props.data.image
-                    // : "media/icons/bookings/notfounds/noroom.png"
+                  props?.data?.image
+                  // props.images.length
+                  //   ? props.data?.image
+                  //   : "media/website/grey.png"
                 }
+                // dimensions={{ width: 1600, height: 900 }}
+                // dimensionsMobile={{ width: 1600, height: 900 }}
+                width="100%"
+                height="220px"
+                //   width="251px"
+                //   widthmobile="1.5rem"
+                //   dimensions={{ width: 1600, height: 900 }}
+                //   dimensionsMobile={{ width: 1600, height: 900 }}
+                //   borderRadius={"16px"}
+                //   fit="cover"
+                //   onload={() => {
+                //     setImageLoaded(true)
+                //   }}
+                //   onfail={() => {
+                //     setImageFail(true);
+                //     setImageLoaded(true);
+                //   }}
+                //   // onfail={() => {
+                //   //   setImageFail(true);
+                //   //   setImageLoaded(true);
+                //   // }}
+                //   url={
+                //     props.data?.image
+                //       // ? props.data.image
+                //       // : "media/icons/bookings/notfounds/noroom.png"
+                //   }
               ></ImageLoader>
             </div>
-            <div
+            {/* <div
               style={{
                 height: "220px",
                 width: "251px",
@@ -114,7 +123,7 @@ export default function NewActivityBooking(props) {
               }}
             >
               <SkeletonCard height={"100%"} />
-            </div>
+            </div> */}
           </div>
 
           <div className="flex flex-col gap-2 text-[#01202B]  w-full h-fit justify-start">
@@ -144,10 +153,7 @@ export default function NewActivityBooking(props) {
 
             <div className="my-2">
               <div className="font-light text-sm text-[#01202B] line-clamp-3">
-                {props.data.short_description
-                  .split(" ")
-                  .slice(0, 20)
-                  .join(" ")}
+                {props.data.short_description.split(" ").slice(0, 20).join(" ")}
               </div>
 
               <div className="font-bold text-gray-500"> ...more</div>
@@ -217,6 +223,11 @@ export default function NewActivityBooking(props) {
         }
         cityId={props?.cityId}
         itinerary_city_id={props?.itinerary_city_id}
+        setActivities={props?.setActivities}
+        activities={props?.activities}
+        setItinerary={props?.setItinerary}
+        activityBookings={props.activityBookings}
+        setActivityBookings={props.setActivityBookings}
       />
     </div>
   );

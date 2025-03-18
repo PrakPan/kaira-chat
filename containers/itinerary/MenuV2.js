@@ -561,8 +561,12 @@ const SimpleTabsV2 = (props) => {
             {props.mercuryItinerary ? (
               props?.itineraryDaybyDay && (
                 <DaybyDay
+                  activityBookings={props?.activityBookings}
+                  setActivityBookings={props?.setActivityBookings}
                   itinerary={props.itinerary}
                   transferBookings={props?.transferBookings}
+                  setTransferBookings={props?.setTransferBookings}
+                  setItinerary={props?.setItinerary}
                 />
               )
             ) : (
@@ -651,29 +655,28 @@ const SimpleTabsV2 = (props) => {
             </div>
           ) : (
             <>
-              {props.transferBookings &&
-                (
-                  <TransferBookings
-                    setShowLoginModal={setShowLoginModal}
-                    showTaxiModal={props.showTaxiModal}
-                    _updateFlightBookingHandler={
-                      props._updateFlightBookingHandler
-                    }
-                    setShowTaxiModal={props.setShowTaxiModal}
-                    getPaymentHandler={props.getPaymentHandler}
-                    _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-                    _updatePaymentHandler={props._updatePaymentHandler}
-                    _updateBookingHandler={props._updateBookingHandler}
-                    showFlightModal={props.showFlightModal}
-                    setShowFlightModal={_handleFlighModalShow}
-                    setHideFlightModal={_handleFlightModalClose}
-                    setShowBookingModal={() => props.setShowBookingModal(true)}
-                    setHideBookingModal={props.setHideBookingModal}
-                    payment={props.payment}
-                    fetchData={props.fetchData}
-                    _GetInTouch={_GetInTouch}
-                  />
-                )}
+              {props.transferBookings && (
+                <TransferBookings
+                  setShowLoginModal={setShowLoginModal}
+                  showTaxiModal={props.showTaxiModal}
+                  _updateFlightBookingHandler={
+                    props._updateFlightBookingHandler
+                  }
+                  setShowTaxiModal={props.setShowTaxiModal}
+                  getPaymentHandler={props.getPaymentHandler}
+                  _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+                  _updatePaymentHandler={props._updatePaymentHandler}
+                  _updateBookingHandler={props._updateBookingHandler}
+                  showFlightModal={props.showFlightModal}
+                  setShowFlightModal={_handleFlighModalShow}
+                  setHideFlightModal={_handleFlightModalClose}
+                  setShowBookingModal={() => props.setShowBookingModal(true)}
+                  setHideBookingModal={props.setHideBookingModal}
+                  payment={props.payment}
+                  fetchData={props.fetchData}
+                  _GetInTouch={_GetInTouch}
+                />
+              )}
             </>
           )}
 
@@ -809,7 +812,13 @@ const SimpleTabsV2 = (props) => {
             <div id={"Itenary"}>
               {props.mercuryItinerary
                 ? props?.itineraryDaybyDay && (
-                    <DaybyDay transferBookings={props?.transferBookings} itinerary={props?.itinerary}/>
+                    <DaybyDay
+                      activityBookings={props?.activityBookings}
+                      setActivityBookings={props?.setActivityBookings}
+                      transferBookings={props?.transferBookings}
+                      setTransferBookings={props?.setTransferBookings}
+                      setItinerary={props?.setItinerary}
+                    />
                   )
                 : props?.itinerary && (
                     <NewItenaryMain
@@ -915,8 +924,10 @@ const SimpleTabsV2 = (props) => {
                           fetchData={props.fetchData}
                           _GetInTouch={_GetInTouch}
                         />
-                        </>
-                      ):<>Loading Data ...</>}
+                      </>
+                    ) : (
+                      <>Loading Data ...</>
+                    )}
                   </>
                 ) : (
                   <TransfersContainer
