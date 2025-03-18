@@ -31,7 +31,6 @@ import {
 import { getCityDetails } from "./getCityDetails";
 import ImageLoader from "../../components/ImageLoader";
 import { connect, useDispatch, useSelector } from "react-redux";
-import { connect, useDispatch, useSelector } from "react-redux";
 import { openNotification } from "../../store/actions/notification";
 import { logEvent } from "../../services/ga/Index";
 import openTailoredModal from "../../services/openTailoredModal";
