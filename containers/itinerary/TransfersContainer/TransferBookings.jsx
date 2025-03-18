@@ -28,8 +28,10 @@ const TransferBookings = (props) => {
     name: null,
   });
   const [showDrawer, setShowDrawer] = useState(false);
+  const transferBooking = useSelector((state) => state.TransferBookings)?.transferBookings
+  console.log("Transfer Booking",transferBooking);
   const [transferBookingsIntercity, setTransferBookingsIntercity] = useState(
-    props.transferBookings.intercity
+    transferBooking?.intercity
   );
 
   const alternateRoutes = {};

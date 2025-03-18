@@ -28,6 +28,7 @@ import axiosPaymentInstance, {
 import axiosBookingsInstance, {
   axiosGetTransfers,
 } from "../../services/itinerary/bookings";
+import { setTransfersBookings } from "../../store/actions/transferBookingsStore";
 
 const Container = styled.div`
   width: 90%;
@@ -40,6 +41,7 @@ const Container = styled.div`
 
 const ItineraryContainer = (props) => {
   const router = useRouter();
+  const dispatch = useDispatch();
   const [totalduration, setTotalduration] = useState(0);
   const [itineraryReleased, setItineraryReleased] = useState(false);
   const [itineraryDate, setItineraryDate] = useState("");
@@ -73,6 +75,9 @@ const ItineraryContainer = (props) => {
   const [showMercuryItinerary, setShowMercuryItinerary] = useState(false);
   const [cities, setCities] = useState([]);
   const [cityTransferBookings, setCityTransferBookings] = useState(null);
+
+   const transferBooking = useSelector((state) => state.TransferBookings)?.transferBookings
+    console.log("Transfer Booking",transferBooking);
 
   // useEffect(() => {
   //   if (hasRendered.current) {
@@ -326,6 +331,8 @@ const ItineraryContainer = (props) => {
         const data = res.data;
         setTransferBookings(data);
         setCityTransferBookings(data);
+        dispatch(setTransfersBookings(data));
+
       })
       .catch((err) => {
         console.error("Error fetching all bookings", err.message);
@@ -922,7 +929,7 @@ const ItineraryContainer = (props) => {
           _updateStayBookingHandler={_updateStayBookingHandler}
           activityBookings={activityBookings}
           transferBookings={transferBookings}
-          cityTransferBookings={cityTransferBookings}
+          cityTransferBookings={transferBooking || cityTransferBookings}
           stayBookings={stayBookings}
           user_email={userEmail}
           setItinerary={props.setItinerary}
@@ -990,6 +997,7 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(setItineraryActivities(payload)),
     setBreif: (payload) => dispatch(setBreif(payload)),
     setItineraryDaybyDay: (payload) => dispatch(setItineraryDaybyDay(payload)),
+   setTransfersBookings: (payload) => dispatch(setTransfersBookings(payload))
   };
 };
 

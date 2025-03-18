@@ -19,9 +19,10 @@ const reducer = (state = initialState, action) => {
         transferBookings: null,
       };
 
-    case actionTypes.UPDTATE_TRANSFER_BOOKINGS:
+    case actionTypes.UPDATE_TRANSFER_BOOKINGS:
       return {
-       ...state
+       ...state,
+       transferBookings: action.payload
       }
 
     default:

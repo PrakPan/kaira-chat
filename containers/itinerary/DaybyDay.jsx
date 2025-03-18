@@ -16,8 +16,9 @@ const CITY_COLOR_CODES = [
   "#7d5e7d", // shade of purple
 ];
 
-const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width}) => {
+const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width, itinerary}) => {
   let isPageWide = media("(min-width: 768px)");
+  console.log("Inside DaybyDay Itinerary",itinerary);
   const cityRefs = useRef({});
   let startCity = itineraryDaybyDay?.start_city;
   let endCity = itineraryDaybyDay?.end_city;
@@ -59,6 +60,7 @@ const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width}) => {
         />
         <CityItem
           key={startCity?.gmaps_place_id}
+          bookingIdToDelete={startCity?.gmaps_place_id + ":" + itineraryDaybyDay?.cities[0]?.id}
           city={
             transferBookings?.intercity?.[
               startCity?.gmaps_place_id + ":" + itineraryDaybyDay?.cities[0]?.id
@@ -83,6 +85,10 @@ const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width}) => {
           ]?.id}
           width={width}
           length={itineraryDaybyDay?.cities?.length}
+          origin_city_id={startCity?.gmaps_place_id || startCity?.city_id}
+          destination_city_id={itineraryDaybyDay?.cities[0]?.city?.id}
+          origin_city_name={startCity?.city_name}
+          destination_city_name={itineraryDaybyDay?.cities[0]?.city?.name}
         />
         {itineraryDaybyDay?.cities.map((city, index) => {
           var idMapping =
@@ -94,6 +100,7 @@ const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width}) => {
                 <div>
                   <CityItem
                     mercury
+                    bookingIdToDelete={idMapping}
                     key={city.id}
                     city={transferBookings?.intercity?.[idMapping]?.name}
                     duration={
@@ -109,6 +116,10 @@ const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width}) => {
                     booking_id={transferBookings?.intercity?.[idMapping]?.id}
                     width={width}
                     length={itineraryDaybyDay?.cities?.length}
+                    origin_city_id={city?.city?.id}
+                    destination_city_id={itineraryDaybyDay?.cities[index + 1]?.city?.id}
+                    origin_city_name={city?.city?.name}
+                    destination_city_name={itineraryDaybyDay?.cities[index + 1]?.city?.name}
                   />
                 </div>
               )}
@@ -145,6 +156,10 @@ const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width}) => {
           ]?.id}
           width={width}
           length={itineraryDaybyDay?.cities?.length}
+          origin_city_id={itineraryDaybyDay?.cities[itineraryDaybyDay?.cities.length - 1]?.city?.id}
+          destination_city_id={endCity?.gmaps_place_id}
+          origin_city_name={itineraryDaybyDay?.cities[itineraryDaybyDay?.cities.length - 1]?.city?.name}
+          destination_city_name={endCity?.city_name}
         />
         <CityItem
           key={endCity?.place_id}

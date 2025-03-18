@@ -30,7 +30,7 @@ import {
 } from "../../services/constants";
 import { getCityDetails } from "./getCityDetails";
 import ImageLoader from "../../components/ImageLoader";
-import { connect, useDispatch } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { openNotification } from "../../store/actions/notification";
 import { logEvent } from "../../services/ga/Index";
 import openTailoredModal from "../../services/openTailoredModal";
@@ -44,7 +44,7 @@ import DaybyDay from "./DaybyDay.jsx";
 import StaysContainer from "./Stays/StaysContainer.jsx";
 import TransferBookings from "./TransfersContainer/TransferBookings.jsx";
 import NewSummaryContainers from "./NewSummaryContainers.js";
-import { setTransferBookings } from "../../store/actions/transferBookingsStore.js"
+import { setTransfersBookings } from "../../store/actions/transferBookingsStore.js"
 const useStyles = {
   root: `
     flex-grow-1
@@ -59,7 +59,6 @@ const GetInTouchContainer = styled.div`
 
 const SimpleTabsV2 = (props) => {
   const dispatch = useDispatch();
-  dispatch(setTransferBookings(props.transferBookings))
   let isPageWide = media("(min-width: 768px)");
   const [isGroup, setIsGroup] = useState(false);
   const router = useRouter();
@@ -73,6 +72,10 @@ const SimpleTabsV2 = (props) => {
   const [share, setShare] = useState(false);
   const [shareMobile, setShareMobile] = useState(false);
   const isDesktop = useMediaQuery("(min-width:1148px)");
+  // const transferBooking = useSelector((sta 
+  const transferBooking = useSelector((state) => state.TransferBookings)?.transferBookings
+  console.log("Transfer Booking",transferBooking);
+
   useEffect(() => {
     if (router.query.payment_status) {
       if (isPageWide) window.scrollTo(0, window.innerHeight);
@@ -559,7 +562,7 @@ const SimpleTabsV2 = (props) => {
               props?.itineraryDaybyDay && (
                 <DaybyDay
                   itinerary={props.itinerary}
-                  trasferBookings={props?.transferBookings}
+                  transferBookings={props?.transferBookings}
                 />
               )
             ) : (
@@ -806,7 +809,7 @@ const SimpleTabsV2 = (props) => {
             <div id={"Itenary"}>
               {props.mercuryItinerary
                 ? props?.itineraryDaybyDay && (
-                    <DaybyDay transferBookings={props?.transferBookings} />
+                    <DaybyDay transferBookings={props?.transferBookings} itinerary={props?.itinerary}/>
                   )
                 : props?.itinerary && (
                     <NewItenaryMain

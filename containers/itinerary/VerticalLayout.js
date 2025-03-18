@@ -15,6 +15,9 @@ import FlightDetailModal from "../../components/modals/daybyday/FlightDetailModa
 import { useRouter } from "next/router";
 import { ToastContainer, toast} from "react-toastify";
 import { axiosDeleteBooking } from "../../services/itinerary/bookings";
+import { setTransferBookings, updateTransferBookings } from "../../store/actions/transferBookingsStore";
+import { useDispatch } from "react-redux";
+import TransferEditDrawer from "../../components/drawers/routeTransfer/TransferEditDrawer";
 const Container = styled.div`
   display: flex;
   align-items: center;
@@ -46,6 +49,11 @@ const CityItem = ({
   downPresent,
   booking_id,
   length,
+  bookingIdToDelete,
+  destination_city_id,
+  origin_city_id,
+  destination_city_name,
+  origin_city_name
 }) => {
 
   console.log("City Name",city);
@@ -83,7 +91,9 @@ const CityItem = ({
   const [data, setData] = useState({});
   const [visible,setVisible] = useState(false);
   const [loading,setLoading] = useState(false);
+  const [showDrawer,setShowDrawer] =useState(false);
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const handleEdit = async () => {
     const res = await axios.get(
@@ -101,11 +111,13 @@ const CityItem = ({
           const response = await axiosDeleteBooking.delete(`${data?.itinerary_id}/bookings/${data?.booking_type?.toLowerCase()}/${data?.id}/`);
           
           if (response.status === 204) {  
+            dispatch(updateTransferBookings(bookingIdToDelete));
               setLoading(false);
               toast.success("Booking deleted successfuly");
               setVisible(true);
               setHandleShow(false);
               console.log("Deleted Booking");
+
           }
       } catch (err) {
           console.log("[ERROR][ItineraryPage][axiosDeleteBooking:/Delete_Booking]", err);
@@ -117,7 +129,6 @@ const CityItem = ({
 
   return (
     <Container>
-      <ToastContainer/>
       <PinWrapper>
         {upPresent && <VerticalLine height="40px" gradient="top" />}
         {upPresent && downPresent ? (
@@ -185,8 +196,8 @@ const CityItem = ({
             )}
           </div> </> : 
           <button
-          onClick={() =>{}
-            // setShowDrawer(true)
+          onClick={() =>
+            setShowDrawer(true)
             }
           className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
         >
@@ -194,7 +205,23 @@ const CityItem = ({
         </button>}
         </div>
       </div>
-      {/* <Drawer
+      <TransferEditDrawer
+                  mercury
+                  addOrEdit={"transferAdd"}
+                  showDrawer={showDrawer}
+                  setShowDrawer={setShowDrawer}
+                  // selectedTransferHeading={origin}
+                  origin={origin_city_id}
+                  destination={destination_city_id}
+                  // check_in={check_in}
+                  // routeId={id}
+                  city={origin_city_name}
+                  dcity={
+                    destination_city_name
+                  }
+                  // selectedBooking={selectedBooking}
+      />
+       <Drawer
         show={handleShow}
         anchor="right"
         width={"500px"}
@@ -220,7 +247,7 @@ const CityItem = ({
           </>
         )}
       </Drawer>
-      <Drawer
+      {/* <Drawer
               show={show}
               anchor="right"
               width={"500px"}
@@ -246,7 +273,7 @@ const CityItem = ({
           mercuryTransfer={props?.mercuryTransfer}
           mercury={true}
         />
-            </Drawer> */}
+            </Drawer>  */}
     </Container>
   );
 };
