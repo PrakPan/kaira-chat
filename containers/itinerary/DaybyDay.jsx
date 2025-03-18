@@ -157,16 +157,6 @@ const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width}) => {
           length={itineraryDaybyDay?.cities?.length}
         />
       </div>
-      <Drawer
-              show={handleShow}
-              anchor="right"
-              width={"500px"}
-              style={1503}
-              className="font-lexend"
-              onHide={setHandleShow}
-            >
-            
-            </Drawer>
     </div>
   );
 };
