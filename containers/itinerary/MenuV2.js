@@ -31,6 +31,7 @@ import {
 import { getCityDetails } from "./getCityDetails";
 import ImageLoader from "../../components/ImageLoader";
 import { connect, useDispatch, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { openNotification } from "../../store/actions/notification";
 import { logEvent } from "../../services/ga/Index";
 import openTailoredModal from "../../services/openTailoredModal";
@@ -59,6 +60,7 @@ const GetInTouchContainer = styled.div`
 
 const SimpleTabsV2 = (props) => {
   const dispatch = useDispatch();
+  dispatch(setTransfersBookings(props.transferBookings));
   let isPageWide = media("(min-width: 768px)");
   const [isGroup, setIsGroup] = useState(false);
   const router = useRouter();
@@ -73,8 +75,8 @@ const SimpleTabsV2 = (props) => {
   const [shareMobile, setShareMobile] = useState(false);
   const isDesktop = useMediaQuery("(min-width:1148px)");
   // const transferBooking = useSelector((sta 
-  // const transferBooking = useSelector((state) => state.TransferBookings)?.transferBookings
-  // console.log("Transfer Booking",transferBooking);
+  const transferBooking = useSelector((state) => state.TransferBookings)?.transferBookings
+  console.log("Transfer Booking",transferBooking);
 
   useEffect(() => {
     if (router.query.payment_status) {
@@ -818,6 +820,7 @@ const SimpleTabsV2 = (props) => {
                       transferBookings={props?.transferBookings}
                       setTransferBookings={props?.setTransferBookings}
                       setItinerary={props?.setItinerary}
+                      itinerary={props?.itinerary}
                     />
                   )
                 : props?.itinerary && (
