@@ -35,7 +35,7 @@ const ItineraryCity = (props) => {
                   className="object-contain"
                   alt="Hotel Icon"
                 />
-                <div className="text-[14px] font-medium leading-0 underline cursor-pointer hover:text-blue">
+                <div className="text-[14px] font-medium leading-0 underline  cursor-pointer hover:text-blue">
                   {props.city.hotels[0]?.name}
                 </div>
               </div>
@@ -49,7 +49,9 @@ const ItineraryCity = (props) => {
                 </div>
               </div>
             </div>
-          ) : null}
+          ) : <div className="text-blue cursor-pointer text-[14px] font-medium">
+         + Add Stay in {props?.city?.city?.name}
+        </div>}
         </div>
 
         <button
