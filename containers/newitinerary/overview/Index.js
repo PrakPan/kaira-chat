@@ -34,7 +34,10 @@ const Overview = (props) => {
   return (
     <div>
       <GridContainer className="gap-2">
-        <Heading className="font-lexend">{toTitleCase(props.title)}</Heading>
+        <Heading className="font-lexend">
+          {/* {toTitleCase(props.title)} */}
+          {props.title}
+          </Heading>
         {!isDesktop && props.tripsPage && <Ratings />}
       </GridContainer>
       <div className="flex flex-row justify-between">

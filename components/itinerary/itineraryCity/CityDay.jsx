@@ -96,7 +96,7 @@ const CityDay = (props) => {
 
         <div className="py-3">
           <button className="bg-[#F7E700] text-black text-sm font-normal py-1 px-3 rounded border-1 border-black">
-            + Add Siteseeing Taxi
+            + Add Sightseeing Taxi
           </button>
         </div>
       </div>

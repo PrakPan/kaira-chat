@@ -171,12 +171,18 @@ const CitySummary = (props) => {
               </div>
             ))}
           </div>
-          <button
+          {/* <button
             className="bg-black text-white w-[120px] h-[38px] rounded-md px-[12px] py-[6px]"
             onClick={() => setShowAddDrawer(true)}
           >
             Add Activity
-          </button>
+          </button> */}
+          <p
+            className=" text-blue cursor-pointer font-semibold underline"
+            onClick={() => setShowAddDrawer(true)}
+          >
+           + Add Activity in {props?.city?.city?.name}
+          </p>
         </div>
       </div>
       {dayByDay && dayByDay.length ? (
