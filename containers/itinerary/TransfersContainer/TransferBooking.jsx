@@ -506,7 +506,7 @@ const TransferBooking = ({
             onClick={() => setShowDrawer(true)}
             className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
           >
-            +Add Transfer
+            + Add Transfer
           </button>
           <TransferEditDrawer
             mercury

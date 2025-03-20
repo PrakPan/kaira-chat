@@ -249,6 +249,8 @@ const POI = (props) => {
                   payment={props.payment}
                   updateBooking={updateBooking}
                   handleClick={props?.handleClick}
+                  setShowDetails={props?.setShowDetails}
+                  id={props?.id}
                 />
               ) : (
                 <Overview

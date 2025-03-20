@@ -382,7 +382,7 @@ const Day_I_Container = (props) => {
                   }
                   className="text-lg font-normal text-blue hover:underline"
                 >
-                  +Add Activity
+                  + Add Activity
                   {props.tripsPage
                     ? ` on Day ${props.indexDay + 1}`
                     : props?.Days?.date

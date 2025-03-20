@@ -29,6 +29,7 @@ import axiosBookingsInstance, {
   axiosGetTransfers,
 } from "../../services/itinerary/bookings";
 import { setTransfersBookings } from "../../store/actions/transferBookingsStore";
+import { setStays } from "../../store/actions/StayBookings";
 
 const Container = styled.div`
   width: 90%;
@@ -478,6 +479,7 @@ const ItineraryContainer = (props) => {
           }
         }
         setStayBookings(stays);
+        dispatch(setStays(stays));
         props.setBookings({
           ...props.bookings,
           stayBookings: data?.cities ? data?.cities : null,

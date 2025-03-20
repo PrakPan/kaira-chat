@@ -20,6 +20,7 @@ import CountryCodes from "./CountryCodes";
 import ItineraryDaybyDay from "./ItineraryDaybyDay"
 import  ItineraryFilters  from "./ItineraryFilters";
 import TransferBookings from "./transferBookingsReducer";
+import Stays from "./StayBookings";
 const rootReducer = combineReducers({
   auth: authReducer,
   experience: experience,
@@ -41,7 +42,8 @@ const rootReducer = combineReducers({
   CountryCodes,
   ItineraryDaybyDay,
   ItineraryFilters,
-  TransferBookings
+  TransferBookings,
+  Stays
 });
 
 export default rootReducer;
