@@ -220,7 +220,7 @@ const ActivitiesBookings = (props) => {
                       </div>
                     </div>
 
-                    <div className="flex flex-row gap-3 items-center w-full">
+                    <div className="flex flex-row gap-3 items-center w-full justify-end">
                         <ButtonYellow className="lg:w-fit w-1/2" onClick={()=>handleView(booking?.id,"activity")}>
                           <div className="text-[#01202B] ">View Detail</div>
                         </ButtonYellow>

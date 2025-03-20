@@ -111,7 +111,7 @@ export default function FlightDetails({
                             onClick={() => setShowDetails(prev => !prev)}
                             className="relative">
                             <div className="text-sm text-blue cursor-pointer">
-                                {numStops} stop{numStops !== 1 && 's'}
+                                {segments?.length-1} stop{segments?.length-1 !== 1 && 's'}
                                 {" via "}
                                 <span className="text-wrap">
                                     {segments?.map((segment, i) => (

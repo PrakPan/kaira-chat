@@ -208,6 +208,9 @@ const ActivityAddDrawer = (props) => {
       sort_by: {
         // no sorting filters added yet.
       },
+      num_adults:filterState?.num_adults,
+      num_children:filterState?.num_children
+
     };
     activtySearch
       .post(`/?limit=30&offset=${offSet}`, requestData)

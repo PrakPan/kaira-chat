@@ -7,11 +7,15 @@ import { useRouter } from "next/router";
 import { toast, ToastContainer } from "react-toastify";
 import { Text, Heading } from "../../../components/modals/flights/SectionOne";
 import { IoMdClose } from "react-icons/io";
-import { connect, useDispatch, useSelector } from "react-redux";
-import { setTransfersBookings } from "../../../store/actions/transferBookingsStore";
+import { connect, useDispatch } from "react-redux";
+import {
+  setTransfersBookings,
+  updateTransferBookings,
+} from "../../../store/actions/transferBookingsStore";
 import { Generalbuttonstyle } from "../../../components/ui/button/Generallinkbutton";
 import { Logo } from "../../../components/modals/flights/new-flight-searched/LogoContainer";
-import { render } from "nprogress";
+import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
+import { PulseLoader } from "react-spinners";
 
 const Details = ({
   originCityId,
@@ -28,14 +32,36 @@ const Details = ({
   transferBookings,
   setTransferBookings,
   setTransferBookingsIntercity,
+  onChange,
 }) => {
-  useEffect(() => {
-    console.log("originCityId in Details:", segments);
-  }, [originCityId, destinationCityId]);
   const router = useRouter();
   const [fareRules, setFareRules] = useState(fareRule?.[0]?.fareRuleDetail);
   const [fareRulesLoading, setFareRulesLoading] = useState(false);
   const [fareRUlesError, setFareRulesError] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+  const handleDelete = async () => {
+    try {
+      setLoading(true);
+      const response = await axiosDeleteBooking.delete(
+        `${router?.query?.id}/bookings/flight/${booking_id}/`
+      );
+
+      if (response.status === 204) {
+        dispatch(updateTransferBookings(booking_id));
+        setLoading(false);
+        toast.success("Booking deleted successfuly");
+        console.log("Deleted Booking");
+      }
+    } catch (err) {
+      console.log(
+        "[ERROR][ItineraryPage][axiosDeleteBooking:/Delete_Booking]",
+        err
+      );
+      toast.error("Error", err.message);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (fareRules == null) {
@@ -91,6 +117,19 @@ const Details = ({
           </Heading>
         </div>
       )}
+      {onChange && (
+        <div className="font-lexend flex justify-between items-start !m-0">
+          <Text>{name}</Text>
+          <Generalbuttonstyle
+            borderRadius={"7px"}
+            fontSize={"1rem"}
+            padding={"7px 25px"}
+            onClick={onChange}
+          >
+            Change
+          </Generalbuttonstyle>
+        </div>
+      )}
       <div className="flex flex-col gap-2 p-2 ">
         <FlightSegment segments={segments} />
       </div>
@@ -117,63 +156,33 @@ const Details = ({
           ></div>
         </div>
       )}
-      {provider && (
-        <div className="flex justify-end">
-          <Generalbuttonstyle
-            bgColor={"#F7E700"}
-            borderRadius="8px"
-            fontWeight="400"
-            padding="0.6rem 0.6rem"
-            hoverColor="white"
-            margin="auto 0px"
-            onclickparam={null}
-            onClick={async () => {
-              try {
-                if (individual == true) {
-                  const res = await axios.post(
-                    MERCURY_HOST +
-                      `/api/v1/itinerary/${router?.query?.id}/bookings/flight/`,
-                    {
-                      trace_id: localStorage.getItem(`${provider}_trace_id`),
-                      result_indices: [resultIndex],
-                    }
-                  );
-                  toast.success("Added booking Successfuly");
-                  window.location.href = `/flights/book/${res.data.id}`;
-                } else {
-                  const res = await axios.post(
-                    MERCURY_HOST +
-                      `/api/v1/itinerary/${router?.query?.id}/bookings/flight/`,
-                    {
-                      trace_id: localStorage.getItem(`${provider}_trace_id`),
-                      result_indices: [resultIndex],
-                      booking_id: booking_id,
-                    }
-                  );
-                  const updatedTransferBookings = {
-                    ...transferBookings,
-                    intercity: {
-                      ...transferBookings.intercity,
-                      [originCityId + ":" + destinationCityId]: res?.data,
-                    },
-                  };
-                  setTransfersBookings(updatedTransferBookings);
-                  setTransferBookingsIntercity(
-                    updatedTransferBookings.intercity
-                  );
+      <div className="p-4 bg-white">
+        <button
+          className="w-full bg-red-500 text-white py-2 rounded-lg flex items-center justify-center"
+          onClick={handleDelete}
+          disabled={loading}
+        >
+          <div style={{ position: "relative" }}>
+            <div style={loading ? { visibility: "hidden" } : {}}>
+              🗑 Delete Booking
+            </div>
+            {loading && (
+              <PulseLoader
+                style={{
+                  position: "absolute",
+                  top: "55%",
+                  left: "50%",
+                  transform: "translate(-50% , -50%)",
+                }}
+                size={12}
+                speedMultiplier={0.6}
+                color="#ffffff"
+              />
+            )}
+          </div>
+        </button>
+      </div>
 
-                  toast.success("Updated booking Successfuly");
-                }
-              } catch (error) {
-                toast.error(error.response?.data?.errors[0]?.message[0]);
-              }
-            }}
-            className="z-[1600]"
-          >
-            {individual ? <>Book Now</> : <>Add To Itinerary</>}
-          </Generalbuttonstyle>
-        </div>
-      )}
       <ToastContainer />
     </div>
   );
