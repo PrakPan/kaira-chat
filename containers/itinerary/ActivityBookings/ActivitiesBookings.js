@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ImageLoader from "../../../components/ImageLoader";
 import { BsCalendar2, BsPeopleFill } from "react-icons/bs";
-import { FaBed, FaStar, FaStarHalfAlt } from "react-icons/fa";
+import { FaBed, FaClock, FaStar, FaStarHalfAlt } from "react-icons/fa";
 import FullScreenGallery from "../../../components/fullscreengallery/Index";
 import * as ga from "../../../services/ga/Index";
 import ButtonYellow from "../../../components/ButtonYellow";
@@ -9,12 +9,31 @@ import { getDate } from "../../../helper/ConvertDateFormat";
 import { connect } from "react-redux";
 import { BiTimeFive } from "react-icons/bi";
 import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
+import { IoTicket } from "react-icons/io5";
 
 const ActivitiesBookings = (props) => {
+  console.log("props are:", props);
   const [images, setImages] = useState(null);
   const [viewMoreDiscription, setViewMoreDiscription] = useState(null);
   const [showMore, setShowMore] = useState(false);
+  const [showDrawer, setShowDrawer] = useState(false);
+  const [activityData, setActivityData] = useState({
+    id: "",
+    type: "",
+  });
+  const handleView = async (poi, type) => {
+    try {
+      setShowDrawer(true);
+      setActivityData(() => ({
+        id: poi,
+        type: type,
+      }));
+    } catch (error) {
+      console.log("error is:", error);
+    }
+  };
 
+  
   function Addons(Shorthand) {
     switch (Shorthand) {
       case "EP":
@@ -41,20 +60,9 @@ const ActivitiesBookings = (props) => {
     return stars;
   };
 
-  const noOfWords = (sentence, number) => {
-    if (sentence) {
-      const words = sentence.trim().split(/\s+/);
-      if (words.length > number) {
-        return true;
-      } else {
-        return false;
-      }
-    }
-  };
-
   const handleMoreDiscription = (e) => {
     setViewMoreDiscription(e.currentTarget.id);
-    setShowMore(true);
+    // setShowMore(true);
 
     ga.logEvent({
       action: "Details_View",
@@ -70,7 +78,7 @@ const ActivitiesBookings = (props) => {
   const handleCloseDrawer = (e) => {
     setViewMoreDiscription();
     if (e) e.stopPropagation(e);
-    setShowMore(false);
+    setShowDrawer(false);
   };
 
   return (
@@ -88,7 +96,7 @@ const ActivitiesBookings = (props) => {
             >
               <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
                 {booking?.city}{" "}
-                {booking.duration && <span>({booking?.duration}N)</span>}
+                {booking.duration && <span>({booking?.duration})</span>}
               </div>
               <div
                 id={index}
@@ -117,7 +125,7 @@ const ActivitiesBookings = (props) => {
                       >
                         {booking?.star_category} star hotel
                       </div>
-                    ) : <>0 star hotel</>}
+                    ) : null}
                   </div>
                   <div className="flex flex-col gap-4 text-[#01202B] lg:w-[70%]">
                     <div className="text-2xl font-semibold ">
@@ -131,21 +139,12 @@ const ActivitiesBookings = (props) => {
                       {booking?.activity?.rating ? (
                         <div className="gap-1 flex flex-row  items-center">
                           <div className="flex flex-row text-[#FFD201]">
-                            {starRating(
-                              booking?.activity?.rating
-                            )}
+                            {starRating(booking?.activity?.rating)}
                           </div>
-                          <div>
-                            {booking?.activity?.rating}
-                          </div>
-                          {booking?.activity
-                            ?.user_ratings_total && (
+                          <div>{booking?.activity?.rating}</div>
+                          {booking?.activity?.user_ratings_total && (
                             <div className="text-sm text-[#7A7A7A] font-medium underline">
-                              {
-                                booking?.activity
-                                  ?.user_ratings_total
-                              }{" "}
-                              Reviews
+                              {booking?.activity?.user_ratings_total} Reviews
                             </div>
                           )}
                         </div>
@@ -164,12 +163,8 @@ const ActivitiesBookings = (props) => {
                         ))
                       ) : (
                         <div className="font-light">
-                          {booking?.activity?.short_description.slice(
-                            0,
-                            250
-                          )}
-                          {booking?.activity
-                            ?.short_description.length ? (
+                          {booking?.activity?.short_description.slice(0, 250)}
+                          {booking?.activity?.short_description.length ? (
                             <button
                               id={index}
                               onClick={handleMoreDiscription}
@@ -204,67 +199,45 @@ const ActivitiesBookings = (props) => {
                           </div>
                         </div>
                       )}
-
-                      {/* {booking?.costings_breakdown?.no_of_tickets && (
-                        <div>
-                          <div className="flex flex-row gap-2 items-center">
-                            <IoTicket className="text-sm font-[400] line-clamp-1 text-[#7A7A7A]" />
-                            <div className="text-sm font-[400] line-clamp-1">
-                              {booking?.costings_breakdown?.no_of_tickets}{" "}
-                              {booking?.costings_breakdown?.no_of_tickets <= "1"
-                                ? "Ticket"
-                                : "Tickets"}
-                            </div>
-                          </div>
-                        </div>
-                      )} */}
-                    </div>
-
-                    {/* {booking.costings_breakdown[0] && (
-                      <div>
-                        <div
-                          className={`flex ${
-                            noOfWords(
-                              booking.costings_breakdown[0]?.room_type,
-                              4
-                            )
-                              ? "lg:flex-row flex-col"
-                              : "flex-row"
-                          } gap-3`}
-                        >
-                          <div className="text-md font-medium gap-2 flex flex-row items-center">
-                            <BsPeopleFill className="text-md text-[#7A7A7A]" />
-                            <div className="text-md font-medium min-w-fit">
-                              {booking.number_of_adults} Adults
-                            </div>
-                          </div>
-                          <div className="text-md font-medium gap-2 flex flex-row items-center">
-                            <FaBed className="text-md text-[#7A7A7A]" />
-                            <div className="text-md font-medium">
-                              {booking.costings_breakdown[0].room_type}
-                            </div>
-                          </div>
-                        </div>
-                        {Addons(booking.costings_breakdown[0].pricing_type) ? (
-                          <div className="flex flex-row gap-2 items-center">
-                            <ImSpoonKnife className="text-md text-[#7A7A7A]" />
-                            <div className="text-md font-medium">
-                              {Addons(
-                                booking.costings_breakdown[0].pricing_type
-                              )}
-                            </div>
-                          </div>
-                        ) : null}
+                      <div className="flex gap-1 items-center">
+                        <IoTicket className="text-sm font-[400] line-clamp-1 text-[#7A7A7A]" />
+                        <div className="text-sm">{booking?.pax} Tickets</div>
                       </div>
-                    )} */}
+                      <div className="flex gap-1 items-center">
+                        <svg
+                          width="13"
+                          height="13"
+                          viewBox="0 0 13 13"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M6.32734 0.417969C3.01534 0.417969 0.333344 3.10597 0.333344 6.41797C0.333344 9.72997 3.01534 12.418 6.32734 12.418C9.64534 12.418 12.3333 9.72997 12.3333 6.41797C12.3333 3.10597 9.64534 0.417969 6.32734 0.417969ZM6.33334 11.218C3.68134 11.218 1.53334 9.06997 1.53334 6.41797C1.53334 3.76597 3.68134 1.61797 6.33334 1.61797C8.98534 1.61797 11.1333 3.76597 11.1333 6.41797C11.1333 9.06997 8.98534 11.218 6.33334 11.218ZM6.20134 3.41797H6.16534C5.92534 3.41797 5.73334 3.60997 5.73334 3.84997V6.68197C5.73334 6.89197 5.84134 7.08997 6.02734 7.19797L8.51734 8.69197C8.72134 8.81197 8.98534 8.75197 9.10534 8.54797C9.23134 8.34397 9.16534 8.07397 8.95534 7.95397L6.63334 6.57397V3.84997C6.63334 3.60997 6.44134 3.41797 6.20134 3.41797Z"
+                            fill="black"
+                          />
+                        </svg>
+                        <div className="text-sm">{booking?.duration}</div>
+                      </div>
+                    </div>
 
                     <div className="flex flex-row gap-3 items-center w-full">
-                      {booking.accommodation && (
-                        <ButtonYellow className="lg:w-fit w-1/2">
+                        <ButtonYellow className="lg:w-fit w-1/2" onClick={()=>handleView(booking?.id,"activity")}>
                           <div className="text-[#01202B] ">View Detail</div>
                         </ButtonYellow>
-                      )}
                     </div>
+                    <POIDetailsDrawer
+                      itineraryDrawer
+                      show={showDrawer}
+                      iconId={
+                        null
+                      }
+                      handleCloseDrawer={handleCloseDrawer}
+                      name={booking?.activity?.name}
+                      image={booking?.image}
+                      text={booking?.activity?.short_description}
+                      Topheading={"Select Our Point Of Interest"}
+                      activityData={activityData}
+                    />
                   </div>
                 </div>
               </div>
@@ -278,27 +251,6 @@ const ActivitiesBookings = (props) => {
           images={images}
         ></FullScreenGallery>
       ) : null}
-
-      <POIDetailsDrawer
-        itineraryDrawer
-        show={showMore}
-        iconId={
-          props?.activityBookings[viewMoreDiscription]?.costings_breakdown
-            ?.activity_data?.id
-        }
-        ActivityiconId={
-          props?.activityBookings[viewMoreDiscription]?.costings_breakdown
-            ?.activity_data?.id
-        }
-        handleCloseDrawer={handleCloseDrawer}
-        name={props?.activityBookings[viewMoreDiscription]?.name}
-        image={props?.activityBookings[viewMoreDiscription]?.images[0]?.image}
-        text={
-          props?.activityBookings[viewMoreDiscription]?.costings_breakdown
-            ?.activity_data?.short_description
-        }
-        Topheading={"Select Our Point Of Interest"}
-      />
     </div>
   );
 };

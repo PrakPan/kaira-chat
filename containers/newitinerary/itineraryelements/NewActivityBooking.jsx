@@ -19,8 +19,8 @@ const ClippathComp = styled.div`
 `;
 
 export default function NewActivityBooking(props) {
-  console.log("set activity bookings is:",props.activityBookings)
   const [stars, setStars] = useState(null);
+  const[imageLoaded,setImageLoaded]=useState(false)
   const [showDetails, setShowDetails] = useState({
     show: false,
     data: {},
@@ -74,46 +74,28 @@ export default function NewActivityBooking(props) {
                 width: "251px",
                 overflow: "hidden",
                 borderRadius: "16px",
-                // display: imageLoaded ? "block" : "none",
+                display: imageLoaded ? "block" : "none",
               }}
             >
               <ImageLoader
                 fit="cover"
                 url={
                   props?.data?.image
-                  // props.images.length
-                  //   ? props.data?.image
-                  //   : "media/website/grey.png"
+                   ? props.data?.image
+                    : "media/website/grey.png"
                 }
-                // dimensions={{ width: 1600, height: 900 }}
-                // dimensionsMobile={{ width: 1600, height: 900 }}
                 width="100%"
                 height="220px"
-                //   width="251px"
-                //   widthmobile="1.5rem"
-                //   dimensions={{ width: 1600, height: 900 }}
-                //   dimensionsMobile={{ width: 1600, height: 900 }}
-                //   borderRadius={"16px"}
-                //   fit="cover"
-                //   onload={() => {
-                //     setImageLoaded(true)
-                //   }}
-                //   onfail={() => {
-                //     setImageFail(true);
-                //     setImageLoaded(true);
-                //   }}
-                //   // onfail={() => {
-                //   //   setImageFail(true);
-                //   //   setImageLoaded(true);
-                //   // }}
-                //   url={
-                //     props.data?.image
-                //       // ? props.data.image
-                //       // : "media/icons/bookings/notfounds/noroom.png"
-                //   }
+                noLazy={true}
+                  onload={() => {
+                    setImageLoaded(true)
+                  }}
+                  onfail={() => {
+                    setImageLoaded(true);
+                  }}
               ></ImageLoader>
             </div>
-            {/* <div
+            <div
               style={{
                 height: "220px",
                 width: "251px",
@@ -123,7 +105,7 @@ export default function NewActivityBooking(props) {
               }}
             >
               <SkeletonCard height={"100%"} />
-            </div> */}
+            </div>
           </div>
 
           <div className="flex flex-col gap-2 text-[#01202B]  w-full h-fit justify-start">
@@ -163,7 +145,7 @@ export default function NewActivityBooking(props) {
                 <div className="flex flex-col md:flex-row gap-1">
                   <div className="text-2xl font-bold">
                     <span>₹</span>
-                    {getIndianPrice(props.data.pricing.total_price)}
+                    {getIndianPrice(Math.round(props.data.pricing.total_price))}
                   </div>
                   <div className="font-normal text-base self-end">
                     for {props.data.pricing.total_pax} people

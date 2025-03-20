@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 
 import ItineraryCity from "../../components/itinerary/itineraryCity";
 import CityItem from "./VerticalLayout";
@@ -16,7 +16,9 @@ const CITY_COLOR_CODES = [
   "#7d5e7d", // shade of purple
 ];
 
-const DaybyDay = ({ itineraryDaybyDay, transferBookings ,width,setItinerary,activityBookings,setActivityBookings,itinerary}) => {
+const DaybyDay = ({ transferBookings ,width,setItinerary,activityBookings,setActivityBookings,itinerary}) => {
+  const itineraryDaybyDay=useSelector((state)=>state.Itinerary)
+
   let isPageWide = media("(min-width: 768px)");
   console.log("Inside DaybyDay Itinerary",itinerary);
   const cityRefs = useRef({});

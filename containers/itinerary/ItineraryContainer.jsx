@@ -427,7 +427,6 @@ const ItineraryContainer = (props) => {
           item.activities.map((activity) => ({
             ...activity, 
             city: item.city.name, 
-            duration: item.duration, 
           }))
         )
         .flat() // Flatten the array

@@ -4,7 +4,6 @@ import media from "../../media";
 import ActivityAddDrawer from "../../drawers/poiDetails/activityAddDrawer";
 
 const CityDay = (props) => {
-  console.log('day by day:',props?.setItinerary)
   let isPageWide = media("(min-width: 768px)");
   const [showAddDrawer, setShowAddDrawer] = useState(false);
   const [elements, setElements] = useState([]);
