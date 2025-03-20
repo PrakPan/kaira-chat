@@ -9,11 +9,16 @@ import useMediaQuery from "../../../media";
 import { FiChevronRight } from "react-icons/fi";
 import Button from "../../../ui/button/Index";
 import SkeletonCard from "../../../ui/SkeletonCard";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { getIndianPrice } from "../../../../services/getIndianPrice";
 import Tag from "../../../cards/bookings/activitybooking/imagecontainer/Tag";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import ImageCarousel from "../../Carousel/ImageCarousel";
+import { PulseLoader } from "react-spinners";
+import { updateStays } from "../../../../store/actions/StayBookings";
+import { useRouter } from "next/router";
+import { toast } from "react-toastify";
+import { axiosDeleteBooking } from "../../../../services/itinerary/bookings";
 const starRating = (rating) => {
   var stars = [];
   for (let i = 0; i < Math.floor(rating); i++) {
@@ -148,6 +153,11 @@ const getRoomImage = (images) => {
 
 const HotelBookingDetails = (props) => {
   const isDesktop = useMediaQuery("(min-width:1148px)");
+  const [loading,setLoading] =useState(false);
+  const router = useRouter();
+  const dispatch = useDispatch();
+  
+  const { id } = router.query;
 
   const [ImagesLoaded, setImagesLoaded] = useState({
     0: false,
@@ -191,6 +201,28 @@ const HotelBookingDetails = (props) => {
     }
   } catch {}
   console.log("images are",images)
+
+  const handleDelete = async () => {
+        try {
+            setLoading(true);  
+            const response = await axiosDeleteBooking.delete(`${id}/bookings/accommodation/${props?.id}/`);
+            
+            if (response.status === 204) {  
+              dispatch(updateStays(props?.id));
+                setLoading(false);
+                toast.success("Booking deleted successfuly");
+                setVisible(true);
+                props?.setShowDetails(false)
+                // setHandleShow(false);
+                console.log("Deleted Booking");
+  
+            }
+        } catch (err) {
+            console.log("[ERROR][ItineraryPage][axiosDeleteBooking:/Delete_Booking]", err);
+            toast.error("Error",err.message);
+            setLoading(false); 
+        }
+    };
   return (
     <Container>
       <FlexBox>
@@ -1184,6 +1216,28 @@ const HotelBookingDetails = (props) => {
             >
               View on Google Map
             </a>
+          </div>
+          <div>
+            <button className=" right-0  bg-red-500 text-white py-2 rounded-lg flex items-center justify-center" onClick={handleDelete}>
+                    <div style={{ position: "relative" }}>
+                                  <div style={loading ? { visibility: "hidden" } : {}}>
+                                    🗑 Delete Booking
+                                  </div>
+                                  {loading && (
+                                    <PulseLoader
+                                      style={{
+                                        position: "absolute",
+                                        top: "55%",
+                                        left: "50%",
+                                        transform: "translate(-50% , -50%)",
+                                      }}
+                                      size={12}
+                                      speedMultiplier={0.6}
+                                      color="#ffffff"
+                                    />
+                                  )}
+                                </div>
+                    </button>
           </div>
         </div>
       ) : (

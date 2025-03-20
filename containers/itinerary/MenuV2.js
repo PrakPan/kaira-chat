@@ -77,6 +77,9 @@ const SimpleTabsV2 = (props) => {
   const transferBooking = useSelector((state) => state.TransferBookings)?.transferBookings
   console.log("Transfer Booking",transferBooking);
 
+  const stays = useSelector((state) => state.Stays)
+  console.log("Stay Booking",stays);
+
   useEffect(() => {
     if (router.query.payment_status) {
       if (isPageWide) window.scrollTo(0, window.innerHeight);
@@ -886,7 +889,7 @@ const SimpleTabsV2 = (props) => {
                     setHideBookingModal={props.setHideBookingModal}
                     setShowLoginModal={setShowLoginModal}
                     _GetInTouch={_GetInTouch}
-                    stayBookings={props?.stayBookings}
+                    stayBookings={stays || props?.stayBookings}
                     setStayBookings={props.setStayBookings}
                   />
                 ) : (

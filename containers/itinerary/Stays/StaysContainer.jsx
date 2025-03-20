@@ -153,6 +153,7 @@ const StaysContainer = (props) => {
               setShowLoginModal={props.setShowLoginModal}
               plan={props.stayBookings}
               setStayBookings={props.setStayBookings}
+              setShowDetails={setShowDetails}
             />
           ))}
       </div>
@@ -181,6 +182,7 @@ const StaysContainer = (props) => {
         }
         provider={currentBooking?.source}
         setStayBookings={props.setStayBookings}
+        setShowDetails={setShowDetails}
       ></AccommodationModal>
 
       <BookingModal

@@ -92,7 +92,7 @@ const CityDay = (props) => {
           onClick={() => setShowAddDrawer(true)}
           className="mt-3  w-fit text-[14px] text-blue underline font-semibold"
         >
-          +Add activities on {convertDateFormat(props?.day?.date)}
+          + Add activities on {convertDateFormat(props?.day?.date)}
         </button>
 
         <div className="py-3">

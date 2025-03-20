@@ -37,6 +37,7 @@ const HotelBooking = ({
   handleClick,
   handleClickAc,
   setShowLoginModal,
+  setShowDetails
 }) => {
   let isPageWide = media("(min-width: 768px)");
   const [imageFail, setImageFail] = useState(false);
@@ -119,7 +120,8 @@ const HotelBooking = ({
 
   return (
     <div className={`${!isPageWide ? "max-w-fit" : "max-w-[54vw]"}`}>
-      {booking?.user_ratings_total?<>
+      {booking?.user_ratings_total?
+      <>
       <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
         {booking?.city_name}
         <span className="ml-1">
