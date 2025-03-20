@@ -1674,9 +1674,6 @@ const OtherTransfer = ({
   const [error, setError] = useState(null);
   const [otherTransfer, setOtherTransfer] = useState(null);
   const [traceId, setTraceId] = useState(null);
-
-  console.log("Mercury Ta", mercuryTransfer);
-
   useEffect(() => {
     // getOtherTrasfer(selectedResult.transfer.mode);
     getOtherTrasfer(selectedResult.transfer);

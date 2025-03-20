@@ -18,6 +18,10 @@ import { FaArrowRight } from "react-icons/fa6";
 import { useRouter } from "next/router";
 import TransferEditDrawer from "../../../components/drawers/routeTransfer/TransferEditDrawer";
 import Details from "./FlightDetail";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { MERCURY_HOST } from "../../../services/constants";
+import VehicleDetailModal from "../../../components/modals/daybyday/VehicleModal";
 const GridContainer = styled.div`
   width: auto;
   overflow: auto;
@@ -131,12 +135,15 @@ const TransferBooking = ({
   originCityId,
   destinationCityId,
 }) => {
+  const router = useRouter();
   let isPageWide = media("(min-width: 768px)");
   const isDesktop = useMediaQuery("(min-width:1024px)");
   const [addbooking, setaddboking] = useState(booking?.user_selected);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [transferImageFailed, setTransferImageFailed] = useState(null);
   const [showDrawer, setShowDrawer] = useState(false);
+  const [showVehicleDrawer, setShowVehicleDrawer] = useState(false);
+  const [vehicleDetails, setVehicleDetails] = useState(null);
   useEffect(() => {
     setaddboking(booking?.user_selected);
   }, [booking?.user_selected]);
@@ -144,34 +151,6 @@ const TransferBooking = ({
   const handleTransferImageFailed = () => {
     setTransferImageFailed(true);
   };
-
-  function handleCheckboxChange(e, label) {
-    if (!payment?.is_registration_needed) {
-      if (token && payment?.user_allowed_to_pay) {
-        _updateSelectedTransfer();
-        e.stopPropagation();
-      } else {
-        openNotification({
-          text: "Oops, this action is not allowed on another user's itinerary.",
-          heading: "Error!",
-          type: "error",
-        });
-        setShowLoginModal();
-        e.stopPropagation();
-      }
-    }
-
-    logEvent({
-      action: "Transfer_Add_Change",
-      params: {
-        page: "Itinerary Page",
-        event_category: "Button Click",
-        event_label: label,
-        event_value: booking?.heading,
-        event_action: "Transfers",
-      },
-    });
-  }
 
   function HandleTransport(i, label) {
     if (!token) {
@@ -267,65 +246,17 @@ const TransferBooking = ({
     }
     return str;
   }
-
-  const _updateSelectedTransfer = () => {
-    setLoading(true);
-
-    let updated_bookings_arr = [
-      {
-        id: booking["id"],
-        booking_type: booking_type,
-        itinerary_type: "Tailored",
-        user_selected: booking?.user_selected,
-        itinerary_id: booking["itinerary_id"],
-        taxi_type: booking["taxi_type"],
-        transfer_type: booking["transfer_type"],
-
-        costings_breakdown: booking?.costings_breakdown,
-      },
-    ];
-    axiosbookingupdateinstance
-      .post("?booking_type=Taxi,Bus,Ferry,Train,Flight", updated_bookings_arr, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        _updateTaxiBookingHandler(res.data.bookings);
-
-        setTimeout(function () {
-          getPaymentHandler();
-        }, 1000);
-        setaddboking(!addbooking);
-        setLoading(false);
-        openNotification({
-          text: "Your Booking updated successfully!",
-          heading: "Success!",
-          type: "success",
-        });
-      })
-      .catch((err) => {
-        if (err.response) {
-          if (err.response.status === 400) {
-            openNotification({
-              text: err.response.data.message,
-              heading: "Error!",
-              type: "error",
-            });
-          } else
-            openNotification({
-              text: "There seems to be a problem, please try again!",
-              heading: "Error!",
-              type: "error",
-            });
-        }
-        setLoading(false);
-        openNotification({
-          text: "There seems to be a problem, please try again!",
-          heading: "Error!",
-          type: "error",
-        });
-      });
+  const handleViewDetails = async (itineraryId, id, mode) => {
+    try {
+      setShowVehicleDrawer(true);
+      const res = await axios.get(
+        `${MERCURY_HOST}/api/v1/itinerary/${itineraryId}/bookings/${mode}/${id}/`
+      );
+      setLoading(false);
+      setVehicleDetails(res?.data);
+    } catch (error) {
+      toast.error(error.response?.data?.errors[0]?.message[0]);
+    }
   };
 
   return (
@@ -386,31 +317,41 @@ const TransferBooking = ({
                         onfail={handleTransferImageFailed}
                       ></ImageLoader>
                     ) : (
-                      <TransportIconFetcher
-                        TransportMode={booking?.booking_type}
-                        Instyle={{
-                          fontSize: "2.75rem",
-                          marginRight: "0.8rem",
-                          color: "black",
-                        }}
-                      />
+                      <>
+                        <TransportIconFetcher
+                          TransportMode={booking?.booking_type}
+                          Instyle={{
+                            fontSize: "2.75rem",
+                            marginRight: "0.8rem",
+                            color: "black",
+                          }}
+                        />
+                      </>
                     )}
                   </div>
 
                   <div className="flex flex-col lg:w-60">
                     <div className="sm:text-sm text-[0.85rem]">
-                      {booking?.booking_type == "Taxi"
-                        ? booking?.transfer_details &&
-                          booking?.transfer_details.gozo &&
-                          booking?.transfer_details.gozo.model
-                          ? isPageWide
-                            ? booking?.transfer_details.gozo.model
-                            : truncateString(
-                                booking?.transfer_details.gozo.model,
-                                25
-                              )
-                          : "Private transfer "
-                        : booking?.booking_type}
+                      {booking?.booking_type == "Taxi" ? (
+                        booking?.transfer_details &&
+                        booking?.transfer_details.gozo &&
+                        booking?.transfer_details.gozo.model ? (
+                          isPageWide ? (
+                            booking?.transfer_details.gozo.model
+                          ) : (
+                            truncateString(
+                              booking?.transfer_details.gozo.model,
+                              25
+                            )
+                          )
+                        ) : (
+                          "Private transfer "
+                        )
+                      ) : (
+                        <>
+                          {booking?.booking_type} ({booking?.duration})
+                        </>
+                      )}
 
                       {booking?.transfer_type === "Intercity one-way" &&
                         booking?.transfer_details?.duration?.text && (
@@ -470,8 +411,7 @@ const TransferBooking = ({
                   </div>
                 ) : (
                   <div className={`absolute bottom-[1rem] right-6 -m-3`}>
-                    {loading && (
-                      <PulseLoader
+                    {/* <PulseLoader
                         style={{
                           position: "absolute",
                           top: "-25%",
@@ -481,8 +421,7 @@ const TransferBooking = ({
                         size={6}
                         speedMultiplier={0.6}
                         color="#111"
-                      />
-                    )}
+                      /> */}
 
                     {/* <div
                       onClick={(e) => {
@@ -503,13 +442,37 @@ const TransferBooking = ({
                       borderRadius="8px"
                       hoverColor="white"
                       fontWeight="400"
-                      onclick={() => handleViewDetails(booking.name)}
+                      onclick={() =>
+                        handleViewDetails(
+                          router?.query?.id,
+                          booking?.id,
+                          booking?.transfer_details?.mode.toLowerCase()
+                        )
+                      }
                     >
                       View Detail
                     </Button>
                   </div>
                 )}
               </div>
+              <Drawer
+                show={showVehicleDrawer}
+                anchor={"right"}
+                backdrop
+                width={"50%"}
+                mobileWidth={"100%"}
+                style={{ zIndex: 1503 }}
+                className={`font-lexend ${
+                  window.innerWidth < 768 ? "w-full" : "w-[50%]"
+                }`}
+                onHide={() => setShowVehicleDrawer(false)}
+              >
+                <VehicleDetailModal
+                  data={vehicleDetails}
+                  loading={loading}
+                  setIsOpen={setShowVehicleDrawer}
+                />
+              </Drawer>
             </div>
           )}
         </Container>
@@ -658,7 +621,7 @@ const FlightBooking = ({
   } catch {}
 
   return (
-    <div className="ml-1 md:ml-7">
+    <div className="ml-1 md:ml-7 flex flex-col w-full">
       <div className="flex flex-row w-full justify-between items-center">
         <span className="font-medium  inline">{booking?.name}</span>
       </div>
@@ -769,6 +732,10 @@ const FlightBooking = ({
               fareRule={booking?.transfer_details?.items?.[0]?.fare_rule}
               originCityId={"karan"}
               destinationCityId={destinationCityId}
+              onChange={() => {
+                HandleFlights(index, "Change Flight");
+                setShowDetails(false);
+              }}
             />
           </>
         )}
