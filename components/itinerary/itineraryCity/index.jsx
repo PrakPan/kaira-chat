@@ -6,6 +6,7 @@ import CityDaybyDay from "./CityDaybyDay";
 import { MdOutlineStar } from "react-icons/md";
 import { getStars } from "./SlabElement";
 import Image from "next/image";
+import { useSelector } from "react-redux";
 
 const ItineraryCity = (props) => {
   const [viewMore, setViewMore] = useState(false);

@@ -41,7 +41,7 @@ const Container = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 2rem;
   padding: ${(props) => (props.itineraryDrawer ? "0 1rem 1rem 1rem" : "1rem")};
 `;
 
@@ -142,7 +142,7 @@ const POIDetails = (props) => {
         </BackContainer>
       )}
 
-      <ImageContainer style={{ height: "188px" }}>
+      <ImageContainer style={{ height: "170px" }}>
         <div>
           <div style={{ display: imageLoaded ? "initial" : "none" }}>
             <ImageLoader
@@ -199,7 +199,7 @@ const POIDetails = (props) => {
         )}
       </ImageContainer>
 
-      <div className="mt-3">
+      <div className="mt-[170px]">
         <Title>{props.data.name}</Title>
         {props.data?.address && (
           <div>
