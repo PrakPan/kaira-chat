@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Theme from "../public/Theme";
 import "../styles.css";
 import "../styles/globals.css";
@@ -12,11 +12,12 @@ import { GOOGLE_CLIENT_ID } from "../services/constants";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import dynamic from "next/dynamic";
 import Head from "next/head";
+import Script from "next/script";
 
 function MyApp({ Component, pageProps, store }) {
   const router = useRouter();
   const ref = useRef();
-
+  const [isChatbotLoaded, setIsChatBotLoaded] = useState(false);
   useEffect(() => {
     const jssStyles = document.querySelector("#jss-server-side");
     if (jssStyles) {
@@ -65,6 +66,52 @@ function MyApp({ Component, pageProps, store }) {
           rel="stylesheet"
         />
       </Head>
+      <link
+        rel="stylesheet"
+        href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css"
+      />
+      <Script
+        src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"
+        async
+        onLoad={() => setIsChatBotLoaded(true)}
+      />
+      {typeof window !== "undefined" && isChatbotLoaded && (
+        <>
+          <>{console.log("inside chat bot")}</>
+          <df-messenger
+            location="asia-south1"
+            project-id="ai-chabot-451908"
+            agent-id="7a31b76b-858c-4efe-837a-43fb35d5b8f5"
+            language-code="en"
+          >
+            <df-messenger-chat-bubble chat-title="Personalized Travel Plan"></df-messenger-chat-bubble>
+          </df-messenger>
+        </>
+      )}
+
+      <style>
+        {`
+          df-messenger {
+            z-index: 1024;
+
+            position:fixed;
+            --df-messenger-font-color: #333333;
+            --df-messenger-font-family: "Poppins", sans-serif;
+            --df-messenger-chat-background: #F3F6FC;
+            --df-messenger-message-user-background: #ffffff;
+            --df-messenger-message-bot-background: #F7e700;
+            --df-messenger-input-placeholder-color: #757575;
+            --df-messenger-input-text-color: #000000;
+            --df-messenger-send-icon: #007bff;
+            --df-messenger-chat-window-height:calc(100vh - 80px);
+            bottom: 0;
+            right: 0;
+            padding:4px;
+            border:4px;
+            border-radius:6px;
+          }
+        `}
+      </style>
       <div ref={ref}>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <Theme>

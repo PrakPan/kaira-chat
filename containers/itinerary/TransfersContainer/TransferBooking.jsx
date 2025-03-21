@@ -4,9 +4,6 @@ import { TransportIconFetcher } from "../../../helper/TransportIconFetcher";
 import ImageLoader from "../../../components/ImageLoader";
 import useMediaQuery from "../../../components/media";
 import media from "../../../components/media";
-import CheckboxFormComponent from "../../../components/FormComponents/CheckboxFormComponent";
-import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
-import { PulseLoader } from "react-spinners";
 import { connect } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
 import Button from "../../../components/ui/button/Index";
@@ -17,11 +14,13 @@ import Drawer from "../../../components/ui/Drawer";
 import { FaArrowRight } from "react-icons/fa6";
 import { useRouter } from "next/router";
 import TransferEditDrawer from "../../../components/drawers/routeTransfer/TransferEditDrawer";
-import Details from "./FlightDetail";
+import Details from "./FlightDetail2";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import VehicleDetailModal from "../../../components/modals/daybyday/VehicleModal";
+import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
+import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 const GridContainer = styled.div`
   width: auto;
   overflow: auto;
@@ -259,6 +258,27 @@ const TransferBooking = ({
     }
   };
 
+  const handleDelete = async () => {
+    try {
+        setLoading(true);  
+        const response = await axiosDeleteBooking.delete(`${router.query.id}/bookings/${booking?.booking_type?.toLowerCase()}/${booking?.id}/`);
+        
+        if (response.status === 204) {  
+          dispatch(updateTransferBookings(booking?.id));
+            setLoading(false);
+            toast.success("Booking deleted successfuly");
+            setVisible(true);
+            setHandleShow(false);
+            console.log("Deleted Booking");
+
+        }
+    } catch (err) {
+        console.log("[ERROR][ItineraryPage][axiosDeleteBooking:/Delete_Booking]", err);
+        toast.error("Error",err.message);
+        setLoading(false); 
+    }
+};
+
   return (
     <>
       {booking?.id ? (
@@ -456,21 +476,18 @@ const TransferBooking = ({
                 )}
               </div>
               <Drawer
-                show={showVehicleDrawer}
-                anchor={"right"}
-                backdrop
-                width={"50%"}
-                mobileWidth={"100%"}
-                style={{ zIndex: 1503 }}
-                className={`font-lexend ${
-                  window.innerWidth < 768 ? "w-full" : "w-[50%]"
-                }`}
-                onHide={() => setShowVehicleDrawer(false)}
+              show={showVehicleDrawer}
+              anchor="right"
+              width={"500px"}
+              style={1503}
+              className="font-lexend"
+              onHide={() => setShowVehicleDrawer(false)}
               >
                 <VehicleDetailModal
                   data={vehicleDetails}
                   loading={loading}
                   setIsOpen={setShowVehicleDrawer}
+                  handleDelete={handleDelete}
                 />
               </Drawer>
             </div>

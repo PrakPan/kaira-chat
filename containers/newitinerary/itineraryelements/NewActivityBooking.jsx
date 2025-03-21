@@ -107,7 +107,7 @@ export default function NewActivityBooking(props) {
               <SkeletonCard height={"100%"} />
             </div>
           </div>
-
+              <div className="flex flex-col justify-between">
           <div className="flex flex-col gap-2 text-[#01202B]  w-full h-fit justify-start">
             <div className="flex flex-col justify-between">
               <div className="flex flex-row justify-between">
@@ -135,12 +135,12 @@ export default function NewActivityBooking(props) {
 
             <div className="my-2">
               <div className="font-light text-sm text-[#01202B] line-clamp-3">
-                {props.data.short_description.split(" ").slice(0, 20).join(" ")}
+                {props.data.short_description.split(" ").slice(0, 40).join(" ")}
+                <span className="font-bold text-gray-500"> ...more</span>
               </div>
-
-              <div className="font-bold text-gray-500"> ...more</div>
             </div>
-            <div className="flex flex-row items-center justify-between">
+          </div>
+           <div className="flex flex-row items-center justify-between">
               {props.data?.pricing?.total_price ? (
                 <div className="flex flex-col md:flex-row gap-1">
                   <div className="text-2xl font-bold">
@@ -189,7 +189,7 @@ export default function NewActivityBooking(props) {
                 </div>
               )}
             </div>
-          </div>
+            </div>
         </div>
       </div>
 
