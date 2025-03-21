@@ -82,8 +82,8 @@ const ActivitiesBookings = (props) => {
   };
 
   return (
-    <div id="activities" className="lg:w-[60vw] w-full">
-      <div className="cursor-pointer font-lexend mb-2  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit">
+<div id="activities" className="w-full lg:w-auto" style={{ width: "calc(54vw + 30px)" }}>
+<div className="cursor-pointer font-lexend mb-2  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit">
         Activities
         <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
       </div>
@@ -96,7 +96,6 @@ const ActivitiesBookings = (props) => {
             >
               <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
                 {booking?.city}{" "}
-                {booking.duration && <span>({booking?.duration})</span>}
               </div>
               <div
                 id={index}
