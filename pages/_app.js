@@ -84,7 +84,7 @@ function MyApp({ Component, pageProps, store }) {
             agent-id="7a31b76b-858c-4efe-837a-43fb35d5b8f5"
             language-code="en"
           >
-            <df-messenger-chat chat-title="Personalized Travel Plan"></df-messenger-chat>
+            <df-messenger-chat-bubble chat-title="Personalized Travel Plan"></df-messenger-chat-bubble>
           </df-messenger>
         </>
       )}
@@ -92,8 +92,9 @@ function MyApp({ Component, pageProps, store }) {
       <style>
         {`
           df-messenger {
-            z-index: 999;
-            position: fixed;
+            z-index: 1024;
+
+            position:fixed;
             --df-messenger-font-color: #333333;
             --df-messenger-font-family: "Poppins", sans-serif;
             --df-messenger-chat-background: #F3F6FC;
@@ -102,14 +103,13 @@ function MyApp({ Component, pageProps, store }) {
             --df-messenger-input-placeholder-color: #757575;
             --df-messenger-input-text-color: #000000;
             --df-messenger-send-icon: #007bff;
+            --df-messenger-chat-window-height:calc(100vh - 80px);
             bottom: 0;
             right: 0;
-            width: 400px;
-            height: 600px;
+            padding:4px;
             border:4px;
             border-radius:6px;
           }
-
         `}
       </style>
       <div ref={ref}>
