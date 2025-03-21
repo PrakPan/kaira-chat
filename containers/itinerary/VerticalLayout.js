@@ -186,37 +186,33 @@ const CityItem = ({
         } ${!upPresent && downPresent && "mb-[41px]"}`}
       >
         <div className="font-[Poppins] text-[16px] font-[500] flex gap-1">
-          {(booking_id || city) && !visible ? (
-            <>
-              {" "}
-              <div className="mt-[4px]">{correctIcon(booking_type)}</div>
-              <div className="flex flex-col">
-                <div className="flex gap-2 items-center">
-                  {city}{" "}
-                  {upPresent && downPresent && (
-                    <div
-                      className="hover:cursor-pointer"
-                      onClick={() => handleEdit()}
-                    >
-                      <FaPen size={12} />
-                    </div>
-                  )}
+          {(booking_id || city) && !visible ? <> <div className="mt-[4px]">{correctIcon(booking_type)}</div>
+          <div className="flex flex-col">
+            <div className="flex gap-2 items-center">
+              {city}{" "}
+              {upPresent && downPresent && (
+                <div
+                  className="hover:cursor-pointer"
+                  onClick={() => handleEdit()}
+                >
+                  <FaPen size={12} />
                 </div>
-                {duration && (
-                  <div className="font-[Poppins] font-[400] text-[12px] ">
-                    Duration: {duration}
-                  </div>
-                )}
-              </div>{" "}
-            </>
-          ) : (
-            <button
-              onClick={() => setShowDrawer(true)}
-              className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
-            >
-              +Add Transfer
-            </button>
-          )}
+              )}
+            </div>
+            {duration && (
+              <div className="font-[Poppins] font-[400] text-[12px] ">
+                Duration: {duration}
+              </div>
+            )}
+          </div> </> : 
+          <button
+          onClick={() =>
+            setShowDrawer(true)
+            }
+          className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
+        >
+          + Add Transfer
+        </button>}
         </div>
       </div>
       <TransferEditDrawer

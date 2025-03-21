@@ -102,6 +102,7 @@ const Enquiry = (props) => {
   const [numberOfChildren, setNumberOfChildren] = useState(0);
   const [numberOfInfants, setNumberOfInfants] = useState(0);
   const [budget, setBudget] = useState("Affordable");
+  const [isLoading,setIsLoading] =useState(false);
   const [roomConfiguration, setRoomConfiguration] = useState([
     {
       adults: 2,
@@ -466,14 +467,17 @@ const Enquiry = (props) => {
       flexible_dates: flexible, //  If this is true, then start and end dates are decided automatically
     };
 
+    setIsLoading(true)
     itineraryInitiate
       .post("", data)
       .then((res) => {
         setItineraryId(res.data.itinerary_id);
+        setIsLoading(false)
         setSlideIndex(slideIndex + 1);
       })
       .catch((err) => {
         console.log("ERROR: ", err.message);
+        setIsLoading(false)
       });
   };
 
@@ -542,7 +546,7 @@ const Enquiry = (props) => {
         setLoading(false);
         router.push("/thank-you");
       });
-  };
+  }; 
 
   if (!loading && !submitted)
     return (
@@ -722,6 +726,7 @@ const Enquiry = (props) => {
                         bottom: "0",
                       }
                     : {}
+                    
                 }
                 padding="0.5rem 2rem"
                 fontWeight="500"
@@ -730,6 +735,7 @@ const Enquiry = (props) => {
                 borderWidth="1px"
                 bgColor="#f7e700"
                 onclick={() => _SlideOneSubmitHandler()}
+                loading={isLoading}
               >
                 Continue
               </Button>

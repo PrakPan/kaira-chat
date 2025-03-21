@@ -49,7 +49,7 @@ function MyApp({ Component, pageProps, store }) {
       router.events.off("routeChangeComplete", handleRouteChange);
     };
   }, [router.events]);
-
+  
   return (
     <>
       <Head>
@@ -73,18 +73,22 @@ function MyApp({ Component, pageProps, store }) {
       <Script
         src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"
         async
-        onLoad={() => setIsChatBotLoaded(true)}
+        onLoad={() => {setIsChatBotLoaded(true)}}
       />
       {typeof window !== "undefined" && isChatbotLoaded && (
         <>
-          <>{console.log("inside chat bot")}</>
           <df-messenger
             location="asia-south1"
             project-id="ai-chabot-451908"
             agent-id="7a31b76b-858c-4efe-837a-43fb35d5b8f5"
             language-code="en"
+            intent="WELCOME"
           >
-            <df-messenger-chat-bubble chat-title="Personalized Travel Plan"></df-messenger-chat-bubble>
+            
+            <df-messenger-chat-bubble chat-title="Personalized Travel Plan"            
+            //  chat-icon="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" to change floater icon, change this link
+
+             ></df-messenger-chat-bubble>
           </df-messenger>
         </>
       )}
@@ -104,12 +108,17 @@ function MyApp({ Component, pageProps, store }) {
             --df-messenger-input-text-color: #000000;
             --df-messenger-send-icon: #007bff;
             --df-messenger-chat-window-height:calc(100vh - 80px);
+            --df-messenger-chat-window-width: 33vw; 
+            --df-messenger-border-radius: 20px;
+            --df-messenger-button-image: url('https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg');
             bottom: 0;
             right: 0;
             padding:4px;
             border:4px;
             border-radius:6px;
-          }
+        }
+}
+
         `}
       </style>
       <div ref={ref}>
