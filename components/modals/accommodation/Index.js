@@ -106,11 +106,6 @@ const POI = (props) => {
         .catch((err) => {
           setLoading(false);
           setError(true);
-          props.openNotification({
-            type: "error",
-            text: "There seems to be a problem, please try again!",
-            heading: "Error!",
-          });
         });
     } else {
       let check_in = props.check_in;
@@ -138,11 +133,6 @@ const POI = (props) => {
         .catch((err) => {
           setLoading(false);
           setError(true);
-          props.openNotification({
-            type: "error",
-            text: "There seems to be a problem, please try again!",
-            heading: "Error!",
-          });
         });
     }
   };
@@ -182,7 +172,6 @@ const POI = (props) => {
         heading: "Success!",
       });
   
-      console.log("city id is:",props.plan[index])
       try {
         stayBookings[index] = {
           city_id: props.plan[index].city_id,

@@ -171,7 +171,7 @@ export default function ActivityDetails(props) {
                 </p>
               )}
 
-              { props.data?.user_ratings_total > 0 && (
+              {props.data?.user_ratings_total > 0 && (
                 <u className="text-[12px] text-[#7a7a7a]">
                   {props.data.user_ratings_total}
                   {" user reviews"}
@@ -204,7 +204,7 @@ export default function ActivityDetails(props) {
             <div className="flex flex-col gap-1">
               <div className="flex flex-row gap-2 items-center text-sm">
                 <span className="font-bold text-lg md:text-2xl">
-                  ₹{getIndianPrice(props.data.prices.total_price)}
+                  ₹{getIndianPrice(Math.round(props.data.prices.total_price))}
                 </span>
                 {`for ${props.data.prices?.total_pax} people`}
               </div>
@@ -223,9 +223,7 @@ export default function ActivityDetails(props) {
                 </div>
               ) : null}
             </div>
-          ) : (
-            <div className="flex flex-row">Cost: Complimentary Activity</div>
-          )}
+          ) : null}
 
           <div className="flex flex-col gap-1">
             <button

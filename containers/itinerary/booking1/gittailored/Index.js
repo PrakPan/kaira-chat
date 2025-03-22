@@ -164,7 +164,7 @@ const Details = (props) => {
                     >
                       {"₹ " +
                         getIndianPrice(
-                          Math.ceil(
+                          Math.round(
                             props.payment.costings_breakdown[booking][
                               "booking_cost"
                             ] / 100
@@ -230,7 +230,7 @@ const Details = (props) => {
                     >
                       {"₹ " +
                         getIndianPrice(
-                          Math.ceil(
+                          Math.round(
                             props.payment.costings_breakdown[booking][
                               "booking_cost"
                             ] / 100

@@ -390,9 +390,7 @@ const SearchHotels = () => {
                       {"Per person"}
                     </div>
                   ) : (
-                    <div className="flex flex-row">
-                      Cost: Complimentary Activity
-                    </div>
+                   null
                   )}
 
                   {hotelDetails?.recommendations?.[0]?.rates?.[0]?.rooms?.[0]
