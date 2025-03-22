@@ -208,8 +208,8 @@ const ActivityAddDrawer = (props) => {
       sort_by: {
         // no sorting filters added yet.
       },
-      num_adults:filterState?.num_adults,
-      num_children:filterState?.num_children
+      number_of_adults:filterState?.num_adults,
+      number_of_children:filterState?.num_children
 
     };
     activtySearch
