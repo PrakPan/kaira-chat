@@ -666,7 +666,7 @@ const FlightBooking = ({
               duration={booking?.duration}
               segments={booking?.transfer_details?.items?.[0]?.segments}
               numStops={
-                booking?.transfer_details?.items?.[0]?.stop_count?.stops
+                booking?.transfer_details?.items?.[0]?.stop_count
               }
               setShowDetails={setShowDetails}
             />

@@ -122,7 +122,7 @@ const BookingContainer = (props) => {
                     >
                       {"₹ " +
                         getIndianPrice(
-                          Math.ceil(
+                          Math.round(
                             props.payment.costings_breakdown[booking][
                               "booking_cost"
                             ] / 100
@@ -188,7 +188,7 @@ const BookingContainer = (props) => {
                     >
                       {"₹ " +
                         getIndianPrice(
-                          Math.ceil(
+                          Math.round(
                             props.payment.costings_breakdown[booking][
                               "booking_cost"
                             ] / 100

@@ -104,7 +104,7 @@ const CityItem = ({
     const res = await axios.get(
       `${MERCURY_HOST}/api/v1/itinerary/${
         router?.query?.id
-      }/bookings/${booking_type.toLowerCase()}/${booking_id}`
+      }/bookings/${booking_type.toLowerCase()}/${booking_id}/`
     );
     setData(res?.data);
     setHandleShow(true);
@@ -230,21 +230,22 @@ const CityItem = ({
         selectedBooking={selectedBooking}
       />
       <Drawer
-        show={handleShow}
-        anchor="right"
-        width={"500px"}
-        style={1503}
-        className="font-lexend"
-        onHide={setHandleShow}
-      >
+      show={handleShow}
+      anchor={"right"}
+      backdrop
+      style={{ zIndex: 1501 }}
+      className="font-lexend"
+      onHide={setHandleShow}
+      mobileWidth={"100vw"}
+      width="50vw"
+    >
         {booking_type === "Flight" ? (
           <>
-            <div className="font-[Poppins] text-[32px] font-[700] flex gap-2 items-center bg-gray-100 p-2">
-              {city}
-            </div>
             <FlightDetailModal
-              segments={data?.flight_details?.items?.[0]?.segments}
-              fareRule={data?.flight_details?.items?.[0]?.fare_rule?.[0]}
+              segments={data?.transfer_details?.items?.[0]?.segments}
+              fareRule={data?.transfer_details?.items?.[0]?.fare_rule?.[0]}
+              setShowDetails={setHandleShow}
+              name={city}
             />
           </>
         ) : booking_type === "Car" ? (
