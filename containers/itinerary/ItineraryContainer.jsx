@@ -448,9 +448,9 @@ function fetchData(poll) {
 
       if (booking === "SUCCESS" && !bookingSuccessRef.current) {
         bookingSuccessRef.current = true;
-        setTimeout(() => {
+        // setTimeout(() => {
           getAllBookings();
-        }, 20000);
+        // }, 20000);
       }
     } catch (err) {
       console.error("[ERROR]: axiosGetItinerary: ", err.message);
