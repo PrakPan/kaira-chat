@@ -48,7 +48,7 @@ const Activity = (props) => {
   };
 
   const handleActivity = async (poi, type) => {
-    console.log("poi is:",type)
+    console.log("poi is:", type);
     setShowDrawer(true);
     setActivityData(() => ({
       id: poi,
@@ -68,13 +68,15 @@ const Activity = (props) => {
 
   return (
     <>
-      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <div className="hidden lg:!flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="w-full flex flex-row items-center gap-3 bg-white">
           <div
             onClick={() =>
               handleActivity(
                 props?.element?.poi || props?.element?.activity,
-                props?.element?.poi !="undefined"?"poi":props?.element?.element_type
+                props?.element?.poi != "undefined"
+                  ? "poi"
+                  : props?.element?.element_type
               )
             }
             className="md:w-[12%] cursor-pointer"
@@ -105,31 +107,28 @@ const Activity = (props) => {
             </div>
 
             <div className="flex flex-row gap-2 items-center text-sm">
-            {props?.element?.poi ? (
+              {props?.element?.poi ? (
                 <div className="flex flex-row items-center bg-[#FAFAFA]  text-[#7A7A7A] opacity-[70%] text-[12px] px-1 rounded-sm">
-                 Self Exploration
-                </div> )
-                :
-                <>
-                <div className="flex flex-row items-center bg-[#F5FFF7]  text-[#10A317] text-[12px] px-1 rounded-sm">
-                 Activity 
+                  Self Exploration
                 </div>
+              ) : (
+                <>
+                  <div className="flex flex-row items-center bg-[#F5FFF7]  text-[#10A317] text-[12px] px-1 rounded-sm">
+                    Activity
+                  </div>
                 </>
-            }
-              
-              <div className="flex flex-row items-center">
-
+              )}
+              <div className="hidden lg:!flex  items-center">
                 {getStars(props.element?.rating)}
               </div>
-              <div className="text-[#7A7A7A] text-[12px]">
+              <div className="hidden lg:!block text-[#7A7A7A] text-[12px]">
                 {props.element?.rating}
               </div>
               {props.element?.user_ratings_total && (
-                <div className="text-[#7A7A7A] text-[12px] underline">
+                <div className="hidden lg:!block text-[#7A7A7A] text-[12px] underline">
                   {props.element?.user_ratings_total} Google reviews
                 </div>
               )}
-              
             </div>
           </div>
         </div>
@@ -138,14 +137,113 @@ const Activity = (props) => {
           onClick={() =>
             handleActivity(
               props?.element?.poi || props?.element?.booking?.id,
-              props?.element?.poi!=null?"poi":"activity"
+              props?.element?.poi != null ? "poi" : "activity"
             )
           }
-          className="w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+          className="hidden lg:!block w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap md:hidden"
         >
           View Details
         </button>
       </div>
+
+      <div className="lg:hidden">
+        <div className="flex flex-col gap-3 md:flex-row  md:justify-between">
+          <div className="w-full flex flex-row  gap-3 bg-white">
+            <div
+              onClick={() =>
+                handleActivity(
+                  props?.element?.poi || props?.element?.activity,
+                  props?.element?.poi != "undefined"
+                    ? "poi"
+                    : props?.element?.element_type
+                )
+              }
+              className="md:w-[12%] cursor-pointer"
+            >
+              <ImageLoader
+                borderRadius={"5px"}
+                style={{
+                  width: isPageWide ? "60px" : "50px",
+                  height: isPageWide ? "60px" : "50px",
+                  cursor: "pointer",
+                  margin: "auto",
+                }}
+                url={props.element?.icon}
+              />
+            </div>
+
+            <div className=" md:ml-[10px] w-full flex flex-col gap-1">
+              <div
+                onClick={() =>
+                  handleActivity(
+                    props?.element?.poi || props?.element?.activity,
+                    props?.element?.element_type
+                  )
+                }
+                className="w-fit font-medium text-[16px] cursor-pointer"
+              >
+                {props.element.heading}
+              </div>
+
+              <div className="w-fulltext-sm flex flex-col gap-1">
+                {props?.element?.poi ? (
+                  <div className="flex flex-row items-center bg-[#FAFAFA]  text-[#7A7A7A] opacity-[70%] text-[12px] px-1 rounded-sm">
+                    Self Exploration
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex flex-row items-center bg-[#F5FFF7]  text-[#10A317] text-[12px] px-1 rounded-sm">
+                      Activity
+                    </div>
+                  </>
+                )}
+                <div className="flex justify-between lg:hidden">
+                  <div className="flex gap-1">
+                    <div className="flex flex-row items-center">
+                      {getStars(props.element?.rating)}
+                    </div>
+                    <div className="text-[#7A7A7A] text-[12px]">
+                      {props.element?.rating}
+                    </div>
+                  </div>
+                  {props.element?.user_ratings_total && (
+                    <div className="text-[#7A7A7A] text-[12px] underline">
+                      {props.element?.user_ratings_total} Google reviews
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  onClick={() =>
+                    handleActivity(
+                      props?.element?.poi || props?.element?.booking?.id,
+                      props?.element?.poi != null ? "poi" : "activity"
+                    )
+                  }
+                  className="!block w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap md:hidden"
+                >
+                  View Details
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* <div className="flex justify-between lg:hidden">
+        <div>
+          <div className="flex flex-row items-center">
+            {getStars(props.element?.rating)}
+          </div>
+          <div className="text-[#7A7A7A] text-[12px]">
+            {props.element?.rating}
+          </div>
+        </div>
+        {props.element?.user_ratings_total && (
+          <div className="text-[#7A7A7A] text-[12px] underline">
+            {props.element?.user_ratings_total} Google reviews
+          </div>
+        )}
+      </div> */}
 
       <POIDetailsDrawer
         itineraryDrawer
@@ -206,12 +304,14 @@ const Recommendation = (props) => {
 
   return (
     <>
-      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <div className="hidden lg:!flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="w-full flex flex-row items-center gap-3 bg-white">
           <div
             onClick={() =>
-              handleActivity(props.element?.restaurants?.[0]?.id, "restaurant")
-
+              handleActivity(
+                props?.element?.restaurants?.[0]?.id,
+                "restaurant"
+              )
             }
             className="md:w-[12%] cursor-pointer"
           >
@@ -226,73 +326,143 @@ const Recommendation = (props) => {
               url={props.element?.icon}
             />
           </div>
-  
+
           <div className="flex flex-col md:ml-[10px]">
             <div
               onClick={() =>
-                handleActivity(props.element?.restaurants?.[0]?.id, "restaurant")
-
+                handleActivity(
+                  props?.element?.restaurants?.[0]?.id,
+                  "restaurant"
+                )
               }
               className="w-fit font-medium text-[16px] cursor-pointer"
             >
               {props.element.heading}
             </div>
-  
-            {props.element?.type === "Restaurant Recommendation" ? (
-              <div className="flex flex-row gap-2 items-center text-sm">
-                <div className="flex flex-row items-center bg-[#FCE3DB] text-[#EE724B] text-[12px] px-1 gap-2 rounded-sm">
-                <div className="flex items-center"><Image
-                              src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/restaurant-icon.png`}
-                              height={12}
-                              width={12}
-                              className="object-contain"
-                            /></div><div>Restaurant</div>
+
+            <div className="flex flex-row gap-2 items-center text-sm">
+              <div className="flex flex-row items-center bg-[#FCE3DB] text-[#EE724B] text-[12px] px-1 gap-2 rounded-sm">
+                <div className="flex items-center">
+                  <Image
+                    src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/restaurant-icon.png`}
+                    height={12}
+                    width={12}
+                    className="object-contain"
+                  />
                 </div>
-                <div className="flex flex-row items-center">
-                  {getStars(props.element?.restaurants?.[0]?.rating)}
-                </div>
-                <div className="text-[#7A7A7A] text-[12px]">
-                  {props.element?.restaurants?.[0]?.rating}
-                </div>
-                {props.element?.restaurants?.[0]?.user_ratings_total && (
-                  <div className="text-[#7A7A7A] text-[12px] underline">
-                    {props.element?.restaurants?.[0]?.user_ratings_total} Google reviews
-                  </div>
-                )}
+                <div>Restaurant</div>
               </div>
-            ) : (
-              <div className="flex flex-row gap-2 items-center text-sm">
-              
-                <div className="flex flex-row items-center">
-                  {getStars(props.element?.rating)}
-                </div>
-                <div className="text-[#7A7A7A] text-[12px]">
-                  {props.element?.rating}
-                </div>
-                {props.element?.user_ratings_total && (
-                  <div className="text-[#7A7A7A] text-[12px] underline">
-                    {props.element?.user_ratings_total} Google reviews
-                  </div>
-                )}
+              <div className="hidden lg:!flex items-center">
+                {getStars(props.element?.restaurants?.[0]?.rating)}
               </div>
-            )}
+              <div className="hidden lg:!block text-[#7A7A7A] text-[12px]">
+                {props.element?.restaurants?.[0]?.rating}
+              </div>
+              {props.element?.restaurants?.[0]?.user_ratings_total && (
+                <div className="hidden lg:!block text-[#7A7A7A] text-[12px] underline">
+                  {props.element?.restaurants?.[0]?.user_ratings_total} Google reviews
+                </div>
+              )}
+            </div>
           </div>
         </div>
-  
+
         <button
           onClick={() =>
-            handleActivity(props.element?.restaurants?.[0]?.id, "restaurant")
+            handleActivity(props?.element?.restaurants?.[0]?.id, "restaurant")
           }
-          className="w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+          className="hidden lg:!block w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap md:hidden"
         >
           View Details
         </button>
       </div>
-  
+
+      <div className="lg:hidden">
+        <div className="flex flex-col gap-3 md:flex-row  md:justify-between">
+          <div className="w-full flex flex-row  gap-3 bg-white">
+            <div
+              onClick={() =>
+                handleActivity(
+                  props?.element?.restaurants?.[0]?.id,
+                  "restaurant"
+                )
+              }
+              className="md:w-[12%] cursor-pointer"
+            >
+              <ImageLoader
+                borderRadius={"5px"}
+                style={{
+                  width: isPageWide ? "60px" : "50px",
+                  height: isPageWide ? "60px" : "50px",
+                  cursor: "pointer",
+                  margin: "auto",
+                }}
+                url={props.element?.icon}
+              />
+            </div>
+
+            <div className=" md:ml-[10px] w-full flex flex-col gap-1">
+              <div
+                onClick={() =>
+                  handleActivity(
+                    props?.element?.restaurants?.[0]?.id,
+                    "restaurant"
+                  )
+                }
+                className="w-fit font-medium text-[16px] cursor-pointer"
+              >
+                {props.element.heading}
+              </div>
+
+              <div className="w-fulltext-sm flex flex-col gap-1">
+                <div className="flex flex-row items-center bg-[#FCE3DB] text-[#EE724B] text-[12px] px-1 gap-2 rounded-sm w-max">
+                  <div className="flex items-center">
+                    <Image
+                      src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/restaurant-icon.png`}
+                      height={12}
+                      width={12}
+                      className="object-contain"
+                    />
+                  </div>
+                  <div>Restaurant</div>
+                </div>
+                <div className="flex justify-between lg:hidden">
+                  <div className="flex gap-1">
+                    <div className="flex flex-row items-center">
+                      {getStars(props.element?.restaurants?.[0]?.rating)}
+                    </div>
+                    <div className="text-[#7A7A7A] text-[12px]">
+                      {props.element?.restaurants?.[0]?.rating}
+                    </div>
+                  </div>
+                  {props.element?.restaurants?.[0]?.user_ratings_total && (
+                    <div className="text-[#7A7A7A] text-[12px] underline">
+                      {props.element?.restaurants?.[0]?.user_ratings_total} Google reviews
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  onClick={() =>
+                    handleActivity(
+                      props?.element?.restaurants?.[0]?.id,
+                      "restaurant"
+                    )
+                  }
+                  className="!block w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap md:hidden"
+                >
+                  View Details
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <POIDetailsDrawer
         itineraryDrawer
         show={showDrawer}
-        iconId={props.element?.poi || props.element?.activity}
+        iconId={props.element?.restaurants?.[0]?.id}
         handleCloseDrawer={handleCloseDrawer}
         name={props.element.heading}
         image={props.element.icon}
@@ -302,8 +472,6 @@ const Recommendation = (props) => {
       />
     </>
   );
-  
-
 };
 
 const MealRecommendation = (props) => {

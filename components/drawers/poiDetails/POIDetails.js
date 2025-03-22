@@ -56,7 +56,7 @@ const TimeStamp = styled.span`
   position: absolute;
   @media screen and (min-width: 768px) {
     bottom: 0px;
-    top:0px;
+    top: 0px;
   }
 `;
 
@@ -176,7 +176,7 @@ const POIDetails = (props) => {
           >
             <div
               style={{
-                width: isPageWide ? "468px" : "100%",
+                width: "100%",
                 height: "188px",
                 overflow: "hidden",
                 borderRadius: "8px",
@@ -187,7 +187,8 @@ const POIDetails = (props) => {
           </div>
         </div>
 
-        {props.data?.ideal_duration_hours || props.data?.ideal_duration_number ? (
+        {props.data?.ideal_duration_hours ||
+        props.data?.ideal_duration_number ? (
           <TimeStamp>
             Approx Time :{" "}
             {props.data.ideal_duration_hours ||
@@ -249,9 +250,7 @@ const POIDetails = (props) => {
           {" /- "}
           {"Per person"}
         </div>
-      ) : (
-        <div className="flex flex-row">Cost: Complimentary Activity</div>
-      )}
+      ) : null}
 
       {props.data?.short_description && (
         <div>

@@ -306,3 +306,374 @@ const ChildAge = ({ index, child, age, setChildAges, showError }) => {
     </div>
   );
 };
+
+// import React, { useState, useRef, useEffect } from 'react';
+// import { IoChevronDown, IoChevronUp, IoPerson } from "react-icons/io5";
+// import { RiArrowDropDownLine } from "react-icons/ri";
+// import { RiDeleteBin6Line } from "react-icons/ri";
+
+// const Pax = (props) => {
+//   const containerRef = useRef(null);
+//   const [isRoomExpanded, setIsRoomExpanded] = useState(false);
+//   const [travelers, setTravelers] = useState(2);
+//   const [rooms, setRooms] = useState([
+//     {
+//       adults: 2,
+//       children: 0,
+//       childAges: [],
+//     },
+//   ]);
+//   const [groupType, setGroupType] = useState('Friends');
+//   const [showError, setShowError] = useState(false);
+
+//   useEffect(() => {
+//     const handleClickOutside = (event) => {
+//       if (containerRef.current && !containerRef.current.contains(event.target)) {
+//         setIsRoomExpanded(false);
+//       }
+//     };
+
+//     document.addEventListener("mousedown", handleClickOutside);
+//     return () => document.removeEventListener("mousedown", handleClickOutside);
+//   }, []);
+
+//   useEffect(() => {
+//     let total = 0;
+//     for (let room of rooms) {
+//       total += room.adults;
+//       total += room.children;
+//     }
+//     setTravelers(total);
+//   }, [rooms]);
+
+//   const handleAddRoom = () => {
+//     if (rooms.length < 8) {
+//       setRooms((prev) => [
+//         ...prev,
+//         {
+//           adults: 1,
+//           children: 0,
+//           childAges: [],
+//         },
+//       ]);
+//     }
+//   };
+
+//   const removeRoom = () => {
+//     setRooms((prev) => prev.slice(0, -1));
+//   };
+
+//   const checkError = () => {
+//     for (let room of rooms) {
+//       if (room.childAges.includes(null)) {
+//         return true;
+//       }
+//     }
+//     return false;
+//   };
+
+//   const handleDone = () => {
+//     if (checkError()) {
+//       setShowError(true);
+//       return;
+//     }
+
+//     setShowError(false);
+
+//     let adults = 0;
+//     let children = 0;
+
+//     for (let room of rooms) {
+//       adults += room.adults;
+//       children += room.children;
+//     }
+
+//     if (props.setNumberOfAdults) props.setNumberOfAdults(adults);
+//     if (props.setNumberOfChildren) props.setNumberOfChildren(children);
+//     if (props.setRoomConfiguration) props.setRoomConfiguration(rooms);
+
+//     setIsRoomExpanded(false);
+//   };
+
+//   return (
+//     <div ref={containerRef} className="w-full max-w-md bg-white rounded-lg shadow-sm border border-gray-100">
+//       <div className="">
+        {/* <div className="flex justify-between items-center mb-4">
+          <div>
+            <span className="text-gray-500 text-sm">Group Type: </span>
+            <span className="font-medium">{groupType}</span>
+          </div>
+          <button 
+            className="text-blue-600 text-sm font-medium"
+            onClick={() => {}}
+          >
+            Change
+          </button>
+        </div> */}
+
+      //   <div className="w-full">
+      //     <div
+      //       className="flex flex-col p-2 bg-gray-50 rounded-lg cursor-pointer"
+      //       onClick={() => setIsRoomExpanded(!isRoomExpanded)}
+      //     >
+      //       <div className="flex justify-between">
+      //       <span className="text-gray-700">Room</span>
+      //       {isRoomExpanded ? <IoChevronUp size={18} /> : <IoChevronDown size={18} />}
+      //       </div>
+      //         <span className="mr-2 text-gray-700">{travelers} Travellers, {rooms.length} Room{rooms.length > 1 ? 's' : ''}</span>
+          
+      //     </div>
+      //   </div>
+      // </div>
+
+      // {isRoomExpanded && (
+      //   <div className="p-4 pt-0">
+      //     <div className="bg-gray-50 rounded-lg p-4">
+      //       {rooms.map((room, index) => (
+      //         <Room 
+      //           key={index}
+      //           index={index}
+      //           data={room}
+      //           setRooms={setRooms}
+      //           showError={showError}
+      //           removeRoom={removeRoom}
+      //         />
+      //       ))}
+
+      //       <div className="flex justify-between mt-4">
+              {/* {rooms.length > 1 && (
+                <button
+                  onClick={removeRoom}
+                  className="text-blue-600 font-medium"
+                >
+                  <RiDeleteBin6Line/>
+                </button>
+              )} */}
+//               <button
+//                 onClick={handleAddRoom}
+//                 className="text-blue font-medium ml-auto underline"
+//                 disabled={rooms.length >= 8}
+//               >
+//                 Add Room
+//               </button>
+//             </div>
+
+//             <div className="mt-4 flex justify-end">
+//               <button
+//                 onClick={handleDone}
+//                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+//               >
+//                 Done
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// const Room = ({ index, data, setRooms, showError, removeRoom }) => {
+//   const [adults, setAdults] = useState(data.adults);
+//   const [children, setChildren] = useState(data.children);
+//   const [childAges, setChildAges] = useState(data.childAges);
+
+//   useEffect(() => {
+//     setRooms((prev) =>
+//       prev.map((room, i) =>
+//         i === index
+//           ? {
+//               ...room,
+//               adults: adults,
+//               children: children,
+//               childAges: childAges,
+//             }
+//           : room
+//       )
+//     );
+//   }, [adults, children, childAges, index, setRooms]);
+
+//   const handleAdults = (increment) => {
+//     if (increment && adults < 14) {
+//       setAdults((prev) => prev + 1);
+//     } else if (!increment && adults > 1) {
+//       setAdults((prev) => prev - 1);
+//     }
+//   };
+
+//   // const handleChildren = (increment) => {
+//   //   if (increment && children < 6) {
+//   //     setChildren((prev) => prev + 1);
+//   //     setChildAges((prev) => [...prev, null]);
+//   //   } else if (!increment && children >= 1) {
+//   //     setChildren((prev) => prev - 1);
+//   //     setChildAges((prev) => prev.slice(0, -1));
+//   //   }
+//   // };
+//     const handleChildren = (type) => {
+//     if (type === "plus" && children < 6) {
+//       setChildren((prev) => prev + 1);
+//       setChildAges((prev) => [...prev, null]);
+//     } else if (type === "minus" && children >= 1) {
+//       setChildren((prev) => prev - 1);
+//       setChildAges((prev) => prev.slice(0, -1));
+//     }
+//   };
+
+//   return (
+//     <div className="mb-6 last:mb-0 ">
+//       <div className='flex justify-between'>
+//       <div className="mb-3 px-2 py-1 bg-gray-200 w-fit rounded-md">
+//         <span className="text-sm font-medium">Room {index + 1}</span>
+//       </div>
+//       {index +1 > 1 && (
+//                 <button
+//                   onClick={removeRoom}
+//                   className="text-blue-600 font-medium"
+//                 >
+//                   <RiDeleteBin6Line className='text-red-600'/>
+//                 </button>
+//         )}
+//       </div>
+
+//       <div className="flex justify-between items-center mb-4">
+//         <div>
+//           <div className="font-medium">Adults</div>
+//           <div className="text-xs text-gray-500">12+ Years</div>
+//         </div>
+//         <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
+//           <button 
+//             className={` flex items-center justify-center  ${adults > 1 ? 'text-blue ' : 'text-gray-300'}`}
+//             onClick={() => handleAdults(false)}
+//             disabled={adults <= 1}
+//           >
+//             -
+//           </button>
+//           <span className="mx-2 w-6 text-center">{adults}</span>
+//           <button 
+//             className="flex items-center justify-center text-blue"
+//             onClick={() => handleAdults(true)}
+//             disabled={adults >= 14}
+//           >
+//             +
+//           </button>
+//         </div>
+//       </div>
+
+//       <div className="flex justify-between items-center mb-3">
+//         <div>
+//           <div className="font-medium">Children</div>
+//           <div className="text-xs text-gray-500">0-12 Years</div>
+//         </div>
+//         <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
+//         <button 
+//             className={`flex items-center justify-center ${children > 0 ? 'text-blue' : 'text-gray-300'}`}
+//             onClick={() => handleChildren("minus")}
+//             disabled={children <= 0}
+//           >
+//             -
+//           </button>
+//           <span className="mx-2 w-6 text-center">{children}</span>
+//           <button 
+//             className=" flex items-center justify-center text-blue"
+//             onClick={() => handleChildren("plus")}
+//             disabled={children >= 6}
+//           >
+//             +
+//           </button>
+          
+//         </div>
+//       </div>
+
+      {/* {children > 0 && (
+        <div className="pl-4 space-y-2 mt-3">
+          {childAges.map((age, i) => (
+            <ChildAge
+              key={i}
+              index={i}
+              child={i + 1}
+              age={age}
+              setChildAges={setChildAges}
+              showError={showError}
+            />
+          ))}
+        </div>
+      )} */}
+//     </div>
+//   );
+// };
+
+// const ChildAge = ({ index, child, age, setChildAges, showError }) => {
+//   const [openAges, setOpenAges] = useState(false);
+//   const [selectedAge, setSelectedAge] = useState(age);
+//   const dropdownRef = useRef(null);
+
+//   useEffect(() => {
+//     setChildAges((prev) =>
+//       prev.map((age, i) => (i === index ? selectedAge : age))
+//     );
+//   }, [selectedAge, index, setChildAges]);
+
+//   useEffect(() => {
+//     const handleClickOutside = (event) => {
+//       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+//         setOpenAges(false);
+//       }
+//     };
+
+//     document.addEventListener("mousedown", handleClickOutside);
+//     return () => document.removeEventListener("mousedown", handleClickOutside);
+//   }, []);
+
+//   const handleChildAge = (value) => {
+//     setSelectedAge(value);
+//     setOpenAges(false);
+//   };
+
+//   return (
+//     <div className="relative" ref={dropdownRef}>
+//       <div
+//         onClick={() => setOpenAges((prev) => !prev)}
+//         className={`flex justify-between items-center p-2 border rounded cursor-pointer bg-white ${
+//           showError && selectedAge === null ? 'border-red-500' : 'border-gray-300'
+//         }`}
+//       >
+//         <span>Child {child} age*</span>
+//         <div className="flex items-center">
+//           <span className="mr-1">{selectedAge !== null ? selectedAge : '--'}</span>
+//           <RiArrowDropDownLine className="text-xl" />
+//         </div>
+//       </div>
+      
+//       {showError && selectedAge === null && (
+//         <div className="text-xs text-red-500 mt-1">
+//           Please provide the age of the child
+//         </div>
+//       )}
+
+//       {openAges && (
+//         <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+//           {Array.from({ length: 13 }, (_, i) => (
+//             <div
+//               key={i}
+//               onClick={() => handleChildAge(i)}
+//               className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+//             >
+//               {i}
+//             </div>
+//           ))}
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// const HotelType = ()=>{
+//   return (
+//     <div>
+
+//     </div>
+//   )
+// }
+
+// export default Pax;

@@ -153,10 +153,10 @@ const getRoomImage = (images) => {
 
 const HotelBookingDetails = (props) => {
   const isDesktop = useMediaQuery("(min-width:1148px)");
-  const [loading,setLoading] =useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
-  
+
   const { id } = router.query;
 
   const [ImagesLoaded, setImagesLoaded] = useState({
@@ -200,29 +200,32 @@ const HotelBookingDetails = (props) => {
       if (props.images[i]) images.push(props.images[i]);
     }
   } catch {}
-  console.log("images are",images)
 
   const handleDelete = async () => {
-        try {
-            setLoading(true);  
-            const response = await axiosDeleteBooking.delete(`${id}/bookings/accommodation/${props?.id}/`);
-            
-            if (response.status === 204) {  
-              dispatch(updateStays(props?.id));
-                setLoading(false);
-                toast.success("Booking deleted successfuly");
-                setVisible(true);
-                props?.setShowDetails(false)
-                // setHandleShow(false);
-                console.log("Deleted Booking");
-  
-            }
-        } catch (err) {
-            console.log("[ERROR][ItineraryPage][axiosDeleteBooking:/Delete_Booking]", err);
-            toast.error("Error",err.message);
-            setLoading(false); 
-        }
-    };
+    try {
+      setLoading(true);
+      const response = await axiosDeleteBooking.delete(
+        `${id}/bookings/accommodation/${props?.id}/`
+      );
+
+      if (response.status === 204) {
+        dispatch(updateStays(props?.id));
+        setLoading(false);
+        toast.success("Booking deleted successfuly");
+        setVisible(true);
+        props?.setShowDetails(false);
+        // setHandleShow(false);
+        console.log("Deleted Booking");
+      }
+    } catch (err) {
+      console.log(
+        "[ERROR][ItineraryPage][axiosDeleteBooking:/Delete_Booking]",
+        err
+      );
+      toast.error("Error", err.message);
+      setLoading(false);
+    }
+  };
   return (
     <Container>
       <FlexBox>
@@ -301,150 +304,150 @@ const HotelBookingDetails = (props) => {
         <ImageContainer>
           {images.length > 3 ? (
             <>
-            <GridImage>
-              <Child area="1 / 1 / 5 / 4" className="div1 ">
-                <div
-                  className="relative"
-                  style={{ display: ImagesLoaded[0] ? "initial" : "none" }}
-                >
-                  <ImageLoader
-                    url={
-                      ImagesError[0]
-                        ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[0]?.image
-                    }
-                    width="100%"
-                    height="100%"
-                    onload={() => OnImageLoad(0)}
-                    onfail={() => OnImageError(0)}
-                    noLazy
-                  />
+              <GridImage>
+                <Child area="1 / 1 / 5 / 4" className="div1 ">
+                  <div
+                    className="relative"
+                    style={{ display: ImagesLoaded[0] ? "initial" : "none" }}
+                  >
+                    <ImageLoader
+                      url={
+                        ImagesError[0]
+                          ? "media/icons/bookings/notfounds/noroom.png"
+                          : images[0]?.image
+                      }
+                      width="100%"
+                      height="100%"
+                      onload={() => OnImageLoad(0)}
+                      onfail={() => OnImageError(0)}
+                      noLazy
+                    />
 
-                  {images[0]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
-                      {images[0]?.caption}
-                    </div>
-                  ) : null}
-                </div>
-                <div
-                  style={{
-                    display: !ImagesLoaded[0] ? "initial" : "none",
-                    height: "100%",
-                    overflow: "hidden",
-                  }}
-                >
-                  <SkeletonCard lottieDimension={"50rem"} />
-                </div>
-              </Child>
+                    {images[0]?.caption ? (
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                        {images[0]?.caption}
+                      </div>
+                    ) : null}
+                  </div>
+                  <div
+                    style={{
+                      display: !ImagesLoaded[0] ? "initial" : "none",
+                      height: "100%",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <SkeletonCard lottieDimension={"50rem"} />
+                  </div>
+                </Child>
 
-              <Child area="1 / 8 / 5 / 11" className="div2 rounded-lg">
-                <div
-                  className="relative"
-                  style={{ display: ImagesLoaded[1] ? "initial" : "none" }}
-                >
-                  <ImageLoader
-                    url={
-                      ImagesError[1]
-                        ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[1]?.image
-                    }
-                    fit="cover"
-                    width="100%"
-                    height="100%"
-                    onload={() => OnImageLoad(1)}
-                    onfail={() => OnImageError(1)}
-                    noLazy
-                  />
+                <Child area="1 / 8 / 5 / 11" className="div2 rounded-lg">
+                  <div
+                    className="relative"
+                    style={{ display: ImagesLoaded[1] ? "initial" : "none" }}
+                  >
+                    <ImageLoader
+                      url={
+                        ImagesError[1]
+                          ? "media/icons/bookings/notfounds/noroom.png"
+                          : images[1]?.image
+                      }
+                      fit="cover"
+                      width="100%"
+                      height="100%"
+                      onload={() => OnImageLoad(1)}
+                      onfail={() => OnImageError(1)}
+                      noLazy
+                    />
 
-                  {images[1]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
-                      {images[1]?.caption}
-                    </div>
-                  ) : null}
-                </div>
-                <div
-                  style={{
-                    display: !ImagesLoaded[1] ? "initial" : "none",
-                    height: "100%",
-                    overflow: "hidden",
-                  }}
-                >
-                  <SkeletonCard lottieDimension={"50rem"} />
-                </div>
-              </Child>
+                    {images[1]?.caption ? (
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                        {images[1]?.caption}
+                      </div>
+                    ) : null}
+                  </div>
+                  <div
+                    style={{
+                      display: !ImagesLoaded[1] ? "initial" : "none",
+                      height: "100%",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <SkeletonCard lottieDimension={"50rem"} />
+                  </div>
+                </Child>
 
-              <Child area="1 / 4 / 3 / 8" className="div3">
-                <div
-                  className="relative"
-                  style={{ display: ImagesLoaded[2] ? "initial" : "none" }}
-                >
-                  <ImageLoader
-                    url={
-                      ImagesError[2]
-                        ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[2]?.image
-                    }
-                    fit="cover"
-                    width="100%"
-                    height="100%"
-                    onload={() => OnImageLoad(2)}
-                    onfail={() => OnImageError(2)}
-                    noLazy
-                  />
+                <Child area="1 / 4 / 3 / 8" className="div3">
+                  <div
+                    className="relative"
+                    style={{ display: ImagesLoaded[2] ? "initial" : "none" }}
+                  >
+                    <ImageLoader
+                      url={
+                        ImagesError[2]
+                          ? "media/icons/bookings/notfounds/noroom.png"
+                          : images[2]?.image
+                      }
+                      fit="cover"
+                      width="100%"
+                      height="100%"
+                      onload={() => OnImageLoad(2)}
+                      onfail={() => OnImageError(2)}
+                      noLazy
+                    />
 
-                  {images[2]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
-                      {images[2]?.caption}
-                    </div>
-                  ) : null}
-                </div>
-                <div
-                  style={{
-                    display: !ImagesLoaded[2] ? "initial" : "none",
-                    height: "100%",
-                    overflow: "hidden",
-                  }}
-                >
-                  <SkeletonCard lottieDimension={"50rem"} />
-                </div>
-              </Child>
+                    {images[2]?.caption ? (
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                        {images[2]?.caption}
+                      </div>
+                    ) : null}
+                  </div>
+                  <div
+                    style={{
+                      display: !ImagesLoaded[2] ? "initial" : "none",
+                      height: "100%",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <SkeletonCard lottieDimension={"50rem"} />
+                  </div>
+                </Child>
 
-              <Child area="3 / 4 / 5 / 8" className="div4">
-                <div
-                  className="relative"
-                  style={{ display: ImagesLoaded[3] ? "initial" : "none" }}
-                >
-                  <ImageLoader
-                    url={
-                      ImagesError[3]
-                        ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[3]?.image
-                    }
-                    fit="cover"
-                    width="100%"
-                    height="100%"
-                    onload={() => OnImageLoad(3)}
-                    onfail={() => OnImageError(3)}
-                    noLazy
-                  />
+                <Child area="3 / 4 / 5 / 8" className="div4">
+                  <div
+                    className="relative"
+                    style={{ display: ImagesLoaded[3] ? "initial" : "none" }}
+                  >
+                    <ImageLoader
+                      url={
+                        ImagesError[3]
+                          ? "media/icons/bookings/notfounds/noroom.png"
+                          : images[3]?.image
+                      }
+                      fit="cover"
+                      width="100%"
+                      height="100%"
+                      onload={() => OnImageLoad(3)}
+                      onfail={() => OnImageError(3)}
+                      noLazy
+                    />
 
-                  {images[3]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
-                      {images[3]?.caption}
-                    </div>
-                  ) : null}
-                </div>
-                <div
-                  style={{
-                    display: !ImagesLoaded[3] ? "initial" : "none",
-                    height: "100%",
-                    overflow: "hidden",
-                  }}
-                >
-                  <SkeletonCard lottieDimension={"50rem"} />
-                </div>
-              </Child>
-            </GridImage>
+                    {images[3]?.caption ? (
+                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                        {images[3]?.caption}
+                      </div>
+                    ) : null}
+                  </div>
+                  <div
+                    style={{
+                      display: !ImagesLoaded[3] ? "initial" : "none",
+                      height: "100%",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <SkeletonCard lottieDimension={"50rem"} />
+                  </div>
+                </Child>
+              </GridImage>
             </>
           ) : images.length == 3 ? (
             <GridImage>
@@ -1218,26 +1221,29 @@ const HotelBookingDetails = (props) => {
             </a>
           </div>
           <div>
-            <button className=" right-0  bg-red-500 text-white py-2 rounded-lg flex items-center justify-center" onClick={handleDelete}>
-                    <div style={{ position: "relative" }}>
-                                  <div style={loading ? { visibility: "hidden" } : {}}>
-                                    🗑 Delete Booking
-                                  </div>
-                                  {loading && (
-                                    <PulseLoader
-                                      style={{
-                                        position: "absolute",
-                                        top: "55%",
-                                        left: "50%",
-                                        transform: "translate(-50% , -50%)",
-                                      }}
-                                      size={12}
-                                      speedMultiplier={0.6}
-                                      color="#ffffff"
-                                    />
-                                  )}
-                                </div>
-                    </button>
+            <button
+              className=" right-0  bg-red-500 text-white py-2 rounded-lg flex items-center justify-center"
+              onClick={handleDelete}
+            >
+              <div style={{ position: "relative" }}>
+                <div style={loading ? { visibility: "hidden" } : {}}>
+                  🗑 Delete Booking
+                </div>
+                {loading && (
+                  <PulseLoader
+                    style={{
+                      position: "absolute",
+                      top: "55%",
+                      left: "50%",
+                      transform: "translate(-50% , -50%)",
+                    }}
+                    size={12}
+                    speedMultiplier={0.6}
+                    color="#ffffff"
+                  />
+                )}
+              </div>
+            </button>
           </div>
         </div>
       ) : (

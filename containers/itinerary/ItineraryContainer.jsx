@@ -6,6 +6,7 @@ import Menu from "./MenuV2";
 import Spinner from "../../containers/loaderbar/Index";
 import axiosdaybydayinstance, {
   axiosGetItinerary,
+  axiosGetItineraryStatus,
 } from "../../services/itinerary/daybyday/preview";
 import axiosbreifinstance from "../../services/itinerary/brief/preview";
 import * as authaction from "../../store/actions/auth";
@@ -76,6 +77,13 @@ const ItineraryContainer = (props) => {
   const [showMercuryItinerary, setShowMercuryItinerary] = useState(false);
   const [cities, setCities] = useState([]);
   const [cityTransferBookings, setCityTransferBookings] = useState(null);
+  
+  const [polling, setPolling] = useState(true);
+
+
+const itinerarySuccessRef = useRef(false);
+const pricingSuccessRef = useRef(false);
+const bookingSuccessRef = useRef(false);
 
   //  const transferBooking = useSelector((state) => state.TransferBookings)?.transferBookings
   //   console.log("Transfer Booking",transferBooking);
@@ -346,69 +354,42 @@ const ItineraryContainer = (props) => {
     return data;
   }
 
-  function fetchData(scroll = true) {
-    if (scroll) window.scrollTo(0, 0);
-    if (TRAVELER_ITINERARIES.includes(props.id))
-      setIsPastTravelerItinerary(true);
 
-    // axiosdaybydayinstance
-    //   .get(`/?itinerary_id=` + props.id)
-    //   .then((res) => {
-    //     if (res.data.day_slabs.length) {
-    //       if (res.data.is_stock) setIsStock(true);
+function fetchData(poll) {
+    if (TRAVELER_ITINERARIES.includes(props.id)) setIsPastTravelerItinerary(true);
 
-    //       props.setItinerary({
-    //         ...res.data,
-    //         images: res.data.images.filter((value) => value),
-    //       });
+  const fetchStatus = async () => {
+    try {
+      const res = await axiosGetItineraryStatus.get(`/${props.id}/status/`);
+      const status = res.data?.celery;
 
-    //       setItineraryLoading(false);
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     setItineraryLoading(false);
-    //   });
+      console.log("Status Response:", status);
 
-    //   getBreifHandler();
+      if (
+        status?.ITINERARY === "SUCCESS" &&
+        status?.BOOKINGS === "SUCCESS" &&
+        status?.PRICING === "SUCCESS"
+      ) {
+        setPolling(false); 
+      } else {
+        setPolling(true); 
+      }
 
-    //   getRoutes(props.id)
-    //     .then((res) => {
-    //       props.setItineraryRoutes(res);
-    //     })
-    //     .catch((err) => {});
+      fetchItinerary(status?.ITINERARY, status?.BOOKINGS, status?.PRICING);
+    } catch (err) {
+      console.error("[ERROR]: axiosGetItineraryStatus: ", err.message);
+    }
+  };
 
-    //     axiosPlanInstance
-    //     .get("?itinerary_id=" + props.id)
-    //     .then((res) => {
-    //       props.setPlan(res.data);
-    //       dispatch(setItineraryStartDate({ date: res.data.start_date }));
-    //       if (
-    //         res.data.itinerary_status === ITINERARY_STATUSES.itinerary_not_created
-    //       ) {
-    //         alert(
-    //           "Looks like the response took too long, please refresh and try again."
-    //         );
-    //       } else {
-    //         setUserEmail(res.data.user_email);
-    //         settravellerType(res.data.experience_filters_selected);
-    //         if (res.data.start_date) setIsDatePresent(true);
-    //         setgroup_type(res.data.group_type);
-    //         setduration_time(res.data.duration_number);
-    //         setItineraryReleased(res.data.is_released_for_customer);
-    //         setItineraryDate(res.data.created_at);
-    //       }
-
-    //     })
-    //     .catch((error) => {});
-
-    //     getAccommodationAndActivitiesHandler();
-
-    axiosGetItinerary
-      .get(`/${props.id}/`)
-      .then((res) => {
+  const fetchItinerary = async (itinerary, booking, pricing) => {
+    try {
+      if (itinerary === "SUCCESS" && !itinerarySuccessRef.current) {
+        if (true) window.scrollTo(0, 0);
+        itinerarySuccessRef.current = true; 
+        const res = await axiosGetItinerary.get(`/${props.id}/`);
         const data = res.data;
 
-        if (res.data?.version === "v1" || !res?.data) {
+        if (data?.version === "v1" || !data) {
           setShowMercuryItinerary(false);
           router.push(`/itinerary/v1/${props.id}`);
           return;
@@ -416,59 +397,29 @@ const ItineraryContainer = (props) => {
           setShowMercuryItinerary(true);
         }
 
-        setItineraryLoading(true);
-
-    setTimeout(() => {
-      setItineraryLoading(false); 
-    }, 60000); 
-
-    setActivityBookings(
-      data.cities
-        .map((item) =>
-          item.activities.map((activity) => ({
-            ...activity, 
-            city: item.city.name, 
-          }))
-        )
-        .flat() // Flatten the array
-    );
-    
-    // setActivityBookings(
-    //   data.cities
-    //     .map((item) =>
-    //       item.activities.map((activity) => ({
-    //         ...activity, 
-    //         city: item.city.name, 
-    //         duration: item.duration, 
-    //       }))
-    //     )
-    //     .flat() // Flatten the array
-    // );
-    
-
         props.setItinerary(data);
         props.setItineraryDaybyDay(data);
         props.setBreif(data);
-        setItineraryLoading(false);
-        getPaymentInfo();
-        getAllBookings();
-        setItineraryDate(data.start_date);
         setCities(data?.cities);
+        setItineraryDate(data.start_date);
+
         let stays = [];
         for (let i = 0; i < data?.cities.length; i++) {
           let hotels = data?.cities[i]?.hotels;
           let city_name = data?.cities[i]?.city?.name;
           let city_id = data?.cities[i]?.city?.id;
 
-          if(hotels.length==0){
+          if (hotels.length === 0) {
             stays.push({
-              city_name:city_name,
-              city_id:city_id,
-              trace_city_id:data?.cities[i]?.id,
-              duration:data?.cities[i]?.duration,
-              check_in:data?.cities[i]?.start_date,
-              check_out:String(new Date(new Date(data?.cities[i]?.start_date).getTime() + data?.cities[i]?.duration * 24 * 60 * 60 * 1000).toISOString().split("T")[0])
-            })
+              city_name,
+              city_id,
+              trace_city_id: data?.cities[i]?.id,
+              duration: data?.cities[i]?.duration,
+              check_in: data?.cities[i]?.start_date,
+              check_out: new Date(new Date(data?.cities[i]?.start_date).getTime() + data?.cities[i]?.duration * 24 * 60 * 60 * 1000)
+                .toISOString()
+                .split("T")[0],
+            });
           }
 
           for (let hotel of hotels) {
@@ -485,19 +436,53 @@ const ItineraryContainer = (props) => {
           stayBookings: data?.cities ? data?.cities : null,
         });
 
-        let activities = [];
-        activities = getItineraryActivities();
+        let activities = getItineraryActivities();
         props.setItineraryActivities(activities);
-      })
-      .catch((err) => {
-        console.error("[ERROR]:axiosGetItinerary: ", err.message);
         setItineraryLoading(false);
-      });
+      }
+
+      if (pricing === "SUCCESS" && !pricingSuccessRef.current) {
+        pricingSuccessRef.current = true; 
+        getPaymentInfo();
+      }
+
+      if (booking === "SUCCESS" && !bookingSuccessRef.current) {
+        bookingSuccessRef.current = true;
+        // setTimeout(() => {
+          getAllBookings();
+        // }, 20000);
+      }
+    } catch (err) {
+      console.error("[ERROR]: axiosGetItinerary: ", err.message);
+      setItineraryLoading(false);
+    }
+  };
+
+  if (poll) {
+    fetchStatus();
+  }
+}
+
+useEffect(() => {
+  fetchData(true);
+}, [props.id]);
+
+useEffect(() => {
+  let interval;
+  console.log("Polling:", polling);
+
+  if (polling) {
+    fetchData(true);
+    interval = setInterval(() => fetchData(true), 500000);
+  } else {
+    clearInterval(interval);
   }
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  return () => clearInterval(interval);
+}, [polling]); 
+
+
+  
 
   const _updateTransferBooking = (arr1, arr2) => {
     const combinedArray = [...arr1]; // Copy arr1 to avoid modifying the original array
@@ -926,6 +911,7 @@ const ItineraryContainer = (props) => {
       <div id="itinerary-anchor">
         <Menu
           mercuryItinerary
+          loadbookings={bookingSuccessRef}
           showMercuryItinerary={showMercuryItinerary}
           hasUserPaid={hasUserPaid}
           isDatePresent={isDatePresent}

@@ -10,3 +10,7 @@ export default preview;
 export const axiosGetItinerary = axios.create({
   baseURL: MERCURY_HOST + "/api/v1/itinerary/"
 })
+
+export const axiosGetItineraryStatus = axios.create({
+  baseURL: MERCURY_HOST + "/api/v1/itinerary/"
+})

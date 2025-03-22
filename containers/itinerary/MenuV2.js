@@ -184,7 +184,7 @@ const SimpleTabsV2 = (props) => {
     items.push({ id: 4, label: "Transfers", link: "Transfers" });
   }
 
-  if (props.activityBookings && props.activityBookings.length>0) {
+  if (props.activityBookings) {
     items.push({
       id: 5,
       label: "Activities",
@@ -706,7 +706,7 @@ const SimpleTabsV2 = (props) => {
             </>
           )}
 
-          {props.activityBookings && props.activityBookings.length>0 &&(
+          {props.activityBookings && (
             <div id={"Activities"}>
               <ActivityBookings
                 plan={props.plan}
@@ -989,7 +989,7 @@ const SimpleTabsV2 = (props) => {
               </div>
             ) : null}
 
-            {props.activityBookings && props.activityBookings.length>0&&(
+            {props.activityBookings && (
               <div id={"Activities"}>
                 <ActivityBookings
                   plan={props.plan}

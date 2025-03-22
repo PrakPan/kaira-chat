@@ -24,9 +24,7 @@ const Details = ({
   individual,
   booking_id,
   drawer,
-  name,
   transferBookings,
-  setTransferBookings,
   setTransferBookingsIntercity,
 }) => {
   useEffect(() => {
@@ -178,7 +176,7 @@ const Details = ({
     </div>
   );
 };
-const FlightSegment = ({ segments }) => {
+export const FlightSegment = ({ segments }) => {
   function getTime(totalMinutes) {
     if (totalMinutes) {
       const hours = Math.floor(totalMinutes / 60);

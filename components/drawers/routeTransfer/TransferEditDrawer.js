@@ -1845,11 +1845,11 @@ const OtherTransfer = ({
 
                 <div className="text-right">
                   <Cost>
-                    {"₹" + getIndianPrice(Math.ceil(price.price)) + "/-"}
+                    {"₹" + getIndianPrice(Math.round(price.price)) + "/-"}
                   </Cost>
                   <Text>Per Person</Text>
                   <button class="focus:outline-none border-2 border-black rounded-lg px-4 py-2 mt-2 bg-[#F7E700] hover:bg-black hover:text-white transition-all">
-                    Select
+                    Add To Itinerary
                   </button>
                 </div>
               </div>

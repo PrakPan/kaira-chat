@@ -13,7 +13,6 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import Script from "next/script";
-
 function MyApp({ Component, pageProps, store }) {
   const router = useRouter();
   const ref = useRef();
@@ -24,7 +23,6 @@ function MyApp({ Component, pageProps, store }) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
   }, []);
-
   useEffect(() => {
     const handleRouteChange = (url) => {
       ga.pageview(url);
@@ -32,7 +30,6 @@ function MyApp({ Component, pageProps, store }) {
     //When the component is mounted, subscribe to router changes
     //and log those page views
     router.events.on("routeChangeComplete", handleRouteChange);
-
     // If the component is unmounted, unsubscribe
     // from the event with the `off` method
     import("react-facebook-pixel")
@@ -40,7 +37,6 @@ function MyApp({ Component, pageProps, store }) {
       .then((ReactPixel) => {
         ReactPixel.init(FACEBOOK_PIXEL_ID); // facebookPixelId
         ReactPixel.pageView();
-
         router.events.on("routeChangeComplete", () => {
           ReactPixel.pageView();
         });
@@ -85,19 +81,21 @@ function MyApp({ Component, pageProps, store }) {
             intent="WELCOME"
           >
             
-            <df-messenger-chat-bubble chat-title="Personalized Travel Plan"            
-            //  chat-icon="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" to change floater icon, change this link
-
+            {/* <df-messenger-chat-bubble chat-title="Personalized Travel Plan"             */}
+            {/* //  chat-icon="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" to change floater icon, change this link */}
+            <df-messenger-chat-bubble 
+            chat-title="Personalized Travel Plan"            
+            chat-icon=" https://openmoji.org/data/color/svg/1F4AC.svg"
+            chat-title-icon="https://openmoji.org/data/color/svg/1F4AC.svg"
+            // to change floater icon, change this link
              ></df-messenger-chat-bubble>
           </df-messenger>
         </>
       )}
-
       <style>
         {`
           df-messenger {
             z-index: 1024;
-
             position:fixed;
             --df-messenger-font-color: #333333;
             --df-messenger-font-family: "Poppins", sans-serif;
@@ -108,17 +106,25 @@ function MyApp({ Component, pageProps, store }) {
             --df-messenger-input-text-color: #000000;
             --df-messenger-send-icon: #007bff;
             --df-messenger-chat-window-height:calc(100vh - 80px);
+            --df-messenger-chat-window-height:calc(100vh - 90px);
             --df-messenger-chat-window-width: 33vw; 
             --df-messenger-border-radius: 20px;
             --df-messenger-button-image: url('https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg');
+            --df-messenger-chat-bubble-border-radius:0px;
             bottom: 0;
             right: 0;
             padding:4px;
             border:4px;
             border-radius:6px;
+            margin-right:20px;
+            margin-bottom:10px;
         }
+        df-messenger .df-messenger-toggle-button {
+    border-radius: 0 !important;
+    width: 50px !important;  /* Adjust size if needed */
+    height: 50px !important; /* Adjust size if needed */
 }
-
+}
         `}
       </style>
       <div ref={ref}>
@@ -140,7 +146,6 @@ MyApp.getInitialProps = async ({ Component, ctx }) => {
     },
   };
 };
-
 export default dynamic(() => Promise.resolve(store.withRedux(MyApp)), {
   ssr: false,
 });
