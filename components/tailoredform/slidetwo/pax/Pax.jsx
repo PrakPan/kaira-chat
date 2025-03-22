@@ -1,320 +1,10 @@
-// import React, { useEffect, useRef, useState } from "react";
-// import { IoPerson } from "react-icons/io5";
-// import { CiCirclePlus, CiCircleMinus } from "react-icons/ci";
-// import { RiArrowDropDownLine } from "react-icons/ri";
-
-// export default function Pax(props) {
-//   const containerRef = useRef(null);
-//   const [travelers, setTravelers] = useState(2);
-//   const [rooms, setRooms] = useState([
-//     {
-//       adults: 2,
-//       children: 0,
-//       childAges: [],
-//     },
-//   ]);
-//   const [open, setOpen] = useState(false);
-//   const [showError, setShowError] = useState(false);
-
-//   useEffect(() => {
-//     const handleClickOutside = (event) => {
-//       if (
-//         containerRef.current &&
-//         !containerRef.current.contains(event.target)
-//       ) {
-//         setOpen(false);
-//       }
-//     };
-
-//     document.addEventListener("mousedown", handleClickOutside);
-
-//     return () => {
-//       document.removeEventListener("mousedown", handleClickOutside);
-//     };
-//   }, [setOpen]);
-
-//   useEffect(() => {
-//     let total = 0;
-//     for (let room of rooms) {
-//       total += room.adults;
-//       total += room.children;
-//     }
-
-//     setTravelers(total);
-//   }, [rooms]);
-
-//   const handleAddRoom = () => {
-//     if (rooms.length < 8) {
-//       setRooms((prev) => [
-//         ...prev,
-//         {
-//           adults: 1,
-//           children: 0,
-//           childAges: [],
-//         },
-//       ]);
-//     }
-//   };
-
-//   const removeRoom = () => {
-//     setRooms((prev) => prev.slice(0, -1));
-//   };
-
-//   const checkError = () => {
-//     for (let room of rooms) {
-//       if (room.childAges.includes(null)) {
-//         return true;
-//       }
-//     }
-
-//     return false;
-//   };
-
-//   const handleDone = () => {
-//     if (checkError()) {
-//       setShowError(true);
-//       return;
-//     }
-
-//     setShowError(false);
-
-//     let adults = 0;
-//     let children = 0;
-
-//     for (let room of rooms) {
-//       adults += room.adults;
-//       children += room.children;
-//     }
-
-//     props.setNumberOfAdults(adults);
-//     props.setNumberOfChildren(children);
-//     props.setRoomConfiguration(rooms);
-
-//     setOpen(false);
-//   };
-
-//   return (
-//     <div
-//       ref={containerRef}
-//       className="relative w-fit md:w-full h-fit border-2 flex flex-row items-center gap-2 px-3 py-2 rounded-lg cursor-pointer hover:border-black"
-//     >
-//       <IoPerson onClick={() => setOpen((prev) => !prev)} className="text-2xl" />
-
-//       <div
-//         onClick={() => setOpen((prev) => !prev)}
-//         className="w-full flex flex-col"
-//       >
-//         <div className="text-sm">Room Configuration</div>
-//         <div>
-//           {travelers} {travelers > 1 ? "travelers" : "traveler"}, {rooms.length}{" "}
-//           {rooms.length > 1 ? "rooms" : "room"}
-//         </div>
-//       </div>
-
-//       {open && (
-//         <div className="absolute bg-white z-50 left-0 md:left-0 md:right-0 top-[65px] flex flex-col gap-3 drop-shadow-2xl rounded-lg p-4 overflow-auto max-h-[70vh] md:max-h-[60vh] hide-scrollbar shadow-2xl">
-//           <div className="flex flex-col gap-3">
-//             {rooms.map((room, index) => (
-//               <Room
-//                 key={index}
-//                 index={index}
-//                 data={room}
-//                 setRooms={setRooms}
-//                 showError={showError}
-//               />
-//             ))}
-//           </div>
-
-//           {rooms.length > 1 && (
-//             <div className="flex justify-end">
-//               <button
-//                 onClick={removeRoom}
-//                 className="w-fit text-blue rounded-full px-2 py-1 hover:bg-[#ECF4FD] focus:outline-none"
-//               >
-//                 Remove room
-//               </button>
-//             </div>
-//           )}
-
-//           <div className="flex justify-end">
-//             <button
-//               onClick={handleAddRoom}
-//               className="w-fit text-blue rounded-full px-2 py-1 hover:bg-[#ECF4FD] focus:outline-none"
-//             >
-//               Add another room
-//             </button>
-//           </div>
-
-//           <div className="flex justify-end">
-//             <button
-//               onClick={handleDone}
-//               className="px-3 py-1 bg-[#F7E700] rounded-lg border-2 border-black hover:text-white hover:bg-black transition-all"
-//             >
-//               Done
-//             </button>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-// const Room = ({ index, data, setRooms, showError }) => {
-//   const [adults, setAdults] = useState(data.adults);
-//   const [children, setChildren] = useState(data.children);
-//   const [childAges, setChildAges] = useState(data.childAges);
-
-//   useEffect(() => {
-//     setRooms((prev) =>
-//       prev.map((room, i) =>
-//         i === index
-//           ? {
-//               ...room,
-//               adults: adults,
-//               children: children,
-//               childAges: childAges,
-//             }
-//           : room
-//       )
-//     );
-//   }, [adults, children, childAges]);
-
-//   const handleAdults = (type) => {
-//     if (type === "plus" && adults < 14) {
-//       setAdults((prev) => prev + 1);
-//     } else if (type === "minus" && adults > 1) {
-//       setAdults((prev) => prev - 1);
-//     }
-//   };
-
-//   const handleChildren = (type) => {
-//     if (type === "plus" && children < 6) {
-//       setChildren((prev) => prev + 1);
-//       setChildAges((prev) => [...prev, null]);
-//     } else if (type === "minus" && children >= 1) {
-//       setChildren((prev) => prev - 1);
-//       setChildAges((prev) => prev.slice(0, -1));
-//     }
-//   };
-
-//   return (
-//     <div className="flex flex-col gap-3">
-//       <div className="font-semibold">Room {index + 1}</div>
-//       <div className="flex flex-row items-center justify-between gap-[100px]">
-//         <div className="flex flex-col">
-//           <div className="text-sm">Adults</div>
-//           <div className="text-xs">12+ years</div>
-//         </div>
-//         <div className="flex flex-row items-center gap-2">
-//           <CiCircleMinus
-//             onClick={() => handleAdults("minus")}
-//             className="text-2xl"
-//           />
-//           <div>{adults}</div>
-//           <CiCirclePlus
-//             onClick={() => handleAdults("plus")}
-//             className="text-2xl"
-//           />
-//         </div>
-//       </div>
-
-//       <div className="flex flex-col gap-2">
-//         <div className="flex flex-row items-center justify-between">
-//           <div className="flex flex-col">
-//             <div className="text-sm">Children</div>
-//             <div className="text-xs">0 - 12 years</div>
-//           </div>
-//           <div className="flex flex-row items-center gap-2">
-//             <CiCircleMinus
-//               onClick={() => handleChildren("minus")}
-//               className="text-2xl"
-//             />
-//             <div>{children}</div>
-//             <CiCirclePlus
-//               onClick={() => handleChildren("plus")}
-//               className="text-2xl"
-//             />
-//           </div>
-//         </div>
-
-//         {children ? (
-//           <div className="flex flex-col gap-2">
-//             {childAges &&
-//               childAges.map((age, i) => (
-//                 <ChildAge
-//                   index={i}
-//                   child={i + 1}
-//                   age={age}
-//                   setChildAges={setChildAges}
-//                   showError={showError}
-//                 />
-//               ))}
-//           </div>
-//         ) : null}
-//       </div>
-//     </div>
-//   );
-// };
-
-// const ChildAge = ({ index, child, age, setChildAges, showError }) => {
-//   const [openAges, setOpenAges] = useState(false);
-//   const [selectedAge, setSelectedAge] = useState(age);
-
-//   useEffect(() => {
-//     setChildAges((prev) =>
-//       prev.map((age, i) => (i === index ? selectedAge : age))
-//     );
-//   }, [selectedAge]);
-
-//   const handleChildAge = (value) => {
-//     setSelectedAge(value);
-//     setOpenAges(false);
-//   };
-
-//   return (
-//     <div className="relative">
-//       <div
-//         onClick={() => setOpenAges((prev) => !prev)}
-//         className={`flex flex-row justify-between text-sm border-1 rounded-lg p-2 ${
-//           showError && !selectedAge ? "border-red-500" : ""
-//         }`}
-//       >
-//         <div>Child {child} age*</div>
-//         <div>{selectedAge}</div>
-//         <RiArrowDropDownLine className="text-xl" />
-//       </div>
-//       {showError && !selectedAge && (
-//         <div className="text-xs text-red-400">
-//           Provide the age of the child.
-//         </div>
-//       )}
-
-//       {openAges && (
-//         <div className="z-50 flex flex-col gap-1 absolute top-10 bg-white w-full border-1 border-black drop-shadow-2xl">
-//           {Array(13)
-//             .fill(null)
-//             .map((_, i) => (
-//               <div
-//                 onClick={() => handleChildAge(i)}
-//                 className="hover:bg-gray-200 p-2"
-//               >
-//                 {i}
-//               </div>
-//             ))}
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-import React, { useState, useRef, useEffect } from 'react';
-import { IoChevronDown, IoChevronUp, IoPerson } from "react-icons/io5";
+import React, { useEffect, useRef, useState } from "react";
+import { IoPerson } from "react-icons/io5";
+import { CiCirclePlus, CiCircleMinus } from "react-icons/ci";
 import { RiArrowDropDownLine } from "react-icons/ri";
-import { RiDeleteBin6Line } from "react-icons/ri";
 
-const Pax = (props) => {
+export default function Pax(props) {
   const containerRef = useRef(null);
-  const [isRoomExpanded, setIsRoomExpanded] = useState(false);
   const [travelers, setTravelers] = useState(2);
   const [rooms, setRooms] = useState([
     {
@@ -323,19 +13,25 @@ const Pax = (props) => {
       childAges: [],
     },
   ]);
-  const [groupType, setGroupType] = useState('Friends');
+  const [open, setOpen] = useState(false);
   const [showError, setShowError] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (containerRef.current && !containerRef.current.contains(event.target)) {
-        setIsRoomExpanded(false);
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target)
+      ) {
+        setOpen(false);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [setOpen]);
 
   useEffect(() => {
     let total = 0;
@@ -343,6 +39,7 @@ const Pax = (props) => {
       total += room.adults;
       total += room.children;
     }
+
     setTravelers(total);
   }, [rooms]);
 
@@ -369,6 +66,7 @@ const Pax = (props) => {
         return true;
       }
     }
+
     return false;
   };
 
@@ -388,92 +86,80 @@ const Pax = (props) => {
       children += room.children;
     }
 
-    if (props.setNumberOfAdults) props.setNumberOfAdults(adults);
-    if (props.setNumberOfChildren) props.setNumberOfChildren(children);
-    if (props.setRoomConfiguration) props.setRoomConfiguration(rooms);
+    props.setNumberOfAdults(adults);
+    props.setNumberOfChildren(children);
+    props.setRoomConfiguration(rooms);
 
-    setIsRoomExpanded(false);
+    setOpen(false);
   };
 
   return (
-    <div ref={containerRef} className="w-full max-w-md bg-white rounded-lg shadow-sm border border-gray-100">
-      <div className="">
-        {/* <div className="flex justify-between items-center mb-4">
-          <div>
-            <span className="text-gray-500 text-sm">Group Type: </span>
-            <span className="font-medium">{groupType}</span>
-          </div>
-          <button 
-            className="text-blue-600 text-sm font-medium"
-            onClick={() => {}}
-          >
-            Change
-          </button>
-        </div> */}
+    <div
+      ref={containerRef}
+      className="relative w-fit md:w-full h-fit border-2 flex flex-row items-center gap-2 px-3 py-2 rounded-lg cursor-pointer hover:border-black"
+    >
+      <IoPerson onClick={() => setOpen((prev) => !prev)} className="text-2xl" />
 
-        <div className="w-full">
-          <div
-            className="flex flex-col p-2 bg-gray-50 rounded-lg cursor-pointer"
-            onClick={() => setIsRoomExpanded(!isRoomExpanded)}
-          >
-            <div className="flex justify-between">
-            <span className="text-gray-700">Room</span>
-            {isRoomExpanded ? <IoChevronUp size={18} /> : <IoChevronDown size={18} />}
-            </div>
-              <span className="mr-2 text-gray-700">{travelers} Travellers, {rooms.length} Room{rooms.length > 1 ? 's' : ''}</span>
-          
-          </div>
+      <div
+        onClick={() => setOpen((prev) => !prev)}
+        className="w-full flex flex-col"
+      >
+        <div className="text-sm">Room Configuration</div>
+        <div>
+          {travelers} {travelers > 1 ? "travelers" : "traveler"}, {rooms.length}{" "}
+          {rooms.length > 1 ? "rooms" : "room"}
         </div>
       </div>
 
-      {isRoomExpanded && (
-        <div className="p-4 pt-0">
-          <div className="bg-gray-50 rounded-lg p-4">
+      {open && (
+        <div className="absolute bg-white z-50 left-0 md:left-0 md:right-0 top-[65px] flex flex-col gap-3 drop-shadow-2xl rounded-lg p-4 overflow-auto max-h-[70vh] md:max-h-[60vh] hide-scrollbar shadow-2xl">
+          <div className="flex flex-col gap-3">
             {rooms.map((room, index) => (
-              <Room 
+              <Room
                 key={index}
                 index={index}
                 data={room}
                 setRooms={setRooms}
                 showError={showError}
-                removeRoom={removeRoom}
               />
             ))}
+          </div>
 
-            <div className="flex justify-between mt-4">
-              {/* {rooms.length > 1 && (
-                <button
-                  onClick={removeRoom}
-                  className="text-blue-600 font-medium"
-                >
-                  <RiDeleteBin6Line/>
-                </button>
-              )} */}
+          {rooms.length > 1 && (
+            <div className="flex justify-end">
               <button
-                onClick={handleAddRoom}
-                className="text-blue font-medium ml-auto underline"
-                disabled={rooms.length >= 8}
+                onClick={removeRoom}
+                className="w-fit text-blue rounded-full px-2 py-1 hover:bg-[#ECF4FD] focus:outline-none"
               >
-                Add Room
+                Remove room
               </button>
             </div>
+          )}
 
-            <div className="mt-4 flex justify-end">
-              <button
-                onClick={handleDone}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              >
-                Done
-              </button>
-            </div>
+          <div className="flex justify-end">
+            <button
+              onClick={handleAddRoom}
+              className="w-fit text-blue rounded-full px-2 py-1 hover:bg-[#ECF4FD] focus:outline-none"
+            >
+              Add another room
+            </button>
+          </div>
+
+          <div className="flex justify-end">
+            <button
+              onClick={handleDone}
+              className="px-3 py-1 bg-[#F7E700] rounded-lg border-2 border-black hover:text-white hover:bg-black transition-all"
+            >
+              Done
+            </button>
           </div>
         </div>
       )}
     </div>
   );
-};
+}
 
-const Room = ({ index, data, setRooms, showError, removeRoom }) => {
+const Room = ({ index, data, setRooms, showError }) => {
   const [adults, setAdults] = useState(data.adults);
   const [children, setChildren] = useState(data.children);
   const [childAges, setChildAges] = useState(data.childAges);
@@ -491,26 +177,17 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
           : room
       )
     );
-  }, [adults, children, childAges, index, setRooms]);
+  }, [adults, children, childAges]);
 
-  const handleAdults = (increment) => {
-    if (increment && adults < 14) {
+  const handleAdults = (type) => {
+    if (type === "plus" && adults < 14) {
       setAdults((prev) => prev + 1);
-    } else if (!increment && adults > 1) {
+    } else if (type === "minus" && adults > 1) {
       setAdults((prev) => prev - 1);
     }
   };
 
-  // const handleChildren = (increment) => {
-  //   if (increment && children < 6) {
-  //     setChildren((prev) => prev + 1);
-  //     setChildAges((prev) => [...prev, null]);
-  //   } else if (!increment && children >= 1) {
-  //     setChildren((prev) => prev - 1);
-  //     setChildAges((prev) => prev.slice(0, -1));
-  //   }
-  // };
-    const handleChildren = (type) => {
+  const handleChildren = (type) => {
     if (type === "plus" && children < 6) {
       setChildren((prev) => prev + 1);
       setChildAges((prev) => [...prev, null]);
@@ -521,69 +198,392 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
   };
 
   return (
-    <div className="mb-6 last:mb-0 ">
-      <div className='flex justify-between'>
-      <div className="mb-3 px-2 py-1 bg-gray-200 w-fit rounded-md">
-        <span className="text-sm font-medium">Room {index + 1}</span>
+    <div className="flex flex-col gap-3">
+      <div className="font-semibold">Room {index + 1}</div>
+      <div className="flex flex-row items-center justify-between gap-[100px]">
+        <div className="flex flex-col">
+          <div className="text-sm">Adults</div>
+          <div className="text-xs">12+ years</div>
+        </div>
+        <div className="flex flex-row items-center gap-2">
+          <CiCircleMinus
+            onClick={() => handleAdults("minus")}
+            className="text-2xl"
+          />
+          <div>{adults}</div>
+          <CiCirclePlus
+            onClick={() => handleAdults("plus")}
+            className="text-2xl"
+          />
+        </div>
       </div>
-      {index +1 > 1 && (
+
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row items-center justify-between">
+          <div className="flex flex-col">
+            <div className="text-sm">Children</div>
+            <div className="text-xs">0 - 12 years</div>
+          </div>
+          <div className="flex flex-row items-center gap-2">
+            <CiCircleMinus
+              onClick={() => handleChildren("minus")}
+              className="text-2xl"
+            />
+            <div>{children}</div>
+            <CiCirclePlus
+              onClick={() => handleChildren("plus")}
+              className="text-2xl"
+            />
+          </div>
+        </div>
+
+        {children ? (
+          <div className="flex flex-col gap-2">
+            {childAges &&
+              childAges.map((age, i) => (
+                <ChildAge
+                  index={i}
+                  child={i + 1}
+                  age={age}
+                  setChildAges={setChildAges}
+                  showError={showError}
+                />
+              ))}
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+};
+
+const ChildAge = ({ index, child, age, setChildAges, showError }) => {
+  const [openAges, setOpenAges] = useState(false);
+  const [selectedAge, setSelectedAge] = useState(age);
+
+  useEffect(() => {
+    setChildAges((prev) =>
+      prev.map((age, i) => (i === index ? selectedAge : age))
+    );
+  }, [selectedAge]);
+
+  const handleChildAge = (value) => {
+    setSelectedAge(value);
+    setOpenAges(false);
+  };
+
+  return (
+    <div className="relative">
+      <div
+        onClick={() => setOpenAges((prev) => !prev)}
+        className={`flex flex-row justify-between text-sm border-1 rounded-lg p-2 ${
+          showError && !selectedAge ? "border-red-500" : ""
+        }`}
+      >
+        <div>Child {child} age*</div>
+        <div>{selectedAge}</div>
+        <RiArrowDropDownLine className="text-xl" />
+      </div>
+      {showError && !selectedAge && (
+        <div className="text-xs text-red-400">
+          Provide the age of the child.
+        </div>
+      )}
+
+      {openAges && (
+        <div className="z-50 flex flex-col gap-1 absolute top-10 bg-white w-full border-1 border-black drop-shadow-2xl">
+          {Array(13)
+            .fill(null)
+            .map((_, i) => (
+              <div
+                onClick={() => handleChildAge(i)}
+                className="hover:bg-gray-200 p-2"
+              >
+                {i}
+              </div>
+            ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// import React, { useState, useRef, useEffect } from 'react';
+// import { IoChevronDown, IoChevronUp, IoPerson } from "react-icons/io5";
+// import { RiArrowDropDownLine } from "react-icons/ri";
+// import { RiDeleteBin6Line } from "react-icons/ri";
+
+// const Pax = (props) => {
+//   const containerRef = useRef(null);
+//   const [isRoomExpanded, setIsRoomExpanded] = useState(false);
+//   const [travelers, setTravelers] = useState(2);
+//   const [rooms, setRooms] = useState([
+//     {
+//       adults: 2,
+//       children: 0,
+//       childAges: [],
+//     },
+//   ]);
+//   const [groupType, setGroupType] = useState('Friends');
+//   const [showError, setShowError] = useState(false);
+
+//   useEffect(() => {
+//     const handleClickOutside = (event) => {
+//       if (containerRef.current && !containerRef.current.contains(event.target)) {
+//         setIsRoomExpanded(false);
+//       }
+//     };
+
+//     document.addEventListener("mousedown", handleClickOutside);
+//     return () => document.removeEventListener("mousedown", handleClickOutside);
+//   }, []);
+
+//   useEffect(() => {
+//     let total = 0;
+//     for (let room of rooms) {
+//       total += room.adults;
+//       total += room.children;
+//     }
+//     setTravelers(total);
+//   }, [rooms]);
+
+//   const handleAddRoom = () => {
+//     if (rooms.length < 8) {
+//       setRooms((prev) => [
+//         ...prev,
+//         {
+//           adults: 1,
+//           children: 0,
+//           childAges: [],
+//         },
+//       ]);
+//     }
+//   };
+
+//   const removeRoom = () => {
+//     setRooms((prev) => prev.slice(0, -1));
+//   };
+
+//   const checkError = () => {
+//     for (let room of rooms) {
+//       if (room.childAges.includes(null)) {
+//         return true;
+//       }
+//     }
+//     return false;
+//   };
+
+//   const handleDone = () => {
+//     if (checkError()) {
+//       setShowError(true);
+//       return;
+//     }
+
+//     setShowError(false);
+
+//     let adults = 0;
+//     let children = 0;
+
+//     for (let room of rooms) {
+//       adults += room.adults;
+//       children += room.children;
+//     }
+
+//     if (props.setNumberOfAdults) props.setNumberOfAdults(adults);
+//     if (props.setNumberOfChildren) props.setNumberOfChildren(children);
+//     if (props.setRoomConfiguration) props.setRoomConfiguration(rooms);
+
+//     setIsRoomExpanded(false);
+//   };
+
+//   return (
+//     <div ref={containerRef} className="w-full max-w-md bg-white rounded-lg shadow-sm border border-gray-100">
+//       <div className="">
+        {/* <div className="flex justify-between items-center mb-4">
+          <div>
+            <span className="text-gray-500 text-sm">Group Type: </span>
+            <span className="font-medium">{groupType}</span>
+          </div>
+          <button 
+            className="text-blue-600 text-sm font-medium"
+            onClick={() => {}}
+          >
+            Change
+          </button>
+        </div> */}
+
+      //   <div className="w-full">
+      //     <div
+      //       className="flex flex-col p-2 bg-gray-50 rounded-lg cursor-pointer"
+      //       onClick={() => setIsRoomExpanded(!isRoomExpanded)}
+      //     >
+      //       <div className="flex justify-between">
+      //       <span className="text-gray-700">Room</span>
+      //       {isRoomExpanded ? <IoChevronUp size={18} /> : <IoChevronDown size={18} />}
+      //       </div>
+      //         <span className="mr-2 text-gray-700">{travelers} Travellers, {rooms.length} Room{rooms.length > 1 ? 's' : ''}</span>
+          
+      //     </div>
+      //   </div>
+      // </div>
+
+      // {isRoomExpanded && (
+      //   <div className="p-4 pt-0">
+      //     <div className="bg-gray-50 rounded-lg p-4">
+      //       {rooms.map((room, index) => (
+      //         <Room 
+      //           key={index}
+      //           index={index}
+      //           data={room}
+      //           setRooms={setRooms}
+      //           showError={showError}
+      //           removeRoom={removeRoom}
+      //         />
+      //       ))}
+
+      //       <div className="flex justify-between mt-4">
+              {/* {rooms.length > 1 && (
                 <button
                   onClick={removeRoom}
                   className="text-blue-600 font-medium"
                 >
-                  <RiDeleteBin6Line className='text-red-600'/>
+                  <RiDeleteBin6Line/>
                 </button>
-        )}
-      </div>
+              )} */}
+//               <button
+//                 onClick={handleAddRoom}
+//                 className="text-blue font-medium ml-auto underline"
+//                 disabled={rooms.length >= 8}
+//               >
+//                 Add Room
+//               </button>
+//             </div>
 
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <div className="font-medium">Adults</div>
-          <div className="text-xs text-gray-500">12+ Years</div>
-        </div>
-        <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
-          <button 
-            className={` flex items-center justify-center  ${adults > 1 ? 'text-blue ' : 'text-gray-300'}`}
-            onClick={() => handleAdults(false)}
-            disabled={adults <= 1}
-          >
-            -
-          </button>
-          <span className="mx-2 w-6 text-center">{adults}</span>
-          <button 
-            className="flex items-center justify-center text-blue"
-            onClick={() => handleAdults(true)}
-            disabled={adults >= 14}
-          >
-            +
-          </button>
-        </div>
-      </div>
+//             <div className="mt-4 flex justify-end">
+//               <button
+//                 onClick={handleDone}
+//                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+//               >
+//                 Done
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
 
-      <div className="flex justify-between items-center mb-3">
-        <div>
-          <div className="font-medium">Children</div>
-          <div className="text-xs text-gray-500">0-12 Years</div>
-        </div>
-        <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
-        <button 
-            className={`flex items-center justify-center ${children > 0 ? 'text-blue' : 'text-gray-300'}`}
-            onClick={() => handleChildren("minus")}
-            disabled={children <= 0}
-          >
-            -
-          </button>
-          <span className="mx-2 w-6 text-center">{children}</span>
-          <button 
-            className=" flex items-center justify-center text-blue"
-            onClick={() => handleChildren("plus")}
-            disabled={children >= 6}
-          >
-            +
-          </button>
+// const Room = ({ index, data, setRooms, showError, removeRoom }) => {
+//   const [adults, setAdults] = useState(data.adults);
+//   const [children, setChildren] = useState(data.children);
+//   const [childAges, setChildAges] = useState(data.childAges);
+
+//   useEffect(() => {
+//     setRooms((prev) =>
+//       prev.map((room, i) =>
+//         i === index
+//           ? {
+//               ...room,
+//               adults: adults,
+//               children: children,
+//               childAges: childAges,
+//             }
+//           : room
+//       )
+//     );
+//   }, [adults, children, childAges, index, setRooms]);
+
+//   const handleAdults = (increment) => {
+//     if (increment && adults < 14) {
+//       setAdults((prev) => prev + 1);
+//     } else if (!increment && adults > 1) {
+//       setAdults((prev) => prev - 1);
+//     }
+//   };
+
+//   // const handleChildren = (increment) => {
+//   //   if (increment && children < 6) {
+//   //     setChildren((prev) => prev + 1);
+//   //     setChildAges((prev) => [...prev, null]);
+//   //   } else if (!increment && children >= 1) {
+//   //     setChildren((prev) => prev - 1);
+//   //     setChildAges((prev) => prev.slice(0, -1));
+//   //   }
+//   // };
+//     const handleChildren = (type) => {
+//     if (type === "plus" && children < 6) {
+//       setChildren((prev) => prev + 1);
+//       setChildAges((prev) => [...prev, null]);
+//     } else if (type === "minus" && children >= 1) {
+//       setChildren((prev) => prev - 1);
+//       setChildAges((prev) => prev.slice(0, -1));
+//     }
+//   };
+
+//   return (
+//     <div className="mb-6 last:mb-0 ">
+//       <div className='flex justify-between'>
+//       <div className="mb-3 px-2 py-1 bg-gray-200 w-fit rounded-md">
+//         <span className="text-sm font-medium">Room {index + 1}</span>
+//       </div>
+//       {index +1 > 1 && (
+//                 <button
+//                   onClick={removeRoom}
+//                   className="text-blue-600 font-medium"
+//                 >
+//                   <RiDeleteBin6Line className='text-red-600'/>
+//                 </button>
+//         )}
+//       </div>
+
+//       <div className="flex justify-between items-center mb-4">
+//         <div>
+//           <div className="font-medium">Adults</div>
+//           <div className="text-xs text-gray-500">12+ Years</div>
+//         </div>
+//         <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
+//           <button 
+//             className={` flex items-center justify-center  ${adults > 1 ? 'text-blue ' : 'text-gray-300'}`}
+//             onClick={() => handleAdults(false)}
+//             disabled={adults <= 1}
+//           >
+//             -
+//           </button>
+//           <span className="mx-2 w-6 text-center">{adults}</span>
+//           <button 
+//             className="flex items-center justify-center text-blue"
+//             onClick={() => handleAdults(true)}
+//             disabled={adults >= 14}
+//           >
+//             +
+//           </button>
+//         </div>
+//       </div>
+
+//       <div className="flex justify-between items-center mb-3">
+//         <div>
+//           <div className="font-medium">Children</div>
+//           <div className="text-xs text-gray-500">0-12 Years</div>
+//         </div>
+//         <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
+//         <button 
+//             className={`flex items-center justify-center ${children > 0 ? 'text-blue' : 'text-gray-300'}`}
+//             onClick={() => handleChildren("minus")}
+//             disabled={children <= 0}
+//           >
+//             -
+//           </button>
+//           <span className="mx-2 w-6 text-center">{children}</span>
+//           <button 
+//             className=" flex items-center justify-center text-blue"
+//             onClick={() => handleChildren("plus")}
+//             disabled={children >= 6}
+//           >
+//             +
+//           </button>
           
-        </div>
-      </div>
+//         </div>
+//       </div>
 
       {/* {children > 0 && (
         <div className="pl-4 space-y-2 mt-3">
@@ -599,73 +599,81 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
           ))}
         </div>
       )} */}
-    </div>
-  );
-};
+//     </div>
+//   );
+// };
 
-const ChildAge = ({ index, child, age, setChildAges, showError }) => {
-  const [openAges, setOpenAges] = useState(false);
-  const [selectedAge, setSelectedAge] = useState(age);
-  const dropdownRef = useRef(null);
+// const ChildAge = ({ index, child, age, setChildAges, showError }) => {
+//   const [openAges, setOpenAges] = useState(false);
+//   const [selectedAge, setSelectedAge] = useState(age);
+//   const dropdownRef = useRef(null);
 
-  useEffect(() => {
-    setChildAges((prev) =>
-      prev.map((age, i) => (i === index ? selectedAge : age))
-    );
-  }, [selectedAge, index, setChildAges]);
+//   useEffect(() => {
+//     setChildAges((prev) =>
+//       prev.map((age, i) => (i === index ? selectedAge : age))
+//     );
+//   }, [selectedAge, index, setChildAges]);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setOpenAges(false);
-      }
-    };
+//   useEffect(() => {
+//     const handleClickOutside = (event) => {
+//       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+//         setOpenAges(false);
+//       }
+//     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+//     document.addEventListener("mousedown", handleClickOutside);
+//     return () => document.removeEventListener("mousedown", handleClickOutside);
+//   }, []);
 
-  const handleChildAge = (value) => {
-    setSelectedAge(value);
-    setOpenAges(false);
-  };
+//   const handleChildAge = (value) => {
+//     setSelectedAge(value);
+//     setOpenAges(false);
+//   };
 
-  return (
-    <div className="relative" ref={dropdownRef}>
-      <div
-        onClick={() => setOpenAges((prev) => !prev)}
-        className={`flex justify-between items-center p-2 border rounded cursor-pointer bg-white ${
-          showError && selectedAge === null ? 'border-red-500' : 'border-gray-300'
-        }`}
-      >
-        <span>Child {child} age*</span>
-        <div className="flex items-center">
-          <span className="mr-1">{selectedAge !== null ? selectedAge : '--'}</span>
-          <RiArrowDropDownLine className="text-xl" />
-        </div>
-      </div>
+//   return (
+//     <div className="relative" ref={dropdownRef}>
+//       <div
+//         onClick={() => setOpenAges((prev) => !prev)}
+//         className={`flex justify-between items-center p-2 border rounded cursor-pointer bg-white ${
+//           showError && selectedAge === null ? 'border-red-500' : 'border-gray-300'
+//         }`}
+//       >
+//         <span>Child {child} age*</span>
+//         <div className="flex items-center">
+//           <span className="mr-1">{selectedAge !== null ? selectedAge : '--'}</span>
+//           <RiArrowDropDownLine className="text-xl" />
+//         </div>
+//       </div>
       
-      {showError && selectedAge === null && (
-        <div className="text-xs text-red-500 mt-1">
-          Please provide the age of the child
-        </div>
-      )}
+//       {showError && selectedAge === null && (
+//         <div className="text-xs text-red-500 mt-1">
+//           Please provide the age of the child
+//         </div>
+//       )}
 
-      {openAges && (
-        <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-          {Array.from({ length: 13 }, (_, i) => (
-            <div
-              key={i}
-              onClick={() => handleChildAge(i)}
-              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-            >
-              {i}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
+//       {openAges && (
+//         <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+//           {Array.from({ length: 13 }, (_, i) => (
+//             <div
+//               key={i}
+//               onClick={() => handleChildAge(i)}
+//               className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+//             >
+//               {i}
+//             </div>
+//           ))}
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
 
-export default Pax;
+// const HotelType = ()=>{
+//   return (
+//     <div>
+
+//     </div>
+//   )
+// }
+
+// export default Pax;
