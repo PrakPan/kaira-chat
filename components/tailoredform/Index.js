@@ -134,6 +134,7 @@ const Enquiry = (props) => {
   const [showBlack, setShowBlack] = useState(false);
   const [submitSecondSlide, setSubmitSecondSlide] = useState(false);
   const [itineraryId, setItineraryId] = useState(null);
+  const [error,setError] = useState(null);
   let isPageWide = media("(min-width: 768px)");
 
   useEffect(() => {
@@ -471,12 +472,14 @@ const Enquiry = (props) => {
     itineraryInitiate
       .post("", data)
       .then((res) => {
+        setError(null);
         setItineraryId(res.data.itinerary_id);
         setIsLoading(false)
         setSlideIndex(slideIndex + 1);
       })
       .catch((err) => {
         console.log("ERROR: ", err.message);
+        setError(err.message);
         setIsLoading(false)
       });
   };
@@ -519,6 +522,8 @@ const Enquiry = (props) => {
         },
       })
       .then((response) => {
+        setLoading(false);
+        setError(null);
           setSubmitted(true);
           // if (!response.data?.auto_itinerary_created) {
           //   router.push("/thank-you");
@@ -544,6 +549,7 @@ const Enquiry = (props) => {
       .catch((err) => {
         console.log("ERROR >>>", err);
         setLoading(false);
+        setError(err.message);
         router.push("/thank-you");
       });
   }; 
@@ -712,6 +718,8 @@ const Enquiry = (props) => {
               setRoomConfiguration={setRoomConfiguration}
               setPriceRange={setPriceRange}
             ></Flickity>
+
+            {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
             {slideIndex === 0 ? (
               <Button

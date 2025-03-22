@@ -469,17 +469,28 @@ useEffect(() => {
 
 useEffect(() => {
   let interval;
+  let callCount = 0; // Initialize counter
+
   console.log("Polling:", polling);
 
   if (polling) {
     fetchData(true);
-    interval = setInterval(() => fetchData(true), 500000);
+
+    interval = setInterval(() => {
+      if (callCount < 7) {
+        fetchData(true); 
+        callCount++;
+      } else {
+        clearInterval(interval);
+        router.push("/thank-you");
+      }
+    }, 5000);
   } else {
-    clearInterval(interval);
+    clearInterval(interval); 
   }
 
-  return () => clearInterval(interval);
-}, [polling]); 
+  return () => clearInterval(interval); 
+}, [polling]);  
 
 
   
