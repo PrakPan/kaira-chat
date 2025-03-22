@@ -243,7 +243,7 @@ const ItineraryPoiElement = (props) => {
       },
       sort_by: {
         // no sorting filters added yet.
-      },
+      }
     }
     activtySearch
       .post(`/?limit=30&offset=${offSet}`, requestData)

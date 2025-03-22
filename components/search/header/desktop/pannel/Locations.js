@@ -69,7 +69,6 @@ const Text = styled.div`
 
 const Locations = (props) => {
   let locations = [];
-  
 
   if (props.hotlocations) {
     for (var i = 0; i < props.hotlocations.length; i++) {

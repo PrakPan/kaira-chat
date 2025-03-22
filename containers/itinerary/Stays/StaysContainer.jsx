@@ -117,7 +117,7 @@ const StaysContainer = (props) => {
     props.setShowBookingModal();
   }
 
-  function handleClick(i, id, data, city_id) {
+  function  handleClick(i, id, data, city_id) {
     let check_in = itineraryFilter.check_in;
     let check_out = itineraryFilter.check_out;
     setDates({ check_in, check_out });

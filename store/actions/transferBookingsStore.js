@@ -14,6 +14,7 @@ export const clearTransferBookings = () => ({
 });
 
 export const updateTransferBookings = (bookingIdToDelete) => {
+  console.log("Inside Redux",bookingIdToDelete);
   return (dispatch, getState) => {
     const state = getState();
     const updatedData = { ...state.TransferBookings?.transferBookings }; 
