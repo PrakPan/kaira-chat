@@ -34,7 +34,7 @@ const Overview = (props) => {
   return (
     <div>
       <GridContainer className="gap-2">
-        <Heading className="font-lexend">
+        <Heading className="font-lexend"> 
           {/* {toTitleCase(props.title)} */}
           {props.title}
           </Heading>
