@@ -224,6 +224,7 @@ const TransferBookings = (props) => {
                 selectedBooking={selectedBooking}
                 originCityId={itineraries?.start_city?.gmaps_place_id}
                 destinationCityId={itineraries?.cities[0]?.id}
+                
               />
             </>
             {itineraries?.cities?.map((item, index) => (

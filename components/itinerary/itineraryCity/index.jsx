@@ -10,7 +10,11 @@ import { useSelector } from "react-redux";
 
 const ItineraryCity = (props) => {
   const [viewMore, setViewMore] = useState(false);
-
+  
+  const handleStay = ()=>{
+    props?.setBookingId(props?.idMapping);
+    props?.setShowDetails(true);
+  }
   
   return (
     <div
@@ -51,7 +55,7 @@ const ItineraryCity = (props) => {
                 </div>
               </div>
             </div>
-          ) : <div className="text-blue cursor-pointer text-[14px] font-medium">
+          ) : <div className="text-blue cursor-pointer text-[14px] font-medium" onClick={handleStay}>
          + Add Stay in {props?.city?.city?.name}
         </div>}
         </div>

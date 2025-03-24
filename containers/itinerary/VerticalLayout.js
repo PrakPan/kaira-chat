@@ -54,7 +54,8 @@ const CityItem = ({
   origin_city_id,
   destination_city_name,
   origin_city_name,
-  loadbookings
+  loadbookings,
+  setBooki
 }) => {
 
   console.log("City Name",city);

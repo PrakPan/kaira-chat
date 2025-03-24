@@ -571,6 +571,9 @@ const SimpleTabsV2 = (props) => {
                   transferBookings={props?.transferBookings}
                   setTransferBookings={props?.setTransferBookings}
                   setItinerary={props?.setItinerary}
+                  payment={props.payment}
+                  stayBookings={stays}
+                  setStayBookings={props.setStayBookings}
                 />
               )
             ) : (
