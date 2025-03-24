@@ -8,7 +8,7 @@ export default class MyDocument extends Document {
     const sheet = new ServerStyleSheet();
     // Step 2: Retrieve styles from components in the page
     const page = await ctx.renderPage(
-      (App) => (props) => sheet.collectStyles(<App {...props} />),
+      (App) => (props) => sheet.collectStyles(<App {...props} />)
     );
 
     // Step 3: Extract the styles as <style> tags
@@ -21,13 +21,6 @@ export default class MyDocument extends Document {
   render() {
     return (
       <Html id="html" lang="en">
-        <script
-          chat="true"
-          src="//in.fw-cdn.com/30401267/225580.js"
-          strategy="beforeInteractive"
-          type="text/javascript"
-        ></script>
-
         <Head>
           {/* Google Tag Manager */}
           {process.env.NODE_ENV === "production" &&
