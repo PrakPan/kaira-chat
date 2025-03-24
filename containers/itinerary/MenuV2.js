@@ -77,6 +77,7 @@ const SimpleTabsV2 = (props) => {
   const transferBooking = useSelector((state) => state.TransferBookings)?.transferBookings
 
   const stays = useSelector((state) => state.Stays);
+  console.log("Stays",stays);
 
   useEffect(() => {
     if (router.query.payment_status) {
@@ -597,7 +598,7 @@ const SimpleTabsV2 = (props) => {
           <div id={"Stays"}>
             {props.mercuryItinerary ? (
               <StaysContainer
-                stayBookings={props?.stayBookings}
+                stayBookings={stays}
                 setStayBookings={props.setStayBookings}
               />
             ) : (
@@ -889,7 +890,7 @@ const SimpleTabsV2 = (props) => {
                     setHideBookingModal={props.setHideBookingModal}
                     setShowLoginModal={setShowLoginModal}
                     _GetInTouch={_GetInTouch}
-                    stayBookings={stays || props?.stayBookings}
+                    stayBookings={stays}
                     setStayBookings={props.setStayBookings}
                   />
                 ) : (
@@ -1472,3 +1473,6 @@ function newFunction(
   }
   return totalcityslabs;
 }
+
+
+                            

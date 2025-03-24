@@ -143,7 +143,7 @@ const StaysContainer = (props) => {
         {props.stayBookings &&
           props.stayBookings.map((booking, index) => (
             <HotelBooking
-              key={booking.id}
+              key={index}
               index={index}
               booking={booking}
               payment={props.payment}

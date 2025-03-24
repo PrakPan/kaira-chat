@@ -19,6 +19,7 @@ import { updateStays } from "../../../../store/actions/StayBookings";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { axiosDeleteBooking } from "../../../../services/itinerary/bookings";
+import { RiDeleteBin6Line } from "react-icons/ri";
 const starRating = (rating) => {
   var stars = [];
   for (let i = 0; i < Math.floor(rating); i++) {
@@ -211,9 +212,9 @@ const HotelBookingDetails = (props) => {
       if (response.status === 204) {
         dispatch(updateStays(props?.id));
         setLoading(false);
+        props?.setShowDetails();
         toast.success("Booking deleted successfuly");
         setVisible(true);
-        props?.setShowDetails(false);
         // setHandleShow(false);
         console.log("Deleted Booking");
       }
@@ -1199,6 +1200,7 @@ const HotelBookingDetails = (props) => {
                 : ""}
             </Address>
           </div>
+          <div className="flex justify-between">
           <div
             style={{
               display: "flex",
@@ -1220,14 +1222,14 @@ const HotelBookingDetails = (props) => {
               View on Google Map
             </a>
           </div>
-          <div>
+          
             <button
               className=" right-0  bg-red-500 text-white py-2 rounded-lg flex items-center justify-center"
               onClick={handleDelete}
             >
               <div style={{ position: "relative" }}>
-                <div style={loading ? { visibility: "hidden" } : {}}>
-                  🗑 Delete Booking
+                <div className="flex gap-1 items-center p-1" style={loading ? { visibility: "hidden" } : {}}>
+                   <RiDeleteBin6Line/> Delete Booking
                 </div>
                 {loading && (
                   <PulseLoader

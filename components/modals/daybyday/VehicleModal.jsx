@@ -5,6 +5,7 @@ import Pin from "../../../containers/newitinerary/breif/route/Pin";
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { PulseLoader } from "react-spinners";
 import styled from "styled-components";
+import { RiDeleteBin6Line } from "react-icons/ri";
 
 const BackText = styled.div`
   font-size: 1.5rem;
@@ -66,7 +67,7 @@ const VehicleDetailModal = ({
       <div className="fixed inset-0 bg-gray-50 w-full h-full flex flex-col">
         <div className="p-4 flex items-center">
           <IoClose
-            onClick={() => setIsOpen(false)}
+            onClick={() => setHandleShow(false)}
             className="hover:cursor-pointer"
             style={{ fontSize: "2rem" }}
           />
@@ -253,8 +254,8 @@ const VehicleDetailModal = ({
               disabled={loading}
             >
               <div style={{ position: "relative" }}>
-                <div style={loading ? { visibility: "hidden" } : {}}>
-                  🗑 Delete Booking
+                <div className="flex gap-1 items-center" style={loading ? { visibility: "hidden" } : {}}>
+                  <RiDeleteBin6Line/> <span> Delete Booking </span>
                 </div>
                 {loading && (
                   <PulseLoader

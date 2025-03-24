@@ -120,7 +120,7 @@ const HotelBooking = ({
 
   return (
     <div className={`${!isPageWide ? "max-w-fit" : "max-w-[54vw]"}`}>
-      {booking?.user_ratings_total?
+      {booking?.user_ratings_total && booking?.id?
       <>
       <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
         {booking?.city_name}

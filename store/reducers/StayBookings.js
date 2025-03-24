@@ -10,13 +10,11 @@ const reducer = (state = initialState, action) => {
       return [...action.payload];
 
     case actionTypes.UPDATE_STAYS:
-          return [
-           action.payload
-          ]
-    default: {
+      return [...action.payload]; 
+    default:
       return state;
-    }
   }
 };
+
 
 export default reducer;
