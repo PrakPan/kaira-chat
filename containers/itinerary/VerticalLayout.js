@@ -238,6 +238,7 @@ const CityItem = ({
             <FlightDetailModal
               segments={data?.transfer_details?.items?.[0]?.segments}
               fareRule={data?.transfer_details?.items?.[0]?.fare_rule?.[0]}
+              booking_id={data?.id}
               setShowDetails={setHandleShow}
               name={city}
             />

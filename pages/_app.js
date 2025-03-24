@@ -14,6 +14,7 @@ import dynamic from "next/dynamic";
 import Head from "next/head";
 import Script from "next/script";
 function MyApp({ Component, pageProps, store }) {
+  const messengerRef = useRef(null);
   const router = useRouter();
   const ref = useRef();
   const [isChatbotLoaded, setIsChatBotLoaded] = useState(false);
@@ -46,6 +47,43 @@ function MyApp({ Component, pageProps, store }) {
     };
   }, [router.events]);
   
+  useEffect(() => {
+    setTimeout(() => {
+      (function() {
+        function getElement(xpath) {
+            return document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+        }
+    
+        let dfMessengerBubble = getElement('/html/body/div[1]/df-messenger/df-messenger-chat-bubble');
+        if (!dfMessengerBubble) return console.error("df-messenger-chat-bubble not found");
+    
+        let dfMessengerChat = dfMessengerBubble.shadowRoot.querySelector('df-messenger-chat');
+        if (!dfMessengerChat) return console.error("df-messenger-chat not found");
+    
+        let userInputContainer = dfMessengerChat.shadowRoot.querySelector('df-messenger-user-input');
+        if (!userInputContainer) return console.error("df-messenger-user-input not found");
+    
+        let textArea = userInputContainer.shadowRoot.querySelector('textarea');
+        if (!textArea) return console.error("Textarea not found");
+    
+        textArea.value = `Give me more detail about this itinerary ${window.location.href}`;
+
+    
+        const enterEvent = new KeyboardEvent('keydown', {
+          key: 'Enter',
+          code: 'Enter',
+          keyCode: 13,
+          which: 13,
+          bubbles: true
+        });
+        textArea.dispatchEvent(enterEvent);
+    })();
+    
+    
+    }, 2000);
+}, []);
+  
+
   return (
     <>
       <Head>
@@ -69,7 +107,9 @@ function MyApp({ Component, pageProps, store }) {
       <Script
         src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"
         async
-        onLoad={() => {setIsChatBotLoaded(true)}}
+        onLoad={() => {
+          setIsChatBotLoaded(true);
+        }}
       />
       {typeof window !== "undefined" && isChatbotLoaded && (
         <>
@@ -79,6 +119,7 @@ function MyApp({ Component, pageProps, store }) {
             agent-id="7a31b76b-858c-4efe-837a-43fb35d5b8f5"
             language-code="en"
             intent="WELCOME"
+            ref={messengerRef}
           >
             
             {/* <df-messenger-chat-bubble chat-title="Personalized Travel Plan"             */}
