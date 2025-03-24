@@ -9,11 +9,10 @@ import CityDetailsSkeleton from "./CityDetailsSkeleton";
 
 const CityDetailsDrawer = (props) => {
   const [data, setData] = useState(null);
-
   const getCityData = async () => {
     try {
-      const res = await cityDetail.get(props.city_id);
-      setData(res.data);
+      const res = await axioscitydatainstance.get("/city/" + props.city_id);
+      setData(res.data?.data?.city);
     } catch (err) {
       console.log("[ERROR][CityDetailsDrawer:getCityData]: ", err.message);
     }

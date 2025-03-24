@@ -53,7 +53,7 @@ export default function Book() {
     if (!router.isReady) return;
     const getResponse = async () => {
       const res = await axios.get(
-        `${MERCURY_HOST}/api/v1/itinerary/jhjkhkj/bookings/flight/${booking_id}`
+        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/flight/${booking_id}`
       );
       setCount((prev) => ({
         ...prev,

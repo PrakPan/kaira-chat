@@ -276,30 +276,28 @@ const HotelBookingDetails = (props) => {
           )}
         </div>
       )}
-
-      {props?.currentBooking.user_rating && (
+{/* 
+      {props?.user_rating && (
         <div className="flex flex-col gap-1">
-          {props?.currentBooking.user_rating && (
+          {props?.user_rating && (
             <div className="gap-1 flex flex-row  items-center">
               <div className="flex flex-row text-[#ffa500]">
-                {starRating(props?.currentBooking.user_rating)}
+                {starRating(props?.user_rating)}
               </div>
               <div>
-                {props?.currentBooking?.user_rating}
+                {props?.user_rating}
                 {" . "}
               </div>
-              {props?.currentBooking?.number_of_reviews && (
+              {props?.number_of_reviews && (
                 <div className="text-sm text-[#7A7A7A] font-medium underline">
-                  {props?.currentBooking?.number_of_reviews}{" "}
-                  {props?.currentBooking?.source === "Agoda"
-                    ? "user reviews"
-                    : "Google reviews"}
+                  {props?.number_of_reviews}{" "}
+                  user reviews
                 </div>
               )}
             </div>
           )}
         </div>
-      )}
+      )} */}
 
       {isDesktop ? (
         <ImageContainer>

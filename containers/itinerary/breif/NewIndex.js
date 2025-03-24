@@ -136,7 +136,6 @@ const Details = (props) => {
     return null; // Return null if city_id is not found in the array
   }
 
-  console.log("Inside Brief New Index",props?.transferBookings);
   return (
     <div id="brief" className="mt-16">
       <DetailsContainer>
@@ -217,8 +216,8 @@ const Details = (props) => {
       <Drawer
         show={showDrawer}
         onHide={() => setShowDrawer(false)}
-        city_id={showDrawerData.city_id}
-        dayId={findDayIdByCityId(showDrawerData.city_id)}
+        city_id={showDrawerData?.city?.id}
+        dayId={findDayIdByCityId(showDrawerData?.city?.id)}
       ></Drawer>
 
       {props.traveleritinerary ? (

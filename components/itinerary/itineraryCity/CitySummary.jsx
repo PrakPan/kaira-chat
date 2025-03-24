@@ -107,7 +107,7 @@ const CitySummary = (props) => {
             {activities?.map((item) => (
               <div 
               key={item.id}
-              className="flex gap-2 group w-[333px] p-[10px] border-[2px] rounded-[12px] shadow-none hover:cursor-pointer" onClick={() =>
+              className="flex gap-2 group w-[333px] p-[10px] border-[2px] rounded-[12px] shadow-none hover:cursor-pointer hover:bg-[rgb(254_250_216)] bg-opacity-100" onClick={() =>
                 handleView(
                   item.id,
                   "activity"
