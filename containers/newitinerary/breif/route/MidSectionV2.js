@@ -216,7 +216,7 @@ const MidSectionV2 = (props) => {
                     onClick={(e) => handleChangeTransfer(e)}
                     className="text-[14px] font-[600] leading-[54px] text-blue hover:underline"
                   >
-                    + Add Transfer from {props?.city} to {props?.dcity}
+                    + Add Transfer
                   </button>
                 )}
 

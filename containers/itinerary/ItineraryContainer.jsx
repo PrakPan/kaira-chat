@@ -481,7 +481,7 @@ useEffect(() => {
     fetchData(true);
 
     interval = setInterval(() => {
-      if (callCount < 7) {
+      if (callCount < 15) {
         fetchData(true); 
         callCount++;
       } else {

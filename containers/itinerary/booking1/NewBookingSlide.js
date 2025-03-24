@@ -82,7 +82,7 @@ const Details = (props) => {
   const convertDFormat = (dt) => {
     if(dt){
     const date = parseISO(dt);
-    const formattedDate = format(date, "MMMM do, yyyy");
+    const formattedDate = format(date, "MMMM do yyyy");
     return formattedDate;
     }
     else return;
