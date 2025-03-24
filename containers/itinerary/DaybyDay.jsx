@@ -16,7 +16,7 @@ const CITY_COLOR_CODES = [
   "#7d5e7d", // shade of purple
 ];
 
-const DaybyDay = ({ transferBookings ,width,setItinerary,activityBookings,setActivityBookings,itinerary}) => {
+const DaybyDay = ({ transferBookings ,width,setItinerary,activityBookings,setActivityBookings,itinerary, loadbookings}) => {
   const itineraryDaybyDay=useSelector((state)=>state.Itinerary)
 
   let isPageWide = media("(min-width: 768px)");
@@ -60,6 +60,7 @@ const DaybyDay = ({ transferBookings ,width,setItinerary,activityBookings,setAct
           length={itineraryDaybyDay?.cities?.length}
         />
         <CityItem
+          loadbookings={loadbookings}
           key={startCity?.gmaps_place_id}
           bookingIdToDelete={startCity?.gmaps_place_id + ":" + itineraryDaybyDay?.cities[0]?.id}
           city={
@@ -101,6 +102,7 @@ const DaybyDay = ({ transferBookings ,width,setItinerary,activityBookings,setAct
                 <div>
                   <CityItem
                     mercury
+                    loadbookings={loadbookings}
                     bookingIdToDelete={idMapping}
                     key={city.id}
                     city={transferBookings?.intercity?.[idMapping]?.name}
@@ -129,6 +131,7 @@ const DaybyDay = ({ transferBookings ,width,setItinerary,activityBookings,setAct
         })}
         <CityItem
           key={endCity?.gmaps_place_id}
+          loadbookings={loadbookings}
           city={
             transferBookings?.intercity?.[
               itineraryDaybyDay?.cities[itineraryDaybyDay?.cities.length - 1]

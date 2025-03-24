@@ -8,6 +8,7 @@ import { connect } from "react-redux";
 import TaxiModal from "../../../../components/modals/taxis/Index";
 import FlightModal from "../../../../components/modals/flights/Index";
 import { useEffect } from "react";
+import TransferSkeleton from "../../../../components/itinerary/Skeleton/TransferSkeleton";
 
 const Container = styled.div`
   display: grid;
@@ -153,13 +154,15 @@ const MidSectionV2 = (props) => {
     }
   };
 
+  console.log("Load Bookings",props?.loadbookings);
+
   return (
     <Container className="font-lexend" hidemidsection={hidemidsection}>
       <div style={{ position: "relative" }}>
         <Line pinColour={props.pinColour} hidemidsection={hidemidsection} />
       </div>
 
-      {hidemidsection && (
+      {hidemidsection && (props?.loadbookings ? <TransferSkeleton/> : (
         <> 
           {props.version == "v2" ? (
             (
@@ -258,7 +261,7 @@ const MidSectionV2 = (props) => {
             </Text>
           )}
         </>
-      )}
+      ))}
 
 
        <FlightModal

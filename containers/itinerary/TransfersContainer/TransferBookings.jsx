@@ -190,6 +190,7 @@ const TransferBookings = (props) => {
               />
 
               <TransferBooking
+                loadbookings={props?.loadbookings}
                 key={
                   transferBookingsIntercity[
                     `${
@@ -240,6 +241,7 @@ const TransferBookings = (props) => {
                     />
 
                     <TransferBooking
+                      loadbookings={props?.loadbookings}
                       key={
                         transferBookingsIntercity[
                           `${item.id + ":" + itineraries?.cities[index + 1].id}`
@@ -284,6 +286,7 @@ const TransferBookings = (props) => {
               pinColour={CITY_COLOR_CODES[itineraries?.cities.length % 7]}
             />
             <TransferBooking
+              loadbookings={props?.loadbookings}
               key={
                 transferBookingsIntercity[
                   `${itineraries?.cities[itineraries?.cities.length - 1]?.id}:${

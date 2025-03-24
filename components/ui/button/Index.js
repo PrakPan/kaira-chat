@@ -37,6 +37,7 @@ const Index = (props) => {
           textAlign={props.textAlign}
           center={props.center}
           style={props.style}
+          disabled={props.disabled}
         >
           <div style={{ position: "relative" }}>
             <div style={props.loading ? { visibility: "hidden" } : {}}>

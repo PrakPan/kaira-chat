@@ -75,10 +75,8 @@ const SimpleTabsV2 = (props) => {
   const isDesktop = useMediaQuery("(min-width:1148px)");
   // const transferBooking = useSelector((sta 
   const transferBooking = useSelector((state) => state.TransferBookings)?.transferBookings
-  console.log("Transfer Booking",transferBooking);
 
-  const stays = useSelector((state) => state.Stays)
-  console.log("Stay Booking",stays);
+  const stays = useSelector((state) => state.Stays);
 
   useEffect(() => {
     if (router.query.payment_status) {
@@ -535,6 +533,7 @@ const SimpleTabsV2 = (props) => {
         {citydatadone && (
           <Breif
             mercuryItinerary={props?.mercuryItinerary}
+            loadbookings={props?.loadbookings}
             plan={props.plan}
             routesData={RoutesData}
             transfersData={TransfersData}
@@ -845,6 +844,7 @@ const SimpleTabsV2 = (props) => {
                       setTransferBookings={props?.setTransferBookings}
                       setItinerary={props?.setItinerary}
                       itinerary={props?.itinerary}
+                      loadbookings={props?.loadbookings}
                     />
                   )
                 : props?.itinerary && (
@@ -928,6 +928,7 @@ const SimpleTabsV2 = (props) => {
                     {props.transferBookings ? (
                       <>
                         <TransferBookings
+                          loadbookings={props?.loadbookings}
                           setShowLoginModal={setShowLoginModal}
                           showTaxiModal={props.showTaxiModal}
                           _updateFlightBookingHandler={
@@ -1046,6 +1047,7 @@ const SimpleTabsV2 = (props) => {
             </div>
           ) : props?.mercuryItinerary ? (
             <NewSummaryContainers
+              loadpricing={props?.loadpricing}
               payment={props?.payment}
               itineraryDate={props?.itineraryDate}
               mercuryItinerary={props?.mercuryItinerary}

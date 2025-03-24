@@ -276,6 +276,7 @@ const NewSummaryContainer = (props) => {
       ) : (
         <NewBookingSlide
           {...props}
+          loadpricing={props?.loadpricing}
           itinerary={props?.itinerary}
           openCouponSlide={() => setCouponSlide(true)}
           setiscouponApplied={setiscouponApplied}

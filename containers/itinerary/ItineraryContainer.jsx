@@ -77,6 +77,8 @@ const ItineraryContainer = (props) => {
   const [showMercuryItinerary, setShowMercuryItinerary] = useState(false);
   const [cities, setCities] = useState([]);
   const [cityTransferBookings, setCityTransferBookings] = useState(null);
+  const [loadbookings,setLoadBookings] = useState(false);
+  const [loadpricing,setLoadPricing] = useState(false);
   
   const [polling, setPolling] = useState(true);
 
@@ -443,11 +445,13 @@ function fetchData(poll) {
 
       if (pricing === "SUCCESS" && !pricingSuccessRef.current) {
         pricingSuccessRef.current = true; 
+        setLoadPricing(true);
         getPaymentInfo();
       }
 
       if (booking === "SUCCESS" && !bookingSuccessRef.current) {
         bookingSuccessRef.current = true;
+        setLoadBookings(true);
         // setTimeout(() => {
           getAllBookings();
         // }, 20000);
@@ -469,7 +473,7 @@ useEffect(() => {
 
 useEffect(() => {
   let interval;
-  let callCount = 0; // Initialize counter
+  let callCount = 0; 
 
   console.log("Polling:", polling);
 
@@ -922,7 +926,8 @@ useEffect(() => {
       <div id="itinerary-anchor">
         <Menu
           mercuryItinerary
-          loadbookings={bookingSuccessRef}
+          loadbookings={!loadbookings}
+          loadpricing={!loadpricing}
           showMercuryItinerary={showMercuryItinerary}
           hasUserPaid={hasUserPaid}
           isDatePresent={isDatePresent}
