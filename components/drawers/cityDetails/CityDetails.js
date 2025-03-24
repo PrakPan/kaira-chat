@@ -119,9 +119,9 @@ const CityDetails = (props) => {
           }}
           noLazy
         ></ImageLoader>
-        <TimeStamp>
+        {!imageLoading&&<TimeStamp>
           Ideal duration - {props.data.ideal_duration_days} days
-        </TimeStamp>
+        </TimeStamp>}
       </div>
       {imageLoading && (
         <div

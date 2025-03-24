@@ -12,7 +12,7 @@ const Question = (props) => {
       className={
         props.hover_pointer
           ? "text-centr font-lexend hover-pointer"
-          : "text-centr font-lexend"
+          : "text-centr font-lexend flex justify-between"
       }
     >
       {props.children}

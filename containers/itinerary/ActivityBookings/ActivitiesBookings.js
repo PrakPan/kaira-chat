@@ -33,7 +33,6 @@ const ActivitiesBookings = (props) => {
     }
   };
 
-  
   function Addons(Shorthand) {
     switch (Shorthand) {
       case "EP":
@@ -82,7 +81,11 @@ const ActivitiesBookings = (props) => {
   };
 
   return (
-    <div id="activities" className="lg:w-[60vw] w-full">
+    <div
+      id="activities"
+      className="w-full lg:w-auto"
+      style={{ width: "calc(54vw + 30px)" }}
+    >
       <div className="cursor-pointer font-lexend mb-2  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit">
         Activities
         <span class="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
@@ -176,7 +179,7 @@ const ActivitiesBookings = (props) => {
                         </div>
                       )}
                     </div>
-                    <div className="flex gap-3">
+                    <div className="flex gap-2">
                       {booking.check_in && (
                         <div className="flex flex-row gap-2 items-center">
                           <BsCalendar2 className="text-sm font-[400] line-clamp-1 text-[#7A7A7A]" />
@@ -190,10 +193,10 @@ const ActivitiesBookings = (props) => {
                         </div>
                       )}
                       {booking.activity?.ideal_duration_hours_text && (
-                        <div className="flex flex-row gap-1 items-center">
+                        <div className="flex flex-row gap-1 items-center ">
                           <BiTimeFive className="text-md font-[400] line-clamp-1 text-[#7A7A7A]" />
                           <div>
-                            <div className="text-sm font-[400] line-clamp-1">
+                            <div className="text-sm font-[400] ">
                               {booking.ideal_duration_hours_text}
                             </div>
                           </div>
@@ -201,7 +204,7 @@ const ActivitiesBookings = (props) => {
                       )}
                       <div className="flex gap-1 items-center">
                         <IoTicket className="text-sm font-[400] line-clamp-1 text-[#7A7A7A]" />
-                        <div className="text-sm">{booking?.pax} Tickets</div>
+                        <div className="text-sm line-clamp-1">{booking?.pax} Tickets</div>
                       </div>
                       <div className="flex gap-1 items-center">
                         <svg
@@ -228,9 +231,7 @@ const ActivitiesBookings = (props) => {
                     <POIDetailsDrawer
                       itineraryDrawer
                       show={showDrawer}
-                      iconId={
-                        null
-                      }
+                      iconId={null}
                       handleCloseDrawer={handleCloseDrawer}
                       name={booking?.activity?.name}
                       image={booking?.image}

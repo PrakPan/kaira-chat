@@ -29,10 +29,17 @@ const CityDay = (props) => {
       <div
         className={`md:w-[20%] text-[14px] md:text-[16px] font-semibold py-2 px-1  md:border-r-2 md:text-center md:text-black bg-[#ECECEC] md:bg-white`}
       >
-       
-        {isPageWide ? <span> {convertDateFormat(props?.day?.date)}</span> : <span>, {convertDateFormat(props?.day?.date)}</span>}
-        <span className="text-[#ABABAB] font-normal"> (Day {props.index + 1})</span>
-        
+        {props?.day?.date &&
+          (isPageWide ? (
+            <span>{convertDateFormat(props?.day?.date)}</span>
+          ) : (
+            <span>, {convertDateFormat(props?.day?.date)}</span>
+          ))}
+        <span className="text-[#ABABAB] font-normal">
+          {" "}
+          (Day {props.index + 1})
+        </span>
+
         {/* {elements.map((element, index) => (
           <>
             
@@ -48,7 +55,7 @@ const CityDay = (props) => {
   {isPageWide && elements.map((time, index) => (
     <div key={index} className="flex items-start">
       {/* Left Section - Clock + Vertical Line */}
-      {/* <div className="flex flex-col items-center"> */}
+        {/* <div className="flex flex-col items-center"> */}
         {/* Clock Icon */}
         {/* <div className="h-6 w-6 flex items-center justify-center">
           <RiTimeLine className="text-gray-400" size={25} />
@@ -69,13 +76,10 @@ const CityDay = (props) => {
       </div>
 
       {/* Right Section - Time */}
-      {/* <span className="ml-2 text-xs text-gray-500"></span>
+        {/* <span className="ml-2 text-xs text-gray-500"></span>
     </div> */}
-  {/* ))}  */}
-{/* </div>  */}
-
-
-
+        {/* ))}  */}
+        {/* </div>  */}
       </div>
 
       <div className="flex flex-col p-3 md:w-[85%]">

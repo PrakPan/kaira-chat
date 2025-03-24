@@ -37,6 +37,7 @@ const PinSection = (props) => {
   const handleClick = () => {
     if (!props.duration || props.duration === "0" || props.transfersPin) return;
     props.setShowDrawer(true);
+    console.log("city data is:",props.cityData)
     props.setShowDrawerData(props.cityData);
   };
   

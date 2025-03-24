@@ -17,6 +17,7 @@ import TransferEditDrawer from "../../components/drawers/routeTransfer/TransferE
 import VehicleDetailModal from "../../components/modals/daybyday/VehicleModal";
 import Drawer from "../../components/ui/Drawer";
 import FlightDetailModal from "../../components/modals/daybyday/FlightDetailModal";
+import TransferSkeleton from "../../components/itinerary/Skeleton/TransferSkeleton";
 const Container = styled.div`
   display: flex;
   align-items: center;
@@ -52,7 +53,9 @@ const CityItem = ({
   destination_city_id,
   origin_city_id,
   destination_city_name,
-  origin_city_name
+  origin_city_name,
+  loadbookings,
+  setBooki
 }) => {
 
   console.log("City Name",city);
@@ -174,7 +177,7 @@ const CityItem = ({
           !downPresent && upPresent && "mt-[41px]"
         } ${!upPresent && downPresent && "mb-[41px]"}`}
       >
-        <div className="font-[Poppins] text-[16px] font-[500] flex gap-1">
+        {loadbookings ? <TransferSkeleton/> : <div className="font-[Poppins] text-[16px] font-[500] flex gap-1">
           {(booking_id || city) && !visible ? <> <div className="mt-[4px]">{correctIcon(booking_type)}</div>
           <div className="flex flex-col">
             <div className="flex gap-2 items-center">
@@ -200,9 +203,9 @@ const CityItem = ({
             }
           className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
         >
-          + Add Transfer
+          + Add Transfer from {origin_city_name} to {destination_city_name}
         </button>}
-        </div>
+        </div>}
       </div>
       <TransferEditDrawer
                   mercury
@@ -235,6 +238,7 @@ const CityItem = ({
             <FlightDetailModal
               segments={data?.transfer_details?.items?.[0]?.segments}
               fareRule={data?.transfer_details?.items?.[0]?.fare_rule?.[0]}
+              booking_id={data?.id}
               setShowDetails={setHandleShow}
               name={city}
             />

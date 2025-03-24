@@ -2,18 +2,17 @@ import React from "react";
 import CityDetails from "./CityDetails";
 import Drawer from "../../ui/Drawer";
 import { TbArrowBack } from "react-icons/tb";
-import axioscitydatainstance from "../../../services/poi/city";
+import axioscitydatainstance, { cityDetail } from "../../../services/poi/city";
 import { useEffect } from "react";
 import { useState } from "react";
 import CityDetailsSkeleton from "./CityDetailsSkeleton";
 
 const CityDetailsDrawer = (props) => {
   const [data, setData] = useState(null);
-
   const getCityData = async () => {
     try {
-      const res = await axioscitydatainstance.get("?city_id=" + props.city_id);
-      setData(res.data);
+      const res = await axioscitydatainstance.get("/city/" + props.city_id);
+      setData(res.data?.data?.city);
     } catch (err) {
       console.log("[ERROR][CityDetailsDrawer:getCityData]: ", err.message);
     }

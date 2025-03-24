@@ -4,6 +4,7 @@ import Pax from "./pax/Pax.jsx";
 import GroupType from "./GroupType";
 import Question from "../Question";
 import BudgetSlider from "./preferences/BudgetSlider.jsx";
+import HotelType from "./HotelType.js";
 
 const Container = styled.div`
   color: black;
@@ -32,7 +33,9 @@ const SlideTwo = (props) => {
       <Section style={{ marginBottom: "1.5rem" }}>
         {showPax ? (
           <Question>
-            Group type: {props.groupType}{" "}
+            <p>
+            <span className="text-gray-700 font-normal">Group type: </span> {props.groupType}{" "}
+            </p>
             <span
               onClick={() => setShowPax(false)}
               className="text-sm ml-2 text-blue cursor-pointer"
@@ -61,6 +64,13 @@ const SlideTwo = (props) => {
           ></GroupType>
         )}
       </Section>
+
+      {/* <Section>
+        <Question>
+          Hotel Type
+        </Question>
+        <HotelType/>
+      </Section> */}
 
       <Section>
         <BudgetSlider

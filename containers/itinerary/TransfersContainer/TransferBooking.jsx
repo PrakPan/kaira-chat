@@ -21,6 +21,7 @@ import { MERCURY_HOST } from "../../../services/constants";
 import VehicleDetailModal from "../../../components/modals/daybyday/VehicleModal";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
+import TransferSkeleton from "../../../components/itinerary/Skeleton/TransferSkeleton";
 const GridContainer = styled.div`
   width: auto;
   overflow: auto;
@@ -133,6 +134,7 @@ const TransferBooking = ({
   selectedBooking,
   originCityId,
   destinationCityId,
+  loadbookings
 }) => {
   const router = useRouter();
   let isPageWide = media("(min-width: 768px)");
@@ -493,8 +495,8 @@ const TransferBooking = ({
             </div>
           )}
         </Container>
-      ) : (
-        <div className="grid w-full grid-cols-[30px_120px] min-h-[5rem] md:min-h-[8rem]">
+      ) : 
+       (<div className="grid w-full grid-cols-[30px_120px] min-h-[5rem] md:min-h-[8rem]">
           <div className="relative">
             <Line
               pinColour={CITY_COLOR_CODES[index % 7]}
@@ -502,12 +504,12 @@ const TransferBooking = ({
               end={end}
             />
           </div>
-          <button
+          {loadbookings ? <TransferSkeleton/> : <button
             onClick={() => setShowDrawer(true)}
-            className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
+            className="text-[14px] font-[600] leading-[60px] text-blue hover:underline w-full whitespace-nowrap"
           >
-            + Add Transfer
-          </button>
+            + Add Transfer from {origin?.name || origin?.city_name} to {destination?.name || destination?.city_name}
+          </button>}
           <TransferEditDrawer
             mercury
             addOrEdit={"transferAdd"}
@@ -559,6 +561,7 @@ const FlightBooking = ({
   setShowLoginModal,
   originCityId,
   destinationCityId,
+  loadbookings
 }) => {
   const [showDetails, setShowDetails] = useState(false);
   const router = useRouter();

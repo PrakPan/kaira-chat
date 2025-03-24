@@ -65,7 +65,7 @@ export async function getStaticPaths() {
   let paths = [];
 
   try {
-    const res = await axiossearchallinstance.get("/?type=State&fields=path");
+    const res = await axiossearchallinstance.get("/all/");
     const data = res.data;
 
     const allPaths = [...data];

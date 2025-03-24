@@ -11,7 +11,6 @@ import { connect, useDispatch, useSelector } from "react-redux";
 import { setTransfersBookings } from "../../../store/actions/transferBookingsStore";
 import { Generalbuttonstyle } from "../../../components/ui/button/Generallinkbutton";
 import { Logo } from "../../../components/modals/flights/new-flight-searched/LogoContainer";
-import { render } from "nprogress";
 
 const Details = ({
   originCityId,
@@ -27,9 +26,7 @@ const Details = ({
   transferBookings,
   setTransferBookingsIntercity,
 }) => {
-  useEffect(() => {
-    console.log("originCityId in Details:", segments);
-  }, [originCityId, destinationCityId]);
+  console.log("booking id is:",booking_id)
   const router = useRouter();
   const [fareRules, setFareRules] = useState(fareRule?.[0]?.fareRuleDetail);
   const [fareRulesLoading, setFareRulesLoading] = useState(false);
@@ -136,16 +133,18 @@ const Details = ({
                       result_indices: [resultIndex],
                     }
                   );
-                  toast.success("Added booking Successfuly");
                   window.location.href = `/flights/book/${res.data.id}`;
                 } else {
+                  console.log("updating",originCityId)
                   const res = await axios.post(
                     MERCURY_HOST +
                       `/api/v1/itinerary/${router?.query?.id}/bookings/flight/`,
                     {
                       trace_id: localStorage.getItem(`${provider}_trace_id`),
                       result_indices: [resultIndex],
-                      booking_id: booking_id,
+                      source_itinerary_city:originCityId,
+                      destination_itinerary_city:destinationCityId  ,
+                      booking_id: booking_id,                    
                     }
                   );
                   const updatedTransferBookings = {

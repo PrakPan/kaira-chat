@@ -557,6 +557,9 @@ const TransferEditDrawer = (props) => {
         elementIndex={element_index}
         routeId={routeId}
         mercuryTransfer={selectedMercuryTransfer}
+        individual={props?.individual}
+        originCityId={origin}
+        destinationCityId={destination}
       ></FlightModal>
 
       <TaxiModal

@@ -19,6 +19,7 @@ import { updateStays } from "../../../../store/actions/StayBookings";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { axiosDeleteBooking } from "../../../../services/itinerary/bookings";
+import { RiDeleteBin6Line } from "react-icons/ri";
 const starRating = (rating) => {
   var stars = [];
   for (let i = 0; i < Math.floor(rating); i++) {
@@ -211,9 +212,9 @@ const HotelBookingDetails = (props) => {
       if (response.status === 204) {
         dispatch(updateStays(props?.id));
         setLoading(false);
+        props?.setShowDetails();
         toast.success("Booking deleted successfuly");
         setVisible(true);
-        props?.setShowDetails(false);
         // setHandleShow(false);
         console.log("Deleted Booking");
       }
@@ -275,30 +276,28 @@ const HotelBookingDetails = (props) => {
           )}
         </div>
       )}
-
-      {props?.currentBooking.user_rating && (
+{/* 
+      {props?.user_rating && (
         <div className="flex flex-col gap-1">
-          {props?.currentBooking.user_rating && (
+          {props?.user_rating && (
             <div className="gap-1 flex flex-row  items-center">
               <div className="flex flex-row text-[#ffa500]">
-                {starRating(props?.currentBooking.user_rating)}
+                {starRating(props?.user_rating)}
               </div>
               <div>
-                {props?.currentBooking?.user_rating}
+                {props?.user_rating}
                 {" . "}
               </div>
-              {props?.currentBooking?.number_of_reviews && (
+              {props?.number_of_reviews && (
                 <div className="text-sm text-[#7A7A7A] font-medium underline">
-                  {props?.currentBooking?.number_of_reviews}{" "}
-                  {props?.currentBooking?.source === "Agoda"
-                    ? "user reviews"
-                    : "Google reviews"}
+                  {props?.number_of_reviews}{" "}
+                  user reviews
                 </div>
               )}
             </div>
           )}
         </div>
-      )}
+      )} */}
 
       {isDesktop ? (
         <ImageContainer>
@@ -1199,6 +1198,7 @@ const HotelBookingDetails = (props) => {
                 : ""}
             </Address>
           </div>
+          <div className="flex justify-between">
           <div
             style={{
               display: "flex",
@@ -1220,14 +1220,14 @@ const HotelBookingDetails = (props) => {
               View on Google Map
             </a>
           </div>
-          <div>
+          
             <button
-              className=" right-0  bg-red-500 text-white py-2 rounded-lg flex items-center justify-center"
+              className=" right-0  bg-[#DC4541] text-white p-1 rounded-lg flex items-center justify-center"
               onClick={handleDelete}
             >
               <div style={{ position: "relative" }}>
-                <div style={loading ? { visibility: "hidden" } : {}}>
-                  🗑 Delete Booking
+                <div className="flex gap-1 items-center p-1" style={loading ? { visibility: "hidden" } : {}}>
+                   <RiDeleteBin6Line/> Delete Booking
                 </div>
                 {loading && (
                   <PulseLoader

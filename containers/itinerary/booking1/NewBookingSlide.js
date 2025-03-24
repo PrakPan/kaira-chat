@@ -29,6 +29,7 @@ import ImageLoader from "../../../components/ImageLoader";
 import { logEvent } from "../../../services/ga/Index";
 import openTailoredModal from "../../../services/openTailoredModal";
 import CountdownTimer from "../../../components/countdownTimer/CountdownTimer";
+import PricingSkeleton from "../../../components/itinerary/Skeleton/PricingSkeleton";
 
 const GetInTouchContainer = styled.div`
   &:hover img {
@@ -81,7 +82,7 @@ const Details = (props) => {
   const convertDFormat = (dt) => {
     if(dt){
     const date = parseISO(dt);
-    const formattedDate = format(date, "MMMM do, yyyy");
+    const formattedDate = format(date, "MMMM do yyyy");
     return formattedDate;
     }
     else return;
@@ -482,7 +483,7 @@ const Details = (props) => {
 
   return (
     <>
-      <div
+      {props?.loadpricing ? <div className="bg-[#F7E70033] -mt-[1rem] -mx-[1rem] mb-0"><PricingSkeleton/></div> : <div
         className={`${
           props.payment?.paid_user ? "bg-[#98F0AB33]" : "bg-[#F7E70033]"
         }  -mt-[1rem] -mx-[1rem] mb-0`}
@@ -720,7 +721,7 @@ const Details = (props) => {
             </div>
           )}
         </div>
-      </div>
+      </div>}
 
       <div className="px-0 pb-4">
         {props.couponJSX}

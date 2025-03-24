@@ -8,6 +8,7 @@ import { connect } from "react-redux";
 import TaxiModal from "../../../../components/modals/taxis/Index";
 import FlightModal from "../../../../components/modals/flights/Index";
 import { useEffect } from "react";
+import TransferSkeleton from "../../../../components/itinerary/Skeleton/TransferSkeleton";
 
 const Container = styled.div`
   display: grid;
@@ -18,6 +19,32 @@ const Container = styled.div`
   }
 `;
 
+// const Line = styled.hr`
+//   background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
+//     ${(props) =>
+//       props.pinColour
+//         ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
+//         : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
+
+//   background-size: 12px 3px, 100% 3px;
+//   color: #c80000;
+//   -webkit-transform: rotate(90deg);
+//   position: absolute;
+//   width: 5rem;
+//   height: 1.7px;
+//   top: 23px;
+//   right: -22px;
+//   border: 2px;
+//   opacity: initial;
+
+//   @media screen and (min-width: 768px) {
+//         width: 8rem;
+//         height: 1.7px;
+//         top: 46px;
+//         right: -46px;
+//   }
+// `;
+
 const Line = styled.hr`
   background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
     ${(props) =>
@@ -25,22 +52,27 @@ const Line = styled.hr`
         ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
         : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
 
-  background-size: 12px 3px, 100% 3px;
+  background-size: 8px 3px, 100% 3px;
+
   color: #c80000;
   -webkit-transform: rotate(90deg);
   position: absolute;
-  width: 5rem;
-  height: 1.7px;
-  top: 23px;
-  right: -22px;
-  border: 2px;
-  opacity: initial;
 
+  height: 1px;
+
+  border: 2px;
+
+  width: ${(props) => (props.Transfers ? `19rem` : `5rem`)};
+
+  top: ${(props) => (props.Transfers ? `128px` : `23px`)};
+  right: ${(props) => (props.Transfers ? `-134px` : `-25px`)};
+  opacity: initial;
+  z-index: -1;
   @media screen and (min-width: 768px) {
-        width: 8rem;
-        height: 1.7px;
-        top: 46px;
-        right: -46px;
+    width: 8.3rem;
+    height: 1px;
+    top: 46px;
+    right: -49px;
   }
 `;
 
@@ -153,13 +185,15 @@ const MidSectionV2 = (props) => {
     }
   };
 
+  console.log("Load Bookings",props?.loadbookings);
+
   return (
     <Container className="font-lexend" hidemidsection={hidemidsection}>
       <div style={{ position: "relative" }}>
         <Line pinColour={props.pinColour} hidemidsection={hidemidsection} />
       </div>
 
-      {hidemidsection && (
+      {hidemidsection && (props?.loadbookings ? <TransferSkeleton/> : (
         <> 
           {props.version == "v2" ? (
             (
@@ -258,7 +292,7 @@ const MidSectionV2 = (props) => {
             </Text>
           )}
         </>
-      )}
+      ))}
 
 
        <FlightModal

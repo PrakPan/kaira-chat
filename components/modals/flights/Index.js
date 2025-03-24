@@ -196,8 +196,8 @@ const Booking = (props) => {
                   provider={res.data?.provider}
                   filtersState={filtersState}
                   booking_id={props.selectedBooking?.booking_id}
-                  originCityId={props.selectedBooking.originCityId}
-                  destinationCityId={props.selectedBooking.destinationCityId}
+                  originCityId={props?.originCityId}
+                  destinationCityId={props?.destinationCityId}
                   setTransferBookingsIntercity={props.setTransferBookingsIntercity}
                 ></Flight>
               );
@@ -255,6 +255,8 @@ const Booking = (props) => {
       source: provider.toLowerCase(),
       trace_id: localStorage.getItem(`${provider}_trace_id`),
       result_indices: [result_index],
+      source_itinerary_city:props?.originCityId,
+      destination_itinerary_city:props?.destinationCityId  ,
     };
 
     updateFlightBooking
@@ -325,8 +327,8 @@ const Booking = (props) => {
                 selectedBooking={props.selectedBooking}
                 _updateBookingHandler={_newUpdateBookingHandler}
                 individual={props?.individual}
-                originCityId={props.selectedBooking.originCityId}
-                destinationCityId={props.selectedBooking.destinationCityId}
+                originCityId={props?.originCityId}
+                destinationCityId={props?.destinationCityId}
               ></Flight>
             );
           }

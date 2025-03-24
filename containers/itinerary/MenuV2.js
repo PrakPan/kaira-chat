@@ -75,10 +75,9 @@ const SimpleTabsV2 = (props) => {
   const isDesktop = useMediaQuery("(min-width:1148px)");
   // const transferBooking = useSelector((sta 
   const transferBooking = useSelector((state) => state.TransferBookings)?.transferBookings
-  console.log("Transfer Booking",transferBooking);
 
-  const stays = useSelector((state) => state.Stays)
-  console.log("Stay Booking",stays);
+  const stays = useSelector((state) => state.Stays);
+  console.log("Stays",stays);
 
   useEffect(() => {
     if (router.query.payment_status) {
@@ -535,6 +534,7 @@ const SimpleTabsV2 = (props) => {
         {citydatadone && (
           <Breif
             mercuryItinerary={props?.mercuryItinerary}
+            loadbookings={props?.loadbookings}
             plan={props.plan}
             routesData={RoutesData}
             transfersData={TransfersData}
@@ -571,6 +571,18 @@ const SimpleTabsV2 = (props) => {
                   transferBookings={props?.transferBookings}
                   setTransferBookings={props?.setTransferBookings}
                   setItinerary={props?.setItinerary}
+                  payment={props.payment}
+                  stayBookings={stays}
+                  setStayBookings={props.setStayBookings}
+                  _updateBookingHandler={props._updateBookingHandler}
+                    _updateStayBookingHandler={props._updateStayBookingHandler}
+                    _updatePaymentHandler={props._updatePaymentHandler}
+                    getPaymentHandler={props.getPaymentHandler}
+                    setShowBookingModal={() => props.setShowBookingModal(true)}
+                    showBookingModal={props.showBookingModal}
+                    setHideBookingModal={props.setHideBookingModal}
+                    setShowLoginModal={setShowLoginModal}
+                    _GetInTouch={_GetInTouch}
                 />
               )
             ) : (
@@ -598,7 +610,7 @@ const SimpleTabsV2 = (props) => {
           <div id={"Stays"}>
             {props.mercuryItinerary ? (
               <StaysContainer
-                stayBookings={props?.stayBookings}
+                stayBookings={stays}
                 setStayBookings={props.setStayBookings}
               />
             ) : (
@@ -845,6 +857,19 @@ const SimpleTabsV2 = (props) => {
                       setTransferBookings={props?.setTransferBookings}
                       setItinerary={props?.setItinerary}
                       itinerary={props?.itinerary}
+                      loadbookings={props?.loadbookings}
+                  payment={props.payment}
+                  stayBookings={stays}
+                  setStayBookings={props.setStayBookings}
+                  _updateBookingHandler={props._updateBookingHandler}
+                    _updateStayBookingHandler={props._updateStayBookingHandler}
+                    _updatePaymentHandler={props._updatePaymentHandler}
+                    getPaymentHandler={props.getPaymentHandler}
+                    setShowBookingModal={() => props.setShowBookingModal(true)}
+                    showBookingModal={props.showBookingModal}
+                    setHideBookingModal={props.setHideBookingModal}
+                    setShowLoginModal={setShowLoginModal}
+                    _GetInTouch={_GetInTouch}
                     />
                   )
                 : props?.itinerary && (
@@ -889,7 +914,7 @@ const SimpleTabsV2 = (props) => {
                     setHideBookingModal={props.setHideBookingModal}
                     setShowLoginModal={setShowLoginModal}
                     _GetInTouch={_GetInTouch}
-                    stayBookings={stays || props?.stayBookings}
+                    stayBookings={stays}
                     setStayBookings={props.setStayBookings}
                   />
                 ) : (
@@ -928,6 +953,7 @@ const SimpleTabsV2 = (props) => {
                     {props.transferBookings ? (
                       <>
                         <TransferBookings
+                          loadbookings={props?.loadbookings}
                           setShowLoginModal={setShowLoginModal}
                           showTaxiModal={props.showTaxiModal}
                           _updateFlightBookingHandler={
@@ -1046,6 +1072,7 @@ const SimpleTabsV2 = (props) => {
             </div>
           ) : props?.mercuryItinerary ? (
             <NewSummaryContainers
+              loadpricing={props?.loadpricing}
               payment={props?.payment}
               itineraryDate={props?.itineraryDate}
               mercuryItinerary={props?.mercuryItinerary}
@@ -1470,3 +1497,6 @@ function newFunction(
   }
   return totalcityslabs;
 }
+
+
+                            

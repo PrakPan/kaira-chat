@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { useEffect } from "react";
 import CityPage from "../../../../../containers/city/Index";
 import Layout from "../../../../../components/Layout";
-import axiossearchInstance from "../../../../../services/search/all";
+import axiossearchInstance, { instance1 } from "../../../../../services/search/all";
 import axiosPoiCityInstance from "../../../../../services/poi/city";
 import axiosReccommendedCityInstance from "../../../../../services/poi/reccommededcities";
 import axioslocationsinstance from "../../../../../services/search/search";
@@ -77,7 +77,10 @@ export async function getStaticPaths() {
   let paths = [];
 
   try {
-    const res = await axiossearchInstance.get(
+    // const res = await axiossearchInstance.get(
+    //   "/?type=Location&fields=path,cta"
+    // );
+    const res = await instance1.get(
       "/?type=Location&fields=path,cta"
     );
 

@@ -50,6 +50,7 @@ const Details = (props) => {
     '#7d5e7d',  //# shade of purple
 ];
 
+
   useEffect(() => {
     const Locationlatlong = [];
 
@@ -87,10 +88,10 @@ const Details = (props) => {
           color = CITY_COLOR_CODES[i%7];
           var postion = props.CityData[i];
           if (
-            !postion.is_departure_only &&
-            !postion.is_trip_terminated &&
-            postion.duration &&
-            postion.duration !== "0"
+            !postion?.is_departure_only &&
+            !postion?.is_trip_terminated &&
+            postion?.duration &&
+            postion?.duration !== "0"
           ) {
             Locationlatlong.push({
               // dayId: getdayId(postion?.day_slab_location?.start_day_slab_index || '12'),
@@ -135,7 +136,6 @@ const Details = (props) => {
     return null; // Return null if city_id is not found in the array
   }
 
-  console.log("Inside Brief New Index",props?.transferBookings);
   return (
     <div id="brief" className="mt-16">
       <DetailsContainer>
@@ -159,6 +159,7 @@ const Details = (props) => {
           <div id="route">
             <Route
               mercuryItinerary={props?.mercuryItinerary}
+              loadbookings={props?.loadbookings}
               payment={props.payment}
               dayslab={props.itinerary?.day_slabs}
               breif={props.breif}
@@ -215,8 +216,8 @@ const Details = (props) => {
       <Drawer
         show={showDrawer}
         onHide={() => setShowDrawer(false)}
-        city_id={showDrawerData.city_id}
-        dayId={findDayIdByCityId(showDrawerData.city_id)}
+        city_id={showDrawerData?.city?.id}
+        dayId={findDayIdByCityId(showDrawerData?.city?.id)}
       ></Drawer>
 
       {props.traveleritinerary ? (
