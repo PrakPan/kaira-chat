@@ -574,6 +574,15 @@ const SimpleTabsV2 = (props) => {
                   payment={props.payment}
                   stayBookings={stays}
                   setStayBookings={props.setStayBookings}
+                  _updateBookingHandler={props._updateBookingHandler}
+                    _updateStayBookingHandler={props._updateStayBookingHandler}
+                    _updatePaymentHandler={props._updatePaymentHandler}
+                    getPaymentHandler={props.getPaymentHandler}
+                    setShowBookingModal={() => props.setShowBookingModal(true)}
+                    showBookingModal={props.showBookingModal}
+                    setHideBookingModal={props.setHideBookingModal}
+                    setShowLoginModal={setShowLoginModal}
+                    _GetInTouch={_GetInTouch}
                 />
               )
             ) : (
@@ -849,6 +858,18 @@ const SimpleTabsV2 = (props) => {
                       setItinerary={props?.setItinerary}
                       itinerary={props?.itinerary}
                       loadbookings={props?.loadbookings}
+                  payment={props.payment}
+                  stayBookings={stays}
+                  setStayBookings={props.setStayBookings}
+                  _updateBookingHandler={props._updateBookingHandler}
+                    _updateStayBookingHandler={props._updateStayBookingHandler}
+                    _updatePaymentHandler={props._updatePaymentHandler}
+                    getPaymentHandler={props.getPaymentHandler}
+                    setShowBookingModal={() => props.setShowBookingModal(true)}
+                    showBookingModal={props.showBookingModal}
+                    setHideBookingModal={props.setHideBookingModal}
+                    setShowLoginModal={setShowLoginModal}
+                    _GetInTouch={_GetInTouch}
                     />
                   )
                 : props?.itinerary && (

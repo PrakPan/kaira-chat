@@ -18,6 +18,7 @@ import Overview from "../../modals/accommodation/Overview/Overview";
 import AccommodationModal from "../../modals/accommodation/Index";
 import styled from "styled-components";
 import { IoMdClose } from "react-icons/io";
+import { logEvent } from "../../../services/ga/Index";
 
 const Container = styled.div`
   padding: 0 0.75rem 0.75rem 0.75rem;
@@ -77,6 +78,7 @@ const ItineraryCity = (props) => {
   const [loading, setLoading] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [data,setData]=useState(null)
+  const {token} = useSelector((state)=>state.auth)
   const fetchDetails = () => {
     setLoading(true);
 
@@ -93,10 +95,24 @@ const ItineraryCity = (props) => {
         setLoading(false);
       });
   };  
-  const handleStay = ()=>{
-    props?.setBookingId(props?.idMapping);
-    props?.setShowDetails(true);
-  }
+  const handleStay = (e, label, value,clickType) => {
+      // console.log("clicktype is:",clickType)
+      e.stopPropagation();
+      if (token) props?.handleClickAc(props?.index, props?.city, props.city.city.id,clickType);
+      else props?.setShowLoginModal(true);
+      props?.setBookingId(props?.key)
+  
+      logEvent({
+        action: "Hotel_Add_Change",
+        params: {
+          page: "Itinerary Page",
+          event_category: "Button Click",
+          event_label: label,
+          event_value: value,
+          event_action: "Stays",
+        },
+      });
+    };
 
   return (
     <div
@@ -140,7 +156,7 @@ const ItineraryCity = (props) => {
                 </div>
               </div>
             </div>
-          ) : <div className="text-blue cursor-pointer text-[14px] font-medium" onClick={handleStay}>
+          ) : <div className="text-blue cursor-pointer text-[14px] font-medium" onClick={(e)=>handleStay(e, "Change", props.city.city.name,"Add")}>
          + Add Stay in {props?.city?.city?.name}
         </div>}
         </div>

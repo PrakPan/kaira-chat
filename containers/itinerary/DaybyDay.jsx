@@ -6,6 +6,8 @@ import CityItem from "./VerticalLayout";
 import media from "../../components/media";
 import Drawer from "../../components/ui/Drawer";
 import AccommodationModal from "../../components/modals/accommodation/Index";
+import BookingModal from "../../components/modals/bookingupdated/Index";
+import { format } from "date-fns";
 
 const CITY_COLOR_CODES = [
   "#359EBF", // shade of blue
@@ -17,8 +19,9 @@ const CITY_COLOR_CODES = [
   "#7d5e7d", // shade of purple
 ];
 
-const DaybyDay = ({ transferBookings ,width,setItinerary,activityBookings,setActivityBookings,itinerary, loadbookings, payment, stayBookings, setStayBookings}) => {
+const DaybyDay = ({ transferBookings ,width,setItinerary,activityBookings,setActivityBookings,itinerary, loadbookings, payment, setStayBookings, ...props}) => {
   const itineraryDaybyDay=useSelector((state)=>state.Itinerary)
+  const stayBookings=useSelector((state)=>state.Stays)
   const [selectedBooking, setSelectedBooking] = useState({
       id: null,
       name: null,
@@ -30,6 +33,7 @@ const DaybyDay = ({ transferBookings ,width,setItinerary,activityBookings,setAct
     const [currentBooking, setCurrentBooking] = useState(null);
     const [bookingFunData, setBookingFunData] = useState(null);
     const [dates, setDates] = useState({ check_in: "", check_out: "" });
+    const [showFilter,setshowFilter] = useState(false);
 
   let isPageWide = media("(min-width: 768px)");
   console.log("Inside DaybyDay Itinerary",itinerary);
@@ -88,8 +92,8 @@ const DaybyDay = ({ transferBookings ,width,setItinerary,activityBookings,setAct
         accommodation: accommodation,
         id: id,
         tailored_id: tailored_id,
-        check_in: format(new Date(check_in), "dd-MM-yyyy").replaceAll("-", "/"),
-        check_out: format(new Date(check_out), "dd-MM-yyyy").replaceAll("-", "/"),
+        check_in: format(new Date(check_in), "yyyy-MM-dd").replaceAll("-", "/"),
+        check_out: format(new Date(check_out), "yyyy-MM-dd").replaceAll("-", "/"),
         pax: pax,
         city: city,
         cityId: cityId,
@@ -101,60 +105,61 @@ const DaybyDay = ({ transferBookings ,width,setItinerary,activityBookings,setAct
         images: images,
         clickType:clickType
       });
-      // props.setShowBookingModal();
+      props.setShowBookingModal();
     };
   
     function handleClickAc(i, data, city_id,clickType) {
-      // let name = props.stayBookings[i]?.["name"];
-      // let itinerary_id = props.stayBookings[i]["itinerary_id"];
-      // let itinerary_name = props.stayBookings[i]["itinerary_name"];
-      // let accommodation = props.stayBookings[i]["accommodation"];
-      // let tailored_id = props.stayBookings[i]["tailored_itinerary"];
-      // let user_rating = props.stayBookings[i]?.star_category;
-      // let number_of_reviews = props.stayBookings[i]?.user_ratings_total;
-      // let id = props.stayBookings[i]["id"];
-      // let check_in = props.stayBookings[i]["check_in"];
-      // let check_out = props.stayBookings[i]["check_out"];
-      // let pax = {
-      //   number_of_adults: props.stayBookings[i]["number_of_adults"],
-      //   number_of_children: props.stayBookings[i]["number_of_children"],
-      //   number_of_infants: props.stayBookings[i]["number_of_infants"],
-      // };
-      // let city = props.stayBookings[i]["city_name"];
-      // let cityId = city_id;
-      // let room_type = props.stayBookings[i]["room"];
-      // _changeBookingHandler(
-      //   name,
-      //   itinerary_id,
-      //   tailored_id,
-      //   accommodation,
-      //   id,
-      //   check_in,
-      //   check_out,
-      //   pax,
-      //   city,
-      //   cityId,
-      //   room_type,
-      //   user_rating,
-      //   number_of_reviews,
-      //   itinerary_name,
-      //   clickType
-      // );
-      // data.clickType=clickType
-      // setCurrentBooking(data);
-      // props.setShowBookingModal();
+      console.log("StayB",stayBookings[i]?.["check_out"],stayBookings[i]?.["check_in"]);
+      let name = stayBookings[i]?.["name"];
+      let itinerary_id = stayBookings[i]?.["itinerary_id"];
+      let itinerary_name = stayBookings[i]?.["itinerary_name"];
+      let accommodation = stayBookings[i]?.["accommodation"];
+      let tailored_id = stayBookings[i]?.["tailored_itinerary"];
+      let user_rating = stayBookings[i]?.star_category;
+      let number_of_reviews = stayBookings[i]?.user_ratings_total;
+      let id = stayBookings[i]?.["id"];
+      let check_in = stayBookings[i]?.["check_in"];
+      let check_out = stayBookings[i]?.["check_out"];
+      let pax = {
+        number_of_adults: stayBookings[i]?.["number_of_adults"],
+        number_of_children: stayBookings[i]?.["number_of_children"],
+        number_of_infants: stayBookings[i]?.["number_of_infants"],
+      };
+      let city = stayBookings[i]?.["city_name"];
+      let cityId = stayBookings[i]?.city_id;
+      let room_type = stayBookings[i]?.["room"];
+      _changeBookingHandler(
+        name,
+        itinerary_id,
+        tailored_id,
+        accommodation,
+        id,
+        check_in,
+        check_out,
+        pax,
+        city,
+        cityId,
+        room_type,
+        user_rating,
+        number_of_reviews,
+        itinerary_name,
+        clickType
+      );
+      data.clickType=clickType
+      setCurrentBooking(data);
+      props.setShowBookingModal();
     }
   
-    // function  handleClick(i, id, data, city_id) {
-    //   let check_in = itineraryFilter.check_in;
-    //   let check_out = itineraryFilter.check_out;
-    //   setDates({ check_in, check_out });
+    function  handleClick(i, id, data, city_id) {
+      let check_in = props?.itineraryFilter.check_in;
+      let check_out = props?.itineraryFilter.check_out;
+      setDates({ check_in, check_out });
   
-    //   setBookingId(id);
-    //   setCurrentBooking(data);
-    //   setBookingFunData({ index: i, booking: data, city_id: city_id });
-    //   setShowDetails(true);
-    // }
+      setBookingId(id);
+      setCurrentBooking(data);
+      setBookingFunData({ index: i, booking: data, city_id: city_id });
+      setShowDetails(true);
+    }
 
   return (
     <>
@@ -217,7 +222,7 @@ const DaybyDay = ({ transferBookings ,width,setItinerary,activityBookings,setAct
             city?.id + ":" + itineraryDaybyDay?.cities[index + 1]?.id;
           return (
             <>
-              <ItineraryCity key={city.id} city={city} cityRefs={cityRefs} setItinerary={setItinerary} activityBookings={activityBookings} setActivityBookings={setActivityBookings} setBookingId={setBookingId} idMapping={transferBookings?.intercity?.[idMapping]?.id} setShowDetails={setShowDetails} />
+              <ItineraryCity key={city.id} city={city} cityRefs={cityRefs} setItinerary={setItinerary} activityBookings={activityBookings} setActivityBookings={setActivityBookings} setBookingId={setBookingId} idMapping={transferBookings?.intercity?.[idMapping]?.id} setShowDetails={setShowDetails} setShowLoginModal={props?.setShowLoginModal} handleClickAc={handleClickAc} index={index}/>
               {index != itineraryDaybyDay?.cities.length - 1 && (
                 <div>
                   <CityItem
@@ -299,32 +304,33 @@ const DaybyDay = ({ transferBookings ,width,setItinerary,activityBookings,setAct
         />
       </div>
     </div>
-    <AccommodationModal
+    <BookingModal
             mercury
-            _setImagesHandler={_setImagesHandler}
-            onHide={() => setShowDetails(false)}
-            id={bookingId}
-            currentBooking={currentBooking}
-            check_in={dates.check_in}
-            check_out={dates.check_out}
-            show={showDetails}
+            showFilter={showFilter}
+            setshowFilter={setshowFilter}
             payment={payment}
             plan={stayBookings}
-            // BookingButton={
-            //   !isDateOlderThanCurrent(props?.plan?.start_date) ? true : false
-            // }
-            bookingFunData={bookingFunData}
-            BookingButtonFun={() =>
-              handleClickAc(
-                bookingFunData.index,
-                bookingFunData.booking,
-                bookingFunData.city_id
-              )
+            _setImagesHandler={_setImagesHandler}
+            getPaymentHandler={props.getPaymentHandler}
+            _updateStayBookingHandler={props._updateStayBookingHandler}
+            tailored_id={
+              stayBookings && stayBookings[0]
+                ? stayBookings[0]["tailored_itinerary"]
+                : null
             }
-            provider={currentBooking?.source}
+            _updatePaymentHandler={props?._updatePaymentHandler}
+            _updateBookingHandler={props?._updateBookingHandler}
+            selectedBooking={selectedBooking}
+            setShowBookingModal={props?.setShowBookingModal}
+            currentBooking={currentBooking}
+            showBookingModal={props?.showBookingModal}
+            setHideBookingModal={props?.setHideBookingModal}
+            AddHotel={AddHotel}
+            _GetInTouch={props._GetInTouch}
+            handleClick={handleClick}
+            stayBookings={stayBookings}
             setStayBookings={setStayBookings}
-            setShowDetails={setShowDetails}
-          ></AccommodationModal>
+          ></BookingModal>
     </>
   );
 };

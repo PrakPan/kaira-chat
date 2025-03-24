@@ -117,6 +117,28 @@ const HotelBooking = ({
     }
   }
 
+  function formatDate(dateInput) {
+    const date = new Date(dateInput);
+    const options = { day: '2-digit', month: 'long', year: 'numeric' };
+    
+    const formattedDate = new Intl.DateTimeFormat('en-GB', options).format(date);
+    
+    const day = date.getDate();
+    const ordinalSuffix = (day) => {
+      if (day > 3 && day < 21) return 'th'; 
+      switch (day % 10) {
+        case 1: return 'st';
+        case 2: return 'nd';
+        case 3: return 'rd';
+        default: return 'th';
+      }
+    };
+  
+    const dayWithSuffix = day + ordinalSuffix(day);
+    
+    return formattedDate.replace(day, dayWithSuffix);
+  }
+
 
   return (
     <div className={`${!isPageWide ? "max-w-fit" : "max-w-[54vw]"}`}>
@@ -386,8 +408,8 @@ const HotelBooking = ({
                     <BsCalendar2 className="text-sm text-[#7A7A7A]" />
                     <div>
                       <div className="text-sm font-[400] ">
-                        {getHumanDate(booking?.check_in)} -{" "}
-                        {getHumanDate(booking?.check_out)}
+                        {formatDate(booking?.check_in)} -{" "}
+                        {formatDate(booking?.check_out)}
                         </div>
                     </div>
                   </div>

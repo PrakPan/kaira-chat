@@ -1222,7 +1222,7 @@ const HotelBookingDetails = (props) => {
           </div>
           
             <button
-              className=" right-0  bg-red-500 text-white py-2 rounded-lg flex items-center justify-center"
+              className=" right-0  bg-[#DC4541] text-white p-1 rounded-lg flex items-center justify-center"
               onClick={handleDelete}
             >
               <div style={{ position: "relative" }}>

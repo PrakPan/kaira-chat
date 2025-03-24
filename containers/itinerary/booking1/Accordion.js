@@ -69,17 +69,17 @@ const FAQs = (props) => {
         try {
           bookingslist.push(
             <div className={"text-sm font-normal text-[#000] "}>
-              {bookings[props.payment.summary[key].bookings[i].id].name}
+              {props.payment.summary[key].bookings[i]?.["text"]}
             </div>
           );
           bookinglistwithcost.push(
             <div className={" text-sm font-normal text-[#000]"}>
-              {bookings[props.payment.summary[key].bookings[i].id].name}
+              {props.payment.summary[key].bookings[i]?.["text"]}
             </div>
           );
         } catch {}
       }
-
+      console.log("BOOO",props?.payment,bookings[props.payment.summary[key].bookings[i]],bookings[props.payment.summary[key].bookings[i]]?.["text"]);
       HeadingsJSX.push(
         <Accordion
           key={key}
@@ -104,9 +104,7 @@ const FAQs = (props) => {
                 {key} ({!props?.mercuryItinerary ? props.payment?.meta_info.number_of_adults : props.payment?.number_of_adults}
                 {!props?.mercuryItinerary ? (props.payment?.meta_info.number_of_adults == 1
                   ? " Adult"
-                  : " Adults") : (props.payment?.number_of_adults == 1
-                    ? " Adult"
-                    : " Adults")}
+                  : " Adults") : (props.payment.summary[key].bookings.length)}
                 )
               </div>
             </Typography>

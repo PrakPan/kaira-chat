@@ -65,12 +65,12 @@ const SlideTwo = (props) => {
         )}
       </Section>
 
-      <Section>
+      {/* <Section>
         <Question>
           Hotel Type
         </Question>
         <HotelType/>
-      </Section>
+      </Section> */}
 
       <Section>
         <BudgetSlider
