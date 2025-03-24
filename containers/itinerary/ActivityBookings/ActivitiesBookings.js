@@ -227,7 +227,6 @@ const ActivitiesBookings = (props) => {
                         <ButtonYellow className="lg:w-fit w-1/2" onClick={()=>handleView(booking?.id,"activity")}>
                           <div className="text-[#01202B] ">View Detail</div>
                         </ButtonYellow>
-                        </div>
                     </div>
                     <POIDetailsDrawer
                       itineraryDrawer
