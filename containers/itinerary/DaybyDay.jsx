@@ -9,6 +9,7 @@ import AccommodationModal from "../../components/modals/accommodation/Index";
 import BookingModal from "../../components/modals/bookingupdated/Index";
 import { format } from "date-fns";
 import { CONTENT_SERVER_HOST } from "../../services/constants";
+import * as ga from "../../services/ga/Index";
 
 const CITY_COLOR_CODES = [
   "#359EBF", // shade of blue
