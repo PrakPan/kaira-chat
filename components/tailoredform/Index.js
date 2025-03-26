@@ -203,7 +203,7 @@ const Enquiry = (props) => {
   console.log("SelectedObj",selectedObj,routerquery);
 
   const _handleHideBlack = () => {
-    setShowBlack(false);
+    // setShowBlack(false);
     setShowCities(false);
     setShowSearchStarting(false);
   };
@@ -397,7 +397,7 @@ const Enquiry = (props) => {
     initiateItineraryCreate();
   };
 
-  const _SlideTwoSubmitHandler = () => {
+  const  _SlideTwoSubmitHandler = () => {
     if (!submitSecondSlide) return setShowPopup({ ...showPopup, group: true });
     setShowPopup(popupObj);
     setSlideIndex(slideIndex + 1);
@@ -522,18 +522,24 @@ const Enquiry = (props) => {
         },
       })
       .then((response) => {
-        setLoading(false);
+        
         setError(null);
-          setSubmitted(true);
+        setSubmitted(true);
+        if(response?.data){
+          setLoading(false);
+          router.push(`/itinerary/${itineraryId}`);
+        }
+        
           // if (!response.data?.auto_itinerary_created) {
           //   router.push("/thank-you");
           // } else {
-          if (response.data.time) {
+          // if (response.data.time) {
             // router.push(`/itinerary/${itineraryId}?t=60`);
-            router.push(`/itinerary/${itineraryId}`);
-          } else {
-            router.push(`/itinerary/${itineraryId}`);
-          }
+
+            
+          // } else {
+          //   router.push(`/itinerary/${itineraryId}`);
+          // }
   
         
   
@@ -554,7 +560,7 @@ const Enquiry = (props) => {
       });
   }; 
 
-  if (!loading && !submitted)
+  // if (!loading && !submitted)
     return (
       <>
         {showBlack && !props.tailoredFormModal ? (
@@ -567,7 +573,7 @@ const Enquiry = (props) => {
           slideIndex={slideIndex}
           className={isPageWide ? "center-div border" : "center-div"}
           onClick={() => {
-            setShowBlack(true);
+            // setShowBlack(true);
           }}
         >
           {showPopup.InputOne && (
@@ -772,6 +778,7 @@ const Enquiry = (props) => {
                     borderWidth="1px"
                     bgColor="#f7e700"
                     onclick={_SlideTwoSubmitHandler}
+                    loading={isLoading && submitted}
                   >
                     Continue
                   </Button>
@@ -809,19 +816,19 @@ const Enquiry = (props) => {
         </Container>
       </>
     );
-  else
-    return (
-      <>
-        {showBlack && !props.tailoredFormModal ? (
-          <BlackContainer onClick={() => setShowBlack(false)}></BlackContainer>
-        ) : null}
+  // else
+  //   return (
+  //     <>
+  //       {showBlack && !props.tailoredFormModal ? (
+  //         <BlackContainer onClick={() => setShowBlack(false)}></BlackContainer>
+  //       ) : null}
 
-        <Container className="border center-div">
-          <LoadingLottie height="50%" width="50%"></LoadingLottie>
-          <LoadingText>Finalizing your plan...</LoadingText>
-        </Container>
-      </>
-    );
+  //       <Container className="border center-div">
+  //         <LoadingLottie height="50%" width="50%"></LoadingLottie>
+  //         <LoadingText>Finalizing your plan...</LoadingText>
+  //       </Container>
+  //     </>
+  //   );
 };
 
 const mapStateToPros = (state) => {

@@ -795,6 +795,7 @@ const SimpleTabsV2 = (props) => {
                     ></SummaryContainer>
                   ) : (
                     <NewSummaryContainers
+                    loadpricing={props?.loadpricing}
                       payment={props?.payment}
                       itineraryDate={props?.itineraryDate}
                       mercuryItinerary={props?.mercuryItinerary}
