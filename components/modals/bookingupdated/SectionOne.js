@@ -24,6 +24,7 @@ const Section = (props) => {
     }
   };
 
+
   return (
     <Container className="font-lexend flex flex-col gap-3 md:flex-row lg:flex-row md:justify-between lg:justify-between">
       <div className="flex flex-row">

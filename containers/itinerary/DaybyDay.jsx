@@ -36,6 +36,7 @@ const DaybyDay = ({ transferBookings ,width,setItinerary,activityBookings,setAct
     const [bookingFunData, setBookingFunData] = useState(null);
     const [dates, setDates] = useState({ check_in: "", check_out: "" });
     const [showFilter,setshowFilter] = useState(false);
+    const [showModal,setShowModal] = useState(false)
 
   let isPageWide = media("(min-width: 768px)");
   console.log("Inside DaybyDay Itinerary",itinerary);
@@ -111,7 +112,7 @@ const DaybyDay = ({ transferBookings ,width,setItinerary,activityBookings,setAct
     };
   
     function handleClickAc(i, data, city_id,clickType) {
-      console.log("StayB",stayBookings[i]?.["check_out"],stayBookings[i]?.["check_in"]);
+      console.log("StayB",selectedBooking);
       let name = stayBookings[i]?.["name"];
       let itinerary_id = stayBookings[i]?.["itinerary_id"];
       let itinerary_name = stayBookings[i]?.["itinerary_name"];
@@ -332,6 +333,7 @@ const DaybyDay = ({ transferBookings ,width,setItinerary,activityBookings,setAct
             handleClick={handleClick}
             stayBookings={stayBookings}
             setStayBookings={setStayBookings}
+            itineraryDaybyDay={itineraryDaybyDay}
           ></BookingModal>
     </>
   );

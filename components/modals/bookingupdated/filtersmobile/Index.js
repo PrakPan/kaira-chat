@@ -199,7 +199,7 @@ export default function TemporaryDrawer(props) {
             {isPageWide && (
               <button
                 onClick={() => props.setShowFILTERS(true)}
-                className="ml-2 border-2 border-black w-fit px-2 py-1 rounded-full hover:bg-black hover:text-white transition-all">More FILTERS</button>
+                className="ml-2 border-2 border-black w-fit px-2 py-1 rounded-full hover:bg-black hover:text-white transition-all">More Filters</button>
             )}
           </div>
         ) : null}

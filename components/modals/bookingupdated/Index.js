@@ -16,9 +16,9 @@ import { openNotification } from "../../../store/actions/notification";
 import Skeleton from "./Skeleton";
 import useDebounce from "../../../hooks/useDebounce";
 import ImageLoader from "../../../components/ImageLoader";
-import { getDate } from "../../../helper/DateUtils";
 import Filters from "./filtersmobile/Filters";
 import { setItineraryFilters } from "../../../store/actions/setItineraryFilters";
+// import { getDate } from "../../../helper/DateUtils";
 
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
@@ -78,7 +78,9 @@ const Booking = (props) => {
   const [totalCount, setTotalCount] = useState(0);
   const [unauthorized, setUnauthorized] = useState(false);
   const [noResults, setNoResults] = useState(false);
-  const filtersState=useSelector((state)=>state.ItineraryFilters)
+  const filtersState=useSelector((state)=>state.ItineraryFilters);
+  console.log("Itinerary",filtersState);
+
   const[filters,setFilters]=useState({...filtersState,applyFilter:false})
   const [filtersObj, setFiltersObj] = useState({
     type: [],
@@ -98,7 +100,7 @@ const Booking = (props) => {
 
 
   useEffect(() => {
-    if (props?.showBookingModal) {
+    if (props?.showBookingModal && props?.selectedBooking?.check_in) {
       fetchHotels();
     }
   }, [
@@ -106,8 +108,32 @@ const Booking = (props) => {
     props?.showBookingModal,
     debouncedSearch,
   ]);
+    
+  const getDate = (dateString) => {
+    try {
+      if (!dateString) return dateString;
 
-  useEffect(() => {
+      dateString = dateString.replace(/\//g, "-");
+      const dateParts = dateString.split("-");
+
+      if (dateParts.length === 3 && dateParts[0].length === 2 && dateParts[1].length === 2 && dateParts[2].length === 4) {
+        const [day, month, year] = dateParts;
+        return `${year}-${month}-${day}`; 
+      }
+
+      const isoParts = dateString.split("-");
+      if (isoParts.length === 3 && isoParts[0].length === 4 && isoParts[1].length === 2 && isoParts[2].length === 2) {
+        return dateString; 
+      }
+      return dateString.replaceAll();
+  
+    } catch (err) {
+      return dateString;
+    }
+  };
+  
+
+  useEffect(() => { 
     if (!props?.showBookingModal) {
       // setItineraryFilters({
       //   free_breakfast: true,
@@ -347,7 +373,7 @@ const Booking = (props) => {
 
               <div className="sticky lg:w-[50vw] w-[100vw] py-2 top-0 bg-white z-[900]">
                 <SectionOne
-                  booking_city={props?.selectedBooking?.city}
+                  booking_city={props?.selectedBooking?.city || props?.selectedBooking?.city_name}
                   setHideBookingModal={props?.setHideBookingModal}
                   selectSearch={selectSearch}
                   setSelectedSearch={setSelectedSearch}
@@ -367,7 +393,7 @@ const Booking = (props) => {
                   updateUserStarHandler={updateUserStarHandler}
                   _removeFilterHandler={_removeFilterHandler}
                   _addFilterHandler={_addFilterHandler}
-                  booking_city={props?.selectedBooking?.city}
+                  booking_city={props?.selectedBooking?.city || props?.selectedBooking?.city_name}
                   No_of_stays={totalCount}
                   payment={props?.payment}
                   plan={props?.plan || props?.booking}
@@ -577,6 +603,7 @@ const Booking = (props) => {
                 show={showDetails}
                 handleClick={props?.handleClick}
                 setStayBookings={props?.setStayBookings}
+                itineraryDaybyDay={props?.itineraryDaybyDay}
               ></AccommodationModal>
             </>
           ) : (

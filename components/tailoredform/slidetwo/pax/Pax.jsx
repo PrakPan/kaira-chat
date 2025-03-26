@@ -311,6 +311,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { IoChevronDown, IoChevronUp, IoPerson } from "react-icons/io5";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import Button from '../../../ui/button/Index';
 
 const Pax = (props) => {
   const containerRef = useRef(null);
@@ -426,23 +427,65 @@ const Pax = (props) => {
               />
             ))}
 
-             <div className="flex justify-between mt-4">
+            <div className="flex justify-end mt-4 gap-2">
              <button
                 onClick={handleAddRoom}
-                className="text-blue font-medium ml-auto underline"
+                className="text-blue font-medium underline"
                 disabled={rooms.length >= 8}
               >
                 Add Room
               </button>
+              {/* <Button
+                              fontSize="1rem"
+                              width={"auto"}
+                              
+                              padding="0.5rem 2rem"
+                              fontWeight="500"
+                              margin="1rem 0"
+                              borderRadius="5px"
+                              borderWidth="1px"
+                              bgColor="#f7e700"
+                              onclick={() => handleAddRoom()}
+                              
+                            >
+                              Add Room
+                            </Button> */}
+
+              {/* <button
+                onClick={handleDone}
+                className="py-1 bg-blue-600 font-medium text-blue rounded-md hover:bg-blue-700"
+              >
+                Apply
+              </button> */}
+              
             </div>
 
             <div className="mt-4 flex justify-end">
-              <button
-                onClick={handleDone}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              >
-                Done
-              </button>
+            <Button
+                              fontSize="1rem"
+                              width={"auto"}
+                              // style={
+                              //   !isPageWide && isPageLoaded
+                              //     ? {
+                              //         position: "fixed",
+                              //         left: "1rem",
+                              //         right: "1rem",
+                              //         bottom: "0",
+                              //       }
+                              //     : {}
+                                  
+                              // }
+                              padding="0.5rem 2rem"
+                              fontWeight="500"
+                              margin="0"
+                              borderRadius="5px"
+                              borderWidth="1px"
+                              bgColor="#f7e700"
+                              onclick={() => handleDone()}
+                              
+                            >
+                              Apply
+                            </Button>
             </div>
           </div>
         </div>

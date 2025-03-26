@@ -183,6 +183,7 @@ const StaysContainer = (props) => {
         provider={currentBooking?.source}
         setStayBookings={props.setStayBookings}
         setShowDetails={setShowDetails}
+        CityData={props?.CityData}
       ></AccommodationModal>
 
       <BookingModal
@@ -211,6 +212,7 @@ const StaysContainer = (props) => {
         handleClick={handleClick}
         stayBookings={props?.stayBookings}
         setStayBookings={props.setStayBookings}
+        CityData={props?.CityData}
       ></BookingModal>
 
       {images ? (
