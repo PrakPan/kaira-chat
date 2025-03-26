@@ -67,8 +67,8 @@ export default function FlightDetails({
         <div className="lg:w-[100%] flex flex-row gap-2 items-center justify-between">
             <div className="w-[20%] flex flex-col items-center">
                 <div className="text-lg font-bold">
-                    {new Date(origin?.departure_time).getHours().toString().padStart(2, '0')}:
-                    {new Date(origin?.departure_time).getMinutes().toString().padStart(2, '0')}
+                    {origin?.departure_time ? `${new Date(origin?.departure_time).getHours().toString().padStart(2, '0')}: ${new Date(origin?.departure_time).getMinutes().toString().padStart(2, '0')}` : ""}
+                    
                 </div>
                 <div className="w-full text-sm truncate text-center">
                     {origin?.city_name}
@@ -141,8 +141,7 @@ export default function FlightDetails({
 
             <div className="w-[20%] flex flex-col items-center">
                 <div className="text-lg font-bold">
-                    {new Date(destination?.arrival_time).getHours().toString().padStart(2, '0')}:
-                    {new Date(destination?.arrival_time).getMinutes().toString().padStart(2, '0')}
+                {destination?.arrival_time ? `${new Date(destination?.arrival_time).getHours().toString().padStart(2, '0')}: ${new Date(destination?.arrival_time).getMinutes().toString().padStart(2, '0')}` : ""}
                 </div>
 
                 <div className="w-full text-sm truncate text-center">

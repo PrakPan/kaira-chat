@@ -4,8 +4,8 @@ const initialState={
     free_breakfast: true,
     is_refundable: false,
     budget: {
-      price_lower_range: 3000,
-      price_upper_range: 8000,
+      price_lower_range: 1000,
+      price_upper_range: 10000,
     },
     star_category: null,
     sort: "price: low to high",

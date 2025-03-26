@@ -7,13 +7,14 @@ import { TbArrowBack } from "react-icons/tb";
 import SkeletonCard from "../../ui/SkeletonCard";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
-
-const Title = styled.p`
+import ReviewsCarousel from "./ReviewsCarousel";
+import FullScreenGalleryGoogle from "./FullScreenGalleryGoogle";
+export const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
 `;
 
-const Reviews = styled.div`
+export const Reviews = styled.div`
   display: flex;
   align-items: center;
   margin-block: 0.5rem;
@@ -28,11 +29,11 @@ const Reviews = styled.div`
   }
 `;
 
-const Text = styled.p`
+export const Text = styled.p`
   font-size: 14px;
 `;
 
-const Heading = styled.p`
+export const Heading = styled.p`
   font-size: 18px;
   font-weight: 800;
 `;
@@ -48,18 +49,31 @@ const Container = styled.div`
 const TimeStamp = styled.span`
   height: 31px;
   padding: 4px 8px;
-  background-color: #000000bf;
+  background-color: rgba(0, 0, 0, 0.6);
   border-radius: 20px;
   color: white;
   font-size: 14px;
   font-weight: 600;
+  left: 0.5rem;
+  top: 0.5rem;
   position: absolute;
-  @media screen and (min-width: 768px) {
-    bottom: 0px;
-    top: 0px;
-  }
-`;
 
+`;
+const PhotosButton = styled.div`
+  &:hover {
+    cursor: pointer;
+  }
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  border-radius: 6px;
+  position: absolute;
+  right: 0.5rem;
+  bottom: -12.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  letterspacing: 1px;
+  font-weight: 300;
+`;
 const BackContainer = styled.div`
   margin: 0;
   display: flex;
@@ -88,22 +102,21 @@ const POIDetails = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageFail, setImageFail] = useState(false);
-  var about = <p>{props?.data?.short_description} </p>;
-  const [aboutText, setAboutText] = useState(about);
-
+  const [aboutText, setAboutText] = useState(props?.data?.overview);
+  const [images, setImages] = useState([]);
   var experience_filters = (
-    <div>
+    <div className="flex flex-wrap gap-2">
       {props.data.experience_filters?.map((e, i) => (
-        <span key={i}>
-          {e} {props.data.experience_filters.length - 1 == i ? "" : <b>·</b>}{" "}
-        </span>
+        <div key={i} className="bg-[#FAFAFA] p-[8px] rounded-[10px]">
+          {e}
+        </div>
       ))}
     </div>
   );
 
   var tips = (
     <ul style={{ paddingLeft: "0.5rem" }}>
-      {props.data.tips?.map((e, i) => (
+      {props.data.tips_tricks?.map((e, i) => (
         <li key={i}>- {e}</li>
       ))}
     </ul>
@@ -167,6 +180,13 @@ const POIDetails = (props) => {
               }}
               noLazy
             ></ImageLoader>
+            <PhotosButton
+              onClick={() => {
+                setImages(props?.data?.extra_images);
+              }}
+            >
+              All Photos{" "}
+            </PhotosButton>
           </div>
 
           <div
@@ -186,9 +206,8 @@ const POIDetails = (props) => {
             </div>
           </div>
         </div>
-
         {props.data?.ideal_duration_hours ||
-        props.data?.ideal_duration_number ? (
+        props.data?.ideal_duration_numbers ? (
           <TimeStamp>
             Approx Time :{" "}
             {props.data.ideal_duration_hours ||
@@ -200,7 +219,7 @@ const POIDetails = (props) => {
         )}
       </ImageContainer>
 
-      <div className="mt-[170px]">
+      <div className="mt-[180px]">
         <Title>{props.data.name}</Title>
         {props.data?.address && (
           <div>
@@ -225,16 +244,13 @@ const POIDetails = (props) => {
             ) : null}
 
             {props.data?.user_ratings_total ? (
-              <u>
-                {" "}
-                {props.data.user_ratings_total}{" "}
-                {props.data.activity_type ? "user reviews" : "Google reviews"}
-              </u>
+              <u> {props.data.user_ratings_total} user reviews</u>
             ) : null}
           </div>
         </Reviews>
         {props.data?.experience_filters && <Text>{experience_filters}</Text>}
       </div>
+    
 
       {props.data?.cost ? (
         <div className="flex flex-row">
@@ -252,10 +268,16 @@ const POIDetails = (props) => {
         </div>
       ) : null}
 
-      {props.data?.short_description && (
+      {aboutText != null && aboutText != undefined && (
         <div>
           <Heading>About</Heading>
-          <Text onClick={() => setAboutText(props.data.short_description)}>
+          <Text
+            onClick={() =>
+              setAboutText(
+                props?.data?.overview || props.data.short_description
+              )
+            }
+          >
             {aboutText}
           </Text>
         </div>
@@ -274,13 +296,28 @@ const POIDetails = (props) => {
           <Text>
             {
               <ul>
-                {props.data.timings.weekday_text?.map((e, i) => (
+                {props.data.timings?.map((e, i) => (
                   <li key={i}>{e}</li>
                 ))}
               </ul>
             }
           </Text>
         </div>
+      )}
+      {props?.data?.reviews && (
+        <>
+          <Heading>Reviews</Heading>
+          <ReviewsCarousel reviews={props?.data?.reviews} />
+
+          {/* <div className="flex gap-4 overflow-x-auto scroll-smooth">
+        {props?.data?.reviews?.map((item)=>(
+          <Reviews1Carousel reviews={item}/>
+          // <div className="w-[300px]">
+          //   <ReviewCard author_name={item?.author_name} text={item?.text} rating={item?.rating}/>
+          //   </div>
+        ))}
+        </div> */}
+        </>
       )}
 
       {props.data?.tips && props.data?.tips.length ? (
@@ -291,6 +328,14 @@ const POIDetails = (props) => {
       ) : (
         <></>
       )}
+      
+      {images?.length > 0 && (
+        <FullScreenGalleryGoogle
+          closeGalleryHandler={() => setImages(null)}
+          images={images}
+        ></FullScreenGalleryGoogle>
+      )}
+      
     </Container>
   );
 };

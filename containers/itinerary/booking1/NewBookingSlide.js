@@ -865,12 +865,25 @@ const Details = (props) => {
       ) 
       : (
         <>
-          {props.payment && props.token ? (
-            props.payment?.itinerary_status ===
-              ITINERARY_STATUSES?.itinerary_finalized &&
-            !props.payment?.paid_user &&
+          {props?.loadpricing ? <Button
+                  color="#111"
+                  fontWeight="500"
+                  fontSize="1rem"
+                  borderWidth="2px"
+                  width="100%"
+                  borderRadius="8px"
+                  bgColor="#f8e000"
+                  padding="12px"
+                  onclick={() => {console.log("") }}
+                  loading={props?.loadpricing}
+                >
+                </Button>
+                : props.payment && props.token ? (
+            // props.payment?.itinerary_status ===
+            //   ITINERARY_STATUSES?.itinerary_finalized &&
+            !props.payment?.paid_user ?
             props.payment?.user_allowed_to_pay ? (
-              props.payment?.total_cost > 0 ? (
+              props.payment?.total_cost || props.payment?.discounted_cost > 0 ? (
                 <Button
                   color="#111"
                   fontWeight="500"
@@ -905,22 +918,7 @@ const Details = (props) => {
             : 
             // props?.payment?.is_registration_needed ? ( 
             //   props?.payment?.email_reverification_needed ? (
-              props.payment?.user_allowed_to_pay ? (
-                props.payment?.user_allowed_to_pay ? (
-                <Button
-                  color="#111"
-                  fontWeight="500"
-                  fontSize="1rem"
-                  borderWidth="2px"
-                  width="100%"
-                  borderRadius="8px"
-                  bgColor="#f8e000"
-                  padding="12px"
-                  onclick={() => handlePayNow("setShowVerification")}
-                >
-                  Pay Now & Book
-                </Button>
-              ) : props?.payment?.paid_user ? (
+            props?.payment?.paid_user ? (
                 <Button
                   color="#111"
                   fontWeight="500"
@@ -949,9 +947,8 @@ const Details = (props) => {
                   Add Travellers Details
                 </Button>
               )
-            ) : (
-              !props.payment.paid_user && (
-                <GetInTouchContainer>
+
+            : <GetInTouchContainer>
                   <Button
                     color="#111"
                     fontWeight="500"
@@ -982,10 +979,8 @@ const Details = (props) => {
                       <span>Get in touch!</span>
                     </div>
                   </Button>
-                </GetInTouchContainer>
-              )
-            )
-          ) : null}
+                </GetInTouchContainer> )
+              : null }
 
           {!props.token ? (
             <Button

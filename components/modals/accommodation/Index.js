@@ -75,7 +75,10 @@ const POI = (props) => {
   const [data, setData] = useState({});
   const [error, setError] = useState(false);
   const itineraryFilters = useSelector((state) => state.ItineraryFilters);
+  const itineraryDaybyDay=useSelector((state)=>state.Itinerary)
   const [drawerWidth, setDrawerWidth] = useState("50%");
+  console.log("Data of Add ",data);console.log("Iti DAY", itineraryDaybyDay);
+
   useEffect(() => {
     const handleResize = () => {
       setDrawerWidth(window.innerWidth <= 986 ? "100%" : "50%");
@@ -141,6 +144,8 @@ const POI = (props) => {
     props.setUpdateBookingState(true);
     let stayBookings=props.plan;
     const index = stayBookings.findIndex(item => item.id == props?.bookingId);
+    const itinerary_city = itineraryDaybyDay?.cities?.filter(item => item?.city?.id == props.plan[index].city_id);
+    console.log("Iti City",itinerary_city);
 
     const requestData = {
       rates: rates,
@@ -152,6 +157,7 @@ const POI = (props) => {
       hotel_id: data?.id,
       source: props.provider,
       booking_id: props?.bookingId,
+      itinerary_city: itinerary_city[0]?.id,
       city_id:props.plan[index].city_id
     };
 
@@ -161,6 +167,7 @@ const POI = (props) => {
     .then((response) => {
       props._updateStayBookingHandler([response.data]);
       props.setUpdateBookingState(false);
+
   
       setTimeout(() => {
         props.getPaymentHandler();

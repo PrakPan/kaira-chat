@@ -79,6 +79,7 @@ const ItineraryCity = (props) => {
   const [showDetails, setShowDetails] = useState(false);
   const [data,setData]=useState(null)
   const {token} = useSelector((state)=>state.auth)
+  const stay = useSelector((state)=>state.Stays)
   const fetchDetails = () => {
     setLoading(true);
 
@@ -114,22 +115,83 @@ const ItineraryCity = (props) => {
       });
     };
 
+    [
+      {
+          "id": "1ed386cc-8f2d-49d6-845c-11883d3a9129",
+          "name": "Kingsgate Hotel Abu Dhabi",
+          "star_category": "3",
+          "images": [
+              {
+                  "type": "Accommodation",
+                  "image": "https://i.travelapi.com/lodging/2000000/2000000/1993300/1993279/ee57a2f6_b.jpg",
+                  "source": "Travclan",
+                  "caption": "Primary image"
+              },
+              {
+                  "type": "Accommodation",
+                  "image": "https://i.travelapi.com/lodging/2000000/2000000/1993300/1993279/26f42d0c_b.jpg",
+                  "source": "Travclan",
+                  "caption": "Lobby"
+              },
+              {
+                  "type": "Accommodation",
+                  "image": "https://i.travelapi.com/lodging/2000000/2000000/1993300/1993279/f2e7974e_b.jpg",
+                  "source": "Travclan",
+                  "caption": "Reception"
+              },
+              {
+                  "type": "Accommodation",
+                  "image": "https://i.travelapi.com/lodging/2000000/2000000/1993300/1993279/5bc17111_b.jpg",
+                  "source": "Travclan",
+                  "caption": "Room"
+              },
+              {
+                  "type": "Accommodation",
+                  "image": "https://i.travelapi.com/lodging/2000000/2000000/1993300/1993279/ce04fbaf_b.jpg",
+                  "source": "Travclan",
+                  "caption": "Room"
+              }
+          ],
+          "check_in": "2025-04-13 00:00:00",
+          "check_out": "2025-04-21 00:00:00",
+          "city": "Abu Dhabi",
+          "duration": 8,
+          "number_of_adults": 1,
+          "number_of_children": 0,
+          "number_of_infants": 0,
+          "room": "1 Room (Superior Double Room)",
+          "meals": "Free Breakfast",
+          "wifi": true,
+          "rating": "3.8",
+          "user_ratings_total": "183",
+          "occupancies": [
+              {
+                  "child_ages": [],
+                  "num_adults": 1
+              }
+          ],
+          "city_name": "Abu Dhabi",
+          "city_id": "670d39ee-724d-48ae-a90b-3efa53cc099c",
+          "source": "Travclan"
+      }
+  ]
+
   return (
     <div
-      data-city-id={props.city.id}
+      data-city-id={stay[props?.index]?.city_id}
       ref={(el) => (props.cityRefs.current[props.city.id] = el)}
       className="border-2 border-gray-200 rounded-t-lg flex flex-col"
     >
       <div className="flex items-start justify-between p-3 rounded-t-lg bg-[#FEFAD8] border-b-2">
         <div className="space-y-1">
           <div className={`md:text-[18px] font-semibold`}>
-            {props.city.city.name}
+            {stay[props?.index]?.city_name}
             {" - "}
-            {props.city.duration}{" "}
-            {props.city.duration === 1 ? "Night" : "Nights"}
+            {stay[props?.index]?.duration}{" "}
+            {stay[props?.index]?.duration === 1 ? "Night" : "Nights"}
           </div>
 
-          {props.city?.hotels && props.city.hotels.length ? (
+          {((stay[props?.index]?.name)) ? (
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
                 <Image
@@ -143,7 +205,7 @@ const ItineraryCity = (props) => {
                   className="text-[14px] font-medium leading-0 underline  cursor-pointer hover:text-blue"
                   onClick={() => fetchDetails()}
                 >
-                  {props.city.hotels[0]?.name}
+                  {stay[props?.index]?.name}
                 </div>
               </div>
               <div className="flex flex-row items-center">
@@ -156,7 +218,9 @@ const ItineraryCity = (props) => {
                 </div>
               </div>
             </div>
-          ) : <div className="text-blue cursor-pointer text-[14px] font-medium" onClick={(e)=>handleStay(e, "Change", props.city.city.name,"Add")}>
+          ) 
+          
+          : <div className="text-blue cursor-pointer text-[14px] font-medium" onClick={(e)=>handleStay(e, "Change", props.city.city.name,"Add")}>
          + Add Stay in {props?.city?.city?.name}
         </div>}
         </div>

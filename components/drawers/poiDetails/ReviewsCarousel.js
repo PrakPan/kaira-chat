@@ -1,16 +1,16 @@
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import ImageLoader from "../ImageLoader";
+import ImageLoader from "../../ImageLoader";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Navigation } from "swiper";
+import { Pagination, Navigation} from "swiper"
 import "swiper/css";
 import "swiper/swiper-bundle.css";
 import "swiper/css/navigation";
 import "swiper/swiper.min.css";
 import "swiper/swiper-bundle.min.css";
 import styled from "styled-components";
-import media from "../../components/media";
-import PrimaryButton from "../ui/PrimaryButton";
+import media from "../../media"
+import GoogleImageLoader from "./GoogleImageLoader";
 
 const SwiperContainer = styled.div`
   position: relative;
@@ -74,25 +74,22 @@ const SwiperContainer = styled.div`
   }
 `;
 
-export default function Reviews1Carousel(props) {
+export default function ReviewsCarousel(props) {
   let isPageWide = media("(min-width: 768px)");
   const [cards, setCards] = useState([]);
 
   useEffect(() => {
-    let arr = [];
-
-    for (let review of props.reviews) {
-      arr.push(
-        <Review
-          heading={review?.heading}
-          text={review.text}
-          name={review?.name ?? review?.author_name}
-          image={review?.image ?? review?.profile_photo_url}
-          itinerary_link={review.itinerary_link}
-          rating={review.rating}
-        />
-      );
-    }
+    const arr = props.reviews.map((review, index) => (
+      <Review
+        key={index}
+        heading={review?.heading}
+        text={review?.text}
+        name={review?.author_name}
+        image={review?.profile_photo_url}
+        rating={review?.rating}
+      />
+    ));
+    
 
     setCards(arr);
   }, []);
@@ -139,24 +136,19 @@ export default function Reviews1Carousel(props) {
   );
 }
 
-const Review = ({ heading, text, name, image, rating, itinerary_link }) => {
-  const router = useRouter();
+const Review = ({ heading, text, name, image, rating }) => {
   const [viewMore, setViewMore] = useState(false);
 
-  const handleViewItinerary = () => {
-    router.push(itinerary_link);
-  };
-
   return (
-    <div className="h-[500px] border-2 flex flex-col gap-4 bg-white p-4 rounded-lg overflow-y-auto hide-scrollbar">
+    <div className="h-[400px] border-2 flex flex-col gap-4 bg-white p-4 rounded-lg overflow-y-auto hide-scrollbar">
       <div className="flex items-center gap-3">
-        {/* Image Section */}
         <div className="w-[65px] h-[65px]">
-          <ImageLoader
+          <GoogleImageLoader
             url={image}
             width={"65px"}
             height={"65px"}
             borderRadius="100%"
+            noLazy
           />
         </div>
 
@@ -184,10 +176,6 @@ const Review = ({ heading, text, name, image, rating, itinerary_link }) => {
             ) : null}
           </p>
         </div>
-
-        <PrimaryButton onClick={handleViewItinerary}>
-          View Itinerary
-        </PrimaryButton>
       </div>
     </div>
   );

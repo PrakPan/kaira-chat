@@ -612,6 +612,7 @@ const SimpleTabsV2 = (props) => {
               <StaysContainer
                 stayBookings={stays}
                 setStayBookings={props.setStayBookings}
+                CityData={CityData}
               />
             ) : (
               <HotelsBooking
@@ -774,7 +775,7 @@ const SimpleTabsV2 = (props) => {
                     <SummaryContainer
                       setUserDetails={props.setUserDetails}
                       id={props.id}
-                      stayBookings={props.stayBookings}
+                      stayBookings={stays || props.stayBookings}
                       flightBookings={props.flightBookings}
                       activityBookings={props.activityBookings}
                       transferBookings={props.transferBookings}
@@ -794,6 +795,7 @@ const SimpleTabsV2 = (props) => {
                     ></SummaryContainer>
                   ) : (
                     <NewSummaryContainers
+                    loadpricing={props?.loadpricing}
                       payment={props?.payment}
                       itineraryDate={props?.itineraryDate}
                       mercuryItinerary={props?.mercuryItinerary}
@@ -916,6 +918,7 @@ const SimpleTabsV2 = (props) => {
                     _GetInTouch={_GetInTouch}
                     stayBookings={stays}
                     setStayBookings={props.setStayBookings}
+                    CityData={CityData}
                   />
                 ) : (
                   <HotelsBooking
@@ -1051,7 +1054,7 @@ const SimpleTabsV2 = (props) => {
               <SummaryContainer
                 setUserDetails={props.setUserDetails}
                 id={props.id}
-                stayBookings={props.stayBookings}
+                stayBookings={stays || props.stayBookings}
                 flightBookings={props.flightBookings}
                 activityBookings={props.activityBookings}
                 transferBookings={props.transferBookings}
