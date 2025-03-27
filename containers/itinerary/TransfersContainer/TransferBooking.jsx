@@ -121,8 +121,6 @@ const TransferBooking = ({
   openNotification,
   setShowLoginModal,
   _changeTaxiHandler,
-  _updateTaxiBookingHandler,
-  getPaymentHandler,
   _changeFlightHandler,
   origin,
   destination,
@@ -130,7 +128,6 @@ const TransferBooking = ({
   check_in,
   end,
   Transfer,
-  lastend,
   selectedBooking,
   originCityId,
   destinationCityId,
@@ -568,6 +565,8 @@ const TransferBooking = ({
                 : destination?.city_name
             }
             selectedBooking={selectedBooking}
+            originCityId={originCityId}
+            destinationCityId={destinationCityId}
           />
         </div>
       )}
@@ -632,12 +631,11 @@ const FlightBooking = ({
     let transfer_type = booking["transfer_type"];
     let destination_city = booking["destination_city"];
     let origin_iata =
-      booking?.transfer_details?.items?.[0]?.segments?.[0]?.origin?.city_code;
+      booking?.transfer_details?.source?.code;
     let destination_iata =
-      booking?.transfer_details?.items?.[0]?.segments?.[
-        booking?.transfer_details?.items?.[0].segments?.length - 1
-      ]?.destination?.city_code;
+    booking?.transfer_details?.destination?.code;
     let user_selected = booking?.user_selected;
+    let edge=booking?.edge
     _changeFlightHandler(
       name,
       itinerary_id,
@@ -658,7 +656,8 @@ const FlightBooking = ({
       user_selected,
       booking?.id,
       originCityId,
-      destinationCityId
+      destinationCityId,
+      edge
     );
 
     logEvent({

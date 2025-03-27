@@ -19,6 +19,7 @@ import AccommodationModal from "../../modals/accommodation/Index";
 import styled from "styled-components";
 import { IoMdClose } from "react-icons/io";
 import { logEvent } from "../../../services/ga/Index";
+import { toast } from "react-toastify";
 
 const Container = styled.div`
   padding: 0 0.75rem 0.75rem 0.75rem;
@@ -82,23 +83,20 @@ const ItineraryCity = (props) => {
   const stay = useSelector((state)=>state.Stays)
   const {itinerary_status,booking_status,pricing_status} = useSelector((state) => state.ItineraryStatus);
   const fetchDetails = () => {
-    setLoading(true);
-
+    setShowDetails(true)
     bookingDetails
       .get(
         `/${router?.query?.id}/bookings/accommodation/${props.city.hotels[0]?.id}/`
       )
       .then((res) => {
         setData(res.data);
-        setLoading(false);
-        setShowDetails(true)
       })
       .catch((err) => {
-        setLoading(false);
+        toast.error("unable to get detail")
+        setShowDetails(false)
       });
   };  
   const handleStay = (e, label, value,clickType) => {
-      // console.log("clicktype is:",clickType)
       e.stopPropagation();
       if (token) props?.handleClickAc(props?.index, props?.city, props.city.city.id,clickType);
       else props?.setShowLoginModal(true);
@@ -215,13 +213,12 @@ const ItineraryCity = (props) => {
         onHide={() => setShowDetails(false)}
         width={"50%"}
       >
-        {!loading && (
           <Container>
             <BackContainer className=" font-lexend">
               <IoMdClose
                 className="hover-pointer"
-                onClick={props.onHide}
                 style={{ fontSize: "2rem" }}
+                onClick={()=>setShowDetails(false)}
               ></IoMdClose>
               <BackText>Back to Itinerary</BackText>
             </BackContainer>
@@ -252,7 +249,6 @@ const ItineraryCity = (props) => {
               id={props?.city?.hotels?.[0]?.id}
             />
           </Container>
-        )}
       </Drawer>
     </div>
   );

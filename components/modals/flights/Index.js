@@ -199,6 +199,7 @@ const Booking = (props) => {
                   originCityId={props?.originCityId}
                   destinationCityId={props?.destinationCityId}
                   setTransferBookingsIntercity={props.setTransferBookingsIntercity}
+                  edge={props?.edge || props?.selectedBooking?.edge}
                 ></Flight>
               );
             }
@@ -329,6 +330,8 @@ const Booking = (props) => {
                 individual={props?.individual}
                 originCityId={props?.originCityId}
                 destinationCityId={props?.destinationCityId}
+                edge={props?.edge || props?.selectedBooking?.edge}
+                setTransferBookingsIntercity={props.setTransferBookingsIntercity}
               ></Flight>
             );
           }

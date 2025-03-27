@@ -6,13 +6,10 @@ import { getHumanTime } from "../../../../services/getHumanTime";
 import Rooms from "../roomtypes/Index";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import useMediaQuery from "../../../media";
-import { FiChevronRight } from "react-icons/fi";
 import Button from "../../../ui/button/Index";
 import SkeletonCard from "../../../ui/SkeletonCard";
 import { connect, useDispatch } from "react-redux";
-import { getIndianPrice } from "../../../../services/getIndianPrice";
 import Tag from "../../../cards/bookings/activitybooking/imagecontainer/Tag";
-import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import ImageCarousel from "../../Carousel/ImageCarousel";
 import { PulseLoader } from "react-spinners";
 import { updateStays } from "../../../../store/actions/StayBookings";
@@ -231,16 +228,16 @@ const HotelBookingDetails = (props) => {
     <Container>
       <FlexBox>
         <div>
-          <Name>{props.data.name}</Name>
+          <Name>{props?.data?.name}</Name>
           <Address>
-            {props.data?.hotel_details?.addr1
-              ? props.data.hotel_details.addr1 + ", "
+            {props?.data?.hotel_details?.addr1
+              ? props?.data?.hotel_details.addr1 + ", "
               : ""}{" "}
-            {props.data?.hotel_details?.addr2
-              ? props.data.hotel_details.addr2 + ", "
+            {props?.data?.hotel_details?.addr2
+              ? props?.data?.hotel_details.addr2 + ", "
               : ""}{" "}
-            {props.data?.hotel_details?.city_name
-              ? props.data.hotel_details.city_name
+            {props?.data?.hotel_details?.city_name
+              ? props?.data?.hotel_details.city_name
               : ""}
           </Address>
         </div>
@@ -260,44 +257,22 @@ const HotelBookingDetails = (props) => {
         )}
       </FlexBox>
 
-      {props.data?.rating && (
+      {props?.data?.rating && (
         <div className="gap-1 flex flex-row  items-center">
           <div className="flex flex-row text-[#FFD201]">
-            {starRating(props.data?.rating)}
+            {starRating(props?.data?.rating)}
           </div>
           <div>
-            {props.data?.rating}
+            {props?.data?.rating}
             {" . "}
           </div>
-          {props.data?.user_ratings_total && (
+          {props?.data?.user_ratings_total && (
             <div className="text-sm text-[#7A7A7A] font-[400] underline">
-              {props.data?.user_ratings_total} reviews
+              {props?.data?.user_ratings_total} reviews
             </div>
           )}
         </div>
       )}
-{/* 
-      {props?.user_rating && (
-        <div className="flex flex-col gap-1">
-          {props?.user_rating && (
-            <div className="gap-1 flex flex-row  items-center">
-              <div className="flex flex-row text-[#ffa500]">
-                {starRating(props?.user_rating)}
-              </div>
-              <div>
-                {props?.user_rating}
-                {" . "}
-              </div>
-              {props?.number_of_reviews && (
-                <div className="text-sm text-[#7A7A7A] font-medium underline">
-                  {props?.number_of_reviews}{" "}
-                  user reviews
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      )} */}
 
       {isDesktop ? (
         <ImageContainer>
@@ -323,7 +298,7 @@ const HotelBookingDetails = (props) => {
                     />
 
                     {images[0]?.caption ? (
-                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                      <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
                         {images[0]?.caption}
                       </div>
                     ) : null}
@@ -359,7 +334,7 @@ const HotelBookingDetails = (props) => {
                     />
 
                     {images[1]?.caption ? (
-                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                      <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
                         {images[1]?.caption}
                       </div>
                     ) : null}
@@ -395,7 +370,7 @@ const HotelBookingDetails = (props) => {
                     />
 
                     {images[2]?.caption ? (
-                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                      <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
                         {images[2]?.caption}
                       </div>
                     ) : null}
@@ -431,7 +406,7 @@ const HotelBookingDetails = (props) => {
                     />
 
                     {images[3]?.caption ? (
-                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                      <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
                         {images[3]?.caption}
                       </div>
                     ) : null}
@@ -469,7 +444,7 @@ const HotelBookingDetails = (props) => {
                   />
 
                   {images[0]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                    <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
                       {images[0]?.caption}
                     </div>
                   ) : null}
@@ -505,7 +480,7 @@ const HotelBookingDetails = (props) => {
                   />
 
                   {images[1]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                    <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
                       {images[1]?.caption}
                     </div>
                   ) : null}
@@ -541,7 +516,7 @@ const HotelBookingDetails = (props) => {
                   />
 
                   {images[2]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                    <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
                       {images[2]?.caption}
                     </div>
                   ) : null}
@@ -579,7 +554,7 @@ const HotelBookingDetails = (props) => {
                   />
 
                   {images[0]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                    <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
                       {images[0]?.caption}
                     </div>
                   ) : null}
@@ -615,7 +590,7 @@ const HotelBookingDetails = (props) => {
                   />
 
                   {images[1]?.caption ? (
-                    <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                    <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
                       {images[1]?.caption}
                     </div>
                   ) : null}
@@ -653,7 +628,7 @@ const HotelBookingDetails = (props) => {
                 />
 
                 {images[0]?.caption ? (
-                  <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
+                  <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white py-1 px-2 rounded-lg">
                     {images[0]?.caption}
                   </div>
                 ) : null}
@@ -711,7 +686,7 @@ const HotelBookingDetails = (props) => {
                     />
 
                     {images[0]?.caption ? (
-                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
+                      <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
                         {images[0]?.caption}
                       </div>
                     ) : null}
@@ -747,7 +722,7 @@ const HotelBookingDetails = (props) => {
                     />
 
                     {images[1]?.caption ? (
-                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
+                      <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
                         {images[1]?.caption}
                       </div>
                     ) : null}
@@ -783,7 +758,7 @@ const HotelBookingDetails = (props) => {
                     />
 
                     {images[2]?.caption ? (
-                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
+                      <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
                         {images[2]?.caption}
                       </div>
                     ) : null}
@@ -821,7 +796,7 @@ const HotelBookingDetails = (props) => {
                     />
 
                     {images[0]?.caption ? (
-                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
+                      <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
                         {images[0]?.caption}
                       </div>
                     ) : null}
@@ -857,7 +832,7 @@ const HotelBookingDetails = (props) => {
                     />
 
                     {images[1]?.caption ? (
-                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
+                      <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
                         {images[1]?.caption}
                       </div>
                     ) : null}
@@ -895,7 +870,7 @@ const HotelBookingDetails = (props) => {
                     />
 
                     {images[0]?.caption ? (
-                      <div className="absolute top-1 left-1 z-50 bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
+                      <div className="absolute top-1 left-1  bg-black bg-opacity-50 text-white text-xs py-1 px-2 rounded-lg">
                         {images[0]?.caption}
                       </div>
                     ) : null}
@@ -939,16 +914,16 @@ const HotelBookingDetails = (props) => {
       )}
 
       <DetailsContainer>
-        {props.data?.hotel_details?.check_in?.begin_time &&
-        props.data?.hotel_details?.check_out?.time ? (
+        {props?.data?.hotel_details?.check_in?.begin_time &&
+        props?.data?.hotel_details?.check_out?.time ? (
           <CheckInText>
             <div className="">
-              Check in: {props.data.hotel_details.check_in.date},
-              {getHumanTime(props.data.hotel_details.check_in.begin_time)}
+              Check in: {props?.data?.hotel_details.check_in.date},
+              {getHumanTime(props?.data?.hotel_details.check_in.begin_time)}
             </div>
             <div>
-              Check out: {props.data.hotel_details.check_out.date},
-              {getHumanTime(props.data.hotel_details.check_out.time)}
+              Check out: {props?.data?.hotel_details.check_out.date},
+              {getHumanTime(props?.data?.hotel_details.check_out.time)}
             </div>
           </CheckInText>
         ) : (
@@ -956,7 +931,7 @@ const HotelBookingDetails = (props) => {
         )}
       </DetailsContainer>
 
-      {props.data?.hotel_details?.rates?.map((room, index) => (
+      {props?.data?.hotel_details?.rates?.map((room, index) => (
         <div
           key={index}
           className="flex flex-col gap-3 bg-white p-2 rounded-lg"
@@ -1004,23 +979,23 @@ const HotelBookingDetails = (props) => {
         </div>
       ))}
 
-      {props.data?.hotel_details?.check_in?.instructions?.length ? (
+      {props?.data?.hotel_details?.check_in?.instructions?.length ? (
         <div className="flex flex-col gap-1">
           <div className="text-lg font-bold">About</div>
           <div
             className="text-[14px] ml-[-30px]"
             dangerouslySetInnerHTML={{
-              __html: props.data?.hotel_details.check_in?.instructions[0],
+              __html: props?.data?.hotel_details.check_in?.instructions[0],
             }}
           ></div>
         </div>
       ) : null}
 
-      {props.data?.hotel_details?.rates?.[0]?.rooms?.[0]?.description && (
+      {props?.data?.hotel_details?.rates?.[0]?.rooms?.[0]?.description && (
         <>
           <Heading>Room Information</Heading>
           <div className="flex flex-col gap-3">
-            {props.data?.hotel_details?.rates?.[0]?.rooms.map((room, index) => (
+            {props?.data?.hotel_details?.rates?.[0]?.rooms.map((room, index) => (
               <div key={index} className="flex flex-col gap-3">
                 <div
                   key={index}
@@ -1060,19 +1035,17 @@ const HotelBookingDetails = (props) => {
           </div>
         </>
       )}
-      {/* <Tag tag={props.data?.hotel_details?.rates?.[0]?.rooms?.[0]?.facilities?.[0]}/>
-      <Tag tag={props.data?.hotel_details?.rates?.[0]?.facilities?.[1]}/> */}
 
-      {props.data?.recommendations && props.data?.recommendations?.length ? (
+      {props?.data?.recommendations && props?.data?.recommendations?.length ? (
         <>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>
             Room Recommendations
           </Heading>
 
           <Rooms
-            data={props.data?.recommendations}
-            checkInDate={props.data?.check_in?.date}
-            city={props.data?.city}
+            data={props?.data?.recommendations}
+            checkInDate={props?.data?.check_in?.date}
+            city={props?.data?.city}
             updateBooking={props.updateBooking}
           ></Rooms>
         </>
@@ -1080,13 +1053,13 @@ const HotelBookingDetails = (props) => {
         <></>
       )}
 
-      {props.data?.google_maps_link ? (
+      {props?.data?.google_maps_link ? (
         <div>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Location</Heading>
           <Address style={{ fontSize: "14px" }}>
-            {props.data?.addr1 ? props.data.addr1 + ", " : ""}{" "}
-            {props.data?.addr2 ? props.data.addr2 + ", " : ""}{" "}
-            {props.data?.city ? props.data.city : ""}
+            {props?.data?.addr1 ? props?.data?.addr1 + ", " : ""}{" "}
+            {props?.data?.addr2 ? props?.data?.addr2 + ", " : ""}{" "}
+            {props?.data?.city ? props?.data?.city : ""}
           </Address>
           <div
             style={{
@@ -1110,7 +1083,7 @@ const HotelBookingDetails = (props) => {
               />
             </div>
             <a
-              href={props.data?.google_maps_link}
+              href={props?.data?.google_maps_link}
               target="_blank"
               style={{ color: "black", fontSize: "14px" }}
             >
@@ -1118,8 +1091,8 @@ const HotelBookingDetails = (props) => {
             </a>
           </div>
         </div>
-      ) : props.data?.hotel_details?.coordinates?.latitude &&
-        props.data?.hotel_details?.coordinates?.longitude ? (
+      ) : props?.data?.hotel_details?.coordinates?.latitude &&
+        props?.data?.hotel_details?.coordinates?.longitude ? (
         <div>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Location</Heading>
           <div className="flex gap-2">
@@ -1187,14 +1160,14 @@ const HotelBookingDetails = (props) => {
               </svg>
             </div>
             <Address style={{ fontSize: "14px" }}>
-              {props.data?.hotel_details?.addr1
-                ? props.data.hotel_details.addr1 + ", "
+              {props?.data?.hotel_details?.addr1
+                ? props?.data?.hotel_details.addr1 + ", "
                 : ""}{" "}
-              {props.data?.hotel_details?.addr2
-                ? props.data.hotel_details.addr2 + ", "
+              {props?.data?.hotel_details?.addr2
+                ? props?.data?.hotel_details.addr2 + ", "
                 : ""}{" "}
-              {props.data?.hotel_details?.city_name
-                ? props.data.hotel_details.city_name
+              {props?.data?.hotel_details?.city_name
+                ? props?.data?.hotel_details.city_name
                 : ""}
             </Address>
           </div>
@@ -1210,10 +1183,10 @@ const HotelBookingDetails = (props) => {
           >
             <a
               href={`https://www.google.com/maps/search/?api=1&query=${
-                props.data?.hotel_details?.coordinates?.latitude
+                props?.data?.hotel_details?.coordinates?.latitude
               },${
-                props.data?.hotel_details?.coordinates?.longitude
-              }+(${props.data?.name?.split(" ").join("+")})`}
+                props?.data?.hotel_details?.coordinates?.longitude
+              }+(${props?.data?.name?.split(" ").join("+")})`}
               target="_blank"
               style={{ color: "#0000EE", fontSize: "14px" }}
             >
