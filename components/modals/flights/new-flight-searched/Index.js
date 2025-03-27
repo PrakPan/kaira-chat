@@ -5,7 +5,7 @@ import FlightDetails from "./FlightDetails";
 import PriceContainer from "./PriceContainer";
 import { useState, useEffect } from "react";
 import ViewMoreButton from "../../../itinerary/daySummary/ViewMoreButton";
-import Details from "../../../../containers/itinerary/TransfersContainer/FlightDetail"
+import Details from "../../../../containers/itinerary/TransfersContainer/FlightDetail";
 const Container = styled.div`
   width: 95%;
   background-color: white;
@@ -27,7 +27,6 @@ const Container = styled.div`
 const ClippathComp = styled.div`
   clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
 `;
-
 
 function convertMinutesToHours(minutes) {
   const hours = Math.floor(minutes / 60);
@@ -105,10 +104,10 @@ const Flight = (props) => {
             setShowDetails={setShowDetails}
             individual={props?.individual}
             booking_id={props?.booking_id}
-
-          originCityId={props.originCityId}
-          destinationCityId={props.destinationCityId}
-          setTransferBookingsIntercity={props.setTransferBookingsIntercity}
+            originCityId={props.originCityId}
+            destinationCityId={props.destinationCityId}
+            setTransferBookingsIntercity={props.setTransferBookingsIntercity}
+            edge={props?.edge}
           />
         </div>
       )}
@@ -117,4 +116,3 @@ const Flight = (props) => {
 };
 
 export default Flight;
-

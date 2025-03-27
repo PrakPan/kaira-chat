@@ -377,26 +377,28 @@ const Pax = (props) => {
   };
 
   const handleDone = () => {
-    if (checkError()) {
-      setShowError(true);
-      return;
-    }
+
+    // if (checkError()) {
+    //   setShowError(true);
+    //   return;
+    // }
 
     setShowError(false);
-
-    let adults = 0;
-    let children = 0;
-
-    for (let room of rooms) {
-      adults += room.adults;
-      children += room.children;
-    }
-
-    if (props.setNumberOfAdults) props.setNumberOfAdults(adults);
-    if (props.setNumberOfChildren) props.setNumberOfChildren(children);
-    if (props.setRoomConfiguration) props.setRoomConfiguration(rooms);
-
     setIsRoomExpanded(false);
+
+    // let adults = 0;
+    // let children = 0;
+
+    // for (let room of rooms) {
+    //   adults += room.adults;
+    //   children += room.children;
+    // }
+
+    // if (props.setNumberOfAdults) props.setNumberOfAdults(adults);
+    // if (props.setNumberOfChildren) props.setNumberOfChildren(children);
+    // if (props.setRoomConfiguration) props.setRoomConfiguration(rooms);
+
+    
   };
 
   return (

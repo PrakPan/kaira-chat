@@ -195,7 +195,7 @@ const ImageLoaderGoogle = (props) => {
                 ? isPageLoaded
                   ? getBtoaUrl(imgUrlEndPoint, smallImageRequest)
                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
-                : `${imgUrlEndPoint}${props.url}&maxheight=${props?.heightmobile}&key=${GOOGLE_MAPS_API_KEY}`
+                : `${imgUrlEndPoint}${props.url}&key=${GOOGLE_MAPS_API_KEY}`
             }
             
             style={{
@@ -214,7 +214,7 @@ const ImageLoaderGoogle = (props) => {
                   : isPageLoaded
                     ? getBtoaUrl(imgUrlEndPoint, imageRequest)
                     : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
-                    : `${imgUrlEndPoint}${props.url}&maxheight=${props?.height}&key=${GOOGLE_MAPS_API_KEY}`
+                    : `${imgUrlEndPoint}${props.url}&key=${GOOGLE_MAPS_API_KEY}`
                   }
             onLoad={fullImageLoadedHandler}
             onError={_handleError}
@@ -249,7 +249,7 @@ const ImageLoaderGoogle = (props) => {
                 ? isPageLoaded
                   ? getBtoaUrl(imgUrlEndPoint, smallImageRequest)
                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
-                  : `${imgUrlEndPoint}${props.url}&maxheight=${props?.height}&key=${GOOGLE_MAPS_API_KEY}`
+                  : `${imgUrlEndPoint}${props.url}&key=${GOOGLE_MAPS_API_KEY}`
                 }
             style={{
               height: props.height ? props.height : "100%",
@@ -267,7 +267,7 @@ const ImageLoaderGoogle = (props) => {
                   : isPageLoaded
                     ? getBtoaUrl(imgUrlEndPoint, imageRequest)
                     : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
-                    : `${imgUrlEndPoint}${props.url}&maxheight=${props?.height}&key=${GOOGLE_MAPS_API_KEY}`
+                    : `${imgUrlEndPoint}${props.url}&key=${GOOGLE_MAPS_API_KEY}`
                   }
             onLoad={fullImageLoadedHandler}
             onError={_handleError}
@@ -304,7 +304,7 @@ const ImageLoaderGoogle = (props) => {
                 ? isPageLoaded
                   ? getBtoaUrl(imgUrlEndPoint, smallImageRequest)
                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
-                  : `${props.url}&maxheight=${props?.heightmobile}&key=${GOOGLE_MAPS_API_KEY}`
+                  : `${props.url}&key=${GOOGLE_MAPS_API_KEY}`
                 }
             style={{
               height: props.height ? props.height : "100%",
@@ -322,7 +322,7 @@ const ImageLoaderGoogle = (props) => {
                   : isPageLoaded
                     ? getBtoaUrl(imgUrlEndPoint, imageRequestMobile)
                     : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
-                    : `${imgUrlEndPoint}${props.url}&maxheight=${props?.height}&key=${GOOGLE_MAPS_API_KEY}`
+                    : `${imgUrlEndPoint}${props.url}&key=${GOOGLE_MAPS_API_KEY}`
                   }
             width={props.dimensionsMobile.width}
             height={props.dimensionsMobile.height}
@@ -359,7 +359,7 @@ const ImageLoaderGoogle = (props) => {
                 ? isPageLoaded
                   ? getBtoaUrl(imgUrlEndPoint, smallImageRequest)
                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
-                  : `${imgUrlEndPoint}${props.url}&maxheight=${props?.height}&key=${GOOGLE_MAPS_API_KEY}`
+                  : `${imgUrlEndPoint}${props.url}&key=${GOOGLE_MAPS_API_KEY}`
                 }
             style={{
               height: props.height ? props.height : "100%",
@@ -376,7 +376,7 @@ const ImageLoaderGoogle = (props) => {
                   : isPageLoaded
                     ? getBtoaUrl(imgUrlEndPoint, imageRequest)
                     : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
-                    : `${imgUrlEndPoint}${props.url}&maxheight=${props?.height}&key=${GOOGLE_MAPS_API_KEY}`
+                    : `${imgUrlEndPoint}${props.url}&key=${GOOGLE_MAPS_API_KEY}`
                   }
             onLoad={fullImageLoadedHandler}
             onError={_handleError}

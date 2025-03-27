@@ -4,7 +4,7 @@ import { TransportIconFetcher } from "../../../../helper/TransportIconFetcher";
 import { MdEdit } from "react-icons/md";
 import TransferEditDrawer from "../../../../components/drawers/routeTransfer/TransferEditDrawer";
 import { logEvent } from "../../../../services/ga/Index";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import TaxiModal from "../../../../components/modals/taxis/Index";
 import FlightModal from "../../../../components/modals/flights/Index";
 import { useEffect } from "react";
@@ -95,6 +95,7 @@ const MidSectionV2 = (props) => {
   );
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showTaxiModal, setShowTaxiModal] = useState(false);
+  const {itinerary_status,booking_status,pricing_status} = useSelector((state) => state.ItineraryStatus);
 
   useEffect(() => {
     if (props.cityTransferBookings && props.flightBookings) {
@@ -193,7 +194,7 @@ const MidSectionV2 = (props) => {
         <Line pinColour={props.pinColour} hidemidsection={hidemidsection} />
       </div>
 
-      {hidemidsection && (props?.loadbookings ? <TransferSkeleton/> : (
+      {hidemidsection && ((booking_status === "PENDING" ) ? <TransferSkeleton/> : (
         <> 
           {props.version == "v2" ? (
             (

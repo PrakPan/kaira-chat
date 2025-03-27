@@ -184,6 +184,7 @@ const TransferEditDrawer = (props) => {
   const handleSelect = (index, transfer, multimode) => {
     selectedBooking.origin_iata=transfer?.source?.code;
     selectedBooking.destination_iata=transfer?.destination?.code;
+    selectedBooking.edge=transfer?.id
     if (!props.token) {
       setShowLoginModal(true);
       return;
@@ -558,8 +559,8 @@ const TransferEditDrawer = (props) => {
         routeId={routeId}
         mercuryTransfer={selectedMercuryTransfer}
         individual={props?.individual}
-        originCityId={origin}
-        destinationCityId={destination}
+        originCityId={props?.originCityId}
+        destinationCityId={props?.destinationCityId}
       ></FlightModal>
 
       <TaxiModal

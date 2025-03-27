@@ -10,6 +10,7 @@ import { IoMdClose } from "react-icons/io";
 import ReviewsCarousel from "./ReviewsCarousel";
 import FullScreenGalleryGoogle from "./FullScreenGalleryGoogle";
 import useMediaQuery from "../../media";
+import ImageLoaderGoogle from "./ImageLoaderGoogle";
 export const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -179,13 +180,13 @@ const POIDetails = (props) => {
             <GridImage>
               <Child area="1 / 1 / 5 / 4" className="div1">
                 <div className="relative">
-                  <ImageLoader
+                  <ImageLoaderGoogle
                     borderRadius="8px"
-                    marginTop="23px"
-                    widthMobile="100%"
+                    height="304"
+                    heightmobile="280"
                     url={
-                      images[0] && !imageFail
-                        ? images[0]
+                      images[0] 
+                        ? images[0].photo_reference
                         : "media/icons/bookings/notfounds/noroom.png"
                     }
                     dimensionsMobile={{ width: 500, height: 280 }}
@@ -200,19 +201,20 @@ const POIDetails = (props) => {
                       setImageLoaded(true);
                     }}
                     noLazy
-                  ></ImageLoader>
+                  ></ImageLoaderGoogle>
                 </div>
               </Child>
 
               <Child area="1 / 8 / 5 / 11" className="div2 rounded-lg">
                 <div className="relative">
-                  <ImageLoader
+                  <ImageLoaderGoogle
                     borderRadius="8px"
                     marginTop="23px"
-                    widthMobile="100%"
+                    height="188"
+                    heightmobile="280"
                     url={
-                      images[1] && !imageFail
-                        ? images[1]
+                      images[1] 
+                        ? images[1].photo_reference
                         : "media/icons/bookings/notfounds/noroom.png"
                     }
                     dimensionsMobile={{ width: 500, height: 280 }}
@@ -227,19 +229,19 @@ const POIDetails = (props) => {
                       setImageLoaded(true);
                     }}
                     noLazy
-                  ></ImageLoader>
+                  ></ImageLoaderGoogle>
                 </div>
               </Child>
 
               <Child area="1 / 4 / 3 / 8" className="div3">
                 <div className="relative">
-                  <ImageLoader
+                  <ImageLoaderGoogle
                     borderRadius="8px"
                     marginTop="23px"
                     widthMobile="100%"
                     url={
-                      images[2] && !imageFail
-                        ? images[2]
+                      images[2] 
+                        ? images[2].photo_reference
                         : "media/icons/bookings/notfounds/noroom.png"
                     }
                     dimensionsMobile={{ width: 500, height: 280 }}
@@ -254,19 +256,19 @@ const POIDetails = (props) => {
                       setImageLoaded(true);
                     }}
                     noLazy
-                  ></ImageLoader>
+                  ></ImageLoaderGoogle>
                 </div>
               </Child>
 
               <Child area="3 / 4 / 5 / 8" className="div4">
                 <div className="relative">
-                  <ImageLoader
+                  <ImageLoaderGoogle
                     borderRadius="8px"
                     marginTop="23px"
                     widthMobile="100%"
                     url={
-                      images[3] && !imageFail
-                        ? images[3]
+                      images[3] 
+                        ? images[3].photo_reference
                         : "media/icons/bookings/notfounds/noroom.png"
                     }
                     dimensionsMobile={{ width: 500, height: 280 }}
@@ -281,7 +283,7 @@ const POIDetails = (props) => {
                       setImageLoaded(true);
                     }}
                     noLazy
-                  ></ImageLoader>
+                  ></ImageLoaderGoogle>
                 </div>
               </Child>
             </GridImage>
@@ -297,7 +299,7 @@ const POIDetails = (props) => {
                   marginTop="23px"
                   widthMobile="100%"
                   url={
-                    props.data.image && !imageFail
+                    props.data.image 
                       ? props.data.image
                       : "media/icons/bookings/notfounds/noroom.png"
                   }

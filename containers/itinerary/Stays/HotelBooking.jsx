@@ -12,7 +12,7 @@ import styled from "styled-components";
 import { ITINERARY_STATUSES } from "../../../services/constants";
 import { MdWifi } from "react-icons/md";
 import { logEvent } from "../../../services/ga/Index";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { getHumanDate } from "../../../services/getHumanDate";
 
 const RoomTypeGrid = styled.div`
@@ -42,6 +42,7 @@ const HotelBooking = ({
   let isPageWide = media("(min-width: 768px)");
   const [imageFail, setImageFail] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const {itinerary_status,booking_status,pricing_status} = useSelector((state) => state.ItineraryStatus);
 
   const starRating = (rating) => {
     var stars = [];
@@ -142,8 +143,65 @@ const HotelBooking = ({
 
   return (
     <div className={`${!isPageWide ? "max-w-fit" : "max-w-[54vw]"}`}>
-      {/* {booking?.user_ratings_total && booking?.id? */}
-      { booking?.id?
+      { booking_status ==="PENDING" ? 
+      <div className="animate-pulse">
+      {/* Skeleton loader for city name */}
+      <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
+        <div className="bg-gray-300 h-6 w-1/2 mb-2"></div>
+        <span className="ml-1 bg-gray-200 h-4 w-12 inline-block"></span>
+      </div>
+
+      {/* Skeleton loader for hotel image */}
+      <div className="relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3">
+        <div className="relative flex lg:flex-row w-full flex-col gap-4">
+          <div className="relative lg:h-[12rem] lg:w-[30%] w-full h-[12rem]">
+            <div className="h-full w-full bg-gray-300 rounded-2xl"></div>
+          </div>
+
+          {/* Skeleton loader for hotel details */}
+          <div className="flex flex-col gap-2 text-[#01202B] lg:w-[70%] w-full justify-between">
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-row justify-between items-center">
+                <div className="bg-gray-300 h-6 w-2/3"></div>
+                <div className="bg-gray-300 h-4 w-16"></div>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <div className="bg-gray-300 h-4 w-32 mb-1"></div>
+                <div className="flex flex-row gap-2 items-center">
+                  <div className="bg-gray-300 h-5 w-1/2"></div>
+                  <div className="bg-gray-300 h-3 w-16"></div>
+                </div>
+              </div>
+
+              {/* Skeleton loader for trip info */}
+              {tripsPage && (
+                <div className="flex flex-row gap-2 items-center">
+                  <div className="bg-gray-300 h-3 w-10"></div>
+                  <div className="bg-gray-300 h-3 w-20"></div>
+                </div>
+              )}
+
+              {/* Skeleton loader for room and bed */}
+              <div className="flex flex-row gap-2 items-center my-0">
+                <div className="bg-gray-300 h-3 w-20"></div>
+              </div>
+
+              {/* Skeleton loader for meals and wifi */}
+              <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
+                <div className="bg-gray-300 h-3 w-24"></div>
+              </div>
+            </div>
+
+            <div className="flex flex-row gap-2 items-end justify-end w-full">
+              <div className="bg-gray-300 h-8 w-24 rounded"></div>
+              <div className="bg-gray-300 h-8 w-24 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+      : booking?.id?
       <>
       <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
         {booking?.city_name}

@@ -484,6 +484,18 @@ const Enquiry = (props) => {
       });
   };
 
+  useEffect(() => {
+    const handleRouteChangeComplete = () => {
+      setLoading(false);
+    };
+  
+    router.events.on('routeChangeComplete', handleRouteChangeComplete);
+  
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChangeComplete);
+    };
+  }, [router]);
+
   const completeItineraryCreate = () => {
     let number_of_adults = 2;
     let number_of_children = 0;
@@ -525,10 +537,9 @@ const Enquiry = (props) => {
         
         setError(null);
         setSubmitted(true);
-        if(response?.data){
-          setLoading(false);
-          router.push(`/itinerary/${itineraryId}`);
-        }
+        router.push(`/itinerary/${itineraryId}`).then(() => {
+          window.scrollTo(0, 0);
+        });
         
           // if (!response.data?.auto_itinerary_created) {
           //   router.push("/thank-you");

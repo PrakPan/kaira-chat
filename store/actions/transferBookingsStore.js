@@ -1,8 +1,6 @@
 import * as actionTypes from "./actionsTypes";
 
 export const setTransfersBookings = (data) => {
-  console.log("Setting Transfer Bookings Data:", data);
-
   return {
     type: actionTypes.SET_TRANSFER_BOOKINGS,
     payload: data,

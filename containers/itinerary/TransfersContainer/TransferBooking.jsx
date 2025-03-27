@@ -4,7 +4,7 @@ import { TransportIconFetcher } from "../../../helper/TransportIconFetcher";
 import ImageLoader from "../../../components/ImageLoader";
 import useMediaQuery from "../../../components/media";
 import media from "../../../components/media";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
 import Button from "../../../components/ui/button/Index";
 import { logEvent } from "../../../services/ga/Index";
@@ -121,8 +121,6 @@ const TransferBooking = ({
   openNotification,
   setShowLoginModal,
   _changeTaxiHandler,
-  _updateTaxiBookingHandler,
-  getPaymentHandler,
   _changeFlightHandler,
   origin,
   destination,
@@ -130,7 +128,6 @@ const TransferBooking = ({
   check_in,
   end,
   Transfer,
-  lastend,
   selectedBooking,
   originCityId,
   destinationCityId,
@@ -145,6 +142,7 @@ const TransferBooking = ({
   const [showDrawer, setShowDrawer] = useState(false);
   const [showVehicleDrawer, setShowVehicleDrawer] = useState(false);
   const [vehicleDetails, setVehicleDetails] = useState(null);
+  const {itinerary_status,booking_status,pricing_status} = useSelector((state) => state.ItineraryStatus);
   useEffect(() => {
     setaddboking(booking?.user_selected);
   }, [booking?.user_selected]);
@@ -283,7 +281,46 @@ const TransferBooking = ({
 
   return (
     <>
-      {booking?.id ? (
+      { booking_status === "PENDING" ?
+           <div className="mt-2 ml-1 md:ml-7 flex flex-col w-full">
+    {/* Booking name */}
+    <div className="flex flex-row w-full justify-between items-center">
+      <div className="w-full h-3 bg-gray-300 rounded-md animate-pulse" />
+      <div className="flex flex-row gap-2 justify-center items-center">
+        {/* Placeholder for additional info */}
+      </div>
+    </div>
+
+    {/* Booking Details */}
+    <div
+      className={`mb-1 mt-2 w-[51vw] flex flex-col lg:flex-row lg:items-center space-y-1 items-start justify-between py-[15px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-1 p-1`}
+    >
+      <div className="flex flex-row items-center justify-between gap-1">
+        {/* Image Placeholder */}
+        <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
+          <div className="w-10 h-10 bg-gray-300 rounded-full animate-pulse" />
+        </div>
+
+        {/* Details */}
+        <div className="flex flex-col lg:w-full">
+          {/* Title Placeholder */}
+          <div className="w-full h-4 bg-gray-300 rounded-md animate-pulse mb-2" />
+          <div className="w-3/4 h-4 bg-gray-300 rounded-md animate-pulse" />
+          {/* Duration Placeholder */}
+          <div className="w-5/6 h-3 bg-gray-300 rounded-md animate-pulse mt-2" />
+          
+          {/* Facilities Placeholder */}
+          <div className="w-3/4 h-3 bg-gray-300 rounded-md animate-pulse mt-1" />
+        </div>
+      </div>
+
+      {/* Button Placeholder */}
+      <div className="w-full flex flex-row items-center justify-end cursor-pointer pr-2">
+        <div className="w-32 h-6 bg-gray-300 rounded-md animate-pulse" />
+      </div>
+    </div>
+  </div> :
+  booking?.id ? (
         <Container className={`${!isPageWide ? "max-w-fit" : "max-w-[54vw]"}`}>
           <div className="relative">
             <Line
@@ -496,7 +533,8 @@ const TransferBooking = ({
           )}
         </Container>
       ) : 
-       (<div className="grid w-full grid-cols-[30px_120px] min-h-[5rem] md:min-h-[8rem]">
+       (
+       <div className="grid w-full grid-cols-[30px_120px] min-h-[5rem] md:min-h-[8rem]">
           <div className="relative">
             <Line
               pinColour={CITY_COLOR_CODES[index % 7]}
@@ -504,12 +542,12 @@ const TransferBooking = ({
               end={end}
             />
           </div>
-          {loadbookings ? <TransferSkeleton/> : <button
+   <button
             onClick={() => setShowDrawer(true)}
             className="text-[14px] font-[600] leading-[60px] text-blue hover:underline w-full whitespace-nowrap"
           >
             + Add Transfer from {origin?.name || origin?.city_name} to {destination?.name || destination?.city_name}
-          </button>}
+          </button>
           <TransferEditDrawer
             mercury
             addOrEdit={"transferAdd"}
@@ -527,6 +565,8 @@ const TransferBooking = ({
                 : destination?.city_name
             }
             selectedBooking={selectedBooking}
+            originCityId={originCityId}
+            destinationCityId={destinationCityId}
           />
         </div>
       )}
@@ -591,12 +631,11 @@ const FlightBooking = ({
     let transfer_type = booking["transfer_type"];
     let destination_city = booking["destination_city"];
     let origin_iata =
-      booking?.transfer_details?.items?.[0]?.segments?.[0]?.origin?.city_code;
+      booking?.transfer_details?.source?.code;
     let destination_iata =
-      booking?.transfer_details?.items?.[0]?.segments?.[
-        booking?.transfer_details?.items?.[0].segments?.length - 1
-      ]?.destination?.city_code;
+    booking?.transfer_details?.destination?.code;
     let user_selected = booking?.user_selected;
+    let edge=booking?.edge
     _changeFlightHandler(
       name,
       itinerary_id,
@@ -617,7 +656,8 @@ const FlightBooking = ({
       user_selected,
       booking?.id,
       originCityId,
-      destinationCityId
+      destinationCityId,
+      edge
     );
 
     logEvent({

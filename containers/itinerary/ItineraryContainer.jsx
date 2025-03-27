@@ -31,6 +31,7 @@ import axiosBookingsInstance, {
 } from "../../services/itinerary/bookings";
 import { setTransfersBookings } from "../../store/actions/transferBookingsStore";
 import { setStays } from "../../store/actions/StayBookings";
+import setItineraryStatus from "../../store/actions/itineraryStatus";
 
 const Container = styled.div`
   width: 90%;
@@ -44,6 +45,7 @@ const Container = styled.div`
 const ItineraryContainer = (props) => {
   const router = useRouter();
   const dispatch = useDispatch();
+  const {itinerary_status,booking_status,pricing_status} = useSelector((state) => state.ItineraryStatus);
   const [totalduration, setTotalduration] = useState(0);
   const [itineraryReleased, setItineraryReleased] = useState(false);
   const [itineraryDate, setItineraryDate] = useState("");
@@ -229,6 +231,7 @@ const bookingSuccessRef = useRef(false);
       .then((res) => {
         let data = res.data;
         setPayment(data);
+        dispatch(setItineraryStatus("pricing_status","SUCCESS"));
 
         for (let category in data.summary) {
           let categoryData = data.summary[category];
@@ -343,7 +346,7 @@ const bookingSuccessRef = useRef(false);
         setTransferBookings(data);
         setCityTransferBookings(data);
         dispatch(setTransfersBookings(data));
-
+        dispatch(setItineraryStatus("booking_status","SUCCESS"));
       })
       .catch((err) => {
         console.error("Error fetching all bookings", err.message);
@@ -397,6 +400,7 @@ function fetchData(poll) {
           return;
         } else {
           setShowMercuryItinerary(true);
+          dispatch(setItineraryStatus("itinerary_status","SUCCESS"));
         }
 
         props.setItinerary(data);
@@ -485,8 +489,22 @@ useEffect(() => {
         fetchData(true); 
         callCount++;
       } else {
+        if (
+          itinerary_status === "FAILURE" &&
+          booking_status === "FAILURE" &&
+          pricing_status === "FAILURE"
+        ) {
+          router.push("/thank-you");
+        } else {
+          if(pricing_status === "FAILURE"){
+            dispatch(setItineraryStatus("pricing_status","FAILURE"));
+          }
+          if(booking_status === "FAILURE"){
+            dispatch(setItineraryStatus("booking_status","FAILURE"));
+          }
+        }
+
         clearInterval(interval);
-        router.push("/thank-you");
       }
     }, 5000);
   } else {
