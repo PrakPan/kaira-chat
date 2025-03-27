@@ -39,47 +39,6 @@ const CityDay = (props) => {
           {" "}
           (Day {props.index + 1})
         </span>
-
-        {/* {elements.map((element, index) => (
-          <>
-            
-            <div className="w-16 flex flex-col items-center py-4">
-              <span className="text-xs text-gray-500">10:30 AM</span>
-              <div className="h-6 w-6 flex items-center justify-center mt-1">
-                <RiTimeLine className="text-gray-400" size={18} />
-              </div>
-            </div>
-          </>
-        ))} */}
-        {/* <div className="flex flex-col items-center mt-1">
-  {isPageWide && elements.map((time, index) => (
-    <div key={index} className="flex items-start">
-      {/* Left Section - Clock + Vertical Line */}
-        {/* <div className="flex flex-col items-center"> */}
-        {/* Clock Icon */}
-        {/* <div className="h-6 w-6 flex items-center justify-center">
-          <RiTimeLine className="text-gray-400" size={25} />
-        </div> */}
-
-        {/* Vertical Line (except for last item) */}
-        {/* {index !== elements.length - 1 && (
-          <div
-          style={{
-            width: "2px",
-            height: "4.5rem",
-            backgroundImage:
-        "repeating-linear-gradient(transparent 0px, transparent 6px, gray 6px, gray 8px)",
-            opacity: 0.5,
-          }}
-        ></div>
-        )}
-      </div>
-
-      {/* Right Section - Time */}
-        {/* <span className="ml-2 text-xs text-gray-500"></span>
-    </div> */}
-        {/* ))}  */}
-        {/* </div>  */}
       </div>
 
       <div className="flex flex-col p-3 md:w-[85%]">

@@ -9,6 +9,7 @@ import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 import ReviewsCarousel from "./ReviewsCarousel";
 import FullScreenGalleryGoogle from "./FullScreenGalleryGoogle";
+import useMediaQuery from "../../media";
 export const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -57,7 +58,6 @@ const TimeStamp = styled.span`
   left: 0.5rem;
   top: 0.5rem;
   position: absolute;
-
 `;
 const PhotosButton = styled.div`
   &:hover {
@@ -97,13 +97,32 @@ const BackText = styled.div`
 const ImageContainer = styled.div`
   position: relative;
 `;
+const GridImage = styled.div`
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(4, 0.4fr);
+  grid-column-gap: 6px;
+  grid-row-gap: 6px;
+  height: 19rem;
+`;
+const Child = styled.div`
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  grid-area: ${(props) => props.area};
+  ${(props) => props.className && `class="${props.className}"`};
+`;
 
 const POIDetails = (props) => {
-  let isPageWide = media("(min-width: 768px)");
+  const isDesktop = useMediaQuery("(min-width:1148px)");
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageFail, setImageFail] = useState(false);
-  const [aboutText, setAboutText] = useState(props?.data?.overview);
-  const [images, setImages] = useState([]);
+  const [aboutText, setAboutText] = useState(
+    props?.data?.overview ?? props?.data?.short_description
+  );
+  const [images, setImages] = useState(props?.data?.extra_images);
   var experience_filters = (
     <div className="flex flex-wrap gap-2">
       {props.data.experience_filters?.map((e, i) => (
@@ -154,70 +173,189 @@ const POIDetails = (props) => {
           <BackText>Back to Itinerary</BackText>
         </BackContainer>
       )}
+      {images?.length>3 ? (
+        <>
+          <ImageContainer>
+            <GridImage>
+              <Child area="1 / 1 / 5 / 4" className="div1">
+                <div className="relative">
+                  <ImageLoader
+                    borderRadius="8px"
+                    marginTop="23px"
+                    widthMobile="100%"
+                    url={
+                      images[0] && !imageFail
+                        ? images[0]
+                        : "media/icons/bookings/notfounds/noroom.png"
+                    }
+                    dimensionsMobile={{ width: 500, height: 280 }}
+                    dimensions={{ width: 468, height: 188 }}
+                    onload={() => {
+                      setTimeout(() => {
+                        setImageLoaded(true);
+                      }, 1000);
+                    }}
+                    onfail={() => {
+                      setImageFail(true);
+                      setImageLoaded(true);
+                    }}
+                    noLazy
+                  ></ImageLoader>
+                </div>
+              </Child>
 
-      <ImageContainer style={{ height: "170px" }}>
-        <div>
-          <div style={{ display: imageLoaded ? "initial" : "none" }}>
-            <ImageLoader
-              borderRadius="8px"
-              marginTop="23px"
-              widthMobile="100%"
-              url={
-                props.data.image && !imageFail
-                  ? props.data.image
-                  : "media/icons/bookings/notfounds/noroom.png"
-              }
-              dimensionsMobile={{ width: 500, height: 280 }}
-              dimensions={{ width: 468, height: 188 }}
-              onload={() => {
-                setTimeout(() => {
-                  setImageLoaded(true);
-                }, 1000);
-              }}
-              onfail={() => {
-                setImageFail(true);
-                setImageLoaded(true);
-              }}
-              noLazy
-            ></ImageLoader>
-            <PhotosButton
-              onClick={() => {
-                setImages(props?.data?.extra_images);
-              }}
-            >
-              All Photos{" "}
-            </PhotosButton>
-          </div>
+              <Child area="1 / 8 / 5 / 11" className="div2 rounded-lg">
+                <div className="relative">
+                  <ImageLoader
+                    borderRadius="8px"
+                    marginTop="23px"
+                    widthMobile="100%"
+                    url={
+                      images[1] && !imageFail
+                        ? images[1]
+                        : "media/icons/bookings/notfounds/noroom.png"
+                    }
+                    dimensionsMobile={{ width: 500, height: 280 }}
+                    dimensions={{ width: 468, height: 188 }}
+                    onload={() => {
+                      setTimeout(() => {
+                        setImageLoaded(true);
+                      }, 1000);
+                    }}
+                    onfail={() => {
+                      setImageFail(true);
+                      setImageLoaded(true);
+                    }}
+                    noLazy
+                  ></ImageLoader>
+                </div>
+              </Child>
 
-          <div
-            style={{
-              display: !imageLoaded ? "initial" : "none",
-            }}
-          >
-            <div
-              style={{
-                width: "100%",
-                height: "188px",
-                overflow: "hidden",
-                borderRadius: "8px",
-              }}
-            >
-              <SkeletonCard />
+              <Child area="1 / 4 / 3 / 8" className="div3">
+                <div className="relative">
+                  <ImageLoader
+                    borderRadius="8px"
+                    marginTop="23px"
+                    widthMobile="100%"
+                    url={
+                      images[2] && !imageFail
+                        ? images[2]
+                        : "media/icons/bookings/notfounds/noroom.png"
+                    }
+                    dimensionsMobile={{ width: 500, height: 280 }}
+                    dimensions={{ width: 468, height: 188 }}
+                    onload={() => {
+                      setTimeout(() => {
+                        setImageLoaded(true);
+                      }, 1000);
+                    }}
+                    onfail={() => {
+                      setImageFail(true);
+                      setImageLoaded(true);
+                    }}
+                    noLazy
+                  ></ImageLoader>
+                </div>
+              </Child>
+
+              <Child area="3 / 4 / 5 / 8" className="div4">
+                <div className="relative">
+                  <ImageLoader
+                    borderRadius="8px"
+                    marginTop="23px"
+                    widthMobile="100%"
+                    url={
+                      images[3] && !imageFail
+                        ? images[3]
+                        : "media/icons/bookings/notfounds/noroom.png"
+                    }
+                    dimensionsMobile={{ width: 500, height: 280 }}
+                    dimensions={{ width: 468, height: 188 }}
+                    onload={() => {
+                      setTimeout(() => {
+                        setImageLoaded(true);
+                      }, 1000);
+                    }}
+                    onfail={() => {
+                      setImageFail(true);
+                      setImageLoaded(true);
+                    }}
+                    noLazy
+                  ></ImageLoader>
+                </div>
+              </Child>
+            </GridImage>
+          </ImageContainer>
+        </>
+      ) : (
+        <>
+          <ImageContainer style={{ height: "170px" }}>
+            <div>
+              <div style={{ display: imageLoaded ? "initial" : "none" }}>
+                <ImageLoader
+                  borderRadius="8px"
+                  marginTop="23px"
+                  widthMobile="100%"
+                  url={
+                    props.data.image && !imageFail
+                      ? props.data.image
+                      : "media/icons/bookings/notfounds/noroom.png"
+                  }
+                  dimensionsMobile={{ width: 500, height: 280 }}
+                  dimensions={{ width: 468, height: 188 }}
+                  onload={() => {
+                    setTimeout(() => {
+                      setImageLoaded(true);
+                    }, 1000);
+                  }}
+                  onfail={() => {
+                    setImageFail(true);
+                    setImageLoaded(true);
+                  }}
+                  noLazy
+                ></ImageLoader>
+                {props?.data?.extra_images && (
+                  <PhotosButton
+                    onClick={() => {
+                      setImages(props?.data?.extra_images);
+                    }}
+                  >
+                    All Photos{" "}
+                  </PhotosButton>
+                )}
+              </div>
+
+              <div
+                style={{
+                  display: !imageLoaded ? "initial" : "none",
+                }}
+              >
+                <div
+                  style={{
+                    width: "100%",
+                    height: "188px",
+                    overflow: "hidden",
+                    borderRadius: "8px",
+                  }}
+                >
+                  <SkeletonCard />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        {props.data?.ideal_duration_hours ||
-        props.data?.ideal_duration_numbers ? (
-          <TimeStamp>
-            Approx Time :{" "}
-            {props.data.ideal_duration_hours ||
-              props.data.ideal_duration_number}{" "}
-            hrs
-          </TimeStamp>
-        ) : (
-          <></>
-        )}
-      </ImageContainer>
+            {props.data?.ideal_duration_hours ||
+            props.data?.ideal_duration_numbers ? (
+              <TimeStamp>
+                Approx Time :{" "}
+                {props.data.ideal_duration_hours ||
+                  props.data.ideal_duration_number}{" "}
+                hrs
+              </TimeStamp>
+            ) : (
+              <></>
+            )}
+          </ImageContainer>
+        </>
+      )}
 
       <div className="mt-[180px]">
         <Title>{props.data.name}</Title>
@@ -250,7 +388,6 @@ const POIDetails = (props) => {
         </Reviews>
         {props.data?.experience_filters && <Text>{experience_filters}</Text>}
       </div>
-    
 
       {props.data?.cost ? (
         <div className="flex flex-row">
@@ -328,14 +465,13 @@ const POIDetails = (props) => {
       ) : (
         <></>
       )}
-      
-      {images?.length > 0 && (
+
+      {/* {images?.length > 0 && (
         <FullScreenGalleryGoogle
           closeGalleryHandler={() => setImages(null)}
           images={images}
         ></FullScreenGalleryGoogle>
-      )}
-      
+      )} */}
     </Container>
   );
 };

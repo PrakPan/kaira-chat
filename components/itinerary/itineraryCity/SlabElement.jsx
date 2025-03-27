@@ -202,11 +202,13 @@ const Activity = (props) => {
                     <div className="flex flex-row items-center">
                       {getStars(props.element?.rating)}
                     </div>
-                    <div className="text-[#7A7A7A] text-[12px]">
-                      {props.element?.rating}
-                    </div>
+                    {props?.element?.rating && (
+                      <div className="text-[#7A7A7A] text-[12px]">
+                        {props.element?.rating}
+                      </div>
+                    )}
                   </div>
-                  {props.element?.user_ratings_total && (
+                  {props.element?.user_ratings_total>0 && (
                     <div className="text-[#7A7A7A] text-[12px] underline">
                       {props.element?.user_ratings_total} Google reviews
                     </div>
@@ -229,21 +231,6 @@ const Activity = (props) => {
           </div>
         </div>
       </div>
-      {/* <div className="flex justify-between lg:hidden">
-        <div>
-          <div className="flex flex-row items-center">
-            {getStars(props.element?.rating)}
-          </div>
-          <div className="text-[#7A7A7A] text-[12px]">
-            {props.element?.rating}
-          </div>
-        </div>
-        {props.element?.user_ratings_total && (
-          <div className="text-[#7A7A7A] text-[12px] underline">
-            {props.element?.user_ratings_total} Google reviews
-          </div>
-        )}
-      </div> */}
 
       <POIDetailsDrawer
         itineraryDrawer
@@ -308,10 +295,7 @@ const Recommendation = (props) => {
         <div className="w-full flex flex-row items-center gap-3 bg-white">
           <div
             onClick={() =>
-              handleActivity(
-                props?.element?.restaurants?.[0]?.id,
-                "restaurant"
-              )
+              handleActivity(props?.element?.restaurants?.[0]?.id, "restaurant")
             }
             className="md:w-[12%] cursor-pointer"
           >
@@ -360,7 +344,8 @@ const Recommendation = (props) => {
               </div>
               {props.element?.restaurants?.[0]?.user_ratings_total && (
                 <div className="hidden lg:!block text-[#7A7A7A] text-[12px] underline">
-                  {props.element?.restaurants?.[0]?.user_ratings_total} Google reviews
+                  {props.element?.restaurants?.[0]?.user_ratings_total} Google
+                  reviews
                 </div>
               )}
             </div>
@@ -437,7 +422,8 @@ const Recommendation = (props) => {
                   </div>
                   {props.element?.restaurants?.[0]?.user_ratings_total && (
                     <div className="text-[#7A7A7A] text-[12px] underline">
-                      {props.element?.restaurants?.[0]?.user_ratings_total} Google reviews
+                      {props.element?.restaurants?.[0]?.user_ratings_total}{" "}
+                      Google reviews
                     </div>
                   )}
                 </div>
