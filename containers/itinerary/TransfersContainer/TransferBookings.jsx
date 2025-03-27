@@ -29,10 +29,6 @@ const TransferBookings = (props) => {
   });
   const [showDrawer, setShowDrawer] = useState(false);
   const transferBooking = useSelector((state) => state.TransferBookings)?.transferBookings
-  console.log("Transfer Booking",transferBooking);
-  const [transferBookingsIntercity, setTransferBookingsIntercity] = useState(
-    transferBooking?.intercity
-  );
 
   const alternateRoutes = {};
   const loadingAlternates = true;
@@ -65,7 +61,8 @@ const TransferBookings = (props) => {
     user_selected,
     booking_id,
     originCityId,
-    destinationCityId
+    destinationCityId,
+    edge
   ) => {
     ga.event({
       action: "Itinerary-bookings-flight_change",
@@ -93,7 +90,8 @@ const TransferBookings = (props) => {
       transfer_type: transfer_type,
       booking_id: booking_id,
       originCityId:originCityId,
-      destinationCityId:destinationCityId
+      destinationCityId:destinationCityId,
+      edge:edge
     });
 
     props.setShowFlightModal(true);
@@ -161,7 +159,7 @@ const TransferBookings = (props) => {
         Transfers
         <span className="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
       </div>
-      {transferBookingsIntercity != undefined && (
+      {transferBooking?.intercity != undefined && (
         <>
           {props.showFlightModal && (
             <MakeYourPersonalised
@@ -192,7 +190,7 @@ const TransferBookings = (props) => {
               <TransferBooking
                 loadbookings={props?.loadbookings}
                 key={
-                  transferBookingsIntercity[
+                  transferBooking?.intercity[
                     `${
                       itineraries?.start_city?.gmaps_place_id +
                       ":" +
@@ -202,7 +200,7 @@ const TransferBookings = (props) => {
                 }
                 index={-1}
                 booking={
-                  transferBookingsIntercity[
+                  transferBooking?.intercity[
                     `${
                       itineraries?.start_city?.gmaps_place_id +
                       ":" +
@@ -222,7 +220,7 @@ const TransferBookings = (props) => {
                 id={itineraries?.start_city?.gmaps_place_id}
                 check_in={itineraries?.start_date}
                 selectedBooking={selectedBooking}
-                originCityId={itineraries?.start_city?.gmaps_place_id}
+                originCityId={null}
                 destinationCityId={itineraries?.cities[0]?.id}
                 
               />
@@ -244,13 +242,13 @@ const TransferBookings = (props) => {
                     <TransferBooking
                       loadbookings={props?.loadbookings}
                       key={
-                        transferBookingsIntercity[
+                        transferBooking?.intercity[
                           `${item.id + ":" + itineraries?.cities[index + 1].id}`
                         ]?.id
                       }
                       index={index}
                       booking={
-                        transferBookingsIntercity[
+                        transferBooking?.intercity[
                           `${item.id + ":" + itineraries?.cities[index + 1].id}`
                         ]
                       }
@@ -289,7 +287,7 @@ const TransferBookings = (props) => {
             <TransferBooking
               loadbookings={props?.loadbookings}
               key={
-                transferBookingsIntercity[
+                transferBooking?.intercity[
                   `${itineraries?.cities[itineraries?.cities.length - 1]?.id}:${
                     itineraries?.end_city?.gmaps_place_id
                   }`
@@ -297,7 +295,7 @@ const TransferBookings = (props) => {
               }
               index={itineraries?.cities.length - 1}
               booking={
-                transferBookingsIntercity[
+                transferBooking?.intercity[
                   `${itineraries?.cities[itineraries?.cities.length - 1]?.id}:${
                     itineraries?.end_city?.gmaps_place_id
                   }`
@@ -319,7 +317,7 @@ const TransferBookings = (props) => {
               originCityId={
                 itineraries?.cities[itineraries?.cities.length - 1]?.id
               }
-              destinationCityId={itineraries?.end_city?.gmaps_place_id}
+              destinationCityId={null}
             />
             <PinSection
               key={itineraries?.cities.length}
@@ -355,7 +353,11 @@ const TransferBookings = (props) => {
             elementIndex={elementIndex}
             routeId={transferId}
             booking_id={selectedBooking?.booking_id}
-            setTransferBookingsIntercity={setTransferBookingsIntercity}
+            edge={selectedBooking?.edge}
+            originCityId={
+              itineraries?.cities[itineraries?.cities.length - 1]?.id
+            }
+            destinationCityId={itineraries?.end_city?.gmaps_place_id}
           ></FlightModal>
 
           <TaxiModal

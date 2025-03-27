@@ -24,14 +24,14 @@ const Details = ({
   booking_id,
   drawer,
   transferBookings,
-  setTransferBookingsIntercity,
+  edge
 }) => {
-  console.log("booking id is:",booking_id)
+  console.log("transferbookings is:",transferBookings)
   const router = useRouter();
   const [fareRules, setFareRules] = useState(fareRule?.[0]?.fareRuleDetail);
   const [fareRulesLoading, setFareRulesLoading] = useState(false);
   const [fareRUlesError, setFareRulesError] = useState(false);
-
+const dispatch=useDispatch();
   useEffect(() => {
     if (fareRules == null) {
       getFareRules();
@@ -144,7 +144,8 @@ const Details = ({
                       result_indices: [resultIndex],
                       source_itinerary_city:originCityId,
                       destination_itinerary_city:destinationCityId  ,
-                      booking_id: booking_id,                    
+                      booking_id: booking_id, 
+                      edge:edge                   
                     }
                   );
                   const updatedTransferBookings = {
@@ -154,10 +155,7 @@ const Details = ({
                       [originCityId + ":" + destinationCityId]: res?.data,
                     },
                   };
-                  setTransfersBookings(updatedTransferBookings);
-                  setTransferBookingsIntercity(
-                    updatedTransferBookings.intercity
-                  );
+                  dispatch(setTransfersBookings(updatedTransferBookings));
 
                   toast.success("Updated booking Successfuly");
                 }
@@ -312,7 +310,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    setTransfersBookings: (payload) => dispatch(setTransferBookings(payload)),
+    setTransfersBookings: (payload) => dispatch(setTransfersBookings(payload)),
   };
 };
 
