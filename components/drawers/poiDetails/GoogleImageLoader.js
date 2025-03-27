@@ -10,53 +10,11 @@ const GoogleImageLoader = (props) => {
   const isPageLoaded = usePageLoaded();
   const [error, setError] = useState(false);
   const [fullLoaded, setFullLoaded] = useState(false);
-  const[imageUrl,setImageUrl]=useState(null)
-  useEffect(() => {
-
-    const fetchImageWithHeaders = async () => {
-
-      const response = await fetch(props.url, {
-        method: 'GET',
-        // headers: {
-        //   'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
-        //   'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-        //   'Accept-Language': 'en-US,en;q=0.9',
-        //   'Cache-Control': 'no-cache',
-        //   'Pragma': 'no-cache',
-        //   'Priority': 'u=0, i',
-        //   'Sec-CH-UA': '"Chromium";v="134", "Not:A-Brand";v="24", "Google Chrome";v="134"',
-        //   'Sec-CH-UA-Mobile': '?0',
-        //   'Sec-CH-UA-Platform': '"Linux"',
-        //   'Sec-Fetch-Dest': 'document',
-        //   'Sec-Fetch-Site': 'none',
-        //   'Sec-Fetch-User': '?1',
-        //   'Upgrade-Insecure-Requests': '1',
-        //   'X-Browser-Channel': 'stable',
-        //   'X-Browser-Copyright': 'Copyright 2025 Google LLC. All rights reserved.',
-        //   'X-Browser-Validation': 'Xu3McleZcKTT6TgGB8KFHwGJApU=',
-        //   'X-Browser-Year': '2025',
-        // },
-      });
-
-      if (response.ok) {
-        const imageBlob = await response.blob();
-        const imageObjectUrl = URL.createObjectURL(imageBlob);
-        setImageUrl(imageObjectUrl);
-      } else {
-        console.error('Image fetch failed', response.statusText);
-      }
-    };
-
-    if(new URL(props?.url).hostname=="lh3.googleusercontent.com"){
-
-    fetchImageWithHeaders();
-    }
-  }, [props?.url]);
   const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
 
   let smallImageRequest = JSON.stringify({
     bucket: "thetarzanway-web",
-    key: imageUrl,
+    key: props.url,
     edits: {
       resize: {
         width: 10,
@@ -71,7 +29,7 @@ const GoogleImageLoader = (props) => {
     if (props.dimensions) {
       smallImageRequest = JSON.stringify({
         bucket: "thetarzanway-web",
-        key: imageUrl,
+        key: props.url,
         edits: {
           resize: {
             width:
@@ -89,7 +47,7 @@ const GoogleImageLoader = (props) => {
       if (!props.fit)
         imageRequest = JSON.stringify({
           bucket: "thetarzanway-web",
-          key: imageUrl,
+          key: props.url,
           edits: {
             resize: {
               width: props.dimensions.width,
@@ -101,7 +59,7 @@ const GoogleImageLoader = (props) => {
       else
         imageRequest = JSON.stringify({
           bucket: "thetarzanway-web",
-          key: imageUrl,
+          key: props.url,
           edits: {
             resize: {
               width: props.dimensions.width,
@@ -113,7 +71,7 @@ const GoogleImageLoader = (props) => {
     } else {
       imageRequest = JSON.stringify({
         bucket: "thetarzanway-web",
-        key: imageUrl,
+        key: props.url,
         edits: {
           resize: {
             fit: "cover",
@@ -122,7 +80,7 @@ const GoogleImageLoader = (props) => {
       });
       smallImageRequest = JSON.stringify({
         bucket: "thetarzanway-web",
-        key: imageUrl,
+        key: props.url,
         edits: {
           resize: {
             fit: "cover",
@@ -134,7 +92,7 @@ const GoogleImageLoader = (props) => {
     if (props.dimensionsMobile)
       imageRequestMobile = JSON.stringify({
         bucket: "thetarzanway-web",
-        key: imageUrl,
+        key: props.url,
         edits: {
           resize: {
             width: props.dimensionsMobile.width,
@@ -145,7 +103,7 @@ const GoogleImageLoader = (props) => {
     else if (props.dimensions)
       imageRequest = JSON.stringify({
         bucket: "thetarzanway-web",
-        key: imageUrl,
+        key: props.url,
         edits: {
           resize: {
             width: props.dimensions.width,
@@ -157,7 +115,7 @@ const GoogleImageLoader = (props) => {
     else
       imageRequest = JSON.stringify({
         bucket: "thetarzanway-web",
-        key: imageUrl,
+        key: props.url,
         edits: {
           resize: {
             fit: "cover",
@@ -206,7 +164,7 @@ const GoogleImageLoader = (props) => {
     }
   };
 
-  let is_url = isValidHttpUrl(imageUrl);
+  let is_url = isValidHttpUrl(props.url);
 
   const fullImageLoadedHandler = () => {
     if (props.onload) {
@@ -244,7 +202,7 @@ const GoogleImageLoader = (props) => {
                 ? isPageLoaded
                   ? getBtoaUrl(imgUrlEndPoint, smallImageRequest)
                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
-                : imageUrl
+                : props.url
             }
             style={{
               height: props.height ? props.height : "100%",
@@ -262,7 +220,7 @@ const GoogleImageLoader = (props) => {
                   : isPageLoaded
                     ? getBtoaUrl(imgUrlEndPoint, imageRequest)
                     : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
-                : imageUrl
+                : props.url
             }
             onLoad={fullImageLoadedHandler}
             onError={_handleError}
@@ -297,7 +255,7 @@ const GoogleImageLoader = (props) => {
                 ? isPageLoaded
                   ? getBtoaUrl(imgUrlEndPoint, smallImageRequest)
                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
-                : imageUrl
+                : props.url
             }
             style={{
               height: props.height ? props.height : "100%",
@@ -315,7 +273,7 @@ const GoogleImageLoader = (props) => {
                   : isPageLoaded
                     ? getBtoaUrl(imgUrlEndPoint, imageRequest)
                     : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
-                : imageUrl
+                : props.url
             }
             onLoad={fullImageLoadedHandler}
             onError={_handleError}
@@ -352,7 +310,7 @@ const GoogleImageLoader = (props) => {
                 ? isPageLoaded
                   ? getBtoaUrl(imgUrlEndPoint, smallImageRequest)
                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
-                : imageUrl
+                : props.url
             }
             style={{
               height: props.height ? props.height : "100%",
@@ -370,7 +328,7 @@ const GoogleImageLoader = (props) => {
                   : isPageLoaded
                     ? getBtoaUrl(imgUrlEndPoint, imageRequestMobile)
                     : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
-                : imageUrl
+                : props.url
             }
             width={props.dimensionsMobile.width}
             height={props.dimensionsMobile.height}
@@ -407,7 +365,7 @@ const GoogleImageLoader = (props) => {
                 ? isPageLoaded
                   ? getBtoaUrl(imgUrlEndPoint, smallImageRequest)
                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
-                : imageUrl
+                : props.url
             }
             style={{
               height: props.height ? props.height : "100%",
@@ -424,7 +382,7 @@ const GoogleImageLoader = (props) => {
                   : isPageLoaded
                     ? getBtoaUrl(imgUrlEndPoint, imageRequest)
                     : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
-                : imageUrl
+                : props.url
             }
             onLoad={fullImageLoadedHandler}
             onError={_handleError}
