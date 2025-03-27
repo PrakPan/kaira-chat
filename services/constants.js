@@ -37,6 +37,20 @@ export const ITINERARY_STATUSES = {
   itinerary_unclaimed: "ITINERARY_UNCLAIMED",
 };
 
+export const NEW_ITINERARY_STATUSES = {
+  itinerarary_under_preparation: "PENDING",
+  itinerary_not_created: "FAILURE",
+  itinerary_finalized: "FINALIZED",
+  itinerary_prepared: "SUCCESS",
+  itinerary_unclaimed: "ITINERARY_UNCLAIMED",
+  booking_under_preparation: "PENDING",
+  booking_not_created: "FAILURE",
+  booking_prepared: "SUCCESS",
+  payment_under_preparation: "PENDING",
+  payment_not_created: "FAILURE",
+  payment_prepared: "SUCCESS"
+};
+
 export const ITINERARY_VERSION = {
   version_1: "v1",
   version_2: "v2",

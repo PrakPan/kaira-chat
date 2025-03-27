@@ -21,6 +21,7 @@ import ItineraryDaybyDay from "./ItineraryDaybyDay"
 import  ItineraryFilters  from "./ItineraryFilters";
 import TransferBookings from "./transferBookingsReducer";
 import Stays from "./StayBookings";
+import ItineraryStatus from './itineraryStatus'; 
 const rootReducer = combineReducers({
   auth: authReducer,
   experience: experience,
@@ -43,7 +44,8 @@ const rootReducer = combineReducers({
   ItineraryDaybyDay,
   ItineraryFilters,
   TransferBookings,
-  Stays
+  Stays,
+  ItineraryStatus
 });
 
 export default rootReducer;

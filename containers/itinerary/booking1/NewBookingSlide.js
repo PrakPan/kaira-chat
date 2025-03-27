@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { RiArrowDropDownLine, RiWhatsappFill } from "react-icons/ri";
 import Button from "../../../components/ui/button/Index";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import * as orderaction from "../../../store/actions/order";
 import { MdEdit } from "react-icons/md";
 import { useRouter } from "next/router";
@@ -55,6 +55,8 @@ const Details = (props) => {
     const formattedDate = format(newDate, "yyyy-MM-dd");
     return formattedDate;
   };
+
+  const {itinerary_status,booking_status,pricing_status} = useSelector((state)=>state.ItineraryStatus);
 
   console.log("Iti",props?.itinerary);
 
@@ -483,7 +485,7 @@ const Details = (props) => {
 
   return (
     <>
-      {props?.loadpricing ? <div className="bg-[#F7E70033] -mt-[1rem] -mx-[1rem] mb-0"><PricingSkeleton/></div> : <div
+      {pricing_status === "PENDING" ? <div className="bg-[#F7E70033] -mt-[1rem] -mx-[1rem] mb-0"><PricingSkeleton/></div> : <div
         className={`${
           props.payment?.paid_user ? "bg-[#98F0AB33]" : "bg-[#F7E70033]"
         }  -mt-[1rem] -mx-[1rem] mb-0`}
@@ -865,7 +867,7 @@ const Details = (props) => {
       ) 
       : (
         <>
-          {props?.loadpricing ? <Button
+          {pricing_status === "PENDING" ? <Button
                   color="#111"
                   fontWeight="500"
                   fontSize="1rem"
@@ -875,8 +877,9 @@ const Details = (props) => {
                   bgColor="#f8e000"
                   padding="12px"
                   onclick={() => {console.log("") }}
-                  loading={props?.loadpricing}
+                  loading={pricing_status === "PENDING"}
                 >
+                  Loading...
                 </Button>
                 : props.payment && props.token ? (
             // props.payment?.itinerary_status ===
@@ -982,7 +985,7 @@ const Details = (props) => {
                 </GetInTouchContainer> )
               : null }
 
-          {!props.token ? (
+          {!props.token && pricing_status === "SUCCESS" ? (
             <Button
               color="#111"
               fontWeight="500"
