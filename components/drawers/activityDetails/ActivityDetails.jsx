@@ -285,11 +285,11 @@ export default function ActivityDetails(props) {
           <div className="flex flex-col gap-2">
             <div className="text-[18px] font-[800]">Tags</div>
             <div className="text-[14px]">
-              <ul style={{ paddingLeft: "0.5rem" }}>
+            <div className="flex flex-wrap gap-2">
                 {props.data.tags?.map((e, i) => (
-                  <li key={i}>- {e}</li>
+                  <div key={i} className="bg-[#FAFAFA] p-[8px] rounded-[10px]">{e}</div>
                 ))}
-              </ul>
+              </div>
             </div>
           </div>
         ) : (

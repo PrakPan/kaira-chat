@@ -66,6 +66,7 @@ function MyApp({ Component, pageProps, store }) {
         let textArea = userInputContainer.shadowRoot.querySelector('textarea');
         if (!textArea) return console.error("Textarea not found");
     
+        if(!window.location.href.split('/').includes('itinerary')) return;
         textArea.value = `Give me more detail about this itinerary ${window.location.href}`;
 
     
