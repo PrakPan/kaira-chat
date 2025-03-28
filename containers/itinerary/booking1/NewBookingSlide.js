@@ -117,11 +117,11 @@ const Details = (props) => {
   const setBookingSummary = () => {
     try {
       if (props.payment) {
-        if (props.payment.costings_breakdown)
-          for (const booking in props.payment.costings_breakdown) {
-            if (props.payment.costings_breakdown[booking].user_selected) {
+        if (props.payment?.costings_breakdown)
+          for (const booking in props.payment?.costings_breakdown) {
+            if (props.payment?.costings_breakdown[booking].user_selected) {
               if (
-                props.payment.costings_breakdown[booking].booking_type ===
+                props.payment?.costings_breakdown[booking].booking_type ===
                 "Accommodation"
               ) {
                 bookingslist.push(
@@ -138,11 +138,11 @@ const Details = (props) => {
                         : "font-lexend text-enter"
                     }
                   >
-                    {props.payment.costings_breakdown[booking].detail[
+                    {props.payment?.costings_breakdown[booking].detail[
                       "duration"
                     ] +
                       "N at " +
-                      props.payment.costings_breakdown[booking].detail["name"]}
+                      props.payment?.costings_breakdown[booking].detail["name"]}
                   </p>,
                 );
                 bookinglistwithcost.push(
@@ -167,11 +167,11 @@ const Details = (props) => {
                           : "font-lexend text-enter"
                       }
                     >
-                      {props.payment.costings_breakdown[booking].detail[
+                      {props.payment?.costings_breakdown[booking].detail[
                         "duration"
                       ] +
                         "N at " +
-                        props.payment.costings_breakdown[booking].detail[
+                        props.payment?.costings_breakdown[booking].detail[
                           "name"
                         ]}
                     </p>
@@ -191,7 +191,7 @@ const Details = (props) => {
                       {"₹ " +
                         getIndianPrice(
                           Math.ceil(
-                            props.payment.costings_breakdown[booking][
+                            props.payment?.costings_breakdown[booking][
                               "booking_cost"
                             ],
                           ),
@@ -214,7 +214,7 @@ const Details = (props) => {
                         : "font-lexend text-enter"
                     }
                   >
-                    {props.payment.costings_breakdown[booking].detail["name"]}
+                    {props.payment?.costings_breakdown[booking].detail["name"]}
                   </p>,
                 );
                 bookinglistwithcost.push(
@@ -239,7 +239,7 @@ const Details = (props) => {
                           : "font-lexend text-enter"
                       }
                     >
-                      {props.payment.costings_breakdown[booking].detail["name"]}
+                      {props.payment?.costings_breakdown[booking].detail["name"]}
                     </p>
                     <p
                       style={{
@@ -257,7 +257,7 @@ const Details = (props) => {
                       {"₹ " +
                         getIndianPrice(
                           Math.ceil(
-                            props.payment.costings_breakdown[booking][
+                            props.payment?.costings_breakdown[booking][
                               "booking_cost"
                             ],
                           ),
@@ -493,19 +493,19 @@ const Details = (props) => {
         <div className=" mx-[1rem] mt-[1rem]">
           <div className="flex flex-row justify-between">
             {props.iscouponApplied &&
-            props.payment?.discounted_cost != props.payment.total_cost &&
+            props.payment?.discounted_cost != props.payment?.total_cost &&
             props.payment?.show_per_person_cost !=
               props.payment?.per_person_discounted_cost ? (
               <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
                 <span>₹</span>
                 <div>
-                  {props.payment.show_per_person_cost ||
-                  props.payment.pay_only_for_one
+                  {props.payment?.show_per_person_cost ||
+                  props.payment?.pay_only_for_one
                     ? getIndianPrice(
-                        Math.round(props.payment.per_person_total_cost ),
+                        Math.round(props.payment?.per_person_total_cost ),
                       )
                     : getIndianPrice(
-                        Math.round(props.payment.total_cost),
+                        Math.round(props.payment?.total_cost),
                       )}
                   {"/-"}
                 </div>
@@ -521,34 +521,33 @@ const Details = (props) => {
             )}
           </div>
           <div className="flex flex-col">
-            {props?.payment && (
               <div className="flex flex-row gap-1">
                 <div
-                  show_per_person_cost={props.payment.show_per_person_cost}
+                  show_per_person_cost={props.payment?.show_per_person_cost}
                   className={
                     props.blur
                       ? "font-lexend blurry-text"
                       : "font-lexend text-3xl flex flex-row items-center font-semibold"
                   }
                 >
-                  <span>₹</span>
-                  <div>
+                  {props?.payment && <span>₹</span>}
+                  {props?.payment && <div>
                     {props?.payment?.pay_only_for_one ||
                     props?.payment?.show_per_person_cost
-                      ? getIndianPrice(
+                      ?  getIndianPrice(
                           Math.round(
                             Math.round(
-                              props.payment.per_person_discounted_cost,
+                              props.payment?.per_person_discounted_cost,
                             ),
                           ),
                         )
                       : getIndianPrice(
                           Math.round(
-                            Math.round(props.payment.discounted_cost),
+                            Math.round(props.payment?.discounted_cost),
                           ),
                         )}
                     {"/-"}
-                  </div>
+                  </div>}
                 </div>
 
                 {props.payment?.paid_user ? (
@@ -564,17 +563,19 @@ const Details = (props) => {
                               ? ""
                               : "Estimated Price"
                           }`
-                        : "Total Cost"}
+                        : props?.payment ? "Total Cost" : ""}
                   </div>
                 )}
+                
               </div>
-            )}
 
-            <div className="text-[#7A7A7A] text-sm">
+              {pricing_status === "FAILURE" ? <p className="text-red-600 text-sm">Get in touch to finalize the pricing!</p> : null}
+
+            {props?.payment && <div className="text-[#7A7A7A] text-sm">
               {props?.payment?.total_cost == 0
                 ? "No bookings added yet"
                 : "Inclusive of applicable taxes"}
-            </div>
+            </div>}
           </div>
         </div>
 
@@ -602,7 +603,7 @@ const Details = (props) => {
           </div>
         ) : null}
 
-        <div
+        {props?.payment && <div
           className="mx-[1rem]  font-medium text-sm flex gap-0 flex-row cursor-pointer"
           onClick={() => setAcordianOpen(!acoordianceOpen)}
         >
@@ -616,14 +617,14 @@ const Details = (props) => {
               acoordianceOpen ? "-rotate-180 " : "rotate-180 animate-bounce"
             }`}
           ></RiArrowDropDownLine>
-        </div>
+        </div>}
 
         <div
           className={`mb-[0.8rem] mx-[1rem] Transition-Height-${
             acoordianceOpen ? "in" : "out"
           } `}
         >
-          {acoordianceOpen && (
+          {props?.payment && acoordianceOpen && (
             <div className="">
               <Accordion
                 stayBookings={props.stayBookings}
@@ -634,7 +635,7 @@ const Details = (props) => {
                 mercuryItinerary={props?.mercuryItinerary}
               ></Accordion>
 
-              {!oldaccommodation && !props.payment.are_prices_hidden ? (
+              {!oldaccommodation && !props.payment?.are_prices_hidden ? (
                 <div className="flex flex-row justify-between">
                   <div
                     className={
@@ -661,8 +662,8 @@ const Details = (props) => {
               ) : null}
 
               {props.payment ? (
-                props.payment.coupon && props.iscouponApplied ? (
-                  props.payment.coupon.code ? (
+                props.payment?.coupon && props.iscouponApplied ? (
+                  props.payment?.coupon.code ? (
                     <div className="flex flex-row justify-between pt-2">
                       <div
                         className={
@@ -674,7 +675,7 @@ const Details = (props) => {
                         {"Coupon Discount"}
                         <div className="flex flex-row gap-1">
                           <div className="text-[#02BF2B]">
-                            {props.payment.coupon.code}
+                            {props.payment?.coupon.code}
                           </div>
                           <div className="font-normal ">
                             {props?.payment?.coupon?.discount_type == "Flat"
@@ -687,8 +688,8 @@ const Details = (props) => {
                                         props?.payment?.coupon_usage?.discount,
                                       ),
                                     )}  OFF!)`
-                                  : props.payment.coupon.discount_value
-                                    ? props.payment.coupon.discount_value +
+                                  : props.payment?.coupon.discount_value
+                                    ? props.payment?.coupon.discount_value +
                                       "%  OFF!"
                                     : null
                                 : null}
@@ -1115,7 +1116,7 @@ const Details = (props) => {
       ></VerificationModal>
 
       <RegisteredUsersModal
-        registered_users={props.payment ? props.payment.registered_users : null}
+        registered_users={props.payment ? props.payment?.registered_users : null}
         show={showRegisteredUsers}
         hide={() => setShowRegisteredUsers(false)}
       ></RegisteredUsersModal>

@@ -552,13 +552,19 @@ const TransferBooking = ({
           {loadbookings ? (
             <TransferSkeleton />
           ) : (
-            <button
+            isPageWide ? <button
               onClick={() => setShowDrawer(true)}
               className="text-[14px] font-[600] leading-[60px] text-blue hover:underline w-full whitespace-nowrap"
             >
               + Add Transfer from {origin?.name || origin?.city_name} to{" "}
               {destination?.name || destination?.city_name}
-            </button>
+            </button> : 
+            <button
+            onClick={() => setShowDrawer(true)}
+            className="text-[14px] font-[600] leading-[60px] text-blue hover:underline w-full whitespace-nowrap"
+          >
+            + Add Transfer 
+          </button>
           )}
           <TransferEditDrawer
             mercury

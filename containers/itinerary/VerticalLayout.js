@@ -18,6 +18,8 @@ import VehicleDetailModal from "../../components/modals/daybyday/VehicleModal";
 import Drawer from "../../components/ui/Drawer";
 import FlightDetailModal from "../../components/modals/daybyday/FlightDetailModal";
 import TransferSkeleton from "../../components/itinerary/Skeleton/TransferSkeleton";
+import media from "../../components/media";
+
 const Container = styled.div`
   display: flex;
   align-items: center;
@@ -54,8 +56,7 @@ const CityItem = ({
   origin_city_id,
   destination_city_name,
   origin_city_name,
-  loadbookings,
-  setBooki
+  loadbookings
 }) => {
 
   console.log("City Name",city);
@@ -96,7 +97,9 @@ const CityItem = ({
   const [showDrawer,setShowDrawer] =useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
+  let isPageWide = window.matchMedia("(min-width: 768px)");
 
+  console.log("isPageWide",isPageWide);
   const handleEdit = async () => {
     const res = await axios.get(
       `${MERCURY_HOST}/api/v1/itinerary/${
@@ -199,14 +202,22 @@ const CityItem = ({
               </div>
             )}
           </div> </> : 
-          <button
+          isPageWide ? <button
           onClick={() =>
             setShowDrawer(true)
             }
           className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
         >
           + Add Transfer from {origin_city_name} to {destination_city_name}
-        </button>}
+        </button> :
+        <button
+        onClick={() =>
+          setShowDrawer(true)
+          }
+        className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
+      >
+        + Add Transfer
+      </button>}
         </div>}
       </div>
       <TransferEditDrawer

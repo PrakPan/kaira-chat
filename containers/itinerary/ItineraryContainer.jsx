@@ -370,6 +370,13 @@ function fetchData(poll) {
 
       console.log("Status Response:", status);
 
+      if(status?.PRICING === "FAILURE"){
+        dispatch(setItineraryStatus("pricing_status","FAILURE"));
+      }
+      if(status?.BOOKINGS === "FAILURE"){
+        dispatch(setItineraryStatus("booking_status","FAILURE"));
+      }
+
       if (
         status?.ITINERARY === "SUCCESS" &&
         status?.BOOKINGS === "SUCCESS" &&

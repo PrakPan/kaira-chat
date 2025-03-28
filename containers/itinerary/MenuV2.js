@@ -75,6 +75,7 @@ const SimpleTabsV2 = (props) => {
   const isDesktop = useMediaQuery("(min-width:1148px)");
   // const transferBooking = useSelector((sta 
   const transferBooking = useSelector((state) => state.TransferBookings)?.transferBookings
+  const {pricing_status} = useSelector((state)=>state.ItineraryStatus);
 
   const stays = useSelector((state) => state.Stays);
   console.log("Stays",stays);
@@ -1088,14 +1089,51 @@ const SimpleTabsV2 = (props) => {
       <div className="z-10 sticky shadow-lg z-2 bottom-[0px] bg-white px-1 py-2 md:hidden -mx-5">
         <div className="flex flex-row justify-between items-center mx-3">
           <div className="flex flex-col">
-            <div className="text-sm">
+          <div className="flex justify-between">
+          <p className="text-red-600 text-sm">Get in touch to finalize the pricing!</p>
+          {pricing_status === "FAILURE" && <GetInTouchContainer className="">
+                      <Button
+                        color="#111"
+                        fontWeight="600"
+                        fontSize="0.85rem"
+                        borderWidth="2px"
+                        width="10rem"
+                        borderRadius="8px"
+                        bgColor="#f8e000"
+                        loading={loading}
+                        onclick={handleGetInTouch}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            gap: "0.5rem",
+                            alignItems: "center",
+                          }}
+                        >
+                          <ImageLoader
+                            dimensions={{ height: 50, width: 50 }}
+                            dimensionsMobile={{ height: 50, width: 50 }}
+                            height={"20px"}
+                            width={"20px"}
+                            widthmobile={"20px"}
+                            leftalign
+                            url={"media/icons/login/customer-service-black.png"}
+                          />{" "}
+                          <span>Get in touch!</span>
+                        </div>
+                      </Button>
+                    </GetInTouchContainer>}
+                    </div>
+            {props?.payment && <div className="text-sm">
               {props?.payment?.pay_only_for_one ||
               props?.payment?.show_per_person_cost
                 ? "Per Person"
                 : props.payment?.is_estimated_price
                 ? `${props.payment.total_cost == 0 ? "" : "Estimated Price"}`
                 : "Total Cost"}
-            </div>
+                    
+            </div>}
             {props.payment ? (
               <div>
                 <span className="font-bold">
