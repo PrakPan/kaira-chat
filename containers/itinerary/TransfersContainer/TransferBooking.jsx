@@ -131,7 +131,7 @@ const TransferBooking = ({
   selectedBooking,
   originCityId,
   destinationCityId,
-  loadbookings
+  loadbookings,
 }) => {
   const router = useRouter();
   let isPageWide = media("(min-width: 768px)");
@@ -260,24 +260,30 @@ const TransferBooking = ({
 
   const handleDelete = async () => {
     try {
-        setLoading(true);  
-        const response = await axiosDeleteBooking.delete(`${router.query.id}/bookings/${booking?.booking_type?.toLowerCase()}/${booking?.id}/`);
-        
-        if (response.status === 204) {  
-          dispatch(updateTransferBookings(booking?.id));
-            setLoading(false);
-            toast.success("Booking deleted successfuly");
-            setVisible(true);
-            setHandleShow(false);
-            console.log("Deleted Booking");
+      setLoading(true);
+      const response = await axiosDeleteBooking.delete(
+        `${router.query.id}/bookings/${booking?.booking_type?.toLowerCase()}/${
+          booking?.id
+        }/`
+      );
 
-        }
+      if (response.status === 204) {
+        dispatch(updateTransferBookings(booking?.id));
+        setLoading(false);
+        toast.success("Booking deleted successfuly");
+        setVisible(true);
+        setHandleShow(false);
+        console.log("Deleted Booking");
+      }
     } catch (err) {
-        console.log("[ERROR][ItineraryPage][axiosDeleteBooking:/Delete_Booking]", err);
-        toast.error("Error",err.message);
-        setLoading(false); 
+      console.log(
+        "[ERROR][ItineraryPage][axiosDeleteBooking:/Delete_Booking]",
+        err
+      );
+      toast.error("Error", err.message);
+      setLoading(false);
     }
-};
+  };
 
   return (
     <>
@@ -515,12 +521,13 @@ const TransferBooking = ({
                 )}
               </div>
               <Drawer
-              show={showVehicleDrawer}
-              anchor="right"
-              width={"500px"}
-              style={1503}
-              className="font-lexend"
-              onHide={() => setShowVehicleDrawer(false)}
+                show={showVehicleDrawer}
+                anchor="right"
+                mobileWidth="100vw"
+                width="50vw"
+                style={1503}
+                className="font-lexend"
+                onHide={() => setShowVehicleDrawer(false)}
               >
                 <VehicleDetailModal
                   data={vehicleDetails}
@@ -542,12 +549,17 @@ const TransferBooking = ({
               end={end}
             />
           </div>
-   <button
-            onClick={() => setShowDrawer(true)}
-            className="text-[14px] font-[600] leading-[60px] text-blue hover:underline w-full whitespace-nowrap"
-          >
-            + Add Transfer from {origin?.name || origin?.city_name} to {destination?.name || destination?.city_name}
-          </button>
+          {loadbookings ? (
+            <TransferSkeleton />
+          ) : (
+            <button
+              onClick={() => setShowDrawer(true)}
+              className="text-[14px] font-[600] leading-[60px] text-blue hover:underline w-full whitespace-nowrap"
+            >
+              + Add Transfer from {origin?.name || origin?.city_name} to{" "}
+              {destination?.name || destination?.city_name}
+            </button>
+          )}
           <TransferEditDrawer
             mercury
             addOrEdit={"transferAdd"}
@@ -601,7 +613,7 @@ const FlightBooking = ({
   setShowLoginModal,
   originCityId,
   destinationCityId,
-  loadbookings
+  loadbookings,
 }) => {
   const [showDetails, setShowDetails] = useState(false);
   const router = useRouter();
@@ -630,12 +642,10 @@ const FlightBooking = ({
     let taxi_type = booking["taxi_type"];
     let transfer_type = booking["transfer_type"];
     let destination_city = booking["destination_city"];
-    let origin_iata =
-      booking?.transfer_details?.source?.code;
-    let destination_iata =
-    booking?.transfer_details?.destination?.code;
+    let origin_iata = booking?.transfer_details?.source?.code;
+    let destination_iata = booking?.transfer_details?.destination?.code;
     let user_selected = booking?.user_selected;
-    let edge=booking?.edge
+    let edge = booking?.edge;
     _changeFlightHandler(
       name,
       itinerary_id,
@@ -708,9 +718,7 @@ const FlightBooking = ({
               }
               duration={booking?.duration}
               segments={booking?.transfer_details?.items?.[0]?.segments}
-              numStops={
-                booking?.transfer_details?.items?.[0]?.stop_count
-              }
+              numStops={booking?.transfer_details?.items?.[0]?.stop_count}
               setShowDetails={setShowDetails}
             />
           </div>
