@@ -79,7 +79,6 @@ const Booking = (props) => {
   const [unauthorized, setUnauthorized] = useState(false);
   const [noResults, setNoResults] = useState(false);
   const filtersState=useSelector((state)=>state.ItineraryFilters);
-  console.log("Itinerary",filtersState);
 
   const[filters,setFilters]=useState({...filtersState,applyFilter:false})
   const [filtersObj, setFiltersObj] = useState({

@@ -179,15 +179,17 @@ const CityItem = ({
       >
         {loadbookings ? <TransferSkeleton/> : <div className="font-[Poppins] text-[16px] font-[500] flex gap-1">
           {(booking_id || city) && !visible ? <> <div className="mt-[4px]">{correctIcon(booking_type)}</div>
-          <div className="flex flex-col">
-            <div className="flex gap-2 items-center">
-              {city}{" "}
+          <div className="flex flex-col group hover:cursor-pointer" onClick={() => 
+            upPresent&&downPresent&&handleEdit()
+            }>
+            <div className="flex gap-2 items-center ">
+              <div className="group-hover:text-blue ">{city}{" "}</div>
               {upPresent && downPresent && (
                 <div
-                  className="hover:cursor-pointer"
-                  onClick={() => handleEdit()}
+                  className=""
+                  
                 >
-                  <FaPen size={12} />
+                  <FaPen size={12} className="transition-transform group-hover:scale-150 duration-300 group-hover:text-yellow-500"/>
                 </div>
               )}
             </div>
@@ -230,7 +232,7 @@ const CityItem = ({
       style={{ zIndex: 1501 }}
       className="font-lexend"
       onHide={setHandleShow}
-      mobileWidth={"100vw"}
+      mobileWidth="100vw"
       width="50vw"
     >
         {booking_type === "Flight" ? (
