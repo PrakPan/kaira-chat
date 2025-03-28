@@ -126,7 +126,7 @@ export default function FlightDetails({
                                     if (index == 0) return null;
                                     return (
                                         <div className="border-b-2 mb-2">
-                                            <div className="text-nowrap">Plane change ({segment?.airline.name}, {segment?.airline.code}-{segment?.airline.flight_number})
+                                            <div className="text-nowrap">Plane change ({segment?.airline.name}, {segment?.airline?.code}-{segment?.airline?.flight_number})
                                             </div>
                                             <div className="text-nowrap">Via {segment?.origin?.city_name} ({segment.origin?.airport_code}) {getTime(segment?.ground_time)} layover
                                             </div>

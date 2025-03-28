@@ -87,6 +87,8 @@ const TransferEditDrawer = (props) => {
   const [showMercuryTransfer, setShowMercuryTransfer] = useState(false);
   const [selectedMercuryTransfer, setSelectedMercuryTransfer] = useState(null);
 
+  console.log("SELECTED BOOKING",city,dcity,oCityData,dCityData,mercuryTransfer?.destination?.city_name);
+
   useEffect(() => {
     if (showDrawer) {
       fetchRoutes();
@@ -240,7 +242,7 @@ const TransferEditDrawer = (props) => {
         ...result,
       };
     });
-    setShowFlightModal(false);
+   // setShowFlightModal(false);
     setShowTaxiModal(false);
   };
 
@@ -1935,3 +1937,5 @@ const MercurySelectButton = ({
     </div>
   );
 };
+
+

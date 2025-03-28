@@ -97,6 +97,7 @@ const MidSectionV2 = (props) => {
   const [showTaxiModal, setShowTaxiModal] = useState(false);
   const {itinerary_status,booking_status,pricing_status} = useSelector((state) => state.ItineraryStatus);
 
+
   useEffect(() => {
     if (props.cityTransferBookings && props.flightBookings) {
       let booking = null;
@@ -308,7 +309,7 @@ const MidSectionV2 = (props) => {
         alternates={selectedBooking?.id}
         tailored_id={selectedBooking["tailored_itinerary"]}
         // _updateFlightHandler={props._updateFlightHandler}
-        selectedBooking={selectedBooking}
+        selectedBooking={props?.cityTransferBookings || selectedBooking}
         itinerary_id={props?.itinerary_id}
         selectedTransferHeading={props?.route?.heading}
         fetchData={props?.fetchData}
@@ -365,7 +366,7 @@ const MidSectionV2 = (props) => {
         check_in={props?.route?.check_in}
         _GetInTouch={props._GetInTouch}
         routeId={props?.route?.transfers?.id}
-        selectedBooking={selectedBooking}
+        // selectedBooking={selectedBooking}
         getPaymentHandler={props.getPaymentHandler}
         _updatePaymentHandler={props._updatePaymentHandler}
         _updateFlightBookingHandler={props._updateFlightBookingHandler}
@@ -375,6 +376,9 @@ const MidSectionV2 = (props) => {
         dcity={props?.dcity}
         oCityData={props?.oCityData}
         dCityData={props?.dCityData}
+        selectedBooking={props?.cityTransferBookings}
+        originCityId={props?.oCityData?.city?.id || props?.oCityData?.gmaps_place_id}
+        destinationCityId={props?.dCityData?.city?.id || props?.dCityData?.gmaps_place_id}
       /> 
     </Container>
   );

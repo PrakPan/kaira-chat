@@ -1,8 +1,10 @@
+import { useRouter } from "next/router";
 import { getIndianPrice } from "../../../../services/getIndianPrice";
 import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im";
 
 
 export default function PriceContainer({ data, isSelected, selectedBooking, _updateBookingHandler, provider }) {
+    const router = useRouter();
     return (
         <div className="flex md:flex-col justify-between items-center">
             <div className="flex flex-col gap-1">
@@ -22,7 +24,7 @@ export default function PriceContainer({ data, isSelected, selectedBooking, _upd
                         onClick={() => {
                             _updateBookingHandler({
                                 booking_id: selectedBooking.id,
-                                itinerary_id: selectedBooking.itinerary_id,
+                                itinerary_id: selectedBooking.itinerary_id || router?.query?.id,
                                 result_index: data.resultIndex,
                                 provider
                             });

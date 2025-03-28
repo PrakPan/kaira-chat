@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import media from "../../media";
 import { updateFlightBooking } from "../../../services/bookings/UpdateBookings";
-import { connect, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import axiosflightsearch, {
   axiosFlightSearch,
 } from "../../../services/bookings/FlightSearch";
@@ -18,6 +18,7 @@ import { FaFilter } from "react-icons/fa";
 import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 import LogInModal from "../Login";
 import { toast, ToastContainer } from "react-toastify";
+import { setTransfersBookings } from "../../../store/actions/transferBookingsStore";
 
 const GridContainer = styled.div`
 min-height: 65vh;
@@ -77,6 +78,8 @@ const ContentContainer = styled.div`
 
 const Booking = (props) => {
   let isPageWide = media("(min-width: 768px)");
+  const dispatch = useDispatch();
+  const transferBookings = useSelector((state)=>state.TransferBookings)
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filtersState, setFiltersState] = useState({
@@ -118,6 +121,8 @@ const Booking = (props) => {
   });
   const [showTransferEditDrawer, setShowTransferEditDrawer] = useState(false);
 
+  console.log("Ord",props?.originCityId,props?.destinationCityId);
+
   useEffect(() => {
     if (!isPageWide && props.showFlightModal) _FetchFlightsHandler();
     if (!props.showFlightModal) {
@@ -130,6 +135,7 @@ const Booking = (props) => {
     if (isPageWide && props.showFlightModal) _FetchFlightsHandler();
   }, [props.showFlightModal, props.token, filtersState, pax, classType]);
 
+  console.log("Booking Data",props?.selectedBooking);
   const _FetchFlightsHandler = () => {
     let options = [];
     setOptionsJSX([]);
@@ -235,7 +241,7 @@ const Booking = (props) => {
         trace_id: localStorage.getItem(`${provider}_trace_id`),
         result_index: result_index,
       });
-      return;
+      // return;
     }
 
     setUpdateBookingState(true);
@@ -253,13 +259,15 @@ const Booking = (props) => {
     });
 
     const requestData = {
-      source: provider.toLowerCase(),
+      booking_id,
       trace_id: localStorage.getItem(`${provider}_trace_id`),
       result_indices: [result_index],
       source_itinerary_city:props?.originCityId,
-      destination_itinerary_city:props?.destinationCityId  ,
+      destination_itinerary_city:props?.destinationCityId,
+      edge: props?.edge || props?.selectedBooking?.edge
     };
 
+    console.log("Request Data",requestData);
     updateFlightBooking
       .post(`${itinerary_id}/bookings/flight/`, requestData, {
         headers: {
@@ -270,6 +278,14 @@ const Booking = (props) => {
         props._updateFlightBookingHandler([res.data]);
         props.getPaymentHandler();
         setUpdateBookingState(false);
+        const updatedTransferBookings = {
+          ...transferBookings,
+          intercity: {
+            ...transferBookings.intercity,
+            [originCityId + ":" + destinationCityId]: res?.data,
+          },
+        };
+        dispatch(setTransfersBookings(updatedTransferBookings));
         props.openNotification({
           type: "success",
           text: "Flight updated successfully.",
@@ -550,3 +566,43 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export default connect(mapStateToPros, mapDispatchToProps)(Booking);
+
+
+
+
+
+
+
+// {
+//   "booking_id": "7ad0b554-7efd-4d53-9ca6-eb21873950de",
+//   "trace_id": "aa92d7fc-2c68-459e-8063-7831dbc26a87",
+//   "result_indices": [
+//       "83e60545-1374-443a-ac16-d5cb510f1a9b"
+//   ],
+//   "source_itinerary_city": "17aa0882-e52e-4625-bd69-450d1eae9761",
+//   "destination_itinerary_city": "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
+//   "edge": "016b1fbe-8c17-4115-a5ea-77052b60b820"
+// }
+
+
+// {
+//   "trace_id": "ebeffef4-c015-400b-806f-ea8f066ee604",
+//   "result_indices": [
+//       "728b0185-38cf-41fd-a4dd-acac77715ac6"
+//   ],
+//   "source_itinerary_city": "a8593ec8-cd94-4ae9-8ae4-5f9f4f6fe484",
+//   "destination_itinerary_city": "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
+//   "booking_id": "9b716e0e-74ba-421e-84ac-d541c532c62a",
+//   "edge": "abec3aef-d7fa-426d-b98b-0095b391f21f"
+// }
+
+// {
+//   "booking_id": "9b716e0e-74ba-421e-84ac-d541c532c62a",
+//   "trace_id": "6088a073-0da2-4c4c-b058-3de4edf30834",
+//   "result_indices": [
+//       "2cee1c63-29e9-45b3-8e80-86a90993b6b8"
+//   ],
+//   "source_itinerary_city": "17aa0882-e52e-4625-bd69-450d1eae9761",
+//   "destination_itinerary_city": "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
+//   "edge": "016b1fbe-8c17-4115-a5ea-77052b60b820"
+// }

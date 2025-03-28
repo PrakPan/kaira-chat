@@ -193,7 +193,7 @@ const ItineraryCity = (props) => {
         </button>
       </div> 
 
-      { !itinerary_status === "SUCCESS" ? viewMore ? (
+      {itinerary_status === "SUCCESS" ? viewMore ? (
         <>
           <CityDaybyDay city={props.city} setItinerary={props?.setItinerary} />
         </>

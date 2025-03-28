@@ -921,7 +921,7 @@ const Details = (props) => {
             : 
             // props?.payment?.is_registration_needed ? ( 
             //   props?.payment?.email_reverification_needed ? (
-            props?.payment?.paid_user ? (
+            props?.payment?.paid_user && (
                 <Button
                   color="#111"
                   fontWeight="500"
@@ -935,21 +935,22 @@ const Details = (props) => {
                 >
                   View Bookings
                 </Button>
-              ) : (
-                <Button
-                  color="#111"
-                  fontWeight="500"
-                  fontSize="1rem"
-                  borderWidth="2px"
-                  width="100%"
-                  borderRadius="8px"
-                  bgColor="#f8e000"
-                  padding="12px"
-                  onclick={handleTravellersDetails}
-                >
-                  Add Travellers Details
-                </Button>
               )
+              //  : (
+              //   <Button
+              //     color="#111"
+              //     fontWeight="500"
+              //     fontSize="1rem"
+              //     borderWidth="2px"
+              //     width="100%"
+              //     borderRadius="8px"
+              //     bgColor="#f8e000"
+              //     padding="12px"
+              //     onclick={handleTravellersDetails}
+              //   >
+              //     Add Travellers Details
+              //   </Button>
+              // )
 
             : <GetInTouchContainer>
                   <Button
@@ -983,7 +984,38 @@ const Details = (props) => {
                     </div>
                   </Button>
                 </GetInTouchContainer> )
-              : null }
+              : pricing_status === "FAILURE" ? <GetInTouchContainer>
+              <Button
+                color="#111"
+                fontWeight="500"
+                fontSize="1rem"
+                borderWidth="2px"
+                width="100%"
+                borderRadius="8px"
+                bgColor="#f8e000"
+                padding="12px" 
+                onclick={handleGetInTouch}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    gap: "0.5rem",
+                    alignItems: "center",
+                  }}
+                >
+                  <ImageLoader
+                    dimensions={{ height: 50, width: 50 }}
+                    dimensionsMobile={{ height: 50, width: 50 }}
+                    height={"20px"}
+                    width={"20px"}
+                    leftalign
+                    url={"media/icons/login/customer-service-black.png"}
+                  />{" "}
+                  <span>Get in touch!</span>
+                </div>
+              </Button>
+            </GetInTouchContainer> : null}
 
           {!props.token && pricing_status === "SUCCESS" ? (
             <Button
@@ -999,7 +1031,39 @@ const Details = (props) => {
             >
               Log in to proceed
             </Button>
-          ) : null}
+          ) : !props.token && pricing_status === "FAILURE" && 
+          <GetInTouchContainer>
+                  <Button
+                    color="#111"
+                    fontWeight="500"
+                    fontSize="1rem"
+                    borderWidth="2px"
+                    width="100%"
+                    borderRadius="8px"
+                    bgColor="#f8e000"
+                    padding="12px" 
+                    onclick={handleGetInTouch}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        gap: "0.5rem",
+                        alignItems: "center",
+                      }}
+                    >
+                      <ImageLoader
+                        dimensions={{ height: 50, width: 50 }}
+                        dimensionsMobile={{ height: 50, width: 50 }}
+                        height={"20px"}
+                        width={"20px"}
+                        leftalign
+                        url={"media/icons/login/customer-service-black.png"}
+                      />{" "}
+                      <span>Get in touch!</span>
+                    </div>
+                  </Button>
+                </GetInTouchContainer>}
         </>
       )}
 
