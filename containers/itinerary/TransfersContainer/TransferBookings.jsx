@@ -355,9 +355,9 @@ const TransferBookings = (props) => {
             booking_id={selectedBooking?.booking_id}
             edge={selectedBooking?.edge}
             originCityId={
-              itineraries?.cities[itineraries?.cities.length - 1]?.id
+              selectedBooking?.originCityId
             }
-            destinationCityId={itineraries?.end_city?.gmaps_place_id}
+            destinationCityId={selectedBooking?.destinationCityId}
           ></FlightModal>
 
           <TaxiModal

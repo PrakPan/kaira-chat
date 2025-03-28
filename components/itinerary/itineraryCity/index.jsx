@@ -83,7 +83,7 @@ const ItineraryCity = (props) => {
   const stay = useSelector((state)=>state.Stays)
   const {itinerary_status,booking_status,pricing_status} = useSelector((state) => state.ItineraryStatus);
   const fetchDetails = () => {
-    setShowDetails(true)
+    setShowDetails(true);
     bookingDetails
       .get(
         `/${router?.query?.id}/bookings/accommodation/${props.city.hotels[0]?.id}/`
@@ -92,28 +92,99 @@ const ItineraryCity = (props) => {
         setData(res.data);
       })
       .catch((err) => {
-        toast.error("unable to get detail")
-        setShowDetails(false)
+        toast.error("unable to get detail");
+        setShowDetails(false);
       });
-  };  
-  const handleStay = (e, label, value,clickType) => {
-      e.stopPropagation();
-      if (token) props?.handleClickAc(props?.index, props?.city, props.city.city.id,clickType);
-      else props?.setShowLoginModal(true);
-      props?.setBookingId(props?.key)
-  
-      logEvent({
-        action: "Hotel_Add_Change",
-        params: {
-          page: "Itinerary Page",
-          event_category: "Button Click",
-          event_label: label,
-          event_value: value,
-          event_action: "Stays",
-        },
-      });
-    };
+  };
+  const handleStay = (e, label, value, clickType) => {
+    e.stopPropagation();
+    if (token)
+      props?.handleClickAc(
+        props?.index,
+        props?.city,
+        props.city.city.id,
+        clickType
+      );
+    else props?.setShowLoginModal(true);
+    props?.setBookingId(props?.key);
 
+    logEvent({
+      action: "Hotel_Add_Change",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Button Click",
+        event_label: label,
+        event_value: value,
+        event_action: "Stays",
+      },
+    });
+  };
+
+  [
+    {
+      id: "1ed386cc-8f2d-49d6-845c-11883d3a9129",
+      name: "Kingsgate Hotel Abu Dhabi",
+      star_category: "3",
+      images: [
+        {
+          type: "Accommodation",
+          image:
+            "https://i.travelapi.com/lodging/2000000/2000000/1993300/1993279/ee57a2f6_b.jpg",
+          source: "Travclan",
+          caption: "Primary image",
+        },
+        {
+          type: "Accommodation",
+          image:
+            "https://i.travelapi.com/lodging/2000000/2000000/1993300/1993279/26f42d0c_b.jpg",
+          source: "Travclan",
+          caption: "Lobby",
+        },
+        {
+          type: "Accommodation",
+          image:
+            "https://i.travelapi.com/lodging/2000000/2000000/1993300/1993279/f2e7974e_b.jpg",
+          source: "Travclan",
+          caption: "Reception",
+        },
+        {
+          type: "Accommodation",
+          image:
+            "https://i.travelapi.com/lodging/2000000/2000000/1993300/1993279/5bc17111_b.jpg",
+          source: "Travclan",
+          caption: "Room",
+        },
+        {
+          type: "Accommodation",
+          image:
+            "https://i.travelapi.com/lodging/2000000/2000000/1993300/1993279/ce04fbaf_b.jpg",
+          source: "Travclan",
+          caption: "Room",
+        },
+      ],
+      check_in: "2025-04-13 00:00:00",
+      check_out: "2025-04-21 00:00:00",
+      city: "Abu Dhabi",
+      duration: 8,
+      number_of_adults: 1,
+      number_of_children: 0,
+      number_of_infants: 0,
+      room: "1 Room (Superior Double Room)",
+      meals: "Free Breakfast",
+      wifi: true,
+      rating: "3.8",
+      user_ratings_total: "183",
+      occupancies: [
+        {
+          child_ages: [],
+          num_adults: 1,
+        },
+      ],
+      city_name: "Abu Dhabi",
+      city_id: "670d39ee-724d-48ae-a90b-3efa53cc099c",
+      source: "Travclan",
+    },
+  ];
 
   return (
     <div
@@ -172,13 +243,16 @@ const ItineraryCity = (props) => {
                 </div>
               </div>
             </div>
-          ) 
-
-          : <div className="text-blue cursor-pointer text-[14px] font-medium" onClick={(e)=>handleStay(e, "Change", props.city.city.name,"Add")}>
-          + Add Stay in {props?.city?.city?.name}
-         </div> 
-       }
-          
+          ) : (
+            <div
+              className="text-blue cursor-pointer text-[14px] font-medium"
+              onClick={(e) =>
+                handleStay(e, "Change", props.city.city.name, "Add")
+              }
+            >
+              + Add Stay in {props?.city?.city?.name}
+            </div>
+          )}
         </div>
 
         <button
@@ -193,7 +267,7 @@ const ItineraryCity = (props) => {
         </button>
       </div> 
 
-      { !itinerary_status === "SUCCESS" ? viewMore ? (
+      {itinerary_status === "SUCCESS" ? viewMore ? (
         <>
           <CityDaybyDay city={props.city} setItinerary={props?.setItinerary} />
         </>
@@ -212,43 +286,40 @@ const ItineraryCity = (props) => {
         className="font-lexend"
         onHide={() => setShowDetails(false)}
         width={"50%"}
+        mobileWidth={"100%"}
       >
-          <Container>
-            <BackContainer className=" font-lexend">
-              <IoMdClose
-                className="hover-pointer"
-                style={{ fontSize: "2rem" }}
-                onClick={()=>setShowDetails(false)}
-              ></IoMdClose>
-              <BackText>Back to Itinerary</BackText>
-            </BackContainer>
-            <HotelBookingDetails
-              _setImagesHandler={props._setImagesHandler}
-              user_rating={props.city.hotels[0]?.rating}
-              number_of_reviews={props.city.hotels[0]?.user_ratings_total}
-              data={data} //
-              images={
-                props?.city?.hotels[0]?.images
-                  ? props?.city?.hotels[0]?.images
-                  : []
-              }
-              experience_filters={
-                props.poi ? props.poi.experience_filters : null
-              }
-              name={
-                props?.city?.hotels[0]?.name
-                  ? props?.city?.hotels[0]?.name
-                  : null
-              }
-              duration={
-                props?.city?.hotels[0]?.duration
-                  ? props?.city?.hotels[0]?.duration
-                  : null
-              }
-              setShowDetails={setShowDetails}
-              id={props?.city?.hotels?.[0]?.id}
-            />
-          </Container>
+        <Container>
+          <BackContainer className=" font-lexend">
+            <IoMdClose
+              className="hover-pointer"
+              style={{ fontSize: "2rem" }}
+              onClick={() => setShowDetails(false)}
+            ></IoMdClose>
+            <BackText>Back to Itinerary</BackText>
+          </BackContainer>
+          <HotelBookingDetails
+            _setImagesHandler={props._setImagesHandler}
+            user_rating={props.city.hotels[0]?.rating}
+            number_of_reviews={props.city.hotels[0]?.user_ratings_total}
+            data={data} //
+            images={
+              props?.city?.hotels[0]?.images
+                ? props?.city?.hotels[0]?.images
+                : []
+            }
+            experience_filters={props.poi ? props.poi.experience_filters : null}
+            name={
+              props?.city?.hotels[0]?.name ? props?.city?.hotels[0]?.name : null
+            }
+            duration={
+              props?.city?.hotels[0]?.duration
+                ? props?.city?.hotels[0]?.duration
+                : null
+            }
+            setShowDetails={setShowDetails}
+            id={props?.city?.hotels?.[0]?.id}
+          />
+        </Container>
       </Drawer>
     </div>
   );

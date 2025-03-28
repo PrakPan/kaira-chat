@@ -191,7 +191,7 @@ const GoogleImageLoader = (props) => {
           style={{
             width: props.widthmobile ? props.widthmobile : "100%",
             height: props.heightmobile ? props.heightmobile : "max-content",
-            margin: props.leftalign ? "0" : "0 auto",
+            // margin: props.leftalign ? "0" : "0 auto",
             filter: props.blur ? "blur(0.5rem)" : "blur(0)",
             borderRadius: props.borderRadius ? props.borderRadius : "0",
           }}
@@ -244,7 +244,7 @@ const GoogleImageLoader = (props) => {
           style={{
             width: props.width ? props.width : "100%",
             height: props.height ? props.height : "max-content",
-            margin: props.leftalign ? "0" : "0 auto",
+            // margin: props.leftalign ? "0" : "0 auto",
             filter: props.blur ? "blur(0.5rem)" : "blur(0)",
             borderRadius: props.borderRadius ? props.borderRadius : "0",
           }}
@@ -260,7 +260,7 @@ const GoogleImageLoader = (props) => {
             style={{
               height: props.height ? props.height : "100%",
               display: !fullLoaded ? "initial" : "none",
-              borderRadius: props.borderRadius ? props.borderRadius : "5px",
+              // borderRadius: props.borderRadius ? props.borderRadius : "5px",
               ...props.style,
             }}
           />
@@ -298,7 +298,7 @@ const GoogleImageLoader = (props) => {
           style={{
             width: props.widthmobile ? props.widthmobile : "100%",
             height: props.heightmobile ? props.heightmobile : "100%",
-            margin: props.leftalign ? "0" : "0 auto",
+            // margin: props.leftalign ? "0" : "0 auto",
             filter: props.blur ? "blur(0.5rem)" : "blur(0)",
             borderRadius: props.borderRadius ? props.borderRadius : "0",
             ...props.style,
@@ -315,7 +315,7 @@ const GoogleImageLoader = (props) => {
             style={{
               height: props.height ? props.height : "100%",
               display: !fullLoaded ? "initial" : "none",
-              borderRadius: props.borderRadius ? props.borderRadius : "5px",
+              // borderRadius: props.borderRadius ? props.borderRadius : "5px",
               ...props.style,
             }}
           />
@@ -354,7 +354,7 @@ const GoogleImageLoader = (props) => {
           style={{
             width: props.width ? props.width : "100%",
             height: props.height ? props.height : "max-content",
-            margin: props.leftalign ? "0" : "0 auto",
+            // margin: props.leftalign ? "0" : "0 auto",
             filter: props.blur ? "blur(0.5rem)" : "blur(0)",
             borderRadius: props.borderRadius ? props.borderRadius : "0",
           }}
@@ -370,7 +370,7 @@ const GoogleImageLoader = (props) => {
             style={{
               height: props.height ? props.height : "100%",
               display: !fullLoaded ? "initial" : "none",
-              borderRadius: props.borderRadius ? props.borderRadius : "5px",
+              // borderRadius: props.borderRadius ? props.borderRadius : "5px",
               ...props.style,
             }}
           />

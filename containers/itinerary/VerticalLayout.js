@@ -18,6 +18,8 @@ import VehicleDetailModal from "../../components/modals/daybyday/VehicleModal";
 import Drawer from "../../components/ui/Drawer";
 import FlightDetailModal from "../../components/modals/daybyday/FlightDetailModal";
 import TransferSkeleton from "../../components/itinerary/Skeleton/TransferSkeleton";
+import media from "../../components/media";
+
 const Container = styled.div`
   display: flex;
   align-items: center;
@@ -54,8 +56,7 @@ const CityItem = ({
   origin_city_id,
   destination_city_name,
   origin_city_name,
-  loadbookings,
-  setBooki
+  loadbookings
 }) => {
 
   console.log("City Name",city);
@@ -96,7 +97,9 @@ const CityItem = ({
   const [showDrawer,setShowDrawer] =useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
+  let isPageWide = window.matchMedia("(min-width: 768px)");
 
+  console.log("isPageWide",isPageWide);
   const handleEdit = async () => {
     const res = await axios.get(
       `${MERCURY_HOST}/api/v1/itinerary/${
@@ -179,15 +182,17 @@ const CityItem = ({
       >
         {loadbookings ? <TransferSkeleton/> : <div className="font-[Poppins] text-[16px] font-[500] flex gap-1">
           {(booking_id || city) && !visible ? <> <div className="mt-[4px]">{correctIcon(booking_type)}</div>
-          <div className="flex flex-col">
-            <div className="flex gap-2 items-center">
-              {city}{" "}
+          <div className="flex flex-col group hover:cursor-pointer" onClick={() => 
+            upPresent&&downPresent&&handleEdit()
+            }>
+            <div className="flex gap-2 items-center ">
+              <div className="group-hover:text-blue ">{city}{" "}</div>
               {upPresent && downPresent && (
                 <div
-                  className="hover:cursor-pointer"
-                  onClick={() => handleEdit()}
+                  className=""
+                  
                 >
-                  <FaPen size={12} />
+                  <FaPen size={12} className="transition-transform group-hover:scale-150 duration-300 group-hover:text-yellow-500"/>
                 </div>
               )}
             </div>
@@ -197,14 +202,22 @@ const CityItem = ({
               </div>
             )}
           </div> </> : 
-          <button
+          isPageWide ? <button
           onClick={() =>
             setShowDrawer(true)
             }
           className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
         >
           + Add Transfer from {origin_city_name} to {destination_city_name}
-        </button>}
+        </button> :
+        <button
+        onClick={() =>
+          setShowDrawer(true)
+          }
+        className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
+      >
+        + Add Transfer
+      </button>}
         </div>}
       </div>
       <TransferEditDrawer
@@ -230,7 +243,7 @@ const CityItem = ({
       style={{ zIndex: 1501 }}
       className="font-lexend"
       onHide={setHandleShow}
-      mobileWidth={"100vw"}
+      mobileWidth="100vw"
       width="50vw"
     >
         {booking_type === "Flight" ? (

@@ -19,7 +19,6 @@ export const Title = styled.p`
 export const Reviews = styled.div`
   display: flex;
   align-items: center;
-  margin-block: 0.5rem;
   gap: 0.2rem;
   p,
   u {
@@ -174,7 +173,7 @@ const POIDetails = (props) => {
           <BackText>Back to Itinerary</BackText>
         </BackContainer>
       )}
-      {images?.length>3 ? (
+      {images?.length > 3 ? (
         <>
           <ImageContainer>
             <GridImage>
@@ -185,7 +184,7 @@ const POIDetails = (props) => {
                     height="304"
                     heightmobile="280"
                     url={
-                      images[0] 
+                      images[0]
                         ? images[0].photo_reference
                         : "media/icons/bookings/notfounds/noroom.png"
                     }
@@ -213,7 +212,7 @@ const POIDetails = (props) => {
                     height="188"
                     heightmobile="280"
                     url={
-                      images[1] 
+                      images[1]
                         ? images[1].photo_reference
                         : "media/icons/bookings/notfounds/noroom.png"
                     }
@@ -240,7 +239,7 @@ const POIDetails = (props) => {
                     marginTop="23px"
                     widthMobile="100%"
                     url={
-                      images[2] 
+                      images[2]
                         ? images[2].photo_reference
                         : "media/icons/bookings/notfounds/noroom.png"
                     }
@@ -267,7 +266,7 @@ const POIDetails = (props) => {
                     marginTop="23px"
                     widthMobile="100%"
                     url={
-                      images[3] 
+                      images[3]
                         ? images[3].photo_reference
                         : "media/icons/bookings/notfounds/noroom.png"
                     }
@@ -299,7 +298,7 @@ const POIDetails = (props) => {
                   marginTop="23px"
                   widthMobile="100%"
                   url={
-                    props.data.image 
+                    props.data.image
                       ? props.data.image
                       : "media/icons/bookings/notfounds/noroom.png"
                   }
@@ -368,26 +367,6 @@ const POIDetails = (props) => {
           </div>
         )}
 
-        <Reviews>
-          {props.data.rating ? (
-            <div
-              style={{ color: "#FFD201", marginBottom: "0.3rem" }}
-              className="flex flex-row gap-1"
-            >
-              {stars}
-            </div>
-          ) : null}
-
-          <div style={{ display: "flex", alignItems: "center" }}>
-            {props.data?.rating ? (
-              <p style={{ marginBlock: "auto" }}>{props.data.rating} · </p>
-            ) : null}
-
-            {props.data?.user_ratings_total ? (
-              <u> {props.data.user_ratings_total} user reviews</u>
-            ) : null}
-          </div>
-        </Reviews>
         {props.data?.experience_filters && <Text>{experience_filters}</Text>}
       </div>
 
@@ -445,17 +424,30 @@ const POIDetails = (props) => {
       )}
       {props?.data?.reviews && (
         <>
+        <div className="flex justify-between">
           <Heading>Reviews</Heading>
-          <ReviewsCarousel reviews={props?.data?.reviews} />
+          <Reviews>
+            {props.data.rating ? (
+              <div
+                style={{ color: "#FFD201" }}
+                className="flex flex-row gap-1"
+              >
+                {stars}
+              </div>
+            ) : null}
 
-          {/* <div className="flex gap-4 overflow-x-auto scroll-smooth">
-        {props?.data?.reviews?.map((item)=>(
-          <Reviews1Carousel reviews={item}/>
-          // <div className="w-[300px]">
-          //   <ReviewCard author_name={item?.author_name} text={item?.text} rating={item?.rating}/>
-          //   </div>
-        ))}
-        </div> */}
+            <div className="flex items-center">
+              {props.data?.rating ? (
+                <p className="m-0">{props.data.rating} · </p>
+              ) : null}
+
+              {props.data?.user_ratings_total ? (
+                <u> {props.data.user_ratings_total} user reviews</u>
+              ) : null}
+            </div>
+          </Reviews>
+          </div>
+          <ReviewsCarousel reviews={props?.data?.reviews} />
         </>
       )}
 
