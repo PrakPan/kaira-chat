@@ -71,6 +71,7 @@ const CityDay = (props) => {
         cityID={props.city.id}
         date={props?.day?.date}
         setItinerary={props?.setItinerary}
+        itinerary_city_id={props?.itinerary_city_id}
         // day_slab_index={props?.indexDay}
         // getPaymentHandler={props?.getPaymentHandler}
         // getAccommodationAndActivitiesHandler={

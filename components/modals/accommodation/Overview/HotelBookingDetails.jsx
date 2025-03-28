@@ -1001,6 +1001,8 @@ const HotelBookingDetails = (props) => {
                   key={index}
                   className="flex flex-col md:flex-row gap-1 justify-between"
                 >
+                  <div>
+                  {room?.name && <div className="text-[16px] font-bold">{room?.name}</div>}
                   {room?.description ? (
                     <div
                       dangerouslySetInnerHTML={{
@@ -1009,6 +1011,7 @@ const HotelBookingDetails = (props) => {
                       className=""
                     ></div>
                   ) : null}
+                  </div>
                   <div className="flex flex-col items-center justify-center gap-3 md:w-[40%] h-[250px]">
                     <ImageCarousel images={room?.images} />
                   </div>
