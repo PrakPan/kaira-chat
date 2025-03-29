@@ -131,9 +131,9 @@ const ItineraryCity = (props) => {
       <div className="flex items-start justify-between p-3 rounded-t-lg bg-[#FEFAD8] border-b-2">
         <div className="space-y-1">
           <div className={`md:text-[18px] font-semibold`}>
-            {stay && stay?.length ? stay[props?.index]?.city_name || stay[props?.index]?.city : props?.city?.city?.name }
+            {stay && stay?.length ? stay[props?.index]?.city_name || stay[props?.index]?.city || props?.city?.city?.name : props?.city?.city?.name }
             {" - "}
-            {stay && stay?.length ? stay[props?.index]?.duration : props?.city?.duration}{" "}
+            {stay && stay?.length ? stay[props?.index]?.duration || props?.city?.duration : props?.city?.duration}{" "}
             {stay && stay?.length ? (stay[props?.index]?.duration === 1 || props?.city?.duration === 1) ? "Night" : "Nights": props?.city?.duration === 1 ? "Night" : "Nights"}
           </div>
 
