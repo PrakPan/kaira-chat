@@ -217,26 +217,61 @@ const hotelsSuccessRef = useRef(false);
     }
   };
 
-  const getAllStays = () =>{
-    axiosGetAllStays
-      .get(props.id + "/bookings/")
-      .then((res) => {
-        let data = res.data;
-        let stays = data?.accommodation_bookings;
-        setStayBookings(data?.accommodation_bookings);
-        dispatch(setStays(stays));
-        props.setBookings({
-          ...props.bookings,
-          stayBookings: stays ? stays : null,
-        });
-        dispatch(setItineraryStatus("hotels_status","SUCCESS"));
-      })
-      .catch((error) => {
-        console.log("ERROR[PaymentInfo][Itinerary]", error);
-        setPaymentLoading(false);
-      });
-  }
 
+
+const getAllStays = async () => {
+  
+  try {
+    const res = await axiosGetAllStays.get(props.id + "/bookings/hotels/");
+
+    let data = res.data;
+    let stays = [];
+    for (let i = 0; i < data?.cities.length; i++) {
+      let hotels = data?.cities[i]?.hotels;
+      let city_name = data?.cities[i]?.city?.name;
+      let city_id = data?.cities[i]?.city?.id;
+
+      if (hotels.length === 0) {
+        stays.push({
+          city_name,
+          city_id,
+          trace_city_id: data?.cities[i]?.id,
+          duration: data?.cities[i]?.duration,
+          check_in: data?.cities[i]?.start_date,
+          // check_out: new Date(new Date(data?.cities[i]?.start_date).getTime() + data?.cities[i]?.duration * 24 * 60 * 60 * 1000)
+          //   .toISOString()
+          //   .split("T")[0],
+        });
+      }
+
+      for (let hotel of hotels) {
+        hotel.city_name = city_name;
+        hotel.city_id = city_id;
+        hotel.source = hotel?.images?.[0]?.source;
+        stays.push(hotel);
+      }
+    }
+
+    console.log('Prepared stays data:', stays); // Log the final stays data before dispatching
+
+    setStayBookings(stays);
+    dispatch(setStays(stays));
+    dispatch(setItineraryStatus('hotels_status', 'SUCCESS')); // Dispatch the success action
+    console.log('State after dispatch:', stays); // Log the state after dispatching
+  
+
+    props.setBookings({
+      ...props.bookings,
+      stayBookings: data?.cities ? data?.cities : null,
+    });
+
+    console.log("Stay bookings:", stays);
+  } catch (error) {
+    console.log("ERROR[HotelBookingInfo][Itinerary]", error);
+  }
+};
+
+  
   const getPaymentInfo = () => {
     let stay_data = {};
     let activity_data = {};
@@ -254,7 +289,7 @@ const hotelsSuccessRef = useRef(false);
         let data = res.data;
         setPayment(data);
         dispatch(setItineraryStatus("pricing_status","SUCCESS"));
-
+ 
         for (let category in data.summary) {
           let categoryData = data.summary[category];
 
@@ -486,6 +521,7 @@ function fetchData(poll) {
         hotelsSuccessRef.current = true;
         // setTimeout(() => {
           getAllStays();
+          
         // }, 20000);
       }
 

@@ -614,6 +614,7 @@ const SimpleTabsV2 = (props) => {
                 stayBookings={stays}
                 setStayBookings={props.setStayBookings}
                 CityData={CityData}
+                cities={props?.cities}
               />
             ) : (
               <HotelsBooking
@@ -920,6 +921,7 @@ const SimpleTabsV2 = (props) => {
                     stayBookings={stays}
                     setStayBookings={props.setStayBookings}
                     CityData={CityData}
+                    cities={props?.cities}
                   />
                 ) : (
                   <HotelsBooking
@@ -950,11 +952,9 @@ const SimpleTabsV2 = (props) => {
               </div>
             )}
 
-            {props?.transferBookings ? (
+            
               <div id={"Transfers"}>
                 {props.mercuryItinerary ? (
-                  <>
-                    {props.transferBookings ? (
                       <>
                         <TransferBookings
                           loadbookings={props?.loadbookings}
@@ -982,10 +982,6 @@ const SimpleTabsV2 = (props) => {
                           _GetInTouch={_GetInTouch}
                         />
                       </>
-                    ) : (
-                      <>Loading Data ...</>
-                    )}
-                  </>
                 ) : (
                   <TransfersContainer
                     setShowLoginModal={setShowLoginModal}
@@ -1017,7 +1013,6 @@ const SimpleTabsV2 = (props) => {
                   />
                 )}
               </div>
-            ) : null}
 
             {props.activityBookings && (
               <div id={"Activities"}>
