@@ -42,7 +42,7 @@ const HotelBooking = ({
   let isPageWide = media("(min-width: 768px)");
   const [imageFail, setImageFail] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const {itinerary_status,booking_status,pricing_status} = useSelector((state) => state.ItineraryStatus);
+  const {itinerary_status,transfers_status,pricing_status, hotels_status} = useSelector((state) => state.ItineraryStatus);
 
   const starRating = (rating) => {
     var stars = [];
@@ -107,12 +107,12 @@ const HotelBooking = ({
   let hotel_image = "";
   if (
     booking &&
-    booking?.images &&
-    booking?.images.length
+    booking?.hotel_details?.images &&
+    booking?.hotel_details?.images.length
   ) {
-    for (let i = 0; i < booking.images.length; i++) {
-      if (booking.images[i]) {
-        hotel_image = booking.images[i]?.image;
+    for (let i = 0; i < booking?.hotel_details?.images.length; i++) {
+      if (booking?.hotel_details?.images[i]) {
+        hotel_image = booking?.hotel_details?.images[i]?.image;
         break;
       }
     }
@@ -143,7 +143,7 @@ const HotelBooking = ({
 
   return (
     <div className={`${!isPageWide ? "max-w-fit" : "max-w-[54vw]"}`}>
-      { booking_status ==="PENDING" ? 
+      { hotels_status ==="PENDING" ? 
       <div className="animate-pulse">
       {/* Skeleton loader for city name */}
       <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
@@ -204,7 +204,7 @@ const HotelBooking = ({
       : booking?.id?
       <>
       <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
-        {booking?.city_name}
+        {booking?.hotel_details?.city}
         <span className="ml-1">
           ({booking?.duration ? booking.duration : 1}N)
         </span>
@@ -268,7 +268,7 @@ const HotelBooking = ({
           <div className="flex flex-col gap-2 text-[#01202B] lg:w-[70%] w-full justify-between">
             <div className="flex flex-col gap-2">
               <div className="flex flex-row justify-between items-center">
-                <div className={`text-2xl font-semibold`}>{booking?.name}</div>
+                <div className={`text-2xl font-semibold`}>{booking?.hotel_details?.name}</div>
 
                 <div
                   className={`ml-auto text-md font-semibold ${
@@ -284,7 +284,7 @@ const HotelBooking = ({
                   className="text-sm font-normal"
                   style={{ marginTop: "-0.5rem" }}
                 >
-                  {booking?.city_name}
+                  {booking?.hotel_details?.city}
                 </div>
 
                 {booking?.rating && (
@@ -352,20 +352,12 @@ const HotelBooking = ({
                 </div>
               ) : null}
 
-              <RoomTypeGrid>
+              {booking?.room && <RoomTypeGrid>
                 <BiBed className="text-sm text-[#7A7A7A]" />
                 <div className="text-sm font-[400] line-clamp-1">
                   {booking?.room}
                 </div>
-                {/* <div>
-                  {"("}
-                  {booking?.room
-                    ? booking.room
-                    : 1}{" "}
-                  {booking?.room > 1 ? "Rooms" : "Room"}
-                  {")"}
-                </div> */}
-              </RoomTypeGrid>
+              </RoomTypeGrid>}
 
               {booking?.number_of_extra_beds &&
               booking?.number_of_extra_beds > 0 ? (

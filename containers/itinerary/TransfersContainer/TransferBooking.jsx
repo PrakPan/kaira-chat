@@ -142,7 +142,7 @@ const TransferBooking = ({
   const [showDrawer, setShowDrawer] = useState(false);
   const [showVehicleDrawer, setShowVehicleDrawer] = useState(false);
   const [vehicleDetails, setVehicleDetails] = useState(null);
-  const {itinerary_status,booking_status,pricing_status} = useSelector((state) => state.ItineraryStatus);
+  const {itinerary_status,transfers_status,pricing_status} = useSelector((state) => state.ItineraryStatus);
   useEffect(() => {
     setaddboking(booking?.user_selected);
   }, [booking?.user_selected]);
@@ -287,7 +287,7 @@ const TransferBooking = ({
 
   return (
     <>
-      { booking_status === "PENDING" ?
+      { transfers_status === "PENDING" ?
            <div className="mt-2 ml-1 md:ml-7 flex flex-col w-full">
     {/* Booking name */}
     <div className="flex flex-row w-full justify-between items-center">
