@@ -37,12 +37,13 @@ const HotelBooking = ({
   handleClick,
   handleClickAc,
   setShowLoginModal,
-  setShowDetails
+  setShowDetails,
+  cities
 }) => {
   let isPageWide = media("(min-width: 768px)");
   const [imageFail, setImageFail] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const {itinerary_status,booking_status,pricing_status} = useSelector((state) => state.ItineraryStatus);
+  const {itinerary_status,transfers_status,pricing_status,hotels_status} = useSelector((state) => state.ItineraryStatus);
 
   const starRating = (rating) => {
     var stars = [];
@@ -70,8 +71,10 @@ const HotelBooking = ({
     }
   }
 
+  console.log("Bkm",booking)
+
   const handleViewDetails = (value) => {
-    handleClick(index, booking.id, booking, booking.city_name);
+    handleClick(index, booking.id, booking, booking.city_name || booking.city);
 
     logEvent({
       action: "Hotel_Details",
@@ -143,7 +146,7 @@ const HotelBooking = ({
 
   return (
     <div className={`${!isPageWide ? "max-w-fit" : "max-w-[54vw]"}`}>
-      { booking_status ==="PENDING" ? 
+      { hotels_status ==="PENDING" ? 
       <div className="animate-pulse">
       {/* Skeleton loader for city name */}
       <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
@@ -204,7 +207,7 @@ const HotelBooking = ({
       : booking?.id?
       <>
       <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
-        {booking?.city_name}
+        {booking?.city_name || booking?.city}
         <span className="ml-1">
           ({booking?.duration ? booking.duration : 1}N)
         </span>
@@ -284,7 +287,7 @@ const HotelBooking = ({
                   className="text-sm font-normal"
                   style={{ marginTop: "-0.5rem" }}
                 >
-                  {booking?.city_name}
+                  {booking?.city_name || booking?.city}
                 </div>
 
                 {booking?.rating && (
@@ -456,8 +459,8 @@ const HotelBooking = ({
               <div className="font-medium  inline">
                 <div className="font-bold flex flex-row lg:text-2xl text-xl lg:pb-2 pb-1 text-[#01202B]">
                   <div>
-                    {booking?.city_name}{" "}
-                    <span>({booking?.duration}N)</span>
+                    {booking?.city_name || booking?.city || cities[index]?.city?.name}{" "}
+                    <span>({booking?.duration || cities[index]?.duration}N)</span>
                   </div>
                 </div>
               </div>
@@ -476,7 +479,7 @@ const HotelBooking = ({
               )}
             </div>
             <div
-                  onClick={(e) => handleChangeHotel(e, "Change", booking?.city_name,"Add")}
+                  onClick={(e) => handleChangeHotel(e, "Change", booking?.city_name || booking?.city || cities[index]?.city?.name,"Add")}
                 >
             <Button
               bgColor={"#F7E700"}
@@ -487,7 +490,7 @@ const HotelBooking = ({
               margin={!isPageWide ? "0.75rem 0 0 0" : "0"}
               onclick={() => console.log("")}
             >
-              Add Stay in {booking?.city_name}
+              Add Stay in {booking?.city_name || booking?.city || cities[index]?.city?.name}
             </Button>
             </div>
           </div>

@@ -159,7 +159,7 @@ const TransferBookings = (props) => {
         Transfers
         <span className="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
       </div>
-      {transferBooking?.intercity != undefined && (
+      {(
         <>
           {props.showFlightModal && (
             <MakeYourPersonalised
@@ -187,7 +187,7 @@ const TransferBookings = (props) => {
                 pinColour={null}
               />
 
-              <TransferBooking
+              {transferBooking?.intercity != undefined && <TransferBooking
                 loadbookings={props?.loadbookings}
                 key={
                   transferBooking?.intercity[
@@ -223,7 +223,7 @@ const TransferBookings = (props) => {
                 originCityId={null}
                 destinationCityId={itineraries?.cities[0]?.id}
                 
-              />
+              />}
             </>
             {itineraries?.cities?.map((item, index) => (
               <>
@@ -239,7 +239,7 @@ const TransferBookings = (props) => {
                       pinColour={CITY_COLOR_CODES[index % 7]}
                     />
 
-                    <TransferBooking
+                      {transferBooking?.intercity != undefined && <TransferBooking
                       loadbookings={props?.loadbookings}
                       key={
                         transferBooking?.intercity[
@@ -268,7 +268,7 @@ const TransferBookings = (props) => {
                       selectedBooking={selectedBooking}
                       originCityId={item.id}
                       destinationCityId={itineraries?.cities[index + 1].id}
-                    />
+                    />}
                   </>
                 )}
               </>
@@ -284,7 +284,7 @@ const TransferBookings = (props) => {
               PinSection
               pinColour={CITY_COLOR_CODES[itineraries?.cities.length % 7]}
             />
-            <TransferBooking
+            {transferBooking?.intercity != undefined && <TransferBooking
               loadbookings={props?.loadbookings}
               key={
                 transferBooking?.intercity[
@@ -318,7 +318,7 @@ const TransferBookings = (props) => {
                 itineraries?.cities[itineraries?.cities.length - 1]?.id
               }
               destinationCityId={null}
-            />
+            />}
             <PinSection
               key={itineraries?.cities.length}
               transfersPin

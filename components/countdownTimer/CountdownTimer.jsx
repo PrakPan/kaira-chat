@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
 export default function CountdownTimer({ priceValidUntil }) {
-  const targetTime = priceValidUntil ? new Date(priceValidUntil?.replace(" ", "T")).getTime() : '';
+  const targetTime = priceValidUntil ? new Date(priceValidUntil?.replace(" ", "T")).getTime() : null;
   const currentTime = new Date().getTime();
 
-  if (!targetTime || (targetTime <= currentTime)) {
+  if (!targetTime || targetTime <= currentTime) {
     return null;
   }
 
@@ -13,16 +13,21 @@ export default function CountdownTimer({ priceValidUntil }) {
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
 
   useEffect(() => {
-    if (timeLeft <= 0) return; 
+    if (timeLeft <= 0) return;
 
-    const timer = setInterval(() => {
+    let animationFrameId;
+
+    const updateTime = () => {
       setTimeLeft(calculateTimeLeft());
-    }, 1000);
+      animationFrameId = requestAnimationFrame(updateTime);
+    };
 
-    return () => clearInterval(timer);
-  }, [priceValidUntil]);
+    animationFrameId = requestAnimationFrame(updateTime);
 
-  const minutes = String(Math.floor(timeLeft / 60)).padStart(2, "0"); 
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [timeLeft, priceValidUntil]);
+
+  const minutes = String(Math.floor(timeLeft / 60)).padStart(2, "0");
   const seconds = String(timeLeft % 60).padStart(2, "0");
 
   const bgColor = timeLeft > 300 ? "bg-[#169873]" : "bg-red-500";
@@ -30,7 +35,7 @@ export default function CountdownTimer({ priceValidUntil }) {
   return (
     <div className="flex flex-col items-center bg-[#FBFBFB] p-4 rounded-lg">
       <h2 className="text-lg font-medium text-gray-900">Offer will end in</h2>
-      
+
       <div className="flex items-center mt-2">
         <div className={`w-12 h-12 ${bgColor} text-white text-xl font-bold flex items-center justify-center rounded-md mx-1`}>
           {minutes[0]}

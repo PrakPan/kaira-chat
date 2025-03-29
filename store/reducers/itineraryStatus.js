@@ -2,8 +2,9 @@ import * as actionTypes from "../actions/actionsTypes";
 
 const initialState = {
   itinerary_status: "PENDING",
-  booking_status: "PENDING",
+  transfers_status: "PENDING",
   pricing_status: "PENDING",
+  hotels_status: "PENDING"
 };
 
 const reducer = (state = initialState, action) => {

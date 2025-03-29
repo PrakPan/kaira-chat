@@ -30,14 +30,12 @@ const MobileCard = Array(4).fill(
 
 const TransferSkeleton = (props) => {
   return (
-    <DesktopContainer>
-      <SkeletonCard
-       width={"10vw"}
-       height={"4vh"}
-       borderRadius={"0.5rem"}
-       lottieDimension={"35vh"}
-  />
-    </DesktopContainer>
+    <div className="flex flex-col space-y-4 animate-pulse mt-4 mb-4 p-2">
+    <div className="flex items-center space-x-4">
+      <div className="w-10 h-10 bg-gray-300 rounded-full"></div> {/* Icon circle */}
+      <div className="h-4 bg-gray-300 rounded w-1/3"></div> {/* Text block */}
+    </div>
+  </div>
   );
 };
 

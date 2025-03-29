@@ -27,6 +27,7 @@ import axiosPaymentInstance, {
   axiosGetPaymentInfo,
 } from "../../services/itinerary/payment";
 import axiosBookingsInstance, {
+  axiosGetAllStays,
   axiosGetTransfers,
 } from "../../services/itinerary/bookings";
 import { setTransfersBookings } from "../../store/actions/transferBookingsStore";
@@ -45,7 +46,7 @@ const Container = styled.div`
 const ItineraryContainer = (props) => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const {itinerary_status,booking_status,pricing_status} = useSelector((state) => state.ItineraryStatus);
+  const {itinerary_status,transfers_status,pricing_status, hotels_status} = useSelector((state) => state.ItineraryStatus);
   const [totalduration, setTotalduration] = useState(0);
   const [itineraryReleased, setItineraryReleased] = useState(false);
   const [itineraryDate, setItineraryDate] = useState("");
@@ -87,7 +88,8 @@ const ItineraryContainer = (props) => {
 
 const itinerarySuccessRef = useRef(false);
 const pricingSuccessRef = useRef(false);
-const bookingSuccessRef = useRef(false);
+const transfersSuccessRef = useRef(false);
+const hotelsSuccessRef = useRef(false);
 
   //  const transferBooking = useSelector((state) => state.TransferBookings)?.transferBookings
   //   console.log("Transfer Booking",transferBooking);
@@ -215,6 +217,61 @@ const bookingSuccessRef = useRef(false);
     }
   };
 
+
+
+const getAllStays = async () => {
+  
+  try {
+    const res = await axiosGetAllStays.get(props.id + "/bookings/hotels/");
+
+    let data = res.data;
+    let stays = [];
+    for (let i = 0; i < data?.cities.length; i++) {
+      let hotels = data?.cities[i]?.hotels;
+      let city_name = data?.cities[i]?.city?.name;
+      let city_id = data?.cities[i]?.city?.id;
+
+      if (hotels.length === 0) {
+        stays.push({
+          city_name,
+          city_id,
+          trace_city_id: data?.cities[i]?.id,
+          duration: data?.cities[i]?.duration,
+          check_in: data?.cities[i]?.start_date,
+          // check_out: new Date(new Date(data?.cities[i]?.start_date).getTime() + data?.cities[i]?.duration * 24 * 60 * 60 * 1000)
+          //   .toISOString()
+          //   .split("T")[0],
+        });
+      }
+
+      for (let hotel of hotels) {
+        hotel.city_name = city_name;
+        hotel.city_id = city_id;
+        hotel.source = hotel?.images?.[0]?.source;
+        stays.push(hotel);
+      }
+    }
+
+    console.log('Prepared stays data:', stays); // Log the final stays data before dispatching
+
+    setStayBookings(stays);
+    dispatch(setStays(stays));
+    dispatch(setItineraryStatus('hotels_status', 'SUCCESS')); // Dispatch the success action
+    console.log('State after dispatch:', stays); // Log the state after dispatching
+  
+
+    props.setBookings({
+      ...props.bookings,
+      stayBookings: data?.cities ? data?.cities : null,
+    });
+
+    console.log("Stay bookings:", stays);
+  } catch (error) {
+    console.log("ERROR[HotelBookingInfo][Itinerary]", error);
+  }
+};
+
+  
   const getPaymentInfo = () => {
     let stay_data = {};
     let activity_data = {};
@@ -232,7 +289,7 @@ const bookingSuccessRef = useRef(false);
         let data = res.data;
         setPayment(data);
         dispatch(setItineraryStatus("pricing_status","SUCCESS"));
-
+ 
         for (let category in data.summary) {
           let categoryData = data.summary[category];
 
@@ -346,7 +403,7 @@ const bookingSuccessRef = useRef(false);
         setTransferBookings(data);
         setCityTransferBookings(data);
         dispatch(setTransfersBookings(data));
-        dispatch(setItineraryStatus("booking_status","SUCCESS"));
+        dispatch(setItineraryStatus("transfers_status","SUCCESS"));
       })
       .catch((err) => {
         console.error("Error fetching all bookings", err.message);
@@ -373,27 +430,33 @@ function fetchData(poll) {
       if(status?.PRICING === "FAILURE"){
         dispatch(setItineraryStatus("pricing_status","FAILURE"));
       }
-      if(status?.BOOKINGS === "FAILURE"){
-        dispatch(setItineraryStatus("booking_status","FAILURE"));
+      if(status?.TRANSFERS === "FAILURE"){
+        dispatch(setItineraryStatus("transfers_status","FAILURE"));
       }
+      
+      if(status?.HOTELS === "FAILURE"){
+        dispatch(setItineraryStatus("hotels_status","FAILURE"));
+      }
+
 
       if (
         status?.ITINERARY === "SUCCESS" &&
-        status?.BOOKINGS === "SUCCESS" &&
-        status?.PRICING === "SUCCESS"
+        status?.TRANSFERS === "SUCCESS" &&
+        status?.PRICING === "SUCCESS" && 
+        status?.HOTELS === "SUCCESS"
       ) {
         setPolling(false); 
       } else {
         setPolling(true); 
       }
 
-      fetchItinerary(status?.ITINERARY, status?.BOOKINGS, status?.PRICING);
+      fetchItinerary(status?.ITINERARY, status?.HOTELS, status?.TRANSFERS, status?.PRICING);
     } catch (err) {
       console.error("[ERROR]: axiosGetItineraryStatus: ", err.message);
     }
   };
 
-  const fetchItinerary = async (itinerary, booking, pricing) => {
+  const fetchItinerary = async (itinerary, hotels, transfers, pricing) => {
     try {
       if (itinerary === "SUCCESS" && !itinerarySuccessRef.current) {
         if (true) window.scrollTo(0, 0);
@@ -416,42 +479,59 @@ function fetchData(poll) {
         setCities(data?.cities);
         setItineraryDate(data.start_date);
 
-        let stays = [];
-        for (let i = 0; i < data?.cities.length; i++) {
-          let hotels = data?.cities[i]?.hotels;
-          let city_name = data?.cities[i]?.city?.name;
-          let city_id = data?.cities[i]?.city?.id;
+        // let stays = [];
+        // for (let i = 0; i < data?.cities.length; i++) {
+        //   let hotels = data?.cities[i]?.hotels;
+        //   let city_name = data?.cities[i]?.city?.name;
+        //   let city_id = data?.cities[i]?.city?.id;
 
-          if (hotels.length === 0) {
-            stays.push({
-              city_name,
-              city_id,
-              trace_city_id: data?.cities[i]?.id,
-              duration: data?.cities[i]?.duration,
-              check_in: data?.cities[i]?.start_date,
-              check_out: new Date(new Date(data?.cities[i]?.start_date).getTime() + data?.cities[i]?.duration * 24 * 60 * 60 * 1000)
-                .toISOString()
-                .split("T")[0],
-            });
-          }
+        //   if (hotels.length === 0) {
+        //     stays.push({
+        //       city_name,
+        //       city_id,
+        //       trace_city_id: data?.cities[i]?.id,
+        //       duration: data?.cities[i]?.duration,
+        //       check_in: data?.cities[i]?.start_date,
+        //       check_out: new Date(new Date(data?.cities[i]?.start_date).getTime() + data?.cities[i]?.duration * 24 * 60 * 60 * 1000)
+        //         .toISOString()
+        //         .split("T")[0],
+        //     });
+        //   }
 
-          for (let hotel of hotels) {
-            hotel.city_name = city_name;
-            hotel.city_id = city_id;
-            hotel.source = hotel?.images?.[0]?.source;
-            stays.push(hotel);
-          }
-        }
-        setStayBookings(stays);
-        dispatch(setStays(stays));
-        props.setBookings({
-          ...props.bookings,
-          stayBookings: data?.cities ? data?.cities : null,
-        });
+        //   for (let hotel of hotels) {
+        //     hotel.city_name = city_name;
+        //     hotel.city_id = city_id;
+        //     hotel.source = hotel?.images?.[0]?.source;
+        //     stays.push(hotel);
+        //   }
+        // }
+        // setStayBookings(stays);
+        // dispatch(setStays(stays));
+        // props.setBookings({
+        //   ...props.bookings,
+        //   stayBookings: data?.cities ? data?.cities : null,
+        // });
 
         let activities = getItineraryActivities();
         props.setItineraryActivities(activities);
         setItineraryLoading(false);
+      }
+      
+      if (hotels === "SUCCESS" && !hotelsSuccessRef.current) {
+        hotelsSuccessRef.current = true;
+        // setTimeout(() => {
+          getAllStays();
+          
+        // }, 20000);
+      }
+
+
+      if (transfers === "SUCCESS" && !transfersSuccessRef.current) {
+        transfersSuccessRef.current = true;
+        setLoadBookings(true);
+        // setTimeout(() => {
+          getAllBookings();
+        // }, 20000);
       }
 
       if (pricing === "SUCCESS" && !pricingSuccessRef.current) {
@@ -460,13 +540,7 @@ function fetchData(poll) {
         getPaymentInfo();
       }
 
-      if (booking === "SUCCESS" && !bookingSuccessRef.current) {
-        bookingSuccessRef.current = true;
-        setLoadBookings(true);
-        // setTimeout(() => {
-          getAllBookings();
-        // }, 20000);
-      }
+      
     } catch (err) {
       console.error("[ERROR]: axiosGetItinerary: ", err.message);
       setItineraryLoading(false);
@@ -498,16 +572,20 @@ useEffect(() => {
       } else {
         if (
           itinerary_status === "FAILURE" &&
-          booking_status === "FAILURE" &&
-          pricing_status === "FAILURE"
+          transfers_status === "FAILURE" &&
+          pricing_status === "FAILURE" && 
+          hotels_status === "FAILURE"
         ) {
           router.push("/thank-you");
         } else {
           if(pricing_status === "FAILURE"){
             dispatch(setItineraryStatus("pricing_status","FAILURE"));
           }
-          if(booking_status === "FAILURE"){
-            dispatch(setItineraryStatus("booking_status","FAILURE"));
+          if(transfers_status === "FAILURE"){
+            dispatch(setItineraryStatus("transfers_status","FAILURE"));
+          }
+          if(hotels_status === "FAILURE"){
+            dispatch(setItineraryStatus("hotels_status","FAILURE"));
           }
         }
 

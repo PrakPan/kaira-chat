@@ -33,7 +33,7 @@ const CityDay = (props) => {
           (isPageWide ? (
             <span>{convertDateFormat(props?.day?.date)}</span>
           ) : (
-            <span>, {convertDateFormat(props?.day?.date)}</span>
+            <span>{convertDateFormat(props?.day?.date)}</span>
           ))}
         <span className="text-[#ABABAB] font-normal">
           {" "}

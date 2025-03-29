@@ -15,6 +15,10 @@ export const axiosGetTransfers = axios.create({
   baseURL: MERCURY_HOST + "/api/v1/itinerary/"
 })
 
+export const axiosGetAllStays = axios.create({
+  baseURL: MERCURY_HOST + "/api/v1/itinerary/"
+})
+
 export const axiosDeleteBooking = axios.create({
   baseURL: MERCURY_HOST + "/api/v1/itinerary/"
 })

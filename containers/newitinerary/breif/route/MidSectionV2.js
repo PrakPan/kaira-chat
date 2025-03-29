@@ -95,7 +95,7 @@ const MidSectionV2 = (props) => {
   );
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showTaxiModal, setShowTaxiModal] = useState(false);
-  const {itinerary_status,booking_status,pricing_status} = useSelector((state) => state.ItineraryStatus);
+  const {itinerary_status,transfers_status,pricing_status} = useSelector((state) => state.ItineraryStatus);
 
 
   useEffect(() => {
@@ -195,7 +195,7 @@ const MidSectionV2 = (props) => {
         <Line pinColour={props.pinColour} hidemidsection={hidemidsection} />
       </div>
 
-      {hidemidsection && ((booking_status === "PENDING" ) ? <TransferSkeleton/> : (
+      {hidemidsection && ((transfers_status === "PENDING" ) ? <TransferSkeleton/> : (
         <> 
           {props.version == "v2" ? (
             (

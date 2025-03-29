@@ -81,7 +81,7 @@ const ItineraryCity = (props) => {
   const [data,setData]=useState(null)
   const {token} = useSelector((state)=>state.auth)
   const stay = useSelector((state)=>state.Stays)
-  const {itinerary_status,booking_status,pricing_status} = useSelector((state) => state.ItineraryStatus);
+  const {itinerary_status,transfers_status,pricing_status,hotels_status} = useSelector((state) => state.ItineraryStatus);
   const fetchDetails = () => {
     setShowDetails(true);
     bookingDetails
@@ -120,88 +120,24 @@ const ItineraryCity = (props) => {
     });
   };
 
-  [
-    {
-      id: "1ed386cc-8f2d-49d6-845c-11883d3a9129",
-      name: "Kingsgate Hotel Abu Dhabi",
-      star_category: "3",
-      images: [
-        {
-          type: "Accommodation",
-          image:
-            "https://i.travelapi.com/lodging/2000000/2000000/1993300/1993279/ee57a2f6_b.jpg",
-          source: "Travclan",
-          caption: "Primary image",
-        },
-        {
-          type: "Accommodation",
-          image:
-            "https://i.travelapi.com/lodging/2000000/2000000/1993300/1993279/26f42d0c_b.jpg",
-          source: "Travclan",
-          caption: "Lobby",
-        },
-        {
-          type: "Accommodation",
-          image:
-            "https://i.travelapi.com/lodging/2000000/2000000/1993300/1993279/f2e7974e_b.jpg",
-          source: "Travclan",
-          caption: "Reception",
-        },
-        {
-          type: "Accommodation",
-          image:
-            "https://i.travelapi.com/lodging/2000000/2000000/1993300/1993279/5bc17111_b.jpg",
-          source: "Travclan",
-          caption: "Room",
-        },
-        {
-          type: "Accommodation",
-          image:
-            "https://i.travelapi.com/lodging/2000000/2000000/1993300/1993279/ce04fbaf_b.jpg",
-          source: "Travclan",
-          caption: "Room",
-        },
-      ],
-      check_in: "2025-04-13 00:00:00",
-      check_out: "2025-04-21 00:00:00",
-      city: "Abu Dhabi",
-      duration: 8,
-      number_of_adults: 1,
-      number_of_children: 0,
-      number_of_infants: 0,
-      room: "1 Room (Superior Double Room)",
-      meals: "Free Breakfast",
-      wifi: true,
-      rating: "3.8",
-      user_ratings_total: "183",
-      occupancies: [
-        {
-          child_ages: [],
-          num_adults: 1,
-        },
-      ],
-      city_name: "Abu Dhabi",
-      city_id: "670d39ee-724d-48ae-a90b-3efa53cc099c",
-      source: "Travclan",
-    },
-  ];
+  console.log("STTTT",stay);
 
   return (
     <div
-      data-city-id={stay[props?.index]?.city_id}
+      data-city-id={stay ? stay[props?.index]?.city_id : props?.city?.id}
       ref={(el) => (props.cityRefs.current[props.city.id] = el)}
       className="border-2 border-gray-200 rounded-t-lg flex flex-col"
     >
       <div className="flex items-start justify-between p-3 rounded-t-lg bg-[#FEFAD8] border-b-2">
         <div className="space-y-1">
           <div className={`md:text-[18px] font-semibold`}>
-            {stay[props?.index]?.city_name || props?.city?.name}
+            {stay && stay?.length ? stay[props?.index]?.city_name || stay[props?.index]?.city : props?.city?.city?.name }
             {" - "}
-            {stay[props?.index]?.duration || props?.city?.duration}{" "}
-            {stay[props?.index]?.duration === 1 || props?.city?.duration ? "Night" : "Nights"}
+            {stay && stay?.length ? stay[props?.index]?.duration : props?.city?.duration}{" "}
+            {stay && stay?.length ? (stay[props?.index]?.duration === 1 || props?.city?.duration === 1) ? "Night" : "Nights": props?.city?.duration === 1 ? "Night" : "Nights"}
           </div>
 
-          {itinerary_status === "PENDING" ? 
+          {hotels_status === "PENDING" ? 
            <div className="flex flex-col animate-pulse">
            <div className="flex flex-col gap-1 p-3">
              <div className="flex items-center gap-2">
@@ -216,7 +152,7 @@ const ItineraryCity = (props) => {
            </div>
          </div>
           :
-          ((stay[props?.index]?.name)) ? (
+          (stay && (stay[props?.index]?.name)) && hotels_status === "SUCCESS" ? (
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
                 <Image
@@ -238,9 +174,9 @@ const ItineraryCity = (props) => {
                 <div className="text-[#7A7A7A] text-[12px] ml-1">
                   {props.city.hotels[0]?.rating} ·{" "}
                 </div>
-                <div className="text-[#7A7A7A] text-[12px] ml-1 underline">
+                {props.city.hotels[0]?.user_ratings_total && <div className="text-[#7A7A7A] text-[12px] ml-1 underline">
                   {props.city.hotels[0]?.user_ratings_total} Google reviews
-                </div>
+                </div>}
               </div>
             </div>
           ) : (
