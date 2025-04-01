@@ -16,7 +16,7 @@ export default function DyamicFilters(props) {
   const [selectedCategories, setSelectedCategories] = useState(["All"]);
   const [selectedTourTypes, setSelectedTourTypes] = useState(["All"]);
   const [selectedGuide, setSelectedGuide] = useState(["All"]);
-
+  const [changed,setChanged]=useState(false);
   const handleApply = () => {
     props.setFilterState((prev) => ({
       ...prev,
@@ -32,53 +32,67 @@ export default function DyamicFilters(props) {
   return (
     <>
       {props?.showFilter && (
-        <div className="w-[452px]  flex flex-col gap-3 justify-between items-start mx-auto ">
-          <div className="flex flex-col gap-3 justify-between w-[95%] mx-auto mt-4">
-            <div className="text-[20px] font-normal line-clamp-1 border-b border-b-[#CAC3C3] font-semibold">
-              Filters
+        <>
+          <div className="w-[452px]  flex flex-col gap-3 justify-between items-start mx-auto">
+            <div className="flex flex-col gap-3 justify-between w-[95%] mx-auto mt-4">
+              <div className="border-b border-b-[#CAC3C3] flex justify-between items-center">
+                <div className="text-[20px] font-normal line-clamp-1 font-semibold">
+                Filters
+                </div>
+                <div className="!text-blue-500 cursor-pointer underline" onClick={()=>{
+                  setSelectedRating([]);
+                  setRecommended(false)
+                  setSelectedCategories(["All"])
+                  setSelectedTourTypes(["All"])
+                  setSelectedGuide(["All"])
+                  setChanged(false)
+                }}>Reset all</div>
+              </div>
+              {props.FILTERS.tour_type && props.FILTERS.tour_type.length ? (
+                <TourType
+                  tourTypes={props.FILTERS.tour_type}
+                  selectedTourTypes={selectedTourTypes}
+                  setSelectedTourTypes={setSelectedTourTypes}
+                  setChanged={setChanged}
+                />
+              ) : null}
+
+              {props.FILTERS.guide && props.FILTERS.guide.length ? (
+                <Guide
+                  guide={props.FILTERS.guide}
+                  selectedGuide={selectedGuide}
+                  setSelectedGuide={setSelectedGuide}
+                  setChanged={setChanged}
+                />
+              ) : null}
+              {props.FILTERS.category && props.FILTERS.category.length ? (
+                <Category
+                  categories={props.FILTERS.category}
+                  selectedCategories={selectedCategories}
+                  setSelectedCategories={setSelectedCategories}
+                />
+              ) : null}
+              <Rating
+                ratings={props.filters.ratings}
+                selectedRating={selectedRating}
+                setSelectedRating={setSelectedRating}
+              />
             </div>
-            {props.FILTERS.tour_type && props.FILTERS.tour_type.length ? (
-              <TourType
-                tourTypes={props.FILTERS.tour_type}
-                selectedTourTypes={selectedTourTypes}
-                setSelectedTourTypes={setSelectedTourTypes}
-              />
-            ) : null}
 
-            {props.FILTERS.guide && props.FILTERS.guide.length ? (
-              <Guide
-                guide={props.FILTERS.guide}
-                selectedGuide={selectedGuide}
-                setSelectedGuide={setSelectedGuide}
-              />
-            ) : null}
-            {props.FILTERS.category && props.FILTERS.category.length ? (
-              <Category
-                categories={props.FILTERS.category}
-                selectedCategories={selectedCategories}
-                setSelectedCategories={setSelectedCategories}
-              />
-            ) : null}
-            <Rating
-              ratings={props.filters.ratings}
-              selectedRating={selectedRating}
-              setSelectedRating={setSelectedRating}
-            />
+            <div className="w-full flex gap-3 flex-row justify-between mt-0">
+              <ButtonYellow
+                primary={false}
+                className="w-1/2 "
+                onClick={() => props.setshowFilter(false)}
+              >
+                <div className="text-[#01202B] ">Cancel</div>
+              </ButtonYellow>
+              <ButtonYellow className="w-1/2 !bg-black" onClick={handleApply}>
+                <div className="text-white">Apply</div>
+              </ButtonYellow>
+            </div>
           </div>
-
-          <div className="w-full flex gap-3 flex-row justify-between mt-0">
-            <ButtonYellow
-              primary={false}
-              className="w-1/2 "
-              onClick={() => props.setshowFilter(false)}
-            >
-              <div className="text-[#01202B] ">Cancel</div>
-            </ButtonYellow>
-            <ButtonYellow className="w-1/2 !bg-black" onClick={handleApply}>
-              <div className="text-white">Apply</div>
-            </ButtonYellow>
-          </div>
-        </div>
+        </>
       )}
     </>
   );

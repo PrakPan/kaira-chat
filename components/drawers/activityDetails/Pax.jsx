@@ -5,7 +5,6 @@ import { IoPerson } from "react-icons/io5";
 
 export const Pax = ({ setShowPax, pax, setPax, showPax }) => {
   const ref = useRef(null);
-  //console.log(pax);
   const [adults, setAdults] = useState(pax.adults ? pax.adults : 1);
   const [children, setChildren] = useState(pax.children ? pax.children : 0);
 

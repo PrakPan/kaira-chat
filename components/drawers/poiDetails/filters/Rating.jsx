@@ -6,6 +6,7 @@ export default function Rating(props) {
   const handleRating = (star) => {
     if (props.selectedRating.includes(star)) {
       props.setSelectedRating((prev) => prev.filter((item) => item !== star));
+      
     } else {
       props.setSelectedRating((prev) => [...prev, star]);
     }

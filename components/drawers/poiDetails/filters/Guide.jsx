@@ -7,6 +7,7 @@ export default function Guide(props) {
         props.setSelectedGuide((prev) =>
           prev.filter((item) => item !== category)
         );
+        props.setChanged(true);
       }
     } else {
       if (category === "All") {
