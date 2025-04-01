@@ -207,9 +207,9 @@ const HotelBooking = ({
       : booking?.id?
       <>
       <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
-        {booking?.city_name || booking?.city}
+        {booking?.city_name || booking?.city || cities[index]?.city?.name}
         <span className="ml-1">
-          ({booking?.duration ? booking.duration : 1}N)
+          ({booking?.duration ? booking.duration || cities[index]?.duration :  cities[index]?.duration ? cities[index]?.duration : 1}N)
         </span>
       </div>
 
