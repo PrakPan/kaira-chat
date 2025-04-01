@@ -121,7 +121,7 @@ const Booking = (props) => {
   });
   const [showTransferEditDrawer, setShowTransferEditDrawer] = useState(false);
 
-  console.log("Ord",props?.originCityId,props?.destinationCityId);
+ // console.log("Ord",props?.originCityId,props?.destinationCityId);
 
   useEffect(() => {
     if (!isPageWide && props.showFlightModal) _FetchFlightsHandler();
@@ -135,7 +135,7 @@ const Booking = (props) => {
     if (isPageWide && props.showFlightModal) _FetchFlightsHandler();
   }, [props.showFlightModal, props.token, filtersState, pax, classType]);
 
-  console.log("Booking Data",props?.selectedBooking);
+  //console.log("Booking Data",props?.selectedBooking);
   const _FetchFlightsHandler = () => {
     let options = [];
     setOptionsJSX([]);
@@ -267,7 +267,7 @@ const Booking = (props) => {
       edge: props?.edge || props?.selectedBooking?.edge
     };
 
-    console.log("Request Data",requestData);
+   // console.log("Request Data",requestData);
     updateFlightBooking
       .post(`${itinerary_id}/bookings/flight/`, requestData, {
         headers: {

@@ -56,9 +56,11 @@ const Details = (props) => {
     return formattedDate;
   };
 
-  const {itinerary_status,transfers_status,pricing_status} = useSelector((state)=>state.ItineraryStatus);
+  const { itinerary_status, transfers_status, pricing_status } = useSelector(
+    (state) => state.ItineraryStatus
+  );
 
-  console.log("Iti",props?.itinerary);
+  //console.log("Iti",props?.itinerary);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -82,16 +84,15 @@ const Details = (props) => {
   };
 
   const convertDFormat = (dt) => {
-    if(dt){
-    const date = parseISO(dt);
-    const formattedDate = format(date, "MMMM do yyyy");
-    return formattedDate;
-    }
-    else return;
+    if (dt) {
+      const date = parseISO(dt);
+      const formattedDate = format(date, "MMMM do yyyy");
+      return formattedDate;
+    } else return;
   };
 
   const [date, setDate] = useState(
-    getCurrentDateIfOlder(props?.itinerary?.start_date),
+    getCurrentDateIfOlder(props?.itinerary?.start_date)
   );
 
   const _handleVerificationSuccess = () => {
@@ -143,7 +144,7 @@ const Details = (props) => {
                     ] +
                       "N at " +
                       props.payment?.costings_breakdown[booking].detail["name"]}
-                  </p>,
+                  </p>
                 );
                 bookinglistwithcost.push(
                   <div
@@ -193,11 +194,11 @@ const Details = (props) => {
                           Math.ceil(
                             props.payment?.costings_breakdown[booking][
                               "booking_cost"
-                            ],
-                          ),
+                            ]
+                          )
                         )}
                     </p>
-                  </div>,
+                  </div>
                 );
               } else {
                 bookingslist.push(
@@ -215,7 +216,7 @@ const Details = (props) => {
                     }
                   >
                     {props.payment?.costings_breakdown[booking].detail["name"]}
-                  </p>,
+                  </p>
                 );
                 bookinglistwithcost.push(
                   <div
@@ -239,7 +240,11 @@ const Details = (props) => {
                           : "font-lexend text-enter"
                       }
                     >
-                      {props.payment?.costings_breakdown[booking].detail["name"]}
+                      {
+                        props.payment?.costings_breakdown[booking].detail[
+                          "name"
+                        ]
+                      }
                     </p>
                     <p
                       style={{
@@ -259,11 +264,11 @@ const Details = (props) => {
                           Math.ceil(
                             props.payment?.costings_breakdown[booking][
                               "booking_cost"
-                            ],
-                          ),
+                            ]
+                          )
                         )}
                     </p>
-                  </div>,
+                  </div>
                 );
               }
             }
@@ -313,7 +318,7 @@ const Details = (props) => {
           .post(
             "https://dev.suppliers.tarzanway.com/sales/verify/",
             { ...response },
-            { headers: { Authorization: `Bearer ${props.token}` } },
+            { headers: { Authorization: `Bearer ${props.token}` } }
           )
           .then((res) => {
             setPaymentLoading(false);
@@ -352,7 +357,7 @@ const Details = (props) => {
           headers: {
             Authorization: `Bearer ${props.token}`,
           },
-        },
+        }
       )
       .then((res) => {
         setPaymentLoading(false);
@@ -485,42 +490,45 @@ const Details = (props) => {
 
   return (
     <>
-      {pricing_status === "PENDING" ? <div className="bg-[#F7E70033] -mt-[1rem] -mx-[1rem] mb-0"><PricingSkeleton/></div> : <div
-        className={`${
-          props.payment?.paid_user ? "bg-[#98F0AB33]" : "bg-[#F7E70033]"
-        }  -mt-[1rem] -mx-[1rem] mb-0`}
-      >
-        <div className=" mx-[1rem] mt-[1rem]">
-          <div className="flex flex-row justify-between">
-            {props.iscouponApplied &&
-            props.payment?.discounted_cost != props.payment?.total_cost &&
-            props.payment?.show_per_person_cost !=
-              props.payment?.per_person_discounted_cost ? (
-              <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
-                <span>₹</span>
-                <div>
-                  {props.payment?.show_per_person_cost ||
-                  props.payment?.pay_only_for_one
-                    ? getIndianPrice(
-                        Math.round(props.payment?.per_person_total_cost ),
-                      )
-                    : getIndianPrice(
-                        Math.round(props.payment?.total_cost),
-                      )}
-                  {"/-"}
+      {pricing_status === "PENDING" ? (
+        <div className="bg-[#F7E70033] -mt-[1rem] -mx-[1rem] mb-0">
+          <PricingSkeleton />
+        </div>
+      ) : (
+        <div
+          className={`${
+            props.payment?.paid_user ? "bg-[#98F0AB33]" : "bg-[#F7E70033]"
+          }  -mt-[1rem] -mx-[1rem] mb-0`}
+        >
+          <div className=" mx-[1rem] mt-[1rem]">
+            <div className="flex flex-row justify-between">
+              {props.iscouponApplied &&
+              props.payment?.discounted_cost != props.payment?.total_cost &&
+              props.payment?.show_per_person_cost !=
+                props.payment?.per_person_discounted_cost ? (
+                <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
+                  <span>₹</span>
+                  <div>
+                    {props.payment?.show_per_person_cost ||
+                    props.payment?.pay_only_for_one
+                      ? getIndianPrice(
+                          Math.round(props.payment?.per_person_total_cost)
+                        )
+                      : getIndianPrice(Math.round(props.payment?.total_cost))}
+                    {"/-"}
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div></div>
-            )}
+              ) : (
+                <div></div>
+              )}
 
-            {props.iscouponApplied && props?.payment?.coupon_usage && (
-              <div className="bg-[#EB5757] font-bold flex flex-row gap-1 items-center justify-center text-sm px-2 py-1 lg:mt-4 mt-0 text-white">
-                <div>{props?.payment?.coupon_usage?.usage_description}</div>
-              </div>
-            )}
-          </div>
-          <div className="flex flex-col">
+              {props.iscouponApplied && props?.payment?.coupon_usage && (
+                <div className="bg-[#EB5757] font-bold flex flex-row gap-1 items-center justify-center text-sm px-2 py-1 lg:mt-4 mt-0 text-white">
+                  <div>{props?.payment?.coupon_usage?.usage_description}</div>
+                </div>
+              )}
+            </div>
+            <div className="flex flex-col">
               <div className="flex flex-row gap-1">
                 <div
                   show_per_person_cost={props.payment?.show_per_person_cost}
@@ -531,23 +539,25 @@ const Details = (props) => {
                   }
                 >
                   {props?.payment && <span>₹</span>}
-                  {props?.payment && <div>
-                    {props?.payment?.pay_only_for_one ||
-                    props?.payment?.show_per_person_cost
-                      ?  getIndianPrice(
-                          Math.round(
+                  {props?.payment && (
+                    <div>
+                      {props?.payment?.pay_only_for_one ||
+                      props?.payment?.show_per_person_cost
+                        ? getIndianPrice(
                             Math.round(
-                              props.payment?.per_person_discounted_cost,
-                            ),
-                          ),
-                        )
-                      : getIndianPrice(
-                          Math.round(
-                            Math.round(props.payment?.discounted_cost),
-                          ),
-                        )}
-                    {"/-"}
-                  </div>}
+                              Math.round(
+                                props.payment?.per_person_discounted_cost
+                              )
+                            )
+                          )
+                        : getIndianPrice(
+                            Math.round(
+                              Math.round(props.payment?.discounted_cost)
+                            )
+                          )}
+                      {"/-"}
+                    </div>
+                  )}
                 </div>
 
                 {props.payment?.paid_user ? (
@@ -558,173 +568,183 @@ const Details = (props) => {
                     props?.payment?.show_per_person_cost
                       ? "Per Person Cost"
                       : props.payment?.is_estimated_price
-                        ? `${
-                            props.payment?.total_cost == 0
-                              ? ""
-                              : "Estimated Price"
-                          }`
-                        : props?.payment ? "Total Cost" : ""}
+                      ? `${
+                          props.payment?.total_cost == 0
+                            ? ""
+                            : "Estimated Price"
+                        }`
+                      : props?.payment
+                      ? "Total Cost"
+                      : ""}
                   </div>
                 )}
-                
               </div>
 
-              {pricing_status === "FAILURE" ? <p className="text-red-600 text-sm">Get in touch to finalize the pricing!</p> : null}
-
-            {props?.payment && <div className="text-[#7A7A7A] text-sm">
-              {props?.payment?.total_cost == 0
-                ? "No bookings added yet"
-                : "Inclusive of applicable taxes"}
-            </div>}
-          </div>
-        </div>
-
-        {!oldaccommodation ? (
-          <div
-            className="px-2 pt-2"
-            style={{
-              marginBottom: "0.1rem",
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gridColumnGap: "1rem",
-            }}
-          >
-            {props.payment?.itinerary_status ===
-              ITINERARY_STATUSES?.itinerary_finalized ||
-            props?.plan?.featured ? null : (
-              <div></div>
-            )}
-
-            {props.payment?.itinerary_status ===
-              ITINERARY_STATUSES.itinerary_finalized ||
-            props?.plan?.featured ? null : (
-              <div></div>
-            )}
-          </div>
-        ) : null}
-
-        {props?.payment && <div
-          className="mx-[1rem]  font-medium text-sm flex gap-0 flex-row cursor-pointer"
-          onClick={() => setAcordianOpen(!acoordianceOpen)}
-        >
-          <div>
-            {acoordianceOpen ? <span>Hide</span> : <span>View</span>}{" "}
-            {!props.payment?.are_prices_hidden ? "breakup" : "inclusions"}
-          </div>
-
-          <RiArrowDropDownLine
-            className={` text-2xl  mt-1 transition-all duration-100 ${
-              acoordianceOpen ? "-rotate-180 " : "rotate-180 animate-bounce"
-            }`}
-          ></RiArrowDropDownLine>
-        </div>}
-
-        <div
-          className={`mb-[0.8rem] mx-[1rem] Transition-Height-${
-            acoordianceOpen ? "in" : "out"
-          } `}
-        >
-          {props?.payment && acoordianceOpen && (
-            <div className="">
-              <Accordion
-                stayBookings={props.stayBookings}
-                flightBookings={props.flightBookings}
-                activityBookings={props.activityBookings}
-                transferBookings={props.transferBookings}
-                payment={props.payment}
-                mercuryItinerary={props?.mercuryItinerary}
-              ></Accordion>
-
-              {!oldaccommodation && !props.payment?.are_prices_hidden ? (
-                <div className="flex flex-row justify-between">
-                  <div
-                    className={
-                      props.blur
-                        ? "font-lexend text-enter blurry-text "
-                        : "font-lexend text-enter text-sm font-normal"
-                    }
-                  >
-                    {"Surcharges & Taxes"}
-                  </div>
-                  <div
-                    className={
-                      props.blur
-                        ? "font-lexend text-enter blurry-text font-bold"
-                        : "font-lexend text-enter "
-                    }
-                  >
-                    {"₹ " +
-                      getIndianPrice(
-                        Math.round(props.payment?.surcharges_and_taxes),
-                      )}
-                  </div>
-                </div>
+              {pricing_status === "FAILURE" ? (
+                <p className="text-red-600 text-sm">
+                  Get in touch to finalize the pricing!
+                </p>
               ) : null}
 
-              {props.payment ? (
-                props.payment?.coupon && props.iscouponApplied ? (
-                  props.payment?.coupon.code ? (
-                    <div className="flex flex-row justify-between pt-2">
-                      <div
-                        className={
-                          props.blur
-                            ? "font-lexend text-enter blurry-text  "
-                            : "font-lexend text-enter text-sm font-bold  flex flex-col"
-                        }
-                      >
-                        {"Coupon Discount"}
-                        <div className="flex flex-row gap-1">
-                          <div className="text-[#02BF2B]">
-                            {props.payment?.coupon.code}
-                          </div>
-                          <div className="font-normal ">
-                            {props?.payment?.coupon?.discount_type == "Flat"
-                              ? "(Flat  OFF!)"
-                              : props?.payment?.coupon?.discount_type ==
+              {props?.payment && (
+                <div className="text-[#7A7A7A] text-sm">
+                  {props?.payment?.total_cost == 0
+                    ? "No bookings added yet"
+                    : "Inclusive of applicable taxes"}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {!oldaccommodation ? (
+            <div
+              className="px-2 pt-2"
+              style={{
+                marginBottom: "0.1rem",
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gridColumnGap: "1rem",
+              }}
+            >
+              {props.payment?.itinerary_status ===
+                ITINERARY_STATUSES?.itinerary_finalized ||
+              props?.plan?.featured ? null : (
+                <div></div>
+              )}
+
+              {props.payment?.itinerary_status ===
+                ITINERARY_STATUSES.itinerary_finalized ||
+              props?.plan?.featured ? null : (
+                <div></div>
+              )}
+            </div>
+          ) : null}
+
+          {props?.payment && (
+            <div
+              className="mx-[1rem]  font-medium text-sm flex gap-0 flex-row cursor-pointer"
+              onClick={() => setAcordianOpen(!acoordianceOpen)}
+            >
+              <div>
+                {acoordianceOpen ? <span>Hide</span> : <span>View</span>}{" "}
+                {!props.payment?.are_prices_hidden ? "breakup" : "inclusions"}
+              </div>
+
+              <RiArrowDropDownLine
+                className={` text-2xl  mt-1 transition-all duration-100 ${
+                  acoordianceOpen ? "-rotate-180 " : "rotate-180 animate-bounce"
+                }`}
+              ></RiArrowDropDownLine>
+            </div>
+          )}
+
+          <div
+            className={`mb-[0.8rem] mx-[1rem] Transition-Height-${
+              acoordianceOpen ? "in" : "out"
+            } `}
+          >
+            {props?.payment && acoordianceOpen && (
+              <div className="">
+                <Accordion
+                  stayBookings={props.stayBookings}
+                  flightBookings={props.flightBookings}
+                  activityBookings={props.activityBookings}
+                  transferBookings={props.transferBookings}
+                  payment={props.payment}
+                  mercuryItinerary={props?.mercuryItinerary}
+                ></Accordion>
+
+                {!oldaccommodation && !props.payment?.are_prices_hidden ? (
+                  <div className="flex flex-row justify-between">
+                    <div
+                      className={
+                        props.blur
+                          ? "font-lexend text-enter blurry-text "
+                          : "font-lexend text-enter text-sm font-normal"
+                      }
+                    >
+                      {"Surcharges & Taxes"}
+                    </div>
+                    <div
+                      className={
+                        props.blur
+                          ? "font-lexend text-enter blurry-text font-bold"
+                          : "font-lexend text-enter "
+                      }
+                    >
+                      {"₹ " +
+                        getIndianPrice(
+                          Math.round(props.payment?.surcharges_and_taxes)
+                        )}
+                    </div>
+                  </div>
+                ) : null}
+
+                {props.payment ? (
+                  props.payment?.coupon && props.iscouponApplied ? (
+                    props.payment?.coupon.code ? (
+                      <div className="flex flex-row justify-between pt-2">
+                        <div
+                          className={
+                            props.blur
+                              ? "font-lexend text-enter blurry-text  "
+                              : "font-lexend text-enter text-sm font-bold  flex flex-col"
+                          }
+                        >
+                          {"Coupon Discount"}
+                          <div className="flex flex-row gap-1">
+                            <div className="text-[#02BF2B]">
+                              {props.payment?.coupon.code}
+                            </div>
+                            <div className="font-normal ">
+                              {props?.payment?.coupon?.discount_type == "Flat"
+                                ? "(Flat  OFF!)"
+                                : props?.payment?.coupon?.discount_type ==
                                   "1 Night Free Stay"
                                 ? props?.payment?.coupon_usage?.discount
                                   ? `(INR ${getIndianPrice(
                                       Math.round(
-                                        props?.payment?.coupon_usage?.discount,
-                                      ),
+                                        props?.payment?.coupon_usage?.discount
+                                      )
                                     )}  OFF!)`
                                   : props.payment?.coupon.discount_value
-                                    ? props.payment?.coupon.discount_value +
-                                      "%  OFF!"
-                                    : null
+                                  ? props.payment?.coupon.discount_value +
+                                    "%  OFF!"
+                                  : null
                                 : null}
+                            </div>
                           </div>
                         </div>
+                        <div
+                          className={
+                            props.blur
+                              ? "font-lexend text-enter blurry-text "
+                              : "font-lexend text-enter font-bold"
+                          }
+                        >
+                          {props?.payment?.coupon_usage?.discount ? (
+                            <div>
+                              (-){" "}
+                              {"₹" +
+                                getIndianPrice(
+                                  Math.round(
+                                    props?.payment?.coupon_usage?.discount
+                                  )
+                                )}
+                            </div>
+                          ) : (
+                            <div></div>
+                          )}
+                        </div>
                       </div>
-                      <div
-                        className={
-                          props.blur
-                            ? "font-lexend text-enter blurry-text "
-                            : "font-lexend text-enter font-bold"
-                        }
-                      >
-                        {props?.payment?.coupon_usage?.discount ? (
-                          <div>
-                            (-){" "}
-                            {"₹" +
-                              getIndianPrice(
-                                Math.round(
-                                  props?.payment?.coupon_usage?.discount,
-                                ),
-                              )}
-                          </div>
-                        ) : (
-                          <div></div>
-                        )}
-                      </div>
-                    </div>
+                    ) : null
                   ) : null
-                ) : null
-              ) : null}
-            </div>
-          )}
+                ) : null}
+              </div>
+            )}
+          </div>
         </div>
-      </div>}
+      )}
 
       <div className="px-0 pb-4">
         {props.couponJSX}
@@ -759,8 +779,17 @@ const Details = (props) => {
                                               "/",
                                             ),
                                           ):  null} */}
-                                          {convertDFormat(props?.itinerary?.start_date ? props?.itinerary?.start_date : null)} -{" "}
-                                          {convertDFormat(props?.itinerary?.end_date ? props?.itinerary?.end_date : null )}
+                  {convertDFormat(
+                    props?.itinerary?.start_date
+                      ? props?.itinerary?.start_date
+                      : null
+                  )}{" "}
+                  -{" "}
+                  {convertDFormat(
+                    props?.itinerary?.end_date
+                      ? props?.itinerary?.end_date
+                      : null
+                  )}
                   {/* {date
                     ? getHumanDateWithYear(
                         format(
@@ -815,10 +844,7 @@ const Details = (props) => {
             {props.itinerary?.number_of_infants ? (
               <div>
                 , {props.itinerary?.number_of_infants}{" "}
-                {pluralDetector(
-                  "Infant",
-                  props.itinerary?.number_of_infants,
-                )}
+                {pluralDetector("Infant", props.itinerary?.number_of_infants)}
               </div>
             ) : null}
             {/* {props.payment?.itinerary_status ===
@@ -847,7 +873,7 @@ const Details = (props) => {
         </div>
 
         <div>
-          <CountdownTimer priceValidUntil={props?.payment?.price_valid_until}/>
+          <CountdownTimer priceValidUntil={props?.payment?.price_valid_until} />
         </div>
       </div>
 
@@ -865,95 +891,32 @@ const Details = (props) => {
         >
           Craft a new trip!
         </Button>
-      ) 
-      : (
+      ) : (
         <>
-          {pricing_status === "PENDING" ? <Button
-                  color="#111"
-                  fontWeight="500"
-                  fontSize="1rem"
-                  borderWidth="2px"
-                  width="100%"
-                  borderRadius="8px"
-                  bgColor="#f8e000"
-                  padding="12px"
-                  onclick={() => {console.log("") }}
-                  loading={pricing_status === "PENDING"}
-                >
-                  Loading...
-                </Button>
-                : props.payment && props.token ? (
+          {pricing_status === "PENDING" ? (
+            <Button
+              color="#111"
+              fontWeight="500"
+              fontSize="1rem"
+              borderWidth="2px"
+              width="100%"
+              borderRadius="8px"
+              bgColor="#f8e000"
+              padding="12px"
+              onclick={() => {
+                console.log("");
+              }}
+              loading={pricing_status === "PENDING"}
+            >
+              Loading...
+            </Button>
+          ) : props.payment && props.token ? (
             // props.payment?.itinerary_status ===
             //   ITINERARY_STATUSES?.itinerary_finalized &&
-            !props.payment?.paid_user ?
-            props.payment?.user_allowed_to_pay ? (
-              props.payment?.total_cost || props.payment?.discounted_cost > 0 ? (
-                <Button
-                  color="#111"
-                  fontWeight="500"
-                  fontSize="1rem"
-                  borderWidth="2px"
-                  width="100%"
-                  borderRadius="8px"
-                  bgColor="#f8e000"
-                  padding="12px"
-                  onclick={() => handlePayNow("_saleCreateHandler")}
-                  loading={paymentLoading}
-                >
-                  Pay Now & Book
-                </Button>
-              )
-               : (
-                <Button
-                  color="#111"
-                  fontWeight="500"
-                  fontSize="1rem"
-                  borderWidth="2px"
-                  width="100%"
-                  borderRadius="8px"
-                  bgColor="#f8e000"
-                  padding="12px"
-                  onclick={() => handleViewBooking("Add Hotels")}
-                >
-                  Add Hotels
-                </Button>
-              )
-            ) 
-            : 
-            // props?.payment?.is_registration_needed ? ( 
-            //   props?.payment?.email_reverification_needed ? (
-            props?.payment?.paid_user && (
-                <Button
-                  color="#111"
-                  fontWeight="500"
-                  fontSize="1rem"
-                  borderWidth="2px"
-                  width="100%"
-                  borderRadius="8px"
-                  bgColor="#f8e000"
-                  padding="12px"
-                  onclick={() => handleViewBooking("View Bookings")}
-                >
-                  View Bookings
-                </Button>
-              )
-              //  : (
-              //   <Button
-              //     color="#111"
-              //     fontWeight="500"
-              //     fontSize="1rem"
-              //     borderWidth="2px"
-              //     width="100%"
-              //     borderRadius="8px"
-              //     bgColor="#f8e000"
-              //     padding="12px"
-              //     onclick={handleTravellersDetails}
-              //   >
-              //     Add Travellers Details
-              //   </Button>
-              // )
-
-            : <GetInTouchContainer>
+            !props.payment?.paid_user ? (
+              props.payment?.user_allowed_to_pay ? (
+                props.payment?.total_cost ||
+                props.payment?.discounted_cost > 0 ? (
                   <Button
                     color="#111"
                     fontWeight="500"
@@ -962,7 +925,40 @@ const Details = (props) => {
                     width="100%"
                     borderRadius="8px"
                     bgColor="#f8e000"
-                    padding="12px" 
+                    padding="12px"
+                    onclick={() => handlePayNow("_saleCreateHandler")}
+                    loading={paymentLoading}
+                  >
+                    Pay Now & Book
+                  </Button>
+                ) : (
+                  <Button
+                    color="#111"
+                    fontWeight="500"
+                    fontSize="1rem"
+                    borderWidth="2px"
+                    width="100%"
+                    borderRadius="8px"
+                    bgColor="#f8e000"
+                    padding="12px"
+                    onclick={() => handleViewBooking("Add Hotels")}
+                  >
+                    Add Hotels
+                  </Button>
+                )
+              ) : // props?.payment?.is_registration_needed ? (
+              //   props?.payment?.email_reverification_needed ? (
+              !props.payment?.user_allowed_to_pay ? (
+                <GetInTouchContainer>
+                  <Button
+                    color="#111"
+                    fontWeight="500"
+                    fontSize="1rem"
+                    borderWidth="2px"
+                    width="100%"
+                    borderRadius="8px"
+                    bgColor="#f8e000"
+                    padding="12px"
                     onclick={handleGetInTouch}
                   >
                     <div
@@ -984,8 +980,76 @@ const Details = (props) => {
                       <span>Get in touch!</span>
                     </div>
                   </Button>
-                </GetInTouchContainer> )
-              : pricing_status === "FAILURE" ? <GetInTouchContainer>
+                </GetInTouchContainer>
+              ) : (
+                props?.payment?.paid_user && (
+                  <Button
+                    color="#111"
+                    fontWeight="500"
+                    fontSize="1rem"
+                    borderWidth="2px"
+                    width="100%"
+                    borderRadius="8px"
+                    bgColor="#f8e000"
+                    padding="12px"
+                    onclick={() => handleViewBooking("View Bookings")}
+                  >
+                    View Bookings
+                  </Button>
+                )
+              )
+            ) : (
+              //  : (
+              //   <Button
+              //     color="#111"
+              //     fontWeight="500"
+              //     fontSize="1rem"
+              //     borderWidth="2px"
+              //     width="100%"
+              //     borderRadius="8px"
+              //     bgColor="#f8e000"
+              //     padding="12px"
+              //     onclick={handleTravellersDetails}
+              //   >
+              //     Add Travellers Details
+              //   </Button>
+              // )
+
+              <GetInTouchContainer>
+                <Button
+                  color="#111"
+                  fontWeight="500"
+                  fontSize="1rem"
+                  borderWidth="2px"
+                  width="100%"
+                  borderRadius="8px"
+                  bgColor="#f8e000"
+                  padding="12px"
+                  onclick={handleGetInTouch}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      gap: "0.5rem",
+                      alignItems: "center",
+                    }}
+                  >
+                    <ImageLoader
+                      dimensions={{ height: 50, width: 50 }}
+                      dimensionsMobile={{ height: 50, width: 50 }}
+                      height={"20px"}
+                      width={"20px"}
+                      leftalign
+                      url={"media/icons/login/customer-service-black.png"}
+                    />{" "}
+                    <span>Get in touch!</span>
+                  </div>
+                </Button>
+              </GetInTouchContainer>
+            )
+          ) : pricing_status === "FAILURE" ? (
+            <GetInTouchContainer>
               <Button
                 color="#111"
                 fontWeight="500"
@@ -994,7 +1058,7 @@ const Details = (props) => {
                 width="100%"
                 borderRadius="8px"
                 bgColor="#f8e000"
-                padding="12px" 
+                padding="12px"
                 onclick={handleGetInTouch}
               >
                 <div
@@ -1016,7 +1080,8 @@ const Details = (props) => {
                   <span>Get in touch!</span>
                 </div>
               </Button>
-            </GetInTouchContainer> : null}
+            </GetInTouchContainer>
+          ) : null}
 
           {!props.token && pricing_status === "SUCCESS" ? (
             <Button
@@ -1032,39 +1097,43 @@ const Details = (props) => {
             >
               Log in to proceed
             </Button>
-          ) : !props.token && pricing_status === "FAILURE" && 
-          <GetInTouchContainer>
-                  <Button
-                    color="#111"
-                    fontWeight="500"
-                    fontSize="1rem"
-                    borderWidth="2px"
-                    width="100%"
-                    borderRadius="8px"
-                    bgColor="#f8e000"
-                    padding="12px" 
-                    onclick={handleGetInTouch}
+          ) : (
+            !props.token &&
+            pricing_status === "FAILURE" && (
+              <GetInTouchContainer>
+                <Button
+                  color="#111"
+                  fontWeight="500"
+                  fontSize="1rem"
+                  borderWidth="2px"
+                  width="100%"
+                  borderRadius="8px"
+                  bgColor="#f8e000"
+                  padding="12px"
+                  onclick={handleGetInTouch}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      gap: "0.5rem",
+                      alignItems: "center",
+                    }}
                   >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        gap: "0.5rem",
-                        alignItems: "center",
-                      }}
-                    >
-                      <ImageLoader
-                        dimensions={{ height: 50, width: 50 }}
-                        dimensionsMobile={{ height: 50, width: 50 }}
-                        height={"20px"}
-                        width={"20px"}
-                        leftalign
-                        url={"media/icons/login/customer-service-black.png"}
-                      />{" "}
-                      <span>Get in touch!</span>
-                    </div>
-                  </Button>
-                </GetInTouchContainer>}
+                    <ImageLoader
+                      dimensions={{ height: 50, width: 50 }}
+                      dimensionsMobile={{ height: 50, width: 50 }}
+                      height={"20px"}
+                      width={"20px"}
+                      leftalign
+                      url={"media/icons/login/customer-service-black.png"}
+                    />{" "}
+                    <span>Get in touch!</span>
+                  </div>
+                </Button>
+              </GetInTouchContainer>
+            )
+          )}
         </>
       )}
 
@@ -1095,8 +1164,7 @@ const Details = (props) => {
 
       <RegistrationModal
         number_of_adults={
-          props?.itinerary ? props?.itinerary?.number_of_adults
-            : 5
+          props?.itinerary ? props?.itinerary?.number_of_adults : 5
         }
         payment={props.payment}
         plan={props.plan}
@@ -1116,7 +1184,9 @@ const Details = (props) => {
       ></VerificationModal>
 
       <RegisteredUsersModal
-        registered_users={props.payment ? props.payment?.registered_users : null}
+        registered_users={
+          props.payment ? props.payment?.registered_users : null
+        }
         show={showRegisteredUsers}
         hide={() => setShowRegisteredUsers(false)}
       ></RegisteredUsersModal>

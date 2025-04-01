@@ -71,7 +71,7 @@ const HotelBooking = ({
     }
   }
 
-  console.log("Bkm",booking)
+  // console.log("Bkm",booking)
 
   const handleViewDetails = (value) => {
     handleClick(index, booking.id, booking, booking.city_name || booking.city);

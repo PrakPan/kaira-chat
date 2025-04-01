@@ -78,7 +78,7 @@ const SimpleTabsV2 = (props) => {
   const {pricing_status} = useSelector((state)=>state.ItineraryStatus);
 
   const stays = useSelector((state) => state.Stays);
-  console.log("Stays",stays);
+ // console.log("Stays",stays);
 
   useEffect(() => {
     if (router.query.payment_status) {
@@ -869,7 +869,7 @@ const SimpleTabsV2 = (props) => {
                     _updateStayBookingHandler={props._updateStayBookingHandler}
                     _updatePaymentHandler={props._updatePaymentHandler}
                     getPaymentHandler={props.getPaymentHandler}
-                    setShowBookingModal={() => props.setShowBookingModal(true)}
+                    setShowBookingModal={(val) => props.setShowBookingModal(val)}
                     showBookingModal={props.showBookingModal}
                     setHideBookingModal={props.setHideBookingModal}
                     setShowLoginModal={setShowLoginModal}
@@ -913,7 +913,7 @@ const SimpleTabsV2 = (props) => {
                     _updateStayBookingHandler={props._updateStayBookingHandler}
                     _updatePaymentHandler={props._updatePaymentHandler}
                     getPaymentHandler={props.getPaymentHandler}
-                    setShowBookingModal={() => props.setShowBookingModal(true)}
+                    setShowBookingModal={(value) => props.setShowBookingModal(value)}
                     showBookingModal={props.showBookingModal}
                     setHideBookingModal={props.setHideBookingModal}
                     setShowLoginModal={setShowLoginModal}

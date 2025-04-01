@@ -87,7 +87,7 @@ const TransferEditDrawer = (props) => {
   const [showMercuryTransfer, setShowMercuryTransfer] = useState(false);
   const [selectedMercuryTransfer, setSelectedMercuryTransfer] = useState(null);
 
-  console.log("SELECTED BOOKING",city,dcity,oCityData,dCityData,mercuryTransfer?.destination?.city_name);
+ // console.log("SELECTED BOOKING",city,dcity,oCityData,dCityData,mercuryTransfer?.destination?.city_name);
 
   useEffect(() => {
     if (showDrawer) {
@@ -247,7 +247,7 @@ const TransferEditDrawer = (props) => {
   };
 
   const handleRoundTripSelect = (trace_id, cab_id) => {
-    console.log(trace_id);
+   // console.log(trace_id);
     const access_token = localStorage.getItem("access_token");
     if (!props.token) {
       setShowLoginModal(true);
@@ -1550,7 +1550,7 @@ const SelectButton = ({
   handleSelect,
   setSelectedMercuryTransfer,
 }) => {
-  setSelectedMercuryTransfer(transfer);
+  //setSelectedMercuryTransfer(transfer);
   const getLabel = () => {
     switch (transfer.mode) {
       case "Flight":

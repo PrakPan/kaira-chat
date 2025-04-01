@@ -77,7 +77,7 @@ const POI = (props) => {
   const itineraryFilters = useSelector((state) => state.ItineraryFilters);
   const itineraryDaybyDay=useSelector((state)=>state.Itinerary)
   const [drawerWidth, setDrawerWidth] = useState("50%");
-  console.log("Data of Add ",data);console.log("Iti DAY", itineraryDaybyDay);
+ // console.log("Data of Add ",data);console.log("Iti DAY", itineraryDaybyDay);
 
   useEffect(() => {
     const handleResize = () => {
@@ -145,7 +145,7 @@ const POI = (props) => {
     let stayBookings=props.plan;
     const index = stayBookings.findIndex(item => item.id == props?.bookingId);
     const itinerary_city = itineraryDaybyDay?.cities?.filter(item => item?.city?.id == props.plan[index].city_id);
-    console.log("Iti City",itinerary_city);
+   // console.log("Iti City",itinerary_city);
 
     const requestData = {
       rates: rates,

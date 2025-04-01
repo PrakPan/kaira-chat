@@ -83,7 +83,7 @@ const Details = (props) => {
     else {
       if (props.CityData.length >= 1) {
         let color;
-        console.log("CityData",props.CityData);
+      //  console.log("CityData",props.CityData);
         for (var i = 0; i < props.CityData.length; i++) {
           color = CITY_COLOR_CODES[i%7];
           var postion = props.CityData[i];

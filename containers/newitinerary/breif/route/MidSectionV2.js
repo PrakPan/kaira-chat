@@ -180,14 +180,16 @@ const MidSectionV2 = (props) => {
   const handleChangeTransfer = (e) => {
     if (props.cityTransferBookings.modes === "Flight") {
       setShowFlightModal(true);
-    } else if (props.modes === "Taxi") {
+    } 
+    else if (props.cityTransferBookings.modes  === "Taxi") {
       setShowTaxiModal(true);
-    } else {
+    }
+     else {
       handleTransferEdit(e, "Edit Transfer");
     }
   };
 
-  console.log("Load Bookings",props?.loadbookings);
+ // console.log("Load Bookings",props?.loadbookings);
 
   return (
     <Container className="font-lexend" hidemidsection={hidemidsection}>

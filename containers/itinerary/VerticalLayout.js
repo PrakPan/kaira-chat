@@ -99,7 +99,7 @@ const CityItem = ({
   const dispatch = useDispatch();
   let isPageWide = window.matchMedia("(min-width: 768px)");
 
-  console.log("isPageWide",isPageWide);
+  //console.log("isPageWide",isPageWide);
   const handleEdit = async () => {
     const res = await axios.get(
       `${MERCURY_HOST}/api/v1/itinerary/${

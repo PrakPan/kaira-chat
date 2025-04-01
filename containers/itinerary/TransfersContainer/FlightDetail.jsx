@@ -26,7 +26,7 @@ const Details = ({
   transferBookings,
   edge
 }) => {
-  console.log("transferbookings is:",transferBookings)
+ // console.log("transferbookings is:",transferBookings)
   const router = useRouter();
   const [fareRules, setFareRules] = useState(fareRule?.[0]?.fareRuleDetail);
   const [fareRulesLoading, setFareRulesLoading] = useState(false);
@@ -135,7 +135,7 @@ const dispatch=useDispatch();
                   );
                   window.location.href = `/flights/book/${res.data.id}`;
                 } else {
-                  console.log("updating",originCityId)
+                 // console.log("updating",originCityId)
                   const res = await axios.post(
                     MERCURY_HOST +
                       `/api/v1/itinerary/${router?.query?.id}/bookings/flight/`,

@@ -93,7 +93,7 @@ const AirportSearch = ({ input, setInput, name }) => {
     const getResponse=async()=>{
       const res=await axios.get(`${MERCURY_HOST}/api/v1/geos/search/hubs/airport?q=`)
       setFilteredResults(res?.data?.results);
-      console.log(res?.data?.results)
+     // console.log(res?.data?.results)
     }
     getResponse();
   },[])
