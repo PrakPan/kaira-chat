@@ -200,7 +200,7 @@ const Enquiry = (props) => {
     ];
   }
 
-  console.log("SelectedObj",selectedObj,routerquery);
+  //console.log("SelectedObj",selectedObj,routerquery);
 
   const _handleHideBlack = () => {
     // setShowBlack(false);
@@ -234,7 +234,7 @@ const Enquiry = (props) => {
 
     try {
       for (var i = 0; i < selectedCities.length; i++) {
-        console.log("Selected Cities",selectedCities);
+       // console.log("Selected Cities",selectedCities);
         if (
           cityids.indexOf(selectedCities[i].id) == -1 &&
           selectedCities[i].id
@@ -429,7 +429,7 @@ const Enquiry = (props) => {
 
     try {
       for (var i = 0; i < selectedCities.length; i++) {
-        console.log("Selected Cities",selectedCities);
+       // console.log("Selected Cities",selectedCities);
         if (
           cityids.indexOf(selectedCities[i].id) == -1 &&
           selectedCities[i].id
@@ -496,6 +496,10 @@ const Enquiry = (props) => {
     };
   }, [router]);
 
+  useEffect(()=>{
+
+  })
+
   const completeItineraryCreate = () => {
     let number_of_adults = 2;
     let number_of_children = 0;
@@ -537,9 +541,9 @@ const Enquiry = (props) => {
         
         setError(null);
         setSubmitted(true);
-        router.push(`/itinerary/${itineraryId}`).then(() => {
-          window.scrollTo(0, 0);
-        });
+        window.location.href = `/itinerary/${itineraryId}`;
+        window.scrollTo(0, 0);
+  
         
           // if (!response.data?.auto_itinerary_created) {
           //   router.push("/thank-you");

@@ -120,6 +120,7 @@ const DaybyDay = ({
   };
 
   function handleClickAc(i, data, city_id, clickType) {
+    console.log("Inside DayByDay");
     let name = stayBookings[i]?.["name"];
     let itinerary_id = stayBookings[i]?.["itinerary_id"];
     let itinerary_name = stayBookings[i]?.["itinerary_name"];
@@ -136,7 +137,7 @@ const DaybyDay = ({
       number_of_infants: stayBookings[i]?.["number_of_infants"],
     };
     let city = stayBookings[i]?.["city_name"];
-    let cityId = stayBookings[i]?.city_id;
+    let cityId = stayBookings[i]?.city?.id;
     let room_type = stayBookings[i]?.["room"];
     _changeBookingHandler(
       name,
@@ -157,7 +158,7 @@ const DaybyDay = ({
     );
     data.clickType = clickType;
     setCurrentBooking(data);
-    props.setShowBookingModal();
+    props.setShowBookingModal(true);
   }
 
   function handleClick(i, id, data, city_id) {

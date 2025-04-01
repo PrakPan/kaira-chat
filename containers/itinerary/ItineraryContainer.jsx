@@ -91,6 +91,21 @@ const pricingSuccessRef = useRef(false);
 const transfersSuccessRef = useRef(false);
 const hotelsSuccessRef = useRef(false);
 
+function addDaysToDate(dateString, daysToAdd) {
+  const date = new Date(dateString);
+
+  date.setDate(date.getDate() + daysToAdd);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
+// const newDate = addDaysToDate(dateString, 2);
+// console.log(newDate); 
+
+
   //  const transferBooking = useSelector((state) => state.TransferBookings)?.transferBookings
   //   console.log("Transfer Booking",transferBooking);
 
@@ -238,11 +253,9 @@ const getAllStays = async () => {
           trace_city_id: data?.cities[i]?.id,
           duration: data?.cities[i]?.duration,
           check_in: data?.cities[i]?.start_date,
-          // check_out: new Date(new Date(data?.cities[i]?.start_date).getTime() + data?.cities[i]?.duration * 24 * 60 * 60 * 1000)
-          //   .toISOString()
-          //   .split("T")[0],
+          check_out: data?.cities[i]?.start_date && data?.cities[i]?.duration ? addDaysToDate(data?.cities[i]?.start_date,data?.cities[i]?.duration) : null,
         });
-      }
+      }else{
 
       for (let hotel of hotels) {
         hotel.city_name = city_name;
@@ -250,6 +263,8 @@ const getAllStays = async () => {
         hotel.source = hotel?.images?.[0]?.source;
         stays.push(hotel);
       }
+
+    }
     }
 
     console.log('Prepared stays data:', stays); // Log the final stays data before dispatching

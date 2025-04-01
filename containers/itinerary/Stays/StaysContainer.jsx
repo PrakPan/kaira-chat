@@ -63,8 +63,8 @@ const StaysContainer = (props) => {
       accommodation: accommodation,
       id: id,
       tailored_id: tailored_id,
-      check_in: format(new Date(check_in), "dd-MM-yyyy").replaceAll("-", "/"),
-      check_out: format(new Date(check_out), "dd-MM-yyyy").replaceAll("-", "/"),
+      check_in: format(new Date(check_in), "yyyy-MM-dd").replaceAll("-", "/"),
+      check_out: format(new Date(check_out), "yyyy-MM-dd").replaceAll("-", "/"),
       pax: pax,
       city: city,
       cityId: cityId,
@@ -76,10 +76,11 @@ const StaysContainer = (props) => {
       images: images,
       clickType:clickType
     });
-    props.setShowBookingModal();
+    props.setShowBookingModal(true);
   };
 
   function handleClickAc(i, data, city_id,clickType) {
+    console.log("Inside Stays");
     let name = props.stayBookings[i]?.["name"];
     let itinerary_id = props.stayBookings[i]["itinerary_id"];
     let itinerary_name = props.stayBookings[i]["itinerary_name"];
@@ -117,7 +118,7 @@ const StaysContainer = (props) => {
     );
     data.clickType=clickType
     setCurrentBooking(data);
-    props.setShowBookingModal();
+    props.setShowBookingModal(true);
   }
 
   function  handleClick(i, id, data, city_id) {
@@ -132,7 +133,7 @@ const StaysContainer = (props) => {
   }
 
  
-  console.log("CITTT",props?.cities)
+ // console.log("CITTT",props?.cities)
 
   return (
     <div id="stays" className="mt-16">
@@ -148,7 +149,7 @@ const StaysContainer = (props) => {
         {hotels_status ==="SUCCESS" ?
           props.stayBookings.map((booking, index) => (
             <HotelBooking
-              key={booking?.id}
+              key={index}
               index={index}
               booking={booking}
               payment={props.payment}

@@ -41,7 +41,7 @@ export default function BudgetSlider(props) {
 
     return (
         <div className="flex flex-col gap-3 justify-start items-baseline">
-            <Question >Your Stay Budget <span className="text-sm font-normal"> &nbsp;(per person)</span> &nbsp;?  </Question>
+            <Question >Your Stay Budget <span className="text-sm font-normal"> &nbsp;(per night)</span> &nbsp;?  </Question>
 
             <div className="w-full flex flex-col gap-4">
                 <RangeSliderInput

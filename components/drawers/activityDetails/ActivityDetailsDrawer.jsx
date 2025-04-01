@@ -13,7 +13,7 @@ import { openNotification } from "../../../store/actions/notification";
 import { toast } from "react-toastify";
 
 const ActivityDetailsDrawer = (props) => {
-  console.log("day by day:",props?.setItinerary)
+  //console.log("day by day:",props?.setItinerary)
   const router = useRouter();
   const [data, setData] = useState(null);
   const [traceId, setTraceId] = useState(null);
