@@ -289,7 +289,7 @@ const HotelBooking = ({
                   {booking?.city_name || booking?.city}
                 </div>
 
-                {booking?.rating && (
+                {booking?.rating ? (
                   <div className="gap-1 flex flex-row  items-center">
                     <div className="flex flex-row text-[#FFD201]">
                       {starRating(booking.rating)}
@@ -298,13 +298,13 @@ const HotelBooking = ({
                       {booking.rating}
                       {" . "}
                     </div>
-                    {booking?.user_ratings_total && (
+                    {booking?.user_ratings_total ? (
                       <div className="text-sm text-[#7A7A7A] font-[400] underline">
                         {booking.user_ratings_total} reviews
                       </div>
-                    )}
+                    ): null}
                   </div>
-                )}
+                ) : null}
               </div>
 
               {tripsPage ? (

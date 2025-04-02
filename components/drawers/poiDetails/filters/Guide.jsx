@@ -4,19 +4,26 @@ export default function Guide(props) {
   const handleCategory = (category) => {
     if (props.selectedGuide.includes(category)) {
       if (category !== "All") {
+        if(props.selectedGuide.length==1){
+          props.setChanged(false);
+        };
         props.setSelectedGuide((prev) =>
           prev.filter((item) => item !== category)
         );
-        props.setChanged(true);
+        if(props.selectedGuide.length==0){
+          props.setChanged(false);
+        }
       }
     } else {
       if (category === "All") {
         props.setSelectedGuide(["All"]);
+        props.setChanged(false);
       } else {
         props.setSelectedGuide((prev) => [
           ...prev.filter((item) => item !== "All"),
           category,
         ]);
+        props.setChanged(true);
       }
     }
   };

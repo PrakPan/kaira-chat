@@ -4,14 +4,17 @@ export default function TourType(props) {
   const handleCategory = (category) => {
     if (props.selectedTourTypes.includes(category)) {
       if (category !== "All") {
+        if(props.selectedTourTypes.length==1){
+          props.setChanged(false);
+        };
         props.setSelectedTourTypes((prev) =>
           prev.filter((item) => item !== category)
         );
-        props.setChanged(true);
       }
     } else {
       if (category === "All") {
         props.setSelectedTourTypes(["All"]);
+        props.setChanged(false)
       } else {
         props.setSelectedTourTypes((prev) => [
           ...prev.filter((item) => item !== "All"),

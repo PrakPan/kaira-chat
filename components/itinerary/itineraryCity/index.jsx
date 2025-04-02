@@ -171,18 +171,18 @@ const ItineraryCity = (props) => {
                 </div>
               </div>
               <div className="flex flex-row items-center">
-                {getStars(props.city.hotels[0]?.rating)}{" "}
+                {stay[props?.index]  && stay[props?.index]?.rating && stay[props?.index]?.rating !== 0 ? getStars(stay[props?.index]?.rating) : null}{" "}
                 <div className="text-[#7A7A7A] text-[12px] ml-1">
-                  {props.city.hotels[0]?.rating} ·{" "}
+                  {stay[props?.index] && stay[props?.index]?.rating && stay[props?.index]?.rating !== 0  ? stay[props?.index]?.rating : null}{" "}
                 </div>
-                {props.city.hotels[0]?.user_ratings_total && <div className="text-[#7A7A7A] text-[12px] ml-1 underline">
-                  {props.city.hotels[0]?.user_ratings_total} Google reviews
-                </div>}
+                {stay[props?.index] && stay[props?.index]?.user_ratings_total ? <div className="text-[#7A7A7A] text-[12px] ml-1 underline">
+                  {stay[props?.index]?.user_ratings_total} Google reviews
+                </div> : null}
               </div>
             </div>
           ) : (
             <div
-              className="text-blue cursor-pointer text-[14px] font-medium"
+              className="text-blue cursor-pointer text-[14px] font-medium hover:underline"
               onClick={(e) =>
                 handleStay(e, "Change", props.city.city.name, "Add")
               }
