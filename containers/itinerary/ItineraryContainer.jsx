@@ -65,6 +65,7 @@ const ItineraryContainer = (props) => {
   const [activityFlickityIndex, setActivityFlickityIndex] = useState(0);
   const [payment, setPayment] = useState(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
+  const [showStayBookingModal, setShowStayBookingModal] = useState(false);
   const [isDatePresent, setIsDatePresent] = useState(false);
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showTaxiModal, setShowTaxiModal] = useState(false);
@@ -646,6 +647,7 @@ useEffect(() => {
   };
 
   const _updateBookingHandler = (json) => {
+    setShowStayBookingModal(false)
     setShowBookingModal(false);
     setShowFlightModal(false);
     setBooking(json);
@@ -653,6 +655,7 @@ useEffect(() => {
 
   const _updateStayBookingHandler = (json) => {
     setShowBookingModal(false);
+    setShowStayBookingModal(false)
     setShowFlightModal(false);
     // setStayBookings(_updateTransferBooking(stayBookings, json));
     // props.setBookings({
@@ -667,6 +670,7 @@ useEffect(() => {
 
   const _updateTransferBookingHandler = (json) => {
     setShowBookingModal(false);
+    setShowStayBookingModal(false)
     setShowFlightModal(false);
     // setTransferBookings(json);
     // setTransferBookings(json);
@@ -968,6 +972,7 @@ useEffect(() => {
 
   const setHideBookingModal = () => {
     setShowBookingModal(false);
+    setShowStayBookingModal(false)
   };
 
   const setHidePoiModal = () => {
@@ -1087,11 +1092,13 @@ useEffect(() => {
           setHideBookingModal={setHideBookingModal}
           setShowPoiModal={setShowPoiModal}
           setShowBookingModal={setShowBookingModal}
+          setShowStayBookingModal={setShowStayBookingModal}
           _updateFlightBookingHandler={_updateFlightBookingHandler}
           showFlightModal={showFlightModal}
           setShowFlightModal={setShowFlightModal}
           showPoiModal={showPoiModal}
           showBookingModal={showBookingModal}
+          showStayBookingModal={showStayBookingModal}
           _updateBookingHandler={_updateBookingHandler}
           itineraryReleased={itineraryReleased}
           itineraryDate={itineraryDate}

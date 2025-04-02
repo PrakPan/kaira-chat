@@ -97,12 +97,13 @@ const ItineraryCity = (props) => {
       });
   };
   const handleStay = (e, label, value, clickType) => {
+    console.log("Props?.city",props?.city);
     e.stopPropagation();
     if (token)
       props?.handleClickAc(
         props?.index,
         props?.city,
-        props.city.city.id,
+        props?.city?.city?.id,
         clickType
       );
     else props?.setShowLoginModal(true);
@@ -120,7 +121,7 @@ const ItineraryCity = (props) => {
     });
   };
 
-  console.log("STTTT",stay);
+//  console.log("STTTT",stay);
 
   return (
     <div

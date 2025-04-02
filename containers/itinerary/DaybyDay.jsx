@@ -116,7 +116,7 @@ const DaybyDay = ({
       images: images,
       clickType: clickType,
     });
-    props.setShowBookingModal();
+    props.setShowBookingModal(true);
   };
 
   function handleClickAc(i, data, city_id, clickType) {
@@ -137,7 +137,7 @@ const DaybyDay = ({
       number_of_infants: stayBookings[i]?.["number_of_infants"],
     };
     let city = stayBookings[i]?.["city_name"];
-    let cityId = stayBookings[i]?.city?.id;
+    let cityId = stayBookings[i]?.city?.id || stayBookings[i]?.city_id || city_id;
     let room_type = stayBookings[i]?.["room"];
     _changeBookingHandler(
       name,
