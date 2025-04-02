@@ -182,7 +182,7 @@ const ItineraryCity = (props) => {
             </div>
           ) : (
             <div
-              className="text-blue cursor-pointer text-[14px] font-medium"
+              className="text-blue cursor-pointer text-[14px] font-medium hover:underline"
               onClick={(e) =>
                 handleStay(e, "Change", props.city.city.name, "Add")
               }
