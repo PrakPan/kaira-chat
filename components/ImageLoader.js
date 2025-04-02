@@ -10,7 +10,6 @@ const ImageLoader = (props) => {
   const isPageLoaded = usePageLoaded();
   const [error, setError] = useState(false);
   const [fullLoaded, setFullLoaded] = useState(false);
-
   const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
 
   let smallImageRequest = JSON.stringify({
@@ -24,8 +23,9 @@ const ImageLoader = (props) => {
       },
     },
   });
-  let imageRequest;
-  let imageRequestMobile;
+
+  let imageRequest, imageRequestMobile;
+
   if (isPageWide) {
     if (props.dimensions) {
       smallImageRequest = JSON.stringify({
@@ -45,30 +45,18 @@ const ImageLoader = (props) => {
           },
         },
       });
-      if (!props.fit)
-        imageRequest = JSON.stringify({
-          bucket: "thetarzanway-web",
-          key: props.url,
-          edits: {
-            resize: {
-              width: props.dimensions.width,
-              height: props.dimensions.height,
-              fit: "cover",
-            },
+
+      imageRequest = JSON.stringify({
+        bucket: "thetarzanway-web",
+        key: props.url,
+        edits: {
+          resize: {
+            width: props.dimensions.width,
+            height: props.dimensions.height,
+            fit: props?.fit ?? "cover",
           },
-        });
-      else
-        imageRequest = JSON.stringify({
-          bucket: "thetarzanway-web",
-          key: props.url,
-          edits: {
-            resize: {
-              width: props.dimensions.width,
-              height: props.dimensions.height,
-              fit: props.fit,
-            },
-          },
-        });
+        },
+      });
     } else {
       imageRequest = JSON.stringify({
         bucket: "thetarzanway-web",
@@ -160,6 +148,7 @@ const ImageLoader = (props) => {
 
   const _handleError = () => {
     if (!error) {
+      console.log(`Image not found in S3: ${props.url}`);
       if (props.onfail) props.onfail();
       setError(true);
     }
@@ -176,12 +165,12 @@ const ImageLoader = (props) => {
 
   const getBtoaUrl = (imgUrlEndPoint, imageRequest) => {
     try {
-      return `${imgUrlEndPoint}/${btoa(imageRequest)}`
+      return `${imgUrlEndPoint}${btoa(imageRequest)}`;
     } catch (err) {
       console.error(err);
-      return "";
+      return "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png";
     }
-  }
+  };
 
   if (!props.dimensionsMobile) {
     if (!isPageWide)
@@ -219,8 +208,8 @@ const ImageLoader = (props) => {
                 ? error
                   ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                   : isPageLoaded
-                    ? getBtoaUrl(imgUrlEndPoint, imageRequest)
-                    : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                  ? getBtoaUrl(imgUrlEndPoint, imageRequest)
+                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
             onLoad={fullImageLoadedHandler}
@@ -272,8 +261,8 @@ const ImageLoader = (props) => {
                 ? error
                   ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                   : isPageLoaded
-                    ? getBtoaUrl(imgUrlEndPoint, imageRequest)
-                    : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                  ? getBtoaUrl(imgUrlEndPoint, imageRequest)
+                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
             onLoad={fullImageLoadedHandler}
@@ -327,8 +316,8 @@ const ImageLoader = (props) => {
                 ? error
                   ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                   : isPageLoaded
-                    ? getBtoaUrl(imgUrlEndPoint, imageRequestMobile)
-                    : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                  ? getBtoaUrl(imgUrlEndPoint, imageRequestMobile)
+                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
             width={props.dimensionsMobile.width}
@@ -381,8 +370,8 @@ const ImageLoader = (props) => {
                 ? error
                   ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                   : isPageLoaded
-                    ? getBtoaUrl(imgUrlEndPoint, imageRequest)
-                    : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                  ? getBtoaUrl(imgUrlEndPoint, imageRequest)
+                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
                 : props.url
             }
             onLoad={fullImageLoadedHandler}
