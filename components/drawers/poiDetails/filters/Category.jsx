@@ -4,19 +4,23 @@ export default function Category(props) {
   const handleCategory = (category) => {
     if (props.selectedCategories.includes(category)) {
       if (category !== "All") {
+        if(props.selectedCategories.length==1){
+          props.setChanged(false)
+        }
         props.setSelectedCategories((prev) =>
           prev.filter((item) => item !== category)
         );
-        props.setChanged(true);
       }
     } else {
       if (category === "All") {
         props.setSelectedCategories(["All"]);
+        props.setChanged(false);
       } else {
         props.setSelectedCategories((prev) => [
           ...prev.filter((item) => item !== "All"),
           category,
         ]);
+        props.setChanged(true);
       }
     }
   };

@@ -22,6 +22,7 @@ import { getHumanDate } from "../../../services/getHumanDate";
 import DyamicFilters from "./filters/DynamicFilters";
 import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";
 import Image from "next/image";
+import { setDate } from "date-fns";
 
 const EmptyMsg = styled.div`
   margin-top: 5rem;
@@ -41,6 +42,7 @@ const GetInTouchContainer = styled.div`
 const items = [{ id: 1, label: "Things To Do", link: "Activities" }];
 
 const ActivityAddDrawer = (props) => {
+  console.log("start date is:",props?.start_date)
   const isDesktop = useMediaQuery("(min-width:767px)");
   const [selectedExprience, setSelectedExprience] = useState(-1);
   const [elementType, setElementType] = useState("Activity");
@@ -81,6 +83,26 @@ const ActivityAddDrawer = (props) => {
   const prevPaxRef = useRef(pax);
   const [selectedRating, setSelectedRating] = useState([]);
   const [recommended, setRecommended] = useState(false);
+  const [changed, setChanged] = useState(false);
+  const [startDate, setStartDate] = useState(props?.date);
+  const [showCalender, setShowCalender] = useState(false);
+
+  const calendarRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (calendarRef.current && !calendarRef.current.contains(event.target)) {
+        setShowCalender(false);
+      }
+    };
+
+    if (showCalender) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showCalender]);
 
   useEffect(() => {
     const hasRatingChanged =
@@ -117,6 +139,7 @@ const ActivityAddDrawer = (props) => {
     props.showDrawer,
     debouncedSearch,
     filterState,
+    startDate,
   ]);
 
   useEffect(() => {
@@ -219,7 +242,7 @@ const ActivityAddDrawer = (props) => {
   function fetchData(showMore = false) {
     const requestData = {
       city: props?.cityID,
-      start_date: getDate(props.date),
+      start_date: getDate(startDate),
       number_of_travelers: filterState.pax.number_of_travelers,
       traveler_ages: filterState.pax.traveler_ages,
       filter_by: {
@@ -387,15 +410,29 @@ const ActivityAddDrawer = (props) => {
                 className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700] h-[44px]"
               ></input>
             </div>
-            <div className="px-[16px] py-[12px] rounded-[8px] border-1 border-[#979393] h-[44px] text-[14px] font-medium flex items-center justify-between max-[583px]:hidden">
-              <span className="text-[14px] font-semibold">
-                {getHumanDate(props?.date) + " | "}{" "}
-                <span className="text-[#979393]">{props?.day}</span>
-              </span>
-              <div className="text-right">
-                <IoIosArrowDown />
-              </div>
-            </div>
+            <select
+              className="px-[16px] py-[12px] rounded-[8px] bg-white border-1 border-[#979393] h-[44px] text-[14px] font-medium flex items-center justify-between max-[583px]:hidden"
+              onChange={(e) => setStartDate(e.target.value)}
+              defaultValue={props?.date}
+            >
+              {[...Array(props.duration)].map((_, i) => {
+                const baseDate = new Date(props.start_date);
+                baseDate.setDate(baseDate.getDate() + i);
+                const formattedDate = getHumanDate(
+                  baseDate.toISOString().split("T")[0]
+                );
+
+                return (
+                  <option key={i} className="w-full" value={formattedDate}>
+                    <span className="!font-bold text-[14px]">
+                      {formattedDate + " | "}
+                    </span>
+                    <span>Day {i + 1}</span>
+                  </option>
+                );
+              })}
+            </select>
+
             <div
               className="relative px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2 max-[583px]:hidden cursor-pointer"
               onClick={() => setShowDynamicfilters(true)}
@@ -407,17 +444,62 @@ const ActivityAddDrawer = (props) => {
                 color="white"
               />
               <button>Filters</button>
+              {changed && (
+                <div className="absolute -right-1 -top-1 h-[20px] w-[20px] rounded-full !bg-red-500"></div>
+              )}
             </div>
-            <div className="min-[584px]:absolute max-[583px]:fixed max-[583px]:bottom-0 max-[583px]:w-full max-[583px]:left-0 max-[583px]:right-0 z-50 bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm">
-              <DyamicFilters
-                filters={filtersObj}
-                showFilter={showDynamicfilters}
-                setshowFilter={setShowDynamicfilters}
-                filterState={filterState}
-                setFilterState={setFilterState}
-                FILTERS={filtersObj}
-              />
-            </div>
+            {showDynamicfilters && (
+              <div className="min-[584px]:absolute max-[583px]:fixed max-[583px]:bottom-0 max-[583px]:w-full z-50 bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm z-[1091]">
+                <DyamicFilters
+                  filters={filtersObj}
+                  showFilter={showDynamicfilters}
+                  setshowFilter={setShowDynamicfilters}
+                  filterState={filterState}
+                  setFilterState={setFilterState}
+                  FILTERS={filtersObj}
+                  setChanged={setChanged}
+                />
+              </div>
+            )}
+            {showCalender && (
+              <div
+                className="fixed bottom-0 w-full z-50 bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm z-[1091]"
+                ref={calendarRef}
+              >
+                <div className="font-medium text-[14px]">Select Days</div>
+                {[...Array(props.duration)].map((_, i) => (
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => {
+                      setStartDate(
+                        getHumanDate(
+                          new Date(
+                            new Date(props.date).setDate(
+                              new Date(props.date).getDate() + i
+                            )
+                          )
+                            .toISOString()
+                            .split("T")[0]
+                        )
+                      );
+                    }}
+                  >
+                    <span className="font-bold text-[14px]">
+                      {getHumanDate(
+                        new Date(
+                          new Date(props.date).setDate(
+                            new Date(props.date).getDate() + i
+                          )
+                        )
+                          .toISOString()
+                          .split("T")[0]
+                      ) + " | "}
+                    </span>
+                    <span>Day {i + 1}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {!isDesktop && (
@@ -443,7 +525,10 @@ const ActivityAddDrawer = (props) => {
               Top Recommended
             </button>
             <div className="flex gap-4">
-              <div className="rounded-[12px] border-2 px-[16px] py-[12px] border-black">
+              <div
+                className="rounded-[12px] border-2 px-[16px] py-[12px] border-black cursor-pointer"
+                onClick={() => setShowCalender(true)}
+              >
                 <Image
                   src="/calender.svg"
                   width={"20"}
@@ -452,7 +537,7 @@ const ActivityAddDrawer = (props) => {
                 />
               </div>
               <div
-                className="px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2  rounded-[12px] cursor-pointer"
+                className="relative px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2  rounded-[12px] cursor-pointer"
                 onClick={() => setShowDynamicfilters(true)}
               >
                 <Image
@@ -461,6 +546,9 @@ const ActivityAddDrawer = (props) => {
                   height={"20"}
                   color="white"
                 />
+                {changed && (
+                  <div className="absolute -right-1 -top-1 h-[20px] w-[20px] rounded-full !bg-red-500"></div>
+                )}
               </div>
             </div>
           </div>

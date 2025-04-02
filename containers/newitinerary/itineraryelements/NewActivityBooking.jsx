@@ -6,12 +6,10 @@ import { getIndianPrice } from "../../../services/getIndianPrice";
 import ActivityDetailsDrawer from "../../../components/drawers/activityDetails/ActivityDetailsDrawer";
 import SkeletonCard from "../../../components/ui/SkeletonCard";
 import {
-  Container,
   TransparentButton,
 } from "../../../containers/itinerary/New_Itenary_DBD/New_itenaryStyled";
 import { MdDoneAll } from "react-icons/md";
 import { convertDateFormat } from "../../../helper/ConvertDateFormat";
-import Button from "../../../components/ui/button/Index";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 const ClippathComp = styled.div`
@@ -97,8 +95,8 @@ export default function NewActivityBooking(props) {
                 }}
               ></ImageLoader>
               {props.data?.is_very_popular && (
-                <div className="absolute top-4 left-0 z-[1090]">
-                  <ClippathComp className="text-[12px] font-medium bg-red-400 text-white  px-[16px] py-[8px] -mr-2 md:-mr-3 z-[1090]">
+                <div className="absolute top-4 left-0 z-[5]">
+                  <ClippathComp className="text-[12px] font-medium bg-red-400 text-white  px-[16px] py-[8px] -mr-2 md:-mr-3 z-[1]">
                     Recommended
                   </ClippathComp>
                 </div>
@@ -179,7 +177,7 @@ export default function NewActivityBooking(props) {
                 </div>
               ) : (
                 <div
-                  className="h-full text-blue underline"
+                  className="h-full text-blue underline cursor-pointer"
                   onClick={() => handleClick(props.data?.id)}
                 >
                   View Details
@@ -290,7 +288,7 @@ export default function NewActivityBooking(props) {
           </div>
         ) : (
           <div
-            className="h-full text-blue underline"
+            className="h-full text-blue underline cursor-pointer"
             onClick={() => handleClick(props.data?.id)}
           >
             View Details

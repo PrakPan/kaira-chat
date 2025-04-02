@@ -8,12 +8,14 @@ import { getIndianPrice } from "../../../services/getIndianPrice";
 import { dateFormat } from "../../../helper/DateUtils";
 import { FaStar, FaStarHalfAlt, FaClock } from "react-icons/fa";
 import { FaPerson } from "react-icons/fa6";
-import { IoMdClose } from "react-icons/io";
+import { IoIosArrowDown, IoMdClose } from "react-icons/io";
 import { IoFastFood, IoTicket } from "react-icons/io5";
 import { MdTransferWithinAStation } from "react-icons/md";
 import { BiSolidCustomize } from "react-icons/bi";
 import Travelers from "../poiDetails/filters/Travelers";
-import { Pax } from "../../../pages/flights";
+import { color } from "framer-motion";
+
+const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
 export default function ActivityDetails(props) {
   let isPageWide = media("(min-width: 768px)");
@@ -66,8 +68,8 @@ export default function ActivityDetails(props) {
   };
 
   return (
-    <div className="flex flex-col gap-2 px-4 pb-4">
-      <div className="sticky top-0 z-1 flex flex-row items-center gap-2 py-4 bg-white">
+    <div className="flex flex-col gap-4 px-4 pb-4 font-[poppins]">
+      <div className="sticky top-0 z-1 flex flex-row items-center gap-2 mt-4 bg-white">
         <IoMdClose
           className="hover-pointer"
           onClick={(e) => {
@@ -75,8 +77,8 @@ export default function ActivityDetails(props) {
           }}
           style={{ fontSize: "2rem" }}
         ></IoMdClose>
-        <div className="text-[1.5rem] leading-[2rem]">Back to Itinerary</div>
       </div>
+      <div className="text-[24px] font-semibold">Activity Details</div>
 
       {props.updateAmenities && (
         <div className="fixed top-[65%] left-[50%] -translate-x-[50%] z-50 flex flex-row items-center gap-2">
@@ -103,8 +105,8 @@ export default function ActivityDetails(props) {
                   ? props.data.image
                   : "media/icons/bookings/notfounds/noroom.png"
               }
-              dimensionsMobile={{ width: 500, height: 280 }}
-              dimensions={{ width: 468, height: 188 }}
+              dimensionsMobile={{ width: 500, height: 295 }}
+              dimensions={{ width: 468, height: 295 }}
               onload={() => {
                 setTimeout(() => {
                   setImageLoaded(true);
@@ -118,12 +120,16 @@ export default function ActivityDetails(props) {
             ></ImageLoader>
 
             {props.data?.ideal_duration_number ? (
-              <div className="absolute bottom-1 right-1 bg-[#000000bf] text-white px-4 py-2 rounded-lg flex flex-row items-center gap-2">
-                <FaClock />
-                {props.data.ideal_duration_number}{" "}
-                {props.data.ideal_duration_number > 1
-                  ? props.data?.ideal_duration_unit.toLowerCase()
-                  : props.data?.ideal_duration_unit.toLowerCase().slice(0, -1)}
+              <div className="absolute bottom-1 left-2 bg-[#000000] text-white px-[16px] py-[2px] rounded-full flex flex-row items-center gap-2">
+                <div className="text-[14px]">Approx Time:</div>
+                <div className="text-[14px]">
+                  {props.data.ideal_duration_number}{" "}
+                  {props.data.ideal_duration_number > 1
+                    ? props.data?.ideal_duration_unit.toLowerCase()
+                    : props.data?.ideal_duration_unit
+                        .toLowerCase()
+                        .slice(0, -1)}
+                </div>
               </div>
             ) : (
               <></>
@@ -144,12 +150,6 @@ export default function ActivityDetails(props) {
 
         <div className="flex flex-col gap-3">
           <div className="text-[20px] font-[800]">{props.data.name}</div>
-
-          {props.data?.city && (
-            <div>
-              <span className="font-bold pr-1">Address:</span> {props.data.city}
-            </div>
-          )}
 
           <div className="flex items-center gap-1">
             {props.data?.rating && (
@@ -179,24 +179,45 @@ export default function ActivityDetails(props) {
               )}
             </div>
           </div>
+        </div>
 
-          <div className="flex flex-col gap-3 md:flex-row md:items-center justify-between">
-            {props.data?.experience_filters && (
-              <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
-                {props.data.experience_filters?.map((e, i) => (
-                  <span key={i} className="border-2 rounded-full px-2 py-1">
-                    {e}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            <Travelers
-              travelers={props.filterState.pax.number_of_travelers}
-              travelerAges={props.filterState.pax.traveler_ages}
-              setFilterState={props.setFilterState}
-            />
+        {props.data?.short_description && (
+          <div className="flex flex-col gap-2">
+            <div className="text-[14px] text-[#01202B]">
+              {props.data.short_description}
+            </div>
           </div>
+        )}
+        {props.data?.city && (
+          <div>
+            <span className="font-bold pr-1 text-[14px] font-semibold text-[#01202B]">
+              Address:
+            </span>{" "}
+            <span className="text-[14px] text-[#01202B]">
+              {props.data.city}
+            </span>
+          </div>
+        )}
+        {props.data?.experience_filters && (
+          <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
+            {props.data.experience_filters?.map((e, i) => (
+              <span
+                key={i}
+                className={`border-2 rounded-full px-2 py-1`}
+                style={{ backgroundColor: colors[i % colors.length] }}
+              >
+                {e}
+              </span>
+            ))}
+          </div>
+        )}
+
+        <div className="flex flex-col gap-3 md:flex-row md:items-center justify-end">
+          <Travelers
+            travelers={props.filterState.pax.number_of_travelers}
+            travelerAges={props.filterState.pax.traveler_ages}
+            setFilterState={props.setFilterState}
+          />
         </div>
 
         <div className="flex flex-col md:flex-row md:items-center gap-2 justify-between">
@@ -244,119 +265,97 @@ export default function ActivityDetails(props) {
           </div>
         </div>
 
-        {props.data?.short_description && (
-          <div className="flex flex-col gap-2">
-            <div className="text-[18px] font-[800]">About</div>
-            <div className="text-[14px]">{props.data.short_description}</div>
-          </div>
-        )}
-
-        {props.data?.tips_tricks && props.data?.tips_tricks?.length ? (
-          <div className="flex flex-col gap-2">
-            <div className="text-[18px] font-[800]">Tips & Tricks</div>
-            <div className="text-[14px]">
-              <ul style={{ paddingLeft: "0.5rem" }}>
-                {props.data.tips_tricks?.map((e, i) => (
-                  <li key={i}>- {e}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        ) : (
-          <></>
-        )}
-
-        {props.data?.things_to_bring && props.data?.things_to_bring?.length ? (
-          <div className="flex flex-col gap-2">
-            <div className="text-[18px] font-[800]">Things to bring</div>
-            <div className="text-[14px]">
-              <ul style={{ paddingLeft: "0.5rem" }}>
-                {props.data.things_to_bring?.map((e, i) => (
-                  <li key={i}>- {e}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        ) : (
-          <></>
-        )}
-
-        {props.data?.tags && props.data?.tags?.length ? (
-          <div className="flex flex-col gap-2">
-            <div className="text-[18px] font-[800]">Tags</div>
-            <div className="text-[14px]">
-            <div className="flex flex-wrap gap-2">
-                {props.data.tags?.map((e, i) => (
-                  <div key={i} className="bg-[#FAFAFA] p-[8px] rounded-[10px]">{e}</div>
-                ))}
+        <div>
+          {props.data?.general_guidelines &&
+          props.data?.general_guidelines?.length ? (
+            <div className="flex flex-col">
+              <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
+                <div>General guidelines</div>
+                <IoIosArrowDown />
+              </div>
+              <div className="text-[14px]">
+                <ul style={{ paddingLeft: "0.5rem" }}>
+                  {props.data.general_guidelines?.map((e, i) => (
+                    <li key={i}>- {e}</li>
+                  ))}
+                </ul>
               </div>
             </div>
-          </div>
-        ) : (
-          <></>
-        )}
+          ) : (
+            <></>
+          )}
 
-        {props.data?.general_guidelines &&
-        props.data?.general_guidelines?.length ? (
-          <div className="flex flex-col gap-2">
-            <div className="text-[18px] font-[800]">General guidelines</div>
-            <div className="text-[14px]">
-              <ul style={{ paddingLeft: "0.5rem" }}>
-                {props.data.general_guidelines?.map((e, i) => (
-                  <li key={i}>- {e}</li>
-                ))}
-              </ul>
+          {props.data?.things_to_bring &&
+          props.data?.things_to_bring?.length ? (
+            <div className="flex flex-col">
+              <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
+                <div>Things to bring</div>
+                <IoIosArrowDown />
+              </div>
+              <div className="text-[14px]">
+                <ul style={{ paddingLeft: "0.5rem" }}>
+                  {props.data.things_to_bring?.map((e, i) => (
+                    <li key={i}>- {e}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
-          </div>
-        ) : (
-          <></>
-        )}
+          ) : (
+            <></>
+          )}
 
-        {props.data?.not_suitable_for &&
-        props.data?.not_suitable_for?.length ? (
-          <div className="flex flex-col gap-2">
-            <div className="text-[18px] font-[800]">Not suitable for</div>
-            <div className="text-[14px]">
-              <ul style={{ paddingLeft: "0.5rem" }}>
-                {props.data.not_suitable_for?.map((e, i) => (
-                  <li key={i}>- {e}</li>
-                ))}
-              </ul>
+          {props.data?.not_suitable_for &&
+          props.data?.not_suitable_for?.length ? (
+            <div className="flex flex-col">
+              <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
+                <div>Not suitable for</div>
+                <IoIosArrowDown />
+              </div>
+              <div className="text-[14px]">
+                <ul style={{ paddingLeft: "0.5rem" }}>
+                  {props.data.not_suitable_for?.map((e, i) => (
+                    <li key={i}>- {e}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
-          </div>
-        ) : (
-          <></>
-        )}
+          ) : (
+            <></>
+          )}
 
-        {props.data?.caution && props.data?.caution?.length ? (
-          <div className="flex flex-col gap-2">
-            <div className="text-[18px] font-[800]">Caution</div>
-            <div className="text-[14px]">
-              <ul style={{ paddingLeft: "0.5rem" }}>
-                {props.data.caution?.map((e, i) => (
-                  <li key={i}>- {e}</li>
-                ))}
-              </ul>
+          {props.data?.tips_tricks && props.data?.tips_tricks?.length ? (
+            <div className="flex flex-col">
+              <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
+                <div>Tips, Tricks and Cautions</div>
+                <IoIosArrowDown />
+              </div>
+              <div className="text-[14px]">
+                <ul style={{ paddingLeft: "0.5rem" }}>
+                  {props.data.tips_tricks?.map((e, i) => (
+                    <li key={i}>- {e}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
-          </div>
-        ) : (
-          <></>
-        )}
+          ) : (
+            <></>
+          )}
+        </div>
 
         {props.data?.amenities && props.data?.amenities?.length ? (
-          <div className="flex flex-col gap-2 relative">
-            <div className="text-[18px] font-[800]">Add-ons</div>
-            <div className="flex flex-col gap-2">
-              {props.data.amenities.map((amenity, index) => (
-                <Amenity
-                  key={index}
-                  index={index}
-                  amenity={amenity}
-                  handleAmenityChange={handleAmenityChange}
-                />
-              ))}
-            </div>
+        <div className="flex flex-col gap-2 relative">
+          <div className="text-[20px] font-semibold">Add-ons</div>
+          <div className="flex flex-col gap-2">
+            {props.data.amenities.map((amenity, index) => (
+              <Amenity
+                key={index}
+                index={index}
+                amenity={amenity}
+                handleAmenityChange={handleAmenityChange}
+              />
+            ))}
           </div>
+        </div>
         ) : null}
       </div>
     </div>
