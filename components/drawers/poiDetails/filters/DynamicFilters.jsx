@@ -10,13 +10,11 @@ import Guide from "./Guide";
 import useMediaQuery from "../../../../hooks/useMedia";
 
 export default function DyamicFilters(props) {
-  const isDesktop = useMediaQuery("(min-width:767px)");
   const [selectedRating, setSelectedRating] = useState([]);
   const [recommended, setRecommended] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState(["All"]);
   const [selectedTourTypes, setSelectedTourTypes] = useState(["All"]);
   const [selectedGuide, setSelectedGuide] = useState(["All"]);
-  const [changed,setChanged]=useState(false);
   const handleApply = () => {
     props.setFilterState((prev) => ({
       ...prev,
@@ -45,7 +43,7 @@ export default function DyamicFilters(props) {
                   setSelectedCategories(["All"])
                   setSelectedTourTypes(["All"])
                   setSelectedGuide(["All"])
-                  setChanged(false)
+                  props.setChanged(false)
                 }}>Reset all</div>
               </div>
               {props.FILTERS.tour_type && props.FILTERS.tour_type.length ? (
@@ -53,7 +51,7 @@ export default function DyamicFilters(props) {
                   tourTypes={props.FILTERS.tour_type}
                   selectedTourTypes={selectedTourTypes}
                   setSelectedTourTypes={setSelectedTourTypes}
-                  setChanged={setChanged}
+                  setChanged={props.setChanged}
                 />
               ) : null}
 
@@ -62,7 +60,7 @@ export default function DyamicFilters(props) {
                   guide={props.FILTERS.guide}
                   selectedGuide={selectedGuide}
                   setSelectedGuide={setSelectedGuide}
-                  setChanged={setChanged}
+                  setChanged={props.setChanged}
                 />
               ) : null}
               {props.FILTERS.category && props.FILTERS.category.length ? (
@@ -70,12 +68,14 @@ export default function DyamicFilters(props) {
                   categories={props.FILTERS.category}
                   selectedCategories={selectedCategories}
                   setSelectedCategories={setSelectedCategories}
+                  setChanged={props.setChanged}
                 />
               ) : null}
               <Rating
                 ratings={props.filters.ratings}
                 selectedRating={selectedRating}
                 setSelectedRating={setSelectedRating}
+                setChanged={props.setChanged}
               />
             </div>
 

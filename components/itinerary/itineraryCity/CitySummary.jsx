@@ -206,11 +206,14 @@ const CitySummary = (props) => {
         cityName={props.city.city.name}
         cityID={props.city.city.id}
         date={props?.city?.start_date}
+        start_date={props?.city?.start_date}
         itinerary_city_id={props?.city?.id}
         setActivities={setActivities}
         activities={activities}
         activityBookings={props?.activityBookings}
         setActivityBookings={props?.setActivityBookings}
+        day="Day 1"
+        duration={props.city.duration}
       ></ActivityAddDrawer>
     </div>
   );

@@ -161,6 +161,9 @@ function MyApp({ Component, pageProps, store }) {
             --df-messenger-chat-window-width: 33vw; 
             --df-messenger-border-radius: 20px;
              --df-messenger-button-size: 80px;
+             --df-messenger-chat-bubble-icon-size: 80px;
+             --df-messenger-send-icon-color: black;
+             ----df-messenger-send-icon-background: yellow;
             bottom: 0;
             right: 0;
             padding:4px;
@@ -170,6 +173,9 @@ function MyApp({ Component, pageProps, store }) {
             margin-bottom:10px;
             background-size: contain;
             background-repeat: no-repeat;
+        }
+        .df-messenger-chat-bubble-icon {
+              margin-top: 5px;
         }
 }
         `}
