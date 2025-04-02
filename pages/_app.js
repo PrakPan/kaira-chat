@@ -46,44 +46,54 @@ function MyApp({ Component, pageProps, store }) {
       router.events.off("routeChangeComplete", handleRouteChange);
     };
   }, [router.events]);
-  
+
   useEffect(() => {
     setTimeout(() => {
-      (function() {
+      (function () {
         function getElement(xpath) {
-            return document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+          return document.evaluate(
+            xpath,
+            document,
+            null,
+            XPathResult.FIRST_ORDERED_NODE_TYPE,
+            null
+          ).singleNodeValue;
         }
-    
-        let dfMessengerBubble = getElement('/html/body/div[1]/df-messenger/df-messenger-chat-bubble');
-        if (!dfMessengerBubble) return console.error("df-messenger-chat-bubble not found");
-    
-        let dfMessengerChat = dfMessengerBubble.shadowRoot.querySelector('df-messenger-chat');
-        if (!dfMessengerChat) return console.error("df-messenger-chat not found");
-    
-        let userInputContainer = dfMessengerChat.shadowRoot.querySelector('df-messenger-user-input');
-        if (!userInputContainer) return console.error("df-messenger-user-input not found");
-    
-        let textArea = userInputContainer.shadowRoot.querySelector('textarea');
+
+        let dfMessengerBubble = getElement(
+          "/html/body/div[1]/df-messenger/df-messenger-chat-bubble"
+        );
+        if (!dfMessengerBubble)
+          return console.error("df-messenger-chat-bubble not found");
+
+        let dfMessengerChat =
+          dfMessengerBubble.shadowRoot.querySelector("df-messenger-chat");
+        if (!dfMessengerChat)
+          return console.error("df-messenger-chat not found");
+
+        let userInputContainer = dfMessengerChat.shadowRoot.querySelector(
+          "df-messenger-user-input"
+        );
+        if (!userInputContainer)
+          return console.error("df-messenger-user-input not found");
+
+        let textArea = userInputContainer.shadowRoot.querySelector("textarea");
         if (!textArea) return console.error("Textarea not found");
-    
-        if(!window.location.href.split('/').includes('itinerary')) return;
+
+        if (!window.location.href.split("/").includes("itinerary")) return;
         textArea.value = `Give me more detail about this itinerary ${window.location.href}`;
 
-    
-        const enterEvent = new KeyboardEvent('keydown', {
-          key: 'Enter',
-          code: 'Enter',
+        const enterEvent = new KeyboardEvent("keydown", {
+          key: "Enter",
+          code: "Enter",
           keyCode: 13,
           which: 13,
-          bubbles: true
+          bubbles: true,
         });
         textArea.dispatchEvent(enterEvent);
-    })();
-    
-    
+      })();
     }, 2000);
-}, []);
-  
+  }, []);
 
   return (
     <>
@@ -117,20 +127,19 @@ function MyApp({ Component, pageProps, store }) {
           <df-messenger
             location="asia-south1"
             project-id="ai-chabot-451908"
-            agent-id="7a31b76b-858c-4efe-837a-43fb35d5b8f5"
+            agent-id="4e407c11-79bb-494a-ad38-12eb60fed12d"
             language-code="en"
             intent="WELCOME"
             ref={messengerRef}
           >
-            
             {/* <df-messenger-chat-bubble chat-title="Personalized Travel Plan"             */}
             {/* //  chat-icon="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" to change floater icon, change this link */}
-            <df-messenger-chat-bubble 
-            chat-title="Personalized Travel Plan"            
-            chat-icon=" https://openmoji.org/data/color/svg/1F4AC.svg"
-            chat-title-icon="https://openmoji.org/data/color/svg/1F4AC.svg"
-            // to change floater icon, change this link
-             ></df-messenger-chat-bubble>
+            <df-messenger-chat-bubble
+              chat-title="Personalized Travel Plan"
+              chat-icon="https://images.thetarzanway.com/media/chatbot.png"
+              chat-title-icon="https://openmoji.org/data/color/svg/1F4AC.svg"
+              // to change floater icon, change this link
+            ></df-messenger-chat-bubble>
           </df-messenger>
         </>
       )}
@@ -151,8 +160,7 @@ function MyApp({ Component, pageProps, store }) {
             --df-messenger-chat-window-height:calc(100vh - 90px);
             --df-messenger-chat-window-width: 33vw; 
             --df-messenger-border-radius: 20px;
-            --df-messenger-button-image: url('https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg');
-            --df-messenger-chat-bubble-border-radius:0px;
+             --df-messenger-button-size: 80px;
             bottom: 0;
             right: 0;
             padding:4px;
@@ -160,12 +168,9 @@ function MyApp({ Component, pageProps, store }) {
             border-radius:6px;
             margin-right:20px;
             margin-bottom:10px;
+            background-size: contain;
+            background-repeat: no-repeat;
         }
-        df-messenger .df-messenger-toggle-button {
-    border-radius: 0 !important;
-    width: 50px !important;  /* Adjust size if needed */
-    height: 50px !important; /* Adjust size if needed */
-}
 }
         `}
       </style>

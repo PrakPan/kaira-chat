@@ -1,40 +1,60 @@
+import Image from "next/image";
+
 export default function Category(props) {
-    const handleCategory = (category) => {
-        if (props.selectedCategories.includes(category)) {
-            if (category !== 'All') {
-                props.setSelectedCategories(prev => prev.filter(item => item !== category));
-            }
-        } else {
-            if (category === 'All') {
-                props.setSelectedCategories(["All"]);
-            } else {
-                props.setSelectedCategories(prev => [...prev.filter(item => item !== "All"), category])
-            }
-        }
+  const handleCategory = (category) => {
+    if (props.selectedCategories.includes(category)) {
+      if (category !== "All") {
+        props.setSelectedCategories((prev) =>
+          prev.filter((item) => item !== category)
+        );
+        props.setChanged(true);
+      }
+    } else {
+      if (category === "All") {
+        props.setSelectedCategories(["All"]);
+      } else {
+        props.setSelectedCategories((prev) => [
+          ...prev.filter((item) => item !== "All"),
+          category,
+        ]);
+      }
     }
+  };
 
-    const isSelectedCategory = (category) => {
-        return props.selectedCategories.includes(category);
-    }
+  const isSelectedCategory = (category) => {
+    return props.selectedCategories.includes(category);
+  };
 
-    return (
-        <div className="flex flex-col justify-start items-baseline">
-            <div className="mb-2 font-semibold">Category</div>
+  return (
+    <div className="flex flex-col justify-start items-baseline">
+      <div className="mb-2 font-medium">Category</div>
 
-            <div className="flex flex-row items-center gap-2 flex-wrap">
-                <div
-                    onClick={() => handleCategory("All")}
-                    style={{ background: isSelectedCategory("All") ? "black" : "", color: isSelectedCategory("All") ? "white" : "" }}
-                    className="border-2 border-black p-2 rounded-lg cursor-pointer">All</div>
-
-                {props.categories.map((category, index) => (
-                    <div
-                        key={index}
-                        onClick={() => handleCategory(category)}
-                        style={{ background: isSelectedCategory(category) ? "black" : "", color: isSelectedCategory(category) ? "white" : "" }}
-                        className="border-2 border-black p-2 rounded-lg cursor-pointer">{category}</div>
-                ))}
-            </div>
+      <div className="flex flex-row items-center gap-2 flex-wrap">
+        <div
+          onClick={() => handleCategory("All")}
+          style={{
+            background: isSelectedCategory("All") ? "#F0F0FE" : "",
+          }}
+          className="border-2 p-2 rounded-full cursor-pointer flex items-center gap-1"
+        >
+          All
+          {isSelectedCategory("All")&&<span><Image src="/tick.svg" width={"15"} height={15} alt="tick"/></span>}
         </div>
-    )
+
+        {props.categories.map((category, index) => (
+          <div
+            key={index}
+            onClick={() => handleCategory(category)}
+            style={{
+              background: isSelectedCategory(category) ? "#F0F0FE" : "",
+            }}
+            className="border-2 p-2 rounded-full bg-[#F6F6F6] cursor-pointer flex items-center gap-1"
+          >
+            {category}
+            {isSelectedCategory({category})&&<span><Image src="/tick.svg" width={"15"} height={15} alt="tick"/></span>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
