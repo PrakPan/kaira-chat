@@ -408,9 +408,7 @@ const ActivityAddDrawer = (props) => {
               />
               <button>Filters</button>
             </div>
-            <div
-                className="absolute top-full left-2 right-2 md:right-5 md:left-auto bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm max-[583px]:hidden"
-                >
+            <div className="min-[584px]:absolute max-[583px]:fixed max-[583px]:bottom-0 max-[583px]:w-full max-[583px]:left-0 max-[583px]:right-0 z-50 bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm">
               <DyamicFilters
                 filters={filtersObj}
                 showFilter={showDynamicfilters}

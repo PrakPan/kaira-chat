@@ -7,6 +7,7 @@ export default function TourType(props) {
         props.setSelectedTourTypes((prev) =>
           prev.filter((item) => item !== category)
         );
+        props.setChanged(true);
       }
     } else {
       if (category === "All") {
@@ -16,6 +17,7 @@ export default function TourType(props) {
           ...prev.filter((item) => item !== "All"),
           category,
         ]);
+        props.setChanged(true);
       }
     }
   };

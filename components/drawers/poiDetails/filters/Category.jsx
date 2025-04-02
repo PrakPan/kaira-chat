@@ -7,6 +7,7 @@ export default function Category(props) {
         props.setSelectedCategories((prev) =>
           prev.filter((item) => item !== category)
         );
+        props.setChanged(true);
       }
     } else {
       if (category === "All") {
