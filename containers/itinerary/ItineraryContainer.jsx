@@ -244,6 +244,7 @@ const getAllStays = async () => {
     let stays = [];
     for (let i = 0; i < data?.cities.length; i++) {
       let hotels = data?.cities[i]?.hotels;
+      console.log("Hotels",hotels);
       let city_name = data?.cities[i]?.city?.name;
       let city_id = data?.cities[i]?.city?.id;
 

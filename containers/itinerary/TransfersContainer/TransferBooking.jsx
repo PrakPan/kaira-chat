@@ -549,7 +549,7 @@ const TransferBooking = ({
               end={end}
             />
           </div>
-          {loadbookings ? (
+          {transfers_status === "PENDING" ? (
             <TransferSkeleton />
           ) : (
             isPageWide ? <button
