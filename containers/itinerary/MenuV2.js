@@ -409,7 +409,7 @@ const SimpleTabsV2 = (props) => {
                         color="#111"
                         fontWeight="400"
                         fontSize="0.45rem"
-                        borderWidth="2px"
+                        borderWidth="1px"
                         width="12rem"
                         borderRadius="10px"
                         bgColor="#F7E700"
@@ -1085,8 +1085,8 @@ const SimpleTabsV2 = (props) => {
         <div className="flex flex-row justify-between items-center mx-3">
           <div className="flex flex-col">
           <div className="flex justify-between">
-          <p className="text-red-600 text-sm">Get in touch to finalize the pricing!</p>
-          {pricing_status === "FAILURE" && <GetInTouchContainer className="">
+          {pricing_status === "FAILURE" ? <p className="text-red-600 text-sm">Get in touch to finalize the pricing!</p> : null }
+          {pricing_status === "FAILURE" ? <GetInTouchContainer className="">
                       <Button
                         color="#111"
                         fontWeight="600"
@@ -1118,7 +1118,7 @@ const SimpleTabsV2 = (props) => {
                           <span>Get in touch!</span>
                         </div>
                       </Button>
-                    </GetInTouchContainer>}
+                    </GetInTouchContainer> : null}
                     </div>
             {props?.payment && <div className="text-sm">
               {props?.payment?.pay_only_for_one ||
