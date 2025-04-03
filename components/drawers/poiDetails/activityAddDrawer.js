@@ -424,9 +424,9 @@ const ActivityAddDrawer = (props) => {
 
                 return (
                   <option key={i} className="w-full" value={formattedDate}>
-                    <span className="!font-bold text-[14px]">
+                    <div className="!font-bold text-[14px]">
                       {formattedDate + " | "}
-                    </span>
+                    </div>
                     <span>Day {i + 1}</span>
                   </option>
                 );
