@@ -12,6 +12,7 @@ import FullScreenGalleryGoogle from "./FullScreenGalleryGoogle";
 import useMediaQuery from "../../media";
 import ImageLoaderGoogle from "./ImageLoaderGoogle";
 import ReviewComponent from "../../Reviews/Reviews";
+import { GOOGLE_MAPS_API_KEY } from "../../../services/constants";
 export const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -109,6 +110,22 @@ const POIDetails = (props) => {
     props?.data?.overview ?? props?.data?.short_description
   );
   const [images, setImages] = useState(props?.data?.extra_images);
+
+  async function fetchImageAsBlob(imageUrl){
+    try{
+      const response=await fetch(imageUrl);
+      const blob=await response.blob();
+      return blob;
+    } catch(error){
+      console.log("Error fetching image:",error);
+    }
+  }
+
+  props?.data?.extra_images?.map((url,index)=>{
+    console.log("url is:",url)
+    fetchImageAsBlob(`https://maps.googleapis.com/maps/api/place/photo?photo_reference=${url?.photo_reference}&maxwidth=400&key=${GOOGLE_MAPS_API_KEY}`);
+  })
+
   var experience_filters = (
     <div className="flex flex-wrap gap-2">
       {props.data.experience_filters?.map((e, i) => (
@@ -331,12 +348,12 @@ const POIDetails = (props) => {
         <></>
       )}
 
-      {images?.length > 0 && (
+      {/* {images?.length > 0 && (
         <FullScreenGalleryGoogle
           closeGalleryHandler={() => setImages(null)}
           images={images}
         ></FullScreenGalleryGoogle>
-      )} 
+      )}  */}
     </Container>
   );
 };

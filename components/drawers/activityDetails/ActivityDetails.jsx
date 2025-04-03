@@ -14,6 +14,7 @@ import { MdTransferWithinAStation } from "react-icons/md";
 import { BiSolidCustomize } from "react-icons/bi";
 import Travelers from "../poiDetails/filters/Travelers";
 import { color } from "framer-motion";
+import Image from "next/image";
 
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
@@ -344,7 +345,8 @@ export default function ActivityDetails(props) {
 
         {props.data?.amenities && props.data?.amenities?.length ? (
         <div className="flex flex-col gap-2 relative">
-          <div className="text-[20px] font-semibold">Add-ons</div>
+          <div className="text-[20px] font-semibold">Add - Ons</div>
+          <div className="border-b-[1px]"></div>
           <div className="flex flex-col gap-2">
             {props.data.amenities.map((amenity, index) => (
               <Amenity
@@ -352,6 +354,7 @@ export default function ActivityDetails(props) {
                 index={index}
                 amenity={amenity}
                 handleAmenityChange={handleAmenityChange}
+                travelers={props.filterState.pax.number_of_travelers}
               />
             ))}
           </div>
@@ -362,7 +365,7 @@ export default function ActivityDetails(props) {
   );
 }
 
-const Amenity = ({ index, amenity, handleAmenityChange }) => {
+const Amenity = ({ index, amenity, handleAmenityChange,travelers }) => {
   const [included, setIncluded] = useState(amenity?.included);
 
   useEffect(() => {
@@ -392,18 +395,19 @@ const Amenity = ({ index, amenity, handleAmenityChange }) => {
   return (
     <div
       key={index}
-      className="flex flex-row gap-3 items-center justify-between bg-gray-200 p-2 rounded-lg"
+      className=" gap-3  bg-[#FAFAFA] p-[10px] rounded-[4px]"
     >
       <div className="flex flex-col gap-1">
-        <div className="flex flex-row items-center gap-2">
-          {getAmenityIcon(amenity?.type)}
+        <div className="flex flex-row items-center gap-2 text-[16px] font-medium">
+          {/* {getAmenityIcon(amenity?.type)} */}
           {amenity.name}
         </div>
-        <div className="text-sm">{amenity.description}</div>
+        <div className="text-[14px]">{amenity.description}</div>
+        <div className="flex text-[12px] font-medium"><Image src="/ticket.svg" alt="ticket" width={13.33} height={10.67}/>{travelers} tickets</div>
       </div>
 
-      <div className="flex flex-col items-end">
-        <div className="font-bold">₹{getIndianPrice(amenity.price)}</div>
+      <div className="flex items-center justify-between">
+        <div className="font-semibold text-[24px]">₹{getIndianPrice(amenity.price)} <span className="text-[14px] font-normal">per person*</span></div>
 
         <button
           disabled={amenity.mandatory}
@@ -411,7 +415,6 @@ const Amenity = ({ index, amenity, handleAmenityChange }) => {
           className="flex flex-row items-center gap-1 cursor-pointer"
         >
           <CheckboxFormComponent checked={included} />
-          {included ? "Selected" : "Select"}
         </button>
       </div>
     </div>
