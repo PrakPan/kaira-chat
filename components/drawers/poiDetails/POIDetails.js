@@ -123,11 +123,11 @@ const POIDetails = (props) => {
         }
         console.log("Redirecting to:", finalUrl);
 
-        const finalResponse =  fetch(finalUrl);
-        const blob =  finalResponse.blob();
+        const finalResponse = await fetch(finalUrl);
+        const blob = await finalResponse.blob();
         return URL.createObjectURL(blob);
       } else {
-        const blob =  response.blob();
+        const blob = await response.blob();
         return URL.createObjectURL(blob);
       }
     } catch (error) {
@@ -213,12 +213,18 @@ const POIDetails = (props) => {
       )}
 
       <>
-        {images&&images.length>0&& (
+        {images?.length > 0 && (
           <>
           {/* <ImageContainer style={{ height: "170px" }}> */}
             <div>
               {/* <div style={{ display: imageLoaded ? "initial" : "none" }}> */}
-                <img src={images[0]} alt="image" width={"200px"} height={"200px"} />
+              {/* <ImageLoaderGoogle
+                url={props?.data?.extra_images?.[0]?.photo_reference}
+                fit="cover"
+                height={"400"}
+                heightmobile={'400'}
+              /> */}
+                <img src={`https://maps.googleapis.com/maps/api/place/photo?photo_reference=${props?.data?.extra_images?.[0]?.photo_reference}&maxwidth=400&key=${GOOGLE_MAPS_API_KEY}`} alt="image" width={200} height={200} />
                 {/* <ImageLoader
                 borderRadius="8px"
                 marginTop="23px"
@@ -252,7 +258,7 @@ const POIDetails = (props) => {
                 )}
               </div>
 
-              {/* <div
+              <div
                 style={{
                   display: !imageLoaded ? "initial" : "none",
                 }}
@@ -266,9 +272,9 @@ const POIDetails = (props) => {
                   }}
                 >
                   <SkeletonCard />
-                </div> */}
+                </div>
               {/* </div> */}
-            {/* </div> */}
+            </div>
             {props.data?.ideal_duration_hours ||
             props.data?.ideal_duration_numbers ? (
               <TimeStamp>

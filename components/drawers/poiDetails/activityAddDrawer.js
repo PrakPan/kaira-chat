@@ -87,22 +87,25 @@ const ActivityAddDrawer = (props) => {
   const [startDate, setStartDate] = useState(props?.date);
   const [showCalender, setShowCalender] = useState(false);
 
+  const filtersRef=useRef(null)
   const calendarRef = useRef(null);
   useEffect(() => {
     const handleClickOutside = (event) => {
+      if(filtersRef.current && !filtersRef.current.contains(event.target)){
+        setShowDynamicfilters(false);
+      }
       if (calendarRef.current && !calendarRef.current.contains(event.target)) {
         setShowCalender(false);
       }
     };
 
-    if (showCalender) {
       document.addEventListener("mousedown", handleClickOutside);
-    }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showCalender]);
+  }, []);
+
 
   useEffect(() => {
     const hasRatingChanged =
@@ -449,7 +452,7 @@ const ActivityAddDrawer = (props) => {
               )}
             </div>
             {showDynamicfilters && (
-              <div className="min-[584px]:absolute max-[583px]:fixed max-[583px]:bottom-0 max-[583px]:w-full z-50 bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm z-[1091]">
+              <div className="min-[584px]:absolute max-[583px]:fixed max-[583px]:bottom-0 max-[583px]:w-full z-50 bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm z-[1091]" ref={filtersRef}>
                 <DyamicFilters
                   filters={filtersObj}
                   showFilter={showDynamicfilters}

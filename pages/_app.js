@@ -13,6 +13,16 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import Script from "next/script";
+import styled from 'styled-components';
+
+const Container = styled.div`
+      margin-right: -0.6rem;
+    margin-bottom: 5rem; 
+  @media screen and (min-width: 768px) {
+  margin-bottom: 0rem;
+  margin-right:0.2rem;
+  }
+`;
 function MyApp({ Component, pageProps, store }) {
   const messengerRef = useRef(null);
   const router = useRouter();
@@ -48,6 +58,8 @@ function MyApp({ Component, pageProps, store }) {
   }, [router.events]);
 
   useEffect(() => {
+    if (!window.location.href.split("/").includes("itinerary")) return;
+
     setTimeout(() => {
       (function () {
         function getElement(xpath) {
@@ -80,7 +92,6 @@ function MyApp({ Component, pageProps, store }) {
         let textArea = userInputContainer.shadowRoot.querySelector("textarea");
         if (!textArea) return console.error("Textarea not found");
 
-        if (!window.location.href.split("/").includes("itinerary")) return;
         textArea.value = `Give me more detail about this itinerary ${window.location.href}`;
 
         const enterEvent = new KeyboardEvent("keydown", {
@@ -110,18 +121,19 @@ function MyApp({ Component, pageProps, store }) {
           href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
         />
+           <link
+          rel="stylesheet"
+          href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css"
+        />
       </Head>
-      <link
-        rel="stylesheet"
-        href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css"
-      />
-      <Script
-        src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"
-        async
-        onLoad={() => {
-          setIsChatBotLoaded(true);
-        }}
-      />
+        <Script
+          src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"
+          async
+          onLoad={() => {
+            setIsChatBotLoaded(true);
+          }}
+          defer
+        />
       {typeof window !== "undefined" && isChatbotLoaded && (
         <>
           <df-messenger
@@ -134,12 +146,14 @@ function MyApp({ Component, pageProps, store }) {
           >
             {/* <df-messenger-chat-bubble chat-title="Personalized Travel Plan"             */}
             {/* //  chat-icon="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" to change floater icon, change this link */}
+            <Container>
             <df-messenger-chat-bubble
               chat-title="Personalized Travel Plan"
               chat-icon="https://images.thetarzanway.com/media/chatbot.png"
               chat-title-icon="https://openmoji.org/data/color/svg/1F4AC.svg"
               // to change floater icon, change this link
             ></df-messenger-chat-bubble>
+            </Container>
           </df-messenger>
         </>
       )}
@@ -159,7 +173,7 @@ function MyApp({ Component, pageProps, store }) {
             --df-messenger-chat-window-height:calc(100vh - 80px);
             --df-messenger-chat-window-height:calc(100vh - 90px);
             --df-messenger-chat-window-width: 33vw; 
-            --df-messenger-border-radius: 20px;
+            --df-messenger-border-radius: 9px;
              --df-messenger-button-size: 80px;
              --df-messenger-chat-bubble-icon-size: 80px;
              --df-messenger-send-icon-color: black;

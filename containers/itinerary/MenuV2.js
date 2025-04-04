@@ -73,13 +73,14 @@ const SimpleTabsV2 = (props) => {
   const [share, setShare] = useState(false);
   const [shareMobile, setShareMobile] = useState(false);
   const isDesktop = useMediaQuery("(min-width:1148px)");
-  // const transferBooking = useSelector((sta 
-  const transferBooking = useSelector((state) => state.TransferBookings);
-  console.log("transferBooking",transferBooking)
-  const {pricing_status} = useSelector((state)=>state.ItineraryStatus);
+  // const transferBooking = useSelector((sta
+  const transferBooking = useSelector(
+    (state) => state.TransferBookings
+  )?.transferBookings;
+  const { pricing_status } = useSelector((state) => state.ItineraryStatus);
 
   const stays = useSelector((state) => state.Stays);
- // console.log("Stays",stays);
+  // console.log("Stays",stays);
 
   useEffect(() => {
     if (router.query.payment_status) {
@@ -570,21 +571,21 @@ const SimpleTabsV2 = (props) => {
                   activityBookings={props?.activityBookings}
                   setActivityBookings={props?.setActivityBookings}
                   itinerary={props.itinerary}
-                  transferBookings={props?.transferBookings}
+                  transferBookings={transferBooking}
                   setTransferBookings={props?.setTransferBookings}
                   setItinerary={props?.setItinerary}
                   payment={props.payment}
                   stayBookings={stays}
                   setStayBookings={props.setStayBookings}
                   _updateBookingHandler={props._updateBookingHandler}
-                    _updateStayBookingHandler={props._updateStayBookingHandler}
-                    _updatePaymentHandler={props._updatePaymentHandler}
-                    getPaymentHandler={props.getPaymentHandler}
-                    setShowBookingModal={() => props.setShowBookingModal(true)}
-                    showBookingModal={props.showBookingModal}
-                    setHideBookingModal={props.setHideBookingModal}
-                    setShowLoginModal={setShowLoginModal}
-                    _GetInTouch={_GetInTouch}
+                  _updateStayBookingHandler={props._updateStayBookingHandler}
+                  _updatePaymentHandler={props._updatePaymentHandler}
+                  getPaymentHandler={props.getPaymentHandler}
+                  setShowBookingModal={() => props.setShowBookingModal(true)}
+                  showBookingModal={props.showBookingModal}
+                  setHideBookingModal={props.setHideBookingModal}
+                  setShowLoginModal={setShowLoginModal}
+                  _GetInTouch={_GetInTouch}
                 />
               )
             ) : (
@@ -798,7 +799,7 @@ const SimpleTabsV2 = (props) => {
                     ></SummaryContainer>
                   ) : (
                     <NewSummaryContainers
-                    loadpricing={props?.loadpricing}
+                      loadpricing={props?.loadpricing}
                       payment={props?.payment}
                       itineraryDate={props?.itineraryDate}
                       mercuryItinerary={props?.mercuryItinerary}
@@ -863,18 +864,22 @@ const SimpleTabsV2 = (props) => {
                       setItinerary={props?.setItinerary}
                       itinerary={props?.itinerary}
                       loadbookings={props?.loadbookings}
-                  payment={props.payment}
-                  stayBookings={stays}
-                  setStayBookings={props.setStayBookings}
-                  _updateBookingHandler={props._updateBookingHandler}
-                    _updateStayBookingHandler={props._updateStayBookingHandler}
-                    _updatePaymentHandler={props._updatePaymentHandler}
-                    getPaymentHandler={props.getPaymentHandler}
-                    setShowBookingModal={(val) => props.setShowStayBookingModal(val)}
-                    showBookingModal={props.showStayBookingModal}
-                    setHideBookingModal={props.setHideBookingModal}
-                    setShowLoginModal={setShowLoginModal}
-                    _GetInTouch={_GetInTouch}
+                      payment={props.payment}
+                      stayBookings={stays}
+                      setStayBookings={props.setStayBookings}
+                      _updateBookingHandler={props._updateBookingHandler}
+                      _updateStayBookingHandler={
+                        props._updateStayBookingHandler
+                      }
+                      _updatePaymentHandler={props._updatePaymentHandler}
+                      getPaymentHandler={props.getPaymentHandler}
+                      setShowBookingModal={(val) =>
+                        props.setShowStayBookingModal(val)
+                      }
+                      showBookingModal={props.showStayBookingModal}
+                      setHideBookingModal={props.setHideBookingModal}
+                      setShowLoginModal={setShowLoginModal}
+                      _GetInTouch={_GetInTouch}
                     />
                   )
                 : props?.itinerary && (
@@ -914,7 +919,9 @@ const SimpleTabsV2 = (props) => {
                     _updateStayBookingHandler={props._updateStayBookingHandler}
                     _updatePaymentHandler={props._updatePaymentHandler}
                     getPaymentHandler={props.getPaymentHandler}
-                    setShowBookingModal={(value) => props.setShowBookingModal(value)}
+                    setShowBookingModal={(value) =>
+                      props.setShowBookingModal(value)
+                    }
                     showBookingModal={props.showBookingModal}
                     setHideBookingModal={props.setHideBookingModal}
                     setShowLoginModal={setShowLoginModal}
@@ -953,46 +960,13 @@ const SimpleTabsV2 = (props) => {
               </div>
             )}
 
-            
-              <div id={"Transfers"}>
-                {props.mercuryItinerary ? (
-                      <>
-                        <TransferBookings
-                          loadbookings={props?.loadbookings}
-                          setShowLoginModal={setShowLoginModal}
-                          showTaxiModal={props.showTaxiModal}
-                          _updateFlightBookingHandler={
-                            props._updateFlightBookingHandler
-                          }
-                          setShowTaxiModal={props.setShowTaxiModal}
-                          getPaymentHandler={props.getPaymentHandler}
-                          _updateTaxiBookingHandler={
-                            props._updateTaxiBookingHandler
-                          }
-                          _updatePaymentHandler={props._updatePaymentHandler}
-                          _updateBookingHandler={props._updateBookingHandler}
-                          showFlightModal={props.showFlightModal}
-                          setShowFlightModal={_handleFlighModalShow}
-                          setHideFlightModal={_handleFlightModalClose}
-                          setShowBookingModal={() =>
-                            props.setShowBookingModal(true)
-                          }
-                          setHideBookingModal={props.setHideBookingModal}
-                          payment={props.payment}
-                          fetchData={props.fetchData}
-                          _GetInTouch={_GetInTouch}
-                        />
-                      </>
-                ) : (
-                  <TransfersContainer
+            <div id={"Transfers"}>
+              {props.mercuryItinerary ? (
+                <>
+                  <TransferBookings
+                    loadbookings={props?.loadbookings}
                     setShowLoginModal={setShowLoginModal}
-                    plan={props.plan}
-                    dayslab={props?.itinerary?.day_slabs}
-                    breif={props?.breif}
                     showTaxiModal={props.showTaxiModal}
-                    routesData={RoutesData}
-                    transfers={TransfersData}
-                    routes={props.routes}
                     _updateFlightBookingHandler={
                       props._updateFlightBookingHandler
                     }
@@ -1007,13 +981,41 @@ const SimpleTabsV2 = (props) => {
                     setShowBookingModal={() => props.setShowBookingModal(true)}
                     setHideBookingModal={props.setHideBookingModal}
                     payment={props.payment}
-                    transferBookings={props.transferBookings}
-                    itinerary_id={props.itinerary_id}
                     fetchData={props.fetchData}
                     _GetInTouch={_GetInTouch}
                   />
-                )}
-              </div>
+                </>
+              ) : (
+                <TransfersContainer
+                  setShowLoginModal={setShowLoginModal}
+                  plan={props.plan}
+                  dayslab={props?.itinerary?.day_slabs}
+                  breif={props?.breif}
+                  showTaxiModal={props.showTaxiModal}
+                  routesData={RoutesData}
+                  transfers={TransfersData}
+                  routes={props.routes}
+                  _updateFlightBookingHandler={
+                    props._updateFlightBookingHandler
+                  }
+                  setShowTaxiModal={props.setShowTaxiModal}
+                  getPaymentHandler={props.getPaymentHandler}
+                  _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+                  _updatePaymentHandler={props._updatePaymentHandler}
+                  _updateBookingHandler={props._updateBookingHandler}
+                  showFlightModal={props.showFlightModal}
+                  setShowFlightModal={_handleFlighModalShow}
+                  setHideFlightModal={_handleFlightModalClose}
+                  setShowBookingModal={() => props.setShowBookingModal(true)}
+                  setHideBookingModal={props.setHideBookingModal}
+                  payment={props.payment}
+                  transferBookings={props.transferBookings}
+                  itinerary_id={props.itinerary_id}
+                  fetchData={props.fetchData}
+                  _GetInTouch={_GetInTouch}
+                />
+              )}
+            </div>
 
             {props.activityBookings && (
               <div id={"Activities"}>
@@ -1085,51 +1087,58 @@ const SimpleTabsV2 = (props) => {
       <div className="z-10 sticky shadow-lg z-2 bottom-[0px] bg-white px-1 py-2 md:hidden -mx-5">
         <div className="flex flex-row justify-between items-center mx-3">
           <div className="flex flex-col">
-          <div className="flex justify-between">
-          {pricing_status === "FAILURE" ? <p className="text-red-600 text-sm">Get in touch to finalize the pricing!</p> : null }
-          {pricing_status === "FAILURE" ? <GetInTouchContainer className="">
-                      <Button
-                        color="#111"
-                        fontWeight="600"
-                        fontSize="0.85rem"
-                        borderWidth="1px"
-                        width="10rem"
-                        borderRadius="8px"
-                        bgColor="#f8e000"
-                        loading={loading}
-                        onclick={handleGetInTouch}
-                      >
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            gap: "0.5rem",
-                            alignItems: "center",
-                          }}
-                        >
-                          <ImageLoader
-                            dimensions={{ height: 50, width: 50 }}
-                            dimensionsMobile={{ height: 50, width: 50 }}
-                            height={"20px"}
-                            width={"20px"}
-                            widthmobile={"20px"}
-                            leftalign
-                            url={"media/icons/login/customer-service-black.png"}
-                          />{" "}
-                          <span>Get in touch!</span>
-                        </div>
-                      </Button>
-                    </GetInTouchContainer> : null}
+            <div className="flex justify-between">
+              {pricing_status === "FAILURE" ? (
+                <p className="text-red-600 text-sm">
+                  Get in touch to finalize the pricing!
+                </p>
+              ) : null}
+              {pricing_status === "FAILURE" ? (
+                <GetInTouchContainer className="">
+                  <Button
+                    color="#111"
+                    fontWeight="600"
+                    fontSize="0.85rem"
+                    borderWidth="2px"
+                    width="10rem"
+                    borderRadius="8px"
+                    bgColor="#f8e000"
+                    loading={loading}
+                    onclick={handleGetInTouch}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        gap: "0.5rem",
+                        alignItems: "center",
+                      }}
+                    >
+                      <ImageLoader
+                        dimensions={{ height: 50, width: 50 }}
+                        dimensionsMobile={{ height: 50, width: 50 }}
+                        height={"20px"}
+                        width={"20px"}
+                        widthmobile={"20px"}
+                        leftalign
+                        url={"media/icons/login/customer-service-black.png"}
+                      />{" "}
+                      <span>Get in touch!</span>
                     </div>
-            {props?.payment && <div className="text-sm">
-              {props?.payment?.pay_only_for_one ||
-              props?.payment?.show_per_person_cost
-                ? "Per Person"
-                : props.payment?.is_estimated_price
-                ? `${props.payment.total_cost == 0 ? "" : "Estimated Price"}`
-                : "Total Cost"}
-                    
-            </div>}
+                  </Button>
+                </GetInTouchContainer>
+              ) : null}
+            </div>
+            {props?.payment && (
+              <div className="text-sm">
+                {props?.payment?.pay_only_for_one ||
+                props?.payment?.show_per_person_cost
+                  ? "Per Person"
+                  : props.payment?.is_estimated_price
+                  ? `${props.payment.total_cost == 0 ? "" : "Estimated Price"}`
+                  : "Total Cost"}
+              </div>
+            )}
             {props.payment ? (
               <div>
                 <span className="font-bold">
@@ -1316,7 +1325,7 @@ const SimpleTabsV2 = (props) => {
       {isPageWide && (
         <div
           onClick={() => setShare((prev) => !prev)}
-          className="z-[999] flex fixed bottom-[90px] right-[25px] bg-[#2b2b27] p-[18px] w-fit items-center justify-center rounded-full cursor-pointer"
+          className="z-[999] flex fixed bottom-[90px] right-[25px] p-[18px] w-fit items-center justify-center rounded-full cursor-pointer bg-black mb-[1rem]"
         >
           {share ? (
             <IoMdClose className="animate-popOut text-[25px] text-white" />
@@ -1339,9 +1348,9 @@ const SimpleTabsV2 = (props) => {
 
       <div
         onClick={() => setShareMobile((prev) => !prev)}
-        className="z-[999] fixed bottom-[130px] right-[16px] md:hidden bg-[#2b2b27] p-[18px] w-fit flex items-center justify-center rounded-full cursor-pointer"
+        className="z-[999] fixed bottom-[160px] right-[16px] md:hidden bg-black mb-[1rem] p-[18px] w-fit flex items-center justify-center rounded-full cursor-pointer"
       >
-        <BsShareFill className="text-[25px] text-white" />
+        <BsShareFill className="text-[25px] text-white " />
       </div>
 
       {shareMobile && (
@@ -1392,6 +1401,7 @@ const mapStateToPros = (state) => {
     itinerary_id: state.ItineraryId,
     tripsPage: state.TripsPage,
     itineraryDaybyDay: state.ItineraryDaybyDay,
+    transferBookings:state.TransferBookings?.transferBookings
   };
 };
 
@@ -1534,6 +1544,3 @@ function newFunction(
   }
   return totalcityslabs;
 }
-
-
-                            
