@@ -1316,7 +1316,7 @@ const SimpleTabsV2 = (props) => {
       {isPageWide && (
         <div
           onClick={() => setShare((prev) => !prev)}
-          className="z-[999] flex fixed bottom-[90px] right-[25px] bg-[#2b2b27] p-[18px] w-fit items-center justify-center rounded-full cursor-pointer"
+          className="z-[999] flex fixed bottom-[90px] right-[25px] p-[18px] w-fit items-center justify-center rounded-full cursor-pointer bg-black mb-[1rem]"
         >
           {share ? (
             <IoMdClose className="animate-popOut text-[25px] text-white" />
@@ -1339,9 +1339,9 @@ const SimpleTabsV2 = (props) => {
 
       <div
         onClick={() => setShareMobile((prev) => !prev)}
-        className="z-[999] fixed bottom-[130px] right-[16px] md:hidden bg-[#2b2b27] p-[18px] w-fit flex items-center justify-center rounded-full cursor-pointer"
+        className="z-[999] fixed bottom-[160px] right-[16px] md:hidden bg-black mb-[1rem] p-[18px] w-fit flex items-center justify-center rounded-full cursor-pointer"
       >
-        <BsShareFill className="text-[25px] text-white" />
+        <BsShareFill className="text-[25px] text-white " />
       </div>
 
       {shareMobile && (

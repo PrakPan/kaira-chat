@@ -13,6 +13,16 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import Script from "next/script";
+import styled from 'styled-components';
+
+const Container = styled.div`
+      margin-right: -0.6rem;
+    margin-bottom: 5rem; 
+  @media screen and (min-width: 768px) {
+  margin-bottom: 0rem;
+  margin-right:0.2rem;
+  }
+`;
 function MyApp({ Component, pageProps, store }) {
   const messengerRef = useRef(null);
   const router = useRouter();
@@ -134,12 +144,14 @@ function MyApp({ Component, pageProps, store }) {
           >
             {/* <df-messenger-chat-bubble chat-title="Personalized Travel Plan"             */}
             {/* //  chat-icon="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" to change floater icon, change this link */}
+            <Container>
             <df-messenger-chat-bubble
               chat-title="Personalized Travel Plan"
               chat-icon="https://images.thetarzanway.com/media/chatbot.png"
               chat-title-icon="https://openmoji.org/data/color/svg/1F4AC.svg"
               // to change floater icon, change this link
             ></df-messenger-chat-bubble>
+            </Container>
           </df-messenger>
         </>
       )}
