@@ -12,20 +12,32 @@ export const clearTransferBookings = () => ({
 });
 
 export const updateTransferBookings = (bookingIdToDelete) => {
-  //console.log("Inside Redux",bookingIdToDelete);
+  console.log("Inside Redux", bookingIdToDelete);
   return (dispatch, getState) => {
     const state = getState();
     const updatedData = { ...state.TransferBookings?.transferBookings }; 
+    console.log("Updated Data", updatedData);
+    
     Object.keys(updatedData).forEach((category) => {
       if (updatedData[category]) {
         Object.keys(updatedData[category]).forEach((key) => {
-          if (key === bookingIdToDelete) {
+          if (updatedData[category][key]?.children && Array.isArray(updatedData[category][key].children)) {
+            const updatedChildren = updatedData[category][key].children.map((combo) => {
+              if (combo.id === bookingIdToDelete) {
+                return { ...combo, id: "" };
+              }
+              return combo;
+            });
+            updatedData[category][key].children = updatedChildren;
+          }
+          if (updatedData[category][key]?.id === bookingIdToDelete) {
             updatedData[category][key] = {};
           }
         });
       }
     });
-  //  console.log("Updated Data ",updatedData);
+    
+    console.log("Updated Data ", updatedData);
 
     dispatch({
       type: actionTypes.UPDATE_TRANSFER_BOOKINGS,

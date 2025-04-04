@@ -74,7 +74,8 @@ const SimpleTabsV2 = (props) => {
   const [shareMobile, setShareMobile] = useState(false);
   const isDesktop = useMediaQuery("(min-width:1148px)");
   // const transferBooking = useSelector((sta 
-  const transferBooking = useSelector((state) => state.TransferBookings)?.transferBookings
+  const transferBooking = useSelector((state) => state.TransferBookings);
+  console.log("transferBooking",transferBooking)
   const {pricing_status} = useSelector((state)=>state.ItineraryStatus);
 
   const stays = useSelector((state) => state.Stays);
@@ -393,7 +394,7 @@ const SimpleTabsV2 = (props) => {
                   color="#111"
                   fontWeight="400"
                   fontSize="0.45rem"
-                  borderWidth="2px"
+                  borderWidth="1px"
                   width="12rem"
                   borderRadius="10px"
                   bgColor="#F7E700"
@@ -431,7 +432,7 @@ const SimpleTabsV2 = (props) => {
                             color="#111"
                             fontWeight="400"
                             fontSize="0.45rem"
-                            borderWidth="2px"
+                            borderWidth="1px"
                             width="13rem"
                             borderRadius="10px"
                             bgColor="#F7E700"
@@ -447,7 +448,7 @@ const SimpleTabsV2 = (props) => {
                             color="#111"
                             fontWeight="400"
                             fontSize="0.45rem"
-                            borderWidth="2px"
+                            borderWidth="1px"
                             width="9rem"
                             borderRadius="10px"
                             bgColor="#F7E700"
@@ -464,7 +465,7 @@ const SimpleTabsV2 = (props) => {
                             color="#111"
                             fontWeight="600"
                             fontSize="0.85rem"
-                            borderWidth="2px"
+                            borderWidth="1px"
                             width="11rem"
                             borderRadius="8px"
                             bgColor="#f8e000"
@@ -514,7 +515,7 @@ const SimpleTabsV2 = (props) => {
                         color="#111"
                         fontWeight="400"
                         fontSize="0.45rem"
-                        borderWidth="2px"
+                        borderWidth="1px"
                         width="9rem"
                         borderRadius="10px"
                         bgColor="#F7E700"
@@ -1091,7 +1092,7 @@ const SimpleTabsV2 = (props) => {
                         color="#111"
                         fontWeight="600"
                         fontSize="0.85rem"
-                        borderWidth="2px"
+                        borderWidth="1px"
                         width="10rem"
                         borderRadius="8px"
                         bgColor="#f8e000"
@@ -1174,7 +1175,7 @@ const SimpleTabsV2 = (props) => {
               color="#111"
               fontWeight="600"
               fontSize="0.85rem"
-              borderWidth="3px"
+              borderWidth="1px"
               width="10rem"
               borderRadius="8px"
               bgColor="#f8e000"
@@ -1190,7 +1191,7 @@ const SimpleTabsV2 = (props) => {
                     color="#111"
                     fontWeight="600"
                     fontSize="0.85rem"
-                    borderWidth="3px"
+                    borderWidth="1px"
                     width="10rem"
                     borderRadius="8px"
                     bgColor="#f8e000"
@@ -1202,17 +1203,17 @@ const SimpleTabsV2 = (props) => {
               ) : null}
 
               {props.payment && props.token ? (
-                props.payment?.itinerary_status ===
-                  ITINERARY_STATUSES?.itinerary_finalized &&
+                (props.payment?.itinerary_status ===
+                  ITINERARY_STATUSES?.itinerary_finalized || pricing_status === "SUCCESS" ) &&
                 !props.payment?.paid_user &&
                 props.payment?.user_allowed_to_pay ? (
-                  props.payment.total_cost > 0 ? (
+                  (props.payment.total_cost > 0 || props?.payment?.discounted_cost > 0) ? (
                     <div className="">
                       <Button
                         color="#111"
                         fontWeight="600"
                         fontSize="0.85rem"
-                        borderWidth="2px"
+                        borderWidth="1px"
                         width="10rem"
                         borderRadius="8px"
                         bgColor="#f8e000"
@@ -1229,7 +1230,7 @@ const SimpleTabsV2 = (props) => {
                         color="#111"
                         fontWeight="600"
                         fontSize="0.85rem"
-                        borderWidth="2px"
+                        borderWidth="1px"
                         width="10rem"
                         borderRadius="8px"
                         bgColor="#f8e000"
@@ -1297,7 +1298,7 @@ const SimpleTabsV2 = (props) => {
                     color="#111"
                     fontWeight="600"
                     fontSize="0.85rem"
-                    borderWidth="2px"
+                    borderWidth="1px"
                     width="10rem"
                     borderRadius="8px"
                     bgColor="#f8e000"

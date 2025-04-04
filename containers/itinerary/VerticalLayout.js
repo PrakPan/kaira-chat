@@ -9,9 +9,12 @@ import axios from "axios";
 import { MERCURY_HOST } from "../../services/constants";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { ToastContainer, toast} from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import { axiosDeleteBooking } from "../../services/itinerary/bookings";
-import { setTransferBookings, updateTransferBookings } from "../../store/actions/transferBookingsStore";
+import {
+  setTransferBookings,
+  updateTransferBookings,
+} from "../../store/actions/transferBookingsStore";
 import { useDispatch } from "react-redux";
 import TransferEditDrawer from "../../components/drawers/routeTransfer/TransferEditDrawer";
 import VehicleDetailModal from "../../components/modals/daybyday/VehicleModal";
@@ -56,11 +59,10 @@ const CityItem = ({
   origin_city_id,
   destination_city_name,
   origin_city_name,
-  loadbookings
+  loadbookings,
 }) => {
-
-  console.log("City Name",city);
-  const [show,setShow] =useState(false);
+  console.log("City Name", city);
+  const [show, setShow] = useState(false);
   const correctIcon = (TransportMode) => {
     switch (TransportMode) {
       case "Flight":
@@ -92,12 +94,12 @@ const CityItem = ({
   };
   const [handleShow, setHandleShow] = useState(false);
   const [data, setData] = useState({});
-  const [visible,setVisible] = useState(false);
-  const [loading,setLoading] = useState(false);
-  const [showDrawer,setShowDrawer] =useState(false);
+  const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showDrawer, setShowDrawer] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
-  let isPageWide = window.matchMedia("(min-width: 768px)");
+  let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
 
   //console.log("isPageWide",isPageWide);
   const handleEdit = async () => {
@@ -111,27 +113,32 @@ const CityItem = ({
   };
 
   const handleDelete = async () => {
-      try {
-          setLoading(true);  
-          const response = await axiosDeleteBooking.delete(`${data?.itinerary_id}/bookings/${data?.booking_type?.toLowerCase()}/${data?.id}/`);
-          
-          if (response.status === 204) {  
-            dispatch(updateTransferBookings(bookingIdToDelete));
-              setLoading(false);
-              toast.success("Booking deleted successfuly");
-              setVisible(true);
-              setHandleShow(false);
-              console.log("Deleted Booking");
+    try {
+      setLoading(true);
+      const response = await axiosDeleteBooking.delete(
+        `${data?.itinerary_id}/bookings/${data?.booking_type?.toLowerCase()}/${
+          data?.id
+        }/`
+      );
 
-          }
-      } catch (err) {
-          console.log("[ERROR][ItineraryPage][axiosDeleteBooking:/Delete_Booking]", err);
-          toast.error("Error",err.message);
-          setLoading(false); 
+      if (response.status === 204) {
+        dispatch(updateTransferBookings(bookingIdToDelete));
+        setLoading(false);
+        toast.success("Booking deleted successfuly");
+        setVisible(true);
+        setHandleShow(false);
+        console.log("Deleted Booking");
       }
+    } catch (err) {
+      console.log(
+        "[ERROR][ItineraryPage][axiosDeleteBooking:/Delete_Booking]",
+        err
+      );
+      toast.error("Error", err.message);
+      setLoading(false);
+    }
   };
   
-
   return (
     <Container>
       <PinWrapper>
@@ -180,72 +187,79 @@ const CityItem = ({
           !downPresent && upPresent && "mt-[41px]"
         } ${!upPresent && downPresent && "mb-[41px]"}`}
       >
-        {loadbookings ? <TransferSkeleton/> : <div className="font-[Poppins] text-[16px] font-[500] flex gap-1">
-          {(booking_id || city) && !visible ? <> <div className="mt-[4px]">{correctIcon(booking_type)}</div>
-          <div className="flex flex-col group hover:cursor-pointer" onClick={() => 
-            upPresent&&downPresent&&handleEdit()
-            }>
-            <div className="flex gap-2 items-center ">
-              <div className="group-hover:text-blue ">{city}{" "}</div>
-              {upPresent && downPresent && (
+        {loadbookings ? (
+          <TransferSkeleton />
+        ) : (
+          <div className="font-[Poppins] text-[16px] font-[500] flex gap-1">
+            {(booking_id || city) && !visible ? (
+              <>
+                {" "}
+                <div className="mt-[4px]">{correctIcon(booking_type)}</div>
                 <div
-                  className=""
-                  
+                  className="flex flex-col group hover:cursor-pointer"
+                  onClick={() => upPresent && downPresent && handleEdit()}
                 >
-                  <FaPen size={12} className="transition-transform group-hover:scale-150 duration-300 group-hover:text-yellow-500"/>
-                </div>
-              )}
-            </div>
-            {duration && (
-              <div className="font-[Poppins] font-[400] text-[12px] ">
-                Duration: {duration}
-              </div>
+                  <div className="flex gap-2 items-center ">
+                    <div className="group-hover:text-blue ">{city} </div>
+                    {upPresent && downPresent && (
+                      <div className="">
+                        <FaPen
+                          size={12}
+                          className="transition-transform group-hover:scale-150 duration-300 group-hover:text-yellow-500"
+                        />
+                      </div>
+                    )}
+                  </div>
+                  {duration && (
+                    <div className="font-[Poppins] font-[400] text-[12px] ">
+                      Duration: {duration}
+                    </div>
+                  )}
+                </div>{" "}
+              </>
+            ) : isPageWide ? (
+              <button
+                onClick={() => setShowDrawer(true)}
+                className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
+              >
+                + Add Transfer from {origin_city_name} to{" "}
+                {destination_city_name}
+              </button>
+            ) : (
+              <button
+                onClick={() => setShowDrawer(true)}
+                className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
+              >
+                + Add Transfer
+              </button>
             )}
-          </div> </> : 
-          isPageWide ? <button
-          onClick={() =>
-            setShowDrawer(true)
-            }
-          className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
-        >
-          + Add Transfer from {origin_city_name} to {destination_city_name}
-        </button> :
-        <button
-        onClick={() =>
-          setShowDrawer(true)
-          }
-        className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
-      >
-        + Add Transfer
-      </button>}
-        </div>}
+          </div>
+        )}
       </div>
       <TransferEditDrawer
-                  mercury
-                  addOrEdit={"transferAdd"}
-                  showDrawer={showDrawer}
-                  setShowDrawer={setShowDrawer}
-                  // selectedTransferHeading={origin}
-                  origin={origin_city_id}
-                  destination={destination_city_id}
-                  // check_in={check_in}
-                  // routeId={id}
-                  city={origin_city_name}
-                  dcity={
-                    destination_city_name
-                  }
-                  // selectedBooking={selectedBooking}
+        mercury
+        addOrEdit={"transferAdd"}
+        showDrawer={showDrawer}
+        setShowDrawer={setShowDrawer}
+        // selectedTransferHeading={origin}
+        origin={origin_city_id}
+        destination={destination_city_id}
+        // check_in={check_in}
+        // routeId={id}
+        city={origin_city_name}
+        dcity={destination_city_name}
+        // selectedBooking={selectedBooking}
       />
       <Drawer
-      show={handleShow}
-      anchor={"right"}
-      backdrop
-      style={{ zIndex: 1501 }}
-      className="font-lexend"
-      onHide={setHandleShow}
-      mobileWidth="100vw"
-      width="50vw"
-    >
+        show={handleShow}
+        anchor={"right"}
+        backdrop
+        style={{ zIndex: 1501 }}
+        className="font-lexend"
+        onHide={setHandleShow}
+        mobileWidth="100vw"
+        width={`${!(booking_type === "Flight") ? "45vw" : "50vw"}`}
+      >
         {booking_type === "Flight" ? (
           <>
             <FlightDetailModal
@@ -260,7 +274,12 @@ const CityItem = ({
           <></>
         ) : (
           <>
-            <VehicleDetailModal data={data} setHandleShow={setHandleShow} handleDelete={handleDelete} loading={loading}/>
+            <VehicleDetailModal
+              data={data}
+              setHandleShow={setHandleShow}
+              handleDelete={handleDelete}
+              loading={loading}
+            />
           </>
         )}
       </Drawer>
