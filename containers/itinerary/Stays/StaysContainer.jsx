@@ -23,8 +23,8 @@ const StaysContainer = (props) => {
   const [currentBooking, setCurrentBooking] = useState(null);
   const [bookingFunData, setBookingFunData] = useState(null);
   const [dates, setDates] = useState({ check_in: "", check_out: "" });
-  const itineraryFilter=useSelector((state)=>state.ItineraryFilters)
-  const {hotels_status} = useSelector((state)=>state.ItineraryStatus)
+  const itineraryFilter = useSelector((state) => state.ItineraryFilters);
+  const { hotels_status } = useSelector((state) => state.ItineraryStatus);
   const _setImagesHandler = (images) => {
     setImages(images);
   };
@@ -74,12 +74,12 @@ const StaysContainer = (props) => {
       cost: Math.round(cost),
       costings_breakdown: costings_breakdown,
       images: images,
-      clickType:clickType
+      clickType: clickType,
     });
     props.setShowBookingModal(true);
   };
 
-  function handleClickAc(i, data, city_id,clickType) {
+  function handleClickAc(i, data, city_id, clickType) {
     console.log("Inside Stays");
     let name = props.stayBookings[i]?.["name"];
     let itinerary_id = props.stayBookings[i]["itinerary_id"];
@@ -116,12 +116,12 @@ const StaysContainer = (props) => {
       itinerary_name,
       clickType
     );
-    data.clickType=clickType
+    data.clickType = clickType;
     setCurrentBooking(data);
     props.setShowBookingModal(true);
   }
 
-  function  handleClick(i, id, data, city_id) {
+  function handleClick(i, id, data, city_id) {
     let check_in = itineraryFilter.check_in;
     let check_out = itineraryFilter.check_out;
     setDates({ check_in, check_out });
@@ -132,8 +132,7 @@ const StaysContainer = (props) => {
     setShowDetails(true);
   }
 
- 
- // console.log("CITTT",props?.cities)
+  // console.log("CITTT",props?.cities)
 
   return (
     <div id="stays" className="mt-16">
@@ -146,7 +145,7 @@ const StaysContainer = (props) => {
       </div>
 
       <div className="mt-4 space-y-6">
-        {hotels_status ==="SUCCESS" ?
+        {hotels_status === "SUCCESS" ? (
           props.stayBookings.map((booking, index) => (
             <HotelBooking
               key={index}
@@ -162,64 +161,64 @@ const StaysContainer = (props) => {
               setShowDetails={setShowDetails}
               cities={props?.cities}
             />
-          )) :
+          ))
+        ) : (
           <>
             <div className={`${!isPageWide ? "max-w-fit" : "max-w-[54vw]"}`}>
-             
-            {hotels_status ==="PENDING" &&
-      <div className="animate-pulse">
-      {/* Skeleton loader for city name */}
-      <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
-        <div className="bg-gray-300 h-6 w-1/2 mb-2"></div>
-        <span className="ml-1 bg-gray-200 h-4 w-12 inline-block"></span>
-      </div>
+              {hotels_status === "PENDING" && (
+                <div className="animate-pulse">
+                  {/* Skeleton loader for city name */}
+                  <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
+                    <div className="bg-gray-300 h-6 w-1/2 mb-2"></div>
+                    <span className="ml-1 bg-gray-200 h-4 w-12 inline-block"></span>
+                  </div>
 
-      {/* Skeleton loader for hotel image */}
-      <div className="relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3">
-        <div className="relative flex lg:flex-row w-full flex-col gap-4">
-          <div className="relative lg:h-[12rem] lg:w-[30%] w-full h-[12rem]">
-            <div className="h-full w-full bg-gray-300 rounded-2xl"></div>
-          </div>
+                  {/* Skeleton loader for hotel image */}
+                  <div className="relative shadow-md rounded-2xl transition-all border-2 hover:shadow-lg duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-4 p-3">
+                    <div className="relative flex lg:flex-row w-full flex-col gap-4">
+                      <div className="relative lg:h-[12rem] lg:w-[30%] w-full h-[12rem]">
+                        <div className="h-full w-full bg-gray-300 rounded-2xl"></div>
+                      </div>
 
-          {/* Skeleton loader for hotel details */}
-          <div className="flex flex-col gap-2 text-[#01202B] lg:w-[70%] w-full justify-between">
-            <div className="flex flex-col gap-2">
-              <div className="flex flex-row justify-between items-center">
-                <div className="bg-gray-300 h-6 w-2/3"></div>
-                <div className="bg-gray-300 h-4 w-16"></div>
-              </div>
+                      {/* Skeleton loader for hotel details */}
+                      <div className="flex flex-col gap-2 text-[#01202B] lg:w-[70%] w-full justify-between">
+                        <div className="flex flex-col gap-2">
+                          <div className="flex flex-row justify-between items-center">
+                            <div className="bg-gray-300 h-6 w-2/3"></div>
+                            <div className="bg-gray-300 h-4 w-16"></div>
+                          </div>
 
-              <div className="flex flex-col gap-1">
-                <div className="bg-gray-300 h-4 w-32 mb-1"></div>
-                <div className="flex flex-row gap-2 items-center">
-                  <div className="bg-gray-300 h-5 w-1/2"></div>
-                  <div className="bg-gray-300 h-3 w-16"></div>
+                          <div className="flex flex-col gap-1">
+                            <div className="bg-gray-300 h-4 w-32 mb-1"></div>
+                            <div className="flex flex-row gap-2 items-center">
+                              <div className="bg-gray-300 h-5 w-1/2"></div>
+                              <div className="bg-gray-300 h-3 w-16"></div>
+                            </div>
+                          </div>
+
+                          {/* Skeleton loader for room and bed */}
+                          <div className="flex flex-row gap-2 items-center my-0">
+                            <div className="bg-gray-300 h-3 w-20"></div>
+                          </div>
+
+                          {/* Skeleton loader for meals and wifi */}
+                          <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
+                            <div className="bg-gray-300 h-3 w-24"></div>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-row gap-2 items-end justify-end w-full">
+                          <div className="bg-gray-300 h-8 w-24 rounded"></div>
+                          <div className="bg-gray-300 h-8 w-24 rounded"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-
-              {/* Skeleton loader for room and bed */}
-              <div className="flex flex-row gap-2 items-center my-0">
-                <div className="bg-gray-300 h-3 w-20"></div>
-              </div>
-
-              {/* Skeleton loader for meals and wifi */}
-              <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
-                <div className="bg-gray-300 h-3 w-24"></div>
-              </div>
-            </div>
-
-            <div className="flex flex-row gap-2 items-end justify-end w-full">
-              <div className="bg-gray-300 h-8 w-24 rounded"></div>
-              <div className="bg-gray-300 h-8 w-24 rounded"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>}
-
+              )}
             </div>
           </>
-          }
+        )}
       </div>
 
       <AccommodationModal

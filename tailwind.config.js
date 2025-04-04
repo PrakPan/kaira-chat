@@ -17,6 +17,7 @@ module.exports = {
       fontFamily: {
         buffalo: ['Buffalo', 'sans-serif'],
         poppins: ["Poppins", "sans-serif"],
+        lexend: ["Lexend", "sans-serif"]
       },
       fontWeight: {
         350: '350',

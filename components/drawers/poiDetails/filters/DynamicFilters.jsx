@@ -87,8 +87,8 @@ export default function DyamicFilters(props) {
               >
                 <div className="text-[#01202B] ">Cancel</div>
               </ButtonYellow>
-              <ButtonYellow className="w-1/2 !bg-black" onClick={handleApply}>
-                <div className="text-white">Apply</div>
+              <ButtonYellow className="w-1/2 " onClick={handleApply}>
+                <div id="apply-button">Apply</div>
               </ButtonYellow>
             </div>
           </div>

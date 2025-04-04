@@ -1079,7 +1079,6 @@ useEffect(() => {
           _updateTransferHandler={_updateTransferBookingHandler}
           _updateStayBookingHandler={_updateStayBookingHandler}
           activityBookings={activityBookings}
-          transferBookings={transferBookings}
           setTransferBookings={setTransferBookings}
           cityTransferBookings={cityTransferBookings}
           stayBookings={stayBookings}

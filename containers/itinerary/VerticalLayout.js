@@ -10,7 +10,12 @@ import { MERCURY_HOST } from "../../services/constants";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import { axiosDeleteBooking } from "../../services/itinerary/bookings";
+import {
+  setTransferBookings,
+  updateTransferBookings,
+} from "../../store/actions/transferBookingsStore";
 import {
   setTransferBookings,
   updateTransferBookings,
@@ -60,9 +65,14 @@ const CityItem = ({
   destination_city_name,
   origin_city_name,
   loadbookings,
+  setShowLoginModal,
+  origin,
+  destination
 }) => {
-  console.log("City Name", city);
-  const [show, setShow] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState({
+    id: null,
+    name: null,
+  });
   const correctIcon = (TransportMode) => {
     switch (TransportMode) {
       case "Flight":
@@ -137,8 +147,32 @@ const CityItem = ({
       toast.error("Error", err.message);
       setLoading(false);
     }
+    try {
+      setLoading(true);
+      const response = await axiosDeleteBooking.delete(
+        `${data?.itinerary_id}/bookings/${data?.booking_type?.toLowerCase()}/${
+          data?.id
+        }/`
+      );
+
+      if (response.status === 204) {
+        dispatch(updateTransferBookings(bookingIdToDelete));
+        setLoading(false);
+        toast.success("Booking deleted successfuly");
+        setVisible(true);
+        setHandleShow(false);
+        console.log("Deleted Booking");
+      }
+    } catch (err) {
+      console.log(
+        "[ERROR][ItineraryPage][axiosDeleteBooking:/Delete_Booking]",
+        err
+      );
+      toast.error("Error", err.message);
+      setLoading(false);
+    }
   };
-  
+
   return (
     <Container>
       <PinWrapper>
@@ -235,6 +269,54 @@ const CityItem = ({
             )}
           </div>
         )}
+        {loadbookings ? (
+          <TransferSkeleton />
+        ) : (
+          <div className="font-[Poppins] text-[16px] font-[500] flex gap-1">
+            {(booking_id || city) && !visible ? (
+              <>
+                {" "}
+                <div className="mt-[4px]">{correctIcon(booking_type)}</div>
+                <div
+                  className="flex flex-col group hover:cursor-pointer"
+                  onClick={() => upPresent && downPresent && handleEdit()}
+                >
+                  <div className="flex gap-2 items-center ">
+                    <div className="group-hover:text-blue ">{city} </div>
+                    {upPresent && downPresent && (
+                      <div className="">
+                        <FaPen
+                          size={12}
+                          className="transition-transform group-hover:scale-150 duration-300 group-hover:text-yellow-500"
+                        />
+                      </div>
+                    )}
+                  </div>
+                  {duration && (
+                    <div className="font-[Poppins] font-[400] text-[12px] ">
+                      Duration: {duration}
+                    </div>
+                  )}
+                </div>{" "}
+              </>
+            ) : isPageWide ? (
+              <button
+                onClick={() => setShowDrawer(true)}
+                className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
+              >
+                + Add Transfer from {origin_city_name} to{" "}
+                {destination_city_name}
+              </button>
+            ) : (
+              <button
+                onClick={() => setShowDrawer(true)}
+                className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
+              >
+                + Add Transfer
+              </button>
+            )}
+          </div>
+        )}
       </div>
       <TransferEditDrawer
         mercury
@@ -246,9 +328,12 @@ const CityItem = ({
         destination={destination_city_id}
         // check_in={check_in}
         // routeId={id}
+        setShowLoginModal={setShowLoginModal}
         city={origin_city_name}
         dcity={destination_city_name}
-        // selectedBooking={selectedBooking}
+        originCityId={origin}
+        destinationCityId={destination}
+        selectedBooking={selectedBooking}
       />
       <Drawer
         show={handleShow}
@@ -259,6 +344,15 @@ const CityItem = ({
         onHide={setHandleShow}
         mobileWidth="100vw"
         width={`${!(booking_type === "Flight") ? "45vw" : "50vw"}`}
+      >
+        show={handleShow}
+        anchor={"right"}
+        backdrop
+        style={{ zIndex: 1501 }}
+        className="font-lexend"
+        onHide={setHandleShow}
+        mobileWidth="100vw"
+        width="50vw"
       >
         {booking_type === "Flight" ? (
           <>
@@ -274,6 +368,12 @@ const CityItem = ({
           <></>
         ) : (
           <>
+            <VehicleDetailModal
+              data={data}
+              setHandleShow={setHandleShow}
+              handleDelete={handleDelete}
+              loading={loading}
+            />
             <VehicleDetailModal
               data={data}
               setHandleShow={setHandleShow}
@@ -301,7 +401,7 @@ const CityItem = ({
           day_slab_index={props.daySlabIndex}
           element_index={props.elementIndex}
           fetchData={props?.fetchData}
-          setShowLoginModal={props?.setShowLoginModal}
+          setShowLoginModal={setShowLoginModal}
           check_in={props?.check_in}
           _GetInTouch={props._GetInTouch}
           routeId={props.routeId}

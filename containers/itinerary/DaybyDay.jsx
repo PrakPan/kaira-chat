@@ -31,6 +31,7 @@ const DaybyDay = ({
   setStayBookings,
   ...props
 }) => {
+  console.log("transfer bookings is:",transferBookings)
   const itineraryDaybyDay = useSelector((state) => state.Itinerary);
   const stayBookings = useSelector((state) => state.Stays);
   const [selectedBooking, setSelectedBooking] = useState({
@@ -137,7 +138,8 @@ const DaybyDay = ({
       number_of_infants: stayBookings[i]?.["number_of_infants"],
     };
     let city = stayBookings[i]?.["city_name"];
-    let cityId = stayBookings[i]?.city?.id || stayBookings[i]?.city_id || city_id;
+    let cityId =
+      stayBookings[i]?.city?.id || stayBookings[i]?.city_id || city_id;
     let room_type = stayBookings[i]?.["room"];
     _changeBookingHandler(
       name,
@@ -189,6 +191,7 @@ const DaybyDay = ({
 
         <div className="flex flex-col">
           <CityItem
+            setShowLoginModal={props?.setShowLoginModal}
             key={startCity?.place_id}
             city={startCity?.city_name}
             pinColour={CITY_COLOR_CODES[0 % 7]}
@@ -199,6 +202,7 @@ const DaybyDay = ({
             length={itineraryDaybyDay?.cities?.length}
           />
           <CityItem
+            setShowLoginModal={props?.setShowLoginModal}
             loadbookings={loadbookings}
             key={2}
             bookingIdToDelete={
@@ -266,6 +270,7 @@ const DaybyDay = ({
                 {index != itineraryDaybyDay?.cities.length - 1 && (
                   <div>
                     <CityItem
+                      setShowLoginModal={props?.setShowLoginModal}
                       mercury
                       loadbookings={loadbookings}
                       bookingIdToDelete={idMapping}
@@ -284,6 +289,8 @@ const DaybyDay = ({
                       booking_id={transferBookings?.intercity?.[idMapping]?.id}
                       width={width}
                       length={itineraryDaybyDay?.cities?.length}
+                      origin={city?.id}
+                      destination={itineraryDaybyDay?.cities[index + 1]?.id}
                       origin_city_id={city?.city?.id}
                       destination_city_id={
                         itineraryDaybyDay?.cities[index + 1]?.city?.id
@@ -300,6 +307,7 @@ const DaybyDay = ({
             );
           })}
           <CityItem
+            setShowLoginModal={props?.setShowLoginModal}
             key={endCity?.gmaps_place_id}
             loadbookings={loadbookings}
             city={
@@ -345,6 +353,7 @@ const DaybyDay = ({
             setBookingId={setBookingId}
           />
           <CityItem
+            setShowLoginModal={props?.setShowLoginModal}
             key={endCity?.place_id}
             city={endCity?.city_name}
             pinColour={CITY_COLOR_CODES[0 % 7]}

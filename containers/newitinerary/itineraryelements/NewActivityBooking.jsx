@@ -12,6 +12,7 @@ import { MdDoneAll } from "react-icons/md";
 import { convertDateFormat } from "../../../helper/ConvertDateFormat";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
+import Button from "../../../components/Button";
 const ClippathComp = styled.div`
   clip-path: polygon(0 0, 100% 0, 100% 50%, 100% 100%, 0% 100%);
 `;
@@ -149,7 +150,7 @@ export default function NewActivityBooking(props) {
               {props.data?.pricing?.total_price ? (
                 <div className="flex flex-col md:flex-row gap-1">
                   <div className="text-[24px] font-bold">
-                    <span>₹</span>
+                    <span className="!font-[lexend]" style={{fontFamily:"Lexend"}}>₹</span>
                     {getIndianPrice(Math.round(props.data.pricing.total_price))}
                   </div>
                   <div className="text-[14px] self-end">
@@ -176,12 +177,19 @@ export default function NewActivityBooking(props) {
                   </TransparentButton>
                 </div>
               ) : (
-                <div
-                  className="h-full text-blue underline cursor-pointer"
-                  onClick={() => handleClick(props.data?.id)}
+                <Button
+                bgColor={"#F7E700"}
+              borderRadius="8px"
+              fontWeight="400"
+              padding="2px"
+              hoverColor="white"
+              height={"full"}
+              // margin={!isPageWide ? "0.75rem 0 0 0" : "0"}
+                  // className="h-full text-blue underline cursor-pointer"
+                  onclick={() => handleClick(props.data?.id)}
                 >
                   View Details
-                </div>
+                </Button>
               )}
             </div>
           </div>
