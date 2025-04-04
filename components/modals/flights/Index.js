@@ -77,6 +77,9 @@ const ContentContainer = styled.div`
 `;
 
 const Booking = (props) => {
+
+  console.log("Flight Selected Booking",props?.selectedBooking);
+  console.log("Flight Selected Booking",props?.originCityId,props?.destinationCityId);
   let isPageWide = media("(min-width: 768px)");
   const dispatch = useDispatch();
   const transferBookings = useSelector((state)=>state.TransferBookings)
@@ -267,25 +270,80 @@ const Booking = (props) => {
       edge: props?.edge || props?.selectedBooking?.edge
     };
 
-   // console.log("Request Data",requestData);
+  //  console.log("originCityId + destinationCityId",props?.originCityId + ":" + props?.destinationCityId);
+   console.log("Request Data",requestData);
+    // updateFlightBooking
+    //   .post(`${itinerary_id}/bookings/flight/`, requestData, {
+    //     headers: {
+    //       Authorization: `Bearer ${props.token}`,
+    //     },
+    //   })
+    //   .then((res) => {
+    //     props._updateFlightBookingHandler([res.data]);
+    //     props.getPaymentHandler();
+    //     setUpdateBookingState(false);
+    //     const updatedTransferBookings = {
+    //       ...transferBookings,
+    //       intercity: {
+    //         ...transferBookings.intercity,
+    //         [originCityId + ":" + destinationCityId]: res?.data,
+    //       },
+    //     };
+    //     dispatch(setTransfersBookings(updatedTransferBookings));
     updateFlightBooking
-      .post(`${itinerary_id}/bookings/flight/`, requestData, {
-        headers: {
-          Authorization: `Bearer ${props.token}`,
-        },
-      })
-      .then((res) => {
-        props._updateFlightBookingHandler([res.data]);
-        props.getPaymentHandler();
-        setUpdateBookingState(false);
-        const updatedTransferBookings = {
-          ...transferBookings,
-          intercity: {
-            ...transferBookings.intercity,
-            [originCityId + ":" + destinationCityId]: res?.data,
-          },
-        };
-        dispatch(setTransfersBookings(updatedTransferBookings));
+    .post(`${itinerary_id}/bookings/flight/`, requestData, {
+      headers: {
+        Authorization: `Bearer ${props.token}`,
+      },
+    })
+    .then((res) => {
+      props._updateFlightBookingHandler([res.data]);
+      props.getPaymentHandler();
+      setUpdateBookingState(false);
+      
+      const updatedTransferBookings = JSON.parse(JSON.stringify(transferBookings?.transferBookings));
+      const bookingIdToUpdate = requestData?.booking_id;
+      
+      Object.keys(updatedTransferBookings).forEach((category) => {
+        if (updatedTransferBookings[category]) {
+          Object.keys(updatedTransferBookings[category]).forEach((key) => {
+            const booking = updatedTransferBookings[category][key];
+            
+            if (!booking || Object.keys(booking).length === 0) {
+              return;
+            }
+
+            if (booking?.id === bookingIdToUpdate) {
+              updatedTransferBookings[category][key] = {
+                ...booking, 
+                ...res.data  
+              };
+            } 
+            else if (booking?.children && Array.isArray(booking.children) && booking.children.length > 0) {
+              let foundMatch = false;
+              const updatedChildren = booking.children.map(childBooking => {
+                if (childBooking && childBooking.id === bookingIdToUpdate) {
+                  foundMatch = true;
+                  return {
+                    ...childBooking,  
+                    ...res.data      
+                  };
+                }
+                return childBooking; 
+              });
+              
+              if (foundMatch) {
+                updatedTransferBookings[category][key] = {
+                  ...booking,
+                  children: updatedChildren
+                };
+              }
+            }
+          });
+        }
+      });
+      
+      dispatch(setTransfersBookings(updatedTransferBookings));
         props.openNotification({
           type: "success",
           text: "Flight updated successfully.",

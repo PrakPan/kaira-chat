@@ -4,7 +4,7 @@ import { TransportIconFetcher } from "../../../helper/TransportIconFetcher";
 import ImageLoader from "../../../components/ImageLoader";
 import useMediaQuery from "../../../components/media";
 import media from "../../../components/media";
-import { connect, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
 import Button from "../../../components/ui/button/Index";
 import { logEvent } from "../../../services/ga/Index";
@@ -144,6 +144,7 @@ const TransferBooking = ({
   loadbookings,
 }) => {
   const router = useRouter();
+  const dispatch = useDispatch();
   let isPageWide = media("(min-width: 768px)");
   const isDesktop = useMediaQuery("(min-width:1024px)");
   const [addbooking, setaddboking] = useState(booking?.user_selected);
@@ -270,17 +271,16 @@ const TransferBooking = ({
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (book) => {
+    //  dispatch(updateTransferBookings(id));
     try {
       setLoading(true);
       const response = await axiosDeleteBooking.delete(
-        `${router.query.id}/bookings/${booking?.booking_type?.toLowerCase()}/${
-          booking?.id
-        }/`
+        `${router.query.id}/bookings/${book?.booking_type?.toLowerCase()}/${book?.id}/`
       );
 
       if (response.status === 204) {
-        dispatch(updateTransferBookings(booking?.id));
+        dispatch(updateTransferBookings(book?.id));
         setLoading(false);
         toast.success("Booking deleted successfuly");
         setVisible(true);
@@ -515,7 +515,6 @@ const TransferBooking = ({
                       </div>
                     )}
 
-                    {!payment?.paid_user && booking?.transfer_type === "combo"}
                   </div>
                   <Drawer
                     show={showVehicleDrawer}
@@ -532,6 +531,7 @@ const TransferBooking = ({
                       setIsOpen={setShowVehicleDrawer}
                       handleDelete={handleDelete}
                       setHandleShow={setShowVehicleDrawer}
+                      booking={booking}
                     />
                   </Drawer>
                 </div>
@@ -547,9 +547,7 @@ const TransferBooking = ({
                 end={end}
               />
             </div>
-            {transfers_status === "PENDING" ? (
-              <TransferSkeleton />
-            ) : isPageWide ? (
+            {isPageWide ? (
               <button
                 onClick={() => setShowDrawer(true)}
                 className="text-[14px] font-[600] leading-[60px] text-blue hover:underline w-full whitespace-nowrap"
@@ -780,6 +778,7 @@ const TransferBooking = ({
                     setIsOpen={setShowVehicleDrawer}
                     handleDelete={handleDelete}
                     setHandleShow={setShowVehicleDrawer}
+                    booking={book}
                   />
                 </Drawer>
               </div>

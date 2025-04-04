@@ -14,36 +14,37 @@ const Container = styled.div`
   display: grid;
   grid-template-columns: 30px auto;
   min-height: 5rem;
+  width: fit-content;
   @media screen and (min-width: 768px) {
     min-height: ${(props) => (props.hidemidsection ? "4.5rem" : "8rem")};
   }
 `;
 
-// const Line = styled.hr`
-//   background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
-//     ${(props) =>
-//       props.pinColour
-//         ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
-//         : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
+const Line2 = styled.hr`
+  background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
+    ${(props) =>
+      props.pinColour
+        ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
+        : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
 
-//   background-size: 12px 3px, 100% 3px;
-//   color: #c80000;
-//   -webkit-transform: rotate(90deg);
-//   position: absolute;
-//   width: 5rem;
-//   height: 1.7px;
-//   top: 23px;
-//   right: -22px;
-//   border: 2px;
-//   opacity: initial;
+  background-size: 12px 3px, 100% 3px;
+  color: #c80000;
+  -webkit-transform: rotate(90deg);
+  position: absolute;
+  width: 5rem;
+  height: 1.7px;
+  top: 23px;
+  right: -22px;
+  border: 2px;
+  opacity: initial;
 
-//   @media screen and (min-width: 768px) {
-//         width: 8rem;
-//         height: 1.7px;
-//         top: 46px;
-//         right: -46px;
-//   }
-// `;
+  @media screen and (min-width: 768px) {
+        width: 8rem;
+        height: 1.7px;
+        top: 46px;
+        right: -46px;
+  }
+`;
 
 const Line = styled.hr`
   background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
@@ -62,10 +63,10 @@ const Line = styled.hr`
 
   border: 2px;
 
-  width: ${(props) => (props.Transfers ? `19rem` : `5rem`)};
+  width: ${(props) => (props.Transfers ? `19rem` : `9rem`)};
 
   top: ${(props) => (props.Transfers ? `128px` : `23px`)};
-  right: ${(props) => (props.Transfers ? `-134px` : `-25px`)};
+  right: ${(props) => (props.Transfers ? `-134px` : `-55px`)};
   opacity: initial;
   z-index: -1;
   @media screen and (min-width: 768px) {
@@ -96,6 +97,7 @@ const MidSectionV2 = (props) => {
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showTaxiModal, setShowTaxiModal] = useState(false);
   const {itinerary_status,transfers_status,pricing_status} = useSelector((state) => state.ItineraryStatus);
+  const isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
 
 
   useEffect(() => {
@@ -192,7 +194,7 @@ const MidSectionV2 = (props) => {
  // console.log("Load Bookings",props?.loadbookings);
 
   return (
-    <Container className="font-lexend" hidemidsection={hidemidsection}>
+    <Container className={`font-lexend`} hidemidsection={hidemidsection}>
       <div style={{ position: "relative" }}>
         <Line pinColour={props.pinColour} hidemidsection={hidemidsection} />
       </div>
@@ -257,7 +259,7 @@ const MidSectionV2 = (props) => {
                 // props.route?.modes.length &&
                
                 props.cityTransferBookings && props.cityTransferBookings?.duration ? (
-                  <div className="inline-flex items-center gap-2">
+                  <div className={`inline-flex items-center gap-2 ${!isPageWide ? "w-max" : ""}`}>
                     <div> {props.modes}: {props.cityTransferBookings?.duration}</div>
                   </div>
                 ) : (

@@ -220,7 +220,7 @@ const TransferBookings = (props) => {
                 id={itineraries?.start_city?.gmaps_place_id}
                 check_in={itineraries?.start_date}
                 selectedBooking={selectedBooking}
-                originCityId={null}
+                originCityId={itineraries?.start_city?.gmaps_place_id}
                 destinationCityId={itineraries?.cities[0]?.id}
                 
               />}
@@ -317,7 +317,7 @@ const TransferBookings = (props) => {
               originCityId={
                 itineraries?.cities[itineraries?.cities.length - 1]?.id
               }
-              destinationCityId={null}
+              destinationCityId={itineraries?.end_city?.gmaps_place_id}
             />}
             <PinSection
               key={itineraries?.cities.length}
@@ -355,7 +355,7 @@ const TransferBookings = (props) => {
             booking_id={selectedBooking?.booking_id}
             edge={selectedBooking?.edge}
             originCityId={
-              selectedBooking?.originCityId
+              selectedBooking?.originCityId 
             }
             destinationCityId={selectedBooking?.destinationCityId}
           ></FlightModal>
@@ -425,4 +425,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(TransferBookings);
+  export default connect(mapStateToProps)(TransferBookings);

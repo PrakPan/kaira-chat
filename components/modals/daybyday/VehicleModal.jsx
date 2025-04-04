@@ -17,6 +17,7 @@ const VehicleDetailModal = ({
   setHandleShow,
   handleDelete,
   loading,
+  booking
 }) => {
   if (!data) return null;
   // const [loading, setLoading] = useState(false);
@@ -250,7 +251,7 @@ const VehicleDetailModal = ({
           <div className="p-4 bg-white">
             <button
               className="w-full bg-red-500 text-white py-2 rounded-lg flex items-center justify-center"
-              onClick={handleDelete}
+              onClick={()=>handleDelete(booking)}
               disabled={loading}
             >
               <div style={{ position: "relative" }}>
