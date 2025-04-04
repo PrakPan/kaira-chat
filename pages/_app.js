@@ -157,7 +157,7 @@ function MyApp({ Component, pageProps, store }) {
           </df-messenger>
         </>
       )}
-      {/* <style>
+      <style>
         {`
           df-messenger {
             z-index: 1024;
@@ -193,7 +193,7 @@ function MyApp({ Component, pageProps, store }) {
         }
 }
         `}
-      </style> */}
+      </style>
       <div ref={ref}>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <Theme>

@@ -10,12 +10,7 @@ import { MERCURY_HOST } from "../../services/constants";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { ToastContainer, toast } from "react-toastify";
-import { ToastContainer, toast } from "react-toastify";
 import { axiosDeleteBooking } from "../../services/itinerary/bookings";
-import {
-  setTransferBookings,
-  updateTransferBookings,
-} from "../../store/actions/transferBookingsStore";
 import {
   setTransferBookings,
   updateTransferBookings,
