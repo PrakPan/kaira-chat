@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import { FaMinus, FaPlus } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoPerson } from "react-icons/io5";
+import ButtonYellow from "../../ButtonYellow";
 
 export const Pax = ({ setShowPax, pax, setPax, showPax }) => {
   const ref = useRef(null);
@@ -62,7 +63,7 @@ export const Pax = ({ setShowPax, pax, setPax, showPax }) => {
 
   return (
     <div>
-      <div className="font-[poppins] relative w-fit h-fit flex flex-row items-center gap-2 rounded-lg cursor-pointer ">
+      <div className="font-[poppins] relative w-fit h-fit flex flex-row items-center gap-2 rounded-lg cursor-pointer z-[10]">
         <div
           onClick={() => setShowPax((prev) => !prev)}
           className="flex items-center bg-[#F5F5F5] px-[16px] py-[8px] rounded-[4px]"
@@ -137,12 +138,12 @@ export const Pax = ({ setShowPax, pax, setPax, showPax }) => {
                 </div>
 
                 <div className="border-t-2 border-t-white pt-2 flex justify-end">
-                  <button
+                  <ButtonYellow
                     onClick={handleDone}
-                    className="bg-black text-white py-2 px-4 rounded-lg border-2 transition-all border-black  hover:text-white w-full"
+                    className="w-full"
                     >
-                    Submit
-                  </button>
+                    Apply
+                  </ButtonYellow>
                 </div>
               </div>
             </div>

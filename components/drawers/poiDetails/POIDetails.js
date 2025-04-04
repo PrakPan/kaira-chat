@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { useState } from "react";
 import ImageLoader from "../../ImageLoader";
@@ -11,6 +11,9 @@ import ReviewsCarousel from "./ReviewsCarousel";
 import FullScreenGalleryGoogle from "./FullScreenGalleryGoogle";
 import useMediaQuery from "../../media";
 import ImageLoaderGoogle from "./ImageLoaderGoogle";
+import ReviewComponent from "../../Reviews/Reviews";
+import { GOOGLE_MAPS_API_KEY } from "../../../services/constants";
+import Image from "next/image";
 export const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -44,6 +47,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  font-family: Poppins;
   padding: ${(props) => (props.itineraryDrawer ? "0 1rem 1rem 1rem" : "1rem")};
 `;
 
@@ -97,23 +101,7 @@ const BackText = styled.div`
 const ImageContainer = styled.div`
   position: relative;
 `;
-const GridImage = styled.div`
-  display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  grid-template-rows: repeat(4, 0.4fr);
-  grid-column-gap: 6px;
-  grid-row-gap: 6px;
-  height: 19rem;
-`;
-const Child = styled.div`
-  border-radius: 8px;
-  position: relative;
-  overflow: hidden;
-  height: 100%;
-  width: 100%;
-  grid-area: ${(props) => props.area};
-  ${(props) => props.className && `class="${props.className}"`};
-`;
+const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
 const POIDetails = (props) => {
   const isDesktop = useMediaQuery("(min-width:1148px)");
@@ -122,11 +110,61 @@ const POIDetails = (props) => {
   const [aboutText, setAboutText] = useState(
     props?.data?.overview ?? props?.data?.short_description
   );
-  const [images, setImages] = useState(props?.data?.extra_images);
+  const [images, setImages] = useState([]);
+
+  async function fetchImageAsBlob(imageUrl) {
+    try {
+      const response = await fetch(imageUrl, { mode: "no-cors" });
+      if (response.status == 302) {
+        const finalUrl = response.headers.get("location");
+        if (!finalUrl) {
+          console.log("Redirect URL missing");
+          throw new Error("Redirect URL missing");
+        }
+        console.log("Redirecting to:", finalUrl);
+
+        const finalResponse =  fetch(finalUrl);
+        const blob =  finalResponse.blob();
+        return URL.createObjectURL(blob);
+      } else {
+        const blob =  response.blob();
+        return URL.createObjectURL(blob);
+      }
+    } catch (error) {
+      console.log("Error fetching image:", error);
+    }
+  }
+  useEffect(() => {
+    console.log("images are:", images," and length is:",typeof(images));
+  }, [images]);
+
+  useEffect(() => {
+    if (!props?.data?.extra_images) return;
+  
+    async function fetchAllImages() {
+      const customImages = await Promise.all(
+        props.data.extra_images.map(async (url) => {
+          return await fetchImageAsBlob(
+            `https://maps.googleapis.com/maps/api/place/photo?photo_reference=${url?.photo_reference}&maxwidth=400&key=${GOOGLE_MAPS_API_KEY}`
+          );
+        })
+      );
+      
+      setImages(customImages);
+    }
+  
+    fetchAllImages();
+  }, [props.data.extra_images]);
+  
+
   var experience_filters = (
     <div className="flex flex-wrap gap-2">
       {props.data.experience_filters?.map((e, i) => (
-        <div key={i} className="bg-[#FAFAFA] p-[8px] rounded-[10px]">
+        <div
+          key={i}
+          className={`border-2 rounded-full px-2 py-1`}
+          style={{ backgroundColor: colors[i % colors.length] }}
+        >
           {e}
         </div>
       ))}
@@ -173,148 +211,36 @@ const POIDetails = (props) => {
           <BackText>Back to Itinerary</BackText>
         </BackContainer>
       )}
-      {images?.length > 3 ? (
-        <>
-          <ImageContainer>
-            <GridImage>
-              <Child area="1 / 1 / 5 / 4" className="div1">
-                <div className="relative">
-                  <ImageLoaderGoogle
-                    borderRadius="8px"
-                    height="304"
-                    heightmobile="280"
-                    url={
-                      images[0]
-                        ? images[0].photo_reference
-                        : "media/icons/bookings/notfounds/noroom.png"
-                    }
-                    dimensionsMobile={{ width: 500, height: 280 }}
-                    dimensions={{ width: 468, height: 188 }}
-                    onload={() => {
-                      setTimeout(() => {
-                        setImageLoaded(true);
-                      }, 1000);
-                    }}
-                    onfail={() => {
-                      setImageFail(true);
-                      setImageLoaded(true);
-                    }}
-                    noLazy
-                  ></ImageLoaderGoogle>
-                </div>
-              </Child>
 
-              <Child area="1 / 8 / 5 / 11" className="div2 rounded-lg">
-                <div className="relative">
-                  <ImageLoaderGoogle
-                    borderRadius="8px"
-                    marginTop="23px"
-                    height="188"
-                    heightmobile="280"
-                    url={
-                      images[1]
-                        ? images[1].photo_reference
-                        : "media/icons/bookings/notfounds/noroom.png"
-                    }
-                    dimensionsMobile={{ width: 500, height: 280 }}
-                    dimensions={{ width: 468, height: 188 }}
-                    onload={() => {
-                      setTimeout(() => {
-                        setImageLoaded(true);
-                      }, 1000);
-                    }}
-                    onfail={() => {
-                      setImageFail(true);
-                      setImageLoaded(true);
-                    }}
-                    noLazy
-                  ></ImageLoaderGoogle>
-                </div>
-              </Child>
-
-              <Child area="1 / 4 / 3 / 8" className="div3">
-                <div className="relative">
-                  <ImageLoaderGoogle
-                    borderRadius="8px"
-                    marginTop="23px"
-                    widthMobile="100%"
-                    url={
-                      images[2]
-                        ? images[2].photo_reference
-                        : "media/icons/bookings/notfounds/noroom.png"
-                    }
-                    dimensionsMobile={{ width: 500, height: 280 }}
-                    dimensions={{ width: 468, height: 188 }}
-                    onload={() => {
-                      setTimeout(() => {
-                        setImageLoaded(true);
-                      }, 1000);
-                    }}
-                    onfail={() => {
-                      setImageFail(true);
-                      setImageLoaded(true);
-                    }}
-                    noLazy
-                  ></ImageLoaderGoogle>
-                </div>
-              </Child>
-
-              <Child area="3 / 4 / 5 / 8" className="div4">
-                <div className="relative">
-                  <ImageLoaderGoogle
-                    borderRadius="8px"
-                    marginTop="23px"
-                    widthMobile="100%"
-                    url={
-                      images[3]
-                        ? images[3].photo_reference
-                        : "media/icons/bookings/notfounds/noroom.png"
-                    }
-                    dimensionsMobile={{ width: 500, height: 280 }}
-                    dimensions={{ width: 468, height: 188 }}
-                    onload={() => {
-                      setTimeout(() => {
-                        setImageLoaded(true);
-                      }, 1000);
-                    }}
-                    onfail={() => {
-                      setImageFail(true);
-                      setImageLoaded(true);
-                    }}
-                    noLazy
-                  ></ImageLoaderGoogle>
-                </div>
-              </Child>
-            </GridImage>
-          </ImageContainer>
-        </>
-      ) : (
-        <>
-          <ImageContainer style={{ height: "170px" }}>
+      <>
+        {images&&images.length>0&& (
+          <>
+          {/* <ImageContainer style={{ height: "170px" }}> */}
             <div>
-              <div style={{ display: imageLoaded ? "initial" : "none" }}>
-                <ImageLoader
-                  borderRadius="8px"
-                  marginTop="23px"
-                  widthMobile="100%"
-                  url={
-                    props.data.image
-                      ? props.data.image
-                      : "media/icons/bookings/notfounds/noroom.png"
-                  }
-                  dimensionsMobile={{ width: 500, height: 280 }}
-                  dimensions={{ width: 468, height: 188 }}
-                  onload={() => {
-                    setTimeout(() => {
-                      setImageLoaded(true);
-                    }, 1000);
-                  }}
-                  onfail={() => {
-                    setImageFail(true);
+              {/* <div style={{ display: imageLoaded ? "initial" : "none" }}> */}
+                <img src={images[0]} alt="image" width={"200px"} height={"200px"} />
+                {/* <ImageLoader
+                borderRadius="8px"
+                marginTop="23px"
+                widthMobile="100%"
+                url={
+                  images[0]
+                    ? images[0]
+                    : "media/icons/bookings/notfounds/noroom.png"
+                }
+                dimensionsMobile={{ width: 500, height: 280 }}
+                dimensions={{ width: 468, height: 188 }}
+                onload={() => {
+                  setTimeout(() => {
                     setImageLoaded(true);
-                  }}
-                  noLazy
-                ></ImageLoader>
+                  }, 1000);
+                }}
+                onfail={() => {
+                  setImageFail(true);
+                  setImageLoaded(true);
+                }}
+                noLazy
+              ></ImageLoader> */}
                 {props?.data?.extra_images && (
                   <PhotosButton
                     onClick={() => {
@@ -326,7 +252,7 @@ const POIDetails = (props) => {
                 )}
               </div>
 
-              <div
+              {/* <div
                 style={{
                   display: !imageLoaded ? "initial" : "none",
                 }}
@@ -340,9 +266,9 @@ const POIDetails = (props) => {
                   }}
                 >
                   <SkeletonCard />
-                </div>
-              </div>
-            </div>
+                </div> */}
+              {/* </div> */}
+            {/* </div> */}
             {props.data?.ideal_duration_hours ||
             props.data?.ideal_duration_numbers ? (
               <TimeStamp>
@@ -354,12 +280,26 @@ const POIDetails = (props) => {
             ) : (
               <></>
             )}
-          </ImageContainer>
-        </>
-      )}
+          {/* </ImageContainer> */}
+          </>
+        )}
+      </>
 
       <div className="mt-[180px]">
         <Title>{props.data.name}</Title>
+        {aboutText != null && aboutText != undefined && (
+          <div>
+            <Text
+              onClick={() =>
+                setAboutText(
+                  props?.data?.overview || props.data.short_description
+                )
+              }
+            >
+              {aboutText}
+            </Text>
+          </div>
+        )}
         {props.data?.address && (
           <div>
             <span className="font-bold pr-1">Address:</span>{" "}
@@ -386,21 +326,6 @@ const POIDetails = (props) => {
         </div>
       ) : null}
 
-      {aboutText != null && aboutText != undefined && (
-        <div>
-          <Heading>About</Heading>
-          <Text
-            onClick={() =>
-              setAboutText(
-                props?.data?.overview || props.data.short_description
-              )
-            }
-          >
-            {aboutText}
-          </Text>
-        </div>
-      )}
-
       {props.data?.getting_around && (
         <div>
           <Heading>Getting Around</Heading>
@@ -424,30 +349,31 @@ const POIDetails = (props) => {
       )}
       {props?.data?.reviews && (
         <>
-        <div className="flex justify-between">
-          <Heading>Reviews</Heading>
-          <Reviews>
-            {props.data.rating ? (
-              <div
-                style={{ color: "#FFD201" }}
-                className="flex flex-row gap-1"
-              >
-                {stars}
+          <div className="flex justify-between">
+            <Heading>Reviews</Heading>
+            <Reviews>
+              {props.data.rating ? (
+                <div
+                  style={{ color: "#FFD201" }}
+                  className="flex flex-row gap-1"
+                >
+                  {stars}
+                </div>
+              ) : null}
+
+              <div className="flex items-center">
+                {props.data?.rating ? (
+                  <p className="m-0">{props.data.rating} · </p>
+                ) : null}
+
+                {props.data?.user_ratings_total ? (
+                  <u> {props.data.user_ratings_total} user reviews</u>
+                ) : null}
               </div>
-            ) : null}
-
-            <div className="flex items-center">
-              {props.data?.rating ? (
-                <p className="m-0">{props.data.rating} · </p>
-              ) : null}
-
-              {props.data?.user_ratings_total ? (
-                <u> {props.data.user_ratings_total} user reviews</u>
-              ) : null}
-            </div>
-          </Reviews>
+            </Reviews>
           </div>
-          <ReviewsCarousel reviews={props?.data?.reviews} />
+          <ReviewComponent review={props?.data?.reviews?.[0]} />
+          {/* <ReviewsCarousel reviews={props?.data?.reviews} /> */}
         </>
       )}
 
@@ -465,7 +391,7 @@ const POIDetails = (props) => {
           closeGalleryHandler={() => setImages(null)}
           images={images}
         ></FullScreenGalleryGoogle>
-      )} */}
+      )}  */}
     </Container>
   );
 };
