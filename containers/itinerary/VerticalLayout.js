@@ -345,15 +345,6 @@ const CityItem = ({
         mobileWidth="100vw"
         width={`${!(booking_type === "Flight") ? "45vw" : "50vw"}`}
       >
-        show={handleShow}
-        anchor={"right"}
-        backdrop
-        style={{ zIndex: 1501 }}
-        className="font-lexend"
-        onHide={setHandleShow}
-        mobileWidth="100vw"
-        width="50vw"
-      >
         {booking_type === "Flight" ? (
           <>
             <FlightDetailModal
