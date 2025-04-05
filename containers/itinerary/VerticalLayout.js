@@ -264,54 +264,7 @@ const CityItem = ({
             )}
           </div>
         )}
-        {loadbookings ? (
-          <TransferSkeleton />
-        ) : (
-          <div className="font-[Poppins] text-[16px] font-[500] flex gap-1">
-            {(booking_id || city) && !visible ? (
-              <>
-                {" "}
-                <div className="mt-[4px]">{correctIcon(booking_type)}</div>
-                <div
-                  className="flex flex-col group hover:cursor-pointer"
-                  onClick={() => upPresent && downPresent && handleEdit()}
-                >
-                  <div className="flex gap-2 items-center ">
-                    <div className="group-hover:text-blue ">{city} </div>
-                    {upPresent && downPresent && (
-                      <div className="">
-                        <FaPen
-                          size={12}
-                          className="transition-transform group-hover:scale-150 duration-300 group-hover:text-yellow-500"
-                        />
-                      </div>
-                    )}
-                  </div>
-                  {duration && (
-                    <div className="font-[Poppins] font-[400] text-[12px] ">
-                      Duration: {duration}
-                    </div>
-                  )}
-                </div>{" "}
-              </>
-            ) : isPageWide ? (
-              <button
-                onClick={() => setShowDrawer(true)}
-                className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
-              >
-                + Add Transfer from {origin_city_name} to{" "}
-                {destination_city_name}
-              </button>
-            ) : (
-              <button
-                onClick={() => setShowDrawer(true)}
-                className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
-              >
-                + Add Transfer
-              </button>
-            )}
-          </div>
-        )}
+        
       </div>
       <TransferEditDrawer
         mercury
