@@ -209,8 +209,9 @@ const POI = (props) => {
       anchor={"right"}
       backdrop
       className="font-lexend"
-      onHide={() => props.handleCloseDrawer}
+      onHide={props.onHide}
       width={drawerWidth}
+
     >
       {!loading ? (
         <Container>
@@ -245,7 +246,7 @@ const POI = (props) => {
                   payment={props.payment}
                   updateBooking={updateBooking}
                   handleClick={props?.handleClick}
-                  setShowDetails={props?.onHide}
+                  setShowDetails={props?.setShowDetails}
                   id={props?.id}
                 />
               ) : (

@@ -209,7 +209,7 @@ const HotelBookingDetails = (props) => {
       if (response.status === 204) {
         dispatch(updateStays(props?.id));
         setLoading(false);
-        props?.setShowDetails();
+        // props?.setShowDetails(true);
         toast.success("Booking deleted successfuly");
         setVisible(true);
         // setHandleShow(false);
