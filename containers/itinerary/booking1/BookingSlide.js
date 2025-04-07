@@ -76,7 +76,7 @@ const Details = (props) => {
   };
 
   const [date, setDate] = useState(
-    getCurrentDateIfOlder(props?.plan?.start_date),
+    getCurrentDateIfOlder(props?.plan?.start_date)
   );
 
   const _handleVerificationSuccess = () => {
@@ -128,7 +128,7 @@ const Details = (props) => {
                     ] +
                       "N at " +
                       props.payment.costings_breakdown[booking].detail["name"]}
-                  </p>,
+                  </p>
                 );
                 bookinglistwithcost.push(
                   <div
@@ -178,11 +178,11 @@ const Details = (props) => {
                           Math.ceil(
                             props.payment.costings_breakdown[booking][
                               "booking_cost"
-                            ] / 100,
-                          ),
+                            ] / 100
+                          )
                         )}
                     </p>
-                  </div>,
+                  </div>
                 );
               } else {
                 bookingslist.push(
@@ -200,7 +200,7 @@ const Details = (props) => {
                     }
                   >
                     {props.payment.costings_breakdown[booking].detail["name"]}
-                  </p>,
+                  </p>
                 );
                 bookinglistwithcost.push(
                   <div
@@ -244,11 +244,11 @@ const Details = (props) => {
                           Math.ceil(
                             props.payment.costings_breakdown[booking][
                               "booking_cost"
-                            ] / 100,
-                          ),
+                            ] / 100
+                          )
                         )}
                     </p>
-                  </div>,
+                  </div>
                 );
               }
             }
@@ -298,7 +298,7 @@ const Details = (props) => {
           .post(
             "https://dev.suppliers.tarzanway.com/sales/verify/",
             { ...response },
-            { headers: { Authorization: `Bearer ${props.token}` } },
+            { headers: { Authorization: `Bearer ${props.token}` } }
           )
           .then((res) => {
             setPaymentLoading(false);
@@ -337,7 +337,7 @@ const Details = (props) => {
           headers: {
             Authorization: `Bearer ${props.token}`,
           },
-        },
+        }
       )
       .then((res) => {
         setPaymentLoading(false);
@@ -468,6 +468,8 @@ const Details = (props) => {
     });
   };
 
+  console.log("HERE >>>>", props.payment);
+
   return (
     <>
       <div
@@ -487,10 +489,10 @@ const Details = (props) => {
                   {props.payment.show_per_person_cost ||
                   props.payment.pay_only_for_one
                     ? getIndianPrice(
-                        Math.round(props.payment.per_person_total_cost / 100),
+                        Math.round(props.payment.per_person_total_cost / 100)
                       )
                     : getIndianPrice(
-                        Math.round(props.payment.total_cost / 100),
+                        Math.round(props.payment.total_cost / 100)
                       )}
                   {"/-"}
                 </div>
@@ -523,14 +525,14 @@ const Details = (props) => {
                       ? getIndianPrice(
                           Math.round(
                             Math.round(
-                              props.payment.per_person_discounted_cost,
-                            ) / 100,
-                          ),
+                              props.payment.per_person_discounted_cost
+                            ) / 100
+                          )
                         )
                       : getIndianPrice(
                           Math.round(
-                            Math.round(props.payment.discounted_cost) / 100,
-                          ),
+                            Math.round(props.payment.discounted_cost) / 100
+                          )
                         )}
                     {"/-"}
                   </div>
@@ -544,12 +546,10 @@ const Details = (props) => {
                     props?.payment?.show_per_person_cost
                       ? "Per Person Cost"
                       : props.payment?.is_estimated_price
-                        ? `${
-                            props.payment.total_cost == 0
-                              ? ""
-                              : "Estimated Price"
-                          }`
-                        : "Total Cost"}
+                      ? `${
+                          props.payment.total_cost == 0 ? "" : "Estimated Price"
+                        }`
+                      : "Total Cost"}
                   </div>
                 )}
               </div>
@@ -638,7 +638,12 @@ const Details = (props) => {
                   >
                     {"₹ " +
                       getIndianPrice(
-                        Math.round(props.payment.total_service_fee / 100),
+                        Math.round(
+                          (props.payment?.gst
+                            ? props.payment.total_service_fee +
+                              props.payment.gst
+                            : props.payment.total_service_fee) / 100
+                        )
                       )}
                   </div>
                 </div>
@@ -664,19 +669,19 @@ const Details = (props) => {
                             {props?.payment?.coupon?.discount_type == "Flat"
                               ? "(Flat  OFF!)"
                               : props?.payment?.coupon?.discount_type ==
-                                  "1 Night Free Stay"
-                                ? props?.payment?.coupon_usage?.discount
-                                  ? `(INR ${getIndianPrice(
-                                      Math.round(
-                                        props?.payment?.coupon_usage?.discount /
-                                          100,
-                                      ),
-                                    )}  OFF!)`
-                                  : props.payment.coupon.discount_value
-                                    ? props.payment.coupon.discount_value +
-                                      "%  OFF!"
-                                    : null
-                                : null}
+                                "1 Night Free Stay"
+                              ? props?.payment?.coupon_usage?.discount
+                                ? `(INR ${getIndianPrice(
+                                    Math.round(
+                                      props?.payment?.coupon_usage?.discount /
+                                        100
+                                    )
+                                  )}  OFF!)`
+                                : props.payment.coupon.discount_value
+                                ? props.payment.coupon.discount_value +
+                                  "%  OFF!"
+                                : null
+                              : null}
                           </div>
                         </div>
                       </div>
@@ -693,8 +698,8 @@ const Details = (props) => {
                             {"₹" +
                               getIndianPrice(
                                 Math.round(
-                                  props?.payment?.coupon_usage?.discount / 100,
-                                ),
+                                  props?.payment?.coupon_usage?.discount / 100
+                                )
                               )}
                           </div>
                         ) : (
@@ -725,8 +730,8 @@ const Details = (props) => {
                       ? getHumanDateWithYear(
                           format(new Date(date), "dd-MM-yyyy").replaceAll(
                             "-",
-                            "/",
-                          ),
+                            "/"
+                          )
                         )
                       : null
                     : null}
@@ -739,11 +744,11 @@ const Details = (props) => {
                               date,
                               props?.plan?.duration_number
                                 ? props?.plan?.duration_number
-                                : 4,
-                            ),
+                                : 4
+                            )
                           ),
-                          "dd-MM-yyyy",
-                        ).replaceAll("-", "/"),
+                          "dd-MM-yyyy"
+                        ).replaceAll("-", "/")
                       )
                     : null}
                 </div>
@@ -787,7 +792,7 @@ const Details = (props) => {
                 , {props.payment.meta_info.number_of_infants}{" "}
                 {pluralDetector(
                   "Infant",
-                  props.payment.meta_info.number_of_infants,
+                  props.payment.meta_info.number_of_infants
                 )}
               </div>
             ) : null}
