@@ -56,6 +56,7 @@ const Details = (props) => {
     return formattedDate;
   };
 
+  console.log("itinerary is:",props?.itinerary)
   const { itinerary_status, transfers_status, pricing_status } = useSelector(
     (state) => state.ItineraryStatus
   );

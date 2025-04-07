@@ -12,26 +12,68 @@ import { GOOGLE_CLIENT_ID } from "../services/constants";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import dynamic from "next/dynamic";
 import Head from "next/head";
-import Script from "next/script";
 import styled from 'styled-components';
 
-const Container = styled.div`
-      margin-right: -0.6rem;
-    margin-bottom: 5rem; 
-  @media screen and (min-width: 768px) {
-  margin-bottom: 0rem;
-  margin-right:0.2rem;
-  }
-`;
 function MyApp({ Component, pageProps, store }) {
-  const messengerRef = useRef(null);
   const router = useRouter();
   const ref = useRef();
-  const [isChatbotLoaded, setIsChatBotLoaded] = useState(false);
   useEffect(() => {
     const jssStyles = document.querySelector("#jss-server-side");
     if (jssStyles) {
       jssStyles.parentElement.removeChild(jssStyles);
+    }
+  }, []);
+  useEffect(() => {
+    try {
+      if (!window.location.href.split("/").includes("itinerary")) return;
+
+    setTimeout(() => {
+      (function () {
+        function getElement(xpath) {
+          return document.evaluate(
+            xpath,
+            document,
+            null,
+            XPathResult.FIRST_ORDERED_NODE_TYPE,
+            null
+          ).singleNodeValue;
+        }
+
+        let dfMessengerBubble = getElement(
+          "/html/body/df-messenger/div/df-messenger-chat-bubble"
+        );
+        if (!dfMessengerBubble)
+          return console.error("df-messenger-chat-bubble not found");
+
+        let dfMessengerChat =
+          dfMessengerBubble.shadowRoot.querySelector("df-messenger-chat");
+        if (!dfMessengerChat)
+          return console.error("df-messenger-chat not found");
+
+        let userInputContainer = dfMessengerChat.shadowRoot.querySelector(
+          "df-messenger-user-input"
+        );
+        if (!userInputContainer)
+          return console.error("df-messenger-user-input not found");
+
+        let textArea =
+          userInputContainer.shadowRoot.querySelector("textarea");
+        if (!textArea) return console.error("Textarea not found");
+
+        textArea.value = `Give me more detail about this itinerary ${window.location.href}`;
+
+        const enterEvent = new KeyboardEvent("keydown", {
+          key: "Enter",
+          code: "Enter",
+          keyCode: 13,
+          which: 13,
+          bubbles: true,
+        });
+        textArea.dispatchEvent(enterEvent);
+      })();
+    }, 2000);
+    } catch (error) {
+      console.log("Error is:",error)
     }
   }, []);
   useEffect(() => {
@@ -57,54 +99,7 @@ function MyApp({ Component, pageProps, store }) {
     };
   }, [router.events]);
 
-  useEffect(() => {
-    if (!window.location.href.split("/").includes("itinerary")) return;
 
-    setTimeout(() => {
-      (function () {
-        function getElement(xpath) {
-          return document.evaluate(
-            xpath,
-            document,
-            null,
-            XPathResult.FIRST_ORDERED_NODE_TYPE,
-            null
-          ).singleNodeValue;
-        }
-
-        let dfMessengerBubble = getElement(
-          "/html/body/div[1]/df-messenger/df-messenger-chat-bubble"
-        );
-        if (!dfMessengerBubble)
-          return console.error("df-messenger-chat-bubble not found");
-
-        let dfMessengerChat =
-          dfMessengerBubble.shadowRoot.querySelector("df-messenger-chat");
-        if (!dfMessengerChat)
-          return console.error("df-messenger-chat not found");
-
-        let userInputContainer = dfMessengerChat.shadowRoot.querySelector(
-          "df-messenger-user-input"
-        );
-        if (!userInputContainer)
-          return console.error("df-messenger-user-input not found");
-
-        let textArea = userInputContainer.shadowRoot.querySelector("textarea");
-        if (!textArea) return console.error("Textarea not found");
-
-        textArea.value = `Give me more detail about this itinerary ${window.location.href}`;
-
-        const enterEvent = new KeyboardEvent("keydown", {
-          key: "Enter",
-          code: "Enter",
-          keyCode: 13,
-          which: 13,
-          bubbles: true,
-        });
-        textArea.dispatchEvent(enterEvent);
-      })();
-    }, 2000);
-  }, []);
 
   return (
     <>
@@ -113,87 +108,11 @@ function MyApp({ Component, pageProps, store }) {
           name="google-site-verification"
           content="JBrEGecffz4oDnRTLJNj0Mxly-wVGeieQdS1k7NZvaY"
         />
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5"
-        ></meta>
         <link
           href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
         />
-           <link
-          rel="stylesheet"
-          href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css"
-        />
       </Head>
-        <Script
-          src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"
-          async
-          onLoad={() => {
-            setIsChatBotLoaded(true);
-          }}
-          defer
-        />
-      {typeof window !== "undefined" && isChatbotLoaded && (
-        <>
-          <df-messenger
-            location="asia-south1"
-            project-id="ai-chabot-451908"
-            agent-id="4e407c11-79bb-494a-ad38-12eb60fed12d"
-            language-code="en"
-            intent="WELCOME"
-            ref={messengerRef}
-          >
-            {/* <df-messenger-chat-bubble chat-title="Personalized Travel Plan"             */}
-            {/* //  chat-icon="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" to change floater icon, change this link */}
-            <Container>
-            <df-messenger-chat-bubble
-              chat-title="Personalized Travel Plan"
-              chat-icon="https://images.thetarzanway.com/media/chatbot.png"
-              chat-title-icon="https://openmoji.org/data/color/svg/1F4AC.svg"
-              // to change floater icon, change this link
-            ></df-messenger-chat-bubble>
-            </Container>
-          </df-messenger>
-        </>
-      )}
-      <style>
-        {`
-          df-messenger {
-            z-index: 1024;
-            position:fixed;
-            --df-messenger-font-color: #333333;
-            --df-messenger-font-family: "Poppins", sans-serif;
-            --df-messenger-chat-background: #F3F6FC;
-            --df-messenger-message-user-background: #ffffff;
-            --df-messenger-message-bot-background: #F7e700;
-            --df-messenger-input-placeholder-color: #757575;
-            --df-messenger-input-text-color: #000000;
-            --df-messenger-send-icon: #007bff;
-            --df-messenger-chat-window-height:calc(100vh - 80px);
-            --df-messenger-chat-window-height:calc(100vh - 90px);
-            --df-messenger-chat-window-width: 33vw; 
-            --df-messenger-border-radius: 9px;
-             --df-messenger-button-size: 80px;
-             --df-messenger-chat-bubble-icon-size: 80px;
-             --df-messenger-send-icon-color: black;
-             ----df-messenger-send-icon-background: yellow;
-            bottom: 0;
-            right: 0;
-            padding:4px;
-            border:4px;
-            border-radius:6px;
-            margin-right:20px;
-            margin-bottom:10px;
-            background-size: contain;
-            background-repeat: no-repeat;
-        }
-        .df-messenger-chat-bubble-icon {
-              margin-top: 5px;
-        }
-}
-        `}
-      </style>
       <div ref={ref}>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <Theme>

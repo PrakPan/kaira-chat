@@ -799,6 +799,8 @@ const SimpleTabsV2 = (props) => {
                     ></SummaryContainer>
                   ) : (
                     <NewSummaryContainers
+                      id={props.itinerary_id}
+                      token={props.token}
                       loadpricing={props?.loadpricing}
                       payment={props?.payment}
                       itineraryDate={props?.itineraryDate}
@@ -1074,6 +1076,8 @@ const SimpleTabsV2 = (props) => {
             </div>
           ) : props?.mercuryItinerary ? (
             <NewSummaryContainers
+              id={props.itinerary_id}
+              token={props.token}
               loadpricing={props?.loadpricing}
               payment={props?.payment}
               itineraryDate={props?.itineraryDate}
@@ -1213,10 +1217,12 @@ const SimpleTabsV2 = (props) => {
 
               {props.payment && props.token ? (
                 (props.payment?.itinerary_status ===
-                  ITINERARY_STATUSES?.itinerary_finalized || pricing_status === "SUCCESS" ) &&
+                  ITINERARY_STATUSES?.itinerary_finalized ||
+                  pricing_status === "SUCCESS") &&
                 !props.payment?.paid_user &&
                 props.payment?.user_allowed_to_pay ? (
-                  (props.payment.total_cost > 0 || props?.payment?.discounted_cost > 0) ? (
+                  props.payment.total_cost > 0 ||
+                  props?.payment?.discounted_cost > 0 ? (
                     <div className="">
                       <Button
                         color="#111"
@@ -1401,7 +1407,7 @@ const mapStateToPros = (state) => {
     itinerary_id: state.ItineraryId,
     tripsPage: state.TripsPage,
     itineraryDaybyDay: state.ItineraryDaybyDay,
-    transferBookings:state.TransferBookings?.transferBookings
+    transferBookings: state.TransferBookings?.transferBookings,
   };
 };
 

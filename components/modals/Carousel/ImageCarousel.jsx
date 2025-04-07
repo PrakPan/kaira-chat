@@ -72,7 +72,7 @@ const SwiperContainer = styled.div`
   //   }
 `;
 
-const ImageCarousel = ({ images }) => {
+const ImageCarousel = ({ images, noCaption }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [emptyImages, setEmptyImages] = useState(false);
   const [mouseHovered, setMouseHovered] = useState(false);
@@ -148,21 +148,20 @@ const ImageCarousel = ({ images }) => {
     >
       <div className="absolute top-0 left-0 w-full h-full bg-gray-200 rounded-lg animate-pulse"></div>
       <div className="relative h-full overflow-hidden rounded-lg">
-      {images.map((src, index) => (
-  <div key={index} className="absolute w-full h-full">
-    <div
-      className={`absolute w-full h-full transition-opacity duration-500 ease-in-out ${
-        index === currentIndex ? "opacity-100" : "opacity-0"
-      }`}
-    >
-      <Image src={src.image} alt={`Slide ${index + 1}`} fill />
-      <div className="absolute left-2 top-2 text-white bg-black/50 p-2 rounded">
-        {src?.caption}
-      </div>
-    </div>
-  </div>
-))}
-
+        {images.map((src, index) => (
+          <div key={index} className="absolute w-full h-full">
+            <div
+              className={`absolute w-full h-full transition-opacity duration-500 ease-in-out ${
+                index === currentIndex ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <Image src={src.image} alt={`Slide ${index + 1}`} fill />
+              {!noCaption&&<div className="absolute left-2 top-2 text-white bg-black/50 p-2 rounded">
+                {src?.caption}
+              </div>}
+            </div>
+          </div>
+        ))}
       </div>
 
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-50 flex flex-row gap-2 items-center">
@@ -265,7 +264,7 @@ export const Carousel = ({ images }) => {
         {images.map((src, i) => (
           <SwiperSlide key={i}>
             <div className="w-[50%] rounded-lg">
-              <div className={`absolute`}>{src?.caption}</div>
+              {!noCaption&&<div className={`absolute`}>{src?.caption}</div>}
               <Image src={src.image} alt={`Slide ${i + 1}`} fill />
             </div>
           </SwiperSlide>
