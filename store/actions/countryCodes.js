@@ -10,7 +10,7 @@ export const getCountryCodes = () => {
   return (dispatch, getState) => {
     const URL = "https://restcountries.com/v3.1/all/?fields=name,flags,idd";
 
-    if (getState().CountryCodes !== null) return;
+    if (Object.keys(getState().CountryCodes) > 3) return;
 
     axios
       .get(URL)
