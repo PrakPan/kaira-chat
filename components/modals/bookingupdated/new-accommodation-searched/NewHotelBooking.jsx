@@ -56,7 +56,7 @@ export default function NewHotelBooking({
                         <div
                             className={`relative w-full h-[12rem] md:w-[30%] md:min-h-full`}
                         >
-                            <ImageCarousel images={booking.images} />
+                            <ImageCarousel images={booking.images} noCaption={true}/>
 
                             {(booking.star_category && booking.star_category!="0") ? (
                                 <div

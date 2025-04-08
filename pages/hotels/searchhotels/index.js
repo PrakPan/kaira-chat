@@ -82,6 +82,11 @@ const FloatingVContaineriew = styled.div`
 const ImageContainer = styled.div`
   position: relative;
 `;
+
+function convertDate(dateStr){
+  const[year,day,month]=dateStr.split("-");
+  return `${year}-${month}-${day}`
+}
 const SearchHotels = () => {
   const router = useRouter();
   const { city, checkIn, checkOut, ppl, price, searchText, country } =
@@ -97,8 +102,8 @@ const SearchHotels = () => {
     cityId: "",
     city: "",
     country: "",
-    checkIn: new Date().formatUTC,
-    checkOut: new Date().formatUTC,
+    checkIn: convertDate(checkIn),
+    checkOut: convertDate(checkOut),
     occupancies: [],
     num_adults: 0,
     num_children: 0,
@@ -131,8 +136,8 @@ const SearchHotels = () => {
         const numChildren = occupancies.pop();
         const numAdults = occupancies.pop();
         setInput({
-          checkIn: checkIn,
-          checkOut: checkOut,
+          checkIn: convertDate(checkIn),
+          checkOut: convertDate(checkOut),
           occupancies: occupancies,
           cityId: city,
           city: { city: searchText, country: country },
@@ -166,8 +171,8 @@ const SearchHotels = () => {
   const requestApi = async (checkIn, checkOut, city, occupancies) => {
     try {
       const res = await axios.post(`${MERCURY_HOST}/api/v1/hotels/search/`, {
-        check_in: checkIn,
-        check_out: checkOut,
+        check_in: new Date(checkIn).toISOString().split('T')[0],
+        check_out:new Date(checkOut).toISOString().split('T')[0],
         city_id: city,
         occupancies: occupancies,
         filter_by: {
@@ -260,8 +265,8 @@ const SearchHotels = () => {
                             `${MERCURY_HOST}/api/v1/hotels/detail/`,
                             {
                               trace_id: null,
-                              check_in: checkIn,
-                              check_out: checkOut,
+                              check_in:input?.checkIn,
+                              check_out: input?.checkOut,
                               hotel_id: String(item?.id),
                               num_adults: input?.num_adults,
                               num_children: input?.num_children,

@@ -30,6 +30,9 @@ import { logEvent } from "../../../services/ga/Index";
 import openTailoredModal from "../../../services/openTailoredModal";
 import CountdownTimer from "../../../components/countdownTimer/CountdownTimer";
 import PricingSkeleton from "../../../components/itinerary/Skeleton/PricingSkeleton";
+import Drawer from "../../../components/ui/Drawer";
+import PassengerDetails from "../../../components/modals/passenger-details/PassengerDetails";
+import { IoMdClose } from "react-icons/io";
 
 const GetInTouchContainer = styled.div`
   &:hover img {
@@ -55,6 +58,8 @@ const Details = (props) => {
     const formattedDate = format(newDate, "yyyy-MM-dd");
     return formattedDate;
   };
+
+  const [showSetPassenger, setShowSetPassenger] = useState(false);
 
   const { itinerary_status, transfers_status, pricing_status } = useSelector(
     (state) => state.ItineraryStatus
@@ -417,6 +422,10 @@ const Details = (props) => {
   };
 
   const handlePayNow = (label) => {
+    if (showSetPassenger == false) {
+      setShowSetPassenger(true);
+      return;
+    }
     if (label === "_saleCreateHandler") {
       _saleCreateHandler(props.id);
     } else {
@@ -869,6 +878,12 @@ const Details = (props) => {
                 ></UiDropdown>
               </>
             )} */}
+            <div
+              className="!text-blue-500 text-[14px] cursor-pointer"
+              onClick={() => setShowSetPassenger(true)}
+            >
+              Traveller Details
+            </div>
           </div>
         </div>
 
@@ -1203,6 +1218,27 @@ const Details = (props) => {
           show={Newitinerary}
         />
       )}
+      <Drawer
+        show={showSetPassenger}
+        anchor={"right"}
+        backdrop
+        width={"100%"}
+        mobileWidth={"100%"}
+        style={1503}
+        className="font-lexend"
+        onHide={() => setShowSetPassenger(false)}
+      >
+        <IoMdClose
+          className="hover-pointer"
+          onClick={(e) => {
+            setShowSetPassenger(false);
+          }}
+          style={{ fontSize: "2rem" }}
+        ></IoMdClose>
+        <div className="p-[40px]">
+          <PassengerDetails />
+        </div>
+      </Drawer>
     </>
   );
 };

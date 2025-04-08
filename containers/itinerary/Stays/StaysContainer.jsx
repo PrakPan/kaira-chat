@@ -25,6 +25,12 @@ const StaysContainer = (props) => {
   const [dates, setDates] = useState({ check_in: "", check_out: "" });
   const itineraryFilter = useSelector((state) => state.ItineraryFilters);
   const { hotels_status } = useSelector((state) => state.ItineraryStatus);
+
+  const handleCloseDrawer = (e) => {
+    if (e) e.stopPropagation(e);
+    setShowDetails(false);
+  };
+
   const _setImagesHandler = (images) => {
     setImages(images);
   };
@@ -121,15 +127,19 @@ const StaysContainer = (props) => {
     props.setShowBookingModal(true);
   }
 
+  console.log("setshowdetails",showDetails);
+
   function handleClick(i, id, data, city_id) {
+    console.log("Hotel View",i, id, data, city_id)
     let check_in = itineraryFilter.check_in;
     let check_out = itineraryFilter.check_out;
+    setShowDetails(true);
     setDates({ check_in, check_out });
 
     setBookingId(id);
     setCurrentBooking(data);
     setBookingFunData({ index: i, booking: data, city_id: city_id });
-    setShowDetails(true);
+    
   }
 
   // console.log("CITTT",props?.cities)
@@ -148,7 +158,7 @@ const StaysContainer = (props) => {
         {hotels_status === "SUCCESS" ? (
           props.stayBookings.map((booking, index) => (
             <HotelBooking
-              key={index}
+              key={booking?.id}
               index={index}
               booking={booking}
               payment={props.payment}
@@ -160,6 +170,7 @@ const StaysContainer = (props) => {
               setStayBookings={props.setStayBookings}
               setShowDetails={setShowDetails}
               cities={props?.cities}
+
             />
           ))
         ) : (
@@ -247,6 +258,7 @@ const StaysContainer = (props) => {
         setStayBookings={props.setStayBookings}
         setShowDetails={setShowDetails}
         CityData={props?.CityData}
+        handleCloseDrawer={handleCloseDrawer}
       ></AccommodationModal>
 
       <BookingModal

@@ -15,6 +15,7 @@ import {
 import { useRouter } from "next/router";
 import HotelBookingDetails from "./Overview/HotelBookingDetails";
 import { updateAccommodationBooking } from "../../../services/bookings/UpdateBookings";
+import { convertDate } from "../../../helper/getDateYYY-MM-DD";
 
 const Container = styled.div`
   padding: 0 0.75rem 0.75rem 0.75rem;
@@ -120,8 +121,8 @@ const POI = (props) => {
       const requestData = {
         trace_id: props.traceId,
         hotel_id: `${props.id}`,
-        check_in: new Date(check_in).toISOString().split("T")[0],
-        check_out: new Date(check_out).toISOString().split("T")[0],
+        check_in: convertDate(check_in),
+        check_out: convertDate(check_out),
         currency: "INR",
         source: props.provider,
         occupancies: itineraryFilters.occupancies,
@@ -209,8 +210,9 @@ const POI = (props) => {
       anchor={"right"}
       backdrop
       className="font-lexend"
-      onHide={() => props.handleCloseDrawer}
+      onHide={props.onHide}
       width={drawerWidth}
+
     >
       {!loading ? (
         <Container>
@@ -245,7 +247,7 @@ const POI = (props) => {
                   payment={props.payment}
                   updateBooking={updateBooking}
                   handleClick={props?.handleClick}
-                  setShowDetails={props?.onHide}
+                  setShowDetails={props?.setShowDetails}
                   id={props?.id}
                 />
               ) : (

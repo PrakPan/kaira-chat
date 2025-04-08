@@ -1,7 +1,15 @@
 import Document, { Html, Head, Main, NextScript } from "next/document";
-import { ServerStyleSheet } from "styled-components";
+import styled, { ServerStyleSheet } from "styled-components";
 import { CONTENT_SERVER_HOST, GOOGLE_ANALTICS_ID } from "../services/constants";
-
+import Script from "next/script";
+const Container = styled.div`
+      margin-right: -0.6rem;
+    margin-bottom: 5rem; 
+  @media screen and (min-width: 768px) {
+  margin-bottom: 0rem;
+  margin-right:0.2rem;
+  }
+`;
 export default class MyDocument extends Document {
   static async getInitialProps(ctx) {
     // Step 1: Create an instance of ServerStyleSheet
@@ -22,6 +30,14 @@ export default class MyDocument extends Document {
     return (
       <Html id="html" lang="en">
         <Head>
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5"
+          ></meta>
+          <link
+            rel="stylesheet"
+            href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css"
+          />
           {/* Google Tag Manager */}
           {process.env.NODE_ENV === "production" &&
             !CONTENT_SERVER_HOST.includes("dev") && (
@@ -137,6 +153,67 @@ export default class MyDocument extends Document {
         </Head>
 
         <body>
+          <script
+            src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"
+          />
+            <>
+              <df-messenger
+                location="asia-south1"
+                project-id="ai-chabot-451908"
+                agent-id="4e407c11-79bb-494a-ad38-12eb60fed12d"
+                language-code="en"
+                intent="WELCOME"
+              >
+                {/* <df-messenger-chat-bubble chat-title="Personalized Travel Plan"             */}
+                {/* //  chat-icon="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" to change floater icon, change this link */}
+                <Container>
+                  <df-messenger-chat-bubble
+                    chat-title="Personalized Travel Plan"
+                    chat-icon="https://images.thetarzanway.com/media/chatbot.png"
+                    chat-title-icon="https://openmoji.org/data/color/svg/1F4AC.svg"
+                    // to change floater icon, change this link
+                  ></df-messenger-chat-bubble>
+                </Container>
+              </df-messenger>
+
+              <style>
+                {`
+          df-messenger {
+            z-index: 1024;
+            position:fixed;
+            --df-messenger-font-color: #333333;
+            --df-messenger-font-family: "Poppins", sans-serif;
+            --df-messenger-chat-background: #F3F6FC;
+            --df-messenger-message-user-background: #ffffff;
+            --df-messenger-message-bot-background: #F7e700;
+            --df-messenger-input-placeholder-color: #757575;
+            --df-messenger-input-text-color: #000000;
+            --df-messenger-send-icon: #007bff;
+            --df-messenger-chat-window-height:calc(100vh - 80px);
+            --df-messenger-chat-window-height:calc(100vh - 90px);
+            --df-messenger-chat-window-width: 33vw; 
+            --df-messenger-border-radius: 9px;
+             --df-messenger-button-size: 80px;
+             --df-messenger-chat-bubble-icon-size: 80px;
+             --df-messenger-send-icon-color: black;
+             ----df-messenger-send-icon-background: yellow;
+            bottom: 0;
+            right: 0;
+            padding:4px;
+            border:4px;
+            border-radius:6px;
+            margin-right:20px;
+            margin-bottom:10px;
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+        .df-messenger-chat-bubble-icon {
+              margin-top: 5px;
+        }
+}
+        `}
+              </style>
+            </>
           {/* Google Tag Manager (noscript) */}
           {process.env.NODE_ENV === "production" &&
             !CONTENT_SERVER_HOST.includes("dev") && (
