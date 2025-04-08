@@ -373,7 +373,7 @@ const Day_I_Container = (props) => {
           <DayContainerStyle>
             {dayIcontainer}
             <div className="flex w-full ml-3">
-              {!props.LastElement && (
+              {/* {!props.LastElement && (
                 <button
                   onClick={() =>
                     handleAddActivity(
@@ -391,13 +391,13 @@ const Day_I_Container = (props) => {
                         ? ` on ${convertDateFormat(props?.Days?.slab)}`
                         : ""}
                 </button>
-              )}
+              )} */}
             </div>
           </DayContainerStyle>
         ) : (
           <DaySummaryContainerStyle>
             {summaryIContainer}
-            <div className="flex ml-[10.50%]">
+            {/* <div className="flex ml-[10.50%]">
               {!props.LastElement && (
                 <button
                   onClick={() =>
@@ -417,7 +417,7 @@ const Day_I_Container = (props) => {
                         : ""}
                 </button>
               )}
-            </div>
+            </div> */}
           </DaySummaryContainerStyle>
         )}
       </div>

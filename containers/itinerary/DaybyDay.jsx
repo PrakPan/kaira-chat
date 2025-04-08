@@ -254,6 +254,7 @@ const DaybyDay = ({
             return (
               <>
                 <ItineraryCity
+                  mercuryItinerary={props?.mercuryItinerary}
                   key={city.id}
                   city={city}
                   cityRefs={cityRefs}

@@ -138,7 +138,7 @@ const Route = (props) => {
               version={"v2"}
               bookings={props?.routes[i + 1].bookings}
               routesData={props?.routesData}
-              duration={props?.routes[i + 1].meta.Time}
+              duration={props?.routes[i + 1].meta?.Time}
               payment={props?.payment}
               plan={props?.plan}
               originCity={props?.routes[i].city_name}

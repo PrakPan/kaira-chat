@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useRouter } from "next/router";
 import DesktopBanner from "../../../components/containers/Banner";
 import Banner from "../../homepage/banner/Mobile";
-import Route from "../../newitinerary/breif/route/Index";
+import Route from "../../newitinerary/breif/route/OldIndex";
 import Drawer from "../../../components/drawers/cityDetails/CityDetailsDrawer";
 import RouteEditSection from "../../newitinerary/breif/route/RouteEditSection.js";
 import RoutesMap from "./RoutesMap.js";
@@ -39,23 +39,11 @@ const Details = (props) => {
   const [showDrawerData, setShowDrawerData] = useState(false);
   const [currentPopup, setCurrentPopup] = useState(false);
   const [locationsLatLong, setLocationsLatLong] = useState([]);
-  
-  const CITY_COLOR_CODES = [
-    '#359EBF',  //  # shade of blue
-    '#F0C631',  //# shade of yellow
-    '#BF3535',  //# shade of red
-    '#47691e',  //# shade of green
-    '#cc610a',  //# shade of orange
-    '#008080',  //# shade of teal
-    '#7d5e7d',  //# shade of purple
-];
-console.log("Routes Data",props?.routesData);
-
 
   useEffect(() => {
     const Locationlatlong = [];
 
-     if(props.routesData.length >= 1) {
+    if (props.routesData.length >= 1) {
       for (var i = 0; i < props.routesData.length; i++) {
         var postion = props.breif.city_slabs[i + 1];
         if (
@@ -80,33 +68,27 @@ console.log("Routes Data",props?.routesData);
           });
         }
       }
-    }
-    else {
+    } else {
       if (props.CityData.length >= 1) {
-        let color;
-      //  console.log("CityData",props.CityData);
         for (var i = 0; i < props.CityData.length; i++) {
-          color = CITY_COLOR_CODES[i%7];
           var postion = props.CityData[i];
           if (
-            !postion?.is_departure_only &&
-            !postion?.is_trip_terminated &&
-            postion?.duration &&
-            postion?.duration !== "0"
+            !postion.is_departure_only &&
+            !postion.is_trip_terminated &&
+            postion.duration &&
+            postion.duration !== "0"
           ) {
             Locationlatlong.push({
-              // dayId: getdayId(postion?.day_slab_location?.start_day_slab_index || '12'),
-              dayId:'12',
+              dayId: getdayId(postion.day_slab_location.start_day_slab_index),
               cityData: postion,
-              id: postion?.gmaps_place_id || 'ChIJ78XjhlaF4TgRxgXjwXxLJGY',
-              city_id: postion.city?.id || postion?.gmaps_place_id,
-              lat: postion.city?.latitude,
-              long: postion.city?.longitude,
-              name: postion.city?.name || postion?.city_name,
+              id: postion.gmaps_place_id,
+              city_id: postion.city_id,
+              lat: postion.lat,
+              long: postion.long,
+              name: postion.city_name,
               duration: postion.duration,
-              color: color,
-              // date: getdateId(postion?.day_slab_location?.start_day_slab_index || '12'),
-              date: postion.start_date
+              color: postion.color,
+              date: getdateId(postion.day_slab_location.start_day_slab_index),
             });
           }
         }
@@ -159,15 +141,11 @@ console.log("Routes Data",props?.routesData);
         <RouteComponent>
           <div id="route">
             <Route
-              mercuryItinerary={props?.mercuryItinerary}
-              loadbookings={props?.loadbookings}
               payment={props.payment}
               dayslab={props.itinerary?.day_slabs}
               breif={props.breif}
               routesData={props.routesData}
-              CityData={props?.CityData}
               transfers={props.transfersData}
-              cityTransferBookings={props.cityTransferBookings}
               setPlaceID={setActive}
               active={active}
               setCurrentPopup={setCurrentPopup}
@@ -178,16 +156,6 @@ console.log("Routes Data",props?.routesData);
               setShowLoginModal={props.setShowLoginModal}
               _GetInTouch={props._GetInTouch}
               setEdit={props.setEditRoute}
-              _updateFlightBookingHandler={props._updateFlightBookingHandler}
-              _updateBookingHandler={props._updateBookingHandler}
-              setHideFlightModal={props.setHideFlightModal}
-              _updatePaymentHandler={props._updatePaymentHandler}
-              setHideBookingModal={props.setHideBookingModal}
-              showFlightModal={props.showFlightModal}
-              setShowFlightModal={props.setShowFlightModal}
-              _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-              setShowTaxiModal={props.setShowTaxiModal}
-              showTaxiModal={props.showTaxiModal}
             />
           </div>
         </RouteComponent>
@@ -200,7 +168,6 @@ console.log("Routes Data",props?.routesData);
           group_type={props.group_type}
           duration_time={props.duration_time}
           travellerType={props.travellerType}
-          transferBookings={props?.transferBookings}
           fetchData={props.fetchData}
           setShowLoginModal={props.setShowLoginModal}
           setLocationsLatLong={setLocationsLatLong}
@@ -217,8 +184,8 @@ console.log("Routes Data",props?.routesData);
       <Drawer
         show={showDrawer}
         onHide={() => setShowDrawer(false)}
-        city_id={showDrawerData?.city?.id}
-        dayId={findDayIdByCityId(showDrawerData?.city?.id)}
+        city_id={showDrawerData.city_id}
+        dayId={findDayIdByCityId(showDrawerData.city_id)}
       ></Drawer>
 
       {props.traveleritinerary ? (
@@ -242,4 +209,4 @@ console.log("Routes Data",props?.routesData);
   );
 };
 
-  export default React.memo(Details);
+export default React.memo(Details);

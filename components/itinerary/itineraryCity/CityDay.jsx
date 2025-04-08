@@ -66,6 +66,7 @@ const CityDay = (props) => {
 
       <ActivityAddDrawer
         showDrawer={showAddDrawer}
+        mercuryItinerary={props?.mercuryItinerary}
         setShowDrawer={setShowAddDrawer}
         cityName={props.city.name}
         cityID={props.city.id}
