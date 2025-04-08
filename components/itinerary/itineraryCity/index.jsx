@@ -206,7 +206,7 @@ const ItineraryCity = (props) => {
 
       {itinerary_status === "SUCCESS" ? viewMore ? (
         <>
-          <CityDaybyDay city={props.city} setItinerary={props?.setItinerary} />
+          <CityDaybyDay mercuryItinerary={props?.mercuryItinerary} city={props.city} setItinerary={props?.setItinerary} />
         </>
       ) : (
         <CitySummary

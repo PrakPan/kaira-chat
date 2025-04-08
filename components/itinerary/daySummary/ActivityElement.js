@@ -161,7 +161,8 @@ export default function ActivityElement(props) {
                       Activity added
                     </TransparentButton>
                   ) : (
-                    <TransparentButton>Add Activity</TransparentButton>
+                    <></>
+                    // <TransparentButton>Add Activity</TransparentButton>
                   )}
                 </>
               ) : (

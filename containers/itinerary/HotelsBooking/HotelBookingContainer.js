@@ -138,13 +138,13 @@ const HotelBookingContainer = ({
   if (banner_image) img = banner_image;
   if (
     booking &&
-    booking.hotel_details?.images &&
-    booking.hotel_details?.images.length &&
+    booking?.images &&
+    booking?.images.length &&
     !banner_image
   )
-    for (let i = 0; i < booking.hotel_details.images.length; i++) {
-      if (booking.hotel_details.images[i]) {
-        img = booking.hotel_details.images[i];
+    for (let i = 0; i < booking.images.length; i++) {
+      if (booking.images[i]) {
+        img = booking.images[i]?.image;
         break;
       }
     }
@@ -187,7 +187,7 @@ const HotelBookingContainer = ({
                       !imageFail && booking.image
                         ? booking.image
                         : !imageFail && img
-                        ? img : !imageFail && booking.images ? booking?.images[0]
+                        ? img : !imageFail && booking.images ? booking?.images[0]?.image
                         : "media/icons/bookings/notfounds/noroom.png"
                     }
                     onfail={() => {
@@ -213,12 +213,12 @@ const HotelBookingContainer = ({
                   <Skeleton />
                 </div>
 
-                {(booking.hotel_details?.star_category && booking?.hotel_details?.star_category!="0")? (
+                {(booking?.star_category && booking?.star_category!="0")? (
                   <div
                     starHotel
                     className={`text-white bg-[#01202B] lg:px-4 px-3 lg:py-3 py-2 m-2 text-sm font-[400]nsition-all shadow-slate-700/70 shadow-md hover:drop-shadow-xl   absolute top-0 rounded-3xl`}
                   >
-                    {booking.hotel_details.star_category} star hotel
+                    {booking.star_category} star hotel
                   </div>
                 ) : null}
               </div>
@@ -251,25 +251,25 @@ const HotelBookingContainer = ({
                         </div>
                       )}
 
-                      {booking.hotel_details?.city_name && (
+                      {booking?.city_name && (
                         <div className="text-sm font-normal line-clamp-2">
-                          {booking.hotel_details?.city_name}
+                          {booking?.city_name}
                         </div>
                       )}
 
-                      {booking.hotel_details?.rating ? (
+                      {booking?.rating ? (
                         <div className="gap-1 flex flex-row  items-center">
                           <div className="flex flex-row text-[#FFD201]">
-                            {starRating(booking.hotel_details?.rating)}
+                            {starRating(booking?.rating)}
                           </div>
                           <div>
-                            {booking.hotel_details?.rating}
+                            {booking?.rating}
                             {" . "}
                           </div>
 
-                          {booking.hotel_details?.num_reviews && (
+                          {booking?.num_reviews && (
                             <div className="text-sm text-[#7A7A7A] font-[400] underline">
-                              {booking.hotel_details.num_reviews}{" "}
+                              {booking.num_reviews}{" "}
                               {booking?.booking_source === "Agoda"
                                 ? "user reviews"
                                 : "Google reviews"}
@@ -335,19 +335,19 @@ const HotelBookingContainer = ({
                     </div>
                   ) : null}
 
-                  {booking?.hotel_details?.room_type_name ? (
+                  {booking?.room_type_name ? (
                     <>
                       <RoomTypeGrid>
                         <BiBed className="text-sm text-[#7A7A7A]" />
                         <div className="text-sm font-[400] line-clamp-1">
-                          {booking?.hotel_details?.room_type_name}
+                          {booking?.room_type_name}
                         </div>
 
-                        {booking?.hotel_details?.room_count ? (
+                        {booking?.room_count ? (
                           <div>
                             {"("}
-                            {booking?.hotel_details?.room_count}{" "}
-                            {booking?.hotel_details?.room_count > 1
+                            {booking?.room_count}{" "}
+                            {booking?.room_count > 1
                               ? "Rooms"
                               : "Room"}
                             {")"}
@@ -355,13 +355,13 @@ const HotelBookingContainer = ({
                         ) : null}
                       </RoomTypeGrid>
 
-                      {booking?.hotel_details?.number_of_extra_beds &&
-                      booking?.hotel_details?.number_of_extra_beds > 0 ? (
+                      {booking?.number_of_extra_beds &&
+                      booking?.number_of_extra_beds > 0 ? (
                         <div className="flex flex-row items-center my-0">
                           <BsPlus className="text-md text-[#7A7A7A]" />
                           <div className="text-sm font-[400] line-clamp-1">
-                            {booking?.hotel_details?.number_of_extra_beds}{" "}
-                            {booking?.hotel_details?.number_of_extra_beds > 1
+                            {booking?.number_of_extra_beds}{" "}
+                            {booking?.number_of_extra_beds > 1
                               ? "Extra beds"
                               : "Extra bed"}
                           </div>
@@ -372,19 +372,19 @@ const HotelBookingContainer = ({
                     </>
                   ) : null}
 
-                  {booking?.hotel_details &&
-                  Addons(booking?.hotel_details?.pricing_type) ? (
+                  {booking &&
+                  Addons(booking?.pricing_type) ? (
                     <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
                       <ImSpoonKnife className="text-sm text-[#7A7A7A]" />
                       <div className="text-sm font-[400]">
-                        {Addons(booking.hotel_details.pricing_type)}
+                        {Addons(booking?.pricing_type)}
                       </div>
                     </div>
                   ) : null}
 
-                  {booking?.hotel_details?.amenities &&
-                  booking?.hotel_details?.amenities?.length &&
-                  booking?.hotel_details?.amenities?.includes("WIFI") ? (
+                  {booking?.amenities &&
+                  booking?.amenities?.length &&
+                  booking?.amenities?.includes("WIFI") ? (
                     <div className="flex flex-row gap-2 items-center lg:my-2 my-0">
                       <MdWifi className="text-sm text-[#7A7A7A]" />
                       <div className="text-sm font-[400]">WIFI available</div>
@@ -463,7 +463,7 @@ const HotelBookingContainer = ({
               )}
             </div>
 
-            <Button
+            {/* <Button
               bgColor={"#F7E700"}
               borderRadius="8px"
               fontWeight="400"
@@ -473,7 +473,7 @@ const HotelBookingContainer = ({
               onclick={() => handleAddStay(`Add Stay in ${cityName}`, cityName)}
             >
               Add Stay in {cityName}
-            </Button>
+            </Button> */}
           </div>
         </div>
       )}

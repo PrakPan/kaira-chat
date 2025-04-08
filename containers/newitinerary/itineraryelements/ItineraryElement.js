@@ -119,7 +119,8 @@ const ItineraryElement = (props) => {
                       Stay added
                     </TransparentButton>
                   ) : (
-                    <TransparentButton>Add Stay</TransparentButton>
+                    <></>
+                    // <TransparentButton>Add Stay</TransparentButton>
                   )}
                 </>
               ) : (

@@ -123,6 +123,8 @@ const HotelsBooking = (props) => {
     setShowLoginModal(false);
   };
 
+  console.log("Stay",props?.stayBookings);
+
   const _SelectedBookingHandler = ({ index }) => {
     return new Promise((resolve, reject) => {
       let updated_bookings_arr = [

@@ -42,7 +42,7 @@ const GetInTouchContainer = styled.div`
 const items = [{ id: 1, label: "Things To Do", link: "Activities" }];
 
 const ActivityAddDrawer = (props) => {
-  console.log("start date is:",props?.start_date)
+  console.log("start date is:",props?.date)
   const isDesktop = useMediaQuery("(min-width:767px)");
   const [selectedExprience, setSelectedExprience] = useState(-1);
   const [elementType, setElementType] = useState("Activity");
@@ -351,6 +351,7 @@ const ActivityAddDrawer = (props) => {
       setElementType("POI");
     }
   };
+  
 
   const handleScroll = (e) => {
     const { offsetHeight, scrollTop, scrollHeight } = e.target;
@@ -359,6 +360,13 @@ const ActivityAddDrawer = (props) => {
     }
   };
 
+  const convertToISODate = (dateStr) => {
+    if(!dateStr)
+      return;
+    const [day, month, year] = dateStr?.split('/');
+    return `${year}-${month?.padStart(2, '0')}-${day?.padStart(2, '0')}`;
+  };
+  
   return (
     <Drawer
       show={props.showDrawer}
@@ -419,11 +427,14 @@ const ActivityAddDrawer = (props) => {
               defaultValue={props?.date}
             >
               {[...Array(props.duration)].map((_, i) => {
-                const baseDate = new Date(props.start_date);
-                baseDate.setDate(baseDate.getDate() + i);
-                const formattedDate = getHumanDate(
-                  baseDate.toISOString().split("T")[0]
-                );
+                let baseDate = props?.mercuryItinerary ? new Date((props?.date)) : new Date(convertToISODate(props?.date));
+                if (isNaN(baseDate.getTime())) {
+                  baseDate = null; 
+                } else {
+                  baseDate.setDate(baseDate.getDate() + i); 
+                }
+                
+                const formattedDate = baseDate ? getHumanDate(baseDate?.toISOString()?.split("T")[0]) : null;
 
                 return (
                   <option key={i} className="w-full" value={formattedDate}>
@@ -452,7 +463,7 @@ const ActivityAddDrawer = (props) => {
               )}
             </div>
             {showDynamicfilters && (
-              <div className="min-[584px]:absolute max-[583px]:fixed max-[583px]:bottom-0 max-[583px]:w-full z-50 bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm z-[1091]" ref={filtersRef}>
+              <div className="min-[584px]:absolute max-[583px]:fixed max-[583px]:bottom-0 max-[583px]:w-full bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm z-[1091]" ref={filtersRef}>
                 <DyamicFilters
                   filters={filtersObj}
                   showFilter={showDynamicfilters}
@@ -466,7 +477,7 @@ const ActivityAddDrawer = (props) => {
             )}
             {showCalender && (
               <div
-                className="fixed bottom-0 w-full z-50 bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm z-[1091]"
+                className="fixed bottom-0 w-full bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm z-[1091]"
                 ref={calendarRef}
               >
                 <div className="font-medium text-[14px]">Select Days</div>
@@ -477,8 +488,10 @@ const ActivityAddDrawer = (props) => {
                       setStartDate(
                         getHumanDate(
                           new Date(
-                            new Date(props.date).setDate(
-                              new Date(props.date).getDate() + i
+                            props?.mercuryItinerary ? new Date((props?.date)).setDate(
+                              new Date((props?.date)).getDate() + i
+                            ) : new Date(convertToISODate(props?.date)).setDate(
+                              new Date(convertToISODate(props?.date)).getDate() + i
                             )
                           )
                             .toISOString()
@@ -490,12 +503,15 @@ const ActivityAddDrawer = (props) => {
                     <span className="font-bold text-[14px]">
                       {getHumanDate(
                         new Date(
-                          new Date(props.date).setDate(
-                            new Date(props.date).getDate() + i
+                          props?.mercuryItinerary ? new Date((props?.date)).setDate(
+                            new Date((props?.date)).getDate() + i
+                          ) : 
+                          new Date(convertToISODate(props?.date)).setDate(
+                            new Date(convertToISODate(props?.date)).getDate() + i
                           )
                         )
-                          .toISOString()
-                          .split("T")[0]
+                          ?.toISOString()
+                          ?.split("T")[0]
                       ) + " | "}
                     </span>
                     <span>Day {i + 1}</span>
@@ -540,7 +556,7 @@ const ActivityAddDrawer = (props) => {
                 />
               </div>
               <div
-                className="relative px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2  rounded-[12px] cursor-pointer"
+                className="relative px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2  cursor-pointer"
                 onClick={() => setShowDynamicfilters(true)}
               >
                 <Image

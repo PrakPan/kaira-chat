@@ -142,6 +142,7 @@ const TransferBooking = ({
   originCityId,
   destinationCityId,
   loadbookings,
+  mercuryItinerary
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -299,7 +300,7 @@ const TransferBooking = ({
 
   return (
     <>
-      {transfers_status === "PENDING" ? (
+      {transfers_status === "PENDING" && mercuryItinerary ? (
         <div className="mt-2 ml-1 md:ml-7 flex flex-col w-full">
           {/* Booking name */}
           <div className="flex flex-row w-full justify-between items-center">
