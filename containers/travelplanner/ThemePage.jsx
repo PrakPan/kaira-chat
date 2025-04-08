@@ -36,6 +36,7 @@ import Poi from "../newcityplanner/pois/Index";
 import PathNavigation from "./PathNavigation.js";
 import ThemeBackground from "../../components/theme/ThemeBackgroundImages.jsx";
 import { imgUrlEndPoint } from "../../components/theme/ThemeConstants.js";
+import BudgetFriendly from "../../components/theme/BudgetFriendly.jsx";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -182,12 +183,12 @@ export default function ThemePage(props) {
         {props?.slug === "japan-cherry-blossom" && (
           <PathNavigation path={"asia/japan"} />
         )}
-        <Overview
+        {props.experienceData.overview_heading && props.experienceData.overview_text ? <Overview
           heading={props.experienceData.overview_heading}
           text={props.experienceData.overview_text}
           image={props.experienceData.overview_image}
           slug={props.slug}
-        />
+        /> : null}
 
         <div className="mt-5">
           {components &&
@@ -300,6 +301,16 @@ export default function ThemePage(props) {
                       )}
 
                     {/* Rendering Static Components */}
+                   
+                    {component.type === "Generic" &&  component?.heading === "How We Keep It Budget-Friendly?" && (
+                      <div>
+                        <BudgetFriendly
+                          page_id={props.experienceData?.id}
+                          destination={props.experienceData?.destination}
+                        ></BudgetFriendly>
+                      </div>
+                    )}
+
 
                     {component.type === "How it works?" && (
                       <div>
