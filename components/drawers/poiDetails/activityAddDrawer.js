@@ -378,7 +378,7 @@ const ActivityAddDrawer = (props) => {
       mobileWidth={"100vw"}
       width="50vw"
     >
-      <div className="px-2 py-4 font-[Poppins]">
+      <div className="px-2 py-4 !font-[lexend]">
         <div className="sticky  top-0 bg-white z-[900] flex flex-col gap-3  pb-1 justify-start items-start mx-auto w-[98%]">
           <div className="flex flex-row gap-[20px] my-0 justify-between w-full items-center">
             <div className="flex flex-row gap-3 items-center">

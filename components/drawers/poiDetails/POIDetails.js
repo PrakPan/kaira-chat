@@ -12,7 +12,7 @@ import FullScreenGalleryGoogle from "./FullScreenGalleryGoogle";
 import useMediaQuery from "../../media";
 import ImageLoaderGoogle from "./ImageLoaderGoogle";
 import ReviewComponent from "../../Reviews/Reviews";
-import { GOOGLE_MAPS_API_KEY } from "../../../services/constants";
+import { GOOGLE_MAPS_API_KEY, MERCURY_HOST } from "../../../services/constants";
 import Image from "next/image";
 export const Title = styled.p`
   font-weight: 800;
@@ -98,9 +98,30 @@ const BackText = styled.div`
   line-height: 2rem;
 `;
 
-const ImageContainer = styled.div`
-  position: relative;
+const GridImage = styled.div`
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(4, 0.4fr);
+  grid-column-gap: 6px;
+  grid-row-gap: 6px;
+  height: 19rem;
 `;
+
+const Child = styled.div`
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  grid-area: ${(props) => props.area};
+  ${(props) => props.className && `class="${props.className}"`};
+`;
+
+// const Heading = styled.div`
+//   font-weight: 600;
+//   font-size: 20px;
+//   margin-block: 1rem 1rem;
+// `;
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
 const POIDetails = (props) => {
@@ -110,52 +131,40 @@ const POIDetails = (props) => {
   const [aboutText, setAboutText] = useState(
     props?.data?.overview ?? props?.data?.short_description
   );
-  const [images, setImages] = useState([]);
 
-  async function fetchImageAsBlob(imageUrl) {
-    try {
-      const response = await fetch(imageUrl, { mode: "no-cors" });
-      if (response.status == 302) {
-        const finalUrl = response.headers.get("location");
-        if (!finalUrl) {
-          console.log("Redirect URL missing");
-          throw new Error("Redirect URL missing");
-        }
-        console.log("Redirecting to:", finalUrl);
+  const [ImagesLoaded, setImagesLoaded] = useState({
+    0: false,
+    1: false,
+    2: false,
+    3: false,
+  });
 
-        const finalResponse = await fetch(finalUrl);
-        const blob = await finalResponse.blob();
-        return URL.createObjectURL(blob);
-      } else {
-        const blob = await response.blob();
-        return URL.createObjectURL(blob);
-      }
-    } catch (error) {
-      console.log("Error fetching image:", error);
+  const [ImagesError, setImagesError] = useState({
+    0: false,
+    1: false,
+    2: false,
+    3: false,
+  });
+
+  function OnImageLoad(i) {
+    if (!ImagesLoaded[i]) {
+      setTimeout(
+        () =>
+          setImagesLoaded((prev) => {
+            return { ...prev, [i]: true };
+          }),
+        1000
+      );
     }
   }
-  useEffect(() => {
-    console.log("images are:", images," and length is:",typeof(images));
-  }, [images]);
 
-  useEffect(() => {
-    if (!props?.data?.extra_images) return;
-  
-    async function fetchAllImages() {
-      const customImages = await Promise.all(
-        props.data.extra_images.map(async (url) => {
-          return await fetchImageAsBlob(
-            `https://maps.googleapis.com/maps/api/place/photo?photo_reference=${url?.photo_reference}&maxwidth=400&key=${GOOGLE_MAPS_API_KEY}`
-          );
-        })
-      );
-      
-      setImages(customImages);
+  function OnImageError(i) {
+    if (!ImagesError[i]) {
+      setImagesError((prev) => {
+        return { ...prev, [i]: true };
+      });
     }
-  
-    fetchAllImages();
-  }, [props.data.extra_images]);
-  
+  }
 
   var experience_filters = (
     <div className="flex flex-wrap gap-2">
@@ -213,85 +222,113 @@ const POIDetails = (props) => {
       )}
 
       <>
-        {images?.length > 0 && (
-          <>
-          {/* <ImageContainer style={{ height: "170px" }}> */}
-            <div>
-              {/* <div style={{ display: imageLoaded ? "initial" : "none" }}> */}
-              {/* <ImageLoaderGoogle
-                url={props?.data?.extra_images?.[0]?.photo_reference}
-                fit="cover"
-                height={"400"}
-                heightmobile={'400'}
-              /> */}
-                <img src={`https://maps.googleapis.com/maps/api/place/photo?photo_reference=${props?.data?.extra_images?.[0]?.photo_reference}&maxwidth=400&key=${GOOGLE_MAPS_API_KEY}`} alt="image" width={200} height={200} />
-                {/* <ImageLoader
-                borderRadius="8px"
-                marginTop="23px"
-                widthMobile="100%"
-                url={
-                  images[0]
-                    ? images[0]
-                    : "media/icons/bookings/notfounds/noroom.png"
+        {props?.data?.extra_images?.length > 0 && (
+          <GridImage>
+            <Child area="1 / 1 / 5 / 4" className="div1">
+              <Image
+                src={
+                  props?.data?.extra_images?.[0]
+                    ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[0]?.photo_reference}`
+                    : "/media/icons/bookings/notfounds/noroom.png"
                 }
-                dimensionsMobile={{ width: 500, height: 280 }}
-                dimensions={{ width: 468, height: 188 }}
-                onload={() => {
-                  setTimeout(() => {
-                    setImageLoaded(true);
-                  }, 1000);
-                }}
-                onfail={() => {
-                  setImageFail(true);
-                  setImageLoaded(true);
-                }}
-                noLazy
-              ></ImageLoader> */}
-                {props?.data?.extra_images && (
-                  <PhotosButton
-                    onClick={() => {
-                      setImages(props?.data?.extra_images);
-                    }}
-                  >
-                    All Photos{" "}
-                  </PhotosButton>
-                )}
-              </div>
-
+                alt="Image 0"
+                fill
+                className="object-cover"
+                onLoad={() => OnImageLoad(0)}
+                onError={() => OnImageError(0)}
+                priority
+              />
               <div
                 style={{
-                  display: !imageLoaded ? "initial" : "none",
+                  display: !ImagesLoaded[0] ? "initial" : "none",
+                  height: "100%",
+                  overflow: "hidden",
                 }}
               >
-                <div
-                  style={{
-                    width: "100%",
-                    height: "188px",
-                    overflow: "hidden",
-                    borderRadius: "8px",
-                  }}
-                >
-                  <SkeletonCard />
-                </div>
-              {/* </div> */}
-            </div>
-            {props.data?.ideal_duration_hours ||
-            props.data?.ideal_duration_numbers ? (
-              <TimeStamp>
-                Approx Time :{" "}
-                {props.data.ideal_duration_hours ||
-                  props.data.ideal_duration_number}{" "}
-                hrs
-              </TimeStamp>
-            ) : (
-              <></>
-            )}
-          {/* </ImageContainer> */}
-          </>
+                <SkeletonCard lottieDimension="50rem" />
+              </div>
+            </Child>
+
+            <Child area="1 / 8 / 5 / 11" className="div2 rounded-lg">
+              <Image
+                src={
+                  props?.data?.extra_images?.[1]
+                    ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[1]?.photo_reference}`
+                    : "/media/icons/bookings/notfounds/noroom.png"
+                }
+                alt="Image 1"
+                fill
+                className="object-cover"
+                onLoad={() => OnImageLoad(1)}
+                onError={() => OnImageError(1)}
+                priority
+              />
+              ={" "}
+              <div
+                style={{
+                  display: !ImagesLoaded[1] ? "initial" : "none",
+                  height: "100%",
+                  overflow: "hidden",
+                }}
+              >
+                <SkeletonCard lottieDimension="50rem" />
+              </div>
+            </Child>
+
+            <Child area="1 / 4 / 3 / 8" className="div3">
+              <Image
+                src={
+                  props?.data?.extra_images?.[2]
+                    ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[2]?.photo_reference}`
+                    : "/media/icons/bookings/notfounds/noroom.png"
+                }
+                alt="Image 2"
+                fill
+                className="object-cover"
+                onLoad={() => OnImageLoad(2)}
+                onError={() => OnImageError(2)}
+                priority
+              />
+              <div
+                style={{
+                  display: !ImagesLoaded[2] ? "initial" : "none",
+                  height: "100%",
+                  overflow: "hidden",
+                }}
+              >
+                <SkeletonCard lottieDimension="50rem" />
+              </div>
+            </Child>
+
+            <Child area="3 / 4 / 5 / 8" className="div4">
+              <Image
+                src={
+                  props?.data?.extra_images?.[3]
+                    ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[3]?.photo_reference}`
+                    : "/media/icons/bookings/notfounds/noroom.png"
+                }
+                alt="Image 3"
+                fill
+                className="object-cover"
+                onLoad={() => OnImageLoad(3)}
+                onError={() => OnImageError(3)}
+                priority
+              />
+              <div
+                style={{
+                  display: !ImagesLoaded[3] ? "initial" : "none",
+                  height: "100%",
+                  overflow: "hidden",
+                }}
+              >
+                <SkeletonCard lottieDimension="50rem" />
+              </div>
+            </Child>
+          </GridImage>
         )}
       </>
 
-      <div className="mt-[180px]">
+      <div className="">
         <Title>{props.data.name}</Title>
         {aboutText != null && aboutText != undefined && (
           <div>

@@ -1,10 +1,34 @@
 import React, { useState } from "react";
 import ButtonYellow from "../../ButtonYellow";
+import CountryCodeDropdown from "../../userauth/CountryDropdown";
+import { FiChevronDown } from "react-icons/fi";
+import { useSelector } from "react-redux";
+import styled from "styled-components";
+import Image from "next/image";
 
-const LeadPaxDetails = ({input,setInput}) => {
+const MobileNumberContainer = styled.div`
+  display: grid;
+  gap: 0.5rem;
+`;
+
+const CountryImg = styled(Image)`
+  background-position: cover;
+  alt: "";
+`;
+
+const LeadPaxDetails = ({ input, setInput }) => {
+  const [openCountryCodeOption, setOpenCountryCodeOption] = useState(false);
+  const CountryCodes = useSelector((state) => state.CountryCodes);
+  const [extension, setExtension] = useState("India");
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setInput((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleExtensionChangeOption = (country) => {
+    setExtension(country);
+    setInput((prev) => ({ ...prev, isd_code: CountryCodes[country].label }));
   };
 
   return (
@@ -34,9 +58,9 @@ const LeadPaxDetails = ({input,setInput}) => {
                 </select>
                 <input
                   className="w-full px-2 text-black"
-                  name="firstName"
+                  name="first_name"
                   placeholder="Enter First Name"
-                  value={input.firstName}
+                  value={input.first_name}
                   onChange={handleChange}
                 />
               </div>
@@ -46,9 +70,9 @@ const LeadPaxDetails = ({input,setInput}) => {
               <div className="text-[12px] text-[#8E8E8E] mb-1">Last Name</div>
               <input
                 className="border w-full h-[40px] px-2 text-black"
-                name="lastName"
+                name="last_name"
                 placeholder="Enter Last Name"
-                value={input.lastName}
+                value={input.last_name}
                 onChange={handleChange}
               />
             </div>
@@ -101,15 +125,43 @@ const LeadPaxDetails = ({input,setInput}) => {
               </div>
             </div>
             <div className="flex-1 min-w-[250px]">
-              <div className="text-[12px] text-[#8E8E8E] mb-1">Phone</div>
-              <div className="flex border h-[40px]">
-                <input
-                  className="w-full px-2 text-black"
-                  name="phone"
-                  placeholder="Enter Phone"
-                  value={input.phone}
-                  onChange={handleChange}
-                />
+              <div className="text-[12px] text-[#8E8E8E] mb-1">
+                contact_number
+              </div>
+              <div className="flex border">
+                <MobileNumberContainer>
+                  <div
+                    className="w-fit px-2 flex flex-row gap-3 items-center border-[#d0d5dd] rounded-lg cursor-pointer"
+                    onClick={() => setOpenCountryCodeOption(true)}
+                  >
+                    <CountryImg
+                      height="30"
+                      width="30"
+                      objectFit="cover"
+                      src={CountryCodes ? CountryCodes[extension].img : ""}
+                    ></CountryImg>
+
+                    <FiChevronDown />
+                  </div>
+
+                  {openCountryCodeOption && (
+                    <CountryCodeDropdown
+                      onClose={() => setOpenCountryCodeOption(false)}
+                      CountryCodes={CountryCodes}
+                      handleExtensionChangeOption={handleExtensionChangeOption}
+                      setOpenCountryCodeOption={setOpenCountryCodeOption}
+                    />
+                  )}
+                </MobileNumberContainer>
+                <div className="flex h-[40px]">
+                  <input
+                    className="w-full px-2 text-black"
+                    name="contact_number"
+                    placeholder="Enter contact_number"
+                    value={input.contact_number}
+                    onChange={handleChange}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -122,9 +174,9 @@ const LeadPaxDetails = ({input,setInput}) => {
               <div className="flex border h-[40px]">
                 <input
                   className="w-full px-2 text-black"
-                  name="passportNumber"
+                  name="passport_number"
                   placeholder="Enter Passport Number"
-                  value={input.passportNumber}
+                  value={input.passport_number}
                   onChange={handleChange}
                 />
               </div>
@@ -136,9 +188,25 @@ const LeadPaxDetails = ({input,setInput}) => {
               <div className="flex border h-[40px]">
                 <input
                   className="w-full px-2 text-black"
-                  name="passportExpiryDate"
+                  name="passport_expiry"
                   placeholder="Enter Passport Expiry Date"
-                  value={input.passportExpiryDate}
+                  type="date"
+                  value={input.passport_expiry}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+            <div className=" min-w-[250px]">
+              <div className="text-[12px] text-[#8E8E8E] mb-1">
+                Passport Issue Date
+              </div>
+              <div className="flex border h-[40px]">
+                <input
+                  className="w-full px-2 text-black"
+                  name="passport_issue_date"
+                  type="date"
+                  placeholder="Enter Passport Issue Date"
+                  value={input.passport_issue_date}
                   onChange={handleChange}
                 />
               </div>

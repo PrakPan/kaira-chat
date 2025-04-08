@@ -3,15 +3,17 @@ import { useSelector } from "react-redux";
 
 const OtherPassengers = ({ input, setInput, index }) => {
     const handleChange = (e) => {
-        const tempVal=input
+        const tempVal=[...input]
         const { name, value } = e.target;
         tempVal[index][name]=value;
+        console.log("tempval is:",tempVal)
         setInput(tempVal);
       };
   return (
     <>
 
       <div className="text-[#8E8E8E]">
+      <div id="basic-information" className="w-full space-y-2">
         <div className="flex flex-wrap gap-2">
             <div className="flex-1 min-w-[250px]">
               <div className="text-[12px] text-[#8E8E8E] mb-1">First Name</div>
@@ -28,9 +30,9 @@ const OtherPassengers = ({ input, setInput, index }) => {
                 </select>
                 <input
                   className="w-full px-2 text-black"
-                  name="firstName"
+                  name="first_name"
                   placeholder="Enter First Name"
-                  value={input[index].firstName}
+                  value={input[index].first_name}
                   onChange={handleChange}
                 />
               </div>
@@ -40,9 +42,9 @@ const OtherPassengers = ({ input, setInput, index }) => {
               <div className="text-[12px] text-[#8E8E8E] mb-1">Last Name</div>
               <input
                 className="border w-full h-[40px] px-2 text-black"
-                name="lastName"
+                name="last_name"
                 placeholder="Enter Last Name"
-                value={input[index].lastName}
+                value={input[index].last_name}
                 onChange={handleChange}
               />
             </div>
@@ -71,6 +73,7 @@ const OtherPassengers = ({ input, setInput, index }) => {
               onChange={handleChange}
             />
           </div>
+        </div>
         </div>
       </div>
     </>
