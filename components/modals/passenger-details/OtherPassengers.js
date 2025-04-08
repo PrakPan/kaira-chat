@@ -12,6 +12,7 @@ const OtherPassengers = ({ input, setInput, index }) => {
     <>
 
       <div className="text-[#8E8E8E]">
+      <div id="basic-information" className="w-full space-y-4">
         <div className="flex flex-wrap gap-2">
             <div className="flex-1 min-w-[250px]">
               <div className="text-[12px] text-[#8E8E8E] mb-1">First Name</div>
@@ -71,6 +72,7 @@ const OtherPassengers = ({ input, setInput, index }) => {
               onChange={handleChange}
             />
           </div>
+        </div>
         </div>
       </div>
     </>

@@ -101,7 +101,7 @@ const PassengerDetails = () => {
             <div className="text-[16px] text-[#8E8E8E] font-medium mb-2 text-black">
               Basic Information of other travellers
             </div>
-            {itinerary.number_of_adults.length - 1 > 0 && (
+            {itinerary.number_of_adults - 1 > 0 && (
               <>
                 <div className="text-[#8E8E8E]">
                   <div className="text-[14px] font-medium">ADULT</div>

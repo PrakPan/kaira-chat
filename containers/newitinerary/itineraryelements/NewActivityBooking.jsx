@@ -12,7 +12,7 @@ import { MdDoneAll } from "react-icons/md";
 import { convertDateFormat } from "../../../helper/ConvertDateFormat";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
-import Button from "../../../components/Button";
+import Button from "../../../components/ui/button/Index";
 const ClippathComp = styled.div`
   clip-path: polygon(0 0, 100% 0, 100% 50%, 100% 100%, 0% 100%);
 `;
