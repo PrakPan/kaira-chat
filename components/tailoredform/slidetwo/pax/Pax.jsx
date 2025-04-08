@@ -321,6 +321,7 @@ const Pax = (props) => {
     {
       adults: 2,
       children: 0,
+      infants:0,
       childAges: [],
     },
   ]);
@@ -346,6 +347,7 @@ const Pax = (props) => {
     for (let room of rooms) {
       total += room.adults;
       total += room.children;
+      total+=room.infants
     }
     setTravelers(total);
   }, [rooms]);
@@ -357,6 +359,7 @@ const Pax = (props) => {
         {
           adults: 1,
           children: 0,
+          infants:0,
           childAges: [],
         },
       ]);
@@ -378,26 +381,13 @@ const Pax = (props) => {
 
   const handleDone = () => {
 
-    // if (checkError()) {
-    //   setShowError(true);
-    //   return;
-    // }
+    props?.setRoomConfiguration(rooms)
+    props?.setNumberOfAdults(rooms.reduce((sum,room)=>sum+room.adults,0))
+    props?.setNumberOfChildren(rooms.reduce((sum,room)=>sum+room.children,0))
+    props?.setNumberOfInfants(rooms.reduce((sum,room)=>sum+room.infants,0))
 
     setShowError(false);
     setIsRoomExpanded(false);
-
-    // let adults = 0;
-    // let children = 0;
-
-    // for (let room of rooms) {
-    //   adults += room.adults;
-    //   children += room.children;
-    // }
-
-    // if (props.setNumberOfAdults) props.setNumberOfAdults(adults);
-    // if (props.setNumberOfChildren) props.setNumberOfChildren(children);
-    // if (props.setRoomConfiguration) props.setRoomConfiguration(rooms);
-
     
   };
 
@@ -446,45 +436,12 @@ const Pax = (props) => {
               >
                 Add Room
               </button>
-              {/* <Button
-                              fontSize="1rem"
-                              width={"auto"}
-                              
-                              padding="0.5rem 2rem"
-                              fontWeight="500"
-                              margin="1rem 0"
-                              borderRadius="5px"
-                              borderWidth="1px"
-                              bgColor="#f7e700"
-                              onclick={() => handleAddRoom()}
-                              
-                            >
-                              Add Room
-                            </Button> */}
-
-              {/* <button
-                onClick={handleDone}
-                className="py-1 bg-blue-600 font-medium text-blue rounded-md hover:bg-blue-700"
-              >
-                Apply
-              </button> */}
             </div>
 
             <div className="mt-4 flex justify-end">
               <Button
                 fontSize="1rem"
                 width={"auto"}
-                // style={
-                //   !isPageWide && isPageLoaded
-                //     ? {
-                //         position: "fixed",
-                //         left: "1rem",
-                //         right: "1rem",
-                //         bottom: "0",
-                //       }
-                //     : {}
-
-                // }
                 padding="0.5rem 2rem"
                 fontWeight="500"
                 margin="0"
@@ -506,6 +463,7 @@ const Pax = (props) => {
 const Room = ({ index, data, setRooms, showError, removeRoom }) => {
   const [adults, setAdults] = useState(data.adults);
   const [children, setChildren] = useState(data.children);
+  const [infants,setInfants]=useState(data.infants)
   const [childAges, setChildAges] = useState(data.childAges);
 
   useEffect(() => {
@@ -516,12 +474,13 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
               ...room,
               adults: adults,
               children: children,
+              infants:infants,
               childAges: childAges,
             }
           : room
       )
     );
-  }, [adults, children, childAges, index, setRooms]);
+  }, [adults, children, childAges,infants, index, setRooms]);
 
   const handleAdults = (increment) => {
     if (increment && adults < 14) {
@@ -531,21 +490,19 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
     }
   };
 
-  //    const handleChildren = (increment) => {
-  //      if (increment && children < 6) {
-  //     setChildren((prev) => prev + 1);
-  //    setChildAges((prev) => [...prev, null]);
-  //    } else if (!increment && children >= 1) {
-  //     setChildren((prev) => prev - 1);
-  //     setChildAges((prev) => prev.slice(0, -1));
-  //   }
-  // };
+  const handleInfants = (increment) => {
+    if (increment && adults < 14) {
+      setInfants((prev) => prev + 1);
+    } else if (!increment && adults > 1) {
+      setInfants((prev) => prev - 1);
+    }
+  };
 
   const handleChildren = (type) => {
-    if (type === "plus" && children < 6) {
+    if (type === "plus" && children < 13) {
       setChildren((prev) => prev + 1);
       setChildAges((prev) => [...prev, null]);
-    } else if (type === "minus" && children >= 1) {
+    } else if (type === "minus" && children >= 2) {
       setChildren((prev) => prev - 1);
       setChildAges((prev) => prev.slice(0, -1));
     }
@@ -590,10 +547,35 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
         </div>
       </div>
 
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <div className="font-medium">Infants</div>
+        </div>
+        <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
+          <button
+            className={` flex items-center justify-center  ${
+              infants > 0 ? "text-blue " : "text-gray-300"
+            }`}
+            onClick={() => handleInfants(false)}
+            disabled={infants <= 0}
+          >
+            -
+          </button>
+          <span className="mx-2 w-6 text-center">{infants}</span>
+          <button
+            className="flex items-center justify-center text-blue"
+            onClick={() => handleInfants(true)}
+            disabled={infants > 4}
+          >
+            +
+          </button>
+        </div>
+      </div>
+
       <div className="flex justify-between items-center mb-3">
         <div>
           <div className="font-medium">Children</div>
-          <div className="text-xs text-gray-500">0-12 Years</div>
+          <div className="text-xs text-gray-500">2-12 Years</div>
         </div>
         <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
           <button
@@ -601,7 +583,7 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
               children > 0 ? "text-blue" : "text-gray-300"
             }`}
             onClick={() => handleChildren("minus")}
-            disabled={children <= 0}
+            disabled={children >= 3}
           >
             -
           </button>
@@ -609,14 +591,14 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
           <button
             className=" flex items-center justify-center text-blue"
             onClick={() => handleChildren("plus")}
-            disabled={children >= 6}
+            disabled={children > 12}
           >
             +
           </button>
         </div>
       </div>
 
-      {/* {children > 0 && (
+      {children > 0 && (
         <div className="pl-4 space-y-2 mt-3">
           {childAges.map((age, i) => (
             <ChildAge
@@ -629,7 +611,7 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
             />
           ))}
         </div>
-      )}  */}
+      )} 
     </div>
   );
 };
@@ -689,13 +671,15 @@ const ChildAge = ({ index, child, age, setChildAges, showError }) => {
       {openAges && (
         <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
           {Array.from({ length: 13 }, (_, i) => (
-            <div
+            <>
+            {i>=2&&<div
               key={i}
               onClick={() => handleChildAge(i)}
               className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
             >
               {i}
-            </div>
+            </div>}
+            </>
           ))}
         </div>
       )}
