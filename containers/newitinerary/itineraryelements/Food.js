@@ -40,7 +40,7 @@ const Line = styled.div`
 
 const ItineraryFoodElement = (props) => {
   return (
-    <Container className="font-poppins">
+    <Container>
       <div style={{ display: "flex", alignItems: "center" }}>
         <SectionOneText>{props.time}</SectionOneText>
       </div>

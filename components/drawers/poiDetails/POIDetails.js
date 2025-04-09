@@ -1,19 +1,16 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
 import { useState } from "react";
-import ImageLoader from "../../ImageLoader";
-import media from "../../media";
 import { TbArrowBack } from "react-icons/tb";
 import SkeletonCard from "../../ui/SkeletonCard";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
-import ReviewsCarousel from "./ReviewsCarousel";
-import FullScreenGalleryGoogle from "./FullScreenGalleryGoogle";
-import useMediaQuery from "../../media";
-import ImageLoaderGoogle from "./ImageLoaderGoogle";
 import ReviewComponent from "../../Reviews/Reviews";
 import { GOOGLE_MAPS_API_KEY, MERCURY_HOST } from "../../../services/constants";
 import Image from "next/image";
+import { useRouter } from "next/router";
+import { PulseLoader } from "react-spinners";
+import axios from "axios";
 export const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -47,7 +44,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  font-family: Poppins;
+  font-family: Lexend;
   padding: ${(props) => (props.itineraryDrawer ? "0 1rem 1rem 1rem" : "1rem")};
 `;
 
@@ -125,9 +122,8 @@ const Child = styled.div`
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
 const POIDetails = (props) => {
-  const isDesktop = useMediaQuery("(min-width:1148px)");
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [imageFail, setImageFail] = useState(false);
+  const router=useRouter()
+  const [loading,setLoading]=useState(false)
   const [aboutText, setAboutText] = useState(
     props?.data?.overview ?? props?.data?.short_description
   );
@@ -156,6 +152,20 @@ const POIDetails = (props) => {
         1000
       );
     }
+  }
+
+  const handleDelete=async()=>{
+    setLoading(true)
+    try {
+      const res=await axios.delete(`${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/poi/delete/`,{
+        data:{itinerary_city_id:props?.itinerary_city_id,
+        day_by_day_index:props?.dayIndex,
+        poi_index:props?.slabIndex}
+      })
+    } catch (error) {
+      console.log('error is:',error)
+    }
+    setLoading(false)
   }
 
   function OnImageError(i) {
@@ -417,6 +427,33 @@ const POIDetails = (props) => {
           </div>
           <ReviewComponent review={props?.data?.reviews?.[0]} />
           {/* <ReviewsCarousel reviews={props?.data?.reviews} /> */}
+
+          <div className="p-4 bg-white">
+        <button
+          className="w-full bg-red-500 text-white py-2 rounded-lg flex items-center justify-center"
+          onClick={handleDelete}
+          disabled={loading}
+        >
+          <div style={{ position: "relative" }}>
+            <div style={loading ? { visibility: "hidden" } : {}}>
+              🗑 Delete Booking
+            </div>
+            {loading && (
+              <PulseLoader
+                style={{
+                  position: "absolute",
+                  top: "55%",
+                  left: "50%",
+                  transform: "translate(-50% , -50%)",
+                }}
+                size={12}
+                speedMultiplier={0.6}
+                color="#ffffff"
+              />
+            )}
+          </div>
+        </button>
+      </div>
         </>
       )}
 

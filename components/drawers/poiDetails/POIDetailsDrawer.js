@@ -14,34 +14,32 @@ import { useRouter } from "next/router";
 const POIDetailsDrawer = (props) => {
   const [data, setData] = useState(props?.data || []);
   const [loading, setLoading] = useState(false);
-  const router=useRouter();
+  const router = useRouter();
   useEffect(() => {
     if (props.show) fetchData();
   }, [props.show]);
 
   const fetchData = async () => {
     setLoading(true);
-    if(props?.activityData?.type=="activity"){
+    if (props?.activityData?.type == "activity") {
       const res = await axios.get(
         `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/activity/${props?.activityData?.id}/`
       );
       setData(res?.data?.activity);
       setLoading(false);
-    }
-    else if (props?.activityData?.type == "poi") {
+    } else if (props?.activityData?.type == "poi") {
       const res = await axios.get(
         `${MERCURY_HOST}/api/v1/geos/poi/${props?.activityData?.id}/`
       );
       setData(res?.data?.data?.poi);
       setLoading(false);
-    } 
-    else if(props?.activityData?.type=="restaurant"){
+    } else if (props?.activityData?.type == "restaurant") {
       const res = await axios.get(
         `${MERCURY_HOST}/api/v1/geos/restaurant/${props?.activityData?.id}/`
       );
       setData(res?.data?.data?.restaurant);
       setLoading(false);
-    }else if (props.ActivityiconId && props.themePage) {
+    } else if (props.ActivityiconId && props.themePage) {
       activityDetail
         .post(`${props.ActivityiconId}/`, {})
         .then((res) => {
@@ -105,7 +103,6 @@ const POIDetailsDrawer = (props) => {
     }
   };
 
-
   return (
     <Drawer
       show={props.show}
@@ -123,6 +120,9 @@ const POIDetailsDrawer = (props) => {
             itineraryDrawer={props.itineraryDrawer}
             data={data}
             handleCloseDrawer={props.handleCloseDrawer}
+            dayIndex={props?.dayIndex}
+            slabIndex={props?.slabIndex}
+            itinerary_city_id={props?.itinerary_city_id}
           >
             {props.children}
           </POIDetails>

@@ -327,6 +327,14 @@ const DaybyDay = ({
                   endCity?.gmaps_place_id
               ]?.booking_type
             }
+            duration={
+              transferBookings?.intercity?.[
+                itineraryDaybyDay?.cities[itineraryDaybyDay?.cities.length - 1]
+                  ?.id +
+                  ":" +
+                  endCity?.gmaps_place_id
+              ]?.duration
+            }
             pinColour={CITY_COLOR_CODES[0 % 7]}
             onClick={() => alert(`Clicked`)}
             upPresent={true}

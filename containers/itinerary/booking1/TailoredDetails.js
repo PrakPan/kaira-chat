@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import BookingSlide from "./BookingSlide";
+import BookingSlide from "./OldBookingSlide";
 import CouponSlide from "./CouponSlide";
 import { useEffect, useState } from "react";
 import { MIS_SERVER_HOST } from "../../../services/constants";

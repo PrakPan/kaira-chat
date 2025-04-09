@@ -78,7 +78,9 @@ const TransferElementsM = ({
                         {modes ? `${modes} added` : null}
                       </>
                     ) : (
-                      <>{modes ? `Add ${modes} ` : null}</>
+                      <>
+                      {/* {modes ? `Add ${modes} ` : null} */}
+                      </>
                     )}
                   </TransparentButton>
                 </Link>

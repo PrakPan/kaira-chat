@@ -62,7 +62,7 @@ const CityItem = ({
   loadbookings,
   setShowLoginModal,
   origin,
-  destination
+  destination,
 }) => {
   const [selectedBooking, setSelectedBooking] = useState({
     id: null,
@@ -168,6 +168,26 @@ const CityItem = ({
     }
   };
 
+  const extractMode = (text) => {
+    // Convert the text to lowercase for better matching
+    const lowerText = text.toLowerCase();
+
+    // Match the known transport modes
+    if (lowerText.includes("flight")) {
+      return "Flight";
+    } else if (lowerText.includes("train")) {
+      return "Train";
+    } else if (lowerText.includes("bus")) {
+      return "Bus";
+    } else if (lowerText.includes("taxi") || lowerText.includes("car")) {
+      return "Car";
+    } else if (lowerText.includes("ferry")) {
+      return "Ferry";
+    } else {
+      return "";
+    }
+  };
+
   return (
     <Container>
       <PinWrapper>
@@ -219,11 +239,27 @@ const CityItem = ({
         {loadbookings ? (
           <TransferSkeleton />
         ) : (
-          <div className="font-[Poppins] text-[16px] font-[500] flex gap-1">
+          <div className=" text-[16px] font-[500] flex gap-1">
             {(booking_id || city) && !visible ? (
               <>
                 {" "}
-                <div className="mt-[4px]">{correctIcon(booking_type)}</div>
+                <div className="mt-[4px] flex items-center">
+                  {city?.includes(",")
+                    ? city?.split(",").map((text, i) => {
+                        const mode = extractMode(text.trim());
+
+                        return (
+                          <>
+                            {correctIcon(mode)}
+
+                            {i < city.split(",").length - 1 && (
+                              <span className="mx-1">-</span>
+                            )}
+                          </>
+                        );
+                      })
+                    : correctIcon(booking_type)}
+                </div>
                 <div
                   className="flex flex-col group hover:cursor-pointer"
                   onClick={() => upPresent && downPresent && handleEdit()}
@@ -240,7 +276,7 @@ const CityItem = ({
                     )}
                   </div>
                   {duration && (
-                    <div className="font-[Poppins] font-[400] text-[12px] ">
+                    <div className=" font-[400] text-[12px] ">
                       Duration: {duration}
                     </div>
                   )}
@@ -264,7 +300,6 @@ const CityItem = ({
             )}
           </div>
         )}
-        
       </div>
       <TransferEditDrawer
         mercury

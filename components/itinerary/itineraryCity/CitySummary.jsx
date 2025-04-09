@@ -127,7 +127,7 @@ const CitySummary = (props) => {
                 </div>
                 <div>
                   <div className="flex gap-1">
-                  <div className="w-fit font-semibold font-[Poppins] text-[12px] cursor-pointer">
+                  <div className="w-fit font-semibold  text-[12px] cursor-pointer">
                     {item?.name}
                   </div>
                   <div className="hidden group-hover:!block">
@@ -135,7 +135,7 @@ const CitySummary = (props) => {
 
                   </div>
                   </div>
-                  <div className="flex gap-3 text-[12px] font-[Poppins]">
+                  <div className="flex gap-3 text-[12px] ">
                     <div className="w-auto flex items-center gap-1">
                       <svg
                         width="14"

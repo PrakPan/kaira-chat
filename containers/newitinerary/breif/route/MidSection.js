@@ -157,13 +157,13 @@ const MidSection = (props) => {
             props.route?.transfers?.id !== "" &&
             (!props.bookings || props.bookings.length === 0) ? (
               <Text>
-                <button
+                {/* <button
                   id="transferAdd"
                   // onClick={(e) => handleTransferEdit(e, "Add Transfer")}
                   className="text-blue hover:underline"
                 >
                   + Add Transfer
-                </button>
+                </button> */}
               </Text>
             ) : (
               <Text>
