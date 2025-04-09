@@ -490,31 +490,44 @@ const TransferBooking = ({
                         ) : (
                           <button
                             // onClick={() => HandleTransport(index, "Add Taxi")}
-                            className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#F7E700]"
+                            className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
                           >
-                            View Details
+                            View Detail
                             {/* Add Taxi */}
                           </button>
                         )}
                       </div>
                     ) : (
-                      <div className={`absolute bottom-[1rem] right-6 -m-3`}>
-                        <Button
-                          padding="0.6rem 2.2rem"
-                          borderRadius="8px"
-                          hoverColor="white"
-                          fontWeight="400"
-                          onclick={() =>
-                            handleViewDetails(
-                              router?.query?.id,
-                              booking?.id,
-                              booking?.transfer_details?.mode.toLowerCase()
-                            )
-                          }
+                      // <div className={`absolute bottom-[1rem] right-6 -m-3`}>
+                      //   <Button
+                      //     padding="0.6rem 2.2rem"
+                      //     borderRadius="8px"
+                      //     hoverColor="white"
+                      //     fontWeight="400"
+                      //     onclick={() =>
+                      //       handleViewDetails(
+                      //         router?.query?.id,
+                      //         booking?.id,
+                      //         booking?.transfer_details?.mode.toLowerCase()
+                      //       )
+                      //     }
+                      //   >
+                      //     View Detail
+                      //   </Button>
+                      // </div>
+                      <button
+                             onclick={() =>
+                          handleViewDetails(
+                            router?.query?.id,
+                            book?.id,
+                            book?.transfer_details?.mode.toLowerCase()
+                          )
+                        }
+                          className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000] mr-2"
                         >
+                          {/* Add Taxi */}
                           View Detail
-                        </Button>
-                      </div>
+                        </button>
                     )}
 
                   </div>
@@ -739,31 +752,44 @@ const TransferBooking = ({
                       ) : (
                         <button
                           // onClick={() => HandleTransport(index, "Add Taxi")}
-                          className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#F7E700]"
+                          className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
                         >
                           {/* Add Taxi */}
-                          View Details
+                          View Detail
                         </button>
                       )}
                     </div>
                   ) : (
-                    <div className={`absolute bottom-[1rem] right-6 -m-3`}>
-                      <Button
-                        padding="0.6rem 2.2rem"
-                        borderRadius="8px"
-                        hoverColor="white"
-                        fontWeight="400"
-                        onclick={() =>
+                    // <div className={`absolute bottom-[1rem] right-6 -m-3`}>
+                    //   <Button
+                    //     padding="0.6rem 2.2rem"
+                    //     borderRadius="8px"
+                    //     hoverColor="white"
+                    //     fontWeight="400"
+                    //     onclick={() =>
+                    //       handleViewDetails(
+                    //         router?.query?.id,
+                    //         book?.id,
+                    //         book?.transfer_details?.mode.toLowerCase()
+                    //       )
+                    //     }
+                    //   >
+                    //     View Detail
+                    //   </Button>
+                    // </div>
+                    <button
+                              onclick={() =>
                           handleViewDetails(
                             router?.query?.id,
                             book?.id,
                             book?.transfer_details?.mode.toLowerCase()
                           )
                         }
-                      >
-                        View Detail
-                      </Button>
-                    </div>
+                          className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
+                        >
+                          {/* Add Taxi */}
+                          View Detail
+                        </button>
                   )}
                 </div>
                 <Drawer
@@ -938,14 +964,14 @@ const FlightBooking = ({
                 borderRadius="8px"
                 fontWeight="400"
                 padding="0.6rem 0.6rem"
-                hoverColor="#f7e700"
+                hoverColor="#FFFFFF"
                 margin="auto 2px"
                 onclick={() => {
                   // HandleFlights(index, "Change Flight");
                   setShowDetails((prev) => !prev);
                 }}
               >
-                View Details
+                View Detail
               </Button>
             </div>
           )}
@@ -969,7 +995,7 @@ const FlightBooking = ({
           {window.innerWidth < 1000 && (
             <div className="w-[131.95px]">
               <Button
-                bgColor={"#FFFFFF"}
+                bgColor={"#000000"}
                 borderRadius="8px"
                 fontWeight="400"
                 padding="0.6rem 0.6rem"
@@ -980,7 +1006,7 @@ const FlightBooking = ({
                   setShowDetails((prev) => !prev);
                 }}
               >
-                View Details
+                View Detail
               </Button>
             </div>
           )}
