@@ -42,7 +42,10 @@ const GetInTouchContainer = styled.div`
 const items = [{ id: 1, label: "Things To Do", link: "Activities" }];
 
 const ActivityAddDrawer = (props) => {
+<<<<<<< HEAD
   console.log("start date is:",props?.date)
+=======
+>>>>>>> 298899f4 (fixed bugs)
   const isDesktop = useMediaQuery("(min-width:767px)");
   const [selectedExprience, setSelectedExprience] = useState(-1);
   const [elementType, setElementType] = useState("Activity");
@@ -87,11 +90,11 @@ const ActivityAddDrawer = (props) => {
   const [startDate, setStartDate] = useState(props?.date);
   const [showCalender, setShowCalender] = useState(false);
 
-  const filtersRef=useRef(null)
+  const filtersRef = useRef(null);
   const calendarRef = useRef(null);
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if(filtersRef.current && !filtersRef.current.contains(event.target)){
+      if (filtersRef.current && !filtersRef.current.contains(event.target)) {
         setShowDynamicfilters(false);
       }
       if (calendarRef.current && !calendarRef.current.contains(event.target)) {
@@ -99,13 +102,12 @@ const ActivityAddDrawer = (props) => {
       }
     };
 
-      document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
 
   useEffect(() => {
     const hasRatingChanged =
@@ -463,7 +465,14 @@ const ActivityAddDrawer = (props) => {
               )}
             </div>
             {showDynamicfilters && (
+<<<<<<< HEAD
               <div className="min-[584px]:absolute max-[583px]:fixed max-[583px]:bottom-0 max-[583px]:w-full bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm z-[1091]" ref={filtersRef}>
+=======
+              <div
+                className="min-[584px]:absolute max-[583px]:fixed max-[583px]:bottom-0 max-[583px]:w-full z-50 bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm z-[1091]"
+                ref={filtersRef}
+              >
+>>>>>>> 298899f4 (fixed bugs)
                 <DyamicFilters
                   filters={filtersObj}
                   showFilter={showDynamicfilters}
@@ -591,88 +600,94 @@ const ActivityAddDrawer = (props) => {
           </div>
         </div>
 
-        {!loading ? (
-          options.length ? (
-            <div
-              onScroll={handleScroll}
-              className="flex flex-col items-center mb-3 h-[100vh] overflow-y-scroll"
-            >
-              {options}
-              {selectSearch !== "" ? (
-                <Button
-                  boxShadow
-                  onclickparam={null}
-                  onclick={handleClearSearch}
-                  margin="0.25rem auto"
-                  borderWidth="1px"
-                  borderRadius="2rem"
-                  padding="0.25rem 1rem"
-                >
-                  Show All
-                </Button>
-              ) : null}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center gap-3">
-              <EmptyMsg className="flex flex-row items-start px-1">
-                <BiErrorCircle className="" />
-                <span className="">
-                  Oops, it looks like there are no{" "}
-                  {elementType === "POI" ? "places to visit" : "things to do"}{" "}
-                  available.
-                </span>
-              </EmptyMsg>
-              {debouncedSearch !== "" ? (
-                <Button
-                  boxShadow
-                  onclickparam={null}
-                  onclick={handleClearSearch}
-                  margin="0.25rem auto"
-                  borderWidth="1px"
-                  borderRadius="2rem"
-                  padding="0.25rem 1rem"
-                >
-                  Show All
-                </Button>
-              ) : (
-                <GetInTouchContainer className="">
+        <div className="flex">
+          <div onClick={()=>navigationHandler("Things To Do")}>Things To do</div>
+          <div onClick={()=>navigationHandler("POI")}>Places To visit</div>
+        </div>
+        <>
+          {!loading ? (
+            options.length ? (
+              <div
+                onScroll={handleScroll}
+                className="flex flex-col items-center mb-3 h-[100vh] overflow-y-scroll"
+              >
+                {options}
+                {selectSearch !== "" ? (
                   <Button
-                    color="#111"
-                    fontWeight="500"
-                    fontSize="1rem"
-                    borderWidth="2px"
-                    width="100%"
-                    borderRadius="8px"
-                    bgColor="#f8e000"
-                    padding="12px"
-                    onclick={props._GetInTouch}
+                    boxShadow
+                    onclickparam={null}
+                    onclick={handleClearSearch}
+                    margin="0.25rem auto"
+                    borderWidth="1px"
+                    borderRadius="2rem"
+                    padding="0.25rem 1rem"
                   >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        gap: "0.5rem",
-                        alignItems: "center",
-                      }}
-                    >
-                      <ImageLoader
-                        dimensions={{ height: 50, width: 50 }}
-                        dimensionsMobile={{ height: 50, width: 50 }}
-                        height={"20px"}
-                        width={"20px"}
-                        leftalign
-                        url={"media/icons/login/customer-service-black.png"}
-                      />{" "}
-                      <span className="">Get in touch!</span>
-                    </div>
+                    Show All
                   </Button>
-                </GetInTouchContainer>
-              )}
-            </div>
-          )
-        ) : (
-          <PoiListSkeleton />
-        )}
+                ) : null}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-3">
+                <EmptyMsg className="flex flex-row items-start px-1">
+                  <BiErrorCircle className="" />
+                  <span className="">
+                    Oops, it looks like there are no{" "}
+                    {elementType === "POI" ? "places to visit" : "things to do"}{" "}
+                    available.
+                  </span>
+                </EmptyMsg>
+                {debouncedSearch !== "" ? (
+                  <Button
+                    boxShadow
+                    onclickparam={null}
+                    onclick={handleClearSearch}
+                    margin="0.25rem auto"
+                    borderWidth="1px"
+                    borderRadius="2rem"
+                    padding="0.25rem 1rem"
+                  >
+                    Show All
+                  </Button>
+                ) : (
+                  <GetInTouchContainer className="">
+                    <Button
+                      color="#111"
+                      fontWeight="500"
+                      fontSize="1rem"
+                      borderWidth="2px"
+                      width="100%"
+                      borderRadius="8px"
+                      bgColor="#f8e000"
+                      padding="12px"
+                      onclick={props._GetInTouch}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          gap: "0.5rem",
+                          alignItems: "center",
+                        }}
+                      >
+                        <ImageLoader
+                          dimensions={{ height: 50, width: 50 }}
+                          dimensionsMobile={{ height: 50, width: 50 }}
+                          height={"20px"}
+                          width={"20px"}
+                          leftalign
+                          url={"media/icons/login/customer-service-black.png"}
+                        />{" "}
+                        <span className="">Get in touch!</span>
+                      </div>
+                    </Button>
+                  </GetInTouchContainer>
+                )}
+              </div>
+            )
+          ) : (
+            <PoiListSkeleton />
+          )}
+        </>
       </div>
     </Drawer>
   );

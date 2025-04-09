@@ -17,7 +17,7 @@ const PassengerDetails = () => {
     title: "Mr",
     first_name: "",
     last_name: "",
-    gender: "",
+    gender: "male",
     dob: "",
     email: "",
     contact_number: "",
@@ -32,7 +32,7 @@ const PassengerDetails = () => {
       title: "Mr",
       first_name: "",
       last_name: "",
-      gender: "",
+      gender: "male",
       type: "adult",
       is_lead:false
     }))

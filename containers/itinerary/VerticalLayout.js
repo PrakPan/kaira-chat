@@ -239,7 +239,7 @@ const CityItem = ({
         {loadbookings ? (
           <TransferSkeleton />
         ) : (
-          <div className="font-[Poppins] text-[16px] font-[500] flex gap-1">
+          <div className=" text-[16px] font-[500] flex gap-1">
             {(booking_id || city) && !visible ? (
               <>
                 {" "}
@@ -276,7 +276,7 @@ const CityItem = ({
                     )}
                   </div>
                   {duration && (
-                    <div className="font-[Poppins] font-[400] text-[12px] ">
+                    <div className=" font-[400] text-[12px] ">
                       Duration: {duration}
                     </div>
                   )}

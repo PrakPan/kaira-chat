@@ -47,7 +47,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  font-family: Poppins;
+  font-family: Lexend;
   padding: ${(props) => (props.itineraryDrawer ? "0 1rem 1rem 1rem" : "1rem")};
 `;
 

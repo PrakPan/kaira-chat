@@ -62,7 +62,7 @@ export const Pax = ({ pax, setPax }) => {
   };
 
   return (
-    <div className="font-[poppins] relative w-fit h-fit flex flex-row items-center gap-2 rounded-lg cursor-pointer z-[10]">
+    <div className=" relative w-fit h-fit flex flex-row items-center gap-2 rounded-lg cursor-pointer z-[10]">
       <div
         onClick={() => {
           if (window.innerWidth >= 583) {
