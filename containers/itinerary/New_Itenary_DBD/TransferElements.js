@@ -41,8 +41,8 @@ const TransferElements = ({
               ? data.bookings[0].id
               : null
           )
-            ? modes + " added"
-            : "Add " + modes
+            ? modes + " added" : null
+            // : "Add " + modes
         }`,
         event_value: heading,
         event_action: "Day by Day Itinerary",
@@ -72,7 +72,14 @@ const TransferElements = ({
                 <div className="text-xl font-normal pr-2 ">{heading}</div>
 
                 {meta == null || meta.estimated_cost == undefined ? null : (
-                  <Link
+                  getUserSelectedByBookings(
+                    data.bookings &&
+                      data.bookings[0] &&
+                      data.bookings[0] &&
+                      data.bookings[0].id
+                      ? data.bookings[0].id
+                      : null
+                  ) ? <Link
                     to={
                       data.bookings && data.bookings[0] && data.bookings[0].id
                         ? `${data.bookings[0].id}`
@@ -81,7 +88,7 @@ const TransferElements = ({
                     offset={-90}
                     onClick={handleTransferButtonClick}
                   >
-                    <TransparentButton>
+                  { modes ? <TransparentButton>
                       {getUserSelectedByBookings(
                         data.bookings &&
                           data.bookings[0] &&
@@ -100,10 +107,12 @@ const TransferElements = ({
                           {modes ? `${modes} added` : null}
                         </>
                       ) : (
-                        <>{modes ? `Add ${modes} ` : null}</>
+                        <>
+                        {/* {modes ? `Add ${modes} ` : null} */}
+                        </>
                       )}
-                    </TransparentButton>
-                  </Link>
+                    </TransparentButton> : null}
+                  </Link> : null
                 )}
               </div>
               {transfers !== undefined ? (
