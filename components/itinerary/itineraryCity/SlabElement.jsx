@@ -25,7 +25,7 @@ const SlabElement = (props) => {
   return (
     <div className="">
       {props.element.element_type === "activity" ? (
-        <Activity element={props.element} />
+        <Activity element={props.element} dayIndex={props?.dayIndex} slabIndex={props?.slabIndex} itinerary_city_id={props?.itinerary_city_id}/>
       ) : props.element.element_type === "recommendation" ? (
         <Recommendation element={props.element} />
       ) : null}
@@ -125,7 +125,7 @@ const Activity = (props) => {
               <div className="hidden lg:!block text-[#7A7A7A] text-[12px]">
                 {props.element?.rating}
               </div>
-              {props.element?.user_ratings_total && (
+              {props.element?.user_ratings_total && !props?.element?.poi && (
                 <div className="hidden lg:!block text-[#7A7A7A] text-[12px] underline">
                   {props.element?.user_ratings_total} Google reviews
                 </div>
@@ -209,7 +209,7 @@ const Activity = (props) => {
                       </div>
                     )}
                   </div>
-                  {props.element?.user_ratings_total>0 && (
+                  {props.element?.user_ratings_total>0 && !props?.element?.poi &&(
                     <div className="text-[#7A7A7A] text-[12px] underline">
                       {props.element?.user_ratings_total} Google reviews
                     </div>
@@ -245,6 +245,9 @@ const Activity = (props) => {
         text={props.element?.text}
         Topheading={"Select Our Point Of Interest"}
         activityData={activityData}
+        itinerary_city_id={props?.itinerary_city_id}
+        dayIndex={props?.dayIndex}
+        slabIndex={props?.slabIndex}
       />
     </>
   );
@@ -456,6 +459,8 @@ const Recommendation = (props) => {
         text={props.element?.text}
         Topheading={"Select Our Point Of Interest"}
         activityData={activityData}
+        dayIndex={props?.dayIndex}
+        slabIndex={props?.slabIndex}
       />
     </>
   );

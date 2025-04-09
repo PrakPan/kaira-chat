@@ -7,7 +7,7 @@ const CityDay = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [showAddDrawer, setShowAddDrawer] = useState(false);
   const [elements, setElements] = useState([]);
-
+console.log("props are:",props)
   useEffect(() => {
     let elements = [];
     for (let elem of props.day.slab_elements) {
@@ -44,7 +44,7 @@ const CityDay = (props) => {
       <div className="flex flex-col p-3 md:w-[85%]">
         {elements.map((element, index) => (
           <>
-            <SlabElement key={index} element={element} />
+            <SlabElement itinerary_city_id={props?.itinerary_city_id} key={index} element={element} dayIndex={props?.index} slabIndex={index}/>
 
             {index !== elements.length - 1 ? <hr /> : null}
           </>
@@ -76,7 +76,7 @@ const CityDay = (props) => {
         day={`Day ${props.index + 1}`}
         duration={props.duration}
         start_date={props?.start_date}
-        // day_slab_index={props?.indexDay}
+        // day_slab_index={props?.index}
         // getPaymentHandler={props?.getPaymentHandler}
         // getAccommodationAndActivitiesHandler={
         //   props?.getAccommodationAndActivitiesHandler

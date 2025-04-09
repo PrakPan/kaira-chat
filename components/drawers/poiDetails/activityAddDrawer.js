@@ -23,6 +23,10 @@ import DyamicFilters from "./filters/DynamicFilters";
 import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";
 import Image from "next/image";
 import { setDate } from "date-fns";
+import { Navigation } from "../../NewNavigation";
+import axios from "axios";
+import { MERCURY_HOST } from "../../../services/constants";
+import NewPoiBooking from "../../../containers/newitinerary/itineraryelements/NewPoiBooking";
 
 const EmptyMsg = styled.div`
   margin-top: 5rem;
@@ -39,8 +43,10 @@ const GetInTouchContainer = styled.div`
   }
 `;
 
-const items = [{ id: 1, label: "Things To Do", link: "Activities" }];
-
+const items = [
+  { id: 1, label: "Things To Do", link: "" },
+  { id: 2, label: "Places To Visit", link: "" },
+];
 const ActivityAddDrawer = (props) => {
 <<<<<<< HEAD
   console.log("start date is:",props?.date)
@@ -244,87 +250,125 @@ const ActivityAddDrawer = (props) => {
     }));
   };
 
-  function fetchData(showMore = false) {
-    const requestData = {
-      city: props?.cityID,
-      start_date: getDate(startDate),
-      number_of_travelers: filterState.pax.number_of_travelers,
-      traveler_ages: filterState.pax.traveler_ages,
-      filter_by: {
-        name: debouncedSearch,
-        recommended_only: filterState.recommended_only,
-        rating: filterState.rating,
-        category:
-          filterState.category && filterState.category[0] !== "All"
-            ? filterState.category
-            : null,
-        tour_type:
-          filterState.tour_type && filterState.tour_type[0] !== "All"
-            ? filterState.tour_type
-            : null,
-        guide:
-          filterState.guide && filterState.guide[0] !== "All"
-            ? filterState.guide
-            : null,
-      },
-      sort_by: {
-        // no sorting filters added yet.
-      },
-    };
-    activtySearch
-      .post(`/?limit=30&offset=${offSet}`, requestData)
-      .then((res) => {
-        if (res.data?.data?.activities?.length) {
-          setTotalResults(res.data.results);
-          if (res.data?.data?.filter_by) {
-            setDynamicFilters(res.data.data.filter_by);
-          }
-          let options = [];
-
-          for (var i = 0; i < res.data.data.activities.length; i++) {
-            options.push(
-              <NewActivityBooking
-                key={i}
-                activityAddDrawer
-                _updatePoiHandler={_addActivityHandler}
-                setShowDrawer={props?.setShowDrawer}
-                data={res.data.data.activities[i]}
-                setLoginModal={props.setShowLoginModal}
-                date={props.date}
-                getAccommodationAndActivitiesHandler={
-                  props.getAccommodationAndActivitiesHandler
-                }
-                cityId={props?.cityID}
-                itinerary_city_id={props?.itinerary_city_id}
-                setActivities={props?.setActivities}
-                activities={props?.activities}
-                setItinerary={props?.setItinerary}
-                activityBookings={props?.activityBookings}
-                setActivityBookings={props?.setActivityBookings}
-              ></NewActivityBooking>
-            );
-          }
-
-          if (showMore) setOptions((prev) => [...prev, ...options]);
-          else setOptions(options);
-
-          if (res.data.next) {
-            setShowMoreResults(true);
-            setOffSet((prev) => prev + 30);
-          } else {
-            setShowMoreResults(false);
-            setOffSet(0);
-          }
-        } else {
-          setOptions([]);
-          setTotalResults(null);
+  const fetchData=async(showMore = false)=> {
+    setLoading(true)
+    if (elementType=="Activity" || elementType==""){
+      console.log("child is here")
+      try {
+        const requestData = {
+          city: props?.cityID,
+          start_date: getDate(startDate),
+          number_of_travelers: filterState.pax.number_of_travelers,
+          traveler_ages: filterState.pax.traveler_ages,
+          filter_by: {
+            name: debouncedSearch,
+            recommended_only: filterState.recommended_only,
+            rating: filterState.rating,
+            category:
+              filterState.category && filterState.category[0] !== "All"
+                ? filterState.category
+                : null,
+            tour_type:
+              filterState.tour_type && filterState.tour_type[0] !== "All"
+                ? filterState.tour_type
+                : null,
+            guide:
+              filterState.guide && filterState.guide[0] !== "All"
+                ? filterState.guide
+                : null,
+          },
+          sort_by: {
+            // no sorting filters added yet.
+          },
+        };
+        activtySearch
+          .post(`/?limit=30&offset=${offSet}`, requestData)
+          .then((res) => {
+            if (res.data?.data?.activities?.length) {
+              setTotalResults(res.data.results);
+              if (res.data?.data?.filter_by) {
+                setDynamicFilters(res.data.data.filter_by);
+              }
+              let options = [];
+    
+              for (var i = 0; i < res.data.data.activities.length; i++) {
+                options.push(
+                  <NewActivityBooking
+                    key={i}
+                    activityAddDrawer
+                    _updatePoiHandler={_addActivityHandler}
+                    setShowDrawer={props?.setShowDrawer}
+                    data={res.data.data.activities[i]}
+                    setLoginModal={props.setShowLoginModal}
+                    date={props.date}
+                    getAccommodationAndActivitiesHandler={
+                      props.getAccommodationAndActivitiesHandler
+                    }
+                    cityId={props?.cityID}
+                    itinerary_city_id={props?.itinerary_city_id}
+                    setActivities={props?.setActivities}
+                    activities={props?.activities}
+                    setItinerary={props?.setItinerary}
+                    activityBookings={props?.activityBookings}
+                    setActivityBookings={props?.setActivityBookings}
+                  ></NewActivityBooking>
+                );
+              }
+    
+              if (showMore) setOptions((prev) => [...prev, ...options]);
+              else setOptions(options);
+    
+              if (res.data.next) {
+                setShowMoreResults(true);
+                setOffSet((prev) => prev + 30);
+              } else {
+                setShowMoreResults(false);
+                setOffSet(0);
+              }
+            } else {
+              setOptions([]);
+              setTotalResults(null);
+            }
+          })
+          .catch((err) => {
+            console.log("error in activity search:",err) 
+          });
+      } catch (error) {
+       console.log("error in activity search:",error) 
+      }
+    
+    }
+    else{
+      try {
+        const res=await axios.get(`${MERCURY_HOST}/api/v1/geos/poi/?fields=id,name,city,image,rating,experience_filters,short_description,tags,is_very_popular,tips_tricks,is_hidden_gem,user_ratings_total&city_id=${props?.cityID}`);
+        const result=[]
+        console.log("length is:",res)
+        for (var i = 0; i < res.data.data.pois.length; i++) {
+          result.push(
+            <NewPoiBooking
+              key={i}
+              setShowDrawer={props?.setShowDrawer}
+              data={res.data.data.pois[i]}
+              setLoginModal={props.setShowLoginModal}
+              date={props.date}
+              cityId={props?.cityID}
+              itinerary_city_id={props?.itinerary_city_id}
+              dayIndex={props?.props.day_slab_index}
+            ></NewPoiBooking>
+          );
         }
-        setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-      });
+        setOptions(result);
+      } catch (error) {
+        console.log("loading poi error:",error)
+      }
+    }
+    setLoading(false);
+
   }
+
+  useEffect(()=>{
+console.log("options are:",options)
+  },[options])
 
   const searchHandler = (e) => {
     if (e.target.id === "icon" && selectSearch.trim().length > 0) {
@@ -346,6 +390,7 @@ const ActivityAddDrawer = (props) => {
     }));
   };
 
+<<<<<<< HEAD
   const navigationHandler = (child) => {
     if (child == "Things To Do") {
       setElementType("Activity");
@@ -355,6 +400,8 @@ const ActivityAddDrawer = (props) => {
   };
   
 
+=======
+>>>>>>> 9ff1da10 (added poi add search detail and delete)
   const handleScroll = (e) => {
     const { offsetHeight, scrollTop, scrollHeight } = e.target;
     if (offsetHeight + scrollTop >= scrollHeight) {
@@ -362,6 +409,7 @@ const ActivityAddDrawer = (props) => {
     }
   };
 
+<<<<<<< HEAD
   const convertToISODate = (dateStr) => {
     if(!dateStr)
       return;
@@ -369,6 +417,17 @@ const ActivityAddDrawer = (props) => {
     return `${year}-${month?.padStart(2, '0')}-${day?.padStart(2, '0')}`;
   };
   
+=======
+  const ClickHandler = (child) => {
+    setOffSet(0);
+    if (child === "Things To Do") {
+      setElementType("Activity");
+    } else {
+      setElementType("POI");
+    }
+    console.log("child is:",child)
+  };
+>>>>>>> 9ff1da10 (added poi add search detail and delete)
   return (
     <Drawer
       show={props.showDrawer}
@@ -600,10 +659,15 @@ const ActivityAddDrawer = (props) => {
           </div>
         </div>
 
-        <div className="flex">
-          <div onClick={()=>navigationHandler("Things To Do")}>Things To do</div>
-          <div onClick={()=>navigationHandler("POI")}>Places To visit</div>
-        </div>
+        <Navigation
+            items={items}
+            BarName="TabsName"
+            ClickHandler={ClickHandler}
+            selectedItem={
+              elementType === "Activity" ? `${items[0].id}` : `${items[1].id}`
+            }
+          />
+
         <>
           {!loading ? (
             options.length ? (
