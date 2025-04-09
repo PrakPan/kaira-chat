@@ -9,12 +9,15 @@ import TaxiModal from "../../../../components/modals/taxis/Index";
 import FlightModal from "../../../../components/modals/flights/Index";
 import { useEffect } from "react";
 import TransferSkeleton from "../../../../components/itinerary/Skeleton/TransferSkeleton";
+import { HiOutlineRefresh } from "react-icons/hi";
 
 const Container = styled.div`
   display: grid;
   grid-template-columns: 30px auto;
   min-height: 5rem;
   width: fit-content;
+  padding-top: 0.3rem;
+  padding-bottom: 1.3rem;
   @media screen and (min-width: 768px) {
     min-height: ${(props) => (props.hidemidsection ? "4.5rem" : "8rem")};
   }
@@ -39,10 +42,10 @@ const Line2 = styled.hr`
   opacity: initial;
 
   @media screen and (min-width: 768px) {
-        width: 8rem;
-        height: 1.7px;
-        top: 46px;
-        right: -46px;
+    width: 8rem;
+    height: 1.7px;
+    top: 46px;
+    right: -46px;
   }
 `;
 
@@ -96,9 +99,10 @@ const MidSectionV2 = (props) => {
   );
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showTaxiModal, setShowTaxiModal] = useState(false);
-  const {itinerary_status,transfers_status,pricing_status} = useSelector((state) => state.ItineraryStatus);
+  const { itinerary_status, transfers_status, pricing_status } = useSelector(
+    (state) => state.ItineraryStatus
+  );
   const isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
-
 
   useEffect(() => {
     if (props.cityTransferBookings && props.flightBookings) {
@@ -133,7 +137,9 @@ const MidSectionV2 = (props) => {
           taxi_type: booking["taxi_type"],
           transfer_type: booking["transfer_type"],
           // destination_city: booking["destination_address"]["shortName"] ? booking["destination_address"]["shortName"] : null,
-          destination_city: booking?.destination_address?.shortName ? booking["destination_address"]["shortName"] : null,
+          destination_city: booking?.destination_address?.shortName
+            ? booking["destination_address"]["shortName"]
+            : null,
           origin_iata: booking["origin_city_iata_code"],
           destination_iata: booking["destination_city_iata_code"],
           origin: booking["source_address"],
@@ -182,16 +188,24 @@ const MidSectionV2 = (props) => {
   const handleChangeTransfer = (e) => {
     if (props.cityTransferBookings.modes === "Flight") {
       setShowFlightModal(true);
-    } 
-    else if (props.cityTransferBookings.modes  === "Taxi") {
+    } else if (props.cityTransferBookings.modes === "Taxi") {
       setShowTaxiModal(true);
-    }
-     else {
+    } else {
       handleTransferEdit(e, "Edit Transfer");
     }
   };
+  const [isHovered, setIsHovered] = useState(false);
+  const popupStyle = {
+    display: isHovered ? "block" : "none",
+    backgroundColor: "#2b2b2a",
+    border: "1px solid #e5e7eb",
+    borderRadius: "0.45rem",
+    padding: "5px 10px",
+    marginTop: "5px",
+    marginLeft: "5px",
+  };
 
- // console.log("Load Bookings",props?.loadbookings);
+  // console.log("Load Bookings",props?.loadbookings);
 
   return (
     <Container className={`font-lexend`} hidemidsection={hidemidsection}>
@@ -199,25 +213,17 @@ const MidSectionV2 = (props) => {
         <Line pinColour={props.pinColour} hidemidsection={hidemidsection} />
       </div>
 
-      {hidemidsection && ((transfers_status === "PENDING" ) ? <TransferSkeleton/> : (
-        <> 
-          {props.version == "v2" ? (
-            (
+      {hidemidsection &&
+        (transfers_status === "PENDING" ? (
+          <TransferSkeleton />
+        ) : (
+          <>
+            {props.version == "v2" ? (
               <Text>
-                {props.cityTransferBookings && props.cityTransferBookings?.duration ? (
-                  <TransportIconFetcher
-                    TransportMode={props.cityTransferBookings?.booking_type}
-                    Instyle={{
-                      fontSize:
-                        props.route?.modes[0] === "Bus" ? "1.2rem" : "1.4rem",
-                      marginRight: "0.8rem",
-                      color: "#4d4d4d",
-                    }}
-                  />
-                ) 
-                
-                : 
-                (
+                {props.cityTransferBookings &&
+                props.cityTransferBookings?.duration ? (
+                  <></>
+                ) : (
                   <button
                     onClick={(e) => handleChangeTransfer(e)}
                     className="text-[14px] font-[600] leading-[54px] text-blue hover:underline"
@@ -226,82 +232,59 @@ const MidSectionV2 = (props) => {
                   </button>
                 )}
 
-                {/* {props.bookings && props.bookings.length ? (
-                  props?.bookings?.map((element, index) => (
-                    <div className="flex flex-row" key={index}>
-                      <div className="flex flex-row pr-0">
-                        {element.booking_type}
-                        {index !== props?.bookings.length - 1 && (
-                          <span className="pr-2">,</span>
-                        )}
-                      </div>
+                {props.cityTransferBookings &&
+                props.cityTransferBookings?.duration ? (
+                  <div
+                    className={`inline-flex items-center gap-2 ${
+                      !isPageWide ? "w-max" : ""
+                    }`}
+                  >
+                    <div className="text-base text-[#01202B]">
+                      {" "}
+                      {props.modes}: {props.cityTransferBookings?.duration}
                     </div>
-                  ))
-                ) : props.route &&
-                  props.route.modes &&
-                  props.route.modes.length ? (
-                  props.route.modes.map((element, index) => (
-                    <div className="flex flex-row" key={index}>
-                      <div className="flex flex-row pr-0">
-                        {element}
-                        {index !== props.route.modes.length - 1 && (
-                          <span className="pr-2">,</span>
-                        )}
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <></>
-                )} */}
-
-                {
-                // props.route?.modes &&
-                // props.route?.modes.length &&
-               
-                props.cityTransferBookings && props.cityTransferBookings?.duration ? (
-                  <div className={`inline-flex items-center gap-2 ${!isPageWide ? "w-max" : ""}`}>
-                    <div> {props.modes}: {props.cityTransferBookings?.duration}</div>
                   </div>
                 ) : (
                   <></>
                 )}
 
-                {/* {props?.route?.transfers &&
-                  props?.route?.transfers?.id &&
-                  props?.route?.transfers?.id !== "" &&
-                  !props?.plan?.round_trip_taxi_added &&
-                  ((props?.route?.modes && props?.route?.modes?.length) ||
-                    (props?.bookings && props?.bookings?.length)) && ( */}
-                    {props.cityTransferBookings && props.cityTransferBookings?.duration && <div
+                {props.cityTransferBookings &&
+                  props.cityTransferBookings?.duration && (
+                    <div
                       id="transferEdit"
-                      onClick={(e) => handleChangeTransfer(e)}
-                      className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90"
+                      onClick={(e) => {handleChangeTransfer(e); setIsHovered(false)}}
+                      className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90 relative"
+                      onMouseEnter={() => setIsHovered(true)}
+                      onMouseLeave={() => setIsHovered(false)}
                     >
-                      <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
-                    </div>}
-                  {/* )} */}
+                      <HiOutlineRefresh
+                        className="transition-transform text-blue"
+                      />
+                      <div
+                        style={popupStyle}
+                        className="z-50 absolute -bottom-140 left-1/2 -translate-x-1/2 text-sm text-center flex flex-col gap-2 bg-[#2b2b2a]"
+                      >
+                        <div className="relative">
+                          <span className="absolute -top-5 left-1/2 -translate-x-1/2 w-0 h-0 border-[10px] border-solid border-transparent border-b-red"></span>
+                          <span className="absolute -top-[21px] left-1/2 -translate-x-1/2 w-0 h-0 border-[10px] border-solid border-transparent border-b-[#2b2b2a]"></span>
+
+                          <div className="text-nowrap font-normal text-white text-sm">
+                            Change
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
               </Text>
-            )
-          ) : (
-            <Text>
-              {props.modes && (
-                <TransportIconFetcher
-                  TransportMode={props.modes}
-                  Instyle={{
-                    fontSize: props.modes === "Bus" ? "1.2rem" : "1.4rem",
-                    marginRight: "0.8rem",
-                    color: "#4d4d4d",
-                  }}
-                />
-              )}
-              {props.modes ? `${props.modes} :` : null} {props.duration}
-            </Text>
-          )}
-        </>
-      ))}
+            ) : (
+              <div className="font-normal text-base text-[#01202B]">
+                {props.modes ? `${props.modes} :` : null} {props.duration}
+              </div>
+            )}
+          </>
+        ))}
 
-
-       <FlightModal
+      <FlightModal
         showFlightModal={showFlightModal}
         setShowFlightModal={setShowFlightModal}
         setHideFlightModal={() => setShowFlightModal(false)}
@@ -356,7 +339,7 @@ const MidSectionV2 = (props) => {
       ></TaxiModal>
 
       <TransferEditDrawer
-      mercury
+        mercury
         addOrEdit={addOrEdit}
         showDrawer={showDrawer}
         setShowDrawer={setShowDrawer}
@@ -381,9 +364,13 @@ const MidSectionV2 = (props) => {
         oCityData={props?.oCityData}
         dCityData={props?.dCityData}
         selectedBooking={props?.cityTransferBookings}
-        originCityId={props?.oCityData?.city?.id || props?.oCityData?.gmaps_place_id}
-        destinationCityId={props?.dCityData?.city?.id || props?.dCityData?.gmaps_place_id}
-      /> 
+        originCityId={
+          props?.oCityData?.city?.id || props?.oCityData?.gmaps_place_id
+        }
+        destinationCityId={
+          props?.dCityData?.city?.id || props?.dCityData?.gmaps_place_id
+        }
+      />
     </Container>
   );
 };
@@ -391,7 +378,6 @@ const MidSectionV2 = (props) => {
 const mapStateToPros = (state) => {
   return {
     ItineraryId: state.ItineraryId,
-    // transferBookings: state.Bookings.transferBookings,
     flightBookings: state.Bookings.flightBookings,
     _bookings: state.Bookings,
   };

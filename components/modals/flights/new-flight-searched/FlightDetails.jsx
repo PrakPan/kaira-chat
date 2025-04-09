@@ -46,11 +46,12 @@ export default function FlightDetails({
 
     const popupStyle = {
         display: isHovered ? 'block' : 'none',
-        backgroundColor: 'white',
+        backgroundColor: '#2B2A2A',
         border: '1px solid #e5e7eb', // gray-200 equivalent
-        borderRadius: '0.25rem',
+        borderRadius: '0.5rem',
         padding: '15px 30px',
         boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+        marginTop: "7px",
     };
 
     function getTime(totalMinutes) {
@@ -108,7 +109,7 @@ export default function FlightDetails({
                         <div
                             onMouseEnter={() => setIsHovered(true)}
                             onMouseLeave={() => setIsHovered(false)}
-                            onClick={() => setShowDetails(prev => !prev)}
+                            onClick={() => {setShowDetails(prev => !prev); setIsHovered(false)}}
                             className="relative">
                             <div className="text-sm text-blue cursor-pointer">
                                 {segments?.length-1} stop{segments?.length-1 !== 1 && 's'}
@@ -121,14 +122,17 @@ export default function FlightDetails({
                                     ))}
                                 </span>
                             </div>
-                            <div style={popupStyle} className="z-50 absolute bottom-100 left-1/2 translate-x-[-50%] text-sm text-center flex flex-col gap-2 bg-gray-200 drop-shadow-3xl">
+
+                            <div style={popupStyle} className="z-50 absolute -bottom-140 left-1/2 -translate-x-1/2 text-sm text-center flex flex-col gap-2 bg-[#2B2A2A]">
                                 {data?.segments.map((segment, index) => {
                                     if (index == 0) return null;
                                     return (
-                                        <div className="border-b-2 mb-2">
-                                            <div className="text-nowrap">Plane change ({segment?.airline.name}, {segment?.airline?.code}-{segment?.airline?.flight_number})
+                                        <div className="mb-2 relative">
+                                            <span className="absolute -top-5 left-1/2 -translate-x-1/2 w-0 h-0 border-[10px] border-solid border-transparent border-b-red"></span>
+                                            <span className="absolute -top-[34px] left-1/2 -translate-x-1/2 w-0 h-0 border-[10px] border-solid border-transparent border-b-[#2B2A2A]"></span>
+                                            <div className="text-nowrap text-white">Plane change ({segment?.airline.name}, {segment?.airline?.code}-{segment?.airline?.flight_number})
                                             </div>
-                                            <div className="text-nowrap">Via {segment?.origin?.city_name} ({segment.origin?.airport_code}) {getTime(segment?.ground_time)} layover
+                                            <div className="text-nowrap text-white">Via {segment?.origin?.city_name} ({segment.origin?.airport_code}) {getTime(segment?.ground_time)} layover
                                             </div>
                                         </div>
                                     )

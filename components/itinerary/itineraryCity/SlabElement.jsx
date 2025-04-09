@@ -8,6 +8,7 @@ import POIDetailsDrawer from "../../drawers/poiDetails/POIDetailsDrawer";
 import { logEvent } from "../../../services/ga/Index";
 import Image from "next/image";
 
+
 export const getStars = (rating) => {
   const stars = [];
   for (let i = 0; i < Math.floor(rating); i++) {
