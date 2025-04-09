@@ -794,7 +794,7 @@ const TransferBooking = ({
                 </div>
                 <Drawer
                   show={showVehicleDrawer}
-                  anchor="right"
+                  anchor="right" 
                   mobileWidth="100vw"
                   width="50vw"
                   style={1503}
