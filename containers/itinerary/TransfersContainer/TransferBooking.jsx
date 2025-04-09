@@ -489,10 +489,11 @@ const TransferBooking = ({
                           </button>
                         ) : (
                           <button
-                            onClick={() => HandleTransport(index, "Add Taxi")}
-                            className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
+                            // onClick={() => HandleTransport(index, "Add Taxi")}
+                            className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#F7E700]"
                           >
-                            Add Taxi
+                            View Details
+                            {/* Add Taxi */}
                           </button>
                         )}
                       </div>
@@ -737,10 +738,11 @@ const TransferBooking = ({
                         </button>
                       ) : (
                         <button
-                          onClick={() => HandleTransport(index, "Add Taxi")}
-                          className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
+                          // onClick={() => HandleTransport(index, "Add Taxi")}
+                          className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#F7E700]"
                         >
-                          Add Taxi
+                          {/* Add Taxi */}
+                          View Details
                         </button>
                       )}
                     </div>
@@ -898,7 +900,7 @@ const FlightBooking = ({
   } catch {}
 
   return (
-    <div className="ml-1 md:ml-7 flex flex-col w-full ">
+    <div className="ml-1 md:ml-7 flex flex-col w-full items-center justify-center p-2 ">
       <div className="flex flex-row w-full justify-between items-center">
         <span className="font-medium  inline">{booking?.name}</span>
       </div>
@@ -932,17 +934,18 @@ const FlightBooking = ({
           {window.innerWidth >= 1000 && (
             <div className="w-[131.95px]">
               <Button
-                bgColor={"#F7E700"}
+                bgColor={"#FFFFFF"}
                 borderRadius="8px"
                 fontWeight="400"
                 padding="0.6rem 0.6rem"
-                hoverColor="white"
-                margin="auto 0px"
+                hoverColor="#f7e700"
+                margin="auto 2px"
                 onclick={() => {
-                  HandleFlights(index, "Change Flight");
+                  // HandleFlights(index, "Change Flight");
+                  setShowDetails((prev) => !prev);
                 }}
               >
-                Change Flight
+                View Details
               </Button>
             </div>
           )}
@@ -952,7 +955,7 @@ const FlightBooking = ({
             window.innerWidth < 1000 ? "justify-between" : "justify-center"
           } items-center`}
         >
-          <button
+          {/* <button
             className="text-sm flex flex-row gap-1 items-center justify-center hover:bg-black hover:text-white rounded-lg px-2 py-1"
             onClick={() => {
               setShowDetails((prev) => !prev);
@@ -962,21 +965,22 @@ const FlightBooking = ({
             <span>
               <FaArrowRight />
             </span>
-          </button>
+          </button> */}
           {window.innerWidth < 1000 && (
             <div className="w-[131.95px]">
               <Button
-                bgColor={"#F7E700"}
+                bgColor={"#FFFFFF"}
                 borderRadius="8px"
                 fontWeight="400"
                 padding="0.6rem 0.6rem"
-                hoverColor="white"
-                margin="auto 0px"
+                hoverColor="#f7e700"
+                margin="auto 2px"
                 onclick={() => {
-                  HandleFlights(index, "Change Flight");
+                  // HandleFlights(index, "Change Flight");
+                  setShowDetails((prev) => !prev);
                 }}
               >
-                Change Flight
+                View Details
               </Button>
             </div>
           )}
