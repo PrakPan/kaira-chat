@@ -48,10 +48,7 @@ const items = [
   { id: 2, label: "Places To Visit", link: "" },
 ];
 const ActivityAddDrawer = (props) => {
-<<<<<<< HEAD
-  console.log("start date is:",props?.date)
-=======
->>>>>>> 298899f4 (fixed bugs)
+
   const isDesktop = useMediaQuery("(min-width:767px)");
   const [selectedExprience, setSelectedExprience] = useState(-1);
   const [elementType, setElementType] = useState("Activity");
@@ -253,7 +250,6 @@ const ActivityAddDrawer = (props) => {
   const fetchData=async(showMore = false)=> {
     setLoading(true)
     if (elementType=="Activity" || elementType==""){
-      console.log("child is here")
       try {
         const requestData = {
           city: props?.cityID,
@@ -353,7 +349,7 @@ const ActivityAddDrawer = (props) => {
               date={props.date}
               cityId={props?.cityID}
               itinerary_city_id={props?.itinerary_city_id}
-              dayIndex={props?.props.day_slab_index}
+              dayIndex={props?.props?.day_slab_index}
             ></NewPoiBooking>
           );
         }
@@ -390,18 +386,6 @@ console.log("options are:",options)
     }));
   };
 
-<<<<<<< HEAD
-  const navigationHandler = (child) => {
-    if (child == "Things To Do") {
-      setElementType("Activity");
-    } else {
-      setElementType("POI");
-    }
-  };
-  
-
-=======
->>>>>>> 9ff1da10 (added poi add search detail and delete)
   const handleScroll = (e) => {
     const { offsetHeight, scrollTop, scrollHeight } = e.target;
     if (offsetHeight + scrollTop >= scrollHeight) {
@@ -409,7 +393,6 @@ console.log("options are:",options)
     }
   };
 
-<<<<<<< HEAD
   const convertToISODate = (dateStr) => {
     if(!dateStr)
       return;
@@ -417,7 +400,6 @@ console.log("options are:",options)
     return `${year}-${month?.padStart(2, '0')}-${day?.padStart(2, '0')}`;
   };
   
-=======
   const ClickHandler = (child) => {
     setOffSet(0);
     if (child === "Things To Do") {
@@ -427,7 +409,6 @@ console.log("options are:",options)
     }
     console.log("child is:",child)
   };
->>>>>>> 9ff1da10 (added poi add search detail and delete)
   return (
     <Drawer
       show={props.showDrawer}
@@ -524,14 +505,10 @@ console.log("options are:",options)
               )}
             </div>
             {showDynamicfilters && (
-<<<<<<< HEAD
-              <div className="min-[584px]:absolute max-[583px]:fixed max-[583px]:bottom-0 max-[583px]:w-full bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm z-[1091]" ref={filtersRef}>
-=======
               <div
                 className="min-[584px]:absolute max-[583px]:fixed max-[583px]:bottom-0 max-[583px]:w-full z-50 bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm z-[1091]"
                 ref={filtersRef}
               >
->>>>>>> 298899f4 (fixed bugs)
                 <DyamicFilters
                   filters={filtersObj}
                   showFilter={showDynamicfilters}
