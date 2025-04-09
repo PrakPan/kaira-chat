@@ -517,7 +517,7 @@ const Overview = (props) => {
                     url={
                       ImagesError[0]
                         ? "media/icons/bookings/notfounds/noroom.png"
-                        : images[0].image
+                        : images[0]?.image
                     }
                     fit="cover"
                     width="100%"
@@ -759,7 +759,7 @@ const Overview = (props) => {
                       url={
                         ImagesError[0]
                           ? "media/icons/bookings/notfounds/noroom.png"
-                          : images[0].image
+                          : images[0]?.image
                       }
                       fit="cover"
                       width="100%"
@@ -833,7 +833,7 @@ const Overview = (props) => {
                       url={
                         ImagesError[0]
                           ? "media/icons/bookings/notfounds/noroom.png"
-                          : images[0].image
+                          : images[0]?.image
                       }
                       fit="cover"
                       width="100%"

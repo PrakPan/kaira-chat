@@ -8,7 +8,7 @@ import Overview from "./Overview/Overview";
 import Drawer from "../../ui/Drawer";
 import Skeleton from "./Skeleton";
 import { openNotification } from "../../../store/actions/notification";
-import {
+import fetchaccommodations, {
   hotelDetails,
   bookingDetails,
 } from "../../../services/bookings/FetchAccommodation";
@@ -112,31 +112,41 @@ const POI = (props) => {
           setError(true);
         });
     } else {
+      setLoading(true);
+      setError(false);
       let check_in = props.check_in;
       let check_out = props.check_out;
       if (props.check_in.includes("/")) {
         check_in = props.check_in.split("/").reverse().join("-");
         check_out = props.check_out.split("/").reverse().join("-");
       }
-      const requestData = {
-        trace_id: props.traceId,
-        hotel_id: `${props.id}`,
-        check_in: convertDate(check_in),
-        check_out: convertDate(check_out),
-        currency: "INR",
-        source: props.provider,
-        occupancies: itineraryFilters.occupancies,
+      let paramsObj = {
+        accommodation_id: props.id,
+        show_rooms: true,
       };
-
-      hotelDetails
-        .post("", requestData)
+      if (
+        props.currentBooking &&
+        props.currentBooking.source &&
+        props.currentBooking.source == "Agoda"
+      ) {
+        // paramsObj.check_in = check_in;
+        // paramsObj.check_out = check_out;
+        paramsObj.source = "Agoda";
+      }
+      fetchaccommodations
+        .get("", { params: paramsObj })
         .then((res) => {
           setLoading(false);
           setData(res.data);
         })
-        .catch((err) => {
+        .catch((error) => {
           setLoading(false);
           setError(true);
+          props.openNotification({
+            type: "error",
+            text: "There seems to be a problem, please try again!",
+            heading: "Error!",
+          });
         });
     }
   };
