@@ -57,11 +57,11 @@ const BudgetFriendly = () => {
         </div>
 
         {isPageWide && 
-        <div className="md:flex overflow-x-auto py-4 space-x-6 m-auto">
+        <div className="md:flex flex-wrap py-4 gap-2">
         {features.map((feature, index) => (
-          <div 
-            key={index} 
-            className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm flex-shrink-0 w-[17rem] items-center"
+          <div
+            key={index}
+            className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm flex-shrink-0 w-full md:w-[17rem] lg:w-[14rem] xl:w-[16rem] items-center mb-6"
           >
             <div className="flex items-center mb-4">
               <div className="bg-gray-50 p-3 rounded-full">
