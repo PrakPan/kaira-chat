@@ -58,13 +58,13 @@ const Details = (props) => {
     const formattedDate = format(newDate, "yyyy-MM-dd");
     return formattedDate;
   };
-
   const [showSetPassenger, setShowSetPassenger] = useState(false);
 
   const { itinerary_status, transfers_status, pricing_status } = useSelector(
     (state) => state.ItineraryStatus
   );
 
+  const passengersDetail=useSelector((state)=>state.Passengers)
   //console.log("Iti",props?.itinerary);
 
   useEffect(() => {
@@ -422,10 +422,6 @@ const Details = (props) => {
   };
 
   const handlePayNow = (label) => {
-    if (showSetPassenger == false) {
-      setShowSetPassenger(true);
-      return;
-    }
     if (label === "_saleCreateHandler") {
       _saleCreateHandler(props.id);
     } else {
@@ -878,12 +874,6 @@ const Details = (props) => {
                 ></UiDropdown>
               </>
             )} */}
-            <div
-              className="!text-blue-500 text-[14px] cursor-pointer"
-              onClick={() => setShowSetPassenger(true)}
-            >
-              Traveller Details
-            </div>
           </div>
         </div>
 
@@ -932,6 +922,8 @@ const Details = (props) => {
               props.payment?.user_allowed_to_pay ? (
                 props.payment?.total_cost ||
                 props.payment?.discounted_cost > 0 ? (
+                  <>
+                  {passengersDetail!=null?
                   <Button
                     color="#111"
                     fontWeight="500"
@@ -945,7 +937,22 @@ const Details = (props) => {
                     loading={paymentLoading}
                   >
                     Pay Now & Book
-                  </Button>
+                  </Button>:
+                  <Button
+                    color="#111"
+                    fontWeight="500"
+                    fontSize="1rem"
+                    borderWidth="2px"
+                    width="100%"
+                    borderRadius="8px"
+                    bgColor="#f8e000"
+                    padding="12px"
+                    onclick={() => setShowSetPassenger(true)}
+                    loading={paymentLoading}
+                  >
+                    Add Traveller Details
+                  </Button>}
+                  </>
                 ) : (
                   <Button
                     color="#111"

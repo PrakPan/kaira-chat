@@ -69,7 +69,7 @@ const ImagesMobile = (props) => {
     });
   }
 
-  return props.images.length >= 3 ? (
+  return props?.images?.length >= 3 ? (
     <Container ConImg={props.images[1]}>
       <>
         <div
@@ -157,7 +157,7 @@ const ImagesMobile = (props) => {
         </GridContainer>
       ) : null}
     </Container>
-  ) : props.images.length === 2 ? (
+  ) : props?.images?.length === 2 ? (
     <TwoImageContainer>
       <div
         style={{
@@ -221,7 +221,7 @@ const ImagesMobile = (props) => {
         <ImageLoader
           borderRadius="12px"
           dimensions={{ width: 1071, height: 400 }}
-          url={props.images[0]}
+          url={props?.images?.[0]}
           height="400px"
           heightMobile="auto"
           dimensionsMobile={{ width: 328, height: 141 }}

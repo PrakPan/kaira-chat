@@ -22,6 +22,7 @@ import  ItineraryFilters  from "./ItineraryFilters";
 import TransferBookings from "./transferBookingsReducer";
 import Stays from "./StayBookings";
 import ItineraryStatus from './itineraryStatus'; 
+import Passengers from "./Passengers"
 const rootReducer = combineReducers({
   auth: authReducer,
   experience: experience,
@@ -45,7 +46,8 @@ const rootReducer = combineReducers({
   ItineraryFilters,
   TransferBookings,
   Stays,
-  ItineraryStatus
+  ItineraryStatus,
+  Passengers,
 });
 
 export default rootReducer;
