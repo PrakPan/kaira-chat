@@ -584,7 +584,7 @@ export const EditPanel = ({ editDestination, setEditDestination }) => {
         >
           Edit/Remove Destination
         </div>
-        <div
+        {/* <div
           onClick={() => handleEditPanel(true)}
           className={`cursor-pointer ${
             !editDestination
@@ -593,7 +593,7 @@ export const EditPanel = ({ editDestination, setEditDestination }) => {
           } `}
         >
           Edit Dates
-        </div>
+        </div> */}
       </div>
     </div>
   );

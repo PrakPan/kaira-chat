@@ -200,10 +200,11 @@ console.log("Routes Data",props?.routesData);
           group_type={props.group_type}
           duration_time={props.duration_time}
           travellerType={props.travellerType}
-          transferBookings={props?.transferBookings}
+          transferBookings={props?.cityTransferBookings}
           fetchData={props.fetchData}
           setShowLoginModal={props.setShowLoginModal}
           setLocationsLatLong={setLocationsLatLong}
+          routes={props.CityData}
         >
           <RoutesMap
             locations={locationsLatLong}
