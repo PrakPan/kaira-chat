@@ -1090,7 +1090,7 @@ const HotelBookingDetails = (props) => {
               target="_blank"
               style={{ color: "black", fontSize: "14px" }}
             >
-              View on Google Map
+              View on Google Maps
             </a>
           </div>
         </div>
@@ -1193,12 +1193,12 @@ const HotelBookingDetails = (props) => {
               target="_blank"
               style={{ color: "#0000EE", fontSize: "14px" }}
             >
-              View on Google Map
+              View on Google Maps
             </a>
           </div>
           
             <button
-              className=" right-0  bg-[#DC4541] text-white p-1 rounded-lg flex items-center justify-center"
+              className=" right-0 text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
               onClick={handleDelete}
             >
               <div style={{ position: "relative" }}>

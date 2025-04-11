@@ -108,7 +108,7 @@ const FlightDetailModal = ({
       )}
       <div className="p-4 bg-white">
         <button
-          className="w-full bg-red-500 text-white py-2 rounded-lg flex items-center justify-center"
+          className="w-full  text-white py-2 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
           onClick={handleDelete}
           disabled={loading}
         >
