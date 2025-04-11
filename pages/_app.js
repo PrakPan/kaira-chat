@@ -46,18 +46,18 @@ function MyApp({ Component, pageProps, store }) {
           return console.error("df-messenger-chat-bubble not found");
 
         let dfMessengerChat =
-          dfMessengerBubble.shadowRoot.querySelector("df-messenger-chat");
+          dfMessengerBubble?.shadowRoot.querySelector("df-messenger-chat");
         if (!dfMessengerChat)
           return console.error("df-messenger-chat not found");
 
-        let userInputContainer = dfMessengerChat.shadowRoot.querySelector(
+        let userInputContainer = dfMessengerChat?.shadowRoot.querySelector(
           "df-messenger-user-input"
         );
         if (!userInputContainer)
           return console.error("df-messenger-user-input not found");
 
         let textArea =
-          userInputContainer.shadowRoot.querySelector("textarea");
+          userInputContainer?.shadowRoot.querySelector("textarea");
         if (!textArea) return console.error("Textarea not found");
 
         textArea.value = `Give me more detail about this itinerary ${window.location.href}`;

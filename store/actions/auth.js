@@ -322,7 +322,7 @@ export const auth = (mobile, password, name, email, whatsapp, country) => {
         }
       })
       .catch((err) => {
-        if (err.response.data?.errors[0].email) {
+        if (err.response.data?.errors && err.response.data?.errors[0].email) {
           logEvent({
             action: "number-login-email_fail",
             params: {

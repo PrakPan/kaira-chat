@@ -11,6 +11,10 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { PulseLoader } from "react-spinners";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import setItinerary from "../../../store/actions/itinerary";
+import { toast, ToastContainer } from "react-toastify";
 export const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -122,11 +126,13 @@ const Child = styled.div`
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
 const POIDetails = (props) => {
-  const router=useRouter()
-  const [loading,setLoading]=useState(false)
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [aboutText, setAboutText] = useState(
     props?.data?.overview ?? props?.data?.short_description
   );
+  const itinerary = useSelector((state) => state.Itinerary);
+  const dispatch = useDispatch();
 
   const [ImagesLoaded, setImagesLoaded] = useState({
     0: false,
@@ -154,19 +160,47 @@ const POIDetails = (props) => {
     }
   }
 
-  const handleDelete=async()=>{
-    setLoading(true)
+  const handleDelete = async (e) => {
+    setLoading(true);
     try {
-      const res=await axios.delete(`${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/poi/delete/`,{
-        data:{itinerary_city_id:props?.itinerary_city_id,
-        day_by_day_index:props?.dayIndex,
-        poi_index:props?.slabIndex}
-      })
+      const res = await axios.delete(
+        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/poi/delete/`,
+        {
+          data: {
+            itinerary_city_id: props?.itinerary_city_id,
+            day_by_day_index: props?.dayIndex,
+            poi_index: props?.slabIndex,
+          },
+        }
+      );
+
+      if (res?.status == 200) {
+      const newItinerary = JSON.parse(JSON.stringify(itinerary));
+      var itineraryCities = newItinerary;
+      itineraryCities = newItinerary.cities.map((city) => {
+        const cityTemp = city;
+        if (city.id === props?.itinerary_city_id) {
+          console.log(
+            "here:",
+            cityTemp.day_by_day[props?.dayIndex]?.slab_elements
+          );
+          cityTemp.day_by_day[props?.dayIndex]?.slab_elements.splice(
+            props?.slabIndex,
+            1
+          );
+        }
+        return cityTemp;
+      });
+      newItinerary.cities = itineraryCities;
+      props?.handleCloseDrawer(e);
+      dispatch(setItinerary(newItinerary));
+      toast.success("deleted successfuly");
+      }
     } catch (error) {
-      console.log('error is:',error)
+      console.log("error is:", error);
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   function OnImageError(i) {
     if (!ImagesError[i]) {
@@ -207,272 +241,279 @@ const POIDetails = (props) => {
     stars.push(<FaStarHalfAlt />);
 
   return (
-    <Container itineraryDrawer={props.itineraryDrawer}>
-      {!props.itineraryDrawer ? (
-        <div>
-          <TbArrowBack
-            style={{ height: "32px", width: "32px" }}
-            cursor={"pointer"}
-            onClick={(e) => {
-              props.handleCloseDrawer(e);
-            }}
-          />
-        </div>
-      ) : (
-        <BackContainer className=" font-lexend">
-          <IoMdClose
-            className="hover-pointer"
-            onClick={(e) => {
-              props.handleCloseDrawer(e);
-            }}
-            style={{ fontSize: "2rem" }}
-          ></IoMdClose>
-          <BackText>Back to Itinerary</BackText>
-        </BackContainer>
-      )}
-
-      <>
-        {props?.data?.extra_images?.length > 0 && (
-          <GridImage>
-            <Child area="1 / 1 / 5 / 4" className="div1">
-              <Image
-                src={
-                  props?.data?.extra_images?.[0]
-                    ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[0]?.photo_reference}`
-                    : "/media/icons/bookings/notfounds/noroom.png"
-                }
-                alt="Image 0"
-                fill
-                className="object-cover"
-                onLoad={() => OnImageLoad(0)}
-                onError={() => OnImageError(0)}
-                priority
-              />
-              <div
-                style={{
-                  display: !ImagesLoaded[0] ? "initial" : "none",
-                  height: "100%",
-                  overflow: "hidden",
+    <>
+      {props?.data ? (
+        <Container itineraryDrawer={props.itineraryDrawer}>
+          {!props.itineraryDrawer ? (
+            <div>
+              <TbArrowBack
+                style={{ height: "32px", width: "32px" }}
+                cursor={"pointer"}
+                onClick={(e) => {
+                  props.handleCloseDrawer(e);
                 }}
-              >
-                <SkeletonCard lottieDimension="50rem" />
-              </div>
-            </Child>
-
-            <Child area="1 / 8 / 5 / 11" className="div2 rounded-lg">
-              <Image
-                src={
-                  props?.data?.extra_images?.[1]
-                    ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[1]?.photo_reference}`
-                    : "/media/icons/bookings/notfounds/noroom.png"
-                }
-                alt="Image 1"
-                fill
-                className="object-cover"
-                onLoad={() => OnImageLoad(1)}
-                onError={() => OnImageError(1)}
-                priority
               />
-              ={" "}
-              <div
-                style={{
-                  display: !ImagesLoaded[1] ? "initial" : "none",
-                  height: "100%",
-                  overflow: "hidden",
-                }}
-              >
-                <SkeletonCard lottieDimension="50rem" />
-              </div>
-            </Child>
-
-            <Child area="1 / 4 / 3 / 8" className="div3">
-              <Image
-                src={
-                  props?.data?.extra_images?.[2]
-                    ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[2]?.photo_reference}`
-                    : "/media/icons/bookings/notfounds/noroom.png"
-                }
-                alt="Image 2"
-                fill
-                className="object-cover"
-                onLoad={() => OnImageLoad(2)}
-                onError={() => OnImageError(2)}
-                priority
-              />
-              <div
-                style={{
-                  display: !ImagesLoaded[2] ? "initial" : "none",
-                  height: "100%",
-                  overflow: "hidden",
-                }}
-              >
-                <SkeletonCard lottieDimension="50rem" />
-              </div>
-            </Child>
-
-            <Child area="3 / 4 / 5 / 8" className="div4">
-              <Image
-                src={
-                  props?.data?.extra_images?.[3]
-                    ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[3]?.photo_reference}`
-                    : "/media/icons/bookings/notfounds/noroom.png"
-                }
-                alt="Image 3"
-                fill
-                className="object-cover"
-                onLoad={() => OnImageLoad(3)}
-                onError={() => OnImageError(3)}
-                priority
-              />
-              <div
-                style={{
-                  display: !ImagesLoaded[3] ? "initial" : "none",
-                  height: "100%",
-                  overflow: "hidden",
-                }}
-              >
-                <SkeletonCard lottieDimension="50rem" />
-              </div>
-            </Child>
-          </GridImage>
-        )}
-      </>
-
-      <div className="">
-        <Title>{props.data.name}</Title>
-        {aboutText != null && aboutText != undefined && (
-          <div>
-            <Text
-              onClick={() =>
-                setAboutText(
-                  props?.data?.overview || props.data.short_description
-                )
-              }
-            >
-              {aboutText}
-            </Text>
-          </div>
-        )}
-        {props.data?.address && (
-          <div>
-            <span className="font-bold pr-1">Address:</span>{" "}
-            {props.data.address}
-          </div>
-        )}
-
-        {props.data?.experience_filters && <Text>{experience_filters}</Text>}
-      </div>
-
-      {props.data?.cost ? (
-        <div className="flex flex-row">
-          Cost: <span className="font-semibold px-1">₹</span>
-          {props.data.cost}
-          {" /- "}
-          {"Per person"}
-        </div>
-      ) : props.data?.pricing?.total_price ? (
-        <div className="flex flex-row">
-          Cost: <span className="font-semibold px-1">₹</span>
-          {props.data.pricing.total_price}
-          {" /- "}
-          {"Per person"}
-        </div>
-      ) : null}
-
-      {props.data?.getting_around && (
-        <div>
-          <Heading>Getting Around</Heading>
-          <Text>{props.data.getting_around}</Text>
-        </div>
-      )}
-
-      {props.data?.timings && (
-        <div>
-          <Heading>Timings</Heading>
-          <Text>
-            {
-              <ul>
-                {props.data.timings?.map((e, i) => (
-                  <li key={i}>{e}</li>
-                ))}
-              </ul>
-            }
-          </Text>
-        </div>
-      )}
-      {props?.data?.reviews && (
-        <>
-          <div className="flex justify-between">
-            <Heading>Reviews</Heading>
-            <Reviews>
-              {props.data.rating ? (
-                <div
-                  style={{ color: "#FFD201" }}
-                  className="flex flex-row gap-1"
-                >
-                  {stars}
-                </div>
-              ) : null}
-
-              <div className="flex items-center">
-                {props.data?.rating ? (
-                  <p className="m-0">{props.data.rating} · </p>
-                ) : null}
-
-                {props.data?.user_ratings_total ? (
-                  <u> {props.data.user_ratings_total} user reviews</u>
-                ) : null}
-              </div>
-            </Reviews>
-          </div>
-          <ReviewComponent review={props?.data?.reviews?.[0]} />
-          {/* <ReviewsCarousel reviews={props?.data?.reviews} /> */}
-
-          <div className="p-4 bg-white">
-        <button
-          className="w-full bg-red-500 text-white py-2 rounded-lg flex items-center justify-center"
-          onClick={handleDelete}
-          disabled={loading}
-        >
-          <div style={{ position: "relative" }}>
-            <div style={loading ? { visibility: "hidden" } : {}}>
-              🗑 Delete Booking
             </div>
-            {loading && (
-              <PulseLoader
-                style={{
-                  position: "absolute",
-                  top: "55%",
-                  left: "50%",
-                  transform: "translate(-50% , -50%)",
+          ) : (
+            <BackContainer className=" font-lexend">
+              <IoMdClose
+                className="hover-pointer"
+                onClick={(e) => {
+                  props.handleCloseDrawer(e);
                 }}
-                size={12}
-                speedMultiplier={0.6}
-                color="#ffffff"
-              />
+                style={{ fontSize: "2rem" }}
+              ></IoMdClose>
+              <BackText>Back to Itinerary</BackText>
+            </BackContainer>
+          )}
+
+          <>
+            {props?.data?.extra_images?.length > 0 && (
+              <GridImage>
+                <Child area="1 / 1 / 5 / 4" className="div1">
+                  <Image
+                    src={
+                      props?.data?.extra_images?.[0]
+                        ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[0]?.photo_reference}`
+                        : "/media/icons/bookings/notfounds/noroom.png"
+                    }
+                    alt="Image 0"
+                    fill
+                    className="object-cover"
+                    onLoad={() => OnImageLoad(0)}
+                    onError={() => OnImageError(0)}
+                    priority
+                  />
+                  <div
+                    style={{
+                      display: !ImagesLoaded[0] ? "initial" : "none",
+                      height: "100%",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <SkeletonCard lottieDimension="50rem" />
+                  </div>
+                </Child>
+
+                <Child area="1 / 8 / 5 / 11" className="div2 rounded-lg">
+                  <Image
+                    src={
+                      props?.data?.extra_images?.[1]
+                        ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[1]?.photo_reference}`
+                        : "/media/icons/bookings/notfounds/noroom.png"
+                    }
+                    alt="Image 1"
+                    fill
+                    className="object-cover"
+                    onLoad={() => OnImageLoad(1)}
+                    onError={() => OnImageError(1)}
+                    priority
+                  />
+                  ={" "}
+                  <div
+                    style={{
+                      display: !ImagesLoaded[1] ? "initial" : "none",
+                      height: "100%",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <SkeletonCard lottieDimension="50rem" />
+                  </div>
+                </Child>
+
+                <Child area="1 / 4 / 3 / 8" className="div3">
+                  <Image
+                    src={
+                      props?.data?.extra_images?.[2]
+                        ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[2]?.photo_reference}`
+                        : "/media/icons/bookings/notfounds/noroom.png"
+                    }
+                    alt="Image 2"
+                    fill
+                    className="object-cover"
+                    onLoad={() => OnImageLoad(2)}
+                    onError={() => OnImageError(2)}
+                    priority
+                  />
+                  <div
+                    style={{
+                      display: !ImagesLoaded[2] ? "initial" : "none",
+                      height: "100%",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <SkeletonCard lottieDimension="50rem" />
+                  </div>
+                </Child>
+
+                <Child area="3 / 4 / 5 / 8" className="div4">
+                  <Image
+                    src={
+                      props?.data?.extra_images?.[3]
+                        ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[3]?.photo_reference}`
+                        : "/media/icons/bookings/notfounds/noroom.png"
+                    }
+                    alt="Image 3"
+                    fill
+                    className="object-cover"
+                    onLoad={() => OnImageLoad(3)}
+                    onError={() => OnImageError(3)}
+                    priority
+                  />
+                  <div
+                    style={{
+                      display: !ImagesLoaded[3] ? "initial" : "none",
+                      height: "100%",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <SkeletonCard lottieDimension="50rem" />
+                  </div>
+                </Child>
+              </GridImage>
+            )}
+          </>
+
+          <div className="">
+            <Title>{props.data.name}</Title>
+            {aboutText != null && aboutText != undefined && (
+              <div>
+                <Text
+                  onClick={() =>
+                    setAboutText(
+                      props?.data?.overview || props.data.short_description
+                    )
+                  }
+                >
+                  {aboutText}
+                </Text>
+              </div>
+            )}
+            {props.data?.address && (
+              <div>
+                <span className="font-bold pr-1">Address:</span>{" "}
+                {props.data.address}
+              </div>
+            )}
+
+            {props.data?.experience_filters && (
+              <Text>{experience_filters}</Text>
             )}
           </div>
-        </button>
-      </div>
-        </>
-      )}
 
-      {props.data?.tips && props.data?.tips.length ? (
-        <div>
-          <Heading>Tips</Heading>
-          <Text>{tips}</Text>
-        </div>
-      ) : (
-        <></>
-      )}
+          {props.data?.cost ? (
+            <div className="flex flex-row">
+              Cost: <span className="font-semibold px-1">₹</span>
+              {props.data.cost}
+              {" /- "}
+              {"Per person"}
+            </div>
+          ) : props.data?.pricing?.total_price ? (
+            <div className="flex flex-row">
+              Cost: <span className="font-semibold px-1">₹</span>
+              {props.data.pricing.total_price}
+              {" /- "}
+              {"Per person"}
+            </div>
+          ) : null}
 
-      {/* {images?.length > 0 && (
+          {props.data?.getting_around && (
+            <div>
+              <Heading>Getting Around</Heading>
+              <Text>{props.data.getting_around}</Text>
+            </div>
+          )}
+
+          {props.data?.timings && (
+            <div>
+              <Heading>Timings</Heading>
+              <Text>
+                {
+                  <ul>
+                    {props.data.timings?.map((e, i) => (
+                      <li key={i}>{e}</li>
+                    ))}
+                  </ul>
+                }
+              </Text>
+            </div>
+          )}
+          {props?.data?.reviews && (
+            <>
+              <div className="flex justify-between">
+                <Heading>Reviews</Heading>
+                <Reviews>
+                  {props.data.rating ? (
+                    <div
+                      style={{ color: "#FFD201" }}
+                      className="flex flex-row gap-1"
+                    >
+                      {stars}
+                    </div>
+                  ) : null}
+
+                  <div className="flex items-center">
+                    {props.data?.rating ? (
+                      <p className="m-0">{props.data.rating} · </p>
+                    ) : null}
+
+                    {props.data?.user_ratings_total ? (
+                      <u> {props.data.user_ratings_total} user reviews</u>
+                    ) : null}
+                  </div>
+                </Reviews>
+              </div>
+              <ReviewComponent review={props?.data?.reviews?.[0]} />
+              {/* <ReviewsCarousel reviews={props?.data?.reviews} /> */}
+
+              <div className="p-4 bg-white">
+                <button
+                  className="w-full bg-red-500 text-white py-2 rounded-lg flex items-center justify-center"
+                  onClick={handleDelete}
+                  disabled={loading}
+                >
+                  <div style={{ position: "relative" }}>
+                    <div style={loading ? { visibility: "hidden" } : {}}>
+                      🗑 Remove from Itinerary
+                    </div>
+                    {loading && (
+                      <PulseLoader
+                        style={{
+                          position: "absolute",
+                          top: "55%",
+                          left: "50%",
+                          transform: "translate(-50% , -50%)",
+                        }}
+                        size={12}
+                        speedMultiplier={0.6}
+                        color="#ffffff"
+                      />
+                    )}
+                  </div>
+                </button>
+              </div>
+            </>
+          )}
+
+          {props.data?.tips && props.data?.tips.length ? (
+            <div>
+              <Heading>Tips</Heading>
+              <Text>{tips}</Text>
+            </div>
+          ) : (
+            <></>
+          )}
+
+          {/* {images?.length > 0 && (
         <FullScreenGalleryGoogle
           closeGalleryHandler={() => setImages(null)}
           images={images}
         ></FullScreenGalleryGoogle>
       )}  */}
-    </Container>
+          <ToastContainer />
+        </Container>
+      ) : null}
+    </>
   );
 };
 

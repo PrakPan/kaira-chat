@@ -49,7 +49,7 @@ const Details = (props) => {
     '#008080',  //# shade of teal
     '#7d5e7d',  //# shade of purple
 ];
-console.log("Routes Data",props?.routesData);
+console.log("Inside routes Dataa",props?.CityData);
 
 
   useEffect(() => {
@@ -195,12 +195,14 @@ console.log("Routes Data",props?.routesData);
 
       {props.editRoute && (
         <RouteEditSection
+          mercuryItinerary={props?.mercuryItinerary}
+          routes={props?.CityData}
           editRoute={props.editRoute}
           setEdit={props.setEditRoute}
           group_type={props.group_type}
           duration_time={props.duration_time}
           travellerType={props.travellerType}
-          transferBookings={props?.transferBookings}
+          transferBookings={props?.cityTransferBookings}
           fetchData={props.fetchData}
           setShowLoginModal={props.setShowLoginModal}
           setLocationsLatLong={setLocationsLatLong}

@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import PinSection from "./PinSection";
 import MidSection from "./MidSection";
 import { ITINERARY_VERSION } from "../../../../services/constants";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { logEvent } from "../../../../services/ga/Index";
 import MidSectionV2 from "./MidSectionV2";
 
@@ -15,6 +15,8 @@ const Container = styled.div`
 `;
 
 const Route = (props) => {
+
+  console.log("RoutesData",props?.routesData);
   const initialorder = {
     0: {
       location: "Jodhpur",
@@ -43,6 +45,7 @@ const Route = (props) => {
 
 
   let locationsArr = [];
+  const {transfers_status} = useSelector((state)=>state.ItineraryStatus)
   const [order, setOrder] = useState(initialorder);
 
   const _moveDownHandler = (index) => {
@@ -367,17 +370,15 @@ if (props?.CityData) {
         <div className="font-lexend mb-4 lg:mb-10  lg:mt-[4rem] mt-[2rem] font-bold text-4xl">
           Route
         </div>
-        {/* {!props?.plan?.is_released_for_customer &&
-        props?.plan?.itinerary_status !== "ITINERARY_PREPARED" &&
-        props?.routes &&
-        props?.routes.length > 0 ? (
+        {transfers_status === "SUCCESS" ?
+        props?.cityTransferBookings && props?.cityTransferBookings !== 'null' && props?.cityTransferBookings !== 'undefined' ? (
           <button
             onClick={handleEditRoute}
             className="mb-4 lg:mb-10  lg:mt-[4rem] mt-[2rem] font-semibold text-sm px-4 py-2 border-2 border-black rounded-lg hover:text-white hover:bg-black transform ease-in-out duration-300"
           >
             Edit Route
           </button>
-        ) : null} */}
+        ) : null : null} 
       </div>
 
       {locationsArr}

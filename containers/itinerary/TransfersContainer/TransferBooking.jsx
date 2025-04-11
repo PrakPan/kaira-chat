@@ -585,15 +585,15 @@ const TransferBooking = ({
               setShowDrawer={setShowDrawer}
               selectedTransferHeading={origin}
               origin={origin?.id != undefined ? origin?.id : id}
-              destination={destination.id != undefined ? destination.id : id}
+              destination={destination?.id != undefined ? destination?.id : id}
               check_in={check_in}
               routeId={id}
               city={
                 origin?.name != undefined ? origin?.name : origin?.city_name
               }
               dcity={
-                destination.name != undefined
-                  ? destination.name
+                destination?.name != undefined
+                  ? destination?.name
                   : destination?.city_name
               }
               selectedBooking={selectedBooking}

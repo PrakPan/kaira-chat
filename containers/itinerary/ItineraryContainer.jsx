@@ -33,6 +33,8 @@ import axiosBookingsInstance, {
 import { setTransfersBookings } from "../../store/actions/transferBookingsStore";
 import { setStays } from "../../store/actions/StayBookings";
 import setItineraryStatus from "../../store/actions/itineraryStatus";
+import { toast, ToastContainer } from "react-toastify";
+import SetPassengers from "../../store/actions/passengers";
 
 const Container = styled.div`
   width: 90%;
@@ -46,7 +48,8 @@ const Container = styled.div`
 const ItineraryContainer = (props) => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const {itinerary_status,transfers_status,pricing_status, hotels_status} = useSelector((state) => state.ItineraryStatus);
+  const { itinerary_status, transfers_status, pricing_status, hotels_status } =
+    useSelector((state) => state.ItineraryStatus);
   const [totalduration, setTotalduration] = useState(0);
   const [itineraryReleased, setItineraryReleased] = useState(false);
   const [itineraryDate, setItineraryDate] = useState("");
@@ -81,31 +84,29 @@ const ItineraryContainer = (props) => {
   const [showMercuryItinerary, setShowMercuryItinerary] = useState(false);
   const [cities, setCities] = useState([]);
   const [cityTransferBookings, setCityTransferBookings] = useState(null);
-  const [loadbookings,setLoadBookings] = useState(false);
-  const [loadpricing,setLoadPricing] = useState(false);
-  
+  const [loadbookings, setLoadBookings] = useState(false);
+  const [loadpricing, setLoadPricing] = useState(false);
+
   const [polling, setPolling] = useState(true);
 
+  const itinerarySuccessRef = useRef(false);
+  const pricingSuccessRef = useRef(false);
+  const transfersSuccessRef = useRef(false);
+  const hotelsSuccessRef = useRef(false);
 
-const itinerarySuccessRef = useRef(false);
-const pricingSuccessRef = useRef(false);
-const transfersSuccessRef = useRef(false);
-const hotelsSuccessRef = useRef(false);
+  function addDaysToDate(dateString, daysToAdd) {
+    const date = new Date(dateString);
 
-function addDaysToDate(dateString, daysToAdd) {
-  const date = new Date(dateString);
+    date.setDate(date.getDate() + daysToAdd);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
 
-  date.setDate(date.getDate() + daysToAdd);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
 
-  return `${year}-${month}-${day}`;
-}
-
-// const newDate = addDaysToDate(dateString, 2);
-// console.log(newDate); 
-
+  // const newDate = addDaysToDate(dateString, 2);
+  // console.log(newDate);
 
   //  const transferBooking = useSelector((state) => state.TransferBookings)?.transferBookings
   //   console.log("Transfer Booking",transferBooking);
@@ -142,18 +143,6 @@ function addDaysToDate(dateString, daysToAdd) {
     return itenaryActivities;
   };
 
-  const getItineraryActivitiesOld = () => {
-    let itenaryActivities = [];
-    props.itinerary?.day_slabs?.map((day_slab, index) => {
-      day_slab?.slab_elements?.map((element, index) => {
-        if (element.element_type === "activity") {
-          itenaryActivities?.push({ activity: element, date: day_slab.slab });
-        }
-      });
-    });
-    return itenaryActivities;
-  };
-
   const getBreifHandler = () => {
     axiosbreifinstance
       .get(`/?itinerary_id=` + props.id)
@@ -182,113 +171,113 @@ function addDaysToDate(dateString, daysToAdd) {
   };
 
   const getPaymentHandler = () => {
-    if(!props?.mercuryItinerary){
-    setPaymentLoading(true);
+    if (!props?.mercuryItinerary) {
+      setPaymentLoading(true);
 
-    axiosPaymentInstance
-      .post(
-        "",
-        {
-          itinerary_type: "Tailored",
-          itinerary_id: props.id,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${props.token}`,
+      axiosPaymentInstance
+        .post(
+          "",
+          {
+            itinerary_type: "Tailored",
+            itinerary_id: props.id,
           },
-        }
-      )
-      .then((res) => {
-        if (
-          props.token &&
-          !res.data.user_allowed_to_pay &&
-          res.data.itinerary_status == ITINERARY_STATUSES.itinerary_unclaimed
-        ) {
-          authaction
-            .ClaimItinary(props.id, props.token)
-            .then((res) => {
-              setPayment(res); //
-              setPaymentLoading(false);
-            })
-            .catch((err) => {});
-        } else {
-          setPayment(res.data);
-          setPaymentLoading(false);
-        }
-        let email = localStorage.getItem("email");
-        if (props.token)
-          for (var i = 0; i < res.data.registered_users.length; i++) {
-            if (res.data.registered_users[i].email === email) {
-              if (res.data.registered_users[i].payment_status)
-                if (res.data.registered_users[i].payment_status === "captured")
-                  setHasUserPaid(true);
-              break;
-            }
+          {
+            headers: {
+              Authorization: `Bearer ${props.token}`,
+            },
           }
-      })
-      .catch((error) => {
-        setPaymentLoading(false);
-      });
-
+        )
+        .then((res) => {
+          if (
+            props.token &&
+            !res.data.user_allowed_to_pay &&
+            res.data.itinerary_status == ITINERARY_STATUSES.itinerary_unclaimed
+          ) {
+            authaction
+              .ClaimItinary(props.id, props.token)
+              .then((res) => {
+                setPayment(res); //
+                setPaymentLoading(false);
+              })
+              .catch((err) => {});
+          } else {
+            setPayment(res.data);
+            setPaymentLoading(false);
+          }
+          let email = localStorage.getItem("email");
+          if (props.token)
+            for (var i = 0; i < res.data.registered_users.length; i++) {
+              if (res.data.registered_users[i].email === email) {
+                if (res.data.registered_users[i].payment_status)
+                  if (
+                    res.data.registered_users[i].payment_status === "captured"
+                  )
+                    setHasUserPaid(true);
+                break;
+              }
+            }
+        })
+        .catch((error) => {
+          setPaymentLoading(false);
+        });
     }
   };
 
+  const getAllStays = async () => {
+    try {
+      const res = await axiosGetAllStays.get(props.id + "/bookings/hotels/");
 
+      let data = res.data;
+      let stays = [];
+      for (let i = 0; i < data?.cities.length; i++) {
+        let hotels = data?.cities[i]?.hotels;
+        console.log("Hotels", hotels);
+        let city_name = data?.cities[i]?.city?.name;
+        let city_id = data?.cities[i]?.city?.id;
 
-const getAllStays = async () => {
-  
-  try {
-    const res = await axiosGetAllStays.get(props.id + "/bookings/hotels/");
-
-    let data = res.data;
-    let stays = [];
-    for (let i = 0; i < data?.cities.length; i++) {
-      let hotels = data?.cities[i]?.hotels;
-      console.log("Hotels",hotels);
-      let city_name = data?.cities[i]?.city?.name;
-      let city_id = data?.cities[i]?.city?.id;
-
-      if (hotels.length === 0) {
-        stays.push({
-          city_name,
-          city_id,
-          trace_city_id: data?.cities[i]?.id,
-          duration: data?.cities[i]?.duration,
-          check_in: data?.cities[i]?.start_date,
-          check_out: data?.cities[i]?.start_date && data?.cities[i]?.duration ? addDaysToDate(data?.cities[i]?.start_date,data?.cities[i]?.duration) : null,
-        });
-      }else{
-
-      for (let hotel of hotels) {
-        hotel.city_name = city_name;
-        hotel.city_id = city_id;
-        hotel.source = hotel?.images?.[0]?.source;
-        stays.push(hotel);
+        if (hotels.length === 0) {
+          stays.push({
+            city_name,
+            city_id,
+            trace_city_id: data?.cities[i]?.id,
+            duration: data?.cities[i]?.duration,
+            check_in: data?.cities[i]?.start_date,
+            check_out:
+              data?.cities[i]?.start_date && data?.cities[i]?.duration
+                ? addDaysToDate(
+                    data?.cities[i]?.start_date,
+                    data?.cities[i]?.duration
+                  )
+                : null,
+          });
+        } else {
+          for (let hotel of hotels) {
+            hotel.city_name = city_name;
+            hotel.city_id = city_id;
+            hotel.source = hotel?.images?.[0]?.source;
+            stays.push(hotel);
+          }
+        }
       }
 
+      console.log("Prepared stays data:", stays); // Log the final stays data before dispatching
+
+      setStayBookings(stays);
+      dispatch(setStays(stays));
+      dispatch(setItineraryStatus("hotels_status", "SUCCESS")); // Dispatch the success action
+      console.log("State after dispatch:", stays); // Log the state after dispatching
+
+      props.setBookings({
+        ...props.bookings,
+        stayBookings: data?.cities ? data?.cities : null,
+      });
+
+      console.log("Stay bookings:", stays);
+    } catch (error) {
+      console.log("ERROR[HotelBookingInfo][Itinerary]", error);
     }
-    }
+  };
 
-    console.log('Prepared stays data:', stays); // Log the final stays data before dispatching
-
-    setStayBookings(stays);
-    dispatch(setStays(stays));
-    dispatch(setItineraryStatus('hotels_status', 'SUCCESS')); // Dispatch the success action
-    console.log('State after dispatch:', stays); // Log the state after dispatching
-  
-
-    props.setBookings({
-      ...props.bookings,
-      stayBookings: data?.cities ? data?.cities : null,
-    });
-
-    console.log("Stay bookings:", stays);
-  } catch (error) {
-    console.log("ERROR[HotelBookingInfo][Itinerary]", error);
-  }
-};
-
-  
   const getPaymentInfo = () => {
     let stay_data = {};
     let activity_data = {};
@@ -305,8 +294,8 @@ const getAllStays = async () => {
       .then((res) => {
         let data = res.data;
         setPayment(data);
-        dispatch(setItineraryStatus("pricing_status","SUCCESS"));
- 
+        dispatch(setItineraryStatus("pricing_status", "SUCCESS"));
+
         for (let category in data.summary) {
           let categoryData = data.summary[category];
 
@@ -412,7 +401,6 @@ const getAllStays = async () => {
   };
 
   const getAllBookings = () => {
-
     axiosGetTransfers
       .get(`/${props.id}/bookings/transfers/`)
       .then((res) => {
@@ -420,7 +408,7 @@ const getAllStays = async () => {
         setTransferBookings(data);
         setCityTransferBookings(data);
         dispatch(setTransfersBookings(data));
-        dispatch(setItineraryStatus("transfers_status","SUCCESS"));
+        dispatch(setItineraryStatus("transfers_status", "SUCCESS"));
       })
       .catch((err) => {
         console.error("Error fetching all bookings", err.message);
@@ -433,191 +421,166 @@ const getAllStays = async () => {
     return data;
   }
 
+  function fetchData(poll) {
+    if (TRAVELER_ITINERARIES.includes(props.id))
+      setIsPastTravelerItinerary(true);
+    const fetchStatus = async () => {
+      try {
+        const res = await axiosGetItineraryStatus.get(`/${props.id}/status/`);
+        const status = res.data?.celery;
 
-function fetchData(poll) {
-    if (TRAVELER_ITINERARIES.includes(props.id)) setIsPastTravelerItinerary(true);
+        console.log("Status Response:", status);
 
-  const fetchStatus = async () => {
-    try {
-      const res = await axiosGetItineraryStatus.get(`/${props.id}/status/`);
-      const status = res.data?.celery;
-
-      console.log("Status Response:", status);
-
-      if(status?.PRICING === "FAILURE"){
-        dispatch(setItineraryStatus("pricing_status","FAILURE"));
-      }
-      if(status?.TRANSFERS === "FAILURE"){
-        dispatch(setItineraryStatus("transfers_status","FAILURE"));
-      }
-      
-      if(status?.HOTELS === "FAILURE"){
-        dispatch(setItineraryStatus("hotels_status","FAILURE"));
-      }
-
-
-      if (
-        status?.ITINERARY === "SUCCESS" &&
-        status?.TRANSFERS === "SUCCESS" &&
-        status?.PRICING === "SUCCESS" && 
-        status?.HOTELS === "SUCCESS"
-      ) {
-        setPolling(false); 
-      } else {
-        setPolling(true); 
-      }
-
-      fetchItinerary(status?.ITINERARY, status?.HOTELS, status?.TRANSFERS, status?.PRICING);
-    } catch (err) {
-      console.error("[ERROR]: axiosGetItineraryStatus: ", err.message);
-    }
-  };
-
-  const fetchItinerary = async (itinerary, hotels, transfers, pricing) => {
-    try {
-      if (itinerary === "SUCCESS" && !itinerarySuccessRef.current) {
-        if (true) window.scrollTo(0, 0);
-        itinerarySuccessRef.current = true; 
-        const res = await axiosGetItinerary.get(`/${props.id}/`);
-        const data = res.data;
-
-        if (data?.version === "v1" || !data) {
-          setShowMercuryItinerary(false);
-          router.push(`/itinerary/v1/${props.id}`);
-          return;
-        } else {
-          setShowMercuryItinerary(true);
-          dispatch(setItineraryStatus("itinerary_status","SUCCESS"));
+        if (status?.PRICING === "FAILURE") {
+          dispatch(setItineraryStatus("pricing_status", "FAILURE"));
+        }
+        if (status?.TRANSFERS === "FAILURE") {
+          dispatch(setItineraryStatus("transfers_status", "FAILURE"));
         }
 
-        props.setItinerary(data);
-        props.setItineraryDaybyDay(data);
-        props.setBreif(data);
-        setCities(data?.cities);
-        setItineraryDate(data.start_date);
+        if (status?.HOTELS === "FAILURE") {
+          dispatch(setItineraryStatus("hotels_status", "FAILURE"));
+        }
 
-        // let stays = [];
-        // for (let i = 0; i < data?.cities.length; i++) {
-        //   let hotels = data?.cities[i]?.hotels;
-        //   let city_name = data?.cities[i]?.city?.name;
-        //   let city_id = data?.cities[i]?.city?.id;
+        if (
+          status?.ITINERARY === "SUCCESS" &&
+          status?.TRANSFERS === "SUCCESS" &&
+          status?.PRICING === "SUCCESS" &&
+          status?.HOTELS === "SUCCESS"
+        ) {
+          setPolling(false);
+        } else {
+          setPolling(true);
+        }
 
-        //   if (hotels.length === 0) {
-        //     stays.push({
-        //       city_name,
-        //       city_id,
-        //       trace_city_id: data?.cities[i]?.id,
-        //       duration: data?.cities[i]?.duration,
-        //       check_in: data?.cities[i]?.start_date,
-        //       check_out: new Date(new Date(data?.cities[i]?.start_date).getTime() + data?.cities[i]?.duration * 24 * 60 * 60 * 1000)
-        //         .toISOString()
-        //         .split("T")[0],
-        //     });
-        //   }
+        fetchItinerary(
+          status?.ITINERARY,
+          status?.HOTELS,
+          status?.TRANSFERS,
+          status?.PRICING
+        );
+      } catch (err) {
+        console.error("[ERROR]: axiosGetItineraryStatus: ", err.message);
+      }
+    };
 
-        //   for (let hotel of hotels) {
-        //     hotel.city_name = city_name;
-        //     hotel.city_id = city_id;
-        //     hotel.source = hotel?.images?.[0]?.source;
-        //     stays.push(hotel);
-        //   }
-        // }
-        // setStayBookings(stays);
-        // dispatch(setStays(stays));
-        // props.setBookings({
-        //   ...props.bookings,
-        //   stayBookings: data?.cities ? data?.cities : null,
-        // });
+    const fetchItinerary = async (itinerary, hotels, transfers, pricing) => {
+      try {
+        if (itinerary === "SUCCESS" && !itinerarySuccessRef.current) {
+          if (true) window.scrollTo(0, 0);
+          itinerarySuccessRef.current = true;
+          const res = await axiosGetItinerary.get(`/${props.id}/`);
+          const data = res.data;
 
-        let activities = getItineraryActivities();
-        props.setItineraryActivities(activities);
+          if (data?.version === "v1" || !data) {
+            setShowMercuryItinerary(false);
+            router.push(`/itinerary/v1/${props.id}`);
+            return;
+          } else {
+            setShowMercuryItinerary(true);
+            dispatch(setItineraryStatus("itinerary_status", "SUCCESS"));
+          }
+
+          props.setItinerary(data);
+          props.setItineraryDaybyDay(data);
+          props.setBreif(data);
+          setCities(data?.cities);
+          setItineraryDate(data.start_date);
+
+          let activities = getItineraryActivities();
+          props.setItineraryActivities(activities);
+          setItineraryLoading(false);
+        }
+
+        if (hotels === "SUCCESS" && !hotelsSuccessRef.current) {
+          hotelsSuccessRef.current = true;
+          // setTimeout(() => {
+          getAllStays();
+
+          // }, 20000);
+        }
+
+        if (transfers === "SUCCESS" && !transfersSuccessRef.current) {
+          transfersSuccessRef.current = true;
+          setLoadBookings(true);
+          // setTimeout(() => {
+          getAllBookings();
+          // }, 20000);
+        }
+
+        if (pricing === "SUCCESS" && !pricingSuccessRef.current) {
+          pricingSuccessRef.current = true;
+          setLoadPricing(true);
+          getPaymentInfo();
+        }
+      } catch (err) {
+        console.error("[ERROR]: axiosGetItinerary: ", err.message);
         setItineraryLoading(false);
       }
-      
-      if (hotels === "SUCCESS" && !hotelsSuccessRef.current) {
-        hotelsSuccessRef.current = true;
-        // setTimeout(() => {
-          getAllStays();
-          
-        // }, 20000);
-      }
-
-
-      if (transfers === "SUCCESS" && !transfersSuccessRef.current) {
-        transfersSuccessRef.current = true;
-        setLoadBookings(true);
-        // setTimeout(() => {
-          getAllBookings();
-        // }, 20000);
-      }
-
-      if (pricing === "SUCCESS" && !pricingSuccessRef.current) {
-        pricingSuccessRef.current = true; 
-        setLoadPricing(true);
-        getPaymentInfo();
-      }
-
-      
-    } catch (err) {
-      console.error("[ERROR]: axiosGetItinerary: ", err.message);
-      setItineraryLoading(false);
+    };
+    if (poll) {
+      fetchStatus();
     }
-  };
-
-  if (poll) {
-    fetchStatus();
   }
-}
 
-useEffect(() => {
-  fetchData(true);
-}, [props.id]);
+  useEffect(() => {
+    const fetchPassengers = async () => {
+      try {
+        const res = await axiosGetItinerary.get(`/${props.id}/guests/`);
+        dispatch(SetPassengers(res?.data));
+      } catch (error) {}
+    };
+    if (props?.token) {
+      fetchPassengers();
+    }
+  }, [props?.token]);
 
-useEffect(() => {
-  let interval;
-  let callCount = 0; 
-
-  console.log("Polling:", polling);
-
-  if (polling) {
+  useEffect(() => {
     fetchData(true);
+  }, [props.id]);
 
-    interval = setInterval(() => {
-      if (callCount < 15) {
-        fetchData(true); 
-        callCount++;
-      } else {
-        if (
-          itinerary_status === "FAILURE" &&
-          transfers_status === "FAILURE" &&
-          pricing_status === "FAILURE" && 
-          hotels_status === "FAILURE"
-        ) {
-          router.push("/thank-you");
+  useEffect(() => {
+    let interval;
+    let callCount = 0;
+
+    console.log("Polling:", polling);
+
+    if (polling) {
+      fetchData(true);
+
+      interval = setInterval(() => {
+        if (callCount < 15) {
+          fetchData(true);
+          callCount++;
         } else {
-          if(pricing_status === "FAILURE"){
-            dispatch(setItineraryStatus("pricing_status","FAILURE"));
+          if (
+            itinerary_status === "FAILURE" &&
+            transfers_status === "FAILURE" &&
+            pricing_status === "FAILURE" &&
+            hotels_status === "FAILURE"
+          ) {
+            router.push("/thank-you");
+          } else {
+            if (pricing_status === "FAILURE") {
+              dispatch(setItineraryStatus("pricing_status", "FAILURE"));
+            }
+            if (transfers_status === "FAILURE") {
+              dispatch(setItineraryStatus("transfers_status", "FAILURE"));
+            }
+            if (hotels_status === "FAILURE") {
+              dispatch(setItineraryStatus("hotels_status", "FAILURE"));
+            }
           }
-          if(transfers_status === "FAILURE"){
-            dispatch(setItineraryStatus("transfers_status","FAILURE"));
-          }
-          if(hotels_status === "FAILURE"){
-            dispatch(setItineraryStatus("hotels_status","FAILURE"));
-          }
+
+          clearInterval(interval);
         }
+      }, 5000);
+    } else {
+      clearInterval(interval);
+    }
 
-        clearInterval(interval);
-      }
-    }, 5000);
-  } else {
-    clearInterval(interval); 
-  }
-
-  return () => clearInterval(interval); 
-}, [polling]);  
-
-
-  
+    return () => clearInterval(interval);
+  }, [polling]);
 
   const _updateTransferBooking = (arr1, arr2) => {
     const combinedArray = [...arr1]; // Copy arr1 to avoid modifying the original array
@@ -648,7 +611,7 @@ useEffect(() => {
   };
 
   const _updateBookingHandler = (json) => {
-    setShowStayBookingModal(false)
+    setShowStayBookingModal(false);
     setShowBookingModal(false);
     setShowFlightModal(false);
     setBooking(json);
@@ -656,7 +619,7 @@ useEffect(() => {
 
   const _updateStayBookingHandler = (json) => {
     setShowBookingModal(false);
-    setShowStayBookingModal(false)
+    setShowStayBookingModal(false);
     setShowFlightModal(false);
     // setStayBookings(_updateTransferBooking(stayBookings, json));
     // props.setBookings({
@@ -671,7 +634,7 @@ useEffect(() => {
 
   const _updateTransferBookingHandler = (json) => {
     setShowBookingModal(false);
-    setShowStayBookingModal(false)
+    setShowStayBookingModal(false);
     setShowFlightModal(false);
     // setTransferBookings(json);
     // setTransferBookings(json);
@@ -973,7 +936,7 @@ useEffect(() => {
 
   const setHideBookingModal = () => {
     setShowBookingModal(false);
-    setShowStayBookingModal(false)
+    setShowStayBookingModal(false);
   };
 
   const setHidePoiModal = () => {
@@ -1060,7 +1023,11 @@ useEffect(() => {
           setShowTaxiModal={setShowTaxiModal}
           paymentLoading={paymentLoading}
           budget={
-            props?.plan ? props.plan.budget : props.budget ? props.budget : null
+            props?.plan
+              ? props.plan?.budget
+              : props.itinerary?.budget
+              ? props.itinerary?.budget
+              : null
           }
           _deselectActivityBookingHandler={_deselectActivityBookingHandler}
           activityFlickityIndex={activityFlickityIndex}
@@ -1109,8 +1076,8 @@ useEffect(() => {
           getAccommodationAndActivitiesHandler={
             getAccommodationAndActivitiesHandler
           }
-          group_type={group_type}
-          duration_time={duration_time}
+          group_type={group_type || props.itinerary?.group_type}
+          duration_time={duration_time || props.itinerary?.duration_time}
           travellerType={travellerType}
           editRoute={editRoute}
           setEditRoute={setEditRoute}
@@ -1121,6 +1088,7 @@ useEffect(() => {
           setActivityBookings={setActivityBookings}
         ></Menu>
       </div>
+      <ToastContainer />
     </Container>
   );
 };
@@ -1151,7 +1119,7 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(setItineraryActivities(payload)),
     setBreif: (payload) => dispatch(setBreif(payload)),
     setItineraryDaybyDay: (payload) => dispatch(setItineraryDaybyDay(payload)),
-   setTransfersBookings: (payload) => dispatch(setTransfersBookings(payload))
+    setTransfersBookings: (payload) => dispatch(setTransfersBookings(payload)),
   };
 };
 
