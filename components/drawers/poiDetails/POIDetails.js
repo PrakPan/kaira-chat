@@ -15,6 +15,9 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import setItinerary from "../../../store/actions/itinerary";
 import { toast, ToastContainer } from "react-toastify";
+import GoogleImageLoader from "./GoogleImageLoader";
+import ReviewPoi from "../../POIDetails/Reviews";
+import { RiDeleteBin6Line } from "react-icons/ri";
 export const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -117,7 +120,18 @@ const Child = styled.div`
   grid-area: ${(props) => props.area};
   ${(props) => props.className && `class="${props.className}"`};
 `;
+const ScrollContainer = styled.div`
+  display: flex;
+  gap: 21px;
+  overflow-x: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
+  // const Heading = styled.div
+`;
 // const Heading = styled.div`
 //   font-weight: 600;
 //   font-size: 20px;
@@ -175,26 +189,26 @@ const POIDetails = (props) => {
       );
 
       if (res?.status == 200) {
-      const newItinerary = JSON.parse(JSON.stringify(itinerary));
-      var itineraryCities = newItinerary;
-      itineraryCities = newItinerary.cities.map((city) => {
-        const cityTemp = city;
-        if (city.id === props?.itinerary_city_id) {
-          console.log(
-            "here:",
-            cityTemp.day_by_day[props?.dayIndex]?.slab_elements
-          );
-          cityTemp.day_by_day[props?.dayIndex]?.slab_elements.splice(
-            props?.slabIndex,
-            1
-          );
-        }
-        return cityTemp;
-      });
-      newItinerary.cities = itineraryCities;
-      props?.handleCloseDrawer(e);
-      dispatch(setItinerary(newItinerary));
-      toast.success("deleted successfuly");
+        const newItinerary = JSON.parse(JSON.stringify(itinerary));
+        var itineraryCities = newItinerary;
+        itineraryCities = newItinerary.cities.map((city) => {
+          const cityTemp = city;
+          if (city.id === props?.itinerary_city_id) {
+            console.log(
+              "here:",
+              cityTemp.day_by_day[props?.dayIndex]?.slab_elements
+            );
+            cityTemp.day_by_day[props?.dayIndex]?.slab_elements.splice(
+              props?.slabIndex,
+              1
+            );
+          }
+          return cityTemp;
+        });
+        newItinerary.cities = itineraryCities;
+        props?.handleCloseDrawer(e);
+        dispatch(setItinerary(newItinerary));
+        toast.success("deleted successfuly");
       }
     } catch (error) {
       console.log("error is:", error);
@@ -373,7 +387,7 @@ const POIDetails = (props) => {
               </GridImage>
             )}
           </>
-
+          {props.data?.experience_filters && <Text>{experience_filters}</Text>}
           <div className="">
             <Title>{props.data.name}</Title>
             {aboutText != null && aboutText != undefined && (
@@ -394,10 +408,6 @@ const POIDetails = (props) => {
                 <span className="font-bold pr-1">Address:</span>{" "}
                 {props.data.address}
               </div>
-            )}
-
-            {props.data?.experience_filters && (
-              <Text>{experience_filters}</Text>
             )}
           </div>
 
@@ -440,8 +450,9 @@ const POIDetails = (props) => {
           )}
           {props?.data?.reviews && (
             <>
-              <div className="flex justify-between">
+              <div id="reviews-poi" className="flex justify-between">
                 <Heading>Reviews</Heading>
+
                 <Reviews>
                   {props.data.rating ? (
                     <div
@@ -457,23 +468,116 @@ const POIDetails = (props) => {
                       <p className="m-0">{props.data.rating} · </p>
                     ) : null}
 
-                    {props.data?.user_ratings_total ? (
+                    {/* {props.data?.user_ratings_total ? (
                       <u> {props.data.user_ratings_total} user reviews</u>
-                    ) : null}
+                    ) : null} */}
                   </div>
                 </Reviews>
               </div>
-              <ReviewComponent review={props?.data?.reviews?.[0]} />
-              {/* <ReviewsCarousel reviews={props?.data?.reviews} /> */}
+              <ScrollContainer>
+                {props?.data?.reviews?.map((item) => (
+                  <div className="w-[289px]">
+                    <ReviewPoi review={item} />
+                  </div>
+                ))}
+              </ScrollContainer>
+              <div className="flex gap-2">
+                <div>
+                  <svg
+                    width="23"
+                    height="24"
+                    viewBox="0 0 23 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <g clip-path="url(#clip0_9135_4118)">
+                      <rect
+                        y="0.800781"
+                        width="22.4"
+                        height="22.4"
+                        rx="4"
+                        fill="#169873"
+                        fill-opacity="0.09"
+                      />
+                      <path
+                        d="M13.2 18L9.20001 16.6L6.10001 17.8C5.87779 17.8889 5.67223 17.8639 5.48335 17.725C5.29446 17.5861 5.20001 17.4 5.20001 17.1667V7.83333C5.20001 7.68889 5.24168 7.56111 5.32501 7.45C5.40835 7.33889 5.52223 7.25556 5.66668 7.2L9.20001 6L13.2 7.4L16.3 6.2C16.5222 6.11111 16.7278 6.13611 16.9167 6.275C17.1056 6.41389 17.2 6.6 17.2 6.83333V16.1667C17.2 16.3111 17.1583 16.4389 17.075 16.55C16.9917 16.6611 16.8778 16.7444 16.7333 16.8L13.2 18ZM12.5333 16.3667V8.56667L9.86668 7.63333V15.4333L12.5333 16.3667ZM13.8667 16.3667L15.8667 15.7V7.8L13.8667 8.56667V16.3667ZM6.53335 16.2L8.53335 15.4333V7.63333L6.53335 8.3V16.2Z"
+                        fill="#169873"
+                      />
+                    </g>
+                    <defs>
+                      <clipPath id="clip0_9135_4118">
+                        <rect
+                          y="0.800781"
+                          width="22.4"
+                          height="22.4"
+                          rx="4"
+                          fill="white"
+                        />
+                      </clipPath>
+                    </defs>
+                    <g
+                      xmlns="http://www.w3.org/2000/svg"
+                      clip-path="url(#clip0_9135_4118)"
+                    >
+                      <rect
+                        y="0.800781"
+                        width="22.4"
+                        height="22.4"
+                        rx="4"
+                        fill="#169873"
+                        fill-opacity="0.09"
+                      />
+                      <path
+                        d="M13.2 18L9.20001 16.6L6.10001 17.8C5.87779 17.8889 5.67223 17.8639 5.48335 17.725C5.29446 17.5861 5.20001 17.4 5.20001 17.1667V7.83333C5.20001 7.68889 5.24168 7.56111 5.32501 7.45C5.40835 7.33889 5.52223 7.25556 5.66668 7.2L9.20001 6L13.2 7.4L16.3 6.2C16.5222 6.11111 16.7278 6.13611 16.9167 6.275C17.1056 6.41389 17.2 6.6 17.2 6.83333V16.1667C17.2 16.3111 17.1583 16.4389 17.075 16.55C16.9917 16.6611 16.8778 16.7444 16.7333 16.8L13.2 18ZM12.5333 16.3667V8.56667L9.86668 7.63333V15.4333L12.5333 16.3667ZM13.8667 16.3667L15.8667 15.7V7.8L13.8667 8.56667V16.3667ZM6.53335 16.2L8.53335 15.4333V7.63333L6.53335 8.3V16.2Z"
+                        fill="#169873"
+                      />
+                    </g>
+                    <defs xmlns="http://www.w3.org/2000/svg">
+                      <clipPath id="clip0_9135_4118">
+                        <rect
+                          y="0.800781"
+                          width="22.4"
+                          height="22.4"
+                          rx="4"
+                          fill="white"
+                        />
+                      </clipPath>
+                    </defs>
+                  </svg>
+                </div>
+                <div>{props?.data?.city}</div>
+              </div>
+              <div className="flex justify-between">
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.75rem",
+                    justifyContent: "left"
+                  }}
+                >
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${
+                      props?.data?.latitude
+                    },${props?.data?.longitude}+(${props?.data?.name
+                      ?.split(" ")
+                      .join("+")})`}
+                    target="_blank"
+                    style={{ color: "#0000EE", fontSize: "14px" }}
+                  >
+                    View on Google Maps
+                  </a>
+                </div>
 
-              <div className="p-4 bg-white">
                 <button
-                  className="w-full bg-red-500 text-white py-2 rounded-lg flex items-center justify-center"
+                  className=" right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
                   onClick={handleDelete}
-                  disabled={loading}
                 >
                   <div style={{ position: "relative" }}>
-                    <div style={loading ? { visibility: "hidden" } : {}}>
+                    <div
+                      className="flex gap-1 items-center p-1"
+                      style={loading ? { visibility: "hidden" } : {}}
+                    >
                       🗑 Remove from Itinerary
                     </div>
                     {loading && (

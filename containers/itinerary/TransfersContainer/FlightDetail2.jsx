@@ -156,9 +156,9 @@ const Details = ({
           ></div>
         </div>
       )}
-      <div className="p-4 bg-white">
+      <div className="w-full flex justify-end">
         <button
-          className="w-full bg-red-500 text-white py-2 rounded-lg flex items-center justify-center"
+          className="right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515] p-2"
           onClick={handleDelete}
           disabled={loading}
         >
@@ -181,7 +181,7 @@ const Details = ({
             )}
           </div>
         </button>
-      </div>
+        </div>
 
       <ToastContainer />
     </div>

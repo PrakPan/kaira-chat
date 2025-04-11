@@ -142,7 +142,7 @@ const TransferBooking = ({
   originCityId,
   destinationCityId,
   loadbookings,
-  mercuryItinerary
+  mercuryItinerary,
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -277,7 +277,9 @@ const TransferBooking = ({
     try {
       setLoading(true);
       const response = await axiosDeleteBooking.delete(
-        `${router.query.id}/bookings/${book?.booking_type?.toLowerCase()}/${book?.id}/`
+        `${router.query.id}/bookings/${book?.booking_type?.toLowerCase()}/${
+          book?.id
+        }/`
       );
 
       if (response.status === 204) {
@@ -339,8 +341,7 @@ const TransferBooking = ({
             </div>
           </div>
         </div>
-      ) : 
-      booking?.transfer_type !== "combo" ? (
+      ) : booking?.transfer_type !== "combo" ? (
         booking?.id ? (
           <Container
             className={`${!isPageWide ? "max-w-fit" : "max-w-[54vw]"}`}
@@ -516,20 +517,19 @@ const TransferBooking = ({
                       //   </Button>
                       // </div>
                       <button
-                             onclick={() =>
+                        onclick={() =>
                           handleViewDetails(
                             router?.query?.id,
                             book?.id,
                             book?.transfer_details?.mode.toLowerCase()
                           )
                         }
-                          className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000] mr-2"
-                        >
-                          {/* Add Taxi */}
-                          View Detail
-                        </button>
+                        className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000] mr-2"
+                      >
+                        {/* Add Taxi */}
+                        View Detail
+                      </button>
                     )}
-
                   </div>
                   <Drawer
                     show={showVehicleDrawer}
@@ -602,15 +602,14 @@ const TransferBooking = ({
             />
           </div>
         )
-      ) :
-       (
-          booking?.children?.map((book, index) =>(
-            <ComboContainer>
+      ) : (
+        booking?.children?.map((book, index) => (
+          <ComboContainer>
             <div className="relative">
-            <Line
-              pinColour={CITY_COLOR_CODES[index % 7]}
-              Transfers={Transfer}
-            />
+              <Line
+                pinColour={CITY_COLOR_CODES[index % 7]}
+                Transfers={Transfer}
+              />
             </div>
             {book?.booking_type === "Flight" ? (
               <FlightBooking
@@ -629,8 +628,7 @@ const TransferBooking = ({
                 destinationCityId={destinationCityId}
                 type={"combo"}
               />
-            ) :
-             (
+            ) : (
               <div
                 key={index}
                 className="mt-3 ml-1 md:ml-7 flex flex-col w-full"
@@ -778,23 +776,23 @@ const TransferBooking = ({
                     //   </Button>
                     // </div>
                     <button
-                              onclick={() =>
-                          handleViewDetails(
-                            router?.query?.id,
-                            book?.id,
-                            book?.transfer_details?.mode.toLowerCase()
-                          )
-                        }
-                          className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
-                        >
-                          {/* Add Taxi */}
-                          View Detail
-                        </button>
+                      onclick={() =>
+                        handleViewDetails(
+                          router?.query?.id,
+                          book?.id,
+                          book?.transfer_details?.mode.toLowerCase()
+                        )
+                      }
+                      className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
+                    >
+                      {/* Add Taxi */}
+                      View Detail
+                    </button>
                   )}
                 </div>
                 <Drawer
                   show={showVehicleDrawer}
-                  anchor="right" 
+                  anchor="right"
                   mobileWidth="100vw"
                   width="50vw"
                   style={1503}
@@ -811,14 +809,13 @@ const TransferBooking = ({
                   />
                 </Drawer>
               </div>
-            )
-          }
-        </ComboContainer>
-      )))
-}
-</>
-)
-}
+            )}
+          </ComboContainer>
+        ))
+      )}
+    </>
+  );
+};
 
 const mapStateToPros = (state) => {
   return {
@@ -959,7 +956,7 @@ const FlightBooking = ({
           </div>
           {window.innerWidth >= 1000 && (
             <div className="w-[131.95px]">
-              <Button
+              {/* <Button
                 bgColor={"#FFFFFF"}
                 borderRadius="8px"
                 fontWeight="400"
@@ -972,7 +969,16 @@ const FlightBooking = ({
                 }}
               >
                 View Detail
-              </Button>
+              </Button> */}
+              <button
+                onclick={() => {
+                  setShowDetails((prev) => !prev);
+                }}
+                className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
+              >
+                {/* Add Taxi */}
+                View Detail
+              </button>
             </div>
           )}
         </div>
@@ -994,7 +1000,7 @@ const FlightBooking = ({
           </button> */}
           {window.innerWidth < 1000 && (
             <div className="w-[131.95px]">
-              <Button
+              {/* <Button
                 bgColor={"#000000"}
                 borderRadius="8px"
                 fontWeight="400"
@@ -1007,7 +1013,16 @@ const FlightBooking = ({
                 }}
               >
                 View Detail
-              </Button>
+              </Button> */}
+              <button
+                onclick={() => {
+                  setShowDetails((prev) => !prev);
+                }}
+                className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg p-1 bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
+              >
+                {/* Add Taxi */}
+                View Detail
+              </button>
             </div>
           )}
         </div>

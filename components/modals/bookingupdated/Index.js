@@ -215,9 +215,6 @@ const Booking = (props) => {
     });
   };
 
-  useEffect(()=>{
-    console.log("hotel status:",paginationStatus)
-  },[paginationStatus])
   const fetchHotels = () => {
     setLoading(true);
     setUpdateLoadingState(true);
