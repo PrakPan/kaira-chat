@@ -1586,6 +1586,7 @@ function newFunction(
     RoutesData.push(props?.itinerary?.end_city);
     setcitydatadone(true);
     setCityData(CityDataTemp);
+    console.log("routes dataaa",RoutesData);
   }
   }
   processRoutes3(props);

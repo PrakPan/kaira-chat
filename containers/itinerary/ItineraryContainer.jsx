@@ -1060,7 +1060,11 @@ useEffect(() => {
           setShowTaxiModal={setShowTaxiModal}
           paymentLoading={paymentLoading}
           budget={
-            props?.plan ? props.plan.budget : props.budget ? props.budget : null
+            props?.plan
+              ? props.plan?.budget
+              : props.itinerary?.budget
+              ? props.itinerary?.budget
+              : null
           }
           _deselectActivityBookingHandler={_deselectActivityBookingHandler}
           activityFlickityIndex={activityFlickityIndex}
@@ -1109,8 +1113,8 @@ useEffect(() => {
           getAccommodationAndActivitiesHandler={
             getAccommodationAndActivitiesHandler
           }
-          group_type={group_type}
-          duration_time={duration_time}
+          group_type={group_type || props.itinerary?.group_type}
+          duration_time={duration_time || props.itinerary?.duration_time}
           travellerType={travellerType}
           editRoute={editRoute}
           setEditRoute={setEditRoute}

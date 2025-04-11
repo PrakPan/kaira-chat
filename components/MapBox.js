@@ -29,11 +29,12 @@ const CustomMarkerIcon = ({ index, color }) => (
 
 const Mapbox = React.memo((props) => {
   const [polylines, setPolylines] = useState();
+  console.log("MapBox",props?.locations);
 
   useEffect(() => {
     const updatedPolylines = props.locations.map((element) => [
-      element.lat,
-      element.long,
+      element.lat || element?.latitude,
+      element.long || element?.longitude,
     ]);
 
     setPolylines(updatedPolylines);
@@ -47,7 +48,7 @@ const Mapbox = React.memo((props) => {
         const bounds = leaflet
           .featureGroup(
             props.locations.map((location) =>
-              leaflet.marker([location.lat, location.long])
+              leaflet.marker([location.lat || location?.latitude, location.long || location?.longitude])
             )
           )
           .getBounds();
@@ -70,7 +71,7 @@ const Mapbox = React.memo((props) => {
 
   return props?.locations ? (
     <MapContainer
-      center={{ lat: props?.locations[0]?.lat, lng: props?.locations[0]?.long }}
+      center={{ lat: props?.locations[0]?.lat || props?.locations[0]?.latitude, lng: props?.locations[0]?.long || props?.locations[0]?.longitude}}
       zoom={props.defaultZoom || 1}
       style={{
         height: props.height || "100%",
@@ -90,8 +91,8 @@ const Mapbox = React.memo((props) => {
             key={`${location.id}-${index}`}
             animate
             position={[
-              location?.lat ? location.lat : "",
-              location?.long ? location.long : "",
+              location?.lat || location?.latitude? location.lat || location?.latitude : "",
+              location?.long || location?.longitude ? location.long || location?.longitude: "",
             ]}
             draggable={false}
             icon={divIcon({
