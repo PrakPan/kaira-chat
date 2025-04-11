@@ -52,19 +52,6 @@ export default function PoiDetails(props) {
     props.updatedActivityBooking();
   };
 
-  const handleAmenityChange = (index, included) => {
-    let amenities = props.data?.amenities.filter(
-      (amenity, i) => i !== index && amenity.included
-    );
-
-    if (included) {
-      amenities.push(props.data?.amenities[index]);
-    }
-
-    props.fetchData({
-      amenities: amenities.map((amenity) => amenity?.id).join(","),
-    });
-  };
 
   return (
     <div className="flex flex-col gap-4 px-4 pb-4">

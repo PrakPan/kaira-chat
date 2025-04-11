@@ -1,75 +1,71 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { connect, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import Drawer from "../../ui/Drawer";
 import POIDetailsSkeleton from "../poiDetails/POIDetailsSkeleton";
 import { getDate } from "../../../helper/DateUtils";
 import { openNotification } from "../../../store/actions/notification";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import PoiDetails from "./NewPoiDetails";
 import { MERCURY_HOST } from "../../../services/constants";
 import axios from "axios";
+import setItinerary from "../../../store/actions/itinerary";
 
 const NewPoiDetailsDrawer = (props) => {
   //console.log("day by day:",props?.setItinerary)
   const router = useRouter();
   const [data, setData] = useState(null);
-  const [traceId, setTraceId] = useState(null);
   const [loading, setLoading] = useState(false);
-
+  const itinerary = useSelector((state) => state.Itinerary);
+  const dispatch = useDispatch();
   useEffect(() => {
     if (props.show) fetchData();
   }, [props.show]);
 
-  const fetchData = async() => {
-    setLoading(true)
+  const fetchData = async () => {
+    setLoading(true);
 
     try {
-        const res = await axios.get(
-            `${MERCURY_HOST}/api/v1/geos/poi/${props?.id}/`
-        );
-        if(res.data?.data?.poi){
-        setData(res.data?.data?.poi)
-        }
-        setLoading(false);
+      const res = await axios.get(
+        `${MERCURY_HOST}/api/v1/geos/poi/${props?.id}/`
+      );
+      if (res.data?.data?.poi) {
+        setData(res.data?.data?.poi);
+      }
+      setLoading(false);
     } catch (error) {
-        console.log('poi drawer error is:',error)
+      console.log("poi drawer error is:", error);
     }
-
   };
 
-  const updatedActivityBooking = async() => {
-
-    const requestData={
-        itinerary_city_id:props?.itinerary_city_id,
-        poi_id:props?.id,
-        day_by_day_index:props?.dayIndex
+  const updatedActivityBooking = async () => {
+    try {
+      const requestData = {
+        itinerary_city_id: props?.itinerary_city_id,
+        poi_id: props?.id,
+        day_by_day_index: props?.dayIndex,
+      };
+      const res = await axios.post(
+        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/poi/add/`,
+        requestData
+      );
+      console.log("itineray is:",itinerary)
+      var newItinerary = JSON.parse(JSON.stringify(itinerary));
+      const itineraryCities=newItinerary?.cities?.map((item)=>{
+        const city=item;
+        if(item.id==props?.itinerary_city_id){
+          const day_by_day=city?.day_by_day
+          day_by_day[props?.dayIndex].slab_elements=[...day_by_day[props?.dayIndex]?.slab_elements,res?.data]
+          city.day_by_day=day_by_day
+        }
+        return city;
+      })
+      newItinerary.cities=itineraryCities
+      dispatch(setItinerary(newItinerary));
+      toast.success("booking updated successfuly");
+    } catch (error) {
+      console.log("add poi error is:",error)
     }
-    const res=await axios.post(`${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/poi/add/`,requestData)
-
-    // activityBooking
-    //   .post(`${router.query?.id}/bookings/activity/`, requestData)
-    //   .then((res) => {
-    //     props.setActivities([...props?.activities,res?.data])
-    //     props.setActivityBookings([...props?.activityBookings,res?.data])
-    //     toast.success("Added activity in itinerary")
-    //   })
-    //   .catch((err) => {
-    //     console.log("error is:",err)
-    //     if (err?.response?.status === 403) {
-    //       props.openNotification({
-    //         text: "You are not allowed to make changes to this itinerary",
-    //         heading: "Error!",
-    //         type: "error",
-    //       });
-    //     } else {
-    //       props.openNotification({
-    //         text: "There seems to be a problem, please try again!",
-    //         heading: "Error!",
-    //         type: "error",
-    //       });
-    //     }
-    //   });
   };
 
   return (
@@ -83,6 +79,7 @@ const NewPoiDetailsDrawer = (props) => {
       className="font-lexend"
       onHide={props.handleCloseDrawer}
     >
+      <ToastContainer />
       {!loading ? (
         <PoiDetails
           itineraryDrawer={props.itineraryDrawer}
@@ -118,7 +115,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(
-  mapStateToPros,
-  mapDispatchToProps
-)(NewPoiDetailsDrawer);
+export default connect(mapStateToPros, mapDispatchToProps)(NewPoiDetailsDrawer);

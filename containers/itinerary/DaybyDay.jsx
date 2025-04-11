@@ -56,7 +56,7 @@ const DaybyDay = ({
 
   useEffect(() => {
     let array = [];
-
+if(itineraryDaybyDay?.cities){
     for (const city of itineraryDaybyDay?.cities) {
       array.push({
         id: city.id,
@@ -64,6 +64,7 @@ const DaybyDay = ({
         duration: city.duration,
       });
     }
+  }
   }, [itineraryDaybyDay]);
 
   const _setImagesHandler = (images) => {
@@ -206,27 +207,27 @@ const DaybyDay = ({
             loadbookings={loadbookings}
             key={2}
             bookingIdToDelete={
-              startCity?.gmaps_place_id + ":" + itineraryDaybyDay?.cities[0]?.id
+              startCity?.gmaps_place_id + ":" + itineraryDaybyDay?.cities?.[0]?.id
             }
             city={
               transferBookings?.intercity?.[
                 startCity?.gmaps_place_id +
                   ":" +
-                  itineraryDaybyDay?.cities[0]?.id
+                  itineraryDaybyDay?.cities?.[0]?.id
               ]?.name
             }
             duration={
               transferBookings?.intercity?.[
                 startCity?.gmaps_place_id +
                   ":" +
-                  itineraryDaybyDay?.cities[0]?.id
+                  itineraryDaybyDay?.cities?.[0]?.id
               ]?.duration
             }
             booking_type={
               transferBookings?.intercity?.[
                 startCity?.gmaps_place_id +
                   ":" +
-                  itineraryDaybyDay?.cities[0]?.id
+                  itineraryDaybyDay?.cities?.[0]?.id
               ]?.booking_type
             }
             pinColour={CITY_COLOR_CODES[0 % 7]}
@@ -237,20 +238,20 @@ const DaybyDay = ({
               transferBookings?.intercity?.[
                 startCity?.gmaps_place_id +
                   ":" +
-                  itineraryDaybyDay?.cities[0]?.id
+                  itineraryDaybyDay?.cities?.[0]?.id
               ]?.id
             }
             width={width}
             length={itineraryDaybyDay?.cities?.length}
             origin_city_id={startCity?.gmaps_place_id || startCity?.city_id}
-            destination_city_id={itineraryDaybyDay?.cities[0]?.city?.id}
+            destination_city_id={itineraryDaybyDay?.cities?.[0]?.city?.id}
             origin_city_name={startCity?.city_name}
-            destination_city_name={itineraryDaybyDay?.cities[0]?.city?.name}
+            destination_city_name={itineraryDaybyDay?.cities?.[0]?.city?.name}
             setBookingId={setBookingId}
           />
-          {itineraryDaybyDay?.cities.map((city, index) => {
+          {itineraryDaybyDay?.cities?.map((city, index) => {
             var idMapping =
-              city?.id + ":" + itineraryDaybyDay?.cities[index + 1]?.id;
+              city?.id + ":" + itineraryDaybyDay?.cities?.[index + 1]?.id;
             return (
               <>
                 <ItineraryCity
@@ -268,7 +269,7 @@ const DaybyDay = ({
                   handleClickAc={handleClickAc}
                   index={index}
                 />
-                {index != itineraryDaybyDay?.cities.length - 1 && (
+                {index != itineraryDaybyDay?.cities?.length - 1 && (
                   <div>
                     <CityItem
                       setShowLoginModal={props?.setShowLoginModal}
@@ -291,14 +292,14 @@ const DaybyDay = ({
                       width={width}
                       length={itineraryDaybyDay?.cities?.length}
                       origin={city?.id}
-                      destination={itineraryDaybyDay?.cities[index + 1]?.id}
+                      destination={itineraryDaybyDay?.cities?.[index + 1]?.id}
                       origin_city_id={city?.city?.id}
                       destination_city_id={
-                        itineraryDaybyDay?.cities[index + 1]?.city?.id
+                        itineraryDaybyDay?.cities?.[index + 1]?.city?.id
                       }
                       origin_city_name={city?.city?.name}
                       destination_city_name={
-                        itineraryDaybyDay?.cities[index + 1]?.city?.name
+                        itineraryDaybyDay?.cities?.[index + 1]?.city?.name
                       }
                       setBookingId={setBookingId}
                     />
@@ -313,7 +314,7 @@ const DaybyDay = ({
             loadbookings={loadbookings}
             city={
               transferBookings?.intercity?.[
-                itineraryDaybyDay?.cities[itineraryDaybyDay?.cities.length - 1]
+                itineraryDaybyDay?.cities?.[itineraryDaybyDay?.cities?.length - 1]
                   ?.id +
                   ":" +
                   endCity?.gmaps_place_id
@@ -321,7 +322,7 @@ const DaybyDay = ({
             }
             booking_type={
               transferBookings?.intercity?.[
-                itineraryDaybyDay?.cities[itineraryDaybyDay?.cities.length - 1]
+                itineraryDaybyDay?.cities?.[itineraryDaybyDay?.cities?.length - 1]
                   ?.id +
                   ":" +
                   endCity?.gmaps_place_id
@@ -329,7 +330,7 @@ const DaybyDay = ({
             }
             duration={
               transferBookings?.intercity?.[
-                itineraryDaybyDay?.cities[itineraryDaybyDay?.cities.length - 1]
+                itineraryDaybyDay?.cities?.[itineraryDaybyDay?.cities?.length - 1]
                   ?.id +
                   ":" +
                   endCity?.gmaps_place_id
@@ -341,7 +342,7 @@ const DaybyDay = ({
             downPresent={true}
             booking_id={
               transferBookings?.intercity?.[
-                itineraryDaybyDay?.cities[itineraryDaybyDay?.cities.length - 1]
+                itineraryDaybyDay?.cities?.[itineraryDaybyDay?.cities?.length - 1]
                   ?.id +
                   ":" +
                   endCity?.gmaps_place_id
@@ -350,12 +351,12 @@ const DaybyDay = ({
             width={width}
             length={itineraryDaybyDay?.cities?.length}
             origin_city_id={
-              itineraryDaybyDay?.cities[itineraryDaybyDay?.cities.length - 1]
+              itineraryDaybyDay?.cities?.[itineraryDaybyDay?.cities?.length - 1]
                 ?.city?.id
             }
             destination_city_id={endCity?.gmaps_place_id}
             origin_city_name={
-              itineraryDaybyDay?.cities[itineraryDaybyDay?.cities.length - 1]
+              itineraryDaybyDay?.cities?.[itineraryDaybyDay?.cities?.length - 1]
                 ?.city?.name
             }
             destination_city_name={endCity?.city_name}

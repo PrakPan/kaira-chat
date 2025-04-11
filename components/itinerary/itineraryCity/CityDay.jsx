@@ -76,7 +76,7 @@ console.log("props are:",props)
         day={`Day ${props.index + 1}`}
         duration={props.duration}
         start_date={props?.start_date}
-        // day_slab_index={props?.index}
+        day_slab_index={props?.index}
         // getPaymentHandler={props?.getPaymentHandler}
         // getAccommodationAndActivitiesHandler={
         //   props?.getAccommodationAndActivitiesHandler

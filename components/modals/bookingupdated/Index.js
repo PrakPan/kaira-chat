@@ -58,7 +58,11 @@ const GetInTouchContainer = styled.div`
 `;
 
 const Booking = (props) => {
-  console.log("Add Stay Issue",props?.selectedBooking)
+  const [paginationStatus, setPaginationStatus] = useState({
+    traceId: null,
+    page: 1,
+    totalPages: 1,
+  });
   let isPageWide = media("(min-width: 768px)");
   const [showDetails, setShowDetails] = useState(false);
   const [moreOptionsJSX, setMoreOptionsJSX] = useState([]);
@@ -79,36 +83,31 @@ const Booking = (props) => {
   const [totalCount, setTotalCount] = useState(0);
   const [unauthorized, setUnauthorized] = useState(false);
   const [noResults, setNoResults] = useState(false);
-  const filtersState=useSelector((state)=>state.ItineraryFilters);
+  const filtersState = useSelector((state) => state.ItineraryFilters);
 
-  const[filters,setFilters]=useState({...filtersState,applyFilter:false})
+  const [filters, setFilters] = useState({
+    ...filtersState,
+    applyFilter: false,
+  });
   const [filtersObj, setFiltersObj] = useState({
     type: [],
     star_category: [1, 2, 3, 4, 5],
     user_ratings: [1, 2, 3, 4, 5],
-    sort: [
-      "Price: low to high",
-      "Price: high to low",
-    ],
+    sort: ["Price: low to high", "Price: high to low"],
     facilities: [],
     tags: [],
   });
   const [selectSearch, setSelectedSearch] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const debouncedSearch = useDebounce(selectSearch);
-  const dispatch=useDispatch();
-
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (props?.showBookingModal && props?.selectedBooking?.check_in) {
       fetchHotels();
     }
-  }, [
-    filters.applyFilter,
-    props?.showBookingModal,
-    debouncedSearch,
-  ]);
-    
+  }, [filters.applyFilter, props?.showBookingModal, debouncedSearch]);
+
   const getDate = (dateString) => {
     try {
       if (!dateString) return dateString;
@@ -116,24 +115,32 @@ const Booking = (props) => {
       dateString = dateString.replace(/\//g, "-");
       const dateParts = dateString.split("-");
 
-      if (dateParts.length === 3 && dateParts[0].length === 2 && dateParts[1].length === 2 && dateParts[2].length === 4) {
+      if (
+        dateParts.length === 3 &&
+        dateParts[0].length === 2 &&
+        dateParts[1].length === 2 &&
+        dateParts[2].length === 4
+      ) {
         const [day, month, year] = dateParts;
-        return `${year}-${month}-${day}`; 
+        return `${year}-${month}-${day}`;
       }
 
       const isoParts = dateString.split("-");
-      if (isoParts.length === 3 && isoParts[0].length === 4 && isoParts[1].length === 2 && isoParts[2].length === 2) {
-        return dateString; 
+      if (
+        isoParts.length === 3 &&
+        isoParts[0].length === 4 &&
+        isoParts[1].length === 2 &&
+        isoParts[2].length === 2
+      ) {
+        return dateString;
       }
       return dateString.replaceAll();
-  
     } catch (err) {
       return dateString;
     }
   };
-  
 
-  useEffect(() => { 
+  useEffect(() => {
     if (!props?.showBookingModal) {
       // setItineraryFilters({
       //   free_breakfast: true,
@@ -166,28 +173,28 @@ const Booking = (props) => {
   };
 
   const _addFilterHandler = (filter, heading) => {
-    setFilters((prev)=>({
+    setFilters((prev) => ({
       ...prev,
-      [heading]: filter ,
-      applyFilter:!filters.applyFilter
-    }))
+      [heading]: filter,
+      applyFilter: !filters.applyFilter,
+    }));
   };
 
   const _updateStarFilterHandler = (star) => {
-    setFilters((prev)=>({
+    setFilters((prev) => ({
       ...prev,
       star_category: star,
-      applyFilter:!filters.applyFilter
-    }))
+      applyFilter: !filters.applyFilter,
+    }));
   };
 
   const updateUserStarHandler = (star) => {
-    setFilters((prev)=>({
+    setFilters((prev) => ({
       ...prev,
-      user_ratings: star ,
-      applyFilter:!filters.applyFilter
-    }))
-  }
+      user_ratings: star,
+      applyFilter: !filters.applyFilter,
+    }));
+  };
 
   const _removeFilterHandler = (heading) => {
     let oldfilters = {
@@ -204,10 +211,13 @@ const Booking = (props) => {
       ...filtersObj,
       type: filters?.accommodation_types ? filters.accommodation_types : [],
       facilities: filters?.facilities ? filters.facilities : [],
-      tags: filters?.tags ? filters.tags : []
+      tags: filters?.tags ? filters.tags : [],
     });
-  }
+  };
 
+  useEffect(()=>{
+    console.log("hotel status:",paginationStatus)
+  },[paginationStatus])
   const fetchHotels = () => {
     setLoading(true);
     setUpdateLoadingState(true);
@@ -234,108 +244,109 @@ const Booking = (props) => {
         type: filters.type && filters.type[0] !== "All" ? filters.type : null,
         star_category: filters.star_category,
         user_ratings: filters.user_ratings,
-        page: nextPage
+        page: nextPage,
       },
-      occupancies:filters.occupancies,
+      occupancies: filters.occupancies,
       sort_by: {
-        price_order: filters.sort === "price: high to low" ? "desc" : "asc"
+        price_order: filters.sort === "price: high to low" ? "desc" : "asc",
       },
-      source: provider
-    }
+      trace_id: paginationStatus?.traceId,
+    };
 
-    hotelSearch.post("", requestData).then(res => {
-      setUpdateLoadingState(false);
+    hotelSearch
+      .post("", requestData)
+      .then((res) => {
+        setUpdateLoadingState(false);
+        setProvider(res.data?.source);
+        setPaginationStatus({
+          traceId: res?.data?.trace_details?.id,
+          page: res?.data?.current_page,
+          totalPages: res?.data?.total_pages,
+        });
 
-      setProvider(res.data?.source);
-      
-      if (res.data?.trace_details?.id) {
-        localStorage.setItem("trace_id", res?.data?.trace_details?.id );
-      }
+        if (res.data?.trace_details?.id) {
+          localStorage.setItem("trace_id", res?.data?.trace_details?.id);
+        }
 
-      if (res.data?.data?.length) {
-        if (res.data?.total_count) setTotalCount(res.data.total_count);
+        if (res.data?.data?.length) {
+          if (res.data?.total_count) setTotalCount(res.data.total_count);
+          setNoResults(false);
 
-        setNoResults(false);
-
-        let options = [];
-        for (var i = 0; i < res.data.data.length; i++) {
-          if (res.data.data[i].name !== props?.selectedBooking.name)
-            if (
-              res.data.data[i]?.images &&
-              res.data.data[i]?.images?.length &&
-              res.data.data[i]?.price
-            ) {
-              let img = false;
-              for (let j = 0; j < res.data.data[i].images.length; j++) {
-                if (res.data.data[i].images[j]?.image) {
-                  img = res.data.data[i].images[j].image;
-                  break;
+          let options = [];
+          for (var i = 0; i < res.data.data.length; i++) {
+            if (res.data.data[i].name !== props?.selectedBooking.name)
+              if (
+                res.data.data[i]?.images &&
+                res.data.data[i]?.images?.length &&
+                res.data.data[i]?.price
+              ) {
+                let img = false;
+                for (let j = 0; j < res.data.data[i].images.length; j++) {
+                  if (res.data.data[i].images[j]?.image) {
+                    img = res.data.data[i].images[j].image;
+                    break;
+                  }
                 }
+
+                if (img)
+                  options.push(
+                    <AccommodationSearched
+                      handleClick={props?.handleClick}
+                      payment={props.payment}
+                      plan={props.plan}
+                      currentBooking={props.currentBooking}
+                      _setImagesHandler={props._setImagesHandler}
+                      itinerary_id={props.itinerary_id}
+                      tailored_id={props.tailored_id}
+                      accommodation={res.data.data[i]}
+                      selectedBooking={props.selectedBooking}
+                      key={i}
+                      images={res.data.data[i].images}
+                      banner_image={img}
+                      bookings={props.bookings}
+                      num_adults={filters.occupancies.reduce(
+                        (sum, room) => sum + room.num_adults,
+                        0
+                      )}
+                      traceId={
+                        res.data?.trace_details?.id
+                          ? res.data.trace_details.id
+                          : ""
+                      }
+                      provider={res.data?.data?.[0]?.source}
+                      setUpdateBookingState={setUpdateBookingState}
+                      setUnauthorized={setUnauthorized}
+                      _updateStayBookingHandler={
+                        props._updateStayBookingHandler
+                      }
+                      getPaymentHandler={props.getPaymentHandler}
+                      setStayBookings={props.setStayBookings}
+                    ></AccommodationSearched>
+                  );
               }
+          }
+          setDynamicFilters({
+            accommodation_types: res.data?.available_types,
+            facilities: res.data?.available_facilities,
+            tags: res.data?.tags,
+          });
 
-              if (img)
-                options.push(
-                  <AccommodationSearched
-                    handleClick={props?.handleClick}
-                    payment={props.payment}
-                    plan={props.plan}
-                    currentBooking={props.currentBooking}
-                    _setImagesHandler={props._setImagesHandler}
-                    itinerary_id={props.itinerary_id}
-                    tailored_id={props.tailored_id}
-                    accommodation={res.data.data[i]}
-                    selectedBooking={props.selectedBooking}
-                    key={i}
-                    images={res.data.data[i].images}
-                    banner_image={img}
-                    bookings={props.bookings}
-                    num_adults={filters.occupancies.reduce((sum, room) => sum + room.num_adults, 0)
-                    }
-                    traceId={res.data?.trace_details?.id ? res.data.trace_details.id : ""}
-                    provider={res.data?.data?.[0]?.source}
-                    setUpdateBookingState={setUpdateBookingState}
-                    setUnauthorized={setUnauthorized}
-                    _updateStayBookingHandler={props._updateStayBookingHandler}
-                    getPaymentHandler={props.getPaymentHandler}
-                    setStayBookings={props.setStayBookings}
-                  ></AccommodationSearched>
-                );
-            }
-        }
+          setMoreOptionsJSX([...moreOptionsJSX,options])
 
-        setDynamicFilters({
-          accommodation_types: res.data?.available_types,
-          facilities: res.data?.available_facilities,
-          tags: res.data?.tags
-        })
-
-        if (res.data?.previous) {
-          setMoreOptionsJSX(prev => [...prev, ...options]);
         } else {
-          setMoreOptionsJSX(options);
+          setNoResults(true);
+          setMoreOptionsJSX([]);
         }
-
-        if (res.data?.next) {
-          setViewMoreStatus(true);
-          setNextPage(res.data.next);
-        } else {
-          setViewMoreStatus(false);
-        }
-      } else {
-        setNoResults(true);
-        setViewMoreStatus(false);
-        setMoreOptionsJSX([]);
-      }
-      setLoading(false);
-
-    }).catch(err => {
-      setLoading(false);
-      setFetchingIsError({
-        error: true,
-        errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        setFetchingIsError({
+          error: true,
+          errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
+        });
       });
-    })
-  }
+  };
 
   if (props?.token)
     return (
@@ -373,13 +384,14 @@ const Booking = (props) => {
 
               <div className="sticky lg:w-[50vw] w-[100vw] py-2 top-0 bg-white z-[900]">
                 <SectionOne
-                  booking_city={props?.selectedBooking?.city || props?.selectedBooking?.city_name}
+                  booking_city={
+                    props?.selectedBooking?.city ||
+                    props?.selectedBooking?.city_name
+                  }
                   setHideBookingModal={props?.setHideBookingModal}
                   selectSearch={selectSearch}
                   setSelectedSearch={setSelectedSearch}
-                  fetchHotels={
-                    fetchHotels
-                  }
+                  fetchHotels={fetchHotels}
                   clickType={props?.currentBooking?.clickType}
                 ></SectionOne>
 
@@ -393,7 +405,10 @@ const Booking = (props) => {
                   updateUserStarHandler={updateUserStarHandler}
                   _removeFilterHandler={_removeFilterHandler}
                   _addFilterHandler={_addFilterHandler}
-                  booking_city={props?.selectedBooking?.city || props?.selectedBooking?.city_name}
+                  booking_city={
+                    props?.selectedBooking?.city ||
+                    props?.selectedBooking?.city_name
+                  }
                   No_of_stays={totalCount}
                   payment={props?.payment}
                   plan={props?.plan || props?.booking}
@@ -481,7 +496,9 @@ const Booking = (props) => {
                           </Button>
                         </GetInTouchContainer>
                       </div>
-                    ) : loading ? (<Skeleton />) : !noResults && !updateBookingState ? (
+                    ) : loading ? (
+                      <Skeleton />
+                    ) : !noResults && !updateBookingState ? (
                       <OptionsContainer id="options">
                         <div className="mb-3" style={{ clear: "right" }}>
                           {moreOptionsJSX.length ? (
@@ -491,33 +508,36 @@ const Booking = (props) => {
                             </>
                           ) : null}
 
-                          <div className="mt-3">
-                            {viewMoreStatus ? (
-                              <Button
-                                boxShadow
-                                onclickparam={null}
-                                onclick={fetchHotels}
-                                margin="0.25rem auto"
-                                borderWidth="1px"
-                                borderRadius="2rem"
-                                padding="0.25rem 1rem"
-                              >
-                                View More
-                              </Button>
-                            ) : selectSearch !== "" ? (
-                              <Button
-                                boxShadow
-                                onclickparam={null}
-                                onclick={handleClearSearch}
-                                margin="0.25rem auto"
-                                borderWidth="1px"
-                                borderRadius="2rem"
-                                padding="0.25rem 1rem"
-                              >
-                                Show All
-                              </Button>
-                            ) : null}
-                          </div>
+                          {paginationStatus.page <
+                            paginationStatus.totalPages && (
+                            <div className="mt-3">
+                              {/* {viewMoreStatus ? ( */}
+                                <Button
+                                  boxShadow
+                                  onclickparam={null}
+                                  onclick={fetchHotels}
+                                  margin="0.25rem auto"
+                                  borderWidth="1px"
+                                  borderRadius="2rem"
+                                  padding="0.25rem 1rem"
+                                >
+                                  View More
+                                </Button>
+                              {/* // ) : selectSearch !== "" ? (
+                              //   <Button
+                              //     boxShadow
+                              //     onclickparam={null}
+                              //     onclick={handleClearSearch}
+                              //     margin="0.25rem auto"
+                              //     borderWidth="1px"
+                              //     borderRadius="2rem"
+                              //     padding="0.25rem 1rem"
+                              //   >
+                              //     Show All
+                              //   </Button>
+                              // ) : null} */}
+                            </div>
+                          )}
                         </div>
                       </OptionsContainer>
                     ) : null}

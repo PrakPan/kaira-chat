@@ -338,7 +338,6 @@ const ActivityAddDrawer = (props) => {
       try {
         const res=await axios.get(`${MERCURY_HOST}/api/v1/geos/poi/?fields=id,name,city,image,rating,experience_filters,short_description,tags,is_very_popular,tips_tricks,is_hidden_gem,user_ratings_total&city_id=${props?.cityID}`);
         const result=[]
-        console.log("length is:",res)
         for (var i = 0; i < res.data.data.pois.length; i++) {
           result.push(
             <NewPoiBooking
@@ -349,7 +348,7 @@ const ActivityAddDrawer = (props) => {
               date={props.date}
               cityId={props?.cityID}
               itinerary_city_id={props?.itinerary_city_id}
-              dayIndex={props?.props?.day_slab_index}
+              dayIndex={props?.day_slab_index}
             ></NewPoiBooking>
           );
         }
