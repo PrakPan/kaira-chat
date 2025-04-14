@@ -1,31 +1,44 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function CountdownTimer({ priceValidUntil }) {
-  const targetTime = priceValidUntil ? new Date(priceValidUntil?.replace(" ", "T")).getTime() : null;
-  const currentTime = new Date().getTime();
+  const targetTime = priceValidUntil ? new Date(priceValidUntil.replace(" ", "T")).getTime() : null;
 
-  if (!targetTime || targetTime <= currentTime) {
-    return null;
-  }
-
-  const calculateTimeLeft = () => Math.max(0, Math.floor((targetTime - new Date().getTime()) / 1000));
-
+  const calculateTimeLeft = () => Math.max(0, Math.floor((targetTime - Date.now()) / 1000));
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+  const lastUpdateRef = useRef(Date.now());
 
   useEffect(() => {
-    if (timeLeft <= 0) return;
+    if (!targetTime || targetTime <= Date.now()) return;
 
     let animationFrameId;
+    let intervalId;
 
     const updateTime = () => {
-      setTimeLeft(calculateTimeLeft());
+      const now = Date.now();
+
+      if (now - lastUpdateRef.current > 2000) {
+        setTimeLeft(calculateTimeLeft()); // force re-sync on tab sleep/wake
+      }
+
+      lastUpdateRef.current = now;
       animationFrameId = requestAnimationFrame(updateTime);
     };
 
-    animationFrameId = requestAnimationFrame(updateTime);
+    updateTime();
 
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [timeLeft, priceValidUntil]);
+    intervalId = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      clearInterval(intervalId);
+    };
+  }, [targetTime]);
+
+  if (!targetTime || timeLeft <= 0) {
+    return null;
+  }
 
   const minutes = String(Math.floor(timeLeft / 60)).padStart(2, "0");
   const seconds = String(timeLeft % 60).padStart(2, "0");
@@ -37,21 +50,18 @@ export default function CountdownTimer({ priceValidUntil }) {
       <h2 className="text-lg font-medium text-gray-900">Offer will end in</h2>
 
       <div className="flex items-center mt-2">
-        <div className={`w-12 h-12 ${bgColor} text-white text-xl font-bold flex items-center justify-center rounded-md mx-1`}>
-          {minutes[0]}
-        </div>
-        <div className={`w-12 h-12 ${bgColor} text-white text-xl font-bold flex items-center justify-center rounded-md mx-1`}>
-          {minutes[1]}
-        </div>
-
-        <span className="mx-2 text-xl font-bold text-gray-900">:</span>
-
-        <div className={`w-12 h-12 ${bgColor} text-white text-xl font-bold flex items-center justify-center rounded-md mx-1`}>
-          {seconds[0]}
-        </div>
-        <div className={`w-12 h-12 ${bgColor} text-white text-xl font-bold flex items-center justify-center rounded-md mx-1`}>
-          {seconds[1]}
-        </div>
+        {[...minutes, ...seconds].map((char, idx) => (
+          <div
+            key={idx}
+            className={`w-12 h-12 ${bgColor} text-white text-xl font-bold flex items-center justify-center rounded-md mx-1`}
+          >
+            {char}
+          </div>
+        )).reduce((acc, el, idx) =>
+          idx === 1
+            ? [...acc, el, <span key="colon" className="mx-2 text-xl font-bold text-gray-900">:</span>]
+            : [...acc, el]
+        , [])}
       </div>
 
       <div className="flex gap-10 text-gray-600 text-sm mt-2">
