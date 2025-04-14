@@ -232,6 +232,7 @@ const CitySummary = (props) => {
         setActivityBookings={props?.setActivityBookings}
         day="Day 1"
         duration={props.city.duration}
+        setItinerary={props?.setItinerary}
       ></ActivityAddDrawer>
     </div>
   );

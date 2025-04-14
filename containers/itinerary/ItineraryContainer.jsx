@@ -404,11 +404,12 @@ const ItineraryContainer = (props) => {
     axiosGetTransfers
       .get(`/${props.id}/bookings/transfers/`)
       .then((res) => {
+        dispatch(setItineraryStatus("transfers_status", "SUCCESS"));
         const data = res.data;
         setTransferBookings(data);
         setCityTransferBookings(data);
         dispatch(setTransfersBookings(data));
-        dispatch(setItineraryStatus("transfers_status", "SUCCESS"));
+        
       })
       .catch((err) => {
         console.error("Error fetching all bookings", err.message);
@@ -568,6 +569,15 @@ const ItineraryContainer = (props) => {
               dispatch(setItineraryStatus("transfers_status", "FAILURE"));
             }
             if (hotels_status === "FAILURE") {
+              dispatch(setItineraryStatus("hotels_status", "FAILURE"));
+            }
+            if(pricing_status === "PENDING"){
+              dispatch(setItineraryStatus("pricing_status", "FAILURE"));
+            }
+            if (transfers_status === "PENDING") {
+              dispatch(setItineraryStatus("transfers_status", "FAILURE"));
+            }
+            if (hotels_status === "PENDING") {
               dispatch(setItineraryStatus("hotels_status", "FAILURE"));
             }
           }

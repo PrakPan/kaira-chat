@@ -22,6 +22,7 @@ const CITY_COLOR_CODES = [
 ];
 
 const TransferBookings = (props) => {
+
   let isPageWide = media("(min-width: 768px)");
   const [selectedBooking, setSelectedBooking] = useState({
     id: null,
@@ -188,6 +189,7 @@ const TransferBookings = (props) => {
               />
 
               {transferBooking?.intercity != undefined && <TransferBooking
+                mercuryItinerary={props?.mercuryItinerary}
                 loadbookings={props?.loadbookings}
                 key={
                   transferBooking?.intercity[
@@ -240,6 +242,7 @@ const TransferBookings = (props) => {
                     />
 
                       {transferBooking?.intercity != undefined && <TransferBooking
+                      mercuryItinerary={props?.mercuryItinerary}
                       loadbookings={props?.loadbookings}
                       key={
                         transferBooking?.intercity[
@@ -285,6 +288,7 @@ const TransferBookings = (props) => {
               pinColour={CITY_COLOR_CODES[itineraries?.cities?.length % 7]}
             />
             {transferBooking?.intercity != undefined && <TransferBooking
+              mercuryItinerary={props?.mercuryItinerary}
               loadbookings={props?.loadbookings}
               key={
                 transferBooking?.intercity[
