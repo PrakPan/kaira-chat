@@ -140,7 +140,7 @@ const FAQs = (props) => {
     }
   }
 
-  return <div className={classes.root}>{HeadingsJSX}</div>;
+  return <div className={`${classes.root} overflow-y-scroll max-h-96 hide-scrollbar`}>{HeadingsJSX}</div>;
 };
 
 export default FAQs;
