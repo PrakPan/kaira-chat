@@ -303,11 +303,11 @@ const TransferBooking = ({
 
   return (
     <>
-      {transfers_status === "PENDING" && mercuryItinerary ? (
+      {(transfers_status === "PENDING") && mercuryItinerary ? (
         <div className="mt-2 ml-1 md:ml-7 flex flex-col w-full">
           {/* Booking name */}
           <div className="flex flex-row w-full justify-between items-center">
-            <div className="w-full h-3 bg-gray-300 rounded-md animate-pulse" />
+            <div className="w-[8rem] h-3 bg-gray-300 rounded-md animate-pulse" />
             <div className="flex flex-row gap-2 justify-center items-center">
               {/* Placeholder for additional info */}
             </div>
@@ -989,40 +989,14 @@ const FlightBooking = ({
             window.innerWidth < 1000 ? "justify-between" : "justify-center"
           } items-center`}
         >
-          {/* <button
-            className="text-sm flex flex-row gap-1 items-center justify-center hover:bg-black hover:text-white rounded-lg px-2 py-1"
-            onClick={() => {
-              setShowDetails((prev) => !prev);
-            }}
-          >
-            Flight Details
-            <span>
-              <FaArrowRight />
-            </span>
-          </button> */}
           {window.innerWidth < 1000 && (
             <div className="w-[131.95px]">
-              {/* <Button
-                bgColor={"#000000"}
-                borderRadius="8px"
-                fontWeight="400"
-                padding="0.6rem 0.6rem"
-                hoverColor="#f7e700"
-                margin="auto 2px"
-                onclick={() => {
-                  // HandleFlights(index, "Change Flight");
-                  setShowDetails((prev) => !prev);
-                }}
-              >
-                View Detail
-              </Button> */}
               <button
                 onClick={() => {
                   setShowDetails(true);
                 }}
                 className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[0.6rem] sm:px-1 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
               >
-                {/* Add Taxi */}
                 View Detail
               </button>
             </div>

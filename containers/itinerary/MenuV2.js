@@ -702,6 +702,7 @@ const SimpleTabsV2 = (props) => {
             <>
               {props.transferBookings && (
                 <TransferBookings
+                  mercuryItinerary={props?.mercuryItinerary}
                   setShowLoginModal={setShowLoginModal}
                   showTaxiModal={props.showTaxiModal}
                   _updateFlightBookingHandler={
@@ -724,6 +725,7 @@ const SimpleTabsV2 = (props) => {
               )}
               {props.transferBookings && (
                 <TransferBookings
+                  mercuryItinerary={props?.mercuryItinerary}
                   setShowLoginModal={setShowLoginModal}
                   showTaxiModal={props.showTaxiModal}
                   _updateFlightBookingHandler={
@@ -991,6 +993,7 @@ const SimpleTabsV2 = (props) => {
               {props.mercuryItinerary ? (
                 <>
                   <TransferBookings
+                    mercuryItinerary={props?.mercuryItinerary}
                     loadbookings={props?.loadbookings}
                     setShowLoginModal={setShowLoginModal}
                     showTaxiModal={props.showTaxiModal}

@@ -214,6 +214,7 @@ const ItineraryCity = (props) => {
           setViewMore={setViewMore}
           activityBookings={props?.activityBookings}
           setActivityBookings={props?.setActivityBookings}
+          setItinerary={props?.setItinerary}
         />
       ) : null}
       <Drawer
