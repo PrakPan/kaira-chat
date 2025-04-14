@@ -79,7 +79,12 @@ const FAQs = (props) => {
           );
         } catch {}
       }
-      console.log("BOOO",props?.payment,bookings[props.payment.summary[key].bookings[i]],bookings[props.payment.summary[key].bookings[i]]?.["text"]);
+      console.log(
+        "BOOO",
+        props?.payment,
+        bookings[props.payment.summary[key].bookings[i]],
+        bookings[props.payment.summary[key].bookings[i]]?.["text"]
+      );
       HeadingsJSX.push(
         <Accordion
           key={key}
@@ -101,10 +106,15 @@ const FAQs = (props) => {
               style={{ fontWeight: "700", fontSize: "0.80rem", margin: "0" }}
             >
               <div className="flex flex-row gap-1">
-                {key} ({!props?.mercuryItinerary ? props.payment?.meta_info.number_of_adults : props.payment?.number_of_adults}
-                {!props?.mercuryItinerary ? (props.payment?.meta_info.number_of_adults == 1
-                  ? " Adult"
-                  : " Adults") : (props.payment.summary[key].bookings.length)}
+                {key} (
+                {!props?.mercuryItinerary
+                  ? props.payment?.meta_info.number_of_adults
+                  : props.payment?.number_of_adults}
+                {!props?.mercuryItinerary
+                  ? props.payment?.meta_info.number_of_adults == 1
+                    ? " Adult"
+                    : " Adults"
+                  : props.payment.summary[key].bookings.length}
                 )
               </div>
             </Typography>
@@ -121,17 +131,17 @@ const FAQs = (props) => {
                 marginRight: "1.5rem",
               }}
             >
-              {!props?.mercuryItinerary ? (!props.payment.are_prices_hidden
-                ? "₹ " +
-                  getIndianPrice(
-                    Math.round(props.payment.summary[key].cost / 100)
-                  )
-                : null):  (!props.payment.are_prices_hidden
+              {!props?.mercuryItinerary
+                ? !props.payment.are_prices_hidden
                   ? "₹ " +
                     getIndianPrice(
-                      Math.round(props.payment.summary[key].cost)
+                      Math.round(props.payment.summary[key].cost / 100)
                     )
-                  : null)}
+                  : null
+                : !props.payment.are_prices_hidden
+                ? "₹ " +
+                  getIndianPrice(Math.round(props.payment.summary[key].cost))
+                : null}
             </Typography>
           </AccordionSummary>
 
@@ -145,7 +155,13 @@ const FAQs = (props) => {
     }
   }
 
-  return <div className={classes.root}>{HeadingsJSX}</div>;
+  return (
+    <div
+      className={`${classes.root} overflow-y-scroll max-h-96 hide-scrollbar`}
+    >
+      {HeadingsJSX}
+    </div>
+  );
 };
 
 export default FAQs;
