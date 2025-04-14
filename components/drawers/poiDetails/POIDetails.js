@@ -18,6 +18,7 @@ import { toast, ToastContainer } from "react-toastify";
 import GoogleImageLoader from "./GoogleImageLoader";
 import ReviewPoi from "../../POIDetails/Reviews";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import useMediaQuery from "../../media";
 export const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -140,6 +141,7 @@ const ScrollContainer = styled.div`
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
 const POIDetails = (props) => {
+  const isSmallScreen = useMediaQuery("(max-height:586px)");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [aboutText, setAboutText] = useState(
@@ -465,7 +467,7 @@ const POIDetails = (props) => {
 
                   <div className="flex items-center">
                     {props.data?.rating ? (
-                      <p className="m-0">{props.data.rating} · </p>
+                      <p className="m-0">{props.data.rating}</p>
                     ) : null}
 
                     {/* {props.data?.user_ratings_total ? (
@@ -474,13 +476,23 @@ const POIDetails = (props) => {
                   </div>
                 </Reviews>
               </div>
-              <ScrollContainer>
+              {isSmallScreen ? (
+                <>
                 {props?.data?.reviews?.map((item) => (
-                  <div className="w-[289px]">
-                    <ReviewPoi review={item} />
-                  </div>
-                ))}
-              </ScrollContainer>
+                    <div className="w-[289px]">
+                      <ReviewPoi review={item} />
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <ScrollContainer>
+                  {props?.data?.reviews?.map((item) => (
+                    <div className="w-[289px]">
+                      <ReviewPoi review={item} />
+                    </div>
+                  ))}
+                </ScrollContainer>
+              )}
               <div className="flex gap-2">
                 <div>
                   <svg
@@ -553,7 +565,7 @@ const POIDetails = (props) => {
                     display: "flex",
                     alignItems: "center",
                     gap: "0.75rem",
-                    justifyContent: "left"
+                    justifyContent: "left",
                   }}
                 >
                   <a

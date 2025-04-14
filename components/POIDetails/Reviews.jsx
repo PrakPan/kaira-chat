@@ -4,7 +4,7 @@ import GoogleImageLoader from "../drawers/poiDetails/GoogleImageLoader";
 const ReviewPoi = ({ review }) => {
   const [viewMore, setViewMore] = useState(false);
   return (
-    <div className="w-[289px] border rounded-[10px] p-[12px]">
+    <div className="w-[289px] h-[180px] border rounded-[10px] p-[12px]">
       <GoogleImageLoader
         url={review?.profile_photo_url}
         width={"39px"}
