@@ -12,15 +12,20 @@ const CitySummary = (props) => {
   const [showDrawer, setShowDrawer] = useState(false);
   const [poi, setPoi] = useState(0);
   const [activities, setActivities] = useState(null);
+  console.log("Activities",activities);
+  const [dayByDayIndex,setDayByDayIndex] = useState(0);
   const [showAddDrawer, setShowAddDrawer] = useState(false);
   const [activityData, setActivityData] = useState({
     id: "",
     type: "",
   });
+  const [showBookingDetail,setShowBookingDetail] = useState(true);
 
   const handleView = async (poi, type) => {
+
     try {
       setShowDrawer(true);
+      setShowBookingDetail(true);
       setActivityData(() => ({
         id: poi,
         type: type,
@@ -33,6 +38,7 @@ const CitySummary = (props) => {
   useEffect(() => {
     let dayByDayArray = [];
 
+
     for (const daybyday of props.city.day_by_day) {
       for (const element of daybyday?.slab_elements) {
         if (element.element_type === "activity") {
@@ -44,8 +50,17 @@ const CitySummary = (props) => {
     setDayByDay(dayByDayArray);
   }, [props.city]);
 
-  const handleActivity = (e) => {
-    setPoi(e.target.id);
+  const handleActivity = (poiData,index) => {
+    // setPoi(e.target.id);
+
+    setDayByDayIndex(index);
+    if(poiData?.booking?.id)
+      setShowBookingDetail(true);
+    setActivityData({
+      id:poiData?.booking?.id ? poiData?.booking?.id : poiData?.poi ? poiData?.poi : poiData?.activity ? poiData?.activity : null,
+      type:poiData?.element_type
+    });
+    setPoi(poiData);
     setShowDrawer(true);
 
     logEvent({
@@ -53,7 +68,7 @@ const CitySummary = (props) => {
       params: {
         page: "Itinerary Page",
         event_category: "Click",
-        event_value: dayByDay[e.target.id].heading,
+        event_value: dayByDay[index].heading,
         event_action: "Day by Day Itinerary",
       },
     });
@@ -65,6 +80,7 @@ const CitySummary = (props) => {
 
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
+    setShowBookingDetail(false);
     setShowDrawer(false);
   };
 
@@ -80,7 +96,7 @@ const CitySummary = (props) => {
               (poi, index) =>
                 index < 3 && (
                   <span
-                    onClick={handleActivity}
+                    onClick={()=>handleActivity(poi,index)}
                     key={index}
                     id={index}
                     className="cursor-pointer hover:text-blue border-2 rounded-full px-2 lg:px-3 md:px-3 py-1"
@@ -186,18 +202,20 @@ const CitySummary = (props) => {
         </div>
       </div>
       {dayByDay && dayByDay.length ? (
+
         <POIDetailsDrawer
           itineraryDrawer
           show={showDrawer}
           iconId={
-            dayByDay[poi]?.poi ? dayByDay[poi]?.poi : dayByDay[poi]?.activity
+            dayByDay?.[dayByDayIndex] ? dayByDay?.[dayByDayIndex]?.poi : dayByDay?.[dayByDayIndex]?.activity
           }
           handleCloseDrawer={handleCloseDrawer}
-          name={dayByDay?.[poi].heading }
-          image={dayByDay[poi].icon}
-          text={dayByDay[poi]?.text }
+          name={dayByDay?.[dayByDayIndex]?.heading }
+          image={dayByDay[dayByDayIndex].icon}
+          text={dayByDay[dayByDayIndex]?.text }
           Topheading={"Select Our Point Of Interest"}
           activityData={activityData}
+          showBookingDetail={showBookingDetail}
         />
       ) : null}
       <ActivityAddDrawer

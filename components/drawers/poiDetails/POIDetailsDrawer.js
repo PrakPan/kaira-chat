@@ -15,6 +15,7 @@ const POIDetailsDrawer = (props) => {
   const [data, setData] = useState(props?.data || []);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
   useEffect(() => {
     if (props.show) fetchData();
   }, [props.show]);
@@ -22,11 +23,20 @@ const POIDetailsDrawer = (props) => {
   const fetchData = async () => {
     setLoading(true);
     if (props?.activityData?.type == "activity") {
+      if(props?.showBookingDetail){
       const res = await axios.get(
         `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/activity/${props?.activityData?.id}/`
       );
-      setData(res?.data?.activity);
+      setData(res?.data?.activity); 
       setLoading(false);
+    }else{
+      const res = await axios.get(
+        `${MERCURY_HOST}/api/v1/geos/poi/${props?.activityData?.id}/`
+      );
+      setData(res?.data?.data?.poi);
+      setLoading(false);
+    }
+      
     } else if (props?.activityData?.type == "poi") {
       const res = await axios.get(
         `${MERCURY_HOST}/api/v1/geos/poi/${props?.activityData?.id}/`

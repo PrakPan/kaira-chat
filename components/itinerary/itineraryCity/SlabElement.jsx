@@ -42,6 +42,7 @@ const Activity = (props) => {
     id: "",
     type: "",
   });
+  const [showBookingDetail,setShowBookingDetail] = useState(true);
 
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
@@ -49,10 +50,12 @@ const Activity = (props) => {
   };
 
   const handleActivity = async (poi, type) => {
-    console.log("poi is:", type);
+    console.log("poi is:", type,poi);
     setShowDrawer(true);
+    if(poi?.booking?.id)
+      setShowBookingDetail(true);
     setActivityData(() => ({
-      id: poi,
+      id:poi?.booking?.id ? poi?.booking?.id : poi?.poi ? poi?.poi : poi?.activity ? poi?.activity : null,
       type: type,
     }));
 
@@ -74,7 +77,7 @@ const Activity = (props) => {
           <div
             onClick={() =>
               handleActivity(
-                props?.element?.poi || props?.element?.activity,
+                props?.element,
                 props?.element?.poi != "undefined"
                   ? "poi"
                   : props?.element?.element_type
@@ -98,7 +101,7 @@ const Activity = (props) => {
             <div
               onClick={() =>
                 handleActivity(
-                  props?.element?.poi || props?.element?.activity,
+                  props?.element,
                   props?.element?.element_type
                 )
               }
@@ -137,7 +140,7 @@ const Activity = (props) => {
         <button
           onClick={() =>
             handleActivity(
-              props?.element?.poi || props?.element?.booking?.id,
+              props?.element,
               props?.element?.poi != null ? "poi" : "activity"
             )
           }
@@ -153,7 +156,7 @@ const Activity = (props) => {
             <div
               onClick={() =>
                 handleActivity(
-                  props?.element?.poi || props?.element?.activity,
+                  props?.element,
                   props?.element?.poi != "undefined"
                     ? "poi"
                     : props?.element?.element_type
@@ -177,7 +180,7 @@ const Activity = (props) => {
               <div
                 onClick={() =>
                   handleActivity(
-                    props?.element?.poi || props?.element?.activity,
+                    props?.element,
                     props?.element?.element_type
                   )
                 }
@@ -219,7 +222,7 @@ const Activity = (props) => {
                 <button
                   onClick={() =>
                     handleActivity(
-                      props?.element?.poi || props?.element?.booking?.id,
+                      props?.element,
                       props?.element?.poi != null ? "poi" : "activity"
                     )
                   }
@@ -248,6 +251,7 @@ const Activity = (props) => {
         itinerary_city_id={props?.itinerary_city_id}
         dayIndex={props?.dayIndex}
         slabIndex={props?.slabIndex}
+        showBookingDetail={showBookingDetail}
       />
     </>
   );
