@@ -214,7 +214,7 @@ const MidSectionV2 = (props) => {
       </div>
 
       {hidemidsection &&
-        (transfers_status === "PENDING" ? (
+        ((transfers_status === "PENDING") ? (
           <TransferSkeleton />
         ) : (
           <>

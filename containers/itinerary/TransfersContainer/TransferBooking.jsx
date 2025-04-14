@@ -157,6 +157,7 @@ const TransferBooking = ({
   const { itinerary_status, transfers_status, pricing_status } = useSelector(
     (state) => state.ItineraryStatus
   );
+  
   useEffect(() => {
     setaddboking(booking?.user_selected);
   }, [booking?.user_selected]);
@@ -848,6 +849,7 @@ const FlightBooking = ({
   type,
 }) => {
   const [showDetails, setShowDetails] = useState(false);
+  console.log("showw",showDetails);
   const router = useRouter();
   function HandleFlights(i, label) {
     if (!token) {
@@ -971,14 +973,14 @@ const FlightBooking = ({
                 View Detail
               </Button> */}
               <button
-                onclick={() => {
-                  setShowDetails((prev) => !prev);
+                onClick={() => {
+                  setShowDetails(true);
                 }}
-                className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
+                className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[0.6rem] sm:px-1 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000] ml-3"
               >
                 {/* Add Taxi */}
-                View Detail
-              </button>
+                 View Detail
+              </button> 
             </div>
           )}
         </div>
@@ -1015,10 +1017,10 @@ const FlightBooking = ({
                 View Detail
               </Button> */}
               <button
-                onclick={() => {
-                  setShowDetails((prev) => !prev);
+                onClick={() => {
+                  setShowDetails(true);
                 }}
-                className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg p-1 bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
+                className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[0.6rem] sm:px-1 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
               >
                 {/* Add Taxi */}
                 View Detail
