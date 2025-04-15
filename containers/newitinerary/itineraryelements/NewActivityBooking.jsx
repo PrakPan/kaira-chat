@@ -5,9 +5,7 @@ import styled from "styled-components";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import ActivityDetailsDrawer from "../../../components/drawers/activityDetails/ActivityDetailsDrawer";
 import SkeletonCard from "../../../components/ui/SkeletonCard";
-import {
-  TransparentButton,
-} from "../../../containers/itinerary/New_Itenary_DBD/New_itenaryStyled";
+import { TransparentButton } from "../../../containers/itinerary/New_Itenary_DBD/New_itenaryStyled";
 import { MdDoneAll } from "react-icons/md";
 import { convertDateFormat } from "../../../helper/ConvertDateFormat";
 import axios from "axios";
@@ -150,7 +148,12 @@ export default function NewActivityBooking(props) {
               {props.data?.pricing?.total_price ? (
                 <div className="flex flex-col md:flex-row gap-1">
                   <div className="text-[24px] font-bold">
-                    <span className="!font-[lexend]" style={{fontFamily:"Lexend"}}>₹</span>
+                    <span
+                      className="!font-[lexend]"
+                      style={{ fontFamily: "Lexend" }}
+                    >
+                      ₹
+                    </span>
                     {getIndianPrice(Math.round(props.data.pricing.total_price))}
                   </div>
                   <div className="text-[14px] self-end">
@@ -178,14 +181,12 @@ export default function NewActivityBooking(props) {
                 </div>
               ) : (
                 <Button
-                bgColor={"#F7E700"}
-              borderRadius="8px"
-              fontWeight="400"
-              padding="2px"
-              hoverColor="white"
-              height={"full"}
-              // margin={!isPageWide ? "0.75rem 0 0 0" : "0"}
-                  // className="h-full text-blue underline cursor-pointer"
+                  bgColor={"#F7E700"}
+                  borderRadius="8px"
+                  fontWeight="400"
+                  hoverColor="white"
+                  height={"full"}
+                  className="p-[12px]"
                   onclick={() => handleClick(props.data?.id)}
                 >
                   View Details
@@ -304,6 +305,8 @@ export default function NewActivityBooking(props) {
         )}
       </div>
 
+      {console.log("login modal is:",props?.setLoginModal)}
+
       <ActivityDetailsDrawer
         itineraryDrawer
         date={props.date}
@@ -321,6 +324,7 @@ export default function NewActivityBooking(props) {
         setItinerary={props?.setItinerary}
         activityBookings={props.activityBookings}
         setActivityBookings={props.setActivityBookings}
+        setShowLoginModal={props?.setLoginModal}
       />
     </div>
   );

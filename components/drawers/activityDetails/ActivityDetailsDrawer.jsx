@@ -133,6 +133,7 @@ const ActivityDetailsDrawer = (props) => {
           updateAmenities={updateAmenities}
           filterState={filterState}
           setFilterState={setFilterState}
+          setShowLoginModal={props?.setShowLoginModal}
         />
       ) : (
         <POIDetailsSkeleton

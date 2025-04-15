@@ -25,9 +25,9 @@ const SlabElement = (props) => {
   return (
     <div className="">
       {props.element.element_type === "activity" ? (
-        <Activity element={props.element} dayIndex={props?.dayIndex} slabIndex={props?.slabIndex} itinerary_city_id={props?.itinerary_city_id}/>
+        <Activity element={props.element} dayIndex={props?.dayIndex} slabIndex={props?.slabIndex} itinerary_city_id={props?.itinerary_city_id} setShowLoginModal={props?.setShowLoginModal}/>
       ) : props.element.element_type === "recommendation" ? (
-        <Recommendation element={props.element} />
+        <Recommendation element={props.element} setShowLoginModal={props?.setShowLoginModal}/>
       ) : null}
     </div>
   );
@@ -252,6 +252,7 @@ const Activity = (props) => {
         dayIndex={props?.dayIndex}
         slabIndex={props?.slabIndex}
         showBookingDetail={showBookingDetail}
+        setShowLoginModal={props?.setShowLoginModal}
       />
     </>
   );

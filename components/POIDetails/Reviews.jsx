@@ -4,7 +4,7 @@ import GoogleImageLoader from "../drawers/poiDetails/GoogleImageLoader";
 const ReviewPoi = ({ review }) => {
   const [viewMore, setViewMore] = useState(false);
   return (
-    <div className="w-[289px] h-[180px] border rounded-[10px] p-[12px]">
+    <div className="w-[289px] h-[208px] border rounded-[10px] p-[12px]">
       <GoogleImageLoader
         url={review?.profile_photo_url}
         width={"39px"}
@@ -15,17 +15,19 @@ const ReviewPoi = ({ review }) => {
       <div>
         <span style={{ color: "#FFD201" }}>★</span> <span className="text-[12px]">{review?.rating}</span>
       </div>
+      <div className="mb-[12px]">
       {viewMore ? (
         <div className="text-[12px] h-[72px] overflow-y-auto">
           {review?.text}{" "}
-          <span className="font-bold cursor-pointer" onClick={()=>setViewMore(false)}>See less</span>
+          <div className="font-bold cursor-pointer" onClick={()=>setViewMore(false)}>See less</div>
         </div>
       ) : (
         <div className="text-[12px]">
           {review?.text.slice(0, 150)}{" "}
-          <span className="font-bold cursor-pointer h-[72px] overflow-auto" onClick={()=>setViewMore(true)}>View more</span>
+          <div className="font-bold cursor-pointer h-[72px] overflow-auto" onClick={()=>setViewMore(true)}>View more</div>
         </div>
       )}
+      </div>
     </div>
   );
 };

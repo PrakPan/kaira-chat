@@ -48,7 +48,6 @@ const items = [
   { id: 2, label: "Places To Visit", link: "" },
 ];
 const ActivityAddDrawer = (props) => {
-
   const isDesktop = useMediaQuery("(min-width:767px)");
   const [selectedExprience, setSelectedExprience] = useState(-1);
   const [elementType, setElementType] = useState("Activity");
@@ -57,7 +56,8 @@ const ActivityAddDrawer = (props) => {
   const [showMoreResults, setShowMoreResults] = useState(false);
   const [selectSearch, setSelectedSearch] = useState(null);
   const debouncedSearch = useDebounce(selectSearch);
-  const [loading, setLoading] = useState(true);
+  const [loaded, setLoaded] = useState(false);
+  const [loadingPoi, setLoadingPoi] = useState(true);
   const [offSet, setOffSet] = useState(0);
   const [showDynamicfilters, setShowDynamicfilters] = useState(false);
   const itineraryFilters = useSelector((state) => state.ItineraryFilters);
@@ -138,7 +138,6 @@ const ActivityAddDrawer = (props) => {
 
   useEffect(() => {
     if (props.showDrawer) {
-      setLoading(true);
       fetchData();
     }
   }, [
@@ -247,9 +246,10 @@ const ActivityAddDrawer = (props) => {
     }));
   };
 
-  const fetchData=async(showMore = false)=> {
-    setLoading(true)
-    if (elementType=="Activity" || elementType==""){
+  const fetchData = async (showMore = false) => {
+  console.log("loaded is:",loaded)
+    if (elementType == "Activity" || elementType == "") {
+      setLoaded(false);
       try {
         const requestData = {
           city: props?.cityID,
@@ -286,7 +286,7 @@ const ActivityAddDrawer = (props) => {
                 setDynamicFilters(res.data.data.filter_by);
               }
               let options = [];
-    
+
               for (var i = 0; i < res.data.data.activities.length; i++) {
                 options.push(
                   <NewActivityBooking
@@ -310,10 +310,10 @@ const ActivityAddDrawer = (props) => {
                   ></NewActivityBooking>
                 );
               }
-    
+
               if (showMore) setOptions((prev) => [...prev, ...options]);
               else setOptions(options);
-    
+
               if (res.data.next) {
                 setShowMoreResults(true);
                 setOffSet((prev) => prev + 30);
@@ -327,17 +327,20 @@ const ActivityAddDrawer = (props) => {
             }
           })
           .catch((err) => {
-            console.log("error in activity search:",err) 
+            console.log("error in activity search:", err);
           });
       } catch (error) {
-       console.log("error in activity search:",error) 
+        console.log("error in activity search:", error);
       }
-    
-    }
-    else{
+
+      setLoaded(true);
+    } else {
+      setLoadingPoi(true);
       try {
-        const res=await axios.get(`${MERCURY_HOST}/api/v1/geos/poi/?fields=id,name,city,image,rating,experience_filters,short_description,tags,is_very_popular,tips_tricks,is_hidden_gem,user_ratings_total&city_id=${props?.cityID}`);
-        const result=[]
+        const res = await axios.get(
+          `${MERCURY_HOST}/api/v1/geos/poi/?fields=id,name,city,image,rating,experience_filters,short_description,tags,is_very_popular,tips_tricks,is_hidden_gem,user_ratings_total&city_id=${props?.cityID}`
+        );
+        const result = [];
         for (var i = 0; i < res.data.data.pois.length; i++) {
           result.push(
             <NewPoiBooking
@@ -349,21 +352,17 @@ const ActivityAddDrawer = (props) => {
               cityId={props?.cityID}
               itinerary_city_id={props?.itinerary_city_id}
               dayIndex={props?.day_slab_index}
+              setShowLoginModal={props.setShowLoginModal}
             ></NewPoiBooking>
           );
         }
         setOptions(result);
       } catch (error) {
-        console.log("loading poi error:",error)
+        console.log("loading poi error:", error);
       }
+      setLoadingPoi(false);
     }
-    setLoading(false);
-
-  }
-
-  useEffect(()=>{
-console.log("options are:",options)
-  },[options])
+  };
 
   const searchHandler = (e) => {
     if (e.target.id === "icon" && selectSearch.trim().length > 0) {
@@ -393,12 +392,11 @@ console.log("options are:",options)
   };
 
   const convertToISODate = (dateStr) => {
-    if(!dateStr)
-      return;
-    const [day, month, year] = dateStr?.split('/');
-    return `${year}-${month?.padStart(2, '0')}-${day?.padStart(2, '0')}`;
+    if (!dateStr) return;
+    const [day, month, year] = dateStr?.split("/");
+    return `${year}-${month?.padStart(2, "0")}-${day?.padStart(2, "0")}`;
   };
-  
+
   const ClickHandler = (child) => {
     setOffSet(0);
     if (child === "Things To Do") {
@@ -406,7 +404,8 @@ console.log("options are:",options)
     } else {
       setElementType("POI");
     }
-    console.log("child is:",child)
+    setLoaded(false);
+    setLoadingPoi(true);
   };
   return (
     <Drawer
@@ -468,14 +467,18 @@ console.log("options are:",options)
               defaultValue={props?.date}
             >
               {[...Array(props.duration)].map((_, i) => {
-                let baseDate = props?.mercuryItinerary ? new Date((props?.date)) : new Date(convertToISODate(props?.date));
+                let baseDate = props?.mercuryItinerary
+                  ? new Date(props?.date)
+                  : new Date(convertToISODate(props?.date));
                 if (isNaN(baseDate.getTime())) {
-                  baseDate = null; 
+                  baseDate = null;
                 } else {
-                  baseDate.setDate(baseDate.getDate() + i); 
+                  baseDate.setDate(baseDate.getDate() + i);
                 }
-                
-                const formattedDate = baseDate ? getHumanDate(baseDate?.toISOString()?.split("T")[0]) : null;
+
+                const formattedDate = baseDate
+                  ? getHumanDate(baseDate?.toISOString()?.split("T")[0])
+                  : null;
 
                 return (
                   <option key={i} className="w-full" value={formattedDate}>
@@ -532,11 +535,15 @@ console.log("options are:",options)
                       setStartDate(
                         getHumanDate(
                           new Date(
-                            props?.mercuryItinerary ? new Date((props?.date)).setDate(
-                              new Date((props?.date)).getDate() + i
-                            ) : new Date(convertToISODate(props?.date)).setDate(
-                              new Date(convertToISODate(props?.date)).getDate() + i
-                            )
+                            props?.mercuryItinerary
+                              ? new Date(props?.date).setDate(
+                                  new Date(props?.date).getDate() + i
+                                )
+                              : new Date(convertToISODate(props?.date)).setDate(
+                                  new Date(
+                                    convertToISODate(props?.date)
+                                  ).getDate() + i
+                                )
                           )
                             .toISOString()
                             .split("T")[0]
@@ -547,12 +554,15 @@ console.log("options are:",options)
                     <span className="font-bold text-[14px]">
                       {getHumanDate(
                         new Date(
-                          props?.mercuryItinerary ? new Date((props?.date)).setDate(
-                            new Date((props?.date)).getDate() + i
-                          ) : 
-                          new Date(convertToISODate(props?.date)).setDate(
-                            new Date(convertToISODate(props?.date)).getDate() + i
-                          )
+                          props?.mercuryItinerary
+                            ? new Date(props?.date).setDate(
+                                new Date(props?.date).getDate() + i
+                              )
+                            : new Date(convertToISODate(props?.date)).setDate(
+                                new Date(
+                                  convertToISODate(props?.date)
+                                ).getDate() + i
+                              )
                         )
                           ?.toISOString()
                           ?.split("T")[0]
@@ -636,16 +646,17 @@ console.log("options are:",options)
         </div>
 
         <Navigation
-            items={items}
-            BarName="TabsName"
-            ClickHandler={ClickHandler}
-            selectedItem={
-              elementType === "Activity" ? `${items[0].id}` : `${items[1].id}`
-            }
-          />
+          items={items}
+          BarName="TabsName"
+          ClickHandler={ClickHandler}
+          selectedItem={
+            elementType === "Activity" ? `${items[0].id}` : `${items[1].id}`
+          }
+        />
 
         <>
-          {!loading ? (
+        {console.log("loaded is:",loaded)}
+          {(elementType === "Activity" ? loaded : !loadingPoi) ? (
             options.length ? (
               <div
                 onScroll={handleScroll}

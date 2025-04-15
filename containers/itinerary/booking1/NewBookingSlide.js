@@ -1231,7 +1231,7 @@ const Details = (props) => {
         backdrop
         width={"100%"}
         mobileWidth={"100%"}
-        style={1503}
+        style={{zIndex:1601}}
         className="font-lexend"
         onHide={() => setShowSetPassenger(false)}
       >

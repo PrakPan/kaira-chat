@@ -1443,7 +1443,7 @@ const SimpleTabsV2 = (props) => {
         ></PoiEditModal>
       ) : null}
 
-      <div className="width-[100%]">
+      <div className="width-[100%] z-[1650]">
         <LogInModal
           show={showLoginModal}
           onhide={_handleLoginClose}

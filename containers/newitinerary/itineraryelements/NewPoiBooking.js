@@ -183,12 +183,11 @@ export default function NewPoiBooking(props) {
                     fontWeight="500"
                     fontSize="1rem"
                     borderWidth="2px"
-                    width="100%"
                     borderRadius="8px"
                     bgColor="#f8e000"
                     padding="12px"
                     // margin={!isPageWide ? "0.75rem 0 0 0" : "0"}
-                    // className="h-full text-blue underline cursor-pointer"
+                    className="p-[12px]"
                     onclick={() => handleClick(props.data?.id)}
                   >
                     View Details
@@ -290,6 +289,7 @@ export default function NewPoiBooking(props) {
           itinerary_city_id={props?.itinerary_city_id}
           id={props.data?.id}
           dayIndex={props?.dayIndex}
+          setShowLoginModal={props.setShowLoginModal}
         />
 
         {props?.data?.added_in_itinerary?.selected ? (

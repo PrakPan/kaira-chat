@@ -90,6 +90,7 @@ const NewPoiDetailsDrawer = (props) => {
           updatedActivityBooking={updatedActivityBooking}
           itinerary_city_id={props?.itinerary_city_id}
           dayIndex={props?.dayIndex}
+          setShowLoginModal={props.setShowLoginModal}
         />
       ) : (
         <POIDetailsSkeleton

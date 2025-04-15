@@ -133,6 +133,7 @@ const POIDetailsDrawer = (props) => {
             dayIndex={props?.dayIndex}
             slabIndex={props?.slabIndex}
             itinerary_city_id={props?.itinerary_city_id}
+            setShowLoginModal={props?.setShowLoginModal}
           >
             {props.children}
           </POIDetails>
