@@ -145,6 +145,7 @@ const POIDetailsDrawer = (props) => {
       ) : (
         <POIDetailsSkeleton
           width={"100%"}
+          height={"19rem"}
           itineraryDrawer={props.itineraryDrawer}
           name={props.name}
           handleCloseDrawer={props.handleCloseDrawer}

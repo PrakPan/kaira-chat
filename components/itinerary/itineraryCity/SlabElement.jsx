@@ -128,11 +128,6 @@ const Activity = (props) => {
               <div className="hidden lg:!block text-[#7A7A7A] text-[12px]">
                 {props.element?.rating}
               </div>
-              {props.element?.user_ratings_total && !props?.element?.poi && (
-                <div className="hidden lg:!block text-[#7A7A7A] text-[12px] underline">
-                  {props.element?.user_ratings_total} Google reviews
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -212,11 +207,6 @@ const Activity = (props) => {
                       </div>
                     )}
                   </div>
-                  {props.element?.user_ratings_total>0 && !props?.element?.poi &&(
-                    <div className="text-[#7A7A7A] text-[12px] underline">
-                      {props.element?.user_ratings_total} Google reviews
-                    </div>
-                  )}
                 </div>
 
                 <button
@@ -351,12 +341,7 @@ const Recommendation = (props) => {
               <div className="hidden lg:!block text-[#7A7A7A] text-[12px]">
                 {props.element?.restaurants?.[0]?.rating}
               </div>
-              {props.element?.restaurants?.[0]?.user_ratings_total && (
-                <div className="hidden lg:!block text-[#7A7A7A] text-[12px] underline">
-                  {props.element?.restaurants?.[0]?.user_ratings_total} Google
-                  reviews
-                </div>
-              )}
+              
             </div>
           </div>
         </div>
@@ -429,12 +414,6 @@ const Recommendation = (props) => {
                       {props.element?.restaurants?.[0]?.rating}
                     </div>
                   </div>
-                  {props.element?.restaurants?.[0]?.user_ratings_total && (
-                    <div className="text-[#7A7A7A] text-[12px] underline">
-                      {props.element?.restaurants?.[0]?.user_ratings_total}{" "}
-                      Google reviews
-                    </div>
-                  )}
                 </div>
 
                 <button

@@ -247,14 +247,15 @@ const ActivityAddDrawer = (props) => {
   };
 
   const fetchData = async (showMore = false) => {
-  console.log("loaded is:",loaded)
+    console.log("loaded is:", loaded);
     if (elementType == "Activity" || elementType == "") {
       setLoaded(false);
       try {
         const requestData = {
           city: props?.cityID,
           start_date: getDate(startDate),
-          number_of_travelers: filterState.pax.number_of_travelers,
+          number_of_adults: pax?.adults || 1,
+          number_of_children: pax?.children || 0,
           traveler_ages: filterState.pax.traveler_ages,
           filter_by: {
             name: debouncedSearch,
@@ -307,6 +308,7 @@ const ActivityAddDrawer = (props) => {
                     setItinerary={props?.setItinerary}
                     activityBookings={props?.activityBookings}
                     setActivityBookings={props?.setActivityBookings}
+                    pax={pax}
                   ></NewActivityBooking>
                 );
               }
@@ -434,7 +436,7 @@ const ActivityAddDrawer = (props) => {
           </div>
           <div className="flex max-[582px]:flex-col max-[582px]:!items-start justify-between w-full items-center">
             <div className=" line-clamp-1 text-[24px] font-semibold ">
-              Add activity in {props.cityName}
+              Add {elementType=="POI"?"Places to visit":elementType} in {props.cityName}
             </div>
             <Pax
               setShowPax={setShowPax}
@@ -655,7 +657,7 @@ const ActivityAddDrawer = (props) => {
         />
 
         <>
-        {console.log("loaded is:",loaded)}
+          {console.log("loaded is:", loaded)}
           {(elementType === "Activity" ? loaded : !loadingPoi) ? (
             options.length ? (
               <div

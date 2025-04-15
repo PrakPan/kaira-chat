@@ -15,9 +15,7 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import setItinerary from "../../../store/actions/itinerary";
 import { toast, ToastContainer } from "react-toastify";
-import GoogleImageLoader from "./GoogleImageLoader";
 import ReviewPoi from "../../POIDetails/Reviews";
-import { RiDeleteBin6Line } from "react-icons/ri";
 import useMediaQuery from "../../media";
 export const Title = styled.p`
   font-weight: 800;
@@ -56,33 +54,6 @@ const Container = styled.div`
   padding: ${(props) => (props.itineraryDrawer ? "0 1rem 1rem 1rem" : "1rem")};
 `;
 
-const TimeStamp = styled.span`
-  height: 31px;
-  padding: 4px 8px;
-  background-color: rgba(0, 0, 0, 0.6);
-  border-radius: 20px;
-  color: white;
-  font-size: 14px;
-  font-weight: 600;
-  left: 0.5rem;
-  top: 0.5rem;
-  position: absolute;
-`;
-const PhotosButton = styled.div`
-  &:hover {
-    cursor: pointer;
-  }
-  background-color: rgba(0, 0, 0, 0.6);
-  color: white;
-  border-radius: 6px;
-  position: absolute;
-  right: 0.5rem;
-  bottom: -12.5rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.85rem;
-  letterspacing: 1px;
-  font-weight: 300;
-`;
 const BackContainer = styled.div`
   margin: 0;
   display: flex;
@@ -141,7 +112,7 @@ const ScrollContainer = styled.div`
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
 const POIDetails = (props) => {
-  const isSmallScreen = useMediaQuery("(max-height:586px)");
+  const isSmallScreen = useMediaQuery("(max-width:586px)");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [aboutText, setAboutText] = useState(
@@ -330,7 +301,7 @@ const POIDetails = (props) => {
                     onError={() => OnImageError(1)}
                     priority
                   />
-                  ={" "}
+                  {" "}
                   <div
                     style={{
                       display: !ImagesLoaded[1] ? "initial" : "none",
@@ -492,13 +463,13 @@ const POIDetails = (props) => {
                   ))}
                 </>
               ) : (
-                <>
+                <div className="flex gap-2">
                   {props?.data?.reviews?.map((item) => (
                     <div className="w-[289px]">
                       <ReviewPoi review={item} />
                     </div>
                   ))}
-                  </>
+                  </div>
               )}
             </div>
           )}

@@ -6,8 +6,8 @@ const Steps = ({ page,nextPage }) => {
       <div className="flex items-center w-[447px] justify-center">
         <div
           className={`px-[22px] py-[10px] bg-[#191919]
-        ${page == 1 ? "bg-[#191919] !text-white " : "bg-white text-[#191919] "} 
-        rounded-[30px] text-white`}
+        ${page == 1 ? "bg-[#191919] !text-white" : "bg-white text-[#191919] border border-[#191919]"} 
+        rounded-[30px]`}
         >
           Step 1
         </div>
@@ -16,8 +16,8 @@ const Steps = ({ page,nextPage }) => {
           style={{ borderTopStyle: "dotted" }}
         ></div>}
         {nextPage&&<div
-          className={`px-[22px] py-[10px] border border-[#191919] ${
-            page == 2 ? "bg-[#191919] !text-white " : "bg-white text-[#191919] "
+          className={`px-[22px] py-[10px]  ${
+            page == 2 ? "bg-[#191919] !text-white" : "bg-white text-[#191919] border border-[#191919]"
           } rounded-[30px]`}
         >
           Step 2

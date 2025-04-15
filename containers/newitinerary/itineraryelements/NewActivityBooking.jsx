@@ -11,6 +11,7 @@ import { convertDateFormat } from "../../../helper/ConvertDateFormat";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import Button from "../../../components/ui/button/Index";
+import RecommendedBadge from "./Recommended";
 const ClippathComp = styled.div`
   clip-path: polygon(0 0, 100% 0, 100% 50%, 100% 100%, 0% 100%);
 `;
@@ -52,7 +53,7 @@ export default function NewActivityBooking(props) {
   };
 
   return (
-    <div className="border rounded-[16px] w-[98%] p-2 mb-3 hover:border-[#F7E700] hover:border-[3px] hover:bg-[#FDFCF1]">
+    <div className="relative border rounded-[16px] w-[98%] p-2 mb-3 hover:border-[#F7E700] hover:border-[3px] hover:bg-[#FDFCF1]">
       <div className={`flex gap-1  flex-col justify-start max-[583px]:hidden`}>
         <div
           style={{
@@ -93,13 +94,7 @@ export default function NewActivityBooking(props) {
                   setImageLoaded(true);
                 }}
               ></ImageLoader>
-              {props.data?.is_very_popular && (
-                <div className="absolute top-4 left-0 z-[5]">
-                  <ClippathComp className="text-[12px] font-medium bg-red-400 text-white  px-[16px] py-[8px] -mr-2 md:-mr-3 z-[1]">
-                    Recommended
-                  </ClippathComp>
-                </div>
-              )}
+
             </div>
             <div
               style={{
@@ -305,8 +300,6 @@ export default function NewActivityBooking(props) {
         )}
       </div>
 
-      {console.log("login modal is:",props?.setLoginModal)}
-
       <ActivityDetailsDrawer
         itineraryDrawer
         date={props.date}
@@ -325,7 +318,13 @@ export default function NewActivityBooking(props) {
         activityBookings={props.activityBookings}
         setActivityBookings={props.setActivityBookings}
         setShowLoginModal={props?.setLoginModal}
+        pax={props?.pax}
       />
+      {props.data?.is_very_popular && (
+          <div className="absolute top-6 -left-2 z-[1]">
+            <RecommendedBadge />
+          </div>
+        )}
     </div>
   );
 }

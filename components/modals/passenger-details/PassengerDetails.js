@@ -82,6 +82,7 @@ const dispatch=useDispatch()
                   <ButtonYellow onClick={() => setPage(2)}>Next</ButtonYellow>
                 ) : (
                   <ButtonYellow
+                  className="!px-[6px]"
                     onClick={handleSubmit}
                   >
                     Submit
@@ -203,7 +204,7 @@ const dispatch=useDispatch()
                 </>
               )}
               <div className="flex justify-end mt-4">
-                <ButtonYellow onClick={handleSubmit}>Submit</ButtonYellow>
+                <ButtonYellow onClick={handleSubmit} primary={true}>Submit</ButtonYellow>
               </div>
             </>
           )}
