@@ -21,6 +21,10 @@ import FlightModal from "../../../components/modals/flights/Index";
 import { getDate } from "../../../helper/DateUtils";
 import { fetchTransferMode } from "../../../services/bookings/FetchTaxiRecommendations";
 import { FaClock } from "react-icons/fa";
+import { AiOutlineRight, AiOutlineUp } from "react-icons/ai";
+import { FaArrowLeftLong } from "react-icons/fa6";
+import { BiTrain } from "react-icons/bi";
+import { PiTaxi } from "react-icons/pi";
 
 const ClippathComp = styled.div`
   clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 95% 50%, 100% 0%);
@@ -86,6 +90,7 @@ const TransferEditDrawer = (props) => {
   const [showOtherTransfer, setShowOtherTrasfer] = useState(false);
   const [showMercuryTransfer, setShowMercuryTransfer] = useState(false);
   const [selectedMercuryTransfer, setSelectedMercuryTransfer] = useState(null);
+   const [currentStep, setCurrentStep] = useState(1); 
 
  // console.log("SELECTED BOOKING",city,dcity,oCityData,dCityData,mercuryTransfer?.destination?.city_name);
 
@@ -326,17 +331,22 @@ const TransferEditDrawer = (props) => {
       width="50vw"
     >
       <div className="relative px-2 bg-white z-[900] flex flex-col gap-4 pt-4 pb-[100px] justify-start items-start mx-auto w-[98%] min-h-screen">
-        <div className="flex flex-row gap-3 my-0 justify-start items-center">
+        <div className="flex flex-row gap-1 my-0 justify-start items-center">
           <IoMdArrowRoundBack
-            onClick={() => setShowDrawer(false)}
+           size={20}
+            onClick={(prev) => 
+               prev > 1 ? setCurrentStep(prev-1) : setCurrentStep(1)
+              // setShowDrawer(false)
+            }
             className="hover-pointer text-3xl font-semibold"
-          />
-          <div className="text-lg md:text-2xl lg:text-2xl font-semibold">
+          /> <span>Back</span>
+          
+        </div>
+        <div className="text-lg md:text-xl lg:text-xl font-semibold">
             {props.addOrEdit === "transferAdd" ? "Adding" : "Changing"} transfer
             from {city || mercuryTransfer?.source?.city_name} to{" "}
             {dcity || mercuryTransfer?.destination?.city_name}{" "}
           </div>
-        </div>
 
         {mercury
           ? showOtherTransfer && (
@@ -451,7 +461,7 @@ const TransferEditDrawer = (props) => {
           </div>
         ) : (
           <div className="w-full flex flex-col items-center gap-3">
-            <div className="w-full flex flex-row gap-4 px-2 whitespace-nowrap overflow-x-auto hide-scrollbar">
+            {/* <div className="w-full flex flex-row gap-4 px-2 whitespace-nowrap overflow-x-auto hide-scrollbar">
               <RadioButton
                 name={TRANSFER_TYPES.ONEWAYTRIP.name}
                 label={TRANSFER_TYPES.ONEWAYTRIP.label}
@@ -474,7 +484,7 @@ const TransferEditDrawer = (props) => {
                   handleTransferType={handleTransferType}
                 />
               )}
-            </div>
+            </div> */}
 
             {selectLoading && (
               <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -486,17 +496,29 @@ const TransferEditDrawer = (props) => {
 
             {transferType === TRANSFER_TYPES.ONEWAYTRIP.name ? (
               <>
-                <div className="w-full flex justify-start">
+                {/* <div className="w-full flex justify-start">
                   {transfers.length < 2
                     ? `${transfers.length} way`
                     : `${transfers.length} ways`}{" "}
                   to travel from {city || mercuryTransfer?.source?.city_name} to{" "}
                   {dcity || mercuryTransfer?.destination?.city_name}
-                </div>
+                </div> */}
                 <div className="w-full flex flex-col items-center gap-3">
                   {transfers.map((transfer, index) => {
                     if (isDesktop)
                       return (
+                        transfer.length > 1 ? <>
+                        <NewMultiModeContainer 
+                        key={index}
+                        transferIndex={index}
+                        transfer={transfer}
+                        handleSelect={handleSelect}
+                        selectedResult={selectedResult}
+                        setCurrentStep={setCurrentStep}
+                        currentStep={currentStep}
+                        />
+                        </> 
+                        :
                         <RouteContainer
                           key={index}
                           transferIndex={index}
@@ -511,12 +533,18 @@ const TransferEditDrawer = (props) => {
                         />
                       );
                     return (
-                      <MobileRouteContainer
+                      <NewMultiModeContainer
                         key={index}
                         transferIndex={index}
                         transfer={transfer}
                         handleSelect={handleSelect}
                       />
+                      // <MobileRouteContainer
+                      //   key={index}
+                      //   transferIndex={index}
+                      //   transfer={transfer}
+                      //   handleSelect={handleSelect}
+                      // />
                     );
                   })}
                 </div>
@@ -765,6 +793,373 @@ const MultiRoute = (props) => {
     </div>
   );
 };
+
+
+
+const NewMultiModeContainer = ({ transferIndex, transferR, handleSelect, selectedResult, setCurrentStep, currentStep}) => {
+  const transfer = [
+    // Train options
+    {
+      id: 101,
+      mode: "Train",
+      details: "Second AC (2A)",
+      duration: "22-23 hours",
+      distance: "1574kms",
+      source: {
+        name: "New Delhi",
+        code: "NDLS"
+      },
+      destination: {
+        name: "New Jalpaiguri",
+        code: "NJP"
+      },
+      facilities: "Second AC (2A) | 4 Luggage Bags",
+      prices: [
+        {
+          type: "Adult",
+          price: 6798
+        }
+      ]
+    },
+    {
+      id: 102,
+      mode: "Train",
+      details: "First AC (1A)",
+      duration: "22-23 hours",
+      distance: "1574kms",
+      source: {
+        name: "New Delhi",
+        code: "NDLS"
+      },
+      destination: {
+        name: "New Jalpaiguri",
+        code: "NJP"
+      },
+      facilities: "First AC (1A) | 4 Luggage Bags",
+      prices: [
+        {
+          type: "Adult",
+          price: 9250
+        }
+      ]
+    },
+    {
+      id: 103,
+      mode: "Train",
+      details: "Third AC (3A)",
+      duration: "22-23 hours",
+      distance: "1574kms",
+      source: {
+        name: "New Delhi",
+        code: "NDLS"
+      },
+      destination: {
+        name: "New Jalpaiguri",
+        code: "NJP"
+      },
+      facilities: "Third AC (3A) | 4 Luggage Bags",
+      prices: [
+        {
+          type: "Adult",
+          price: 4980
+        }
+      ]
+    },
+    
+    // Taxi options
+    {
+      id: 201,
+      mode: "Taxi",
+      details: "SUV (Petrol/ Diesel)",
+      description: "Swift, Celerio or equivalent Petrol/ Diesel",
+      seats: "4 - Seater",
+      duration: "3-4 hours",
+      distance: "126kms",
+      source: {
+        name: "New Jalpaiguri",
+        code: "NJP"
+      },
+      destination: {
+        name: "Gangtok",
+        code: "GAN"
+      },
+      prices: [
+        {
+          type: "Vehicle",
+          price: 5202
+        }
+      ]
+    },
+    {
+      id: 202,
+      mode: "Taxi",
+      details: "Sedan (Petrol/ Diesel)",
+      description: "Dzire, Etios or equivalent Petrol/ Diesel",
+      seats: "4 - Seater",
+      duration: "3-4 hours",
+      distance: "126kms",
+      source: {
+        name: "New Jalpaiguri",
+        code: "NJP"
+      },
+      destination: {
+        name: "Gangtok",
+        code: "GAN"
+      },
+      prices: [
+        {
+          type: "Vehicle",
+          price: 4500
+        }
+      ]
+    },
+    {
+      id: 203,
+      mode: "Taxi",
+      details: "Premium SUV (Petrol/ Diesel)",
+      description: "Innova, Crysta or equivalent Petrol/ Diesel",
+      seats: "6 - Seater",
+      duration: "3-4 hours",
+      distance: "126kms",
+      source: {
+        name: "New Jalpaiguri",
+        code: "NJP"
+      },
+      destination: {
+        name: "Gangtok",
+        code: "GAN"
+      },
+      prices: [
+        {
+          type: "Vehicle",
+          price: 6798
+        }
+      ]
+    }
+  ];
+  const [expanded, setExpanded] = useState(false);
+  const [selectedTrainId, setSelectedTrainId] = useState(null);
+  const [selectedTaxiId, setSelectedTaxiId] = useState(null);
+ // 1 for train, 2 for taxi
+  
+  // Handle train selection
+  const handleTrainSelect = (id) => {
+    setSelectedTrainId(id);
+  //  handleSelect(transferIndex, transfer.find(item => item.id === id && item.mode === "Train"));
+  };
+  
+  // Handle taxi selection
+  const handleTaxiSelect = (id) => {
+    setSelectedTaxiId(id);
+   // handleSelect(transferIndex, transfer.find(item => item.id === id && item.mode === "Taxi"));
+  };
+  
+  const toggleExpanded = () => {
+    setExpanded(!expanded);
+  };
+  
+
+  const trainOptions = transfer.filter(t => t.mode === "Train");
+  const taxiOptions = transfer.filter(t => t.mode === "Taxi");
+  
+  const totalDistance = "1574 km";
+  const sourceCity = currentStep === 1 ? "New Delhi" : "New Jalpaiguri";
+  const destinationCity = currentStep === 1 ? "New Jalpaiguri" : "Gangtok";
+  
+  const calculateTotalPrice = () => {
+    let total = 0;
+    const selectedTrain = trainOptions.find(t => t.id === selectedTrainId);
+    const selectedTaxi = taxiOptions.find(t => t.id === selectedTaxiId);
+    
+    if (selectedTrain && selectedTrain.prices && selectedTrain.prices[0]) {
+      total += selectedTrain.prices[0].price;
+    }
+    
+    if (selectedTaxi && selectedTaxi.prices && selectedTaxi.prices[0]) {
+      total += selectedTaxi.prices[0].price;
+    }
+    
+    return total > 0 ? `Rs.${total}` : "";
+  };
+
+  return (
+    <div className="w-full bg-white">
+      {/* Header section */}
+      <div className="p-4 border-b">
+        <div className="flex items-center">
+          {/* <button className="mr-2">
+            <FaArrowLeftLong size={20} onClick={(prev)=> prev > 1 ? setCurrentStep(prev-1) : setCurrentStep(1)} />
+          </button> */}
+          {/* <span className="font-medium text-lg">Changing transfer from New Delhi to Gangtok</span> */}
+        </div>
+        
+        <div className="flex gap-4 mb-2">
+          <label className="flex items-center">
+            <input type="checkbox" checked={true} className="mr-2 h-4 w-4 accent-blue-600" />
+            <span>One - Way Trip</span>
+          </label>
+          <label className="flex items-center">
+            <input type="checkbox" checked={false} className="mr-2 h-4 w-4" />
+            <span>Two - Way Trip</span>
+          </label>
+        </div>
+      </div>
+      
+      {/* Transport mode selection (collapsed view) */}
+      <div 
+        className="flex justify-between items-center p-4 border border-b cursor-pointer shadow-md"
+        onClick={toggleExpanded}
+      >
+        <div className="font-bold">Train, Taxi | <span className="font-normal">8-10 hours | 1251 kms</span></div>
+        {expanded ? <AiOutlineUp size={20} /> : <AiOutlineRight size={20} />}
+      </div>
+      
+      {/* Expanded content */}
+      {expanded && (
+        <div className="border">
+          {/* Progress visualization */}
+          <div className="w-full bg-yellow-50 border-b-[#ffd201] border-b-1 rounded-md p-4">
+      {/* Route Steps */}
+      <div className="relative flex justify-between items-center mb-2 p-2">
+        {/* Step 1 - Train */}
+        <div className="flex items-center gap-2">
+          <div className={`w-6 h-6 flex items-center justify-center rounded-full ${currentStep >= 1 ? "bg-yellow-400" : "bg-gray-200"}`}>
+            <span className="text-sm font-bold">1</span>
+          </div>
+          <span className="text-sm text-black">Train</span>
+        </div>
+
+        {/* Line between steps */}
+        <div className={`absolute left-[30%] right-[30%] h-1 ${currentStep >= 2 ? "bg-yellow-400" : "bg-gray-100"} top-1/2 transform -translate-y-1/2`}></div>
+
+        {/* Step 2 - Taxi */}
+        <div className="flex items-center gap-2">
+          <div className={`w-6 h-6 flex items-center justify-center rounded-full ${currentStep >= 2 ? "bg-yellow-400" : "bg-gray-100"}`}>
+            <span className="text-sm font-bold">2</span>
+          </div>
+          <span className="text-sm text-black">Taxi</span>
+        </div>
+      </div>
+
+      {/* City names and distance */}
+      
+    </div>
+
+    <div className="flex justify-between items-center p-4">
+        <span className="text-[#2AAAFF] font-medium text-sm">{sourceCity}</span>
+        <div className="absolute left-[11rem] right-[11rem]  border-t border-dotted border-gray-300 z-0"></div>
+
+        <span className="bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full">{totalDistance}</span>
+        <span className="text-green-600 font-medium text-sm">{destinationCity}</span>
+      </div>
+          
+          {/* Train options - Step 1 */}
+          {currentStep === 1 && (
+            <div className="space-y-4">
+              {trainOptions.map((train, index) => (
+                <div key={index} className="flex justify-between bg-white p-4  rounded-md border-b-1">
+                  <div className="flex gap-3">
+                    <div className="text-gray-500 mt-1">
+                      <BiTrain size={20}/>
+                      {/* <svg width="40" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7 11H17V18H7V11Z" stroke="currentColor" strokeWidth="1" />
+                        <path d="M9 20L7 22" stroke="currentColor" strokeWidth="1" />
+                        <path d="M15 20L17 22" stroke="currentColor" strokeWidth="1" />
+                        <path d="M17 5H7V11H17V5Z" stroke="currentColor" strokeWidth="1" />
+                        <path d="M10 7.5V8.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+                        <path d="M14 7.5V8.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+                      </svg> */}
+                    </div>
+                    <div>
+                      <div className="font-semibold">Train</div>
+                      <div className="text-sm text-gray-600">
+                        {train.details || "Second AC (2A)"} | 22-23 hours | 1574kms
+                      </div>
+                      <div className="text-sm font-semibold">
+                        Facilities: Second AC (2A) | 4 Luggage Bags
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end justify-between">
+                    <div className="font-semibold">Rs.6798</div>
+                    <input 
+                      type="checkbox" 
+                      checked={selectedTrainId === train.id}
+                      onChange={() => handleTrainSelect(train.id)}
+                      className="h-5 w-5 mt-2 accent-blue-600"
+                    />
+                  </div>
+                </div>
+              ))}
+              
+              {/* Next button for step 1 */}
+              <div className="mt-6 flex justify-end p-4">
+                <button 
+                  onClick={() => setCurrentStep(2)}
+                  className="bg-black text-white px-8 py-2 rounded-md font-medium"
+                  disabled={!selectedTrainId}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+          
+          {/* Taxi options - Step 2 */}
+          {currentStep === 2 && (
+            <div className="space-y-4">
+              {taxiOptions.map((taxi, index) => (
+                <div key={index} className="flex justify-between bg-white p-4 border-b-1 rounded-md">
+                  <div className="flex gap-3">
+                    <div className="text-gray-500 mt-1">
+                      {/* <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 11L7 7H17L19 11M5 11V15M5 11H3M19 11V15M19 11H21M5 15V18H7M5 15H19M19 15V18H17M7 18V20H9M7 18H17M17 18V20H15M9 20H15" stroke="currentColor" strokeWidth="2" />
+                        <circle cx="7.5" cy="14.5" r="1.5" fill="currentColor" />
+                        <circle cx="16.5" cy="14.5" r="1.5" fill="currentColor" />
+                      </svg> */}
+                      <PiTaxi size={20} />
+                    </div>
+                    <div>
+                      <div className="font-semibold">SUV (Petrol/ Diesel)</div>
+                      <div className="text-sm text-gray-600">
+                        Swift, Celerio or equivalent Petrol/ Diesel
+                      </div>
+                      <div className="text-sm font-semibold">
+                        4 - Seater
+                        <button className="ml-2 px-2 py-0.5 border rounded text-xs">Facilities ▼</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end justify-between">
+                    <div className="font-semibold">Rs.6798</div>
+                    <input 
+                      type="checkbox" 
+                      checked={selectedTaxiId === taxi.id}
+                      onChange={() => handleTaxiSelect(taxi.id)}
+                      className="h-5 w-5 mt-2 accent-blue-600"
+                    />
+                  </div>
+                </div>
+              ))}
+              
+              {/* Total price and update button */}
+              <div className="mt-6 flex justify-between items-center p-4">
+                <div className="font-semibold">Total Price: 12000</div>
+                <button 
+                  className="bg-black text-white px-8 py-2 rounded-md font-medium"
+                  disabled={!selectedTaxiId}
+                >
+                  Update Transfer
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
 
 const MultiModeContainer = ({ transferIndex, transfer, handleSelect }) => {
   return (

@@ -102,7 +102,7 @@ const Activity = (props) => {
               onClick={() =>
                 handleActivity(
                   props?.element,
-                  props?.element?.element_type
+                  props?.element?.poi != null ? "poi" : "activity"
                 )
               }
               className="w-fit font-medium text-[16px] cursor-pointer"
@@ -176,7 +176,7 @@ const Activity = (props) => {
                 onClick={() =>
                   handleActivity(
                     props?.element,
-                    props?.element?.element_type
+                    props?.element?.poi != null ? "poi" : "activity"
                   )
                 }
                 className="w-fit font-medium text-[16px] cursor-pointer"
