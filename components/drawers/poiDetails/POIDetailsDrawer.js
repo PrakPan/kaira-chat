@@ -133,6 +133,7 @@ const POIDetailsDrawer = (props) => {
             dayIndex={props?.dayIndex}
             slabIndex={props?.slabIndex}
             itinerary_city_id={props?.itinerary_city_id}
+            setShowLoginModal={props?.setShowLoginModal}
           >
             {props.children}
           </POIDetails>
@@ -144,6 +145,7 @@ const POIDetailsDrawer = (props) => {
       ) : (
         <POIDetailsSkeleton
           width={"100%"}
+          height={"19rem"}
           itineraryDrawer={props.itineraryDrawer}
           name={props.name}
           handleCloseDrawer={props.handleCloseDrawer}

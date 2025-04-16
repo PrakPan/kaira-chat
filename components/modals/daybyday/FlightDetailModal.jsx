@@ -9,6 +9,7 @@ import { PulseLoader } from "react-spinners";
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { toast, ToastContainer } from "react-toastify";
 import { useRouter } from "next/router";
+import Image from "next/image";
 
 export const Text = styled.div`
   font-size: 1.5rem;
@@ -114,7 +115,7 @@ const FlightDetailModal = ({
         >
           <div style={{ position: "relative" }}>
             <div style={loading ? { visibility: "hidden" } : {}}>
-              🗑 Delete Booking
+            <Image src="/delete.svg" width={"20"} height={"20"}/> Delete Booking
             </div>
             {loading && (
               <PulseLoader

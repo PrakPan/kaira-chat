@@ -12,7 +12,7 @@ const OtherPassengers = ({ input, setInput, index }) => {
   return (
     <>
 
-      <div className="text-[#8E8E8E]">
+      <div className="">
       <div id="basic-information" className="w-full space-y-2">
         <div className="flex flex-wrap gap-2">
             <div className="flex-1 min-w-[250px]">

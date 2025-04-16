@@ -25,9 +25,9 @@ const SlabElement = (props) => {
   return (
     <div className="">
       {props.element.element_type === "activity" ? (
-        <Activity element={props.element} dayIndex={props?.dayIndex} slabIndex={props?.slabIndex} itinerary_city_id={props?.itinerary_city_id}/>
+        <Activity element={props.element} dayIndex={props?.dayIndex} slabIndex={props?.slabIndex} itinerary_city_id={props?.itinerary_city_id} setShowLoginModal={props?.setShowLoginModal}/>
       ) : props.element.element_type === "recommendation" ? (
-        <Recommendation element={props.element} />
+        <Recommendation element={props.element} setShowLoginModal={props?.setShowLoginModal}/>
       ) : null}
     </div>
   );
@@ -102,7 +102,7 @@ const Activity = (props) => {
               onClick={() =>
                 handleActivity(
                   props?.element,
-                  props?.element?.element_type
+                  props?.element?.poi != null ? "poi" : "activity"
                 )
               }
               className="w-fit font-medium text-[16px] cursor-pointer"
@@ -128,11 +128,6 @@ const Activity = (props) => {
               <div className="hidden lg:!block text-[#7A7A7A] text-[12px]">
                 {props.element?.rating}
               </div>
-              {props.element?.user_ratings_total && !props?.element?.poi && (
-                <div className="hidden lg:!block text-[#7A7A7A] text-[12px] underline">
-                  {props.element?.user_ratings_total} Google reviews
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -181,7 +176,7 @@ const Activity = (props) => {
                 onClick={() =>
                   handleActivity(
                     props?.element,
-                    props?.element?.element_type
+                    props?.element?.poi != null ? "poi" : "activity"
                   )
                 }
                 className="w-fit font-medium text-[16px] cursor-pointer"
@@ -212,11 +207,6 @@ const Activity = (props) => {
                       </div>
                     )}
                   </div>
-                  {props.element?.user_ratings_total>0 && !props?.element?.poi &&(
-                    <div className="text-[#7A7A7A] text-[12px] underline">
-                      {props.element?.user_ratings_total} Google reviews
-                    </div>
-                  )}
                 </div>
 
                 <button
@@ -252,6 +242,7 @@ const Activity = (props) => {
         dayIndex={props?.dayIndex}
         slabIndex={props?.slabIndex}
         showBookingDetail={showBookingDetail}
+        setShowLoginModal={props?.setShowLoginModal}
       />
     </>
   );
@@ -350,12 +341,7 @@ const Recommendation = (props) => {
               <div className="hidden lg:!block text-[#7A7A7A] text-[12px]">
                 {props.element?.restaurants?.[0]?.rating}
               </div>
-              {props.element?.restaurants?.[0]?.user_ratings_total && (
-                <div className="hidden lg:!block text-[#7A7A7A] text-[12px] underline">
-                  {props.element?.restaurants?.[0]?.user_ratings_total} Google
-                  reviews
-                </div>
-              )}
+              
             </div>
           </div>
         </div>
@@ -428,12 +414,6 @@ const Recommendation = (props) => {
                       {props.element?.restaurants?.[0]?.rating}
                     </div>
                   </div>
-                  {props.element?.restaurants?.[0]?.user_ratings_total && (
-                    <div className="text-[#7A7A7A] text-[12px] underline">
-                      {props.element?.restaurants?.[0]?.user_ratings_total}{" "}
-                      Google reviews
-                    </div>
-                  )}
                 </div>
 
                 <button

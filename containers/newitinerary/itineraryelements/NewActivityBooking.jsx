@@ -5,14 +5,13 @@ import styled from "styled-components";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import ActivityDetailsDrawer from "../../../components/drawers/activityDetails/ActivityDetailsDrawer";
 import SkeletonCard from "../../../components/ui/SkeletonCard";
-import {
-  TransparentButton,
-} from "../../../containers/itinerary/New_Itenary_DBD/New_itenaryStyled";
+import { TransparentButton } from "../../../containers/itinerary/New_Itenary_DBD/New_itenaryStyled";
 import { MdDoneAll } from "react-icons/md";
 import { convertDateFormat } from "../../../helper/ConvertDateFormat";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import Button from "../../../components/ui/button/Index";
+import RecommendedBadge from "./Recommended";
 const ClippathComp = styled.div`
   clip-path: polygon(0 0, 100% 0, 100% 50%, 100% 100%, 0% 100%);
 `;
@@ -54,7 +53,7 @@ export default function NewActivityBooking(props) {
   };
 
   return (
-    <div className="border rounded-[16px] w-[98%] p-2 mb-3 hover:border-[#F7E700] hover:border-[3px] hover:bg-[#FDFCF1]">
+    <div className="relative border rounded-[16px] w-[98%] p-2 mb-3 hover:border-[#F7E700] hover:border-[3px] hover:bg-[#FDFCF1]">
       <div className={`flex gap-1  flex-col justify-start max-[583px]:hidden`}>
         <div
           style={{
@@ -95,13 +94,7 @@ export default function NewActivityBooking(props) {
                   setImageLoaded(true);
                 }}
               ></ImageLoader>
-              {props.data?.is_very_popular && (
-                <div className="absolute top-4 left-0 z-[5]">
-                  <ClippathComp className="text-[12px] font-medium bg-red-400 text-white  px-[16px] py-[8px] -mr-2 md:-mr-3 z-[1]">
-                    Recommended
-                  </ClippathComp>
-                </div>
-              )}
+
             </div>
             <div
               style={{
@@ -150,7 +143,12 @@ export default function NewActivityBooking(props) {
               {props.data?.pricing?.total_price ? (
                 <div className="flex flex-col md:flex-row gap-1">
                   <div className="text-[24px] font-bold">
-                    <span className="!font-[lexend]" style={{fontFamily:"Lexend"}}>₹</span>
+                    <span
+                      className="!font-[lexend]"
+                      style={{ fontFamily: "Lexend" }}
+                    >
+                      ₹
+                    </span>
                     {getIndianPrice(Math.round(props.data.pricing.total_price))}
                   </div>
                   <div className="text-[14px] self-end">
@@ -178,14 +176,12 @@ export default function NewActivityBooking(props) {
                 </div>
               ) : (
                 <Button
-                bgColor={"#F7E700"}
-              borderRadius="8px"
-              fontWeight="400"
-              padding="2px"
-              hoverColor="white"
-              height={"full"}
-              // margin={!isPageWide ? "0.75rem 0 0 0" : "0"}
-                  // className="h-full text-blue underline cursor-pointer"
+                  bgColor={"#F7E700"}
+                  borderRadius="8px"
+                  fontWeight="400"
+                  hoverColor="white"
+                  height={"full"}
+                  className="p-[12px]"
                   onclick={() => handleClick(props.data?.id)}
                 >
                   View Details
@@ -321,7 +317,14 @@ export default function NewActivityBooking(props) {
         setItinerary={props?.setItinerary}
         activityBookings={props.activityBookings}
         setActivityBookings={props.setActivityBookings}
+        setShowLoginModal={props?.setLoginModal}
+        pax={props?.pax}
       />
+      {props.data?.is_very_popular && (
+          <div className="absolute top-6 -left-2 z-[1]">
+            <RecommendedBadge />
+          </div>
+        )}
     </div>
   );
 }

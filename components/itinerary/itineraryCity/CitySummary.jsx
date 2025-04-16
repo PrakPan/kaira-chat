@@ -216,6 +216,7 @@ const CitySummary = (props) => {
           Topheading={"Select Our Point Of Interest"}
           activityData={activityData}
           showBookingDetail={showBookingDetail}
+          setShowLoginModal={props?.setShowLoginModal}
         />
       ) : null}
       <ActivityAddDrawer

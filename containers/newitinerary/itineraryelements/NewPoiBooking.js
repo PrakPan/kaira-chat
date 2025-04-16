@@ -11,9 +11,12 @@ import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import Button from "../../../components/ui/button/Index";
 import NewPoiDetailsDrawer from "../../../components/drawers/poiDetails/NewPoiDetailsDrawer";
+import RecommendedBadge from "./Recommended";
 const ClippathComp = styled.div`
   clip-path: polygon(0 0, 100% 0, 100% 50%, 100% 100%, 0% 100%);
 `;
+
+const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
 export default function NewPoiBooking(props) {
   const [stars, setStars] = useState(null);
@@ -49,19 +52,28 @@ export default function NewPoiBooking(props) {
   };
 
   return (
-    <div className="border rounded-[16px] w-[98%] p-2 mb-3 hover:border-[#F7E700] hover:border-[3px] hover:bg-[#FDFCF1]">
-      <div className={`flex gap-1  flex-col justify-start max-[583px]:hidden`}>
+    <div className="relative border rounded-[16px] w-[98%] p-2 mb-3 hover:border-[#F7E700] hover:border-[3px] hover:bg-[#FDFCF1]">
+      <div
+        className={`relative flex gap-1  flex-col justify-start max-[583px]:hidden`}
+      >
         <div
           style={{
             display: "grid",
             gridGap: "1rem",
             gridTemplateColumns: "auto 2fr",
-            // marginBottom: "0.75rem",
           }}
           id="Activity"
         >
-          <div>
-            {" "}
+          {" "}
+          <div
+            style={{
+              height: "220px",
+              width: "251px",
+              // overflow: "hidden",
+              borderRadius: "16px",
+              display: imageLoaded ? "block" : "none",
+            }}
+          >
             <div
               style={{
                 height: "220px",
@@ -70,7 +82,6 @@ export default function NewPoiBooking(props) {
                 borderRadius: "16px",
                 display: imageLoaded ? "block" : "none",
               }}
-              className="relative"
             >
               <ImageLoader
                 fit="cover"
@@ -90,13 +101,6 @@ export default function NewPoiBooking(props) {
                   setImageLoaded(true);
                 }}
               ></ImageLoader>
-              {props.data?.is_very_popular && (
-                <div className="absolute top-4 left-0 z-[5]">
-                  <ClippathComp className="text-[12px] font-medium bg-red-400 text-white  px-[16px] py-[8px] -mr-2 md:-mr-3 z-[1]">
-                    Recommended
-                  </ClippathComp>
-                </div>
-              )}
             </div>
             <div
               style={{
@@ -130,8 +134,20 @@ export default function NewPoiBooking(props) {
                   </span>
                 )}
               </div>
-
-              <div className="my-2">
+              {props.data?.experience_filters && (
+                <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
+                  {props.data.experience_filters?.map((e, i) => (
+                    <span
+                      key={i}
+                      className={`border-2 rounded-full px-2 py-1`}
+                      style={{ backgroundColor: colors[i % colors.length] }}
+                    >
+                      {e}
+                    </span>
+                  ))}
+                </div>
+              )}
+              <div>
                 <div className=" text-sm text-[#01202B] line-clamp-3 text-[14px]">
                   {props.data.short_description
                     .split(" ")
@@ -141,6 +157,7 @@ export default function NewPoiBooking(props) {
                 </div>
               </div>
             </div>
+
             <div className="flex flex-row items-center justify-between">
               {props.data?.pricing?.total_price ? (
                 <div className="flex flex-col md:flex-row gap-1">
@@ -183,21 +200,21 @@ export default function NewPoiBooking(props) {
                     fontWeight="500"
                     fontSize="1rem"
                     borderWidth="2px"
-                    width="100%"
                     borderRadius="8px"
                     bgColor="#f8e000"
                     padding="12px"
                     // margin={!isPageWide ? "0.75rem 0 0 0" : "0"}
-                    // className="h-full text-blue underline cursor-pointer"
+                    className="p-[12px]"
                     onclick={() => handleClick(props.data?.id)}
                   >
-                    View Details
+                    Add To Itinerary
                   </Button>
                 </div>
               )}
             </div>
           </div>
         </div>
+
       </div>
 
       <div className="min-[583px]:hidden" id="Activity">
@@ -290,6 +307,7 @@ export default function NewPoiBooking(props) {
           itinerary_city_id={props?.itinerary_city_id}
           id={props.data?.id}
           dayIndex={props?.dayIndex}
+          setShowLoginModal={props.setShowLoginModal}
         />
 
         {props?.data?.added_in_itinerary?.selected ? (
@@ -323,10 +341,15 @@ export default function NewPoiBooking(props) {
             // className="h-full text-blue underline cursor-pointer"
             onclick={() => handleClick(props.data?.id)}
           >
-            View Details
+            Add To Itinerary
           </Button>
         )}
       </div>
+      {props.data?.is_very_popular && (
+          <div className="absolute top-6 -left-2 z-[1]">
+            <RecommendedBadge />
+          </div>
+        )}
     </div>
   );
 }

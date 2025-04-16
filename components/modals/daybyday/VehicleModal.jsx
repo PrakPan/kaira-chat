@@ -6,6 +6,7 @@ import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { PulseLoader } from "react-spinners";
 import styled from "styled-components";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import Image from "next/image";
 
 const BackText = styled.div`
   font-size: 1.5rem;
@@ -256,7 +257,7 @@ const VehicleDetailModal = ({
             >
               <div style={{ position: "relative" }}>
                 <div className="flex gap-1 items-center" style={loading ? { visibility: "hidden" } : {}}>
-                  <RiDeleteBin6Line/> <span> Delete Booking </span>
+                <Image src="/delete.svg" width={"20"} height={"20"}/> <span> Delete Booking </span>
                 </div>
                 {loading && (
                   <PulseLoader

@@ -2,16 +2,17 @@ import React, { useState } from "react";
 import ButtonYellow from "../../ButtonYellow";
 import LeadPaxDetails from "./LeadPaxDetails";
 import OtherPassengers from "./OtherPassengers";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Image from "next/image";
 import Steps from "./steps";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import { useRouter } from "next/router";
-import { mergeClasses } from "@mui/styles";
+import { toast, ToastContainer } from "react-toastify";
 const PassengerDetails = () => {
   const router=useRouter();
   const itinerary = useSelector((state) => state.Itinerary);
+const dispatch=useDispatch()
 
   const [input, setInput] = useState({
     title: "Mr",
@@ -57,15 +58,18 @@ const PassengerDetails = () => {
       await axios.post(`${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/guests/bookings/add/`,{
         guests:[input,...adults,...children]
       })
+      toast.success("Passengers Added Successfuly")
+
     } catch (error) {
-      console.log("unable to set passenger:",error)
+      toast.error(error.response?.data?.errors[0]?.message[0]);
     }
   }
 
   return (
     <>
       <div>
-        <Steps page={page}/>
+        <Steps page={page} nextPage={itinerary.number_of_adults > 1 ||
+                itinerary.number_of_children > 0} />
       </div>
       <div className="flex justify-center">
         <div className="rounded-[12px] p-[40px] border border-[#F2EDED] max-w-[868px]">
@@ -78,6 +82,7 @@ const PassengerDetails = () => {
                   <ButtonYellow onClick={() => setPage(2)}>Next</ButtonYellow>
                 ) : (
                   <ButtonYellow
+                  className="!px-[6px]"
                     onClick={handleSubmit}
                   >
                     Submit
@@ -199,11 +204,12 @@ const PassengerDetails = () => {
                 </>
               )}
               <div className="flex justify-end mt-4">
-                <ButtonYellow onClick={handleSubmit}>Submit</ButtonYellow>
+                <ButtonYellow onClick={handleSubmit} primary={true}>Submit</ButtonYellow>
               </div>
             </>
           )}
         </div>
+        <ToastContainer/>
       </div>
     </>
   );

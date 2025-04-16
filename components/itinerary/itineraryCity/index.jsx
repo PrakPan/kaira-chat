@@ -73,6 +73,7 @@ const ErrorContainer = styled.div`
   text-align: center;
 `;
 const ItineraryCity = (props) => {
+  console.log("shologinmodal is:",props?.setShowLoginModal)
   const router = useRouter();
   const [viewMore, setViewMore] = useState(false);
   const [bookingId, setBookingId] = useState(null);
@@ -206,7 +207,7 @@ const ItineraryCity = (props) => {
 
       {itinerary_status === "SUCCESS" ? viewMore ? (
         <>
-          <CityDaybyDay mercuryItinerary={props?.mercuryItinerary} city={props.city} setItinerary={props?.setItinerary} />
+          <CityDaybyDay mercuryItinerary={props?.mercuryItinerary} city={props.city} setItinerary={props?.setItinerary} setShowLoginModal={props?.setShowLoginModal}/>
         </>
       ) : (
         <CitySummary
@@ -215,6 +216,7 @@ const ItineraryCity = (props) => {
           activityBookings={props?.activityBookings}
           setActivityBookings={props?.setActivityBookings}
           setItinerary={props?.setItinerary}
+          setShowLoginModal={props?.setShowLoginModal}
         />
       ) : null}
       <Drawer

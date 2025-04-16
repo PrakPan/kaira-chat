@@ -1203,7 +1203,7 @@ const HotelBookingDetails = (props) => {
             >
               <div style={{ position: "relative" }}>
                 <div className="flex gap-1 items-center p-1" style={loading ? { visibility: "hidden" } : {}}>
-                   <RiDeleteBin6Line/> Delete Booking
+                <Image src="/delete.svg" width={"20"} height={"20"}/> Delete Booking
                 </div>
                 {loading && (
                   <PulseLoader

@@ -16,6 +16,7 @@ import { Generalbuttonstyle } from "../../../components/ui/button/Generallinkbut
 import { Logo } from "../../../components/modals/flights/new-flight-searched/LogoContainer";
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { PulseLoader } from "react-spinners";
+import Image from "next/image";
 
 const Details = ({
   originCityId,
@@ -164,7 +165,7 @@ const Details = ({
         >
           <div style={{ position: "relative" }}>
             <div style={loading ? { visibility: "hidden" } : {}}>
-              🗑 Delete Booking
+            <Image src="/delete.svg" width={"20"} height={"20"}/> Delete Booking
             </div>
             {loading && (
               <PulseLoader
