@@ -10,6 +10,7 @@ import axiosPOIActivityInstance, {
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import { useRouter } from "next/router";
+import PoiDetailsNew from "./PoiDetailsNew";
 
 const POIDetailsDrawer = (props) => {
   const [data, setData] = useState(props?.data || []);
@@ -143,13 +144,14 @@ const POIDetailsDrawer = (props) => {
           </div>
         </>
       ) : (
-        <POIDetailsSkeleton
-          width={"100%"}
-          height={"19rem"}
-          itineraryDrawer={props.itineraryDrawer}
-          name={props.name}
-          handleCloseDrawer={props.handleCloseDrawer}
-        />
+        <PoiDetailsNew/>
+        // <POIDetailsSkeleton
+        //   width={"100%"}
+        //   height={"19rem"}
+        //   itineraryDrawer={props.itineraryDrawer}
+        //   name={props.name}
+        //   handleCloseDrawer={props.handleCloseDrawer}
+        // />
       )}
     </Drawer>
   );

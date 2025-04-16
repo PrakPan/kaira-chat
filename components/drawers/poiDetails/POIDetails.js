@@ -95,7 +95,9 @@ const Child = styled.div`
 const ScrollContainer = styled.div`
   display: flex;
   gap: 21px;
+  height:210px;
   overflow-x: auto;
+  overflow-y: hidden;
   -ms-overflow-style: none;
   scrollbar-width: none;
   &::-webkit-scrollbar {
@@ -366,10 +368,10 @@ const POIDetails = (props) => {
             )}
           </>
           <div className="">
+            <Title>{props.data.name}</Title>
             {props.data?.experience_filters && (
               <Text>{experience_filters}</Text>
             )}
-            <Title>{props.data.name}</Title>
             {aboutText != null && aboutText != undefined && (
               <div>
                 <Text
@@ -463,13 +465,13 @@ const POIDetails = (props) => {
                   ))}
                 </>
               ) : (
-                <div className="flex gap-2">
+                <ScrollContainer>
                   {props?.data?.reviews?.map((item) => (
                     <div className="w-[289px]">
                       <ReviewPoi review={item} />
                     </div>
                   ))}
-                  </div>
+                  </ScrollContainer>
               )}
             </div>
           )}

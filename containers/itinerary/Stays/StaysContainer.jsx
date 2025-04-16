@@ -9,6 +9,7 @@ import { isDateOlderThanCurrent } from "../../../helper/isDateOlderThanCurrent";
 import { format, parse } from "date-fns";
 import { CONTENT_SERVER_HOST } from "../../../services/constants";
 import media from "../../../components/media";
+import Drawer from "../../../components/ui/Drawer";
 const StaysContainer = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [selectedBooking, setSelectedBooking] = useState({
@@ -86,7 +87,6 @@ const StaysContainer = (props) => {
   };
 
   function handleClickAc(i, data, city_id, clickType) {
-    console.log("Inside Stays");
     let name = props.stayBookings[i]?.["name"];
     let itinerary_id = props.stayBookings[i]["itinerary_id"];
     let itinerary_name = props.stayBookings[i]["itinerary_name"];
@@ -231,7 +231,6 @@ const StaysContainer = (props) => {
           </>
         )}
       </div>
-
       <AccommodationModal
         mercury
         _setImagesHandler={_setImagesHandler}

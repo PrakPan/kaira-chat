@@ -15,7 +15,7 @@ const ReviewPoi = ({ review }) => {
       <div>
         <span style={{ color: "#FFD201" }}>★</span> <span className="text-[12px]">{review?.rating}</span>
       </div>
-      <div className="mb-[12px]">
+      <div>
       {viewMore ? (
         <div className="text-[12px] h-[72px] overflow-y-auto">
           {review?.text}{" "}

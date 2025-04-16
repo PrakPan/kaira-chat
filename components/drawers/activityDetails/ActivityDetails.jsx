@@ -8,7 +8,7 @@ import { getIndianPrice } from "../../../services/getIndianPrice";
 import { dateFormat } from "../../../helper/DateUtils";
 import { FaStar, FaStarHalfAlt, FaClock } from "react-icons/fa";
 import { FaPerson } from "react-icons/fa6";
-import { IoIosArrowDown, IoMdClose } from "react-icons/io";
+import { IoIosArrowDown, IoIosArrowUp, IoMdClose } from "react-icons/io";
 import { IoFastFood, IoTicket } from "react-icons/io5";
 import { MdTransferWithinAStation } from "react-icons/md";
 import { BiSolidCustomize } from "react-icons/bi";
@@ -27,6 +27,13 @@ export default function ActivityDetails(props) {
   const [stars, setStars] = useState([]);
   const [inclusiveCost, setInclusiveCost] = useState([]);
   const token = useSelector((state) => state.auth.token);
+  const [boolDetails, setBoolDetail] = useState({
+    generalGuidelines: false,
+    thingsToBring: false,
+    notSuitableFor: false,
+    tipsTricks: false,
+    Amenities: false,
+  });
   useEffect(() => {
     if (props.data?.amenities?.length) {
       for (let amenity of props.data.amenities) {
@@ -160,19 +167,6 @@ export default function ActivityDetails(props) {
           </div>
 
           <div className="flex flex-col gap-3">
-            {props.data?.experience_filters && (
-              <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
-                {props.data.experience_filters?.map((e, i) => (
-                  <span
-                    key={i}
-                    className={`border-2 rounded-full px-2 py-1`}
-                    style={{ backgroundColor: colors[i % colors.length] }}
-                  >
-                    {e}
-                  </span>
-                ))}
-              </div>
-            )}
             <div className="text-[20px] font-[800]">{props.data.name}</div>
 
             {props?.data?.rating && (
@@ -185,7 +179,6 @@ export default function ActivityDetails(props) {
                     {stars}
                   </div>
                 )}
-
                 <div style={{ display: "flex", alignItems: "center" }}>
                   {props.data?.rating && (
                     <p
@@ -204,7 +197,21 @@ export default function ActivityDetails(props) {
                   )}
                 </div>
               </div>
+              
             )}
+            {props.data?.experience_filters && (
+                  <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
+                    {props.data.experience_filters?.map((e, i) => (
+                      <span
+                        key={i}
+                        className={`border-2 rounded-full px-2 py-1`}
+                        style={{ backgroundColor: colors[i % colors.length] }}
+                      >
+                        {e}
+                      </span>
+                    ))}
+                  </div>
+                )}
             {props.data?.short_description && (
               <div className="flex flex-col gap-2">
                 <div className="text-[14px] text-[#01202B]">
@@ -230,15 +237,37 @@ export default function ActivityDetails(props) {
               <div className="flex flex-col">
                 <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
                   <div>General guidelines</div>
-                  <IoIosArrowDown />
+                  {!boolDetails?.generalGuidelines ? (
+                    <IoIosArrowDown
+                      className="cursor-pointer"
+                      onClick={() =>
+                        setBoolDetail((prev) => ({
+                          ...prev,
+                          generalGuidelines: true,
+                        }))
+                      }
+                    />
+                  ) : (
+                    <IoIosArrowUp
+                      className="cursor-pointer"
+                      onClick={() =>
+                        setBoolDetail((prev) => ({
+                          ...prev,
+                          generalGuidelines: false,
+                        }))
+                      }
+                    />
+                  )}
                 </div>
-                <div className="text-[14px]">
-                  <ul style={{ paddingLeft: "0.5rem" }}>
-                    {props.data.general_guidelines?.map((e, i) => (
-                      <li key={i}>- {e}</li>
-                    ))}
-                  </ul>
-                </div>
+                {boolDetails?.generalGuidelines && (
+                  <div className="text-[14px]">
+                    <ul style={{ paddingLeft: "0.5rem" }}>
+                      {props.data.general_guidelines?.map((e, i) => (
+                        <li key={i}>- {e}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             ) : (
               <></>
@@ -249,15 +278,37 @@ export default function ActivityDetails(props) {
               <div className="flex flex-col">
                 <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
                   <div>Things to bring</div>
-                  <IoIosArrowDown />
+                  {!boolDetails?.thingsToBring ? (
+                    <IoIosArrowDown
+                      className="cursor-pointer"
+                      onClick={() =>
+                        setBoolDetail((prev) => ({
+                          ...prev,
+                          thingsToBring: true,
+                        }))
+                      }
+                    />
+                  ) : (
+                    <IoIosArrowUp
+                      className="cursor-pointer"
+                      onClick={() =>
+                        setBoolDetail((prev) => ({
+                          ...prev,
+                          thingsToBring: flase,
+                        }))
+                      }
+                    />
+                  )}
                 </div>
-                <div className="text-[14px]">
-                  <ul style={{ paddingLeft: "0.5rem" }}>
-                    {props.data.things_to_bring?.map((e, i) => (
-                      <li key={i}>- {e}</li>
-                    ))}
-                  </ul>
-                </div>
+                {boolDetails?.thingsToBring && (
+                  <div className="text-[14px]">
+                    <ul style={{ paddingLeft: "0.5rem" }}>
+                      {props.data.things_to_bring?.map((e, i) => (
+                        <li key={i}>- {e}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             ) : (
               <></>
@@ -268,15 +319,37 @@ export default function ActivityDetails(props) {
               <div className="flex flex-col">
                 <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
                   <div>Not suitable for</div>
-                  <IoIosArrowDown />
+                  {boolDetails?.notSuitableFor ? (
+                    <IoIosArrowDown
+                      className="cursor-pointer"
+                      onClick={() =>
+                        setBoolDetail((prev) => ({
+                          ...prev,
+                          boolDetails: true,
+                        }))
+                      }
+                    />
+                  ) : (
+                    <IoIosArrowUp
+                      className="cursor-pointer"
+                      onClick={() =>
+                        setBoolDetail((prev) => ({
+                          ...prev,
+                          boolDetails: false,
+                        }))
+                      }
+                    />
+                  )}
                 </div>
-                <div className="text-[14px]">
-                  <ul style={{ paddingLeft: "0.5rem" }}>
-                    {props.data.not_suitable_for?.map((e, i) => (
-                      <li key={i}>- {e}</li>
-                    ))}
-                  </ul>
-                </div>
+                {boolDetails?.notSuitableFor && (
+                  <div className="text-[14px]">
+                    <ul style={{ paddingLeft: "0.5rem" }}>
+                      {props.data.not_suitable_for?.map((e, i) => (
+                        <li key={i}>- {e}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             ) : (
               <></>
@@ -286,15 +359,37 @@ export default function ActivityDetails(props) {
               <div className="flex flex-col">
                 <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
                   <div>Tips, Tricks and Cautions</div>
-                  <IoIosArrowDown />
+                  {!boolDetails?.tipsTricks ? (
+                    <IoIosArrowDown
+                      className="cursor-pointer"
+                      onClick={() =>
+                        setBoolDetail((prev) => ({
+                          ...prev,
+                          tipsTricks: true,
+                        }))
+                      }
+                    />
+                  ) : (
+                    <IoIosArrowUp
+                      className="cursor-pointer"
+                      onClick={() =>
+                        setBoolDetail((prev) => ({
+                          ...prev,
+                          tipsTricks: false,
+                        }))
+                      }
+                    />
+                  )}
                 </div>
-                <div className="text-[14px]">
-                  <ul style={{ paddingLeft: "0.5rem" }}>
-                    {props.data.tips_tricks?.map((e, i) => (
-                      <li key={i}>- {e}</li>
-                    ))}
-                  </ul>
-                </div>
+                {boolDetails?.tipsTricks && (
+                  <div className="text-[14px]">
+                    <ul style={{ paddingLeft: "0.5rem" }}>
+                      {props.data.tips_tricks?.map((e, i) => (
+                        <li key={i}>- {e}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             ) : (
               <></>
@@ -330,12 +425,15 @@ export default function ActivityDetails(props) {
             Total Cost
           </div>
         </div>
-        <button
-          onClick={handleUpdate}
-          className="bg-[#F7E700] py-2 px-4 border-2 border-black rounded-lg h-[40px]"
-        >
-          {props.data?.city && "Add to Itinerary"}
-        </button>
+        <div className="flex flex-col gap-1">
+          <button
+            onClick={handleUpdate}
+            className="bg-[#F7E700] py-2 px-4 border-2 border-black rounded-lg h-[40px]"
+          >
+            {props.data?.city && "Add to Itinerary"}
+          </button>
+          {dateFormat(props?.date)}
+        </div>
       </div>
     </div>
   );
