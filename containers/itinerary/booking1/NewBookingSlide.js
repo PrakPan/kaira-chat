@@ -394,7 +394,7 @@ const Details = (props) => {
   };
 
   const handleGetInTouch = () => {
-    props._GetInTouch()();
+    props._GetInTouch();
 
     logEvent({
       action: "Button_Click",
@@ -898,7 +898,7 @@ const Details = (props) => {
         </Button>
       ) : (
         <>
-          {pricing_status === "PENDING" ? (
+          {/* {pricing_status === "PENDING" ? (
             <Button
               color="#111"
               fontWeight="500"
@@ -1070,7 +1070,7 @@ const Details = (props) => {
                 </Button>
               </GetInTouchContainer>
             )
-          ) : pricing_status === "FAILURE" ? (
+          ) : pricing_status === "FAILURE" ? ( */}
             <GetInTouchContainer>
               <Button
                 color="#111"
@@ -1103,7 +1103,7 @@ const Details = (props) => {
                 </div>
               </Button>
             </GetInTouchContainer>
-          ) : null}
+          
 
           {!props.token && pricing_status === "SUCCESS" ? (
             <Button

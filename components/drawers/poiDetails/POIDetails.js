@@ -165,7 +165,10 @@ const POIDetails = (props) => {
             day_by_day_index: props?.dayIndex,
             poi_index: props?.slabIndex,
           },
-        }
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        },
       );
 
       if (res?.status == 200) {

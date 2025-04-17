@@ -47,7 +47,11 @@ const NewPoiDetailsDrawer = (props) => {
       };
       const res = await axios.post(
         `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/poi/add/`,
-        requestData
+        requestData,{
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
       );
       console.log("itineray is:",itinerary)
       var newItinerary = JSON.parse(JSON.stringify(itinerary));

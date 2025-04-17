@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import RoomType from "./roomtype/Index";
+import { dateFormat } from "../../../../helper/DateUtils";
 
 
 const Rooms = (props) => {
@@ -33,7 +34,7 @@ const Rooms = (props) => {
               handleUpdateBooking={handleUpdateBooking}
               selectedRecommendation={selectedRecommendation && selectedRecommendation === i}
               setSelectedRecommendation={setSelectedRecommendation}
-              checkInDate={props.checkInDate?.date}
+              checkInDate={dateFormat(props.checkInDate)}
               city={props.city}
             ></RoomType>
           );

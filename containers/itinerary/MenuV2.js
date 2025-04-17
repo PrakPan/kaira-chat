@@ -832,6 +832,7 @@ const SimpleTabsV2 = (props) => {
                       itineraryDate={props?.itineraryDate}
                       mercuryItinerary={props?.mercuryItinerary}
                       itinerary={props.itinerary}
+                      _GetInTouch={props._GetInTouch}
                     />
                   )
                 ) : (
@@ -1140,6 +1141,7 @@ const SimpleTabsV2 = (props) => {
               itineraryDate={props?.itineraryDate}
               mercuryItinerary={props?.mercuryItinerary}
               itinerary={props.itinerary}
+              _GetInTouch={_GetInTouch}
             />
           ) : null}
         </SplitScreen>

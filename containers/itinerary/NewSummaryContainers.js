@@ -285,6 +285,7 @@ const NewSummaryContainer = (props) => {
           paymentInfo={props?.payment}
           mercuryItinerary={props?.mercuryItinerary}
           itineraryDate={props?.itineraryDate}
+          _GetInTouch={props?._GetInTouch}
         />
       )}
     </SummaryContainer>

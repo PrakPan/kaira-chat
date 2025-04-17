@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import ImageLoader from "../../../ImageLoader";
 import Image from "../../../ImageLoader";
-import NextImage from "next/image"
+import NextImage from "next/image";
 import { getHumanTime } from "../../../../services/getHumanTime";
 import Rooms from "../roomtypes/Index";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
@@ -18,6 +18,7 @@ import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { axiosDeleteBooking } from "../../../../services/itinerary/bookings";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { dateFormat } from "../../../../helper/DateUtils";
 const starRating = (rating) => {
   var stars = [];
   for (let i = 0; i < Math.floor(rating); i++) {
@@ -199,47 +200,15 @@ const HotelBookingDetails = (props) => {
       if (props.images[i]) images.push(props.images[i]);
     }
   } catch {}
-
-  const handleDelete = async () => {
-    try {
-      setLoading(true);
-      const response = await axiosDeleteBooking.delete(
-        `${id}/bookings/accommodation/${props?.id}/`
-      );
-
-      if (response.status === 204) {
-        dispatch(updateStays(props?.id));
-        setLoading(false);
-        // props?.setShowDetails(true);
-        toast.success("Booking deleted successfuly");
-        setVisible(true);
-        // setHandleShow(false);
-        console.log("Deleted Booking");
-      }
-    } catch (err) {
-      console.log(
-        "[ERROR][ItineraryPage][axiosDeleteBooking:/Delete_Booking]",
-        err
-      );
-      toast.error("Error", err.message);
-      setLoading(false);
-    }
-  };
   return (
     <Container>
       <FlexBox>
         <div>
           <Name>{props?.data?.name}</Name>
           <Address>
-            {props?.data?.addr1
-              ? props?.data?.addr1 + ", "
-              : ""}{" "}
-            {props?.data?.addr2
-              ? props?.data?.addr2 + ", "
-              : ""}{" "}
-            {props?.data?.city_name
-              ? props?.data?.city_name
-              : ""}
+            {props?.data?.addr1 ? props?.data?.addr1 + ", " : ""}{" "}
+            {props?.data?.addr2 ? props?.data?.addr2 + ", " : ""}{" "}
+            {props?.data?.city_name ? props?.data?.city_name : ""}
           </Address>
         </div>
         {props.payment && props.token ? (
@@ -915,15 +884,14 @@ const HotelBookingDetails = (props) => {
       )}
 
       <DetailsContainer>
-        {props?.data?.check_in?.begin_time &&
-        props?.data?.check_out?.time ? (
+        {props?.data?.check_in?.begin_time && props?.data?.check_out?.time ? (
           <CheckInText>
             <div className="">
-              Check in: {props?.data?.check_in.date},
-              {getHumanTime(props?.data?.check_in.begin_time)}
+              Check in: {dateFormat(props?.data?.check_in.date)}|
+              {getHumanTime(dateFormat(props?.data?.check_in.begin_time))}
             </div>
             <div>
-              Check out: {props?.data?.check_out.date},
+              Check out: {dateFormat(props?.data?.check_out.date)}|
               {getHumanTime(props?.data?.check_out.time)}
             </div>
           </CheckInText>
@@ -1003,15 +971,17 @@ const HotelBookingDetails = (props) => {
                   className="flex flex-col md:flex-row gap-1 justify-between"
                 >
                   <div>
-                  {room?.name && <div className="text-[16px] font-bold">{room?.name}</div>}
-                  {room?.description ? (
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: room.description,
-                      }}
-                      className=""
-                    ></div>
-                  ) : null}
+                    {room?.name && (
+                      <div className="text-[16px] font-bold">{room?.name}</div>
+                    )}
+                    {room?.description ? (
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: room.description,
+                        }}
+                        className=""
+                      ></div>
+                    ) : null}
                   </div>
                   <div className="flex flex-col items-center justify-center gap-3 md:w-[40%] h-[250px]">
                     <ImageCarousel images={room?.images} />
@@ -1022,16 +992,16 @@ const HotelBookingDetails = (props) => {
                   <div className="flex flex-col gap-2">
                     <div className="text-lg font-semibold">Amenities</div>
                     <div className="text-[14px]">
-                      <div className="flex flex-wrap gap-2">
-                        {room.facilities.map((item, index) => (
-                          <div key={index}>
-                            <div className="bg-[#FAFAFA] p-[8px] rounded-[10px]">
-                              {item}
+                        <div className="flex flex-wrap gap-2">
+                          {room.facilities.map((item, index) => (
+                            <div key={index}>
+                              <div className="bg-[#FAFAFA] p-[8px] rounded-[10px]">
+                                {item}
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
-                    </div>
                   </div>
                 ) : null}
               </div>
@@ -1055,6 +1025,19 @@ const HotelBookingDetails = (props) => {
         </>
       ) : (
         <></>
+      )}
+      {props?.data?.category_ratings && (
+        <div>
+          <Heading >Ratings</Heading>
+          {props?.data?.category_ratings.map((item, index) => (
+            <div key={index} className="flex justify-between items-center">
+              <div className="w-1/2 font-medium">{item?.category}</div>
+              <div className="w-1/2 flex justify-end text-[#FFD201]">
+                {starRating(item?.rating)}
+              </div>
+            </div>
+          ))}
+        </div>
       )}
 
       {props?.data?.google_maps_link ? (
@@ -1164,63 +1147,33 @@ const HotelBookingDetails = (props) => {
               </svg>
             </div>
             <Address style={{ fontSize: "14px" }}>
-              {props?.data?.addr1
-                ? props?.data.addr1 + ", "
-                : ""}{" "}
-              {props?.data?.addr2
-                ? props?.data.addr2 + ", "
-                : ""}{" "}
-              {props?.data?.city_name
-                ? props?.data.city
-                : ""}
+              {props?.data?.addr1 ? props?.data.addr1 + ", " : ""}{" "}
+              {props?.data?.addr2 ? props?.data.addr2 + ", " : ""}{" "}
+              {props?.data?.city_name ? props?.data.city : ""}
             </Address>
           </div>
           <div className="flex justify-between">
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.75rem",
-              justifyContent: "left",
-              marginTop: "0.5rem",
-            }}
-          >
-            <a
-              href={`https://www.google.com/maps/search/?api=1&query=${
-                props?.data?.coordinates?.latitude
-              },${
-                props?.data?.coordinates?.longitude
-              }+(${props?.data?.name?.split(" ").join("+")})`}
-              target="_blank"
-              style={{ color: "#0000EE", fontSize: "14px" }}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.75rem",
+                justifyContent: "left",
+                marginTop: "0.5rem",
+              }}
             >
-              View on Google Maps
-            </a>
-          </div>
-          
-            <button
-              className=" right-0 text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
-              onClick={handleDelete}
-            >
-              <div style={{ position: "relative" }}>
-                <div className="flex gap-1 items-center p-1" style={loading ? { visibility: "hidden" } : {}}>
-                <NextImage src="/delete.svg" width={"20"} height={"20"}/> Delete Booking
-                </div>
-                {loading && (
-                  <PulseLoader
-                    style={{
-                      position: "absolute",
-                      top: "55%",
-                      left: "50%",
-                      transform: "translate(-50% , -50%)",
-                    }}
-                    size={12}
-                    speedMultiplier={0.6}
-                    color="#ffffff"
-                  />
-                )}
-              </div>
-            </button>
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${
+                  props?.data?.coordinates?.latitude
+                },${props?.data?.coordinates?.longitude}+(${props?.data?.name
+                  ?.split(" ")
+                  .join("+")})`}
+                target="_blank"
+                style={{ color: "#0000EE", fontSize: "14px" }}
+              >
+                View on Google Maps
+              </a>
+            </div>
           </div>
         </div>
       ) : (

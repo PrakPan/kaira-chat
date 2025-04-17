@@ -16,6 +16,7 @@ import { useRouter } from "next/router";
 import HotelBookingDetails from "./Overview/HotelBookingDetails";
 import { updateAccommodationBooking } from "../../../services/bookings/UpdateBookings";
 import { convertDate } from "../../../helper/getDateYYY-MM-DD";
+import { toast } from "react-toastify";
 
 const Container = styled.div`
   padding: 0 0.75rem 0.75rem 0.75rem;
@@ -180,7 +181,11 @@ const ViewHotelDetails = (props) => {
     };
 
     updateAccommodationBooking
-      .post(`${router?.query?.id}/bookings/accommodation/`, requestData)
+      .post(`${router?.query?.id}/bookings/accommodation/`, requestData,{
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      })
       .then((response) => {
         props._updateStayBookingHandler([response.data]);
         props.setUpdateBookingState(false);
@@ -203,15 +208,16 @@ const ViewHotelDetails = (props) => {
             source: response?.data?.images?.[0]?.source,
           };
           props.setStayBookings(stayBookings);
+          toast.success("booking updated successfuly")
         } catch (error) {
-          console.error("Error updating stay bookings:", error);
+          toast.error(error.response?.data?.errors[0]?.message[0]);
         }
       })
       .catch((err) => {
         props.setUpdateBookingState(false);
         props.openNotification({
           type: "error",
-          text: "Something went wrong! Please try after some time.",
+          text: `${err.response?.data?.errors[0]?.message[0]}`,
           heading: "Error!",
         });
       });

@@ -409,6 +409,7 @@ const ActivityAddDrawer = (props) => {
     }
     setLoaded(false);
     setLoadingPoi(true);
+    setOptions([])
   };
   return (
     <Drawer
