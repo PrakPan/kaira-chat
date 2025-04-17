@@ -229,16 +229,16 @@ const HotelBookingDetails = (props) => {
     <Container>
       <FlexBox>
         <div>
-          <Name>{props?.data?.hotel_details?.name}</Name>
+          <Name>{props?.data?.name}</Name>
           <Address>
-            {props?.data?.hotel_details?.addr1
-              ? props?.data?.hotel_details?.addr1 + ", "
+            {props?.data?.addr1
+              ? props?.data?.addr1 + ", "
               : ""}{" "}
-            {props?.data?.hotel_details?.addr2
-              ? props?.data?.hotel_details?.addr2 + ", "
+            {props?.data?.addr2
+              ? props?.data?.addr2 + ", "
               : ""}{" "}
-            {props?.data?.hotel_details?.city_name
-              ? props?.data?.hotel_details?.city_name
+            {props?.data?.city_name
+              ? props?.data?.city_name
               : ""}
           </Address>
         </div>
@@ -258,18 +258,18 @@ const HotelBookingDetails = (props) => {
         )}
       </FlexBox>
 
-      {props?.data?.hotel_details?.rating && (
+      {props?.data?.rating && (
         <div className="gap-1 flex flex-row  items-center">
           <div className="flex flex-row text-[#FFD201]">
-            {starRating(props?.data?.hotel_details?.rating)}
+            {starRating(props?.data?.rating)}
           </div>
           <div>
-            {props?.data?.hotel_details?.rating}
+            {props?.data?.rating}
             {" . "}
           </div>
-          {props?.data?.hotel_details?.user_ratings_total && (
+          {props?.data?.user_ratings_total && (
             <div className="text-sm text-[#7A7A7A] font-[400] underline">
-              {props?.data?.hotel_details?.user_ratings_total} reviews
+              {props?.data?.user_ratings_total} reviews
             </div>
           )}
         </div>
@@ -915,16 +915,16 @@ const HotelBookingDetails = (props) => {
       )}
 
       <DetailsContainer>
-        {props?.data?.hotel_details?.check_in?.begin_time &&
-        props?.data?.hotel_details?.check_out?.time ? (
+        {props?.data?.check_in?.begin_time &&
+        props?.data?.check_out?.time ? (
           <CheckInText>
             <div className="">
-              Check in: {props?.data?.hotel_details?.check_in.date},
-              {getHumanTime(props?.data?.hotel_details?.check_in.begin_time)}
+              Check in: {props?.data?.check_in.date},
+              {getHumanTime(props?.data?.check_in.begin_time)}
             </div>
             <div>
-              Check out: {props?.data?.hotel_details?.check_out.date},
-              {getHumanTime(props?.data?.hotel_details?.check_out.time)}
+              Check out: {props?.data?.check_out.date},
+              {getHumanTime(props?.data?.check_out.time)}
             </div>
           </CheckInText>
         ) : (
@@ -932,7 +932,7 @@ const HotelBookingDetails = (props) => {
         )}
       </DetailsContainer>
 
-      {props?.data?.hotel_details?.rates?.map((room, index) => (
+      {props?.data?.rates?.map((room, index) => (
         <div
           key={index}
           className="flex flex-col gap-3 bg-white p-2 rounded-lg"
@@ -980,23 +980,23 @@ const HotelBookingDetails = (props) => {
         </div>
       ))}
 
-      {props?.data?.hotel_details?.check_in?.instructions?.length ? (
+      {props?.data?.check_in?.instructions?.length ? (
         <div className="flex flex-col gap-1">
           <div className="text-lg font-bold">About</div>
           <div
             className="text-[14px] ml-[-30px]"
             dangerouslySetInnerHTML={{
-              __html: props?.data?.hotel_details?.check_in?.instructions[0],
+              __html: props?.data?.check_in?.instructions[0],
             }}
           ></div>
         </div>
       ) : null}
 
-      {props?.data?.hotel_details?.rates?.[0]?.rooms?.[0]?.description && (
+      {props?.data?.rates?.[0]?.rooms?.[0]?.description && (
         <>
           <Heading>Room Information</Heading>
           <div className="flex flex-col gap-3">
-            {props?.data?.hotel_details?.rates?.[0]?.rooms.map((room, index) => (
+            {props?.data?.rates?.[0]?.rooms.map((room, index) => (
               <div key={index} className="flex flex-col gap-3">
                 <div
                   key={index}
@@ -1040,16 +1040,16 @@ const HotelBookingDetails = (props) => {
         </>
       )}
 
-      {props?.data?.hotel_details?.recommendations && props?.data?.hotel_details?.recommendations?.length ? (
+      {props?.data?.recommendations && props?.data?.recommendations?.length ? (
         <>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>
             Room Recommendations
           </Heading>
 
           <Rooms
-            data={props?.data?.hotel_details?.recommendations}
-            checkInDate={props?.data?.hotel_details?.check_in?.date}
-            city={props?.data?.hotel_details?.city}
+            data={props?.data?.recommendations}
+            checkInDate={props?.data?.check_in?.date}
+            city={props?.data?.city}
             updateBooking={props.updateBooking}
           ></Rooms>
         </>
@@ -1057,13 +1057,13 @@ const HotelBookingDetails = (props) => {
         <></>
       )}
 
-      {props?.data?.hotel_details?.google_maps_link ? (
+      {props?.data?.google_maps_link ? (
         <div>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Location</Heading>
           <Address style={{ fontSize: "14px" }}>
-            {props?.data?.hotel_details?.addr1 ? props?.data?.hotel_details?.addr1 + ", " : ""}{" "}
-            {props?.data?.hotel_details?.addr2 ? props?.data?.hotel_details?.addr2 + ", " : ""}{" "}
-            {props?.data?.hotel_details?.city ? props?.data?.hotel_details?.city : ""}
+            {props?.data?.addr1 ? props?.data?.addr1 + ", " : ""}{" "}
+            {props?.data?.addr2 ? props?.data?.addr2 + ", " : ""}{" "}
+            {props?.data?.city ? props?.data?.city : ""}
           </Address>
           <div
             style={{
@@ -1087,7 +1087,7 @@ const HotelBookingDetails = (props) => {
               />
             </div>
             <a
-              href={props?.data?.hotel_details?.google_maps_link}
+              href={props?.data?.google_maps_link}
               target="_blank"
               style={{ color: "black", fontSize: "14px" }}
             >
@@ -1095,8 +1095,8 @@ const HotelBookingDetails = (props) => {
             </a>
           </div>
         </div>
-      ) : props?.data?.hotel_details?.coordinates?.latitude &&
-        props?.data?.hotel_details?.coordinates?.longitude ? (
+      ) : props?.data?.coordinates?.latitude &&
+        props?.data?.coordinates?.longitude ? (
         <div>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Location</Heading>
           <div className="flex gap-2">
@@ -1164,14 +1164,14 @@ const HotelBookingDetails = (props) => {
               </svg>
             </div>
             <Address style={{ fontSize: "14px" }}>
-              {props?.data?.hotel_details?.addr1
-                ? props?.data?.hotel_details?.addr1 + ", "
+              {props?.data?.addr1
+                ? props?.data.addr1 + ", "
                 : ""}{" "}
-              {props?.data?.hotel_details?.addr2
-                ? props?.data?.hotel_details?.addr2 + ", "
+              {props?.data?.addr2
+                ? props?.data.addr2 + ", "
                 : ""}{" "}
-              {props?.data?.hotel_details?.city
-                ? props?.data?.hotel_details?.city
+              {props?.data?.city_name
+                ? props?.data.city
                 : ""}
             </Address>
           </div>
@@ -1187,10 +1187,10 @@ const HotelBookingDetails = (props) => {
           >
             <a
               href={`https://www.google.com/maps/search/?api=1&query=${
-                props?.data?.hotel_details?.coordinates?.latitude
+                props?.data?.coordinates?.latitude
               },${
-                props?.data?.hotel_details?.coordinates?.longitude
-              }+(${props?.data?.hotel_details?.name?.split(" ").join("+")})`}
+                props?.data?.coordinates?.longitude
+              }+(${props?.data?.name?.split(" ").join("+")})`}
               target="_blank"
               style={{ color: "#0000EE", fontSize: "14px" }}
             >
