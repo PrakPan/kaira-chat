@@ -34,7 +34,7 @@ const HotelBooking = ({
   plan,
   token,
   payment,
-  handleClick,
+  handleBookedHotelViewDetails,
   handleClickAc,
   setShowLoginModal,
   setShowDetails,
@@ -74,8 +74,7 @@ const HotelBooking = ({
   // console.log("Bkm",booking)
 
   const handleViewDetails = (value) => {
-    handleClick(index, booking.id, booking, booking.city_name || booking.city);
-
+    handleBookedHotelViewDetails(index, booking.id, booking, booking.city_name || booking.city)
     logEvent({
       action: "Hotel_Details",
       params: {

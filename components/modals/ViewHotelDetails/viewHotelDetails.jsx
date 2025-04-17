@@ -69,7 +69,7 @@ const ErrorContainer = styled.div`
   text-align: center;
 `;
 
-const POI = (props) => {
+const ViewHotelDetails = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -99,8 +99,17 @@ const POI = (props) => {
     setError(false);
 
     if (props?.mercury) {
-      bookingDetails
-        .get(`${router?.query?.id}/bookings/accommodation/${props?.id}/`)
+      const requestData = {
+        trace_id: props?.traceId,
+        check_in: (props?.check_in).split("/").join("-"),
+        check_out: (props?.check_out).split("/").join("-"),
+        hotel_id: props?.id,
+        occupancies: props?.occupancies,
+        source:props?.source,
+        currency:"INR"
+      };
+      hotelDetails
+        .post('',requestData)
         .then((res) => {
           setLoading(false);
           setData(res.data);
@@ -239,7 +248,7 @@ const POI = (props) => {
                   number_of_reviews={props.number_of_reviews}
                   data={data}
                   images={
-                    data?.hotel_details?.images ? data?.hotel_details?.images : []
+                    data?.images ? data.images : []
                   }
                   experience_filters={
                     props.poi ? props.poi.experience_filters : null
@@ -310,4 +319,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToPros, mapDispatchToProps)(POI);
+export default connect(mapStateToPros, mapDispatchToProps)(ViewHotelDetails);
