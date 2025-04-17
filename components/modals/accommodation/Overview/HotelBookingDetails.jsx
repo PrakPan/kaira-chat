@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import ImageLoader from "../../../ImageLoader";
 import Image from "../../../ImageLoader";
+import NextImage from "next/image"
 import { getHumanTime } from "../../../../services/getHumanTime";
 import Rooms from "../roomtypes/Index";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
@@ -1203,7 +1204,7 @@ const HotelBookingDetails = (props) => {
             >
               <div style={{ position: "relative" }}>
                 <div className="flex gap-1 items-center p-1" style={loading ? { visibility: "hidden" } : {}}>
-                <Image src="/delete.svg" width={"20"} height={"20"}/> Delete Booking
+                <NextImage src="/delete.svg" width={"20"} height={"20"}/> Delete Booking
                 </div>
                 {loading && (
                   <PulseLoader

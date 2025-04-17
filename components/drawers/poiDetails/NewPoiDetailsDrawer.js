@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { connect, useDispatch, useSelector } from "react-redux";
 import Drawer from "../../ui/Drawer";
-import POIDetailsSkeleton from "../poiDetails/POIDetailsSkeleton";
 import { getDate } from "../../../helper/DateUtils";
 import { openNotification } from "../../../store/actions/notification";
 import { toast, ToastContainer } from "react-toastify";
@@ -10,6 +9,7 @@ import PoiDetails from "./NewPoiDetails";
 import { MERCURY_HOST } from "../../../services/constants";
 import axios from "axios";
 import setItinerary from "../../../store/actions/itinerary";
+import PoiDetailsSkeleton from "./PoiDetailsSkelton";
 
 const NewPoiDetailsDrawer = (props) => {
   //console.log("day by day:",props?.setItinerary)
@@ -93,7 +93,7 @@ const NewPoiDetailsDrawer = (props) => {
           setShowLoginModal={props.setShowLoginModal}
         />
       ) : (
-        <POIDetailsSkeleton
+        <PoiDetailsSkeleton
           itineraryDrawer={props.itineraryDrawer}
           name={props.name}
           handleCloseDrawer={props.handleCloseDrawer}

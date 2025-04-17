@@ -25,16 +25,12 @@ const GridContainer = styled.div`
 
     display: grid;
     grid-template-columns: 1fr;
-    width: 100vw;
-    @media screen and (min-width: 768px) {
-      width: 50vw;
-    }
+
 `;
 
 const OptionsContainer = styled.div`
   min-height: 40vh;
   overflow-x: hidden;
-  width: 100%;
   position: relative;
 
   @media screen and (min-width: 768px) {
@@ -86,8 +82,21 @@ const Booking = (props) => {
   const filtersState = useSelector((state) => state.ItineraryFilters);
 
   const [filters, setFilters] = useState({
-    ...filtersState,
-    applyFilter: false,
+    free_breakfast: true,
+    is_refundable: false,
+    budget: {
+      price_lower_range: 1000,
+      price_upper_range: 10000,
+    },
+    star_category: null,
+    sort: "price: low to high",
+    type: null,
+    user_ratings: null,
+    facilities: null,
+    tags: null,
+    trace_id:null,
+    occupancies:filtersState?.occupancies,
+    applyFilter: false
   });
   const [filtersObj, setFiltersObj] = useState({
     type: [],
@@ -271,7 +280,7 @@ const Booking = (props) => {
 
           let options = [];
           for (var i = 0; i < res.data.data.length; i++) {
-            if (res.data.data[i].name !== props?.selectedBooking.name)
+            // if (res.data.data[i].name !== props?.selectedBooking.name)
               if (
                 res.data.data[i]?.images &&
                 res.data.data[i]?.images?.length &&
@@ -288,6 +297,8 @@ const Booking = (props) => {
                 if (img)
                   options.push(
                     <AccommodationSearched
+                      mercury
+                      source={res?.data?.data?.[i]?.source}
                       handleClick={props?.handleClick}
                       payment={props.payment}
                       plan={props.plan}
@@ -305,6 +316,7 @@ const Booking = (props) => {
                         (sum, room) => sum + room.num_adults,
                         0
                       )}
+                      occupancies={filters.occupancies}
                       traceId={
                         res.data?.trace_details?.id
                           ? res.data.trace_details.id
@@ -328,8 +340,7 @@ const Booking = (props) => {
             tags: res.data?.tags,
           });
 
-          setMoreOptionsJSX([...moreOptionsJSX,options])
-
+          setMoreOptionsJSX([...moreOptionsJSX, options]);
         } else {
           setNoResults(true);
           setMoreOptionsJSX([]);
@@ -337,6 +348,7 @@ const Booking = (props) => {
         setLoading(false);
       })
       .catch((err) => {
+        console.log("new error:",err)
         setLoading(false);
         setFetchingIsError({
           error: true,
@@ -354,6 +366,8 @@ const Booking = (props) => {
           backdrop
           className="font-lexend "
           onHide={props?.setHideBookingModal}
+          width={"50vw"}
+          mobileWidth={"100vw"}
         >
           {props?.showBookingModal ? (
             <>
@@ -497,10 +511,16 @@ const Booking = (props) => {
                       <Skeleton />
                     ) : !noResults && !updateBookingState ? (
                       <OptionsContainer id="options">
-                        <div className="mb-3" style={{ clear: "right" }}>
+                        <div
+                          className="mb-3"
+                        >
                           {moreOptionsJSX.length ? (
                             <>
-                              {moreOptionsJSX}
+                              {moreOptionsJSX?.map((item)=>(
+                                <>
+                                {item}
+                                </>
+                              ))}
                               {updateLoadingState && <Skeleton />}
                             </>
                           ) : null}
@@ -509,17 +529,17 @@ const Booking = (props) => {
                             paginationStatus.totalPages && (
                             <div className="mt-3">
                               {/* {viewMoreStatus ? ( */}
-                                <Button
-                                  boxShadow
-                                  onclickparam={null}
-                                  onclick={fetchHotels}
-                                  margin="0.25rem auto"
-                                  borderWidth="1px"
-                                  borderRadius="2rem"
-                                  padding="0.25rem 1rem"
-                                >
-                                  View More
-                                </Button>
+                              <Button
+                                boxShadow
+                                onclickparam={null}
+                                onclick={fetchHotels}
+                                margin="0.25rem auto"
+                                borderWidth="1px"
+                                borderRadius="2rem"
+                                padding="0.25rem 1rem"
+                              >
+                                View More
+                              </Button>
                               {/* // ) : selectSearch !== "" ? (
                               //   <Button
                               //     boxShadow
@@ -608,9 +628,8 @@ const Booking = (props) => {
                 _addFilterHandler={_addFilterHandler}
                 updateUserStarHandler={updateUserStarHandler}
               />
-
               <AccommodationModal
-                mercury
+                mercury={true}
                 check_in={props?.selectedBooking.check_in}
                 check_out={props?.selectedBooking.check_out}
                 _setImagesHandler={props?._setImagesHandler}
@@ -621,6 +640,7 @@ const Booking = (props) => {
                 handleClick={props?.handleClick}
                 setStayBookings={props?.setStayBookings}
                 itineraryDaybyDay={props?.itineraryDaybyDay}
+                occupancies={filters.occupancies}
               ></AccommodationModal>
             </>
           ) : (
