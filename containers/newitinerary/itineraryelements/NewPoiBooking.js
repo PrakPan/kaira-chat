@@ -114,6 +114,17 @@ export default function NewPoiBooking(props) {
               <SkeletonCard height={"100%"} />
             </div>
           </div>
+          <div
+              style={{
+                height: "220px",
+                width: "251px",
+                overflow: "hidden",
+                borderRadius: "16px",
+                display: !imageLoaded ? "block" : "none",
+              }}
+            >
+              <SkeletonCard height={"100%"} />
+            </div>
           <div className="flex flex-col justify-between">
             <div className="flex flex-col gap-2 text-[#01202B]  w-full h-fit justify-start">
               <div className="flex flex-col justify-between">
@@ -337,8 +348,6 @@ export default function NewPoiBooking(props) {
             borderRadius="8px"
             bgColor="#f8e000"
             padding="12px"
-            // margin={!isPageWide ? "0.75rem 0 0 0" : "0"}
-            // className="h-full text-blue underline cursor-pointer"
             onclick={() => handleClick(props.data?.id)}
           >
             Add To Itinerary

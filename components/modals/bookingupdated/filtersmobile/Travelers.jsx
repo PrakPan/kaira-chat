@@ -77,15 +77,6 @@ export default function Travelers(props) {
     }
 
     setShowError(false);
-    console.log(
-      "set filters are:",
-      rooms.map((room) => {
-        return {
-          num_adults: room.num_adults,
-          child_ages: room.child_ages,
-        };
-      })
-    );
     props.setFilters((prev) => ({
       ...prev,
       occupancies: rooms.map((room) => {

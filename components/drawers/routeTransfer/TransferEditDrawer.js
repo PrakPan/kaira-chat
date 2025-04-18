@@ -335,9 +335,9 @@ const TransferEditDrawer = (props) => {
       backdrop
       style={{ zIndex: 1501 }}
       className="font-lexend"
-      onHide={() => setShowDrawer(false)}
+      width={"50vw"}
       mobileWidth={"100vw"}
-      width="50vw"
+      onHide={() => setShowDrawer(false)}
     >
       <div className="relative px-2 bg-white z-[900] flex flex-col gap-4 pt-4 pb-[100px] justify-start items-start mx-auto w-[98%] min-h-screen">
         <div className="flex flex-row gap-2 my-0 justify-start items-center">
@@ -2328,7 +2328,7 @@ const OtherTransfer = ({
       className="font-lexend"
       onHide={() => setShowOtherTrasfer(false)}
       mobileWidth={"100vw"}
-      width="50vw"
+      width={"50vw"}
     >
       {/* <div
       onClick={handleClose}

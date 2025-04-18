@@ -200,51 +200,15 @@ const HotelBookingDetails = (props) => {
       if (props.images[i]) images.push(props.images[i]);
     }
   } catch {}
-
-  const handleDelete = async () => {
-    try {
-      setLoading(true);
-      const response = await axiosDeleteBooking.delete(
-        `${id}/bookings/accommodation/${props?.id}/`,{
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        }
-      );
-
-      if (response.status === 204) {
-        dispatch(updateStays(props?.id));
-        setLoading(false);
-        // props?.setShowDetails(true);
-        toast.success("Booking deleted successfuly");
-        setVisible(true);
-        // setHandleShow(false);
-        console.log("Deleted Booking");
-      }
-    } catch (err) {
-      console.log(
-        "[ERROR][ItineraryPage][axiosDeleteBooking:/Delete_Booking]",
-        err
-      );
-      toast.error("Error", err.message);
-      setLoading(false);
-    }
-  };
   return (
     <Container>
       <FlexBox>
         <div>
-          <Name>{props?.data?.hotel_details?.name}</Name>
+          <Name>{props?.data?.name}</Name>
           <Address>
-            {props?.data?.hotel_details?.addr1
-              ? props?.data?.hotel_details?.addr1 + ", "
-              : ""}{" "}
-            {props?.data?.hotel_details?.addr2
-              ? props?.data?.hotel_details?.addr2 + ", "
-              : ""}{" "}
-            {props?.data?.hotel_details?.city_name
-              ? props?.data?.hotel_details?.city_name
-              : ""}
+            {props?.data?.addr1 ? props?.data?.addr1 + ", " : ""}{" "}
+            {props?.data?.addr2 ? props?.data?.addr2 + ", " : ""}{" "}
+            {props?.data?.city_name ? props?.data?.city_name : ""}
           </Address>
         </div>
         {props.payment && props.token ? (
@@ -263,18 +227,18 @@ const HotelBookingDetails = (props) => {
         )}
       </FlexBox>
 
-      {props?.data?.hotel_details?.rating && (
+      {props?.data?.rating && (
         <div className="gap-1 flex flex-row  items-center">
           <div className="flex flex-row text-[#FFD201]">
-            {starRating(props?.data?.hotel_details?.rating)}
+            {starRating(props?.data?.rating)}
           </div>
           <div>
-            {props?.data?.hotel_details?.rating}
+            {props?.data?.rating}
             {" . "}
           </div>
-          {props?.data?.hotel_details?.user_ratings_total && (
+          {props?.data?.user_ratings_total && (
             <div className="text-sm text-[#7A7A7A] font-[400] underline">
-              {props?.data?.hotel_details?.user_ratings_total} reviews
+              {props?.data?.user_ratings_total} reviews
             </div>
           )}
         </div>
@@ -920,16 +884,15 @@ const HotelBookingDetails = (props) => {
       )}
 
       <DetailsContainer>
-        {props?.data?.hotel_details?.check_in?.begin_time &&
-        props?.data?.hotel_details?.check_out?.time ? (
+        {props?.data?.check_in?.begin_time && props?.data?.check_out?.time ? (
           <CheckInText>
             <div className="">
-              Check in: {dateFormat(props?.data?.hotel_details?.check_in.date)}|
-              {getHumanTime(dateFormat(props?.data?.hotel_details?.check_in.begin_time))}
+              Check in: {dateFormat(props?.data?.check_in.date)}|
+              {getHumanTime(dateFormat(props?.data?.check_in.begin_time))}
             </div>
             <div>
-              Check out: {props?.data?.hotel_details?.check_out.date}|
-              {getHumanTime(props?.data?.hotel_details?.check_out.time)}
+              Check out: {dateFormat(props?.data?.check_out.date)}|
+              {getHumanTime(props?.data?.check_out.time)}
             </div>
           </CheckInText>
         ) : (
@@ -937,7 +900,7 @@ const HotelBookingDetails = (props) => {
         )}
       </DetailsContainer>
 
-      {props?.data?.hotel_details?.rates?.map((room, index) => (
+      {props?.data?.rates?.map((room, index) => (
         <div
           key={index}
           className="flex flex-col gap-3 bg-white p-2 rounded-lg"
@@ -985,53 +948,50 @@ const HotelBookingDetails = (props) => {
         </div>
       ))}
 
-      {props?.data?.hotel_details?.check_in?.instructions?.length ? (
+      {props?.data?.check_in?.instructions?.length ? (
         <div className="flex flex-col gap-1">
           <div className="text-lg font-bold">About</div>
           <div
             className="text-[14px] ml-[-30px]"
             dangerouslySetInnerHTML={{
-              __html: props?.data?.hotel_details?.check_in?.instructions[0],
+              __html: props?.data?.check_in?.instructions[0],
             }}
           ></div>
         </div>
       ) : null}
 
-      {props?.data?.hotel_details?.rates?.[0]?.rooms?.[0]?.description && (
+      {props?.data?.rates?.[0]?.rooms?.[0]?.description && (
         <>
           <Heading>Room Information</Heading>
           <div className="flex flex-col gap-3">
-            {props?.data?.hotel_details?.rates?.[0]?.rooms.map(
-              (room, index) => (
-                <div key={index} className="flex flex-col gap-3">
-                  <div
-                    key={index}
-                    className="flex flex-col md:flex-row gap-1 justify-between"
-                  >
-                    <div>
-                      {room?.name && (
-                        <div className="text-[16px] font-bold">
-                          {room?.name}
-                        </div>
-                      )}
-                      {room?.description ? (
-                        <div
-                          dangerouslySetInnerHTML={{
-                            __html: room.description,
-                          }}
-                          className=""
-                        ></div>
-                      ) : null}
-                    </div>
-                    <div className="flex flex-col items-center justify-center gap-3 md:w-[40%] h-[250px]">
-                      <ImageCarousel images={room?.images} />
-                    </div>
+            {props?.data?.rates?.[0]?.rooms.map((room, index) => (
+              <div key={index} className="flex flex-col gap-3">
+                <div
+                  key={index}
+                  className="flex flex-col md:flex-row gap-1 justify-between"
+                >
+                  <div>
+                    {room?.name && (
+                      <div className="text-[16px] font-bold">{room?.name}</div>
+                    )}
+                    {room?.description ? (
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: room.description,
+                        }}
+                        className=""
+                      ></div>
+                    ) : null}
                   </div>
+                  <div className="flex flex-col items-center justify-center gap-3 md:w-[40%] h-[250px]">
+                    <ImageCarousel images={room?.images} />
+                  </div>
+                </div>
 
-                  {room?.facilities ? (
-                    <div className="flex flex-col gap-2">
-                      <div className="text-lg font-semibold">Amenities</div>
-                      <div className="text-[14px]">
+                {room?.facilities ? (
+                  <div className="flex flex-col gap-2">
+                    <div className="text-lg font-semibold">Amenities</div>
+                    <div className="text-[14px]">
                         <div className="flex flex-wrap gap-2">
                           {room.facilities.map((item, index) => (
                             <div key={index}>
@@ -1042,22 +1002,37 @@ const HotelBookingDetails = (props) => {
                           ))}
                         </div>
                       </div>
-                    </div>
-                  ) : null}
-                </div>
-              )
-            )}
+                  </div>
+                ) : null}
+              </div>
+            ))}
           </div>
         </>
       )}
 
-      {props?.data?.hotel_details?.category_ratings && (
+      {props?.data?.recommendations && props?.data?.recommendations?.length ? (
+        <>
+          <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>
+            Room Recommendations
+          </Heading>
+
+          <Rooms
+            data={props?.data?.recommendations}
+            checkInDate={props?.data?.check_in?.date}
+            city={props?.data?.city}
+            updateBooking={props.updateBooking}
+          ></Rooms>
+        </>
+      ) : (
+        <></>
+      )}
+      {props?.data?.category_ratings && (
         <div>
-          <Heading>Ratings</Heading>
-          {props?.data?.hotel_details?.category_ratings.map((item, index) => (
-            <div key={index} className="flex justify-between items-center ">
-              <div className="font-medium">{item?.category}</div>
-              <div className="flex justify-end text-[#FFD201]">
+          <Heading >Ratings</Heading>
+          {props?.data?.category_ratings.map((item, index) => (
+            <div key={index} className="flex justify-between items-center">
+              <div className="w-1/2 font-medium">{item?.category}</div>
+              <div className="w-1/2 flex justify-end text-[#FFD201]">
                 {starRating(item?.rating)}
               </div>
             </div>
@@ -1065,37 +1040,13 @@ const HotelBookingDetails = (props) => {
         </div>
       )}
 
-      {props?.data?.hotel_details?.recommendations &&
-      props?.data?.hotel_details?.recommendations?.length ? (
-        <>
-          <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>
-            Room Recommendations
-          </Heading>
-
-          <Rooms
-            data={props?.data?.hotel_details?.recommendations}
-            checkInDate={props?.data?.hotel_details?.check_in?.date}
-            city={props?.data?.hotel_details?.city}
-            updateBooking={props.updateBooking}
-          ></Rooms>
-        </>
-      ) : (
-        <></>
-      )}
-
-      {props?.data?.hotel_details?.google_maps_link ? (
+      {props?.data?.google_maps_link ? (
         <div>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Location</Heading>
           <Address style={{ fontSize: "14px" }}>
-            {props?.data?.hotel_details?.addr1
-              ? props?.data?.hotel_details?.addr1 + ", "
-              : ""}{" "}
-            {props?.data?.hotel_details?.addr2
-              ? props?.data?.hotel_details?.addr2 + ", "
-              : ""}{" "}
-            {props?.data?.hotel_details?.city
-              ? props?.data?.hotel_details?.city
-              : ""}
+            {props?.data?.addr1 ? props?.data?.addr1 + ", " : ""}{" "}
+            {props?.data?.addr2 ? props?.data?.addr2 + ", " : ""}{" "}
+            {props?.data?.city ? props?.data?.city : ""}
           </Address>
           <div
             style={{
@@ -1119,7 +1070,7 @@ const HotelBookingDetails = (props) => {
               />
             </div>
             <a
-              href={props?.data?.hotel_details?.google_maps_link}
+              href={props?.data?.google_maps_link}
               target="_blank"
               style={{ color: "black", fontSize: "14px" }}
             >
@@ -1127,8 +1078,8 @@ const HotelBookingDetails = (props) => {
             </a>
           </div>
         </div>
-      ) : props?.data?.hotel_details?.coordinates?.latitude &&
-        props?.data?.hotel_details?.coordinates?.longitude ? (
+      ) : props?.data?.coordinates?.latitude &&
+        props?.data?.coordinates?.longitude ? (
         <div>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Location</Heading>
           <div className="flex gap-2">
@@ -1196,15 +1147,9 @@ const HotelBookingDetails = (props) => {
               </svg>
             </div>
             <Address style={{ fontSize: "14px" }}>
-              {props?.data?.hotel_details?.addr1
-                ? props?.data?.hotel_details?.addr1 + ", "
-                : ""}{" "}
-              {props?.data?.hotel_details?.addr2
-                ? props?.data?.hotel_details?.addr2 + ", "
-                : ""}{" "}
-              {props?.data?.hotel_details?.city
-                ? props?.data?.hotel_details?.city
-                : ""}
+              {props?.data?.addr1 ? props?.data.addr1 + ", " : ""}{" "}
+              {props?.data?.addr2 ? props?.data.addr2 + ", " : ""}{" "}
+              {props?.data?.city_name ? props?.data.city : ""}
             </Address>
           </div>
           <div className="flex justify-between">
@@ -1219,44 +1164,16 @@ const HotelBookingDetails = (props) => {
             >
               <a
                 href={`https://www.google.com/maps/search/?api=1&query=${
-                  props?.data?.hotel_details?.coordinates?.latitude
-                },${
-                  props?.data?.hotel_details?.coordinates?.longitude
-                }+(${props?.data?.hotel_details?.name?.split(" ").join("+")})`}
+                  props?.data?.coordinates?.latitude
+                },${props?.data?.coordinates?.longitude}+(${props?.data?.name
+                  ?.split(" ")
+                  .join("+")})`}
                 target="_blank"
                 style={{ color: "#0000EE", fontSize: "14px" }}
               >
                 View on Google Maps
               </a>
             </div>
-
-            <button
-              className=" right-0 text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
-              onClick={handleDelete}
-            >
-              <div style={{ position: "relative" }}>
-                <div
-                  className="flex gap-1 items-center p-1"
-                  style={loading ? { visibility: "hidden" } : {}}
-                >
-                  <NextImage src="/delete.svg" width={"20"} height={"20"} />{" "}
-                  Delete Booking
-                </div>
-                {loading && (
-                  <PulseLoader
-                    style={{
-                      position: "absolute",
-                      top: "55%",
-                      left: "50%",
-                      transform: "translate(-50% , -50%)",
-                    }}
-                    size={12}
-                    speedMultiplier={0.6}
-                    color="#ffffff"
-                  />
-                )}
-              </div>
-            </button>
           </div>
         </div>
       ) : (

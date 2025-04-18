@@ -3,19 +3,15 @@ import { RiArrowDropDownLine, RiArrowDropUpLine } from "react-icons/ri";
 
 import CitySummary from "./CitySummary";
 import CityDaybyDay from "./CityDaybyDay";
-import { MdOutlineStar } from "react-icons/md";
 import { getStars } from "./SlabElement";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 import {
   bookingDetails,
-  hotelDetails,
 } from "../../../services/bookings/FetchAccommodation";
 import { useRouter } from "next/router";
 import Drawer from "../../ui/Drawer";
 import HotelBookingDetails from "../../modals/accommodation/Overview/HotelBookingDetails";
-import Overview from "../../modals/accommodation/Overview/Overview";
-import AccommodationModal from "../../modals/accommodation/Index";
 import styled from "styled-components";
 import { IoMdClose } from "react-icons/io";
 import { logEvent } from "../../../services/ga/Index";
@@ -73,16 +69,14 @@ const ErrorContainer = styled.div`
   text-align: center;
 `;
 const ItineraryCity = (props) => {
-  console.log("shologinmodal is:",props?.setShowLoginModal)
   const router = useRouter();
   const [viewMore, setViewMore] = useState(false);
-  const [bookingId, setBookingId] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
-  const [data,setData]=useState(null)
-  const {token} = useSelector((state)=>state.auth)
-  const stay = useSelector((state)=>state.Stays)
-  const {itinerary_status,transfers_status,pricing_status,hotels_status} = useSelector((state) => state.ItineraryStatus);
+  const [data, setData] = useState(null);
+  const { token } = useSelector((state) => state.auth);
+  const stay = useSelector((state) => state.Stays);
+  const { itinerary_status, hotels_status } =
+    useSelector((state) => state.ItineraryStatus);
   const fetchDetails = () => {
     setShowDetails(true);
     bookingDetails
@@ -98,7 +92,7 @@ const ItineraryCity = (props) => {
       });
   };
   const handleStay = (e, label, value, clickType) => {
-    console.log("Props?.city",props?.city);
+    console.log("Props?.city", props?.city);
     e.stopPropagation();
     if (token)
       props?.handleClickAc(
@@ -122,7 +116,7 @@ const ItineraryCity = (props) => {
     });
   };
 
-//  console.log("STTTT",stay);
+  //  console.log("STTTT",stay);
 
   return (
     <div
@@ -133,28 +127,42 @@ const ItineraryCity = (props) => {
       <div className="flex items-start justify-between p-3 rounded-t-lg bg-[#FEFAD8] border-b-2">
         <div className="space-y-1">
           <div className={`md:text-[18px] font-semibold`}>
-            {stay && stay?.length ? stay[props?.index]?.city_name || stay[props?.index]?.city || props?.city?.city?.name : props?.city?.city?.name }
+            {stay && stay?.length
+              ? stay[props?.index]?.city_name ||
+                stay[props?.index]?.city ||
+                props?.city?.city?.name
+              : props?.city?.city?.name}
             {" - "}
-            {stay && stay?.length ? stay[props?.index]?.duration || props?.city?.duration : props?.city?.duration}{" "}
-            {stay && stay?.length ? (stay[props?.index]?.duration === 1 || props?.city?.duration === 1) ? "Night" : "Nights": props?.city?.duration === 1 ? "Night" : "Nights"}
+            {stay && stay?.length
+              ? stay[props?.index]?.duration || props?.city?.duration
+              : props?.city?.duration}{" "}
+            {stay && stay?.length
+              ? stay[props?.index]?.duration === 1 ||
+                props?.city?.duration === 1
+                ? "Night"
+                : "Nights"
+              : props?.city?.duration === 1
+              ? "Night"
+              : "Nights"}
           </div>
 
-          {hotels_status === "PENDING" ? 
-           <div className="flex flex-col animate-pulse">
-           <div className="flex flex-col gap-1 p-3">
-             <div className="flex items-center gap-2">
-               <div className="bg-gray-300 h-5 w-5 rounded-full"></div>
-               <div className="bg-gray-300 h-4 w-24 rounded"></div>
-             </div>
-             <div className="flex flex-row items-center mt-2 gap-2">
-               <div className="bg-gray-300 h-3 w-16 rounded"></div>
-               <div className="bg-gray-300 h-3 w-12 rounded"></div>
-               <div className="bg-gray-300 h-3 w-32 rounded"></div>
-             </div>
-           </div>
-         </div>
-          :
-          (stay && (stay[props?.index]?.name)) && hotels_status === "SUCCESS" ? (
+          {hotels_status === "PENDING" ? (
+            <div className="flex flex-col animate-pulse">
+              <div className="flex flex-col gap-1 p-3">
+                <div className="flex items-center gap-2">
+                  <div className="bg-gray-300 h-5 w-5 rounded-full"></div>
+                  <div className="bg-gray-300 h-4 w-24 rounded"></div>
+                </div>
+                <div className="flex flex-row items-center mt-2 gap-2">
+                  <div className="bg-gray-300 h-3 w-16 rounded"></div>
+                  <div className="bg-gray-300 h-3 w-12 rounded"></div>
+                  <div className="bg-gray-300 h-3 w-32 rounded"></div>
+                </div>
+              </div>
+            </div>
+          ) : stay &&
+            stay[props?.index]?.name &&
+            hotels_status === "SUCCESS" ? (
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
                 <Image
@@ -172,13 +180,24 @@ const ItineraryCity = (props) => {
                 </div>
               </div>
               <div className="flex flex-row items-center">
-                {stay[props?.index]  && stay[props?.index]?.rating && stay[props?.index]?.rating !== 0 ? getStars(stay[props?.index]?.rating) : null}{" "}
+                {stay[props?.index] &&
+                stay[props?.index]?.rating &&
+                stay[props?.index]?.rating !== 0
+                  ? getStars(stay[props?.index]?.rating)
+                  : null}{" "}
                 <div className="text-[#7A7A7A] text-[12px] ml-1">
-                  {stay[props?.index] && stay[props?.index]?.rating && stay[props?.index]?.rating !== 0  ? stay[props?.index]?.rating : null}{" "}
+                  {stay[props?.index] &&
+                  stay[props?.index]?.rating &&
+                  stay[props?.index]?.rating !== 0
+                    ? stay[props?.index]?.rating
+                    : null}{" "}
                 </div>
-                {stay[props?.index] && stay[props?.index]?.user_ratings_total ? <div className="text-[#7A7A7A] text-[12px] ml-1 underline">
-                  {stay[props?.index]?.user_ratings_total} Google reviews
-                </div> : null}
+                {stay[props?.index] &&
+                stay[props?.index]?.user_ratings_total ? (
+                  <div className="text-[#7A7A7A] text-[12px] ml-1 underline">
+                    {stay[props?.index]?.user_ratings_total} Google reviews
+                  </div>
+                ) : null}
               </div>
             </div>
           ) : (
@@ -203,21 +222,30 @@ const ItineraryCity = (props) => {
             <RiArrowDropDownLine className="text-3xl" />
           )}
         </button>
-      </div> 
+      </div>
 
-      {itinerary_status === "SUCCESS" ? viewMore ? (
-        <>
-          <CityDaybyDay mercuryItinerary={props?.mercuryItinerary} city={props.city} setItinerary={props?.setItinerary} setShowLoginModal={props?.setShowLoginModal}/>
-        </>
-      ) : (
-        <CitySummary
-          city={props.city}
-          setViewMore={setViewMore}
-          activityBookings={props?.activityBookings}
-          setActivityBookings={props?.setActivityBookings}
-          setItinerary={props?.setItinerary}
-          setShowLoginModal={props?.setShowLoginModal}
-        />
+      {itinerary_status === "SUCCESS" ? (
+        viewMore ? (
+          <>
+            <CityDaybyDay
+              mercuryItinerary={props?.mercuryItinerary}
+              city={props.city}
+              setItinerary={props?.setItinerary}
+              setShowLoginModal={props?.setShowLoginModal}
+              activityBookings={props?.activityBookings}
+              setActivityBookings={props?.setActivityBookings}
+            />
+          </>
+        ) : (
+          <CitySummary
+            city={props.city}
+            setViewMore={setViewMore}
+            activityBookings={props?.activityBookings}
+            setActivityBookings={props?.setActivityBookings}
+            setItinerary={props?.setItinerary}
+            setShowLoginModal={props?.setShowLoginModal}
+          />
+        )
       ) : null}
       <Drawer
         show={showDetails}

@@ -17,6 +17,7 @@ const ClippathComp = styled.div`
 `;
 
 export default function NewActivityBooking(props) {
+  console.log('props are:',props)
   const [stars, setStars] = useState(null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [showDetails, setShowDetails] = useState({

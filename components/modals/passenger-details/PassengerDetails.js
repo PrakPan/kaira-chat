@@ -10,9 +10,9 @@ import { MERCURY_HOST } from "../../../services/constants";
 import { useRouter } from "next/router";
 import { toast, ToastContainer } from "react-toastify";
 const PassengerDetails = () => {
-  const router=useRouter();
+  const router = useRouter();
   const itinerary = useSelector((state) => state.Itinerary);
-const dispatch=useDispatch()
+  const dispatch = useDispatch();
 
   const [input, setInput] = useState({
     title: "Mr",
@@ -26,16 +26,16 @@ const dispatch=useDispatch()
     type: "adult",
     passport_number: "",
     passport_expiry: "",
-    passport_issue_date:""
+    passport_issue_date: "",
   });
   const [adults, setAdults] = useState(() =>
-    Array.from({ length: itinerary.number_of_adults-1 }, () => ({
+    Array.from({ length: itinerary.number_of_adults - 1 }, () => ({
       title: "Mr",
       first_name: "",
       last_name: "",
       gender: "male",
       type: "adult",
-      is_lead:false
+      is_lead: false,
     }))
   );
 
@@ -46,30 +46,38 @@ const dispatch=useDispatch()
       last_name: "",
       gender: "",
       type: "child",
-      is_lead:false
+      is_lead: false,
     }))
   );
 
   const [page, setPage] = useState(1);
 
-  const handleSubmit=async()=>{
+  const handleSubmit = async () => {
     try {
-      await axios.get(`${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/reprice/bookings`)
-      await axios.post(`${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/guests/bookings/add/`,{
-        guests:[input,...adults,...children]
-      })
-      toast.success("Passengers Added Successfuly")
-
+      await axios.get(
+        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/reprice/bookings`
+      );
+      await axios.post(
+        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/guests/bookings/add/`,
+        {
+          guests: [input, ...adults, ...children],
+        }
+      );
+      toast.success("Passengers Added Successfuly");
     } catch (error) {
       toast.error(error.response?.data?.errors[0]?.message[0]);
     }
-  }
+  };
 
   return (
     <>
       <div>
-        <Steps page={page} nextPage={itinerary.number_of_adults > 1 ||
-                itinerary.number_of_children > 0} />
+        <Steps
+          page={page}
+          nextPage={
+            itinerary.number_of_adults > 1 || itinerary.number_of_children > 0
+          }
+        />
       </div>
       <div className="flex justify-center">
         <div className="rounded-[12px] p-[40px] border border-[#F2EDED] max-w-[868px]">
@@ -81,10 +89,7 @@ const dispatch=useDispatch()
                 itinerary.number_of_children > 0 ? (
                   <ButtonYellow onClick={() => setPage(2)}>Next</ButtonYellow>
                 ) : (
-                  <ButtonYellow
-                  className="!px-[6px]"
-                    onClick={handleSubmit}
-                  >
+                  <ButtonYellow className="!px-[6px]" onClick={handleSubmit}>
                     Submit
                   </ButtonYellow>
                 )}
@@ -204,12 +209,14 @@ const dispatch=useDispatch()
                 </>
               )}
               <div className="flex justify-end mt-4">
-                <ButtonYellow onClick={handleSubmit} primary={true}>Submit</ButtonYellow>
+                <ButtonYellow onClick={handleSubmit} primary={true}>
+                  Submit
+                </ButtonYellow>
               </div>
             </>
           )}
         </div>
-        <ToastContainer/>
+        <ToastContainer />
       </div>
     </>
   );

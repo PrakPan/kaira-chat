@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import AccommodationModal from "../../accommodation/Index";
 import NewHotelBooking from "./NewHotelBooking";
+import ViewHotelDetails from "../../ViewHotelDetails/viewHotelDetails";
 
 const Accommodation = (props) => {
   const [showDetails, setShowDetails] = useState(false);
+  console.log("props are1:", props.source);
   return (
     <div>
       <NewHotelBooking
@@ -17,12 +19,13 @@ const Accommodation = (props) => {
         selectedBooking={props.selectedBooking}
         num_adults={props.num_adults}
         openDetails={() => setShowDetails(true)}
-        banner_image={props.banner_image}
+        banner_imcurage={props.banner_image}
         handleClick={props?.handleClick}
         key={props?.key}
       />
 
-      <AccommodationModal
+      <ViewHotelDetails
+        mercury={props?.mercury}
         check_in={props.selectedBooking.check_in}
         check_out={props.selectedBooking.check_out}
         pax={props.selectedBooking?.pax}
@@ -41,7 +44,9 @@ const Accommodation = (props) => {
         handleClick={props?.handleClick}
         plan={props?.plan}
         setStayBookings={props.setStayBookings}
-      ></AccommodationModal>
+        occupancies={props.occupancies}
+        source={props.source}
+      ></ViewHotelDetails>
     </div>
   );
 };

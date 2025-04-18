@@ -31,19 +31,19 @@ const RoomType = (props) => {
 
 
   return (
-    <div onClick={() => setOpen(prev => !prev)} className="bg-[#F4F4F4] flex flex-col gap-3 p-3 rounded-lg cursor-pointer">
+    <div className="bg-[#F4F4F4] flex flex-col gap-3 p-3 rounded-lg cursor-pointer">
       <div className="flex flex-col gap-1">
         <div className="flex flex-row items-center h-fit gap-2">
           <div className="text-md md:text-lg font-bold">Recommendation {props.index + 1}</div>
           {props.rooms.length > 1 && (<div className="text-blue">
             {open ? (
-              <div className="flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer">
+              <div className="flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer" onClick={() => setOpen(prev => !prev)}>
                 <div>Hide details</div>
                 <IoIosArrowUp className="text-xl" />
               </div>
             ) :
               (
-                <div className="flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer">
+                <div className="flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer" onClick={() => setOpen(prev => !prev)}>
                   <div>See details</div>
                   <IoIosArrowDown className="text-xl" />
                 </div>
@@ -105,13 +105,13 @@ const RoomType = (props) => {
 
               {props.rooms.length === 1 && (<div className="text-blue">
                 {open ? (
-                  <div className="w-fit flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer">
+                  <div className="w-fit flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer" onClick={() => setOpen(prev => !prev)}>
                     <div>Hide details</div>
                     <IoIosArrowUp className="text-xl" />
                   </div>
                 ) :
                   (
-                    <div className="w-fit flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer">
+                    <div className="w-fit flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer" onClick={() => setOpen(prev => !prev)}>
                       <div>See details</div>
                       <IoIosArrowDown className="text-xl" />
                     </div>

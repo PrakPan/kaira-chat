@@ -84,13 +84,9 @@ const CityDay = (props) => {
         duration={props.duration}
         start_date={props?.start_date}
         day_slab_index={props?.index}
-        // getPaymentHandler={props?.getPaymentHandler}
-        // getAccommodationAndActivitiesHandler={
-        //   props?.getAccommodationAndActivitiesHandler
-        // }
         setShowLoginModal={props?.setShowLoginModal}
-        // setItinerary={props?.setItinerary}
-        // _GetInTouch={props._GetInTouch}
+        activityBookings={props?.activityBookings}
+        setActivityBookings={props?.setActivityBookings}
       ></ActivityAddDrawer>
     </div>
   );

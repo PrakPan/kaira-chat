@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from "react";
-import Drawer from "../../ui/Drawer";
 import { IoIosArrowDown, IoMdClose } from "react-icons/io";
 import styled from "styled-components";
 import { activtySearch } from "../../../services/poi/reccommendedactivities";
@@ -27,6 +26,7 @@ import { Navigation } from "../../NewNavigation";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import NewPoiBooking from "../../../containers/newitinerary/itineraryelements/NewPoiBooking";
+import Drawer from "../../ui/Drawer";
 
 const EmptyMsg = styled.div`
   margin-top: 5rem;
@@ -327,15 +327,16 @@ const ActivityAddDrawer = (props) => {
               setOptions([]);
               setTotalResults(null);
             }
+            setLoaded(true);
           })
           .catch((err) => {
             console.log("error in activity search:", err);
+            setLoaded(true)
           });
-      } catch (error) {
+        } catch (error) {
         console.log("error in activity search:", error);
       }
 
-      setLoaded(true);
     } else {
       setLoadingPoi(true);
       try {
@@ -408,17 +409,18 @@ const ActivityAddDrawer = (props) => {
     }
     setLoaded(false);
     setLoadingPoi(true);
+    setOptions([])
   };
   return (
     <Drawer
       show={props.showDrawer}
       anchor={"right"}
       backdrop
+      width={"50%"}
+      mobileWidth={"100%"}
       style={{ zIndex: 1501 }}
       className="font-lexend"
       onHide={() => props.setShowDrawer(false)}
-      mobileWidth={"100vw"}
-      width="50vw"
     >
       <div className="px-2 py-4 !font-[lexend]">
         <div className="sticky  top-0 bg-white z-[900] flex flex-col gap-3  pb-1 justify-start items-start mx-auto w-[98%]">

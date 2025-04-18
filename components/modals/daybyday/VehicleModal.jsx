@@ -258,7 +258,7 @@ const VehicleDetailModal = ({
               disabled={loading}
             >
               <div style={{ position: "relative" }}>
-                <div className="flex gap-1 items-center" style={loading ? { visibility: "hidden" } : {}}>
+                <div className="flex gap-1 items-center text-white" style={loading ? { visibility: "hidden" } : {}}>
                 <Image src="/delete.svg" width={"20"} height={"20"}/> <span> Delete Booking </span>
                 </div>
                 {loading && (
