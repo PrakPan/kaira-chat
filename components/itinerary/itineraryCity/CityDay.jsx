@@ -6,8 +6,8 @@ import ActivityAddDrawer from "../../drawers/poiDetails/activityAddDrawer";
 const CityDay = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [showAddDrawer, setShowAddDrawer] = useState(false);
-  const [elements, setElements] = useState([]);
-  console.log("props are:", props);
+  const [elements, setElements] = useState([]); 
+  console.log("updated itinerary is:",props.day.slab_elements) 
   useEffect(() => {
     let elements = [];
     for (let elem of props.day.slab_elements) {
@@ -84,13 +84,9 @@ const CityDay = (props) => {
         duration={props.duration}
         start_date={props?.start_date}
         day_slab_index={props?.index}
-        // getPaymentHandler={props?.getPaymentHandler}
-        // getAccommodationAndActivitiesHandler={
-        //   props?.getAccommodationAndActivitiesHandler
-        // }
         setShowLoginModal={props?.setShowLoginModal}
-        // setItinerary={props?.setItinerary}
-        // _GetInTouch={props._GetInTouch}
+        activityBookings={props?.activityBookings}
+        setActivityBookings={props?.setActivityBookings}
       ></ActivityAddDrawer>
     </div>
   );

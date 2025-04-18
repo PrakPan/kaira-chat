@@ -12,7 +12,6 @@ const CitySummary = (props) => {
   const [showDrawer, setShowDrawer] = useState(false);
   const [poi, setPoi] = useState(0);
   const [activities, setActivities] = useState(null);
-  console.log("Activities",activities);
   const [dayByDayIndex,setDayByDayIndex] = useState(0);
   const [showAddDrawer, setShowAddDrawer] = useState(false);
   const [activityData, setActivityData] = useState({

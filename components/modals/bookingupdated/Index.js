@@ -18,6 +18,7 @@ import useDebounce from "../../../hooks/useDebounce";
 import ImageLoader from "../../../components/ImageLoader";
 import Filters from "./filtersmobile/Filters";
 import { setItineraryFilters } from "../../../store/actions/setItineraryFilters";
+import ViewHotelDetails from "../ViewHotelDetails/viewHotelDetails";
 // import { getDate } from "../../../helper/DateUtils";
 
 const GridContainer = styled.div`
@@ -94,9 +95,9 @@ const Booking = (props) => {
     user_ratings: null,
     facilities: null,
     tags: null,
-    trace_id:null,
-    occupancies:filtersState?.occupancies,
-    applyFilter: false
+    trace_id: null,
+    occupancies: filtersState?.occupancies,
+    applyFilter: false,
   });
   const [filtersObj, setFiltersObj] = useState({
     type: [],
@@ -281,58 +282,56 @@ const Booking = (props) => {
           let options = [];
           for (var i = 0; i < res.data.data.length; i++) {
             // if (res.data.data[i].name !== props?.selectedBooking.name)
-              if (
-                res.data.data[i]?.images &&
-                res.data.data[i]?.images?.length &&
-                res.data.data[i]?.price
-              ) {
-                let img = false;
-                for (let j = 0; j < res.data.data[i].images.length; j++) {
-                  if (res.data.data[i].images[j]?.image) {
-                    img = res.data.data[i].images[j].image;
-                    break;
-                  }
+            if (
+              res.data.data[i]?.images &&
+              res.data.data[i]?.images?.length &&
+              res.data.data[i]?.price
+            ) {
+              let img = false;
+              for (let j = 0; j < res.data.data[i].images.length; j++) {
+                if (res.data.data[i].images[j]?.image) {
+                  img = res.data.data[i].images[j].image;
+                  break;
                 }
-
-                if (img)
-                  options.push(
-                    <AccommodationSearched
-                      mercury
-                      source={res?.data?.data?.[i]?.source}
-                      handleClick={props?.handleClick}
-                      payment={props.payment}
-                      plan={props.plan}
-                      currentBooking={props.currentBooking}
-                      _setImagesHandler={props._setImagesHandler}
-                      itinerary_id={props.itinerary_id}
-                      tailored_id={props.tailored_id}
-                      accommodation={res.data.data[i]}
-                      selectedBooking={props.selectedBooking}
-                      key={i}
-                      images={res.data.data[i].images}
-                      banner_image={img}
-                      bookings={props.bookings}
-                      num_adults={filters.occupancies.reduce(
-                        (sum, room) => sum + room.num_adults,
-                        0
-                      )}
-                      occupancies={filters.occupancies}
-                      traceId={
-                        res.data?.trace_details?.id
-                          ? res.data.trace_details.id
-                          : ""
-                      }
-                      provider={res.data?.data?.[0]?.source}
-                      setUpdateBookingState={setUpdateBookingState}
-                      setUnauthorized={setUnauthorized}
-                      _updateStayBookingHandler={
-                        props._updateStayBookingHandler
-                      }
-                      getPaymentHandler={props.getPaymentHandler}
-                      setStayBookings={props.setStayBookings}
-                    ></AccommodationSearched>
-                  );
               }
+
+              if (img)
+                options.push(
+                  <AccommodationSearched
+                    mercury
+                    source={res?.data?.data?.[i]?.source}
+                    handleClick={props?.handleClick}
+                    payment={props.payment}
+                    plan={props.plan}
+                    currentBooking={props.currentBooking}
+                    _setImagesHandler={props._setImagesHandler}
+                    itinerary_id={props.itinerary_id}
+                    tailored_id={props.tailored_id}
+                    accommodation={res.data.data[i]}
+                    selectedBooking={props.selectedBooking}
+                    key={i}
+                    images={res.data.data[i].images}
+                    banner_image={img}
+                    bookings={props.bookings}
+                    num_adults={filters.occupancies.reduce(
+                      (sum, room) => sum + room.num_adults,
+                      0
+                    )}
+                    occupancies={filters.occupancies}
+                    traceId={
+                      res.data?.trace_details?.id
+                        ? res.data.trace_details.id
+                        : ""
+                    }
+                    provider={res.data?.data?.[0]?.source}
+                    setUpdateBookingState={setUpdateBookingState}
+                    setUnauthorized={setUnauthorized}
+                    _updateStayBookingHandler={props._updateStayBookingHandler}
+                    getPaymentHandler={props.getPaymentHandler}
+                    setStayBookings={props.setStayBookings}
+                  ></AccommodationSearched>
+                );
+            }
           }
           setDynamicFilters({
             accommodation_types: res.data?.available_types,
@@ -340,7 +339,7 @@ const Booking = (props) => {
             tags: res.data?.tags,
           });
 
-          setMoreOptionsJSX([...moreOptionsJSX, options]);
+          setMoreOptionsJSX([...moreOptionsJSX, ...options]);
         } else {
           setNoResults(true);
           setMoreOptionsJSX([]);
@@ -348,7 +347,7 @@ const Booking = (props) => {
         setLoading(false);
       })
       .catch((err) => {
-        console.log("new error:",err)
+        console.log("new error:", err);
         setLoading(false);
         setFetchingIsError({
           error: true,
@@ -511,15 +510,11 @@ const Booking = (props) => {
                       <Skeleton />
                     ) : !noResults && !updateBookingState ? (
                       <OptionsContainer id="options">
-                        <div
-                          className="mb-3"
-                        >
+                        <div className="mb-3">
                           {moreOptionsJSX.length ? (
                             <>
-                              {moreOptionsJSX?.map((item)=>(
-                                <>
-                                {item}
-                                </>
+                              {moreOptionsJSX?.map((item) => (
+                                <>{item}</>
                               ))}
                               {updateLoadingState && <Skeleton />}
                             </>
@@ -628,7 +623,22 @@ const Booking = (props) => {
                 _addFilterHandler={_addFilterHandler}
                 updateUserStarHandler={updateUserStarHandler}
               />
-              <AccommodationModal
+              <ViewHotelDetails
+               mercury={true}
+               check_in={props?.selectedBooking.check_in}
+               check_out={props?.selectedBooking.check_out}
+               _setImagesHandler={props?._setImagesHandler}
+               onHide={() => setShowDetails(false)}
+               id={props?.currentBooking?.agoda_accommodation}
+               currentBooking={props?.currentBooking}
+               show={showDetails}
+               handleClick={props?.handleClick}
+               setStayBookings={props?.setStayBookings}
+               itineraryDaybyDay={props?.itineraryDaybyDay}
+               occupancies={filters.occupancies}
+              ></ViewHotelDetails>
+
+              {/* <AccommodationModal
                 mercury={true}
                 check_in={props?.selectedBooking.check_in}
                 check_out={props?.selectedBooking.check_out}
@@ -641,7 +651,7 @@ const Booking = (props) => {
                 setStayBookings={props?.setStayBookings}
                 itineraryDaybyDay={props?.itineraryDaybyDay}
                 occupancies={filters.occupancies}
-              ></AccommodationModal>
+              ></AccommodationModal> */}
             </>
           ) : (
             <></>

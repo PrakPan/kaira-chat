@@ -6,12 +6,10 @@ import useMediaQuery from "../../../components/media";
 import media from "../../../components/media";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
-import Button from "../../../components/ui/button/Index";
 import { logEvent } from "../../../services/ga/Index";
 import FlightLogoContainer from "../../../components/modals/flights/new-flight-searched/LogoContainer";
 import FlightDetails from "../../../components/modals/flights/new-flight-searched/FlightDetails";
 import Drawer from "../../../components/ui/Drawer";
-import { FaArrowRight } from "react-icons/fa6";
 import { useRouter } from "next/router";
 import TransferEditDrawer from "../../../components/drawers/routeTransfer/TransferEditDrawer";
 import Details from "./FlightDetail2";
@@ -21,7 +19,6 @@ import { MERCURY_HOST } from "../../../services/constants";
 import VehicleDetailModal from "../../../components/modals/daybyday/VehicleModal";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
-import TransferSkeleton from "../../../components/itinerary/Skeleton/TransferSkeleton";
 const GridContainer = styled.div`
   width: auto;
   overflow: auto;
@@ -157,7 +154,7 @@ const TransferBooking = ({
   const { itinerary_status, transfers_status, pricing_status } = useSelector(
     (state) => state.ItineraryStatus
   );
-  
+
   useEffect(() => {
     setaddboking(booking?.user_selected);
   }, [booking?.user_selected]);
@@ -269,7 +266,13 @@ const TransferBooking = ({
       setLoading(false);
       setVehicleDetails(res?.data);
     } catch (error) {
-      toast.error(error.response?.data?.errors[0]?.message[0]);
+      dispatch(
+        openNotification({
+          type: "error",
+          text: `${error.response?.data?.errors[0]?.message[0]}`,
+          heading: "Error!",
+        })
+      );
     }
   };
 
@@ -286,24 +289,26 @@ const TransferBooking = ({
       if (response.status === 204) {
         dispatch(updateTransferBookings(book?.id));
         setLoading(false);
-        toast.success("Booking deleted successfuly");
+        openNotification({
+          type: "success",
+          text: "Booking deleted successfuly",
+          heading: "Success!",
+        });
         setVisible(true);
-        //setHandleShow(false);
-        console.log("Deleted Booking");
       }
     } catch (err) {
-      console.log(
-        "[ERROR][ItineraryPage][axiosDeleteBooking:/Delete_Booking]",
-        err
-      );
-      toast.error("Error", err.message);
+      openNotification({
+        type: "error",
+        text: `${err.message}`,
+        heading: "Error!",
+      });
       setLoading(false);
     }
   };
 
   return (
     <>
-      {(transfers_status === "PENDING") && mercuryItinerary ? (
+      {transfers_status === "PENDING" && mercuryItinerary ? (
         <div className="mt-2 ml-1 md:ml-7 flex flex-col w-full">
           {/* Booking name */}
           <div className="flex flex-row w-full justify-between items-center">
@@ -849,7 +854,7 @@ const FlightBooking = ({
   type,
 }) => {
   const [showDetails, setShowDetails] = useState(false);
-  console.log("showw",showDetails);
+  console.log("showw", showDetails);
   const router = useRouter();
   function HandleFlights(i, label) {
     if (!token) {
@@ -979,8 +984,8 @@ const FlightBooking = ({
                 className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[0.6rem] sm:px-1 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000] ml-3"
               >
                 {/* Add Taxi */}
-                 View Detail
-              </button> 
+                View Detail
+              </button>
             </div>
           )}
         </div>

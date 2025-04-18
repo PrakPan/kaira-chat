@@ -33,7 +33,7 @@ const Rooms = (props) => {
               handleUpdateBooking={handleUpdateBooking}
               selectedRecommendation={selectedRecommendation && selectedRecommendation === i}
               setSelectedRecommendation={setSelectedRecommendation}
-              checkInDate={props.checkInDate?.date}
+              checkInDate={props.check_in?.date}
               city={props.city}
             ></RoomType>
           );

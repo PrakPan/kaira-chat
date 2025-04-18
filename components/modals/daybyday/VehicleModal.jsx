@@ -53,12 +53,14 @@ const VehicleDetailModal = ({
   };
 
   const addMinutesToDate = (dateString, minutes) => {
+    console.log("Date String",dateString);
     const date = new Date(dateString);
     date.setMinutes(date.getMinutes() + minutes);
     return formatDateTime(date.toISOString());
   };
 
-  const departure = transfer_details?.start_datetime;
+
+  const departure = transfer_details?.start_datetime || transfer_details?.gozo?.start_date;
   const duration = transfer_details?.duration;
 
   const arrival = addMinutesToDate(departure, duration);

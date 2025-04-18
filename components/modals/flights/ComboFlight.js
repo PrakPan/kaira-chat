@@ -19,6 +19,7 @@ import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 import LogInModal from "../Login";
 import { toast, ToastContainer } from "react-toastify";
 import { setTransfersBookings } from "../../../store/actions/transferBookingsStore";
+import ComboSection from "./ComboSectionOne";
 
 const GridContainer = styled.div`
 min-height: 65vh;
@@ -76,7 +77,7 @@ const ContentContainer = styled.div`
   }
 `;
 
-const Booking = (props) => {
+const ComboFlight = (props) => {
 
   console.log("Flight Selected Booking",props?.selectedBooking);
   console.log("Flight Selected Booking",props?.originCityId,props?.destinationCityId);
@@ -350,6 +351,7 @@ const Booking = (props) => {
           heading: "Sucess!",
         });
         props.setHideFlightModal();
+        toast.success("flight updated successfuly");
       })
       .catch((err) => {
         setUpdateBookingState(false);
@@ -360,6 +362,7 @@ const Booking = (props) => {
           heading: "Error!",
         });
         props.setHideFlightModal();
+        toast.error("some error occured");
       });
   };
 
@@ -430,18 +433,9 @@ const Booking = (props) => {
 
   if (props.token)
     return (
-      <Drawer
-        anchor={"right"}
-        backdrop
-        style={{ zIndex: 1501 }}
-        className="font-lexend"
-        show={props.showFlightModal}
-        onHide={props.setHideFlightModal}
-        mobileWidth={"100%"}
-        width={"50%"}
-      >
+      <div>
         <ToastContainer />
-        <SectionOne
+        <ComboSection
           _FetchFlightsHandler={_FetchFlightsHandler}
           setHideBookingModal={props.setHideBookingModal}
           showFilter={showFilter}
@@ -458,7 +452,7 @@ const Booking = (props) => {
           setClassType={setClassType}
           handleTransferEdit={handleTransferEdit}
           mercuryTransfer={props?.mercuryTransfer}
-        ></SectionOne>
+        ></ComboSection>
 
         <GridContainer style={{ clear: "right" }}>
           <ContentContainer style={{ position: "relative" }}>
@@ -592,7 +586,7 @@ const Booking = (props) => {
           mercuryTransfer={props?.mercuryTransfer}
           mercury={true}
         />
-      </Drawer>
+      </div>
     );
 
   return (
@@ -621,44 +615,5 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToPros, mapDispatchToProps)(Booking);
+export default connect(mapStateToPros, mapDispatchToProps)(ComboFlight);
 
-
-
-
-
-
-
-// {
-//   "booking_id": "7ad0b554-7efd-4d53-9ca6-eb21873950de",
-//   "trace_id": "aa92d7fc-2c68-459e-8063-7831dbc26a87",
-//   "result_indices": [
-//       "83e60545-1374-443a-ac16-d5cb510f1a9b"
-//   ],
-//   "source_itinerary_city": "17aa0882-e52e-4625-bd69-450d1eae9761",
-//   "destination_itinerary_city": "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
-//   "edge": "016b1fbe-8c17-4115-a5ea-77052b60b820"
-// }
-
-
-// {
-//   "trace_id": "ebeffef4-c015-400b-806f-ea8f066ee604",
-//   "result_indices": [
-//       "728b0185-38cf-41fd-a4dd-acac77715ac6"
-//   ],
-//   "source_itinerary_city": "a8593ec8-cd94-4ae9-8ae4-5f9f4f6fe484",
-//   "destination_itinerary_city": "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
-//   "booking_id": "9b716e0e-74ba-421e-84ac-d541c532c62a",
-//   "edge": "abec3aef-d7fa-426d-b98b-0095b391f21f"
-// }
-
-// {
-//   "booking_id": "9b716e0e-74ba-421e-84ac-d541c532c62a",
-//   "trace_id": "6088a073-0da2-4c4c-b058-3de4edf30834",
-//   "result_indices": [
-//       "2cee1c63-29e9-45b3-8e80-86a90993b6b8"
-//   ],
-//   "source_itinerary_city": "17aa0882-e52e-4625-bd69-450d1eae9761",
-//   "destination_itinerary_city": "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
-//   "edge": "016b1fbe-8c17-4115-a5ea-77052b60b820"
-// }

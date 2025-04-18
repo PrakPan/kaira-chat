@@ -10,6 +10,7 @@ import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { toast, ToastContainer } from "react-toastify";
 import { useRouter } from "next/router";
 import Image from "next/image";
+import { openNotification } from "../../../store/actions/notification";
 
 export const Text = styled.div`
   font-size: 1.5rem;
@@ -44,15 +45,18 @@ const FlightDetailModal = ({
       if (response.status === 204) {
         dispatch(updateTransferBookings(booking_id));
         setLoading(false);
-        toast.success("Booking deleted successfuly");
-        console.log("Deleted Booking");
+        dispatch(openNotification({
+          type: "success",
+          text: "Booking deleted Successfuly",
+          heading: "Success!",
+        }))
       }
     } catch (err) {
-      console.log(
-        "[ERROR][ItineraryPage][axiosDeleteBooking:/Delete_Booking]",
-        err
-      );
-      toast.error("Error", err.message);
+      dispatch(openNotification({
+        type: "error",
+        text: `${err.message}`,
+        heading: "Error!",
+      }))
       setLoading(false);
     }
   };

@@ -39,7 +39,7 @@ const Plan = styled.div`
   transform: translate(-50%, -45%);
 `;
 
-export default function FlightDetails({
+export default function  FlightDetails({
     segments, data, origin, destination, duration, isNonStop, numStops, setShowDetails
 }) {
     const [isHovered, setIsHovered] = useState(false);

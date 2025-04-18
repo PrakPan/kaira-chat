@@ -16,6 +16,7 @@ import { useRouter } from "next/router";
 import HotelBookingDetails from "./Overview/HotelBookingDetails";
 import { updateAccommodationBooking } from "../../../services/bookings/UpdateBookings";
 import { convertDate } from "../../../helper/getDateYYY-MM-DD";
+import { toast } from "react-toastify";
 
 const Container = styled.div`
   padding: 0 0.75rem 0.75rem 0.75rem;
@@ -37,6 +38,22 @@ const BackContainer = styled.div`
   @media screen and (min-width: 768px) {
     padding-block: 1rem;
   }
+`;
+
+
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 10px;
+  background: #f7e700;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  left: 90%;
+  z-index: 2;
+  cursor: pointer;
 `;
 
 const BackText = styled.div`
@@ -105,11 +122,11 @@ const ViewHotelDetails = (props) => {
         check_out: (props?.check_out).split("/").join("-"),
         hotel_id: props?.id,
         occupancies: props?.occupancies,
-        source:props?.source,
-        currency:"INR"
+        source: props?.source,
+        currency: "INR",
       };
       hotelDetails
-        .post('',requestData)
+        .post("", requestData)
         .then((res) => {
           setLoading(false);
           setData(res.data);
@@ -180,7 +197,11 @@ const ViewHotelDetails = (props) => {
     };
 
     updateAccommodationBooking
-      .post(`${router?.query?.id}/bookings/accommodation/`, requestData)
+      .post(`${router?.query?.id}/bookings/accommodation/`, requestData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      })
       .then((response) => {
         props._updateStayBookingHandler([response.data]);
         props.setUpdateBookingState(false);
@@ -203,15 +224,24 @@ const ViewHotelDetails = (props) => {
             source: response?.data?.images?.[0]?.source,
           };
           props.setStayBookings(stayBookings);
+          props.openNotification({
+            type: "success",
+            text: "Booking Updated Successfuly",
+            heading: "Success!",
+          });
         } catch (error) {
-          console.error("Error updating stay bookings:", error);
+          props.openNotification({
+            type: "error",
+            text: `${error.response?.data?.errors[0]?.message[0]}`,
+            heading: "Error!",
+          });
         }
       })
       .catch((err) => {
         props.setUpdateBookingState(false);
         props.openNotification({
           type: "error",
-          text: "Something went wrong! Please try after some time.",
+          text: `${err.response?.data?.errors[0]?.message[0]}`,
           heading: "Error!",
         });
       });
@@ -247,9 +277,7 @@ const ViewHotelDetails = (props) => {
                   currentBooking={props.currentBooking}
                   number_of_reviews={props.number_of_reviews}
                   data={data}
-                  images={
-                    data?.images ? data.images : []
-                  }
+                  images={data?.images ? data.images : []}
                   experience_filters={
                     props.poi ? props.poi.experience_filters : null
                   }

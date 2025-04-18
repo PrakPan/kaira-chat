@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { FaMinus, FaPlus } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
 import ButtonYellow from "../../ButtonYellow";
+import Button from "../../ui/button/Index";
 
 export const Pax = ({ pax, setPax }) => {
   const refDesktop = useRef(null);
@@ -114,9 +115,21 @@ export const Pax = ({ pax, setPax }) => {
             </div>
           </div>
 
-          <div className="border-t-2 border-t-white pt-2 flex justify-end">
-            <ButtonYellow onClick={handleDone} className="w-full">Apply</ButtonYellow>
-          </div>
+            <div className="mt-4 flex justify-end">
+                          <Button
+                            fontSize="1rem"
+                            width={"auto"}
+                            padding="0.5rem 2rem"
+                            fontWeight="500"
+                            margin="0"
+                            borderRadius="5px"
+                            borderWidth="1px"
+                            bgColor="#f7e700"
+                            onclick={() => handleDone()}
+                          >
+                            Apply
+                          </Button>
+                        </div>
         </div>
       )}
 

@@ -139,11 +139,15 @@ const RoomType = (props) => {
                     <div className="flex flex-col gap-2">
                       <div className="text-lg font-semibold">Room Amenities</div>
                       <div className="text-[14px]">
-                        {room.facilities.map((item, index) => (
-                          <span key={index}>{item}
-                            {index < room.facilities.length - 1 && " . "}
-                          </span>
-                        ))}
+                        <div className="flex flex-wrap gap-2">
+                          {room.facilities.map((item, index) => (
+                            <div key={index}>
+                              <div className="bg-[#FAFAFA] p-[8px] rounded-[10px]">
+                                {item}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   ) : null}

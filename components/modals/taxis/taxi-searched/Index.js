@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import SectionOne from "./sectionone/Index";
+import ComboSection from "./sectionone/ComboSection";
 
 const Container = styled.div`
   width: 100%;
@@ -18,6 +19,18 @@ const Container = styled.div`
 const Booking = (props) => {
   return (
     <Container className="border" style={{ borderRadius: "10px" }}>
+      {props?.combo ? 
+      <ComboSection
+      setHideBookingModal={props.setHideBookingModal}
+      _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+      _updateSearchedTaxi={props._updateSearchedTaxi}
+      getPaymentHandler={props.getPaymentHandler}
+      setShowTaxiModal={props.setShowTaxiModal}
+      selectedBooking={props.selectedBooking}
+      data={props.data}
+      handleTaxiSelect={props.handleTaxiSelect}
+    ></ComboSection>
+      :
       <SectionOne
         setHideBookingModal={props.setHideBookingModal}
         _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
@@ -27,7 +40,7 @@ const Booking = (props) => {
         selectedBooking={props.selectedBooking}
         data={props.data}
         handleTaxiSelect={props.handleTaxiSelect}
-      ></SectionOne>
+      ></SectionOne>}
     </Container>
   );
 };

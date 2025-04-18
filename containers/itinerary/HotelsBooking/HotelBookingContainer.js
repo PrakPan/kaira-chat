@@ -14,6 +14,7 @@ import { ITINERARY_STATUSES } from "../../../services/constants";
 import { MdWifi } from "react-icons/md";
 import { logEvent } from "../../../services/ga/Index";
 import { connect } from "react-redux";
+import { getStars } from "../../../components/itinerary/itineraryCity/SlabElement";
 
 const RoomTypeGrid = styled.div`
   display: grid;
@@ -65,11 +66,7 @@ const HotelBookingContainer = ({
   }
 
   const starRating = (rating) => {
-    var stars = [];
-    for (let i = 0; i < Math.floor(rating); i++) {
-      stars.push(<FaStar />);
-    }
-    if (Math.floor(rating) < rating) stars.push(<FaStarHalfAlt />);
+    var stars = getStars(rating)
     return stars;
   };
 

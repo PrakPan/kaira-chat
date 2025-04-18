@@ -78,7 +78,7 @@ export default function PoiDetails(props) {
             style={{ fontSize: "2rem" }}
           ></IoMdClose>
         </div>
-        <div className="text-[24px] font-semibold">POI Details</div>
+        <div className="text-[24px] font-semibold">Back To Itinerary</div>
 
         <div className={`flex flex-col gap-4 `}>
           <div className="h-[180px] md:h-[300px]">

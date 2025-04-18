@@ -37,7 +37,7 @@ const PoiDetailsSkeleton = (props) => {
   let isPageWide = media("(min-width: 768px)");
 
   return (
-    <Container width={props.width} className="gap-4 px-4">
+    <Container width={props.width} className="gap-4 ">
       {!props.itineraryDrawer ? (
         <div onClick={props.handleCloseDrawer}>
           <TbArrowBack

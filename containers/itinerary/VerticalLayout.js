@@ -22,6 +22,7 @@ import Drawer from "../../components/ui/Drawer";
 import FlightDetailModal from "../../components/modals/daybyday/FlightDetailModal";
 import TransferSkeleton from "../../components/itinerary/Skeleton/TransferSkeleton";
 import media from "../../components/media";
+import { openNotification } from "../../store/actions/notification";
 
 const Container = styled.div`
   display: flex;
@@ -129,17 +130,24 @@ const CityItem = ({
       if (response.status === 204) {
         dispatch(updateTransferBookings(bookingIdToDelete));
         setLoading(false);
-        toast.success("Booking deleted successfuly");
+        dispatch(
+          openNotification({
+            type: "success",
+            text: "Booking deleted successfuly",
+            heading: "Success!",
+          })
+        );
         setVisible(true);
         setHandleShow(false);
-        console.log("Deleted Booking");
       }
     } catch (err) {
-      console.log(
-        "[ERROR][ItineraryPage][axiosDeleteBooking:/Delete_Booking]",
-        err
+      dispatch(
+        openNotification({
+          type: "error",
+          text: `${err.message}`,
+          heading: "Error!",
+        })
       );
-      toast.error("Error", err.message);
       setLoading(false);
     }
     try {
@@ -153,17 +161,25 @@ const CityItem = ({
       if (response.status === 204) {
         dispatch(updateTransferBookings(bookingIdToDelete));
         setLoading(false);
-        toast.success("Booking deleted successfuly");
+        dispatch(
+          openNotification({
+            type: "success",
+            text: "Booking deleted successfuly",
+            heading: "Success!",
+          })
+        );
         setVisible(true);
         setHandleShow(false);
         console.log("Deleted Booking");
       }
     } catch (err) {
-      console.log(
-        "[ERROR][ItineraryPage][axiosDeleteBooking:/Delete_Booking]",
-        err
+      dispatch(
+        openNotification({
+          type: "error",
+          text: `${err.message}`,
+          heading: "Error!",
+        })
       );
-      toast.error("Error", err.message);
       setLoading(false);
     }
   };

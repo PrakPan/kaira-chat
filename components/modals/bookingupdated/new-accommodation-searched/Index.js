@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import AccommodationModal from "../../accommodation/Index";
 import NewHotelBooking from "./NewHotelBooking";
+import ViewHotelDetails from "../../ViewHotelDetails/viewHotelDetails";
 
 const Accommodation = (props) => {
   const [showDetails, setShowDetails] = useState(false);
-  console.log("props are1:",props.source)
+  console.log("props are1:", props.source);
   return (
     <div>
       <NewHotelBooking
@@ -23,7 +24,7 @@ const Accommodation = (props) => {
         key={props?.key}
       />
 
-      <AccommodationModal
+      <ViewHotelDetails
         mercury={props?.mercury}
         check_in={props.selectedBooking.check_in}
         check_out={props.selectedBooking.check_out}
@@ -45,7 +46,7 @@ const Accommodation = (props) => {
         setStayBookings={props.setStayBookings}
         occupancies={props.occupancies}
         source={props.source}
-      ></AccommodationModal>
+      ></ViewHotelDetails>
     </div>
   );
 };
