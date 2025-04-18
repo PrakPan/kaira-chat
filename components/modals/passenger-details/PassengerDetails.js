@@ -9,6 +9,7 @@ import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import { useRouter } from "next/router";
 import { toast, ToastContainer } from "react-toastify";
+import { openNotification } from "../../../store/actions/notification";
 const PassengerDetails = () => {
   const router = useRouter();
   const itinerary = useSelector((state) => state.Itinerary);
@@ -63,9 +64,17 @@ const PassengerDetails = () => {
           guests: [input, ...adults, ...children],
         }
       );
-      toast.success("Passengers Added Successfuly");
+      dispatch(openNotification({
+        type: "success",
+        text: "Passengers Added Successfuly",
+        heading: "Success!",
+      }))
     } catch (error) {
-      toast.error(error.response?.data?.errors[0]?.message[0]);
+      dispatch(openNotification({
+        type: "error",
+        text: `${error.response?.data?.errors[0]?.message[0]}`,
+        heading: "Error!",
+      }))
     }
   };
 

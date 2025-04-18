@@ -156,65 +156,72 @@ const POI = (props) => {
       (item) => item?.city?.id == props.plan[index].city_id
     );
     // console.log("Iti City",itinerary_city);
-try {
-  const requestData = {
-    rates: rates,
-    itinerary_code: data?.itinerary_code,
-    items: data?.items,
-    recommendation_id: recommendation_id,
-    trace_id: localStorage.getItem("trace_id"),
-    itinerary_id: router?.query?.id,
-    hotel_id: data?.id,
-    source: props.provider,
-    booking_id: props?.bookingId,
-    itinerary_city: itinerary_city[0]?.id,
-    city_id: props.plan[index].city_id,
-  };
+    try {
+      const requestData = {
+        rates: rates,
+        itinerary_code: data?.itinerary_code,
+        items: data?.items,
+        recommendation_id: recommendation_id,
+        trace_id: localStorage.getItem("trace_id"),
+        itinerary_id: router?.query?.id,
+        hotel_id: data?.id,
+        source: props.provider,
+        booking_id: props?.bookingId,
+        itinerary_city: itinerary_city[0]?.id,
+        city_id: props.plan[index].city_id,
+      };
 
-  updateAccommodationBooking
-    .post(`${router?.query?.id}/bookings/accommodation/`, requestData,{
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-      },
-    })
-    .then((response) => {
-      props._updateStayBookingHandler([response.data]);
-      props.setUpdateBookingState(false);
+      updateAccommodationBooking
+        .post(`${router?.query?.id}/bookings/accommodation/`, requestData, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        })
+        .then((response) => {
+          props._updateStayBookingHandler([response.data]);
+          props.setUpdateBookingState(false);
 
-      setTimeout(() => {
-        props.getPaymentHandler();
-      }, 1000);
+          setTimeout(() => {
+            props.getPaymentHandler();
+          }, 1000);
 
-      props.openNotification({
-        type: "success",
-        text: "Hotel added successfully.",
-        heading: "Success!",
-      });
-
-      try {
-        stayBookings[index] = {
-          city_id: props.plan[index].city_id,
-          city_name: props.plan[index].city_name,
-          ...response?.data,
-          source: response?.data?.images?.[0]?.source,
-        };
-        props.setStayBookings(stayBookings);
-      } catch (error) {
-        console.error("Error updating stay bookings:", error);
-      }
-    })
-    .catch((err) => {
-      props.setUpdateBookingState(false);
+          try {
+            stayBookings[index] = {
+              city_id: props.plan[index].city_id,
+              city_name: props.plan[index].city_name,
+              ...response?.data,
+              source: response?.data?.images?.[0]?.source,
+            };
+            props.setStayBookings(stayBookings);
+            props.openNotification({
+              type: "success",
+              text: "Hotel added successfully.",
+              heading: "Success!",
+            });
+          } catch (error) {
+            props.openNotification({
+              type: "error",
+              text: "Something went wrong! Please try after some time.",
+              heading: "Error!",
+            });
+            console.error("Error updating stay bookings:", error);
+          }
+        })
+        .catch((err) => {
+          props.setUpdateBookingState(false);
+          props.openNotification({
+            type: "error",
+            text: "Something went wrong! Please try after some time.",
+            heading: "Error!",
+          });
+        });
+    } catch (error) {
       props.openNotification({
         type: "error",
-        text: "Something went wrong! Please try after some time.",
+        text: `${error.response?.data?.errors[0]?.message[0]}`,
         heading: "Error!",
       });
-    });
-    toast.success("booking updated successfuly")
-} catch (error) {
-  toast.error(error.response?.data?.errors[0]?.message[0]);
-}
+    }
   };
 
   return (
@@ -248,7 +255,9 @@ try {
                   number_of_reviews={props.number_of_reviews}
                   data={data}
                   images={
-                    data?.hotel_details?.images ? data?.hotel_details?.images : []
+                    data?.hotel_details?.images
+                      ? data?.hotel_details?.images
+                      : []
                   }
                   experience_filters={
                     props.poi ? props.poi.experience_filters : null
@@ -302,7 +311,7 @@ try {
       ) : (
         <Skeleton onHide={props.onHide} />
       )}
-      <ToastContainer/>
+      <ToastContainer />
     </Drawer>
   );
 };

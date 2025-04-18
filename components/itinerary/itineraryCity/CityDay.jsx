@@ -6,8 +6,8 @@ import ActivityAddDrawer from "../../drawers/poiDetails/activityAddDrawer";
 const CityDay = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [showAddDrawer, setShowAddDrawer] = useState(false);
-  const [elements, setElements] = useState([]);
-  console.log("props are:", props);
+  const [elements, setElements] = useState([]); 
+  console.log("updated itinerary is:",props.day.slab_elements) 
   useEffect(() => {
     let elements = [];
     for (let elem of props.day.slab_elements) {

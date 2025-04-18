@@ -637,10 +637,22 @@ const SimpleTabsV2 = (props) => {
           <div id={"Stays"}>
             {props.mercuryItinerary ? (
               <StaysContainer
-                stayBookings={stays}
-                setStayBookings={props.setStayBookings}
-                CityData={CityData}
-                cities={props?.cities}
+              payment={props.payment}
+              _updateBookingHandler={props._updateBookingHandler}
+              _updateStayBookingHandler={props._updateStayBookingHandler}
+              _updatePaymentHandler={props._updatePaymentHandler}
+              getPaymentHandler={props.getPaymentHandler}
+              setShowBookingModal={(value) =>
+                props.setShowBookingModal(value)
+              }
+              showBookingModal={props.showBookingModal}
+              setHideBookingModal={props.setHideBookingModal}
+              setShowLoginModal={setShowLoginModal}
+              _GetInTouch={_GetInTouch}
+              stayBookings={stays}
+              setStayBookings={props.setStayBookings}
+              CityData={CityData}
+              cities={props?.cities}
               />
             ) : (
               <HotelsBooking

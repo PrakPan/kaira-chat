@@ -350,7 +350,6 @@ const Booking = (props) => {
           heading: "Sucess!",
         });
         props.setHideFlightModal();
-        toast.success("flight updated successfuly");
       })
       .catch((err) => {
         setUpdateBookingState(false);
@@ -361,7 +360,6 @@ const Booking = (props) => {
           heading: "Error!",
         });
         props.setHideFlightModal();
-        toast.error("some error occured");
       });
   };
 

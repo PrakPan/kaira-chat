@@ -11,6 +11,7 @@ import { connect, useDispatch, useSelector } from "react-redux";
 import { setTransfersBookings } from "../../../store/actions/transferBookingsStore";
 import { Generalbuttonstyle } from "../../../components/ui/button/Generallinkbutton";
 import { Logo } from "../../../components/modals/flights/new-flight-searched/LogoContainer";
+import { openNotification } from "../../../store/actions/notification";
 
 const Details = ({
   originCityId,
@@ -24,14 +25,14 @@ const Details = ({
   booking_id,
   drawer,
   transferBookings,
-  edge
+  edge,
 }) => {
- // console.log("transferbookings is:",transferBookings)
+  // console.log("transferbookings is:",transferBookings)
   const router = useRouter();
   const [fareRules, setFareRules] = useState(fareRule?.[0]?.fareRuleDetail);
   const [fareRulesLoading, setFareRulesLoading] = useState(false);
   const [fareRUlesError, setFareRulesError] = useState(false);
-const dispatch=useDispatch();
+  const dispatch = useDispatch();
   useEffect(() => {
     if (fareRules == null) {
       getFareRules();
@@ -135,17 +136,17 @@ const dispatch=useDispatch();
                   );
                   window.location.href = `/flights/book/${res.data.id}`;
                 } else {
-                 // console.log("updating",originCityId)
+                  // console.log("updating",originCityId)
                   const res = await axios.post(
                     MERCURY_HOST +
                       `/api/v1/itinerary/${router?.query?.id}/bookings/flight/`,
                     {
                       trace_id: localStorage.getItem(`${provider}_trace_id`),
                       result_indices: [resultIndex],
-                      source_itinerary_city:originCityId,
-                      destination_itinerary_city:destinationCityId  ,
-                      booking_id: booking_id, 
-                      edge:edge                   
+                      source_itinerary_city: originCityId,
+                      destination_itinerary_city: destinationCityId,
+                      booking_id: booking_id,
+                      edge: edge,
                     }
                   );
                   const updatedTransferBookings = {
@@ -156,11 +157,22 @@ const dispatch=useDispatch();
                     },
                   };
                   dispatch(setTransfersBookings(updatedTransferBookings));
-
-                  toast.success("Updated booking Successfuly");
+                  dispatch(
+                    openNotification({
+                      type: "success",
+                      text: "Updated booking Successfuly",
+                      heading: "Success!",
+                    })
+                  );
                 }
               } catch (error) {
-                toast.error(error.response?.data?.errors[0]?.message[0]);
+                dispatch(
+                  openNotification({
+                    type: "error",
+                    text: `${error.response?.data?.errors[0]?.message[0]}`,
+                    heading: "Error!",
+                  })
+                );
               }
             }}
             className="z-[1600]"

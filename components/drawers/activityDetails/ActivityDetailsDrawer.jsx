@@ -9,9 +9,9 @@ import {
 } from "../../../services/poi/poiActivities";
 import { getDate } from "../../../helper/DateUtils";
 import { openNotification } from "../../../store/actions/notification";
-import { toast } from "react-toastify";
 import ActivityDetailsSkeleton from "./ActivityDetailsSkeleton";
 import setItinerary from "../../../store/actions/itinerary";
+import { duration } from "@mui/material";
 
 const ActivityDetailsDrawer = (props) => {
   //console.log("day by day:",props?.setItinerary)
@@ -99,11 +99,25 @@ const ActivityDetailsDrawer = (props) => {
             if (city?.city?.id === props?.cityId) {
               const updatedActivities = [...(city?.activities || []), res?.data];
         
+              const activityData={
+                activity:res?.data?.activity?.id,
+                booking:{
+                  id:res?.data?.id,
+                  pax:res?.data?.number_of_adults+res?.data?.number_of_children+res?.data?.number_of_infants,
+                  duration:res?.data?.duration
+                },
+                element_type:"activity",
+                heading:res?.data?.activity?.name,
+                icon:res?.data?.image,
+                poi:null,
+                rating:res?.data?.activity?.rating,
+                user_ratings_total:res?.data?.activity?.user_ratings_total
+              }
               const updatedDayByDay = city?.day_by_day?.map((day) => {
                 if (day?.date === props?.date) {
                   return {
                     ...day,
-                    slab_elements: [...(day?.slab_elements || []), res?.data],
+                    slab_elements: [...(day?.slab_elements || []), activityData],
                   };
                 }
                 return day;
@@ -118,12 +132,8 @@ const ActivityDetailsDrawer = (props) => {
             return city;
           }),
         };
-        
-
-        console.log("itinerary is:",newItinerary)
-        
+                
         dispatch(setItinerary(newItinerary));
-        
 
         if(props?.activityBookings==null){
           props?.setActivityBookings([res?.data])
@@ -131,8 +141,11 @@ const ActivityDetailsDrawer = (props) => {
         else{
           props.setActivityBookings([...props?.activityBookings, res?.data]);
         }
-        // props.setActivities([...props?.activities, res?.data]);
-        toast.success("Added activity in itinerary");
+        props.openNotification({
+          type: "success",
+          text: "Added activity in itinerary",
+          heading: "Success!",
+        });
       })
       .catch((err) => {
         console.log("error is:", err);

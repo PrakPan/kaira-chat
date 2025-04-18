@@ -87,7 +87,11 @@ const ItineraryCity = (props) => {
         setData(res.data);
       })
       .catch((err) => {
-        toast.error("unable to get detail");
+        props.openNotification({
+          type: "error",
+          text: "unable to get detail",
+          heading: "Error!",
+        });
         setShowDetails(false);
       });
   };

@@ -19,6 +19,8 @@ import {
 } from "../../../components/modals/flights/new-flight-searched/FlightStyles";
 import GlobalModal from "../../../components/modals/GlobalModal";
 import { toast, ToastContainer } from "react-toastify";
+import { openNotification } from "../../../store/actions/notification";
+import { useDispatch } from "react-redux";
 export default function Book() {
   const router = useRouter();
   const [count, setCount] = useState({
@@ -39,6 +41,7 @@ export default function Book() {
     is_domestic: true,
   });
   const [ssr, setSsr] = useState({});
+  const dispatch = useDispatch();
 
   const [priceDetails, setPriceDetails] = useState({
     baseFare: 0,
@@ -125,8 +128,10 @@ export default function Book() {
           baseFare: res?.data?.flight_details?.price_details?.base_fare,
           taxAndSubCharge:
             res?.data?.flight_details?.price_details?.tax_and_surcharge,
-          addOns:priceDetails?.addOns,
-          totalAmount: res?.data?.flight_details?.price_details?.total_amount+priceDetails?.addOns,
+          addOns: priceDetails?.addOns,
+          totalAmount:
+            res?.data?.flight_details?.price_details?.total_amount +
+            priceDetails?.addOns,
         });
         setIsPriceUpdated(true);
         return;
@@ -141,9 +146,21 @@ export default function Book() {
           is_domestic: metaData.is_domestic,
         }
       );
-      toast.success(res?.data?.message)
+      dispatch(
+        openNotification({
+          type: "success",
+          text: `${res?.data?.message}`,
+          heading: "Success!",
+        })
+      );
     } catch (error) {
-      toast.error(error.response?.data?.errors[0]?.message[0]);
+      dispatch(
+        openNotification({
+          type: "error",
+          text: `${error.response?.data?.errors[0]?.message[0]}`,
+          heading: "Error!",
+        })
+      );
     }
   };
 

@@ -14,6 +14,7 @@ import { IoMdClose } from "react-icons/io";
 import ImageLoader from "../../../components/ImageLoader";
 import SkeletonCard from "../../../components/ui/SkeletonCard";
 import { useDispatch } from "react-redux";
+import { openNotification } from "../../../store/actions/notification";
 
 const Title = styled.p`
   font-weight: 800;
@@ -83,9 +84,9 @@ const ImageContainer = styled.div`
   position: relative;
 `;
 
-function convertDate(dateStr){
-  const[year,day,month]=dateStr.split("-");
-  return `${year}-${month}-${day}`
+function convertDate(dateStr) {
+  const [year, day, month] = dateStr.split("-");
+  return `${year}-${month}-${day}`;
 }
 const SearchHotels = () => {
   const router = useRouter();
@@ -108,7 +109,7 @@ const SearchHotels = () => {
     num_adults: 0,
     num_children: 0,
   });
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
 
   const [showDetails, setShowDetails] = useState(false);
 
@@ -171,8 +172,8 @@ const SearchHotels = () => {
   const requestApi = async (checkIn, checkOut, city, occupancies) => {
     try {
       const res = await axios.post(`${MERCURY_HOST}/api/v1/hotels/search/`, {
-        check_in: new Date(checkIn).toISOString().split('T')[0],
-        check_out:new Date(checkOut).toISOString().split('T')[0],
+        check_in: new Date(checkIn).toISOString().split("T")[0],
+        check_out: new Date(checkOut).toISOString().split("T")[0],
         city_id: city,
         occupancies: occupancies,
         filter_by: {
@@ -185,14 +186,19 @@ const SearchHotels = () => {
         },
       });
       setData(res?.data?.data);
-      
     } catch (err) {
       const errorMessage =
         err?.response?.data?.errors?.[0]?.detail?.[0]?.message ||
         err?.response?.data?.message ||
         "Something went wrong. Please try again.";
 
-      toast.error(errorMessage);
+      dispatch(
+        openNotification({
+          type: "error",
+          text: `${errorMessage}`,
+          heading: "Error!",
+        })
+      );
       console.log("Error: ", err);
     }
   };
@@ -265,7 +271,7 @@ const SearchHotels = () => {
                             `${MERCURY_HOST}/api/v1/hotels/detail/`,
                             {
                               trace_id: null,
-                              check_in:input?.checkIn,
+                              check_in: input?.checkIn,
                               check_out: input?.checkOut,
                               hotel_id: String(item?.id),
                               num_adults: input?.num_adults,
@@ -394,9 +400,7 @@ const SearchHotels = () => {
                       {" /- "}
                       {"Per person"}
                     </div>
-                  ) : (
-                   null
-                  )}
+                  ) : null}
 
                   {hotelDetails?.recommendations?.[0]?.rates?.[0]?.rooms?.[0]
                     ?.description && (
