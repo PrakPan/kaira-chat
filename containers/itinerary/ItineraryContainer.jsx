@@ -450,7 +450,16 @@ const ItineraryContainer = (props) => {
           status?.HOTELS === "SUCCESS"
         ) {
           setPolling(false);
-        } else {
+        }else if(
+          status?.ITINERARY === "FAILURE" &&
+          status?.TRANSFERS === "FAILURE" &&
+          status?.PRICING === "FAILURE" &&
+          status?.HOTELS === "FAILURE"
+        ) {
+          setPolling(false);
+        }
+          
+        else {
           setPolling(true);
         }
 
@@ -571,17 +580,17 @@ const ItineraryContainer = (props) => {
             if (hotels_status === "FAILURE") {
               dispatch(setItineraryStatus("hotels_status", "FAILURE"));
             }
-            if(pricing_status === "PENDING"){
-              dispatch(setItineraryStatus("pricing_status", "FAILURE"));
-            }
-            if (transfers_status === "PENDING") {
-              dispatch(setItineraryStatus("transfers_status", "FAILURE"));
-            }
-            if (hotels_status === "PENDING") {
-              dispatch(setItineraryStatus("hotels_status", "FAILURE"));
-            }
+            if (
+              pricing_status === "PENDING" ||
+              transfers_status === "PENDING" ||
+              itinerary_status === "PENDING" ||
+              hotels_status === "PENDING"
+            ) {
+              fetchData(true);
+              setPolling(true);
           }
 
+          }
           clearInterval(interval);
         }
       }, 5000);
