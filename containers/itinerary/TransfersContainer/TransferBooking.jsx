@@ -19,6 +19,7 @@ import { MERCURY_HOST } from "../../../services/constants";
 import VehicleDetailModal from "../../../components/modals/daybyday/VehicleModal";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
+import { HiOutlineRefresh } from "react-icons/hi";
 const GridContainer = styled.div`
   width: auto;
   overflow: auto;
@@ -373,6 +374,7 @@ const TransferBooking = ({
                   setShowLoginModal={setShowLoginModal}
                   originCityId={originCityId}
                   destinationCityId={destinationCityId}
+                  setShowDrawer={setShowDrawer}
                 />
               ) : (
                 <div className="mt-3 ml-1 md:ml-7 flex flex-col w-full">
@@ -633,6 +635,7 @@ const TransferBooking = ({
                 originCityId={originCityId}
                 destinationCityId={destinationCityId}
                 type={"combo"}
+                setShowDrawer={setShowDrawer}
               />
             ) : (
               <div
@@ -642,9 +645,6 @@ const TransferBooking = ({
                 <div className="flex flex-row w-full justify-between items-center">
                   <span className="font-medium inline">{book?.name}</span>
                   <div className="flex flex-row gap-2 justify-center items-center">
-                    {/* <div className=" text-md font-semibold  text-[#277004] ">
-            Included
-          </div> */}
                   </div>
                 </div>
 
@@ -812,10 +812,33 @@ const TransferBooking = ({
                     handleDelete={handleDelete}
                     setHandleShow={setShowVehicleDrawer}
                     booking={book}
+                    type={"combo"}
                   />
                 </Drawer>
               </div>
             )}
+          <TransferEditDrawer
+              mercury
+              addOrEdit={"transferAdd"}
+              showDrawer={showDrawer}
+              setShowDrawer={setShowDrawer}
+              selectedTransferHeading={origin}
+              origin={origin?.id != undefined ? origin?.id : id}
+              destination={destination?.id != undefined ? destination?.id : id}
+              check_in={check_in}
+              routeId={id}
+              city={
+                origin?.name != undefined ? origin?.name : origin?.city_name
+              }
+              dcity={
+                destination?.name != undefined
+                  ? destination?.name
+                  : destination?.city_name
+              }
+              selectedBooking={selectedBooking}
+              originCityId={originCityId}
+              destinationCityId={destinationCityId}
+            />
           </ComboContainer>
         ))
       )}
@@ -852,8 +875,19 @@ const FlightBooking = ({
   destinationCityId,
   loadbookings,
   type,
+  setShowDrawer
 }) => {
   const [showDetails, setShowDetails] = useState(false);
+  const[isHovered,setIsHovered]=useState(false);
+  const popupStyle = {
+    display: isHovered ? "block" : "none",
+    backgroundColor: "#2b2b2a",
+    border: "1px solid #e5e7eb",
+    borderRadius: "0.45rem",
+    padding: "5px 10px",
+    marginTop: "5px",
+    marginLeft: "5px",
+  };
   console.log("showw", showDetails);
   const router = useRouter();
   function HandleFlights(i, label) {
@@ -931,8 +965,33 @@ const FlightBooking = ({
 
   return (
     <div className="ml-1 md:ml-7 flex flex-col w-full items-center justify-center p-2 ">
-      <div className="flex flex-row w-full justify-between items-center">
+      <div className="flex flex-row w-full items-center">
         <span className="font-medium  inline">{booking?.name}</span>
+        {/* <div
+          id="transferEdit"
+          onClick={(e) => {
+            setShowDrawer(true)
+            setIsHovered(false);
+          }}
+          className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90 relative"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <HiOutlineRefresh className="transition-transform text-blue" />
+          <div
+            style={popupStyle}
+            className="z-50 absolute -bottom-140 left-1/2 -translate-x-1/2 text-sm text-center flex flex-col gap-2 bg-[#2b2b2a]"
+          >
+            <div className="relative">
+              <span className="absolute -top-5 left-1/2 -translate-x-1/2 w-0 h-0 border-[10px] border-solid border-transparent border-b-red"></span>
+              <span className="absolute -top-[21px] left-1/2 -translate-x-1/2 w-0 h-0 border-[10px] border-solid border-transparent border-b-[#2b2b2a]"></span>
+
+              <div className="text-nowrap font-normal text-white text-sm">
+                Change
+              </div>
+            </div>
+          </div>
+        </div> */}
       </div>
       <div
         id={booking?.id}
@@ -959,6 +1018,7 @@ const FlightBooking = ({
               segments={booking?.transfer_details?.items?.[0]?.segments}
               numStops={booking?.transfer_details?.items?.[0]?.stop_count}
               setShowDetails={setShowDetails}
+              type={type}
             />
           </div>
           {window.innerWidth >= 1000 && (
@@ -1037,6 +1097,7 @@ const FlightBooking = ({
                 HandleFlights(index, "Change Flight");
                 setShowDetails(false);
               }}
+              type={type}
             />
           </>
         )}

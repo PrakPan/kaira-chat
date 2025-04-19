@@ -17,6 +17,7 @@ import HotelBookingDetails from "./Overview/HotelBookingDetails";
 import { updateAccommodationBooking } from "../../../services/bookings/UpdateBookings";
 import { convertDate } from "../../../helper/getDateYYY-MM-DD";
 import { toast } from "react-toastify";
+import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 
 const Container = styled.div`
   padding: 0 0.75rem 0.75rem 0.75rem;
@@ -94,7 +95,8 @@ const ViewHotelDetails = (props) => {
   const [error, setError] = useState(false);
   const itineraryDaybyDay = useSelector((state) => state.Itinerary);
   const [drawerWidth, setDrawerWidth] = useState("50%");
-
+const dispatch=useDispatch()
+const CallPaymentInfo=useSelector((state)=>state.CallPaymentInfo)
   useEffect(() => {
     const handleResize = () => {
       setDrawerWidth(window.innerWidth <= 986 ? "100%" : "50%");
@@ -205,7 +207,7 @@ const ViewHotelDetails = (props) => {
       .then((response) => {
         props._updateStayBookingHandler([response.data]);
         props.setUpdateBookingState(false);
-
+        dispatch(SetCallPaymentInfo(!CallPaymentInfo))
         setTimeout(() => {
           props.getPaymentHandler();
         }, 1000);

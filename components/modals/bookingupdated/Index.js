@@ -150,6 +150,14 @@ const Booking = (props) => {
     }
   };
 
+  const resetPaginationStatus = () => {
+    setPaginationStatus({
+      traceId: null,
+      page: 1,
+      totalPages: 1,
+    });
+  };
+
   useEffect(() => {
     if (!props?.showBookingModal) {
       // setItineraryFilters({
@@ -251,7 +259,7 @@ const Booking = (props) => {
         type: filters.type && filters.type[0] !== "All" ? filters.type : null,
         star_category: filters.star_category,
         user_ratings: filters.user_ratings,
-        page: nextPage,
+        page: paginationStatus?.page,
       },
       occupancies: filters.occupancies,
       sort_by: {
@@ -267,7 +275,7 @@ const Booking = (props) => {
         setProvider(res.data?.source);
         setPaginationStatus({
           traceId: res?.data?.trace_details?.id,
-          page: res?.data?.current_page,
+          page: paginationStatus?.page+1,
           totalPages: res?.data?.total_pages,
         });
 
@@ -364,7 +372,11 @@ const Booking = (props) => {
           anchor={"right"}
           backdrop
           className="font-lexend "
-          onHide={props?.setHideBookingModal}
+          onHide={() => {
+            props?.setHideBookingModal;
+            resetPaginationStatus();
+            setMoreOptionsJSX([]);
+          }}
           width={"50vw"}
           mobileWidth={"100vw"}
         >
@@ -402,6 +414,8 @@ const Booking = (props) => {
                   selectSearch={selectSearch}
                   setSelectedSearch={setSelectedSearch}
                   fetchHotels={fetchHotels}
+                  resetPaginationStatus={resetPaginationStatus}
+                  setMoreOptionsJSX={setMoreOptionsJSX}
                   clickType={props?.currentBooking?.clickType}
                 ></SectionOne>
 
@@ -624,18 +638,18 @@ const Booking = (props) => {
                 updateUserStarHandler={updateUserStarHandler}
               />
               <ViewHotelDetails
-               mercury={true}
-               check_in={props?.selectedBooking.check_in}
-               check_out={props?.selectedBooking.check_out}
-               _setImagesHandler={props?._setImagesHandler}
-               onHide={() => setShowDetails(false)}
-               id={props?.currentBooking?.agoda_accommodation}
-               currentBooking={props?.currentBooking}
-               show={showDetails}
-               handleClick={props?.handleClick}
-               setStayBookings={props?.setStayBookings}
-               itineraryDaybyDay={props?.itineraryDaybyDay}
-               occupancies={filters.occupancies}
+                mercury={true}
+                check_in={props?.selectedBooking.check_in}
+                check_out={props?.selectedBooking.check_out}
+                _setImagesHandler={props?._setImagesHandler}
+                onHide={() => setShowDetails(false)}
+                id={props?.currentBooking?.agoda_accommodation}
+                currentBooking={props?.currentBooking}
+                show={showDetails}
+                handleClick={props?.handleClick}
+                setStayBookings={props?.setStayBookings}
+                itineraryDaybyDay={props?.itineraryDaybyDay}
+                occupancies={filters.occupancies}
               ></ViewHotelDetails>
 
               {/* <AccommodationModal

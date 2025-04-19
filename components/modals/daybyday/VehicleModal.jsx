@@ -18,7 +18,8 @@ const VehicleDetailModal = ({
   setHandleShow,
   handleDelete,
   loading,
-  booking
+  booking,
+  type
 }) => {
   if (!data) return null;
   // const [loading, setLoading] = useState(false);
@@ -53,14 +54,14 @@ const VehicleDetailModal = ({
   };
 
   const addMinutesToDate = (dateString, minutes) => {
-    console.log("Date String",dateString);
+    console.log("Date String", dateString);
     const date = new Date(dateString);
     date.setMinutes(date.getMinutes() + minutes);
     return formatDateTime(date.toISOString());
   };
 
-
-  const departure = transfer_details?.start_datetime || transfer_details?.gozo?.start_date;
+  const departure =
+    transfer_details?.start_datetime || transfer_details?.gozo?.start_date;
   const duration = transfer_details?.duration;
 
   const arrival = addMinutesToDate(departure, duration);
@@ -250,16 +251,21 @@ const VehicleDetailModal = ({
         </div>
 
         {/* Delete Booking Button (Fixed) */}
-        {handleDelete && (
+        {handleDelete && type!="combo"&&(
           <div className="p-4 bg-white">
+            {console.log("type is:",type)}
             <button
               className="w-full bg-red-500 text-white py-2 rounded-lg flex items-center justify-center"
-              onClick={()=>handleDelete(booking)}
+              onClick={() => handleDelete(booking)}
               disabled={loading}
             >
               <div style={{ position: "relative" }}>
-                <div className="flex gap-1 items-center text-white" style={loading ? { visibility: "hidden" } : {}}>
-                <Image src="/delete.svg" width={"20"} height={"20"}/> <span> Delete Booking </span>
+                <div
+                  className="flex gap-1 items-center text-white"
+                  style={loading ? { visibility: "hidden" } : {}}
+                >
+                  <Image src="/delete.svg" width={"20"} height={"20"} />{" "}
+                  <div>Delete Booking </div>
                 </div>
                 {loading && (
                   <PulseLoader
