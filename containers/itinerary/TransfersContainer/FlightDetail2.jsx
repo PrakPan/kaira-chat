@@ -51,15 +51,22 @@ const Details = ({
       if (response.status === 204) {
         dispatch(updateTransferBookings(booking_id));
         setLoading(false);
-        toast.success("Booking deleted successfuly");
-        console.log("Deleted Booking");
+        dispatch(
+          openNotification({
+            type: "success",
+            text: "Booking Deleted Successfuly",
+            heading: "Success!",
+          })
+        );
       }
     } catch (err) {
-      console.log(
-        "[ERROR][ItineraryPage][axiosDeleteBooking:/Delete_Booking]",
-        err
+      dispatch(
+        openNotification({
+          type: "error",
+          text: `${err.message}`,
+          heading: "Error!",
+        })
       );
-      toast.error("Error", err.message);
       setLoading(false);
     }
   };
@@ -165,7 +172,8 @@ const Details = ({
         >
           <div style={{ position: "relative" }}>
             <div style={loading ? { visibility: "hidden" } : {}}>
-            <Image src="/delete.svg" width={"20"} height={"20"}/> Delete Booking
+              <Image src="/delete.svg" width={"20"} height={"20"} /> Delete
+              Booking
             </div>
             {loading && (
               <PulseLoader
@@ -182,7 +190,7 @@ const Details = ({
             )}
           </div>
         </button>
-        </div>
+      </div>
 
       <ToastContainer />
     </div>

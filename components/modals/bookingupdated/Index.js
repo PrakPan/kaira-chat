@@ -339,7 +339,7 @@ const Booking = (props) => {
             tags: res.data?.tags,
           });
 
-          setMoreOptionsJSX([...moreOptionsJSX, options]);
+          setMoreOptionsJSX([...moreOptionsJSX, ...options]);
         } else {
           setNoResults(true);
           setMoreOptionsJSX([]);

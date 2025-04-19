@@ -215,18 +215,19 @@ const HotelBookingDetails = (props) => {
       if (response.status === 204) {
         dispatch(updateStays(props?.id));
         setLoading(false);
-        // props?.setShowDetails(true);
-        toast.success("Booking deleted successfuly");
         setVisible(true);
-        // setHandleShow(false);
-        console.log("Deleted Booking");
+        props.openNotification({
+          type: "success",
+          text: "Booking deleted Successfuly",
+          heading: "Success!",
+        });
       }
     } catch (err) {
-      console.log(
-        "[ERROR][ItineraryPage][axiosDeleteBooking:/Delete_Booking]",
-        err
-      );
-      toast.error("Error", err.message);
+      props.openNotification({
+        type: "error",
+        text: `${err.message}`,
+        heading: "Error!",
+      });
       setLoading(false);
     }
   };

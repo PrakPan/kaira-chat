@@ -43,7 +43,7 @@ const NewPoiDetailsDrawer = (props) => {
       const requestData = {
         itinerary_city_id: props?.itinerary_city_id,
         poi_id: props?.id,
-        day_by_day_index: props?.dayIndex,
+        day_by_day_index: props?.dayIndex || 0,
       };
       const res = await axios.post(
         `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/poi/add/`,
@@ -53,7 +53,6 @@ const NewPoiDetailsDrawer = (props) => {
           },
         }
       );
-      console.log("itineray is:",itinerary)
       var newItinerary = JSON.parse(JSON.stringify(itinerary));
       const itineraryCities=newItinerary?.cities?.map((item)=>{
         const city=item;
@@ -66,9 +65,17 @@ const NewPoiDetailsDrawer = (props) => {
       })
       newItinerary.cities=itineraryCities
       dispatch(setItinerary(newItinerary));
-      toast.success("booking updated successfuly");
+      props.openNotification({
+        type: "success",
+        text: "Booking Updated Successfuly",
+        heading: "Success!",
+      });
     } catch (error) {
-      console.log("add poi error is:",error)
+      props.openNotification({
+        type: "error",
+        text: "Something went wrong! Please try after some time.",
+        heading: "Error!",
+      });
     }
   };
 

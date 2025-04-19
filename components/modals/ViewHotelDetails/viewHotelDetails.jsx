@@ -40,6 +40,22 @@ const BackContainer = styled.div`
   }
 `;
 
+
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 10px;
+  background: #f7e700;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  left: 90%;
+  z-index: 2;
+  cursor: pointer;
+`;
+
 const BackText = styled.div`
   font-size: 1.5rem;
   line-height: 2rem;
@@ -106,11 +122,11 @@ const ViewHotelDetails = (props) => {
         check_out: (props?.check_out).split("/").join("-"),
         hotel_id: props?.id,
         occupancies: props?.occupancies,
-        source:props?.source,
-        currency:"INR"
+        source: props?.source,
+        currency: "INR",
       };
       hotelDetails
-        .post('',requestData)
+        .post("", requestData)
         .then((res) => {
           setLoading(false);
           setData(res.data);
@@ -181,7 +197,7 @@ const ViewHotelDetails = (props) => {
     };
 
     updateAccommodationBooking
-      .post(`${router?.query?.id}/bookings/accommodation/`, requestData,{
+      .post(`${router?.query?.id}/bookings/accommodation/`, requestData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
@@ -208,9 +224,17 @@ const ViewHotelDetails = (props) => {
             source: response?.data?.images?.[0]?.source,
           };
           props.setStayBookings(stayBookings);
-          toast.success("booking updated successfuly")
+          props.openNotification({
+            type: "success",
+            text: "Booking Updated Successfuly",
+            heading: "Success!",
+          });
         } catch (error) {
-          toast.error(error.response?.data?.errors[0]?.message[0]);
+          props.openNotification({
+            type: "error",
+            text: `${error.response?.data?.errors[0]?.message[0]}`,
+            heading: "Error!",
+          });
         }
       })
       .catch((err) => {
@@ -253,9 +277,7 @@ const ViewHotelDetails = (props) => {
                   currentBooking={props.currentBooking}
                   number_of_reviews={props.number_of_reviews}
                   data={data}
-                  images={
-                    data?.images ? data.images : []
-                  }
+                  images={data?.images ? data.images : []}
                   experience_filters={
                     props.poi ? props.poi.experience_filters : null
                   }
