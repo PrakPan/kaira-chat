@@ -29,6 +29,7 @@ const Booking = (props) => {
       selectedBooking={props.selectedBooking}
       data={props.data}
       handleTaxiSelect={props.handleTaxiSelect}
+      onSelect={props?.onSelect}
     ></ComboSection>
       :
       <SectionOne

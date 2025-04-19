@@ -60,13 +60,17 @@ const ComboTaxi = (props) => {
 
  console.log("OCity,D",props?.selectedBooking,props?.originCityId);
 
+ console.log("Inside fetch dtaa",props?.showTaxiModal)
+
   useEffect(() => {
     if (props.showTaxiModal) {
+      console.log("Inside fetch dtaa",props.showTaxiModal);
       fetchData();
     }
   }, [props.alternates, props.budget, props.showTaxiModal]);
 
   const fetchData = () => {
+    console.log("Inside fetch dtaa");
     setError(false);
     setLoading(true);
     setUpdateLoadingState(false);
@@ -145,6 +149,7 @@ const ComboTaxi = (props) => {
                 }}
                 handleTaxiSelect={props.handleTaxiSelect}
                 combo={true}
+                onSelect={props?.onSelect}
               ></TaxiSearched>
             );
           }

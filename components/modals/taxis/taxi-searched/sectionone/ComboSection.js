@@ -152,42 +152,39 @@ const ComboSection = (props) => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const handleUpdate = () => {
-    if (props.handleTaxiSelect) {
-      props.handleTaxiSelect({
-        trace_id: props.data.trace_id,
-        result_index: props.data.result_index
-      });
-      return;
-    }
+  const handleUpdate = (data) => {
+    if (props.onSelect) {
+      props?.onSelect(data);
+     
+    }else return;
 
-    setLoading(true);
+    // setLoading(true);
 
-    const requestData = {
-      source: props.data.source,
-      trace_id: props.data.trace_id,
-      result_index: props.data.result_index
-    }
+    // const requestData = {
+    //   source: props.data.source,
+    //   trace_id: props.data.trace_id,
+    //   result_index: props.data.result_index
+    // }
 
-    axiosTaxiBooking.post(`${props.selectedBooking.itinerary_id}/bookings/taxi/`, requestData).then(res => {
-      setLoading(false);
-      props.openNotification({
-        type: "success",
-        text: "Taxi changed successfully.",
-        heading: "Success!",
-      });
-      props._updateTaxiBookingHandler([res.data]);
-      props.getPaymentHandler();
-      props.setHideBookingModal()
-    }).catch(err => {
-      setLoading(false);
-      props.openNotification({
-        type: "error",
-        text: "There seems to be a problem, please try again after some time!",
-        heading: "Error!",
-      });
-      props.setHideBookingModal()
-    })
+    // axiosTaxiBooking.post(`${props.selectedBooking.itinerary_id}/bookings/taxi/`, requestData).then(res => {
+    //   setLoading(false);
+    //   props.openNotification({
+    //     type: "success",
+    //     text: "Taxi changed successfully.",
+    //     heading: "Success!",
+    //   });
+    //   props._updateTaxiBookingHandler([res.data]);
+    //   props.getPaymentHandler();
+    //   props.setHideBookingModal()
+    // }).catch(err => {
+    //   setLoading(false);
+    //   props.openNotification({
+    //     type: "error",
+    //     text: "There seems to be a problem, please try again after some time!",
+    //     heading: "Error!",
+    //   });
+    //   props.setHideBookingModal()
+    // })
   }
 
   // Calculate bag capacity
@@ -301,7 +298,7 @@ const ComboSection = (props) => {
               {loading ? (
                 <PulseLoader size={8} speedMultiplier={0.6} color="#111" />
               ) : (
-                <SelectButton onClick={handleUpdate}>Select</SelectButton>
+                <input type="checkbox" onClick={()=>handleUpdate(props?.data)}></input>
               )}
             </PriceActionContainer>
           </TripInfoContainer>

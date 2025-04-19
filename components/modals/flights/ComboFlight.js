@@ -79,7 +79,7 @@ const ContentContainer = styled.div`
 
 const ComboFlight = (props) => {
 
-  console.log("Flight Selected Booking",props?.selectedBooking);
+  console.log("Flight Selected Booking",props?.selectedBooking,props?.showComboFlightModal);
   console.log("Flight Selected Booking",props?.originCityId,props?.destinationCityId);
   let isPageWide = media("(min-width: 768px)");
   const dispatch = useDispatch();
@@ -128,16 +128,16 @@ const ComboFlight = (props) => {
  // console.log("Ord",props?.originCityId,props?.destinationCityId);
 
   useEffect(() => {
-    if (!isPageWide && props.showFlightModal) _FetchFlightsHandler();
-    if (!props.showFlightModal) {
+    if (!isPageWide && props.showComboFlightModal) _FetchFlightsHandler();
+    if (!props.showComboFlightModal) {
       setOptionsJSX([]);
       setLoading(true);
     }
-  }, [props.showFlightModal]);
+  }, [props.showComboFlightModal]);
 
   useEffect(() => {
-    if (isPageWide && props.showFlightModal) _FetchFlightsHandler();
-  }, [props.showFlightModal, props.token, filtersState, pax, classType]);
+    if (isPageWide && props.showComboFlightModal) _FetchFlightsHandler();
+  }, [props.showComboFlightModal, props.token, filtersState, pax, classType]);
 
   //console.log("Booking Data",props?.selectedBooking);
   const _FetchFlightsHandler = () => {
@@ -153,6 +153,7 @@ const ComboFlight = (props) => {
     });
 
     if (props.selectedBooking && props.token) {
+      console.log("Inside Flight")
       const requestData = {
         adult_count: pax.adults,
         child_count: pax.children,
@@ -170,7 +171,8 @@ const ComboFlight = (props) => {
         }`,
         flight_cabin_class: classType.value,
       };
-
+       
+      console.log("Inside Flight",requestData);
       axiosFlightSearch
         .post(
           `?${filtersState.sort_by}_order=${filtersState.order}${
@@ -210,6 +212,7 @@ const ComboFlight = (props) => {
                   destinationCityId={props?.destinationCityId}
                   setTransferBookingsIntercity={props.setTransferBookingsIntercity}
                   edge={props?.edge || props?.selectedBooking?.edge}
+                  onSelect={props?.onSelect}
                 ></Flight>
               );
             }
@@ -407,6 +410,7 @@ const ComboFlight = (props) => {
                 destinationCityId={props?.destinationCityId}
                 edge={props?.edge || props?.selectedBooking?.edge}
                 setTransferBookingsIntercity={props.setTransferBookingsIntercity}
+                onSelect={props.onSelect}
               ></Flight>
             );
           }
