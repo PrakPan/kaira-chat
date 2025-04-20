@@ -25,7 +25,7 @@ import { AiOutlineRight, AiOutlineUp } from "react-icons/ai";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { BiTrain } from "react-icons/bi";
 import { PiTaxi } from "react-icons/pi";
-import { ImCross } from "react-icons/im";
+import { ImCheckboxChecked, ImCheckboxUnchecked, ImCross } from "react-icons/im";
 import ComboFlight from "../../modals/flights/ComboFlight";
 import ComboTaxi from "../../modals/taxis/ComboTaxi";
 

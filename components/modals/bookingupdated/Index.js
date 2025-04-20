@@ -81,6 +81,7 @@ const Booking = (props) => {
   const [unauthorized, setUnauthorized] = useState(false);
   const [noResults, setNoResults] = useState(false);
   const filtersState = useSelector((state) => state.ItineraryFilters);
+  const itinerary=useSelector((state)=>state.Itinerary)
 
   const [filters, setFilters] = useState({
     free_breakfast: true,
@@ -96,7 +97,7 @@ const Booking = (props) => {
     facilities: null,
     tags: null,
     trace_id: null,
-    occupancies: filtersState?.occupancies,
+    occupancies: itinerary?.hotels_config?.room_configuration,
     applyFilter: false,
   });
   const [filtersObj, setFiltersObj] = useState({
@@ -246,7 +247,7 @@ const Booking = (props) => {
       check_in: getDate(props?.selectedBooking?.check_in),
       check_out: getDate(props?.selectedBooking?.check_out),
       city_id: props?.selectedBooking?.cityId,
-      occupancies: filters.occupancies,
+      occupancies: props?.selectedBooking?.occupancies,
       filter_by: {
         price_lower_range: filters.budget.price_lower_range,
         price_upper_range: filters.budget.price_upper_range,
@@ -261,7 +262,12 @@ const Booking = (props) => {
         user_ratings: filters.user_ratings,
         page: paginationStatus?.page,
       },
-      occupancies: filters.occupancies,
+      occupancies: filters.occupancies.map((room) => {
+        return {
+          num_adults: room.adults,
+          child_ages: room.childAges,
+        };
+      }),
       sort_by: {
         price_order: filters.sort === "price: high to low" ? "desc" : "asc",
       },
@@ -376,6 +382,10 @@ const Booking = (props) => {
             props?.setHideBookingModal;
             resetPaginationStatus();
             setMoreOptionsJSX([]);
+            setFilters((prev)=>({
+              ...prev,
+              occupancies:props?.hotelsConf
+            }))
           }}
           width={"50vw"}
           mobileWidth={"100vw"}
@@ -417,6 +427,8 @@ const Booking = (props) => {
                   resetPaginationStatus={resetPaginationStatus}
                   setMoreOptionsJSX={setMoreOptionsJSX}
                   clickType={props?.currentBooking?.clickType}
+                  setFilters={setFilters}
+                  hotelsConf={itinerary?.hotels_config?.room_configuration}
                 ></SectionOne>
 
                 <SectionTwo

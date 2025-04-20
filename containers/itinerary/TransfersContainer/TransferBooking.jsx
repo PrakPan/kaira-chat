@@ -525,12 +525,14 @@ const TransferBooking = ({
                       //   </Button>
                       // </div>
                       <button
-                        onclick={() =>
+                        onClick={() =>{
                           handleViewDetails(
                             router?.query?.id,
-                            book?.id,
-                            book?.transfer_details?.mode.toLowerCase()
+                            booking?.id,
+                            booking?.transfer_details?.mode.toLowerCase()
                           )
+                          setShowVehicleDrawer(true)
+                        }
                         }
                         className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000] mr-2"
                       >
@@ -561,7 +563,8 @@ const TransferBooking = ({
               )}
             </>
           </Container>
-        ) : (
+        ) :
+         (
           <div className="grid w-full grid-cols-[30px_120px] min-h-[5rem] md:min-h-[8rem]">
             <div className="relative">
               <Line

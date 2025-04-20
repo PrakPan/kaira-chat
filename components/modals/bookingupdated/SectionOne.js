@@ -34,6 +34,13 @@ const Section = (props) => {
               props.setHideBookingModal();
               props?.resetPaginationStatus();
               props?.setMoreOptionsJSX([])
+              props?.setFilters((prev)=>({
+                ...prev,
+                occupancies:props?.hotelsConf
+              }))
+              // props?.setFilters((prev)=>({
+              //   ...prev,
+              //   props?.hotelsConf})));
             } catch (error) {
               console.log("unable to close:", error);
             }

@@ -429,24 +429,7 @@ const CityItem = ({
               className="font-lexend"
               onHide={setShow}
             >
-            <TransferEditDrawer
-          itinerary_id={props?.itinerary_id}
-          showDrawer={show}
-          setShowDrawer={setShowTransferEditDrawer}
-          selectedTransferHeading={props.selectedTransferHeading}
-          origin={props.selectedBooking?.city}
-          destination={props.selectedBooking?.destination_city}
-          day_slab_index={props.daySlabIndex}
-          element_index={props.elementIndex}
-          fetchData={props?.fetchData}
-          setShowLoginModal={setShowLoginModal}
-          check_in={props?.check_in}
-          _GetInTouch={props._GetInTouch}
-          routeId={props.routeId}
-          selectedBooking={props.selectedBooking}
-          mercuryTransfer={props?.mercuryTransfer}
-          mercury={true}
-        />
+           
             </Drawer>  */}
     </Container>
   );
