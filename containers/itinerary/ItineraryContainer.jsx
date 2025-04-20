@@ -48,6 +48,7 @@ const Container = styled.div`
 const ItineraryContainer = (props) => {
   const router = useRouter();
   const dispatch = useDispatch();
+  const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
   const { itinerary_status, transfers_status, pricing_status, hotels_status } =
     useSelector((state) => state.ItineraryStatus);
   const [totalduration, setTotalduration] = useState(0);
@@ -409,7 +410,6 @@ const ItineraryContainer = (props) => {
         setTransferBookings(data);
         setCityTransferBookings(data);
         dispatch(setTransfersBookings(data));
-        
       })
       .catch((err) => {
         console.error("Error fetching all bookings", err.message);
@@ -430,8 +430,6 @@ const ItineraryContainer = (props) => {
         const res = await axiosGetItineraryStatus.get(`/${props.id}/status/`);
         const status = res.data?.celery;
 
-        console.log("Status Response:", status);
-
         if (status?.PRICING === "FAILURE") {
           dispatch(setItineraryStatus("pricing_status", "FAILURE"));
         }
@@ -450,16 +448,14 @@ const ItineraryContainer = (props) => {
           status?.HOTELS === "SUCCESS"
         ) {
           setPolling(false);
-        }else if(
+        } else if (
           status?.ITINERARY === "FAILURE" &&
           status?.TRANSFERS === "FAILURE" &&
           status?.PRICING === "FAILURE" &&
           status?.HOTELS === "FAILURE"
         ) {
           setPolling(false);
-        }
-          
-        else {
+        } else {
           setPolling(true);
         }
 
@@ -532,6 +528,13 @@ const ItineraryContainer = (props) => {
       fetchStatus();
     }
   }
+  useEffect(() => {
+    if (payment != null) {
+      pricingSuccessRef.current = true;
+      getPaymentInfo();
+    }
+    // setLoadPricing(false);
+  }, [CallPaymentInfo]);
 
   useEffect(() => {
     const fetchPassengers = async () => {
@@ -588,8 +591,7 @@ const ItineraryContainer = (props) => {
             ) {
               fetchData(true);
               setPolling(true);
-          }
-
+            }
           }
           clearInterval(interval);
         }

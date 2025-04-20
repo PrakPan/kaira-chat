@@ -23,6 +23,7 @@ import FlightDetailModal from "../../components/modals/daybyday/FlightDetailModa
 import TransferSkeleton from "../../components/itinerary/Skeleton/TransferSkeleton";
 import media from "../../components/media";
 import { openNotification } from "../../store/actions/notification";
+import Image from "next/image";
 
 const Container = styled.div`
   display: flex;
@@ -51,6 +52,7 @@ const CityItem = ({
   city,
   duration,
   booking_type,
+  transfer_type,
   upPresent,
   downPresent,
   booking_id,
@@ -118,13 +120,18 @@ const CityItem = ({
     setHandleShow(true);
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (val) => {
+    const dataPassed=val!=null?val:data
     try {
       setLoading(true);
       const response = await axiosDeleteBooking.delete(
-        `${data?.itinerary_id}/bookings/${data?.booking_type?.toLowerCase()}/${
-          data?.id
-        }/`
+        `${dataPassed?.itinerary_id}/bookings/${dataPassed?.booking_type?.toLowerCase()}/${
+          dataPassed?.id
+        }/`,{
+          headers:{
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          }
+        }
       );
 
       if (response.status === 204) {
@@ -153,8 +160,8 @@ const CityItem = ({
     try {
       setLoading(true);
       const response = await axiosDeleteBooking.delete(
-        `${data?.itinerary_id}/bookings/${data?.booking_type?.toLowerCase()}/${
-          data?.id
+        `${dataPassed?.itinerary_id}/bookings/${dataPassed?.booking_type?.toLowerCase()}/${
+          dataPassed?.id
         }/`
       );
 
@@ -276,27 +283,68 @@ const CityItem = ({
                       })
                     : correctIcon(booking_type)}
                 </div>
-                <div
-                  className="flex flex-col group hover:cursor-pointer"
-                  onClick={() => upPresent && downPresent && handleEdit()}
-                >
-                  <div className="flex gap-2 items-center ">
-                    <div className="group-hover:text-blue ">{city} </div>
-                    {upPresent && downPresent && (
-                      <div className="">
-                        <FaPen
-                          size={12}
-                          className="transition-transform group-hover:scale-150 duration-300 group-hover:text-yellow-500"
-                        />
+                {transfer_type == "combo" ? (
+                  <div
+                    className="flex flex-col group hover:cursor-pointer"
+                    onClick={async () => {
+                      const res = await axios.get(
+                        `${MERCURY_HOST}/api/v1/itinerary/${
+                          router?.query?.id
+                        }/bookings/${booking_type.toLowerCase()}/${booking_id}/`
+                      );
+                      upPresent && downPresent && handleDelete(res?.data);
+                    }}
+                  >
+                    <div className="flex gap-2 items-center ">
+                      <div className="group-hover:text-blue ">{city} </div>
+                      {upPresent && downPresent && (
+                        <>
+                          <div className="transition-transform group-hover:scale-150 duration-300 group-hover:text-yellow-500">
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 20 20"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M5.83398 17.5C5.37565 17.5 4.98329 17.3368 4.6569 17.0104C4.33051 16.684 4.16732 16.2917 4.16732 15.8333V5H3.33398V3.33333H7.50065V2.5H12.5007V3.33333H16.6673V5H15.834V15.8333C15.834 16.2917 15.6708 16.684 15.3444 17.0104C15.018 17.3368 14.6257 17.5 14.1673 17.5H5.83398ZM14.1673 5H5.83398V15.8333H14.1673V5ZM7.50065 14.1667H9.16732V6.66667H7.50065V14.1667ZM10.834 14.1667H12.5007V6.66667H10.834V14.1667Z"
+                                fill="red"
+                              />
+                            </svg>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                    {duration && (
+                      <div className=" font-[400] text-[12px] ">
+                        Duration: {duration}
                       </div>
                     )}
                   </div>
-                  {duration && (
-                    <div className=" font-[400] text-[12px] ">
-                      Duration: {duration}
+                ) : (
+                  <div
+                    className="flex flex-col group hover:cursor-pointer"
+                    onClick={() => upPresent && downPresent && handleEdit()}
+                  >
+                    <div className="flex gap-2 items-center ">
+                      <div className="group-hover:text-blue ">{city} </div>
+                      {upPresent && downPresent && (
+                        <div className="">
+                          <FaPen
+                            size={12}
+                            className="transition-transform group-hover:scale-150 duration-300 group-hover:text-yellow-500"
+                          />
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>{" "}
+                    {duration && (
+                      <div className=" font-[400] text-[12px] ">
+                        Duration: {duration}
+                      </div>
+                    )}
+                  </div>
+                )}
               </>
             ) : isPageWide ? (
               <button

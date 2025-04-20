@@ -17,6 +17,7 @@ import { Logo } from "../../../components/modals/flights/new-flight-searched/Log
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { PulseLoader } from "react-spinners";
 import Image from "next/image";
+import { openNotification } from "../../../store/actions/notification";
 
 const Details = ({
   originCityId,
@@ -34,6 +35,7 @@ const Details = ({
   setTransferBookings,
   setTransferBookingsIntercity,
   onChange,
+  type
 }) => {
   const router = useRouter();
   const [fareRules, setFareRules] = useState(fareRule?.[0]?.fareRuleDetail);
@@ -45,7 +47,11 @@ const Details = ({
     try {
       setLoading(true);
       const response = await axiosDeleteBooking.delete(
-        `${router?.query?.id}/bookings/flight/${booking_id}/`
+        `${router?.query?.id}/bookings/flight/${booking_id}/`,{
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
       );
 
       if (response.status === 204) {
@@ -164,16 +170,21 @@ const Details = ({
           ></div>
         </div>
       )}
-      <div className="w-full flex justify-end">
+      {type!="combo"&&<div className="w-full flex justify-end">
         <button
           className="right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515] p-2"
           onClick={handleDelete}
           disabled={loading}
         >
           <div style={{ position: "relative" }}>
-            <div style={loading ? { visibility: "hidden" } : {}}>
-              <Image src="/delete.svg" width={"20"} height={"20"} /> Delete
-              Booking
+            <div
+              className="flex gap-1 items-center"
+              style={loading ? { visibility: "hidden" } : {}}
+            >
+              <div>
+                <Image src="/delete.svg" width={"20"} height={"20"} />
+              </div>
+              <div>Delete Booking</div>
             </div>
             {loading && (
               <PulseLoader
@@ -190,7 +201,7 @@ const Details = ({
             )}
           </div>
         </button>
-      </div>
+      </div>}
 
       <ToastContainer />
     </div>

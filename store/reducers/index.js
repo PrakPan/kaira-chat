@@ -23,6 +23,7 @@ import TransferBookings from "./transferBookingsReducer";
 import Stays from "./StayBookings";
 import ItineraryStatus from './itineraryStatus'; 
 import Passengers from "./Passengers"
+import CallPaymentInfo from "./callPaymentInfo"
 const rootReducer = combineReducers({
   auth: authReducer,
   experience: experience,
@@ -48,6 +49,7 @@ const rootReducer = combineReducers({
   Stays,
   ItineraryStatus,
   Passengers,
+  CallPaymentInfo
 });
 
 export default rootReducer;
