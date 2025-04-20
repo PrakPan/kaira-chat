@@ -17,7 +17,7 @@ export const Text = styled.div`
   line-height: 2rem;
 `;
 
-const FlightDetailModal = ({ 
+const FlightDetailModal = ({
   segments,
   fareRule,
   setShowDetails,
@@ -26,7 +26,7 @@ const FlightDetailModal = ({
   originCityId,
   destinationCityId,
   drawer,
-  onChange
+  onChange,
 }) => {
   const router = useRouter();
   const fareRules = fareRule?.fareRuleDetail;
@@ -34,7 +34,7 @@ const FlightDetailModal = ({
   const fareRUlesError = false;
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
-  
+
   const handleDelete = async () => {
     try {
       setLoading(true);
@@ -45,46 +45,46 @@ const FlightDetailModal = ({
       if (response.status === 204) {
         dispatch(updateTransferBookings(booking_id));
         setLoading(false);
-        dispatch(openNotification({
-          type: "success",
-          text: "Booking deleted Successfuly",
-          heading: "Success!",
-        }))
+        dispatch(
+          openNotification({
+            type: "success",
+            text: "Booking deleted Successfuly",
+            heading: "Success!",
+          })
+        );
       }
     } catch (err) {
-      dispatch(openNotification({
-        type: "error",
-        text: `${err.message}`,
-        heading: "Error!",
-      }))
+      dispatch(
+        openNotification({
+          type: "error",
+          text: `${err.message}`,
+          heading: "Error!",
+        })
+      );
       setLoading(false);
     }
   };
 
   return (
     <div className="relative flex flex-col gap-4 rounded-md px-3 py-2">
-        <div className="flex flex-col gap-2">
-          <Heading>
-            <div className="flex flex-row items-center gap-2">
-              <IoMdClose
-                className="hover-pointer"
-                onClick={() => setShowDetails((prev) => !prev)}
-                style={{ fontSize: "2rem" }}
-              ></IoMdClose>
-              <Text>Back To Itinerary</Text>
-            </div>
-          </Heading>
-        </div>
-      
-      {!onChange && !drawer && (
-          <Text>
-          {name}
-          </Text>
-      )}
+      <div className="flex flex-col gap-2">
+        <Heading>
+          <div className="flex flex-row items-center gap-2">
+            <IoMdClose
+              className="hover-pointer"
+              onClick={() => setShowDetails((prev) => !prev)}
+              style={{ fontSize: "2rem" }}
+            ></IoMdClose>
+            <Text>Back To Itinerary</Text>
+          </div>
+        </Heading>
+      </div>
+
+      {!onChange && !drawer && <Text>{name}</Text>}
       <div className="flex flex-col gap-2 p-2">
-        <FlightSegment 
-          segments={segments} 
-          originCityId={originCityId} 
+        <FlightSegment
+          segments={segments}
+          originCityId={originCityId}
           destinationCityId={destinationCityId}
         />
       </div>
@@ -119,7 +119,12 @@ const FlightDetailModal = ({
         >
           <div style={{ position: "relative" }}>
             <div style={loading ? { visibility: "hidden" } : {}}>
-            <Image src="/delete.svg" width={"20"} height={"20"}/> Delete Booking
+              <div className="flex gap-1 items-center">
+                <div>
+                  <Image src="/delete.svg" width={"20"} height={"20"} />
+                </div>{" "}
+                <div>Delete Booking</div>
+              </div>
             </div>
             {loading && (
               <PulseLoader
@@ -142,7 +147,5 @@ const FlightDetailModal = ({
     </div>
   );
 };
-
-
 
 export default FlightDetailModal;

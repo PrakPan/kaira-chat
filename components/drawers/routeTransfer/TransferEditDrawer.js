@@ -19,13 +19,13 @@ import { logEvent } from "../../../services/ga/Index";
 import TaxiModal from "../../../components/modals/taxis/Index";
 import FlightModal from "../../../components/modals/flights/Index";
 import { getDate } from "../../../helper/DateUtils";
-import { fetchTransferMode } from "../../../services/bookings/FetchTaxiRecommendations";
+import { fetchTransferMode, UpdateTransferMode } from "../../../services/bookings/FetchTaxiRecommendations";
 import { FaClock, FaPlaneDeparture } from "react-icons/fa";
 import { AiOutlineRight, AiOutlineUp } from "react-icons/ai";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { BiTrain } from "react-icons/bi";
 import { PiTaxi } from "react-icons/pi";
-import { ImCross } from "react-icons/im";
+import { ImCheckboxChecked, ImCheckboxUnchecked, ImCross } from "react-icons/im";
 import ComboFlight from "../../modals/flights/ComboFlight";
 import ComboTaxi from "../../modals/taxis/ComboTaxi";
 
@@ -194,48 +194,84 @@ const TransferEditDrawer = (props) => {
         });
   };
 
-  const handleSelect = (index, transfer, multimode) => {
+  const handleSelect = (index, transfer, multimode,mode) => {
+    console.log("Inside",transfer,mode)
+    // If transfer is null, it means we're deselecting
+    if (!transfer) {
+        // Reset any selection data
+        setSelectedResult(null);
+        return;
+    }
+    
+    // Set common data
     selectedBooking.origin_iata = transfer?.source?.code;
     selectedBooking.destination_iata = transfer?.destination?.code;
     selectedBooking.edge = transfer?.id;
+    
+    // Check for login
     if (!props.token) {
-      setShowLoginModal(true);
-      return;
+        setShowLoginModal(true);
+        return;
     }
 
-    switch (transfer.mode) {
-      case "Flight":
-        setSelectedResult({ transferIndex: index, mode: transfer.mode });
-        // setShowFlightModal(true);
-        setShowComboFlightModal(true);
-        break;
-      case "Taxi":
-        setSelectedResult({ transferIndex: index, mode: transfer.mode });
-        // setShowTaxiModal(true);
-        setShowComboTaxiModal(true);
-        break;
-      default:
-        setSelectedResult({
-          transferIndex: index,
-          mode: transfer.mode,
-          transfer: transfer,
-        });
-        // setShowDrawer(false);
-        setShowOtherTrasfer(true);
-        break;
+    // Handle different modes
+    switch (mode) {
+        case "Flight":
+            // Check if this is the same selection (for toggling)
+            const isExistingFlightSelection = 
+                selectedResult && 
+                selectedResult.transferIndex === index && 
+                selectedResult.mode === "Flight";
+                
+            if (isExistingFlightSelection) {
+                // Deselecting
+                setShowComboFlightModal(true);
+                setSelectedResult(null);
+            } else {
+                // New selection
+                setSelectedResult({ transferIndex: index, mode: transfer.mode });
+                setShowComboFlightModal(true);
+            }
+            break;
+            
+        case "Taxi":
+            const isExistingTaxiSelection = 
+                selectedResult && 
+                selectedResult.transferIndex === index && 
+                selectedResult.mode === "Taxi";
+                
+            if (isExistingTaxiSelection) {
+                // Deselecting
+                setShowComboTaxiModal(true);
+                setSelectedResult(null);
+            } else {
+                // New selection
+                setSelectedResult({ transferIndex: index, mode: transfer.mode });
+                setShowComboTaxiModal(true);
+            }
+            break;
+            
+        default:
+            const isExistingSelection = 
+                selectedResult && 
+                selectedResult.transferIndex === index && 
+                selectedResult.mode === transfer.mode;
+                
+            if (isExistingSelection) {
+                // Deselecting
+                setSelectedResult(null);
+            } else {
+                // New selection
+                setSelectedResult({
+                    transferIndex: index,
+                    mode: transfer.mode,
+                    transfer: transfer,
+                });
+                setShowOtherTrasfer(true);
+            }
+            break;
     }
-
-    logEvent({
-      action: "Transfer_Add_Change",
-      params: {
-        page: "Itinerary Page",
-        event_category: "Button Click",
-        event_label: `Select`,
-        evemt_value: `Select ${transfer.mode}`,
-        event_action: "Transfer Add/Change Drawer",
-      },
-    });
-  };
+};
 
   const handleSelectResult = (result) => {
     setSelectedResult((prev) => {
@@ -548,8 +584,8 @@ const TransferEditDrawer = (props) => {
                             setCurrentStep={setCurrentStep}
                             currentStep={currentStep}
                             handleFlightSelect={handleSelectResult}
-                            showFlightModal={showComboFlightModal}
-                            setShowFlightModal={setShowComboFlightModal}
+                            showComboFlightModal={showComboFlightModal}
+                            setShowComboFlightModal={setShowComboFlightModal}
                             setHideFlightModal={() =>
                               setShowComboFlightModal(false)
                             }
@@ -583,6 +619,7 @@ const TransferEditDrawer = (props) => {
                             individual={props?.individual}
                             originCityId={props?.originCityId}
                             destinationCityId={props?.destinationCityId}
+                            token={props?.token}
                           />
                         </>
                       ) : (
@@ -605,6 +642,7 @@ const TransferEditDrawer = (props) => {
                         transferIndex={index}
                         transfer={transfer}
                         handleSelect={handleSelect}
+                        token={props?.token}
                       />
                       // <MobileRouteContainer
                       //   key={index}
@@ -898,8 +936,8 @@ const NewMultiModeContainer = ({
   setCurrentStep,
   currentStep,
   handleFlightSelect,
-  showFlightModal,
-  setShowFlightModal,
+  showComboFlightModal,
+  setShowComboFlightModal,
   setHideFlightModal,
   setHideBookingModal,
   showTaxiModal,
@@ -925,43 +963,31 @@ const NewMultiModeContainer = ({
   individual,
   originCityId,
   destinationCityId,
+  token
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [selectedModeIds, setSelectedModeIds] = useState({});
-  console.log("Transferrr", transfer);
-  // Instead of grouping by unique modes, maintain the sequence order
-  // Each transfer represents one step in the journey
+  const [selectedData, setSelectedData] = useState([]);
+  
+  const [searchResults, setSearchResults] = useState({});
+
   const sequencedModes = transfer.map((t) => t.mode);
 
-  // Handle selection for any mode
-  const handleModeSelect = (index, id) => {
-    setSelectedModeIds((prev) => ({
-      ...prev,
-      [index]: id,
-    }));
+  console.log("Selected Modes",selectedModeIds,selectedData)
 
-    // Notify parent component about the selection
-    const selectedTransfer = transfer.find((item) => item.id === id);
-    if (selectedTransfer) {
-      handleSelect(transferIndex, selectedTransfer);
-    }
-  };
 
   const toggleExpanded = () => {
     setExpanded(!expanded);
   };
 
-  // Calculate total distance
   const totalDistance = transfer.reduce((sum, t) => sum + (t.distance || 0), 0);
 
-  // Get source of first transfer and destination of last transfer
   const sourceCity = transfer.length > 0 ? transfer[0].source.city_name : "";
   const destinationCity =
     transfer.length > 0
       ? transfer[transfer.length - 1].destination.city_name
       : "";
 
-  // Calculate total price of selected options
   const calculateTotalPrice = () => {
     let total = 0;
 
@@ -974,29 +1000,26 @@ const NewMultiModeContainer = ({
       }
     });
 
-    return total > 0 ? `Rs.${total}` : "";
+    return total > 0 ? `₹${total}` : "";
   };
 
-  // Get current mode based on step
   const getCurrentMode = () => {
     return currentStep > 0 && currentStep <= sequencedModes.length
       ? sequencedModes[currentStep - 1]
       : "";
   };
 
-  // Get current step's transfer data
   const getCurrentTransfer = () => {
     return currentStep > 0 && currentStep <= transfer.length
       ? [transfer[currentStep - 1]]
       : [];
   };
 
-  // Check if current mode is selected
+
   const isCurrentModeSelected = () => {
     return selectedModeIds[currentStep - 1] !== undefined;
   };
 
-  // Get mode icon component
   const getModeIcon = (mode) => {
     switch (mode.toLowerCase()) {
       case "train":
@@ -1010,40 +1033,168 @@ const NewMultiModeContainer = ({
     }
   };
 
-  // Total number of steps
   const totalSteps = transfer.length;
 
-  // Auto-open and select flight if present
+
+  const handleModeSelect = (index, id, searchData = null,mode= null) => {
+    const isDeselecting = selectedModeIds[index] === id;
+    
+    if (isDeselecting) {
+      setSelectedModeIds(prev => {
+        const newSelections = { ...prev };
+        delete newSelections[index];
+        return newSelections;
+      });
+      
+      setSelectedData(prev => {
+        const newData = [...prev];
+        newData[index] = undefined;
+        return newData;
+      });
+    } else {
+      // If selecting or changing selection
+      setSelectedModeIds(prev => ({
+        ...prev,
+        [index]: id,
+      }));
+      
+      if (searchData) {
+        // For flight/taxi API results
+        setSelectedData(prev => {
+          const newData = [...prev];
+          newData[index] = searchData;
+          return newData;
+        });
+      } else {
+        // For direct transfers
+        const selectedTransfer = transfer.find(item => item.id === id);
+        if (selectedTransfer) {
+          setSelectedData(prev => {
+            const newData = [...prev];
+            newData[index] = selectedTransfer;
+            return newData;
+          });
+        }
+      }
+    }
+    
+    handleSelect(transferIndex,isDeselecting ? null : (searchData || transfer.find(item => item.id === id)),transfer,mode);
+  };
+
+  const handleFlightSelection = (flightData) => {
+    console.log("Seleted Mo flight",flightData)
+    handleModeSelect(currentStep - 1, flightData?.id || flightData?.resultIndex, flightData,"Flight");
+  };
+
+  const handleTaxiSelection = (taxiData) => {
+    console.log("Seleted Mo Taxi",taxiData)
+    handleModeSelect(currentStep - 1, taxiData?.id || taxiData?.result_index, taxiData,"Taxi");
+  };
+
+  const handleUpdateTransfer = async () => {
+    if (Object.keys(selectedModeIds).length === totalSteps) {
+      try {
+  
+        const transfersPayload = selectedData.map((item, index) => {
+          const currentTransfer = transfer[index];
+          
+          const transferObj = {
+            booking_type: currentTransfer.mode,
+            edge_id: currentTransfer.id,
+          };
+          
+          if (currentTransfer.mode === "Flight") {
+            return {
+              ...transferObj,
+              result_index: item.resultIndex || item.result_index
+            };
+          } else if (currentTransfer.mode === "Taxi") {
+            return {
+              ...transferObj,
+              trace_id: item.trace_id,
+              result_index: item.result_index,
+              source: item.source
+            };
+          } else {
+            
+            return {
+              ...transferObj,
+              result_index: 0 
+            };
+          }
+        });
+        
+        // Create the request body
+        const requestBody = {
+          destination_itinerary_city: destinationCityId,
+          number_of_adults: 4, 
+          number_of_children: 0,
+          number_of_infants: 0,
+          start_datetime: "2025-04-25T00:00:00", 
+          transfers: transfersPayload
+        };
+  
+        if (selectedBooking) {
+          requestBody.booking_id = selectedBooking;
+        }
+        
+        console.log("Sending API request with body:", requestBody);
+        
+        UpdateTransferMode.post(`${itinerary_id}/bookings/transfer/`, requestBody,{
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        })
+        .then((response)=>{
+          if (!response.ok) {
+            throw new Error(`API error: ${response.status}`);
+          }
+          
+          const data = response.json();
+          console.log("Transfer updated successfully:", data);
+          openNotification({
+            text: "Your Transfer updated successfully!",
+            heading: "Success!",
+            type: "success",
+          });
+        })
+        .catch((error)=>{
+          openNotification({
+            text: "Error updating Transfers!",
+            heading: "Error!",
+            type: "error",
+          });
+        console.error("Error updating transfer:", error);
+      })
+    } catch(err){
+      console.log("Error in handleUpdateTransfer",err.message);
+    }
+  }
+}
+
   useEffect(() => {
-    const currentTransferData = getCurrentTransfer()[0];
-
-    if (currentTransferData && currentTransferData.mode === "Flight") {
-      // Auto-select the flight
-      handleModeSelect(currentStep - 1, currentTransferData.id);
-
-      // Move to next step automatically if not the last step
-      if (currentStep < totalSteps) {
-        // Short delay to ensure state updates properly
-        const timer = setTimeout(() => {
-          // setCurrentStep(currentStep + 1);
-        }, 100);
-        return () => clearTimeout(timer);
+    if (currentStep > 0 && currentStep <= transfer.length) {
+      const currentTransfer = transfer[currentStep - 1];
+      
+      if (!selectedModeIds[currentStep - 1]) {
+        if (currentTransfer) {
+          if (currentTransfer.mode !== "Flight" && currentTransfer.mode !== "Taxi") {
+            handleModeSelect(currentStep - 1, currentTransfer.id);
+          }else {
+            if(currentTransfer.mode === "Flight"){
+              handleSelect(currentStep -1, currentTransfer,"","Flight");
+              setShowComboFlightModal(true);
+              }
+            if(currentTransfer.mode === "Taxi"){
+              handleSelect(currentStep -1, currentTransfer,"","Taxi");
+              setShowComboTaxiModal(true);
+            }
+          }
+        }
       }
     }
-    if (currentTransferData && currentTransferData.mode === "Taxi") {
-      // Auto-select the flight
-      handleModeSelect(currentStep - 1, currentTransferData.id);
-
-      // Move to next step automatically if not the last step
-      if (currentStep < totalSteps) {
-        // Short delay to ensure state updates properly
-        const timer = setTimeout(() => {
-          // setCurrentStep(currentStep + 1);
-        }, 100);
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [currentStep]);
+  }, [currentStep, transfer]);
 
   return (
     <div className="w-full bg-white">
@@ -1071,7 +1222,7 @@ const NewMultiModeContainer = ({
         </div>
       </div>
 
-      {/* Transport mode selection (collapsed view) */}
+     
       {currentStep === 0 && (
         <div
           className="flex justify-between items-center p-3 md:p-4 border border-b cursor-pointer shadow-md"
@@ -1080,11 +1231,10 @@ const NewMultiModeContainer = ({
           <div className="font-bold text-sm md:text-base">
             {sequencedModes.join(", ")} |
             <span className="font-normal">
-              {/* Calculate approximate duration */}
               {Math.ceil(
                 transfer.reduce((sum, t) => sum + (t.duration || 0), 0) / 60
               )}{" "}
-              hours |{totalDistance} kms
+              hours | {totalDistance} kms
             </span>
           </div>
           <AiOutlineRight size={16} className="md:text-20" />
@@ -1101,7 +1251,7 @@ const NewMultiModeContainer = ({
                 {Math.ceil(
                   transfer.reduce((sum, t) => sum + (t.duration || 0), 0) / 60
                 )}{" "}
-                hours |{totalDistance} kms
+                hours | {totalDistance} kms
               </span>
             </div>
             <AiOutlineUp size={16} className="md:text-20" />
@@ -1134,7 +1284,6 @@ const NewMultiModeContainer = ({
                       </span>
                     </div>
 
-                    {/* Line between steps - hidden on small screens to avoid overflow */}
                     {index < transfer.length - 1 && (
                       <div
                         className="hidden md:block absolute h-1 bg-[#dfdedb] top-1/2 transform -translate-y-1/2"
@@ -1151,7 +1300,7 @@ const NewMultiModeContainer = ({
                       ></div>
                     )}
 
-                    {/* Mobile connector line (simpler) */}
+
                     {index < transfer.length - 1 && (
                       <div className="md:hidden flex-grow h-1 bg-[#dfdedb] mx-1"></div>
                     )}
@@ -1184,20 +1333,18 @@ const NewMultiModeContainer = ({
                   if (option.mode === "Flight") {
                     return (
                       <ComboFlight
+                        key={option.id}
                         handleFlightSelect={handleFlightSelect}
-                        showFlightModal={showFlightModal}
-                        setShowFlightModal={setShowFlightModal}
+                        showComboFlightModal={showComboFlightModal}
+                        setShowComboFlightModal={setShowComboFlightModal}
                         setHideFlightModal={setHideFlightModal}
                         setHideBookingModal={setHideBookingModal}
                         getPaymentHandler={getPaymentHandler}
                         _updatePaymentHandler={_updatePaymentHandler}
-                        _updateFlightBookingHandler={
-                          _updateFlightBookingHandler
-                        }
+                        _updateFlightBookingHandler={_updateFlightBookingHandler}
                         _updateBookingHandler={_updateBookingHandler}
                         alternates={alternates}
                         tailored_id={tailored_id}
-                        // _updateFlightHandler={props._updateFlightHandler}
                         selectedBooking={selectedBooking}
                         itinerary_id={itinerary_id}
                         selectedTransferHeading={selectedTransferHeading}
@@ -1212,12 +1359,15 @@ const NewMultiModeContainer = ({
                         individual={individual}
                         originCityId={originCityId}
                         destinationCityId={destinationCityId}
-                      ></ComboFlight>
+                        isSelected={selectedModeIds[currentStep - 1] === option.id}
+                        onSelect={handleFlightSelection}
+                      />
                     );
                   }
                   if (option.mode === "Taxi") {
                     return (
                       <ComboTaxi
+                        key={option.id}
                         handleFlightSelect={handleFlightSelect}
                         showTaxiModal={showTaxiModal}
                         setShowComboTaxiModal={setShowComboTaxiModal}
@@ -1225,13 +1375,10 @@ const NewMultiModeContainer = ({
                         setHideBookingModal={setHideBookingModal}
                         getPaymentHandler={getPaymentHandler}
                         _updatePaymentHandler={_updatePaymentHandler}
-                        _updateFlightBookingHandler={
-                          _updateFlightBookingHandler
-                        }
+                        _updateFlightBookingHandler={_updateFlightBookingHandler}
                         _updateBookingHandler={_updateBookingHandler}
                         alternates={alternates}
                         tailored_id={tailored_id}
-                        // _updateFlightHandler={props._updateFlightHandler}
                         selectedBooking={selectedBooking}
                         itinerary_id={itinerary_id}
                         selectedTransferHeading={selectedTransferHeading}
@@ -1246,9 +1393,14 @@ const NewMultiModeContainer = ({
                         individual={individual}
                         originCityId={originCityId}
                         destinationCityId={destinationCityId}
-                      ></ComboTaxi>
+                        isSelected={selectedModeIds[currentStep - 1] === option.id}
+                        onSelect={handleTaxiSelection}
+
+                      />
                     );
                   }
+                  
+                  // For other modes (Train, etc.)
                   const price =
                     option.prices && option.prices[0]
                       ? option.prices[0].price
@@ -1261,7 +1413,9 @@ const NewMultiModeContainer = ({
                   return (
                     <div
                       key={index}
-                      className="flex flex-col md:flex-row justify-between bg-white p-3 md:p-4 border-b-1 rounded-md"
+                      className={`flex flex-col md:flex-row justify-between bg-white p-3 md:p-4 border-b rounded-md 
+                        ${selectedModeIds[currentStep - 1] === option.id ? "border border-yellow-400 bg-yellow-50" : "border"}
+                      `}
                     >
                       <div className="flex gap-2 md:gap-3 mb-2 md:mb-0">
                         <div className="text-gray-500 mt-1">
@@ -1286,16 +1440,22 @@ const NewMultiModeContainer = ({
                         <div className="font-semibold text-sm md:text-base">
                           {currency} {price}
                         </div>
-                        <input
-                          type="checkbox"
-                          checked={
-                            selectedModeIds[currentStep - 1] === option.id
-                          }
-                          onChange={() =>
-                            handleModeSelect(currentStep - 1, option.id)
-                          }
-                          className="h-4 w-4 md:h-5 md:w-5 mt-0 md:mt-2 accent-blue-600"
-                        />
+                        <div 
+                          className="cursor-pointer"
+                          onClick={() => handleModeSelect(currentStep - 1, option.id)}
+                        >
+                          {selectedModeIds[currentStep - 1] === option.id ? (
+                            <div className="flex items-center gap-1">
+                              <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
+                              <span className="text-sm">Selected</span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-1">
+                              <ImCheckboxUnchecked className="h-4 w-4 md:h-5 md:w-5" />
+                              <span className="text-sm">Select</span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   );
@@ -1317,7 +1477,11 @@ const NewMultiModeContainer = ({
                   {currentStep < totalSteps ? (
                     <button
                       onClick={() => setCurrentStep(currentStep + 1)}
-                      className="bg-black text-white px-6 md:px-8 py-2 rounded-md font-medium text-sm md:text-base w-full md:w-auto"
+                      className={`px-6 md:px-8 py-2 rounded-md font-medium text-sm md:text-base w-full md:w-auto
+                        ${isCurrentModeSelected() 
+                          ? "bg-black text-white" 
+                          : "bg-gray-200 text-gray-500 cursor-not-allowed"}`
+                      }
                       disabled={!isCurrentModeSelected()}
                     >
                       Next
@@ -1328,10 +1492,13 @@ const NewMultiModeContainer = ({
                         Total Price: {calculateTotalPrice()}
                       </div>
                       <button
-                        className="bg-black text-white px-6 md:px-8 py-2 rounded-md font-medium text-sm md:text-base w-full md:w-auto"
-                        disabled={
-                          Object.keys(selectedModeIds).length !== totalSteps
+                        onClick={handleUpdateTransfer}
+                        className={`px-6 md:px-8 py-2 rounded-md font-medium text-sm md:text-base w-full md:w-auto
+                          ${Object.keys(selectedModeIds).length === totalSteps
+                            ? "bg-black text-white" 
+                            : "bg-gray-200 text-gray-500 cursor-not-allowed"}`
                         }
+                        disabled={Object.keys(selectedModeIds).length !== totalSteps}
                       >
                         Update Transfer
                       </button>
@@ -1346,6 +1513,8 @@ const NewMultiModeContainer = ({
     </div>
   );
 };
+
+
 
 const MultiModeContainer = ({ transferIndex, transfer, handleSelect }) => {
   return (
@@ -2378,7 +2547,7 @@ const OtherTransfer = ({
           </Heading>
         </div>
         {otherTransfer &&
-          otherTransfer.prices.map((price, i) => (
+          otherTransfer?.prices?.map((price, i) => (
             <div
               key={i}
               className="flex items-center p-4 border rounded-lg shadow-md w-full max-w-full mb-3"
@@ -2523,3 +2692,6 @@ const MercurySelectButton = ({
     </div>
   );
 };
+
+
+

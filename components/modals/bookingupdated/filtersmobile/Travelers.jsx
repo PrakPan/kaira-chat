@@ -8,7 +8,7 @@ export default function Travelers(props) {
   const [travelers, setTravelers] = useState(
     props.filters.occupancies.reduce(
       (sum, room) =>
-        sum + room.num_adults + (room.child_ages ? room.child_ages.length : 0),
+        sum + room.adults + (room.childAges ? room.childAges.length : 0),
       0
     )
   );
@@ -36,7 +36,7 @@ export default function Travelers(props) {
   useEffect(() => {
     let total = 0;
     for (let room of rooms) {
-      total += room?.num_adults ? room.num_adults : 0;
+      total += room?.adults ? room.adults : 0;
       total += room?.children ? room.children : 0;
     }
 
@@ -48,9 +48,9 @@ export default function Travelers(props) {
       setRooms((prev) => [
         ...prev,
         {
-          num_adults: 1,
+          adults: 1,
           children: 0,
-          child_ages: [],
+          childAges: [],
         },
       ]);
     }
@@ -62,7 +62,7 @@ export default function Travelers(props) {
 
   const checkError = () => {
     for (let room of rooms) {
-      if (room.child_ages.includes(null)) {
+      if (room.childAges.includes(null)) {
         return true;
       }
     }
@@ -81,8 +81,8 @@ export default function Travelers(props) {
       ...prev,
       occupancies: rooms.map((room) => {
         return {
-          num_adults: room.num_adults,
-          child_ages: room.child_ages,
+          adults: room.adults,
+          childAges: room.childAges,
         };
       }),
       applyFilter: !props.filters.applyFilter,
@@ -156,9 +156,9 @@ export default function Travelers(props) {
 }
 
 const Room = ({ index, data, setRooms, showError ,removeRoom}) => {
-  const [num_adults, setnum_adults] = useState(data.num_adults);
+  const [num_adults, setnum_adults] = useState(data.adults);
   const [children, setChildren] = useState(data?.children || 0);
-  const [child_ages, setchild_ages] = useState(data.child_ages);
+  const [child_ages, setchild_ages] = useState(data.childAges);
 
   useEffect(() => {
     setRooms((prev) =>
@@ -166,9 +166,9 @@ const Room = ({ index, data, setRooms, showError ,removeRoom}) => {
         i === index
           ? {
               ...room,
-              num_adults: num_adults,
+              adults: num_adults,
               children: children,
-              child_ages: child_ages,
+              childAges: child_ages,
             }
           : room
       )

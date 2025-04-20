@@ -3,8 +3,23 @@ import { getIndianPrice } from "../../../../services/getIndianPrice";
 import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im";
 
 
-export default function PriceContainer({ data, isSelected, selectedBooking, _updateBookingHandler, provider }) {
+export default function PriceContainer({ data, isSelected, selectedBooking, _updateBookingHandler, provider,onSelect }) {
     const router = useRouter();
+    console.log("OnSelect",onSelect)
+
+    const handleSelect = () => {
+        if (onSelect) {
+          onSelect(data);
+        }else{
+            _updateBookingHandler({
+                booking_id: selectedBooking.id,
+                itinerary_id: selectedBooking.itinerary_id || router?.query?.id,
+                result_index: data.resultIndex,
+                provider
+            });
+        }
+      };
+
     return (
         <div className="flex md:flex-col justify-between items-center">
             <div className="flex flex-col gap-1">
@@ -21,14 +36,7 @@ export default function PriceContainer({ data, isSelected, selectedBooking, _upd
                 ) : (
                     <div
                         className="flex items-center gap-1"
-                        onClick={() => {
-                            _updateBookingHandler({
-                                booking_id: selectedBooking.id,
-                                itinerary_id: selectedBooking.itinerary_id || router?.query?.id,
-                                result_index: data.resultIndex,
-                                provider
-                            });
-                        }}
+                        onClick={handleSelect}
                     >
                         <ImCheckboxUnchecked className="inline" /> Select
                     </div>

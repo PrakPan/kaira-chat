@@ -1071,7 +1071,7 @@ const Details = (props) => {
               </GetInTouchContainer>
             )
           ) : pricing_status === "FAILURE" ? ( */}
-            <GetInTouchContainer>
+            {props?.token &&<GetInTouchContainer>
               <Button
                 color="#111"
                 fontWeight="500"
@@ -1102,7 +1102,7 @@ const Details = (props) => {
                   <span>Get in touch!</span>
                 </div>
               </Button>
-            </GetInTouchContainer>
+            </GetInTouchContainer>}
           
 
           {!props.token && pricing_status === "SUCCESS" ? (

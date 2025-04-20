@@ -82,6 +82,7 @@ const Flight = (props) => {
           selectedBooking={props.selectedBooking}
           _updateBookingHandler={props._updateBookingHandler}
           provider={props.provider}
+          onSelect={props?.onSelect}
         />
       </div>
       <div className="flex justify-center items-center">

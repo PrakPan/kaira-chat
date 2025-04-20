@@ -19,6 +19,9 @@ import { toast } from "react-toastify";
 import { axiosDeleteBooking } from "../../../../services/itinerary/bookings";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { dateFormat } from "../../../../helper/DateUtils";
+import { useSelector } from "react-redux";
+import SetCallPaymentInfo from "../../../../store/actions/callPaymentInfo";
+import { openNotification } from "../../../../store/actions/notification";
 const starRating = (rating) => {
   var stars = [];
   for (let i = 0; i < Math.floor(rating); i++) {
@@ -154,6 +157,7 @@ const getRoomImage = (images) => {
 const HotelBookingDetails = (props) => {
   const isDesktop = useMediaQuery("(min-width:1148px)");
   const [loading, setLoading] = useState(false);
+  const CallPaymentInfo=useSelector((state)=>state.CallPaymentInfo)
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -213,21 +217,22 @@ const HotelBookingDetails = (props) => {
       );
 
       if (response.status === 204) {
+        dispatch(SetCallPaymentInfo(!CallPaymentInfo))
         dispatch(updateStays(props?.id));
         setLoading(false);
         setVisible(true);
-        props.openNotification({
+        dispatch(openNotification({
           type: "success",
           text: "Booking deleted Successfuly",
           heading: "Success!",
-        });
+        }))
       }
     } catch (err) {
-      props.openNotification({
+      dispatch(openNotification({
         type: "error",
         text: `${err.message}`,
         heading: "Error!",
-      });
+      }))
       setLoading(false);
     }
   };

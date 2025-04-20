@@ -52,7 +52,8 @@ const StaysContainer = (props) => {
     cost,
     costings_breakdown,
     images,
-    clickType
+    clickType,
+    occupancies
   ) => {
     {
       process.env.NODE_ENV === "production" &&
@@ -82,6 +83,7 @@ const StaysContainer = (props) => {
       costings_breakdown: costings_breakdown,
       images: images,
       clickType: clickType,
+      occupancies:occupancies
     });
     props.setShowBookingModal(true);
   };
@@ -105,6 +107,7 @@ const StaysContainer = (props) => {
     let city = props.stayBookings[i]["city_name"];
     let cityId = city_id;
     let room_type = props.stayBookings[i]["room"];
+    let occupancies=props.stayBookings[i]["occupancies"]
     _changeBookingHandler(
       name,
       itinerary_id,
@@ -120,7 +123,8 @@ const StaysContainer = (props) => {
       user_rating,
       number_of_reviews,
       itinerary_name,
-      clickType
+      clickType,
+      occupancies
     );
     data.clickType = clickType;
     setCurrentBooking(data);

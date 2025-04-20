@@ -17,8 +17,10 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import VehicleDetailModal from "../../../components/modals/daybyday/VehicleModal";
+import TaxiDetailModal from "../../../components/modals/daybyday/TaxiDetailModal";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
+import { HiOutlineRefresh } from "react-icons/hi";
 const GridContainer = styled.div`
   width: auto;
   overflow: auto;
@@ -163,19 +165,19 @@ const TransferBooking = ({
     setTransferImageFailed(true);
   };
 
-  function HandleTransport(i, label) {
+  function HandleTransport(book, label) {
     if (!token) {
       return setShowLoginModal(true);
     }
-    let name = booking["name"];
+    let name = book["name"];
     let costings_breakdown = booking["transfer_details"];
-    let cost = booking["price"];
+    let cost = book?.transfer_details?.prices?.price;
     let itinerary_id = booking["itinerary_id"];
-    let itinerary_name = booking["itinerary_name"];
+    let itinerary_name = book?.name;
     let tailored_id = booking["tailored_itinerary"];
-    let id = booking["id"];
-    let check_in = booking["check_in"];
-    let check_out = booking["check_out"];
+    let id = book?.id;
+    let check_in = book?.check_in;
+    let check_out = book?.check_out;
     let pax = {
       number_of_adults: booking["number_of_adults"],
       number_of_children: booking["number_of_children"],
@@ -283,7 +285,12 @@ const TransferBooking = ({
       const response = await axiosDeleteBooking.delete(
         `${router.query.id}/bookings/${book?.booking_type?.toLowerCase()}/${
           book?.id
-        }/`
+        }/`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
       );
 
       if (response.status === 204) {
@@ -294,7 +301,6 @@ const TransferBooking = ({
           text: "Booking deleted successfuly",
           heading: "Success!",
         });
-        setVisible(true);
       }
     } catch (err) {
       openNotification({
@@ -373,6 +379,7 @@ const TransferBooking = ({
                   setShowLoginModal={setShowLoginModal}
                   originCityId={originCityId}
                   destinationCityId={destinationCityId}
+                  setShowDrawer={setShowDrawer}
                 />
               ) : (
                 <div className="mt-3 ml-1 md:ml-7 flex flex-col w-full">
@@ -488,7 +495,11 @@ const TransferBooking = ({
                         {addbooking ? (
                           <button
                             onClick={() =>
-                              HandleTransport(index, "Change Taxi")
+                              handleViewDetails(
+                                router?.query?.id,
+                                booking?.id,
+                                booking?.booking_type
+                              )
                             }
                             className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
                           >
@@ -496,7 +507,13 @@ const TransferBooking = ({
                           </button>
                         ) : (
                           <button
-                            // onClick={() => HandleTransport(index, "Add Taxi")}
+                            onClick={() =>
+                              handleViewDetails(
+                                router?.query?.id,
+                                booking?.id,
+                                booking?.booking_type
+                              )
+                            }
                             className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
                           >
                             View Detail
@@ -523,16 +540,16 @@ const TransferBooking = ({
                       //   </Button>
                       // </div>
                       <button
-                        onclick={() =>
+                        onClick={() => {
                           handleViewDetails(
                             router?.query?.id,
-                            book?.id,
-                            book?.transfer_details?.mode.toLowerCase()
-                          )
-                        }
+                            booking?.id,
+                            booking?.transfer_details?.mode.toLowerCase()
+                          );
+                          setShowVehicleDrawer(true);
+                        }}
                         className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000] mr-2"
                       >
-                        {/* Add Taxi */}
                         View Detail
                       </button>
                     )}
@@ -546,14 +563,25 @@ const TransferBooking = ({
                     className="font-lexend"
                     onHide={() => setShowVehicleDrawer(false)}
                   >
-                    <VehicleDetailModal
-                      data={vehicleDetails}
-                      loading={loading}
-                      setIsOpen={setShowVehicleDrawer}
-                      handleDelete={handleDelete}
-                      setHandleShow={setShowVehicleDrawer}
-                      booking={booking}
-                    />
+                    {vehicleDetails?.booking_type == "Taxi" ? (
+                      <TaxiDetailModal
+                        data={vehicleDetails}
+                        loading={loading}
+                        setIsOpen={setShowVehicleDrawer}
+                        handleDelete={handleDelete}
+                        setHandleShow={setShowVehicleDrawer}
+                        booking={booking}
+                      />
+                    ) : (
+                      <VehicleDetailModal
+                        data={vehicleDetails}
+                        loading={loading}
+                        setIsOpen={setShowVehicleDrawer}
+                        handleDelete={handleDelete}
+                        setHandleShow={setShowVehicleDrawer}
+                        booking={booking}
+                      />
+                    )}
                   </Drawer>
                 </div>
               )}
@@ -633,6 +661,7 @@ const TransferBooking = ({
                 originCityId={originCityId}
                 destinationCityId={destinationCityId}
                 type={"combo"}
+                setShowDrawer={setShowDrawer}
               />
             ) : (
               <div
@@ -641,11 +670,7 @@ const TransferBooking = ({
               >
                 <div className="flex flex-row w-full justify-between items-center">
                   <span className="font-medium inline">{book?.name}</span>
-                  <div className="flex flex-row gap-2 justify-center items-center">
-                    {/* <div className=" text-md font-semibold  text-[#277004] ">
-            Included
-          </div> */}
-                  </div>
+                  <div className="flex flex-row gap-2 justify-center items-center"></div>
                 </div>
 
                 <div
@@ -744,18 +769,34 @@ const TransferBooking = ({
                     </div>
                   </div>
 
-                  {!payment?.paid_user && book?.booking_type === "Taxi" ? (
+                  {!payment?.paid_user && 
+                  <>
+                  {book?.booking_type === "Taxi" ? (
                     <div className="w-full flex flex-row items-center justify-end cursor-pointer pr-2">
                       {addbooking ? (
                         <button
-                          onClick={() => HandleTransport(index, "Change Taxi")}
+                          onClick={() =>{
+                            handleViewDetails(
+                              router?.query?.id,
+                              book?.id,
+                              booking?.transfer_details?.mode.toLowerCase()
+                            );
+                          }}
                           className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
                         >
                           {isDesktop ? "Change Taxi" : "Change"}
                         </button>
                       ) : (
                         <button
-                          // onClick={() => HandleTransport(index, "Add Taxi")}
+                          onClick={() => {
+                            console.log("clicked");
+                            handleViewDetails(
+                              router?.query?.id,
+                              book?.id,
+                              booking?.transfer_details?.mode.toLowerCase()
+                            );
+                            setShowVehicleDrawer(true);
+                          }}
                           className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
                         >
                           {/* Add Taxi */}
@@ -795,6 +836,8 @@ const TransferBooking = ({
                       View Detail
                     </button>
                   )}
+                  </>
+                  }
                 </div>
                 <Drawer
                   show={showVehicleDrawer}
@@ -805,17 +848,61 @@ const TransferBooking = ({
                   className="font-lexend"
                   onHide={() => setShowVehicleDrawer(false)}
                 >
-                  <VehicleDetailModal
+                  {vehicleDetails?.booking_type == "Taxi" ? (
+                    <TaxiDetailModal
+                      data={vehicleDetails}
+                      loading={loading}
+                      setIsOpen={setShowVehicleDrawer}
+                      handleDelete={handleDelete}
+                      setHandleShow={setShowVehicleDrawer}
+                      booking={booking}
+                      type={"combo"}
+                    />
+                  ) : (
+                    <VehicleDetailModal
+                      data={vehicleDetails}
+                      loading={loading}
+                      setIsOpen={setShowVehicleDrawer}
+                      handleDelete={handleDelete}
+                      setHandleShow={setShowVehicleDrawer}
+                      booking={booking}
+                      type={"combo"}
+                    />
+                  )}
+                  {/* <VehicleDetailModal
                     data={vehicleDetails}
                     loading={loading}
                     setIsOpen={setShowVehicleDrawer}
                     handleDelete={handleDelete}
                     setHandleShow={setShowVehicleDrawer}
                     booking={book}
-                  />
+                    type={"combo"}
+                  /> */}
                 </Drawer>
               </div>
             )}
+            <TransferEditDrawer
+              mercury
+              addOrEdit={"transferAdd"}
+              showDrawer={showDrawer}
+              setShowDrawer={setShowDrawer}
+              selectedTransferHeading={origin}
+              origin={origin?.id != undefined ? origin?.id : id}
+              destination={destination?.id != undefined ? destination?.id : id}
+              check_in={check_in}
+              routeId={id}
+              city={
+                origin?.name != undefined ? origin?.name : origin?.city_name
+              }
+              dcity={
+                destination?.name != undefined
+                  ? destination?.name
+                  : destination?.city_name
+              }
+              selectedBooking={selectedBooking}
+              originCityId={originCityId}
+              destinationCityId={destinationCityId}
+            />
           </ComboContainer>
         ))
       )}
@@ -852,8 +939,19 @@ const FlightBooking = ({
   destinationCityId,
   loadbookings,
   type,
+  setShowDrawer,
 }) => {
   const [showDetails, setShowDetails] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const popupStyle = {
+    display: isHovered ? "block" : "none",
+    backgroundColor: "#2b2b2a",
+    border: "1px solid #e5e7eb",
+    borderRadius: "0.45rem",
+    padding: "5px 10px",
+    marginTop: "5px",
+    marginLeft: "5px",
+  };
   console.log("showw", showDetails);
   const router = useRouter();
   function HandleFlights(i, label) {
@@ -931,8 +1029,33 @@ const FlightBooking = ({
 
   return (
     <div className="ml-1 md:ml-7 flex flex-col w-full items-center justify-center p-2 ">
-      <div className="flex flex-row w-full justify-between items-center">
+      <div className="flex flex-row w-full items-center">
         <span className="font-medium  inline">{booking?.name}</span>
+        {/* <div
+          id="transferEdit"
+          onClick={(e) => {
+            setShowDrawer(true)
+            setIsHovered(false);
+          }}
+          className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90 relative"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <HiOutlineRefresh className="transition-transform text-blue" />
+          <div
+            style={popupStyle}
+            className="z-50 absolute -bottom-140 left-1/2 -translate-x-1/2 text-sm text-center flex flex-col gap-2 bg-[#2b2b2a]"
+          >
+            <div className="relative">
+              <span className="absolute -top-5 left-1/2 -translate-x-1/2 w-0 h-0 border-[10px] border-solid border-transparent border-b-red"></span>
+              <span className="absolute -top-[21px] left-1/2 -translate-x-1/2 w-0 h-0 border-[10px] border-solid border-transparent border-b-[#2b2b2a]"></span>
+
+              <div className="text-nowrap font-normal text-white text-sm">
+                Change
+              </div>
+            </div>
+          </div>
+        </div> */}
       </div>
       <div
         id={booking?.id}
@@ -959,24 +1082,11 @@ const FlightBooking = ({
               segments={booking?.transfer_details?.items?.[0]?.segments}
               numStops={booking?.transfer_details?.items?.[0]?.stop_count}
               setShowDetails={setShowDetails}
+              type={type}
             />
           </div>
           {window.innerWidth >= 1000 && (
             <div className="w-[131.95px]">
-              {/* <Button
-                bgColor={"#FFFFFF"}
-                borderRadius="8px"
-                fontWeight="400"
-                padding="0.6rem 0.6rem"
-                hoverColor="#FFFFFF"
-                margin="auto 2px"
-                onclick={() => {
-                  // HandleFlights(index, "Change Flight");
-                  setShowDetails((prev) => !prev);
-                }}
-              >
-                View Detail
-              </Button> */}
               <button
                 onClick={() => {
                   setShowDetails(true);
@@ -1037,6 +1147,7 @@ const FlightBooking = ({
                 HandleFlights(index, "Change Flight");
                 setShowDetails(false);
               }}
+              type={type}
             />
           </>
         )}

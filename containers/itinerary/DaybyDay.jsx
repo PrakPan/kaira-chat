@@ -31,7 +31,7 @@ const DaybyDay = ({
   setStayBookings,
   ...props
 }) => {
-  console.log("transfer bookings is:",transferBookings)
+  console.log("transfer bookings is:", transferBookings);
   const itineraryDaybyDay = useSelector((state) => state.Itinerary);
   const stayBookings = useSelector((state) => state.Stays);
   const [selectedBooking, setSelectedBooking] = useState({
@@ -56,15 +56,15 @@ const DaybyDay = ({
 
   useEffect(() => {
     let array = [];
-if(itineraryDaybyDay?.cities){
-    for (const city of itineraryDaybyDay?.cities) {
-      array.push({
-        id: city.id,
-        name: city.city.name,
-        duration: city.duration,
-      });
+    if (itineraryDaybyDay?.cities) {
+      for (const city of itineraryDaybyDay?.cities) {
+        array.push({
+          id: city.id,
+          name: city.city.name,
+          duration: city.duration,
+        });
+      }
     }
-  }
   }, [itineraryDaybyDay]);
 
   const _setImagesHandler = (images) => {
@@ -207,7 +207,9 @@ if(itineraryDaybyDay?.cities){
             loadbookings={loadbookings}
             key={2}
             bookingIdToDelete={
-              startCity?.gmaps_place_id + ":" + itineraryDaybyDay?.cities?.[0]?.id
+              startCity?.gmaps_place_id +
+              ":" +
+              itineraryDaybyDay?.cities?.[0]?.id
             }
             city={
               transferBookings?.intercity?.[
@@ -229,6 +231,13 @@ if(itineraryDaybyDay?.cities){
                   ":" +
                   itineraryDaybyDay?.cities?.[0]?.id
               ]?.booking_type
+            }
+            transfer_type={
+              transferBookings?.intercity?.[
+                startCity?.gmaps_place_id +
+                  ":" +
+                  itineraryDaybyDay?.cities?.[0]?.id
+              ]?.transfer_type
             }
             pinColour={CITY_COLOR_CODES[0 % 7]}
             onClick={() => alert(`Clicked`)}
@@ -284,6 +293,9 @@ if(itineraryDaybyDay?.cities){
                       booking_type={
                         transferBookings?.intercity?.[idMapping]?.booking_type
                       }
+                      transfer_type={
+                        transferBookings?.intercity?.[idMapping]?.transfer_type
+                      }
                       pinColour={CITY_COLOR_CODES[index % 7]}
                       onClick={() => alert(`Clicked`)}
                       upPresent={true}
@@ -314,24 +326,36 @@ if(itineraryDaybyDay?.cities){
             loadbookings={loadbookings}
             city={
               transferBookings?.intercity?.[
-                itineraryDaybyDay?.cities?.[itineraryDaybyDay?.cities?.length - 1]
-                  ?.id +
+                itineraryDaybyDay?.cities?.[
+                  itineraryDaybyDay?.cities?.length - 1
+                ]?.id +
                   ":" +
                   endCity?.gmaps_place_id
               ]?.name
             }
             booking_type={
               transferBookings?.intercity?.[
-                itineraryDaybyDay?.cities?.[itineraryDaybyDay?.cities?.length - 1]
-                  ?.id +
+                itineraryDaybyDay?.cities?.[
+                  itineraryDaybyDay?.cities?.length - 1
+                ]?.id +
                   ":" +
                   endCity?.gmaps_place_id
               ]?.booking_type
             }
+            transfer_type={
+              transferBookings?.intercity?.[
+                itineraryDaybyDay?.cities?.[
+                  itineraryDaybyDay?.cities?.length - 1
+                ]?.id +
+                  ":" +
+                  endCity?.gmaps_place_id
+              ]?.transfer_type
+            }
             duration={
               transferBookings?.intercity?.[
-                itineraryDaybyDay?.cities?.[itineraryDaybyDay?.cities?.length - 1]
-                  ?.id +
+                itineraryDaybyDay?.cities?.[
+                  itineraryDaybyDay?.cities?.length - 1
+                ]?.id +
                   ":" +
                   endCity?.gmaps_place_id
               ]?.duration
@@ -342,8 +366,9 @@ if(itineraryDaybyDay?.cities){
             downPresent={true}
             booking_id={
               transferBookings?.intercity?.[
-                itineraryDaybyDay?.cities?.[itineraryDaybyDay?.cities?.length - 1]
-                  ?.id +
+                itineraryDaybyDay?.cities?.[
+                  itineraryDaybyDay?.cities?.length - 1
+                ]?.id +
                   ":" +
                   endCity?.gmaps_place_id
               ]?.id

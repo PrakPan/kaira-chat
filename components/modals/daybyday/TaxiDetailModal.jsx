@@ -2,17 +2,15 @@ import React from "react";
 import { IoClose } from "react-icons/io5";
 import TransfersIcon from "../../../helper/TransfersIcon";
 import Pin from "../../../containers/newitinerary/breif/route/Pin";
-import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { PulseLoader } from "react-spinners";
 import styled from "styled-components";
-import { RiDeleteBin6Line } from "react-icons/ri";
 import Image from "next/image";
 
 const BackText = styled.div`
   font-size: 1.5rem;
   line-height: 2rem;
 `;
-const VehicleDetailModal = ({
+const TaxiDetailModal = ({
   data,
   setIsOpen,
   setHandleShow,
@@ -27,45 +25,11 @@ const VehicleDetailModal = ({
   const {
     name,
     transfer_details,
-    price,
-    currency,
     number_of_adults,
     number_of_children,
     source_address,
     destination_address,
   } = data;
-
-  const formatDateTime = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return {
-      date: date.toLocaleDateString("en-US", {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-        weekday: "long",
-      }),
-      time: date.toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      }),
-    };
-  };
-
-  const addMinutesToDate = (dateString, minutes) => {
-    console.log("Date String", dateString);
-    const date = new Date(dateString);
-    date.setMinutes(date.getMinutes() + minutes);
-    return formatDateTime(date.toISOString());
-  };
-
-  const departure =
-    transfer_details?.start_datetime || transfer_details?.gozo?.start_date;
-  const duration = transfer_details?.duration;
-
-  const arrival = addMinutesToDate(departure, duration);
-  const depart = formatDateTime(departure);
 
   return (
     <>
@@ -84,7 +48,7 @@ const VehicleDetailModal = ({
               <div className="w-20 h-12 bg-gray-300 opacity-50 rounded-lg"></div>
             ) : (
               <TransfersIcon
-                TransportMode={transfer_details?.mode}
+                TransportMode={"Taxi"}
                 Instyle={{
                   fontSize:
                     transfer_details?.mode === "Bus" ? "2.5rem" : "3rem",
@@ -134,10 +98,10 @@ const VehicleDetailModal = ({
                         {source_address?.name}
                       </p>
                       <p className="text-black opacity-50 text-[12px]">
-                        {depart?.time}
+                        {transfer_details?.trips?.[0]?.end_time}
                       </p>
                       <p className="text-black opacity-50 text-[12px]">
-                        {depart?.date}
+                      {transfer_details?.trips?.[0]?.end_date}
                       </p>
                     </>
                   )}
@@ -149,7 +113,7 @@ const VehicleDetailModal = ({
                   {loading ? (
                     <div className="w-12 h-3 bg-gray-300 opacity-50 rounded"></div>
                   ) : (
-                    `${transfer_details?.distance} km`
+                    `${transfer_details?.distance?.text}`
                   )}
                 </span>
                 <div className="border-t border-dashed w-64"></div>
@@ -170,10 +134,10 @@ const VehicleDetailModal = ({
                         {destination_address?.name}
                       </p>
                       <p className="text-black opacity-50 text-[12px]">
-                        {arrival?.time}
+                        {transfer_details?.trips?.[0]?.end_time}
                       </p>
                       <p className="text-black opacity-50 text-[12px]">
-                        {arrival?.date}
+                        {transfer_details?.trips?.[0]?.end_date}
                       </p>
                     </>
                   )}
@@ -216,7 +180,7 @@ const VehicleDetailModal = ({
                   ) : (
                     <>
                       <p className="font-semibold text-md">
-                        {price} {currency}
+                        {transfer_details?.quote?.price?.total} {transfer_details?.quote?.price?.currency}
                       </p>
                       <p className="text-gray-500 text-sm">Price</p>
                     </>
@@ -289,4 +253,4 @@ const VehicleDetailModal = ({
   );
 };
 
-export default VehicleDetailModal;
+export default TaxiDetailModal;
