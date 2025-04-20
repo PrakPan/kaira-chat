@@ -19,7 +19,7 @@ import { logEvent } from "../../../services/ga/Index";
 import TaxiModal from "../../../components/modals/taxis/Index";
 import FlightModal from "../../../components/modals/flights/Index";
 import { getDate } from "../../../helper/DateUtils";
-import { fetchTransferMode } from "../../../services/bookings/FetchTaxiRecommendations";
+import { fetchTransferMode, UpdateTransferMode } from "../../../services/bookings/FetchTaxiRecommendations";
 import { FaClock, FaPlaneDeparture } from "react-icons/fa";
 import { AiOutlineRight, AiOutlineUp } from "react-icons/ai";
 import { FaArrowLeftLong } from "react-icons/fa6";
@@ -619,6 +619,7 @@ const TransferEditDrawer = (props) => {
                             individual={props?.individual}
                             originCityId={props?.originCityId}
                             destinationCityId={props?.destinationCityId}
+                            token={props?.token}
                           />
                         </>
                       ) : (
@@ -641,6 +642,7 @@ const TransferEditDrawer = (props) => {
                         transferIndex={index}
                         transfer={transfer}
                         handleSelect={handleSelect}
+                        token={props?.token}
                       />
                       // <MobileRouteContainer
                       //   key={index}
@@ -961,6 +963,7 @@ const NewMultiModeContainer = ({
   individual,
   originCityId,
   destinationCityId,
+  token
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [selectedModeIds, setSelectedModeIds] = useState({});
@@ -1078,7 +1081,6 @@ const NewMultiModeContainer = ({
     handleSelect(transferIndex,isDeselecting ? null : (searchData || transfer.find(item => item.id === id)),transfer,mode);
   };
 
-  // Update the handle flight/taxi selection callbacks
   const handleFlightSelection = (flightData) => {
     console.log("Seleted Mo flight",flightData)
     handleModeSelect(currentStep - 1, flightData?.id || flightData?.resultIndex, flightData,"Flight");
@@ -1089,34 +1091,93 @@ const NewMultiModeContainer = ({
     handleModeSelect(currentStep - 1, taxiData?.id || taxiData?.result_index, taxiData,"Taxi");
   };
 
-  const handleUpdateTransfer = () => {
+  const handleUpdateTransfer = async () => {
     if (Object.keys(selectedModeIds).length === totalSteps) {
-      const combinedData = selectedData.map((item, index) => {
-        if (searchResults[index]) {
-          return {
-            ...item,
-            selected_id: searchResults[index],
-            mode: transfer[index].mode
+      try {
+  
+        const transfersPayload = selectedData.map((item, index) => {
+          const currentTransfer = transfer[index];
+          
+          const transferObj = {
+            booking_type: currentTransfer.mode,
+            edge_id: currentTransfer.id,
           };
+          
+          if (currentTransfer.mode === "Flight") {
+            return {
+              ...transferObj,
+              result_index: item.resultIndex || item.result_index
+            };
+          } else if (currentTransfer.mode === "Taxi") {
+            return {
+              ...transferObj,
+              trace_id: item.trace_id,
+              result_index: item.result_index,
+              source: item.source
+            };
+          } else {
+            
+            return {
+              ...transferObj,
+              result_index: 0 
+            };
+          }
+        });
+        
+        // Create the request body
+        const requestBody = {
+          destination_itinerary_city: destinationCityId,
+          number_of_adults: 4, 
+          number_of_children: 0,
+          number_of_infants: 0,
+          start_datetime: "2025-04-25T00:00:00", 
+          transfers: transfersPayload
+        };
+  
+        if (selectedBooking) {
+          requestBody.booking_id = selectedBooking;
         }
-        return item;
-      });
-      
-      console.log("Updating transfers with selected data:", combinedData);
-      
-      // Here you would call your API with the complete selection
-      // updateTransferAPI(combinedData);
+        
+        console.log("Sending API request with body:", requestBody);
+        
+        UpdateTransferMode.post(`${itinerary_id}/bookings/transfer/`, requestBody,{
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        })
+        .then((response)=>{
+          if (!response.ok) {
+            throw new Error(`API error: ${response.status}`);
+          }
+          
+          const data = response.json();
+          console.log("Transfer updated successfully:", data);
+          openNotification({
+            text: "Your Transfer updated successfully!",
+            heading: "Success!",
+            type: "success",
+          });
+        })
+        .catch((error)=>{
+          openNotification({
+            text: "Error updating Transfers!",
+            heading: "Error!",
+            type: "error",
+          });
+        console.error("Error updating transfer:", error);
+      })
+    } catch(err){
+      console.log("Error in handleUpdateTransfer",err.message);
     }
-  };
+  }
+}
 
-  // Auto-open and select flight or taxi if present
   useEffect(() => {
     if (currentStep > 0 && currentStep <= transfer.length) {
       const currentTransfer = transfer[currentStep - 1];
       
-      // If this mode isn't already selected
       if (!selectedModeIds[currentStep - 1]) {
-        // Auto-select the current mode's first option
         if (currentTransfer) {
           if (currentTransfer.mode !== "Flight" && currentTransfer.mode !== "Taxi") {
             handleModeSelect(currentStep - 1, currentTransfer.id);
@@ -1161,7 +1222,7 @@ const NewMultiModeContainer = ({
         </div>
       </div>
 
-      {/* Transport mode selection (collapsed view) */}
+     
       {currentStep === 0 && (
         <div
           className="flex justify-between items-center p-3 md:p-4 border border-b cursor-pointer shadow-md"
@@ -1170,7 +1231,6 @@ const NewMultiModeContainer = ({
           <div className="font-bold text-sm md:text-base">
             {sequencedModes.join(", ")} |
             <span className="font-normal">
-              {/* Calculate approximate duration */}
               {Math.ceil(
                 transfer.reduce((sum, t) => sum + (t.duration || 0), 0) / 60
               )}{" "}
@@ -1224,7 +1284,6 @@ const NewMultiModeContainer = ({
                       </span>
                     </div>
 
-                    {/* Line between steps - hidden on small screens to avoid overflow */}
                     {index < transfer.length - 1 && (
                       <div
                         className="hidden md:block absolute h-1 bg-[#dfdedb] top-1/2 transform -translate-y-1/2"
@@ -1241,7 +1300,7 @@ const NewMultiModeContainer = ({
                       ></div>
                     )}
 
-                    {/* Mobile connector line (simpler) */}
+
                     {index < transfer.length - 1 && (
                       <div className="md:hidden flex-grow h-1 bg-[#dfdedb] mx-1"></div>
                     )}
@@ -2633,3 +2692,6 @@ const MercurySelectButton = ({
     </div>
   );
 };
+
+
+

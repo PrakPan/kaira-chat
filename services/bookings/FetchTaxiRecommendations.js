@@ -9,4 +9,8 @@ export const fetchTransferMode = axios.create({
   baseURL: MERCURY_HOST + "/api/v1/geos/route/",
 });
 
+export const UpdateTransferMode = axios.create({
+  baseURL: MERCURY_HOST + "/api/v1/itinerary/",
+});
+
 export default fetchaccommodations;
