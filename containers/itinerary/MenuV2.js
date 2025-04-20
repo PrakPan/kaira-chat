@@ -845,6 +845,7 @@ const SimpleTabsV2 = (props) => {
                       mercuryItinerary={props?.mercuryItinerary}
                       itinerary={props.itinerary}
                       _GetInTouch={props._GetInTouch}
+                      setShowLoginModal={setShowLoginModal}
                     />
                   )
                 ) : (
@@ -1154,6 +1155,7 @@ const SimpleTabsV2 = (props) => {
               mercuryItinerary={props?.mercuryItinerary}
               itinerary={props.itinerary}
               _GetInTouch={_GetInTouch}
+              setShowLoginModal={setShowLoginModal}
             />
           ) : null}
         </SplitScreen>
