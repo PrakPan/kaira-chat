@@ -25,6 +25,12 @@ const reducer = (state = initialState, action) => {
        transferBookings: action.payload
       }
 
+      case actionTypes.UPDATE_SINGLE_TRANSFER:
+        return {
+         ...state,
+         transferBookings: action.payload
+        }
+
     default:
       return state;
   }

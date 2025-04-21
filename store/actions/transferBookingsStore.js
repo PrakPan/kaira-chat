@@ -46,3 +46,20 @@ export const updateTransferBookings = (bookingIdToDelete) => {
   };
 };
 
+export const updateSingleTransferBooking = (data) => {
+  console.log("Inside Redux", data);
+  return (dispatch, getState) => {
+    const state = getState();
+    // const updatedData = { ...state.TransferBookings?.transferBookings }; 
+    // console.log("Updated Data", updatedData);
+    
+    
+    // console.log("Updated Data ", updatedData);
+
+    // dispatch({
+    //   type: actionTypes.UPDATE_SINGLE_TRANSFER,
+    //   payload: updatedData,
+    // });
+  };
+};
+

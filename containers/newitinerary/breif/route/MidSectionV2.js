@@ -370,6 +370,8 @@ const MidSectionV2 = (props) => {
         destinationCityId={
           props?.dCityData?.city?.id || props?.dCityData?.gmaps_place_id
         }
+        origin_itinerary_city_id={props?.oCityData?.id}
+        destination_itinerary_city_id={props?.dCityData?.id}
       />
     </Container>
   );
