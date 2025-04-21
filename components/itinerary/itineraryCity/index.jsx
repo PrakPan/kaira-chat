@@ -81,7 +81,12 @@ const ItineraryCity = (props) => {
     setShowDetails(true);
     bookingDetails
       .get(
-        `/${router?.query?.id}/bookings/accommodation/${props.city.hotels[0]?.id}/`
+        `/${router?.query?.id}/bookings/accommodation/${props.city.hotels[0]?.id}/`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
       )
       .then((res) => {
         setData(res.data);

@@ -56,12 +56,21 @@ const PassengerDetails = () => {
   const handleSubmit = async () => {
     try {
       await axios.get(
-        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/reprice/bookings`
+        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/reprice/bookings`,{
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
       );
       await axios.post(
         `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/guests/bookings/add/`,
         {
           guests: [input, ...adults, ...children],
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
         }
       );
       dispatch(openNotification({

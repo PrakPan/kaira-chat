@@ -275,7 +275,11 @@ const Booking = (props) => {
     };
 
     hotelSearch
-      .post("", requestData)
+      .post("", requestData,{
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      })
       .then((res) => {
         setUpdateLoadingState(false);
         setProvider(res.data?.source);

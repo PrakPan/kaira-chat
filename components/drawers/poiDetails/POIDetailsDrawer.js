@@ -55,7 +55,11 @@ const POIDetailsDrawer = (props) => {
       setLoading(false);
     } else if (props.ActivityiconId && props.themePage) {
       activityDetail
-        .post(`${props.ActivityiconId}/`, {})
+        .post(`${props.ActivityiconId}/`, {},{
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        })
         .then((res) => {
           if (res.data.success) setData(res.data.data.activity);
           else throw new Error(res.data?.message);
@@ -75,7 +79,13 @@ const POIDetailsDrawer = (props) => {
         });
     } else if (props.ActivityiconId) {
       axiosPOIActivityInstance
-        .get(`/?id=${props.ActivityiconId}`)
+        .get(`/?id=${props.ActivityiconId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+          }
+        )
         .then((res) => {
           if (res.data.name) setData(res.data);
           else throw new Error(res.data?.message);
@@ -92,7 +102,13 @@ const POIDetailsDrawer = (props) => {
     } else {
       if (props.iconId) {
         axiosPOIdetailsInstance
-          .get(`/?id=${props.iconId}`)
+          .get(`/?id=${props.iconId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+              },
+            }
+          )
           .then((res) => {
             if (res.data.name) setData(res.data);
             else throw new Error(res.data?.message);

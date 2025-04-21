@@ -128,7 +128,13 @@ const TransferEditDrawer = (props) => {
               number_of_children: props?.plan?.number_of_children || 1,
               number_of_infants: props?.plan?.number_of_infants || 1,
               top_only: "false",
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+              },
             })
+
             .then((res) => {
               if (res.data.success && res.data.routes.data.length > 0) {
                 const data = res.data.routes.data;
@@ -171,7 +177,13 @@ const TransferEditDrawer = (props) => {
   const roundTripSuggestion = () => {
     !mercury &&
       axiosRoundTripInstance
-        .get(`?itinerary_id=${props?.ItineraryId}`)
+        .get(`?itinerary_id=${props?.ItineraryId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+          }
+        )
         .then((response) => {
           const results = response.data;
 
