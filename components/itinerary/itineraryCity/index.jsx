@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RiArrowDropDownLine, RiArrowDropUpLine } from "react-icons/ri";
 
 import CitySummary from "./CitySummary";
@@ -6,9 +6,7 @@ import CityDaybyDay from "./CityDaybyDay";
 import { getStars } from "./SlabElement";
 import Image from "next/image";
 import { useSelector } from "react-redux";
-import {
-  bookingDetails,
-} from "../../../services/bookings/FetchAccommodation";
+import { bookingDetails } from "../../../services/bookings/FetchAccommodation";
 import { useRouter } from "next/router";
 import Drawer from "../../ui/Drawer";
 import HotelBookingDetails from "../../modals/accommodation/Overview/HotelBookingDetails";
@@ -75,8 +73,9 @@ const ItineraryCity = (props) => {
   const [data, setData] = useState(null);
   const { token } = useSelector((state) => state.auth);
   const stay = useSelector((state) => state.Stays);
-  const { itinerary_status, hotels_status } =
-    useSelector((state) => state.ItineraryStatus);
+  const { itinerary_status, hotels_status } = useSelector(
+    (state) => state.ItineraryStatus
+  );
   const fetchDetails = () => {
     setShowDetails(true);
     bookingDetails
@@ -119,6 +118,12 @@ const ItineraryCity = (props) => {
       },
     });
   };
+
+  useEffect(() => {
+    if (props.index === 0) {
+      setViewMore(true);
+    }
+  }, []);
 
   //  console.log("STTTT",stay);
 
