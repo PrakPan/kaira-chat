@@ -31,38 +31,57 @@ const SlideTwo = (props) => {
   return (
     <Container>
       <Section style={{ marginBottom: "1.5rem" }}>
-        {showPax ? (
-          <Question>
-            <p>
-            <span className="text-gray-700 font-normal">Group type: </span> {props.groupType}{" "}
-            </p>
-            <span
-              onClick={() => setShowPax(false)}
-              className="text-sm ml-2 text-blue cursor-pointer"
-            >
-              Change
-            </span>
-          </Question>
-        ) : (
-          <Question>Your group type?</Question>
-        )}
-        {showPax ? (
-          <Pax
-            numberOfAdults={props.numberOfAdults}
-            setNumberOfAdults={props.setNumberOfAdults}
-            numberOfChildren={props.numberOfChildren}
-            setNumberOfChildren={props.setNumberOfChildren}
-            numberOfInfants={props.numberOfInfants}
-            setNumberOfInfants={props.setNumberOfInfants}
-            setRoomConfiguration={props.setRoomConfiguration}
-          ></Pax>
-        ) : (
-          <GroupType
-            setShowPax={setShowPax}
-            _handleShowPax={_handleShowPax}
-            groupType={props.groupType}
-          ></GroupType>
-        )}
+        <Question>Your group type?</Question>
+
+        <GroupType
+          setShowPax={setShowPax}
+          _handleShowPax={_handleShowPax}
+          groupType={props.groupType}
+        ></GroupType>
+      </Section>
+
+      <Section className="space-y-5">
+        <div className="bg-[#FFEFE5] flex items-center gap-2 p-2 rounded-md w-fit">
+          <input
+            type="checkbox"
+            value={props.addHotels}
+            onChange={(e) => props.setAddHotels(e.target.checked)}
+            className="focus:outline-none cursor-pointer"
+          ></input>
+          <div className="text-sm">Add hotels to my itinerary?</div>
+        </div>
+
+        {props.addHotels ? (
+          <div className="space-y-5">
+            <Pax
+              numberOfAdults={props.numberOfAdults}
+              setNumberOfAdults={props.setNumberOfAdults}
+              numberOfChildren={props.numberOfChildren}
+              setNumberOfChildren={props.setNumberOfChildren}
+              numberOfInfants={props.numberOfInfants}
+              setNumberOfInfants={props.setNumberOfInfants}
+              setRoomConfiguration={props.setRoomConfiguration}
+            ></Pax>
+
+            <BudgetSlider
+              setShowPax={setShowPax}
+              setBudget={props.setBudget}
+              setPriceRange={props.setPriceRange}
+            ></BudgetSlider>
+          </div>
+        ) : null}
+      </Section>
+
+      <Section>
+        <div className="bg-[#FFEFE5] flex items-center gap-2 p-2 rounded-md w-fit">
+          <input
+            type="checkbox"
+            value={props.addTransfers}
+            onChange={(e) => props.setAddTransfers(e.target.checked)}
+            className="focus:outline-none cursor-pointer"
+          ></input>
+          <div className="text-sm">Add transfers to my itinerary?</div>
+        </div>
       </Section>
 
       {/* <Section>
@@ -71,14 +90,6 @@ const SlideTwo = (props) => {
         </Question>
         <HotelType/>
       </Section> */}
-
-      <Section>
-        <BudgetSlider
-          setShowPax={setShowPax}
-          setBudget={props.setBudget}
-          setPriceRange={props.setPriceRange}
-        ></BudgetSlider>
-      </Section>
     </Container>
   );
 };

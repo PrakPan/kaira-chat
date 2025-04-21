@@ -65,6 +65,10 @@ const FlickityComp = (props) => {
             setSubmitSecondSlide={props.setSubmitSecondSlide}
             setRoomConfiguration={props.setRoomConfiguration}
             setPriceRange={props.setPriceRange}
+            addHotels={props.addHotels}
+            setAddHotels={props.setAddHotels}
+            addTransfers={props.addTransfers}
+            setAddTransfers={props.setAddTransfers}
           ></SlideTwo>
         </Card>
       ) : null}
