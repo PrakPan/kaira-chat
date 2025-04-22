@@ -16,6 +16,8 @@ export default function NewHotelBooking({
     handleClick,
     key
 }) {
+    console.log("num_adults:", num_adults);
+
     const starRating = (rating) => {
         var stars = [];
         for (let i = 0; i < Math.floor(rating); i++) {

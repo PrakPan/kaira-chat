@@ -61,8 +61,6 @@ const GetInTouchContainer = styled.div`
 `;
 
 const SimpleTabsV2 = (props) => {
-  const dispatch = useDispatch();
-  // dispatch(setTransfersBookings(props.transferBookings))
   let isPageWide = media("(min-width: 768px)");
   const [isGroup, setIsGroup] = useState(false);
   const router = useRouter();
@@ -76,7 +74,7 @@ const SimpleTabsV2 = (props) => {
   const [share, setShare] = useState(false);
   const [shareMobile, setShareMobile] = useState(false);
   const isDesktop = useMediaQuery("(min-width:1148px)");
-  // const transferBooking = useSelector((sta
+
   const transferBooking = useSelector(
     (state) => state.TransferBookings
   )?.transferBookings;
@@ -683,7 +681,7 @@ const SimpleTabsV2 = (props) => {
             )}
           </div>
 
-          {props?.transferBookings && !props?.mercuryItinerary ? (
+          {(props?.transferBookings && !props?.mercuryItinerary) ? (
             <div id={"Transfers"}>
               <TransfersContainer
                 setShowLoginModal={setShowLoginModal}
@@ -737,7 +735,7 @@ const SimpleTabsV2 = (props) => {
                   _GetInTouch={_GetInTouch}
                 />
               )}
-              {props.transferBookings && (
+              {/* {props.transferBookings && (
                 <TransferBookings
                   mercuryItinerary={props?.mercuryItinerary}
                   setShowLoginModal={setShowLoginModal}
@@ -759,7 +757,7 @@ const SimpleTabsV2 = (props) => {
                   fetchData={props.fetchData}
                   _GetInTouch={_GetInTouch}
                 />
-              )}
+              )} */}
             </>
           )}
 

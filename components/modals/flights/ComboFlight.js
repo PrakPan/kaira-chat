@@ -213,6 +213,7 @@ const ComboFlight = (props) => {
                   setTransferBookingsIntercity={props.setTransferBookingsIntercity}
                   edge={props?.edge || props?.selectedBooking?.edge}
                   onSelect={props?.onSelect}
+                  trace_id={res?.data?.trace_id}
                 ></Flight>
               );
             }

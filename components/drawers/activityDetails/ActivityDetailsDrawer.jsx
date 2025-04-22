@@ -59,7 +59,13 @@ const ActivityDetailsDrawer = (props) => {
     }
 
     activityDetail
-      .post(`/${props.activityId}/`, requestData)
+      .post(`/${props.activityId}/`, requestData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      )
       .then((res) => {
         setTraceId(res.data?.trace_id);
         if (res.data?.data?.activity.name) {

@@ -103,7 +103,13 @@ const POI = (props) => {
 
     if (props?.mercury) {
       bookingDetails
-        .get(`${router?.query?.id}/bookings/accommodation/${props?.id}/`)
+        .get(`${router?.query?.id}/bookings/accommodation/${props?.id}/`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+          }
+        )
         .then((res) => {
           setLoading(false);
           setData(res.data);
@@ -133,7 +139,11 @@ const POI = (props) => {
         paramsObj.source = "Agoda";
       }
       fetchaccommodations
-        .get("", { params: paramsObj })
+        .get("", { params: paramsObj,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        })
         .then((res) => {
           setLoading(false);
           setData(res.data);

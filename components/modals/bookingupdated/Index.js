@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import media from "../../media";
 import AccommodationSearched from "./new-accommodation-searched/Index";
-import AccommodationModal from "../accommodation/Index";
 import { hotelSearch } from "../../../services/bookings/FetchAccommodations";
 import { connect, useDispatch, useSelector } from "react-redux";
 import Button from "../../ui/button/Index";
@@ -72,7 +71,6 @@ const Booking = (props) => {
     errorMsg: "",
   });
   const [loading, setLoading] = useState(false);
-  const [viewMoreStatus, setViewMoreStatus] = useState(false);
   const [nextPage, setNextPage] = useState(1);
   const [provider, setProvider] = useState(null);
   const [updateBookingState, setUpdateBookingState] = useState(false);
@@ -242,12 +240,11 @@ const Booking = (props) => {
       error: false,
       errorMsg: "",
     });
-
+console.log('occupancies are:',filters?.occupancies)
     const requestData = {
       check_in: getDate(props?.selectedBooking?.check_in),
       check_out: getDate(props?.selectedBooking?.check_out),
       city_id: props?.selectedBooking?.cityId,
-      occupancies: props?.selectedBooking?.occupancies,
       filter_by: {
         price_lower_range: filters.budget.price_lower_range,
         price_upper_range: filters.budget.price_upper_range,
@@ -275,7 +272,11 @@ const Booking = (props) => {
     };
 
     hotelSearch
-      .post("", requestData)
+      .post("", requestData,{
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      })
       .then((res) => {
         setUpdateLoadingState(false);
         setProvider(res.data?.source);
@@ -327,8 +328,8 @@ const Booking = (props) => {
                     images={res.data.data[i].images}
                     banner_image={img}
                     bookings={props.bookings}
-                    num_adults={filters.occupancies.reduce(
-                      (sum, room) => sum + room.num_adults,
+                    num_adults={(filters?.occupancies).reduce(
+                      (sum, room) => sum + (room.adults || 0),
                       0
                     )}
                     occupancies={filters.occupancies}
@@ -384,7 +385,7 @@ const Booking = (props) => {
             setMoreOptionsJSX([]);
             setFilters((prev)=>({
               ...prev,
-              occupancies:props?.hotelsConf
+              occupancies:itinerary?.hotels_config?.room_configuration
             }))
           }}
           width={"50vw"}

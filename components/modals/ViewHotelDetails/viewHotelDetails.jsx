@@ -128,7 +128,13 @@ const CallPaymentInfo=useSelector((state)=>state.CallPaymentInfo)
         currency: "INR",
       };
       hotelDetails
-        .post("", requestData)
+        .post("", requestData,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+          }
+        )
         .then((res) => {
           setLoading(false);
           setData(res.data);
@@ -158,7 +164,11 @@ const CallPaymentInfo=useSelector((state)=>state.CallPaymentInfo)
         paramsObj.source = "Agoda";
       }
       fetchaccommodations
-        .get("", { params: paramsObj })
+        .get("", { params: paramsObj,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        })
         .then((res) => {
           setLoading(false);
           setData(res.data);

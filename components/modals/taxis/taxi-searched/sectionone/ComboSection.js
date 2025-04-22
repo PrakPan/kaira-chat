@@ -298,7 +298,7 @@ const ComboSection = (props) => {
               {loading ? (
                 <PulseLoader size={8} speedMultiplier={0.6} color="#111" />
               ) : (
-                <input type="checkbox" onClick={()=>handleUpdate(props?.data)}></input>
+                <input type="checkbox" onClick={()=>handleUpdate({...props?.data,"booking_type":"Taxi"})}></input>
               )}
             </PriceActionContainer>
           </TripInfoContainer>

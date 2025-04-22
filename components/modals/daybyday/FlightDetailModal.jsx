@@ -39,7 +39,12 @@ const FlightDetailModal = ({
     try {
       setLoading(true);
       const response = await axiosDeleteBooking.delete(
-        `${router?.query?.id}/bookings/flight/${booking_id}/`
+        `${router?.query?.id}/bookings/flight/${booking_id}/`,
+        {
+                  headers: {
+                    Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+                  },
+        }
       );
 
       if (response.status === 204) {

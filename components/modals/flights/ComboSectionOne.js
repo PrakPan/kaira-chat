@@ -87,14 +87,14 @@ const ComboSection = (props) => {
       </div>
 
       {/* Results Summary */}
-      <div className="flex justify-between p-4 bg-gray-50 border-t">
+      {/* <div className="flex justify-between p-4 bg-gray-50 border-t">
         <div className="text-sm">
           Showing <span className="font-semibold">10 flights</span>
         </div>
         <div className="text-sm">
           Sort by: <span className="font-semibold">Price</span>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

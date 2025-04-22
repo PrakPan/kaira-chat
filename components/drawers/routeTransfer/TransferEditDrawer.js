@@ -28,6 +28,8 @@ import { PiTaxi } from "react-icons/pi";
 import { ImCheckboxChecked, ImCheckboxUnchecked, ImCross } from "react-icons/im";
 import ComboFlight from "../../modals/flights/ComboFlight";
 import ComboTaxi from "../../modals/taxis/ComboTaxi";
+import { MdDirectionsTransit, MdLocalTaxi } from "react-icons/md";
+import { PulseLoader } from "react-spinners";
 
 const ClippathComp = styled.div`
   clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 95% 50%, 100% 0%);
@@ -76,6 +78,8 @@ const TransferEditDrawer = (props) => {
     dCityData,
     mercury,
     mercuryTransfer,
+    origin_itinerary_city_id,
+    destination_itinerary_city_id
   } = props;
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
@@ -128,7 +132,13 @@ const TransferEditDrawer = (props) => {
               number_of_children: props?.plan?.number_of_children || 1,
               number_of_infants: props?.plan?.number_of_infants || 1,
               top_only: "false",
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+              },
             })
+
             .then((res) => {
               if (res.data.success && res.data.routes.data.length > 0) {
                 const data = res.data.routes.data;
@@ -171,7 +181,13 @@ const TransferEditDrawer = (props) => {
   const roundTripSuggestion = () => {
     !mercury &&
       axiosRoundTripInstance
-        .get(`?itinerary_id=${props?.ItineraryId}`)
+        .get(`?itinerary_id=${props?.ItineraryId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+          }
+        )
         .then((response) => {
           const results = response.data;
 
@@ -198,7 +214,6 @@ const TransferEditDrawer = (props) => {
     console.log("Inside",transfer,mode)
     // If transfer is null, it means we're deselecting
     if (!transfer) {
-        // Reset any selection data
         setSelectedResult(null);
         return;
     }
@@ -329,10 +344,12 @@ const TransferEditDrawer = (props) => {
           }
           setSelectLoading(false);
           setShowDrawer(false);
+          setCurrentStep(0);
         })
         .catch((err) => {
           setSelectLoading(false);
           setShowDrawer(false);
+          setCurrentStep(0);
           if (err.response.status === 403) {
             props.openNotification({
               text: "You are not allowed to make changes to this itinerary",
@@ -373,7 +390,7 @@ const TransferEditDrawer = (props) => {
       className="font-lexend"
       width={"50vw"}
       mobileWidth={"100vw"}
-      onHide={() => setShowDrawer(false)}
+      onHide={() => {setShowDrawer(false);setCurrentStep(0);}}
     >
       <div className="relative px-2 bg-white z-[900] flex flex-col gap-4 pt-4 pb-[100px] justify-start items-start mx-auto w-[98%] min-h-screen">
         <div className="flex flex-row gap-2 my-0 justify-start items-center">
@@ -383,6 +400,7 @@ const TransferEditDrawer = (props) => {
                 size={20}
                 onClick={() => {
                   setShowDrawer(false);
+                  setCurrentStep(0);
                 }}
                 className="hover-pointer"
                 style={{ fontSize: "2rem" }}
@@ -508,6 +526,7 @@ const TransferEditDrawer = (props) => {
                   onclick={() => {
                     props._GetInTouch();
                     setShowDrawer(false);
+                    setCurrentStep(0);
                   }}
                 >
                   <div className="flex flex-row gap-2 items-center justify-center">
@@ -620,6 +639,9 @@ const TransferEditDrawer = (props) => {
                             originCityId={props?.originCityId}
                             destinationCityId={props?.destinationCityId}
                             token={props?.token}
+                            origin_itinerary_city_id={origin_itinerary_city_id}
+                            destination_itinerary_city_id={destination_itinerary_city_id}
+                            setShowDrawer={setShowDrawer}
                           />
                         </>
                       ) : (
@@ -638,12 +660,51 @@ const TransferEditDrawer = (props) => {
                       );
                     return (
                       <NewMultiModeContainer
-                        key={index}
-                        transferIndex={index}
-                        transfer={transfer}
-                        handleSelect={handleSelect}
-                        token={props?.token}
-                      />
+                            key={index}
+                            transferIndex={index}
+                            transfer={transfer}
+                            handleSelect={handleSelect}
+                            selectedResult={selectedResult}
+                            setCurrentStep={setCurrentStep}
+                            currentStep={currentStep}
+                            handleFlightSelect={handleSelectResult}
+                            showComboFlightModal={showComboFlightModal}
+                            setShowComboFlightModal={setShowComboFlightModal}
+                            setHideFlightModal={() =>
+                              setShowComboFlightModal(false)
+                            }
+                            setHideBookingModal={() =>
+                              setShowComboFlightModal(false)
+                            }
+                            showTaxiModal={showComboTaxiModal}
+                            setShowComboTaxiModal={setShowComboTaxiModal}
+                            // setHideBookingModal={() => setShowTaxiModal(false)}
+                            setHideTaxiModal={() => setShowComboTaxiModal(false)}
+                            getPaymentHandler={props.getPaymentHandler}
+                            _updatePaymentHandler={props._updatePaymentHandler}
+                            _updateFlightBookingHandler={
+                              props._updateFlightBookingHandler
+                            }
+                            _updateBookingHandler={props._updateBookingHandler}
+                            alternates={selectedBooking?.id}
+                            tailored_id={selectedBooking?.tailored_itinerary}
+                            // _updateFlightHandler={props._updateFlightHandler}
+                            selectedBooking={selectedBooking}
+                            itinerary_id={ItineraryId}
+                            selectedTransferHeading={selectedTransferHeading}
+                            fetchData={fetchData}
+                            setShowLoginModal={setShowLoginModal}
+                            check_in={check_in}
+                            _GetInTouch={props._GetInTouch}
+                            daySlabIndex={day_slab_index}
+                            elementIndex={element_index}
+                            routeId={routeId}
+                            mercuryTransfer={selectedMercuryTransfer}
+                            individual={props?.individual}
+                            originCityId={props?.originCityId}
+                            destinationCityId={props?.destinationCityId}
+                            token={props?.token}
+                          />
                       // <MobileRouteContainer
                       //   key={index}
                       //   transferIndex={index}
@@ -928,6 +989,19 @@ const MultiRoute = (props) => {
   );
 };
 
+export const getModeIcon = (mode,size=20) => {
+  switch (mode.toLowerCase()) {
+    case "train":
+      return <BiTrain size={size} />;
+    case "taxi":
+      return <MdLocalTaxi size={size} />;
+    case "flight":
+      return <FaPlaneDeparture size={size} />;
+    default:
+      return <MdDirectionsTransit size={size} />;
+  }
+};
+
 const NewMultiModeContainer = ({
   transferIndex,
   transfer,
@@ -963,13 +1037,17 @@ const NewMultiModeContainer = ({
   individual,
   originCityId,
   destinationCityId,
-  token
+  token,
+  destination_itinerary_city_id,
+  origin_itinerary_city_id,
+  setShowDrawer
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [selectedModeIds, setSelectedModeIds] = useState({});
   const [selectedData, setSelectedData] = useState([]);
   
   const [searchResults, setSearchResults] = useState({});
+  const [updateLoading,setUpdateLoading] = useState(false);
 
   const sequencedModes = transfer.map((t) => t.mode);
 
@@ -1020,20 +1098,14 @@ const NewMultiModeContainer = ({
     return selectedModeIds[currentStep - 1] !== undefined;
   };
 
-  const getModeIcon = (mode) => {
-    switch (mode.toLowerCase()) {
-      case "train":
-        return <BiTrain size={20} />;
-      case "taxi":
-        return <PiTaxi size={20} />;
-      case "flight":
-        return <FaPlaneDeparture size={20} />;
-      default:
-        return <MdDirectionsTransit size={20} />;
-    }
-  };
+ 
 
   const totalSteps = transfer.length;
+
+  const isValidUUID = (uuid) => {
+    const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return regex.test(uuid);
+  };
 
 
   const handleModeSelect = (index, id, searchData = null,mode= null) => {
@@ -1092,6 +1164,7 @@ const NewMultiModeContainer = ({
   };
 
   const handleUpdateTransfer = async () => {
+    setUpdateLoading(true);
     if (Object.keys(selectedModeIds).length === totalSteps) {
       try {
   
@@ -1106,7 +1179,8 @@ const NewMultiModeContainer = ({
           if (currentTransfer.mode === "Flight") {
             return {
               ...transferObj,
-              result_index: item.resultIndex || item.result_index
+              result_index: item.resultIndex || item.result_index,
+              trace_id: item?.trace_id || localStorage.getItem("Travclan_trace_id")
             };
           } else if (currentTransfer.mode === "Taxi") {
             return {
@@ -1126,8 +1200,9 @@ const NewMultiModeContainer = ({
         
         // Create the request body
         const requestBody = {
-          destination_itinerary_city: destinationCityId,
-          number_of_adults: 4, 
+          destination_itinerary_city: isValidUUID(destination_itinerary_city_id) ? destination_itinerary_city_id : null,
+          source_itinerary_city: isValidUUID(origin_itinerary_city_id) ? origin_itinerary_city_id : null,
+          number_of_adults: 2, 
           number_of_children: 0,
           number_of_infants: 0,
           start_datetime: "2025-04-25T00:00:00", 
@@ -1147,12 +1222,17 @@ const NewMultiModeContainer = ({
           }
         })
         .then((response)=>{
-          if (!response.ok) {
-            throw new Error(`API error: ${response.status}`);
-          }
           
+          if (!response.ok) {
+            setUpdateLoading(false);
+            throw new Error(`API error: ${response.status}`);
+
+          }
+          setUpdateLoading(false);
           const data = response.json();
+          
           console.log("Transfer updated successfully:", data);
+          setShowDrawer(false)
           openNotification({
             text: "Your Transfer updated successfully!",
             heading: "Success!",
@@ -1160,6 +1240,7 @@ const NewMultiModeContainer = ({
           });
         })
         .catch((error)=>{
+          setUpdateLoading(false);
           openNotification({
             text: "Error updating Transfers!",
             heading: "Error!",
@@ -1222,7 +1303,7 @@ const NewMultiModeContainer = ({
         </div>
       </div>
 
-     
+     {console.log("current step is:",currentStep)}
       {currentStep === 0 && (
         <div
           className="flex justify-between items-center p-3 md:p-4 border border-b cursor-pointer shadow-md"
@@ -1230,7 +1311,7 @@ const NewMultiModeContainer = ({
         >
           <div className="font-bold text-sm md:text-base">
             {sequencedModes.join(", ")} |
-            <span className="font-normal">
+            <span className="font-norOne -mal">
               {Math.ceil(
                 transfer.reduce((sum, t) => sum + (t.duration || 0), 0) / 60
               )}{" "}
@@ -1488,9 +1569,9 @@ const NewMultiModeContainer = ({
                     </button>
                   ) : (
                     <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 w-full md:w-auto">
-                      <div className="font-semibold text-sm md:text-base w-full md:w-auto text-center md:text-right">
+                      {/* <div className="font-semibold text-sm md:text-base w-full md:w-auto text-center md:text-right">
                         Total Price: {calculateTotalPrice()}
-                      </div>
+                      </div> */}
                       <button
                         onClick={handleUpdateTransfer}
                         className={`px-6 md:px-8 py-2 rounded-md font-medium text-sm md:text-base w-full md:w-auto
@@ -1498,10 +1579,24 @@ const NewMultiModeContainer = ({
                             ? "bg-black text-white" 
                             : "bg-gray-200 text-gray-500 cursor-not-allowed"}`
                         }
+                        style={updateLoading ? { visibility: "hidden" } : {}}
                         disabled={Object.keys(selectedModeIds).length !== totalSteps}
                       >
                         Update Transfer
                       </button>
+                      {updateLoading && (
+                  <PulseLoader
+                    style={{
+                      position: "absolute",
+                      top: "55%",
+                      left: "50%",
+                      transform: "translate(-50% , -50%)",
+                    }}
+                    size={12}
+                    speedMultiplier={0.6}
+                    color="#ffffff"
+                  />
+                )}
                     </div>
                   )}
                 </div>

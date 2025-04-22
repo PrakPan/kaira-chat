@@ -2,20 +2,18 @@ import { useState } from "react";
 import Image from "next/image";
 
 import SkeletonCard from "../../../ui/SkeletonCard";
-import media from '../../../media';
+import media from "../../../media";
 
 export default function LogoContainer({ data }) {
   return (
     <div className="flex flex-row gap-2 items-center">
-      <Logo src={data?.segments[0]?.airline?.code} />
+      <Logo src={data?.segments[0]?.airline?.code} height={34} width={34} />
 
-      <div className="flex flex-col gap-1">
-        <div className="text-sm">
-          {data?.segments[0]?.airline?.name}
-        </div>
-        <div className="text-sm text-gray-600">
-          {data?.segments[0]?.airline?.code}-{data?.segments[0]?.airline?.flight_number}
-
+      <div className="flex items-center gap-1">
+        <div className="text-[18px] font-semibold">{data?.segments[0]?.airline?.name} |</div>
+        <div className="text-[16px] text-gray-600">
+          {data?.segments[0]?.airline?.code}-
+          {data?.segments[0]?.airline?.flight_number}
           {data?.segments.length > 1 ? (
             <div className="text-sm text-gray-600">
               +{data?.segments?.length - 1} more
@@ -43,10 +41,10 @@ export const Logo = ({ src, width, height }) => {
         </div>
       )}
 
-
       <div
-        // style={{ display: imageLoaded ? "block" : "none" }}
-        className={`relative w-12 md:w-16 h-12 md:h-16`}
+        className={`relative h-[${height ? height : "48 md:64"}px] w-[${
+          width ? width : "48 md:64"
+        }px]`}
       >
         <Image
           fill
@@ -58,5 +56,5 @@ export const Logo = ({ src, width, height }) => {
         ></Image>
       </div>
     </>
-  )
-}
+  );
+};
