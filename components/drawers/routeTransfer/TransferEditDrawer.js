@@ -28,7 +28,7 @@ import { PiTaxi } from "react-icons/pi";
 import { ImCheckboxChecked, ImCheckboxUnchecked, ImCross } from "react-icons/im";
 import ComboFlight from "../../modals/flights/ComboFlight";
 import ComboTaxi from "../../modals/taxis/ComboTaxi";
-import { MdLocalTaxi } from "react-icons/md";
+import { MdDirectionsTransit, MdLocalTaxi } from "react-icons/md";
 import { PulseLoader } from "react-spinners";
 
 const ClippathComp = styled.div`
