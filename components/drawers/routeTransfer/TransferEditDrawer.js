@@ -1544,6 +1544,8 @@ const NewMultiModeContainer = ({
                         onSelect={handleFlightSelection}
                         comboStartDate={comboStartDate}
                         comboStartTime={comboStartTime}
+                        source_code={option?.source?.code}
+                        destination_code={option?.destination?.code}
                       />
                     );
                   }

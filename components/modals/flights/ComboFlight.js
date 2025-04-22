@@ -180,8 +180,8 @@ const ComboFlight = (props) => {
         infant_count: pax.infants,
         direct_flight: filtersState.non_stop_flights ? "true" : "false",
         journey_type: "1",
-        origin: props.selectedBooking.origin_iata,
-        destination: props.selectedBooking.destination_iata,
+        origin: props.source_code || props.selectedBooking.origin_iata,
+        destination: props.destination_code || props.selectedBooking.destination_iata,
         preferred_departure_time: `${
           props?.comboStartTime && props?.comboStartDate ? dayjs(getISOStringFromDateAndTime(props?.comboStartDate,props?.comboStartTime)).format("YYYY-MM-DDTHH:mm:ss") : 
           props?.selectedBooking?.check_in
