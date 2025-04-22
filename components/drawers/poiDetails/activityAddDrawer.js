@@ -50,6 +50,7 @@ const items = [
 const ActivityAddDrawer = (props) => {
   const isDesktop = useMediaQuery("(min-width:767px)");
   const [selectedExprience, setSelectedExprience] = useState(-1);
+  const [nextUrl,setNextUrl]=useState(null)
   const [elementType, setElementType] = useState("Activity");
   const [options, setOptions] = useState([]);
   const [totalResults, setTotalResults] = useState(null);
@@ -247,7 +248,6 @@ const ActivityAddDrawer = (props) => {
   };
 
   const fetchData = async (showMore = false) => {
-    console.log("loaded is:", loaded);
     if (elementType == "Activity" || elementType == "") {
       setLoaded(false);
       try {
@@ -275,7 +275,6 @@ const ActivityAddDrawer = (props) => {
                 : null,
           },
           sort_by: {
-            // no sorting filters added yet.
           },
         };
         activtySearch
@@ -315,6 +314,7 @@ const ActivityAddDrawer = (props) => {
 
               if (showMore) setOptions((prev) => [...prev, ...options]);
               else setOptions(options);
+              setNextUrl(res?.data?.next)
 
               if (res.data.next) {
                 setShowMoreResults(true);
@@ -331,18 +331,18 @@ const ActivityAddDrawer = (props) => {
           })
           .catch((err) => {
             console.log("error in activity search:", err);
-            setLoaded(true)
+            setLoaded(true);
           });
-        } catch (error) {
+      } catch (error) {
         console.log("error in activity search:", error);
       }
-
     } else {
       setLoadingPoi(true);
       try {
         const res = await axios.get(
-          `${MERCURY_HOST}/api/v1/geos/poi/?fields=id,name,city,image,rating,experience_filters,short_description,tags,is_very_popular,tips_tricks,is_hidden_gem,user_ratings_total&city_id=${props?.cityID}`
+          `${MERCURY_HOST}/api/v1/geos/poi/?fields=id,name,city,image,rating,experience_filters,short_description,tags,is_very_popular,tips_tricks,is_hidden_gem,gmaps_place_id,user_ratings_total&city_id=${props?.cityID}`
         );
+        setTotalResults(res.data.results);
         const result = [];
         for (var i = 0; i < res.data.data.pois.length; i++) {
           result.push(
@@ -359,6 +359,8 @@ const ActivityAddDrawer = (props) => {
             ></NewPoiBooking>
           );
         }
+        setNextUrl(res?.data?.next)
+        console.log("next url is:",nextUrl)
         setOptions(result);
       } catch (error) {
         console.log("loading poi error:", error);
@@ -366,6 +368,61 @@ const ActivityAddDrawer = (props) => {
       setLoadingPoi(false);
     }
   };
+
+  const handleViewMore=async()=>{
+    try {
+      const res=await axios.get(nextUrl)
+      let options = [];
+      if(elementType=="Activity" || elementType==""){
+        for (var i = 0; i < res.data.data.activities.length; i++) {
+          options.push(
+            <NewActivityBooking
+              key={i}
+              activityAddDrawer
+              _updatePoiHandler={_addActivityHandler}
+              setShowDrawer={props?.setShowDrawer}
+              data={res.data.data.activities[i]}
+              setLoginModal={props.setShowLoginModal}
+              date={props.date}
+              getAccommodationAndActivitiesHandler={
+                props.getAccommodationAndActivitiesHandler
+              }
+              cityId={props?.cityID}
+              itinerary_city_id={props?.itinerary_city_id}
+              setActivities={props?.setActivities}
+              activities={props?.activities}
+              setItinerary={props?.setItinerary}
+              activityBookings={props?.activityBookings}
+              setActivityBookings={props?.setActivityBookings}
+              pax={pax}
+            ></NewActivityBooking>
+          );
+        }
+        setOptions((prev)=>[...prev,...options])
+      }
+      else{
+        for (var i = 0; i < res.data.data.pois.length; i++) {
+          options.push(
+            <NewPoiBooking
+              key={i}
+              setShowDrawer={props?.setShowDrawer}
+              data={res.data.data.pois[i]}
+              setLoginModal={props.setShowLoginModal}
+              date={props.date}
+              cityId={props?.cityID}
+              itinerary_city_id={props?.itinerary_city_id}
+              dayIndex={props?.day_slab_index}
+              setShowLoginModal={props.setShowLoginModal}
+            ></NewPoiBooking>
+          );
+        }
+        setOptions((prev)=>[...prev,...options])
+      }
+      setNextUrl(res?.data?.next)
+    } catch (error) {
+      console.log("error is:",error)
+    }
+  }
 
   const searchHandler = (e) => {
     if (e.target.id === "icon" && selectSearch.trim().length > 0) {
@@ -409,7 +466,7 @@ const ActivityAddDrawer = (props) => {
     }
     setLoaded(false);
     setLoadingPoi(true);
-    setOptions([])
+    setOptions([]);
   };
   return (
     <Drawer
@@ -438,7 +495,8 @@ const ActivityAddDrawer = (props) => {
           </div>
           <div className="flex max-[582px]:flex-col max-[582px]:!items-start justify-between w-full items-center">
             <div className=" line-clamp-1 text-[24px] font-semibold ">
-              Add {elementType=="POI"?"Places to visit":elementType} in {props.cityName}
+              Add {elementType == "POI" ? "Places to visit" : elementType} in{" "}
+              {props.cityName}
             </div>
             <Pax
               setShowPax={setShowPax}
@@ -495,37 +553,45 @@ const ActivityAddDrawer = (props) => {
               })}
             </select>
 
-            <div
-              className="relative px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2 max-[583px]:hidden cursor-pointer"
-              onClick={() => setShowDynamicfilters(true)}
-            >
-              <Image
-                src="/filter.svg"
-                width={"20"}
-                height={"20"}
-                color="white"
-              />
-              <button>Filters</button>
-              {changed && (
-                <div className="absolute -right-1 -top-1 h-[20px] w-[20px] rounded-full !bg-red-500"></div>
+            <div className="relative inline-block">
+              <div
+                className="relative px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2 max-[583px]:hidden cursor-pointer"
+                onClick={() => setShowDynamicfilters(true)}
+              >
+                <Image
+                  src="/filter.svg"
+                  width={20}
+                  height={20}
+                  alt="Filter Icon"
+                />
+                <button>Filters</button>
+                {changed && (
+                  <div className="absolute -right-1 -top-1 h-[20px] w-[20px] rounded-full bg-red-500"></div>
+                )}
+              </div>
+
+              {showDynamicfilters && (
+                <div
+                  className={`
+        z-50 bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm z-[1091]
+        min-[584px]:absolute min-[584px]:top-[calc(100%+8px)] min-[584px]:right-0
+        max-[583px]:fixed max-[583px]:bottom-0 max-[583px]:w-full
+      `}
+                  ref={filtersRef}
+                >
+                  <DyamicFilters
+                    filters={filtersObj}
+                    showFilter={showDynamicfilters}
+                    setshowFilter={setShowDynamicfilters}
+                    filterState={filterState}
+                    setFilterState={setFilterState}
+                    FILTERS={filtersObj}
+                    setChanged={setChanged}
+                  />
+                </div>
               )}
             </div>
-            {showDynamicfilters && (
-              <div
-                className="min-[584px]:absolute max-[583px]:fixed max-[583px]:bottom-0 max-[583px]:w-full z-50 bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm z-[1091]"
-                ref={filtersRef}
-              >
-                <DyamicFilters
-                  filters={filtersObj}
-                  showFilter={showDynamicfilters}
-                  setshowFilter={setShowDynamicfilters}
-                  filterState={filterState}
-                  setFilterState={setFilterState}
-                  FILTERS={filtersObj}
-                  setChanged={setChanged}
-                />
-              </div>
-            )}
+
             {showCalender && (
               <div
                 className="fixed bottom-0 w-full bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm z-[1091]"
@@ -659,25 +725,24 @@ const ActivityAddDrawer = (props) => {
         />
 
         <>
-          {console.log("loaded is:", loaded)}
           {(elementType === "Activity" ? loaded : !loadingPoi) ? (
             options.length ? (
               <div
                 onScroll={handleScroll}
-                className="flex flex-col items-center mb-3 h-[100vh] overflow-y-scroll"
+                className="flex flex-col items-center mb-3 h-[calc(100vh-270px)] overflow-y-scroll"
               >
                 {options}
-                {selectSearch !== "" ? (
+                {nextUrl !== null ? (
                   <Button
                     boxShadow
                     onclickparam={null}
-                    onclick={handleClearSearch}
+                    onclick={handleViewMore}
                     margin="0.25rem auto"
                     borderWidth="1px"
                     borderRadius="2rem"
                     padding="0.25rem 1rem"
                   >
-                    Show All
+                    View more
                   </Button>
                 ) : null}
               </div>

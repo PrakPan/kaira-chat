@@ -140,7 +140,7 @@ const CityItem = ({
         dispatch(
           openNotification({
             type: "success",
-            text: "Booking deleted successfuly",
+            text: `${city} deleted successfuly`,
             heading: "Success!",
           })
         );
@@ -151,7 +151,7 @@ const CityItem = ({
       dispatch(
         openNotification({
           type: "error",
-          text: `${err.message}`,
+          text: `${error.response?.data?.errors[0]?.message[0]}`,
           heading: "Error!",
         })
       );

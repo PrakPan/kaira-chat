@@ -157,7 +157,7 @@ const getRoomImage = (images) => {
 const HotelBookingDetails = (props) => {
   const isDesktop = useMediaQuery("(min-width:1148px)");
   const [loading, setLoading] = useState(false);
-  const CallPaymentInfo=useSelector((state)=>state.CallPaymentInfo)
+  const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -209,7 +209,8 @@ const HotelBookingDetails = (props) => {
     try {
       setLoading(true);
       const response = await axiosDeleteBooking.delete(
-        `${id}/bookings/accommodation/${props?.id}/`,{
+        `${id}/bookings/accommodation/${props?.id}/`,
+        {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
@@ -217,22 +218,25 @@ const HotelBookingDetails = (props) => {
       );
 
       if (response.status === 204) {
-        dispatch(SetCallPaymentInfo(!CallPaymentInfo))
+        dispatch(SetCallPaymentInfo(!CallPaymentInfo));
         dispatch(updateStays(props?.id));
         setLoading(false);
-        setVisible(true);
-        dispatch(openNotification({
-          type: "success",
-          text: "Booking deleted Successfuly",
-          heading: "Success!",
-        }))
+        dispatch(
+          openNotification({
+            type: "success",
+            text: `${props?.data?.hotel_details?.name} booking deleted successfuly`,
+            heading: "Success!",
+          })
+        );
       }
     } catch (err) {
-      dispatch(openNotification({
-        type: "error",
-        text: `${err.message}`,
-        heading: "Error!",
-      }))
+      dispatch(
+        openNotification({
+          type: "error",
+          text: `${err.message}`,
+          heading: "Error!",
+        })
+      );
       setLoading(false);
     }
   };
@@ -931,7 +935,9 @@ const HotelBookingDetails = (props) => {
           <CheckInText>
             <div className="">
               Check in: {dateFormat(props?.data?.hotel_details?.check_in.date)}|
-              {getHumanTime(dateFormat(props?.data?.hotel_details?.check_in.begin_time))}
+              {getHumanTime(
+                dateFormat(props?.data?.hotel_details?.check_in.begin_time)
+              )}
             </div>
             <div>
               Check out: {props?.data?.hotel_details?.check_out.date}|
@@ -1061,12 +1067,16 @@ const HotelBookingDetails = (props) => {
         <div>
           <Heading>Ratings</Heading>
           {props?.data?.hotel_details?.category_ratings.map((item, index) => (
-            <div key={index} className="flex justify-between items-center ">
-              <div className="font-medium">{item?.category}</div>
-              <div className="flex justify-end text-[#FFD201]">
-                {starRating(item?.rating)}
-              </div>
-            </div>
+            <>
+              {item?.category != "recommendation_percent" && (
+                <div key={index} className="flex justify-between items-center ">
+                  <div className="font-medium">{item?.category}</div>
+                  <div className="flex justify-end text-[#FFD201]">
+                    {starRating(item?.rating)}
+                  </div>
+                </div>
+              )}
+            </>
           ))}
         </div>
       )}

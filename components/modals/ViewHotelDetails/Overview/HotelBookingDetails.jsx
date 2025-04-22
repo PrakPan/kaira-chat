@@ -1030,12 +1030,16 @@ const HotelBookingDetails = (props) => {
         <div>
           <Heading >Ratings</Heading>
           {props?.data?.category_ratings.map((item, index) => (
-            <div key={index} className="flex justify-between items-center">
-              <div className="w-1/2 font-medium">{item?.category}</div>
-              <div className="w-1/2 flex justify-end text-[#FFD201]">
-                {starRating(item?.rating)}
+            <>
+            {item?.category != "recommendation_percent" && (
+              <div key={index} className="flex justify-between items-center ">
+                <div className="font-medium">{item?.category}</div>
+                <div className="flex justify-end text-[#FFD201]">
+                  {starRating(item?.rating)}
+                </div>
               </div>
-            </div>
+            )}
+          </>
           ))}
         </div>
       )}
