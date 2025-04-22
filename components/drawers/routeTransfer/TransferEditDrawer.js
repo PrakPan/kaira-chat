@@ -1068,6 +1068,7 @@ const NewMultiModeContainer = ({
   const sequencedModes = transfer.map((t) => t.mode);
 
 
+  console.log("Selected Data",selectedData);
 
   const toggleExpanded = () => {
     setExpanded(!expanded);
@@ -1535,8 +1536,8 @@ const NewMultiModeContainer = ({
                         routeId={routeId}
                         mercuryTransfer={mercuryTransfer}
                         individual={individual}
-                        originCityId={originCityId}
-                        destinationCityId={destinationCityId}
+                        originCityId={option?.source?.city}
+                        destinationCityId={option?.destination?.city}
                         isSelected={
                           selectedModeIds[currentStep - 1] === option.id
                         }
@@ -1575,8 +1576,8 @@ const NewMultiModeContainer = ({
                         routeId={routeId}
                         mercuryTransfer={mercuryTransfer}
                         individual={individual}
-                        originCityId={originCityId}
-                        destinationCityId={destinationCityId}
+                        originCityId={option?.source?.city}
+                        destinationCityId={option?.destination?.city}
                         isSelected={
                           selectedModeIds[currentStep - 1] === option.id
                         }
