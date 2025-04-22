@@ -84,6 +84,7 @@ const Flight = (props) => {
           provider={props.provider}
           onSelect={props?.onSelect}
           trace_id={props?.trace_id}
+          onFlightSelect={props?.onFlightSelect}
         />
       </div>
       <div className="flex justify-center items-center">

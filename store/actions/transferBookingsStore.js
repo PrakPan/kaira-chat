@@ -46,20 +46,30 @@ export const updateTransferBookings = (bookingIdToDelete) => {
   };
 };
 
-export const updateSingleTransferBooking = (data) => {
-  console.log("Inside Redux", data);
+export const updateSingleTransferBooking = (keyPath, data) => {
   return (dispatch, getState) => {
     const state = getState();
-    // const updatedData = { ...state.TransferBookings?.transferBookings }; 
-    // console.log("Updated Data", updatedData);
-    
-    
-    // console.log("Updated Data ", updatedData);
+    const currentTransferBookings = state.TransferBookings?.transferBookings;
 
-    // dispatch({
-    //   type: actionTypes.UPDATE_SINGLE_TRANSFER,
-    //   payload: updatedData,
-    // });
+
+    
+    if (!currentTransferBookings) {
+      console.error("Transfer bookings not found in state");
+      return;
+    }
+  
+    const updatedData = JSON.parse(JSON.stringify(currentTransferBookings));
+    if (updatedData.intercity && updatedData.intercity[keyPath]) {
+      updatedData.intercity[keyPath] = data;
+
+      console.log("Updated Data",updatedData)
+      dispatch({
+        type: actionTypes.UPDATE_SINGLE_TRANSFER,
+        payload: updatedData,
+      });
+    } else {
+      console.error(`Key path ${keyPath} not found in intercity bookings`);
+    }
   };
 };
 

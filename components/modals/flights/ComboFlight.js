@@ -20,6 +20,7 @@ import LogInModal from "../Login";
 import { toast, ToastContainer } from "react-toastify";
 import { setTransfersBookings } from "../../../store/actions/transferBookingsStore";
 import ComboSection from "./ComboSectionOne";
+import dayjs from "dayjs";
 
 const GridContainer = styled.div`
 min-height: 65vh;
@@ -79,11 +80,20 @@ const ContentContainer = styled.div`
 
 const ComboFlight = (props) => {
 
-  console.log("Flight Selected Booking",props?.selectedBooking,props?.showComboFlightModal);
-  console.log("Flight Selected Booking",props?.originCityId,props?.destinationCityId);
+  console.log("TIMEE",props?.comboStartTime)
+  console.log(
+    "Flight Selected Booking",
+    props?.selectedBooking,
+    props?.showComboFlightModal
+  );
+  console.log(
+    "Flight Selected Booking",
+    props?.originCityId,
+    props?.destinationCityId
+  );
   let isPageWide = media("(min-width: 768px)");
   const dispatch = useDispatch();
-  const transferBookings = useSelector((state)=>state.TransferBookings)
+  const transferBookings = useSelector((state) => state.TransferBookings);
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filtersState, setFiltersState] = useState({
@@ -124,8 +134,10 @@ const ComboFlight = (props) => {
     value: 1,
   });
   const [showTransferEditDrawer, setShowTransferEditDrawer] = useState(false);
+  const [flights, setFlights] = useState([]);
+  const [selectedFlightIndex, setSelectedFlightIndex] = useState(null);
 
- // console.log("Ord",props?.originCityId,props?.destinationCityId);
+  // console.log("Ord",props?.originCityId,props?.destinationCityId);
 
   useEffect(() => {
     if (!isPageWide && props.showComboFlightModal) _FetchFlightsHandler();
@@ -136,10 +148,18 @@ const ComboFlight = (props) => {
   }, [props.showComboFlightModal]);
 
   useEffect(() => {
-    if (isPageWide && props.showComboFlightModal) _FetchFlightsHandler();
-  }, [props.showComboFlightModal, props.token, filtersState, pax, classType]);
+    if (isPageWide && props.showComboFlightModal ) _FetchFlightsHandler();
+  }, [props.showComboFlightModal, props.token, filtersState, pax, classType,props?.comboStartDate,props?.comboStartTime]);
 
   //console.log("Booking Data",props?.selectedBooking);
+  function getISOStringFromDateAndTime(dateStr, timeStr) {
+    console.log("Date String",dateStr, timeStr);
+    const [year, month, day] = dateStr.split("-");
+    const [hour, minute] = timeStr.split(":");
+  
+    const localDate = new Date(year, month - 1, day, hour, minute);
+    return localDate.toISOString();
+  }
   const _FetchFlightsHandler = () => {
     let options = [];
     setOptionsJSX([]);
@@ -153,7 +173,7 @@ const ComboFlight = (props) => {
     });
 
     if (props.selectedBooking && props.token) {
-      console.log("Inside Flight")
+      console.log("Inside Flight");
       const requestData = {
         adult_count: pax.adults,
         child_count: pax.children,
@@ -163,17 +183,19 @@ const ComboFlight = (props) => {
         origin: props.selectedBooking.origin_iata,
         destination: props.selectedBooking.destination_iata,
         preferred_departure_time: `${
+          props?.comboStartTime && props?.comboStartDate ? dayjs(getISOStringFromDateAndTime(props?.comboStartDate,props?.comboStartTime)).format("YYYY-MM-DDTHH:mm:ss") : 
           props?.selectedBooking?.check_in
             ? new Date(props?.selectedBooking?.check_in.replace(" ", "T"))
                 ?.toISOString()
                 ?.slice(0, 19)
             : new Date()?.toISOString()?.slice(0, 19)
+
         }`,
         flight_cabin_class: classType.value,
       };
-       
-      console.log("Inside Flight",requestData);
-      axiosFlightSearch
+
+      console.log("Inside Flight", requestData);
+      props?.comboStartDate && axiosFlightSearch
         .post(
           `?${filtersState.sort_by}_order=${filtersState.order}${
             filtersState.departure_time_period
@@ -197,6 +219,13 @@ const ComboFlight = (props) => {
           localStorage.setItem(`${provider}_trace_id`, res.data.trace_id);
 
           if (res.data?.results.length) {
+            setFlights(res.data.results);
+            setFlightsCount(res.data.results.length);
+          } else {
+            setFlights([]);
+          }
+
+          if (res.data?.results.length) {
             for (var i = 0; i < res.data.results.length; i++) {
               options.push(
                 <Flight
@@ -210,7 +239,9 @@ const ComboFlight = (props) => {
                   booking_id={props.selectedBooking?.booking_id}
                   originCityId={props?.originCityId}
                   destinationCityId={props?.destinationCityId}
-                  setTransferBookingsIntercity={props.setTransferBookingsIntercity}
+                  setTransferBookingsIntercity={
+                    props.setTransferBookingsIntercity
+                  }
                   edge={props?.edge || props?.selectedBooking?.edge}
                   onSelect={props?.onSelect}
                   trace_id={res?.data?.trace_id}
@@ -237,6 +268,8 @@ const ComboFlight = (props) => {
       });
     }
   };
+
+ 
 
   const _newUpdateBookingHandler = ({
     booking_id,
@@ -270,13 +303,13 @@ const ComboFlight = (props) => {
       booking_id,
       trace_id: localStorage.getItem(`${provider}_trace_id`),
       result_indices: [result_index],
-      source_itinerary_city:props?.originCityId,
-      destination_itinerary_city:props?.destinationCityId,
-      edge: props?.edge || props?.selectedBooking?.edge
+      source_itinerary_city: props?.originCityId,
+      destination_itinerary_city: props?.destinationCityId,
+      edge: props?.edge || props?.selectedBooking?.edge,
     };
 
-  //  console.log("originCityId + destinationCityId",props?.originCityId + ":" + props?.destinationCityId);
-   console.log("Request Data",requestData);
+    //  console.log("originCityId + destinationCityId",props?.originCityId + ":" + props?.destinationCityId);
+    console.log("Request Data", requestData);
     // updateFlightBooking
     //   .post(`${itinerary_id}/bookings/flight/`, requestData, {
     //     headers: {
@@ -296,59 +329,64 @@ const ComboFlight = (props) => {
     //     };
     //     dispatch(setTransfersBookings(updatedTransferBookings));
     updateFlightBooking
-    .post(`${itinerary_id}/bookings/flight/`, requestData, {
-      headers: {
-        Authorization: `Bearer ${props.token}`,
-      },
-    })
-    .then((res) => {
-      props._updateFlightBookingHandler([res.data]);
-      props.getPaymentHandler();
-      setUpdateBookingState(false);
-      
-      const updatedTransferBookings = JSON.parse(JSON.stringify(transferBookings?.transferBookings));
-      const bookingIdToUpdate = requestData?.booking_id;
-      
-      Object.keys(updatedTransferBookings).forEach((category) => {
-        if (updatedTransferBookings[category]) {
-          Object.keys(updatedTransferBookings[category]).forEach((key) => {
-            const booking = updatedTransferBookings[category][key];
-            
-            if (!booking || Object.keys(booking).length === 0) {
-              return;
-            }
+      .post(`${itinerary_id}/bookings/flight/`, requestData, {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+        },
+      })
+      .then((res) => {
+        props._updateFlightBookingHandler([res.data]);
+        props.getPaymentHandler();
+        setUpdateBookingState(false);
 
-            if (booking?.id === bookingIdToUpdate) {
-              updatedTransferBookings[category][key] = {
-                ...booking, 
-                ...res.data  
-              };
-            } 
-            else if (booking?.children && Array.isArray(booking.children) && booking.children.length > 0) {
-              let foundMatch = false;
-              const updatedChildren = booking.children.map(childBooking => {
-                if (childBooking && childBooking.id === bookingIdToUpdate) {
-                  foundMatch = true;
-                  return {
-                    ...childBooking,  
-                    ...res.data      
-                  };
-                }
-                return childBooking; 
-              });
-              
-              if (foundMatch) {
+        const updatedTransferBookings = JSON.parse(
+          JSON.stringify(transferBookings?.transferBookings)
+        );
+        const bookingIdToUpdate = requestData?.booking_id;
+
+        Object.keys(updatedTransferBookings).forEach((category) => {
+          if (updatedTransferBookings[category]) {
+            Object.keys(updatedTransferBookings[category]).forEach((key) => {
+              const booking = updatedTransferBookings[category][key];
+
+              if (!booking || Object.keys(booking).length === 0) {
+                return;
+              }
+
+              if (booking?.id === bookingIdToUpdate) {
                 updatedTransferBookings[category][key] = {
                   ...booking,
-                  children: updatedChildren
+                  ...res.data,
                 };
+              } else if (
+                booking?.children &&
+                Array.isArray(booking.children) &&
+                booking.children.length > 0
+              ) {
+                let foundMatch = false;
+                const updatedChildren = booking.children.map((childBooking) => {
+                  if (childBooking && childBooking.id === bookingIdToUpdate) {
+                    foundMatch = true;
+                    return {
+                      ...childBooking,
+                      ...res.data,
+                    };
+                  }
+                  return childBooking;
+                });
+
+                if (foundMatch) {
+                  updatedTransferBookings[category][key] = {
+                    ...booking,
+                    children: updatedChildren,
+                  };
+                }
               }
-            }
-          });
-        }
-      });
-      
-      dispatch(setTransfersBookings(updatedTransferBookings));
+            });
+          }
+        });
+
+        dispatch(setTransfersBookings(updatedTransferBookings));
         props.openNotification({
           type: "success",
           text: "Flight updated successfully.",
@@ -398,24 +436,11 @@ const ComboFlight = (props) => {
           setFlightsCount(res.data.data);
         }
         let options = optionsJSX.slice();
-        if (res.data.Results.length) {
-          for (var i = 0; i < res.data.Results.length; i++) {
-            options.push(
-              <Flight
-                itinerary_id={props.itinerary_id}
-                data={res.data.Results[i]}
-                selectedBooking={props.selectedBooking}
-                _updateBookingHandler={_newUpdateBookingHandler}
-                individual={props?.individual}
-                originCityId={props?.originCityId}
-                destinationCityId={props?.destinationCityId}
-                edge={props?.edge || props?.selectedBooking?.edge}
-                setTransferBookingsIntercity={props.setTransferBookingsIntercity}
-                onSelect={props.onSelect}
-              ></Flight>
-            );
-          }
-          setOptionsJSX([...options]);
+        if (res.data?.Results.length) {
+          setFlights(res.data.Results);
+          setFlightsCount(res.data.Results.length);
+        } else {
+          setFlights([]);
         }
         if (res.data.next_page) {
           setViewMoreStatus(true);
@@ -492,11 +517,29 @@ const ComboFlight = (props) => {
             ) : !noResults && !updateLoadingState && !unauthorized ? (
               <OptionsContainer id="options">
                 <div style={{ clear: "right" }}>
-                  {optionsJSX.length && !updateBookingState ? optionsJSX : null}
+                  {flights.map((flight, index) => (
+                    <Flight
+                      key={index}
+                      itinerary_id={props.itinerary_id}
+                      data={flight}
+                      selectedBooking={props.selectedBooking}
+                      _updateBookingHandler={_newUpdateBookingHandler}
+                      individual={props?.individual}
+                      originCityId={props?.originCityId}
+                      destinationCityId={props?.destinationCityId}
+                      edge={props?.edge || props?.selectedBooking?.edge}
+                      setTransferBookingsIntercity={
+                        props.setTransferBookingsIntercity
+                      }
+                      onSelect={props.onSelect}
+                      isSelected={selectedFlightIndex === index}
+                      onFlightSelect={() => setSelectedFlightIndex(index)}
+                    />
+                  ))}
 
-                  {loading && !optionsJSX.length ? <Skeleton /> : null}
+                  {loading && !flights.length ? <Skeleton /> : null}
 
-                  {!loading && !optionsJSX.length ? (
+                  {!loading && !flights.length ? (
                     <div
                       style={{
                         textAlign: "center",
@@ -516,7 +559,7 @@ const ComboFlight = (props) => {
                 {viewMoreStatus &&
                 !updateBookingState &&
                 !loading &&
-                optionsJSX.length ? (
+                flights.length ? (
                   <Button
                     boxShadow
                     onclickparam={null}
@@ -621,4 +664,3 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export default connect(mapStateToPros, mapDispatchToProps)(ComboFlight);
-

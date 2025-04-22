@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { getIndianPrice } from "../../../../services/getIndianPrice";
 import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im";
@@ -10,31 +9,29 @@ export default function PriceContainer({
   _updateBookingHandler,
   provider,
   onSelect,
-  trace_id
+  trace_id,
+  onFlightSelect
 }) {
   const router = useRouter();
-  const [localSelected, setLocalSelected] = useState(isSelected);
-
-  // Sync with prop change
-  useEffect(() => {
-    setLocalSelected(isSelected);
-  }, [isSelected]);
 
   const handleSelect = () => {
+    onFlightSelect?.();
+
     if (onSelect) {
-      setLocalSelected(true); 
-      onSelect({...data,"booking_type":"Flight",trace_id: trace_id || localStorage.getItem("Travclan_trace_id")});
+      onSelect({
+        ...data,
+        booking_type: "Flight",
+        trace_id: trace_id || localStorage.getItem("Travclan_trace_id"),
+      });
     } else {
       _updateBookingHandler({
         booking_id: selectedBooking.id,
         itinerary_id: selectedBooking.itinerary_id || router?.query?.id,
         result_index: data.resultIndex,
-        provider
+        provider,
       });
     }
   };
-
-  const showSelected = onSelect ? localSelected : isSelected;
 
   return (
     <div className="flex md:flex-col justify-between items-center">
@@ -46,12 +43,15 @@ export default function PriceContainer({
 
       {_updateBookingHandler && (
         <div>
-          {showSelected ? (
+          {isSelected ? (
             <div className="flex items-center gap-1">
               <ImCheckboxChecked className="inline" /> Selected
             </div>
           ) : (
-            <div className="flex items-center gap-1 cursor-pointer" onClick={handleSelect}>
+            <div
+              className="flex items-center gap-1 cursor-pointer"
+              onClick={handleSelect}
+            >
               <ImCheckboxUnchecked className="inline" /> Select
             </div>
           )}

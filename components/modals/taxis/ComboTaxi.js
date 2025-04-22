@@ -57,17 +57,28 @@ const ComboTaxi = (props) => {
   const [noResults, setNoResults] = useState(false);
   const [showTransferEditDrawer, setShowTransferEditDrawer] = useState(false);
   const [isMercury, setIsMercury] = useState(false);
+  const [selectedTaxiIndex, setSelectedTaxiIndex] = useState(null);
+  const [quotes, setQuotes] = useState([]);
 
- console.log("OCity,D",props?.selectedBooking,props?.originCityId);
+  console.log("OCity,D", props?.selectedBooking, props?.originCityId);
 
- console.log("Inside fetch dtaa",props?.showTaxiModal)
+  console.log("Inside fetch dtaa", props?.showTaxiModal);
+
+  console.log("START DATEEE",props?.comboStartDate,props?.comboStartTime);
+
+   const addDaysToDate = (dateString, numberOfDays) => {
+        const date = new Date(dateString);
+        const newDate = add(date, { days: numberOfDays });
+        const formattedDate = format(newDate, "yyyy-MM-dd");
+        return formattedDate;
+      };
 
   useEffect(() => {
     if (props.showTaxiModal) {
-      console.log("Inside fetch dtaa",props.showTaxiModal);
+      console.log("Inside fetch dtaa", props.showTaxiModal);
       fetchData();
     }
-  }, [props.alternates, props.budget, props.showTaxiModal]);
+  }, [props.alternates, props.budget, props.showTaxiModal,props?.comboStartDate,props?.comboStartTime]);
 
   const fetchData = () => {
     console.log("Inside fetch dtaa");
@@ -76,9 +87,16 @@ const ComboTaxi = (props) => {
     setUpdateLoadingState(false);
     setOptionsJSX([]);
 
-    {props?.mercury && 
-      fetchTransferMode
-      .post("",{origin: props?.origin, destination: props?.destination, top_only:"false",number_of_adults:props?.number_of_adults || 1,number_of_children: props?.number_of_children || 0, number_of_infants: props?.number_of_infants || 0})
+    {
+      props?.mercury &&
+        fetchTransferMode.post("", {
+          origin: props?.origin,
+          destination: props?.destination,
+          top_only: "false",
+          number_of_adults: props?.number_of_adults || 1,
+          number_of_children: props?.number_of_children || 0,
+          number_of_infants: props?.number_of_infants || 0,
+        });
     }
 
     const now = new Date();
@@ -91,25 +109,41 @@ const ComboTaxi = (props) => {
     const requestData = {
       trips: [
         {
-          start_date: "2025-04-25" || props.selectedBooking.check_in || start_date,
-          start_time: start_time,
+          start_date:
+            props?.comboStartDate || props.selectedBooking.check_in || start_date,
+          start_time: props?.comboStartTime || start_time,
           number_of_travellers:
-            props?.plan?.number_of_adults + props?.plan?.number_of_children || 1,
+            props?.plan?.number_of_adults + props?.plan?.number_of_children ||
+            1,
           trip_type: "one-way",
           origin: {
-            city_id: props.selectedBooking?.origin?.city_id || props?.oCityData?.gmaps_place_id || props?.oCityData?.city?.id || props?.originCityId,
+            city_id:
+              props.selectedBooking?.origin?.city_id ||
+              props?.oCityData?.gmaps_place_id ||
+              props?.oCityData?.city?.id ||
+              props?.originCityId,
             hub_id: null,
             gmaps_place_id: null,
             // address: props.selectedBooking?.origin?.shortName
             //   ? props.selectedBooking?.origin?.shortName
             //   : props.selectedBooking?.origin?.city_name ? props.selectedBooking?.origin?.city_name : (props?.oCityData.city_name || props?.oCityData?.city?.name),
             coordinates: {
-              latitude: props.selectedBooking?.origin?.lat ? props.selectedBooking?.origin?.lat : props?.oCityData?.latitude || props?.oCityData?.city?.latitude,
-              longitude: props.selectedBooking?.origin?.lng ? props.selectedBooking?.origin?.lng : props?.oCityData?.longitude || props?.oCityData?.city?.longitude,
+              latitude: props.selectedBooking?.origin?.lat
+                ? props.selectedBooking?.origin?.lat
+                : props?.oCityData?.latitude ||
+                  props?.oCityData?.city?.latitude,
+              longitude: props.selectedBooking?.origin?.lng
+                ? props.selectedBooking?.origin?.lng
+                : props?.oCityData?.longitude ||
+                  props?.oCityData?.city?.longitude,
             },
           },
           destination: {
-            city_id: props.selectedBooking?.destination?.city_id || props?.dCityData?.gmaps_place_id || props?.dCityData?.city?.id || props?.destinationCityId,
+            city_id:
+              props.selectedBooking?.destination?.city_id ||
+              props?.dCityData?.gmaps_place_id ||
+              props?.dCityData?.city?.id ||
+              props?.destinationCityId,
             hub_id: null,
             gmaps_place_id: null,
             // address: props.selectedBooking?.destination?.shortName
@@ -117,48 +151,38 @@ const ComboTaxi = (props) => {
             //   : props.selectedBooking?.destination?.city_name ? props.selectedBooking?.destination?.city_name :
             //   (props?.dCityData.city_name || props?.dCityData?.city?.name),
             coordinates: {
-              latitude: props.selectedBooking?.destination?.lat ? props.selectedBooking?.origin?.lat : props?.dCityData?.latitude || props?.dCityData?.city?.latitude,
-              longitude: props.selectedBooking?.destination?.lng ? props.selectedBooking?.origin?.lng : props?.dCityData?.longitude || props?.dCityData?.city?.longitude,
+              latitude: props.selectedBooking?.destination?.lat
+                ? props.selectedBooking?.origin?.lat
+                : props?.dCityData?.latitude ||
+                  props?.dCityData?.city?.latitude,
+              longitude: props.selectedBooking?.destination?.lng
+                ? props.selectedBooking?.origin?.lng
+                : props?.dCityData?.longitude ||
+                  props?.dCityData?.city?.longitude,
             },
           },
         },
       ],
     };
 
-    axiosTaxiSearch
+    props?.comboStartDate && axiosTaxiSearch
       .post("", requestData)
       .then((res) => {
         if (res.data.success) {
           setNoResults(false);
-
-          let options = [];
-          for (var i = 0; i < res.data?.data?.quotes?.length; i++) {
-            options.push(
-              <TaxiSearched
-                setHideBookingModal={props.setHideBookingModal}
-                _updateSearchedTaxi={_updateSearchedTaxi}
-                selectedBooking={props.selectedBooking}
-                getPaymentHandler={props.getPaymentHandler}
-                _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-                data={{
-                  ...res.data.data.quotes[i],
-                  distance: res.data.data.distance,
-                  duration: res.data.data.duration,
-                  trace_id: res.data.trace_id,
-                  source: res.data.data?.source,
-                }}
-                handleTaxiSelect={props.handleTaxiSelect}
-                combo={true}
-                onSelect={props?.onSelect}
-              ></TaxiSearched>
-            );
-          }
-          if (!options.length) setNoResults(true);
-          setOptionsJSX(options);
+          setQuotes(
+            res.data.data.quotes.map((q, i) => ({
+              ...q,
+              distance: res.data.data.distance,
+              duration: res.data.data.duration,
+              trace_id: res.data.trace_id,
+              source: res.data.data?.source,
+            }))
+          );
         } else {
           setNoResults(true);
           setViewMoreStatus(false);
-          setOptionsJSX([]);
+          setQuotes([]);
         }
         setLoading(false);
       })
@@ -205,7 +229,6 @@ const ComboTaxi = (props) => {
       },
     ];
 
-
     axiosbookingupdateinstance
       .post("?booking_type=Taxi,Bus,Ferry", updated_bookings_arr, {
         headers: {
@@ -235,18 +258,17 @@ const ComboTaxi = (props) => {
 
   if (props.token)
     return (
-    //   <Drawer
-    //     anchor={"right"}
-    //     backdrop
-    //     style={{ zIndex: 1501 }}
-    //     className="font-lexend"
-    //     show={props.showTaxiModal}
-    //     onHide={props.setHideTaxiModal}
-    //     mobileWidth={"100%"}
-    //     width="50%"
-    //   >
-    <>
-
+      //   <Drawer
+      //     anchor={"right"}
+      //     backdrop
+      //     style={{ zIndex: 1501 }}
+      //     className="font-lexend"
+      //     show={props.showTaxiModal}
+      //     onHide={props.setHideTaxiModal}
+      //     mobileWidth={"100%"}
+      //     width="50%"
+      //   >
+      <>
         <div>
           <GridContainer style={{ clear: "right" }}>
             <ContentContainer style={{ position: "relative" }}>
@@ -267,12 +289,26 @@ const ComboTaxi = (props) => {
               {!noResults && !error && !updateBookingState ? (
                 <OptionsContainer id="options">
                   <div style={{ clear: "right" }}>
-                    {optionsJSX.length
-                      ? optionsJSX
-                      : moreOptionsJSX.length
-                      ? moreOptionsJSX
-                      : null}
-                    {loading && !optionsJSX.length ? <Skeleton /> : null}
+                    {quotes.map((quote, index) => (
+                      <TaxiSearched
+                        key={index}
+                        setHideBookingModal={props.setHideBookingModal}
+                        _updateSearchedTaxi={_updateSearchedTaxi}
+                        selectedBooking={props.selectedBooking}
+                        getPaymentHandler={props.getPaymentHandler}
+                        _updateTaxiBookingHandler={
+                          props._updateTaxiBookingHandler
+                        }
+                        data={quote}
+                        handleTaxiSelect={props.handleTaxiSelect}
+                        combo={true}
+                        onSelect={props?.onSelect}
+                        isSelected={selectedTaxiIndex === index}
+                        onTaxiSelect={() => setSelectedTaxiIndex(index)}
+                        index={index}
+                      />
+                    ))}
+                    {loading && !quotes.length ? <Skeleton /> : null}
                   </div>
 
                   {updateLoadingState ? (
@@ -318,52 +354,62 @@ const ComboTaxi = (props) => {
           </GridContainer>
         </div>
 
-        {props?.mercury ? <TransferEditDrawer
-          itinerary_id={props?.itinerary_id}
-          showDrawer={showTransferEditDrawer}
-          setShowDrawer={setShowTransferEditDrawer}
-          selectedTransferHeading={props.selectedTransferHeading}
-          origin={props.selectedBooking?.origin?.shortName || props?.oCityData?.gmaps_place_id || props?.oCityData?.city?.id}
-          destination={props.selectedBooking?.destination?.shortName || props?.dCityData?.gmaps_place_id || props?.dCityData?.city?.id}
-          day_slab_index={props.daySlabIndex}
-          element_index={props.elementIndex}
-          fetchData={props?.fetchData}
-          setShowLoginModal={props?.setShowLoginModal}
-          check_in={props?.check_in}
-          _GetInTouch={props._GetInTouch}
-          routeId={props.routeId}
-          selectedBooking={props.selectedBooking}
-          city={props?.city}
-          dcity={props?.dcity}
-          oCityData={props?.oCityData}
-          dCityData={props?.dCityData}
-          isMercury={isMercury}
-          mercury={props?.mercury}
-        /> 
-        :
-        <TransferEditDrawer
-          itinerary_id={props?.itinerary_id}
-          showDrawer={showTransferEditDrawer}
-          setShowDrawer={setShowTransferEditDrawer}
-          selectedTransferHeading={props.selectedTransferHeading}
-          origin={props.selectedBooking?.origin?.shortName}
-          destination={props.selectedBooking?.destination?.shortName}
-          day_slab_index={props.daySlabIndex}
-          element_index={props.elementIndex}
-          fetchData={props?.fetchData}
-          setShowLoginModal={props?.setShowLoginModal}
-          check_in={props?.check_in}
-          _GetInTouch={props._GetInTouch}
-          routeId={props.routeId}
-          selectedBooking={props.selectedBooking}
-          isMercury={isMercury}
-          city={props?.city}
-          dcity={props?.dcity}
-          oCityData={props?.oCityData}
-          dCityData={props?.dCityData}
-        />}
-        </>
-    //   {/* </Drawer> */}
+        {props?.mercury ? (
+          <TransferEditDrawer
+            itinerary_id={props?.itinerary_id}
+            showDrawer={showTransferEditDrawer}
+            setShowDrawer={setShowTransferEditDrawer}
+            selectedTransferHeading={props.selectedTransferHeading}
+            origin={
+              props.selectedBooking?.origin?.shortName ||
+              props?.oCityData?.gmaps_place_id ||
+              props?.oCityData?.city?.id
+            }
+            destination={
+              props.selectedBooking?.destination?.shortName ||
+              props?.dCityData?.gmaps_place_id ||
+              props?.dCityData?.city?.id
+            }
+            day_slab_index={props.daySlabIndex}
+            element_index={props.elementIndex}
+            fetchData={props?.fetchData}
+            setShowLoginModal={props?.setShowLoginModal}
+            check_in={props?.check_in}
+            _GetInTouch={props._GetInTouch}
+            routeId={props.routeId}
+            selectedBooking={props.selectedBooking}
+            city={props?.city}
+            dcity={props?.dcity}
+            oCityData={props?.oCityData}
+            dCityData={props?.dCityData}
+            isMercury={isMercury}
+            mercury={props?.mercury}
+          />
+        ) : (
+          <TransferEditDrawer
+            itinerary_id={props?.itinerary_id}
+            showDrawer={showTransferEditDrawer}
+            setShowDrawer={setShowTransferEditDrawer}
+            selectedTransferHeading={props.selectedTransferHeading}
+            origin={props.selectedBooking?.origin?.shortName}
+            destination={props.selectedBooking?.destination?.shortName}
+            day_slab_index={props.daySlabIndex}
+            element_index={props.elementIndex}
+            fetchData={props?.fetchData}
+            setShowLoginModal={props?.setShowLoginModal}
+            check_in={props?.check_in}
+            _GetInTouch={props._GetInTouch}
+            routeId={props.routeId}
+            selectedBooking={props.selectedBooking}
+            isMercury={isMercury}
+            city={props?.city}
+            dcity={props?.dcity}
+            oCityData={props?.oCityData}
+            dCityData={props?.dCityData}
+          />
+        )}
+      </>
+      //   {/* </Drawer> */}
     );
   else
     return (
