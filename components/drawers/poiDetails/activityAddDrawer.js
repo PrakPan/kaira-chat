@@ -96,6 +96,8 @@ const ActivityAddDrawer = (props) => {
 
   const filtersRef = useRef(null);
   const calendarRef = useRef(null);
+
+  const [showSkeleton,setShowSkeleton]=useState(false)
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (filtersRef.current && !filtersRef.current.contains(event.target)) {
@@ -370,6 +372,7 @@ const ActivityAddDrawer = (props) => {
   };
 
   const handleViewMore=async()=>{
+    setShowSkeleton(true)
     try {
       const res=await axios.get(nextUrl)
       let options = [];
@@ -422,6 +425,7 @@ const ActivityAddDrawer = (props) => {
     } catch (error) {
       console.log("error is:",error)
     }
+    setShowSkeleton(false)
   }
 
   const searchHandler = (e) => {
@@ -732,6 +736,7 @@ const ActivityAddDrawer = (props) => {
                 className="flex flex-col items-center mb-3 h-[calc(100vh-270px)] overflow-y-scroll"
               >
                 {options}
+                {showSkeleton&&<PoiListSkeleton/>}
                 {nextUrl !== null ? (
                   <Button
                     boxShadow
