@@ -52,7 +52,7 @@ const Timeline = (props) => {
           className={classes.RightBorder}
           style={{ borderWidth: "3.5px 7px" }}
         >
-          <div className="bg-red-200">
+          <div className="">
             <ImageLoader
               widthmobile="150px"
               heightmobile="150px"
