@@ -11,7 +11,9 @@ import FlightLogoContainer from "../../../components/modals/flights/new-flight-s
 import FlightDetails from "../../../components/modals/flights/new-flight-searched/FlightDetails";
 import Drawer from "../../../components/ui/Drawer";
 import { useRouter } from "next/router";
-import TransferEditDrawer from "../../../components/drawers/routeTransfer/TransferEditDrawer";
+import TransferEditDrawer, {
+  getModeIcon,
+} from "../../../components/drawers/routeTransfer/TransferEditDrawer";
 import Details from "./FlightDetail2";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -21,6 +23,7 @@ import TaxiDetailModal from "../../../components/modals/daybyday/TaxiDetailModal
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { HiOutlineRefresh } from "react-icons/hi";
+import { FaPlane, FaPlaneDeparture } from "react-icons/fa";
 const GridContainer = styled.div`
   width: auto;
   overflow: auto;
@@ -32,7 +35,7 @@ const GridContainer = styled.div`
   }
 `;
 
-const Line = styled.hr`
+var Line = styled.hr`
   background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
     ${(props) =>
       props.pinColour
@@ -59,6 +62,30 @@ const Line = styled.hr`
     width: 12.3rem;
     height: 1px;
     top: ${(props) => (props.end ? `1rem` : `5rem`)};
+    right: -81px;
+  }
+`;
+
+Line = styled.div`
+  position: absolute;
+  top: 0;
+  left: 10px;
+  bottom: 0;
+  right: -25px; // Adjust as needed
+
+  width: 2px;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    ${(props) => props.pinColour || "black"},
+    ${(props) => props.pinColour || "black"} 4px,
+    transparent 4px,
+    transparent 8px
+  );
+  background-repeat: repeat-y;
+
+  z-index: -1;
+
+  @media screen and (min-width: 768px) {
     right: -81px;
   }
 `;
@@ -359,10 +386,7 @@ const TransferBooking = ({
             className={`${!isPageWide ? "max-w-fit" : "max-w-[54vw]"}`}
           >
             <div className="relative">
-              <Line
-                pinColour={CITY_COLOR_CODES[index % 7]}
-                Transfers={Transfer}
-              />
+              <Line Transfers={Transfer} />
             </div>
             <>
               {booking?.booking_type === "Flight" ? (
@@ -383,12 +407,28 @@ const TransferBooking = ({
                 />
               ) : (
                 <div className="mt-3 ml-1 md:ml-7 flex flex-col w-full">
-                  <div className="flex flex-row w-full justify-between items-center">
-                    <span className="font-medium  inline">{booking?.name}</span>
-                    <div className="flex flex-row gap-2 justify-center items-center">
-                      {/* <div className=" text-md font-semibold  text-[#277004] ">
-                Included
-              </div> */}
+                  <div className=" w-full items-center">
+                    <div className="font-medium text-[15px]  inline flex items-center gap-1">
+                      <div className="text-[#C5C1C1]">
+                        {getModeIcon(booking?.booking_type, 15)}
+                      </div>
+                      {booking?.transfer_details?.source?.name}{" "}
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 12 12"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
+                          fill="#1F1F1F"
+                        />
+                      </svg>{" "}
+                      {booking?.transfer_details?.destination?.name}
+                    </div>
+                    <div className="text-[10px] ml-[20px]">
+                      Duration: {booking?.duration}
                     </div>
                   </div>
 
@@ -398,7 +438,7 @@ const TransferBooking = ({
                       !isPageWide ? "w-full" : "max-w-[54vw]"
                     }`}
                   >
-                    <div className="flex flex-row items-center justify-between gap-1">
+                    <div className="flex flex-row items-center gap-1 w-full">
                       <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
                         {!transferImageFailed ? (
                           <ImageLoader
@@ -420,15 +460,16 @@ const TransferBooking = ({
                               Instyle={{
                                 fontSize: "2.75rem",
                                 marginRight: "0.8rem",
-                                color: "black",
                               }}
+                              classname={"bg-[#D9D9D9] rounded-[11px]"}
+                              color="#C5C1C1"
                             />
                           </>
                         )}
                       </div>
 
-                      <div className="flex flex-col lg:w-60">
-                        <div className="sm:text-sm text-[0.85rem]">
+                      <div className="flex flex-col w-full">
+                        <div className="flex justify-between w-full sm:text-sm text-[0.85rem]">
                           {booking?.booking_type == "Taxi" ? (
                             booking?.transfer_details &&
                             booking?.transfer_details.gozo &&
@@ -449,6 +490,52 @@ const TransferBooking = ({
                               {booking?.booking_type} ({booking?.duration})
                             </>
                           )}
+                          <div className="w-full flex flex-row items-center justify-end cursor-pointer ">
+                            {!payment?.paid_user &&
+                            booking?.booking_type === "Taxi" ? (
+                              addbooking ? (
+                                <button
+                                  onClick={() =>
+                                    handleViewDetails(
+                                      router?.query?.id,
+                                      booking?.id,
+                                      booking?.booking_type
+                                    )
+                                  }
+                                  className="text-sm text-[12px] font-medium border-2 border-black rounded-lg px-[1.6rem] py-[8px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
+                                >
+                                  {isDesktop ? "Change Taxi" : "Change"}
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() =>
+                                    handleViewDetails(
+                                      router?.query?.id,
+                                      booking?.id,
+                                      booking?.booking_type
+                                    )
+                                  }
+                                  className="text-sm text-[12px] font-medium border-2 border-black rounded-lg px-[1.6rem] py-[8px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
+                                >
+                                  View Detail
+                                </button>
+                              )
+                            ) : (
+                              <button
+                                onClick={() => {
+                                  handleViewDetails(
+                                    router?.query?.id,
+                                    booking?.id,
+                                    booking?.transfer_details?.mode.toLowerCase()
+                                  );
+                                  setShowVehicleDrawer(true);
+                                }}
+                                className="text-sm text-[12px] font-medium border-2 border-black rounded-lg px-[1.6rem] py-[8px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000] mr-2"
+                              >
+                                View Detail
+                              </button>
+                            )}
+                          </div>
 
                           {booking?.transfer_type === "Intercity one-way" &&
                             booking?.transfer_details?.duration?.text && (
@@ -457,10 +544,8 @@ const TransferBooking = ({
                               </span>
                             )}
                         </div>
-                        <div className="flex sm:text-sm text-[0.93rem] flex-row text-[#7A7A7A] font-light items-center">
-                          {booking?.taxi_type && (
-                            <div>{booking?.taxi_type}</div>
-                          )}
+                        <div className="flex sm:text-sm text-[14px] flex-row text-[#7A7A7A] font-light items-center">
+                          {booking?.type && <div>{booking?.type} car</div>}
                         </div>
 
                         {booking?.transfer_details && (
@@ -489,70 +574,6 @@ const TransferBooking = ({
                         )}
                       </div>
                     </div>
-
-                    {!payment?.paid_user && booking?.booking_type === "Taxi" ? (
-                      <div className="w-full flex flex-row items-center justify-end cursor-pointer pr-2">
-                        {addbooking ? (
-                          <button
-                            onClick={() =>
-                              handleViewDetails(
-                                router?.query?.id,
-                                booking?.id,
-                                booking?.booking_type
-                              )
-                            }
-                            className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
-                          >
-                            {isDesktop ? "Change Taxi" : "Change"}
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() =>
-                              handleViewDetails(
-                                router?.query?.id,
-                                booking?.id,
-                                booking?.booking_type
-                              )
-                            }
-                            className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
-                          >
-                            View Detail
-                            {/* Add Taxi */}
-                          </button>
-                        )}
-                      </div>
-                    ) : (
-                      // <div className={`absolute bottom-[1rem] right-6 -m-3`}>
-                      //   <Button
-                      //     padding="0.6rem 2.2rem"
-                      //     borderRadius="8px"
-                      //     hoverColor="white"
-                      //     fontWeight="400"
-                      //     onclick={() =>
-                      //       handleViewDetails(
-                      //         router?.query?.id,
-                      //         booking?.id,
-                      //         booking?.transfer_details?.mode.toLowerCase()
-                      //       )
-                      //     }
-                      //   >
-                      //     View Detail
-                      //   </Button>
-                      // </div>
-                      <button
-                        onClick={() => {
-                          handleViewDetails(
-                            router?.query?.id,
-                            booking?.id,
-                            booking?.transfer_details?.mode.toLowerCase()
-                          );
-                          setShowVehicleDrawer(true);
-                        }}
-                        className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000] mr-2"
-                      >
-                        View Detail
-                      </button>
-                    )}
                   </div>
                   <Drawer
                     show={showVehicleDrawer}
@@ -590,11 +611,7 @@ const TransferBooking = ({
         ) : (
           <div className="grid w-full grid-cols-[30px_120px] min-h-[5rem] md:min-h-[8rem]">
             <div className="relative">
-              <Line
-                pinColour={CITY_COLOR_CODES[index % 7]}
-                Transfers={Transfer}
-                end={end}
-              />
+              <Line Transfers={Transfer} end={end} />
             </div>
             {isPageWide ? (
               <button
@@ -640,246 +657,254 @@ const TransferBooking = ({
         booking?.children?.map((book, index) => (
           <ComboContainer>
             <div className="relative">
-              <Line
-                pinColour={CITY_COLOR_CODES[index % 7]}
-                Transfers={Transfer}
-              />
+              <Line Transfers={Transfer} />
             </div>
             {book?.booking_type === "Flight" ? (
-              <FlightBooking
-                key={index}
-                booking={book}
-                notificationText={notificationText}
-                plan={plan}
-                tripsPage={tripsPage}
-                openNotification={openNotification}
-                payment={payment}
-                index={index}
-                _changeFlightHandler={_changeFlightHandler}
-                token={token}
-                setShowLoginModal={setShowLoginModal}
-                originCityId={originCityId}
-                destinationCityId={destinationCityId}
-                type={"combo"}
-                setShowDrawer={setShowDrawer}
-              />
+              <>
+                <div className="absolute w-[20px] border border-black ml-4 mt-[15px]"></div>
+                <FlightBooking
+                  key={index}
+                  booking={book}
+                  notificationText={notificationText}
+                  plan={plan}
+                  tripsPage={tripsPage}
+                  openNotification={openNotification}
+                  payment={payment}
+                  index={index}
+                  _changeFlightHandler={_changeFlightHandler}
+                  token={token}
+                  setShowLoginModal={setShowLoginModal}
+                  originCityId={originCityId}
+                  destinationCityId={destinationCityId}
+                  type={"combo"}
+                  setShowDrawer={setShowDrawer}
+                />
+              </>
             ) : (
-              <div
-                key={index}
-                className="mt-3 ml-1 md:ml-7 flex flex-col w-full"
-              >
-                <div className="flex flex-row w-full justify-between items-center">
-                  <span className="font-medium inline">{book?.name}</span>
-                  <div className="flex flex-row gap-2 justify-center items-center"></div>
-                </div>
-
+              <>
+                <div className="absolute w-[20px] border border-black ml-4 mt-[28px]"></div>
                 <div
-                  id={book?.id}
-                  className={`mb-2 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ${
-                    !isPageWide ? "w-full" : "max-w-[54vw]"
-                  }`}
+                  key={index}
+                  className="mt-3 ml-1 md:ml-7 flex flex-col w-full"
                 >
-                  <div className="flex flex-row items-center justify-between gap-1">
-                    <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
-                      {!transferImageFailed ? (
-                        <ImageLoader
-                          is_url={book?.image?.includes("gozo")}
-                          className="object-contain"
-                          url={book?.image}
-                          leftalign
-                          height={
-                            book?.image?.includes("gozo") ? "3rem" : "4rem"
-                          }
-                          width={"4rem"}
-                          widthmobile="4rem"
-                          onfail={handleTransferImageFailed}
+                  <div className=" w-full items-center">
+                    <div className="font-medium text-[15px]  inline flex items-center gap-1">
+                      <div className="text-[#C5C1C1]">
+                        {getModeIcon(book?.booking_type, 15)}
+                      </div>
+                      {book?.transfer_details?.source?.name}{" "}
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 12 12"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
+                          fill="#1F1F1F"
                         />
-                      ) : (
-                        <>
-                          <TransportIconFetcher
-                            TransportMode={book?.booking_type}
-                            Instyle={{
-                              fontSize: "2.75rem",
-                              marginRight: "0.8rem",
-                              color: "black",
-                            }}
-                          />
-                        </>
-                      )}
+                      </svg>{" "}
+                      {book?.transfer_details?.destination?.name}
                     </div>
-
-                    <div className="flex flex-col lg:w-60">
-                      <div className="sm:text-sm text-[0.85rem]">
-                        {book?.booking_type == "Taxi" ? (
-                          book?.transfer_details &&
-                          book?.transfer_details.gozo &&
-                          book?.transfer_details.gozo.model ? (
-                            isPageWide ? (
-                              book?.transfer_details.gozo.model
-                            ) : (
-                              truncateString(
-                                book?.transfer_details.gozo.model,
-                                25
-                              )
-                            )
-                          ) : (
-                            "Private transfer "
-                          )
-                        ) : (
-                          <>
-                            {book?.booking_type} ({booking?.duration})
-                          </>
-                        )}
-
-                        {book?.transfer_type === "Intercity one-way" &&
-                          book?.transfer_details?.duration?.text && (
-                            <span className="ml-1">
-                              ({book?.transfer_details?.duration?.text})
-                            </span>
-                          )}
-                      </div>
-                      <div className="flex sm:text-sm text-[0.93rem] flex-row text-[#7A7A7A] font-light items-center">
-                        {book?.taxi_type && <div>{book?.taxi_type}</div>}
-                      </div>
-
-                      {book?.transfer_details && (
-                        <div className="text-[#01202B] font-normal flex flex-row justify-start items-center mt-1 flex-wrap">
-                          <span className="pr-1 sm:text-sm text-[0.82rem]">
-                            Facilities:
-                          </span>
-
-                          <GridContainer className="">
-                            {Facilities.filter(Boolean).map(
-                              (data, index) =>
-                                data !== null && (
-                                  <div key={index} className="gap-1">
-                                    <div className="flex flex-row flex-wrap sm:text-sm text-[0.74rem] font-normal">
-                                      {index !== 0 && data != null ? (
-                                        <span className="px-1">|</span>
-                                      ) : null}
-
-                                      <div className="">{data}</div>
-                                    </div>
-                                  </div>
-                                )
-                            )}
-                          </GridContainer>
-                        </div>
-                      )}
+                    <div className="text-[10px] ml-[20px]">
+                      Duration: {booking?.duration}
                     </div>
                   </div>
 
-                  {!payment?.paid_user && 
-                  <>
-                  {book?.booking_type === "Taxi" ? (
-                    <div className="w-full flex flex-row items-center justify-end cursor-pointer pr-2">
-                      {addbooking ? (
-                        <button
-                          onClick={() =>{
-                            handleViewDetails(
-                              router?.query?.id,
-                              book?.id,
-                              booking?.transfer_details?.mode.toLowerCase()
-                            );
-                          }}
-                          className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
-                        >
-                          {isDesktop ? "Change Taxi" : "Change"}
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => {
-                            console.log("clicked");
-                            handleViewDetails(
-                              router?.query?.id,
-                              book?.id,
-                              booking?.transfer_details?.mode.toLowerCase()
-                            );
-                            setShowVehicleDrawer(true);
-                          }}
-                          className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
-                        >
-                          {/* Add Taxi */}
-                          View Detail
-                        </button>
-                      )}
+                  <div
+                    id={book?.id}
+                    className={`mb-2 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ${
+                      !isPageWide ? "w-full" : "max-w-[54vw]"
+                    }`}
+                  >
+                    <div className="flex flex-row items-center justify-between gap-1 w-full">
+                      <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
+                        {!transferImageFailed ? (
+                          <ImageLoader
+                            is_url={book?.image?.includes("gozo")}
+                            className="object-contain"
+                            url={book?.image}
+                            leftalign
+                            height={
+                              book?.image?.includes("gozo") ? "3rem" : "4rem"
+                            }
+                            width={"4rem"}
+                            widthmobile="4rem"
+                            onfail={handleTransferImageFailed}
+                          />
+                        ) : (
+                          <>
+                            <TransportIconFetcher
+                              TransportMode={book?.booking_type}
+                              Instyle={{
+                                fontSize: "2.75rem",
+                                marginRight: "0.8rem",
+                              }}
+                              classname={"bg-[#D9D9D9] rounded-[11px]"}
+                              color="#C5C1C1"
+                            />
+                          </>
+                        )}
+                      </div>
+                      <div className="flex justify-between items-start w-full">
+                        <div className="flex flex-col lg:w-60 w-full">
+                          <div className="text-[16px] font-medium">
+                            {book?.booking_type == "Taxi" ? (
+                              book?.transfer_details &&
+                              book?.transfer_details.gozo &&
+                              book?.transfer_details.gozo.model ? (
+                                isPageWide ? (
+                                  book?.transfer_details.gozo.model
+                                ) : (
+                                  truncateString(
+                                    book?.transfer_details.gozo.model,
+                                    25
+                                  )
+                                )
+                              ) : (
+                                "Private transfer "
+                              )
+                            ) : (
+                              <>
+                                {book?.booking_type} ({booking?.duration})
+                              </>
+                            )}
+                          </div>
+                          <div className="flex sm:text-sm text-[14px]  flex-row text-[#7A7A7A] font-light items-center">
+                            {book?.type && <div>{book?.type} car</div>}
+                          </div>
+
+                          {book?.transfer_details && (
+                            <div className="text-[#01202B] font-normal flex flex-row justify-start items-center mt-1 flex-wrap">
+                              <span className="pr-1 sm:text-sm text-[0.82rem]">
+                                Facilities:
+                              </span>
+
+                              <GridContainer className="">
+                                {Facilities.filter(Boolean).map(
+                                  (data, index) =>
+                                    data !== null && (
+                                      <div key={index} className="gap-1">
+                                        <div className="flex flex-row flex-wrap sm:text-sm text-[0.74rem] font-normal">
+                                          {index !== 0 && data != null ? (
+                                            <span className="px-1">|</span>
+                                          ) : null}
+
+                                          <div className="">{data}</div>
+                                        </div>
+                                      </div>
+                                    )
+                                )}
+                              </GridContainer>
+                            </div>
+                          )}
+                        </div>
+                        {!payment?.paid_user && (
+                          <>
+                            {book?.booking_type === "Taxi" ? (
+                              <div className="w-full flex flex-row items-center justify-end cursor-pointer pr-2">
+                                {addbooking ? (
+                                  <button
+                                    onClick={() => {
+                                      handleViewDetails(
+                                        router?.query?.id,
+                                        book?.id,
+                                        booking?.transfer_details?.mode.toLowerCase()
+                                      );
+                                    }}
+                                    className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
+                                  >
+                                    {isDesktop ? "Change Taxi" : "Change"}
+                                  </button>
+                                ) : (
+                                  <button
+                                    onClick={() => {
+                                      console.log("clicked");
+                                      handleViewDetails(
+                                        router?.query?.id,
+                                        book?.id,
+                                        booking?.transfer_details?.mode.toLowerCase()
+                                      );
+                                      setShowVehicleDrawer(true);
+                                    }}
+                                    className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
+                                  >
+                                    {/* Add Taxi */}
+                                    View Detail
+                                  </button>
+                                )}
+                              </div>
+                            ) : (
+                              // <div className={`absolute bottom-[1rem] right-6 -m-3`}>
+                              //   <Button
+                              //     padding="0.6rem 2.2rem"
+                              //     borderRadius="8px"
+                              //     hoverColor="white"
+                              //     fontWeight="400"
+                              //     onclick={() =>
+                              //       handleViewDetails(
+                              //         router?.query?.id,
+                              //         book?.id,
+                              //         book?.transfer_details?.mode.toLowerCase()
+                              //       )
+                              //     }
+                              //   >
+                              //     View Detail
+                              //   </Button>
+                              // </div>
+                              <button
+                                onclick={() =>
+                                  handleViewDetails(
+                                    router?.query?.id,
+                                    book?.id,
+                                    book?.transfer_details?.mode.toLowerCase()
+                                  )
+                                }
+                                className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
+                              >
+                                {/* Add Taxi */}
+                                View Detail
+                              </button>
+                            )}
+                          </>
+                        )}
+                      </div>
                     </div>
-                  ) : (
-                    // <div className={`absolute bottom-[1rem] right-6 -m-3`}>
-                    //   <Button
-                    //     padding="0.6rem 2.2rem"
-                    //     borderRadius="8px"
-                    //     hoverColor="white"
-                    //     fontWeight="400"
-                    //     onclick={() =>
-                    //       handleViewDetails(
-                    //         router?.query?.id,
-                    //         book?.id,
-                    //         book?.transfer_details?.mode.toLowerCase()
-                    //       )
-                    //     }
-                    //   >
-                    //     View Detail
-                    //   </Button>
-                    // </div>
-                    <button
-                      onclick={() =>
-                        handleViewDetails(
-                          router?.query?.id,
-                          book?.id,
-                          book?.transfer_details?.mode.toLowerCase()
-                        )
-                      }
-                      className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
-                    >
-                      {/* Add Taxi */}
-                      View Detail
-                    </button>
-                  )}
-                  </>
-                  }
+                  </div>
+                  <Drawer
+                    show={showVehicleDrawer}
+                    anchor="right"
+                    mobileWidth="100vw"
+                    width="50vw"
+                    style={1503}
+                    className="font-lexend"
+                    onHide={() => setShowVehicleDrawer(false)}
+                  >
+                    {vehicleDetails?.booking_type == "Taxi" ? (
+                      <TaxiDetailModal
+                        data={vehicleDetails}
+                        loading={loading}
+                        setIsOpen={setShowVehicleDrawer}
+                        handleDelete={handleDelete}
+                        setHandleShow={setShowVehicleDrawer}
+                        booking={booking}
+                        type={"combo"}
+                      />
+                    ) : (
+                      <VehicleDetailModal
+                        data={vehicleDetails}
+                        loading={loading}
+                        setIsOpen={setShowVehicleDrawer}
+                        handleDelete={handleDelete}
+                        setHandleShow={setShowVehicleDrawer}
+                        booking={booking}
+                        type={"combo"}
+                      />
+                    )}
+                  </Drawer>
                 </div>
-                <Drawer
-                  show={showVehicleDrawer}
-                  anchor="right"
-                  mobileWidth="100vw"
-                  width="50vw"
-                  style={1503}
-                  className="font-lexend"
-                  onHide={() => setShowVehicleDrawer(false)}
-                >
-                  {vehicleDetails?.booking_type == "Taxi" ? (
-                    <TaxiDetailModal
-                      data={vehicleDetails}
-                      loading={loading}
-                      setIsOpen={setShowVehicleDrawer}
-                      handleDelete={handleDelete}
-                      setHandleShow={setShowVehicleDrawer}
-                      booking={booking}
-                      type={"combo"}
-                    />
-                  ) : (
-                    <VehicleDetailModal
-                      data={vehicleDetails}
-                      loading={loading}
-                      setIsOpen={setShowVehicleDrawer}
-                      handleDelete={handleDelete}
-                      setHandleShow={setShowVehicleDrawer}
-                      booking={booking}
-                      type={"combo"}
-                    />
-                  )}
-                  {/* <VehicleDetailModal
-                    data={vehicleDetails}
-                    loading={loading}
-                    setIsOpen={setShowVehicleDrawer}
-                    handleDelete={handleDelete}
-                    setHandleShow={setShowVehicleDrawer}
-                    booking={book}
-                    type={"combo"}
-                  /> */}
-                </Drawer>
-              </div>
+              </>
             )}
             <TransferEditDrawer
               mercury
@@ -942,17 +967,7 @@ const FlightBooking = ({
   setShowDrawer,
 }) => {
   const [showDetails, setShowDetails] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const popupStyle = {
-    display: isHovered ? "block" : "none",
-    backgroundColor: "#2b2b2a",
-    border: "1px solid #e5e7eb",
-    borderRadius: "0.45rem",
-    padding: "5px 10px",
-    marginTop: "5px",
-    marginLeft: "5px",
-  };
-  console.log("showw", showDetails);
+
   const router = useRouter();
   function HandleFlights(i, label) {
     if (!token) {
@@ -1026,47 +1041,54 @@ const FlightBooking = ({
     if (booking?.number_of_children > 1) child = " Childs";
     else child = " Child";
   } catch {}
-
   return (
     <div className="ml-1 md:ml-7 flex flex-col w-full items-center justify-center p-2 ">
-      <div className="flex flex-row w-full items-center">
-        <span className="font-medium  inline">{booking?.name}</span>
-        {/* <div
-          id="transferEdit"
-          onClick={(e) => {
-            setShowDrawer(true)
-            setIsHovered(false);
-          }}
-          className="cursor-pointer min-w-max text-lg w-4 h-4 pl-3 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90 relative"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          <HiOutlineRefresh className="transition-transform text-blue" />
-          <div
-            style={popupStyle}
-            className="z-50 absolute -bottom-140 left-1/2 -translate-x-1/2 text-sm text-center flex flex-col gap-2 bg-[#2b2b2a]"
+      <div className=" w-full items-center">
+        <div className="font-medium text-[15px]  inline flex items-center gap-1">
+          <FaPlaneDeparture color="#C5C1C1" />
+          {booking?.transfer_details?.source?.name}{" "}
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 12 12"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            <div className="relative">
-              <span className="absolute -top-5 left-1/2 -translate-x-1/2 w-0 h-0 border-[10px] border-solid border-transparent border-b-red"></span>
-              <span className="absolute -top-[21px] left-1/2 -translate-x-1/2 w-0 h-0 border-[10px] border-solid border-transparent border-b-[#2b2b2a]"></span>
-
-              <div className="text-nowrap font-normal text-white text-sm">
-                Change
-              </div>
-            </div>
-          </div>
-        </div> */}
+            <path
+              d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
+              fill="#1F1F1F"
+            />
+          </svg>{" "}
+          {booking?.transfer_details?.destination?.name}
+        </div>
+        <div className="text-[10px] ml-[20px]">
+          Duration: {booking?.duration}
+        </div>
       </div>
       <div
         id={booking?.id}
         className={`mb-2 mt-2  w-full lg:block ${"mb-2 mt-2 lg:block flex flex-col p-3 "} cursor-pointer relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA] lg:p-5 `}
       >
         <div
-          className={` w-full ${
-            window.innerWidth >= 1000 && "flex justify-between items-center "
-          }`}
+          className={` w-full 
+
+          `}
         >
-          <FlightLogoContainer data={booking?.transfer_details?.items?.[0]} />
+          <div className="flex justify-between">
+            <FlightLogoContainer data={booking?.transfer_details?.items?.[0]} />
+            {window.innerWidth >= 1000 && (
+              <div className="w-[131.95px]">
+                <button
+                  onClick={() => {
+                    setShowDetails(true);
+                  }}
+                  className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[0.6rem] sm:px-1 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000] "
+                >
+                  View Details
+                </button>
+              </div>
+            )}
+          </div>
           <div className="flex-grow">
             <FlightDetails
               data={booking?.transfer_details?.items?.[0]}
@@ -1085,19 +1107,6 @@ const FlightBooking = ({
               type={type}
             />
           </div>
-          {window.innerWidth >= 1000 && (
-            <div className="w-[131.95px]">
-              <button
-                onClick={() => {
-                  setShowDetails(true);
-                }}
-                className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[0.6rem] sm:px-1 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000] ml-3"
-              >
-                {/* Add Taxi */}
-                View Detail
-              </button>
-            </div>
-          )}
         </div>
         <div
           className={`flex ${
@@ -1105,14 +1114,14 @@ const FlightBooking = ({
           } items-center`}
         >
           {window.innerWidth < 1000 && (
-            <div className="w-[131.95px]">
+            <div className="w-full mt-4">
               <button
                 onClick={() => {
                   setShowDetails(true);
                 }}
-                className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[0.6rem] sm:px-1 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
+                className="w-full text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[0.6rem] sm:px-1 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
               >
-                View Detail
+                View Details
               </button>
             </div>
           )}

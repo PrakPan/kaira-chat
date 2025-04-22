@@ -35,6 +35,7 @@ import {
 } from "react-icons/im";
 import ComboFlight from "../../modals/flights/ComboFlight";
 import ComboTaxi from "../../modals/taxis/ComboTaxi";
+import { MdDirectionsTransit, MdLocalTaxi } from "react-icons/md";
 import { PulseLoader } from "react-spinners";
 import dayjs from "dayjs";
 import { updateSingleTransferBooking } from "../../../store/actions/transferBookingsStore";
@@ -670,12 +671,51 @@ const TransferEditDrawer = (props) => {
                       );
                     return (
                       <NewMultiModeContainer
-                        key={index}
-                        transferIndex={index}
-                        transfer={transfer}
-                        handleSelect={handleSelect}
-                        token={props?.token}
-                      />
+                            key={index}
+                            transferIndex={index}
+                            transfer={transfer}
+                            handleSelect={handleSelect}
+                            selectedResult={selectedResult}
+                            setCurrentStep={setCurrentStep}
+                            currentStep={currentStep}
+                            handleFlightSelect={handleSelectResult}
+                            showComboFlightModal={showComboFlightModal}
+                            setShowComboFlightModal={setShowComboFlightModal}
+                            setHideFlightModal={() =>
+                              setShowComboFlightModal(false)
+                            }
+                            setHideBookingModal={() =>
+                              setShowComboFlightModal(false)
+                            }
+                            showTaxiModal={showComboTaxiModal}
+                            setShowComboTaxiModal={setShowComboTaxiModal}
+                            // setHideBookingModal={() => setShowTaxiModal(false)}
+                            setHideTaxiModal={() => setShowComboTaxiModal(false)}
+                            getPaymentHandler={props.getPaymentHandler}
+                            _updatePaymentHandler={props._updatePaymentHandler}
+                            _updateFlightBookingHandler={
+                              props._updateFlightBookingHandler
+                            }
+                            _updateBookingHandler={props._updateBookingHandler}
+                            alternates={selectedBooking?.id}
+                            tailored_id={selectedBooking?.tailored_itinerary}
+                            // _updateFlightHandler={props._updateFlightHandler}
+                            selectedBooking={selectedBooking}
+                            itinerary_id={ItineraryId}
+                            selectedTransferHeading={selectedTransferHeading}
+                            fetchData={fetchData}
+                            setShowLoginModal={setShowLoginModal}
+                            check_in={check_in}
+                            _GetInTouch={props._GetInTouch}
+                            daySlabIndex={day_slab_index}
+                            elementIndex={element_index}
+                            routeId={routeId}
+                            mercuryTransfer={selectedMercuryTransfer}
+                            individual={props?.individual}
+                            originCityId={props?.originCityId}
+                            destinationCityId={props?.destinationCityId}
+                            token={props?.token}
+                          />
                       // <MobileRouteContainer
                       //   key={index}
                       //   transferIndex={index}
@@ -960,6 +1000,19 @@ const MultiRoute = (props) => {
   );
 };
 
+export const getModeIcon = (mode,size=20) => {
+  switch (mode.toLowerCase()) {
+    case "train":
+      return <BiTrain size={size} />;
+    case "taxi":
+      return <MdLocalTaxi size={size} />;
+    case "flight":
+      return <FaPlaneDeparture size={size} />;
+    default:
+      return <MdDirectionsTransit size={size} />;
+  }
+};
+
 const NewMultiModeContainer = ({
   transferIndex,
   transfer,
@@ -1059,18 +1112,7 @@ const NewMultiModeContainer = ({
     return selectedModeIds[currentStep - 1] !== undefined;
   };
 
-  const getModeIcon = (mode) => {
-    switch (mode.toLowerCase()) {
-      case "train":
-        return <BiTrain size={20} />;
-      case "taxi":
-        return <PiTaxi size={20} />;
-      case "flight":
-        return <FaPlaneDeparture size={20} />;
-      default:
-        return <MdDirectionsTransit size={20} />;
-    }
-  };
+ 
 
   const totalSteps = transfer.length;
 
@@ -1366,6 +1408,7 @@ const NewMultiModeContainer = ({
         </div>
       </div>
 
+     {console.log("current step is:",currentStep)}
       {currentStep === 0 && (
         <div
           className="flex justify-between items-center p-3 md:p-4 border border-b cursor-pointer shadow-md"
@@ -1373,7 +1416,7 @@ const NewMultiModeContainer = ({
         >
           <div className="font-bold text-sm md:text-base">
             {sequencedModes.join(", ")} |
-            <span className="font-normal">
+            <span className="font-norOne -mal">
               {Math.ceil(
                 transfer.reduce((sum, t) => sum + (t.duration || 0), 0) / 60
               )}{" "}

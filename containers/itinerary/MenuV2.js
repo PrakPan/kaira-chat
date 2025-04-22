@@ -47,6 +47,7 @@ import StaysContainer from "./Stays/StaysContainer.jsx";
 import TransferBookings from "./TransfersContainer/TransferBookings.jsx";
 import NewSummaryContainers from "./NewSummaryContainers.js";
 import { setTransfersBookings } from "../../store/actions/transferBookingsStore.js";
+import { TopicSharp } from "@mui/icons-material";
 const useStyles = {
   root: `
     flex-grow-1
@@ -60,8 +61,6 @@ const GetInTouchContainer = styled.div`
 `;
 
 const SimpleTabsV2 = (props) => {
-  const dispatch = useDispatch();
-  // dispatch(setTransfersBookings(props.transferBookings))
   let isPageWide = media("(min-width: 768px)");
   const [isGroup, setIsGroup] = useState(false);
   const router = useRouter();
@@ -75,20 +74,19 @@ const SimpleTabsV2 = (props) => {
   const [share, setShare] = useState(false);
   const [shareMobile, setShareMobile] = useState(false);
   const isDesktop = useMediaQuery("(min-width:1148px)");
-  // const transferBooking = useSelector((sta
+
   const transferBooking = useSelector(
     (state) => state.TransferBookings
   )?.transferBookings;
   const { pricing_status } = useSelector((state) => state.ItineraryStatus);
-
   const stays = useSelector((state) => state.Stays);
-  console.log("brief",props?.breif);
 
   useEffect(() => {
-    if (router.query.payment_status) {
-      if (isPageWide) window.scrollTo(0, window.innerHeight);
-      else window.scrollTo(0, window.innerHeight / 2);
-    }
+    const timeout = setTimeout(() => {
+      scrollToElement("Itenary");
+    }, 300);
+
+    return () => clearTimeout(timeout);
   }, []);
 
   const scrollToElement = (elementId) => {
@@ -536,7 +534,7 @@ const SimpleTabsV2 = (props) => {
       )}
 
       <div id={"Brief"}>
-        { props?.mercuryItinerary && citydatadone ? (
+        {props?.mercuryItinerary && citydatadone ? (
           <Breif
             mercuryItinerary={props?.mercuryItinerary}
             loadbookings={props?.loadbookings}
@@ -561,27 +559,29 @@ const SimpleTabsV2 = (props) => {
             editRoute={props.editRoute}
             setEditRoute={props.setEditRoute}
           ></Breif>
-        ) : citydatadone && (
-          <OldBreif
-            plan={props.plan}
-            routesData={RoutesData}
-            transfersData={TransfersData}
-            routes={props.routes}
-            payment={props.payment}
-            traveleritinerary={props.traveleritinerary}
-            CityData={CityData}
-            itinerary={props.itinerary}
-            breif={props.breif}
-            fetchData={props.fetchData}
-            getPaymentHandler={props.getPaymentHandler}
-            setShowLoginModal={setShowLoginModal}
-            _GetInTouch={_GetInTouch}
-            group_type={props.group_type}
-            duration_time={props.duration_time}
-            travellerType={props.travellerType}
-            editRoute={props.editRoute}
-            setEditRoute={props.setEditRoute}
-          ></OldBreif>
+        ) : (
+          citydatadone && (
+            <OldBreif
+              plan={props.plan}
+              routesData={RoutesData}
+              transfersData={TransfersData}
+              routes={props.routes}
+              payment={props.payment}
+              traveleritinerary={props.traveleritinerary}
+              CityData={CityData}
+              itinerary={props.itinerary}
+              breif={props.breif}
+              fetchData={props.fetchData}
+              getPaymentHandler={props.getPaymentHandler}
+              setShowLoginModal={setShowLoginModal}
+              _GetInTouch={_GetInTouch}
+              group_type={props.group_type}
+              duration_time={props.duration_time}
+              travellerType={props.travellerType}
+              editRoute={props.editRoute}
+              setEditRoute={props.setEditRoute}
+            ></OldBreif>
+          )
         )}
       </div>
 
@@ -637,22 +637,22 @@ const SimpleTabsV2 = (props) => {
           <div id={"Stays"}>
             {props.mercuryItinerary ? (
               <StaysContainer
-              payment={props.payment}
-              _updateBookingHandler={props._updateBookingHandler}
-              _updateStayBookingHandler={props._updateStayBookingHandler}
-              _updatePaymentHandler={props._updatePaymentHandler}
-              getPaymentHandler={props.getPaymentHandler}
-              setShowBookingModal={(value) =>
-                props.setShowBookingModal(value)
-              }
-              showBookingModal={props.showBookingModal}
-              setHideBookingModal={props.setHideBookingModal}
-              setShowLoginModal={setShowLoginModal}
-              _GetInTouch={_GetInTouch}
-              stayBookings={stays}
-              setStayBookings={props.setStayBookings}
-              CityData={CityData}
-              cities={props?.cities}
+                payment={props.payment}
+                _updateBookingHandler={props._updateBookingHandler}
+                _updateStayBookingHandler={props._updateStayBookingHandler}
+                _updatePaymentHandler={props._updatePaymentHandler}
+                getPaymentHandler={props.getPaymentHandler}
+                setShowBookingModal={(value) =>
+                  props.setShowBookingModal(value)
+                }
+                showBookingModal={props.showBookingModal}
+                setHideBookingModal={props.setHideBookingModal}
+                setShowLoginModal={setShowLoginModal}
+                _GetInTouch={_GetInTouch}
+                stayBookings={stays}
+                setStayBookings={props.setStayBookings}
+                CityData={CityData}
+                cities={props?.cities}
               />
             ) : (
               <HotelsBooking
@@ -681,7 +681,7 @@ const SimpleTabsV2 = (props) => {
             )}
           </div>
 
-          {props?.transferBookings && !props?.mercuryItinerary ? (
+          {(props?.transferBookings && !props?.mercuryItinerary) ? (
             <div id={"Transfers"}>
               <TransfersContainer
                 setShowLoginModal={setShowLoginModal}
@@ -735,7 +735,7 @@ const SimpleTabsV2 = (props) => {
                   _GetInTouch={_GetInTouch}
                 />
               )}
-              {props.transferBookings && (
+              {/* {props.transferBookings && (
                 <TransferBookings
                   mercuryItinerary={props?.mercuryItinerary}
                   setShowLoginModal={setShowLoginModal}
@@ -757,7 +757,7 @@ const SimpleTabsV2 = (props) => {
                   fetchData={props.fetchData}
                   _GetInTouch={_GetInTouch}
                 />
-              )}
+              )} */}
             </>
           )}
 
@@ -899,7 +899,7 @@ const SimpleTabsV2 = (props) => {
               {props.mercuryItinerary
                 ? props?.itineraryDaybyDay && (
                     <DaybyDay
-                    mercuryItinerary={props?.mercuryItinerary}
+                      mercuryItinerary={props?.mercuryItinerary}
                       activityBookings={props?.activityBookings}
                       setActivityBookings={props?.setActivityBookings}
                       transferBookings={props?.transferBookings}
@@ -1061,10 +1061,10 @@ const SimpleTabsV2 = (props) => {
               )}
             </div>
 
-            {props.activityBookings && props?.mercuryItinerary ?  (
+            {props.activityBookings && props?.mercuryItinerary ? (
               <div id={"Activities"}>
                 <ActivityBookings
-                 mercuryItinerary={props?.mercuryItinerary}
+                  mercuryItinerary={props?.mercuryItinerary}
                   plan={props.plan}
                   hasUserPaid={
                     props.payment
@@ -1088,34 +1088,34 @@ const SimpleTabsV2 = (props) => {
                   booking={props.booking}
                 />
               </div>
-            ) : 
-            
-            props.activityBookings && (
-              <div id={"Activities"}>
-                <OldActivityBookings
-                  plan={props.plan}
-                  hasUserPaid={
-                    props.payment
-                      ? props.payment.paid_user
-                        ? true
+            ) : (
+              props.activityBookings && (
+                <div id={"Activities"}>
+                  <OldActivityBookings
+                    plan={props.plan}
+                    hasUserPaid={
+                      props.payment
+                        ? props.payment.paid_user
+                          ? true
+                          : false
                         : false
-                      : false
-                  }
-                  budget={props.budget}
-                  stayBookings={props.stayBookings}
-                  _updateBookingHandler={props._updateBookingHandler}
-                  _updateStayBookingHandler={props._updateStayBookingHandler}
-                  _updatePaymentHandler={props._updatePaymentHandler}
-                  flightBookings={props.flightBookings}
-                  getPaymentHandler={props.getPaymentHandler}
-                  setShowBookingModal={() => props.setShowBookingModal(true)}
-                  showBookingModal={props.showBookingModal}
-                  setHideBookingModal={props.setHideBookingModal}
-                  activityBookings={props.activityBookings}
-                  payment={props.payment}
-                  booking={props.booking}
-                />
-              </div>
+                    }
+                    budget={props.budget}
+                    stayBookings={props.stayBookings}
+                    _updateBookingHandler={props._updateBookingHandler}
+                    _updateStayBookingHandler={props._updateStayBookingHandler}
+                    _updatePaymentHandler={props._updatePaymentHandler}
+                    flightBookings={props.flightBookings}
+                    getPaymentHandler={props.getPaymentHandler}
+                    setShowBookingModal={() => props.setShowBookingModal(true)}
+                    showBookingModal={props.showBookingModal}
+                    setHideBookingModal={props.setHideBookingModal}
+                    activityBookings={props.activityBookings}
+                    payment={props.payment}
+                    booking={props.booking}
+                  />
+                </div>
+              )
             )}
           </div>
           {!props?.mercuryItinerary ? (
@@ -1520,8 +1520,6 @@ function newFunction(
     }
   }
 
-  
-
   function replaceLatLong1(source, destination) {
     return {
       ...source,
@@ -1539,13 +1537,11 @@ function newFunction(
     }
   }
 
-  
-
   async function processRoutes2(props) {
     if (props?.breif && !props.mercuryItinerary) {
       console.log("Inside pr2");
-     // CityDataTemp.push(props?.itinerary?.start_city);
-    //  RoutesData.push(props?.itinerary?.start_city);
+      // CityDataTemp.push(props?.itinerary?.start_city);
+      //  RoutesData.push(props?.itinerary?.start_city);
       for (var i = 0; i < props.breif.city_slabs.length; i++) {
         if (props.breif.city_slabs[i].long) {
           CityDataTemp.push(props.breif.city_slabs[i]);
@@ -1574,39 +1570,39 @@ function newFunction(
     }
     setcitydatadone(true);
     setCityData(CityDataTemp);
-    console.log("routes data",RoutesData);
   }
   // processRoutes2(props);
 
   async function processRoutes3(props) {
-    if(props?.mercuryItinerary){
-    CityDataTemp.push(props?.itinerary?.start_city);
-    RoutesData.push(props?.itinerary?.start_city);
-    for (var i = 0; i < props.cities.length; i++) {
-      if (props.cities[i]?.city.longitude) {
-        CityDataTemp.push(props.cities[i]);
-        RoutesData.push(props.cities[i].city);
-      } else {
-        if (props.cities[i].city?.id && props.cities[i].city?.duration > "0") {
-          try {
-            const data = await getCityDetails(props.cities[i].city?.id);
-            const updatedRoutes = replaceLatLong1(props.cities[i].city, data);
-            RoutesData.push(updatedRoutes);
-            CityDataTemp.push(updatedRoutes);
-          } catch (error) {
-            console.error(error);
+    if (props?.mercuryItinerary) {
+      CityDataTemp.push(props?.itinerary?.start_city);
+      RoutesData.push(props?.itinerary?.start_city);
+      for (var i = 0; i < props.cities.length; i++) {
+        if (props.cities[i]?.city.longitude) {
+          CityDataTemp.push(props.cities[i]);
+          RoutesData.push(props.cities[i].city);
+        } else {
+          if (
+            props.cities[i].city?.id &&
+            props.cities[i].city?.duration > "0"
+          ) {
+            try {
+              const data = await getCityDetails(props.cities[i].city?.id);
+              const updatedRoutes = replaceLatLong1(props.cities[i].city, data);
+              RoutesData.push(updatedRoutes);
+              CityDataTemp.push(updatedRoutes);
+            } catch (error) {
+              console.error(error);
+            }
           }
         }
       }
-    }
-    
 
-    CityDataTemp.push(props?.itinerary?.end_city);
-    RoutesData.push(props?.itinerary?.end_city);
-    setcitydatadone(true);
-    setCityData(CityDataTemp);
-    console.log("routes dataaa",RoutesData);
-  }
+      CityDataTemp.push(props?.itinerary?.end_city);
+      RoutesData.push(props?.itinerary?.end_city);
+      setcitydatadone(true);
+      setCityData(CityDataTemp);
+    }
   }
   processRoutes3(props);
 

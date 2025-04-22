@@ -222,13 +222,13 @@ export default function NewActivityBooking(props) {
                 setImageLoaded(true);
               }}
             ></ImageLoader>
-            {props.data?.is_very_popular && (
+            {/* {props.data?.is_very_popular && (
               <div className="absolute top-4 left-0 z-[1090]">
                 <ClippathComp className="text-[12px] font-medium bg-red-400 text-white  px-[16px] py-[8px] -mr-2 md:-mr-3 z-[1090]">
                   Recommended
                 </ClippathComp>
               </div>
-            )}
+            )} */}
           </div>
           <div
             style={{

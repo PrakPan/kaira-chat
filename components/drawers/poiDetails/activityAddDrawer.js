@@ -16,7 +16,7 @@ import ImageLoader from "../../../components/ImageLoader";
 import { logEvent } from "../../../services/ga/Index";
 import NewActivityBooking from "../../../containers/newitinerary/itineraryelements/NewActivityBooking";
 import { FaFilter } from "react-icons/fa";
-import { Pax } from "../activityDetails/Pax";
+import { Pax } from "./Pax";
 import { getHumanDate } from "../../../services/getHumanDate";
 import DyamicFilters from "./filters/DynamicFilters";
 import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";
