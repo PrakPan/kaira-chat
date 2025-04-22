@@ -5,7 +5,11 @@ import ViewHotelDetails from "../../ViewHotelDetails/viewHotelDetails";
 
 const Accommodation = (props) => {
   const [showDetails, setShowDetails] = useState(false);
-  console.log("props are1:", props.source);
+  const num_adults=props.occupancies?.reduce(
+    (sum, room) => sum + (room.adults || 0),
+    0
+  )
+  // console.log("num_adults:", num_adults);
   return (
     <div>
       <NewHotelBooking
@@ -17,7 +21,7 @@ const Accommodation = (props) => {
         booking={props.accommodation}
         alternates={props.alternates}
         selectedBooking={props.selectedBooking}
-        num_adults={props.num_adults}
+        num_adults={num_adults}
         openDetails={() => setShowDetails(true)}
         banner_imcurage={props.banner_image}
         handleClick={props?.handleClick}

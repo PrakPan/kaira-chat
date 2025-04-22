@@ -46,7 +46,6 @@ import DaybyDay from "./DaybyDay.jsx";
 import StaysContainer from "./Stays/StaysContainer.jsx";
 import TransferBookings from "./TransfersContainer/TransferBookings.jsx";
 import NewSummaryContainers from "./NewSummaryContainers.js";
-import { setTransfersBookings } from "../../store/actions/transferBookingsStore.js";
 const useStyles = {
   root: `
     flex-grow-1
@@ -60,8 +59,6 @@ const GetInTouchContainer = styled.div`
 `;
 
 const SimpleTabsV2 = (props) => {
-  const dispatch = useDispatch();
-  // dispatch(setTransfersBookings(props.transferBookings))
   let isPageWide = media("(min-width: 768px)");
   const [isGroup, setIsGroup] = useState(false);
   const router = useRouter();
@@ -75,14 +72,13 @@ const SimpleTabsV2 = (props) => {
   const [share, setShare] = useState(false);
   const [shareMobile, setShareMobile] = useState(false);
   const isDesktop = useMediaQuery("(min-width:1148px)");
-  // const transferBooking = useSelector((sta
+
   const transferBooking = useSelector(
     (state) => state.TransferBookings
   )?.transferBookings;
   const { pricing_status } = useSelector((state) => state.ItineraryStatus);
 
   const stays = useSelector((state) => state.Stays);
-  console.log("brief",props?.breif);
 
   useEffect(() => {
     if (router.query.payment_status) {
@@ -681,7 +677,7 @@ const SimpleTabsV2 = (props) => {
             )}
           </div>
 
-          {props?.transferBookings && !props?.mercuryItinerary ? (
+          {(props?.transferBookings && !props?.mercuryItinerary) ? (
             <div id={"Transfers"}>
               <TransfersContainer
                 setShowLoginModal={setShowLoginModal}
@@ -735,7 +731,7 @@ const SimpleTabsV2 = (props) => {
                   _GetInTouch={_GetInTouch}
                 />
               )}
-              {props.transferBookings && (
+              {/* {props.transferBookings && (
                 <TransferBookings
                   mercuryItinerary={props?.mercuryItinerary}
                   setShowLoginModal={setShowLoginModal}
@@ -757,7 +753,7 @@ const SimpleTabsV2 = (props) => {
                   fetchData={props.fetchData}
                   _GetInTouch={_GetInTouch}
                 />
-              )}
+              )} */}
             </>
           )}
 
