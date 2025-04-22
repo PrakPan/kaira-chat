@@ -22,6 +22,7 @@ import { dateFormat } from "../../../../helper/DateUtils";
 import { useSelector } from "react-redux";
 import SetCallPaymentInfo from "../../../../store/actions/callPaymentInfo";
 import { openNotification } from "../../../../store/actions/notification";
+import { getStars } from "../../../itinerary/itineraryCity/SlabElement";
 const starRating = (rating) => {
   var stars = [];
   for (let i = 0; i < Math.floor(rating); i++) {
@@ -1065,19 +1066,28 @@ const HotelBookingDetails = (props) => {
 
       {props?.data?.hotel_details?.category_ratings && (
         <div>
-          <Heading>Ratings</Heading>
+          <Heading >Ratings</Heading>
+          <table>
+              <tbody>
           {props?.data?.hotel_details?.category_ratings.map((item, index) => (
-            <>
-              {item?.category != "recommendation_percent" && (
-                <div key={index} className="flex justify-between items-center ">
-                  <div className="font-medium">{item?.category}</div>
-                  <div className="flex justify-end text-[#FFD201]">
-                    {starRating(item?.rating)}
-                  </div>
-                </div>
-              )}
-            </>
+                            <tr>
+
+            {item?.category != "recommendation_percent" && (
+              <>
+                <td className="">{item?.category?.slice(0,1).toUpperCase()+item?.category?.slice(1,item?.category?.length)}</td>
+                <td className="flex items-center gap-1">
+                    <div className="flex text-[#FFD201]">
+                      {getStars(item?.rating)}
+                    </div>
+                    {item?.rating}
+                  </td>
+                  </>
+            )}
+            </tr>
           ))}
+
+          </tbody>
+          </table>
         </div>
       )}
 

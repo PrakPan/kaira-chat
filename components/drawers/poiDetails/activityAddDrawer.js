@@ -342,7 +342,7 @@ const ActivityAddDrawer = (props) => {
       setLoadingPoi(true);
       try {
         const res = await axios.get(
-          `${MERCURY_HOST}/api/v1/geos/poi/?fields=id,name,city,image,rating,experience_filters,short_description,tags,is_very_popular,tips_tricks,is_hidden_gem,gmaps_place_id,user_ratings_total&city_id=${props?.cityID}`
+          `${MERCURY_HOST}/api/v1/geos/poi/?fields=id,name,city,image,rating,experience_filters,short_description,tags,is_very_popular,tips_tricks,is_hidden_gem,gmaps_place_id,user_ratings_total&city_id=${props?.cityID}&name=${debouncedSearch}`
         );
         setTotalResults(res.data.results);
         const result = [];
@@ -502,12 +502,12 @@ const ActivityAddDrawer = (props) => {
               Add {elementType == "POI" ? "Places to visit" : elementType} in{" "}
               {props.cityName}
             </div>
-            <Pax
+            {elementType=="Activity"&&<Pax
               setShowPax={setShowPax}
               pax={pax}
               setPax={setPax}
               showPax={showPax}
-            />
+            />}
           </div>
           <div className="grid w-full gap-2 min-[583px]:grid-cols-[3fr_2fr_1fr]">
             <div className=" flex flex-row items-center relative h-[44px]">
@@ -591,6 +591,7 @@ const ActivityAddDrawer = (props) => {
                     setFilterState={setFilterState}
                     FILTERS={filtersObj}
                     setChanged={setChanged}
+                    elementType={elementType}
                   />
                 </div>
               )}

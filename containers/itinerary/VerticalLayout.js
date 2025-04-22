@@ -109,7 +109,6 @@ const CityItem = ({
   const dispatch = useDispatch();
   let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
 
-  //console.log("isPageWide",isPageWide);
   const handleEdit = async () => {
     const res = await axios.get(
       `${MERCURY_HOST}/api/v1/itinerary/${
@@ -152,38 +151,6 @@ const CityItem = ({
         openNotification({
           type: "error",
           text: `${error.response?.data?.errors[0]?.message[0]}`,
-          heading: "Error!",
-        })
-      );
-      setLoading(false);
-    }
-    try {
-      setLoading(true);
-      const response = await axiosDeleteBooking.delete(
-        `${dataPassed?.itinerary_id}/bookings/${dataPassed?.booking_type?.toLowerCase()}/${
-          dataPassed?.id
-        }/`
-      );
-
-      if (response.status === 204) {
-        dispatch(updateTransferBookings(bookingIdToDelete));
-        setLoading(false);
-        dispatch(
-          openNotification({
-            type: "success",
-            text: "Booking deleted successfuly",
-            heading: "Success!",
-          })
-        );
-        setVisible(true);
-        setHandleShow(false);
-        console.log("Deleted Booking");
-      }
-    } catch (err) {
-      dispatch(
-        openNotification({
-          type: "error",
-          text: `${err.message}`,
           heading: "Error!",
         })
       );
