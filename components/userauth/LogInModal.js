@@ -198,7 +198,7 @@ const LogIn = React.memo((props) => {
           userDetails.email,
           whatsapp,
           props.CountryCodes[extension].value,
-          props.itinary_id
+          props.onSuccess
         );
     } else if (props.otpSent && !props.name) {
       props.onAuth(
@@ -207,7 +207,8 @@ const LogIn = React.memo((props) => {
         userDetails.userName,
         null,
         whatsapp,
-        props.itinary_id
+        null,
+        props.onSuccess
       );
     } else if (props.otpSent && !props.name && !props.email) {
       props.onAuth(
@@ -216,7 +217,8 @@ const LogIn = React.memo((props) => {
         userDetails.userName,
         userDetails.email,
         whatsapp,
-        props.itinary_id
+        null,
+        props.onSuccess
       );
     } else if (props.otpSent && !props.email) {
       props.onAuth(
@@ -225,10 +227,11 @@ const LogIn = React.memo((props) => {
         null,
         userDetails.email,
         whatsapp,
-        props.itinary_id
+        null,
+        props.onSuccess
       );
     } else {
-      props.onAuth(phone, otp, null, null, whatsapp, props.itinary_id);
+      props.onAuth(phone, otp, null, null, whatsapp, null, props.onSuccess);
     }
   };
 
@@ -728,7 +731,7 @@ const mapStateToPros = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onAuth: (mobile, password, name, email, whatsapp, country, itinary_id) =>
+    onAuth: (mobile, password, name, email, whatsapp, country, onSuccess) =>
       dispatch(
         authaction.auth(
           mobile,
@@ -737,7 +740,7 @@ const mapDispatchToProps = (dispatch) => {
           email,
           whatsapp,
           country,
-          itinary_id
+          onSuccess
         )
       ),
     onOtp: (mobile, setNewUser) =>

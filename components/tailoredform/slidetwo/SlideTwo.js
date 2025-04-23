@@ -63,11 +63,19 @@ const SlideTwo = (props) => {
               setRoomConfiguration={props.setRoomConfiguration}
             ></Pax>
 
-            <BudgetSlider
-              setShowPax={setShowPax}
-              setBudget={props.setBudget}
-              setPriceRange={props.setPriceRange}
-            ></BudgetSlider>
+            <div className="space-y-1">
+              <div className="text-xs font-medium">
+                Hotel Prices in {props.destination} range from ₹
+                {props.defaultPriceRange.min_price} to ₹{props.defaultPriceRange.max_price}
+              </div>
+
+              <BudgetSlider
+                defaultValue={props.defaultPriceRange}
+                setShowPax={setShowPax}
+                setBudget={props.setBudget}
+                setPriceRange={props.setPriceRange}
+              ></BudgetSlider>
+            </div>
           </div>
         ) : null}
       </Section>

@@ -47,7 +47,7 @@ const FlickityComp = (props) => {
         </Card>
       ) : null}
 
-      {props.slideIndex === 1 ? (
+      {props.slideIndex === 1 && (props.token || props.phone !== "null") ? (
         <Card>
           <SlideTwo
             numberOfAdults={props.numberOfAdults}
@@ -64,17 +64,30 @@ const FlickityComp = (props) => {
             setSelectedPreferences={props.setSelectedPreferences}
             setSubmitSecondSlide={props.setSubmitSecondSlide}
             setRoomConfiguration={props.setRoomConfiguration}
+            priceRange={props.priceRange}
             setPriceRange={props.setPriceRange}
             addHotels={props.addHotels}
             setAddHotels={props.setAddHotels}
             addTransfers={props.addTransfers}
             setAddTransfers={props.setAddTransfers}
+            destination={props.destination}
+            defaultPriceRange={props.defaultPriceRange}
           ></SlideTwo>
         </Card>
       ) : null}
 
       {props.slideIndex === 2 && (!props.token || props.phone === "null") ? (
-        <Login nospacing noheading noicons hideloginclose noclose></Login>
+        <Login
+          nospacing
+          noheading
+          noicons
+          hideloginclose
+          noclose
+          onSuccess={() => {
+            props.setSlideIndex((prev) => prev - 1);
+            props.setLoginComplete(true);
+          }}
+        ></Login>
       ) : null}
     </div>
   );

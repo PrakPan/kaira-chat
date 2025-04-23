@@ -137,6 +137,11 @@ const Enquiry = (props) => {
   const [error, setError] = useState(null);
   const [addHotels, setAddHotels] = useState(false);
   const [addTransfers, setAddTransfers] = useState(false);
+  const [loginComplete, setLoginComplete] = useState(false);
+  const [defaultPriceRange, setDefaultPriceRange] = useState({
+    min_price: 0,
+    max_price: 3000,
+  });
   let isPageWide = media("(min-width: 768px)");
 
   useEffect(() => {
@@ -152,7 +157,7 @@ const Enquiry = (props) => {
   }, [groupType]);
 
   useEffect(() => {
-    if (slideIndex === 2 && props.token && props.phone !== "null") {
+    if (loginComplete && props.token && props.phone !== "null") {
       _submitDataHandler();
     }
     setShowPopup(popupObj);
@@ -474,10 +479,18 @@ const Enquiry = (props) => {
     itineraryInitiate
       .post("", data)
       .then((res) => {
+        const data = res.data;
         setError(null);
-        setItineraryId(res.data.itinerary_id);
+        setItineraryId(data.itinerary_id);
         setIsLoading(false);
         setSlideIndex(slideIndex + 1);
+
+        const hotelsBudget = data?.hotels_budget;
+        if (hotelsBudget) {
+          const minPrice = 0.5 * hotelsBudget;
+          const maxPrice = 1.5 * hotelsBudget;
+          setDefaultPriceRange({ min_price: minPrice, max_price: maxPrice });
+        }
       })
       .catch((err) => {
         console.log("ERROR: ", err.message);
@@ -734,11 +747,15 @@ const Enquiry = (props) => {
             setSubmitSecondSlide={setSubmitSecondSlide}
             eventDates={props.eventDates}
             setRoomConfiguration={setRoomConfiguration}
+            priceRange={priceRange}
             setPriceRange={setPriceRange}
             addHotels={addHotels}
             setAddHotels={setAddHotels}
             addTransfers={addTransfers}
             setAddTransfers={setAddTransfers}
+            setSlideIndex={setSlideIndex}
+            setLoginComplete={setLoginComplete}
+            defaultPriceRange={defaultPriceRange}
           ></Flickity>
 
           {error ? <p className="text-sm text-red-600">{error}</p> : null}
