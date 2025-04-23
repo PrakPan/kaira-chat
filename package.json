@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=\"--max_old_space_size=8192\" next dev",
     "prebuild": "cross-env BUILD_NUMBER=\"150220252235\" node scripts/sitemap.xml.js",
-    "build": "next build",
+    "build": "NODE_OPTIONS=\"--max_old_space_size=8192\" next build",
     "start": "next start -p 3002",
     "lint": "next lint"
   },

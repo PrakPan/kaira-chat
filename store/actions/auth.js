@@ -237,7 +237,15 @@ export const setAuthRedirect = (path) => {
   };
 };
 
-export const auth = (mobile, password, name, email, whatsapp, country) => {
+export const auth = (
+  mobile,
+  password,
+  name,
+  email,
+  whatsapp,
+  country,
+  onSuccess = null
+) => {
   //name and email null incase of old user
 
   const authData = {
@@ -313,6 +321,9 @@ export const auth = (mobile, password, name, email, whatsapp, country) => {
           dispatch(setUserDetails(userdata)); //Store user name and email
           dispatch(checkAuthTimeout(responseData.data.user?.oauth?.expires_in)); //Start logout /refresh timer -> logout /refresh  after token expiration time
           dispatch(authCloseLogin()); //close login modal
+          if (onSuccess) {
+            onSuccess();
+          }
           //store token details in local storage
           localStorage.setItem(
             "access_token",
