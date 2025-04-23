@@ -264,7 +264,7 @@ export const SocialShareMobile = ({
   return (
     <div
       onClick={(e) => closeShare(e)}
-      className="z-[2000] fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center px-3"
+      className={`fixed bottom-[160px] right-4 z-[999] w-fit drop-shadow-2xl shadow-2xl border-2 border-black rounded-md transition-all popup ${open && "open-popup"}`}
     >
       <div className="w-full animate-popOut flex flex-col justify-center gap-3 items-center">
         <div

@@ -150,7 +150,7 @@ const CityItem = ({
       dispatch(
         openNotification({
           type: "error",
-          text: `${error.response?.data?.errors[0]?.message[0]}`,
+          text: `${err.response?.data?.errors[0]?.message[0]}`,
           heading: "Error!",
         })
       );

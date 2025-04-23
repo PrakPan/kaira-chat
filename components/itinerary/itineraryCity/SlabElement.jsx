@@ -8,7 +8,6 @@ import POIDetailsDrawer from "../../drawers/poiDetails/POIDetailsDrawer";
 import { logEvent } from "../../../services/ga/Index";
 import Image from "next/image";
 
-
 export const getStars = (rating) => {
   const stars = [];
   for (let i = 0; i < Math.floor(rating); i++) {
@@ -25,9 +24,18 @@ const SlabElement = (props) => {
   return (
     <div className="">
       {props.element.element_type === "activity" ? (
-        <Activity element={props.element} dayIndex={props?.dayIndex} slabIndex={props?.slabIndex} itinerary_city_id={props?.itinerary_city_id} setShowLoginModal={props?.setShowLoginModal}/>
+        <Activity
+          element={props.element}
+          dayIndex={props?.dayIndex}
+          slabIndex={props?.slabIndex}
+          itinerary_city_id={props?.itinerary_city_id}
+          setShowLoginModal={props?.setShowLoginModal}
+        />
       ) : props.element.element_type === "recommendation" ? (
-        <Recommendation element={props.element} setShowLoginModal={props?.setShowLoginModal}/>
+        <Recommendation
+          element={props.element}
+          setShowLoginModal={props?.setShowLoginModal}
+        />
       ) : null}
     </div>
   );
@@ -36,13 +44,14 @@ const SlabElement = (props) => {
 export default SlabElement;
 
 const Activity = (props) => {
+  console.log("element type is:", props);
   let isPageWide = media("(min-width: 768px)");
   const [showDrawer, setShowDrawer] = useState(false);
   const [activityData, setActivityData] = useState({
     id: "",
     type: "",
   });
-  const [showBookingDetail,setShowBookingDetail] = useState(true);
+  const [showBookingDetail, setShowBookingDetail] = useState(true);
 
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
@@ -50,12 +59,16 @@ const Activity = (props) => {
   };
 
   const handleActivity = async (poi, type) => {
-    console.log("poi is:", type,poi);
     setShowDrawer(true);
-    if(poi?.booking?.id)
-      setShowBookingDetail(true);
+    if (poi?.booking?.id) setShowBookingDetail(true);
     setActivityData(() => ({
-      id:poi?.booking?.id ? poi?.booking?.id : poi?.poi ? poi?.poi : poi?.activity ? poi?.activity : null,
+      id: poi?.booking?.id
+        ? poi?.booking?.id
+        : poi?.poi
+        ? poi?.poi
+        : poi?.activity
+        ? poi?.activity
+        : null,
       type: type,
     }));
 
@@ -112,22 +125,54 @@ const Activity = (props) => {
 
             <div className="flex flex-row gap-2 items-center text-sm">
               {props?.element?.poi ? (
-                <div className="flex flex-row items-center bg-[#FAFAFA]  text-[#7A7A7A] opacity-[70%] text-[12px] px-1 rounded-sm">
+                <div className="w-max items-center bg-[#FAFAFA]  text-[#7A7A7A] opacity-[70%] text-[12px] px-1 rounded-sm">
                   Self Exploration
                 </div>
               ) : (
                 <>
-                  <div className="flex flex-row items-center bg-[#F5FFF7]  text-[#10A317] text-[12px] px-1 rounded-sm">
+                  <div className="w-max items-center bg-[#F5FFF7]  text-[#10A317] text-[12px] px-1 rounded-sm">
                     Activity
                   </div>
                 </>
               )}
-              <div className="hidden lg:!flex  items-center">
-                {getStars(props.element?.rating)}
-              </div>
-              <div className="hidden lg:!block text-[#7A7A7A] text-[12px]">
-                {props.element?.rating}
-              </div>
+
+              {props?.element?.activity != null ? (
+                <div className="flex justify-between hidden lg:!flex  items-center">
+                  <div className="flex gap-1">
+                    {props?.element?.booking?.pax && (
+                      <div className="flex text-[12px] font-medium items-center gap-1">
+                        <Image
+                          src="/ticket.svg"
+                          alt="ticket"
+                          width={13.33}
+                          height={10.67}
+                        />
+                        {props?.element?.booking?.pax} tickets
+                      </div>
+                    )}
+                    {props.element?.booking?.duration && props.element?.booking?.duration>0 && (
+                      <div className="flex text-[12px] font-medium items-center gap-1">
+                        <Image
+                          src="/clock.svg"
+                          alt="clock"
+                          width={13.33}
+                          height={10.67}
+                        />
+                        {props.element?.booking?.duration}
+                      </div>
+                    ) }
+                  </div>
+                </div>
+              ): (
+                <div className="flex">
+                  <div className="flex  items-center">
+                    {getStars(props.element?.rating)}
+                  </div>
+                  <div className=" text-[#7A7A7A] text-[12px]">
+                    {props.element?.rating}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -186,28 +231,51 @@ const Activity = (props) => {
 
               <div className="w-fulltext-sm flex flex-col gap-1">
                 {props?.element?.poi ? (
-                  <div className="flex flex-row items-center bg-[#FAFAFA]  text-[#7A7A7A] opacity-[70%] text-[12px] px-1 rounded-sm">
+                  <div className="w-maxitems-center bg-[#FAFAFA]  text-[#7A7A7A] opacity-[70%] text-[12px] px-1 rounded-sm">
                     Self Exploration
                   </div>
                 ) : (
                   <>
-                    <div className="flex flex-row items-center bg-[#F5FFF7]  text-[#10A317] text-[12px] px-1 rounded-sm">
+                    <div className="w-max items-center bg-[#F5FFF7]  text-[#10A317] text-[12px] px-1 rounded-sm">
                       Activity
                     </div>
                   </>
                 )}
-                <div className="flex justify-between lg:hidden">
-                  <div className="flex gap-1">
-                    <div className="flex flex-row items-center">
-                      {getStars(props.element?.rating)}
+                {props?.element?.activity != null ? (
+                  <div className="flex justify-between lg:hidden">
+                    <div className="flex gap-1">
+                      <div className="flex text-[12px] font-medium items-center gap-1">
+                        <Image
+                          src="/ticket.svg"
+                          alt="ticket"
+                          width={13.33}
+                          height={10.67}
+                        />
+                        {props?.element?.booking?.pax} tickets
+                      </div>
+                      {props.element?.booking?.duration && props.element?.booking?.duration>0&&<div className="flex text-[12px] font-medium items-center gap-1">
+                        <Image
+                          src="/clock.svg"
+                          alt="clock"
+                          width={13.33}
+                          height={10.67}
+                        />
+                        {props.element?.booking?.duration}
+                      </div>}
                     </div>
-                    {props?.element?.rating && (
-                      <div className="text-[#7A7A7A] text-[12px]">
+                  </div>
+                ) : (
+                  <div className="flex">
+                    <>
+                      <div className="!flex  items-center">
+                        {getStars(props.element?.rating)}
+                      </div>
+                      <div className=" text-[#7A7A7A] text-[12px]">
                         {props.element?.rating}
                       </div>
-                    )}
+                    </>
                   </div>
-                </div>
+                )}
 
                 <button
                   onClick={() =>
@@ -341,7 +409,6 @@ const Recommendation = (props) => {
               <div className="hidden lg:!block text-[#7A7A7A] text-[12px]">
                 {props.element?.restaurants?.[0]?.rating}
               </div>
-              
             </div>
           </div>
         </div>

@@ -96,7 +96,6 @@ export default function ActivityDetails(props) {
         </div>
         <div className="flex justify-between">
           <div className="text-[24px] font-semibold">Activity Details</div>
-          <Pax pax={props?.filterState} setPax={props?.setFilterState} />
         </div>
         {props.updateAmenities && (
           <div className="fixed top-[65%] left-[50%] -translate-x-[50%] z-50 flex flex-row items-center gap-2">
@@ -167,8 +166,11 @@ export default function ActivityDetails(props) {
           </div>
 
           <div className="flex flex-col gap-3">
+            <div className="flex justify-between">
             <div className="text-[20px] font-[800]">{props.data.name}</div>
+            <Pax pax={props?.filterState} setPax={props?.setFilterState} />
 
+</div>
             {props?.data?.rating && (
               <div className="flex items-center gap-1">
                 {props.data?.rating && (
@@ -417,9 +419,9 @@ export default function ActivityDetails(props) {
       </div>
       <div className="border-t-2 fixed bottom-0 right-0 left-0 flex justify-end gap-1 py-[12px] px-[20px] bg-white shadow-md z-50 flex justify-between items-center">
         <div className="font-bold">
-          <span className="text-[24px]">₹</span>
           <span className="text-[34px]">
-            {getIndianPrice(Math.round(props.data.prices.total_price))}
+          ₹{getIndianPrice(Math.round(props.data.prices.total_price))}
+          <span className="text-[12px] font-normal"> for {props?.filterState.adults+props?.filterState?.children} people </span>
           </span>
           <div className="text-gray-500 font-semiBold text-[#01202B] text-[14px]">
             Total Cost

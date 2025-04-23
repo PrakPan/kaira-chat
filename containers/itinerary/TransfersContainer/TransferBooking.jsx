@@ -256,30 +256,6 @@ const TransferBooking = ({
       },
     });
   }
-
-  const Facilities = [
-    booking?.booking_type == "Taxi" || booking?.booking_type == "Bus"
-      ? booking?.transfer_details?.hasOwnProperty("luggage_bags") &&
-        booking?.transfer_details?.luggage_bags > 0
-        ? `${booking?.transfer_details?.luggage_bags} Luggage bags`
-        : "2 Luggage bags"
-      : null,
-
-    booking?.transfer_details?.taxi_occupancy ||
-    booking?.transfer_details?.no_of_seats
-      ? `${
-          booking?.transfer_details?.taxi_occupancy
-            ? booking?.transfer_details?.taxi_occupancy
-            : booking?.transfer_details?.no_of_seats
-        } Seats`
-      : null,
-    booking?.booking?.transfer_type === "Intercity one-way"
-      ? booking?.transfer_details?.distance?.text
-        ? `${booking?.transfer_details?.distance?.text}`
-        : null
-      : null,
-  ];
-
   function truncateString(str, maxLength) {
     if (str.length > maxLength) {
       return str.slice(0, maxLength - 3) + "...";
@@ -382,7 +358,7 @@ const TransferBooking = ({
         </div>
       ) : booking?.transfer_type !== "combo" ? (
         booking?.id ? (
-          <Container className={`${!isPageWide ? "w-full" : "max-w-[54vw]"}`}>
+          <Container >
             <div className="relative">
               <Line Transfers={Transfer} />
             </div>
@@ -467,27 +443,30 @@ const TransferBooking = ({
                       <div className="flex justify-between items-start w-full">
                         <div className="flex flex-col w-full">
                           <div className="flex justify-between w-full sm:text-sm text-[0.85rem]">
-                            <div className="text-[16px] font-medium">
-                              {booking?.booking_type == "Taxi" ? (
-                                booking?.transfer_details &&
-                                booking?.transfer_details.gozo &&
-                                booking?.transfer_details.gozo.model ? (
-                                  isPageWide ? (
-                                    booking?.transfer_details.gozo.model
-                                  ) : (
-                                    truncateString(
-                                      booking?.transfer_details.gozo.model,
-                                      25
+                            <div className="text-[16px] font-medium w-full">
+                              <div className="w-full">
+                                {booking?.booking_type == "Taxi" ? (
+                                  booking?.transfer_details &&
+                                  booking?.transfer_details.gozo &&
+                                  booking?.transfer_details.gozo.model ? (
+                                    isPageWide ? (
+                                      booking?.transfer_details.gozo.model
+                                    ) : (
+                                      truncateString(
+                                        booking?.transfer_details.gozo.model,
+                                        25
+                                      )
                                     )
+                                  ) : (
+                                    <div className="w-full">{booking.name}</div>
                                   )
                                 ) : (
-                                  "Private transfer "
-                                )
-                              ) : (
-                                <>
-                                  {booking?.booking_type} ({booking?.duration})
-                                </>
-                              )}
+                                  <>
+                                    {booking?.booking_type} ({booking?.duration}
+                                    )
+                                  </>
+                                )}
+                              </div>
                             </div>
 
                             {booking?.transfer_type === "Intercity one-way" &&
@@ -498,31 +477,83 @@ const TransferBooking = ({
                               )}
                           </div>
                           <div className="flex sm:text-sm text-[14px] flex-row text-[#7A7A7A] font-light items-center">
-                            {booking?.type && <div>{booking?.type} car</div>}
+                            {booking?.type && (
+                              <div>
+                                {booking?.type}
+                                {booking?.transfer_details?.quote?.taxi_category
+                                  ?.type &&
+                                  `(${booking.transfer_details.quote.taxi_category.type})`}
+                              </div>
+                            )}
                           </div>
 
                           {booking?.transfer_details && (
-                            <div className="text-[#01202B] font-normal flex flex-row justify-start items-center mt-1 flex-wrap">
+                            <div className="text-[#01202B] font-normal flex  justify-start items-center mt-1 flex-wrap">
                               <span className="pr-1 sm:text-sm text-[0.82rem]">
                                 Facilities:
                               </span>
+                              <span className="flex items-center gap-1">
+                                {(() => {
+                                  const items = [];
 
-                              <GridContainer className="">
-                                {Facilities.filter(Boolean).map(
-                                  (data, index) =>
-                                    data !== null && (
-                                      <div className="gap-1">
-                                        <div className="flex flex-row flex-wrap sm:text-sm text-[0.74rem] font-normal">
-                                          {index !== 0 && data != null ? (
-                                            <span className="px-1">|</span>
-                                          ) : null}
+                                  const seating =
+                                    booking?.transfer_details?.quote
+                                      ?.taxi_category?.seating_capacity ??
+                                    booking?.number_of_adults +
+                                      booking?.number_of_children +
+                                      booking?.number_of_infants;
 
-                                          <div className="">{data}</div>
-                                        </div>
-                                      </div>
-                                    )
-                                )}
-                              </GridContainer>
+                                  if (seating) {
+                                    items.push(
+                                      <span
+                                        key="seating"
+                                        className="sm:text-sm text-[0.74rem] font-normal"
+                                      >
+                                        {seating} Seater
+                                      </span>
+                                    );
+                                  }
+
+                                  const bagCapacity =
+                                    booking?.transfer_details?.quote
+                                      ?.taxi_category?.bag_capacity;
+                                  if (bagCapacity > 0) {
+                                    items.push(
+                                      <span
+                                        key="bags"
+                                        className="sm:text-sm text-[0.74rem] font-normal"
+                                      >
+                                        {bagCapacity} Luggage bags
+                                      </span>
+                                    );
+                                  }
+
+                                  const fuelType =
+                                    booking?.transfer_details?.quote
+                                      ?.taxi_category?.fuel_type;
+                                  if (fuelType) {
+                                    items.push(
+                                      <span
+                                        key="fuel"
+                                        className="sm:text-sm text-[0.74rem] font-normal"
+                                      >
+                                        {fuelType}
+                                      </span>
+                                    );
+                                  }
+
+                                  return items.map((item, index) => (
+                                    <React.Fragment key={index}>
+                                      {item}
+                                      {index !== items.length - 1 && (
+                                        <span className="sm:text-sm text-[0.74rem] font-normal mx-1">
+                                          |
+                                        </span>
+                                      )}
+                                    </React.Fragment>
+                                  ));
+                                })()}
+                              </span>
                             </div>
                           )}
                         </div>
@@ -530,7 +561,7 @@ const TransferBooking = ({
                         {!payment?.paid_user && (
                           <>
                             {booking?.booking_type === "Taxi" ? (
-                              <div className="w-full flex flex-row items-center justify-end cursor-pointer ">
+                              <div className="flex flex-row items-center justify-end cursor-pointer ">
                                 {addbooking ? (
                                   <button
                                     onClick={() => {
@@ -541,13 +572,12 @@ const TransferBooking = ({
                                       );
                                     }}
                                     className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[0.6rem] sm:px-1 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000] "
-                                    >
+                                  >
                                     {isDesktop ? "Change Taxi" : "Change"}
                                   </button>
                                 ) : (
                                   <button
                                     onClick={() => {
-                                      console.log("clicked");
                                       handleViewDetails(
                                         router?.query?.id,
                                         booking?.id,
@@ -555,31 +585,14 @@ const TransferBooking = ({
                                       );
                                       setShowVehicleDrawer(true);
                                     }}
-                                    className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[0.6rem] sm:px-1 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000] "
-                                    >
+                                    className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                                  >
                                     {/* Add Taxi */}
                                     View Details
                                   </button>
                                 )}
                               </div>
                             ) : (
-                              // <div className={`absolute bottom-[1rem] right-6 -m-3`}>
-                              //   <Button
-                              //     padding="0.6rem 2.2rem"
-                              //     borderRadius="8px"
-                              //     hoverColor="white"
-                              //     fontWeight="400"
-                              //     onclick={() =>
-                              //       handleViewDetails(
-                              //         router?.query?.id,
-                              //         book?.id,
-                              //         book?.transfer_details?.mode.toLowerCase()
-                              //       )
-                              //     }
-                              //   >
-                              //     View Detail
-                              //   </Button>
-                              // </div>
                               <button
                                 onclick={() =>
                                   handleViewDetails(
@@ -744,11 +757,13 @@ const TransferBooking = ({
                   >
                     <div className="flex flex-row items-center justify-between gap-1 w-full">
                       <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
-                        {!transferImageFailed ? (
+                        {book?.booking_source === "Gozo" ? (
                           <ImageLoader
-                            is_url={book?.image?.includes("gozo")}
                             className="object-contain"
-                            url={book?.image}
+                            url={
+                              book?.transfer_details?.quote?.taxi_category
+                                ?.image
+                            }
                             leftalign
                             height={
                               book?.image?.includes("gozo") ? "3rem" : "4rem"
@@ -771,7 +786,7 @@ const TransferBooking = ({
                           </>
                         )}
                       </div>
-                      <div className="flex justify-between items-start w-full">
+                      <div className="flex justify-between items-center w-full">
                         <div className="flex flex-col lg:w-60 w-full">
                           <div className="text-[16px] font-medium w-full">
                             {book?.booking_type == "Taxi" ? (
@@ -787,7 +802,7 @@ const TransferBooking = ({
                                   )
                                 )
                               ) : (
-                                "Private transfer "
+                                <div className="w-full">{book?.name}</div>
                               )
                             ) : (
                               <>
@@ -796,38 +811,94 @@ const TransferBooking = ({
                             )}
                           </div>
                           <div className="flex sm:text-sm text-[14px]  flex-row text-[#7A7A7A] font-light items-center">
-                            {book?.type && <div>{book?.type} car</div>}
+                            {book?.type && (
+                              <div>
+                                {book?.transfer_details?.quote?.taxi_category
+                                  ?.type ||
+                                  book?.transfer_details?.quote?.taxi_category
+                                    ?.type}
+
+                                {"("}
+                                {book?.type}
+                                {")"}
+                              </div>
+                            )}
                           </div>
 
                           {book?.transfer_details && (
-                            <div className="text-[#01202B] font-normal flex flex-row justify-start items-center mt-1 flex-wrap">
+                            <div className="text-[#01202B] font-normal flex  justify-start items-center mt-1 flex-wrap">
                               <span className="pr-1 sm:text-sm text-[0.82rem]">
                                 Facilities:
                               </span>
+                              <span className="flex items-center gap-1">
+                                {(() => {
+                                  const details = [];
 
-                              <GridContainer className="">
-                                {Facilities.filter(Boolean).map(
-                                  (data, index) =>
-                                    data !== null && (
-                                      <div key={index} className="gap-1">
-                                        <div className="flex flex-row flex-wrap sm:text-sm text-[0.74rem] font-normal">
-                                          {index !== 0 && data != null ? (
-                                            <span className="px-1">|</span>
-                                          ) : null}
+                                  const seatingCapacity =
+                                    book?.transfer_details?.quote?.taxi_category
+                                      ?.seating_capacity ??
+                                    book?.number_of_adults +
+                                      book?.number_of_children +
+                                      book?.number_of_infants;
 
-                                          <div className="">{data}</div>
-                                        </div>
-                                      </div>
-                                    )
-                                )}
-                              </GridContainer>
+                                  if (seatingCapacity) {
+                                    details.push(
+                                      <span
+                                        key="seater"
+                                        className="sm:text-sm text-[0.74rem] font-normal"
+                                      >
+                                        {seatingCapacity} Seater
+                                      </span>
+                                    );
+                                  }
+
+                                  const bagCapacity =
+                                    book?.transfer_details?.quote?.taxi_category
+                                      ?.bag_capacity;
+                                  if (bagCapacity > 0) {
+                                    details.push(
+                                      <span
+                                        key="bags"
+                                        className="sm:text-sm text-[0.74rem] font-normal"
+                                      >
+                                        {bagCapacity} Luggage bags
+                                      </span>
+                                    );
+                                  }
+
+                                  const fuelType =
+                                    book?.transfer_details?.quote?.taxi_category
+                                      ?.fuel_type;
+                                  if (fuelType) {
+                                    details.push(
+                                      <span
+                                        key="fuel"
+                                        className="sm:text-sm text-[0.74rem] font-normal"
+                                      >
+                                        {fuelType}
+                                      </span>
+                                    );
+                                  }
+
+                                  return details.map((item, index) => (
+                                    <React.Fragment key={index}>
+                                      {item}
+                                      {index !== details.length - 1 && (
+                                        <span className="sm:text-sm text-[0.74rem] font-normal mx-1">
+                                          |
+                                        </span>
+                                      )}
+                                    </React.Fragment>
+                                  ));
+                                })()}
+                              </span>
                             </div>
                           )}
                         </div>
                         {!payment?.paid_user && (
                           <>
                             {book?.booking_type === "Taxi" ? (
-                              <div className="w-full flex flex-row items-center justify-end cursor-pointer ">
+                              <div className=" flex flex-row items-center justify-end cursor-pointer ">
                                 {addbooking ? (
                                   <button
                                     onClick={() => {
@@ -852,31 +923,14 @@ const TransferBooking = ({
                                       );
                                       setShowVehicleDrawer(true);
                                     }}
-                                    className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[0.6rem] sm:px-1 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000] "
-                                    >
+                                    className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                                  >
                                     {/* Add Taxi */}
                                     View Details
                                   </button>
                                 )}
                               </div>
                             ) : (
-                              // <div className={`absolute bottom-[1rem] right-6 -m-3`}>
-                              //   <Button
-                              //     padding="0.6rem 2.2rem"
-                              //     borderRadius="8px"
-                              //     hoverColor="white"
-                              //     fontWeight="400"
-                              //     onclick={() =>
-                              //       handleViewDetails(
-                              //         router?.query?.id,
-                              //         book?.id,
-                              //         book?.transfer_details?.mode.toLowerCase()
-                              //       )
-                              //     }
-                              //   >
-                              //     View Detail
-                              //   </Button>
-                              // </div>
                               <button
                                 onclick={() =>
                                   handleViewDetails(
@@ -1099,9 +1153,13 @@ const FlightBooking = ({
           `}
         >
           <div className="flex justify-between">
-            <FlightLogoContainer data={booking?.transfer_details?.items?.[0]} height={34} width={34}/>
+            <FlightLogoContainer
+              data={booking?.transfer_details?.items?.[0]}
+              height={34}
+              width={34}
+            />
             {window.innerWidth >= 1000 && (
-              <div >
+              <div>
                 <button
                   onClick={() => {
                     setShowDetails(true);
@@ -1138,12 +1196,12 @@ const FlightBooking = ({
           } items-center`}
         >
           {window.innerWidth < 1000 && (
-            <div className="w-full mt-4">
+            <div className=" mt-4">
               <button
                 onClick={() => {
                   setShowDetails(true);
                 }}
-                className="w-full text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[0.6rem] sm:px-1 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
+                className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[0.6rem] sm:px-1 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
               >
                 View Details
               </button>
