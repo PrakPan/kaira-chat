@@ -232,6 +232,7 @@ const TransferEditDrawer = (props) => {
     selectedBooking.destination_iata = transfer?.destination?.code;
     selectedBooking.edge = transfer?.id;
 
+
     if (!props.token) {
       setShowLoginModal(true);
       return;
@@ -594,14 +595,14 @@ const TransferEditDrawer = (props) => {
                   {dcity || mercuryTransfer?.destination?.city_name}
                 </div> */}
                 <div className="w-full flex flex-col items-center gap-3">
-                  {transfers.map((transfer, index) => {
+                  {transfers?.map((transfer, index) => {
                     if (isDesktop)
-                      return transfer.length > 1 ? (
+                      return transfer?.transfers?.length > 1 ? (
                         <>
                           <NewMultiModeContainer
                             key={index}
                             transferIndex={index}
-                            transfer={transfer}
+                            transfer={transfer?.transfers}
                             handleSelect={handleSelect}
                             selectedResult={selectedResult}
                             setCurrentStep={setCurrentStep}
@@ -653,6 +654,7 @@ const TransferEditDrawer = (props) => {
                             dCityData={dCityData}
                             oCityData={oCityData}
                             openNotification={openNotification}
+                            showDrawer={showDrawer}
                           />
                         </>
                       ) : (
@@ -922,9 +924,9 @@ const RouteContainer = (props) => {
             className={`w-[80px] h-[70px] px-2 bg-gray-100 rounded-xl flex items-center justify-center`}
           >
             <TransfersIcon
-              TransportMode={singleTransfer.mode}
+              TransportMode={singleTransfer?.mode}
               Instyle={{
-                fontSize: singleTransfer.mode === "Bus" ? "2.5rem" : "3rem",
+                fontSize: singleTransfer?.mode === "Bus" ? "2.5rem" : "3rem",
                 color: "black",
               }}
               classname={{ width: 80, height: 75 }}
@@ -1064,11 +1066,15 @@ const NewMultiModeContainer = ({
   const [updateLoading, setUpdateLoading] = useState(false);
   const [comboStartTime, setComboStartTime] = useState(null);
   const [comboStartDate, setComboStartDate] = useState(null);
+  
+  // Added state variables to track API fetching status
+  const [skipFlightFetch, setSkipFlightFetch] = useState(false);
+  const [skipTaxiFetch, setSkipTaxiFetch] = useState(false);
+  const [hasAppliedFilters, setHasAppliedFilters] = useState(false);
 
   const sequencedModes = transfer.map((t) => t.mode);
 
-
-  console.log("Selected Data",selectedData);
+  console.log("Selected Data", selectedData);
 
   const toggleExpanded = () => {
     setExpanded(!expanded);
@@ -1113,8 +1119,6 @@ const NewMultiModeContainer = ({
     return selectedModeIds[currentStep - 1] !== undefined;
   };
 
- 
-
   const totalSteps = transfer.length;
 
   const isValidUUID = (uuid) => {
@@ -1123,13 +1127,23 @@ const NewMultiModeContainer = ({
     return regex.test(uuid);
   };
 
+  // Modified handleBackButton to set skip flags
   const handleBackButton = () => {
+    // Set flag to prevent API refetch for Flight/Taxi when navigating back
+    const currentTransfer = transfer[currentStep - 1];
+    if (currentTransfer.mode === "Flight") {
+      setSkipFlightFetch(true);
+      setShowComboFlightModal(false);
+    } else if (currentTransfer.mode === "Taxi") {
+      setSkipTaxiFetch(true);
+      setShowComboTaxiModal(false);
+    }
+    
     setSelectedModeIds((prev) => {
       const newSelections = { ...prev };
       for (let i = currentStep - 1; i < totalSteps; i++) {
         delete newSelections[i];
       }
-
       return newSelections;
     });
 
@@ -1142,6 +1156,29 @@ const NewMultiModeContainer = ({
     });
 
     setCurrentStep(currentStep - 1);
+  };
+
+  // New function for handling Next button
+  const handleNextStep = () => {
+    // Set flag to prevent API refetch for Flight/Taxi when navigating forward
+    const currentTransfer = transfer[currentStep - 1];
+    if (currentTransfer.mode === "Flight") {
+      setSkipFlightFetch(true);
+      setShowComboFlightModal(false);
+    } else if (currentTransfer.mode === "Taxi") {
+      setSkipTaxiFetch(true);
+      setShowComboTaxiModal(false);
+    }
+    
+    setCurrentStep(currentStep + 1);
+  };
+
+  // Export this function to handle filter changes
+  const handleFilterApplied = () => {
+    setHasAppliedFilters(true);
+    // Reset skip flags when filters are applied
+    setSkipFlightFetch(false);
+    setSkipTaxiFetch(false);
   };
 
   const handleModeSelect = (index, id, searchData = null, mode = null) => {
@@ -1197,6 +1234,7 @@ const NewMultiModeContainer = ({
   };
 
   const handleFlightSelection = (flightData) => {
+    console.log("Flight Data",flightData)
     handleModeSelect(
       currentStep - 1,
       flightData?.id || flightData?.resultIndex,
@@ -1333,22 +1371,27 @@ const NewMultiModeContainer = ({
     if (currentStep < 1 || currentStep > transfer.length) return;
 
     const currentTransfer = transfer[currentStep - 1];
-
+     
+    console.log("Boooo", selectedBooking);
     const baseStartDate =
-      dCityData?.start_date ??
+    selectedBooking?.check_in
+    ? dayjs(selectedBooking?.check_in).format("YYYY-MM-DD")
+    : dCityData?.start_date ??
       (oCityData?.start_date && oCityData?.duration != null
         ? addDaysToDate(oCityData.start_date, oCityData.duration)
-        : dayjs().format("YYYY-MM-DD"));
+        : null);
 
     let calculatedStartTime = dayjs(`${baseStartDate} 10:00`);
+
+    console.log("Dates", dCityData?.start_date, oCityData?.start_date, oCityData?.duration, baseStartDate);
 
     let totalDuration = 0;
     for (let i = 0; i < currentStep - 1; i++) {
       const prevSelected = selectedData[i];
       const prevTransfer = currentStep >= 2 ? transfer[currentStep - 2] : null;
       if (prevSelected?.duration || prevTransfer?.duration) {
-        totalDuration += prevSelected?.duration?.value
-          ? prevSelected?.duration?.value
+        totalDuration += prevSelected?.duration 
+          ? (prevSelected?.duration || prevSelected?.duration?.value)
           : prevTransfer?.duration;
       }
     }
@@ -1361,7 +1404,7 @@ const NewMultiModeContainer = ({
       setComboStartTime(calculatedStartTime.format("HH:mm"));
       console.log(
         "TIMEE",
-        setComboStartTime(calculatedStartTime.format("HH:mm"))
+        calculatedStartTime.format("HH:mm")
       );
     }
 
@@ -1378,15 +1421,32 @@ const NewMultiModeContainer = ({
           "",
           currentTransfer.mode
         );
-        if (currentTransfer.mode === "Flight") setShowComboFlightModal(true);
-        if (currentTransfer.mode === "Taxi") setShowComboTaxiModal(true);
+        
+        // Only show modals if not skipping
+        if (currentTransfer.mode === "Flight") {
+          if (!skipFlightFetch) {
+            setShowComboFlightModal(true);
+          } else {
+            // Reset the flag for next time
+            setSkipFlightFetch(false);
+          }
+        }
+        
+        if (currentTransfer.mode === "Taxi") {
+          if (!skipTaxiFetch) {
+            setShowComboTaxiModal(true);
+          } else {
+            // Reset the flag for next time
+            setSkipTaxiFetch(false);
+          }
+        }
       }
     }
   }, [currentStep, transfer]);
 
   return (
     <div className="w-full bg-white">
-      <div className="p-3 md:p-4 border-b">
+      {/* <div className="p-3 md:p-4 border-b">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center">
           <div className="flex gap-3 md:gap-4">
             <label className="flex items-center">
@@ -1407,9 +1467,9 @@ const NewMultiModeContainer = ({
             </label>
           </div>
         </div>
-      </div>
+      </div> */}
 
-     {console.log("current step is:",currentStep)}
+     {console.log("current step is:", currentStep)}
       {currentStep === 0 && (
         <div
           className="flex justify-between items-center p-3 md:p-4 border border-b cursor-pointer shadow-md"
@@ -1486,22 +1546,23 @@ const NewMultiModeContainer = ({
               </div>
             </div>
 
-            <div className="flex flex-col md:flex-row justify-between items-center p-3 md:p-4">
-              <span className="text-[#2AAAFF] font-medium text-xs md:text-sm mb-2 md:mb-0">
-                {sourceCity}
-              </span>
+            <div className="flex flex-row justify-between items-center p-4 relative">
+  <span className="text-[#2AAAFF] font-medium text-sm z-10 pr-3">
+    {sourceCity}
+  </span>
 
-              {/* Hide dotted line on mobile */}
-              <div className="hidden md:block absolute left-[11rem] right-[11rem] border-t border-dotted border-gray-300 z-0"></div>
+  <div className="absolute left-0 right-0 flex justify-center items-center">
+    <div className="border-t border-dotted border-gray-400 w-[50%] mx-8"></div>
+  </div>
 
-              <span className="bg-gray-100 text-gray-700 text-xs md:text-sm px-2 md:px-3 py-1 rounded-full mb-2 md:mb-0">
-                {totalDistance} km
-              </span>
+  <span className="bg-gray-100 text-gray-700 text-sm px-4 py-1 rounded-full z-10 mx-4">
+    {totalDistance} km
+  </span>
 
-              <span className="text-green-600 font-medium text-xs md:text-sm">
-                {destinationCity}
-              </span>
-            </div>
+  <span className="text-green-600 font-medium text-sm z-10  pl-3">
+    {destinationCity}
+  </span>
+</div>
 
             {/* Current mode options - only show the current step's transfer option */}
             {currentStep >= 1 && currentStep <= totalSteps && (
@@ -1546,6 +1607,8 @@ const NewMultiModeContainer = ({
                         comboStartTime={comboStartTime}
                         source_code={option?.source?.code}
                         destination_code={option?.destination?.code}
+                        skipFetch={skipFlightFetch}
+                        onFilterApplied={handleFilterApplied}
                       />
                     );
                   }
@@ -1586,6 +1649,8 @@ const NewMultiModeContainer = ({
                         onSelect={handleTaxiSelection}
                         comboStartDate={comboStartDate}
                         comboStartTime={comboStartTime}
+                        skipFetch={skipTaxiFetch}
+                        onFilterApplied={handleFilterApplied}
                       />
                     );
                   }
@@ -1672,7 +1737,7 @@ const NewMultiModeContainer = ({
 
                   {currentStep < totalSteps ? (
                     <button
-                      onClick={() => setCurrentStep(currentStep + 1)}
+                      onClick={() => handleNextStep()}
                       className={`px-6 md:px-8 py-2 rounded-md font-medium text-sm md:text-base w-full md:w-auto
                         ${
                           isCurrentModeSelected()

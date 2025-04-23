@@ -1056,6 +1056,7 @@ const SimpleTabsV2 = (props) => {
                   transferBookings={props.transferBookings}
                   itinerary_id={props.itinerary_id}
                   fetchData={props.fetchData}
+                  CityData={CityData}
                   _GetInTouch={_GetInTouch}
                 />
               )}

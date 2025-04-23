@@ -52,7 +52,7 @@ export const updateSingleTransferBooking = (keyPath, data) => {
     const currentTransferBookings = state.TransferBookings?.transferBookings;
 
 
-    
+    console.log("Current Transfer", currentTransferBookings)
     if (!currentTransferBookings) {
       console.error("Transfer bookings not found in state");
       return;

@@ -13,6 +13,7 @@ export const Pax = ({ pax, setPax }) => {
 
   const [adults, setAdults] = useState(pax.adults || 1);
   const [children, setChildren] = useState(pax.children || 0);
+  const [infants, setInfants] = useState(pax.infants || 0);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -55,7 +56,14 @@ export const Pax = ({ pax, setPax }) => {
   };
 
   const handleDone = () => {
-    setPax({ adults, children });
+    setPax({ 
+      adults, 
+      children,
+      infants,
+      number_of_adults: adults,
+      number_of_children: children,
+      number_of_infants: infants || 0
+    });
     setShowPax(false);
     setShowPaxMobile(false);
   };

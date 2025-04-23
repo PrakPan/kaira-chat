@@ -78,6 +78,8 @@ const TransfersContainer = (props) => {
   const [daySlabIndex, setDaySlabIndex] = useState(null);
   const [elementIndex, setElementIndex] = useState(null);
 
+  console.log("ROUTED",props?.route)
+
   const _changeFlightHandler = (
     name,
     itinerary_id,

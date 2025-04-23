@@ -31,6 +31,8 @@ const TransferBookings = (props) => {
   const [showDrawer, setShowDrawer] = useState(false);
   const transferBooking = useSelector((state) => state.TransferBookings)?.transferBookings
 
+  console.log("sel book",selectedBooking);
+
   const alternateRoutes = {};
   const loadingAlternates = true;
   const roundTripSuggestions = null;

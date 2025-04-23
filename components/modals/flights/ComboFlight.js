@@ -177,7 +177,7 @@ const ComboFlight = (props) => {
       const requestData = {
         adult_count: pax.adults,
         child_count: pax.children,
-        infant_count: pax.infants,
+        infant_count: pax.infants || 0,
         direct_flight: filtersState.non_stop_flights ? "true" : "false",
         journey_type: "1",
         origin: props.source_code || props.selectedBooking.origin_iata,

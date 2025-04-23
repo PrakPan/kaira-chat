@@ -14,6 +14,7 @@ export default function PriceContainer({
 }) {
   const router = useRouter();
 
+  console.log("flight data",data?.duration)
   const handleSelect = () => {
     onFlightSelect?.();
 
