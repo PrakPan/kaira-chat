@@ -12,15 +12,57 @@ const ComboSection = (props) => {
     _FetchFlightsHandler,
     setHideFlightModal,
     flightCount,
-    preferred_departure_time
+    preferred_departure_time,
   } = props;
 
   const [showPax, setShowPax] = useState(false);
-  
+  const [showTimeDropdown, setShowTimeDropdown] = useState(false);
+  const [timeSlots, setTimeSlots] = useState([]);
+  const [selectedTime, setSelectedTime] = useState(null);
+
+  useEffect(() => {
+    if (preferred_departure_time) {
+      const slots = [];
+      let baseTime = dayjs(preferred_departure_time);
+      
+      const minutes = baseTime.minute();
+      const remainder = minutes % 30;
+
+      if (remainder > 0) {
+        baseTime = baseTime.add(30 - remainder, 'minute');
+      }
+      
+      const endTime = baseTime.startOf('day').add(1, 'day').subtract(1, 'minute');
+      
+      while (baseTime.isBefore(endTime) || baseTime.isSame(endTime)) {
+        slots.push({
+          value: baseTime.format('HH:mm'),
+          display: baseTime.format('h:mm A')
+        });
+        baseTime = baseTime.add(30, 'minute');
+      }
+      
+      setTimeSlots(slots);
+    }
+  }, [preferred_departure_time]);
+
+  const getTimePeriodFromHour = (hour) => {
+    if (hour >= 6 && hour < 10) {
+      return "MORNING";
+    } else if (hour >= 10 && hour < 16) {
+      return "AFTERNOON";
+    } else if (hour >= 12 && hour < 18) {
+      return "EVENING";
+    } else if (hour >= 21 || hour < 6) {
+      return "NIGHT";
+    }
+    return "";
+  };
+
   const toggleNonStop = () => {
     const newFiltersState = {
       ...filtersState,
-      non_stop_flights: !filtersState.non_stop_flights
+      non_stop_flights: !filtersState.non_stop_flights,
     };
     setFiltersState(newFiltersState);
   };
@@ -28,26 +70,32 @@ const ComboSection = (props) => {
   const handleDepartureTimeChange = (e) => {
     const newFiltersState = {
       ...filtersState,
-      departure_time_period: e.target.value
+      departure_time_period: e.target.value,
     };
     setFiltersState(newFiltersState);
+    setShowTimeDropdown(false);
   };
 
   const handleArrivalTimeChange = (e) => {
     const newFiltersState = {
       ...filtersState,
-      arrival_time_period: e.target.value
+      arrival_time_period: e.target.value,
     };
     setFiltersState(newFiltersState);
   };
 
   const getTimeDisplay = (value) => {
-    switch(value) {
-      case "MORNING": return "6 AM - 10 AM";
-      case "AFTERNOON": return "10 AM - 4 PM";
-      case "EVENING": return "12 PM - 6 PM";
-      case "NIGHT": return "9 PM - 6 AM";
-      default: return "Any Time";
+    switch (value) {
+      case "MORNING":
+        return "6 AM - 10 AM";
+      case "AFTERNOON":
+        return "10 AM - 4 PM";
+      case "EVENING":
+        return "12 PM - 6 PM";
+      case "NIGHT":
+        return "9 PM - 6 AM";
+      default:
+        return "Any Time";
     }
   };
 
@@ -55,22 +103,49 @@ const ComboSection = (props) => {
     const newOrder = filtersState.order === "asc" ? "desc" : "asc";
     const newFiltersState = {
       ...filtersState,
-      order: newOrder
+      order: newOrder,
     };
     setFiltersState(newFiltersState);
-    // Refetch with new filters
     setTimeout(() => {
       _FetchFlightsHandler();
     }, 100);
+  };
+
+  const handleTimeSelection = (slot) => {
+    setSelectedTime(slot.display);
+  
+    const hour = parseInt(slot.value.split(':')[0], 10);
+    const timePeriod = getTimePeriodFromHour(hour);
+    
+    const newFiltersState = {
+      ...filtersState,
+      departure_time_period: timePeriod
+    };
+    
+    setFiltersState(newFiltersState);
+    setShowTimeDropdown(false);
   };
 
   useEffect(() => {
     const timer = setTimeout(() => {
       _FetchFlightsHandler();
     }, 500);
-    
+
     return () => clearTimeout(timer);
   }, [filtersState]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showTimeDropdown && !event.target.closest('.time-dropdown-container')) {
+        setShowTimeDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showTimeDropdown]);
 
   return (
     <div className="font-sans max-w-2xl mx-auto bg-white">
@@ -99,88 +174,82 @@ const ComboSection = (props) => {
 
         {/* Date and Time Selection */}
         <div className="">
-          <div className="flex flex-row flex-1 justify-between">
-            <div>
-              <span className="text-sm text-gray-600 mb-1">Departure Date: &nbsp; </span>
-              <span className="font-semibold">{dayjs(preferred_departure_time)?.format("DD MMM, YYYY")}</span>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
+            <div className="mb-2 sm:mb-0">
+              <span className="text-sm text-gray-600">Departure: </span>
+              <span className="font-semibold">
+                {dayjs(preferred_departure_time)?.format("DD MMM, YYYY")}
+              </span>
             </div>
-            <div 
-              className="p-1 border flex flex-row items-center cursor-pointer"
-              onClick={handleSortChange}
-            >
-              <MdSort/> 
-              <span>Sort: {filtersState.sort_by} ({filtersState.order})</span>
-            </div>
+            
           </div>
-          <div className="flex flex-col md:flex-row gap-4 mb-4"></div>
 
-          <div className="flex flex-col sm:flex-row gap-4 mb-4 w-full">
-      <div className="w-full sm:w-1/2">
-        <div className="relative">
-          <div className="flex items-center w-full p-2 bg-gray-100  border-gray-200 rounded-md text-gray-800">
-            <span className="mr-2 font-medium">Departure from |</span>
-            <span className="">{getTimeDisplay(filtersState.departure_time_period)}</span>
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-              </svg>
+          <div className="flex flex-col sm:flex-row justify-between mb-4 w-full gap-2">
+            <div className="w-full sm:w-auto">
+              <div
+                className="p-2 border flex flex-row items-center cursor-pointer rounded-md hover:bg-gray-50"
+                onClick={handleSortChange}
+              >
+                <MdSort className="mr-1" />
+                <span className="text-sm">
+                  Sort: {filtersState.sort_by} ({filtersState.order})
+                </span>
+              </div>
+            </div>
+            
+            <div className="time-dropdown-container relative w-full sm:w-auto">
+              <div 
+                className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
+                onClick={() => setShowTimeDropdown(!showTimeDropdown)}
+              >
+                <span className="text-sm font-medium">
+                  Departure Time: {dayjs(preferred_departure_time)?.format("HH:mm A") || "Select Time"}
+                </span>
+                <svg
+                  className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${showTimeDropdown ? 'transform rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 9l-7 7-7-7"
+                  ></path>
+                </svg>
+              </div>
+              
+              {showTimeDropdown && (
+                <div className="absolute z-10 w-full sm:w-64 mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
+                  <div className="sticky -top-1 bg-gray-100 p-2 border-b">
+                    <span className="font-medium text-sm">Select Time</span>
+                  </div>
+                  <div className="p-1">
+                    {timeSlots.map((slot, index) => (
+                      <div
+                        key={index}
+                        className={`p-2 hover:bg-blue-50 cursor-pointer text-sm rounded-md ${
+                          selectedTime === slot.display ? 'bg-blue-100' : ''
+                        }`}
+                        onClick={() => handleTimeSelection(slot)}
+                      >
+                        {slot.display}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-          <select
-            className="absolute inset-0 w-full opacity-0 cursor-pointer"
-            value={filtersState.departure_time_period}
-            onChange={handleDepartureTimeChange}
-          >
-            <option value="">Any Time</option>
-            <option value="MORNING">6 AM - 10 AM</option>
-            <option value="AFTERNOON">10 AM - 4 PM</option>
-            <option value="EVENING">12 PM - 6 PM</option>
-            <option value="NIGHT">9 PM - 6 AM</option>
-          </select>
-        </div>
-      </div>
-      
-      <div className="w-full sm:w-1/2">
-        <div className="relative">
-          <div className="flex items-center w-full p-2 bg-gray-100 border-gray-200 rounded-md text-gray-800">
-            <span className="mr-2 font-medium">Arrival at |</span>
-            <span className="">{getTimeDisplay(filtersState.arrival_time_period)}</span>
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-              </svg>
-            </div>
-          </div>
-          <select
-            className="absolute inset-0 w-full opacity-0 cursor-pointer"
-            value={filtersState.arrival_time_period}
-            onChange={handleArrivalTimeChange}
-          >
-            <option value="">Any Time</option>
-            <option value="MORNING">6 AM - 10 AM</option>
-            <option value="AFTERNOON">10 AM - 4 PM</option>
-            <option value="EVENING">12 PM - 6 PM</option>
-            <option value="NIGHT">9 PM - 6 AM</option>
-          </select>
-        </div>
-      </div>
-    </div>
         </div>
       </div>
 
-      {/* Results Summary */}
       <div className="flex justify-between p-2 bg-gray-50 border-t">
         <div className="text-sm">
           Showing <span className="font-semibold">{flightCount} flights</span>
         </div>
-        {/* <div className="text-sm">
-          <button 
-            className="text-blue-600 text-sm"
-            onClick={_FetchFlightsHandler}
-          >
-            Apply Filters
-          </button>
-        </div> */}
       </div>
     </div>
   );

@@ -95,7 +95,10 @@ const MidSectionV2 = (props) => {
   const [showDrawer, setShowDrawer] = useState(false);
   const [addOrEdit, setAddOrEdit] = useState(null);
   const [selectedBooking, setSelectedBooking] = useState(
-    props.Bookings ? props?.bookings[0] : {}
+    props.Bookings ? props?.bookings[0] : {
+      id: null,
+      name: null,
+    }
   );
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showTaxiModal, setShowTaxiModal] = useState(false);
@@ -103,6 +106,7 @@ const MidSectionV2 = (props) => {
     (state) => state.ItineraryStatus
   );
   const isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
+  console.log("Destination City Data",props?.dcityData)
 
   console.log("All Book",props.cityTransferBookings, props.flightBookings, selectedBooking )
 
@@ -189,9 +193,9 @@ const MidSectionV2 = (props) => {
   };
 
   const handleChangeTransfer = (e) => {
-    if (props.cityTransferBookings.modes === "Flight") {
+    if (props.cityTransferBookings?.modes === "Flight") {
       setShowFlightModal(true);
-    } else if (props.cityTransferBookings.modes === "Taxi") {
+    } else if (props.cityTransferBookings?.modes === "Taxi") {
       setShowTaxiModal(true);
     } else {
       handleTransferEdit(e, "Edit Transfer");
@@ -367,14 +371,15 @@ const MidSectionV2 = (props) => {
         oCityData={props?.oCityData}
         dCityData={props?.dCityData}
         selectedBooking={props?.cityTransferBookings}
+        setSelectedBooking={setSelectedBooking}
         originCityId={
-          props?.oCityData?.city?.id || props?.oCityData?.gmaps_place_id
+          props?.oCityData?.city?.id || props?.oCityData?.place_id
         }
         destinationCityId={
-          props?.dCityData?.city?.id || props?.dCityData?.gmaps_place_id
+          props?.dCityData?.city?.id || props?.dCityData?.place_id
         }
-        origin_itinerary_city_id={props?.oCityData?.id || props?.oCityData?.gmaps_place_id}
-        destination_itinerary_city_id={props?.dCityData?.id || props?.dCityData?.gmaps_place_id}
+        origin_itinerary_city_id={props?.oCityData?.id || props?.oCityData?.place_id || props?.oCityData?.place_id}
+        destination_itinerary_city_id={props?.dCityData?.id || props?.dCityData?.place_id || props?.dCityData?.place_id}
       />
     </Container>
   );

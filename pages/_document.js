@@ -3,11 +3,11 @@ import styled, { ServerStyleSheet } from "styled-components";
 import { CONTENT_SERVER_HOST, GOOGLE_ANALTICS_ID } from "../services/constants";
 import Script from "next/script";
 const Container = styled.div`
-      margin-right: -0.6rem;
-    margin-bottom: 5rem; 
+  margin-right: -0.6rem;
+  margin-bottom: 5rem;
   @media screen and (min-width: 768px) {
-  margin-bottom: 0rem;
-  margin-right:0.2rem;
+    margin-bottom: 0rem;
+    margin-right: 0.2rem;
   }
 `;
 export default class MyDocument extends Document {
@@ -153,31 +153,29 @@ export default class MyDocument extends Document {
         </Head>
 
         <body>
-          <script
-            src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"
-          />
-            <>
-              <df-messenger
-                location="asia-south1"
-                project-id="ai-chabot-451908"
-                agent-id="4e407c11-79bb-494a-ad38-12eb60fed12d"
-                language-code="en"
-                intent="WELCOME"
-              >
-                {/* <df-messenger-chat-bubble chat-title="Personalized Travel Plan"             */}
-                {/* //  chat-icon="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" to change floater icon, change this link */}
-                <Container>
-                  <df-messenger-chat-bubble
-                    chat-title="Personalized Travel Plan"
-                    chat-icon="https://images.thetarzanway.com/media/chatbot.png"
-                    chat-title-icon="https://openmoji.org/data/color/svg/1F4AC.svg"
-                    // to change floater icon, change this link
-                  ></df-messenger-chat-bubble>
-                </Container>
-              </df-messenger>
+          <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js" />
+          <>
+            <df-messenger
+              location="asia-south1"
+              project-id="ai-chabot-451908"
+              agent-id="4e407c11-79bb-494a-ad38-12eb60fed12d"
+              language-code="en"
+              intent="WELCOME"
+            >
+              {/* <df-messenger-chat-bubble chat-title="Personalized Travel Plan"             */}
+              {/* //  chat-icon="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" to change floater icon, change this link */}
+              <Container>
+                <df-messenger-chat-bubble
+                  chat-title="Personalized Travel Plan"
+                  chat-icon="https://images.thetarzanway.com/media/chatbot.png"
+                  chat-title-icon="https://openmoji.org/data/color/svg/1F4AC.svg"
+                  // to change floater icon, change this link
+                ></df-messenger-chat-bubble>
+              </Container>
+            </df-messenger>
 
-              <style>
-                {`
+            <style>
+              {`
           df-messenger {
             z-index: 1024;
             position:fixed;
@@ -212,8 +210,8 @@ export default class MyDocument extends Document {
         }
 }
         `}
-              </style>
-            </>
+            </style>
+          </>
           {/* Google Tag Manager (noscript) */}
           {process.env.NODE_ENV === "production" &&
             !CONTENT_SERVER_HOST.includes("dev") && (

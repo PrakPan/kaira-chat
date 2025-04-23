@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { connect, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { IoMenu, IoLocationSharp } from "react-icons/io5";
 import { RxCrossCircled } from "react-icons/rx";
 import { MdDone } from "react-icons/md";
@@ -41,6 +41,7 @@ import axiosItineraryUpdateInstance, {
 import { getDate, getDateString } from "../../../../helper/DateUtils";
 import { dateFormat } from "../../../../helper/DateUtils";
 import { openNotification } from "../../../../store/actions/notification";
+import setItinerary from "../../../../store/actions/itinerary";
 
 const Container = styled.div`
   position: relative;
@@ -156,6 +157,7 @@ const CITY_COLOR_CODES = [
 
 const RouteEditSection = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
+  const dispatch = useDispatch();
   const [startDate, setStartDate] = useState(
     getDate(props?.plan ? props?.plan.start_date : props?.itinerary?.start_date)
   );
@@ -947,9 +949,9 @@ const RouteEditSection = (props) => {
             city_id: dest.cityData.city_id || dest.cityData.resource_id,
             check_in: dest.cityData.checkin_date,
             check_out: dest.cityData.checkout_date,
-            id: dest.cityData?.id,
-            duration: dest.cityData?.duration,
-            start_date: dest.cityData?.start_date || startDate,
+            id: dest.cityData?.hasOwnProperty('id') ? dest.cityData?.id : null,
+            duration: dest.cityData?.duration || dest.cityData?.nights,
+            start_date: dest.cityData?.start_date || dest.cityData.checkin_date || startDate,
           };
         })
         .filter(
@@ -1011,6 +1013,7 @@ const RouteEditSection = (props) => {
         })
         .then((response) => {
           props.fetchData();
+          dispatch(setItinerary(response.data))
           setLoading(false);
           props.openNotification({
             text: "Your Itinerary is updated successfully!",
@@ -1860,15 +1863,19 @@ export const DestinationPopUp = (props) => {
       const curDestination = destinations[index];
 
       if (curDestination) {
+        console.log("Currr",curDestination)
         if (curDestination.startingCity || curDestination.endingCity) {
+          console.log("Currr Is start end",curDestination)
           destinations[index] = {
             startingCity: curDestination.startingCity,
             endingCity: curDestination.endingCity,
             cityData: {
               ...destination,
+              duration: nights
             },
           };
         } else {
+          console.log("Currr Is not start end",curDestination)
           destinations[index] = {
             startingCity: curDestination.startingCity,
             endingCity: curDestination.endingCity,
@@ -1876,6 +1883,7 @@ export const DestinationPopUp = (props) => {
               ...destination,
               nights: nights,
               color: curDestination.cityData.color,
+              duration: nights
             },
           };
         }
@@ -1886,6 +1894,7 @@ export const DestinationPopUp = (props) => {
           cityData: {
             ...destination,
             nights: nights,
+            duration: nights,
             color: CITY_COLOR_CODES[(destinations.length - 1) % 7],
           },
         });
