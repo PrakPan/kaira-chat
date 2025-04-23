@@ -302,14 +302,19 @@ const Day_I_ContainerM = (props) => {
           ) : (
             <>
               {convertDateFormat(props.Days?.slab)}
-              {getYear(props?.Days?.slab) ?
-                `, ${getYear(props?.Days?.slab)} - ` : " - "}
+              {getYear(props?.Days?.slab)
+                ? `, ${getYear(props?.Days?.slab)} - `
+                : " - "}
             </>
           )}
 
           {newCity
             ? `Arrival in ${newCity.city_name}`
-            : `${props.current_city.city_name} Exploration`}
+            : `${
+                typeof props.current_city === "object"
+                  ? props.current_city?.city_name ?? ""
+                  : props.current_city ?? ""
+              } Exploration`}
         </div>
       </div>
 
