@@ -60,7 +60,7 @@ const Details = ({
         dispatch(
           openNotification({
             type: "success",
-            text: "Booking Deleted Successfuly",
+            text: `${name} deleted successfuly`,
             heading: "Success!",
           })
         );

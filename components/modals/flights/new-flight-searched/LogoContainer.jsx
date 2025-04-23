@@ -4,10 +4,10 @@ import Image from "next/image";
 import SkeletonCard from "../../../ui/SkeletonCard";
 import media from "../../../media";
 
-export default function LogoContainer({ data }) {
+export default function LogoContainer({ data,height,width }) {
   return (
     <div className="flex flex-row gap-2 items-center">
-      <Logo src={data?.segments[0]?.airline?.code} height={34} width={34} />
+      <Logo src={data?.segments[0]?.airline?.code} ht={height} wd={width} />
 
       <div className="flex items-center gap-1">
         <div className="text-[18px] font-semibold">{data?.segments[0]?.airline?.name} |</div>
@@ -25,7 +25,7 @@ export default function LogoContainer({ data }) {
   );
 }
 
-export const Logo = ({ src, width, height }) => {
+export const Logo = ({ src, wd, ht }) => {
   let isPageWide = media("(min-width: 768px)");
   const [imageLoaded, setImageLoaded] = useState(false);
 
@@ -42,9 +42,12 @@ export const Logo = ({ src, width, height }) => {
       )}
 
       <div
-        className={`relative h-[${height ? height : "48 md:64"}px] w-[${
-          width ? width : "48 md:64"
-        }px]`}
+          className="relative h-12 md:h-16 w-12 md:w-16"
+
+        style={{
+          height: ht ? `${ht}px` : undefined,
+          width: wd ? `${wd}px` : undefined,
+        }}
       >
         <Image
           fill

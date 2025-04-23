@@ -198,7 +198,7 @@ const ActivityDetails = (props) => {
         dispatch(
           openNotification({
             type: "success",
-            text: "deleted successfuly",
+            text: `${props?.data?.name} has been removed from your itinerary`,
             heading: "Success!",
           })
         );

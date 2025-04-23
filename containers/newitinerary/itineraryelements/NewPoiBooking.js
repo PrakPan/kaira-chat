@@ -115,16 +115,16 @@ export default function NewPoiBooking(props) {
             </div>
           </div>
           <div
-              style={{
-                height: "220px",
-                width: "251px",
-                overflow: "hidden",
-                borderRadius: "16px",
-                display: !imageLoaded ? "block" : "none",
-              }}
-            >
-              <SkeletonCard height={"100%"} />
-            </div>
+            style={{
+              height: "220px",
+              width: "251px",
+              overflow: "hidden",
+              borderRadius: "16px",
+              display: !imageLoaded ? "block" : "none",
+            }}
+          >
+            <SkeletonCard height={"100%"} />
+          </div>
           <div className="flex flex-col justify-between">
             <div className="flex flex-col gap-2 text-[#01202B]  w-full h-fit justify-start">
               <div className="flex flex-col justify-between">
@@ -147,7 +147,7 @@ export default function NewPoiBooking(props) {
               </div>
               {props.data?.experience_filters && (
                 <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
-                  {props.data.experience_filters?.map((e, i) => (
+                  {props.data.experience_filters?.slice(0, 3)?.map((e, i) => (
                     <span
                       key={i}
                       className={`border-2 rounded-full px-2 py-1`}
@@ -156,6 +156,11 @@ export default function NewPoiBooking(props) {
                       {e}
                     </span>
                   ))}
+                  {props?.data?.experience_filters?.length > 3 && (
+                    <span className={`border-2 rounded-full px-2 py-1`}>
+                      +{props?.data?.experience_filters?.length - 3} more
+                    </span>
+                  )}
                 </div>
               )}
               <div>
@@ -225,7 +230,6 @@ export default function NewPoiBooking(props) {
             </div>
           </div>
         </div>
-
       </div>
 
       <div className="min-[583px]:hidden" id="Activity">
@@ -355,10 +359,10 @@ export default function NewPoiBooking(props) {
         )}
       </div>
       {props.data?.is_very_popular && (
-          <div className="absolute top-6 -left-2 z-[1]">
-            <RecommendedBadge />
-          </div>
-        )}
+        <div className="absolute top-6 -left-2 z-[1]">
+          <RecommendedBadge />
+        </div>
+      )}
     </div>
   );
 }

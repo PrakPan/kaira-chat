@@ -85,11 +85,6 @@ export default function Filters({
         showPax={showPax}
       />
 
-      {/* <Travelers
-                travelers={filterState.pax.number_of_travelers}
-                travelerAges={filterState.pax.traveler_ages}
-                setFilterState={setFilterState}
-            /> */}
 
       <DyamicFilters
         filters={filters}
