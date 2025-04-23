@@ -26,6 +26,7 @@ const reducer = (state = initialState, action) => {
       }
 
       case actionTypes.UPDATE_SINGLE_TRANSFER:
+        console.log("Reducer: updating transferBookings", action.payload);
         return {
          ...state,
          transferBookings: action.payload

@@ -77,6 +77,9 @@ const Flight = (props) => {
             resultIndex: props.data?.result_index,
             finalFare: props.data?.final_fare,
             isRefundable: props.data?.is_refundable,
+            duration:
+            props.data?.segments[props.data?.segments?.length-1]?.duration
+            
           }}
           isSelected={props.isSelected}
           selectedBooking={props.selectedBooking}
@@ -84,6 +87,7 @@ const Flight = (props) => {
           provider={props.provider}
           onSelect={props?.onSelect}
           trace_id={props?.trace_id}
+          onFlightSelect={props?.onFlightSelect}
         />
       </div>
       <div className="flex justify-center items-center">

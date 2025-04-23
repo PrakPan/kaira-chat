@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MdOutlineStar } from "react-icons/md";
+import { MdOutlineStar, MdStarHalf } from "react-icons/md";
 import { RiArrowDropDownLine, RiArrowDropUpLine } from "react-icons/ri";
 import { FaLocationDot } from "react-icons/fa6";
 import ImageLoader from "../../ImageLoader";
@@ -15,7 +15,7 @@ export const getStars = (rating) => {
     stars.push(<MdOutlineStar className="text-[#FFD201]" />);
   }
   if (Math.floor(rating) < rating) {
-    stars.push(<MdOutlineStar className="text-[#E3E3E3]" />);
+    stars.push(<MdStarHalf className="text-[#FFD201]" />);
   }
 
   return stars;

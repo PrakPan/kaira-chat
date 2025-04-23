@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { IoMenu, IoLocationSharp } from "react-icons/io5";
 import { RxCrossCircled } from "react-icons/rx";
 import { MdDone } from "react-icons/md";
@@ -776,6 +776,8 @@ const RouteEditSection = (props) => {
     return `${year}-${month}-${day}`;
   }
 
+  console.log("Props.routes",props?.routes)
+  const itinerary = useSelector(state => state.Itinerary)
   useEffect(() => {
     const cities = [];
     if (props?.routes) {
@@ -787,16 +789,18 @@ const RouteEditSection = (props) => {
             ...props.routes[i],
             city_name:
               props.routes[i]?.city_name || props.routes[i]?.city?.name,
-            checkin_date: getDate(
-              props.routes[i].checkin_date || props.routes[i]?.start_date
-            ),
-            checkout_date: getDate(
-              props.routes[i].checkout_date ||
+              checkin_date: getDate(
+                props.routes[i].checkin_date || props.routes[i]?.start_date || 
+                (i === 0 ? itinerary?.start_date : (i === props.routes.length - 1 ? itinerary?.end_date : null))
+              ),
+              checkout_date: getDate(
+                props.routes[i].checkout_date ||
                 addDaysToDate(
                   props.routes[i]?.start_date,
                   props.routes[i]?.duration
-                )
-            ),
+                ) ||
+                (i === 0 ? itinerary?.start_date : (i === props.routes.length - 1 ? itinerary?.end_date : null))
+              ),
             city_id: props?.routes[i]?.city_id || props?.routes[i]?.city?.id,
             place_id:
               props.routes[i]?.place_id || props.routes[i]?.gmaps_place_id,
@@ -851,7 +855,7 @@ const RouteEditSection = (props) => {
 
   const validateDates = () => {
     const today = new Date();
-
+    console.log("Valid D",destinations)
     if (
       !new Date(startDate) ||
       isNaN(Date.parse(startDate)) ||
@@ -869,7 +873,9 @@ const RouteEditSection = (props) => {
 
     let prevDate = new Date(startDate);
 
+    
     for (let i = 1; i < destinations.length - 1; i++) {
+
       const checkin_date = getDate(destinations[i].cityData.checkin_date);
       const checkout_date = getDate(destinations[i].cityData.checkout_date);
 
@@ -1051,7 +1057,7 @@ const RouteEditSection = (props) => {
     } else {
       setIsValidDates(false);
     }
-
+    console.log("Valid Dates",validateDates());
     logEvent({
       action: "Route Edit",
       params: {

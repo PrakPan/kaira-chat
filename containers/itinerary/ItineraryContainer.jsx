@@ -84,9 +84,10 @@ const ItineraryContainer = (props) => {
   const [editRoute, setEditRoute] = useState(false);
   const [showMercuryItinerary, setShowMercuryItinerary] = useState(false);
   const [cities, setCities] = useState([]);
-  const [cityTransferBookings, setCityTransferBookings] = useState(null);
+  // const [cityTransferBookings, setCityTransferBookings] = useState(null);
   const [loadbookings, setLoadBookings] = useState(false);
   const [loadpricing, setLoadPricing] = useState(false);
+  const cityTransferBookings = useSelector(state=>state.TransferBookings)?.transferBookings
 
   const [polling, setPolling] = useState(true);
 
@@ -408,7 +409,7 @@ const ItineraryContainer = (props) => {
         dispatch(setItineraryStatus("transfers_status", "SUCCESS"));
         const data = res.data;
         setTransferBookings(data);
-        setCityTransferBookings(data);
+        // setCityTransferBookings(data);
         dispatch(setTransfersBookings(data));
       })
       .catch((err) => {

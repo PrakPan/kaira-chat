@@ -104,6 +104,8 @@ const MidSectionV2 = (props) => {
   );
   const isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
 
+  console.log("All Book",props.cityTransferBookings, props.flightBookings, selectedBooking )
+
   useEffect(() => {
     if (props.cityTransferBookings && props.flightBookings) {
       let booking = null;
@@ -112,6 +114,7 @@ const MidSectionV2 = (props) => {
           ...props.flightBookings,
           ...props.cityTransferBookings,
         ];
+        
         booking = allBookings.find(
           (book) => book.id === props?.bookings[0]?.id
         );
@@ -370,8 +373,8 @@ const MidSectionV2 = (props) => {
         destinationCityId={
           props?.dCityData?.city?.id || props?.dCityData?.gmaps_place_id
         }
-        origin_itinerary_city_id={props?.oCityData?.id}
-        destination_itinerary_city_id={props?.dCityData?.id}
+        origin_itinerary_city_id={props?.oCityData?.id || props?.oCityData?.gmaps_place_id}
+        destination_itinerary_city_id={props?.dCityData?.id || props?.dCityData?.gmaps_place_id}
       />
     </Container>
   );

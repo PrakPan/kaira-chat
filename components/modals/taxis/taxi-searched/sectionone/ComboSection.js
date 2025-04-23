@@ -152,6 +152,7 @@ const ComboSection = (props) => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
+
   const handleUpdate = (data) => {
     if (props.onSelect) {
       props?.onSelect(data);
@@ -242,7 +243,7 @@ const ComboSection = (props) => {
 
           {isPageWide && <ModelText>{props.data?.taxi_category?.model_name}</ModelText>}
           
-          <RouteContainer>
+          {/* <RouteContainer>
             <Location>
               {props.selectedBooking.city}
             </Location>
@@ -259,7 +260,7 @@ const ComboSection = (props) => {
             <Location>
               {props.selectedBooking.destination_city}
             </Location>
-          </RouteContainer>
+          </RouteContainer> */}
 
           <TripInfoContainer>
             <ImageLoader
@@ -298,7 +299,14 @@ const ComboSection = (props) => {
               {loading ? (
                 <PulseLoader size={8} speedMultiplier={0.6} color="#111" />
               ) : (
-                <input type="checkbox" onClick={()=>handleUpdate({...props?.data,"booking_type":"Taxi"})}></input>
+                <input type="checkbox" 
+                //onClick={()=>handleUpdate({...props?.data,"booking_type":"Taxi"})}
+                checked={props.isSelected}
+                onChange={() => { 
+                  props.onTaxiSelect?.(props?.index);
+                  handleUpdate({ ...props.data, booking_type: "Taxi" });
+                }}
+                ></input>
               )}
             </PriceActionContainer>
           </TripInfoContainer>
