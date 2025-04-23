@@ -482,6 +482,15 @@ const ComboFlight = (props) => {
           setClassType={setClassType}
           handleTransferEdit={handleTransferEdit}
           mercuryTransfer={props?.mercuryTransfer}
+          preferred_departure_time= {`${
+            props?.comboStartTime && props?.comboStartDate ? dayjs(getISOStringFromDateAndTime(props?.comboStartDate,props?.comboStartTime)).format("YYYY-MM-DDTHH:mm:ss") : 
+            props?.selectedBooking?.check_in
+              ? new Date(props?.selectedBooking?.check_in.replace(" ", "T"))
+                  ?.toISOString()
+                  ?.slice(0, 19)
+              : new Date()?.toISOString()?.slice(0, 19)
+  
+          }`}
         ></ComboSection>
 
         <GridContainer style={{ clear: "right" }}>

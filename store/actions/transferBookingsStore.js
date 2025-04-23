@@ -52,17 +52,15 @@ export const updateSingleTransferBooking = (keyPath, data) => {
     const currentTransferBookings = state.TransferBookings?.transferBookings;
 
 
-    console.log("Current Transfer", currentTransferBookings)
     if (!currentTransferBookings) {
       console.error("Transfer bookings not found in state");
       return;
     }
   
     const updatedData = JSON.parse(JSON.stringify(currentTransferBookings));
+
     if (updatedData.intercity && updatedData.intercity[keyPath]) {
       updatedData.intercity[keyPath] = data;
-
-      console.log("Updated Data",updatedData)
       dispatch({
         type: actionTypes.UPDATE_SINGLE_TRANSFER,
         payload: updatedData,

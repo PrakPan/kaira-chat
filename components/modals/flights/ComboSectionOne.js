@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { MdSort } from "react-icons/md";
 import { Pax } from "../../drawers/activityDetails/Pax";
+import dayjs from "dayjs";
 
 const ComboSection = (props) => {
   const {
@@ -10,7 +11,8 @@ const ComboSection = (props) => {
     setPax,
     _FetchFlightsHandler,
     setHideFlightModal,
-    flightCount
+    flightCount,
+    preferred_departure_time
   } = props;
 
   const [showPax, setShowPax] = useState(false);
@@ -100,7 +102,7 @@ const ComboSection = (props) => {
           <div className="flex flex-row flex-1 justify-between">
             <div>
               <span className="text-sm text-gray-600 mb-1">Departure Date: &nbsp; </span>
-              <span className="font-semibold">10 April, 2025</span>
+              <span className="font-semibold">{dayjs(preferred_departure_time)?.format("DD MMM, YYYY")}</span>
             </div>
             <div 
               className="p-1 border flex flex-row items-center cursor-pointer"
@@ -116,7 +118,7 @@ const ComboSection = (props) => {
       <div className="w-full sm:w-1/2">
         <div className="relative">
           <div className="flex items-center w-full p-2 bg-gray-100  border-gray-200 rounded-md text-gray-800">
-            <span className="mr-2 font-medium">Departure From |</span>
+            <span className="mr-2 font-medium">Departure from |</span>
             <span className="">{getTimeDisplay(filtersState.departure_time_period)}</span>
             <div className="absolute inset-y-0 right-0 flex items-center pr-3">
               <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

@@ -659,16 +659,62 @@ const TransferEditDrawer = (props) => {
                         </>
                       ) : (
                         <RouteContainer
-                          key={index}
-                          transferIndex={index}
-                          transfer={transfer}
-                          handleSelect={handleSelect}
-                          selectedResult={selectedResult}
-                          setShowMercuryTransfer={setShowMercuryTransfer}
-                          setSelectedMercuryTransfer={
-                            setSelectedMercuryTransfer
-                          }
-                          mercury={true}
+                        setSelectedMercuryTransfer={setSelectedMercuryTransfer}
+                        key={index}
+                        transferIndex={index}
+                        transfer={transfer?.transfers}
+                        handleSelect={handleSelect}
+                        selectedResult={selectedResult}
+                        setCurrentStep={setCurrentStep}
+                        currentStep={currentStep}
+                        handleFlightSelect={handleSelectResult}
+                        showComboFlightModal={showComboFlightModal}
+                        setShowComboFlightModal={setShowComboFlightModal}
+                        setHideFlightModal={() =>
+                          setShowComboFlightModal(false)
+                        }
+                        setHideBookingModal={() =>
+                          setShowComboFlightModal(false)
+                        }
+                        showTaxiModal={showComboTaxiModal}
+                        setShowComboTaxiModal={setShowComboTaxiModal}
+                        // setHideBookingModal={() => setShowTaxiModal(false)}
+                        setHideTaxiModal={() =>
+                          setShowComboTaxiModal(false)
+                        }
+                        getPaymentHandler={props.getPaymentHandler}
+                        _updatePaymentHandler={props._updatePaymentHandler}
+                        _updateFlightBookingHandler={
+                          props._updateFlightBookingHandler
+                        }
+                        _updateBookingHandler={props._updateBookingHandler}
+                        alternates={selectedBooking?.id}
+                        tailored_id={selectedBooking?.tailored_itinerary}
+                        // _updateFlightHandler={props._updateFlightHandler}
+                        selectedBooking={selectedBooking}
+                        itinerary_id={ItineraryId}
+                        selectedTransferHeading={selectedTransferHeading}
+                        fetchData={fetchData}
+                        setShowLoginModal={setShowLoginModal}
+                        check_in={check_in}
+                        _GetInTouch={props._GetInTouch}
+                        daySlabIndex={day_slab_index}
+                        elementIndex={element_index}
+                        routeId={routeId}
+                        mercuryTransfer={selectedMercuryTransfer}
+                        individual={props?.individual}
+                        originCityId={props?.originCityId}
+                        destinationCityId={props?.destinationCityId}
+                        token={props?.token}
+                        origin_itinerary_city_id={origin_itinerary_city_id}
+                        destination_itinerary_city_id={
+                          destination_itinerary_city_id
+                        }
+                        setShowDrawer={setShowDrawer}
+                        dCityData={dCityData}
+                        oCityData={oCityData}
+                        openNotification={openNotification}
+                        showDrawer={showDrawer}
                         />
                       );
                     return (
@@ -857,10 +903,47 @@ export default connect(mapStateToPros, mapDispatchToProps)(TransferEditDrawer);
 const RouteContainer = (props) => {
   const {
     transferIndex,
-    transfer,
-    handleSelect,
-    selectedResult,
-    setSelectedMercuryTransfer,
+  transfer,
+  handleSelect,
+  selectedResult,
+  setCurrentStep,
+  currentStep,
+  handleFlightSelect,
+  showComboFlightModal,
+  setShowComboFlightModal,
+  setHideFlightModal,
+  setHideBookingModal,
+  showTaxiModal,
+  setHideTaxiModal,
+  setShowComboTaxiModal,
+  getPaymentHandler,
+  _updatePaymentHandler,
+  _updateFlightBookingHandler,
+  _updateBookingHandler,
+  alternates,
+  tailored_id,
+  selectedBooking,
+  itinerary_id,
+  selectedTransferHeading,
+  fetchData,
+  setShowLoginModal,
+  check_in,
+  _GetInTouch,
+  daySlabIndex,
+  elementIndex,
+  routeId,
+  mercuryTransfer,
+  individual,
+  originCityId,
+  destinationCityId,
+  token,
+  destination_itinerary_city_id,
+  origin_itinerary_city_id,
+  setShowDrawer,
+  dCityData,
+  oCityData,
+  openNotification,
+  setSelectedMercuryTransfer
   } = props;
   const [viewMore, setViewMore] = useState(false);
   const [singleTransfer, setSingleTransfer] = useState(transfer[0]);
@@ -868,6 +951,74 @@ const RouteContainer = (props) => {
   const handleViewMore = () => {
     setViewMore((prev) => !prev);
   };
+
+  if (singleTransfer?.mode === "Flight") {
+    return (
+      <ComboFlight
+        handleFlightSelect={handleFlightSelect}
+        showComboFlightModal={showComboFlightModal}
+        setShowComboFlightModal={setShowComboFlightModal}
+        setHideFlightModal={setHideFlightModal}
+        setHideBookingModal={setHideBookingModal}
+        getPaymentHandler={getPaymentHandler}
+        _updatePaymentHandler={_updatePaymentHandler}
+        _updateFlightBookingHandler={
+          _updateFlightBookingHandler
+        }
+        _updateBookingHandler={_updateBookingHandler}
+        alternates={alternates}
+        tailored_id={tailored_id}
+        selectedBooking={selectedBooking}
+        itinerary_id={itinerary_id}
+        selectedTransferHeading={selectedTransferHeading}
+        fetchData={fetchData}
+        setShowLoginModal={setShowLoginModal}
+        check_in={check_in}
+        _GetInTouch={_GetInTouch}
+        daySlabIndex={daySlabIndex}
+        elementIndex={elementIndex}
+        routeId={routeId}
+        mercuryTransfer={mercuryTransfer}
+        individual={individual}
+        originCityId={originCityId}
+        destinationCityId={destinationCityId}
+
+      />
+    );
+  }
+  if (singleTransfer?.mode === "Taxi") {
+    return (
+      <ComboTaxi
+        handleFlightSelect={handleFlightSelect}
+        showTaxiModal={showTaxiModal}
+        setShowComboTaxiModal={setShowComboTaxiModal}
+        setHideTaxiModal={setHideTaxiModal}
+        setHideBookingModal={setHideBookingModal}
+        getPaymentHandler={getPaymentHandler}
+        _updatePaymentHandler={_updatePaymentHandler}
+        _updateFlightBookingHandler={
+          _updateFlightBookingHandler
+        }
+        _updateBookingHandler={_updateBookingHandler}
+        alternates={alternates}
+        tailored_id={tailored_id}
+        selectedBooking={selectedBooking}
+        itinerary_id={itinerary_id}
+        selectedTransferHeading={selectedTransferHeading}
+        fetchData={fetchData}
+        setShowLoginModal={setShowLoginModal}
+        check_in={check_in}
+        _GetInTouch={_GetInTouch}
+        daySlabIndex={daySlabIndex}
+        elementIndex={elementIndex}
+        routeId={routeId}
+        mercuryTransfer={mercuryTransfer}
+        individual={individual}
+        originCityId={originCityId}
+        destinationCityId={destinationCityId}
+      />
+    );
+  }
 
   return (
     <div
@@ -1765,7 +1916,7 @@ const NewMultiModeContainer = ({
                       >
                         {updateLoading ? (
                           <PulseLoader
-                            size={12}
+                            size={15}
                             speedMultiplier={0.6}
                             color="#FFFFFF"
                             cssOverride={{
