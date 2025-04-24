@@ -262,12 +262,11 @@ const ItineraryContainer = (props) => {
         }
       }
 
-      console.log("Prepared stays data:", stays); // Log the final stays data before dispatching
+      console.log("Prepared stays data:", stays); 
 
       setStayBookings(stays);
       dispatch(setStays(stays));
-      dispatch(setItineraryStatus("hotels_status", "SUCCESS")); // Dispatch the success action
-      console.log("State after dispatch:", stays); // Log the state after dispatching
+      dispatch(setItineraryStatus("hotels_status", "SUCCESS"));
 
       props.setBookings({
         ...props.bookings,
@@ -443,13 +442,6 @@ const ItineraryContainer = (props) => {
         }
 
         if (
-          status?.ITINERARY === "SUCCESS" &&
-          status?.TRANSFERS === "SUCCESS" &&
-          status?.PRICING === "SUCCESS" &&
-          status?.HOTELS === "SUCCESS"
-        ) {
-          setPolling(false);
-        } else if (
           status?.ITINERARY === "FAILURE" &&
           status?.TRANSFERS === "FAILURE" &&
           status?.PRICING === "FAILURE" &&
@@ -466,6 +458,14 @@ const ItineraryContainer = (props) => {
           status?.TRANSFERS,
           status?.PRICING
         );
+        if (
+          status?.ITINERARY === "SUCCESS" &&
+          status?.TRANSFERS === "SUCCESS" &&
+          status?.PRICING === "SUCCESS" &&
+          status?.HOTELS === "SUCCESS"
+        ) {
+          setPolling(false);
+        }
       } catch (err) {
         console.error("[ERROR]: axiosGetItineraryStatus: ", err.message);
       }

@@ -313,7 +313,7 @@ if (props?.CityData) {
               dayslab={props?.day_by_day}
               lat={props?.CityData[i]?.city?.latitude || props?.CityData[i]?.latitude}
               long={props?.CityData[i]?.city?.longitude || props?.CityData[i]?.longitude}
-              Mapid={props?.CityData[i]?.place_id || 'ChIJ78XjhlaF4TgRxgXjwXxLJGY'}
+              Mapid={props?.CityData[i]?.gmaps_place_id || 'ChIJ78XjhlaF4TgRxgXjwXxLJGY'}
               city={props?.CityData[i]?.city?.name || props?.CityData[i]?.city_name}
               cityId={props?.CityData[i]?.city?.id}
               duration={
@@ -332,10 +332,10 @@ if (props?.CityData) {
           if (i < props?.CityData.length - 1) {
             let key;
             if(i+1 < props?.CityData.length - 1){
-            key = `${(props?.CityData[i]?.place_id!=undefined ? props?.CityData[i]?.place_id : props?.CityData[i]?.id) + ":" + props?.CityData[i+1]?.id}`;
+            key = `${(props?.CityData[i]?.gmaps_place_id!=undefined ? props?.CityData[i]?.gmaps_place_id : props?.CityData[i]?.id) + ":" + props?.CityData[i+1]?.id}`;
             }
             else {
-              key = `${(props?.CityData[i]?.place_id ? props?.CityData[i]?.place_id : props?.CityData[i]?.id) + ":" + (props?.CityData[i+1]?.place_id ? props?.CityData[i+1]?.place_id : props?.CityData[i+1]?.id)}`;
+              key = `${(props?.CityData[i]?.gmaps_place_id ? props?.CityData[i]?.gmaps_place_id : props?.CityData[i]?.id) + ":" + (props?.CityData[i+1]?.gmaps_place_id ? props?.CityData[i+1]?.gmaps_place_id : props?.CityData[i+1]?.id)}`;
             }
             console.log("Keys",key);
             locationsArr.push(
@@ -353,9 +353,9 @@ if (props?.CityData) {
                 transportMode={props?.CityData[i]?.transfers}
                 duration={props?.CityData[i]?.duration}
                 _GetInTouch={props?._GetInTouch}
-                originCity={props?.CityData[i]?.place_id ? props?.CityData[i]?.place_id : props?.CityData[i]?.city?.id}
+                originCity={props?.CityData[i]?.gmaps_place_id ? props?.CityData[i]?.gmaps_place_id : props?.CityData[i]?.city?.id}
                 city={props?.CityData[i]?.city?.name || props?.CityData[i]?.city_name}
-                destinationCity={props?.CityData[i+1]?.place_id ? props?.CityData[i+1]?.place_id : props?.CityData[i+1]?.city?.id}
+                destinationCity={props?.CityData[i+1]?.gmaps_place_id ? props?.CityData[i+1]?.gmaps_place_id : props?.CityData[i+1]?.city?.id}
                 dcity={props?.CityData[i+1]?.city?.name || props?.CityData[i+1]?.city_name}
                 oCityData={props?.CityData[i]}
                 dCityData={props?.CityData[i+1]}

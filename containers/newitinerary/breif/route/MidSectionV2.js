@@ -373,13 +373,13 @@ const MidSectionV2 = (props) => {
         selectedBooking={props?.cityTransferBookings}
         setSelectedBooking={setSelectedBooking}
         originCityId={
-          props?.oCityData?.city?.id || props?.oCityData?.place_id
+          props?.oCityData?.city?.id || props?.oCityData?.gmaps_place_id
         }
         destinationCityId={
-          props?.dCityData?.city?.id || props?.dCityData?.place_id
+          props?.dCityData?.city?.id || props?.dCityData?.gmaps_place_id
         }
-        origin_itinerary_city_id={props?.oCityData?.id || props?.oCityData?.place_id || props?.oCityData?.place_id}
-        destination_itinerary_city_id={props?.dCityData?.id || props?.dCityData?.place_id || props?.dCityData?.place_id}
+        origin_itinerary_city_id={props?.oCityData?.id || props?.oCityData?.gmaps_place_id || props?.oCityData?.gmaps_place_id}
+        destination_itinerary_city_id={props?.dCityData?.id || props?.dCityData?.gmaps_place_id || props?.dCityData?.gmaps_place_id}
       />
     </Container>
   );

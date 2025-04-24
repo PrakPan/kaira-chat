@@ -19,11 +19,17 @@ const ComboSection = (props) => {
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
   const [timeSlots, setTimeSlots] = useState([]);
   const [selectedTime, setSelectedTime] = useState(null);
+  const [showSortDropdown, setShowSortDropdown] = useState(false);
+
 
   useEffect(() => {
     if (preferred_departure_time) {
       const slots = [];
-      let baseTime = dayjs(preferred_departure_time);
+      let Time = dayjs(preferred_departure_time);
+      const date = new Date(Time);
+      date.setHours(0, 0, 0, 0);
+
+      let baseTime = dayjs(date.toISOString()); 
       
       const minutes = baseTime.minute();
       const remainder = minutes % 30;
@@ -139,6 +145,23 @@ const ComboSection = (props) => {
       if (showTimeDropdown && !event.target.closest('.time-dropdown-container')) {
         setShowTimeDropdown(false);
       }
+      if (showSortDropdown && !event.target.closest('.sort-dropdown-container')) {
+        setShowSortDropdown(false);
+      }
+    };
+  
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showTimeDropdown, showSortDropdown]);
+  
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showTimeDropdown && !event.target.closest('.time-dropdown-container')) {
+        setShowTimeDropdown(false);
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
@@ -180,21 +203,6 @@ const ComboSection = (props) => {
               <span className="font-semibold">
                 {dayjs(preferred_departure_time)?.format("DD MMM, YYYY")}
               </span>
-            </div>
-            
-          </div>
-
-          <div className="flex flex-col sm:flex-row justify-between mb-4 w-full gap-2">
-            <div className="w-full sm:w-auto">
-              <div
-                className="p-2 border flex flex-row items-center cursor-pointer rounded-md hover:bg-gray-50"
-                onClick={handleSortChange}
-              >
-                <MdSort className="mr-1" />
-                <span className="text-sm">
-                  Sort: {filtersState.sort_by} ({filtersState.order})
-                </span>
-              </div>
             </div>
             
             <div className="time-dropdown-container relative w-full sm:w-auto">
@@ -243,6 +251,45 @@ const ComboSection = (props) => {
               )}
             </div>
           </div>
+
+          <div className="relative sm:w-auto">
+  <div
+    className="p-2 border w-[15rem] flex flex-row items-center cursor-pointer rounded-md hover:bg-gray-50"
+    onClick={() => setShowSortDropdown(prev => !prev)}
+  >
+    <MdSort className="mr-1" />
+    <span className="text-sm">
+      Sort: {filtersState.sort_by} {filtersState.order === "asc" ? "(Low to High)" : "(High to Low)"}
+    </span>
+  </div>
+
+  {showSortDropdown && (
+    <div className="absolute z-10 bg-white border rounded-md shadow-lg mt-1 w-48">
+      {[
+        { label: "Price (Low to High)", sort_by: "Price", order: "asc" },
+        { label: "Price (High to Low)", sort_by: "Price", order: "desc" },
+        { label: "Duration (Short to Long)", sort_by: "Duration", order: "asc" },
+        { label: "Duration (Long to Short)", sort_by: "Duration", order: "desc" },
+      ].map((option, idx) => (
+        <div
+          key={idx}
+          className="p-2 hover:bg-blue-50 cursor-pointer text-sm"
+          onClick={() => {
+            setFiltersState({
+              ...filtersState,
+              sort_by: option.sort_by,
+              order: option.order,
+            });
+            setShowSortDropdown(false);
+          }}
+        >
+          {option.label}
+        </div>
+      ))}
+    </div>
+  )}
+</div>
+
         </div>
       </div>
 

@@ -483,9 +483,9 @@ const TransferEditDrawer = (props) => {
         {loadingTransfers ? (
           <div className="mt-10 w-full flex flex-col gap-3 items-center">
             <div className="w-full flex flex-row items-center gap-3 bg-gray-200 rounded-lg p-2 shadow-sm animate-pulse">
-              <div className="flex items-center justify-center">
+              {/* <div className="flex items-center justify-center">
                 <div className="w-16 h-16 flex items-center justify-center rounded-full bg-gray-300"></div>
-              </div>
+              </div> */}
               <div className="w-full h-full flex flex-col space-y-6 items-center justify-between">
                 <div className="w-full flex flex-row space-x-3 items-start justify-between">
                   <div className="bg-gray-300 w-3/4 h-16 rounded-lg"></div>
@@ -499,9 +499,9 @@ const TransferEditDrawer = (props) => {
             </div>
 
             <div className="w-full flex flex-row gap-3 bg-gray-200 rounded-lg p-2 shadow-sm animate-pulse">
-              <div className="flex items-center justify-center">
+              {/* <div className="flex items-center justify-center">
                 <div className="w-16 h-16 flex items-center justify-center rounded-full bg-gray-300"></div>
-              </div>
+              </div> */}
               <div className="w-full h-full flex flex-col space-y-6 items-center justify-between">
                 <div className="w-full flex flex-row space-x-3 items-start justify-between">
                   <div className="bg-gray-300 w-3/4 h-16 rounded-lg"></div>
@@ -515,9 +515,9 @@ const TransferEditDrawer = (props) => {
             </div>
 
             <div className="w-full flex flex-row gap-3 bg-gray-200 rounded-lg p-2 shadow-sm animate-pulse">
-              <div className="flex items-center justify-center">
+              {/* <div className="flex items-center justify-center">
                 <div className="w-16 h-16 flex items-center justify-center rounded-full bg-gray-300"></div>
-              </div>
+              </div> */}
               <div className="w-full h-full flex flex-col space-y-6 items-center justify-between">
                 <div className="w-full flex flex-row space-x-3 items-start justify-between">
                   <div className="bg-gray-300 w-3/4 h-16 rounded-lg"></div>
@@ -1834,18 +1834,13 @@ const NewMultiModeContainer = ({
                   if (option.prices && option.prices.length > 0) {
                     return option.prices.map((priceOption, priceIndex) => {
                       const price = priceOption.price || 0;
-                      const currency = priceOption.currency || "INR";
+                      const currency = priceOption.currency === "INR" ?  "₹" : priceOption.currency;
                       const priceOptionId = `${option.id}-${priceIndex}`;
 
                       return (
                         <div
                           key={`${option.id}-price-${priceIndex}`}
-                          className={`flex flex-col md:flex-row justify-between bg-white p-3 md:p-4 border-b rounded-md 
-                            ${
-                              selectedModeIds[currentStep - 1] === priceOptionId
-                                ? "border border-yellow-400 bg-yellow-50"
-                                : "border"
-                            }
+                          className={`flex flex-col md:flex-row justify-between bg-white p-3 md:p-4 border-b
                           `}
                         >
                           <div className="flex gap-2 md:gap-3 mb-2 md:mb-0">
@@ -1860,14 +1855,14 @@ const NewMultiModeContainer = ({
                                   : ""}
                               </div>
                               <div className="text-xs md:text-sm text-gray-600">
-                                {option.duration} minutes | {option.distance}{" "}
+                              {Math.floor(option?.duration/60) + "-" + Math.ceil(option?.duration / 60)} hours | {option.distance}{" "}
                                 kms
                               </div>
                               <div className="text-xs md:text-sm">
-                                <span className="font-semibold">From:</span>{" "}
-                                {option.source.name} |{" "}
-                                <span className="font-semibold">To:</span>{" "}
-                                {option.destination.name}
+                                <span className="font-semibold">Facilities:</span>{" "}
+                                {priceOption?.class} {" "}
+                                {/* <span className="font-semibold">To:</span>{" "}
+                                {option.destination.name} */}
                               </div>
                               {priceOption.description && (
                                 <div className="text-xs md:text-sm text-gray-700 mt-1">
