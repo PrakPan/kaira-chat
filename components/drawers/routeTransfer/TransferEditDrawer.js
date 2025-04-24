@@ -1249,6 +1249,8 @@ const NewMultiModeContainer = ({
   const [skipFlightFetch, setSkipFlightFetch] = useState(false);
   const [skipTaxiFetch, setSkipTaxiFetch] = useState(false);
   const [hasAppliedFilters, setHasAppliedFilters] = useState(false);
+  const [currentModeDepartureDate,setCurrentModeDepartureDate] = useState(null);
+  const [currentModeDepartureTime,setCurrentModeDepartureTime] = useState(null)
 
   const sequencedModes = transfer.map((t) => t.mode);
 
@@ -1537,87 +1539,68 @@ const NewMultiModeContainer = ({
   };
 
   const addDaysToDate = (dateString, numberOfDays) => {
-    const date = new Date(dateString);
-    const newDate = add(date, { days: numberOfDays });
-    const formattedDate = format(newDate, "yyyy-MM-dd");
-    return formattedDate;
+    const newDate = dayjs(dateString).add(numberOfDays, 'day');
+    return newDate.format("YYYY-MM-DD");
   };
 
   useEffect(() => {
     if (currentStep < 1 || currentStep > transfer.length) return;
-
+  
     const currentTransfer = transfer[currentStep - 1];
 
-    console.log("Boooo", selectedBooking);
+ 
     const baseStartDate = selectedBooking?.check_in
       ? dayjs(selectedBooking?.check_in).format("YYYY-MM-DD")
-      : dCityData?.start_date ??
-        (oCityData?.start_date && oCityData?.duration != null
+      : dCityData?.start_date ?? (
+        oCityData?.start_date && oCityData?.duration != null
           ? addDaysToDate(oCityData.start_date, oCityData.duration)
-          : null);
-
-    let calculatedStartTime = dayjs(`${baseStartDate} 10:00`);
-
-    console.log(
-      "Dates",
-      dCityData?.start_date,
-      oCityData?.start_date,
-      oCityData?.duration,
-      baseStartDate
-    );
-
-    let totalDuration = 0;
-    for (let i = 0; i < currentStep - 1; i++) {
-      const prevSelected = selectedData[i];
-      const prevTransfer = currentStep >= 2 ? transfer[currentStep - 2] : null;
-      if (prevSelected?.duration || prevTransfer?.duration) {
-        totalDuration += prevSelected?.duration
-          ? prevSelected?.duration || prevSelected?.duration?.value
-          : prevTransfer?.duration;
+          : null
+      );
+  
+      console.log("Start Dtae",selectedBooking,selectedBooking?.check_in,dCityData?.start_date,oCityData.start_date, oCityData.duration,baseStartDate)
+    let calculatedStartTime;
+  
+    if (currentStep === 1) {
+      calculatedStartTime = dayjs(`${baseStartDate} 12:00`);
+    } else {
+      const prevSelected = selectedData[currentStep - 2];
+      const prevArrivalTime = prevSelected?.arrival_time;
+  
+      if (prevArrivalTime) {
+        let arrivalMoment = dayjs(prevArrivalTime); 
+        calculatedStartTime = arrivalMoment.add(1, 'hour'); 
+        const updatedStartDate = calculatedStartTime.format("YYYY-MM-DD");
+        setComboStartDate(updatedStartDate);
+      } else {
+        calculatedStartTime = dayjs(`${baseStartDate} 12:00`);
       }
     }
-
-    calculatedStartTime = calculatedStartTime.add(totalDuration, "minute");
-
+    setCurrentModeDepartureDate(calculatedStartTime.format("YYYY-MM-DD"))
+    setComboStartDate(calculatedStartTime.format("YYYY-MM-DD"))
+    setComboStartTime(calculatedStartTime.format("HH:mm"));
+    setCurrentModeDepartureTime(calculatedStartTime.format("HH:mm"))
+  
     if (["Flight", "Taxi"].includes(currentTransfer.mode)) {
-      calculatedStartTime = calculatedStartTime.add(60, "minute");
-      setComboStartDate(baseStartDate);
-      setComboStartTime(calculatedStartTime.format("HH:mm"));
-      console.log("TIMEE", calculatedStartTime.format("HH:mm"));
-    }
-
-    if (!selectedModeIds[currentStep - 1]) {
-      if (
-        currentTransfer.mode !== "Flight" &&
-        currentTransfer.mode !== "Taxi"
-      ) {
-        handleSelect(currentStep - 1, null, "", currentTransfer.mode);
-      } else {
-        handleSelect(
-          currentStep - 1,
-          currentTransfer,
-          "",
-          currentTransfer.mode
-        );
-
+      if (!selectedModeIds[currentStep - 1]) {
+        handleSelect(currentStep - 1, currentTransfer, "", currentTransfer.mode);
+  
         if (currentTransfer.mode === "Flight") {
-          if (!skipFlightFetch) {
-            setShowComboFlightModal(true);
-          } else {
-            setSkipFlightFetch(false);
-          }
+          if (!skipFlightFetch) setShowComboFlightModal(true);
+          else setSkipFlightFetch(false);
         }
-
+  
         if (currentTransfer.mode === "Taxi") {
-          if (!skipTaxiFetch) {
-            setShowComboTaxiModal(true);
-          } else {
-            setSkipTaxiFetch(false);
-          }
+          if (!skipTaxiFetch) setShowComboTaxiModal(true);
+          else setSkipTaxiFetch(false);
         }
+      }
+    } else {
+      if (!selectedModeIds[currentStep - 1]) {
+        handleSelect(currentStep - 1, null, "", currentTransfer.mode);
       }
     }
   }, [currentStep, transfer]);
+  
 
   return (
     <div className="w-full bg-white">
@@ -1725,7 +1708,7 @@ const NewMultiModeContainer = ({
 
             <div className="flex flex-row justify-between items-center p-4 relative">
               <span className="text-[#2AAAFF] font-medium text-sm z-10 pr-3">
-                {sourceCity}
+                {transfer[currentStep - 1]?.source?.city_name}
               </span>
 
               <div className="absolute left-0 right-0 flex justify-center items-center">
@@ -1733,11 +1716,11 @@ const NewMultiModeContainer = ({
               </div>
 
               <span className="bg-gray-100 text-gray-700 text-sm px-4 py-1 rounded-full z-10 mx-4">
-                {totalDistance} km
+                {transfer[currentStep - 1]?.distance} km
               </span>
 
               <span className="text-green-600 font-medium text-sm z-10  pl-3">
-                {destinationCity}
+              {transfer[currentStep - 1]?.destination?.city_name}
               </span>
             </div>
 
@@ -1825,7 +1808,7 @@ const NewMultiModeContainer = ({
                         onSelect={handleTaxiSelection}
                         comboStartDate={comboStartDate}
                         comboStartTime={comboStartTime}
-                        skipFetch={skipTaxiFetch}
+                       // skipFetch={skipTaxiFetch}
                         onFilterApplied={handleFilterApplied}
                       />
                     );
@@ -1838,6 +1821,32 @@ const NewMultiModeContainer = ({
                       const priceOptionId = `${option.id}-${priceIndex}`;
 
                       return (
+                        <>
+
+<div className="p-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
+                          <div className="mb-2 sm:mb-0">
+                            <span className="text-sm text-gray-600">Departure Date: </span>
+                            <span className="font-semibold">
+                              {currentModeDepartureDate}
+                            </span>
+                          </div>
+              
+                          <div className="time-dropdown-container relative w-full sm:w-auto">
+                            <div
+                              className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
+                              onClick={() => setShowTimeDropdown(!showTimeDropdown)}
+                            >
+                              <span className="text-sm font-medium">
+                                Departure Time:{" "}
+                                {currentModeDepartureTime}
+                              </span>
+                            </div>
+              
+                            
+                          </div>
+                        </div>
+                        </div>
                         <div
                           key={`${option.id}-price-${priceIndex}`}
                           className={`flex flex-col md:flex-row justify-between bg-white p-3 md:p-4 border-b
@@ -1906,6 +1915,7 @@ const NewMultiModeContainer = ({
                             </div>
                           </div>
                         </div>
+                        </>
                       );
                     });
                   } else {

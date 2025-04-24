@@ -33,6 +33,8 @@ const Booking = (props) => {
       isSelected={props?.isSelected} 
       onTaxiSelect={props?.onTaxiSelect} 
       index={props?.index}
+      start_date={props?.start_date}
+      start_time={props?.start_time}
     ></ComboSection>
       :
       <SectionOne

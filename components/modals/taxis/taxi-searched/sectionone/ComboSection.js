@@ -8,6 +8,7 @@ import { getIndianPrice } from "../../../../../services/getIndianPrice";
 import Accordion, { AccordionDetails, AccordionSummary } from "../../../../ui/Accordion";
 import { connect } from "react-redux";
 import { openNotification } from "../../../../../store/actions/notification";
+import dayjs from "dayjs";
 
 
 // Styled components
@@ -188,11 +189,20 @@ const ComboSection = (props) => {
     // })
   }
 
+
+
   // Calculate bag capacity
   let bagCapacity = 0;
   if (props.data?.taxi_category?.bag_capacity) {
     bagCapacity += props.data.taxi_category.bag_capacity;
   }
+
+  const calculateArrivalTime = (startDate, startTime, durationInMinutes) => {
+    console.log("Selected Data", startDate, startTime, durationInMinutes);
+    const startDateTime = dayjs(`${startDate}T${startTime}`);
+    const arrivalDateTime = startDateTime.add(durationInMinutes, "minute");
+    return arrivalDateTime.format("YYYY-MM-DDTHH:mm:ss");
+  };
 
   if (!props.data) return null;
 
@@ -304,7 +314,18 @@ const ComboSection = (props) => {
                 checked={props.isSelected}
                 onChange={() => { 
                   props.onTaxiSelect?.(props?.index);
-                  handleUpdate({ ...props.data, booking_type: "Taxi" });
+                
+                  const arrivalTime = calculateArrivalTime(
+                    props.start_date,
+                    props.start_time,
+                    props.data?.duration?.value ?? 0
+                  );
+                
+                  handleUpdate({ 
+                    ...props.data, 
+                    booking_type: "Taxi",
+                    arrival_time: arrivalTime 
+                  });
                 }}
                 ></input>
               )}

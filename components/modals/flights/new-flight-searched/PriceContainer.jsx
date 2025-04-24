@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { getIndianPrice } from "../../../../services/getIndianPrice";
 import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im";
+import { duration } from "@mui/material/node/styles";
 
 export default function PriceContainer({
   data,
@@ -10,7 +11,7 @@ export default function PriceContainer({
   provider,
   onSelect,
   trace_id,
-  onFlightSelect
+  onFlightSelect,
 }) {
   const router = useRouter();
 
@@ -21,6 +22,7 @@ export default function PriceContainer({
     if (onSelect) {
       onSelect({
         ...data,
+        arrival_time: data?.duration,
         booking_type: "Flight",
         trace_id: trace_id || localStorage.getItem("Travclan_trace_id"),
       });

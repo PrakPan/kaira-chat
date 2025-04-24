@@ -14,6 +14,7 @@ import { openNotification } from "../../../store/actions/notification";
 import Skeleton from "./Skeleton";
 import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 import { fetchTransferMode } from "../../../services/bookings/FetchTaxiRecommendations";
+import dayjs from "dayjs";
 
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
@@ -66,6 +67,43 @@ const ComboTaxi = (props) => {
 
   console.log("START DATEEE",props?.comboStartDate,props?.comboStartTime);
 
+   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
+    const [timeSlots, setTimeSlots] = useState([]);
+    const [selectedTime, setSelectedTime] = useState(null);
+  
+    useEffect(() => {
+      if (props?.comboStartTime) {
+        const slots = [];
+        let Time = dayjs(props?.comboStartDate + "T" + props?.comboStartTime + ":00");
+        const date = new Date(Time);
+        date.setHours(0, 0, 0, 0);
+  
+        let baseTime = dayjs(date.toISOString());
+  
+        const minutes = baseTime.minute();
+        const remainder = minutes % 30;
+  
+        if (remainder > 0) {
+          baseTime = baseTime.add(30 - remainder, "minute");
+        }
+  
+        const endTime = baseTime
+          .startOf("day")
+          .add(1, "day")
+          .subtract(1, "minute");
+  
+        while (baseTime.isBefore(endTime) || baseTime.isSame(endTime)) {
+          slots.push({
+            value: baseTime.format("HH:mm"),
+            display: baseTime.format("h:mm A"),
+          });
+          baseTime = baseTime.add(30, "minute");
+        }
+  
+        setTimeSlots(slots);
+      }
+    }, [props?.comboStartTime]);
+
    const addDaysToDate = (dateString, numberOfDays) => {
         const date = new Date(dateString);
         const newDate = add(date, { days: numberOfDays });
@@ -79,6 +117,27 @@ const ComboTaxi = (props) => {
       fetchData();
     }
   }, [props.alternates, props.budget, props.showTaxiModal,props?.comboStartDate,props?.comboStartTime]);
+
+   useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (
+          showTimeDropdown &&
+          !event.target.closest(".time-dropdown-container")
+        ) {
+          setShowTimeDropdown(false);
+        }
+      };
+  
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, [showTimeDropdown]);
+
+    const handleTimeSelection = (slot) => {
+      setSelectedTime(slot.display);
+      setShowTimeDropdown(false);
+    };
 
   const fetchData = () => {
     console.log("Inside fetch dtaa");
@@ -272,6 +331,66 @@ const ComboTaxi = (props) => {
         <div>
           <GridContainer style={{ clear: "right" }}>
             <ContentContainer style={{ position: "relative" }}>
+              <div className="p-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
+                          <div className="mb-2 sm:mb-0">
+                            <span className="text-sm text-gray-600">Departure Date: </span>
+                            <span className="font-semibold">
+                              {dayjs(props?.comboStartDate)?.format("DD MMM, YYYY")}
+                            </span>
+                          </div>
+              
+                          <div className="time-dropdown-container relative w-full sm:w-auto">
+                            <div
+                              className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
+                              onClick={() => setShowTimeDropdown(!showTimeDropdown)}
+                            >
+                              <span className="text-sm font-medium">
+                                Departure Time:{" "}
+                                {dayjs(props?.comboStartDate + "T" + props?.comboStartTime + ":00")?.format("HH:mm A") ||
+                                  "Select Time"}
+                              </span>
+                              <svg
+                                className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
+                                  showTimeDropdown ? "transform rotate-180" : ""
+                                }`}
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M19 9l-7 7-7-7"
+                                ></path>
+                              </svg>
+                            </div>
+              
+                            {showTimeDropdown && (
+                              <div className="absolute z-10 w-full sm:w-64 mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
+                                <div className="sticky -top-1 bg-gray-100 p-2 border-b">
+                                  <span className="font-medium text-sm">Select Time</span>
+                                </div>
+                                <div className="p-1">
+                                  {timeSlots.map((slot, index) => (
+                                    <div
+                                      key={index}
+                                      className={`p-2 hover:bg-blue-50 cursor-pointer text-sm rounded-md ${
+                                        selectedTime === slot.display ? "bg-blue-100" : ""
+                                      }`}
+                                      onClick={() => handleTimeSelection(slot)}
+                                    >
+                                      {slot.display}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+              </div>
               {updateBookingState ? (
                 <div
                   style={{
@@ -306,6 +425,8 @@ const ComboTaxi = (props) => {
                         isSelected={selectedTaxiIndex === index}
                         onTaxiSelect={() => setSelectedTaxiIndex(index)}
                         index={index}
+                        start_date={props?.comboStartDate}
+                        start_time={props?.comboStartTime}
                       />
                     ))}
                     {loading && !quotes.length ? <Skeleton /> : null}

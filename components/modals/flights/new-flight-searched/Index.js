@@ -42,7 +42,7 @@ const Flight = (props) => {
   };
   return (
     <Container
-      className="relative border p-3 space-y-2"
+      className="relative border p-3 space-y-2 overflow-x-hidden"
       isSelected={props.isSelected}
       style={{ borderRadius: "10px" }}
     >
@@ -78,7 +78,7 @@ const Flight = (props) => {
             finalFare: props.data?.final_fare,
             isRefundable: props.data?.is_refundable,
             duration:
-            props.data?.segments[props.data?.segments?.length-1]?.duration
+            props.data?.segments[props.data?.segments?.length-1]?.destination?.arrival_time
             
           }}
           isSelected={props.isSelected}
