@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { BsInfoCircleFill } from "react-icons/bs";
+
 import RangeSliderInput from "../../../modals/bookingupdated/filtersmobile/RangeSlider";
 import Question from "../../Question";
+import media from "../../../media";
 
 export default function BudgetSlider(props) {
+  let isPageWide = media("(min-width: 768px)");
   const [value, setValue] = useState([
     props?.defaultValue?.min_price ?? 0,
     props?.defaultValue?.max_price ?? 3000,
@@ -11,6 +15,19 @@ export default function BudgetSlider(props) {
   const [maxPrice, setMaxPrice] = useState(
     props?.defaultValue?.max_price ?? 3000
   );
+  const [showTooltip, setShowTooltip] = useState(false);
+  const tooltipRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (tooltipRef.current && !tooltipRef.current.contains(event.target)) {
+        setShowTooltip(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleValueChange = (value) => {
     setValue(value);
@@ -46,9 +63,40 @@ export default function BudgetSlider(props) {
 
   return (
     <div className="flex flex-col gap-3 justify-start items-baseline">
-      <Question>
-        Your Stay Budget{" "}
-        <span className="text-sm font-normal"> &nbsp;(per night)</span> &nbsp;?{" "}
+      <Question className="w-full">
+        <div className="flex items-center relative w-full">
+          Your Stay Budget
+          <span className="text-sm font-normal">&nbsp;(per night)</span> &nbsp;
+          {props.tailoredForm ? (
+            <>
+              {isPageWide ? (
+                <BsInfoCircleFill
+                  onMouseEnter={() => setShowTooltip(true)}
+                  onMouseLeave={() => setShowTooltip(false)}
+                  className="text-primary cursor-pointer"
+                />
+              ) : (
+                <BsInfoCircleFill
+                  onClick={() => setShowTooltip((prev) => !prev)}
+                  className="text-primary cursor-pointer"
+                />
+              )}
+
+              {showTooltip && (
+                <div
+                  ref={tooltipRef}
+                  className={`z-50 absolute -top-[50px] text-xs font-medium bg-[#FFEFE5] p-2 rounded-md w-full shadow-2xl drop-shadow-xl`}
+                >
+                  Hotels in {props.destination} typically range from ₹
+                  {props.defaultValue.min_price} to ₹
+                  {props.defaultValue.max_price} per night
+                </div>
+              )}
+            </>
+          ) : (
+            "?"
+          )}
+        </div>
       </Question>
 
       <div className="w-full flex flex-col gap-4">
