@@ -67,7 +67,7 @@ const NewPoiDetailsDrawer = (props) => {
       dispatch(setItinerary(newItinerary));
       props.openNotification({
         type: "success",
-        text: "Booking Updated Successfuly",
+        text: `Added ${res?.data?.heading} Successfuly`,
         heading: "Success!",
       });
     } catch (error) {

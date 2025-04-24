@@ -22,8 +22,7 @@ import VehicleDetailModal from "../../../components/modals/daybyday/VehicleModal
 import TaxiDetailModal from "../../../components/modals/daybyday/TaxiDetailModal";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
-import { HiOutlineRefresh } from "react-icons/hi";
-import { FaPlane, FaPlaneDeparture } from "react-icons/fa";
+import { FaPlaneDeparture } from "react-icons/fa";
 const GridContainer = styled.div`
   width: auto;
   overflow: auto;
@@ -71,23 +70,55 @@ Line = styled.div`
   top: 0;
   left: 10px;
   bottom: 0;
-  right: -25px; // Adjust as needed
+  right: -25px;
 
   width: 2px;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    ${(props) => props.pinColour || "black"},
-    ${(props) => props.pinColour || "black"} 4px,
-    transparent 4px,
-    transparent 8px
-  );
-  background-repeat: repeat-y;
+  background-image: linear-gradient(
+      to bottom,
+      ${(props) => props.pinColour1 || "black"} 0%,
+      ${(props) => props.pinColour1 || "black"} 50%,
+      ${(props) => props.pinColour2 || "gray"} 50%,
+      ${(props) => props.pinColour2 || "gray"} 100%
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 4px,
+      black 4px,
+      black 8px
+    );
+  background-blend-mode: src-in;
 
   z-index: -1;
 
   @media screen and (min-width: 768px) {
     right: -81px;
   }
+`;
+
+const LineContainer = styled.div`
+  position: absolute;
+  top: 0;
+  left: 10px;
+  bottom: 0;
+  right: -25px;
+  width: 1px;
+  z-index: -1;
+  display: flex;
+  flex-direction: column;
+`;
+
+const HalfLine = styled.div`
+  width: 100%;
+  height: 50%;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    ${(props) => props.color || "black"},
+    ${(props) => props.color || "black"} 4px,
+    transparent 4px,
+    transparent 8px
+  );
+  background-repeat: repeat-y;
 `;
 
 const Line2 = styled.hr`
@@ -169,6 +200,8 @@ const TransferBooking = ({
   destinationCityId,
   loadbookings,
   mercuryItinerary,
+  pinColour1,
+  pinColour2,
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -358,9 +391,14 @@ const TransferBooking = ({
         </div>
       ) : booking?.transfer_type !== "combo" ? (
         booking?.id ? (
-          <Container >
+          <Container>
             <div className="relative">
-              <Line Transfers={Transfer} />
+              <LineContainer>
+                <HalfLine Transfers={Transfer} color={pinColour1} />
+                <HalfLine Transfers={Transfer} color={pinColour2} />
+              </LineContainer>
+
+              {/* <Line Transfers={Transfer} pinColour1={pinColour1} pinColour2={pinColour2}/> */}
             </div>
             <>
               {booking?.booking_type === "Flight" ? (
@@ -435,7 +473,7 @@ const TransferBooking = ({
                                 marginRight: "0.8rem",
                               }}
                               classname={"bg-[#D9D9D9] rounded-[11px]"}
-                              color="#C5C1C1"
+                              color="#000000"
                             />
                           </>
                         )}
@@ -477,13 +515,23 @@ const TransferBooking = ({
                               )}
                           </div>
                           <div className="flex sm:text-sm text-[14px] flex-row text-[#7A7A7A] font-light items-center">
-                            {booking?.type && (
-                              <div>
-                                {booking?.type}
-                                {booking?.transfer_details?.quote?.taxi_category
-                                  ?.type &&
-                                  `(${booking.transfer_details.quote.taxi_category.type})`}
-                              </div>
+                            {booking?.transfer_details?.mode == "Taxi" ? (
+                              <>
+                                {booking?.type && (
+                                  <div>
+                                    {booking?.transfer_details?.quote
+                                      ?.taxi_category?.type ||
+                                      booking?.transfer_details?.quote
+                                        ?.taxi_category?.type}
+
+                                    {"("}
+                                    {booking?.type}
+                                    {")"}
+                                  </div>
+                                )}
+                              </>
+                            ) : (
+                              <>{booking?.type}</>
                             )}
                           </div>
 
@@ -561,7 +609,7 @@ const TransferBooking = ({
                         {!payment?.paid_user && (
                           <>
                             {booking?.booking_type === "Taxi" ? (
-                              <div className="flex flex-row items-center justify-end cursor-pointer ">
+                              <div className="flex flex-row items-center justify-end cursor-pointer pr-2">
                                 {addbooking ? (
                                   <button
                                     onClick={() => {
@@ -593,19 +641,21 @@ const TransferBooking = ({
                                 )}
                               </div>
                             ) : (
-                              <button
-                                onclick={() =>
-                                  handleViewDetails(
-                                    router?.query?.id,
-                                    booking?.id,
-                                    booking?.transfer_details?.mode.toLowerCase()
-                                  )
-                                }
-                                className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
-                              >
-                                {/* Add Taxi */}
-                                View Details
-                              </button>
+                              <div className="pr-2">
+                                <button
+                                  onclick={() =>
+                                    handleViewDetails(
+                                      router?.query?.id,
+                                      booking?.id,
+                                      booking?.transfer_details?.mode.toLowerCase()
+                                    )
+                                  }
+                                  className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                                >
+                                  {/* Add Taxi */}
+                                  View Details
+                                </button>
+                              </div>
                             )}
                           </>
                         )}
@@ -648,7 +698,17 @@ const TransferBooking = ({
         ) : (
           <div className="grid w-full grid-cols-[30px_120px] min-h-[5rem] md:min-h-[8rem]">
             <div className="relative">
-              <Line Transfers={Transfer} end={end} />
+              <LineContainer>
+                <HalfLine Transfers={Transfer} color={pinColour1} />
+                <HalfLine Transfers={Transfer} color={pinColour2} />
+              </LineContainer>
+              {/* 
+              <Line
+                Transfers={Transfer}
+                end={end}
+                pinColour1={pinColour1}
+                pinColour2={pinColour2}
+              /> */}
             </div>
             {isPageWide ? (
               <button
@@ -694,7 +754,12 @@ const TransferBooking = ({
         booking?.children?.map((book, index) => (
           <ComboContainer>
             <div className="relative">
-              <Line Transfers={Transfer} />
+              <LineContainer>
+                <HalfLine Transfers={Transfer} color={
+                "#000000"
+                } />
+                <HalfLine Transfers={Transfer} color={"#000000"} />
+              </LineContainer>
             </div>
             {book?.booking_type === "Flight" ? (
               <>
@@ -781,13 +846,13 @@ const TransferBooking = ({
                                 marginRight: "0.8rem",
                               }}
                               classname={"bg-[#D9D9D9] rounded-[11px]"}
-                              color="#C5C1C1"
+                              color="#000000"
                             />
                           </>
                         )}
                       </div>
                       <div className="flex justify-between items-center w-full">
-                        <div className="flex flex-col lg:w-60 w-full">
+                        <div className="flex flex-col  w-full">
                           <div className="text-[16px] font-medium w-full">
                             {book?.booking_type == "Taxi" ? (
                               book?.transfer_details &&
@@ -811,17 +876,23 @@ const TransferBooking = ({
                             )}
                           </div>
                           <div className="flex sm:text-sm text-[14px]  flex-row text-[#7A7A7A] font-light items-center">
-                            {book?.type && (
-                              <div>
-                                {book?.transfer_details?.quote?.taxi_category
-                                  ?.type ||
-                                  book?.transfer_details?.quote?.taxi_category
-                                    ?.type}
+                            {book?.transfer_details?.mode == "Taxi" ? (
+                              <>
+                                {book?.type && (
+                                  <div>
+                                    {book?.transfer_details?.quote
+                                      ?.taxi_category?.type ||
+                                      book?.transfer_details?.quote
+                                        ?.taxi_category?.type}
 
-                                {"("}
-                                {book?.type}
-                                {")"}
-                              </div>
+                                    {"("}
+                                    {book?.type}
+                                    {")"}
+                                  </div>
+                                )}
+                              </>
+                            ) : (
+                              <>{book?.type}</>
                             )}
                           </div>
 
@@ -898,7 +969,7 @@ const TransferBooking = ({
                         {!payment?.paid_user && (
                           <>
                             {book?.booking_type === "Taxi" ? (
-                              <div className=" flex flex-row items-center justify-end cursor-pointer ">
+                              <div className=" flex flex-row items-center justify-end cursor-pointer pr-2">
                                 {addbooking ? (
                                   <button
                                     onClick={() => {
@@ -931,19 +1002,21 @@ const TransferBooking = ({
                                 )}
                               </div>
                             ) : (
-                              <button
-                                onclick={() =>
-                                  handleViewDetails(
-                                    router?.query?.id,
-                                    book?.id,
-                                    book?.transfer_details?.mode.toLowerCase()
-                                  )
-                                }
-                                className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
-                              >
-                                {/* Add Taxi */}
-                                View Details
-                              </button>
+                              <div className="pr-2">
+                                <button
+                                  onclick={() =>
+                                    handleViewDetails(
+                                      router?.query?.id,
+                                      book?.id,
+                                      book?.transfer_details?.mode.toLowerCase()
+                                    )
+                                  }
+                                  className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                                >
+                                  {/* Add Taxi */}
+                                  View Details
+                                </button>
+                              </div>
                             )}
                           </>
                         )}
@@ -1159,12 +1232,12 @@ const FlightBooking = ({
               width={34}
             />
             {window.innerWidth >= 1000 && (
-              <div>
+              <div className="">
                 <button
                   onClick={() => {
                     setShowDetails(true);
                   }}
-                  className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[0.6rem] sm:px-1 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000] "
+                  className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                 >
                   View Details
                 </button>
@@ -1196,12 +1269,12 @@ const FlightBooking = ({
           } items-center`}
         >
           {window.innerWidth < 1000 && (
-            <div className=" mt-4">
+            <div className=" mt-4 pr-2">
               <button
                 onClick={() => {
                   setShowDetails(true);
                 }}
-                className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[0.6rem] sm:px-1 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000]"
+                className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
               >
                 View Details
               </button>

@@ -153,18 +153,18 @@ export default class MyDocument extends Document {
         </Head>
 
         <body>
-          <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js" />
+          {/* <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js" /> */}
           <>
-            <df-messenger
+            {/* <df-messenger
               location="asia-south1"
               project-id="ai-chabot-451908"
               agent-id="4e407c11-79bb-494a-ad38-12eb60fed12d"
               language-code="en"
               intent="WELCOME"
-            >
+            > */}
               {/* <df-messenger-chat-bubble chat-title="Personalized Travel Plan"             */}
               {/* //  chat-icon="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" to change floater icon, change this link */}
-              <Container>
+              {/* <Container>
                 <df-messenger-chat-bubble
                   chat-title="Personalized Travel Plan"
                   chat-icon="https://images.thetarzanway.com/media/chatbot.png"
@@ -172,45 +172,51 @@ export default class MyDocument extends Document {
                   // to change floater icon, change this link
                 ></df-messenger-chat-bubble>
               </Container>
-            </df-messenger>
+            </df-messenger> */}
 
-            <style>
-              {`
-          df-messenger {
-            z-index: 1024;
-            position:fixed;
-            --df-messenger-font-color: #333333;
-            --df-messenger-font-family: "Poppins", sans-serif;
-            --df-messenger-chat-background: #F3F6FC;
-            --df-messenger-message-user-background: #ffffff;
-            --df-messenger-message-bot-background: #F7e700;
-            --df-messenger-input-placeholder-color: #757575;
-            --df-messenger-input-text-color: #000000;
-            --df-messenger-send-icon: #007bff;
-            --df-messenger-chat-window-height:calc(100vh - 80px);
-            --df-messenger-chat-window-height:calc(100vh - 90px);
-            --df-messenger-chat-window-width: 33vw; 
-            --df-messenger-border-radius: 9px;
-             --df-messenger-button-size: 80px;
-             --df-messenger-chat-bubble-icon-size: 80px;
-             --df-messenger-send-icon-color: black;
-             ----df-messenger-send-icon-background: yellow;
-            bottom: 0;
-            right: 0;
-            padding:4px;
-            border:4px;
-            border-radius:6px;
-            margin-right:20px;
-            margin-bottom:10px;
-            background-size: contain;
-            background-repeat: no-repeat;
-        }
-        .df-messenger-chat-bubble-icon {
+        {/* <style>
+          {`
+            df-messenger {
+              z-index: 1024;
+              position: fixed;
+              --df-messenger-font-color: #333333;
+              --df-messenger-font-family: "Poppins", sans-serif;
+              --df-messenger-chat-background: #F3F6FC;
+              --df-messenger-message-user-background: #ffffff;
+              --df-messenger-message-bot-background: #F7e700;
+              --df-messenger-input-placeholder-color: #757575;
+              --df-messenger-input-text-color: #000000;
+              --df-messenger-send-icon: #007bff;
+              --df-messenger-chat-window-height: calc(100vh - 80px);
+              --df-messenger-chat-window-width: 90vw;
+              --df-messenger-border-radius: 9px;
+              --df-messenger-button-size: 80px;
+              --df-messenger-chat-bubble-icon-size: 80px;
+              --df-messenger-send-icon-color: black;
+              bottom: 0;
+              right: 0;
+              padding: 4px;
+              border: 4px;
+              border-radius: 6px;
+              margin-right: 20px;
+              margin-bottom: 10px;
+              background-size: contain;
+              background-repeat: no-repeat;
+            }
+
+            .df-messenger-chat-bubble-icon {
               margin-top: 5px;
-        }
-}
-        `}
-            </style>
+            }
+
+            @media (max-width: 768px) {
+              df-messenger {
+                bottom: 60px;
+                margin-right: 16px;
+              }
+            }
+          `}
+        </style> */}
+
           </>
           {/* Google Tag Manager (noscript) */}
           {process.env.NODE_ENV === "production" &&

@@ -12,7 +12,7 @@ import media from "../../../components/media";
 import Pin from "../../newitinerary/breif/route/Pin";
 
 const CITY_COLOR_CODES = [
-  "#359EBF", // shade of blue
+  "#000000", // shade of blue
   "#F0C631", // shade of yellow
   "#BF3535", // shade of red
   "#47691e", // shade of green
@@ -22,16 +22,17 @@ const CITY_COLOR_CODES = [
 ];
 
 const TransferBookings = (props) => {
-
   let isPageWide = media("(min-width: 768px)");
   const [selectedBooking, setSelectedBooking] = useState({
     id: null,
     name: null,
   });
   const [showDrawer, setShowDrawer] = useState(false);
-  const transferBooking = useSelector((state) => state.TransferBookings)?.transferBookings
+  const transferBooking = useSelector(
+    (state) => state.TransferBookings
+  )?.transferBookings;
 
-  console.log("sel book",selectedBooking);
+  console.log("sel book", selectedBooking);
 
   const alternateRoutes = {};
   const loadingAlternates = true;
@@ -92,9 +93,9 @@ const TransferBookings = (props) => {
       taxi_type: taxi_type,
       transfer_type: transfer_type,
       booking_id: booking_id,
-      originCityId:originCityId,
-      destinationCityId:destinationCityId,
-      edge:edge
+      originCityId: originCityId,
+      destinationCityId: destinationCityId,
+      edge: edge,
     });
 
     props.setShowFlightModal(true);
@@ -118,7 +119,7 @@ const TransferBookings = (props) => {
     taxi_type,
     transfer_type,
     origin,
-    destination,
+    destination
   ) => {
     ga.event({
       action: "Itinerary-bookings-taxi_change",
@@ -162,7 +163,7 @@ const TransferBookings = (props) => {
         Transfers
         <span className="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-[#262626]"></span>
       </div>
-      {(
+      {
         <>
           {props.showFlightModal && (
             <MakeYourPersonalised
@@ -190,44 +191,47 @@ const TransferBookings = (props) => {
                 pinColour={null}
               />
 
-              {transferBooking?.intercity != undefined && <TransferBooking
-                mercuryItinerary={props?.mercuryItinerary}
-                loadbookings={props?.loadbookings}
-                key={
-                  transferBooking?.intercity[
-                    `${
-                      itineraries?.start_city?.gmaps_place_id +
-                      ":" +
-                      itineraries?.cities?.[0]?.id
-                    }`
-                  ]?.id
-                }
-                index={-1}
-                booking={
-                  transferBooking?.intercity[
-                    `${
-                      itineraries?.start_city?.gmaps_place_id +
-                      ":" +
-                      itineraries?.cities?.[0]?.id
-                    }`
-                  ]
-                }
-                payment={props?.payment}
-                token={props?.token}
-                setShowLoginModal={props?.setShowLoginModal}
-                _changeTaxiHandler={_changeTaxiHandler}
-                _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
-                getPaymentHandler={props?.getPaymentHandler}
-                _changeFlightHandler={_changeFlightHandler}
-                origin={itineraries?.start_city}
-                destination={itineraries?.cities?.[0].city}
-                id={itineraries?.start_city?.gmaps_place_id}
-                check_in={itineraries?.start_date}
-                selectedBooking={selectedBooking}
-                originCityId={itineraries?.start_city?.gmaps_place_id}
-                destinationCityId={itineraries?.cities?.[0]?.id}
-                
-              />}
+              {transferBooking?.intercity != undefined && (
+                <TransferBooking
+                  mercuryItinerary={props?.mercuryItinerary}
+                  loadbookings={props?.loadbookings}
+                  key={
+                    transferBooking?.intercity[
+                      `${
+                        itineraries?.start_city?.gmaps_place_id +
+                        ":" +
+                        itineraries?.cities?.[0]?.id
+                      }`
+                    ]?.id
+                  }
+                  index={-1}
+                  booking={
+                    transferBooking?.intercity[
+                      `${
+                        itineraries?.start_city?.gmaps_place_id +
+                        ":" +
+                        itineraries?.cities?.[0]?.id
+                      }`
+                    ]
+                  }
+                  payment={props?.payment}
+                  token={props?.token}
+                  setShowLoginModal={props?.setShowLoginModal}
+                  _changeTaxiHandler={_changeTaxiHandler}
+                  _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
+                  getPaymentHandler={props?.getPaymentHandler}
+                  _changeFlightHandler={_changeFlightHandler}
+                  origin={itineraries?.start_city}
+                  destination={itineraries?.cities?.[0].city}
+                  id={itineraries?.start_city?.gmaps_place_id}
+                  check_in={itineraries?.start_date}
+                  selectedBooking={selectedBooking}
+                  originCityId={itineraries?.start_city?.gmaps_place_id}
+                  destinationCityId={itineraries?.cities?.[0]?.id}
+                  pinColour1={CITY_COLOR_CODES[0]}
+                  pinColour2={itineraries?.cities?.length>1?CITY_COLOR_CODES[1]:CITY_COLOR_CODES[0]}
+                />
+              )}
             </>
             {itineraries?.cities?.map((item, index) => (
               <>
@@ -240,40 +244,52 @@ const TransferBookings = (props) => {
                       city={item.city.name}
                       index={index}
                       PinSection
-                      pinColour={CITY_COLOR_CODES[index % 7]}
+                      pinColour={CITY_COLOR_CODES[(index + 1) % 7]}
                     />
 
-                      {transferBooking?.intercity != undefined && <TransferBooking
-                      mercuryItinerary={props?.mercuryItinerary}
-                      loadbookings={props?.loadbookings}
-                      key={
-                        transferBooking?.intercity[
-                          `${item.id + ":" + itineraries?.cities?.[index + 1].id}`
-                        ]?.id
-                      }
-                      index={index}
-                      booking={
-                        transferBooking?.intercity[
-                          `${item.id + ":" + itineraries?.cities?.[index + 1].id}`
-                        ]
-                      }
-                      payment={props?.payment}
-                      token={props?.token}
-                      setShowLoginModal={props?.setShowLoginModal}
-                      _changeTaxiHandler={_changeTaxiHandler}
-                      _updateTaxiBookingHandler={
-                        props?._updateTaxiBookingHandler
-                      }
-                      getPaymentHandler={props?.getPaymentHandler}
-                      _changeFlightHandler={_changeFlightHandler}
-                      origin={item.city}
-                      destination={itineraries?.cities?.[index + 1].city}
-                      id={item.id}
-                      check_in={item.start_date}
-                      selectedBooking={selectedBooking}
-                      originCityId={item.id}
-                      destinationCityId={itineraries?.cities?.[index + 1].id}
-                    />}
+                    {transferBooking?.intercity != undefined && (
+                      <TransferBooking
+                        mercuryItinerary={props?.mercuryItinerary}
+                        loadbookings={props?.loadbookings}
+                        key={
+                          transferBooking?.intercity[
+                            `${
+                              item.id +
+                              ":" +
+                              itineraries?.cities?.[index + 1].id
+                            }`
+                          ]?.id
+                        }
+                        index={index}
+                        booking={
+                          transferBooking?.intercity[
+                            `${
+                              item.id +
+                              ":" +
+                              itineraries?.cities?.[index + 1].id
+                            }`
+                          ]
+                        }
+                        payment={props?.payment}
+                        token={props?.token}
+                        setShowLoginModal={props?.setShowLoginModal}
+                        _changeTaxiHandler={_changeTaxiHandler}
+                        _updateTaxiBookingHandler={
+                          props?._updateTaxiBookingHandler
+                        }
+                        getPaymentHandler={props?.getPaymentHandler}
+                        _changeFlightHandler={_changeFlightHandler}
+                        origin={item.city}
+                        destination={itineraries?.cities?.[index + 1].city}
+                        id={item.id}
+                        check_in={item.start_date}
+                        selectedBooking={selectedBooking}
+                        originCityId={item.id}
+                        destinationCityId={itineraries?.cities?.[index + 1].id}
+                        pinColour1={CITY_COLOR_CODES[(index + 1) % 7]}
+                        pinColour2={CITY_COLOR_CODES[(index+2)%7]}
+                      />
+                    )}
                   </>
                 )}
               </>
@@ -283,48 +299,55 @@ const TransferBookings = (props) => {
               transfersPin
               setCurrentPopup={false}
               city={
-                itineraries?.cities?.[itineraries?.cities?.length - 1]?.city.name
+                itineraries?.cities?.[itineraries?.cities?.length - 1]?.city
+                  .name
               }
               index={itineraries?.cities?.length - 1}
               PinSection
               pinColour={CITY_COLOR_CODES[itineraries?.cities?.length % 7]}
             />
-            {transferBooking?.intercity != undefined && <TransferBooking
-              mercuryItinerary={props?.mercuryItinerary}
-              loadbookings={props?.loadbookings}
-              key={
-                transferBooking?.intercity[
-                  `${itineraries?.cities?.[itineraries?.cities?.length - 1]?.id}:${
-                    itineraries?.end_city?.gmaps_place_id
-                  }`
-                ]?.id
-              }
-              index={itineraries?.cities?.length - 1}
-              booking={
-                transferBooking?.intercity[
-                  `${itineraries?.cities?.[itineraries?.cities?.length - 1]?.id}:${
-                    itineraries?.end_city?.gmaps_place_id
-                  }`
-                ]
-              }
-              payment={props?.payment || null}
-              token={props?.token || null}
-              setShowLoginModal={props?.setShowLoginModal}
-              _changeTaxiHandler={_changeTaxiHandler}
-              _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
-              getPaymentHandler={props?.getPaymentHandler}
-              _changeFlightHandler={_changeFlightHandler}
-              origin={itineraries?.cities?.[itineraries?.cities?.length - 1].city}
-              destination={itineraries?.end_city}
-              id={itineraries?.end_city?.gmaps_place_id}
-              check_in={itineraries?.end_date}
-              end={true}
-              selectedBooking={selectedBooking}
-              originCityId={
-                itineraries?.cities?.[itineraries?.cities?.length - 1]?.id
-              }
-              destinationCityId={itineraries?.end_city?.gmaps_place_id}
-            />}
+            {transferBooking?.intercity != undefined && (
+              <TransferBooking
+                mercuryItinerary={props?.mercuryItinerary}
+                loadbookings={props?.loadbookings}
+                key={
+                  transferBooking?.intercity[
+                    `${
+                      itineraries?.cities?.[itineraries?.cities?.length - 1]?.id
+                    }:${itineraries?.end_city?.gmaps_place_id}`
+                  ]?.id
+                }
+                index={itineraries?.cities?.length - 1}
+                booking={
+                  transferBooking?.intercity[
+                    `${
+                      itineraries?.cities?.[itineraries?.cities?.length - 1]?.id
+                    }:${itineraries?.end_city?.gmaps_place_id}`
+                  ]
+                }
+                payment={props?.payment || null}
+                token={props?.token || null}
+                setShowLoginModal={props?.setShowLoginModal}
+                _changeTaxiHandler={_changeTaxiHandler}
+                _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
+                getPaymentHandler={props?.getPaymentHandler}
+                _changeFlightHandler={_changeFlightHandler}
+                origin={
+                  itineraries?.cities?.[itineraries?.cities?.length - 1].city
+                }
+                destination={itineraries?.end_city}
+                id={itineraries?.end_city?.gmaps_place_id}
+                check_in={itineraries?.end_date}
+                end={true}
+                selectedBooking={selectedBooking}
+                originCityId={
+                  itineraries?.cities?.[itineraries?.cities?.length - 1]?.id
+                }
+                destinationCityId={itineraries?.end_city?.gmaps_place_id}
+                pinColour1={CITY_COLOR_CODES[itineraries?.cities?.length % 7]}
+                pinColour2={"#000000"}
+                />
+            )}
             <PinSection
               key={itineraries?.cities?.length}
               transfersPin
@@ -360,9 +383,7 @@ const TransferBookings = (props) => {
             routeId={transferId}
             booking_id={selectedBooking?.booking_id}
             edge={selectedBooking?.edge}
-            originCityId={
-              selectedBooking?.originCityId 
-            }
+            originCityId={selectedBooking?.originCityId}
             destinationCityId={selectedBooking?.destinationCityId}
           ></FlightModal>
 
@@ -408,7 +429,7 @@ const TransferBookings = (props) => {
             selectedBooking={selectedBooking}
           />
         </>
-      )}
+      }
     </div>
   );
 };
@@ -431,4 +452,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-  export default connect(mapStateToProps)(TransferBookings);
+export default connect(mapStateToProps)(TransferBookings);

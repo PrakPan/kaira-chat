@@ -71,7 +71,8 @@ const HotelBooking = ({
   // console.log("Bkm",booking)
 
   const handleViewDetails = (value) => {
-    handleBookedHotelViewDetails(index, booking.id, booking, booking.city_name || booking.city)
+    console.log("value is:",booking)
+    handleBookedHotelViewDetails(index, booking.id, booking, booking.city_id)
     logEvent({
       action: "Hotel_Details",
       params: {

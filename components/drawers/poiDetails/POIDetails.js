@@ -560,7 +560,7 @@ const POIDetails = (props) => {
                 </defs>
               </svg>
             </div>
-            <div>{props?.data?.city}</div>
+            <div>{props?.data?.address}</div>
           </div>
           <div className="flex justify-between">
             <div
@@ -572,11 +572,7 @@ const POIDetails = (props) => {
               }}
             >
               <a
-                href={`https://www.google.com/maps/search/?api=1&query=${
-                  props?.data?.latitude
-                },${props?.data?.longitude}+(${props?.data?.name
-                  ?.split(" ")
-                  .join("+")})`}
+                href={`https://www.google.com/maps/place/?q=place_id:${props?.data?.gmaps_place_id}`}
                 target="_blank"
                 style={{ color: "#0000EE", fontSize: "14px" }}
               >

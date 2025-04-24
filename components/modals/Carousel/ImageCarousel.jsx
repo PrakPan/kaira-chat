@@ -156,9 +156,11 @@ const ImageCarousel = ({ images, noCaption }) => {
               }`}
             >
               <Image src={src.image} alt={`Slide ${index + 1}`} fill />
-              {!noCaption&&<div className="absolute left-2 top-2 text-white bg-black/50 p-2 rounded">
-                {src?.caption}
-              </div>}
+              {!noCaption && (
+                <div className="absolute left-2 top-2 text-white bg-black/50 p-2 rounded">
+                  {src?.caption}
+                </div>
+              )}
             </div>
           </div>
         ))}
@@ -264,7 +266,7 @@ export const Carousel = ({ images }) => {
         {images.map((src, i) => (
           <SwiperSlide key={i}>
             <div className="w-[50%] rounded-lg">
-              {!noCaption&&<div className={`absolute`}>{src?.caption}</div>}
+              {!noCaption && <div className={`absolute`}>{src?.caption}</div>}
               <Image src={src.image} alt={`Slide ${i + 1}`} fill />
             </div>
           </SwiperSlide>
