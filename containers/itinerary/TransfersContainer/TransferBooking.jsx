@@ -99,7 +99,7 @@ Line = styled.div`
 const LineContainer = styled.div`
   position: absolute;
   top: 0;
-  left: 10px;
+  left: 11px;
   bottom: 0;
   right: -25px;
   width: 1px;
@@ -465,20 +465,20 @@ const TransferBooking = ({
                             onfail={handleTransferImageFailed}
                           ></ImageLoader>
                         ) : (
-                          <>
+                          <div className="bg-[#D9D9D9] mr-[0.8rem] rounded-[11px] p-[10px]">
                             <TransportIconFetcher
                               TransportMode={booking?.booking_type}
                               Instyle={{
                                 fontSize: "2.75rem",
-                                marginRight: "0.8rem",
                               }}
-                              classname={"bg-[#D9D9D9] rounded-[11px]"}
+                              
+                              classname={" h-[34px] w-[34px]"}
                               color="#000000"
                             />
-                          </>
+                          </div>
                         )}
                       </div>
-                      <div className="flex justify-between items-start w-full">
+                      <div className="flex justify-between items-center w-full">
                         <div className="flex flex-col w-full">
                           <div className="flex justify-between w-full sm:text-sm text-[0.85rem]">
                             <div className="text-[16px] font-medium w-full">
@@ -641,7 +641,7 @@ const TransferBooking = ({
                                 )}
                               </div>
                             ) : (
-                              <div className="pr-2">
+                              <div className="flex flex-row items-center justify-end cursor-pointer pr-2">
                                 <button
                                   onclick={() =>
                                     handleViewDetails(
@@ -838,17 +838,17 @@ const TransferBooking = ({
                             onfail={handleTransferImageFailed}
                           />
                         ) : (
-                          <>
+                          <div className="bg-[#D9D9D9] mr-[0.8rem] rounded-[11px] p-[10px]">
+
                             <TransportIconFetcher
                               TransportMode={book?.booking_type}
                               Instyle={{
                                 fontSize: "2.75rem",
-                                marginRight: "0.8rem",
                               }}
-                              classname={"bg-[#D9D9D9] rounded-[11px]"}
+                              classname={" h-[34px] w-[34px]"}
                               color="#000000"
                             />
-                          </>
+                          </div>
                         )}
                       </div>
                       <div className="flex justify-between items-center w-full">
@@ -984,6 +984,7 @@ const TransferBooking = ({
                                     {isDesktop ? "Change Taxi" : "Change"}
                                   </button>
                                 ) : (
+                                  
                                   <button
                                     onClick={() => {
                                       console.log("clicked");
