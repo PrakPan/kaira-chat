@@ -3,12 +3,12 @@
   "version": "2.0.0",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_OPTIONS=\"--max_old_space_size=8192\" next dev",
-    "prebuild": "cross-env BUILD_NUMBER=\"150220252235\" node scripts/sitemap.xml.js",
-    "build": "NODE_OPTIONS=\"--max_old_space_size=8192\" next build",
-    "start": "next start -p 3002",
-    "lint": "next lint"
-  },
+  "dev": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next dev",
+  "prebuild": "cross-env BUILD_NUMBER=250420252236 node scripts/sitemap.xml.js",
+  "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 next build",
+  "start": "next start -p 3002",
+  "lint": "next lint"
+},
   "dependencies": {
     "@builder.io/partytown": "^0.8.0",  
     "@changey/react-leaflet-markercluster": "^4.0.0-rc1",
