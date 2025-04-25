@@ -380,7 +380,7 @@ console.log('occupancies are:',filters?.occupancies)
           backdrop
           className="font-lexend "
           onHide={() => {
-            props?.setHideBookingModal;
+            props?.setHideBookingModal()
             resetPaginationStatus();
             setMoreOptionsJSX([]);
             setFilters((prev)=>({
