@@ -13,14 +13,17 @@ const COLORS = {
 };
 
 const Container1 = styled.div`
-  width: 100vw;
-  height: 100vh;
-
-  z-index: 1000;
-  position: fixed;
-  place-items: center;
-  background-size: contain;
-  background-color: ${COLORS.background};
+  ${(props) =>
+    !props.isEdit &&
+    `
+      width: 100vw;
+      height: 100vh;
+      z-index: 1000;
+      position: fixed;
+      place-items: center;
+      background-size: contain;
+      background-color: ${COLORS.background};
+  `}
 `;
 
 const Heading2 = styled.div`
@@ -37,7 +40,7 @@ const Heading2 = styled.div`
   }
 `;
 
-const Index = () => {
+const Index = (props) => {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   var IntervalTiming;
@@ -64,7 +67,7 @@ const Index = () => {
   }, [currentStep]);
 
   return (
-    <Container1 className="center-div">
+    <Container1 className="center-div" isEdit={props?.isEdit}>
       <LottieAnimation></LottieAnimation>
       <ResponsiveProgressBar progress={currentStep}></ResponsiveProgressBar>
 

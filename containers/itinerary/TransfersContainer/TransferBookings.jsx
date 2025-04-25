@@ -191,7 +191,7 @@ const TransferBookings = (props) => {
                 pinColour={null}
               />
 
-              {transferBooking?.intercity != undefined && (
+              {(
                 <TransferBooking
                   mercuryItinerary={props?.mercuryItinerary}
                   loadbookings={props?.loadbookings}
@@ -247,7 +247,7 @@ const TransferBookings = (props) => {
                       pinColour={CITY_COLOR_CODES[(index + 1) % 7]}
                     />
 
-                    {transferBooking?.intercity != undefined && (
+                    {(
                       <TransferBooking
                         mercuryItinerary={props?.mercuryItinerary}
                         loadbookings={props?.loadbookings}
@@ -306,7 +306,7 @@ const TransferBookings = (props) => {
               PinSection
               pinColour={CITY_COLOR_CODES[itineraries?.cities?.length % 7]}
             />
-            {transferBooking?.intercity != undefined && (
+            {(
               <TransferBooking
                 mercuryItinerary={props?.mercuryItinerary}
                 loadbookings={props?.loadbookings}

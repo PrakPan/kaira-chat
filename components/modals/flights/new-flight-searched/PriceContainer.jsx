@@ -15,7 +15,7 @@ export default function PriceContainer({
 }) {
   const router = useRouter();
 
-  console.log("flight data",data?.duration)
+  console.log("flight data",selectedBooking);
   const handleSelect = () => {
     onFlightSelect?.();
 
@@ -31,7 +31,7 @@ export default function PriceContainer({
         booking_id: selectedBooking.id,
         itinerary_id: selectedBooking.itinerary_id || router?.query?.id,
         result_index: data.resultIndex,
-        provider,
+        flightProvider:provider,
       });
     }
   };

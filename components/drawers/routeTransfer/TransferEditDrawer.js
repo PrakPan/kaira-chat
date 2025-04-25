@@ -314,7 +314,7 @@ const TransferEditDrawer = (props) => {
 
   const handleSelectResult = (result) => {
     setSelectedResult((prev) => {
-      if (prev.multimode) {
+      if (prev?.multimode) {
         return {
           ...prev,
           modes: [

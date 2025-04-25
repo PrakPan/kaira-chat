@@ -549,6 +549,7 @@ const SimpleTabsV2 = (props) => {
             // CityData={props?.cities}
             itinerary={props.itinerary}
             breif={props.breif}
+            resetRef={props?.resetRef}
             fetchData={props.fetchData}
             getPaymentHandler={props.getPaymentHandler}
             setShowLoginModal={setShowLoginModal}

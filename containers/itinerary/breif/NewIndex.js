@@ -206,6 +206,7 @@ console.log("Inside routes Dataa",props?.CityData);
           fetchData={props.fetchData}
           setShowLoginModal={props.setShowLoginModal}
           setLocationsLatLong={setLocationsLatLong}
+          resetRef={props?.resetRef}
         >
           <RoutesMap
             locations={locationsLatLong}

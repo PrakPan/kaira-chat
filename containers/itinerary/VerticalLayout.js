@@ -15,7 +15,7 @@ import {
   setTransferBookings,
   updateTransferBookings,
 } from "../../store/actions/transferBookingsStore";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import TransferEditDrawer from "../../components/drawers/routeTransfer/TransferEditDrawer";
 import VehicleDetailModal from "../../components/modals/daybyday/VehicleModal";
 import Drawer from "../../components/ui/Drawer";
@@ -72,6 +72,7 @@ const CityItem = ({
     id: null,
     name: null,
   });
+  const {transfers_status} = useSelector(state=>state.ItineraryStatus);
   const correctIcon = (TransportMode) => {
     switch (TransportMode) {
       case "Flight":
@@ -230,7 +231,7 @@ const CityItem = ({
           !downPresent && upPresent && "mt-[41px]"
         } ${!upPresent && downPresent && "mb-[41px]"}`}
       >
-        {loadbookings ? (
+        {transfers_status === "PENDING" ? (
           <TransferSkeleton />
         ) : (
           <div className=" text-[16px] font-[500] flex gap-1">

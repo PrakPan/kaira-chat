@@ -242,7 +242,7 @@ const ComboFlight = (props) => {
                   booking_id={props.selectedBooking?.booking_id}
                   originCityId={props?.originCityId}
                   destinationCityId={props?.destinationCityId}
-                  setTransferBookingsIntercity={
+                  setTransferBookingsIntercity={ 
                     props.setTransferBookingsIntercity
                   }
                   edge={props?.edge || props?.selectedBooking?.edge}
@@ -407,6 +407,7 @@ const ComboFlight = (props) => {
           heading: "Error!",
         });
         props.setHideFlightModal();
+        console.log("Error in Updating Flight",err.message);
         toast.error("some error occured");
       });
   };
