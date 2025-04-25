@@ -193,7 +193,7 @@ const CallPaymentInfo=useSelector((state)=>state.CallPaymentInfo)
       (item) => item?.city?.id == props.plan[index].city_id
     );
     // console.log("Iti City",itinerary_city);
-
+console.log("hotel name:",data?.name)
     const requestData = {
       rates: rates,
       itinerary_code: data?.itinerary_code,
@@ -238,7 +238,7 @@ const CallPaymentInfo=useSelector((state)=>state.CallPaymentInfo)
           props.setStayBookings(stayBookings);
           props.openNotification({
             type: "success",
-            text: "Booking Updated Successfuly",
+            text: `${data?.name} added to itinerary Successfuly`,
             heading: "Success!",
           });
         } catch (error) {

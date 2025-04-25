@@ -22,19 +22,15 @@ const ActivityDetailsDrawer = (props) => {
   const [updateAmenities, setUpdateAmenities] = useState(false);
   const itineraryFilters = useSelector((state) => state.ItineraryFilters);
   const itinerary=useSelector((state)=>state.Itinerary)
-  const num_adults = itineraryFilters.occupancies.reduce(
-    (sum, item) => sum + item.num_adults,
-    0
-  );
-  const num_children = itineraryFilters.occupancies.reduce(
-    (sum, item) => sum + item.child_ages.length,
-    0
-  );
+  console.log("itinerary is:",itinerary)
+  const num_adults = props?.pax?.adults
+  const num_children = props?.pax?.children
+  console
   const [filterState, setFilterState] = useState({
-    number_of_travelers: num_adults + num_children,
+    number_of_travelers:  num_adults + num_children,
     traveler_ages: Array(num_adults).fill(null),
-    children: props?.pax?.children,
-    adults: props?.pax?.adults,
+    children: num_children,
+    adults: num_adults,
   });
   const dispatch=useDispatch();
 
@@ -46,7 +42,6 @@ const ActivityDetailsDrawer = (props) => {
     if (!data?.amenities) {
       setLoading(true);
     }
-
     let requestData = {
       start_date: getDate(props.date),
       number_of_adults: filterState.adults,
@@ -149,7 +144,7 @@ const ActivityDetailsDrawer = (props) => {
         }
         props.openNotification({
           type: "success",
-          text: "Added activity in itinerary",
+          text: `Added ${res?.data?.name} activity to the itinerary`,
           heading: "Success!",
         });
       })

@@ -50,7 +50,7 @@ const items = [
 const ActivityAddDrawer = (props) => {
   const isDesktop = useMediaQuery("(min-width:767px)");
   const [selectedExprience, setSelectedExprience] = useState(-1);
-  const [nextUrl,setNextUrl]=useState(null)
+  const [nextUrl, setNextUrl] = useState(null);
   const [elementType, setElementType] = useState("Activity");
   const [options, setOptions] = useState([]);
   const [totalResults, setTotalResults] = useState(null);
@@ -83,9 +83,10 @@ const ActivityAddDrawer = (props) => {
     tour_type: [],
     guide: [],
   });
-  const [pax, setPax] = useState(
-    useSelector((state) => state.ItineraryFilters).occupancies
-  );
+  const [pax, setPax] = useState({
+    adults: 1,
+    children: 0,
+  });
   const [showPax, setShowPax] = useState(false);
   const prevPaxRef = useRef(pax);
   const [selectedRating, setSelectedRating] = useState([]);
@@ -97,7 +98,7 @@ const ActivityAddDrawer = (props) => {
   const filtersRef = useRef(null);
   const calendarRef = useRef(null);
 
-  const [showSkeleton,setShowSkeleton]=useState(false)
+  const [showSkeleton, setShowSkeleton] = useState(false);
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (filtersRef.current && !filtersRef.current.contains(event.target)) {
@@ -276,8 +277,7 @@ const ActivityAddDrawer = (props) => {
                 ? filterState.guide
                 : null,
           },
-          sort_by: {
-          },
+          sort_by: {},
         };
         activtySearch
           .post(`/?limit=30&offset=${offSet}`, requestData)
@@ -316,7 +316,7 @@ const ActivityAddDrawer = (props) => {
 
               if (showMore) setOptions((prev) => [...prev, ...options]);
               else setOptions(options);
-              setNextUrl(res?.data?.next)
+              setNextUrl(res?.data?.next);
 
               if (res.data.next) {
                 setShowMoreResults(true);
@@ -361,8 +361,8 @@ const ActivityAddDrawer = (props) => {
             ></NewPoiBooking>
           );
         }
-        setNextUrl(res?.data?.next)
-        console.log("next url is:",nextUrl)
+        setNextUrl(res?.data?.next);
+        console.log("next url is:", nextUrl);
         setOptions(result);
       } catch (error) {
         console.log("loading poi error:", error);
@@ -371,12 +371,12 @@ const ActivityAddDrawer = (props) => {
     }
   };
 
-  const handleViewMore=async()=>{
-    setShowSkeleton(true)
+  const handleViewMore = async () => {
+    setShowSkeleton(true);
     try {
-      const res=await axios.get(nextUrl)
+      const res = await axios.get(nextUrl);
       let options = [];
-      if(elementType=="Activity" || elementType==""){
+      if (elementType == "Activity" || elementType == "") {
         for (var i = 0; i < res.data.data.activities.length; i++) {
           options.push(
             <NewActivityBooking
@@ -401,9 +401,8 @@ const ActivityAddDrawer = (props) => {
             ></NewActivityBooking>
           );
         }
-        setOptions((prev)=>[...prev,...options])
-      }
-      else{
+        setOptions((prev) => [...prev, ...options]);
+      } else {
         for (var i = 0; i < res.data.data.pois.length; i++) {
           options.push(
             <NewPoiBooking
@@ -419,14 +418,14 @@ const ActivityAddDrawer = (props) => {
             ></NewPoiBooking>
           );
         }
-        setOptions((prev)=>[...prev,...options])
+        setOptions((prev) => [...prev, ...options]);
       }
-      setNextUrl(res?.data?.next)
+      setNextUrl(res?.data?.next);
     } catch (error) {
-      console.log("error is:",error)
+      console.log("error is:", error);
     }
-    setShowSkeleton(false)
-  }
+    setShowSkeleton(false);
+  };
 
   const searchHandler = (e) => {
     if (e.target.id === "icon" && selectSearch.trim().length > 0) {
@@ -502,12 +501,14 @@ const ActivityAddDrawer = (props) => {
               Add {elementType == "POI" ? "Places to visit" : elementType} in{" "}
               {props.cityName}
             </div>
-            {elementType=="Activity"&&<Pax
-              setShowPax={setShowPax}
-              pax={pax}
-              setPax={setPax}
-              showPax={showPax}
-            />}
+            {elementType == "Activity" && (
+              <Pax
+                setShowPax={setShowPax}
+                pax={pax}
+                setPax={setPax}
+                showPax={showPax}
+              />
+            )}
           </div>
           <div className="grid w-full gap-2 min-[583px]:grid-cols-[3fr_2fr_1fr]">
             <div className=" flex flex-row items-center relative h-[44px]">
@@ -737,7 +738,7 @@ const ActivityAddDrawer = (props) => {
                 className="flex flex-col items-center mb-3 h-[calc(100vh-270px)] overflow-y-scroll"
               >
                 {options}
-                {showSkeleton&&<PoiListSkeleton/>}
+                {showSkeleton && <PoiListSkeleton />}
                 {nextUrl !== null ? (
                   <Button
                     boxShadow

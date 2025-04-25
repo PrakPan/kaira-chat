@@ -664,21 +664,6 @@ console.log('occupancies are:',filters?.occupancies)
                 itineraryDaybyDay={props?.itineraryDaybyDay}
                 occupancies={filters.occupancies}
               ></ViewHotelDetails>
-
-              {/* <AccommodationModal
-                mercury={true}
-                check_in={props?.selectedBooking.check_in}
-                check_out={props?.selectedBooking.check_out}
-                _setImagesHandler={props?._setImagesHandler}
-                onHide={() => setShowDetails(false)}
-                id={props?.currentBooking?.agoda_accommodation}
-                currentBooking={props?.currentBooking}
-                show={showDetails}
-                handleClick={props?.handleClick}
-                setStayBookings={props?.setStayBookings}
-                itineraryDaybyDay={props?.itineraryDaybyDay}
-                occupancies={filters.occupancies}
-              ></AccommodationModal> */}
             </>
           ) : (
             <></>

@@ -233,7 +233,7 @@ const CityItem = ({
             {(booking_id || city) && !visible ? (
               <>
                 {" "}
-                <div className="mt-[4px] flex items-center">
+                <div className="mt-[4px] flex items-start">
                   {city?.includes(",")
                     ? city?.split(",").map((text, i) => {
                         const mode = extractMode(text.trim());
@@ -254,19 +254,19 @@ const CityItem = ({
                   <div
                     className="flex flex-col group hover:cursor-pointer"
                     onClick={async () => {
-                      const res = await axios.get(
-                        `${MERCURY_HOST}/api/v1/itinerary/${
-                          router?.query?.id
-                        }/bookings/${booking_type.toLowerCase()}/${booking_id}/`
-                      );
-                      upPresent && downPresent && handleDelete(res?.data);
+                      // const res = await axios.get(
+                      //   `${MERCURY_HOST}/api/v1/itinerary/${
+                      //     router?.query?.id
+                      //   }/bookings/${booking_type.toLowerCase()}/${booking_id}/`
+                      // );
+                      // upPresent && downPresent && handleDelete(res?.data);
                     }}
                   >
                     <div className="flex gap-2 items-center ">
                       <div className="group-hover:text-blue ">{city} </div>
                       {upPresent && downPresent && (
                         <>
-                          <div className="transition-transform group-hover:scale-150 duration-300 group-hover:text-yellow-500">
+                          {/* <div className="transition-transform group-hover:scale-150 duration-300 group-hover:text-yellow-500">
                             <svg
                               width="12"
                               height="12"
@@ -279,7 +279,7 @@ const CityItem = ({
                                 fill="red"
                               />
                             </svg>
-                          </div>
+                          </div> */}
                         </>
                       )}
                     </div>
