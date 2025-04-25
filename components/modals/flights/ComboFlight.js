@@ -293,7 +293,7 @@ const ComboFlight = (props) => {
     let updated_bookings_arr = [];
 
     updated_bookings_arr.push({
-      trace_id: localStorage.getItem(`${provider}_trace_id`),
+      trace_id: localStorage.getItem(`${flightProvider}_trace_id`),
       id: booking_id,
       user_selected: true,
       booking_type: "Flight",
@@ -304,7 +304,7 @@ const ComboFlight = (props) => {
 
     const requestData = {
       booking_id,
-      trace_id: localStorage.getItem(`${provider}_trace_id`),
+      trace_id: localStorage.getItem(`${flightProvider}_trace_id`),
       result_indices: [result_index],
       source_itinerary_city: props?.originCityId,
       destination_itinerary_city: props?.destinationCityId,
