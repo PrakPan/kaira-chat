@@ -44,7 +44,6 @@ const SlabElement = (props) => {
 export default SlabElement;
 
 const Activity = (props) => {
-  console.log("element type is:", props);
   let isPageWide = media("(min-width: 768px)");
   const [showDrawer, setShowDrawer] = useState(false);
   const [activityData, setActivityData] = useState({
@@ -138,7 +137,7 @@ const Activity = (props) => {
 
               {props?.element?.activity != null ? (
                 <div className="flex justify-between hidden lg:!flex  items-center">
-                  <div className="flex gap-1">
+                  <div className="flex gap-3">
                     {props?.element?.booking?.pax && (
                       <div className="flex text-[12px] font-medium items-center gap-1">
                         <Image
@@ -147,10 +146,10 @@ const Activity = (props) => {
                           width={13.33}
                           height={10.67}
                         />
-                        {props?.element?.booking?.pax} tickets
+                        {props?.element?.booking?.pax} ticket{props?.element?.booking?.pax>1?"s":""}
                       </div>
                     )}
-                    {props.element?.booking?.duration && props.element?.booking?.duration>0 && (
+                    {props.element?.booking?.duration && props.element?.booking?.duration!=="0 hours" && (
                       <div className="flex text-[12px] font-medium items-center gap-1">
                         <Image
                           src="/clock.svg"
@@ -231,7 +230,7 @@ const Activity = (props) => {
 
               <div className="w-fulltext-sm flex flex-col gap-1">
                 {props?.element?.poi ? (
-                  <div className="w-maxitems-center bg-[#FAFAFA]  text-[#7A7A7A] opacity-[70%] text-[12px] px-1 rounded-sm">
+                  <div className="w-max items-center bg-[#FAFAFA]  text-[#7A7A7A] opacity-[70%] text-[12px] px-1 rounded-sm">
                     Self Exploration
                   </div>
                 ) : (
@@ -243,7 +242,7 @@ const Activity = (props) => {
                 )}
                 {props?.element?.activity != null ? (
                   <div className="flex justify-between lg:hidden">
-                    <div className="flex gap-1">
+                    <div className="flex gap-3">
                       <div className="flex text-[12px] font-medium items-center gap-1">
                         <Image
                           src="/ticket.svg"
@@ -251,9 +250,9 @@ const Activity = (props) => {
                           width={13.33}
                           height={10.67}
                         />
-                        {props?.element?.booking?.pax} tickets
+                        {props?.element?.booking?.pax} ticket{props?.element?.booking?.pax>1?"s":""}
                       </div>
-                      {props.element?.booking?.duration && props.element?.booking?.duration>0&&<div className="flex text-[12px] font-medium items-center gap-1">
+                      {props.element?.booking?.duration && props.element?.booking?.duration!=="0 hours" &&<div className="flex text-[12px] font-medium items-center gap-1">
                         <Image
                           src="/clock.svg"
                           alt="clock"

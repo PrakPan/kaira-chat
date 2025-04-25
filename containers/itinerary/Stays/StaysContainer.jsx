@@ -144,6 +144,8 @@ const StaysContainer = (props) => {
     setOpenViewDetails(true);
     setBookingId(id);
     setCurrentBooking(data);
+    setBookingFunData({ index: i, booking: data, city_id: city_id });
+
   }
 
   // console.log("CITTT",props?.cities)
@@ -246,12 +248,13 @@ const StaysContainer = (props) => {
           !isDateOlderThanCurrent(props?.plan?.start_date) ? true : false
         }
         bookingFunData={bookingFunData}
-        BookingButtonFun={() =>
+        BookingButtonFun={() =>{
+          console.log("booking func is:",bookingFunData)
           handleClickAc(
             bookingFunData.index,
             bookingFunData.booking,
             bookingFunData.city_id
-          )
+          )}
         }
         provider={currentBooking?.source}
         setStayBookings={props.setStayBookings}
@@ -274,12 +277,13 @@ const StaysContainer = (props) => {
           !isDateOlderThanCurrent(props?.plan?.start_date) ? true : false
         }
         bookingFunData={bookingFunData}
-        BookingButtonFun={() =>
+        BookingButtonFun={() =>{
+          console.log("booking func is:",bookingFunData)
           handleClickAc(
             bookingFunData.index,
             bookingFunData.booking,
             bookingFunData.city_id
-          )
+          )}
         }
         provider={currentBooking?.source}
         setStayBookings={props.setStayBookings}

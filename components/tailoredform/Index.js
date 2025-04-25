@@ -487,8 +487,8 @@ const Enquiry = (props) => {
 
         const hotelsBudget = data?.hotels_budget;
         if (hotelsBudget) {
-          const minPrice = 0.5 * hotelsBudget;
-          const maxPrice = 1.5 * hotelsBudget;
+          const minPrice = parseInt(0.5 * hotelsBudget);
+          const maxPrice = parseInt(1.5 * hotelsBudget);
           setDefaultPriceRange({ min_price: minPrice, max_price: maxPrice });
         }
       })

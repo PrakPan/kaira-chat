@@ -12,12 +12,8 @@ import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import Button from "../../../components/ui/button/Index";
 import RecommendedBadge from "./Recommended";
-const ClippathComp = styled.div`
-  clip-path: polygon(0 0, 100% 0, 100% 50%, 100% 100%, 0% 100%);
-`;
 
 export default function NewActivityBooking(props) {
-  console.log('props are:',props)
   const [stars, setStars] = useState(null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [showDetails, setShowDetails] = useState({
@@ -61,7 +57,6 @@ export default function NewActivityBooking(props) {
             display: "grid",
             gridGap: "1rem",
             gridTemplateColumns: "auto 2fr",
-            // marginBottom: "0.75rem",
           }}
           id="Activity"
         >
@@ -95,7 +90,6 @@ export default function NewActivityBooking(props) {
                   setImageLoaded(true);
                 }}
               ></ImageLoader>
-
             </div>
             <div
               style={{
@@ -222,13 +216,6 @@ export default function NewActivityBooking(props) {
                 setImageLoaded(true);
               }}
             ></ImageLoader>
-            {/* {props.data?.is_very_popular && (
-              <div className="absolute top-4 left-0 z-[1090]">
-                <ClippathComp className="text-[12px] font-medium bg-red-400 text-white  px-[16px] py-[8px] -mr-2 md:-mr-3 z-[1090]">
-                  Recommended
-                </ClippathComp>
-              </div>
-            )} */}
           </div>
           <div
             style={{
@@ -322,10 +309,10 @@ export default function NewActivityBooking(props) {
         pax={props?.pax}
       />
       {props.data?.is_very_popular && (
-          <div className="absolute top-6 -left-2 z-[1]">
-            <RecommendedBadge />
-          </div>
-        )}
+        <div className="absolute top-6 -left-2 z-[1]">
+          <RecommendedBadge />
+        </div>
+      )}
     </div>
   );
 }

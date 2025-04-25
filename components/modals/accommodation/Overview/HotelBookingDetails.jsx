@@ -1037,6 +1037,7 @@ const HotelBookingDetails = (props) => {
                       ) : null}
                     </div>
                     <div className="flex flex-col items-center justify-center gap-3 md:w-[40%] h-[250px]">
+                      {console.log("images are:",room?.images)}
                       <ImageCarousel images={room?.images} />
                     </div>
                   </div>

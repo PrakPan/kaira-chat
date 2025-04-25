@@ -485,7 +485,7 @@ const ActivityDetails = (props) => {
             <></>
           )}
           <div className="flex flex-col gap-[12px]">
-            <div className="flex gap-2">
+            {/* <div className="flex gap-2">
               <div>
                 <svg
                   width="23"
@@ -550,9 +550,9 @@ const ActivityDetails = (props) => {
                 </svg>
               </div>
               <div>{props?.data?.city}</div>
-            </div>
-            <div className="flex justify-between">
-              <div
+            </div> */}
+            <div className="flex justify-end">
+              {/* <div
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -561,13 +561,17 @@ const ActivityDetails = (props) => {
                 }}
               >
                 <a
-                  href={`https://maps.googleapis.com/maps/api/place/details/json?place_id=${props?.data?.gmaps_place_id}`}
+                  href={`https://www.google.com/maps/search/?api=1&query=${
+                    props?.data?.latitude
+                  },${props?.data?.longitude}+(${props?.data?.name
+                    ?.split(" ")
+                    .join("+")})`}
                   target="_blank"
                   style={{ color: "#0000EE", fontSize: "14px" }}
                 >
                   View on Google Maps
                 </a>
-              </div>
+              </div> */}
 
               <button
                 className=" right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"

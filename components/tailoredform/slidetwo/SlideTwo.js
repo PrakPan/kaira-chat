@@ -64,12 +64,9 @@ const SlideTwo = (props) => {
             ></Pax>
 
             <div className="space-y-1">
-              <div className="text-xs font-medium">
-                Hotel Prices in {props.destination} range from ₹
-                {props.defaultPriceRange.min_price} to ₹{props.defaultPriceRange.max_price}
-              </div>
-
               <BudgetSlider
+                tailoredForm
+                destination={props.destination}
                 defaultValue={props.defaultPriceRange}
                 setShowPax={setShowPax}
                 setBudget={props.setBudget}

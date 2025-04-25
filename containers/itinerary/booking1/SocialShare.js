@@ -270,7 +270,7 @@ export const SocialShareMobile = ({
         <div
           ref={ref}
           className={`w-full bg-white rounded-md flex flex-col gap-3 p-3`}
-        >
+          >
           <SocialShare
             itineraryName={itineraryName}
             itineraryImage={itineraryImage}

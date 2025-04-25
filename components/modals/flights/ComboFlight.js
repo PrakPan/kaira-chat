@@ -25,6 +25,7 @@ import dayjs from "dayjs";
 const GridContainer = styled.div`
 min-height: 65vh;
 max-height: 40vh;
+overflow-x: hidden;
 
 @media screen and (min-width: 768px) {
     min-height: 90vh;
@@ -102,7 +103,7 @@ const ComboFlight = (props) => {
     departure_time_period: "",
     arrival_time_period: "",
     airline_name: "",
-    sort_by: "price",
+    sort_by: "Price",
   });
   const [limit, setLimit] = useState(20);
   const [offset, setOffset] = useState(0);
@@ -136,6 +137,7 @@ const ComboFlight = (props) => {
   const [showTransferEditDrawer, setShowTransferEditDrawer] = useState(false);
   const [flights, setFlights] = useState([]);
   const [selectedFlightIndex, setSelectedFlightIndex] = useState(null);
+  const [flightProvider,setProvider] = useState(null);
 
   // console.log("Ord",props?.originCityId,props?.destinationCityId);
 
@@ -153,9 +155,9 @@ const ComboFlight = (props) => {
 
   //console.log("Booking Data",props?.selectedBooking);
   function getISOStringFromDateAndTime(dateStr, timeStr) {
-    console.log("Date String",dateStr, timeStr);
+    console.log("Date String",dateStr, timeStr,props?.comboStartDate,props?.comboStartTime);
     const [year, month, day] = dateStr.split("-");
-    const [hour, minute] = timeStr.split(":");
+    const [hour, minute] = timeStr ? timeStr.split(":") : "00:00".split(":");
   
     const localDate = new Date(year, month - 1, day, hour, minute);
     return localDate.toISOString();
@@ -216,6 +218,7 @@ const ComboFlight = (props) => {
         )
         .then((res) => {
           const provider = res.data.provider;
+          setProvider(provider);
           localStorage.setItem(`${provider}_trace_id`, res.data.trace_id);
 
           if (res.data?.results.length) {
@@ -275,11 +278,11 @@ const ComboFlight = (props) => {
     booking_id,
     itinerary_id,
     result_index,
-    provider,
+    flightProvider
   }) => {
     if (props.handleFlightSelect) {
       props.handleFlightSelect({
-        trace_id: localStorage.getItem(`${provider}_trace_id`),
+        trace_id: localStorage.getItem(`${flightProvider}_trace_id`),
         result_index: result_index,
       });
       // return;
@@ -463,8 +466,9 @@ const ComboFlight = (props) => {
 
   if (props.token)
     return (
-      <div>
+      <div className="w-full">
         <ToastContainer />
+        
         <ComboSection
           _FetchFlightsHandler={_FetchFlightsHandler}
           setHideBookingModal={props.setHideBookingModal}
@@ -535,6 +539,7 @@ const ComboFlight = (props) => {
                       _updateBookingHandler={_newUpdateBookingHandler}
                       individual={props?.individual}
                       originCityId={props?.originCityId}
+                      provider={flightProvider}
                       destinationCityId={props?.destinationCityId}
                       edge={props?.edge || props?.selectedBooking?.edge}
                       setTransferBookingsIntercity={
@@ -603,7 +608,7 @@ const ComboFlight = (props) => {
               </p>
             ) : null}
           </ContentContainer>
-          {!isPageWide && (
+          {/* {!isPageWide && (
             <>
               <Floating>
                 <FaFilter
@@ -622,7 +627,7 @@ const ComboFlight = (props) => {
                 />
               </FloatingView>
             </>
-          )}
+          )} */}
         </GridContainer>
 
         <TransferEditDrawer

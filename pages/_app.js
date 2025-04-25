@@ -23,59 +23,59 @@ function MyApp({ Component, pageProps, store }) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
   }, []);
-  useEffect(() => {
-    try {
-      if (!window.location.href.split("/").includes("itinerary")) return;
+  // useEffect(() => {
+  //   try {
+  //     if (!window.location.href.split("/").includes("itinerary")) return;
 
-    setTimeout(() => {
-      (function () {
-        function getElement(xpath) {
-          return document.evaluate(
-            xpath,
-            document,
-            null,
-            XPathResult.FIRST_ORDERED_NODE_TYPE,
-            null
-          ).singleNodeValue;
-        }
+  //   setTimeout(() => {
+  //     (function () {
+  //       function getElement(xpath) {
+  //         return document.evaluate(
+  //           xpath,
+  //           document,
+  //           null,
+  //           XPathResult.FIRST_ORDERED_NODE_TYPE,
+  //           null
+  //         ).singleNodeValue;
+  //       }
 
-        let dfMessengerBubble = getElement(
-          "/html/body/df-messenger/div/df-messenger-chat-bubble"
-        );
-        if (!dfMessengerBubble)
-          return console.error("df-messenger-chat-bubble not found");
+  //       let dfMessengerBubble = getElement(
+  //         "/html/body/df-messenger/div/df-messenger-chat-bubble"
+  //       );
+  //       if (!dfMessengerBubble)
+  //         return console.error("df-messenger-chat-bubble not found");
 
-        let dfMessengerChat =
-          dfMessengerBubble?.shadowRoot.querySelector("df-messenger-chat");
-        if (!dfMessengerChat)
-          return console.error("df-messenger-chat not found");
+  //       let dfMessengerChat =
+  //         dfMessengerBubble?.shadowRoot.querySelector("df-messenger-chat");
+  //       if (!dfMessengerChat)
+  //         return console.error("df-messenger-chat not found");
 
-        let userInputContainer = dfMessengerChat?.shadowRoot.querySelector(
-          "df-messenger-user-input"
-        );
-        if (!userInputContainer)
-          return console.error("df-messenger-user-input not found");
+  //       let userInputContainer = dfMessengerChat?.shadowRoot.querySelector(
+  //         "df-messenger-user-input"
+  //       );
+  //       if (!userInputContainer)
+  //         return console.error("df-messenger-user-input not found");
 
-        let textArea =
-          userInputContainer?.shadowRoot.querySelector("textarea");
-        if (!textArea) return console.error("Textarea not found");
+  //       let textArea =
+  //         userInputContainer?.shadowRoot.querySelector("textarea");
+  //       if (!textArea) return console.error("Textarea not found");
 
-        textArea.value = `Give me more detail about this itinerary ${window.location.href}`;
+  //       textArea.value = `Give me more detail about this itinerary ${window.location.href}`;
 
-        const enterEvent = new KeyboardEvent("keydown", {
-          key: "Enter",
-          code: "Enter",
-          keyCode: 13,
-          which: 13,
-          bubbles: true,
-        });
-        textArea.dispatchEvent(enterEvent);
-      })();
-    }, 2000);
-    } catch (error) {
-      console.log("Error is:",error)
-    }
-  }, []);
+  //       const enterEvent = new KeyboardEvent("keydown", {
+  //         key: "Enter",
+  //         code: "Enter",
+  //         keyCode: 13,
+  //         which: 13,
+  //         bubbles: true,
+  //       });
+  //       textArea.dispatchEvent(enterEvent);
+  //     })();
+  //   }, 2000);
+  //   } catch (error) {
+  //     console.log("Error is:",error)
+  //   }
+  // }, []);
   useEffect(() => {
     const handleRouteChange = (url) => {
       ga.pageview(url);

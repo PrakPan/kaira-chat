@@ -4,7 +4,7 @@ import { IoIosArrowDown } from "react-icons/io";
 import ButtonYellow from "../../ButtonYellow";
 import Button from "../../ui/button/Index";
 
-export const Pax = ({ pax, setPax }) => {
+export const Pax = ({ pax, setPax, combo }) => {
   const refDesktop = useRef(null);
   const refMobile = useRef(null);
 
@@ -48,22 +48,33 @@ export const Pax = ({ pax, setPax }) => {
   const handleMinus = (type) => {
     if (type === "adult" && adults > 1) setAdults((prev) => prev - 1);
     if (type === "children" && children > 0) setChildren((prev) => prev - 1);
+    if (type === "infants" && children > 0) setInfants((prev) => prev - 1);
   };
 
   const handlePlus = (type) => {
     if (type === "adult") setAdults((prev) => prev + 1);
     if (type === "children") setChildren((prev) => prev + 1);
+    if (type === "infants") setInfants((prev) => prev + 1);
   };
 
   const handleDone = () => {
-    setPax({ 
+    combo ?  setPax({ 
       adults, 
       children,
       infants,
       number_of_adults: adults,
       number_of_children: children,
       number_of_infants: infants || 0
-    });
+    }) 
+    :
+    setPax({ 
+      adults, 
+      children,
+      infants,
+      number_of_adults: adults,
+      number_of_children: children,
+    }) 
+    ;
     setShowPax(false);
     setShowPaxMobile(false);
   };
@@ -80,7 +91,7 @@ export const Pax = ({ pax, setPax }) => {
         <div className="text-[14px] font-medium">&nbsp;|&nbsp;</div>
         <div className="flex">
           <div className="text-[10px] font-medium">
-            {adults} Adults and {children} Children
+            {adults} Adults and {children} Children 
           </div>
           <IoIosArrowDown />
         </div>
@@ -134,6 +145,28 @@ export const Pax = ({ pax, setPax }) => {
               />
             </div>
           </div>
+
+          {combo && <div className="flex justify-between gap-1">
+            <div>
+              <div className="text-[14px] font-medium">Infants</div>
+              <div className="text-[10px]"> {`<2 years`}</div>
+            </div>
+            <div className="flex items-center gap-2 border-2 border-[#E4E4E4] rounded-full px-[10px] py-[5px]">
+              <FaMinus
+                onClick={() => handleMinus("infants")}
+                size={9.33}
+                className="cursor-pointer"
+                color="#0000EE"
+              />
+              <div className="text-[12px]">{infants}</div>
+              <FaPlus
+                onClick={() => handlePlus("infants")}
+                size={9.33}
+                className="cursor-pointer"
+                color="#0000EE"
+              />
+            </div>
+          </div>}
 
           <div className="mt-4 flex justify-end">
             <Button

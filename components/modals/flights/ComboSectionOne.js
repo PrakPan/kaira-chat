@@ -19,29 +19,37 @@ const ComboSection = (props) => {
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
   const [timeSlots, setTimeSlots] = useState([]);
   const [selectedTime, setSelectedTime] = useState(null);
+  const [showSortDropdown, setShowSortDropdown] = useState(false);
 
   useEffect(() => {
     if (preferred_departure_time) {
       const slots = [];
-      let baseTime = dayjs(preferred_departure_time);
-      
+      let Time = dayjs(preferred_departure_time);
+      const date = new Date(Time);
+      date.setHours(0, 0, 0, 0);
+
+      let baseTime = dayjs(date.toISOString());
+
       const minutes = baseTime.minute();
       const remainder = minutes % 30;
 
       if (remainder > 0) {
-        baseTime = baseTime.add(30 - remainder, 'minute');
+        baseTime = baseTime.add(30 - remainder, "minute");
       }
-      
-      const endTime = baseTime.startOf('day').add(1, 'day').subtract(1, 'minute');
-      
+
+      const endTime = baseTime
+        .startOf("day")
+        .add(1, "day")
+        .subtract(1, "minute");
+
       while (baseTime.isBefore(endTime) || baseTime.isSame(endTime)) {
         slots.push({
-          value: baseTime.format('HH:mm'),
-          display: baseTime.format('h:mm A')
+          value: baseTime.format("HH:mm"),
+          display: baseTime.format("h:mm A"),
         });
-        baseTime = baseTime.add(30, 'minute');
+        baseTime = baseTime.add(30, "minute");
       }
-      
+
       setTimeSlots(slots);
     }
   }, [preferred_departure_time]);
@@ -113,42 +121,67 @@ const ComboSection = (props) => {
 
   const handleTimeSelection = (slot) => {
     setSelectedTime(slot.display);
-  
-    const hour = parseInt(slot.value.split(':')[0], 10);
+
+    const hour = parseInt(slot.value.split(":")[0], 10);
     const timePeriod = getTimePeriodFromHour(hour);
-    
+
     const newFiltersState = {
       ...filtersState,
-      departure_time_period: timePeriod
+      departure_time_period: timePeriod,
     };
-    
+
     setFiltersState(newFiltersState);
     setShowTimeDropdown(false);
   };
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      _FetchFlightsHandler();
-    }, 500);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     _FetchFlightsHandler();
+  //   }, 500);
 
-    return () => clearTimeout(timer);
-  }, [filtersState]);
+  //   return () => clearTimeout(timer);
+  // }, [filtersState]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (showTimeDropdown && !event.target.closest('.time-dropdown-container')) {
+      if (
+        showTimeDropdown &&
+        !event.target.closest(".time-dropdown-container")
+      ) {
+        setShowTimeDropdown(false);
+      }
+      if (
+        showSortDropdown &&
+        !event.target.closest(".sort-dropdown-container")
+      ) {
+        setShowSortDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showTimeDropdown, showSortDropdown]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        showTimeDropdown &&
+        !event.target.closest(".time-dropdown-container")
+      ) {
         setShowTimeDropdown(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showTimeDropdown]);
 
   return (
-    <div className="font-sans max-w-2xl mx-auto bg-white">
+    <div className="font-sans w-full mx-auto bg-white">
       {/* Filter Section */}
       <div className="p-4">
         {/* Non-Stop Flight Checkbox */}
@@ -168,6 +201,7 @@ const ComboSection = (props) => {
               pax={pax}
               setPax={setPax}
               showPax={showPax}
+              combo={true}
             />
           </div>
         </div>
@@ -176,37 +210,26 @@ const ComboSection = (props) => {
         <div className="">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
             <div className="mb-2 sm:mb-0">
-              <span className="text-sm text-gray-600">Departure: </span>
+              <span className="text-sm text-gray-600">Departure Date: </span>
               <span className="font-semibold">
                 {dayjs(preferred_departure_time)?.format("DD MMM, YYYY")}
               </span>
             </div>
-            
-          </div>
 
-          <div className="flex flex-col sm:flex-row justify-between mb-4 w-full gap-2">
-            <div className="w-full sm:w-auto">
-              <div
-                className="p-2 border flex flex-row items-center cursor-pointer rounded-md hover:bg-gray-50"
-                onClick={handleSortChange}
-              >
-                <MdSort className="mr-1" />
-                <span className="text-sm">
-                  Sort: {filtersState.sort_by} ({filtersState.order})
-                </span>
-              </div>
-            </div>
-            
             <div className="time-dropdown-container relative w-full sm:w-auto">
-              <div 
+              <div
                 className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
                 onClick={() => setShowTimeDropdown(!showTimeDropdown)}
               >
                 <span className="text-sm font-medium">
-                  Departure Time: {dayjs(preferred_departure_time)?.format("HH:mm A") || "Select Time"}
+                  Departure Time:{" "}
+                  {dayjs(preferred_departure_time)?.format("HH:mm A") ||
+                    "Select Time"}
                 </span>
                 <svg
-                  className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${showTimeDropdown ? 'transform rotate-180' : ''}`}
+                  className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
+                    showTimeDropdown ? "transform rotate-180" : ""
+                  }`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -220,7 +243,7 @@ const ComboSection = (props) => {
                   ></path>
                 </svg>
               </div>
-              
+
               {showTimeDropdown && (
                 <div className="absolute z-10 w-full sm:w-64 mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
                   <div className="sticky -top-1 bg-gray-100 p-2 border-b">
@@ -231,7 +254,7 @@ const ComboSection = (props) => {
                       <div
                         key={index}
                         className={`p-2 hover:bg-blue-50 cursor-pointer text-sm rounded-md ${
-                          selectedTime === slot.display ? 'bg-blue-100' : ''
+                          selectedTime === slot.display ? "bg-blue-100" : ""
                         }`}
                         onClick={() => handleTimeSelection(slot)}
                       >
@@ -242,6 +265,63 @@ const ComboSection = (props) => {
                 </div>
               )}
             </div>
+          </div>
+
+          <div className="relative sm:w-auto">
+            <div
+              className="p-2 border w-[15rem] flex flex-row items-center cursor-pointer rounded-md hover:bg-gray-50"
+              onClick={() => setShowSortDropdown((prev) => !prev)}
+            >
+              <MdSort className="mr-1" />
+              <span className="text-sm">
+                Sort: {filtersState.sort_by}{" "}
+                {filtersState.order === "asc"
+                  ? "(Low to High)"
+                  : "(High to Low)"}
+              </span>
+            </div>
+
+            {showSortDropdown && (
+              <div className="absolute z-10 bg-white border rounded-md shadow-lg mt-1 w-48">
+                {[
+                  {
+                    label: "Price (Low to High)",
+                    sort_by: "Price",
+                    order: "asc",
+                  },
+                  {
+                    label: "Price (High to Low)",
+                    sort_by: "Price",
+                    order: "desc",
+                  },
+                  {
+                    label: "Duration (Ascending)",
+                    sort_by: "Duration",
+                    order: "asc",
+                  },
+                  {
+                    label: "Duration (Descending)",
+                    sort_by: "Duration",
+                    order: "desc",
+                  },
+                ].map((option, idx) => (
+                  <div
+                    key={idx}
+                    className="p-2 hover:bg-blue-50 cursor-pointer text-sm"
+                    onClick={() => {
+                      setFiltersState({
+                        ...filtersState,
+                        sort_by: option.sort_by,
+                        order: option.order,
+                      });
+                      setShowSortDropdown(false);
+                    }}
+                  >
+                    {option.label}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
