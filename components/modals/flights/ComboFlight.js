@@ -25,6 +25,7 @@ import dayjs from "dayjs";
 const GridContainer = styled.div`
 min-height: 65vh;
 max-height: 40vh;
+overflow-x: hidden;
 
 @media screen and (min-width: 768px) {
     min-height: 90vh;
@@ -465,8 +466,9 @@ const ComboFlight = (props) => {
 
   if (props.token)
     return (
-      <div>
+      <div className="w-full">
         <ToastContainer />
+        
         <ComboSection
           _FetchFlightsHandler={_FetchFlightsHandler}
           setHideBookingModal={props.setHideBookingModal}

@@ -201,6 +201,7 @@ const ComboSection = (props) => {
               pax={pax}
               setPax={setPax}
               showPax={showPax}
+              combo={true}
             />
           </div>
         </div>
