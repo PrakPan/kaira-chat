@@ -3,6 +3,7 @@ import media from "../../../components/media";
 import SkeletonCard from "../../ui/SkeletonCard";
 import { TbArrowBack } from "react-icons/tb";
 import { IoMdClose } from "react-icons/io";
+import BackArrow from "../../ui/BackArrow";
 
 const Container = styled.div`
   display: flex;
@@ -58,12 +59,7 @@ const POIDetailsSkeleton = (props) => {
   return (
     <Container>
       <BackContainer className=" font-lexend">
-        <IoMdClose
-          className="hover-pointer"
-          onClick={props.onHide}
-          style={{ fontSize: "2rem" }}
-        ></IoMdClose>
-        <BackText>Back to Itinerary</BackText>
+        <BackArrow handleClick={props.onHide}/>
       </BackContainer>
 
       <SkeletonCard width={"50%"} height={"60px"} />

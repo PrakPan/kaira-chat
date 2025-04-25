@@ -5,6 +5,7 @@ import Pin from "../../../containers/newitinerary/breif/route/Pin";
 import { PulseLoader } from "react-spinners";
 import styled from "styled-components";
 import Image from "next/image";
+import BackArrow from "../../ui/BackArrow";
 
 const BackText = styled.div`
   font-size: 1.5rem;
@@ -35,12 +36,7 @@ const TaxiDetailModal = ({
     <>
       <div className="fixed inset-0 bg-gray-50 w-full h-full flex flex-col">
         <div className="p-4 flex items-center">
-          <IoClose
-            onClick={() => setHandleShow(false)}
-            className="hover:cursor-pointer"
-            style={{ fontSize: "2rem" }}
-          />
-          <BackText>Back to Itinerary</BackText>
+          <BackArrow handleClick={()=>setHandleShow(false)}/>
         </div>
         <div className="flex items-center px-4">
           <div className="bg-blue-100 rounded-lg p-2 mr-3">

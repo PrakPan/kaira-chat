@@ -18,6 +18,7 @@ import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { PulseLoader } from "react-spinners";
 import Image from "next/image";
 import { openNotification } from "../../../store/actions/notification";
+import BackArrow from "../../../components/ui/BackArrow";
 
 const Details = ({
   originCityId,
@@ -120,14 +121,15 @@ const Details = ({
       {drawer && (
         <div className="flex flex-col gap-2">
           <Heading>
-            <div className="flex flex-row items-center gap-2">
+            <BackArrow handleClick={() => setShowDetails((prev) => !prev)}/>
+            {/* <div className="flex flex-row items-center gap-2">
               <IoMdClose
                 className="hover-pointer"
                 onClick={() => setShowDetails((prev) => !prev)}
                 style={{ fontSize: "2rem" }}
               ></IoMdClose>
               <Text>Back To Itinerary</Text>
-            </div>
+            </div> */}
           </Heading>
         </div>
       )}

@@ -3,6 +3,7 @@ import media from "../../../components/media";
 import SkeletonCard from "../../ui/SkeletonCard";
 import { TbArrowBack } from "react-icons/tb";
 import { IoMdClose } from "react-icons/io";
+import BackArrow from "../../ui/BackArrow";
 
 const ActivityDetailsSkeleton = (props) => {
   const Container = styled.div`
@@ -38,7 +39,7 @@ const ActivityDetailsSkeleton = (props) => {
 
   return (
     <Container width={props.width} className="gap-4 px-4">
-      {!props.itineraryDrawer ? (
+      {/* {!props.itineraryDrawer ? (
         <div onClick={props.handleCloseDrawer}>
           <TbArrowBack
             style={{ height: "32px", width: "32px" }}
@@ -57,16 +58,12 @@ const ActivityDetailsSkeleton = (props) => {
         //   ></IoMdClose>
         //   <BackText className="text-[24px] font-semibold">Activity Details</BackText>
         // </div>
-      )}
+      )} */}
 
-<div className="h-[100vh] overflow-y-auto px-4">
+<div className="h-[100vh] overflow-y-auto ">
       <div className="flex flex-col gap-4 mb-[100px]">
         <div className="sticky top-0 z-1 flex flex-row items-center gap-2 mt-4 bg-white">
-          <IoMdClose
-            className="hover-pointer"
-            onClick={props.handleCloseDrawer}
-            style={{ fontSize: "2rem" }}
-          />
+          <BackArrow handleClick={props.handleCloseDrawer}/>
         </div>
         <div className="flex justify-between items-center">
           <SkeletonCard width="180px" height="32px" />

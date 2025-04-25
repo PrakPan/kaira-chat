@@ -11,6 +11,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { openNotification } from "../../../store/actions/notification";
+import BackArrow from "../../ui/BackArrow";
 
 export const Text = styled.div`
   font-size: 1.5rem;
@@ -75,12 +76,7 @@ const FlightDetailModal = ({
       <div className="flex flex-col gap-2">
         <Heading>
           <div className="flex flex-row items-center gap-2">
-            <IoMdClose
-              className="hover-pointer"
-              onClick={() => setShowDetails((prev) => !prev)}
-              style={{ fontSize: "2rem" }}
-            ></IoMdClose>
-            <Text>Back To Itinerary</Text>
+            <BackArrow handleClick={()=>setShowDetails((prev) => !prev)}/>
           </div>
         </Heading>
       </div>

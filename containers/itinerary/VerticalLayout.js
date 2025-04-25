@@ -3,7 +3,7 @@ import React from "react";
 import Pin from "../newitinerary/breif/route/Pin";
 import { IoCar } from "react-icons/io5";
 import { MdOutlineFlightTakeoff } from "react-icons/md";
-import { IoMdTrain, IoMdBoat } from "react-icons/io";
+import { IoMdTrain, IoMdBoat, IoIosArrowForward } from "react-icons/io";
 import { FaBus, FaPen } from "react-icons/fa";
 import axios from "axios";
 import { MERCURY_HOST } from "../../services/constants";
@@ -24,6 +24,7 @@ import TransferSkeleton from "../../components/itinerary/Skeleton/TransferSkelet
 import media from "../../components/media";
 import { openNotification } from "../../store/actions/notification";
 import Image from "next/image";
+import { RiArrowDropRightLine, RiArrowGoForwardLine } from "react-icons/ri";
 
 const Container = styled.div`
   display: flex;
@@ -120,16 +121,19 @@ const CityItem = ({
   };
 
   const handleDelete = async (val) => {
-    const dataPassed=val!=null?val:data
+    const dataPassed = val != null ? val : data;
     try {
       setLoading(true);
       const response = await axiosDeleteBooking.delete(
-        `${dataPassed?.itinerary_id}/bookings/${dataPassed?.booking_type?.toLowerCase()}/${
+        `${
+          dataPassed?.itinerary_id
+        }/bookings/${dataPassed?.booking_type?.toLowerCase()}/${
           dataPassed?.id
-        }/`,{
-          headers:{
+        }/`,
+        {
+          headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          }
+          },
         }
       );
 
@@ -243,7 +247,9 @@ const CityItem = ({
                             {correctIcon(mode)}
 
                             {i < city.split(",").length - 1 && (
-                              <span className="mx-1">-</span>
+                              <span>
+                                <RiArrowDropRightLine size={18} />
+                              </span>
                             )}
                           </>
                         );
@@ -266,6 +272,14 @@ const CityItem = ({
                       <div className="group-hover:text-blue ">{city} </div>
                       {upPresent && downPresent && (
                         <>
+                          {upPresent && downPresent && (
+                            <div className="">
+                              <FaPen
+                                size={12}
+                                className="transition-transform group-hover:scale-150 duration-300 group-hover:text-yellow-500"
+                              />
+                            </div>
+                          )}
                           {/* <div className="transition-transform group-hover:scale-150 duration-300 group-hover:text-yellow-500">
                             <svg
                               width="12"
