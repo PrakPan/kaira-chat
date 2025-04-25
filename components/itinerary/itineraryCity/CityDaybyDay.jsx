@@ -3,7 +3,7 @@ import CityDay from "./CityDay";
 
 const CityDaybyDay = (props) => {
   return (
-    <div className="flex flex-col">
+    <div id="citydaybyday" className="flex flex-col">
       {props.city?.day_by_day.map((day, index) => (
         <>
           <CityDay

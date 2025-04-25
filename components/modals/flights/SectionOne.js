@@ -17,7 +17,7 @@ export const Heading = styled.div`
   margin: 0;
   display: flex;
   gap: 0.5rem;
-  margin: 1rem;
+  margin: 1rem 0rem;
   @media screen and (min-width: 768px) {
   }
 `;

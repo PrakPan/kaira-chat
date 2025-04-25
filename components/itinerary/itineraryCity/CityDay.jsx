@@ -25,7 +25,7 @@ const CityDay = (props) => {
   }
 
   return (
-    <div className="flex flex-col md:flex-row md:border-b-2">
+    <div id="cityday" className="flex flex-col md:flex-row md:border-b-2">
       <div
         className={`md:w-[20%] text-[14px] md:text-[16px] font-semibold py-2 px-1  md:border-r-2 md:text-center md:text-black bg-[#ECECEC] md:bg-white`}
       >

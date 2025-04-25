@@ -18,6 +18,7 @@ import { toast, ToastContainer } from "react-toastify";
 import ReviewPoi from "../../POIDetails/Reviews";
 import useMediaQuery from "../../media";
 import { openNotification } from "../../../store/actions/notification";
+import BackArrow from "../../ui/BackArrow";
 export const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -262,14 +263,7 @@ const POIDetails = (props) => {
             </div>
           ) : (
             <BackContainer className=" font-lexend">
-              <IoMdClose
-                className="hover-pointer"
-                onClick={(e) => {
-                  props.handleCloseDrawer(e);
-                }}
-                style={{ fontSize: "2rem" }}
-              ></IoMdClose>
-              <BackText>Back to Itinerary</BackText>
+              <BackArrow handleClick={(e)=>props.handleCloseDrawer(e)}/>
             </BackContainer>
           )}
 

@@ -15,7 +15,6 @@ import TransferEditDrawer, {
   getModeIcon,
 } from "../../../components/drawers/routeTransfer/TransferEditDrawer";
 import Details from "./FlightDetail2";
-import { toast } from "react-toastify";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import VehicleDetailModal from "../../../components/modals/daybyday/VehicleModal";
@@ -471,7 +470,6 @@ const TransferBooking = ({
                               Instyle={{
                                 fontSize: "2.75rem",
                               }}
-                              
                               classname={" h-[34px] w-[34px]"}
                               color="#000000"
                             />
@@ -643,13 +641,14 @@ const TransferBooking = ({
                             ) : (
                               <div className="flex flex-row items-center justify-end cursor-pointer pr-2">
                                 <button
-                                  onclick={() =>
+                                  onClick={() => {
                                     handleViewDetails(
                                       router?.query?.id,
                                       booking?.id,
                                       booking?.transfer_details?.mode.toLowerCase()
-                                    )
-                                  }
+                                    );
+                                    setShowVehicleDrawer(true);
+                                  }}
                                   className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                                 >
                                   {/* Add Taxi */}
@@ -755,15 +754,13 @@ const TransferBooking = ({
           <ComboContainer>
             <div className="relative">
               <LineContainer>
-                <HalfLine Transfers={Transfer} color={
-                "#000000"
-                } />
+                <HalfLine Transfers={Transfer} color={"#000000"} />
                 <HalfLine Transfers={Transfer} color={"#000000"} />
               </LineContainer>
             </div>
             {book?.booking_type === "Flight" ? (
               <>
-                <div className="absolute w-[20px] border border-black ml-4 mt-[15px]"></div>
+                <div className="absolute w-[20px] border border-black ml-4 mt-[27px]"></div>
                 <FlightBooking
                   key={index}
                   booking={book}
@@ -839,7 +836,6 @@ const TransferBooking = ({
                           />
                         ) : (
                           <div className="bg-[#D9D9D9] mr-[0.8rem] rounded-[11px] p-[10px]">
-
                             <TransportIconFetcher
                               TransportMode={book?.booking_type}
                               Instyle={{
@@ -984,7 +980,6 @@ const TransferBooking = ({
                                     {isDesktop ? "Change Taxi" : "Change"}
                                   </button>
                                 ) : (
-                                  
                                   <button
                                     onClick={() => {
                                       console.log("clicked");
@@ -1005,13 +1000,14 @@ const TransferBooking = ({
                             ) : (
                               <div className="pr-2">
                                 <button
-                                  onclick={() =>
+                                  onClick={() =>{
                                     handleViewDetails(
                                       router?.query?.id,
                                       book?.id,
                                       book?.transfer_details?.mode.toLowerCase()
                                     )
-                                  }
+                                    setShowVehicleDrawer(true)
+                                  }}
                                   className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                                 >
                                   {/* Add Taxi */}
@@ -1194,7 +1190,7 @@ const FlightBooking = ({
     else child = " Child";
   } catch {}
   return (
-    <div className="ml-1 md:ml-7 flex flex-col w-full items-center justify-center ">
+    <div className="mt-3 ml-1 md:ml-7 flex flex-col w-full items-center justify-center ">
       <div className=" w-full items-center">
         <div className="font-medium text-[15px]  inline flex items-center gap-1">
           <FaPlaneDeparture color="#C5C1C1" />
@@ -1233,7 +1229,7 @@ const FlightBooking = ({
               width={34}
             />
             {window.innerWidth >= 1000 && (
-              <div className="">
+              <div>
                 <button
                   onClick={() => {
                     setShowDetails(true);
@@ -1267,10 +1263,10 @@ const FlightBooking = ({
         <div
           className={`flex ${
             window.innerWidth < 1000 ? "justify-between" : "justify-center"
-          } items-center`}
+          } items-center w-full`}
         >
           {window.innerWidth < 1000 && (
-            <div className=" mt-4 pr-2">
+            <div className="flex justify-end mt-4 pr-2 w-full">
               <button
                 onClick={() => {
                   setShowDetails(true);
