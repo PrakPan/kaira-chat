@@ -195,12 +195,19 @@ const TransferBooking = ({
   end,
   Transfer,
   selectedBooking,
+  setSelectedBooking,
+  oCityData,
+  dCityData,
   originCityId,
   destinationCityId,
   loadbookings,
   mercuryItinerary,
   pinColour1,
   pinColour2,
+  _updateFlightBookingHandler,
+  _updateTaxiBookingHandler,
+  _updatePaymentHandler,
+  getPaymentHandler,
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -744,8 +751,14 @@ const TransferBooking = ({
                   : destination?.city_name
               }
               selectedBooking={selectedBooking}
+              setSelectedBooking={setSelectedBooking}
+              oCityData={oCityData}
+              dCityData={dCityData}
               originCityId={originCityId}
               destinationCityId={destinationCityId}
+              _updateFlightBookingHandler={_updateFlightBookingHandler}
+              _updateTaxiBookingHandler={_updateTaxiBookingHandler}
+              getPaymentHandler={getPaymentHandler}
             />
           </div>
         )
@@ -1054,6 +1067,33 @@ const TransferBooking = ({
                 </div>
               </>
             )}
+            {/* <TransferEditDrawer
+                    mercury
+                    addOrEdit={"transferAdd"}
+                    showDrawer={showDrawer}
+                    setShowDrawer={setShowDrawer}
+                    // selectedTransferHeading={origin}
+                    destination={destination_city_id}
+                    // check_in={check_in}
+                    // routeId={id}
+                    oCityData={oCityData}
+                    dCityData={dCityData}
+                    setShowLoginModal={setShowLoginModal}
+                    city={origin_city_name}
+                    dcity={destination_city_name}
+                    // originCityId={origin}
+                    // destinationCityId={destination}
+                    selectedBooking={selectedBooking}
+                    setSelectedBooking={setSelectedBooking}
+                    originCityId={
+                      oCityData?.city?.id || oCityData?.gmaps_place_id
+                    }
+                    destinationCityId={
+                      dCityData?.city?.id || dCityData?.gmaps_place_id
+                    }
+                    origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
+                    destination_itinerary_city_id={dCityData?.id || dCityData?.gmaps_place_id}
+                  /> */}
             <TransferEditDrawer
               mercury
               addOrEdit={"transferAdd"}
@@ -1072,9 +1112,14 @@ const TransferBooking = ({
                   ? destination?.name
                   : destination?.city_name
               }
+              oCityData={oCityData}
+              dCityData={dCityData}
               selectedBooking={selectedBooking}
+              setSelectedBooking={setSelectedBooking}
               originCityId={originCityId}
               destinationCityId={destinationCityId}
+              _updateFlightBookingHandler={_updateFlightBookingHandler}
+              _updatePaymentHandler={_updatePaymentHandler}
             />
           </ComboContainer>
         ))

@@ -211,18 +211,18 @@ const RouteEditSection = (props) => {
             ...props.routes[i],
             city_name:
               props.routes[i]?.city_name || props.routes[i]?.city?.name,
-              checkin_date: getDate(
+              checkin_date: (i === 0 ? itinerary?.start_date : (i === props.routes.length - 1 ? itinerary?.end_date : getDate(
                 props.routes[i].checkin_date || props.routes[i]?.start_date || 
                 (i === 0 ? itinerary?.start_date : (i === props.routes.length - 1 ? itinerary?.end_date : null))
-              ),
-              checkout_date: getDate(
+              ))) || null,
+              checkout_date: (i === 0 ? itinerary?.start_date : (i === props.routes.length - 1 ? itinerary?.end_date : getDate(
                 props.routes[i].checkout_date ||
                 addDaysToDate(
                   props.routes[i]?.start_date,
                   props.routes[i]?.duration
-                ) ||
-                (i === 0 ? itinerary?.start_date : (i === props.routes.length - 1 ? itinerary?.end_date : null))
-              ),
+                ) 
+                )
+              )) || null,
             city_id: props?.routes[i]?.city_id || props?.routes[i]?.city?.id,
             place_id:
               props.routes[i]?.place_id || props.routes[i]?.gmaps_place_id,

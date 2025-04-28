@@ -429,7 +429,7 @@ const ItineraryContainer = (props) => {
     return data;
   }
 
-  function fetchData(poll) {
+async function fetchData(poll) {
     if (TRAVELER_ITINERARIES.includes(props.id))
       setIsPastTravelerItinerary(true);
     const fetchStatus = async () => {
@@ -1035,7 +1035,8 @@ const ItineraryContainer = (props) => {
       <div id="itinerary-anchor">
         <Menu
           mercuryItinerary
-          loadbookings={!loadbookings}
+          loadbookings={!
+          loadbookings}
           resetRef={resetRef}
           loadpricing={!loadpricing}
           showMercuryItinerary={showMercuryItinerary}

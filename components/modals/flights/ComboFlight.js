@@ -167,7 +167,7 @@ const ComboFlight = (props) => {
 
 function roundToNext30Min(dateTime) {
   let minutes = dateTime.minute();
-  let addMinutes = minutes <= 30 ? (30 - minutes) : (60 - minutes);
+  let addMinutes = minutes === 0 ? 0 : (minutes <= 30 ? (30 - minutes) : (60 - minutes));
   return dateTime.add(addMinutes, 'minute').second(0);
 }
 
@@ -411,9 +411,10 @@ const preferredDepartureTime = (() => {
           heading: "Sucess!",
         });
         props.setHideFlightModal();
-        toast.success("flight updated successfuly");
+       // toast.success("flight updated successfuly");
       })
       .catch((err) => {
+        console.log("Error in Updating Flight",err.message);
         setUpdateBookingState(false);
         setUnauthorized(true);
         props.openNotification({
@@ -422,7 +423,7 @@ const preferredDepartureTime = (() => {
           heading: "Error!",
         });
         props.setHideFlightModal();
-        console.log("Error in Updating Flight",err.message);
+        
         toast.error("some error occured");
       });
   };
