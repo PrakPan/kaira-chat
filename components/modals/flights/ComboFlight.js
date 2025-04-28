@@ -162,6 +162,29 @@ const ComboFlight = (props) => {
     const localDate = new Date(year, month - 1, day, hour, minute);
     return localDate.toISOString();
   }
+
+
+
+function roundToNext30Min(dateTime) {
+  let minutes = dateTime.minute();
+  let addMinutes = minutes <= 30 ? (30 - minutes) : (60 - minutes);
+  return dateTime.add(addMinutes, 'minute').second(0);
+}
+
+const preferredDepartureTime = (() => {
+  let baseTime;
+  if (props?.comboStartTime && props?.comboStartDate) {
+    baseTime = dayjs(getISOStringFromDateAndTime(props?.comboStartDate, props?.comboStartTime));
+  } else if (props?.selectedBooking?.check_in) {
+    baseTime = dayjs(props?.selectedBooking?.check_in.replace(" ", "T"));
+  } else {
+    baseTime = dayjs();
+  }
+  
+  const roundedTime = roundToNext30Min(baseTime);
+  return roundedTime.format("YYYY-MM-DDTHH:mm:ss");
+})();
+
   const _FetchFlightsHandler = () => {
     let options = [];
     setOptionsJSX([]);
@@ -184,15 +207,7 @@ const ComboFlight = (props) => {
         journey_type: "1",
         origin: props.source_code || props.selectedBooking.origin_iata,
         destination: props.destination_code || props.selectedBooking.destination_iata,
-        preferred_departure_time: `${
-          props?.comboStartTime && props?.comboStartDate ? dayjs(getISOStringFromDateAndTime(props?.comboStartDate,props?.comboStartTime)).format("YYYY-MM-DDTHH:mm:ss") : 
-          props?.selectedBooking?.check_in
-            ? new Date(props?.selectedBooking?.check_in.replace(" ", "T"))
-                ?.toISOString()
-                ?.slice(0, 19)
-            : new Date()?.toISOString()?.slice(0, 19)
-
-        }`,
+        preferred_departure_time: `${preferredDepartureTime}`,
         flight_cabin_class: classType.value,
       };
 
@@ -260,14 +275,14 @@ const ComboFlight = (props) => {
           setLoading(false);
           setFetchingIsError({
             error: true,
-            errorMsg: `Sorry, we could not find any flights from ${props.selectedBooking?.origin_iata} to ${props.selectedBooking?.destination_iata} for given dates at the moment. Please contact us to complete this booking`,
+            errorMsg: `Sorry, we could not find any flights from ${props.source_code || props.selectedBooking?.origin_iata} to ${props.destination_code || props.selectedBooking?.destination_iata} for given dates at the moment. Please contact us to complete this booking`,
           });
         });
     } else {
       setLoading(false);
       setFetchingIsError({
         error: true,
-        errorMsg: `Sorry, we could not find any flights from ${props.selectedBooking?.origin_iata} to ${props.selectedBooking?.destination_iata} for given dates at the moment. Please contact us to complete this booking`,
+        errorMsg: `Sorry, we could not find any flights from ${props.source_code || props.selectedBooking?.origin_iata} to ${props.destination_code || props.selectedBooking?.destination_iata} for given dates at the moment. Please contact us to complete this booking`,
       });
     }
   };
@@ -487,15 +502,7 @@ const ComboFlight = (props) => {
           setClassType={setClassType}
           handleTransferEdit={handleTransferEdit}
           mercuryTransfer={props?.mercuryTransfer}
-          preferred_departure_time= {`${
-            props?.comboStartTime && props?.comboStartDate ? dayjs(getISOStringFromDateAndTime(props?.comboStartDate,props?.comboStartTime)).format("YYYY-MM-DDTHH:mm:ss") : 
-            props?.selectedBooking?.check_in
-              ? new Date(props?.selectedBooking?.check_in.replace(" ", "T"))
-                  ?.toISOString()
-                  ?.slice(0, 19)
-              : new Date()?.toISOString()?.slice(0, 19)
-  
-          }`}
+          preferred_departure_time= {`${preferredDepartureTime}`}
         ></ComboSection>
 
         <GridContainer style={{ clear: "right" }}>

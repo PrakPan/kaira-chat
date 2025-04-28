@@ -704,6 +704,12 @@ const TransferEditDrawer = (props) => {
                             setHideFlightModal={() =>
                               setShowComboFlightModal(false)
                             }
+                            hideDrawer={() => {
+                              setShowDrawer(false);
+                              setCurrentStep(0);
+                              setIsRouteSelected(false);
+                              setShowOtherTrasfer(false);
+                            }}
                             setHideBookingModal={() =>
                               setShowComboFlightModal(false)
                             }
@@ -718,6 +724,7 @@ const TransferEditDrawer = (props) => {
                             _updateFlightBookingHandler={
                               props._updateFlightBookingHandler
                             }
+                            _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
                             _updateBookingHandler={props._updateBookingHandler}
                             alternates={selectedBooking?.id}
                             tailored_id={selectedBooking?.tailored_itinerary}
@@ -993,7 +1000,9 @@ const RouteContainer = (props) => {
     currentModeDepartureTime,
     showOtherTrasfer,
     setShowOtherTrasfer,
-    name
+    name,
+    _updateTaxiBookingHandler,
+    hideDrawer
   } = props;
   const [viewMore, setViewMore] = useState(false);
   const [singleTransfer, setSingleTransfer] = useState(transfer[0]);
@@ -1181,7 +1190,7 @@ const RouteContainer = (props) => {
               handleFlightSelect={handleFlightSelect}
               showTaxiModal={showTaxiModal}
               setShowComboTaxiModal={setShowComboTaxiModal}
-              setHideTaxiModal={setHideTaxiModal}
+              setHideTaxiModal={hideDrawer}
               setHideBookingModal={setHideBookingModal}
               getPaymentHandler={getPaymentHandler}
               _updatePaymentHandler={_updatePaymentHandler}
@@ -1205,6 +1214,7 @@ const RouteContainer = (props) => {
               destinationCityId={destinationCityId}
               comboStartDate={currentModeDepartureDate}
               comboStartTime={currentModeDepartureTime}
+             _updateTaxiBookingHandler={_updateTaxiBookingHandler}
             />
         :
         <OtherTransfer
@@ -1908,6 +1918,7 @@ const NewMultiModeContainer = ({
                     return (
                       <ComboTaxi
                         key={option.id}
+                        combo={true}
                         handleFlightSelect={handleFlightSelect}
                         showTaxiModal={showTaxiModal}
                         setShowComboTaxiModal={setShowComboTaxiModal}

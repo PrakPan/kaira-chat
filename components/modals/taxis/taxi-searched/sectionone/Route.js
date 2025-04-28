@@ -6,6 +6,8 @@ import SectionFour from "../SectionFour";
 import { PulseLoader } from "react-spinners";
 import { getIndianPrice } from "../../../../../services/getIndianPrice";
 import { axiosTaxiBooking } from "../../../../../services/bookings/UpdateTaxiGozo";
+import { useDispatch, useSelector } from "react-redux";
+import { openNotification } from "../../../../../store/actions/notification";
 
 const Container = styled.div`
   padding: 0.75rem 0.5rem;
@@ -70,12 +72,13 @@ const Cost = styled.p`
 const Section = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [loading, setLoading] = useState(false);
-
+  const dispatch = useDispatch();
+  const itineraryId = useSelector((state) => state.ItineraryId);
   const handleUpdate = () => {
     if (props.handleTaxiSelect) {
       props.handleTaxiSelect({
         trace_id: props.data.trace_id,
-        result_index: props.data.result_index
+        result_index: props.data.result_index,
       });
       return;
     }
@@ -85,29 +88,45 @@ const Section = (props) => {
     const requestData = {
       source: props.data.source,
       trace_id: props.data.trace_id,
-      result_index: props.data.result_index
-    }
+      result_index: props.data.result_index,
+    };
 
-    axiosTaxiBooking.post(`${props.selectedBooking.itinerary_id}/bookings/taxi/`, requestData).then(res => {
-      setLoading(false);
-      props.openNotification({
-        type: "success",
-        text: "Taxi changed successfully.",
-        heading: "Sucess!",
+    axiosTaxiBooking
+      .post(
+        `${itineraryId || props.selectedBooking.itinerary_id}/bookings/taxi/`,
+        requestData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      )
+      .then((res) => {
+        setLoading(false);
+        dispatch(
+          openNotification({
+            type: "success",
+            text: "Taxi changed successfully.",
+            heading: "Sucess!",
+          })
+        );
+        props._updateTaxiBookingHandler([res.data]);
+        props.getPaymentHandler();
+        props.setHideBookingModal();
+      })
+      .catch((err) => {
+        setLoading(false);
+        console.log("Error Changing Taxi", err.message);
+        dispatch(
+          openNotification({
+            type: "error",
+            text: "There seems to be a problem, please try again after some time!",
+            heading: "Error!",
+          })
+        );
+        props.setHideBookingModal();
       });
-      props._updateTaxiBookingHandler([res.data]);
-      props.getPaymentHandler();
-      props.setHideBookingModal()
-    }).catch(err => {
-      setLoading(false);
-      props.openNotification({
-        type: "error",
-        text: "There seems to be a problem, please try again after some time!",
-        heading: "Error!",
-      });
-      props.setHideBookingModal()
-    })
-  }
+  };
 
   if (props.data)
     return (
@@ -131,8 +150,10 @@ const Section = (props) => {
           )}
         </Heading>
 
-        {isPageWide && <ModelText>{props.data?.taxi_category?.model_name}</ModelText>}
-        <RouteContainer className="font-lexend">
+        {isPageWide && (
+          <ModelText>{props.data?.taxi_category?.model_name}</ModelText>
+        )}
+        {/* <RouteContainer className="font-lexend">
           <Location className="font-lexend">
             {props.selectedBooking.city}
           </Location>
@@ -149,7 +170,7 @@ const Section = (props) => {
           <Location className="font-lexend">
             {props.selectedBooking.destination_city}
           </Location>
-        </RouteContainer>
+        </RouteContainer> */}
 
         <div
           style={{
@@ -170,7 +191,10 @@ const Section = (props) => {
             noLazy
           ></ImageLoader>
 
-          <div style={{ display: "flex", gap: "1rem" }} className="flex flex-row justify-between w-full">
+          <div
+            style={{ display: "flex", gap: "1rem" }}
+            className="flex flex-row justify-between w-full"
+          >
             <div className="flex flex-row gap-[1rem]">
               {props.data?.distance?.text ? (
                 <div>
@@ -191,19 +215,39 @@ const Section = (props) => {
               ) : null}
             </div>
 
-            <div className="flex flex-col gap-2 items-end" >
+            <div className="flex flex-col gap-2">
               <div className="center-div" style={{ marginRight: "0.5rem" }}>
-                <Cost>{"₹" + getIndianPrice(Math.ceil(props.data.price.total)) + "/-"}</Cost>
+                <Cost>
+                  {"₹" +
+                    getIndianPrice(Math.ceil(props.data.price.total)) +
+                    "/-"}
+                </Cost>
               </div>
 
               <div>
                 {loading ? (
                   <PulseLoader size={8} speedMultiplier={0.6} color="#111" />
                 ) : (
-                  <button
-                    onClick={handleUpdate}
-                    className="focus:outline-none border-2 border-black rounded-lg px-4 py-2 bg-[#F7E700] hover:bg-black hover:text-white transition-all"
-                  >Select</button>
+                  <label
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent:"center",
+                      gap: "0.5rem",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      onChange={(e) => {
+                        if (e.target.checked) handleUpdate();
+                      }}
+                      style={{ width: "1.25rem", height: "1.25rem" }}
+                    />
+                    {/* <span className="font-lexend" style={{ fontSize: "14px" }}>
+                      Select
+                    </span> */}
+                  </label>
                 )}
               </div>
             </div>

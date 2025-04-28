@@ -546,6 +546,7 @@ const SimpleTabsV2 = (props) => {
             payment={props.payment}
             traveleritinerary={props.traveleritinerary}
             CityData={CityData}
+            _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
             // CityData={props?.cities}
             itinerary={props.itinerary}
             breif={props.breif}

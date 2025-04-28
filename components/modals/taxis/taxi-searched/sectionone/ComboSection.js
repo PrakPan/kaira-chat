@@ -99,7 +99,8 @@ const InfoText = styled.p`
 const PriceActionContainer = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
+  justify-content: center;
   gap: 0.5rem;
 `;
 
@@ -311,6 +312,7 @@ const ComboSection = (props) => {
               ) : (
                 <input type="checkbox" 
                 //onClick={()=>handleUpdate({...props?.data,"booking_type":"Taxi"})}
+                style={{ width: "1.25rem", height: "1.25rem" }}
                 checked={props.isSelected}
                 onChange={() => { 
                   props.onTaxiSelect?.(props?.index);
