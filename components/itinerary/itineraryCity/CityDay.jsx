@@ -64,11 +64,11 @@ const CityDay = (props) => {
           + Add activities on {convertDateFormat(props?.day?.date)}
         </button>
 
-        <div className="py-3">
+        {/* <div className="py-3">
           <button className="bg-[#F7E700] text-black text-sm font-normal py-1 px-3 rounded border-1 border-black">
             + Add Sightseeing Taxi
           </button>
-        </div>
+        </div> */}
       </div>
 
       <ActivityAddDrawer

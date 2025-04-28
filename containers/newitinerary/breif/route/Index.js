@@ -360,6 +360,8 @@ if (props?.CityData) {
                 oCityData={props?.CityData[i]}
                 dCityData={props?.CityData[i+1]}
                 setShowLoginModal={props?.setShowLoginModal}
+                _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
+                getPaymentHandler={props.getPaymentHandler}
               ></MidSectionV2>
             );
           }

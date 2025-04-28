@@ -3,7 +3,7 @@ import styled from "styled-components";
 import media from "../../media";
 import axiosTaxiSearch from "../../../services/bookings/TaxiSearch";
 import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import Button from "../../ui/button/Index";
 import LogInModal from "../Login";
 import SectionOne from "./SectionOne";
@@ -60,6 +60,7 @@ const ComboTaxi = (props) => {
   const [isMercury, setIsMercury] = useState(false);
   const [selectedTaxiIndex, setSelectedTaxiIndex] = useState(null);
   const [quotes, setQuotes] = useState([]);
+  const dispatch = useDispatch();
 
   console.log("OCity,D", props?.selectedBooking, props?.originCityId);
 
@@ -248,11 +249,11 @@ const ComboTaxi = (props) => {
       .catch((err) => {
         setLoading(false);
         setError(true);
-        props.openNotification({
+        dispatch(openNotification({
           type: "error",
           text: "There seems to be a problem, please try again later!",
           heading: "Error!",
-        });
+        }));
       });
   };
 
@@ -291,7 +292,7 @@ const ComboTaxi = (props) => {
     axiosbookingupdateinstance
       .post("?booking_type=Taxi,Bus,Ferry", updated_bookings_arr, {
         headers: {
-          Authorization: `Bearer ${props.token}`,
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
       })
       .then((res) => {
@@ -303,11 +304,11 @@ const ComboTaxi = (props) => {
       })
       .catch((err) => {
         setUpdateBookingState(false);
-        props.openNotification({
+        dispatch(openNotification({
           type: "error",
           text: "There seems to be a problem, please try again!",
           heading: "Error!",
-        });
+        }));
       });
   };
 
@@ -411,7 +412,7 @@ const ComboTaxi = (props) => {
                     {quotes.map((quote, index) => (
                       <TaxiSearched
                         key={index}
-                        setHideBookingModal={props.setHideBookingModal}
+                        setHideBookingModal={props.setHideTaxiModal}
                         _updateSearchedTaxi={_updateSearchedTaxi}
                         selectedBooking={props.selectedBooking}
                         getPaymentHandler={props.getPaymentHandler}
@@ -420,7 +421,7 @@ const ComboTaxi = (props) => {
                         }
                         data={quote}
                         handleTaxiSelect={props.handleTaxiSelect}
-                        combo={true}
+                        combo={props?.combo}
                         onSelect={props?.onSelect}
                         isSelected={selectedTaxiIndex === index}
                         onTaxiSelect={() => setSelectedTaxiIndex(index)}

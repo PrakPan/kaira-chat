@@ -96,6 +96,13 @@ const ItineraryContainer = (props) => {
   const transfersSuccessRef = useRef(false);
   const hotelsSuccessRef = useRef(false);
 
+  const resetRef = () => {
+    itinerarySuccessRef.current = false;
+    pricingSuccessRef.current = false;
+    transfersSuccessRef.current = false;
+    hotelsSuccessRef.current = false;
+  };
+
   function addDaysToDate(dateString, daysToAdd) {
     const date = new Date(dateString);
 
@@ -422,7 +429,7 @@ const ItineraryContainer = (props) => {
     return data;
   }
 
-  function fetchData(poll) {
+async function fetchData(poll) {
     if (TRAVELER_ITINERARIES.includes(props.id))
       setIsPastTravelerItinerary(true);
     const fetchStatus = async () => {
@@ -441,11 +448,12 @@ const ItineraryContainer = (props) => {
           dispatch(setItineraryStatus("hotels_status", "FAILURE"));
         }
 
+        const allStatusesCompleted = ["ITINERARY", "TRANSFERS", "PRICING", "HOTELS"].every(
+          key => status?.[key] === "SUCCESS" || status?.[key] === "FAILURE"
+        );
+
         if (
-          status?.ITINERARY === "FAILURE" &&
-          status?.TRANSFERS === "FAILURE" &&
-          status?.PRICING === "FAILURE" &&
-          status?.HOTELS === "FAILURE"
+         allStatusesCompleted
         ) {
           setPolling(false);
         } else {
@@ -458,14 +466,6 @@ const ItineraryContainer = (props) => {
           status?.TRANSFERS,
           status?.PRICING
         );
-        if (
-          status?.ITINERARY === "SUCCESS" &&
-          status?.TRANSFERS === "SUCCESS" &&
-          status?.PRICING === "SUCCESS" &&
-          status?.HOTELS === "SUCCESS"
-        ) {
-          setPolling(false);
-        }
       } catch (err) {
         console.error("[ERROR]: axiosGetItineraryStatus: ", err.message);
       }
@@ -1035,7 +1035,9 @@ const ItineraryContainer = (props) => {
       <div id="itinerary-anchor">
         <Menu
           mercuryItinerary
-          loadbookings={!loadbookings}
+          loadbookings={!
+          loadbookings}
+          resetRef={resetRef}
           loadpricing={!loadpricing}
           showMercuryItinerary={showMercuryItinerary}
           hasUserPaid={hasUserPaid}

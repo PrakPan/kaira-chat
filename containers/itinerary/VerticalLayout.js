@@ -15,7 +15,7 @@ import {
   setTransferBookings,
   updateTransferBookings,
 } from "../../store/actions/transferBookingsStore";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import TransferEditDrawer from "../../components/drawers/routeTransfer/TransferEditDrawer";
 import VehicleDetailModal from "../../components/modals/daybyday/VehicleModal";
 import Drawer from "../../components/ui/Drawer";
@@ -51,6 +51,8 @@ const PinWrapper = styled.div`
 
 const CityItem = ({
   city,
+  selectedBooking,
+  setSelectedBooking,
   duration,
   booking_type,
   transfer_type,
@@ -67,11 +69,14 @@ const CityItem = ({
   setShowLoginModal,
   origin,
   destination,
+  oCityData,
+  dCityData,
+  _updateFlightBookingHandler,
+  _updatePaymentHandler,
+  getPaymentHandler,
 }) => {
-  const [selectedBooking, setSelectedBooking] = useState({
-    id: null,
-    name: null,
-  });
+
+  const {transfers_status} = useSelector(state=>state.ItineraryStatus);
   const correctIcon = (TransportMode) => {
     switch (TransportMode) {
       case "Flight":
@@ -106,6 +111,7 @@ const CityItem = ({
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
+
   const router = useRouter();
   const dispatch = useDispatch();
   let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
@@ -230,7 +236,7 @@ const CityItem = ({
           !downPresent && upPresent && "mt-[41px]"
         } ${!upPresent && downPresent && "mb-[41px]"}`}
       >
-        {loadbookings ? (
+        {transfers_status === "PENDING" ? (
           <TransferSkeleton />
         ) : (
           <div className=" text-[16px] font-[500] flex gap-1">
@@ -352,16 +358,29 @@ const CityItem = ({
         showDrawer={showDrawer}
         setShowDrawer={setShowDrawer}
         // selectedTransferHeading={origin}
-        origin={origin_city_id}
         destination={destination_city_id}
+        _updateFlightBookingHandler={_updateFlightBookingHandler}
+        _updatePaymentHandler={_updatePaymentHandler}
+        getPaymentHandler={getPaymentHandler}
         // check_in={check_in}
         // routeId={id}
+        oCityData={oCityData}
+        dCityData={dCityData}
         setShowLoginModal={setShowLoginModal}
         city={origin_city_name}
         dcity={destination_city_name}
-        originCityId={origin}
-        destinationCityId={destination}
+        // originCityId={origin}
+        // destinationCityId={destination}
         selectedBooking={selectedBooking}
+        setSelectedBooking={setSelectedBooking}
+        originCityId={
+          oCityData?.city?.id || oCityData?.gmaps_place_id
+        }
+        destinationCityId={
+          dCityData?.city?.id || dCityData?.gmaps_place_id
+        }
+        origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
+        destination_itinerary_city_id={dCityData?.id || dCityData?.gmaps_place_id}
       />
       <Drawer
         show={handleShow}

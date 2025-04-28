@@ -236,6 +236,7 @@ const TransferEditDrawer = (props) => {
   };
 
   const handleSelect = (index, transfer, multimode, mode) => {
+    console.log("Inside handleSelect",transfer)
     if (!transfer) {
       setSelectedResult(null);
       return;
@@ -299,7 +300,12 @@ const TransferEditDrawer = (props) => {
 
         if (isExistingSelection) {
           // Deselecting
-          setSelectedResult(null);
+          setSelectedResult({
+            transferIndex: index,
+            mode: transfer.mode,
+            transfer: transfer,
+          });
+        //  setSelectedResult(null);
         } else {
           // New selection
           setSelectedResult({
@@ -307,6 +313,7 @@ const TransferEditDrawer = (props) => {
             mode: transfer.mode,
             transfer: transfer,
           });
+        //  setShowOtherTrasfer(true)
         }
         break;
     }
@@ -314,7 +321,7 @@ const TransferEditDrawer = (props) => {
 
   const handleSelectResult = (result) => {
     setSelectedResult((prev) => {
-      if (prev.multimode) {
+      if (prev?.multimode) {
         return {
           ...prev,
           modes: [
@@ -696,6 +703,7 @@ const TransferEditDrawer = (props) => {
                             transfer={transfer?.transfers}
                             handleSelect={handleSelect}
                             selectedResult={selectedResult}
+                            setSelectedResult={setSelectedResult}
                             setCurrentStep={setCurrentStep}
                             currentStep={currentStep}
                             handleFlightSelect={handleSelectResult}
@@ -704,6 +712,12 @@ const TransferEditDrawer = (props) => {
                             setHideFlightModal={() =>
                               setShowComboFlightModal(false)
                             }
+                            hideDrawer={() => {
+                              setShowDrawer(false);
+                              setCurrentStep(0);
+                              setIsRouteSelected(false);
+                              setShowOtherTrasfer(false);
+                            }}
                             setHideBookingModal={() =>
                               setShowComboFlightModal(false)
                             }
@@ -718,6 +732,7 @@ const TransferEditDrawer = (props) => {
                             _updateFlightBookingHandler={
                               props._updateFlightBookingHandler
                             }
+                            _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
                             _updateBookingHandler={props._updateBookingHandler}
                             alternates={selectedBooking?.id}
                             tailored_id={selectedBooking?.tailored_itinerary}
@@ -993,7 +1008,9 @@ const RouteContainer = (props) => {
     currentModeDepartureTime,
     showOtherTrasfer,
     setShowOtherTrasfer,
-    name
+    name,
+    _updateTaxiBookingHandler,
+    hideDrawer
   } = props;
   const [viewMore, setViewMore] = useState(false);
   const [singleTransfer, setSingleTransfer] = useState(transfer[0]);
@@ -1014,6 +1031,9 @@ const RouteContainer = (props) => {
 
   useEffect(() => {
     if (currentStep < 1 || currentStep > transfer.length) return;
+    setShowComboFlightModal(false);
+    setShowComboTaxiModal(false);
+    setShowOtherTrasfer(false);
   
     const currentTransfer = transfer[currentStep - 1];
 
@@ -1062,7 +1082,8 @@ const RouteContainer = (props) => {
         }
       }
      else {
-        handleSelect(currentStep - 1, null, "", currentTransfer.mode);
+        handleSelect(currentStep - 1, currentTransfer, "", currentTransfer.mode);
+       setShowOtherTrasfer(true);
       }
     }
   , [currentStep, transfer]);
@@ -1121,6 +1142,7 @@ const RouteContainer = (props) => {
         )
       ) : (
         <>
+        {console.log("current step is:", currentStep)}
         { (
         <div
           className="w-full flex justify-between items-center p-2 md:p-3 cursor-pointer shadow-md"
@@ -1147,7 +1169,7 @@ const RouteContainer = (props) => {
               handleFlightSelect={handleFlightSelect}
               showComboFlightModal={showComboFlightModal}
               setShowComboFlightModal={setShowComboFlightModal}
-              setHideFlightModal={setHideFlightModal}
+              setHideFlightModal={hideDrawer}
               setHideBookingModal={setHideBookingModal}
               getPaymentHandler={getPaymentHandler}
               _updatePaymentHandler={_updatePaymentHandler}
@@ -1181,7 +1203,7 @@ const RouteContainer = (props) => {
               handleFlightSelect={handleFlightSelect}
               showTaxiModal={showTaxiModal}
               setShowComboTaxiModal={setShowComboTaxiModal}
-              setHideTaxiModal={setHideTaxiModal}
+              setHideTaxiModal={hideDrawer}
               setHideBookingModal={setHideBookingModal}
               getPaymentHandler={getPaymentHandler}
               _updatePaymentHandler={_updatePaymentHandler}
@@ -1205,12 +1227,14 @@ const RouteContainer = (props) => {
               destinationCityId={destinationCityId}
               comboStartDate={currentModeDepartureDate}
               comboStartTime={currentModeDepartureTime}
+             _updateTaxiBookingHandler={_updateTaxiBookingHandler}
             />
         :
         <OtherTransfer
         showOtherTransfer={showOtherTrasfer}
         setShowOtherTrasfer={setShowOtherTrasfer}
         selectedResult={selectedResult}
+        selectedBooking={selectedBooking}
         setSelectedResult={setSelectedResult}
         number_of_travellers={
           props?.plan?.number_of_adults +
@@ -1219,6 +1243,8 @@ const RouteContainer = (props) => {
         check_in={check_in}
         mercuryTransfer={mercuryTransfer}
         currentStep={currentStep}
+        currentModeDepartureDate={currentModeDepartureDate}
+        currentModeDepartureTime={currentModeDepartureTime}
       />
       : ""}
         {/* <div className="flex flex-row gap-2 w-full">
@@ -1908,6 +1934,7 @@ const NewMultiModeContainer = ({
                     return (
                       <ComboTaxi
                         key={option.id}
+                        combo={true}
                         handleFlightSelect={handleFlightSelect}
                         showTaxiModal={showTaxiModal}
                         setShowComboTaxiModal={setShowComboTaxiModal}
@@ -3100,7 +3127,8 @@ const OtherTransfer = ({
   showOtherTransfer,
   mercuryTransfer,
   currentModeDepartureDate,
-  currentModeDepartureTime
+  currentModeDepartureTime,
+  selectedBooking
 }) => {
   const ref = useRef(null);
   const [loading, setLoading] = useState(true);
@@ -3109,8 +3137,9 @@ const OtherTransfer = ({
   const [traceId, setTraceId] = useState(null);
   const [isSelected, setIsSelected] =useState(false)
   useEffect(() => {
-    // getOtherTrasfer(selectedResult.transfer.mode);
-  getOtherTrasfer(selectedResult.transfer);
+    console.log("Result",selectedResult?.transfer)
+    setSelectedResult(selectedResult);
+  getOtherTrasfer(selectedResult?.transfer);
   }, []);
 
   const handleClose = (e) => {
@@ -3139,92 +3168,6 @@ const OtherTransfer = ({
 
   return (
       <Container>
-
-        {/* <div className="flex flex-row gap-3 my-0 justify-start items-center">
-          <IoMdArrowRoundBack
-            onClick={() => setShowOtherTrasfer(false)}
-            className="hover-pointer text-3xl font-semibold"
-          />
-          <Heading>
-            Changing Transfer from{" "}
-            {otherTransfer?.source?.city_name ||
-              mercuryTransfer?.source?.city_name}{" "}
-            to{" "}
-            {otherTransfer?.destination?.city_name ||
-              mercuryTransfer?.destination?.city_name}
-          </Heading>
-        </div> */}
-        {/* {otherTransfer &&
-          otherTransfer?.prices?.map((price, i) => (
-            <div
-              key={i}
-              className="flex items-center p-4 border rounded-lg shadow-md w-full max-w-full mb-3"
-            >
-              <div className="flex items-center gap-4 justify-between w-full ">
-                <TransfersIcon
-                  TransportMode={otherTransfer.mode}
-                  Instyle={{
-                    fontSize: otherTransfer.mode === "Bus" ? "2.5rem" : "3rem",
-                    color: "black",
-                  }}
-                  classname={{ width: 80, height: 75 }}
-                />
-                <div className="flex-1">
-                  <Heading>{otherTransfer.mode}</Heading>
-                  <ModelText>{price?.class}</ModelText>
-                  <div className="flex items-center gap-2 mt-2 text-gray-600">
-                    <ImageLoader
-                      url="media/icons/bookings/distance.png"
-                      leftalign
-                      dimensions={{ width: 200, height: 200 }}
-                      width="1.25rem"
-                      widthmobile="1.25rem"
-                      noLazy
-                    ></ImageLoader>
-                    <Text>{otherTransfer.distance} km</Text>
-                    <span>
-                      <FaClock />
-                    </span>
-                    <Text>
-                      {Math.floor(Number(otherTransfer.duration) / 60) +
-                        "-" +
-                        Math.ceil(Number(otherTransfer.duration + 1) / 60) +
-                        "hours"}
-                    </Text>
-                  </div>
-                  <div className="flex">
-                    <Location className="font-lexend">
-                      {otherTransfer?.source?.city_name}
-                    </Location>
-                    <div style={{ margin: "0 2px" }}>
-                      <ImageLoader
-                        url="media/icons/bookings/next.png"
-                        leftalign
-                        dimensions={{ width: 200, height: 200 }}
-                        width="1.25rem"
-                        widthmobile="1.25rem"
-                        noLazy
-                      ></ImageLoader>
-                    </div>
-                    <Location className="font-lexend">
-                      {otherTransfer?.destination?.city_name}
-                    </Location>
-                  </div>
-                </div>
-
-                <div className="text-right">
-                  <Cost>
-                    {"₹" + getIndianPrice(Math.round(price.price)) + "/-"}
-                  </Cost>
-                  <Text>Per Person</Text>
-                  <button class="focus:outline-none border-2 border-black rounded-lg px-4 py-2 mt-2 bg-[#F7E700] hover:bg-black hover:text-white transition-all">
-                    Add To Itinerary
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))
-          } */}
           {otherTransfer && 
            (otherTransfer.prices && otherTransfer.prices.length > 0) &&
              otherTransfer.prices.map((priceOption, priceIndex) => {
@@ -3247,7 +3190,7 @@ const OtherTransfer = ({
                   <div className="time-dropdown-container relative w-full sm:w-auto">
                     <div
                       className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
-                      onClick={() => setShowTimeDropdown(!showTimeDropdown)}
+                      // onClick={() => setShowTimeDropdown(!showTimeDropdown)}
                     >
                       <span className="text-sm font-medium">
                         Departure Time:{" "}
@@ -3279,12 +3222,12 @@ const OtherTransfer = ({
                       {Math.floor(otherTransfer?.duration/60) + "-" + Math.ceil(otherTransfer?.duration / 60)} hours | {otherTransfer.distance}{" "}
                         kms
                       </div>
-                      <div className="text-xs md:text-sm">
+                      {priceOption?.class && <div className="text-xs md:text-sm">
                         <span className="font-semibold">Facilities:</span>{" "}
                         {priceOption?.class} {" "}
                         {/* <span className="font-semibold">To:</span>{" "}
                         {option.destination.name} */}
-                      </div>
+                      </div>}
                       {priceOption.description && (
                         <div className="text-xs md:text-sm text-gray-700 mt-1">
                           {priceOption.description}
@@ -3292,14 +3235,13 @@ const OtherTransfer = ({
                       )}
                     </div>
                   </div>
-                  <div className="flex flex-row md:flex-row gap-2 items-center md:items-end justify-between">
+                  <div className="flex flex-col md:flex-col gap-2 items-center md:items-end justify-between">
                     <div className="font-semibold text-sm md:text-base">
                       {currency} {price}
                     </div>
                     <div
                       className="cursor-pointer"
                       onClick={() => {
-                        // Pass the price data along with the selection
                         const selectedPriceData = {
                           ...otherTransfer,
                           selectedPrice: priceOption,

@@ -29,6 +29,9 @@ const DaybyDay = ({
   loadbookings,
   payment,
   setStayBookings,
+  _updateFlightBookingHandler,
+  _updatePaymentHandler,
+  getPaymentHandler,
   ...props
 }) => {
   console.log("transfer bookings is:", transferBookings);
@@ -201,6 +204,13 @@ const DaybyDay = ({
             upPresent={false}
             width={width}
             length={itineraryDaybyDay?.cities?.length}
+            oCityData={startCity}
+            dCityData={itineraryDaybyDay?.cities?.[0]}
+            selectedBooking={selectedBooking}
+            setSelectedBooking={setSelectedBooking}
+            _updateFlightBookingHandler={_updateFlightBookingHandler}
+            _updatePaymentHandler={_updatePaymentHandler}
+            getPaymentHandler={getPaymentHandler}
           />
           <CityItem
             setShowLoginModal={props?.setShowLoginModal}
@@ -257,6 +267,13 @@ const DaybyDay = ({
             origin_city_name={startCity?.city_name}
             destination_city_name={itineraryDaybyDay?.cities?.[0]?.city?.name}
             setBookingId={setBookingId}
+            oCityData={startCity}
+            dCityData={itineraryDaybyDay?.cities?.[0]}
+            selectedBooking={selectedBooking}
+            setSelectedBooking={setSelectedBooking}
+            _updateFlightBookingHandler={_updateFlightBookingHandler}
+            _updatePaymentHandler={_updatePaymentHandler}
+            getPaymentHandler={getPaymentHandler}
           />
           {itineraryDaybyDay?.cities?.map((city, index) => {
             var idMapping =
@@ -314,6 +331,13 @@ const DaybyDay = ({
                         itineraryDaybyDay?.cities?.[index + 1]?.city?.name
                       }
                       setBookingId={setBookingId}
+                      oCityData={itineraryDaybyDay?.cities?.[index]}
+                      dCityData={itineraryDaybyDay?.cities?.[index + 1]}
+                      selectedBooking={selectedBooking}
+                      setSelectedBooking={setSelectedBooking}
+                      _updateFlightBookingHandler={_updateFlightBookingHandler}
+                      _updatePaymentHandler={_updatePaymentHandler}
+                      getPaymentHandler={getPaymentHandler}
                     />
                   </div>
                 )}
@@ -386,6 +410,13 @@ const DaybyDay = ({
             }
             destination_city_name={endCity?.city_name}
             setBookingId={setBookingId}
+            oCityData={itineraryDaybyDay?.cities?.[itineraryDaybyDay?.cities?.length - 1]}
+            dCityData={endCity}
+            selectedBooking={selectedBooking}
+            setSelectedBooking={setSelectedBooking}
+            _updateFlightBookingHandler={_updateFlightBookingHandler}
+            _updatePaymentHandler={_updatePaymentHandler}
+            getPaymentHandler={getPaymentHandler}
           />
           <CityItem
             setShowLoginModal={props?.setShowLoginModal}
@@ -397,6 +428,11 @@ const DaybyDay = ({
             upPresent={false}
             width={width}
             length={itineraryDaybyDay?.cities?.length}
+            selectedBooking={selectedBooking}
+            setSelectedBooking={setSelectedBooking}
+            _updateFlightBookingHandler={_updateFlightBookingHandler}
+            _updatePaymentHandler={_updatePaymentHandler}
+            getPaymentHandler={getPaymentHandler}
           />
         </div>
       </div>

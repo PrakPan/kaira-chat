@@ -546,9 +546,11 @@ const SimpleTabsV2 = (props) => {
             payment={props.payment}
             traveleritinerary={props.traveleritinerary}
             CityData={CityData}
+            _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
             // CityData={props?.cities}
             itinerary={props.itinerary}
             breif={props.breif}
+            resetRef={props?.resetRef}
             fetchData={props.fetchData}
             getPaymentHandler={props.getPaymentHandler}
             setShowLoginModal={setShowLoginModal}
@@ -603,6 +605,7 @@ const SimpleTabsV2 = (props) => {
                   setStayBookings={props.setStayBookings}
                   _updateBookingHandler={props._updateBookingHandler}
                   _updateStayBookingHandler={props._updateStayBookingHandler}
+                  _updateFlightBookingHandler={props._updateFlightBookingHandler}
                   _updatePaymentHandler={props._updatePaymentHandler}
                   getPaymentHandler={props.getPaymentHandler}
                   setShowBookingModal={() => props.setShowBookingModal(true)}

@@ -43,6 +43,11 @@ import { dateFormat } from "../../../../helper/DateUtils";
 import { openNotification } from "../../../../store/actions/notification";
 import setItinerary from "../../../../store/actions/itinerary";
 
+import setItineraryStatus from "../../../../store/actions/itineraryStatus";
+import Spinner from "../../../loaderbar/Index";
+import { axiosGetItineraryStatus } from "../../../../services/itinerary/daybyday/preview";
+import { PulseLoader } from "react-spinners";
+
 const Container = styled.div`
   position: relative;
 
@@ -172,600 +177,15 @@ const RouteEditSection = (props) => {
   const [isValidDates, setIsValidDates] = useState(true);
   const [invalidDateError, setInvalidDateError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [itineraryLoading, setItineraryLoading] = useState(false);
+  const [polling, setPolling] = useState(false);
+  const [pollingInterval, setPollingInterval] = useState(null);
   const destinationRef = useRef(null);
+  const itinerary = useSelector(state => state.Itinerary);
+  const [waitingForStatusUpdate, setWaitingForStatusUpdate] = useState(false);
+  const { itinerary_status, transfers_status, pricing_status, hotels_status } =
+      useSelector((state) => state.ItineraryStatus);
 
-  [
-    {
-      lat: 28.6139298,
-      long: 77.2088282,
-      image: null,
-      source: "PLACE_ID",
-      country: "India",
-      duration: 0,
-      place_id: "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
-      city_name: "New Delhi",
-      state_abbr: "DL",
-      state_name: "Delhi",
-      country_code: "IN",
-      day_slab_location: {
-        end_element_index: 0,
-        end_day_slab_index: 0,
-        start_element_index: 0,
-        start_day_slab_index: 0,
-      },
-      is_departure_only: true,
-      short_description: null,
-      is_trip_terminated: false,
-    },
-    {
-      icon: "media/itinerary/flight.svg",
-      keys: ["icon", "heading", "text"],
-      meta: {
-        Time: "13-14 hours",
-        Distance: 6034,
-        distance: 6034,
-        duration: 811,
-        estimated_cost: 38256,
-      },
-      text: "Pack your bags and get ready to leave for your destination Oslo. You'll start your journey today when you reach Oslo, proceed to your accommodation.",
-      modes: ["Flight"],
-      heading: "Flight from Delhi to Oslo",
-      bookings: [
-        {
-          id: "61d5ea55-08f4-4dc6-b00a-640bd71d08ad",
-          detail: {
-            pax: {
-              number_of_adults: 1,
-              number_of_infants: 0,
-              number_of_children: 0,
-            },
-            name: "Flight from Delhi to Oslo",
-            type: "Flight",
-            version: "v2",
-            check_in: "2025-04-23",
-            duration: null,
-            check_out: "2025-04-23",
-          },
-          booking_cost: 3651300,
-          booking_type: "Flight",
-          user_selected: false,
-        },
-      ],
-      check_in: "23/04/2025",
-      transfers: {
-        id: "306291cf-d68a-4714-a9d4-662fde83ef13",
-        routes: [
-          {
-            icon: "media/itinerary/flight.svg",
-            legs: [
-              {
-                origin: {
-                  lat: 28.55588,
-                  lng: 77.08694,
-                  code: "DEL",
-                  kind: "airport",
-                  timeZone: "Asia/Kolkata",
-                  shortName: "Delhi",
-                  countryCode: "IN",
-                },
-                prices: [
-                  {
-                    class: null,
-                    price: 36513,
-                    currency: "INR",
-                  },
-                ],
-                vehicle: "Flight",
-                distance: 5967.82,
-                duration: 645,
-                destination: {
-                  lat: 60.19279,
-                  lng: 11.09765,
-                  code: "OSL",
-                  kind: "airport",
-                  timeZone: "Europe/Oslo",
-                  shortName: "Oslo",
-                  countryCode: "NO",
-                },
-                estimated_cost: 36513,
-                convertible_to_taxi: false,
-              },
-            ],
-            meta: {
-              Time: "13-14 hours",
-              Distance: 6034,
-              distance: 6034,
-              duration: 811,
-              estimated_cost: 38256,
-            },
-            modes: ["Flight"],
-            origin: {
-              lat: 28.63576,
-              lng: 77.22445,
-              kind: "capital",
-              city_id: 3,
-              longName: "New Delhi, India",
-              timeZone: "Asia/Kolkata",
-              city_name: "New Delhi",
-              shortName: "New Delhi",
-              countryCode: "IN",
-              canonicalName: "New-Delhi",
-            },
-            heading: "Flight from Delhi to Oslo",
-            destination: {
-              lat: 59.91273,
-              lng: 10.74609,
-              code: "OSL",
-              kind: "capital",
-              city_id: 1684,
-              longName: "Oslo, Norway",
-              timeZone: "Europe/Oslo",
-              city_name: "Oslo",
-              shortName: "Oslo",
-              countryCode: "NO",
-              canonicalName: "Oslo",
-            },
-            convertible_to_taxi: false,
-            inconvenience_score: 790,
-          },
-        ],
-      },
-      element_type: "transfer",
-      element_index: 1,
-      current_city_id: null,
-      element_location: {
-        day_slab_index: 0,
-        slab_element_index: 0,
-      },
-    },
-    {
-      lat: 59.9138688,
-      long: 10.7522454,
-      color: "#359EBF",
-      image: "media/cities/168553048821400856971740722656.png",
-      region: null,
-      city_id: 1684,
-      country: "Norway",
-      duration: 2,
-      state_id: 215,
-      city_name: "Oslo",
-      state_name: "Oslo",
-      has_airport: true,
-      checkin_date: "23/04/2025",
-      country_code: "NO",
-      extra_images: [],
-      airport_codes: ["OSL"],
-      checkout_date: "25/04/2025",
-      canonical_name: "Oslo",
-      gmaps_place_id: "ChIJOfBn8mFuQUYRmh4j019gkn4",
-      airport_distance: 36,
-      is_state_capital: true,
-      day_slab_location: {
-        end_element_index: 1,
-        end_day_slab_index: 2,
-        start_element_index: 1,
-        start_day_slab_index: 0,
-      },
-      is_departure_only: false,
-      short_description:
-        "Welcome to Oslo, the vibrant and modern capital of Norway! Thanks to its thriving oil industry, this city is one of the wealthiest in Europe, and you can see it in the impressive glass-covered skyscrapers, sleek infrastructure, and trendy restaurants, bars, and boutiques. But Oslo is not just about modernity - it seamlessly blends in with the breathtaking natural environment, with the Oslofjord right at its doorstep and majestic mountains in the distance.\r\n\r\nTake a stroll through the city and you'll be struck by its unique Nordic vibe, with innovative architecture perfectly complemented by the sea and mountains. Immerse yourself in Oslo's rich cultural heritage by visiting one of its many state-of-the-art museums or admiring the cityscape scattered with artworks. And when you need a break from the hustle and bustle, simply step into one of Oslo's many green areas to relax and recharge.\r\n\r\nWith so much to see and do, Oslo is one of the most captivating urban destinations in the North. Come and experience the perfect blend of modernity and nature in this beautiful city!",
-      is_country_capital: true,
-      is_trip_terminated: false,
-      intracity_transport: "Taxi",
-      accommodation_booking: "51dc24be-1825-45ea-a51d-ef30bf93eda1",
-    },
-    {
-      icon: "media/itinerary/flight.svg",
-      keys: ["icon", "heading", "text"],
-      meta: {
-        Time: "2-3 hours",
-        Distance: 371,
-        distance: 371,
-        duration: 132,
-        estimated_cost: 6724,
-      },
-      text: "Pack your bags and get ready to leave for your destination Bergen. You'll start your journey today when you reach Bergen, proceed to your accommodation.",
-      modes: ["Flight"],
-      heading: "Flight from Oslo to Bergen",
-      bookings: [
-        {
-          id: "fc7e124e-2cde-45e2-830b-7b9f075b1cf0",
-          detail: {
-            pax: {
-              number_of_adults: 1,
-              number_of_infants: 0,
-              number_of_children: 0,
-            },
-            name: "Flight from Oslo to Bergen",
-            type: "Flight",
-            version: "v2",
-            check_in: "2025-04-25",
-            duration: null,
-            check_out: "2025-04-25",
-          },
-          booking_cost: 539500,
-          booking_type: "Flight",
-          user_selected: false,
-        },
-      ],
-      check_in: "25/04/2025",
-      transfers: {
-        id: "52a3ec32-ceee-455e-974e-552667367e26",
-        routes: [
-          {
-            icon: "media/itinerary/flight.svg",
-            legs: [
-              {
-                origin: {
-                  lat: 60.19279,
-                  lng: 11.09765,
-                  code: "OSL",
-                  kind: "airport",
-                  timeZone: "Europe/Oslo",
-                  shortName: "Oslo",
-                  countryCode: "NO",
-                },
-                prices: [
-                  {
-                    class: null,
-                    price: 5395,
-                    currency: "INR",
-                  },
-                ],
-                vehicle: "Flight",
-                distance: 324.03,
-                duration: 50,
-                destination: {
-                  lat: 60.28911,
-                  lng: 5.22803,
-                  code: "BGO",
-                  kind: "airport",
-                  timeZone: "Europe/Oslo",
-                  shortName: "Bergen",
-                  countryCode: "NO",
-                },
-                estimated_cost: 5395,
-                convertible_to_taxi: true,
-              },
-            ],
-            meta: {
-              Time: "2-3 hours",
-              Distance: 371,
-              distance: 371,
-              duration: 132,
-              estimated_cost: 6724,
-            },
-            modes: ["Flight"],
-            origin: {
-              code: "OSL",
-              kind: "capital",
-              city_id: 1684,
-              longName: "Oslo, Norway",
-              timeZone: "Europe/Oslo",
-              city_name: "Oslo",
-              shortName: "Oslo",
-              countryCode: "NO",
-              canonicalName: "Oslo",
-            },
-            heading: "Flight from Oslo to Bergen",
-            destination: {
-              kind: "city",
-              city_id: 1685,
-              longName: "Bergen, Norway",
-              timeZone: "Europe/Oslo",
-              city_name: "Bergen",
-              shortName: "Bergen",
-              countryCode: "NO",
-              canonicalName: "Bergen",
-            },
-            convertible_to_taxi: true,
-            inconvenience_score: 195,
-          },
-        ],
-      },
-      element_type: "transfer",
-      element_index: 1,
-      current_city_id: 1684,
-      element_location: {
-        day_slab_index: 2,
-        slab_element_index: 1,
-      },
-    },
-    {
-      lat: 60.39126279999999,
-      long: 5.3220544,
-      color: "#F0C631",
-      image: "media/cities/168448445721933841705322265625.jpeg",
-      region: null,
-      city_id: 1685,
-      country: "Norway",
-      duration: 2,
-      state_id: 216,
-      city_name: "Bergen",
-      state_name: "Vestland",
-      has_airport: true,
-      checkin_date: "25/04/2025",
-      country_code: "NO",
-      extra_images: ["media/cities/168448445736724686622619628906.jpeg"],
-      airport_codes: ["BGO"],
-      checkout_date: "27/04/2025",
-      canonical_name: "Bergen",
-      gmaps_place_id: "ChIJd312ZkkNOUYRCAretD6gQp4",
-      airport_distance: 12,
-      is_state_capital: true,
-      day_slab_location: {
-        end_element_index: 1,
-        end_day_slab_index: 4,
-        start_element_index: 2,
-        start_day_slab_index: 2,
-      },
-      is_departure_only: false,
-      short_description:
-        "Welcome to Bergen, the charming old city with a youthful spirit! As you fly into Bergen, be prepared to be mesmerized by the stunning cliffs rising out of the sea and the fjord surrounded by majestic mountains. Bergen was the largest city in Scandinavia during the Middle Ages and retains its status as an important port city. The city's lively music scene, dramatic scenery, and pleasant atmosphere make it a popular destination for travellers.\r\n\r\nBergen is surrounded by seven mountains, making it a picturesque location. The Bergenhus district has well-preserved medieval buildings, while the Klosteret area boasts beautiful 18th-century wooden houses and charming alleys for a leisurely stroll. The city centre extends from the main square, Torget, to the Nygård area, where you can find most shops and restaurants.\r\n\r\nBergen has a rich history of trade with countries all over Europe and was awarded its city charter as early as 1070 by King Olav Kyrre. The old Hanseatic Wharf, Bryggen, is located in the harbour called Vågen and is still visible. The old wooden buildings are on the UNESCO world heritage list and have been damaged by fire several times.\r\n\r\nThe city has a vibrant cultural scene with two major festivals, Bergen Festspel and Nattjazzen. The composer Edvard Grieg grew up here, and his home, Troldhaugen, has been turned into a museum. From March to May, you can hear the Buekorps, a relic from the days when every Norwegian city had its own militia, with children now making up the teams of drummers.\r\n\r\nIn recent years, Bergen has produced a number of successful artists, including Kings of Convenience",
-      is_country_capital: false,
-      is_trip_terminated: false,
-      intracity_transport: "Taxi",
-      accommodation_booking: "c4c3c46c-35e4-4591-bda7-697b2e23543d",
-    },
-    {
-      icon: "media/itinerary/bus.svg",
-      keys: ["icon", "heading", "text"],
-      meta: {
-        Time: "2-3 hours",
-        Distance: 144,
-        distance: 144,
-        duration: 173,
-        estimated_cost: 3322,
-      },
-      text: "Pack your bags and get ready to leave for your destination Haugesund. You'll start your journey today when you reach Haugesund, proceed to your accommodation.",
-      modes: ["Bus"],
-      heading: "Bus from Bergen to Haugesund",
-      bookings: [
-        {
-          id: "ef94a264-b3df-4eb5-b311-fcb08b716181",
-          detail: {
-            pax: {
-              number_of_adults: 1,
-              number_of_infants: 0,
-              number_of_children: 0,
-            },
-            name: "Bus from Bergen to Haugesund",
-            type: "Bus",
-            version: "v2",
-            check_in: "2025-04-27",
-            duration: null,
-            check_out: "2025-04-27",
-          },
-          booking_cost: 332200,
-          booking_type: "Bus",
-          user_selected: true,
-        },
-      ],
-      check_in: "27/04/2025",
-      transfers: {
-        id: "3eec3f2a-31e9-4a14-99eb-896763950d61",
-        routes: [
-          {
-            icon: "media/itinerary/bus.svg",
-            legs: [
-              {
-                origin: {
-                  lat: 60.39299,
-                  lng: 5.32415,
-                  kind: "city",
-                  city_id: 1685,
-                  longName: "Bergen, Norway",
-                  timeZone: "Europe/Oslo",
-                  city_name: "Bergen",
-                  shortName: "Bergen",
-                  countryCode: "NO",
-                  canonicalName: "Bergen",
-                },
-                prices: [
-                  {
-                    class: "Online Ticket ",
-                    price: 3322,
-                    currency: "INR",
-                  },
-                ],
-                vehicle: "Bus",
-                distance: 143.39,
-                duration: 173,
-                destination: {
-                  lat: 59.41378,
-                  lng: 5.268,
-                  kind: "town",
-                  city_id: 1855,
-                  longName: "Haugesund, Norway",
-                  timeZone: "Europe/Oslo",
-                  city_name: "Haugesund",
-                  shortName: "Haugesund",
-                  countryCode: "NO",
-                  canonicalName: "Haugesund",
-                },
-                estimated_cost: 3322,
-                convertible_to_taxi: true,
-              },
-            ],
-            meta: {
-              Time: "2-3 hours",
-              Distance: 144,
-              distance: 144,
-              duration: 173,
-              estimated_cost: 3322,
-            },
-            modes: ["Bus"],
-            origin: {
-              lat: 60.39299,
-              lng: 5.32415,
-              kind: "city",
-              city_id: 1685,
-              longName: "Bergen, Norway",
-              timeZone: "Europe/Oslo",
-              city_name: "Bergen",
-              shortName: "Bergen",
-              countryCode: "NO",
-              canonicalName: "Bergen",
-            },
-            heading: "Bus from Bergen to Haugesund",
-            destination: {
-              lat: 59.41378,
-              lng: 5.268,
-              kind: "town",
-              city_id: 1855,
-              longName: "Haugesund, Norway",
-              timeZone: "Europe/Oslo",
-              city_name: "Haugesund",
-              shortName: "Haugesund",
-              countryCode: "NO",
-              canonicalName: "Haugesund",
-            },
-            convertible_to_taxi: true,
-            inconvenience_score: 111.5,
-          },
-        ],
-      },
-      element_type: "transfer",
-      element_index: 1,
-      current_city_id: 1685,
-      element_location: {
-        day_slab_index: 4,
-        slab_element_index: 1,
-      },
-    },
-    {
-      lat: 59.41358100000001,
-      long: 5.267986899999999,
-      color: "#BF3535",
-      image: "media/cities/168552997040822267532348632812.jpeg",
-      region: null,
-      city_id: 1855,
-      country: "Norway",
-      duration: 2,
-      state_id: 338,
-      city_name: "Haugesund",
-      state_name: "Rogaland",
-      has_airport: true,
-      checkin_date: "27/04/2025",
-      country_code: "NO",
-      extra_images: [],
-      airport_codes: ["HAU", "SRP"],
-      checkout_date: "29/04/2025",
-      canonical_name: "Haugesund",
-      gmaps_place_id: "ChIJ_3dbqi2eO0YRZjrmiEo5JME",
-      airport_distance: 8,
-      is_state_capital: false,
-      day_slab_location: {
-        end_element_index: 1,
-        end_day_slab_index: 6,
-        start_element_index: 2,
-        start_day_slab_index: 4,
-      },
-      is_departure_only: false,
-      short_description:
-        "Welcome to Haugesund, a charming town that dates back to the Viking era! Today, it is a young and vibrant destination that is known for hosting some of Norway's most popular festivals and congresses, including the standout Norwegian Film Festival. During the summer, the town comes alive with a buzzing atmosphere that lasts day and night. Despite its small population of only 36,538 people, Haugesund serves as the regional center for approximately 160,000 people, making it a hub for culture, commerce, and services. You'll find plenty of opportunities to indulge in retail therapy as the town boasts a plethora of commercial streets and shopping malls that attract huge crowds. Come and experience the energy and excitement of Haugesund for yourself!",
-      is_country_capital: false,
-      is_trip_terminated: false,
-      intracity_transport: "Taxi",
-    },
-    {
-      icon: "media/itinerary/transfer.svg",
-      keys: ["icon", "heading", "text"],
-      meta: {},
-      text: "Pack your bags and get ready to leave for your destination Tromso. You'll start your journey today when you reach Tromso, proceed to your accommodation.",
-      heading: "Start your journey to Tromso",
-      check_in: "29/04/2025",
-      transfers: {
-        id: "eea70458-fbec-4665-89d7-dcb5c2a0c0ec",
-        routes: [],
-      },
-      element_type: "transfer",
-      element_index: 1,
-      current_city_id: 1855,
-      element_location: {
-        day_slab_index: 6,
-        slab_element_index: 1,
-      },
-    },
-    {
-      lat: 69.6492047,
-      long: 18.9553239,
-      color: "#47691e",
-      image: "media/cities/172751832596801519393920898438.jpeg",
-      region: null,
-      city_id: 2203,
-      country: "Norway",
-      duration: 1,
-      state_id: 506,
-      city_name: "Tromso",
-      state_name: "Tromso",
-      has_airport: false,
-      checkin_date: "29/04/2025",
-      country_code: "NO",
-      extra_images: [],
-      airport_codes: [],
-      checkout_date: "30/04/2025",
-      canonical_name: "Tromso",
-      gmaps_place_id: "ChIJ_XE7bFLExEUR075ujoXKPQI",
-      airport_distance: null,
-      is_state_capital: false,
-      day_slab_location: {
-        end_element_index: 1,
-        end_day_slab_index: 7,
-        start_element_index: 2,
-        start_day_slab_index: 6,
-      },
-      is_departure_only: false,
-      short_description:
-        "Tromsø, Romsa, or Tromssa is a city in Tromsø Municipality in Troms county, Norway. The city is the administrative centre of the municipality as well as the administrative centre of Troms county. The Diocese of Nord-Hålogaland and its Bishop are based at the Tromsø Cathedral in the city.",
-      is_country_capital: false,
-      is_trip_terminated: false,
-      intracity_transport: "Taxi",
-    },
-    {
-      icon: "media/itinerary/transfer.svg",
-      keys: ["icon", "heading", "text"],
-      meta: {},
-      text: "Bid adieu to this amazing city as you head back to your home, New Delhi. We hope you get your cameras full of pictures and your bags full of souvenirs as you take home all the beautiful memories of your travel experience.",
-      heading: "Head back to your home",
-      check_in: "30/04/2025",
-      transfers: {
-        id: "b7ae0c2a-cd5e-4c30-a8ef-9169c259e9ab",
-        routes: [],
-      },
-      element_type: "transfer",
-      element_index: 1,
-      current_city_id: 2203,
-      element_location: {
-        day_slab_index: 7,
-        slab_element_index: 1,
-      },
-    },
-    {
-      lat: 28.6139298,
-      long: 77.2088282,
-      image: null,
-      source: "PLACE_ID",
-      country: "India",
-      duration: 0,
-      place_id: "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
-      city_name: "New Delhi",
-      state_abbr: "DL",
-      state_name: "Delhi",
-      checkin_date: null,
-      country_code: "IN",
-      checkout_date: null,
-      day_slab_location: {
-        end_element_index: 1,
-        end_day_slab_index: 7,
-        start_element_index: 2,
-        start_day_slab_index: 7,
-      },
-      is_departure_only: false,
-      short_description: null,
-      is_trip_terminated: true,
-    },
-  ];
 
   function addDaysToDate(dateString, daysToAdd) {
     const date = new Date(dateString);
@@ -778,8 +198,8 @@ const RouteEditSection = (props) => {
     return `${year}-${month}-${day}`;
   }
 
-  console.log("Props.routes",props?.routes)
-  const itinerary = useSelector(state => state.Itinerary)
+  console.log("Props.routes", props?.routes);
+  
   useEffect(() => {
     const cities = [];
     if (props?.routes) {
@@ -791,23 +211,23 @@ const RouteEditSection = (props) => {
             ...props.routes[i],
             city_name:
               props.routes[i]?.city_name || props.routes[i]?.city?.name,
-              checkin_date: getDate(
+              checkin_date: (i === 0 ? itinerary?.start_date : (i === props.routes.length - 1 ? itinerary?.end_date : getDate(
                 props.routes[i].checkin_date || props.routes[i]?.start_date || 
                 (i === 0 ? itinerary?.start_date : (i === props.routes.length - 1 ? itinerary?.end_date : null))
-              ),
-              checkout_date: getDate(
+              ))) || null,
+              checkout_date: (i === 0 ? itinerary?.start_date : (i === props.routes.length - 1 ? itinerary?.end_date : getDate(
                 props.routes[i].checkout_date ||
                 addDaysToDate(
                   props.routes[i]?.start_date,
                   props.routes[i]?.duration
-                ) ||
-                (i === 0 ? itinerary?.start_date : (i === props.routes.length - 1 ? itinerary?.end_date : null))
-              ),
+                ) 
+                )
+              )) || null,
             city_id: props?.routes[i]?.city_id || props?.routes[i]?.city?.id,
             place_id:
               props.routes[i]?.place_id || props.routes[i]?.gmaps_place_id,
             duration: props?.routes[i]?.duration,
-            id: props?.routes[i]?.id,
+            id: props?.routes[i]?.hasOwnProperty('id') ? props?.routes[i]?.id : null,
             color: CITY_COLOR_CODES[i % 7],
             lat:
               props?.routes[i]?.lat ||
@@ -855,9 +275,51 @@ const RouteEditSection = (props) => {
     }
   }, [destinations, startDate, endDate]);
 
+  useEffect(() => {
+      if (waitingForStatusUpdate) {
+        const allStatusesCompleted = [itinerary_status, transfers_status, pricing_status, hotels_status]
+        .every(status => status === "SUCCESS" || status === "FAILURE");
+
+        if (allStatusesCompleted) {
+          console.log("Status update complete", itinerary_status, transfers_status, pricing_status, hotels_status);
+          setItineraryLoading(false);
+          setWaitingForStatusUpdate(false);
+          props.setEdit(false);
+        }
+      }
+  }, [itinerary_status,transfers_status,pricing_status,hotels_status,itineraryLoading,waitingForStatusUpdate]);
+
+  const fetchItineraryStatus = async (itineraryId) => {
+    try {
+      const res = await axiosGetItineraryStatus.get(`/${itineraryId}/status/`);
+      const status = res.data?.celery;
+      dispatch(setItineraryStatus("pricing_status", status?.PRICING || "PENDING"));
+      dispatch(setItineraryStatus("transfers_status", status?.TRANSFERS || "PENDING"));
+      dispatch(setItineraryStatus("hotels_status", status?.HOTELS || "PENDING"));
+      dispatch(setItineraryStatus("itinerary_status", status?.ITINERARY || "PENDING"));
+      fetchItinerary();
+    } catch (err) {
+      console.error("[ERROR]: axiosGetItineraryStatus: ", err.message);
+    }
+  };
+
+  const fetchItinerary = (
+  ) => {   
+   props?.resetRef();
+   setWaitingForStatusUpdate(true);
+   props.fetchData(true);
+  };
+
+  const startStatusPolling = (itineraryId) => {
+    setItineraryLoading(true);
+    setPolling(true);
+    
+    fetchItineraryStatus(itineraryId);
+  };
+
   const validateDates = () => {
     const today = new Date();
-    console.log("Valid D",destinations)
+    console.log("Valid D", destinations);
     if (
       !new Date(startDate) ||
       isNaN(Date.parse(startDate)) ||
@@ -875,9 +337,7 @@ const RouteEditSection = (props) => {
 
     let prevDate = new Date(startDate);
 
-    
     for (let i = 1; i < destinations.length - 1; i++) {
-
       const checkin_date = getDate(destinations[i].cityData.checkin_date);
       const checkout_date = getDate(destinations[i].cityData.checkout_date);
 
@@ -951,7 +411,7 @@ const RouteEditSection = (props) => {
             check_out: dest.cityData.checkout_date,
             id: dest.cityData?.hasOwnProperty('id') ? dest.cityData?.id : null,
             duration: dest.cityData?.duration || dest.cityData?.nights,
-            start_date: dest.cityData?.start_date || dest.cityData.checkin_date || startDate,
+            start_date: dest.cityData.checkin_date || startDate,
           };
         })
         .filter(
@@ -974,14 +434,9 @@ const RouteEditSection = (props) => {
       axiosItineraryUpdateInstance
         .post("", data, { headers })
         .then((response) => {
-          props.fetchData();
           setLoading(false);
-          props.openNotification({
-            text: "Your Itinerary is updated successfully!",
-            heading: "Success!",
-            type: "success",
-          });
-          props.setEdit(false);
+          const itineraryId = props.ItineraryId || props?.itinerary?.ItineraryId;
+          startStatusPolling(itineraryId);
         })
         .catch((err) => {
           setLoading(false);
@@ -1012,18 +467,14 @@ const RouteEditSection = (props) => {
           headers,
         })
         .then((response) => {
-          props.fetchData();
-          dispatch(setItinerary(response.data))
+          dispatch(setItinerary(response.data));
           setLoading(false);
-          props.openNotification({
-            text: "Your Itinerary is updated successfully!",
-            heading: "Success!",
-            type: "success",
-          });
-          props.setEdit(false);
+          const itineraryId = props.ItineraryId || props?.itinerary?.ItineraryId;
+          startStatusPolling(itineraryId);
         })
         .catch((err) => {
           setLoading(false);
+          setItineraryLoading(false);
           if (err?.response?.status === 403) {
             props.openNotification({
               text: "You are not allowed to make changes to this itinerary",
@@ -1056,11 +507,12 @@ const RouteEditSection = (props) => {
 
     if (validateDates()) {
       setLoading(true);
+      setItineraryLoading(true);
       submitData();
     } else {
       setIsValidDates(false);
     }
-    console.log("Valid Dates",validateDates());
+    console.log("Valid Dates", validateDates());
     logEvent({
       action: "Route Edit",
       params: {
@@ -1081,12 +533,14 @@ const RouteEditSection = (props) => {
     }
   };
 
+ 
+  
   return (
     <div
       onClick={(e) => handleOutsideClick(e)}
       className="fixed inset-0 flex flex-col items-center bg-white z-[999]"
     >
-      {loading && <Loader />}
+      {/* {loading && <Loader />} */}
       <Header
         setEdit={props.setEdit}
         title={props?.itinerary.name}
@@ -1125,13 +579,10 @@ const RouteEditSection = (props) => {
         setEditDestination={setEditDestination}
       />
 
-      {/* <EditPanel
-        editDestination={editDestination}
-        setEditDestination={setEditDestination}
-      /> */}
+     {itineraryLoading && <Spinner isEdit={true} />}
 
       <div className="w-full h-fit md:w-[85%] lg:w-[85%] px-3 hide-scrollbar overflow-y-auto py-5">
-        {editDestination ? (
+        {editDestination && !itineraryLoading ? (
           <div className="w-full flex flex-row justify-center gap-5">
             <EditDestinations
               destinations={destinations}
@@ -1156,16 +607,17 @@ const RouteEditSection = (props) => {
             )}
           </div>
         ) : (
-          <EditDates
-            destinations={destinations}
-            setDestinations={setDestinations}
-            startDate={startDate}
-            setStartDate={setStartDate}
-            endDate={endDate}
-            setEndDate={setEndDate}
-            isValidDates={isValidDates}
-            invalidDateError={invalidDateError}
-          />
+          // <EditDates
+          //   destinations={destinations}
+          //   setDestinations={setDestinations}
+          //   startDate={startDate}
+          //   setStartDate={setStartDate}
+          //   endDate={endDate}
+          //   setEndDate={setEndDate}
+          //   isValidDates={isValidDates}
+          //   invalidDateError={invalidDateError}
+          // />
+          ""
         )}
       </div>
 
@@ -1174,6 +626,7 @@ const RouteEditSection = (props) => {
         editDestination={editDestination}
         setEditDestination={setEditDestination}
         handleSaveButton={handleSaveButton}
+        itineraryLoading={itineraryLoading}
       />
     </div>
   );
@@ -2734,13 +2187,13 @@ export const DatePicker = (props) => {
 };
 
 export const ActionPanel = (props) => {
-  const { setEdit, setEditDestination, editDestination, handleSaveButton } =
+  const { setEdit, setEditDestination, editDestination, handleSaveButton, itineraryLoading } =
     props;
 
   return (
     <div className="w-full fixed bottom-0 bg-white py-2 md:py-3 lg:py-3 flex items-center justify-center border-t-2 shadow-lg px-2">
       <div className="flex flex-row gap-4">
-        <button
+       { !itineraryLoading && <button
           onClick={
             editDestination
               ? () => setEdit(false)
@@ -2749,12 +2202,14 @@ export const ActionPanel = (props) => {
           className="px-5 py-2 rounded-lg border-2 border-black hover:text-white hover:bg-black transition ease-in-out duration-500"
         >
           {editDestination ? "Cancel" : "Back"}
-        </button>
+        </button>}
         <button
           onClick={handleSaveButton}
           className="bg-[#F7E700] px-5 py-2 rounded-lg border-2 border-black hover:text-white hover:bg-black transition ease-in-out duration-500"
         >
-          Save
+         { itineraryLoading ? (
+                             <PulseLoader size={14} speedMultiplier={0.6} color="black" />
+                           ) : "Save"}
         </button>
       </div>
     </div>
