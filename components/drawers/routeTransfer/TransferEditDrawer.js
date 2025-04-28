@@ -92,6 +92,7 @@ const TransferEditDrawer = (props) => {
     destination_itinerary_city_id,
     originCityId,
     destinationCityId,
+    _updateFlightBookingHandler,
   } = props;
 
   console.log("Originn", originCityId, destinationCityId);
@@ -653,7 +654,7 @@ const TransferEditDrawer = (props) => {
                             getPaymentHandler={props.getPaymentHandler}
                             _updatePaymentHandler={props._updatePaymentHandler}
                             _updateFlightBookingHandler={
-                              props._updateFlightBookingHandler
+                              _updateFlightBookingHandler
                             }
                             _updateBookingHandler={props._updateBookingHandler}
                             alternates={selectedBooking?.id}
@@ -730,7 +731,7 @@ const TransferEditDrawer = (props) => {
                             getPaymentHandler={props.getPaymentHandler}
                             _updatePaymentHandler={props._updatePaymentHandler}
                             _updateFlightBookingHandler={
-                              props._updateFlightBookingHandler
+                              _updateFlightBookingHandler
                             }
                             _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
                             _updateBookingHandler={props._updateBookingHandler}
@@ -1973,111 +1974,93 @@ const NewMultiModeContainer = ({
                       />
                     );
                   }
+                  
 
                   if (option.prices && option.prices.length > 0) {
-                    return option.prices.map((priceOption, priceIndex) => {
-                      const price = priceOption.price || 0;
-                      const currency = priceOption.currency === "INR" ?  "₹" : priceOption.currency;
-                      const priceOptionId = `${option.id}-${priceIndex}`;
 
-                      return (
-                        <>
-
-<div className="p-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
-                          <div className="mb-2 sm:mb-0">
-                            <span className="text-sm text-gray-600">Departure Date: </span>
-                            <span className="font-semibold">
-                              {currentModeDepartureDate}
-                            </span>
+                    return (
+                     
+                       <>
+                        <div className="p-4">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
+                            <div className="mb-2 sm:mb-0">
+                              <span className="text-sm text-gray-600">Departure Date: </span>
+                              <span className="font-semibold">{currentModeDepartureDate}</span>
+                            </div>
+                    
+                            <div className="time-dropdown-container relative w-full sm:w-auto">
+                              <div
+                                className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
+                                onClick={() => setShowTimeDropdown(!showTimeDropdown)}
+                              >
+                                <span className="text-sm font-medium">
+                                  Departure Time: {currentModeDepartureTime}
+                                </span>
+                              </div>
+                            </div>
                           </div>
-              
-                          <div className="time-dropdown-container relative w-full sm:w-auto">
+                        </div>
+                    
+                        {option.prices.map((priceOption, priceIndex) => {
+                          const price = priceOption.price || 0;
+                          const currency = priceOption.currency === "INR" ? "₹" : priceOption.currency;
+                          const priceOptionId = `${option.id}-${priceIndex}`;
+                    
+                          return (
                             <div
-                              className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
-                              onClick={() => setShowTimeDropdown(!showTimeDropdown)}
+                              key={`${option.id}-price-${priceIndex}`}
+                              className="flex flex-col md:flex-row justify-between bg-white p-3 md:p-4 border-b"
                             >
-                              <span className="text-sm font-medium">
-                                Departure Time:{" "}
-                                {currentModeDepartureTime}
-                              </span>
-                            </div>
-              
-                            
-                          </div>
-                        </div>
-                        </div>
-                        <div
-                          key={`${option.id}-price-${priceIndex}`}
-                          className={`flex flex-col md:flex-row justify-between bg-white p-3 md:p-4 border-b
-                          `}
-                        >
-                          <div className="flex gap-2 md:gap-3 mb-2 md:mb-0">
-                            <div className="text-gray-500 mt-1">
-                              {getModeIcon(option.mode)}
-                            </div>
-                            <div>
-                              <div className="font-semibold text-sm md:text-base">
-                                {option.text}{" "}
-                                {priceOption.name
-                                  ? `- ${priceOption.name}`
-                                  : ""}
-                              </div>
-                              <div className="text-xs md:text-sm text-gray-600">
-                              {Math.floor(option?.duration/60) + "-" + Math.ceil(option?.duration / 60)} hours | {option.distance}{" "}
-                                kms
-                              </div>
-                              <div className="text-xs md:text-sm">
-                                <span className="font-semibold">Facilities:</span>{" "}
-                                {priceOption?.class} {" "}
-                                {/* <span className="font-semibold">To:</span>{" "}
-                                {option.destination.name} */}
-                              </div>
-                              {priceOption.description && (
-                                <div className="text-xs md:text-sm text-gray-700 mt-1">
-                                  {priceOption.description}
+                              <div className="flex gap-2 md:gap-3 mb-2 md:mb-0">
+                                <div className="text-gray-500 mt-1">{getModeIcon(option.mode)}</div>
+                                <div>
+                                  <div className="font-semibold text-sm md:text-base">
+                                    {option.text} {priceOption.name ? `- ${priceOption.name}` : ""}
+                                  </div>
+                                  <div className="text-xs md:text-sm text-gray-600">
+                                    {Math.floor(option?.duration / 60) + "-" + Math.ceil(option?.duration / 60)} hours | {option.distance} kms
+                                  </div>
+                                  <div className="text-xs md:text-sm">
+                                    <span className="font-semibold">Facilities:</span> {priceOption?.class}
+                                  </div>
+                                  {priceOption.description && (
+                                    <div className="text-xs md:text-sm text-gray-700 mt-1">
+                                      {priceOption.description}
+                                    </div>
+                                  )}
                                 </div>
-                              )}
-                            </div>
-                          </div>
-                          <div className="flex flex-row md:flex-row gap-2 items-center md:items-end justify-between">
-                            <div className="font-semibold text-sm md:text-base">
-                              {currency} {price}
-                            </div>
-                            <div
-                              className="cursor-pointer"
-                              onClick={() => {
-                                // Pass the price data along with the selection
-                                const selectedPriceData = {
-                                  ...option,
-                                  selectedPrice: priceOption,
-                                };
-                                handleModeSelect(
-                                  currentStep - 1,
-                                  priceOptionId,
-                                  selectedPriceData,
-                                  option.mode
-                                );
-                              }}
-                            >
-                              {selectedModeIds[currentStep - 1] ===
-                              priceOptionId ? (
-                                <div className="flex items-center gap-1">
-                                  <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
-                                  <span className="text-sm">Selected</span>
+                              </div>
+                    
+                              <div className="flex flex-col md:flex-col gap-2 items-center md:items-center justify-center">
+                                <div className="font-semibold text-sm md:text-base">
+                                  {currency} {price}
                                 </div>
-                              ) : (
-                                <div className="flex items-center gap-1">
-                                  <ImCheckboxUnchecked className="h-4 w-4 md:h-5 md:w-5" />
-                                  <span className="text-sm">Select</span>
+                                <div
+                                  className="cursor-pointer"
+                                  onClick={() => {
+                                    const selectedPriceData = { ...option, selectedPrice: priceOption };
+                                    handleModeSelect(currentStep - 1, priceOptionId, selectedPriceData, option.mode);
+                                  }}
+                                >
+                                  {selectedModeIds[currentStep - 1] === priceOptionId ? (
+                                    <div className="flex items-center gap-1">
+                                      <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
+                                      <span className="text-sm">Selected</span>
+                                    </div>
+                                  ) : (
+                                    <div className="flex items-center gap-1">
+                                      <ImCheckboxUnchecked className="h-4 w-4 md:h-5 md:w-5" />
+                                      <span className="text-sm">Select</span>
+                                    </div>
+                                  )}
                                 </div>
-                              )}
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                        </>
-                      );
-                    });
+                          );
+                        })}
+                      </>
+                    )
+                    
                   } else {
                     return (
                       <div
@@ -3168,17 +3151,7 @@ const OtherTransfer = ({
 
   return (
       <Container>
-          {otherTransfer && 
-           (otherTransfer.prices && otherTransfer.prices.length > 0) &&
-             otherTransfer.prices.map((priceOption, priceIndex) => {
-              const price = priceOption.price || 0;
-              const currency = priceOption.currency === "INR" ?  "₹" : priceOption.currency;
-              const priceOptionId = `${otherTransfer.id}-${priceIndex}`;
-
-              return (
-                <>
-
-<div className="w-full">
+        <div className="w-full">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
                   <div className="mb-2 sm:mb-0">
                     <span className="text-sm text-gray-600">Departure Date: </span>
@@ -3202,9 +3175,19 @@ const OtherTransfer = ({
                   </div>
                 </div>
                 </div>
+          {otherTransfer && 
+           (otherTransfer.prices && otherTransfer.prices.length > 0) &&
+             otherTransfer.prices.map((priceOption, priceIndex) => {
+              const price = priceOption.price || 0;
+              const currency = priceOption.currency === "INR" ?  "₹" : priceOption.currency;
+              const priceOptionId = `${otherTransfer.id}-${priceIndex}`;
+
+              return (
+                <>
+
                 <div
                   key={`${otherTransfer.id}-price-${priceIndex}`}
-                  className={`flex flex-col md:flex-row justify-between bg-white p-3 md:p-4 border-b
+                  className={`flex w-full flex-col md:flex-row justify-between bg-white p-3 md:p-4 border-b
                   `}
                 >
                   <div className="flex gap-2 md:gap-3 mb-2 md:mb-0">

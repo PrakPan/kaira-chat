@@ -303,7 +303,7 @@ const RouteEditSection = (props) => {
     }
   };
 
-  const fetchItinerary = (
+  const  fetchItinerary = async  (
   ) => {   
    props?.resetRef();
    setWaitingForStatusUpdate(true);

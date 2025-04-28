@@ -180,11 +180,12 @@ const SimpleTabsV2 = (props) => {
     { id: 2, label: "Itinerary", link: "Itenary" },
 
     { id: 3, label: "Stays", link: "Stays" },
+    { id: 4, label: "Transfers", link: "Transfers" }
   ];
 
-  if (props.transferBookings || props?.routes?.length) {
-    items.push({ id: 4, label: "Transfers", link: "Transfers" });
-  }
+  // if (props.transferBookings || props?.routes?.length) {
+  //   items.push({ id: 4, label: "Transfers", link: "Transfers" });
+  // }
 
   if (props.activityBookings) {
     items.push({
@@ -547,6 +548,7 @@ const SimpleTabsV2 = (props) => {
             traveleritinerary={props.traveleritinerary}
             CityData={CityData}
             _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+            _updateFlightBookingHandler={props._updateFlightBookingHandler}
             // CityData={props?.cities}
             itinerary={props.itinerary}
             breif={props.breif}

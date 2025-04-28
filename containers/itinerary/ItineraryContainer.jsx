@@ -417,6 +417,7 @@ const ItineraryContainer = (props) => {
         setTransferBookings(data);
         // setCityTransferBookings(data);
         dispatch(setTransfersBookings(data));
+        console.log("New Transfer Data",data);
       })
       .catch((err) => {
         console.error("Error fetching all bookings", err.message);
@@ -515,10 +516,19 @@ async function fetchData(poll) {
           // }, 20000);
         }
 
+        if(transfers === "FAILURE" && !transfersSuccessRef.current){
+          transfersSuccessRef.current = true;
+          dispatch(setTransfersBookings(null));
+        }
+
         if (pricing === "SUCCESS" && !pricingSuccessRef.current) {
           pricingSuccessRef.current = true;
           setLoadPricing(true);
           getPaymentInfo();
+        }
+        if(pricing === "FAILURE" && !pricingSuccessRef.current){
+          pricingSuccessRef.current = true;
+          setPayment(null);
         }
       } catch (err) {
         console.error("[ERROR]: axiosGetItinerary: ", err.message);
