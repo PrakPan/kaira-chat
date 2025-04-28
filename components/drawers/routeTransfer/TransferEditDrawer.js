@@ -39,6 +39,7 @@ import { MdDirectionsTransit, MdLocalTaxi } from "react-icons/md";
 import { PulseLoader } from "react-spinners";
 import dayjs from "dayjs";
 import { updateSingleTransferBooking } from "../../../store/actions/transferBookingsStore";
+import BackArrow from "../../ui/BackArrow";
 
 const ClippathComp = styled.div`
   clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 95% 50%, 100% 0%);
@@ -435,17 +436,11 @@ const TransferEditDrawer = (props) => {
         <div className="flex flex-row gap-2 my-0 justify-start items-center">
           {currentStep === 0 ? (
             <>
-              <IoMdClose
-                size={20}
-                onClick={() => {
-                  setShowDrawer(false);
-                  setCurrentStep(0);
-                  setIsRouteSelected(false);
-                }}
-                className="hover-pointer"
-                style={{ fontSize: "2rem" }}
-              />{" "}
-              <IText>Back to Itinerary</IText>
+            <BackArrow handleClick={()=>{
+              setShowDrawer(false);
+              setCurrentStep(0);
+              setIsRouteSelected(false);
+            }}/>
             </>
           ) : (
             <>

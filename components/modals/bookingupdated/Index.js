@@ -240,7 +240,6 @@ const Booking = (props) => {
       error: false,
       errorMsg: "",
     });
-console.log('occupancies are:',filters?.occupancies)
     const requestData = {
       check_in: getDate(props?.selectedBooking?.check_in),
       check_out: getDate(props?.selectedBooking?.check_out),

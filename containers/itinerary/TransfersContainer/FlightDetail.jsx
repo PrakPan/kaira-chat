@@ -12,6 +12,7 @@ import { setTransfersBookings } from "../../../store/actions/transferBookingsSto
 import { Generalbuttonstyle } from "../../../components/ui/button/Generallinkbutton";
 import { Logo } from "../../../components/modals/flights/new-flight-searched/LogoContainer";
 import { openNotification } from "../../../store/actions/notification";
+import BackArrow from "../../../components/ui/BackArrow";
 
 const Details = ({
   originCityId,
@@ -77,12 +78,7 @@ const Details = ({
         <div className="flex flex-col gap-2">
           <Heading>
             <div className="flex flex-row items-center gap-2">
-              <IoMdClose
-                className="hover-pointer"
-                onClick={() => setShowDetails((prev) => !prev)}
-                style={{ fontSize: "2rem" }}
-              ></IoMdClose>
-              <Text>Back To Itinerary</Text>
+              <BackArrow handleClick={() => setShowDetails((prev) => !prev)}/>
             </div>
           </Heading>
         </div>

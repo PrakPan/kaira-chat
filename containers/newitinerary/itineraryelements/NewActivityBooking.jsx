@@ -179,7 +179,7 @@ export default function NewActivityBooking(props) {
                   className="p-[12px]"
                   onclick={() => handleClick(props.data?.id)}
                 >
-                  View Details
+                  Add To Itinerary
                 </Button>
               )}
             </div>
@@ -279,12 +279,23 @@ export default function NewActivityBooking(props) {
             </TransparentButton>
           </div>
         ) : (
-          <div
-            className="h-full text-blue underline cursor-pointer"
-            onClick={() => handleClick(props.data?.id)}
-          >
-            View Details
-          </div>
+          <Button
+                  bgColor={"#F7E700"}
+                  borderRadius="8px"
+                  fontWeight="400"
+                  hoverColor="white"
+                  height={"full"}
+                  className="p-[12px]"
+                  onclick={() => handleClick(props.data?.id)}
+                >
+                  Add To Itinerary
+                </Button>
+          // <div
+          //   className="h-full text-blue underline cursor-pointer"
+          //   onClick={() => handleClick(props.data?.id)}
+          // >
+          //   View Details
+          // </div>
         )}
       </div>
 

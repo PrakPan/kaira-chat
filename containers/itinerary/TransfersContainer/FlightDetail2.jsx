@@ -19,6 +19,45 @@ import { PulseLoader } from "react-spinners";
 import Image from "next/image";
 import { openNotification } from "../../../store/actions/notification";
 import BackArrow from "../../../components/ui/BackArrow";
+import { FaPlane } from "react-icons/fa";
+import styled from "styled-components";
+
+const DottedLine = styled.div`
+  position: relative;
+  height: 2px;
+  width: 100%;
+  color: #c5c1c1;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: linear-gradient(to right, #c5c1c1 5px, transparent 5px);
+    background-size: 9px 100%; /* Adjust this value to change the spacing between the dots */
+  }
+`;
+
+const Circle = styled.div`
+  border: 1px solid #c5c1c1;
+  height: 10px;
+  width: 10px;
+  border-radius: 100%;
+  background: #c5c1c1;
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  transform: translateY(-38%);
+`;
+
+const Plan = styled.div`
+  position: absolute;
+  left: 50%;
+  top: 0%;
+  transform: translate(-50%, -45%);
+`;
 
 const Details = ({
   originCityId,
@@ -36,7 +75,7 @@ const Details = ({
   setTransferBookings,
   setTransferBookingsIntercity,
   onChange,
-  type
+  type,
 }) => {
   const router = useRouter();
   const [fareRules, setFareRules] = useState(fareRule?.[0]?.fareRuleDetail);
@@ -48,7 +87,8 @@ const Details = ({
     try {
       setLoading(true);
       const response = await axiosDeleteBooking.delete(
-        `${router?.query?.id}/bookings/flight/${booking_id}/`,{
+        `${router?.query?.id}/bookings/flight/${booking_id}/`,
+        {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
@@ -121,15 +161,7 @@ const Details = ({
       {drawer && (
         <div className="flex flex-col gap-2">
           <Heading>
-            <BackArrow handleClick={() => setShowDetails((prev) => !prev)}/>
-            {/* <div className="flex flex-row items-center gap-2">
-              <IoMdClose
-                className="hover-pointer"
-                onClick={() => setShowDetails((prev) => !prev)}
-                style={{ fontSize: "2rem" }}
-              ></IoMdClose>
-              <Text>Back To Itinerary</Text>
-            </div> */}
+            <BackArrow handleClick={() => setShowDetails((prev) => !prev)} />
           </Heading>
         </div>
       )}
@@ -172,38 +204,40 @@ const Details = ({
           ></div>
         </div>
       )}
-      {type!="combo"&&<div className="w-full flex justify-end">
-        <button
-          className="right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515] p-2"
-          onClick={handleDelete}
-          disabled={loading}
-        >
-          <div style={{ position: "relative" }}>
-            <div
-              className="flex gap-1 items-center"
-              style={loading ? { visibility: "hidden" } : {}}
-            >
-              <div>
-                <Image src="/delete.svg" width={"20"} height={"20"} />
+      {type != "combo" && (
+        <div className="w-full flex justify-end">
+          <button
+            className="right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515] p-2"
+            onClick={handleDelete}
+            disabled={loading}
+          >
+            <div style={{ position: "relative" }}>
+              <div
+                className="flex gap-1 items-center"
+                style={loading ? { visibility: "hidden" } : {}}
+              >
+                <div>
+                  <Image src="/delete.svg" width={"20"} height={"20"} />
+                </div>
+                <div>Delete Booking</div>
               </div>
-              <div>Delete Booking</div>
+              {loading && (
+                <PulseLoader
+                  style={{
+                    position: "absolute",
+                    top: "55%",
+                    left: "50%",
+                    transform: "translate(-50% , -50%)",
+                  }}
+                  size={12}
+                  speedMultiplier={0.6}
+                  color="#ffffff"
+                />
+              )}
             </div>
-            {loading && (
-              <PulseLoader
-                style={{
-                  position: "absolute",
-                  top: "55%",
-                  left: "50%",
-                  transform: "translate(-50% , -50%)",
-                }}
-                size={12}
-                speedMultiplier={0.6}
-                color="#ffffff"
-              />
-            )}
-          </div>
-        </button>
-      </div>}
+          </button>
+        </div>
+      )}
 
       <ToastContainer />
     </div>
@@ -221,7 +255,7 @@ const FlightSegment = ({ segments }) => {
   }
 
   return (
-    <div className="max-w-full p-0 bg-[#FAFBFC] text-[rgba(0,0,0,0.85)] text-sm leading-[21px] rounded-md">
+    <div className="max-w-full bg-[#FCFAFA] p-[20px] rounded-[12px] text-[rgba(0,0,0,0.85)] text-sm leading-[21px] rounded-md">
       {segments.map((segment, i) => (
         <div key={i}>
           {i !== 0 && (
@@ -238,7 +272,7 @@ const FlightSegment = ({ segments }) => {
               </div>
             </div>
           )}
-          <div>
+          <div className="flex flex-col gap-4">
             <div className="flex flex-row gap-3 items-center mb-3">
               <Logo src={segment?.airline?.code} />
               <span className="space-x-2">
@@ -248,51 +282,74 @@ const FlightSegment = ({ segments }) => {
                 <span className="text-[#6d7278]">{`${segment?.airline?.code}-${segment?.airline?.flight_number}`}</span>
               </span>
             </div>
+            <div className="flex flex-col items-center gap-2 text-[#C5C1C1]">
+              <div
+                className="w-full"
+                style={{
+                  margin: "0",
+                  position: "relative",
+                  height: "0px",
+                  top: "50%",
+                }}
+              >
+                <Circle style={{ left: 0 }} color="#C5C1C1" />
+                <DottedLine color="#C5C1C1" />
+                <Circle style={{ right: 0 }} />
+                <Plan>
+                  <FaPlane style={{ fontSize: "1.25rem" }} />
+                </Plan>
+              </div>
+              <div className="flex-1 text-xs text-black text-[10px] mt-1 text-center">
+                {getTime(segment?.accumulated_duration)}
+              </div>
+            </div>
+
             <div className="flex flex-col  justify-between">
-              <div className=" flex flex-row gap-3 justify-between items-center">
+              <div className=" flex flex-row gap-3 justify-between ">
                 {["origin"].map((key) => (
                   <div key={key} className="flex flex-col w-[200px]">
-                    <p className="text-black text-lg font-bold m-0">
-                      {new Date(
-                        segment[key]?.departure_time ||
-                          segment[key]?.arrival_time
-                      ).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                    <p className="text-black text-[16px] sm:text-[18px] font-semibold m-0">
+                      {segment[key]?.airport_code}
                     </p>
-                    <p className="text-black text-xs font-bold mb-2">
-                      {new Date(
-                        segment[key]?.departure_time ||
-                          segment[key]?.arrival_time
-                      ).toDateString()}
+
+                    <p className="text-[10px] sm:text-[12px] font-normal m-0">
+                      {segment[key]?.airport_name}
                     </p>
-                    <p className="text-xs m-0">
-                      {segment[key]?.airport_name} ({segment[key]?.airport_code}
-                      )
-                    </p>
-                    {segment[key]?.terminal && (
-                      <p className="text-xs">
-                        Terminal: {segment[key].terminal}
-                      </p>
-                    )}
+
+                    <div className=" sm:flex sm:gap-1 text-black text-[10px] sm:text-[14px] sm:font-semibold font-normal mb-2 mt-[12px] ">
+                    <div >
+                    {new Date(
+                      segment[key]?.departure_time ||
+                        segment[key]?.arrival_time
+                    ).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                    </div>
+                    <div className="hidden sm:!block px-1">|</div>
+                    <div >
+                    {new Date(
+                      segment[key]?.departure_time ||
+                        segment[key]?.arrival_time
+                    ).toDateString()}
+                    </div>
+                  </div>
+
                   </div>
                 ))}
-                <div className="flex-1 text-xs text-center">
-                  <div className="text-sm text-gray-600">
-                    {getTime(segment?.accumulated_duration)}
-                  </div>
-                  <div className=" h-4">
-                    <p className="h-[3px]  z-[1] border-t-[3px] border-[#F7E700]"></p>
-                  </div>
-                </div>
+
                 {["destination"].map((key) => (
-                  <div
-                    key={key}
-                    className="flex flex-row justify-end w-[200px]"
-                  >
-                    <div className="flex flex-col justify-end w-max">
-                      <p className="text-black text-lg font-bold m-0">
+                  <div key={key} className="flex flex-col w-[200px]">
+                    <p className="text-black text-[16px] sm:text-[18px] font-semibold m-0 flex justify-end">
+                      {segment[key]?.airport_code}
+                    </p>
+
+                    <p className="text-[10px] sm:text-[12px] font-normal m-0 flex justify-end">
+                      {segment[key]?.airport_name}
+                    </p>
+
+                    <div className=" sm:flex sm:gap-1 text-black text-[10px] sm:text-[14px] sm:font-semibold font-normal mb-2 mt-[12px] justify-end">
+                      <div className="flex justify-end">
                         {new Date(
                           segment[key]?.departure_time ||
                             segment[key]?.arrival_time
@@ -300,33 +357,33 @@ const FlightSegment = ({ segments }) => {
                           hour: "2-digit",
                           minute: "2-digit",
                         })}
-                      </p>
-                      <p className="text-black text-xs font-bold mb-2">
+                      </div>
+                      <div className="hidden sm:!block px-1">|</div>
+                      <div className="flex justify-end">
                         {new Date(
                           segment[key]?.departure_time ||
                             segment[key]?.arrival_time
                         ).toDateString()}
-                      </p>
-                      <p className="text-xs m-0">
-                        {segment[key]?.airport_name} (
-                        {segment[key]?.airport_code})
-                      </p>
-                      {segment[key]?.terminal && (
-                        <p className="text-xs">
-                          Terminal: {segment[key].terminal}
-                        </p>
-                      )}
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
-              <div className="flex  items-start justify-between text-xs mt-4">
+              <div className="flex  items-start justify-between gap-[20px] text-xs mt-4">
                 {["baggage_allowance", "cabin_baggage_allowance"].map((key) => (
-                  <p key={key} className="flex flex-col gap-2">
-                    <span className="text-sm font-bold text-left pr-2.5">
-                      {key.toUpperCase().replace("_", " ")}
+                  <p
+                    key={key}
+                    className="flex flex-col gap-2 p-[10px] w-full bg-[#6464640C] rounded-[8px]"
+                  >
+                    <span className="font-normal text-left pr-2.5 text-[14px]">
+                      {key
+                        .split("_")
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join(" ")}
                     </span>
-                    <span className="text-[#4a4a4a] text-left pr-2.5">
+                    <span className=" text[18px] font-semibold text-left pr-2.5">
                       {segment[key]}
                     </span>
                   </p>

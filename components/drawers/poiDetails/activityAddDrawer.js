@@ -342,7 +342,7 @@ const ActivityAddDrawer = (props) => {
       setLoadingPoi(true);
       try {
         const res = await axios.get(
-          `${MERCURY_HOST}/api/v1/geos/poi/?fields=id,name,city,image,rating,experience_filters,short_description,tags,is_very_popular,tips_tricks,is_hidden_gem,gmaps_place_id,user_ratings_total&city_id=${props?.cityID}&name=${debouncedSearch}`
+          `${MERCURY_HOST}/api/v1/geos/poi/?fields=id,name,city,image,rating,experience_filters,short_description,tags,is_very_popular,tips_tricks,is_hidden_gem,gmaps_place_id,user_ratings_total&city_id=${props?.cityID}&name=${debouncedSearch}&is_very_popular=${filterState?.recommended_only}`
         );
         setTotalResults(res.data.results);
         const result = [];

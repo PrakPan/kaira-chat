@@ -367,7 +367,6 @@ const TransferBookings = (props) => {
               transfersPin
               setCurrentPopup={false}
               city={itineraries?.end_city?.city_name}
-              index={itineraries?.cities?.length}
               PinSection
               pinColour={null}
             />

@@ -43,10 +43,11 @@ export default function TemporaryDrawer(props) {
 
   useEffect(() => {
     let handler;
-    if (props.filtersState.budget.price_lower_range !== budget[0] || props.filtersState.budget.price_upper_range !== budget[1]) {
       handler = setTimeout(() => {
         props.setFilters((prev)=>({
           ...prev,
+          free_breakfast:freeBreakfast,
+          is_refundable:refundable,
           budget: {
             price_lower_range: budget[0],
             price_upper_range: budget[1]
@@ -54,12 +55,12 @@ export default function TemporaryDrawer(props) {
           applyFilter:!props.filters.applyFilter
         }))
       }, 2000);
-    }
+    // }
 
     return () => {
       clearTimeout(handler);
     };
-  }, [budget])
+  }, [budget,freeBreakfast,refundable])
 
   useEffect(() => {
     if (props.filtersState.star_category === null && selectedStarCategory.length === 0) {
@@ -79,17 +80,17 @@ export default function TemporaryDrawer(props) {
   }, [selectedStarCategory])
 
   const handleRefundable = () => {
-    setRefundable(prev => !prev);
     dispatch(setItineraryFilters({ 
-      "is_refundable": !prev["is_refundable"]
+      "is_refundable": !refundable
     }));
+    setRefundable(prev => !prev);
   }
 
   const handleFreeBreakfast = () => {
-    setFreeBreakfast(prev => !prev);
     dispatch(setItineraryFilters({ 
-      "free_breakfast": !prev["free_breakfast"]
+      "free_breakfast": !freeBreakfast
     }));
+    setFreeBreakfast(prev => !prev);
   }
 
   return (
@@ -198,7 +199,7 @@ export default function TemporaryDrawer(props) {
 
             {isPageWide && (
               <button
-                onClick={() => props.setShowFILTERS(true)}
+                onClick={() => props.setShowFilters(true)}
                 className="ml-2 border-2 border-black w-fit px-2 py-1 rounded-full hover:bg-black hover:text-white transition-all">More Filters</button>
             )}
           </div>

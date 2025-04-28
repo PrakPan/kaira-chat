@@ -19,7 +19,6 @@ const InnerContainer = styled.div`
 `;
 
 const BriefPin = (props) => {
-  console.log("Pin2", props?.index, props?.length);
 
   return (
     <Container className="center-div" pinColour={props.pinColour} index={props?.index} length={props?.length}>
