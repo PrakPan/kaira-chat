@@ -13,6 +13,45 @@ import { Generalbuttonstyle } from "../../../components/ui/button/Generallinkbut
 import { Logo } from "../../../components/modals/flights/new-flight-searched/LogoContainer";
 import { openNotification } from "../../../store/actions/notification";
 import BackArrow from "../../../components/ui/BackArrow";
+import styled from "styled-components";
+import { FaPlane } from "react-icons/fa";
+
+const DottedLine = styled.div`
+  position: relative;
+  height: 2px;
+  width: 100%;
+  color: #c5c1c1;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: linear-gradient(to right, #c5c1c1 5px, transparent 5px);
+    background-size: 9px 100%; /* Adjust this value to change the spacing between the dots */
+  }
+`;
+
+const Circle = styled.div`
+  border: 1px solid #c5c1c1;
+  height: 10px;
+  width: 10px;
+  border-radius: 100%;
+  background: #c5c1c1;
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  transform: translateY(-38%);
+`;
+
+const Plan = styled.div`
+  position: absolute;
+  left: 50%;
+  top: 0%;
+  transform: translate(-50%, -45%);
+`;
 
 const Details = ({
   originCityId,
@@ -193,115 +232,175 @@ export const FlightSegment = ({ segments }) => {
   }
 
   return (
-    <div className="max-w-full p-0 bg-[#FAFBFC] text-[rgba(0,0,0,0.85)] text-sm leading-[21px] rounded-md">
+    <div className="max-w-full bg-[#FCFAFA] p-[20px] border-[#ECE8E8] border-2 rounded-[12px] text-[rgba(0,0,0,0.85)] text-sm leading-[21px]">
       {segments.map((segment, i) => (
         <div key={i}>
           {i !== 0 && (
-            <div className="text-center my-[25px]">
-              <div className="text-[#4a4a4a] bg-[#f4f4f4] inline-block relative text-xs rounded px-2.5 py-1.5">
-                <span className="text-[#4a4a4a] bg-[#dfdfdf] block absolute text-xs left-[-50px] md:left-[-100px] h-[1px] w-[50px] md:w-[100px] md:top-[13.7px] top-[50%]"></span>
-                <div className="flex flex-col md:flex-row gap-2">
-                  <b className="font-black">Change of planes</b>
-                  <b>{`${getTime(segment?.ground_time)} Layover in ${
-                    segment?.origin?.airport_name
-                  }`}</b>
+            <div className="text-center  my-[30px]">
+              <div className="flex items-center  gap-2">
+                <div className="hidden sm:!block w-[35px] border-[1px] border-[#FDCA05]"></div>
+                {/* <span className="text-[#4a4a4a] bg-[#dfdfdf] block absolute text-xs left-[-50px] md:left-[-100px] h-[1px] w-[50px] md:w-[100px] md:top-[13.7px] top-[50%]"></span> */}
+                <div className=" flex flex-col gap-[2px] text-[#4a4a4a] bg-[rgba(253,202,5,0.11)] rounded-[40px] px-[16px] py-[8px] w-full">
+                  <div className="font-black text-[12px] sm:text-[14px] font-semibold">
+                    Change of planes
+                  </div>
+                  <div className="text-[10px] sm:text-[12px]">{`${getTime(
+                    segment?.ground_time
+                  )} Layover in ${segment?.origin?.airport_name}`}</div>
                 </div>
-                <span className="text-[#4a4a4a] bg-[#dfdfdf] block absolute text-xs right-[-50px] md:right-[-100px] h-[1px] w-[50px] md:w-[100px] md:top-[13.7px] top-[50%]"></span>
+                <div className="hidden sm:!block  w-[35px] border-[1px] border-[#FDCA05]"></div>
               </div>
             </div>
           )}
-          <div>
+          <div className="flex flex-col gap-4">
             <div className="flex flex-row gap-3 items-center mb-3">
               <Logo src={segment?.airline?.code} />
               <span className="space-x-2">
                 <span className="text-black font-bold">
-                  {segment?.airline?.name}
+                  {segment?.airline?.name + " |"}
                 </span>
                 <span className="text-[#6d7278]">{`${segment?.airline?.code}-${segment?.airline?.flight_number}`}</span>
               </span>
             </div>
+            <div className="flex flex-col items-center gap-2 text-[#C5C1C1]">
+              <div
+                className="w-full"
+                style={{
+                  margin: "0",
+                  position: "relative",
+                  height: "0px",
+                  top: "50%",
+                }}
+              >
+                <Circle style={{ left: 0 }} color="#C5C1C1" />
+                <DottedLine color="#C5C1C1" />
+                <Circle style={{ right: 0 }} />
+                <Plan>
+                  <FaPlane style={{ fontSize: "1.25rem" }} />
+                </Plan>
+              </div>
+              <div className="flex-1 text-xs text-black text-[10px] mt-1 text-center">
+                {getTime(segment?.duration)}
+              </div>
+            </div>
+
             <div className="flex flex-col  justify-between">
-              <div className=" flex flex-row gap-3 justify-between items-center">
+              <div className=" flex flex-row gap-3 justify-between ">
                 {["origin"].map((key) => (
-                  <div key={key} className="flex flex-col w-[200px]">
-                    <p className="text-black text-lg font-bold m-0">
-                      {new Date(
-                        segment[key]?.departure_time ||
-                          segment[key]?.arrival_time
-                      ).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                  <div key={key} className="flex flex-col w-full">
+                    <p className="text-black text-[16px] sm:text-[18px] font-semibold m-0">
+                      {segment[key]?.airport_code}
                     </p>
-                    <p className="text-black text-xs font-bold mb-2">
-                      {new Date(
-                        segment[key]?.departure_time ||
-                          segment[key]?.arrival_time
-                      ).toDateString()}
+
+                    <p className="text-[10px] sm:text-[12px] font-normal m-0">
+                      {segment[key]?.airport_name}
                     </p>
-                    <p className="text-xs m-0">
-                      {segment[key]?.airport_name} ({segment[key]?.airport_code}
-                      )
-                    </p>
-                    {segment[key]?.terminal && (
-                      <p className="text-xs">
-                        Terminal: {segment[key].terminal}
-                      </p>
-                    )}
                   </div>
                 ))}
-                <div className="flex-1 text-xs text-center">
-                  <div className="text-sm text-gray-600">
-                    {getTime(segment?.accumulated_duration)}
-                  </div>
-                  <div className=" h-4">
-                    <p className="h-[3px]  z-[1] border-t-[3px] border-[#F7E700]"></p>
-                  </div>
-                </div>
+
                 {["destination"].map((key) => (
-                  <div
-                    key={key}
-                    className="flex flex-row justify-end w-[200px]"
-                  >
-                    <div className="flex flex-col justify-end w-max">
-                      <p className="text-black text-lg font-bold m-0">
-                        {new Date(
-                          segment[key]?.departure_time ||
-                            segment[key]?.arrival_time
-                        ).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
-                      <p className="text-black text-xs font-bold mb-2">
-                        {new Date(
-                          segment[key]?.departure_time ||
-                            segment[key]?.arrival_time
-                        ).toDateString()}
-                      </p>
-                      <p className="text-xs m-0">
-                        {segment[key]?.airport_name} (
-                        {segment[key]?.airport_code})
-                      </p>
-                      {segment[key]?.terminal && (
-                        <p className="text-xs">
-                          Terminal: {segment[key].terminal}
-                        </p>
-                      )}
-                    </div>
+                  <div key={key} className="flex flex-col w-full">
+                    <p className="text-black text-[16px] sm:text-[18px] font-semibold m-0 flex justify-end">
+                      {segment[key]?.airport_code}
+                    </p>
+
+                    <p className="text-[10px] sm:text-[12px] font-normal m-0 flex justify-end">
+                      {segment[key]?.airport_name}
+                    </p>
                   </div>
                 ))}
               </div>
-              <div className="flex  items-start justify-between text-xs mt-4">
+
+              <div className="flex flex-col  justify-between w-full">
+                <div className=" flex flex-row gap-3 justify-between w-full">
+                  {["origin"].map((key) => (
+                    <div key={key} className="flex flex-col w-full">
+                      <div className="text-[10px] sm:text-[12px] font-normal m-0 flex justify-end">
+                        <div>Terminal {segment[key]?.terminal}</div>
+                      </div>
+                    </div>
+                  ))}
+
+                  {["destination"].map((key) => (
+                    <div key={key} className="flex flex-col w-full">
+                      <div className="text-[10px] sm:text-[12px] font-normal m-0 flex justify-end">
+                        <div className="flex justify-end">
+                          Terminal {segment[key]?.terminal}{" "}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex flex-col  justify-between w-full">
+                <div className=" flex flex-row gap-3 justify-between w-full">
+                  {["origin"].map((key) => (
+                    <div key={key} className="flex flex-col w-full">
+                      <div className=" sm:flex sm:gap-1 text-black text-[10px] sm:text-[14px] sm:font-semibold font-normal mb-2 mt-[12px]">
+                        <div>
+                          {new Date(
+                            segment[key]?.departure_time ||
+                              segment[key]?.arrival_time
+                          ).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </div>
+                        <div className="hidden sm:!block px-1">|</div>
+                        <div>
+                          {new Date(
+                            segment[key]?.departure_time ||
+                              segment[key]?.arrival_time
+                          ).toDateString()}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  {["destination"].map((key) => (
+                    <div key={key} className="flex flex-col w-full">
+                      <div className=" sm:flex sm:gap-1 text-black text-[10px] sm:text-[14px] sm:font-semibold font-normal mb-2 mt-[12px] justify-end">
+                        <div className="flex justify-end">
+                          {new Date(
+                            segment[key]?.departure_time ||
+                              segment[key]?.arrival_time
+                          ).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </div>
+                        <div className="hidden sm:!block px-1">|</div>
+                        <div className="flex justify-end">
+                          {new Date(
+                            segment[key]?.departure_time ||
+                              segment[key]?.arrival_time
+                          ).toDateString()}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex  items-start justify-between gap-[20px] text-xs mt-4 w-full">
                 {["baggage_allowance", "cabin_baggage_allowance"].map((key) => (
-                  <p key={key} className="flex flex-col gap-2">
-                    <span className="text-sm font-bold text-left pr-2.5">
-                      {key.toUpperCase().replace("_", " ")}
+                  <div
+                    key={key}
+                    className="flex flex-col gap-2 p-[10px] w-full bg-[#6464640C] rounded-[8px]"
+                  >
+                    <span className="font-normal text-left pr-2.5 text-[14px]">
+                      {key
+                        .split("_")
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join(" ")}
                     </span>
-                    <span className="text-[#4a4a4a] text-left pr-2.5">
+                    <span className=" text[18px] font-semibold text-left pr-2.5">
                       {segment[key]}
                     </span>
-                  </p>
+                  </div>
                 ))}
               </div>
             </div>

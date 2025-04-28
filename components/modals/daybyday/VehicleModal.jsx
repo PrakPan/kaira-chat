@@ -34,7 +34,10 @@ const VehicleDetailModal = ({
     number_of_children,
     source_address,
     destination_address,
+    check_in,
+    check_out
   } = data;
+  console.log("day by day data is:",data)
 
   const formatDateTime = (dateString) => {
     if (!dateString) return "";
@@ -57,15 +60,16 @@ const VehicleDetailModal = ({
   const addMinutesToDate = (dateString, minutes) => {
     console.log("Date String", dateString);
     const date = new Date(dateString);
+    console.log("date is:")
     date.setMinutes(date.getMinutes() + minutes);
     return formatDateTime(date.toISOString());
   };
 
   const departure =
-    transfer_details?.start_datetime || transfer_details?.gozo?.start_date;
+    check_in||transfer_details?.start_datetime || transfer_details?.gozo?.start_date ;
   const duration = transfer_details?.duration;
 
-  const arrival = addMinutesToDate(departure, duration);
+  const arrival = check_out || addMinutesToDate(departure, duration);
   const depart = formatDateTime(departure);
 
   return (

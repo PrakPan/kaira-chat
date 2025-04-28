@@ -21,7 +21,7 @@ export default function Rating(props) {
 
   return (
     <div className="flex flex-col justify-start items-baseline">
-      <div className="mb-2 font-normal">Rating</div>
+      <div className="mb-2 font-normal">User Ratings</div>
       <div className="flex flex-wrap gap-2">
         {props.ratings.map((star, i) => (
           <button

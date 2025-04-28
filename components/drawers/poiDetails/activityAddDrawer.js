@@ -68,14 +68,15 @@ const ActivityAddDrawer = (props) => {
   );
   const [filterState, setFilterState] = useState({
     recommended_only: false,
-    rating: [],
-    category: [],
-    tour_type: [],
-    guide: [],
+    rating: ["All"],
+    category: ["All"],
+    tour_type: ["All"],
+    guide: ["All"],
     pax: {
       number_of_travelers: num_adults,
       traveler_ages: Array(num_adults).fill(null),
     },
+    experienceFilters: ["All"],
   });
   const [filtersObj, setFiltersObj] = useState({
     ratings: [1, 2, 3, 4, 5],
@@ -342,7 +343,11 @@ const ActivityAddDrawer = (props) => {
       setLoadingPoi(true);
       try {
         const res = await axios.get(
-          `${MERCURY_HOST}/api/v1/geos/poi/?fields=id,name,city,image,rating,experience_filters,short_description,tags,is_very_popular,tips_tricks,is_hidden_gem,gmaps_place_id,user_ratings_total&city_id=${props?.cityID}&name=${debouncedSearch}&is_very_popular=${filterState?.recommended_only}`
+          `${MERCURY_HOST}/api/v1/geos/poi/?fields=id,name,city,image,rating,experience_filters,short_description,tags,is_very_popular,tips_tricks,is_hidden_gem,gmaps_place_id,user_ratings_total&city_id=${
+            props?.cityID
+          }&name=${debouncedSearch}&is_very_popular=${
+            filterState?.recommended_only
+          }&filters=${filterState?.experienceFilters.join(",")}`
         );
         setTotalResults(res.data.results);
         const result = [];

@@ -618,7 +618,7 @@ const TransferBooking = ({
                                       handleViewDetails(
                                         router?.query?.id,
                                         booking?.id,
-                                        booking?.transfer_details?.mode.toLowerCase()
+                                        booking?.booking_type?.toLowerCase()
                                       );
                                     }}
                                     className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[0.6rem] sm:px-1 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000] "
@@ -631,7 +631,7 @@ const TransferBooking = ({
                                       handleViewDetails(
                                         router?.query?.id,
                                         booking?.id,
-                                        booking?.transfer_details?.mode.toLowerCase()
+                                        booking?.booking_type?.toLowerCase()
                                       );
                                       setShowVehicleDrawer(true);
                                     }}
@@ -649,7 +649,7 @@ const TransferBooking = ({
                                     handleViewDetails(
                                       router?.query?.id,
                                       booking?.id,
-                                      booking?.transfer_details?.mode.toLowerCase()
+                                      booking?.booking_type?.toLowerCase()
                                     );
                                     setShowVehicleDrawer(true);
                                   }}
@@ -982,7 +982,7 @@ const TransferBooking = ({
                                       handleViewDetails(
                                         router?.query?.id,
                                         book?.id,
-                                        booking?.transfer_details?.mode.toLowerCase()
+                                        book?.booking_type.toLowerCase()
                                       );
                                     }}
                                     className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
@@ -996,7 +996,7 @@ const TransferBooking = ({
                                       handleViewDetails(
                                         router?.query?.id,
                                         book?.id,
-                                        booking?.transfer_details?.mode.toLowerCase()
+                                        book?.booking_type.toLowerCase()
                                       );
                                       setShowVehicleDrawer(true);
                                     }}
@@ -1014,7 +1014,7 @@ const TransferBooking = ({
                                     handleViewDetails(
                                       router?.query?.id,
                                       book?.id,
-                                      book?.transfer_details?.mode.toLowerCase()
+                                      book?.booking_type.toLowerCase()
                                     );
                                     setShowVehicleDrawer(true);
                                   }}
@@ -1257,14 +1257,13 @@ const FlightBooking = ({
       </div>
       <div
         id={booking?.id}
-        className={`mb-2 mt-2  w-full lg:block ${"mb-2 mt-2 lg:block flex flex-col p-3 "} cursor-pointer relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA] lg:p-5 `}
+        className={`mb-2 mt-2  w-full lg:block ${"mb-2 mt-2 lg:block flex flex-col p-3 "} cursor-pointer relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA] lg:p-5 w-full`}
       >
         <div
           className={` w-full 
-
           `}
         >
-          <div className="flex justify-between">
+          <div className="flex justify-between w-full">
             <FlightLogoContainer
               data={booking?.transfer_details?.items?.[0]}
               height={34}

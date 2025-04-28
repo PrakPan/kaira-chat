@@ -10,6 +10,7 @@ const Container = styled.div`
     margin-right: 0.2rem;
   }
 `;
+
 export default class MyDocument extends Document {
   static async getInitialProps(ctx) {
     // Step 1: Create an instance of ServerStyleSheet
@@ -153,18 +154,49 @@ export default class MyDocument extends Document {
         </Head>
 
         <body>
-          {/* <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js" /> */}
+        <script src="https://app.crmone.com/assets/scripts/integrate-widgets.js" />
+<script
+  dangerouslySetInnerHTML={{
+    __html: `
+      createBot({ botId: "680b71a4a47fab68f44972ab" });
+    `,
+  }}
+/>
+          <style>
+    {`
+      iframe[src*="crmone.com"] {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 350px;
+        height: 500px;
+        border-radius: 12px;
+        box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
+        border: none;
+        z-index: 9999;
+      }
+
+      @media (max-width: 768px) {
+        iframe[src*="crmone.com"] {
+          width: 90%;
+          height: 80%;
+          right: 5%;
+          bottom: 10px;
+        }
+      }
+    `}
+  </style>
+
+          {/* <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js" />
           <>
-            {/* <df-messenger
+            <df-messenger
               location="asia-south1"
               project-id="ai-chabot-451908"
-              agent-id="4e407c11-79bb-494a-ad38-12eb60fed12d"
+              agent-id="680b71a4a47fab68f44972ab"
               language-code="en"
               intent="WELCOME"
-            > */}
-              {/* <df-messenger-chat-bubble chat-title="Personalized Travel Plan"             */}
-              {/* //  chat-icon="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" to change floater icon, change this link */}
-              {/* <Container>
+            >
+              <Container>
                 <df-messenger-chat-bubble
                   chat-title="Personalized Travel Plan"
                   chat-icon="https://images.thetarzanway.com/media/chatbot.png"
@@ -172,10 +204,10 @@ export default class MyDocument extends Document {
                   // to change floater icon, change this link
                 ></df-messenger-chat-bubble>
               </Container>
-            </df-messenger> */}
+            </df-messenger>
 
-        {/* <style>
-          {`
+            <style>
+              {`
             df-messenger {
               z-index: 1024;
               position: fixed;
@@ -188,7 +220,7 @@ export default class MyDocument extends Document {
               --df-messenger-input-text-color: #000000;
               --df-messenger-send-icon: #007bff;
               --df-messenger-chat-window-height: calc(100vh - 80px);
-              --df-messenger-chat-window-width: 90vw;
+              --df-messenger-chat-window-width: 40vw;
               --df-messenger-border-radius: 9px;
               --df-messenger-button-size: 80px;
               --df-messenger-chat-bubble-icon-size: 80px;
@@ -215,9 +247,8 @@ export default class MyDocument extends Document {
               }
             }
           `}
-        </style> */}
-
-          </>
+            </style>
+          </> */}
           {/* Google Tag Manager (noscript) */}
           {process.env.NODE_ENV === "production" &&
             !CONTENT_SERVER_HOST.includes("dev") && (

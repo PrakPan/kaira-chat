@@ -13,11 +13,11 @@ import ExperienceFilters from "./ExperienceFilters";
 export default function DyamicFilters(props) {
   const [selectedRating, setSelectedRating] = useState([]);
   const [recommended, setRecommended] = useState(false);
-  const [selectedCategories, setSelectedCategories] = useState(["All"]);
-  const [selectedTourTypes, setSelectedTourTypes] = useState(["All"]);
-  const [selectedGuide, setSelectedGuide] = useState(["All"]);
-  const [experienceFilters,setExperienceFilters]=useState(["All"]);
-
+  const [selectedCategories, setSelectedCategories] = useState(props?.filterState?.category);
+  const [selectedTourTypes, setSelectedTourTypes] = useState(props?.filterState?.tour_type);
+  const [selectedGuide, setSelectedGuide] = useState(props?.filterState?.guide);
+  const [experienceFilters,setExperienceFilters]=useState(props?.filterState?.experienceFilters);
+console.log("selected guide is:",selectedGuide)
   const handleApply = () => {
     props.setFilterState((prev) => ({
       ...prev,
@@ -26,9 +26,11 @@ export default function DyamicFilters(props) {
       category: selectedCategories,
       tour_type: selectedTourTypes,
       guide: selectedGuide,
+      experienceFilters:experienceFilters
     }));
     props.setshowFilter(false);
   };
+
 
   return (
     <>

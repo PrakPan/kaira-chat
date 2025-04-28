@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import media from "../../media";
 import AccommodationSearched from "./new-accommodation-searched/Index";
@@ -15,7 +15,6 @@ import { openNotification } from "../../../store/actions/notification";
 import Skeleton from "./Skeleton";
 import useDebounce from "../../../hooks/useDebounce";
 import ImageLoader from "../../../components/ImageLoader";
-import Filters from "./filtersmobile/Filters";
 import { setItineraryFilters } from "../../../store/actions/setItineraryFilters";
 import ViewHotelDetails from "../ViewHotelDetails/viewHotelDetails";
 // import { getDate } from "../../../helper/DateUtils";
@@ -79,10 +78,9 @@ const Booking = (props) => {
   const [unauthorized, setUnauthorized] = useState(false);
   const [noResults, setNoResults] = useState(false);
   const filtersState = useSelector((state) => state.ItineraryFilters);
-  const itinerary=useSelector((state)=>state.Itinerary)
-
+  const itinerary = useSelector((state) => state.Itinerary);
   const [filters, setFilters] = useState({
-    free_breakfast: true,
+    free_breakfast: false,
     is_refundable: false,
     budget: {
       price_lower_range: 1000,
@@ -156,6 +154,7 @@ const Booking = (props) => {
       totalPages: 1,
     });
   };
+
 
   useEffect(() => {
     if (!props?.showBookingModal) {
@@ -271,7 +270,7 @@ const Booking = (props) => {
     };
 
     hotelSearch
-      .post("", requestData,{
+      .post("", requestData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
@@ -281,7 +280,7 @@ const Booking = (props) => {
         setProvider(res.data?.source);
         setPaginationStatus({
           traceId: res?.data?.trace_details?.id,
-          page: paginationStatus?.page+1,
+          page: paginationStatus?.page + 1,
           totalPages: res?.data?.total_pages,
         });
 
@@ -379,13 +378,13 @@ const Booking = (props) => {
           backdrop
           className="font-lexend "
           onHide={() => {
-            props?.setHideBookingModal()
+            props?.setHideBookingModal();
             resetPaginationStatus();
             setMoreOptionsJSX([]);
-            setFilters((prev)=>({
+            setFilters((prev) => ({
               ...prev,
-              occupancies:itinerary?.hotels_config?.room_configuration
-            }))
+              occupancies: itinerary?.hotels_config?.room_configuration,
+            }));
           }}
           width={"50vw"}
           mobileWidth={"100vw"}
@@ -450,6 +449,7 @@ const Booking = (props) => {
                   plan={props?.plan || props?.booking}
                   TotalCount={totalCount}
                   setShowFilters={setShowFilters}
+                  showFilters={showFilters}
                   filters={filters}
                   setFilters={setFilters}
                 ></SectionTwo>
@@ -640,15 +640,9 @@ const Booking = (props) => {
                   </ContentContainer>
                 </GridContainer>
               </div>
-
-              <Filters
-                showFilter={showFilters}
-                setshowFilter={setShowFilters}
-                filtersState={filtersState}
-                FILTERS={filtersObj}
-                _addFilterHandler={_addFilterHandler}
-                updateUserStarHandler={updateUserStarHandler}
-              />
+<div>
+              
+              </div>
               <ViewHotelDetails
                 mercury={true}
                 check_in={props?.selectedBooking.check_in}
