@@ -73,6 +73,8 @@ const Section = (props) => {
           data={props.data}
           _updateSearchedTaxi={props._updateSearchedTaxi}
           handleTaxiSelect={props.handleTaxiSelect}
+          origin_itinerary_city_id={props?.origin_itinerary_city_id}
+                destination_itinerary_city_id={props?.destination_itinerary_city_id}
         ></Route>
       </Container>
     );

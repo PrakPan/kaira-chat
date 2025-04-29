@@ -489,7 +489,8 @@ async function fetchData(poll) {
             dispatch(setItineraryStatus("itinerary_status", "SUCCESS"));
           }
 
-          props.setItinerary(data);
+          dispatch(setItinerary(data));
+         // props.setItinerary(data);
           props.setItineraryDaybyDay(data);
           props.setBreif(data);
           setCities(data?.cities);
@@ -674,7 +675,7 @@ async function fetchData(poll) {
     setShowBookingModal(false);
     setShowStayBookingModal(false);
     setShowFlightModal(false);
-    // setTransferBookings(json);
+    //setTransferBookings(json);
     // setTransferBookings(json);
   };
 

@@ -32,8 +32,6 @@ const TransferBookings = (props) => {
     (state) => state.TransferBookings
   )?.transferBookings;
 
-  console.log("sel book", selectedBooking);
-
   const alternateRoutes = {};
   const loadingAlternates = true;
   const roundTripSuggestions = null;
@@ -150,6 +148,10 @@ const TransferBookings = (props) => {
 
     props.setShowTaxiModal(true);
   };
+
+  
+  console.log("itinerariesss", itineraries);
+
 
   return (
     <div
