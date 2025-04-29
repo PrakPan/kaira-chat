@@ -984,9 +984,9 @@ const HotelBookingDetails = (props) => {
                       ></div>
                     ) : null}
                   </div>
-                  <div className="flex flex-col items-center justify-center gap-3 md:w-[40%] h-[250px]">
+                  {room?.images&& room?.images?.length>0&&<div className="flex flex-col items-center justify-center gap-3 md:w-[40%] h-[250px]">
                     <ImageCarousel images={room?.images} />
-                  </div>
+                  </div>}
                 </div>
 
                 {room?.facilities ? (
@@ -1011,7 +1011,7 @@ const HotelBookingDetails = (props) => {
         </>
       )}
 
-      {props?.data?.recommendations && props?.data?.recommendations?.length ? (
+      {props?.data?.recommendations && props?.data?.recommendations?.length>0 ? (
         <>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>
             Room Recommendations
@@ -1027,7 +1027,7 @@ const HotelBookingDetails = (props) => {
       ) : (
         <></>
       )}
-      {props?.data?.category_ratings && (
+      {props?.data?.category_ratings && props?.data?.category_ratings?.length>0 && (
         <div>
           <Heading >Ratings</Heading>
           <table>

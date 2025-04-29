@@ -258,9 +258,7 @@ const HotelBookingDetails = (props) => {
               : ""}
           </Address>
         </div>
-        {props.payment && props.token ? (
-          props.payment?.is_registration_needed ? null : props.payment
-              ?.paid_user || !props.payment?.user_allowed_to_pay ? null : (
+
             <Button
               padding="7px 25px"
               borderRadius="7px"
@@ -268,10 +266,6 @@ const HotelBookingDetails = (props) => {
             >
               Change
             </Button>
-          )
-        ) : (
-          <></>
-        )}
       </FlexBox>
 
       {props?.data?.hotel_details?.rating && (
@@ -1036,10 +1030,9 @@ const HotelBookingDetails = (props) => {
                         ></div>
                       ) : null}
                     </div>
-                    <div className="flex flex-col items-center justify-center gap-3 md:w-[40%] h-[250px]">
-                      {console.log("images are:",room?.images)}
+                    {room?.images?.length>0&&<div className="flex flex-col items-center justify-center gap-3 md:w-[40%] h-[250px]">
                       <ImageCarousel images={room?.images} />
-                    </div>
+                    </div>}
                   </div>
 
                   {room?.facilities ? (
