@@ -155,7 +155,6 @@ const Booking = (props) => {
     });
   };
 
-
   useEffect(() => {
     if (!props?.showBookingModal) {
       // setItineraryFilters({
@@ -232,6 +231,7 @@ const Booking = (props) => {
   };
 
   const fetchHotels = () => {
+    console.log("occupancies are:",filters.occupancies)
     setLoading(true);
     setUpdateLoadingState(true);
     setNoResults(false);
@@ -346,12 +346,12 @@ const Booking = (props) => {
                 );
             }
           }
-          setDynamicFilters({
-            accommodation_types: res.data?.available_types,
-            facilities: res.data?.available_facilities,
-            tags: res.data?.tags,
-          });
-
+            setDynamicFilters({
+              accommodation_types: res.data?.available_types,
+              facilities: res.data?.available_facilities,
+              tags: res.data?.tags,
+            });
+          setTotalCount(res?.data?.count);
           setMoreOptionsJSX([...moreOptionsJSX, ...options]);
         } else {
           setNoResults(true);
@@ -640,9 +640,7 @@ const Booking = (props) => {
                   </ContentContainer>
                 </GridContainer>
               </div>
-<div>
-              
-              </div>
+              <div></div>
               <ViewHotelDetails
                 mercury={true}
                 check_in={props?.selectedBooking.check_in}
