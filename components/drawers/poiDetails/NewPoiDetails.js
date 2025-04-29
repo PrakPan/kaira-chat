@@ -15,10 +15,103 @@ import { BiSolidCustomize } from "react-icons/bi";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 import BackArrow from "../../ui/BackArrow";
+import styled from "styled-components";
+import ReviewPoi from "../../../components/POIDetails/Reviews";
 
+export const Title = styled.p`
+  font-weight: 800;
+  font-size: 20px;
+`;
+
+export const Reviews = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  p,
+  u {
+    font-size: 12px;
+    color: #7a7a7a;
+  }
+  u {
+    margin-inline: 0.2rem;
+  }
+`;
+
+export const Text = styled.p`
+  font-size: 14px;
+`;
+
+export const Heading = styled.p`
+  font-size: 18px;
+  font-weight: 800;
+`;
+
+const Container = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  font-family: Lexend;
+  padding: ${(props) => (props.itineraryDrawer ? "0 1rem 1rem 1rem" : "1rem")};
+`;
+
+const BackContainer = styled.div`
+  margin: 0;
+  display: flex;
+  gap: 0.5rem;
+  position: sticky;
+  z-index: 1;
+  background: white;
+  top: 0;
+  padding-block: 0.75rem;
+
+  @media screen and (min-width: 768px) {
+    padding-block: 1rem;
+  }
+`;
+
+const BackText = styled.div`
+  font-size: 1.5rem;
+  line-height: 2rem;
+`;
+
+const GridImage = styled.div`
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(4, 0.4fr);
+  grid-column-gap: 6px;
+  grid-row-gap: 6px;
+  height: 19rem;
+`;
+
+const Child = styled.div`
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  grid-area: ${(props) => props.area};
+  ${(props) => props.className && `class="${props.className}"`};
+`;
+const ScrollContainer = styled.div`
+  display: flex;
+  gap: 21px;
+  height: 210px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  // const Heading = styled.div
+`;
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
 export default function PoiDetails(props) {
+  const isSmallScreen = media("(max-width:586px)");
+
   let isPageWide = media("(min-width: 768px)");
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageFail, setImageFail] = useState(false);
@@ -71,7 +164,7 @@ export default function PoiDetails(props) {
     <div className="flex flex-col gap-4 pb-[100px] h-[100vh] overflow-y-auto">
       <div className="flex flex-col gap-4 px-[20px] pb-4">
         <div className="sticky top-0 z-1 flex flex-row items-center gap-2 mt-4 bg-white">
-          <BackArrow handleClick={(e)=>props.handleCloseDrawer(e)}/>
+          <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
         </div>
 
         <div className={`flex flex-col gap-4 `}>
@@ -115,7 +208,6 @@ export default function PoiDetails(props) {
             </div>
           </div>
           <div className="flex flex-col gap-3">
-            
             <div className="text-[20px] font-[800]">{props.data.name}</div>
 
             {props?.data?.rating && (
@@ -169,16 +261,6 @@ export default function PoiDetails(props) {
               </div>
             )}
           </div>
-          {props.data?.city && (
-            <div>
-              <span className="font-bold pr-1 text-[14px] font-semibold text-[#01202B]">
-                Address:
-              </span>{" "}
-              <span className="text-[14px] text-[#01202B]">
-                {props.data.city}
-              </span>
-            </div>
-          )}
 
           {/* <div className="flex flex-col gap-3 md:flex-row md:items-center justify-end">
           <Travelers
@@ -243,13 +325,15 @@ export default function PoiDetails(props) {
                     />
                   )}
                 </div>
-                {boolDetails?.generalGuidelines&&<div className="text-[14px]">
-                  <ul style={{ paddingLeft: "0.5rem" }}>
-                    {props.data.general_guidelines?.map((e, i) => (
-                      <li key={i}>- {e}</li>
-                    ))}
-                  </ul>
-                </div>}
+                {boolDetails?.generalGuidelines && (
+                  <div className="text-[14px]">
+                    <ul style={{ paddingLeft: "0.5rem" }}>
+                      {props.data.general_guidelines?.map((e, i) => (
+                        <li key={i}>- {e}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             ) : (
               <></>
@@ -282,13 +366,15 @@ export default function PoiDetails(props) {
                     />
                   )}
                 </div>
-                {!boolDetails?.thingsToBring&&<div className="text-[14px]">
-                  <ul style={{ paddingLeft: "0.5rem" }}>
-                    {props.data.things_to_bring?.map((e, i) => (
-                      <li key={i}>- {e}</li>
-                    ))}
-                  </ul>
-                </div>}
+                {!boolDetails?.thingsToBring && (
+                  <div className="text-[14px]">
+                    <ul style={{ paddingLeft: "0.5rem" }}>
+                      {props.data.things_to_bring?.map((e, i) => (
+                        <li key={i}>- {e}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             ) : (
               <></>
@@ -321,13 +407,15 @@ export default function PoiDetails(props) {
                     />
                   )}
                 </div>
-                {boolDetails?.notSuitableFor&&<div className="text-[14px]">
-                  <ul style={{ paddingLeft: "0.5rem" }}>
-                    {props.data.not_suitable_for?.map((e, i) => (
-                      <li key={i}>- {e}</li>
-                    ))}
-                  </ul>
-                </div>}
+                {boolDetails?.notSuitableFor && (
+                  <div className="text-[14px]">
+                    <ul style={{ paddingLeft: "0.5rem" }}>
+                      {props.data.not_suitable_for?.map((e, i) => (
+                        <li key={i}>- {e}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             ) : (
               <></>
@@ -359,28 +447,185 @@ export default function PoiDetails(props) {
                     />
                   )}
                 </div>
-                {boolDetails?.tipsTricks&&<div className="text-[14px]">
-                  <ul style={{ paddingLeft: "0.5rem" }}>
-                    {props.data.tips_tricks?.map((e, i) => (
-                      <li key={i}>- {e}</li>
-                    ))}
-                  </ul>
-                </div>}
+                {boolDetails?.tipsTricks && (
+                  <div className="text-[14px]">
+                    <ul style={{ paddingLeft: "0.5rem" }}>
+                      {props.data.tips_tricks?.map((e, i) => (
+                        <li key={i}>- {e}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             ) : (
               <></>
             )}
           </div>
         </div>
+        {props.data?.timings && (
+            <div>
+              <Heading>Timings</Heading>
+              <Text>
+                {
+                  <div>
+                    {props.data.timings?.map((e, i) => {
+                      const index = e.indexOf(":");
+                      const day = e.slice(0, index).trim();
+                      const time = e.slice(index + 1).trim();
+
+                      return (
+                        <div key={i} className="flex gap-[22px]">
+                          <div className="text-[14px] font-semibold">{day}</div>
+                          <div className={`text-[14px] font-normal ${time=="Closed"?"px-[8px] py-[2px] bg-[rgba(220,69,65,0.1)] rounded-[10px] text-[#DC4541]":""}`}>{time}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                }
+              </Text>
+            </div>
+          )}
+        {props?.data?.reviews && (
+          <div className="flex flex-col gap-[12px]">
+            <div id="reviews-poi" className="flex justify-between">
+              <Heading>Reviews</Heading>
+
+              <Reviews>
+                {props.data.rating ? (
+                  <div
+                    style={{ color: "#FFD201" }}
+                    className="flex flex-row gap-1"
+                  >
+                    {stars}
+                  </div>
+                ) : null}
+
+                <div className="flex items-center">
+                  {props.data?.rating ? (
+                    <p className="m-0">{props.data.rating}</p>
+                  ) : null}
+
+                  {/* {props.data?.user_ratings_total ? (
+                      <u> {props.data.user_ratings_total} user reviews</u>
+                    ) : null} */}
+                </div>
+              </Reviews>
+            </div>
+            {isSmallScreen ? (
+              <>
+                {props?.data?.reviews?.map((item) => (
+                  <div className="w-[289px]">
+                    <ReviewPoi review={item} />
+                  </div>
+                ))}
+              </>
+            ) : (
+              <ScrollContainer>
+                {props?.data?.reviews?.map((item) => (
+                  <div className="w-[289px]">
+                    <ReviewPoi review={item} />
+                  </div>
+                ))}
+              </ScrollContainer>
+            )}
+          </div>
+        )}
+
+        <div className="flex gap-2">
+          <div>
+            <svg
+              width="23"
+              height="24"
+              viewBox="0 0 23 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <g clip-path="url(#clip0_9135_4118)">
+                <rect
+                  y="0.800781"
+                  width="22.4"
+                  height="22.4"
+                  rx="4"
+                  fill="#169873"
+                  fill-opacity="0.09"
+                />
+                <path
+                  d="M13.2 18L9.20001 16.6L6.10001 17.8C5.87779 17.8889 5.67223 17.8639 5.48335 17.725C5.29446 17.5861 5.20001 17.4 5.20001 17.1667V7.83333C5.20001 7.68889 5.24168 7.56111 5.32501 7.45C5.40835 7.33889 5.52223 7.25556 5.66668 7.2L9.20001 6L13.2 7.4L16.3 6.2C16.5222 6.11111 16.7278 6.13611 16.9167 6.275C17.1056 6.41389 17.2 6.6 17.2 6.83333V16.1667C17.2 16.3111 17.1583 16.4389 17.075 16.55C16.9917 16.6611 16.8778 16.7444 16.7333 16.8L13.2 18ZM12.5333 16.3667V8.56667L9.86668 7.63333V15.4333L12.5333 16.3667ZM13.8667 16.3667L15.8667 15.7V7.8L13.8667 8.56667V16.3667ZM6.53335 16.2L8.53335 15.4333V7.63333L6.53335 8.3V16.2Z"
+                  fill="#169873"
+                />
+              </g>
+              <defs>
+                <clipPath id="clip0_9135_4118">
+                  <rect
+                    y="0.800781"
+                    width="22.4"
+                    height="22.4"
+                    rx="4"
+                    fill="white"
+                  />
+                </clipPath>
+              </defs>
+              <g
+                xmlns="http://www.w3.org/2000/svg"
+                clip-path="url(#clip0_9135_4118)"
+              >
+                <rect
+                  y="0.800781"
+                  width="22.4"
+                  height="22.4"
+                  rx="4"
+                  fill="#169873"
+                  fill-opacity="0.09"
+                />
+                <path
+                  d="M13.2 18L9.20001 16.6L6.10001 17.8C5.87779 17.8889 5.67223 17.8639 5.48335 17.725C5.29446 17.5861 5.20001 17.4 5.20001 17.1667V7.83333C5.20001 7.68889 5.24168 7.56111 5.32501 7.45C5.40835 7.33889 5.52223 7.25556 5.66668 7.2L9.20001 6L13.2 7.4L16.3 6.2C16.5222 6.11111 16.7278 6.13611 16.9167 6.275C17.1056 6.41389 17.2 6.6 17.2 6.83333V16.1667C17.2 16.3111 17.1583 16.4389 17.075 16.55C16.9917 16.6611 16.8778 16.7444 16.7333 16.8L13.2 18ZM12.5333 16.3667V8.56667L9.86668 7.63333V15.4333L12.5333 16.3667ZM13.8667 16.3667L15.8667 15.7V7.8L13.8667 8.56667V16.3667ZM6.53335 16.2L8.53335 15.4333V7.63333L6.53335 8.3V16.2Z"
+                  fill="#169873"
+                />
+              </g>
+              <defs xmlns="http://www.w3.org/2000/svg">
+                <clipPath id="clip0_9135_4118">
+                  <rect
+                    y="0.800781"
+                    width="22.4"
+                    height="22.4"
+                    rx="4"
+                    fill="white"
+                  />
+                </clipPath>
+              </defs>
+            </svg>
+          </div>
+          <div>{props?.data?.address}</div>
+        </div>
+
+        <div className="flex justify-between">
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.75rem",
+              justifyContent: "left",
+            }}
+          >
+            <a
+              href={`https://www.google.com/maps/place/?q=place_id:${props?.data?.gmaps_place_id}`}
+              target="_blank"
+              style={{ color: "#0000EE", fontSize: "14px" }}
+            >
+              View on Google Maps
+            </a>
+          </div>
+        </div>
+
         <div className="border-t-2 fixed bottom-0 right-0 left-0 flex justify-end gap-1 py-[12px] px-[20px] bg-white shadow-md z-50">
           <div className="flex flex-col gap-1">
-          <button
-            onClick={handleUpdate}
-            className="bg-[#F7E700] py-2 px-4 border-2 border-black rounded-lg"
-          >
-            {props.data?.city && "Add to Itinerary"}
-          </button>
-          {dateFormat(props?.date)}
+            <button
+              onClick={handleUpdate}
+              className="bg-[#F7E700] py-2 px-4 border-2 border-black rounded-lg"
+            >
+              {props.data?.city && "Add to Itinerary"}
+            </button>
+            {dateFormat(props?.date)}
           </div>
         </div>
       </div>

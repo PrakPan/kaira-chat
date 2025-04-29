@@ -97,7 +97,7 @@ const Child = styled.div`
 const ScrollContainer = styled.div`
   display: flex;
   gap: 21px;
-  height:210px;
+  height: 210px;
   overflow-x: auto;
   overflow-y: hidden;
   -ms-overflow-style: none;
@@ -170,7 +170,7 @@ const POIDetails = (props) => {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-        },
+        }
       );
 
       if (res?.status == 200) {
@@ -193,18 +193,22 @@ const POIDetails = (props) => {
         newItinerary.cities = itineraryCities;
         props?.handleCloseDrawer(e);
         dispatch(setItinerary(newItinerary));
-        dispatch(openNotification({
-          type: "success",
-          text:  `${props?.data?.name} has been removed from your itinerary`,
-          heading: "Success!",
-        }))
+        dispatch(
+          openNotification({
+            type: "success",
+            text: `${props?.data?.name} has been removed from your itinerary`,
+            heading: "Success!",
+          })
+        );
       }
     } catch (error) {
-      dispatch(openNotification({
-        type: "error",
-        text: "Something went wrong! Please try after some time.",
-        heading: "Error!",
-      }))
+      dispatch(
+        openNotification({
+          type: "error",
+          text: "Something went wrong! Please try after some time.",
+          heading: "Error!",
+        })
+      );
     }
     setLoading(false);
   };
@@ -263,7 +267,7 @@ const POIDetails = (props) => {
             </div>
           ) : (
             <BackContainer className=" font-lexend">
-              <BackArrow handleClick={(e)=>props.handleCloseDrawer(e)}/>
+              <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
             </BackContainer>
           )}
 
@@ -308,8 +312,7 @@ const POIDetails = (props) => {
                     onLoad={() => OnImageLoad(1)}
                     onError={() => OnImageError(1)}
                     priority
-                  />
-                  {" "}
+                  />{" "}
                   <div
                     style={{
                       display: !ImagesLoaded[1] ? "initial" : "none",
@@ -391,12 +394,6 @@ const POIDetails = (props) => {
                 </Text>
               </div>
             )}
-            {props.data?.address && (
-              <div>
-                <span className="font-bold pr-1">Address:</span>{" "}
-                {props.data.address}
-              </div>
-            )}
           </div>
 
           {props.data?.cost ? (
@@ -422,16 +419,25 @@ const POIDetails = (props) => {
             </div>
           )}
 
-          {props.data?.timings && (
+{props.data?.timings && (
             <div>
               <Heading>Timings</Heading>
               <Text>
                 {
-                  <ul>
-                    {props.data.timings?.map((e, i) => (
-                      <li key={i}>{e}</li>
-                    ))}
-                  </ul>
+                  <div>
+                    {props.data.timings?.map((e, i) => {
+                      const index = e.indexOf(":");
+                      const day = e.slice(0, index).trim();
+                      const time = e.slice(index + 1).trim();
+
+                      return (
+                        <div key={i} className="flex gap-[22px]">
+                          <div className="text-[14px] font-semibold">{day}</div>
+                          <div className={`text-[14px] font-normal ${time=="Closed"?"px-[8px] py-[2px] bg-[rgba(220,69,65,0.1)] rounded-[10px] text-[#DC4541]":""}`}>{time}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 }
               </Text>
             </div>
@@ -477,7 +483,7 @@ const POIDetails = (props) => {
                       <ReviewPoi review={item} />
                     </div>
                   ))}
-                  </ScrollContainer>
+                </ScrollContainer>
               )}
             </div>
           )}
@@ -490,118 +496,118 @@ const POIDetails = (props) => {
             <></>
           )}
           <div className="flex flex-col gap-[12px]">
-          <div className="flex gap-2">
-            <div>
-              <svg
-                width="23"
-                height="24"
-                viewBox="0 0 23 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <g clip-path="url(#clip0_9135_4118)">
-                  <rect
-                    y="0.800781"
-                    width="22.4"
-                    height="22.4"
-                    rx="4"
-                    fill="#169873"
-                    fill-opacity="0.09"
-                  />
-                  <path
-                    d="M13.2 18L9.20001 16.6L6.10001 17.8C5.87779 17.8889 5.67223 17.8639 5.48335 17.725C5.29446 17.5861 5.20001 17.4 5.20001 17.1667V7.83333C5.20001 7.68889 5.24168 7.56111 5.32501 7.45C5.40835 7.33889 5.52223 7.25556 5.66668 7.2L9.20001 6L13.2 7.4L16.3 6.2C16.5222 6.11111 16.7278 6.13611 16.9167 6.275C17.1056 6.41389 17.2 6.6 17.2 6.83333V16.1667C17.2 16.3111 17.1583 16.4389 17.075 16.55C16.9917 16.6611 16.8778 16.7444 16.7333 16.8L13.2 18ZM12.5333 16.3667V8.56667L9.86668 7.63333V15.4333L12.5333 16.3667ZM13.8667 16.3667L15.8667 15.7V7.8L13.8667 8.56667V16.3667ZM6.53335 16.2L8.53335 15.4333V7.63333L6.53335 8.3V16.2Z"
-                    fill="#169873"
-                  />
-                </g>
-                <defs>
-                  <clipPath id="clip0_9135_4118">
-                    <rect
-                      y="0.800781"
-                      width="22.4"
-                      height="22.4"
-                      rx="4"
-                      fill="white"
-                    />
-                  </clipPath>
-                </defs>
-                <g
+            <div className="flex gap-2">
+              <div>
+                <svg
+                  width="23"
+                  height="24"
+                  viewBox="0 0 23 24"
+                  fill="none"
                   xmlns="http://www.w3.org/2000/svg"
-                  clip-path="url(#clip0_9135_4118)"
                 >
-                  <rect
-                    y="0.800781"
-                    width="22.4"
-                    height="22.4"
-                    rx="4"
-                    fill="#169873"
-                    fill-opacity="0.09"
-                  />
-                  <path
-                    d="M13.2 18L9.20001 16.6L6.10001 17.8C5.87779 17.8889 5.67223 17.8639 5.48335 17.725C5.29446 17.5861 5.20001 17.4 5.20001 17.1667V7.83333C5.20001 7.68889 5.24168 7.56111 5.32501 7.45C5.40835 7.33889 5.52223 7.25556 5.66668 7.2L9.20001 6L13.2 7.4L16.3 6.2C16.5222 6.11111 16.7278 6.13611 16.9167 6.275C17.1056 6.41389 17.2 6.6 17.2 6.83333V16.1667C17.2 16.3111 17.1583 16.4389 17.075 16.55C16.9917 16.6611 16.8778 16.7444 16.7333 16.8L13.2 18ZM12.5333 16.3667V8.56667L9.86668 7.63333V15.4333L12.5333 16.3667ZM13.8667 16.3667L15.8667 15.7V7.8L13.8667 8.56667V16.3667ZM6.53335 16.2L8.53335 15.4333V7.63333L6.53335 8.3V16.2Z"
-                    fill="#169873"
-                  />
-                </g>
-                <defs xmlns="http://www.w3.org/2000/svg">
-                  <clipPath id="clip0_9135_4118">
+                  <g clip-path="url(#clip0_9135_4118)">
                     <rect
                       y="0.800781"
                       width="22.4"
                       height="22.4"
                       rx="4"
-                      fill="white"
+                      fill="#169873"
+                      fill-opacity="0.09"
                     />
-                  </clipPath>
-                </defs>
-              </svg>
-            </div>
-            <div>{props?.data?.address}</div>
-          </div>
-          <div className="flex justify-between">
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.75rem",
-                justifyContent: "left",
-              }}
-            >
-              <a
-                href={`https://www.google.com/maps/place/?q=place_id:${props?.data?.gmaps_place_id}`}
-                target="_blank"
-                style={{ color: "#0000EE", fontSize: "14px" }}
-              >
-                View on Google Maps
-              </a>
-            </div>
-
-            <button
-              className=" right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
-              onClick={handleDelete}
-            >
-              <div style={{ position: "relative" }}>
-                <div
-                  className="flex gap-1 items-center p-1"
-                  style={loading ? { visibility: "hidden" } : {}}
-                >
-                  <Image src="/delete.svg" width={"20"} height={"20"} /> Remove
-                  from Itinerary
-                </div>
-                {loading && (
-                  <PulseLoader
-                    style={{
-                      position: "absolute",
-                      top: "55%",
-                      left: "50%",
-                      transform: "translate(-50% , -50%)",
-                    }}
-                    size={12}
-                    speedMultiplier={0.6}
-                    color="#ffffff"
-                  />
-                )}
+                    <path
+                      d="M13.2 18L9.20001 16.6L6.10001 17.8C5.87779 17.8889 5.67223 17.8639 5.48335 17.725C5.29446 17.5861 5.20001 17.4 5.20001 17.1667V7.83333C5.20001 7.68889 5.24168 7.56111 5.32501 7.45C5.40835 7.33889 5.52223 7.25556 5.66668 7.2L9.20001 6L13.2 7.4L16.3 6.2C16.5222 6.11111 16.7278 6.13611 16.9167 6.275C17.1056 6.41389 17.2 6.6 17.2 6.83333V16.1667C17.2 16.3111 17.1583 16.4389 17.075 16.55C16.9917 16.6611 16.8778 16.7444 16.7333 16.8L13.2 18ZM12.5333 16.3667V8.56667L9.86668 7.63333V15.4333L12.5333 16.3667ZM13.8667 16.3667L15.8667 15.7V7.8L13.8667 8.56667V16.3667ZM6.53335 16.2L8.53335 15.4333V7.63333L6.53335 8.3V16.2Z"
+                      fill="#169873"
+                    />
+                  </g>
+                  <defs>
+                    <clipPath id="clip0_9135_4118">
+                      <rect
+                        y="0.800781"
+                        width="22.4"
+                        height="22.4"
+                        rx="4"
+                        fill="white"
+                      />
+                    </clipPath>
+                  </defs>
+                  <g
+                    xmlns="http://www.w3.org/2000/svg"
+                    clip-path="url(#clip0_9135_4118)"
+                  >
+                    <rect
+                      y="0.800781"
+                      width="22.4"
+                      height="22.4"
+                      rx="4"
+                      fill="#169873"
+                      fill-opacity="0.09"
+                    />
+                    <path
+                      d="M13.2 18L9.20001 16.6L6.10001 17.8C5.87779 17.8889 5.67223 17.8639 5.48335 17.725C5.29446 17.5861 5.20001 17.4 5.20001 17.1667V7.83333C5.20001 7.68889 5.24168 7.56111 5.32501 7.45C5.40835 7.33889 5.52223 7.25556 5.66668 7.2L9.20001 6L13.2 7.4L16.3 6.2C16.5222 6.11111 16.7278 6.13611 16.9167 6.275C17.1056 6.41389 17.2 6.6 17.2 6.83333V16.1667C17.2 16.3111 17.1583 16.4389 17.075 16.55C16.9917 16.6611 16.8778 16.7444 16.7333 16.8L13.2 18ZM12.5333 16.3667V8.56667L9.86668 7.63333V15.4333L12.5333 16.3667ZM13.8667 16.3667L15.8667 15.7V7.8L13.8667 8.56667V16.3667ZM6.53335 16.2L8.53335 15.4333V7.63333L6.53335 8.3V16.2Z"
+                      fill="#169873"
+                    />
+                  </g>
+                  <defs xmlns="http://www.w3.org/2000/svg">
+                    <clipPath id="clip0_9135_4118">
+                      <rect
+                        y="0.800781"
+                        width="22.4"
+                        height="22.4"
+                        rx="4"
+                        fill="white"
+                      />
+                    </clipPath>
+                  </defs>
+                </svg>
               </div>
-            </button>
-          </div>
+              <div>{props?.data?.address}</div>
+            </div>
+            <div className="flex justify-between">
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.75rem",
+                  justifyContent: "left",
+                }}
+              >
+                <a
+                  href={`https://www.google.com/maps/place/?q=place_id:${props?.data?.gmaps_place_id}`}
+                  target="_blank"
+                  style={{ color: "#0000EE", fontSize: "14px" }}
+                >
+                  View on Google Maps
+                </a>
+              </div>
+
+              <button
+                className=" right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
+                onClick={handleDelete}
+              >
+                <div style={{ position: "relative" }}>
+                  <div
+                    className="flex gap-1 items-center p-1"
+                    style={loading ? { visibility: "hidden" } : {}}
+                  >
+                    <Image src="/delete.svg" width={"20"} height={"20"} />{" "}
+                    Remove from Itinerary
+                  </div>
+                  {loading && (
+                    <PulseLoader
+                      style={{
+                        position: "absolute",
+                        top: "55%",
+                        left: "50%",
+                        transform: "translate(-50% , -50%)",
+                      }}
+                      size={12}
+                      speedMultiplier={0.6}
+                      color="#ffffff"
+                    />
+                  )}
+                </div>
+              </button>
+            </div>
           </div>
 
           {/* {images?.length > 0 && (

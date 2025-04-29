@@ -517,9 +517,10 @@ const TransferBooking = ({
                               )}
                           </div>
                           <div className="flex sm:text-sm text-[14px] flex-row text-[#7A7A7A] font-light items-center">
-                            {booking?.transfer_details?.mode == "Taxi" ? (
+                            {booking?.booking_type == "Taxi" ? (
                               <>
-                                {booking?.type && (
+                                {booking?.transfer_details?.quote
+                                      ?.taxi_category?.type && (
                                   <div>
                                     {booking?.transfer_details?.quote
                                       ?.taxi_category?.type ||
@@ -538,7 +539,7 @@ const TransferBooking = ({
                           </div>
 
                           {booking?.transfer_details && (
-                            <div className="text-[#01202B] font-normal flex  justify-start items-center mt-1 flex-wrap">
+                            <div className="text-[#01202B] font-normal flex  justify-start items-center mt-1 flex-wrap w-full">
                               <span className="pr-1 sm:text-sm text-[0.82rem]">
                                 Facilities:
                               </span>
@@ -884,9 +885,10 @@ const TransferBooking = ({
                             )}
                           </div>
                           <div className="flex sm:text-sm text-[14px]  flex-row text-[#7A7A7A] font-light items-center">
-                            {book?.transfer_details?.mode == "Taxi" ? (
+                            {book?.booking_type == "Taxi" ? (
                               <>
-                                {book?.type && (
+                                {book?.transfer_details?.quote
+                                      ?.taxi_category?.type  && (
                                   <div>
                                     {book?.transfer_details?.quote
                                       ?.taxi_category?.type ||

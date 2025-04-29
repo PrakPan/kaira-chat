@@ -147,7 +147,7 @@ export default function NewPoiBooking(props) {
               </div>
               {props.data?.experience_filters && (
                 <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
-                  {props.data.experience_filters?.slice(0, 3)?.map((e, i) => (
+                  {props.data.experience_filters?.slice(0, 2)?.map((e, i) => (
                     <span
                       key={i}
                       className={`border-2 rounded-full px-2 py-1`}
@@ -156,9 +156,9 @@ export default function NewPoiBooking(props) {
                       {e}
                     </span>
                   ))}
-                  {props?.data?.experience_filters?.length > 3 && (
+                  {props?.data?.experience_filters?.length > 2 && (
                     <span className={`border-2 rounded-full px-2 py-1`}>
-                      +{props?.data?.experience_filters?.length - 3} more
+                      +{props?.data?.experience_filters?.length - 2} more
                     </span>
                   )}
                 </div>
@@ -321,7 +321,7 @@ export default function NewPoiBooking(props) {
           cityId={props?.cityId}
           itinerary_city_id={props?.itinerary_city_id}
           id={props.data?.id}
-          dayIndex={props?.dayIndex}
+          dayIndex={props?.dayIndex | 0}
           setShowLoginModal={props.setShowLoginModal}
         />
 

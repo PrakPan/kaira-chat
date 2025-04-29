@@ -53,13 +53,17 @@ const NewPoiDetailsDrawer = (props) => {
           },
         }
       );
-      var newItinerary = JSON.parse(JSON.stringify(itinerary));
+      var newItinerary = itinerary;
       const itineraryCities=newItinerary?.cities?.map((item)=>{
+        console.log("city is:",item)
         const city=item;
         if(item.id==props?.itinerary_city_id){
           const day_by_day=city?.day_by_day
+          console.log("city1 is:",props?.dayIndex)
           day_by_day[props?.dayIndex].slab_elements=[...day_by_day[props?.dayIndex]?.slab_elements,res?.data]
           city.day_by_day=day_by_day
+          console.log("city2 is:",day_by_day)
+
         }
         return city;
       })
@@ -71,6 +75,7 @@ const NewPoiDetailsDrawer = (props) => {
         heading: "Success!",
       });
     } catch (error) {
+      console.log("error is:",error)
       props.openNotification({
         type: "error",
         text: "Something went wrong! Please try after some time.",
