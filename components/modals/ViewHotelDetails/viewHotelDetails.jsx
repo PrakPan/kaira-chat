@@ -124,7 +124,12 @@ const CallPaymentInfo=useSelector((state)=>state.CallPaymentInfo)
         check_in: (props?.check_in).split("/").join("-"),
         check_out: (props?.check_out).split("/").join("-"),
         hotel_id: props?.id,
-        occupancies: props?.occupancies,
+        occupancies: props?.occupancies?.map((item)=>{
+          return {
+            num_adults:item.adults,
+            child_age:item.childAges
+          }
+        }),
         source: props?.source,
         currency: "INR",
       };

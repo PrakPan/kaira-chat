@@ -154,38 +154,39 @@ export default class MyDocument extends Document {
         </Head>
 
         <body>
-        <script src="https://app.crmone.com/assets/scripts/integrate-widgets.js" />
-<script
-  dangerouslySetInnerHTML={{
-    __html: `
-      createBot({ botId: "680b71a4a47fab68f44972ab" });
-    `,
-  }}
-/>
+          <script src="https://app.crmone.com/assets/scripts/integrate-widgets.js" />
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+              createBot({ botId: "680b71a4a47fab68f44972ab" });
+            `,
+            }}
+          />
           <style>
-    {`
-      iframe[src*="crmone.com"] {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 350px;
-        height: 500px;
-        border-radius: 12px;
-        box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
-        border: none;
-        z-index: 9999;
-      }
+          {`
+            #chatbot-iframe-container {
+              bottom: 0;
+              right: 0;
+              margin-right: 20px;
+              margin-bottom: 10px;
+              z-index:1024 !important;
+            }
 
-      @media (max-width: 768px) {
-        iframe[src*="crmone.com"] {
-          width: 90%;
-          height: 80%;
-          right: 5%;
-          bottom: 10px;
-        }
-      }
-    `}
-  </style>
+            #chatbot-iframe-container iframe {
+              width: 100%;
+              height: 100%;
+              border: none;
+            }
+
+          @media (max-width: 768px) {
+            #chatbot-iframe-container {
+              margin-bottom: 60px;
+              margin-right: 16px;
+            }
+          }
+        `}
+        </style>
+
 
           {/* <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js" />
           <>

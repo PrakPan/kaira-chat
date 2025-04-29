@@ -338,18 +338,18 @@ const FlightSegment = ({ segments }) => {
                 <div className=" flex flex-row gap-3 justify-between w-full">
                   {["origin"].map((key) => (
                     <div key={key} className="flex flex-col w-full">
-                      <div className="text-[10px] sm:text-[12px] font-normal m-0 flex justify-end">
-                        <div>Terminal {segment[key]?.terminal}</div>
-                      </div>
+                       {segment[key]?.terminal&&<div className="flex ">
+                          Terminal {segment[key]?.terminal}{" "}
+                        </div>}
                     </div>
                   ))}
 
                   {["destination"].map((key) => (
                     <div key={key} className="flex flex-col w-full">
                       <div className="text-[10px] sm:text-[12px] font-normal m-0 flex justify-end">
-                        <div className="flex justify-end">
+                        {segment[key]?.terminal&&<div className="flex ">
                           Terminal {segment[key]?.terminal}{" "}
-                        </div>
+                        </div>}
                       </div>
                     </div>
                   ))}
