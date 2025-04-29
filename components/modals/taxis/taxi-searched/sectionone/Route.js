@@ -8,6 +8,7 @@ import { getIndianPrice } from "../../../../../services/getIndianPrice";
 import { axiosTaxiBooking } from "../../../../../services/bookings/UpdateTaxiGozo";
 import { useDispatch, useSelector } from "react-redux";
 import { openNotification } from "../../../../../store/actions/notification";
+import { updateSingleTransferBooking } from "../../../../../store/actions/transferBookingsStore";
 
 const Container = styled.div`
   padding: 0.75rem 0.5rem;
@@ -74,6 +75,12 @@ const Section = (props) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const itineraryId = useSelector((state) => state.ItineraryId);
+
+  const isValidUUID = (uuid) => {
+    const regex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return regex.test(uuid);
+  };
   const handleUpdate = () => {
     if (props.handleTaxiSelect) {
       props.handleTaxiSelect({
@@ -85,10 +92,13 @@ const Section = (props) => {
 
     setLoading(true);
 
+
     const requestData = {
       source: props.data.source,
       trace_id: props.data.trace_id,
       result_index: props.data.result_index,
+      source_itinerary_city:isValidUUID(props?.origin_itinerary_city_id) ? props?.origin_itinerary_city_id : null,
+      destination_itinerary_city: isValidUUID(props?.destination_itinerary_city_id) ? props?.destination_itinerary_city_id : null
     };
 
     axiosTaxiBooking
@@ -110,6 +120,12 @@ const Section = (props) => {
             heading: "Sucess!",
           })
         );
+        dispatch(
+                updateSingleTransferBooking(
+                  `${props?.origin_itinerary_city_id}:${props?.destination_itinerary_city_id}`,
+                  res.data
+                )
+              );
         props._updateTaxiBookingHandler([res.data]);
         props.getPaymentHandler();
         props.setHideBookingModal();

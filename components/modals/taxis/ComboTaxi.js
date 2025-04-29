@@ -62,7 +62,7 @@ const ComboTaxi = (props) => {
   const [quotes, setQuotes] = useState([]);
   const dispatch = useDispatch();
 
-  console.log("OCity,D", props?.selectedBooking, props?.originCityId);
+  console.log("OCity,D", props?.selectedBooking, props?.oCityData,props?.dCityData);
 
   console.log("Inside fetch dtaa", props?.showTaxiModal);
 
@@ -140,6 +140,12 @@ const ComboTaxi = (props) => {
       setShowTimeDropdown(false);
     };
 
+     const isValidUUID = (uuid) => {
+    const regex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return regex.test(uuid);
+  };
+
   const fetchData = () => {
     console.log("Inside fetch dtaa");
     setError(false);
@@ -178,10 +184,13 @@ const ComboTaxi = (props) => {
           trip_type: "one-way",
           origin: {
             city_id:
-              props.selectedBooking?.origin?.city_id ||
+              isValidUUID(props.selectedBooking?.origin?.city_id ||
               props?.oCityData?.gmaps_place_id ||
               props?.oCityData?.city?.id ||
-              props?.originCityId,
+              props?.originCityId) ? props.selectedBooking?.origin?.city_id ||
+              props?.oCityData?.gmaps_place_id ||
+              props?.oCityData?.city?.id ||
+              props?.originCityId : null,
             hub_id: null,
             gmaps_place_id: null,
             // address: props.selectedBooking?.origin?.shortName
@@ -200,10 +209,13 @@ const ComboTaxi = (props) => {
           },
           destination: {
             city_id:
-              props.selectedBooking?.destination?.city_id ||
+              isValidUUID(props.selectedBooking?.destination?.city_id ||
               props?.dCityData?.gmaps_place_id ||
               props?.dCityData?.city?.id ||
-              props?.destinationCityId,
+              props?.destinationCityId) ? props.selectedBooking?.destination?.city_id ||
+              props?.dCityData?.gmaps_place_id ||
+              props?.dCityData?.city?.id ||
+              props?.destinationCityId : null,
             hub_id: null,
             gmaps_place_id: null,
             // address: props.selectedBooking?.destination?.shortName
@@ -428,6 +440,8 @@ const ComboTaxi = (props) => {
                         index={index}
                         start_date={props?.comboStartDate}
                         start_time={props?.comboStartTime}
+                        origin_itinerary_city_id={props?.origin_itinerary_city_id}
+                destination_itinerary_city_id={props?.destination_itinerary_city_id}
                       />
                     ))}
                     {loading && !quotes.length ? <Skeleton /> : null}

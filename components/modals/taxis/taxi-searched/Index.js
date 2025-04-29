@@ -46,6 +46,8 @@ const Booking = (props) => {
         selectedBooking={props.selectedBooking}
         data={props.data}
         handleTaxiSelect={props.handleTaxiSelect}
+        origin_itinerary_city_id={props?.origin_itinerary_city_id}
+        destination_itinerary_city_id={props?.destination_itinerary_city_id}
       ></SectionOne>}
     </Container>
   );

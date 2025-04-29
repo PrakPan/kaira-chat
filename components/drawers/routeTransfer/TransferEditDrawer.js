@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { connect, useDispatch } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { IoIosArrowUp, IoIosArrowDown, IoMdClose } from "react-icons/io";
 import { RiArrowRightSLine } from "react-icons/ri";
@@ -40,6 +40,7 @@ import { PulseLoader } from "react-spinners";
 import dayjs from "dayjs";
 import { updateSingleTransferBooking } from "../../../store/actions/transferBookingsStore";
 import BackArrow from "../../ui/BackArrow";
+import { Pax } from "../activityDetails/Pax";
 
 const ClippathComp = styled.div`
   clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 95% 50%, 100% 0%);
@@ -777,8 +778,11 @@ const TransferEditDrawer = (props) => {
                         />
                       );
                     return (
+
+                      transfer?.transfers?.length > 1 ?  <>
                       <NewMultiModeContainer
                         key={index}
+                        name={transfer?.name}
                         transferIndex={index}
                         transfer={transfer?.transfers}
                         handleSelect={handleSelect}
@@ -797,11 +801,13 @@ const TransferEditDrawer = (props) => {
                         showTaxiModal={showComboTaxiModal}
                         setShowComboTaxiModal={setShowComboTaxiModal}
                         // setHideBookingModal={() => setShowTaxiModal(false)}
-                        setHideTaxiModal={() => setShowComboTaxiModal(false)}
+                        setHideTaxiModal={() =>
+                          setShowComboTaxiModal(false)
+                        }
                         getPaymentHandler={props.getPaymentHandler}
                         _updatePaymentHandler={props._updatePaymentHandler}
                         _updateFlightBookingHandler={
-                          props._updateFlightBookingHandler
+                          _updateFlightBookingHandler
                         }
                         _updateBookingHandler={props._updateBookingHandler}
                         alternates={selectedBooking?.id}
@@ -818,11 +824,115 @@ const TransferEditDrawer = (props) => {
                         elementIndex={element_index}
                         routeId={routeId}
                         mercuryTransfer={selectedMercuryTransfer}
+                        mercury={mercuryTransfer}
                         individual={props?.individual}
                         originCityId={props?.originCityId}
                         destinationCityId={props?.destinationCityId}
                         token={props?.token}
+                        origin_itinerary_city_id={origin_itinerary_city_id}
+                        destination_itinerary_city_id={
+                          destination_itinerary_city_id
+                        }
+                        setShowDrawer={setShowDrawer}
+                        dCityData={dCityData}
+                        oCityData={oCityData}
+                        openNotification={openNotification}
+                        showDrawer={showDrawer}
+                        origin={origin}
+                        destination={destination}
+                        city={city}
+                        dcity={dcity}
+                        currentModeDepartureDate={currentModeDepartureDate}
+                        setCurrentModeDepartureDate={
+                          setCurrentModeDepartureDate
+                        }
+                        currentModeDepartureTime={currentModeDepartureTime}
+                        setCurrentModeDepartureTime={
+                          setCurrentModeDepartureTime
+                        }
                       />
+                    </> :
+                    <RouteContainer
+                    setSelectedMercuryTransfer={
+                      setSelectedMercuryTransfer
+                    }
+                    key={index}
+                    name={transfer?.name}
+                    transferIndex={index}
+                    transfer={transfer?.transfers}
+                    handleSelect={handleSelect}
+                    selectedResult={selectedResult}
+                    setSelectedResult={setSelectedResult}
+                    setCurrentStep={setCurrentStep}
+                    currentStep={currentStep}
+                    handleFlightSelect={handleSelectResult}
+                    showComboFlightModal={showComboFlightModal}
+                    setShowComboFlightModal={setShowComboFlightModal}
+                    setHideFlightModal={() =>
+                      setShowComboFlightModal(false)
+                    }
+                    hideDrawer={() => {
+                      setShowDrawer(false);
+                      setCurrentStep(0);
+                      setIsRouteSelected(false);
+                      setShowOtherTrasfer(false);
+                    }}
+                    setHideBookingModal={() =>
+                      setShowComboFlightModal(false)
+                    }
+                    showTaxiModal={showComboTaxiModal}
+                    setShowComboTaxiModal={setShowComboTaxiModal}
+                    // setHideBookingModal={() => setShowTaxiModal(false)}
+                    setHideTaxiModal={() => setShowComboTaxiModal(false)}
+                    getPaymentHandler={props.getPaymentHandler}
+                    _updatePaymentHandler={props._updatePaymentHandler}
+                    _updateFlightBookingHandler={
+                      _updateFlightBookingHandler
+                    }
+                    _updateTaxiBookingHandler={
+                      props._updateTaxiBookingHandler
+                    }
+                    _updateBookingHandler={props._updateBookingHandler}
+                    alternates={selectedBooking?.id}
+                    tailored_id={selectedBooking?.tailored_itinerary}
+                    // _updateFlightHandler={props._updateFlightHandler}
+                    selectedBooking={selectedBooking}
+                    itinerary_id={ItineraryId}
+                    selectedTransferHeading={selectedTransferHeading}
+                    fetchData={fetchData}
+                    setShowLoginModal={setShowLoginModal}
+                    check_in={check_in}
+                    _GetInTouch={props._GetInTouch}
+                    daySlabIndex={day_slab_index}
+                    elementIndex={element_index}
+                    routeId={routeId}
+                    mercuryTransfer={selectedMercuryTransfer}
+                    individual={props?.individual}
+                    originCityId={props?.originCityId}
+                    destinationCityId={props?.destinationCityId}
+                    token={props?.token}
+                    origin_itinerary_city_id={origin_itinerary_city_id}
+                    destination_itinerary_city_id={
+                      destination_itinerary_city_id
+                    }
+                    setShowDrawer={setShowDrawer}
+                    dCityData={dCityData}
+                    oCityData={oCityData}
+                    openNotification={openNotification}
+                    showDrawer={showDrawer}
+                    origin={origin}
+                    destination={destination}
+                    currentModeDepartureDate={currentModeDepartureDate}
+                    setCurrentModeDepartureDate={
+                      setCurrentModeDepartureDate
+                    }
+                    currentModeDepartureTime={currentModeDepartureTime}
+                    setCurrentModeDepartureTime={
+                      setCurrentModeDepartureTime
+                    }
+                    showOtherTrasfer={showOtherTransfer}
+                    setShowOtherTrasfer={setShowOtherTrasfer}
+                  />
                       // <MobileRouteContainer
                       //   key={index}
                       //   transferIndex={index}
@@ -1175,6 +1285,7 @@ const RouteContainer = (props) => {
             {currentStep === 1 ? (
               singleTransfer?.mode === "Flight" ? (
                 <ComboFlight
+                  combo={false}
                   handleFlightSelect={handleFlightSelect}
                   showComboFlightModal={showComboFlightModal}
                   setShowComboFlightModal={setShowComboFlightModal}
@@ -1205,6 +1316,10 @@ const RouteContainer = (props) => {
                   comboStartTime={currentModeDepartureTime}
                   source_code={singleTransfer?.source?.code}
                   destination_code={singleTransfer?.destination?.code}
+                  origin_itinerary_city_id={origin_itinerary_city_id}
+                destination_itinerary_city_id={destination_itinerary_city_id}
+                dCityData={dCityData}
+                          oCityData={oCityData}
                 />
               ) : singleTransfer?.mode === "Taxi" ? (
                 <ComboTaxi
@@ -1236,6 +1351,10 @@ const RouteContainer = (props) => {
                   comboStartDate={currentModeDepartureDate}
                   comboStartTime={currentModeDepartureTime}
                   _updateTaxiBookingHandler={_updateTaxiBookingHandler}
+                  origin_itinerary_city_id={origin_itinerary_city_id}
+                destination_itinerary_city_id={destination_itinerary_city_id}
+                dCityData={dCityData}
+                oCityData={oCityData}
                 />
               ) : (
                 <OtherTransfer
@@ -1244,15 +1363,22 @@ const RouteContainer = (props) => {
                   selectedResult={selectedResult}
                   selectedBooking={selectedBooking}
                   setSelectedResult={setSelectedResult}
+                  mercuryTransfer={mercuryTransfer}
+                  transfer={transfer}
                   number_of_travellers={
                     props?.plan?.number_of_adults +
                     props?.plan?.number_of_children
                   }
                   check_in={check_in}
-                  mercuryTransfer={mercuryTransfer}
                   currentStep={currentStep}
                   currentModeDepartureDate={currentModeDepartureDate}
                   currentModeDepartureTime={currentModeDepartureTime}
+                  oCityData={oCityData}
+                  dCityData={dCityData}
+                  origin_itinerary_city_id={origin_itinerary_city_id}
+                destination_itinerary_city_id={destination_itinerary_city_id}
+                handleSelect={handleSelect}
+                hideDrawer={hideDrawer}
                 />
               )
             ) : (
@@ -1480,9 +1606,7 @@ const NewMultiModeContainer = ({
     return regex.test(uuid);
   };
 
-  // Modified handleBackButton to set skip flags
   const handleBackButton = () => {
-    // Set flag to prevent API refetch for Flight/Taxi when navigating back
     const currentTransfer = transfer[currentStep - 1];
     if (currentTransfer.mode === "Flight") {
       setSkipFlightFetch(true);
@@ -1915,6 +2039,7 @@ const NewMultiModeContainer = ({
                     return (
                       <ComboFlight
                         key={option.id}
+                        combo={true}
                         handleFlightSelect={handleFlightSelect}
                         showComboFlightModal={showComboFlightModal}
                         setShowComboFlightModal={setShowComboFlightModal}
@@ -3147,7 +3272,6 @@ const Cost = styled.p`
     font-size: 1.25rem;
   }
 `;
-
 const OtherTransfer = ({
   setShowOtherTrasfer,
   selectedResult,
@@ -3159,18 +3283,96 @@ const OtherTransfer = ({
   currentModeDepartureDate,
   currentModeDepartureTime,
   selectedBooking,
+  setSelectedBooking,
+  transferIndex,
+  setSelectedData,
+  currentStep,
+  handleSelect,
+  transfer,
+  totalSteps,
+  hideDrawer,
+  token,
+  origin_itinerary_city_id,
+  destination_itinerary_city_id,
+  oCityData,
+  dCityData,
+  city,
+  dcity,
+  mercury,
 }) => {
   const ref = useRef(null);
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [otherTransfer, setOtherTransfer] = useState(null);
   const [traceId, setTraceId] = useState(null);
   const [isSelected, setIsSelected] = useState(false);
+  const [updateLoading, setUpdateLoading] = useState(false);
+  const [loadingOptionId, setLoadingOptionId] = useState(null);
+  const { number_of_adults, number_of_children, number_of_infants } = useSelector(state => state.Itinerary);
+  const [showPax, setShowPax] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [localSelectedData, setLocalSelectedData] = useState([]);
+  const [isResultSelected,setIsResultSelected] = useState(false);
+  const itinerary_id = useSelector(state=>state.ItineraryId);
+  
+  const [pax, setPax] = useState({
+    adults: selectedBooking?.pax?.number_of_adults
+      ? selectedBooking.pax.number_of_adults
+      : number_of_adults,
+    children: selectedBooking?.pax?.number_of_children
+      ? selectedBooking.pax.number_of_children
+      : number_of_children,
+    infants: selectedBooking?.pax?.number_of_infants
+      ? selectedBooking.pax.number_of_infants
+      : number_of_infants,
+  });
+
+  // Initialize localSelectedData from parent component's selected data
+  useEffect(() => {
+    if (setSelectedData && Array.isArray(transfer)) {
+      const initialData = Array(transfer.length).fill(undefined);
+      
+      if (selectedResult) {
+        const index = currentStep - 1;
+        initialData[index] = selectedResult;
+      }
+      
+      setLocalSelectedData(initialData);
+    }
+  }, []);
+
   useEffect(() => {
     console.log("Result", selectedResult?.transfer);
-    setSelectedResult(selectedResult);
-    getOtherTrasfer(selectedResult?.transfer);
-  }, []);
+    if (selectedResult) {
+      setSelectedResult(selectedResult);
+      getOtherTrasfer(selectedResult?.transfer);
+    }
+
+    if (selectedResult?.selectedPrice) {
+      const index = currentStep - 1;
+      
+      if (setSelectedData) {
+        setSelectedData(prev => {
+          const newData = Array.isArray(prev) ? [...prev] : [];
+          newData[index] = selectedResult;
+          return newData;
+        });
+        
+        setLocalSelectedData(prev => {
+          const newData = Array.isArray(prev) ? [...prev] : [];
+          newData[index] = selectedResult;
+          return newData;
+        });
+      }
+    }
+  }, [selectedResult]);
+
+  const isValidUUID = (uuid) => {
+    const regex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return regex.test(uuid);
+  };
 
   const handleClose = (e) => {
     e.stopPropagation();
@@ -3196,9 +3398,216 @@ const OtherTransfer = ({
     setOtherTransfer(transfer);
   };
 
+  const isPriceOptionSelected = (transferId, priceIndex) => {
+    const currentSelection = localSelectedData[currentStep - 1];
+    
+    if (!currentSelection) return false;
+    
+    return (
+      currentSelection.id === transferId && 
+      currentSelection.selectedPrice?.result_index === priceIndex
+    );
+  };
+  const handleUpdateTransfer = async () => {
+    handleUpdateTransferWithData(localSelectedData);
+  };
+
+  const handleModeSelect = (index, priceOptionId, selectedPriceData, mode) => {
+    if (updateLoading) {
+      return;
+    }
+    
+    const [transferId, priceIndex] = priceOptionId.split('-');
+    
+    const isDeselecting = isPriceOptionSelected(selectedPriceData.id, parseInt(priceIndex));
+    
+    setLoadingOptionId(priceOptionId);
+
+    if (isDeselecting) {
+      setLocalSelectedData(prev => {
+        const newData = [...prev];
+        newData[index] = undefined;
+        return newData;
+      });
+      
+      if (setSelectedData) {
+        setSelectedData(prev => {
+          const newData = [...prev];
+          newData[index] = undefined;
+          return newData;
+        });
+      }
+      
+      setLoadingOptionId(null);
+
+      if (handleSelect) {
+        handleSelect(
+          transferIndex,
+          null,
+          transfer,
+          mode
+        );
+      }
+    } else {
+      const newLocalData = [...localSelectedData];
+      newLocalData[index] = selectedPriceData;
+      setLocalSelectedData(newLocalData);
+      
+      if (setSelectedData) {
+        const newParentData = Array.isArray(setSelectedData) ? [...setSelectedData] : [];
+        newParentData[index] = selectedPriceData;
+        setSelectedData(newParentData);
+      }
+      if (handleSelect) {
+        handleSelect(
+          transferIndex,
+          selectedPriceData,
+          transfer,
+          mode
+        );
+      }
+    
+      setTimeout(() => {
+        handleUpdateTransferWithData(newLocalData);
+      }, 50);
+    }
+  };
+
+  const handleUpdateTransferWithData = async (updatedData) => {
+    setUpdateLoading(true);
+    
+    try {
+      if (!Array.isArray(transfer) || transfer.length === 0) {
+        throw new Error("Transfer data is missing");
+      }
+
+      const transfersPayload = updatedData
+        .filter(Boolean) 
+        .map((item, arrayIndex) => {
+          const transferItem = transfer[arrayIndex] || transfer[0];
+          
+          if (!transferItem) {
+            console.error(`Transfer item for index ${arrayIndex} is missing`);
+            return null;
+          }
+
+          const transferObj = {
+            booking_type: transferItem.mode,
+            edge_id: transferItem.id,
+          };
+
+          if (transferItem.mode === "Flight") {
+            return {
+              ...transferObj,
+              result_index: item.resultIndex || item.result_index || 0,
+              trace_id: item?.trace_id || localStorage.getItem("Travclan_trace_id") || "",
+            };
+          } else if (transferItem.mode === "Taxi") {
+            return {
+              ...transferObj,
+              trace_id: item.trace_id || "",
+              result_index: item.result_index || 0,
+              source: item.source || "",
+            };
+          } else {
+            let resultIndex = 0;
+            
+            if (item.selectedPrice) {
+              resultIndex = item.selectedPrice.result_index || 0;
+            }
+            
+            return {
+              ...transferObj,
+              result_index: resultIndex,
+            };
+          }
+        })
+        .filter(Boolean); 
+        
+      if (transfersPayload.length === 0) {
+        throw new Error("No valid transfer options selected");
+      }
+
+      const baseStartDate =
+        dCityData?.start_date ??
+        (oCityData?.start_date && oCityData?.duration != null
+          ? addDaysToDate(oCityData.start_date, oCityData.duration)
+          : dayjs().format("YYYY-MM-DD"));
+          
+      const requestBody = {
+        destination_itinerary_city: isValidUUID(destination_itinerary_city_id)
+          ? destination_itinerary_city_id
+          : null,
+        source_itinerary_city: isValidUUID(origin_itinerary_city_id)
+          ? origin_itinerary_city_id
+          : null,
+        number_of_adults: number_of_adults || 2,
+        number_of_children: number_of_children || 0,
+        number_of_infants: number_of_infants || 0,
+        start_datetime: baseStartDate + "T00:00:00",
+        transfers: transfersPayload,
+      };
+
+      if (selectedBooking?.id) {
+        requestBody.booking_id = selectedBooking.id;
+      }
+
+      console.log("Sending request body:", requestBody);
+
+      const response = await UpdateTransferMode.post(
+        `${itinerary_id}/bookings/transfer/`,
+        requestBody,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      );
+
+      const data = response.data;
+      setIsResultSelected(true);
+
+      dispatch(
+        updateSingleTransferBooking(
+          `${origin_itinerary_city_id}:${destination_itinerary_city_id}`,
+          data
+        )
+      );
+
+      console.log("Transfer updated successfully:", data);
+
+     hideDrawer();
+
+      dispatch(openNotification({
+        text: `Transfer from ${city || transfer[0]?.source?.city_name} to ${dcity || transfer[0]?.destination?.city_name} has been updated successfully!`,
+        heading: "Success!",
+        type: "success",
+      }));
+    } catch (error) {
+      console.error("Error updating transfer:", error);
+      dispatch(openNotification({
+        text: error.message || "Error updating Transfers!",
+        heading: "Error!",
+        type: "error",
+      }));
+    } finally {
+      setUpdateLoading(false);
+      setLoadingOptionId(null);
+    }
+  };
+
   return (
     <Container>
       <div className="w-full">
+        <div className="flex justify-end py-2">
+          <Pax
+            setShowPax={setShowPax}
+            pax={pax}
+            setPax={setPax}
+            showPax={showPax}
+            combo={true}
+          />
+        </div>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
           <div className="mb-2 sm:mb-0">
             <span className="text-sm text-gray-600">Departure Date: </span>
@@ -3208,7 +3617,6 @@ const OtherTransfer = ({
           <div className="time-dropdown-container relative w-full sm:w-auto">
             <div
               className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
-              // onClick={() => setShowTimeDropdown(!showTimeDropdown)}
             >
               <span className="text-sm font-medium">
                 Departure Time: {currentModeDepartureTime}
@@ -3225,90 +3633,111 @@ const OtherTransfer = ({
           const currency =
             priceOption.currency === "INR" ? "₹" : priceOption.currency;
           const priceOptionId = `${otherTransfer.id}-${priceIndex}`;
+          
+          // Check if this specific price option is selected
+          const isOptionSelected = isPriceOptionSelected(otherTransfer.id, priceIndex);
+          
+          // Check if this option is currently loading
+          const isOptionLoading = loadingOptionId === priceOptionId;
 
           return (
-            <>
-              <div
-                key={`${otherTransfer.id}-price-${priceIndex}`}
-                className={`flex w-full flex-col md:flex-row justify-between bg-white p-3 md:p-4 border-b
-                  `}
-              >
-                <div className="flex gap-2 md:gap-3 mb-2 md:mb-0">
-                  <div className="text-gray-500 mt-1">
-                    {getModeIcon(otherTransfer.mode)}
-                  </div>
-                  <div>
-                    <div className="font-semibold text-sm md:text-base">
-                      {otherTransfer.text}{" "}
-                      {priceOption.name ? `- ${priceOption.name}` : ""}
-                    </div>
-                    <div className="text-xs md:text-sm text-gray-600">
-                      {Math.floor(otherTransfer?.duration / 60) +
-                        "-" +
-                        Math.ceil(otherTransfer?.duration / 60)}{" "}
-                      hours | {otherTransfer.distance} kms
-                    </div>
-                    {priceOption?.class && (
-                      <div className="text-xs md:text-sm">
-                        <span className="font-semibold">Facilities:</span>{" "}
-                        {priceOption?.class}{" "}
-                        {/* <span className="font-semibold">To:</span>{" "}
-                        {option.destination.name} */}
-                      </div>
-                    )}
-                    {priceOption.description && (
-                      <div className="text-xs md:text-sm text-gray-700 mt-1">
-                        {priceOption.description}
-                      </div>
-                    )}
-                  </div>
+            <div
+              key={`${otherTransfer.id}-price-${priceIndex}`}
+              className={`flex w-full flex-col md:flex-row justify-between bg-white p-3 md:p-4 border-b
+                ${isOptionSelected ? "border-blue-500 bg-blue-50" : ""}`}
+            >
+              <div className="flex gap-2 md:gap-3 mb-2 md:mb-0">
+                <div className="text-gray-500 mt-1">
+                  {getModeIcon(otherTransfer.mode)}
                 </div>
-                <div className="flex flex-col md:flex-col gap-2 items-center md:items-end justify-between">
+                <div>
                   <div className="font-semibold text-sm md:text-base">
-                    {currency} {price}
+                    {otherTransfer.text}{" "}
+                    {priceOption.name ? `- ${priceOption.name}` : ""}
                   </div>
-                  <div
-                    className="cursor-pointer"
-                    onClick={() => {
-                      const selectedPriceData = {
-                        ...otherTransfer,
-                        selectedPrice: priceOption,
-                      };
-                      setIsSelected(true);
-                      // handleModeSelect(
-                      //   currentStep - 1,
-                      //   priceOptionId,
-                      //   selectedPriceData,
-                      //   otherTransfer.mode
-                      // );
-                    }}
-                  >
-                    {isSelected ? (
-                      <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
-                    ) : (
-                      <ImCheckboxUnchecked className="h-4 w-4 md:h-5 md:w-5" />
-                    )}
-                    {/* {selectedModeIds[currentStep - 1] ===
-                      priceOptionId ? (
-                        <div className="flex items-center gap-1">
-                          <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
-                          <span className="text-sm">Selected</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-1">
-                          <ImCheckboxUnchecked className="h-4 w-4 md:h-5 md:w-5" />
-                          <span className="text-sm">Select</span>
-                        </div>
-                      )} */}
+                  <div className="text-xs md:text-sm text-gray-600">
+                    {Math.floor(otherTransfer?.duration / 60) +
+                      "-" +
+                      Math.ceil(otherTransfer?.duration / 60)}{" "}
+                    hours | {otherTransfer.distance} kms
                   </div>
+                  {priceOption?.class && (
+                    <div className="text-xs md:text-sm">
+                      <span className="font-semibold">Facilities:</span>{" "}
+                      {priceOption?.class}
+                    </div>
+                  )}
+                  {priceOption.description && (
+                    <div className="text-xs md:text-sm text-gray-700 mt-1">
+                      {priceOption.description}
+                    </div>
+                  )}
                 </div>
               </div>
-            </>
+              <div className="flex flex-col md:flex-col gap-2 items-center md:items-end justify-between">
+                <div className="text-md font-bold">
+                  <span
+                    className="!font-[lexend]"
+                    style={{ fontFamily: "Lexend" }}
+                  >
+                    {currency} {price}
+                  </span>
+                </div>
+                
+                <div
+                  className={`cursor-pointer ${updateLoading && !isOptionLoading ? 'opacity-50' : ''}`}
+                  onClick={() => {
+                    if (updateLoading && !isOptionLoading) return;
+                    const selectedPriceData = {
+                      ...otherTransfer,
+                      selectedPrice: {
+                        ...priceOption,
+                        result_index: priceIndex
+                      },
+                    };
+                    
+                    handleModeSelect(
+                      currentStep - 1,
+                      priceOptionId,
+                      selectedPriceData,
+                      otherTransfer.mode
+                    );
+                  }}
+                >
+                  {isOptionLoading || (updateLoading && isOptionSelected) ? (
+                    <div className="flex items-center gap-1">
+                      <PulseLoader
+                        size={15}
+                        speedMultiplier={0.6}
+                        color="#000000"
+                      />
+                    </div>
+                  ) : isOptionSelected && isResultSelected ? (
+                    <div className="flex items-center gap-1">
+                      <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
+                      <span className="text-sm">Selected</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1">
+                      <ImCheckboxUnchecked className="h-4 w-4 md:h-5 md:w-5" />
+                      <span className="text-sm">Select</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           );
         })}
+      {showLoginModal && (
+        <LoginModal
+          show={showLoginModal}
+          onClose={() => setShowLoginModal(false)}
+        />
+      )}
     </Container>
   );
 };
+
 
 const MercuryTransfer = ({ transfer, setShowMercuryTransfer }) => {
   // const handleSelectPrice = (index) => {

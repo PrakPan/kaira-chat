@@ -164,9 +164,9 @@ const CitySummary = (props) => {
                           fill="#01202B"
                         />
                       </svg>{" "}
-                      <div>{item?.pax} tickets</div>
+                      <div>{item?.pax || item?.number_of_adults+item?.number_of_children+item?.number_of_infants} tickets</div>
                     </div>
-                    <div className="w-auto flex items-center gap-1">
+                    {item?.duration && item?.duration!="0 hours" && <div className="w-auto flex items-center gap-1">
                       <svg
                         width="13"
                         height="13"
@@ -180,7 +180,7 @@ const CitySummary = (props) => {
                         />
                       </svg>
                       {item?.duration}
-                    </div>
+                    </div>}
                   </div>
                 </div>
               </div>

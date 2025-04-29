@@ -18,7 +18,7 @@ import { FaFilter } from "react-icons/fa";
 import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 import LogInModal from "../Login";
 import { toast, ToastContainer } from "react-toastify";
-import { setTransfersBookings } from "../../../store/actions/transferBookingsStore";
+import { setTransfersBookings, updateSingleTransferBooking } from "../../../store/actions/transferBookingsStore";
 import ComboSection from "./ComboSectionOne";
 import dayjs from "dayjs";
 
@@ -357,10 +357,13 @@ const preferredDepartureTime = (() => {
         props.getPaymentHandler();
         setUpdateBookingState(false);
 
+
         const updatedTransferBookings = JSON.parse(
           JSON.stringify(transferBookings?.transferBookings)
         );
         const bookingIdToUpdate = requestData?.booking_id;
+
+        if(props?.combo){
 
         Object.keys(updatedTransferBookings).forEach((category) => {
           if (updatedTransferBookings[category]) {
@@ -405,6 +408,14 @@ const preferredDepartureTime = (() => {
         });
 
         dispatch(setTransfersBookings(updatedTransferBookings));
+
+      }
+     else  dispatch(
+        updateSingleTransferBooking(
+          `${props?.origin_itinerary_city_id}:${props?.destination_itinerary_city_id}`,
+          res.data
+        )
+      );
         props.openNotification({
           type: "success",
           text: "Flight updated successfully.",

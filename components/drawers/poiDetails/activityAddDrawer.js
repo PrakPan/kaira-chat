@@ -62,10 +62,8 @@ const ActivityAddDrawer = (props) => {
   const [offSet, setOffSet] = useState(0);
   const [showDynamicfilters, setShowDynamicfilters] = useState(false);
   const itineraryFilters = useSelector((state) => state.ItineraryFilters);
-  const num_adults = itineraryFilters.occupancies.reduce(
-    (sum, item) => sum + item.num_adults,
-    0
-  );
+  const itinerary=useSelector((state)=>state.Itinerary)
+  const num_adults = itinerary.number_of_adults
   const [filterState, setFilterState] = useState({
     recommended_only: false,
     rating: ["All"],
@@ -85,8 +83,8 @@ const ActivityAddDrawer = (props) => {
     guide: [],
   });
   const [pax, setPax] = useState({
-    adults: 1,
-    children: 0,
+    adults: itinerary.number_of_adults,
+    children: itinerary.number_of_children,
   });
   const [showPax, setShowPax] = useState(false);
   const prevPaxRef = useRef(pax);
