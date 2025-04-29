@@ -39,6 +39,7 @@ import { MdDirectionsTransit, MdLocalTaxi } from "react-icons/md";
 import { PulseLoader } from "react-spinners";
 import dayjs from "dayjs";
 import { updateSingleTransferBooking } from "../../../store/actions/transferBookingsStore";
+import BackArrow from "../../ui/BackArrow";
 
 const ClippathComp = styled.div`
   clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 95% 50%, 100% 0%);
@@ -92,6 +93,7 @@ const TransferEditDrawer = (props) => {
     destination_itinerary_city_id,
     originCityId,
     destinationCityId,
+    _updateFlightBookingHandler,
   } = props;
 
   console.log("Originn", originCityId, destinationCityId);
@@ -115,9 +117,10 @@ const TransferEditDrawer = (props) => {
   const [showMercuryTransfer, setShowMercuryTransfer] = useState(false);
   const [selectedMercuryTransfer, setSelectedMercuryTransfer] = useState(null);
   const [currentStep, setCurrentStep] = useState(0);
-  const [currentModeDepartureDate,setCurrentModeDepartureDate] = useState(null);
-  const [currentModeDepartureTime,setCurrentModeDepartureTime] = useState(null)
-
+  const [currentModeDepartureDate, setCurrentModeDepartureDate] =
+    useState(null);
+  const [currentModeDepartureTime, setCurrentModeDepartureTime] =
+    useState(null);
 
   // console.log("SELECTED BOOKING",city,dcity,oCityData,dCityData,mercuryTransfer?.destination?.city_name);
 
@@ -236,12 +239,12 @@ const TransferEditDrawer = (props) => {
   };
 
   const handleSelect = (index, transfer, multimode, mode) => {
-    console.log("Inside handleSelect",transfer)
+    console.log("Inside handleSelect", transfer);
     if (!transfer) {
       setSelectedResult(null);
       return;
     }
-    console.log("STransfer", transfer,mode);
+    console.log("STransfer", transfer, mode);
     let selectedBookings = {
       ...selectedBooking,
       origin_iata: transfer?.source?.code,
@@ -305,7 +308,7 @@ const TransferEditDrawer = (props) => {
             mode: transfer.mode,
             transfer: transfer,
           });
-        //  setSelectedResult(null);
+          //  setSelectedResult(null);
         } else {
           // New selection
           setSelectedResult({
@@ -313,7 +316,7 @@ const TransferEditDrawer = (props) => {
             mode: transfer.mode,
             transfer: transfer,
           });
-        //  setShowOtherTrasfer(true)
+          //  setShowOtherTrasfer(true)
         }
         break;
     }
@@ -412,7 +415,6 @@ const TransferEditDrawer = (props) => {
     setTransferType(e.target.id);
   };
 
-  
   return (
     <Drawer
       show={showDrawer}
@@ -429,22 +431,15 @@ const TransferEditDrawer = (props) => {
         setShowOtherTrasfer(false);
       }}
     >
-      
       <div className="relative px-2 bg-white z-[900] flex flex-col gap-4 pt-4 pb-[100px] justify-start items-start mx-auto w-[98%] min-h-screen">
         <div className="flex flex-row gap-2 my-0 justify-start items-center">
           {currentStep === 0 ? (
             <>
-              <IoMdClose
-                size={20}
-                onClick={() => {
-                  setShowDrawer(false);
-                  setCurrentStep(0);
-                  setIsRouteSelected(false);
-                }}
-                className="hover-pointer"
-                style={{ fontSize: "2rem" }}
-              />{" "}
-              <IText>Back to Itinerary</IText>
+            <BackArrow handleClick={()=>{
+              setShowDrawer(false);
+              setCurrentStep(0);
+              setIsRouteSelected(false);
+            }}/>
             </>
           ) : (
             <>
@@ -653,7 +648,7 @@ const TransferEditDrawer = (props) => {
                             getPaymentHandler={props.getPaymentHandler}
                             _updatePaymentHandler={props._updatePaymentHandler}
                             _updateFlightBookingHandler={
-                              props._updateFlightBookingHandler
+                              _updateFlightBookingHandler
                             }
                             _updateBookingHandler={props._updateBookingHandler}
                             alternates={selectedBooking?.id}
@@ -670,6 +665,7 @@ const TransferEditDrawer = (props) => {
                             elementIndex={element_index}
                             routeId={routeId}
                             mercuryTransfer={selectedMercuryTransfer}
+                            mercury={mercuryTransfer}
                             individual={props?.individual}
                             originCityId={props?.originCityId}
                             destinationCityId={props?.destinationCityId}
@@ -685,11 +681,16 @@ const TransferEditDrawer = (props) => {
                             showDrawer={showDrawer}
                             origin={origin}
                             destination={destination}
-                            currentModeDepartureDate ={currentModeDepartureDate}
-                            setCurrentModeDepartureDate={setCurrentModeDepartureDate}
+                            city={city}
+                            dcity={dcity}
+                            currentModeDepartureDate={currentModeDepartureDate}
+                            setCurrentModeDepartureDate={
+                              setCurrentModeDepartureDate
+                            }
                             currentModeDepartureTime={currentModeDepartureTime}
-                            setCurrentModeDepartureTime={setCurrentModeDepartureTime}
-
+                            setCurrentModeDepartureTime={
+                              setCurrentModeDepartureTime
+                            }
                           />
                         </>
                       ) : (
@@ -697,79 +698,82 @@ const TransferEditDrawer = (props) => {
                           setSelectedMercuryTransfer={
                             setSelectedMercuryTransfer
                           }
-                            key={index}
-                            name={transfer?.name}
-                            transferIndex={index}
-                            transfer={transfer?.transfers}
-                            handleSelect={handleSelect}
-                            selectedResult={selectedResult}
-                            setSelectedResult={setSelectedResult}
-                            setCurrentStep={setCurrentStep}
-                            currentStep={currentStep}
-                            handleFlightSelect={handleSelectResult}
-                            showComboFlightModal={showComboFlightModal}
-                            setShowComboFlightModal={setShowComboFlightModal}
-                            setHideFlightModal={() =>
-                              setShowComboFlightModal(false)
-                            }
-                            hideDrawer={() => {
-                              setShowDrawer(false);
-                              setCurrentStep(0);
-                              setIsRouteSelected(false);
-                              setShowOtherTrasfer(false);
-                            }}
-                            setHideBookingModal={() =>
-                              setShowComboFlightModal(false)
-                            }
-                            showTaxiModal={showComboTaxiModal}
-                            setShowComboTaxiModal={setShowComboTaxiModal}
-                            // setHideBookingModal={() => setShowTaxiModal(false)}
-                            setHideTaxiModal={() =>
-                              setShowComboTaxiModal(false)
-                            }
-                            getPaymentHandler={props.getPaymentHandler}
-                            _updatePaymentHandler={props._updatePaymentHandler}
-                            _updateFlightBookingHandler={
-                              props._updateFlightBookingHandler
-                            }
-                            _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-                            _updateBookingHandler={props._updateBookingHandler}
-                            alternates={selectedBooking?.id}
-                            tailored_id={selectedBooking?.tailored_itinerary}
-                            // _updateFlightHandler={props._updateFlightHandler}
-                            selectedBooking={selectedBooking}
-                            itinerary_id={ItineraryId}
-                            selectedTransferHeading={selectedTransferHeading}
-                            fetchData={fetchData}
-                            setShowLoginModal={setShowLoginModal}
-                            check_in={check_in}
-                            _GetInTouch={props._GetInTouch}
-                            daySlabIndex={day_slab_index}
-                            elementIndex={element_index}
-                            routeId={routeId}
-                            mercuryTransfer={selectedMercuryTransfer}
-                            individual={props?.individual}
-                            originCityId={props?.originCityId}
-                            destinationCityId={props?.destinationCityId}
-                            token={props?.token}
-                            origin_itinerary_city_id={origin_itinerary_city_id}
-                            destination_itinerary_city_id={
-                              destination_itinerary_city_id
-                            }
-                            setShowDrawer={setShowDrawer}
-                            dCityData={dCityData}
-                            oCityData={oCityData}
-                            openNotification={openNotification}
-                            showDrawer={showDrawer}
-                            origin={origin}
-                            destination={destination}
-                            currentModeDepartureDate ={currentModeDepartureDate}
-                            setCurrentModeDepartureDate={setCurrentModeDepartureDate}
-                            currentModeDepartureTime={currentModeDepartureTime}
-                            setCurrentModeDepartureTime={setCurrentModeDepartureTime}
-                            showOtherTrasfer={showOtherTransfer}
-                            setShowOtherTrasfer={setShowOtherTrasfer}
-                            
+                          key={index}
+                          name={transfer?.name}
+                          transferIndex={index}
+                          transfer={transfer?.transfers}
+                          handleSelect={handleSelect}
+                          selectedResult={selectedResult}
+                          setSelectedResult={setSelectedResult}
+                          setCurrentStep={setCurrentStep}
+                          currentStep={currentStep}
+                          handleFlightSelect={handleSelectResult}
+                          showComboFlightModal={showComboFlightModal}
+                          setShowComboFlightModal={setShowComboFlightModal}
+                          setHideFlightModal={() =>
+                            setShowComboFlightModal(false)
+                          }
+                          hideDrawer={() => {
+                            setShowDrawer(false);
+                            setCurrentStep(0);
+                            setIsRouteSelected(false);
+                            setShowOtherTrasfer(false);
+                          }}
+                          setHideBookingModal={() =>
+                            setShowComboFlightModal(false)
+                          }
+                          showTaxiModal={showComboTaxiModal}
+                          setShowComboTaxiModal={setShowComboTaxiModal}
+                          // setHideBookingModal={() => setShowTaxiModal(false)}
+                          setHideTaxiModal={() => setShowComboTaxiModal(false)}
+                          getPaymentHandler={props.getPaymentHandler}
+                          _updatePaymentHandler={props._updatePaymentHandler}
+                          _updateFlightBookingHandler={
+                            _updateFlightBookingHandler
+                          }
+                          _updateTaxiBookingHandler={
+                            props._updateTaxiBookingHandler
+                          }
+                          _updateBookingHandler={props._updateBookingHandler}
+                          alternates={selectedBooking?.id}
+                          tailored_id={selectedBooking?.tailored_itinerary}
+                          // _updateFlightHandler={props._updateFlightHandler}
+                          selectedBooking={selectedBooking}
+                          itinerary_id={ItineraryId}
+                          selectedTransferHeading={selectedTransferHeading}
+                          fetchData={fetchData}
+                          setShowLoginModal={setShowLoginModal}
+                          check_in={check_in}
+                          _GetInTouch={props._GetInTouch}
+                          daySlabIndex={day_slab_index}
+                          elementIndex={element_index}
+                          routeId={routeId}
+                          mercuryTransfer={selectedMercuryTransfer}
+                          individual={props?.individual}
+                          originCityId={props?.originCityId}
+                          destinationCityId={props?.destinationCityId}
+                          token={props?.token}
+                          origin_itinerary_city_id={origin_itinerary_city_id}
+                          destination_itinerary_city_id={
+                            destination_itinerary_city_id
+                          }
+                          setShowDrawer={setShowDrawer}
+                          dCityData={dCityData}
+                          oCityData={oCityData}
+                          openNotification={openNotification}
+                          showDrawer={showDrawer}
+                          origin={origin}
+                          destination={destination}
+                          currentModeDepartureDate={currentModeDepartureDate}
+                          setCurrentModeDepartureDate={
+                            setCurrentModeDepartureDate
+                          }
+                          currentModeDepartureTime={currentModeDepartureTime}
+                          setCurrentModeDepartureTime={
+                            setCurrentModeDepartureTime
+                          }
+                          showOtherTrasfer={showOtherTransfer}
+                          setShowOtherTrasfer={setShowOtherTrasfer}
                         />
                       );
                     return (
@@ -1010,22 +1014,19 @@ const RouteContainer = (props) => {
     setShowOtherTrasfer,
     name,
     _updateTaxiBookingHandler,
-    hideDrawer
+    hideDrawer,
   } = props;
   const [viewMore, setViewMore] = useState(false);
   const [singleTransfer, setSingleTransfer] = useState(transfer[0]);
-  const [comboStartDate,setComboStartDate] = useState(null);
+  const [comboStartDate, setComboStartDate] = useState(null);
   const [comboStartTime, setComboStartTime] = useState(null);
-
 
   const handleViewMore = () => {
     setViewMore((prev) => !prev);
   };
 
- 
-
   const addDaysToDate = (dateString, numberOfDays) => {
-    const newDate = dayjs(dateString).add(numberOfDays, 'day');
+    const newDate = dayjs(dateString).add(numberOfDays, "day");
     return newDate.format("YYYY-MM-DD");
   };
 
@@ -1034,220 +1035,230 @@ const RouteContainer = (props) => {
     setShowComboFlightModal(false);
     setShowComboTaxiModal(false);
     setShowOtherTrasfer(false);
-  
+
     const currentTransfer = transfer[currentStep - 1];
 
- 
     const baseStartDate = selectedBooking?.check_in
       ? dayjs(selectedBooking?.check_in).format("YYYY-MM-DD")
-      : dCityData?.start_date ?? (
-        oCityData?.start_date && oCityData?.duration != null
+      : dCityData?.start_date ??
+        (oCityData?.start_date && oCityData?.duration != null
           ? addDaysToDate(oCityData.start_date, oCityData.duration)
-          : null
-      );
-  
-      console.log("Start Dtae",selectedBooking,selectedBooking?.check_in,dCityData?.start_date,oCityData.start_date, oCityData.duration,baseStartDate)
+          : null);
+
+    console.log(
+      "Start Dtae",
+      selectedBooking,
+      selectedBooking?.check_in,
+      dCityData?.start_date,
+      oCityData.start_date,
+      oCityData.duration,
+      baseStartDate
+    );
     let calculatedStartTime;
-  
+
     if (currentStep === 1) {
       calculatedStartTime = dayjs(`${baseStartDate} 12:00`);
     } else {
       const prevSelected = selectedData[currentStep - 2];
       const prevArrivalTime = prevSelected?.arrival_time;
-  
+
       if (prevArrivalTime) {
-        let arrivalMoment = dayjs(prevArrivalTime); 
-        calculatedStartTime = arrivalMoment.add(1, 'hour'); 
+        let arrivalMoment = dayjs(prevArrivalTime);
+        calculatedStartTime = arrivalMoment.add(1, "hour");
         const updatedStartDate = calculatedStartTime.format("YYYY-MM-DD");
         setComboStartDate(updatedStartDate);
       } else {
         calculatedStartTime = dayjs(`${baseStartDate} 12:00`);
       }
     }
-    setCurrentModeDepartureDate(calculatedStartTime.format("YYYY-MM-DD"))
-    setComboStartDate(calculatedStartTime.format("YYYY-MM-DD"))
+    setCurrentModeDepartureDate(calculatedStartTime.format("YYYY-MM-DD"));
+    setComboStartDate(calculatedStartTime.format("YYYY-MM-DD"));
     setComboStartTime(calculatedStartTime.format("HH:mm"));
-    setCurrentModeDepartureTime(calculatedStartTime.format("HH:mm"))
-  
+    setCurrentModeDepartureTime(calculatedStartTime.format("HH:mm"));
+
     if (["Flight", "Taxi"].includes(currentTransfer.mode)) {
-        handleSelect(currentStep - 1, currentTransfer, "", currentTransfer.mode);
-  
-        if (currentTransfer.mode === "Flight") {
-          setShowComboFlightModal(true);
-          
-        }
-  
-        if (currentTransfer.mode === "Taxi") {
-         setShowComboTaxiModal(true);
-        }
+      handleSelect(currentStep - 1, currentTransfer, "", currentTransfer.mode);
+
+      if (currentTransfer.mode === "Flight") {
+        setShowComboFlightModal(true);
       }
-     else {
-        handleSelect(currentStep - 1, currentTransfer, "", currentTransfer.mode);
-       setShowOtherTrasfer(true);
+
+      if (currentTransfer.mode === "Taxi") {
+        setShowComboTaxiModal(true);
       }
+    } else {
+      handleSelect(currentStep - 1, currentTransfer, "", currentTransfer.mode);
+      setShowOtherTrasfer(true);
     }
-  , [currentStep, transfer]);
+  }, [currentStep, transfer]);
 
   const totalDistance = transfer.reduce((sum, t) => sum + (t.distance || 0), 0);
 
   return (
     <>
-    <div
-      className={ ` ${transfer?.length > 1 ? `w-full flex flex-col gap-0 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm ${
-        transferIndex === 0 && transfer[0]?.isSelected
-          ? "border-yellow-300"
-          : ""
-      } border-x-2 border-t-2 border-b-4` : "w-full"}`}
-    >
-      {transfer[0]?.recommended && (
-        <ClippathComp className="text-sm font-semibold bg-[#F7E700] text-#090909 pl-2 pr-2 py-1 -ml-4 -mt-4 rounded-tl-2xl">
-          Recommended
-        </ClippathComp>
-      )}
-
-      {selectedResult &&
-        selectedResult.trace_id &&
-        selectedResult.transferIndex === transferIndex && (
-          <div className="text-sm text-green-900 pb-1">
-            {selectedResult.mode} Selected
-          </div>
+      <div
+        className={` ${
+          transfer?.length > 1
+            ? `w-full flex flex-col gap-0 items-start rounded-2xl py-3 px-3 pl-2 shadow-sm ${
+                transferIndex === 0 && transfer[0]?.isSelected
+                  ? "border-yellow-300"
+                  : ""
+              } border-x-2 border-t-2 border-b-4`
+            : "w-full"
+        }`}
+      >
+        {transfer[0]?.recommended && (
+          <ClippathComp className="text-sm font-semibold bg-[#F7E700] text-#090909 pl-2 pr-2 py-1 -ml-4 -mt-4 rounded-tl-2xl">
+            Recommended
+          </ClippathComp>
         )}
 
-      {transfer.length > 1 ? (
-        viewMore ? (
-          <div className="w-full flex flex-col items-center justify-center">
-            <MultiModeContainer
-              transferIndex={transferIndex}
-              transfer={transfer}
-              handleSelect={handleSelect}
-            />
-            <ViewMoreButton
-              viewMore={viewMore}
-              handleViewMore={handleViewMore}
-            />
-          </div>
+        {selectedResult &&
+          selectedResult.trace_id &&
+          selectedResult.transferIndex === transferIndex && (
+            <div className="text-sm text-green-900 pb-1">
+              {selectedResult.mode} Selected
+            </div>
+          )}
+
+        {transfer.length > 1 ? (
+          viewMore ? (
+            <div className="w-full flex flex-col items-center justify-center">
+              <MultiModeContainer
+                transferIndex={transferIndex}
+                transfer={transfer}
+                handleSelect={handleSelect}
+              />
+              <ViewMoreButton
+                viewMore={viewMore}
+                handleViewMore={handleViewMore}
+              />
+            </div>
+          ) : (
+            <div className="w-full flex flex-col items-center justify-center">
+              <MultiRoute
+                transferIndex={transferIndex}
+                transfer={singleTransfer}
+                handleSelect={handleSelect}
+                setViewMore={setViewMore}
+              />
+              <ViewMoreButton
+                viewMore={viewMore}
+                handleViewMore={handleViewMore}
+              />
+            </div>
+          )
         ) : (
-          <div className="w-full flex flex-col items-center justify-center">
-            <MultiRoute
-              transferIndex={transferIndex}
-              transfer={singleTransfer}
-              handleSelect={handleSelect}
-              setViewMore={setViewMore}
-            />
-            <ViewMoreButton
-              viewMore={viewMore}
-              handleViewMore={handleViewMore}
-            />
-          </div>
-        )
-      ) : (
-        <>
-        {console.log("current step is:", currentStep)}
-        { (
-        <div
-          className="w-full flex justify-between items-center p-2 md:p-3 cursor-pointer shadow-md"
-          onClick={() => setCurrentStep(1)}
-        >
-          <div className="text-sm md:text-base">
-            <span className="font-medium">
-              {/* {sequencedModes.join(", ")} */}
-              {name}  </span>
-            <p className="font-normal">
-              {Math.ceil(
-                transfer.reduce((sum, t) => sum + (t.duration || 0), 0) / 60
-              )}{" "}
-              hours | {totalDistance} kms
-            </p>
-          </div>
-          <AiOutlineRight size={16} className="md:text-20" />
-        </div>
-      )}
-      {currentStep ===1 ?
-        
-        (singleTransfer?.mode === "Flight") ?
-            <ComboFlight
-              handleFlightSelect={handleFlightSelect}
-              showComboFlightModal={showComboFlightModal}
-              setShowComboFlightModal={setShowComboFlightModal}
-              setHideFlightModal={hideDrawer}
-              setHideBookingModal={setHideBookingModal}
-              getPaymentHandler={getPaymentHandler}
-              _updatePaymentHandler={_updatePaymentHandler}
-              _updateFlightBookingHandler={_updateFlightBookingHandler}
-              _updateBookingHandler={_updateBookingHandler}
-              alternates={alternates}
-              tailored_id={tailored_id}
-              selectedBooking={selectedBooking}
-              itinerary_id={itinerary_id}
-              selectedTransferHeading={selectedTransferHeading}
-              fetchData={fetchData}
-              setShowLoginModal={setShowLoginModal}
-              check_in={check_in}
-              _GetInTouch={_GetInTouch}
-              daySlabIndex={daySlabIndex}
-              elementIndex={elementIndex}
-              routeId={routeId}
-              mercuryTransfer={mercuryTransfer}
-              individual={individual}
-              originCityId={originCityId}
-              destinationCityId={destinationCityId}
-              isSingleTransfer={true}
-              comboStartDate={currentModeDepartureDate}
-              comboStartTime={currentModeDepartureTime}
-              source_code={singleTransfer?.source?.code}
-              destination_code={singleTransfer?.destination?.code}
-            />
-        :
-        (singleTransfer?.mode === "Taxi") ?
-            <ComboTaxi
-              handleFlightSelect={handleFlightSelect}
-              showTaxiModal={showTaxiModal}
-              setShowComboTaxiModal={setShowComboTaxiModal}
-              setHideTaxiModal={hideDrawer}
-              setHideBookingModal={setHideBookingModal}
-              getPaymentHandler={getPaymentHandler}
-              _updatePaymentHandler={_updatePaymentHandler}
-              _updateFlightBookingHandler={_updateFlightBookingHandler}
-              _updateBookingHandler={_updateBookingHandler}
-              alternates={alternates}
-              tailored_id={tailored_id}
-              selectedBooking={selectedBooking}
-              itinerary_id={itinerary_id}
-              selectedTransferHeading={selectedTransferHeading}
-              fetchData={fetchData}
-              setShowLoginModal={setShowLoginModal}
-              check_in={check_in}
-              _GetInTouch={_GetInTouch}
-              daySlabIndex={daySlabIndex}
-              elementIndex={elementIndex}
-              routeId={routeId}
-              mercuryTransfer={mercuryTransfer}
-              individual={individual}
-              originCityId={originCityId}
-              destinationCityId={destinationCityId}
-              comboStartDate={currentModeDepartureDate}
-              comboStartTime={currentModeDepartureTime}
-             _updateTaxiBookingHandler={_updateTaxiBookingHandler}
-            />
-        :
-        <OtherTransfer
-        showOtherTransfer={showOtherTrasfer}
-        setShowOtherTrasfer={setShowOtherTrasfer}
-        selectedResult={selectedResult}
-        selectedBooking={selectedBooking}
-        setSelectedResult={setSelectedResult}
-        number_of_travellers={
-          props?.plan?.number_of_adults +
-          props?.plan?.number_of_children
-        }
-        check_in={check_in}
-        mercuryTransfer={mercuryTransfer}
-        currentStep={currentStep}
-        currentModeDepartureDate={currentModeDepartureDate}
-        currentModeDepartureTime={currentModeDepartureTime}
-      />
-      : ""}
-        {/* <div className="flex flex-row gap-2 w-full">
+          <>
+            {console.log("current step is:", currentStep)}
+            {
+              <div
+                className="w-full flex justify-between items-center p-2 md:p-3 cursor-pointer shadow-md"
+                onClick={() => setCurrentStep(1)}
+              >
+                <div className="text-sm md:text-base">
+                  <span className="font-medium">
+                    {/* {sequencedModes.join(", ")} */}
+                    {name}{" "}
+                  </span>
+                  <p className="font-normal">
+                    {Math.ceil(
+                      transfer.reduce((sum, t) => sum + (t.duration || 0), 0) /
+                        60
+                    )}{" "}
+                    hours | {totalDistance} kms
+                  </p>
+                </div>
+                <AiOutlineRight size={16} className="md:text-20" />
+              </div>
+            }
+            {currentStep === 1 ? (
+              singleTransfer?.mode === "Flight" ? (
+                <ComboFlight
+                  handleFlightSelect={handleFlightSelect}
+                  showComboFlightModal={showComboFlightModal}
+                  setShowComboFlightModal={setShowComboFlightModal}
+                  setHideFlightModal={hideDrawer}
+                  setHideBookingModal={setHideBookingModal}
+                  getPaymentHandler={getPaymentHandler}
+                  _updatePaymentHandler={_updatePaymentHandler}
+                  _updateFlightBookingHandler={_updateFlightBookingHandler}
+                  _updateBookingHandler={_updateBookingHandler}
+                  alternates={alternates}
+                  tailored_id={tailored_id}
+                  selectedBooking={selectedBooking}
+                  itinerary_id={itinerary_id}
+                  selectedTransferHeading={selectedTransferHeading}
+                  fetchData={fetchData}
+                  setShowLoginModal={setShowLoginModal}
+                  check_in={check_in}
+                  _GetInTouch={_GetInTouch}
+                  daySlabIndex={daySlabIndex}
+                  elementIndex={elementIndex}
+                  routeId={routeId}
+                  mercuryTransfer={mercuryTransfer}
+                  individual={individual}
+                  originCityId={originCityId}
+                  destinationCityId={destinationCityId}
+                  isSingleTransfer={true}
+                  comboStartDate={currentModeDepartureDate}
+                  comboStartTime={currentModeDepartureTime}
+                  source_code={singleTransfer?.source?.code}
+                  destination_code={singleTransfer?.destination?.code}
+                />
+              ) : singleTransfer?.mode === "Taxi" ? (
+                <ComboTaxi
+                  handleFlightSelect={handleFlightSelect}
+                  showTaxiModal={showTaxiModal}
+                  setShowComboTaxiModal={setShowComboTaxiModal}
+                  setHideTaxiModal={hideDrawer}
+                  setHideBookingModal={setHideBookingModal}
+                  getPaymentHandler={getPaymentHandler}
+                  _updatePaymentHandler={_updatePaymentHandler}
+                  _updateFlightBookingHandler={_updateFlightBookingHandler}
+                  _updateBookingHandler={_updateBookingHandler}
+                  alternates={alternates}
+                  tailored_id={tailored_id}
+                  selectedBooking={selectedBooking}
+                  itinerary_id={itinerary_id}
+                  selectedTransferHeading={selectedTransferHeading}
+                  fetchData={fetchData}
+                  setShowLoginModal={setShowLoginModal}
+                  check_in={check_in}
+                  _GetInTouch={_GetInTouch}
+                  daySlabIndex={daySlabIndex}
+                  elementIndex={elementIndex}
+                  routeId={routeId}
+                  mercuryTransfer={mercuryTransfer}
+                  individual={individual}
+                  originCityId={originCityId}
+                  destinationCityId={destinationCityId}
+                  comboStartDate={currentModeDepartureDate}
+                  comboStartTime={currentModeDepartureTime}
+                  _updateTaxiBookingHandler={_updateTaxiBookingHandler}
+                />
+              ) : (
+                <OtherTransfer
+                  showOtherTransfer={showOtherTrasfer}
+                  setShowOtherTrasfer={setShowOtherTrasfer}
+                  selectedResult={selectedResult}
+                  selectedBooking={selectedBooking}
+                  setSelectedResult={setSelectedResult}
+                  number_of_travellers={
+                    props?.plan?.number_of_adults +
+                    props?.plan?.number_of_children
+                  }
+                  check_in={check_in}
+                  mercuryTransfer={mercuryTransfer}
+                  currentStep={currentStep}
+                  currentModeDepartureDate={currentModeDepartureDate}
+                  currentModeDepartureTime={currentModeDepartureTime}
+                />
+              )
+            ) : (
+              ""
+            )}
+            {/* <div className="flex flex-row gap-2 w-full">
           <div
             className={`w-[80px] h-[70px] px-2 bg-gray-100 rounded-xl flex items-center justify-center`}
           >
@@ -1266,9 +1277,9 @@ const RouteContainer = (props) => {
               <TransferItem transfer={singleTransfer} />
               <div className="flex flex-col gap-2 items-end">
                 <EstimatedCost cost={singleTransfer?.prices[0]?.price} /> */}
-                {/* {
+            {/* {
                 singleTransfer?.mode === "Bus" || singleTransfer?.mode === "Train" || singleTransfer?.mode === "Ferry" || singleTransfer?.mode === "Car" ? <MercurySelectButton transfer={singleTransfer} setShowMercuryTransfer={props?.setShowMercuryTransfer} setSelectedMercuryTransfer={props?.setSelectedMercuryTransfer}/>: */}
-                {/* <SelectButton
+            {/* <SelectButton
                   transfer={singleTransfer}
                   transferIndex={transferIndex}
                   handleSelect={handleSelect}
@@ -1276,14 +1287,14 @@ const RouteContainer = (props) => {
                   isRouteSelected={isRouteSelected}
                   setIsRouteSelected={setIsRouteSelected}
                 /> */}
-                {/* } */}
-              {/* </div>
+            {/* } */}
+            {/* </div>
             </div>
           </div>
         </div> */}
-        </>
-      )}
-    </div>
+          </>
+        )}
+      </div>
     </>
   );
 };
@@ -1350,6 +1361,9 @@ export const getModeIcon = (mode, size = 20) => {
 const NewMultiModeContainer = ({
   transferIndex,
   name,
+  city,
+  dcity,
+  mercury,
   transfer,
   handleSelect,
   selectedResult,
@@ -1393,9 +1407,9 @@ const NewMultiModeContainer = ({
   origin,
   destination,
   currentModeDepartureDate,
- setCurrentModeDepartureDate,
-                            currentModeDepartureTime,
-                            setCurrentModeDepartureTime,
+  setCurrentModeDepartureDate,
+  currentModeDepartureTime,
+  setCurrentModeDepartureTime,
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [selectedModeIds, setSelectedModeIds] = useState({});
@@ -1410,7 +1424,7 @@ const NewMultiModeContainer = ({
   const [skipFlightFetch, setSkipFlightFetch] = useState(false);
   const [skipTaxiFetch, setSkipTaxiFetch] = useState(false);
   const [hasAppliedFilters, setHasAppliedFilters] = useState(false);
-  
+
   const sequencedModes = transfer.map((t) => t.mode);
 
   console.log("Selected Data", selectedData);
@@ -1677,7 +1691,7 @@ const NewMultiModeContainer = ({
         setShowDrawer(false);
 
         openNotification({
-          text: `Transfer from ${origin} to ${destination} has been updated successfully!`,
+          text: `Transfer from ${city || mercury?.source?.city_name} to ${dcity || mercury?.destination?.city_name} has been updated successfully!`,
           heading: "Success!",
           type: "success",
         });
@@ -1698,56 +1712,67 @@ const NewMultiModeContainer = ({
   };
 
   const addDaysToDate = (dateString, numberOfDays) => {
-    const newDate = dayjs(dateString).add(numberOfDays, 'day');
+    const newDate = dayjs(dateString).add(numberOfDays, "day");
     return newDate.format("YYYY-MM-DD");
   };
 
   useEffect(() => {
     if (currentStep < 1 || currentStep > transfer.length) return;
-  
+
     const currentTransfer = transfer[currentStep - 1];
 
- 
     const baseStartDate = selectedBooking?.check_in
       ? dayjs(selectedBooking?.check_in).format("YYYY-MM-DD")
-      : dCityData?.start_date ?? (
-        oCityData?.start_date && oCityData?.duration != null
+      : dCityData?.start_date ??
+        (oCityData?.start_date && oCityData?.duration != null
           ? addDaysToDate(oCityData.start_date, oCityData.duration)
-          : null
-      );
-  
-      console.log("Start Dtae",selectedBooking,selectedBooking?.check_in,dCityData?.start_date,oCityData.start_date, oCityData.duration,baseStartDate)
+          : null);
+
+    console.log(
+      "Start Dtae",
+      selectedBooking,
+      selectedBooking?.check_in,
+      dCityData?.start_date,
+      oCityData.start_date,
+      oCityData.duration,
+      baseStartDate
+    );
     let calculatedStartTime;
-  
+
     if (currentStep === 1) {
       calculatedStartTime = dayjs(`${baseStartDate} 12:00`);
     } else {
       const prevSelected = selectedData[currentStep - 2];
       const prevArrivalTime = prevSelected?.arrival_time;
-  
+
       if (prevArrivalTime) {
-        let arrivalMoment = dayjs(prevArrivalTime); 
-        calculatedStartTime = arrivalMoment.add(1, 'hour'); 
+        let arrivalMoment = dayjs(prevArrivalTime);
+        calculatedStartTime = arrivalMoment.add(1, "hour");
         const updatedStartDate = calculatedStartTime.format("YYYY-MM-DD");
         setComboStartDate(updatedStartDate);
       } else {
         calculatedStartTime = dayjs(`${baseStartDate} 12:00`);
       }
     }
-    setCurrentModeDepartureDate(calculatedStartTime.format("YYYY-MM-DD"))
-    setComboStartDate(calculatedStartTime.format("YYYY-MM-DD"))
+    setCurrentModeDepartureDate(calculatedStartTime.format("YYYY-MM-DD"));
+    setComboStartDate(calculatedStartTime.format("YYYY-MM-DD"));
     setComboStartTime(calculatedStartTime.format("HH:mm"));
-    setCurrentModeDepartureTime(calculatedStartTime.format("HH:mm"))
-  
+    setCurrentModeDepartureTime(calculatedStartTime.format("HH:mm"));
+
     if (["Flight", "Taxi"].includes(currentTransfer.mode)) {
       if (!selectedModeIds[currentStep - 1]) {
-        handleSelect(currentStep - 1, currentTransfer, "", currentTransfer.mode);
-  
+        handleSelect(
+          currentStep - 1,
+          currentTransfer,
+          "",
+          currentTransfer.mode
+        );
+
         if (currentTransfer.mode === "Flight") {
           if (!skipFlightFetch) setShowComboFlightModal(true);
           else setSkipFlightFetch(false);
         }
-  
+
         if (currentTransfer.mode === "Taxi") {
           if (!skipTaxiFetch) setShowComboTaxiModal(true);
           else setSkipTaxiFetch(false);
@@ -1759,7 +1784,6 @@ const NewMultiModeContainer = ({
       }
     }
   }, [currentStep, transfer]);
-  
 
   return (
     <div className="w-full bg-white">
@@ -1795,7 +1819,8 @@ const NewMultiModeContainer = ({
           <div className="text-sm md:text-base">
             <span className="font-medium">
               {/* {sequencedModes.join(", ")} */}
-              {name}  </span>
+              {name}{" "}
+            </span>
             <p className="font-normal">
               {Math.ceil(
                 transfer.reduce((sum, t) => sum + (t.duration || 0), 0) / 60
@@ -1879,7 +1904,7 @@ const NewMultiModeContainer = ({
               </span>
 
               <span className="text-green-600 font-medium text-sm z-10  pl-3">
-              {transfer[currentStep - 1]?.destination?.city_name}
+                {transfer[currentStep - 1]?.destination?.city_name}
               </span>
             </div>
 
@@ -1968,116 +1993,123 @@ const NewMultiModeContainer = ({
                         onSelect={handleTaxiSelection}
                         comboStartDate={comboStartDate}
                         comboStartTime={comboStartTime}
-                       // skipFetch={skipTaxiFetch}
+                        // skipFetch={skipTaxiFetch}
                         onFilterApplied={handleFilterApplied}
                       />
                     );
                   }
 
                   if (option.prices && option.prices.length > 0) {
-                    return option.prices.map((priceOption, priceIndex) => {
-                      const price = priceOption.price || 0;
-                      const currency = priceOption.currency === "INR" ?  "₹" : priceOption.currency;
-                      const priceOptionId = `${option.id}-${priceIndex}`;
-
-                      return (
-                        <>
-
-<div className="p-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
-                          <div className="mb-2 sm:mb-0">
-                            <span className="text-sm text-gray-600">Departure Date: </span>
-                            <span className="font-semibold">
-                              {currentModeDepartureDate}
-                            </span>
-                          </div>
-              
-                          <div className="time-dropdown-container relative w-full sm:w-auto">
-                            <div
-                              className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
-                              onClick={() => setShowTimeDropdown(!showTimeDropdown)}
-                            >
-                              <span className="text-sm font-medium">
-                                Departure Time:{" "}
-                                {currentModeDepartureTime}
+                    return (
+                      <>
+                        <div className="p-4">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
+                            <div className="mb-2 sm:mb-0">
+                              <span className="text-sm text-gray-600">
+                                Departure Date:{" "}
+                              </span>
+                              <span className="font-semibold">
+                                {currentModeDepartureDate}
                               </span>
                             </div>
-              
-                            
-                          </div>
-                        </div>
-                        </div>
-                        <div
-                          key={`${option.id}-price-${priceIndex}`}
-                          className={`flex flex-col md:flex-row justify-between bg-white p-3 md:p-4 border-b
-                          `}
-                        >
-                          <div className="flex gap-2 md:gap-3 mb-2 md:mb-0">
-                            <div className="text-gray-500 mt-1">
-                              {getModeIcon(option.mode)}
-                            </div>
-                            <div>
-                              <div className="font-semibold text-sm md:text-base">
-                                {option.text}{" "}
-                                {priceOption.name
-                                  ? `- ${priceOption.name}`
-                                  : ""}
+
+                            <div className="time-dropdown-container relative w-full sm:w-auto">
+                              <div
+                                className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
+                                onClick={() =>
+                                  setShowTimeDropdown(!showTimeDropdown)
+                                }
+                              >
+                                <span className="text-sm font-medium">
+                                  Departure Time: {currentModeDepartureTime}
+                                </span>
                               </div>
-                              <div className="text-xs md:text-sm text-gray-600">
-                              {Math.floor(option?.duration/60) + "-" + Math.ceil(option?.duration / 60)} hours | {option.distance}{" "}
-                                kms
-                              </div>
-                              <div className="text-xs md:text-sm">
-                                <span className="font-semibold">Facilities:</span>{" "}
-                                {priceOption?.class} {" "}
-                                {/* <span className="font-semibold">To:</span>{" "}
-                                {option.destination.name} */}
-                              </div>
-                              {priceOption.description && (
-                                <div className="text-xs md:text-sm text-gray-700 mt-1">
-                                  {priceOption.description}
-                                </div>
-                              )}
                             </div>
                           </div>
-                          <div className="flex flex-row md:flex-row gap-2 items-center md:items-end justify-between">
-                            <div className="font-semibold text-sm md:text-base">
-                              {currency} {price}
-                            </div>
+                        </div>
+
+                        {option.prices.map((priceOption, priceIndex) => {
+                          const price = priceOption.price || 0;
+                          const currency =
+                            priceOption.currency === "INR"
+                              ? "₹"
+                              : priceOption.currency;
+                          const priceOptionId = `${option.id}-${priceIndex}`;
+
+                          return (
                             <div
-                              className="cursor-pointer"
-                              onClick={() => {
-                                // Pass the price data along with the selection
-                                const selectedPriceData = {
-                                  ...option,
-                                  selectedPrice: priceOption,
-                                };
-                                handleModeSelect(
-                                  currentStep - 1,
-                                  priceOptionId,
-                                  selectedPriceData,
-                                  option.mode
-                                );
-                              }}
+                              key={`${option.id}-price-${priceIndex}`}
+                              className="flex flex-col md:flex-row justify-between bg-white p-3 md:p-4 border-b"
                             >
-                              {selectedModeIds[currentStep - 1] ===
-                              priceOptionId ? (
-                                <div className="flex items-center gap-1">
-                                  <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
-                                  <span className="text-sm">Selected</span>
+                              <div className="flex gap-2 md:gap-3 mb-2 md:mb-0">
+                                <div className="text-gray-500 mt-1">
+                                  {getModeIcon(option.mode)}
                                 </div>
-                              ) : (
-                                <div className="flex items-center gap-1">
-                                  <ImCheckboxUnchecked className="h-4 w-4 md:h-5 md:w-5" />
-                                  <span className="text-sm">Select</span>
+                                <div>
+                                  <div className="font-semibold text-sm md:text-base">
+                                    {option.text}{" "}
+                                    {priceOption.name
+                                      ? `- ${priceOption.name}`
+                                      : ""}
+                                  </div>
+                                  <div className="text-xs md:text-sm text-gray-600">
+                                    {Math.floor(option?.duration / 60) +
+                                      "-" +
+                                      Math.ceil(option?.duration / 60)}{" "}
+                                    hours | {option.distance} kms
+                                  </div>
+                                  <div className="text-xs md:text-sm">
+                                    <span className="font-semibold">
+                                      Facilities:
+                                    </span>{" "}
+                                    {priceOption?.class}
+                                  </div>
+                                  {priceOption.description && (
+                                    <div className="text-xs md:text-sm text-gray-700 mt-1">
+                                      {priceOption.description}
+                                    </div>
+                                  )}
                                 </div>
-                              )}
+                              </div>
+
+                              <div className="flex flex-col md:flex-col gap-2 items-center md:items-center justify-center">
+                                <div className="font-semibold text-sm md:text-base">
+                                  {currency} {price}
+                                </div>
+                                <div
+                                  className="cursor-pointer"
+                                  onClick={() => {
+                                    const selectedPriceData = {
+                                      ...option,
+                                      selectedPrice: priceOption,
+                                    };
+                                    handleModeSelect(
+                                      currentStep - 1,
+                                      priceOptionId,
+                                      selectedPriceData,
+                                      option.mode
+                                    );
+                                  }}
+                                >
+                                  {selectedModeIds[currentStep - 1] ===
+                                  priceOptionId ? (
+                                    <div className="flex items-center gap-1">
+                                      <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
+                                      <span className="text-sm">Selected</span>
+                                    </div>
+                                  ) : (
+                                    <div className="flex items-center gap-1">
+                                      <ImCheckboxUnchecked className="h-4 w-4 md:h-5 md:w-5" />
+                                      <span className="text-sm">Select</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                        </>
-                      );
-                    });
+                          );
+                        })}
+                      </>
+                    );
                   } else {
                     return (
                       <div
@@ -2173,29 +2205,27 @@ const NewMultiModeContainer = ({
                       <button
                         onClick={handleUpdateTransfer}
                         className={`px-6 md:px-8 py-2 rounded-md font-medium text-sm md:text-base w-full md:w-auto relative
-                        ${
-                          Object.keys(selectedModeIds).length === totalSteps
-                            ? "bg-black text-white"
-                            : "bg-gray-200 text-gray-500 cursor-not-allowed"
-                        }`}
+  ${
+    Object.keys(selectedModeIds).length === totalSteps
+      ? "bg-black text-white"
+      : "bg-gray-200 text-gray-500 cursor-not-allowed"
+  }`}
                         disabled={
                           Object.keys(selectedModeIds).length !== totalSteps ||
                           updateLoading
                         }
                       >
-                        {updateLoading ? (
-                          <PulseLoader
-                            size={15}
-                            speedMultiplier={0.6}
-                            color="#FFFFFF"
-                            cssOverride={{
-                              display: "flex",
-                              justifyContent: "center",
-                            }}
-                          />
-                        ) : (
-                          "Update Transfer"
-                        )}
+                        <div className="flex items-center justify-center min-w-[140px]">
+                          {updateLoading ? (
+                            <PulseLoader
+                              size={15}
+                              speedMultiplier={0.6}
+                              color="#FFFFFF"
+                            />
+                          ) : (
+                            "Update Transfer"
+                          )}
+                        </div>
                       </button>
                     </div>
                   )}
@@ -3128,18 +3158,18 @@ const OtherTransfer = ({
   mercuryTransfer,
   currentModeDepartureDate,
   currentModeDepartureTime,
-  selectedBooking
+  selectedBooking,
 }) => {
   const ref = useRef(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [otherTransfer, setOtherTransfer] = useState(null);
   const [traceId, setTraceId] = useState(null);
-  const [isSelected, setIsSelected] =useState(false)
+  const [isSelected, setIsSelected] = useState(false);
   useEffect(() => {
-    console.log("Result",selectedResult?.transfer)
+    console.log("Result", selectedResult?.transfer);
     setSelectedResult(selectedResult);
-  getOtherTrasfer(selectedResult?.transfer);
+    getOtherTrasfer(selectedResult?.transfer);
   }, []);
 
   const handleClose = (e) => {
@@ -3167,96 +3197,98 @@ const OtherTransfer = ({
   };
 
   return (
-      <Container>
-          {otherTransfer && 
-           (otherTransfer.prices && otherTransfer.prices.length > 0) &&
-             otherTransfer.prices.map((priceOption, priceIndex) => {
-              const price = priceOption.price || 0;
-              const currency = priceOption.currency === "INR" ?  "₹" : priceOption.currency;
-              const priceOptionId = `${otherTransfer.id}-${priceIndex}`;
+    <Container>
+      <div className="w-full">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
+          <div className="mb-2 sm:mb-0">
+            <span className="text-sm text-gray-600">Departure Date: </span>
+            <span className="font-semibold">{currentModeDepartureDate}</span>
+          </div>
 
-              return (
-                <>
+          <div className="time-dropdown-container relative w-full sm:w-auto">
+            <div
+              className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
+              // onClick={() => setShowTimeDropdown(!showTimeDropdown)}
+            >
+              <span className="text-sm font-medium">
+                Departure Time: {currentModeDepartureTime}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {otherTransfer &&
+        otherTransfer.prices &&
+        otherTransfer.prices.length > 0 &&
+        otherTransfer.prices.map((priceOption, priceIndex) => {
+          const price = priceOption.price || 0;
+          const currency =
+            priceOption.currency === "INR" ? "₹" : priceOption.currency;
+          const priceOptionId = `${otherTransfer.id}-${priceIndex}`;
 
-<div className="w-full">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
-                  <div className="mb-2 sm:mb-0">
-                    <span className="text-sm text-gray-600">Departure Date: </span>
-                    <span className="font-semibold">
-                      {currentModeDepartureDate}
-                    </span>
-                  </div>
-      
-                  <div className="time-dropdown-container relative w-full sm:w-auto">
-                    <div
-                      className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
-                      // onClick={() => setShowTimeDropdown(!showTimeDropdown)}
-                    >
-                      <span className="text-sm font-medium">
-                        Departure Time:{" "}
-                        {currentModeDepartureTime}
-                      </span>
-                    </div>
-      
-                    
-                  </div>
-                </div>
-                </div>
-                <div
-                  key={`${otherTransfer.id}-price-${priceIndex}`}
-                  className={`flex flex-col md:flex-row justify-between bg-white p-3 md:p-4 border-b
+          return (
+            <>
+              <div
+                key={`${otherTransfer.id}-price-${priceIndex}`}
+                className={`flex w-full flex-col md:flex-row justify-between bg-white p-3 md:p-4 border-b
                   `}
-                >
-                  <div className="flex gap-2 md:gap-3 mb-2 md:mb-0">
-                    <div className="text-gray-500 mt-1">
-                      {getModeIcon(otherTransfer.mode)}
+              >
+                <div className="flex gap-2 md:gap-3 mb-2 md:mb-0">
+                  <div className="text-gray-500 mt-1">
+                    {getModeIcon(otherTransfer.mode)}
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm md:text-base">
+                      {otherTransfer.text}{" "}
+                      {priceOption.name ? `- ${priceOption.name}` : ""}
                     </div>
-                    <div>
-                      <div className="font-semibold text-sm md:text-base">
-                        {otherTransfer.text}{" "}
-                        {priceOption.name
-                          ? `- ${priceOption.name}`
-                          : ""}
-                      </div>
-                      <div className="text-xs md:text-sm text-gray-600">
-                      {Math.floor(otherTransfer?.duration/60) + "-" + Math.ceil(otherTransfer?.duration / 60)} hours | {otherTransfer.distance}{" "}
-                        kms
-                      </div>
-                      {priceOption?.class && <div className="text-xs md:text-sm">
+                    <div className="text-xs md:text-sm text-gray-600">
+                      {Math.floor(otherTransfer?.duration / 60) +
+                        "-" +
+                        Math.ceil(otherTransfer?.duration / 60)}{" "}
+                      hours | {otherTransfer.distance} kms
+                    </div>
+                    {priceOption?.class && (
+                      <div className="text-xs md:text-sm">
                         <span className="font-semibold">Facilities:</span>{" "}
-                        {priceOption?.class} {" "}
+                        {priceOption?.class}{" "}
                         {/* <span className="font-semibold">To:</span>{" "}
                         {option.destination.name} */}
-                      </div>}
-                      {priceOption.description && (
-                        <div className="text-xs md:text-sm text-gray-700 mt-1">
-                          {priceOption.description}
-                        </div>
-                      )}
-                    </div>
+                      </div>
+                    )}
+                    {priceOption.description && (
+                      <div className="text-xs md:text-sm text-gray-700 mt-1">
+                        {priceOption.description}
+                      </div>
+                    )}
                   </div>
-                  <div className="flex flex-col md:flex-col gap-2 items-center md:items-end justify-between">
-                    <div className="font-semibold text-sm md:text-base">
-                      {currency} {price}
-                    </div>
-                    <div
-                      className="cursor-pointer"
-                      onClick={() => {
-                        const selectedPriceData = {
-                          ...otherTransfer,
-                          selectedPrice: priceOption,
-                        };
-                        setIsSelected(true);
-                        // handleModeSelect(
-                        //   currentStep - 1,
-                        //   priceOptionId,
-                        //   selectedPriceData,
-                        //   otherTransfer.mode
-                        // );
-                      }}
-                    >
-                      {isSelected ? <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" /> : <ImCheckboxUnchecked className="h-4 w-4 md:h-5 md:w-5" />}
-                      {/* {selectedModeIds[currentStep - 1] ===
+                </div>
+                <div className="flex flex-col md:flex-col gap-2 items-center md:items-end justify-between">
+                  <div className="font-semibold text-sm md:text-base">
+                    {currency} {price}
+                  </div>
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => {
+                      const selectedPriceData = {
+                        ...otherTransfer,
+                        selectedPrice: priceOption,
+                      };
+                      setIsSelected(true);
+                      // handleModeSelect(
+                      //   currentStep - 1,
+                      //   priceOptionId,
+                      //   selectedPriceData,
+                      //   otherTransfer.mode
+                      // );
+                    }}
+                  >
+                    {isSelected ? (
+                      <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
+                    ) : (
+                      <ImCheckboxUnchecked className="h-4 w-4 md:h-5 md:w-5" />
+                    )}
+                    {/* {selectedModeIds[currentStep - 1] ===
                       priceOptionId ? (
                         <div className="flex items-center gap-1">
                           <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
@@ -3268,14 +3300,13 @@ const OtherTransfer = ({
                           <span className="text-sm">Select</span>
                         </div>
                       )} */}
-                    </div>
                   </div>
                 </div>
-                </>
-              );
-          }
-        )}
-      </Container>
+              </div>
+            </>
+          );
+        })}
+    </Container>
   );
 };
 

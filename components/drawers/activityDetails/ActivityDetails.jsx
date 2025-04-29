@@ -17,6 +17,7 @@ import { color } from "framer-motion";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 import { Pax } from "./Pax";
+import BackArrow from "../../ui/BackArrow";
 
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
@@ -86,13 +87,7 @@ export default function ActivityDetails(props) {
     <div className="h-[100vh] overflow-y-auto px-4">
       <div className="flex flex-col gap-4  mb-[100px]">
         <div className="sticky top-0 z-1 flex flex-row items-center gap-2 mt-4 bg-white">
-          <IoMdClose
-            className="hover-pointer"
-            onClick={(e) => {
-              props.handleCloseDrawer(e);
-            }}
-            style={{ fontSize: "2rem" }}
-          ></IoMdClose>
+          <BackArrow handleClick={(e)=>props.handleCloseDrawer(e)}/>
         </div>
         <div className="flex justify-between">
           <div className="text-[24px] font-semibold">Activity Details</div>

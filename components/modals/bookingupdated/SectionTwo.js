@@ -84,6 +84,7 @@ const Section = (props) => {
         totalCount={props.TotalCount}
         plan={props?.plan[0]}
         setShowFilters={props.setShowFilters}
+        showFilters={props.showFilters}
         filters={props.filters}
         setFilters={props.setFilters}
       ></FiltersMobile>

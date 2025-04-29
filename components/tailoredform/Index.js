@@ -549,7 +549,7 @@ const Enquiry = (props) => {
     itineraryComplete
       .post("", data, {
         headers: {
-          Authorization: `Bearer ${props.token}`,
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
       })
       .then((response) => {

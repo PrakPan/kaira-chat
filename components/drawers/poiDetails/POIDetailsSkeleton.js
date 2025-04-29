@@ -3,6 +3,7 @@ import media from "../../../components/media";
 import SkeletonCard from "../../ui/SkeletonCard";
 import { TbArrowBack } from "react-icons/tb";
 import { IoMdClose } from "react-icons/io";
+import BackArrow from "../../ui/BackArrow";
 
 const POIDetailsSkeleton = (props) => {
   const Container = styled.div`
@@ -50,14 +51,7 @@ const POIDetailsSkeleton = (props) => {
         </div>
       ) : (
         <BackContainer className=" font-lexend">
-          <IoMdClose
-            className="hover-pointer"
-            onClick={(e) => {
-              props.handleCloseDrawer(e);
-            }}
-            style={{ fontSize: "2rem" }}
-          ></IoMdClose>
-          <BackText>Back to Itinerary</BackText>
+          <BackArrow handleClick={(e)=>props?.handleCloseDrawer(e)}/>
         </BackContainer>
       )}
 

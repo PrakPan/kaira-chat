@@ -283,6 +283,7 @@ const TransferBookings = (props) => {
                           props?._updateTaxiBookingHandler
                         }
                         getPaymentHandler={props?.getPaymentHandler}
+                        _updatePaymentHandler={props._updatePaymentHandler}
                         _changeFlightHandler={_changeFlightHandler}
                         origin={item.city}
                         destination={itineraries?.cities?.[index + 1].city}
@@ -367,7 +368,6 @@ const TransferBookings = (props) => {
               transfersPin
               setCurrentPopup={false}
               city={itineraries?.end_city?.city_name}
-              index={itineraries?.cities?.length}
               PinSection
               pinColour={null}
             />

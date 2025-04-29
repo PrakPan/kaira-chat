@@ -8,87 +8,88 @@ import Tags from "./Tags";
 import UserRatings from "./UserRatings";
 
 export default function Filters(props) {
-    const [selectedUserStar, setSelectedUserStar] = useState([]);
-    const [selectedFacilities, setSelectedFacilities] = useState([]);
-    const [selectedTags, setSelectedTags] = useState([]);
-    const [selectedTypes, setSelectedTypes] = useState(["All"]);
+  console.log("filter is:",props.FILTERS);  // Check what 'type' actually contains
 
-    const handleApply = () => {
-        props.updateUserStarHandler(selectedUserStar);
-        props._addFilterHandler(selectedFacilities, "facilities");
-        props._addFilterHandler(selectedTags, "tags");
-        props._addFilterHandler(selectedTypes, "type");
-        props.setshowFilter(false)
-    }
+  const [selectedUserStar, setSelectedUserStar] = useState([]);
+  const [selectedFacilities, setSelectedFacilities] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedTypes, setSelectedTypes] = useState(["All"]);
 
-    return (
-        <Drawer
-            show={props.showFilter}
-            anchor={"right"}
-            backdrop
-            style={{ zIndex: 1508 }}
-            className="font-lexend"
-            onHide={() => props.setshowFilter(false)}
-        >
-            <div className="w-[25vw] px-2 h-[98vh] flex flex-col gap-3 justify-between items-start mx-auto ">
-                <div className="flex flex-col gap-3 justify-between w-[95%] mx-auto mt-4">
-                    <div className="flex flex-row gap-3 my-0 justify-start items-center">
-                        <IoMdClose
-                            onClick={() => props.setshowFilter(false)}
-                            className="hover-pointer"
-                            style={{
-                                fontSize: "1.75rem",
-                                textAlign: "right",
-                            }}
-                        ></IoMdClose>
-                        <div className="text-2xl font-normal line-clamp-1">Filters</div>
-                    </div>
+  const handleApply = () => {
+    props.updateUserStarHandler(selectedUserStar);
+    props._addFilterHandler(selectedFacilities, "facilities");
+    props._addFilterHandler(selectedTags, "tags");
+    props._addFilterHandler(selectedTypes, "type");
+    props.setshowFilter(false);
+  };
 
-                    <UserRatings
-                        userRatings={props.FILTERS.user_ratings}
-                        selectedUserStar={selectedUserStar}
-                        setSelectedUserStar={setSelectedUserStar}
-                    />
+  return (
+    <Drawer
+      show={props.showFilter}
+      anchor={"right"}
+      backdrop
+      style={{ zIndex: 1508 }}
+      className="font-lexend"
+      onHide={() => props.setshowFilter(false)}
+    >
+      <div className="w-[25vw] px-2 h-[98vh] flex flex-col gap-3 justify-between items-start mx-auto ">
+        <div className="flex flex-col gap-3 justify-between w-[95%] mx-auto mt-4">
+          <div className="flex flex-row gap-3 my-0 justify-start items-center">
+            <IoMdClose
+              onClick={() => props.setshowFilter(false)}
+              className="hover-pointer"
+              style={{
+                fontSize: "1.75rem",
+                textAlign: "right",
+              }}
+            ></IoMdClose>
+            <div className="text-2xl font-normal line-clamp-1">Filters</div>
+          </div>
 
-                    {props.FILTERS.type.length ? (
-                        <PropertyType
-                            types={props.FILTERS.type}
-                            selectedTypes={selectedTypes}
-                            setSelectedTypes={setSelectedTypes}
-                        />
-                    ) : null}
+          {props.FILTERS?.type.length ? (
+            <PropertyType
+              types={props.FILTERS?.type}
+              selectedTypes={selectedTypes}
+              setSelectedTypes={setSelectedTypes}
+            />
+          ) : null}
 
-                    {props.FILTERS.facilities.length ? (
-                        <Facilities
-                            facilities={props.FILTERS.facilities}
-                            selectedFacilities={selectedFacilities}
-                            setSelectedFacilities={setSelectedFacilities} />
-                    ) : null}
+          {props.FILTERS?.facilities.length ? (
+            <Facilities
+              facilities={props.FILTERS?.facilities}
+              selectedFacilities={selectedFacilities}
+              setSelectedFacilities={setSelectedFacilities}
+            />
+          ) : null}
 
-                    {props.FILTERS.tags.length ? (
-                        <Tags
-                            tags={props.FILTERS.tags}
-                            selectedTags={selectedTags}
-                            setSelectedTags={setSelectedTags} />
-                    ) : null}
-                </div>
+          {props.FILTERS?.tags.length ? (
+            <Tags
+              tags={props.FILTERS?.tags}
+              selectedTags={selectedTags}
+              setSelectedTags={setSelectedTags}
+            />
+          ) : null}
 
-                <div className="w-full flex gap-3 flex-row justify-between mt-0">
-                    <ButtonYellow
-                        primary={false}
-                        className="w-1/2 "
-                        onClick={() => props.setshowFilter(false)}
-                    >
-                        <div className="text-[#01202B] ">Cancel</div>
-                    </ButtonYellow>
-                    <ButtonYellow
-                        className="w-1/2"
-                        onClick={handleApply}
-                    >
-                        <div className="text-[#01202B] ">Apply</div>
-                    </ButtonYellow>
-                </div>
-            </div>
-        </Drawer>
-    );
+          <UserRatings
+            userRatings={props.FILTERS?.user_ratings}
+            selectedUserStar={selectedUserStar}
+            setSelectedUserStar={setSelectedUserStar}
+          />
+        </div>
+
+        <div className="w-full flex gap-3 flex-row justify-between mt-0">
+          <ButtonYellow
+            primary={false}
+            className="w-1/2 "
+            onClick={() => props.setshowFilter(false)}
+          >
+            <div className="text-[#01202B] ">Cancel</div>
+          </ButtonYellow>
+          <ButtonYellow className="w-1/2" onClick={handleApply}>
+            <div className="text-[#01202B] ">Apply</div>
+          </ButtonYellow>
+        </div>
+      </div>
+    </Drawer>
+  );
 }

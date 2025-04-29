@@ -108,8 +108,8 @@ const LineContainer = styled.div`
 `;
 
 const HalfLine = styled.div`
+  flex: ${(props) => props.flex || 1};
   width: 100%;
-  height: 50%;
   background-image: repeating-linear-gradient(
     to bottom,
     ${(props) => props.color || "black"},
@@ -400,8 +400,8 @@ const TransferBooking = ({
           <Container>
             <div className="relative">
               <LineContainer>
-                <HalfLine Transfers={Transfer} color={pinColour1} />
-                <HalfLine Transfers={Transfer} color={pinColour2} />
+                <HalfLine Transfers={Transfer} color={pinColour1} flex={9} />
+                <HalfLine Transfers={Transfer} color={pinColour2} flex={1} />
               </LineContainer>
 
               {/* <Line Transfers={Transfer} pinColour1={pinColour1} pinColour2={pinColour2}/> */}
@@ -504,10 +504,7 @@ const TransferBooking = ({
                                     <div className="w-full">{booking.name}</div>
                                   )
                                 ) : (
-                                  <>
-                                    {booking?.booking_type} ({booking?.duration}
-                                    )
-                                  </>
+                                  <>{booking?.name}</>
                                 )}
                               </div>
                             </div>
@@ -562,7 +559,7 @@ const TransferBooking = ({
                                         key="seating"
                                         className="sm:text-sm text-[0.74rem] font-normal"
                                       >
-                                        {seating} Seater
+                                        {seating} Seat{seating > 1 ? "s" : ""}
                                       </span>
                                     );
                                   }
@@ -621,7 +618,7 @@ const TransferBooking = ({
                                       handleViewDetails(
                                         router?.query?.id,
                                         booking?.id,
-                                        booking?.transfer_details?.mode.toLowerCase()
+                                        booking?.booking_type?.toLowerCase()
                                       );
                                     }}
                                     className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[0.6rem] sm:px-1 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000] "
@@ -634,7 +631,7 @@ const TransferBooking = ({
                                       handleViewDetails(
                                         router?.query?.id,
                                         booking?.id,
-                                        booking?.transfer_details?.mode.toLowerCase()
+                                        booking?.booking_type?.toLowerCase()
                                       );
                                       setShowVehicleDrawer(true);
                                     }}
@@ -652,7 +649,7 @@ const TransferBooking = ({
                                     handleViewDetails(
                                       router?.query?.id,
                                       booking?.id,
-                                      booking?.transfer_details?.mode.toLowerCase()
+                                      booking?.booking_type?.toLowerCase()
                                     );
                                     setShowVehicleDrawer(true);
                                   }}
@@ -705,9 +702,10 @@ const TransferBooking = ({
           <div className="grid w-full grid-cols-[30px_120px] min-h-[5rem] md:min-h-[8rem]">
             <div className="relative">
               <LineContainer>
-                <HalfLine Transfers={Transfer} color={pinColour1} />
-                <HalfLine Transfers={Transfer} color={pinColour2} />
+                <HalfLine Transfers={Transfer} color={pinColour1} flex={8} />
+                <HalfLine Transfers={Transfer} color={pinColour2} flex={2} />
               </LineContainer>
+
               {/* 
               <Line
                 Transfers={Transfer}
@@ -737,6 +735,7 @@ const TransferBooking = ({
               addOrEdit={"transferAdd"}
               showDrawer={showDrawer}
               setShowDrawer={setShowDrawer}
+              setShowLoginModal={setShowLoginModal}
               selectedTransferHeading={origin}
               origin={origin?.id != undefined ? origin?.id : id}
               destination={destination?.id != undefined ? destination?.id : id}
@@ -759,6 +758,8 @@ const TransferBooking = ({
               _updateFlightBookingHandler={_updateFlightBookingHandler}
               _updateTaxiBookingHandler={_updateTaxiBookingHandler}
               getPaymentHandler={getPaymentHandler}
+              origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id || oCityData?.gmaps_place_id}
+              destination_itinerary_city_id={dCityData?.id || dCityData?.gmaps_place_id || dCityData?.gmaps_place_id}
             />
           </div>
         )
@@ -879,9 +880,7 @@ const TransferBooking = ({
                                 <div className="w-full">{book?.name}</div>
                               )
                             ) : (
-                              <>
-                                {book?.booking_type} ({booking?.duration})
-                              </>
+                              <>{book?.name}</>
                             )}
                           </div>
                           <div className="flex sm:text-sm text-[14px]  flex-row text-[#7A7A7A] font-light items-center">
@@ -927,7 +926,8 @@ const TransferBooking = ({
                                         key="seater"
                                         className="sm:text-sm text-[0.74rem] font-normal"
                                       >
-                                        {seatingCapacity} Seater
+                                        {seatingCapacity} Seat
+                                        {seatingCapacity > 1 ? "s" : ""}
                                       </span>
                                     );
                                   }
@@ -985,7 +985,7 @@ const TransferBooking = ({
                                       handleViewDetails(
                                         router?.query?.id,
                                         book?.id,
-                                        booking?.transfer_details?.mode.toLowerCase()
+                                        book?.booking_type.toLowerCase()
                                       );
                                     }}
                                     className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
@@ -999,7 +999,7 @@ const TransferBooking = ({
                                       handleViewDetails(
                                         router?.query?.id,
                                         book?.id,
-                                        booking?.transfer_details?.mode.toLowerCase()
+                                        book?.booking_type.toLowerCase()
                                       );
                                       setShowVehicleDrawer(true);
                                     }}
@@ -1013,13 +1013,13 @@ const TransferBooking = ({
                             ) : (
                               <div className="pr-2">
                                 <button
-                                  onClick={() =>{
+                                  onClick={() => {
                                     handleViewDetails(
                                       router?.query?.id,
                                       book?.id,
-                                      book?.transfer_details?.mode.toLowerCase()
-                                    )
-                                    setShowVehicleDrawer(true)
+                                      book?.booking_type.toLowerCase()
+                                    );
+                                    setShowVehicleDrawer(true);
                                   }}
                                   className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                                 >
@@ -1118,8 +1118,12 @@ const TransferBooking = ({
               setSelectedBooking={setSelectedBooking}
               originCityId={originCityId}
               destinationCityId={destinationCityId}
+              getPaymentHandler={getPaymentHandler}
               _updateFlightBookingHandler={_updateFlightBookingHandler}
               _updatePaymentHandler={_updatePaymentHandler}
+              setShowLoginModal={setShowLoginModal}
+              origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
+        destination_itinerary_city_id={dCityData?.id || dCityData?.gmaps_place_id}
             />
           </ComboContainer>
         ))
@@ -1260,14 +1264,13 @@ const FlightBooking = ({
       </div>
       <div
         id={booking?.id}
-        className={`mb-2 mt-2  w-full lg:block ${"mb-2 mt-2 lg:block flex flex-col p-3 "} cursor-pointer relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA] lg:p-5 `}
+        className={`mb-2 mt-2  w-full lg:block ${"mb-2 mt-2 lg:block flex flex-col p-3 "} cursor-pointer relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA] lg:p-5 w-full`}
       >
         <div
           className={` w-full 
-
           `}
         >
-          <div className="flex justify-between">
+          <div className="flex justify-between w-full">
             <FlightLogoContainer
               data={booking?.transfer_details?.items?.[0]}
               height={34}

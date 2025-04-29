@@ -23,6 +23,29 @@ function MyApp({ Component, pageProps, store }) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
   }, []);
+
+  // useEffect(() => {
+  //   const handleBrowserBack = (event) => {
+  //     event.preventDefault();
+  //     console.log("Browser back button pressed!");
+
+  //     const confirmLeave = window.confirm("Are you sure you want to go back?");
+  //     if (confirmLeave) {
+  //       window.history.back(); // Allow back
+  //     } else {
+  //       window.history.pushState(null, null, window.location.href); // Stay on page
+  //     }
+  //   };
+
+  //   if (typeof window !== "undefined") {
+  //     window.history.pushState(null, null, window.location.href); // push a dummy state
+  //     window.addEventListener("popstate", handleBrowserBack);
+  //   }
+
+  //   return () => {
+  //     window.removeEventListener("popstate", handleBrowserBack);
+  //   };
+  // }, []);
   // useEffect(() => {
   //   try {
   //     if (!window.location.href.split("/").includes("itinerary")) return;

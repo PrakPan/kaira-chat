@@ -14,6 +14,7 @@ import styled from "styled-components";
 import { IoMdClose } from "react-icons/io";
 import { logEvent } from "../../../services/ga/Index";
 import { toast } from "react-toastify";
+import BackArrow from "../../ui/BackArrow";
 
 const Container = styled.div`
   padding: 0 0.75rem 0.75rem 0.75rem;
@@ -272,12 +273,7 @@ const ItineraryCity = (props) => {
       >
         <Container>
           <BackContainer className=" font-lexend">
-            <IoMdClose
-              className="hover-pointer"
-              style={{ fontSize: "2rem" }}
-              onClick={() => setShowDetails(false)}
-            ></IoMdClose>
-            <BackText>Back to Itinerary</BackText>
+            <BackArrow onClick={()=>setShowDetails(false)}/>
           </BackContainer>
           <HotelBookingDetails
             _setImagesHandler={props._setImagesHandler}

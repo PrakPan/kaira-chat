@@ -362,6 +362,7 @@ if (props?.CityData) {
                 setShowLoginModal={props?.setShowLoginModal}
                 _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
                 getPaymentHandler={props.getPaymentHandler}
+                _updateFlightBookingHandler={props._updateFlightBookingHandler}
               ></MidSectionV2>
             );
           }
