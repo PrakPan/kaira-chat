@@ -32,6 +32,8 @@ const DaybyDay = ({
   _updateFlightBookingHandler,
   _updatePaymentHandler,
   getPaymentHandler,
+  _updateTaxiBookingHandler,
+  setShowLoginModal,
   ...props
 }) => {
   console.log("transfer bookings is:", transferBookings);
@@ -195,7 +197,7 @@ const DaybyDay = ({
 
         <div className="flex flex-col">
           <CityItem
-            setShowLoginModal={props?.setShowLoginModal}
+            setShowLoginModal={setShowLoginModal}
             key={startCity?.place_id}
             city={startCity?.city_name}
             pinColour={CITY_COLOR_CODES[0 % 7]}
@@ -209,11 +211,12 @@ const DaybyDay = ({
             selectedBooking={selectedBooking}
             setSelectedBooking={setSelectedBooking}
             _updateFlightBookingHandler={_updateFlightBookingHandler}
+            _updateTaxiBookingHandler={_updateTaxiBookingHandler}
             _updatePaymentHandler={_updatePaymentHandler}
             getPaymentHandler={getPaymentHandler}
           />
           <CityItem
-            setShowLoginModal={props?.setShowLoginModal}
+            setShowLoginModal={setShowLoginModal}
             loadbookings={loadbookings}
             key={2}
             bookingIdToDelete={
@@ -273,6 +276,7 @@ const DaybyDay = ({
             setSelectedBooking={setSelectedBooking}
             _updateFlightBookingHandler={_updateFlightBookingHandler}
             _updatePaymentHandler={_updatePaymentHandler}
+            _updateTaxiBookingHandler={_updateTaxiBookingHandler}
             getPaymentHandler={getPaymentHandler}
           />
           {itineraryDaybyDay?.cities?.map((city, index) => {
@@ -291,14 +295,14 @@ const DaybyDay = ({
                   setBookingId={setBookingId}
                   idMapping={transferBookings?.intercity?.[idMapping]?.id}
                   setShowDetails={setShowDetails}
-                  setShowLoginModal={props?.setShowLoginModal}
+                  setShowLoginModal={setShowLoginModal}
                   handleClickAc={handleClickAc}
                   index={index}
                 />
                 {index != itineraryDaybyDay?.cities?.length - 1 && (
                   <div>
                     <CityItem
-                      setShowLoginModal={props?.setShowLoginModal}
+                      setShowLoginModal={setShowLoginModal}
                       mercury
                       loadbookings={loadbookings}
                       bookingIdToDelete={idMapping}
@@ -336,6 +340,7 @@ const DaybyDay = ({
                       selectedBooking={selectedBooking}
                       setSelectedBooking={setSelectedBooking}
                       _updateFlightBookingHandler={_updateFlightBookingHandler}
+                      _updateTaxiBookingHandler={_updateTaxiBookingHandler}
                       _updatePaymentHandler={_updatePaymentHandler}
                       getPaymentHandler={getPaymentHandler}
                     />
@@ -345,7 +350,7 @@ const DaybyDay = ({
             );
           })}
           <CityItem
-            setShowLoginModal={props?.setShowLoginModal}
+            setShowLoginModal={setShowLoginModal}
             key={endCity?.gmaps_place_id}
             loadbookings={loadbookings}
             city={
@@ -415,11 +420,12 @@ const DaybyDay = ({
             selectedBooking={selectedBooking}
             setSelectedBooking={setSelectedBooking}
             _updateFlightBookingHandler={_updateFlightBookingHandler}
+            _updateTaxiBookingHandler={_updateTaxiBookingHandler}
             _updatePaymentHandler={_updatePaymentHandler}
             getPaymentHandler={getPaymentHandler}
           />
           <CityItem
-            setShowLoginModal={props?.setShowLoginModal}
+            setShowLoginModal={setShowLoginModal}
             key={endCity?.place_id}
             city={endCity?.city_name}
             pinColour={CITY_COLOR_CODES[0 % 7]}
@@ -431,6 +437,7 @@ const DaybyDay = ({
             selectedBooking={selectedBooking}
             setSelectedBooking={setSelectedBooking}
             _updateFlightBookingHandler={_updateFlightBookingHandler}
+            _updateTaxiBookingHandler={_updateTaxiBookingHandler}
             _updatePaymentHandler={_updatePaymentHandler}
             getPaymentHandler={getPaymentHandler}
           />
@@ -440,17 +447,18 @@ const DaybyDay = ({
         mercury
         showFilter={showFilter}
         setshowFilter={setshowFilter}
+        setShowLoginModal={setShowLoginModal}
         payment={payment}
         plan={stayBookings}
         _setImagesHandler={_setImagesHandler}
-        getPaymentHandler={props.getPaymentHandler}
+        getPaymentHandler={getPaymentHandler}
         _updateStayBookingHandler={props._updateStayBookingHandler}
         tailored_id={
           stayBookings && stayBookings[0]
             ? stayBookings[0]["tailored_itinerary"]
             : null
         }
-        _updatePaymentHandler={props?._updatePaymentHandler}
+        _updatePaymentHandler={_updatePaymentHandler}
         _updateBookingHandler={props?._updateBookingHandler}
         selectedBooking={selectedBooking}
         setShowBookingModal={props?.setShowBookingModal}

@@ -516,9 +516,15 @@ async function fetchData(poll) {
           // }, 20000);
         }
 
+        if(hotels === "FAILURE" && !hotelsSuccessRef.current){
+          hotelsSuccessRef.current = true;
+          getAllStays();
+        }
+
+
         if(transfers === "FAILURE" && !transfersSuccessRef.current){
           transfersSuccessRef.current = true;
-          dispatch(setTransfersBookings(null));
+          getAllBookings();
         }
 
         if (pricing === "SUCCESS" && !pricingSuccessRef.current) {
@@ -528,7 +534,7 @@ async function fetchData(poll) {
         }
         if(pricing === "FAILURE" && !pricingSuccessRef.current){
           pricingSuccessRef.current = true;
-          setPayment(null);
+          getPaymentInfo();
         }
       } catch (err) {
         console.error("[ERROR]: axiosGetItinerary: ", err.message);

@@ -381,7 +381,9 @@ const CityItem = ({
         }
         origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
         destination_itinerary_city_id={dCityData?.id || dCityData?.gmaps_place_id}
+        
       />
+
       <Drawer
         show={handleShow}
         anchor={"right"}

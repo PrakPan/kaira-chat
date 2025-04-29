@@ -737,6 +737,7 @@ const TransferBooking = ({
               addOrEdit={"transferAdd"}
               showDrawer={showDrawer}
               setShowDrawer={setShowDrawer}
+              setShowLoginModal={setShowLoginModal}
               selectedTransferHeading={origin}
               origin={origin?.id != undefined ? origin?.id : id}
               destination={destination?.id != undefined ? destination?.id : id}
@@ -759,6 +760,8 @@ const TransferBooking = ({
               _updateFlightBookingHandler={_updateFlightBookingHandler}
               _updateTaxiBookingHandler={_updateTaxiBookingHandler}
               getPaymentHandler={getPaymentHandler}
+              origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id || oCityData?.gmaps_place_id}
+              destination_itinerary_city_id={dCityData?.id || dCityData?.gmaps_place_id || dCityData?.gmaps_place_id}
             />
           </div>
         )
@@ -1118,8 +1121,12 @@ const TransferBooking = ({
               setSelectedBooking={setSelectedBooking}
               originCityId={originCityId}
               destinationCityId={destinationCityId}
+              getPaymentHandler={getPaymentHandler}
               _updateFlightBookingHandler={_updateFlightBookingHandler}
               _updatePaymentHandler={_updatePaymentHandler}
+              setShowLoginModal={setShowLoginModal}
+              origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
+        destination_itinerary_city_id={dCityData?.id || dCityData?.gmaps_place_id}
             />
           </ComboContainer>
         ))

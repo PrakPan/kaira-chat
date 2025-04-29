@@ -283,6 +283,7 @@ const TransferBookings = (props) => {
                           props?._updateTaxiBookingHandler
                         }
                         getPaymentHandler={props?.getPaymentHandler}
+                        _updatePaymentHandler={props._updatePaymentHandler}
                         _changeFlightHandler={_changeFlightHandler}
                         origin={item.city}
                         destination={itineraries?.cities?.[index + 1].city}
