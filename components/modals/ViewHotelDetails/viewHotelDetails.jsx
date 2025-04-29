@@ -18,6 +18,7 @@ import { updateAccommodationBooking } from "../../../services/bookings/UpdateBoo
 import { convertDate } from "../../../helper/getDateYYY-MM-DD";
 import { toast } from "react-toastify";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
+import BackArrow from "../../ui/BackArrow";
 
 const Container = styled.div`
   padding: 0 0.75rem 0.75rem 0.75rem;
@@ -272,12 +273,7 @@ console.log("hotel name:",data?.name)
       {!loading ? (
         <Container>
           <BackContainer className=" font-lexend">
-            <IoMdClose
-              className="hover-pointer"
-              onClick={props.onHide}
-              style={{ fontSize: "2rem" }}
-            ></IoMdClose>
-            <BackText>Back to Itinerary</BackText>
+            <BackArrow handleClick={props.onHide}/>
           </BackContainer>
           {!error ? (
             <div>

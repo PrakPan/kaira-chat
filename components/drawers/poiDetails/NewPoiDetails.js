@@ -14,6 +14,7 @@ import { MdTransferWithinAStation } from "react-icons/md";
 import { BiSolidCustomize } from "react-icons/bi";
 import Image from "next/image";
 import { useSelector } from "react-redux";
+import BackArrow from "../../ui/BackArrow";
 
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
@@ -70,15 +71,8 @@ export default function PoiDetails(props) {
     <div className="flex flex-col gap-4 pb-[100px] h-[100vh] overflow-y-auto">
       <div className="flex flex-col gap-4 px-[20px] pb-4">
         <div className="sticky top-0 z-1 flex flex-row items-center gap-2 mt-4 bg-white">
-          <IoMdClose
-            className="hover-pointer"
-            onClick={(e) => {
-              props.handleCloseDrawer(e);
-            }}
-            style={{ fontSize: "2rem" }}
-          ></IoMdClose>
+          <BackArrow handleClick={(e)=>props.handleCloseDrawer(e)}/>
         </div>
-        <div className="text-[24px] font-semibold">Back To Itinerary</div>
 
         <div className={`flex flex-col gap-4 `}>
           <div className="h-[180px] md:h-[300px]">

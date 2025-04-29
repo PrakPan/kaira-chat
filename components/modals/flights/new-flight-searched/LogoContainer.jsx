@@ -6,18 +6,18 @@ import media from "../../../media";
 
 export default function LogoContainer({ data,height,width }) {
   return (
-    <div className="flex flex-row gap-2 items-center">
+    <div className="flex flex-row gap-2 items-center w-full">
       <Logo src={data?.segments[0]?.airline?.code} ht={height} wd={width} />
 
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 w-full">
         <div className="text-[18px] font-semibold">{data?.segments[0]?.airline?.name} |</div>
-        <div className="text-[16px] text-gray-600">
+        <div className="text-[16px] text-gray-600 ">
           {data?.segments[0]?.airline?.code}-
-          {data?.segments[0]?.airline?.flight_number}
+          {data?.segments[0]?.airline?.flight_number+" "}
           {data?.segments.length > 1 ? (
-            <div className="text-sm text-gray-600">
+            <span className="text-sm text-gray-600">
               +{data?.segments?.length - 1} more
-            </div>
+            </span>
           ) : null}
         </div>
       </div>
