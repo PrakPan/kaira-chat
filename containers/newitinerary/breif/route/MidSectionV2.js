@@ -75,7 +75,7 @@ const Line = styled.hr`
   @media screen and (min-width: 768px) {
     width: 8.3rem;
     height: 1px;
-    top: 46px;
+    top: 34px;
     right: -49px;
   }
 `;
