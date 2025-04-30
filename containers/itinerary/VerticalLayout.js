@@ -25,6 +25,8 @@ import media from "../../components/media";
 import { openNotification } from "../../store/actions/notification";
 import Image from "next/image";
 import { RiArrowDropRightLine, RiArrowGoForwardLine } from "react-icons/ri";
+import TaxiDetailModal from "../../components/modals/daybyday/TaxiDetailModal";
+import VehicleDetailLoader from "../../components/modals/daybyday/VehicleDetailLoader";
 
 const Container = styled.div`
   display: flex;
@@ -75,8 +77,7 @@ const CityItem = ({
   _updatePaymentHandler,
   getPaymentHandler,
 }) => {
-
-  const {transfers_status} = useSelector(state=>state.ItineraryStatus);
+  const { transfers_status } = useSelector((state) => state.ItineraryStatus);
   const correctIcon = (TransportMode) => {
     switch (TransportMode) {
       case "Flight":
@@ -117,13 +118,20 @@ const CityItem = ({
   let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
 
   const handleEdit = async () => {
-    const res = await axios.get(
-      `${MERCURY_HOST}/api/v1/itinerary/${
-        router?.query?.id
-      }/bookings/${booking_type.toLowerCase()}/${booking_id}/`
-    );
-    setData(res?.data);
-    setHandleShow(true);
+    setLoading(true);
+    console.log("inside show")
+    try {
+      setHandleShow(true);
+      const res = await axios.get(
+        `${MERCURY_HOST}/api/v1/itinerary/${
+          router?.query?.id
+        }/bookings/${booking_type.toLowerCase()}/${booking_id}/`
+      );
+      setData(res?.data);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+    }
   };
 
   const handleDelete = async (val) => {
@@ -373,15 +381,12 @@ const CityItem = ({
         // destinationCityId={destination}
         selectedBooking={selectedBooking}
         setSelectedBooking={setSelectedBooking}
-        originCityId={
-          oCityData?.city?.id || oCityData?.gmaps_place_id
-        }
-        destinationCityId={
-          dCityData?.city?.id || dCityData?.gmaps_place_id
-        }
+        originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
+        destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
         origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
-        destination_itinerary_city_id={dCityData?.id || dCityData?.gmaps_place_id}
-        
+        destination_itinerary_city_id={
+          dCityData?.id || dCityData?.gmaps_place_id
+        }
       />
 
       <Drawer
@@ -394,32 +399,45 @@ const CityItem = ({
         mobileWidth="100vw"
         width={`${!(booking_type === "Flight") ? "45vw" : "50vw"}`}
       >
-        {booking_type === "Flight" ? (
-          <>
-            <FlightDetailModal
-              segments={data?.transfer_details?.items?.[0]?.segments}
-              fareRule={data?.transfer_details?.items?.[0]?.fare_rule?.[0]}
-              booking_id={data?.id}
-              setShowDetails={setHandleShow}
-              name={city}
-            />
-          </>
-        ) : booking_type === "Car" ? (
-          <></>
+        {loading ? (
+          <VehicleDetailLoader />
         ) : (
           <>
-            <VehicleDetailModal
-              data={data}
-              setHandleShow={setHandleShow}
-              handleDelete={handleDelete}
-              loading={loading}
-            />
-            <VehicleDetailModal
-              data={data}
-              setHandleShow={setHandleShow}
-              handleDelete={handleDelete}
-              loading={loading}
-            />
+            {booking_type === "Flight" ? (
+              <>
+                <FlightDetailModal
+                  segments={data?.transfer_details?.items?.[0]?.segments}
+                  fareRule={data?.transfer_details?.items?.[0]?.fare_rule?.[0]}
+                  booking_id={data?.id}
+                  setShowDetails={setHandleShow}
+                  name={city}
+                />
+              </>
+            ) : booking_type === "Car" ? (
+              <>
+                <TaxiDetailModal
+                  data={data}
+                  setHandleShow={setHandleShow}
+                  handleDelete={handleDelete}
+                  loading={loading}
+                />
+              </>
+            ) : (
+              <>
+                <VehicleDetailModal
+                  data={data}
+                  setHandleShow={setHandleShow}
+                  handleDelete={handleDelete}
+                  loading={loading}
+                />
+                <VehicleDetailModal
+                  data={data}
+                  setHandleShow={setHandleShow}
+                  handleDelete={handleDelete}
+                  loading={loading}
+                />
+              </>
+            )}
           </>
         )}
       </Drawer>
