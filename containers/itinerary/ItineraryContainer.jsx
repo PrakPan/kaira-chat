@@ -229,6 +229,8 @@ const ItineraryContainer = (props) => {
         .catch((error) => {
           setPaymentLoading(false);
         });
+    }else{
+      getPaymentInfo();
     }
   };
 

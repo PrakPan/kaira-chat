@@ -2081,6 +2081,8 @@ const NewMultiModeContainer = ({
                         destination_code={option?.destination?.code}
                         skipFetch={skipFlightFetch}
                         onFilterApplied={handleFilterApplied}
+                        dCityData={option?.destination?.city}
+                        oCityData={option?.source?.city}
                       />
                     );
                   }
@@ -2124,6 +2126,8 @@ const NewMultiModeContainer = ({
                         comboStartTime={comboStartTime}
                         // skipFetch={skipTaxiFetch}
                         onFilterApplied={handleFilterApplied}
+                        dCityData={dCityData}
+                        oCityData={oCityData}
                       />
                     );
                   }
