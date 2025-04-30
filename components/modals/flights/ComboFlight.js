@@ -408,14 +408,17 @@ const preferredDepartureTime = (() => {
         });
 
         dispatch(setTransfersBookings(updatedTransferBookings));
+        props?.getPaymentHandler();
 
       }
-     else  dispatch(
+     else { dispatch(
         updateSingleTransferBooking(
           `${props?.origin_itinerary_city_id}:${props?.destination_itinerary_city_id}`,
           res.data
         )
       );
+      props?.getPaymentHandler();
+    }
         props.openNotification({
           type: "success",
           text: "Flight updated successfully.",

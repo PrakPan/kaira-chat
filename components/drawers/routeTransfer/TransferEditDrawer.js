@@ -445,20 +445,13 @@ const TransferEditDrawer = (props) => {
             </>
           ) : (
             <>
-              <IoMdArrowRoundBack
-                size={20}
-                onClick={() => {
+              <BackArrow
+                handleClick={() => {
                   if (currentStep >= 1) {
                     setCurrentStep(currentStep - 1);
                   }
                 }}
-                className="hover-pointer text-3xl font-semibold"
-              />{" "}
-              {currentStep === 1 ? (
-                <IText>Back to results</IText>
-              ) : (
-                <IText>Back</IText>
-              )}{" "}
+              />
             </>
           )}
         </div>
@@ -1377,6 +1370,7 @@ const RouteContainer = (props) => {
                 destination_itinerary_city_id={destination_itinerary_city_id}
                 handleSelect={handleSelect}
                 hideDrawer={hideDrawer}
+                getPaymentHandler={ getPaymentHandler}
                 />
               )
             ) : (
@@ -1618,13 +1612,12 @@ const NewMultiModeContainer = ({
       setShowComboTaxiModal(false);
     }
 
-    // If we're at step 1, go back to the transfer list
+    
     if (currentStep === 1) {
-      setCurrentStep(0); // Go back to the transfer list
+      setCurrentStep(0); 
       return;
     }
 
-    // Otherwise proceed with normal back button behavior
     setSelectedModeIds((prev) => {
       const newSelections = { ...prev };
       for (let i = currentStep - 1; i < totalSteps; i++) {
@@ -1818,6 +1811,8 @@ const NewMultiModeContainer = ({
             data
           )
         );
+
+        getPaymentHandler();
 
         console.log("Transfer from updated successfully:", data);
 
@@ -2212,7 +2207,7 @@ const NewMultiModeContainer = ({
 
                               <div className="flex flex-col md:flex-col gap-2 items-center md:items-center justify-center">
                                 <div className="font-semibold text-sm md:text-base">
-                                  {currency} {price}
+                                  {currency} {price} {`/-`}
                                 </div>
                                 <div
                                   className="cursor-pointer"
@@ -3286,6 +3281,7 @@ const Cost = styled.p`
   }
 `;
 const OtherTransfer = ({
+  getPaymentHandler,
   setShowOtherTrasfer,
   selectedResult,
   setSelectedResult,
@@ -3592,6 +3588,8 @@ const OtherTransfer = ({
         )
       );
 
+      getPaymentHandler();
+
       console.log("Key to update",origin_itinerary_city_id,destination_itinerary_city_id)
 
       console.log("Transfer updated successfully:", data);
@@ -3700,7 +3698,7 @@ const OtherTransfer = ({
                     className="!font-[lexend]"
                     style={{ fontFamily: "Lexend" }}
                   >
-                    {currency} {price}
+                    {currency} {price} {`/-`}
                   </span>
                 </div>
                 

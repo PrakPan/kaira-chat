@@ -273,7 +273,7 @@ const CityItem = ({
                 </div>
                 {transfer_type == "combo" ? (
                   <div
-                    className="flex flex-col group hover:cursor-pointer"
+                    className={`flex flex-col ${upPresent && downPresent ? "group hover:cursor-pointer" : ""}`}
                     onClick={async () => {
                       // const res = await axios.get(
                       //   `${MERCURY_HOST}/api/v1/itinerary/${
@@ -320,7 +320,7 @@ const CityItem = ({
                   </div>
                 ) : (
                   <div
-                    className="flex flex-col group hover:cursor-pointer"
+                    className={`flex flex-col ${upPresent && downPresent ? "group hover:cursor-pointer" : ""}`}
                     onClick={() => upPresent && downPresent && handleEdit()}
                   >
                     <div className="flex gap-2 items-center ">
