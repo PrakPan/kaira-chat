@@ -27,6 +27,7 @@ import Image from "next/image";
 import { RiArrowDropRightLine, RiArrowGoForwardLine } from "react-icons/ri";
 import TaxiDetailModal from "../../components/modals/daybyday/TaxiDetailModal";
 import VehicleDetailLoader from "../../components/modals/daybyday/VehicleDetailLoader";
+import FlightDetailLoader from "../../components/modals/daybyday/FlightDetailLoader";
 
 const Container = styled.div`
   display: flex;
@@ -119,7 +120,7 @@ const CityItem = ({
 
   const handleEdit = async () => {
     setLoading(true);
-    console.log("inside show")
+    console.log("inside show");
     try {
       setHandleShow(true);
       const res = await axios.get(
@@ -399,47 +400,42 @@ const CityItem = ({
         mobileWidth="100vw"
         width={`${!(booking_type === "Flight") ? "45vw" : "50vw"}`}
       >
-        {loading ? (
-          <VehicleDetailLoader />
-        ) : (
-          <>
-            {booking_type === "Flight" ? (
-              <>
-                <FlightDetailModal
-                  segments={data?.transfer_details?.items?.[0]?.segments}
-                  fareRule={data?.transfer_details?.items?.[0]?.fare_rule?.[0]}
-                  booking_id={data?.id}
-                  setShowDetails={setHandleShow}
-                  name={city}
-                />
-              </>
-            ) : booking_type === "Car" ? (
-              <>
-                <TaxiDetailModal
-                  data={data}
-                  setHandleShow={setHandleShow}
-                  handleDelete={handleDelete}
-                  loading={loading}
-                />
-              </>
-            ) : (
-              <>
-                <VehicleDetailModal
-                  data={data}
-                  setHandleShow={setHandleShow}
-                  handleDelete={handleDelete}
-                  loading={loading}
-                />
-                <VehicleDetailModal
-                  data={data}
-                  setHandleShow={setHandleShow}
-                  handleDelete={handleDelete}
-                  loading={loading}
-                />
-              </>
-            )}
-          </>
-        )}
+        <>
+          {booking_type === "Flight" ? (
+            loading?<FlightDetailLoader/>:
+            <FlightDetailModal
+              segments={data?.transfer_details?.items?.[0]?.segments}
+              fareRule={data?.transfer_details?.items?.[0]?.fare_rule?.[0]}
+              booking_id={data?.id}
+              setShowDetails={setHandleShow}
+              name={city}
+            />
+          ) : loading ? (
+            <VehicleDetailLoader setHandleShow={setHandleShow} />
+          ) : booking_type === "Car" ? (
+            <TaxiDetailModal
+              data={data}
+              setHandleShow={setHandleShow}
+              handleDelete={handleDelete}
+              loading={loading}
+            />
+          ) : (
+            <>
+              <VehicleDetailModal
+                data={data}
+                setHandleShow={setHandleShow}
+                handleDelete={handleDelete}
+                loading={loading}
+              />
+              <VehicleDetailModal
+                data={data}
+                setHandleShow={setHandleShow}
+                handleDelete={handleDelete}
+                loading={loading}
+              />
+            </>
+          )}
+        </>
       </Drawer>
       {/* <Drawer
               show={show}
