@@ -69,7 +69,7 @@ const VehicleDetailModal = ({
     check_in||transfer_details?.start_datetime || transfer_details?.gozo?.start_date ;
   const duration = transfer_details?.duration;
 
-  const arrival = check_out || addMinutesToDate(departure, duration);
+  const arrival = formatDateTime(check_out) ||  addMinutesToDate(departure, duration);
   const depart = formatDateTime(departure);
 
   return (
@@ -149,7 +149,12 @@ const VehicleDetailModal = ({
                   {loading ? (
                     <div className="w-12 h-3 bg-gray-300 opacity-50 rounded"></div>
                   ) : (
-                    `${transfer_details?.distance} km`
+                    `
+                    ${
+                      transfer_details?.distance?.text ||
+                      `${transfer_details?.distance} km`
+                    }
+                    `
                   )}
                 </span>
                 <div className="border-t border-dashed w-64"></div>

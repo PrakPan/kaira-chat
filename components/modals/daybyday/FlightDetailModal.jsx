@@ -42,9 +42,9 @@ const FlightDetailModal = ({
       const response = await axiosDeleteBooking.delete(
         `${router?.query?.id}/bookings/flight/${booking_id}/`,
         {
-                  headers: {
-                    Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-                  },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
         }
       );
 
@@ -76,7 +76,7 @@ const FlightDetailModal = ({
       <div className="flex flex-col gap-2">
         <Heading>
           <div className="flex flex-row items-center gap-2">
-            <BackArrow handleClick={()=>setShowDetails((prev) => !prev)}/>
+            <BackArrow handleClick={() => setShowDetails((prev) => !prev)} />
           </div>
         </Heading>
       </div>
