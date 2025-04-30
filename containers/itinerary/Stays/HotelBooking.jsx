@@ -39,7 +39,8 @@ const HotelBooking = ({
   handleClickAc,
   setShowLoginModal,
   setShowDetails,
-  cities
+  cities,
+  hotelCity,
 }) => {
   let isPageWide = media("(min-width: 768px)");
   const [imageFail, setImageFail] = useState(false);
@@ -114,7 +115,7 @@ const HotelBooking = ({
         hotel_image = booking.images[i]?.image;
         break;
       }
-    }
+  }
   }
 
   function formatDate(dateInput) {

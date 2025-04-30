@@ -458,11 +458,11 @@ const TransferBooking = ({
                   >
                     <div className="flex flex-row items-center gap-1 w-full">
                       <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
-                        {!transferImageFailed ? (
+                        { booking?.transfer_details?.quote?.taxi_category?.image ? (
                           <ImageLoader
-                            is_url={booking?.image?.includes("gozo")}
+                          //  is_url={booking?.image?.includes("gozo")}
                             className=" object-contain"
-                            url={booking?.image}
+                            url={booking?.transfer_details?.quote?.taxi_category?.image}
                             leftalign
                             height={
                               booking?.image?.includes("gozo") ? "3rem" : "4rem"
@@ -521,15 +521,15 @@ const TransferBooking = ({
                             {booking?.booking_type == "Taxi" ? (
                               <>
                                 {booking?.transfer_details?.quote?.taxi_category
-                                  ?.type && (
+                                  ?.model_name && (
                                   <div>
                                     {booking?.transfer_details?.quote
-                                      ?.taxi_category?.type ||
+                                      ?.taxi_category?.model_name ||
                                       booking?.transfer_details?.quote
-                                        ?.taxi_category?.type}
+                                        ?.taxi_category?.model_name}
 
-                                    {"("}
-                                    {booking?.type}
+                                    &nbsp;{"("}
+                                    {booking?.type} 
                                     {")"}
                                   </div>
                                 )}
@@ -902,9 +902,9 @@ const TransferBooking = ({
                                   ?.type && (
                                   <div>
                                     {book?.transfer_details?.quote
-                                      ?.taxi_category?.type ||
+                                      ?.taxi_category?.model_name ||
                                       book?.transfer_details?.quote
-                                        ?.taxi_category?.type}
+                                        ?.taxi_category?.model_name} &nbsp;
 
                                     {"("}
                                     {book?.type}

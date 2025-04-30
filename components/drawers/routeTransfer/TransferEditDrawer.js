@@ -159,7 +159,7 @@ const TransferEditDrawer = (props) => {
                 number_of_adults: props?.plan?.number_of_adults || 1,
                 number_of_children: props?.plan?.number_of_children || 1,
                 number_of_infants: props?.plan?.number_of_infants || 1,
-                top_only: "false",
+                //top_only: "false",
               },
               {
                 headers: {
@@ -2081,8 +2081,8 @@ const NewMultiModeContainer = ({
                         destination_code={option?.destination?.code}
                         skipFetch={skipFlightFetch}
                         onFilterApplied={handleFilterApplied}
-                        dCityData={option?.destination?.city}
-                        oCityData={option?.source?.city}
+                        dCityData={dCityData}
+                        oCityData={oCityData}
                       />
                     );
                   }
