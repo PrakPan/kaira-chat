@@ -18,7 +18,7 @@ const TaxiDetailModal = ({
   handleDelete,
   loading,
   booking,
-  type
+  type,
 }) => {
   if (!data) return null;
   // const [loading, setLoading] = useState(false);
@@ -36,7 +36,7 @@ const TaxiDetailModal = ({
     <>
       <div className="fixed inset-0 bg-gray-50 w-full h-full flex flex-col">
         <div className="p-4 flex items-center">
-          <BackArrow handleClick={()=>setHandleShow(false)}/>
+          <BackArrow handleClick={() => setHandleShow(false)} />
         </div>
         <div className="flex items-center px-4">
           <div className="bg-blue-100 rounded-lg p-2 mr-3">
@@ -97,7 +97,7 @@ const TaxiDetailModal = ({
                         {transfer_details?.trips?.[0]?.end_time}
                       </p>
                       <p className="text-black opacity-50 text-[12px]">
-                      {transfer_details?.trips?.[0]?.end_date}
+                        {transfer_details?.trips?.[0]?.end_date}
                       </p>
                     </>
                   )}
@@ -109,7 +109,10 @@ const TaxiDetailModal = ({
                   {loading ? (
                     <div className="w-12 h-3 bg-gray-300 opacity-50 rounded"></div>
                   ) : (
-                    `${transfer_details?.distance?.text}`
+                    `${
+                      transfer_details?.distance?.text ||
+                      `${transfer_details?.distance} km`
+                    }`
                   )}
                 </span>
                 <div className="border-t border-dashed w-64"></div>
@@ -176,7 +179,8 @@ const TaxiDetailModal = ({
                   ) : (
                     <>
                       <p className="font-semibold text-md">
-                        {transfer_details?.quote?.price?.total} {transfer_details?.quote?.price?.currency}
+                        {transfer_details?.quote?.price?.total || data?.price}{" "}
+                        {transfer_details?.quote?.price?.currency || data?.currency}
                       </p>
                       <p className="text-gray-500 text-sm">Price</p>
                     </>
@@ -211,9 +215,9 @@ const TaxiDetailModal = ({
         </div>
 
         {/* Delete Booking Button (Fixed) */}
-        {handleDelete && type!="combo"&&(
+        {handleDelete && type != "combo" && (
           <div className="p-4 bg-white">
-            {console.log("type is:",type)}
+            {console.log("type is:", type)}
             <button
               className="w-full bg-red-500 text-white py-2 rounded-lg flex items-center justify-center"
               onClick={() => handleDelete(booking)}

@@ -22,6 +22,7 @@ import TaxiDetailModal from "../../../components/modals/daybyday/TaxiDetailModal
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { FaPlaneDeparture } from "react-icons/fa";
+import VehicleDetailLoader from "../../../components/modals/daybyday/VehicleDetailLoader";
 const GridContainer = styled.div`
   width: auto;
   overflow: auto;
@@ -519,8 +520,8 @@ const TransferBooking = ({
                           <div className="flex sm:text-sm text-[14px] flex-row text-[#7A7A7A] font-light items-center">
                             {booking?.booking_type == "Taxi" ? (
                               <>
-                                {booking?.transfer_details?.quote
-                                      ?.taxi_category?.type && (
+                                {booking?.transfer_details?.quote?.taxi_category
+                                  ?.type && (
                                   <div>
                                     {booking?.transfer_details?.quote
                                       ?.taxi_category?.type ||
@@ -675,6 +676,7 @@ const TransferBooking = ({
                     className="font-lexend"
                     onHide={() => setShowVehicleDrawer(false)}
                   >
+                    {loading?<><VehicleDetailLoader/></>:<>
                     {vehicleDetails?.booking_type == "Taxi" ? (
                       <TaxiDetailModal
                         data={vehicleDetails}
@@ -694,6 +696,7 @@ const TransferBooking = ({
                         booking={booking}
                       />
                     )}
+                    </>}
                   </Drawer>
                 </div>
               )}
@@ -759,8 +762,16 @@ const TransferBooking = ({
               _updateFlightBookingHandler={_updateFlightBookingHandler}
               _updateTaxiBookingHandler={_updateTaxiBookingHandler}
               getPaymentHandler={getPaymentHandler}
-              origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id || oCityData?.gmaps_place_id}
-              destination_itinerary_city_id={dCityData?.id || dCityData?.gmaps_place_id || dCityData?.gmaps_place_id}
+              origin_itinerary_city_id={
+                oCityData?.id ||
+                oCityData?.gmaps_place_id ||
+                oCityData?.gmaps_place_id
+              }
+              destination_itinerary_city_id={
+                dCityData?.id ||
+                dCityData?.gmaps_place_id ||
+                dCityData?.gmaps_place_id
+              }
             />
           </div>
         )
@@ -887,8 +898,8 @@ const TransferBooking = ({
                           <div className="flex sm:text-sm text-[14px]  flex-row text-[#7A7A7A] font-light items-center">
                             {book?.booking_type == "Taxi" ? (
                               <>
-                                {book?.transfer_details?.quote
-                                      ?.taxi_category?.type  && (
+                                {book?.transfer_details?.quote?.taxi_category
+                                  ?.type && (
                                   <div>
                                     {book?.transfer_details?.quote
                                       ?.taxi_category?.type ||
@@ -1044,26 +1055,34 @@ const TransferBooking = ({
                     className="font-lexend"
                     onHide={() => setShowVehicleDrawer(false)}
                   >
-                    {vehicleDetails?.booking_type == "Taxi" ? (
-                      <TaxiDetailModal
-                        data={vehicleDetails}
-                        loading={loading}
-                        setIsOpen={setShowVehicleDrawer}
-                        handleDelete={handleDelete}
-                        setHandleShow={setShowVehicleDrawer}
-                        booking={booking}
-                        type={"combo"}
-                      />
+                    {loading ? (
+                      <>
+                        <VehicleDetailLoader />
+                      </>
                     ) : (
-                      <VehicleDetailModal
-                        data={vehicleDetails}
-                        loading={loading}
-                        setIsOpen={setShowVehicleDrawer}
-                        handleDelete={handleDelete}
-                        setHandleShow={setShowVehicleDrawer}
-                        booking={booking}
-                        type={"combo"}
-                      />
+                      <>
+                        {vehicleDetails?.booking_type == "Taxi" ? (
+                          <TaxiDetailModal
+                            data={vehicleDetails}
+                            loading={loading}
+                            setIsOpen={setShowVehicleDrawer}
+                            handleDelete={handleDelete}
+                            setHandleShow={setShowVehicleDrawer}
+                            booking={booking}
+                            type={"combo"}
+                          />
+                        ) : (
+                          <VehicleDetailModal
+                            data={vehicleDetails}
+                            loading={loading}
+                            setIsOpen={setShowVehicleDrawer}
+                            handleDelete={handleDelete}
+                            setHandleShow={setShowVehicleDrawer}
+                            booking={booking}
+                            type={"combo"}
+                          />
+                        )}
+                      </>
                     )}
                   </Drawer>
                 </div>
@@ -1124,8 +1143,12 @@ const TransferBooking = ({
               _updateFlightBookingHandler={_updateFlightBookingHandler}
               _updatePaymentHandler={_updatePaymentHandler}
               setShowLoginModal={setShowLoginModal}
-              origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
-        destination_itinerary_city_id={dCityData?.id || dCityData?.gmaps_place_id}
+              origin_itinerary_city_id={
+                oCityData?.id || oCityData?.gmaps_place_id
+              }
+              destination_itinerary_city_id={
+                dCityData?.id || dCityData?.gmaps_place_id
+              }
             />
           </ComboContainer>
         ))
