@@ -35,7 +35,7 @@ import {
 } from "react-icons/im";
 import ComboFlight from "../../modals/flights/ComboFlight";
 import ComboTaxi from "../../modals/taxis/ComboTaxi";
-import { MdDirectionsTransit, MdLocalTaxi } from "react-icons/md";
+import { MdDirectionsBoat, MdDirectionsBus, MdDirectionsTransit, MdLocalTaxi } from "react-icons/md";
 import { PulseLoader } from "react-spinners";
 import dayjs from "dayjs";
 import { updateSingleTransferBooking } from "../../../store/actions/transferBookingsStore";
@@ -1479,6 +1479,10 @@ export const getModeIcon = (mode, size = 20) => {
       return <MdLocalTaxi size={size} />;
     case "flight":
       return <FaPlaneDeparture size={size} />;
+    case "bus":
+      return <MdDirectionsBus size={size} />;
+    case "ferry":
+      return <MdDirectionsBoat size={size} />;
     default:
       return <MdDirectionsTransit size={size} />;
   }

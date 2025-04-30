@@ -483,7 +483,7 @@ const RouteEditSection = (props) => {
             });
           } else if (err?.response?.status === 400) {
             props.openNotification({
-              text: err?.response?.data?.messages[0],
+              text: err?.message,
               heading: "Error!",
               type: "error",
             });
