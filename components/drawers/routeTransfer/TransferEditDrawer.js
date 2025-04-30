@@ -3477,6 +3477,11 @@ const OtherTransfer = ({
     }
   };
 
+  const addDaysToDate = (dateString, numberOfDays) => {
+    const newDate = dayjs(dateString).add(numberOfDays, "day");
+    return newDate.format("YYYY-MM-DD");
+  };
+
   const handleUpdateTransferWithData = async (updatedData) => {
     setUpdateLoading(true);
     
@@ -3577,6 +3582,8 @@ const OtherTransfer = ({
           data
         )
       );
+
+      console.log("Key to update",origin_itinerary_city_id,destination_itinerary_city_id)
 
       console.log("Transfer updated successfully:", data);
 
