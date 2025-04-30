@@ -30,8 +30,36 @@ const TaxiDetailModal = ({
     number_of_children,
     source_address,
     destination_address,
+    check_in,
+    check_out,
   } = data;
+  const formatDateTime = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return {
+      date: date.toLocaleDateString("en-US", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        weekday: "long",
+      }),
+      time: date.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      }),
+    };
+  };
 
+  const departure =
+    check_in ||
+    transfer_details?.start_datetime ||
+    transfer_details?.gozo?.start_date;
+  const duration = transfer_details?.duration;
+
+  const arrival =
+    formatDateTime(check_out) || addMinutesToDate(departure, duration);
+  const depart = formatDateTime(departure);
   return (
     <>
       <div className="fixed inset-0 bg-gray-50 w-full h-full flex flex-col">
@@ -94,10 +122,10 @@ const TaxiDetailModal = ({
                         {source_address?.name}
                       </p>
                       <p className="text-black opacity-50 text-[12px]">
-                        {transfer_details?.trips?.[0]?.end_time}
+                        {depart.time}
                       </p>
                       <p className="text-black opacity-50 text-[12px]">
-                        {transfer_details?.trips?.[0]?.end_date}
+                        {depart.date}
                       </p>
                     </>
                   )}
@@ -133,10 +161,10 @@ const TaxiDetailModal = ({
                         {destination_address?.name}
                       </p>
                       <p className="text-black opacity-50 text-[12px]">
-                        {transfer_details?.trips?.[0]?.end_time}
+                        {arrival?.time}
                       </p>
                       <p className="text-black opacity-50 text-[12px]">
-                        {transfer_details?.trips?.[0]?.end_date}
+                        {arrival?.date}
                       </p>
                     </>
                   )}
@@ -180,7 +208,8 @@ const TaxiDetailModal = ({
                     <>
                       <p className="font-semibold text-md">
                         {transfer_details?.quote?.price?.total || data?.price}{" "}
-                        {transfer_details?.quote?.price?.currency || data?.currency}
+                        {transfer_details?.quote?.price?.currency ||
+                          data?.currency}
                       </p>
                       <p className="text-gray-500 text-sm">Price</p>
                     </>

@@ -676,7 +676,7 @@ const TransferBooking = ({
                     className="font-lexend"
                     onHide={() => setShowVehicleDrawer(false)}
                   >
-                    {loading?<><VehicleDetailLoader/></>:<>
+                    {loading?<><VehicleDetailLoader setHandleShow={setShowVehicleDrawer}/></>:<>
                     {vehicleDetails?.booking_type == "Taxi" ? (
                       <TaxiDetailModal
                         data={vehicleDetails}
@@ -1057,7 +1057,7 @@ const TransferBooking = ({
                   >
                     {loading ? (
                       <>
-                        <VehicleDetailLoader />
+                        <VehicleDetailLoader setHandleShow={setShowVehicleDrawer}/>
                       </>
                     ) : (
                       <>

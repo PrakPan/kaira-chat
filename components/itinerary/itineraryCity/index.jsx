@@ -5,7 +5,7 @@ import CitySummary from "./CitySummary";
 import CityDaybyDay from "./CityDaybyDay";
 import { getStars } from "./SlabElement";
 import Image from "next/image";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { bookingDetails } from "../../../services/bookings/FetchAccommodation";
 import { useRouter } from "next/router";
 import Drawer from "../../ui/Drawer";
@@ -15,7 +15,8 @@ import { IoMdClose } from "react-icons/io";
 import { logEvent } from "../../../services/ga/Index";
 import { toast } from "react-toastify";
 import BackArrow from "../../ui/BackArrow";
-
+import { openNotification } from "../../../store/actions/notification";
+import FullScreenGallery from "../../fullscreengallery/Index"
 const Container = styled.div`
   padding: 0 0.75rem 0.75rem 0.75rem;
   @media screen and (min-width: 768px) {
@@ -77,11 +78,20 @@ const ItineraryCity = (props) => {
   const { itinerary_status, hotels_status } = useSelector(
     (state) => state.ItineraryStatus
   );
+  const [images, setImages] = useState(null);
+  const dispatch = useDispatch();
+  const _setImagesHandler = (images) => {
+    setImages(images);
+  };
+
   const fetchDetails = () => {
+    console.log("stays are:", stay);
     setShowDetails(true);
     bookingDetails
       .get(
-        `/${router?.query?.id}/bookings/accommodation/${props.city.hotels[0]?.id}/`,
+        `/${router?.query?.id}/bookings/accommodation/${
+          stay[props?.index].id
+        }/`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -92,11 +102,13 @@ const ItineraryCity = (props) => {
         setData(res.data);
       })
       .catch((err) => {
-        props.openNotification({
-          type: "error",
-          text: "unable to get detail",
-          heading: "Error!",
-        });
+        dispatch(
+          openNotification({
+            type: "error",
+            text: "unable to get detail",
+            heading: "Error!",
+          })
+        );
         setShowDetails(false);
       });
   };
@@ -273,17 +285,22 @@ const ItineraryCity = (props) => {
       >
         <Container>
           <BackContainer className=" font-lexend">
-            <BackArrow onClick={()=>setShowDetails(false)}/>
+            <BackArrow handleClick={() => setShowDetails(false)} />
           </BackContainer>
           <HotelBookingDetails
-            _setImagesHandler={props._setImagesHandler}
+            _setImagesHandler={_setImagesHandler}
             user_rating={props.city.hotels[0]?.rating}
             number_of_reviews={props.city.hotels[0]?.user_ratings_total}
-            data={data} //
+            data={data}
+            BookingButtonFun={() => {
+              props.handleClickAc(
+                props.index,
+                stay[props.index],
+                stay[props?.index]?.city_id
+              );
+            }}
             images={
-              props?.city?.hotels[0]?.images
-                ? props?.city?.hotels[0]?.images
-                : []
+              data?.hotel_details?.images ? data?.hotel_details?.images : []
             }
             experience_filters={props.poi ? props.poi.experience_filters : null}
             name={
@@ -297,6 +314,13 @@ const ItineraryCity = (props) => {
             setShowDetails={setShowDetails}
             id={props?.city?.hotels?.[0]?.id}
           />
+          {images ? (
+        <FullScreenGallery
+          mercury
+          closeGalleryHandler={() => setImages(null)}
+          images={images}
+        ></FullScreenGallery>
+      ) : null}
         </Container>
       </Drawer>
     </div>

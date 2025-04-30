@@ -339,7 +339,7 @@ const FlightSegment = ({ segments }) => {
                   {["origin"].map((key) => (
                     <div key={key} className="flex flex-col w-full">
                        {segment[key]?.terminal&&<div className="flex ">
-                          Terminal {segment[key]?.terminal}{" "}
+                        {segment[key]?.terminal.split(" ")[0]=="Terminal"?"":"Terminal"} {segment[key]?.terminal}{" "}
                         </div>}
                     </div>
                   ))}
@@ -348,7 +348,7 @@ const FlightSegment = ({ segments }) => {
                     <div key={key} className="flex flex-col w-full">
                       <div className="text-[10px] sm:text-[12px] font-normal m-0 flex justify-end">
                         {segment[key]?.terminal&&<div className="flex ">
-                          Terminal {segment[key]?.terminal}{" "}
+                          {segment[key]?.terminal.split(" ")[0]=="Terminal"?"":"Terminal"} {segment[key]?.terminal}{" "}
                         </div>}
                       </div>
                     </div>

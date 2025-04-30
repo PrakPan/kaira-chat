@@ -144,6 +144,10 @@ export default function Book() {
           booking_id: metaData.booking_id,
           travellers: [...adultsData, ...childrenData, ...infantsData],
           is_domestic: metaData.is_domestic,
+        },{
+          headers:{
+            Authorization:`Bearer ${localStorage.getItem("access_token")}`
+          }
         }
       );
       dispatch(

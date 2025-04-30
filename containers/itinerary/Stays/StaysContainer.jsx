@@ -164,6 +164,7 @@ const StaysContainer = (props) => {
         {hotels_status === "SUCCESS" ? (
           props.stayBookings.map((booking, index) => (
             <>
+            {console.log("booking images is:",booking)}
               <HotelBooking
                 key={booking?.id}
                 index={index}
