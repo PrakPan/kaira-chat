@@ -591,7 +591,7 @@ const Details = (props) => {
                 </p>
               ) : null}
 
-              {props?.payment && (
+              {props?.payment && pricing_status === "SUCCESS" && (
                 <div className="text-[#7A7A7A] text-sm">
                   {props?.payment?.total_cost == 0
                     ? "No bookings added yet"
@@ -877,9 +877,9 @@ const Details = (props) => {
           </div>
         </div>
 
-        <div>
+        {/* <div>
           <CountdownTimer priceValidUntil={props?.payment?.price_valid_until} />
-        </div>
+        </div> */}
       </div>
 
       {props.tripsPage ? (

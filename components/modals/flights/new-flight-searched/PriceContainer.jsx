@@ -20,6 +20,7 @@ export default function PriceContainer({
     onFlightSelect?.();
 
     if (onSelect) {
+      console.log("Inside onSelect")
       onSelect({
         ...data,
         arrival_time: data?.duration,
@@ -27,6 +28,7 @@ export default function PriceContainer({
         trace_id: trace_id || localStorage.getItem("Travclan_trace_id"),
       });
     } else {
+      console.log("Inside updateBo")
       _updateBookingHandler({
         booking_id: selectedBooking.id,
         itinerary_id: selectedBooking.itinerary_id || router?.query?.id,

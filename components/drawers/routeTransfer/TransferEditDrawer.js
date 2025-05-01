@@ -122,6 +122,7 @@ const TransferEditDrawer = (props) => {
     useState(null);
   const [currentModeDepartureTime, setCurrentModeDepartureTime] =
     useState(null);
+    const [selectedTransferIndex, setSelectedTransferIndex] = useState(null);
 
   // console.log("SELECTED BOOKING",city,dcity,oCityData,dCityData,mercuryTransfer?.destination?.city_name);
 
@@ -159,7 +160,7 @@ const TransferEditDrawer = (props) => {
                 number_of_adults: props?.plan?.number_of_adults || 1,
                 number_of_children: props?.plan?.number_of_children || 1,
                 number_of_infants: props?.plan?.number_of_infants || 1,
-                top_only: "false",
+                //top_only: "false",
               },
               {
                 headers: {
@@ -444,20 +445,13 @@ const TransferEditDrawer = (props) => {
             </>
           ) : (
             <>
-              <IoMdArrowRoundBack
-                size={20}
-                onClick={() => {
+              <BackArrow
+                handleClick={() => {
                   if (currentStep >= 1) {
                     setCurrentStep(currentStep - 1);
                   }
                 }}
-                className="hover-pointer text-3xl font-semibold"
-              />{" "}
-              {currentStep === 1 ? (
-                <IText>Back to results</IText>
-              ) : (
-                <IText>Back</IText>
-              )}{" "}
+              />
             </>
           )}
         </div>
@@ -618,330 +612,327 @@ const TransferEditDrawer = (props) => {
                   {dcity || mercuryTransfer?.destination?.city_name}
                 </div> */}
                 <div className="w-full flex flex-col items-center gap-3">
-                  {transfers?.map((transfer, index) => {
-                    if (isDesktop)
-                      return transfer?.transfers?.length > 1 ? (
-                        <>
-                          <NewMultiModeContainer
-                            key={index}
-                            name={transfer?.name}
-                            transferIndex={index}
-                            transfer={transfer?.transfers}
-                            handleSelect={handleSelect}
-                            selectedResult={selectedResult}
-                            setCurrentStep={setCurrentStep}
-                            currentStep={currentStep}
-                            handleFlightSelect={handleSelectResult}
-                            showComboFlightModal={showComboFlightModal}
-                            setShowComboFlightModal={setShowComboFlightModal}
-                            setHideFlightModal={() =>
-                              setShowComboFlightModal(false)
-                            }
-                            setHideBookingModal={() =>
-                              setShowComboFlightModal(false)
-                            }
-                            showTaxiModal={showComboTaxiModal}
-                            setShowComboTaxiModal={setShowComboTaxiModal}
-                            // setHideBookingModal={() => setShowTaxiModal(false)}
-                            setHideTaxiModal={() =>
-                              setShowComboTaxiModal(false)
-                            }
-                            getPaymentHandler={props.getPaymentHandler}
-                            _updatePaymentHandler={props._updatePaymentHandler}
-                            _updateFlightBookingHandler={
-                              _updateFlightBookingHandler
-                            }
-                            _updateBookingHandler={props._updateBookingHandler}
-                            alternates={selectedBooking?.id}
-                            tailored_id={selectedBooking?.tailored_itinerary}
-                            // _updateFlightHandler={props._updateFlightHandler}
-                            selectedBooking={selectedBooking}
-                            itinerary_id={ItineraryId}
-                            selectedTransferHeading={selectedTransferHeading}
-                            fetchData={fetchData}
-                            setShowLoginModal={setShowLoginModal}
-                            check_in={check_in}
-                            _GetInTouch={props._GetInTouch}
-                            daySlabIndex={day_slab_index}
-                            elementIndex={element_index}
-                            routeId={routeId}
-                            mercuryTransfer={selectedMercuryTransfer}
-                            mercury={mercuryTransfer}
-                            individual={props?.individual}
-                            originCityId={props?.originCityId}
-                            destinationCityId={props?.destinationCityId}
-                            token={props?.token}
-                            origin_itinerary_city_id={origin_itinerary_city_id}
-                            destination_itinerary_city_id={
-                              destination_itinerary_city_id
-                            }
-                            setShowDrawer={setShowDrawer}
-                            dCityData={dCityData}
-                            oCityData={oCityData}
-                            openNotification={openNotification}
-                            showDrawer={showDrawer}
-                            origin={origin}
-                            destination={destination}
-                            city={city}
-                            dcity={dcity}
-                            currentModeDepartureDate={currentModeDepartureDate}
-                            setCurrentModeDepartureDate={
-                              setCurrentModeDepartureDate
-                            }
-                            currentModeDepartureTime={currentModeDepartureTime}
-                            setCurrentModeDepartureTime={
-                              setCurrentModeDepartureTime
-                            }
-                          />
-                        </>
-                      ) : (
-                        <RouteContainer
-                          setSelectedMercuryTransfer={
-                            setSelectedMercuryTransfer
-                          }
-                          key={index}
-                          name={transfer?.name}
-                          transferIndex={index}
-                          transfer={transfer?.transfers}
-                          handleSelect={handleSelect}
-                          selectedResult={selectedResult}
-                          setSelectedResult={setSelectedResult}
-                          setCurrentStep={setCurrentStep}
-                          currentStep={currentStep}
-                          handleFlightSelect={handleSelectResult}
-                          showComboFlightModal={showComboFlightModal}
-                          setShowComboFlightModal={setShowComboFlightModal}
-                          setHideFlightModal={() =>
-                            setShowComboFlightModal(false)
-                          }
-                          hideDrawer={() => {
-                            setShowDrawer(false);
-                            setCurrentStep(0);
-                            setIsRouteSelected(false);
-                            setShowOtherTrasfer(false);
-                          }}
-                          setHideBookingModal={() =>
-                            setShowComboFlightModal(false)
-                          }
-                          showTaxiModal={showComboTaxiModal}
-                          setShowComboTaxiModal={setShowComboTaxiModal}
-                          // setHideBookingModal={() => setShowTaxiModal(false)}
-                          setHideTaxiModal={() => setShowComboTaxiModal(false)}
-                          getPaymentHandler={props.getPaymentHandler}
-                          _updatePaymentHandler={props._updatePaymentHandler}
-                          _updateFlightBookingHandler={
-                            _updateFlightBookingHandler
-                          }
-                          _updateTaxiBookingHandler={
-                            props._updateTaxiBookingHandler
-                          }
-                          _updateBookingHandler={props._updateBookingHandler}
-                          alternates={selectedBooking?.id}
-                          tailored_id={selectedBooking?.tailored_itinerary}
-                          // _updateFlightHandler={props._updateFlightHandler}
-                          selectedBooking={selectedBooking}
-                          itinerary_id={ItineraryId}
-                          selectedTransferHeading={selectedTransferHeading}
-                          fetchData={fetchData}
-                          setShowLoginModal={setShowLoginModal}
-                          check_in={check_in}
-                          _GetInTouch={props._GetInTouch}
-                          daySlabIndex={day_slab_index}
-                          elementIndex={element_index}
-                          routeId={routeId}
-                          mercuryTransfer={selectedMercuryTransfer}
-                          individual={props?.individual}
-                          originCityId={props?.originCityId}
-                          destinationCityId={props?.destinationCityId}
-                          token={props?.token}
-                          origin_itinerary_city_id={origin_itinerary_city_id}
-                          destination_itinerary_city_id={
-                            destination_itinerary_city_id
-                          }
-                          setShowDrawer={setShowDrawer}
-                          dCityData={dCityData}
-                          oCityData={oCityData}
-                          openNotification={openNotification}
-                          showDrawer={showDrawer}
-                          origin={origin}
-                          destination={destination}
-                          currentModeDepartureDate={currentModeDepartureDate}
-                          setCurrentModeDepartureDate={
-                            setCurrentModeDepartureDate
-                          }
-                          currentModeDepartureTime={currentModeDepartureTime}
-                          setCurrentModeDepartureTime={
-                            setCurrentModeDepartureTime
-                          }
-                          showOtherTrasfer={showOtherTransfer}
-                          setShowOtherTrasfer={setShowOtherTrasfer}
-                        />
-                      );
-                    return (
-
-                      transfer?.transfers?.length > 1 ?  <>
-                      <NewMultiModeContainer
-                        key={index}
-                        name={transfer?.name}
-                        transferIndex={index}
-                        transfer={transfer?.transfers}
-                        handleSelect={handleSelect}
-                        selectedResult={selectedResult}
-                        setCurrentStep={setCurrentStep}
-                        currentStep={currentStep}
-                        handleFlightSelect={handleSelectResult}
-                        showComboFlightModal={showComboFlightModal}
-                        setShowComboFlightModal={setShowComboFlightModal}
-                        setHideFlightModal={() =>
-                          setShowComboFlightModal(false)
-                        }
-                        setHideBookingModal={() =>
-                          setShowComboFlightModal(false)
-                        }
-                        showTaxiModal={showComboTaxiModal}
-                        setShowComboTaxiModal={setShowComboTaxiModal}
-                        // setHideBookingModal={() => setShowTaxiModal(false)}
-                        setHideTaxiModal={() =>
-                          setShowComboTaxiModal(false)
-                        }
-                        getPaymentHandler={props.getPaymentHandler}
-                        _updatePaymentHandler={props._updatePaymentHandler}
-                        _updateFlightBookingHandler={
-                          _updateFlightBookingHandler
-                        }
-                        _updateBookingHandler={props._updateBookingHandler}
-                        alternates={selectedBooking?.id}
-                        tailored_id={selectedBooking?.tailored_itinerary}
-                        // _updateFlightHandler={props._updateFlightHandler}
-                        selectedBooking={selectedBooking}
-                        itinerary_id={ItineraryId}
-                        selectedTransferHeading={selectedTransferHeading}
-                        fetchData={fetchData}
-                        setShowLoginModal={setShowLoginModal}
-                        check_in={check_in}
-                        _GetInTouch={props._GetInTouch}
-                        daySlabIndex={day_slab_index}
-                        elementIndex={element_index}
-                        routeId={routeId}
-                        mercuryTransfer={selectedMercuryTransfer}
-                        mercury={mercuryTransfer}
-                        individual={props?.individual}
-                        originCityId={props?.originCityId}
-                        destinationCityId={props?.destinationCityId}
-                        token={props?.token}
-                        origin_itinerary_city_id={origin_itinerary_city_id}
-                        destination_itinerary_city_id={
-                          destination_itinerary_city_id
-                        }
-                        setShowDrawer={setShowDrawer}
-                        dCityData={dCityData}
-                        oCityData={oCityData}
-                        openNotification={openNotification}
-                        showDrawer={showDrawer}
-                        origin={origin}
-                        destination={destination}
-                        city={city}
-                        dcity={dcity}
-                        currentModeDepartureDate={currentModeDepartureDate}
-                        setCurrentModeDepartureDate={
-                          setCurrentModeDepartureDate
-                        }
-                        currentModeDepartureTime={currentModeDepartureTime}
-                        setCurrentModeDepartureTime={
-                          setCurrentModeDepartureTime
-                        }
-                      />
-                    </> :
-                    <RouteContainer
-                    setSelectedMercuryTransfer={
-                      setSelectedMercuryTransfer
-                    }
-                    key={index}
-                    name={transfer?.name}
-                    transferIndex={index}
-                    transfer={transfer?.transfers}
-                    handleSelect={handleSelect}
-                    selectedResult={selectedResult}
-                    setSelectedResult={setSelectedResult}
-                    setCurrentStep={setCurrentStep}
-                    currentStep={currentStep}
-                    handleFlightSelect={handleSelectResult}
-                    showComboFlightModal={showComboFlightModal}
-                    setShowComboFlightModal={setShowComboFlightModal}
-                    setHideFlightModal={() =>
-                      setShowComboFlightModal(false)
-                    }
-                    hideDrawer={() => {
-                      setShowDrawer(false);
-                      setCurrentStep(0);
-                      setIsRouteSelected(false);
-                      setShowOtherTrasfer(false);
-                    }}
-                    setHideBookingModal={() =>
-                      setShowComboFlightModal(false)
-                    }
-                    showTaxiModal={showComboTaxiModal}
-                    setShowComboTaxiModal={setShowComboTaxiModal}
-                    // setHideBookingModal={() => setShowTaxiModal(false)}
-                    setHideTaxiModal={() => setShowComboTaxiModal(false)}
-                    getPaymentHandler={props.getPaymentHandler}
-                    _updatePaymentHandler={props._updatePaymentHandler}
-                    _updateFlightBookingHandler={
-                      _updateFlightBookingHandler
-                    }
-                    _updateTaxiBookingHandler={
-                      props._updateTaxiBookingHandler
-                    }
-                    _updateBookingHandler={props._updateBookingHandler}
-                    alternates={selectedBooking?.id}
-                    tailored_id={selectedBooking?.tailored_itinerary}
-                    // _updateFlightHandler={props._updateFlightHandler}
-                    selectedBooking={selectedBooking}
-                    itinerary_id={ItineraryId}
-                    selectedTransferHeading={selectedTransferHeading}
-                    fetchData={fetchData}
-                    setShowLoginModal={setShowLoginModal}
-                    check_in={check_in}
-                    _GetInTouch={props._GetInTouch}
-                    daySlabIndex={day_slab_index}
-                    elementIndex={element_index}
-                    routeId={routeId}
-                    mercuryTransfer={selectedMercuryTransfer}
-                    individual={props?.individual}
-                    originCityId={props?.originCityId}
-                    destinationCityId={props?.destinationCityId}
-                    token={props?.token}
-                    origin_itinerary_city_id={origin_itinerary_city_id}
-                    destination_itinerary_city_id={
-                      destination_itinerary_city_id
-                    }
-                    setShowDrawer={setShowDrawer}
-                    dCityData={dCityData}
-                    oCityData={oCityData}
-                    openNotification={openNotification}
-                    showDrawer={showDrawer}
-                    origin={origin}
-                    destination={destination}
-                    currentModeDepartureDate={currentModeDepartureDate}
-                    setCurrentModeDepartureDate={
-                      setCurrentModeDepartureDate
-                    }
-                    currentModeDepartureTime={currentModeDepartureTime}
-                    setCurrentModeDepartureTime={
-                      setCurrentModeDepartureTime
-                    }
-                    showOtherTrasfer={showOtherTransfer}
-                    setShowOtherTrasfer={setShowOtherTrasfer}
-                  />
-                      // <MobileRouteContainer
-                      //   key={index}
-                      //   transferIndex={index}
-                      //   transfer={transfer}
-                      //   handleSelect={handleSelect}
-                      // />
-                    );
-                  })}
+      {currentStep === 0 ? (
+        <>
+        {transfers && transfers.length > 0 && (
+          <div className="mb-4 w-full">
+            <div className="inline-block mb-3">
+              <span className="bg-red-500 text-white px-3 py-1 rounded-md text-sm font-medium">
+                Recommended
+              </span>
+            </div>
+            
+            <div
+              key={0}
+              className="flex justify-between items-center p-3 bg-white rounded-xl shadow-md w-full cursor-pointer hover:bg-gray-50 mb-4"
+              onClick={() => {
+                setSelectedTransferIndex(0);
+                setCurrentStep(1);
+              }}
+            >
+              <div>
+                <span className="font-medium p-2 text-lg">{transfers[0]?.name} |</span>
+                <span className="text-gray-600 ml-1">
+                  {Math.ceil(
+                    transfers[0].transfers.reduce((sum, t) => sum + (t.duration || 0), 0) / 60
+                  )}{" "}
+                  hours | {transfers[0].transfers.reduce((sum, t) => sum + (t.distance || 0), 0)} kms
+                </span>
+              </div>
+              <AiOutlineRight size={20} className="text-gray-400" />
+            </div>
+          </div>
+        )}
+        
+      
+        {transfers && transfers.length > 1 && (
+          <div className="w-full">
+            <div className="inline-block mb-3 w-full">
+              <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-sm font-medium">
+                OTHERS
+              </span>
+            </div>
+            
+            {transfers.slice(1).map((transfer, idx) => {
+              const index = idx + 1; // Actual index in the transfers array
+              return (
+                <div
+                  key={index}
+                  className="flex justify-between p-3 items-center bg-white rounded-xl shadow-md w-full cursor-pointer hover:bg-gray-50 mb-4"
+                  onClick={() => {
+                    setSelectedTransferIndex(index);
+                    setCurrentStep(1);
+                  }}
+                >
+                  <div>
+                    <span className="font-medium p-2 text-lg">{transfer?.name} |</span>
+                    <span className="text-gray-600 ml-1">
+                      {Math.ceil(
+                        transfer.transfers.reduce((sum, t) => sum + (t.duration || 0), 0) / 60
+                      )}{" "}
+                      hours | {transfer.transfers.reduce((sum, t) => sum + (t.distance || 0), 0)} kms
+                    </span>
+                  </div>
+                  <AiOutlineRight size={20} className="text-gray-400" />
                 </div>
+              );
+            })}
+          </div>
+      )}
+        </>
+      ) : (
+        selectedTransferIndex !== null && (
+          isDesktop ? (
+            transfers[selectedTransferIndex]?.transfers?.length > 1 ? (
+              <NewMultiModeContainer
+                key={selectedTransferIndex}
+                name={transfers[selectedTransferIndex]?.name}
+                transferIndex={selectedTransferIndex}
+                transfer={transfers[selectedTransferIndex]?.transfers}
+                handleSelect={handleSelect}
+                selectedResult={selectedResult}
+                setCurrentStep={setCurrentStep}
+                currentStep={currentStep}
+                handleFlightSelect={handleSelectResult}
+                showComboFlightModal={showComboFlightModal}
+                setShowComboFlightModal={setShowComboFlightModal}
+                setHideFlightModal={() => setShowComboFlightModal(false)}
+                setHideBookingModal={() => setShowComboFlightModal(false)}
+                showTaxiModal={showComboTaxiModal}
+                setShowComboTaxiModal={setShowComboTaxiModal}
+                setHideTaxiModal={() => setShowComboTaxiModal(false)}
+                getPaymentHandler={props.getPaymentHandler}
+                _updatePaymentHandler={props._updatePaymentHandler}
+                _updateFlightBookingHandler={_updateFlightBookingHandler}
+                _updateBookingHandler={props._updateBookingHandler}
+                alternates={selectedBooking?.id}
+                tailored_id={selectedBooking?.tailored_itinerary}
+                selectedBooking={selectedBooking}
+                itinerary_id={ItineraryId}
+                selectedTransferHeading={selectedTransferHeading}
+                fetchData={fetchData}
+                setShowLoginModal={setShowLoginModal}
+                check_in={check_in}
+                _GetInTouch={props._GetInTouch}
+                daySlabIndex={day_slab_index}
+                elementIndex={element_index}
+                routeId={routeId}
+                mercuryTransfer={selectedMercuryTransfer}
+                mercury={mercuryTransfer}
+                individual={props?.individual}
+                originCityId={props?.originCityId}
+                destinationCityId={props?.destinationCityId}
+                token={props?.token}
+                origin_itinerary_city_id={origin_itinerary_city_id}
+                destination_itinerary_city_id={destination_itinerary_city_id}
+                setShowDrawer={setShowDrawer}
+                dCityData={dCityData}
+                oCityData={oCityData}
+                openNotification={openNotification}
+                showDrawer={showDrawer}
+                origin={origin}
+                destination={destination}
+                city={city}
+                dcity={dcity}
+                currentModeDepartureDate={currentModeDepartureDate}
+                setCurrentModeDepartureDate={setCurrentModeDepartureDate}
+                currentModeDepartureTime={currentModeDepartureTime}
+                setCurrentModeDepartureTime={setCurrentModeDepartureTime}
+              />
+            ) : (
+              <RouteContainer
+                setSelectedMercuryTransfer={setSelectedMercuryTransfer}
+                key={selectedTransferIndex}
+                name={transfers[selectedTransferIndex]?.name}
+                transferIndex={selectedTransferIndex}
+                transfer={transfers[selectedTransferIndex]?.transfers}
+                handleSelect={handleSelect}
+                selectedResult={selectedResult}
+                setSelectedResult={setSelectedResult}
+                setCurrentStep={setCurrentStep}
+                currentStep={currentStep}
+                handleFlightSelect={handleSelectResult}
+                showComboFlightModal={showComboFlightModal}
+                setShowComboFlightModal={setShowComboFlightModal}
+                setHideFlightModal={() => setShowComboFlightModal(false)}
+                hideDrawer={() => {
+                  setShowDrawer(false);
+                  setCurrentStep(0);
+                  setIsRouteSelected(false);
+                  setShowOtherTrasfer(false);
+                  setSelectedTransferIndex(null); // Reset selected transfer
+                }}
+                setHideBookingModal={() => setShowComboFlightModal(false)}
+                showTaxiModal={showComboTaxiModal}
+                setShowComboTaxiModal={setShowComboTaxiModal}
+                setHideTaxiModal={() => setShowComboTaxiModal(false)}
+                getPaymentHandler={props.getPaymentHandler}
+                _updatePaymentHandler={props._updatePaymentHandler}
+                _updateFlightBookingHandler={_updateFlightBookingHandler}
+                _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+                _updateBookingHandler={props._updateBookingHandler}
+                alternates={selectedBooking?.id}
+                tailored_id={selectedBooking?.tailored_itinerary}
+                selectedBooking={selectedBooking}
+                itinerary_id={ItineraryId}
+                selectedTransferHeading={selectedTransferHeading}
+                fetchData={fetchData}
+                setShowLoginModal={setShowLoginModal}
+                check_in={check_in}
+                _GetInTouch={props._GetInTouch}
+                daySlabIndex={day_slab_index}
+                elementIndex={element_index}
+                routeId={routeId}
+                mercuryTransfer={selectedMercuryTransfer}
+                individual={props?.individual}
+                originCityId={props?.originCityId}
+                destinationCityId={props?.destinationCityId}
+                token={props?.token}
+                origin_itinerary_city_id={origin_itinerary_city_id}
+                destination_itinerary_city_id={destination_itinerary_city_id}
+                setShowDrawer={setShowDrawer}
+                dCityData={dCityData}
+                oCityData={oCityData}
+                openNotification={openNotification}
+                showDrawer={showDrawer}
+                origin={origin}
+                destination={destination}
+                currentModeDepartureDate={currentModeDepartureDate}
+                setCurrentModeDepartureDate={setCurrentModeDepartureDate}
+                currentModeDepartureTime={currentModeDepartureTime}
+                setCurrentModeDepartureTime={setCurrentModeDepartureTime}
+                showOtherTrasfer={showOtherTransfer}
+                setShowOtherTrasfer={setShowOtherTrasfer}
+              />
+            )
+          ) : (
+            // Mobile view logic
+            transfers[selectedTransferIndex]?.transfers?.length > 1 ? (
+              <NewMultiModeContainer
+                key={selectedTransferIndex}
+                name={transfers[selectedTransferIndex]?.name}
+                transferIndex={selectedTransferIndex}
+                transfer={transfers[selectedTransferIndex]?.transfers}
+                handleSelect={handleSelect}
+                selectedResult={selectedResult}
+                setCurrentStep={setCurrentStep}
+                currentStep={currentStep}
+                handleFlightSelect={handleSelectResult}
+                showComboFlightModal={showComboFlightModal}
+                setShowComboFlightModal={setShowComboFlightModal}
+                setHideFlightModal={() => setShowComboFlightModal(false)}
+                setHideBookingModal={() => setShowComboFlightModal(false)}
+                showTaxiModal={showComboTaxiModal}
+                setShowComboTaxiModal={setShowComboTaxiModal}
+                setHideTaxiModal={() => setShowComboTaxiModal(false)}
+                getPaymentHandler={props.getPaymentHandler}
+                _updatePaymentHandler={props._updatePaymentHandler}
+                _updateFlightBookingHandler={_updateFlightBookingHandler}
+                _updateBookingHandler={props._updateBookingHandler}
+                alternates={selectedBooking?.id}
+                tailored_id={selectedBooking?.tailored_itinerary}
+                selectedBooking={selectedBooking}
+                itinerary_id={ItineraryId}
+                selectedTransferHeading={selectedTransferHeading}
+                fetchData={fetchData}
+                setShowLoginModal={setShowLoginModal}
+                check_in={check_in}
+                _GetInTouch={props._GetInTouch}
+                daySlabIndex={day_slab_index}
+                elementIndex={element_index}
+                routeId={routeId}
+                mercuryTransfer={selectedMercuryTransfer}
+                mercury={mercuryTransfer}
+                individual={props?.individual}
+                originCityId={props?.originCityId}
+                destinationCityId={props?.destinationCityId}
+                token={props?.token}
+                origin_itinerary_city_id={origin_itinerary_city_id}
+                destination_itinerary_city_id={destination_itinerary_city_id}
+                setShowDrawer={setShowDrawer}
+                dCityData={dCityData}
+                oCityData={oCityData}
+                openNotification={openNotification}
+                showDrawer={showDrawer}
+                origin={origin}
+                destination={destination}
+                city={city}
+                dcity={dcity}
+                currentModeDepartureDate={currentModeDepartureDate}
+                setCurrentModeDepartureDate={setCurrentModeDepartureDate}
+                currentModeDepartureTime={currentModeDepartureTime}
+                setCurrentModeDepartureTime={setCurrentModeDepartureTime}
+              />
+            ) : (
+              <RouteContainer
+                setSelectedMercuryTransfer={setSelectedMercuryTransfer}
+                key={selectedTransferIndex}
+                name={transfers[selectedTransferIndex]?.name}
+                transferIndex={selectedTransferIndex}
+                transfer={transfers[selectedTransferIndex]?.transfers}
+                handleSelect={handleSelect}
+                selectedResult={selectedResult}
+                setSelectedResult={setSelectedResult}
+                setCurrentStep={setCurrentStep}
+                currentStep={currentStep}
+                handleFlightSelect={handleSelectResult}
+                showComboFlightModal={showComboFlightModal}
+                setShowComboFlightModal={setShowComboFlightModal}
+                setHideFlightModal={() => setShowComboFlightModal(false)}
+                hideDrawer={() => {
+                  setShowDrawer(false);
+                  setCurrentStep(0);
+                  setIsRouteSelected(false);
+                  setShowOtherTrasfer(false);
+                  setSelectedTransferIndex(null); // Reset selected transfer
+                }}
+                setHideBookingModal={() => setShowComboFlightModal(false)}
+                showTaxiModal={showComboTaxiModal}
+                setShowComboTaxiModal={setShowComboTaxiModal}
+                setHideTaxiModal={() => setShowComboTaxiModal(false)}
+                getPaymentHandler={props.getPaymentHandler}
+                _updatePaymentHandler={props._updatePaymentHandler}
+                _updateFlightBookingHandler={_updateFlightBookingHandler}
+                _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+                _updateBookingHandler={props._updateBookingHandler}
+                alternates={selectedBooking?.id}
+                tailored_id={selectedBooking?.tailored_itinerary}
+                selectedBooking={selectedBooking}
+                itinerary_id={ItineraryId}
+                selectedTransferHeading={selectedTransferHeading}
+                fetchData={fetchData}
+                setShowLoginModal={setShowLoginModal}
+                check_in={check_in}
+                _GetInTouch={props._GetInTouch}
+                daySlabIndex={day_slab_index}
+                elementIndex={element_index}
+                routeId={routeId}
+                mercuryTransfer={selectedMercuryTransfer}
+                individual={props?.individual}
+                originCityId={props?.originCityId}
+                destinationCityId={props?.destinationCityId}
+                token={props?.token}
+                origin_itinerary_city_id={origin_itinerary_city_id}
+                destination_itinerary_city_id={destination_itinerary_city_id}
+                setShowDrawer={setShowDrawer}
+                dCityData={dCityData}
+                oCityData={oCityData}
+                openNotification={openNotification}
+                showDrawer={showDrawer}
+                origin={origin}
+                destination={destination}
+                currentModeDepartureDate={currentModeDepartureDate}
+                setCurrentModeDepartureDate={setCurrentModeDepartureDate}
+                currentModeDepartureTime={currentModeDepartureTime}
+                setCurrentModeDepartureTime={setCurrentModeDepartureTime}
+                showOtherTrasfer={showOtherTransfer}
+                setShowOtherTrasfer={setShowOtherTrasfer}
+              />
+            )
+          )
+        )
+      )}
+    </div>
               </>
             ) : transferType === TRANSFER_TYPES.ROUNDTRIP.name ? (
               <RoundTripSuggestion
@@ -1379,6 +1370,7 @@ const RouteContainer = (props) => {
                 destination_itinerary_city_id={destination_itinerary_city_id}
                 handleSelect={handleSelect}
                 hideDrawer={hideDrawer}
+                getPaymentHandler={ getPaymentHandler}
                 />
               )
             ) : (
@@ -1620,6 +1612,12 @@ const NewMultiModeContainer = ({
       setShowComboTaxiModal(false);
     }
 
+    
+    if (currentStep === 1) {
+      setCurrentStep(0); 
+      return;
+    }
+
     setSelectedModeIds((prev) => {
       const newSelections = { ...prev };
       for (let i = currentStep - 1; i < totalSteps; i++) {
@@ -1813,6 +1811,8 @@ const NewMultiModeContainer = ({
             data
           )
         );
+
+        getPaymentHandler();
 
         console.log("Transfer from updated successfully:", data);
 
@@ -2081,6 +2081,8 @@ const NewMultiModeContainer = ({
                         destination_code={option?.destination?.code}
                         skipFetch={skipFlightFetch}
                         onFilterApplied={handleFilterApplied}
+                        dCityData={dCityData}
+                        oCityData={oCityData}
                       />
                     );
                   }
@@ -2124,6 +2126,8 @@ const NewMultiModeContainer = ({
                         comboStartTime={comboStartTime}
                         // skipFetch={skipTaxiFetch}
                         onFilterApplied={handleFilterApplied}
+                        dCityData={dCityData}
+                        oCityData={oCityData}
                       />
                     );
                   }
@@ -2203,7 +2207,7 @@ const NewMultiModeContainer = ({
 
                               <div className="flex flex-col md:flex-col gap-2 items-center md:items-center justify-center">
                                 <div className="font-semibold text-sm md:text-base">
-                                  {currency} {price}
+                                  {currency} {price} {`/-`}
                                 </div>
                                 <div
                                   className="cursor-pointer"
@@ -3277,6 +3281,7 @@ const Cost = styled.p`
   }
 `;
 const OtherTransfer = ({
+  getPaymentHandler,
   setShowOtherTrasfer,
   selectedResult,
   setSelectedResult,
@@ -3583,6 +3588,8 @@ const OtherTransfer = ({
         )
       );
 
+      getPaymentHandler();
+
       console.log("Key to update",origin_itinerary_city_id,destination_itinerary_city_id)
 
       console.log("Transfer updated successfully:", data);
@@ -3691,7 +3698,7 @@ const OtherTransfer = ({
                     className="!font-[lexend]"
                     style={{ fontFamily: "Lexend" }}
                   >
-                    {currency} {price}
+                    {currency} {price} {`/-`}
                   </span>
                 </div>
                 

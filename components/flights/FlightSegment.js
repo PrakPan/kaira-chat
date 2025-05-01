@@ -73,8 +73,8 @@ export const FlightSegment = ({ segments }) => {
   
                     {segment?.origin?.terminal ? (
                       <p className="text-xs">
-                        Terminal: {segment.origin.terminal}
-                      </p>
+                          {segment[key]?.terminal.split(" ")[0]=="Terminal"?"":"Terminal"} {segment[key]?.terminal}{" "}
+                          </p>
                     ) : null}
                   </div>
   
@@ -110,8 +110,8 @@ export const FlightSegment = ({ segments }) => {
                     </p>
                     {segment?.destination?.terminal ? (
                       <p className="text-xs">
-                        Terminal: {segment.destination.terminal}
-                      </p>
+                          {segment[key]?.terminal.split(" ")[0]=="Terminal"?"":"Terminal"} {segment[key]?.terminal}{" "}
+                          </p>
                     ) : null}
                   </div>
                 </div>

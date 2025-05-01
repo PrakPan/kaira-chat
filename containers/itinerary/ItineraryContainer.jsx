@@ -229,6 +229,8 @@ const ItineraryContainer = (props) => {
         .catch((error) => {
           setPaymentLoading(false);
         });
+    }else{
+      getPaymentInfo();
     }
   };
 
@@ -287,6 +289,7 @@ const ItineraryContainer = (props) => {
   };
 
   const getPaymentInfo = () => {
+    console.log("I'm Inside Payment");
     let stay_data = {};
     let activity_data = {};
     let transfer_data = {};

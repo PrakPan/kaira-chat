@@ -474,9 +474,9 @@ export default function PoiDetails(props) {
                       const time = e.slice(index + 1).trim();
 
                       return (
-                        <div key={i} className="flex gap-[22px]">
+                        <div key={i} className="flex gap-[22px] mb-2">
                           <div className="text-[14px] font-semibold">{day}</div>
-                          <div className={`text-[14px] font-normal ${time=="Closed"?"px-[8px] py-[2px] bg-[rgba(220,69,65,0.1)] rounded-[10px] text-[#DC4541]":""}`}>{time}</div>
+                          <div className={`text-[14px] font-normal bg-[#FAFAFA] px-[8px] py-[2px] rounded-[10px] ${time=="Closed"?" bg-[rgba(220,69,65,0.1)]  text-[#DC4541]":""}`}>{time}</div>
                         </div>
                       );
                     })}

@@ -32,7 +32,7 @@ const SortItem = styled.div`
 `;
 
 export default function TemporaryDrawer(props) {
-  console.log("props are:",props)
+  console.log("props are:", props);
   let isPageWide = media("(min-width: 768px)");
   const [selectedStarCategory, setSelectedStarCategory] = useState([]);
   const [SelectedSort, setSelectedSort] = useState(props.FILTERS.sort[0]);
@@ -224,40 +224,39 @@ export default function TemporaryDrawer(props) {
             </div>
 
             {isPageWide && (
-  <div className="relative">
-    <button
-      onClick={() => {
-        props.setShowFilters(true);
-        console.log("filters pressed");
-      }}
-      className="ml-2 border-2 border-black w-fit px-2 py-1 rounded-full hover:bg-black hover:text-white transition-all"
-    >
-      More Filters
-    </button>
-    {props?.showFilters && (
-      <div
-        // className={`
-        //   z-50 bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm
-        //   min-[584px]:absolute min-[584px]:top-[calc(100%+8px)] min-[584px]:right-0
-        //   max-[583px]:absolute max-[583px]:bottom-0 max-[583px]:w-full
-        //   ${props?.showFilters ? 'opacity-100' : 'opacity-0'} transition-all
-        // `}
-        ref={filtersRef}
-      key={1}
-      >
-        <Filters
-          showFilter={props?.showFilters}
-          setshowFilter={props?.setShowFilters}
-          filtersState={props?.filtersState}
-          FILTERS={props?.FILTERS}
-          _addFilterHandler={props?._addFilterHandler}
-          updateUserStarHandler={props?.updateUserStarHandler}
-        />
-      </div>
-    )}
-  </div>
-)}
-
+              <div className="relative">
+                <button
+                  onClick={() => {
+                    props.setShowFilters(true);
+                    console.log("filters pressed");
+                  }}
+                  className="ml-2 border-2 border-black w-fit px-2 py-1 rounded-full hover:bg-black hover:text-white transition-all"
+                >
+                  More Filters
+                </button>
+                {props?.showFilters && (
+                  <div
+                    // className={`
+                    //   z-50 bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm
+                    //   min-[584px]:absolute min-[584px]:top-[calc(100%+8px)] min-[584px]:right-0
+                    //   max-[583px]:absolute max-[583px]:bottom-0 max-[583px]:w-full
+                    //   ${props?.showFilters ? 'opacity-100' : 'opacity-0'} transition-all
+                    // `}
+                    ref={filtersRef}
+                    key={1}
+                  >
+                    <Filters
+                      showFilter={props?.showFilters}
+                      setshowFilter={props?.setShowFilters}
+                      filtersState={props?.filtersState}
+                      FILTERS={props?.FILTERS}
+                      _addFilterHandler={props?._addFilterHandler}
+                      updateUserStarHandler={props?.updateUserStarHandler}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         ) : null}
       </React.Fragment>

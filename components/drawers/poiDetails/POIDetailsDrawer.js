@@ -156,6 +156,7 @@ const POIDetailsDrawer = (props) => {
               slabIndex={props?.slabIndex}
               itinerary_city_id={props?.itinerary_city_id}
               setShowLoginModal={props?.setShowLoginModal}
+              getPaymentHandler={props?.getPaymentHandler}
             >
               {props?.children}
             </ActivityDetails>
@@ -170,6 +171,7 @@ const POIDetailsDrawer = (props) => {
               slabIndex={props?.slabIndex}
               itinerary_city_id={props?.itinerary_city_id}
               setShowLoginModal={props?.setShowLoginModal}
+              getPaymentHandler={props?.getPaymentHandler}
             >
               {props.children}
             </POIDetails>

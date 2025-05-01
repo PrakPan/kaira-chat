@@ -238,6 +238,7 @@ const ActivitiesBookings = (props) => {
                       text={booking?.activity?.short_description}
                       Topheading={"Select Our Point Of Interest"}
                       activityData={activityData}
+                      getPaymentHandler={props.getPaymentHandler}
                     />
                   </div>
                 </div>

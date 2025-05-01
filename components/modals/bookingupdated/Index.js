@@ -353,6 +353,12 @@ const Booking = (props) => {
             });
           setTotalCount(res?.data?.count);
           setMoreOptionsJSX([...moreOptionsJSX, ...options]);
+          setFilters((prev)=>({
+            ...prev,
+            facilities:res?.data?.selected_filters?.facilities,
+            type:res?.data?.selected_filters?.type,
+            tags:res?.data?.selected_filters?.tags
+          }))
         } else {
           setNoResults(true);
           setMoreOptionsJSX([]);

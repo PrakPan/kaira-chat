@@ -280,16 +280,16 @@ export default function NewActivityBooking(props) {
           </div>
         ) : (
           <Button
-                  bgColor={"#F7E700"}
-                  borderRadius="8px"
-                  fontWeight="400"
-                  hoverColor="white"
-                  height={"full"}
-                  className="p-[12px]"
-                  onclick={() => handleClick(props.data?.id)}
-                >
-                  Add To Itinerary
-                </Button>
+            bgColor={"#F7E700"}
+            borderRadius="8px"
+            fontWeight="400"
+            hoverColor="white"
+            height={"full"}
+            className="p-[12px]"
+            onclick={() => handleClick(props.data?.id)}
+          >
+            Add To Itinerary
+          </Button>
           // <div
           //   className="h-full text-blue underline cursor-pointer"
           //   onClick={() => handleClick(props.data?.id)}

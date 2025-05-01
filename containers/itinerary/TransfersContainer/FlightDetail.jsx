@@ -66,6 +66,7 @@ const Details = ({
   drawer,
   transferBookings,
   edge,
+  getPaymentHandler,
 }) => {
   // console.log("transferbookings is:",transferBookings)
   const router = useRouter();
@@ -117,7 +118,7 @@ const Details = ({
         <div className="flex flex-col gap-2">
           <Heading>
             <div className="flex flex-row items-center gap-2">
-              <BackArrow handleClick={() => setShowDetails((prev) => !prev)}/>
+              <BackArrow handleClick={() => setShowDetails((prev) => !prev)} />
             </div>
           </Heading>
         </div>
@@ -170,6 +171,7 @@ const Details = ({
                     }
                   );
                   window.location.href = `/flights/book/${res.data.id}`;
+                  getPaymentHandler();
                 } else {
                   // console.log("updating",originCityId)
                   const res = await axios.post(
@@ -182,6 +184,13 @@ const Details = ({
                       destination_itinerary_city: destinationCityId,
                       booking_id: booking_id,
                       edge: edge,
+                    },
+                    {
+                      headers: {
+                        Authorization: `Bearer ${localStorage.getItem(
+                          "access_token"
+                        )}`,
+                      },
                     }
                   );
                   const updatedTransferBookings = {
@@ -192,6 +201,7 @@ const Details = ({
                     },
                   };
                   dispatch(setTransfersBookings(updatedTransferBookings));
+                  getPaymentHandler();
                   dispatch(
                     openNotification({
                       type: "success",
@@ -315,18 +325,31 @@ export const FlightSegment = ({ segments }) => {
                 <div className=" flex flex-row gap-3 justify-between w-full">
                   {["origin"].map((key) => (
                     <div key={key} className="flex flex-col w-full">
-                      <div className="text-[10px] sm:text-[12px] font-normal m-0 flex justify-end">
-                        <div>Terminal {segment[key]?.terminal}</div>
-                      </div>
+                      {segment[key]?.terminal && (
+                        <div className="text-[10px] sm:text-[12px] font-normal m-0 flex">
+                          <div>
+                            {" "}
+                            {segment[key]?.terminal.split(" ")[0] == "Terminal"
+                              ? ""
+                              : "Terminal"}{" "}
+                            {segment[key]?.terminal} {segment[key]?.terminal}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))}
 
                   {["destination"].map((key) => (
                     <div key={key} className="flex flex-col w-full">
                       <div className="text-[10px] sm:text-[12px] font-normal m-0 flex justify-end">
-                        <div className="flex justify-end">
-                          Terminal {segment[key]?.terminal}{" "}
-                        </div>
+                        {segment[key]?.terminal && (
+                          <div className="flex justify-end">
+                            {segment[key]?.terminal.split(" ")[0] == "Terminal"
+                              ? ""
+                              : "Terminal"}{" "}
+                            {segment[key]?.terminal}{" "}
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}

@@ -184,13 +184,11 @@ const ComboTaxi = (props) => {
           trip_type: "one-way",
           origin: {
             city_id:
-              isValidUUID(props.selectedBooking?.origin?.city_id ||
+              isValidUUID(props?.originCityId || props.selectedBooking?.origin?.city_id ||
               props?.oCityData?.gmaps_place_id ||
-              props?.oCityData?.city?.id ||
-              props?.originCityId) ? props.selectedBooking?.origin?.city_id ||
+              props?.oCityData?.city?.id) ? props?.originCityId || props.selectedBooking?.origin?.city_id ||
               props?.oCityData?.gmaps_place_id ||
-              props?.oCityData?.city?.id ||
-              props?.originCityId : null,
+              props?.oCityData?.city?.id  : null,
             hub_id: null,
             gmaps_place_id: null,
             // address: props.selectedBooking?.origin?.shortName
@@ -209,10 +207,10 @@ const ComboTaxi = (props) => {
           },
           destination: {
             city_id:
-              isValidUUID(props.selectedBooking?.destination?.city_id ||
+              isValidUUID(props?.destinationCityId || props.selectedBooking?.destination?.city_id ||
               props?.dCityData?.gmaps_place_id ||
               props?.dCityData?.city?.id ||
-              props?.destinationCityId) ? props.selectedBooking?.destination?.city_id ||
+              props?.destinationCityId) ? props?.destinationCityId || props.selectedBooking?.destination?.city_id ||
               props?.dCityData?.gmaps_place_id ||
               props?.dCityData?.city?.id ||
               props?.destinationCityId : null,
