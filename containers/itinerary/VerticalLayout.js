@@ -155,6 +155,7 @@ const CityItem = ({
       if (response.status === 204) {
         dispatch(updateTransferBookings(bookingIdToDelete));
         setLoading(false);
+        getPaymentHandler();
         dispatch(
           openNotification({
             type: "success",
@@ -245,8 +246,9 @@ const CityItem = ({
           !downPresent && upPresent && "mt-[41px]"
         } ${!upPresent && downPresent && "mb-[41px]"}`}
       >
-        {transfers_status === "PENDING" ? (
-          <TransferSkeleton />
+        {!(upPresent && downPresent) && <div className="">{city} </div>}
+        {(transfers_status === "PENDING") ? (
+          (upPresent && downPresent) ? <TransferSkeleton /> : ""
         ) : (
           <div className=" text-[16px] font-[500] flex gap-1">
             {(booking_id || city) && !visible ? (
@@ -324,7 +326,7 @@ const CityItem = ({
                     onClick={() => upPresent && downPresent && handleEdit()}
                   >
                     <div className="flex gap-2 items-center ">
-                      <div className="group-hover:text-blue ">{city} </div>
+                     {(upPresent && downPresent) && <div className="group-hover:text-blue ">{city} </div>}
                       {upPresent && downPresent && (
                         <div className="">
                           <FaPen

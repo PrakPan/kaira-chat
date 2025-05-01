@@ -338,6 +338,7 @@ const TransferBooking = ({
 
       if (response.status === 204) {
         dispatch(updateTransferBookings(book?.id));
+        getPaymentHandler();
         setLoading(false);
         openNotification({
           type: "success",

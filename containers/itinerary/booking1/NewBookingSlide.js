@@ -877,9 +877,9 @@ const Details = (props) => {
           </div>
         </div>
 
-        <div>
+        {/* <div>
           <CountdownTimer priceValidUntil={props?.payment?.price_valid_until} />
-        </div>
+        </div> */}
       </div>
 
       {props.tripsPage ? (

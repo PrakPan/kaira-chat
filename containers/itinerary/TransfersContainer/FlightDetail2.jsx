@@ -76,6 +76,7 @@ const Details = ({
   setTransferBookingsIntercity,
   onChange,
   type,
+  getPaymentHandler
 }) => {
   const router = useRouter();
   const [fareRules, setFareRules] = useState(fareRule?.[0]?.fareRuleDetail);
@@ -97,6 +98,7 @@ const Details = ({
 
       if (response.status === 204) {
         dispatch(updateTransferBookings(booking_id));
+        getPaymentHandler();
         setLoading(false);
         dispatch(
           openNotification({

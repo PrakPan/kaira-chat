@@ -114,6 +114,7 @@ const Flight = (props) => {
             destinationCityId={props.destinationCityId}
             setTransferBookingsIntercity={props.setTransferBookingsIntercity}
             edge={props?.edge}
+            getPaymentHandler={props.getPaymentHandler}
           />
         </div>
       )}

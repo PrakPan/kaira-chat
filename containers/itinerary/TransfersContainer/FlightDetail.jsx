@@ -66,6 +66,7 @@ const Details = ({
   drawer,
   transferBookings,
   edge,
+  getPaymentHandler,
 }) => {
   // console.log("transferbookings is:",transferBookings)
   const router = useRouter();
@@ -170,6 +171,7 @@ const Details = ({
                     }
                   );
                   window.location.href = `/flights/book/${res.data.id}`;
+                  getPaymentHandler();
                 } else {
                   // console.log("updating",originCityId)
                   const res = await axios.post(
@@ -199,6 +201,7 @@ const Details = ({
                     },
                   };
                   dispatch(setTransfersBookings(updatedTransferBookings));
+                  getPaymentHandler();
                   dispatch(
                     openNotification({
                       type: "success",

@@ -196,6 +196,7 @@ const ActivityDetails = (props) => {
         newItinerary.cities = itineraryCities;
         props?.handleCloseDrawer(e);
         dispatch(setItinerary(newItinerary));
+        props?.getPaymentHandler();
         dispatch(
           openNotification({
             type: "success",

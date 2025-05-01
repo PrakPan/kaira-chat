@@ -571,6 +571,7 @@ const preferredDepartureTime = (() => {
                       onSelect={props.onSelect}
                       isSelected={selectedFlightIndex === index}
                       onFlightSelect={() => setSelectedFlightIndex(index)}
+                      getPaymentHandler={props.getPaymentHandler}
                     />
                   ))}
 

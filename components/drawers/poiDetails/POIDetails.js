@@ -192,6 +192,8 @@ const POIDetails = (props) => {
         });
         newItinerary.cities = itineraryCities;
         props?.handleCloseDrawer(e);
+        props?.getPaymentHandler();
+
         dispatch(setItinerary(newItinerary));
         dispatch(
           openNotification({
