@@ -618,7 +618,7 @@ const TransferEditDrawer = (props) => {
           <div className="mb-4 w-full">
             <div className="inline-block mb-3">
               <span className="bg-red-500 text-white px-3 py-1 rounded-md text-sm font-medium">
-                Recommended
+                RECOMMENDED
               </span>
             </div>
             
@@ -1277,6 +1277,7 @@ const RouteContainer = (props) => {
               singleTransfer?.mode === "Flight" ? (
                 <ComboFlight
                   combo={false}
+                  edge={singleTransfer?.id}
                   handleFlightSelect={handleFlightSelect}
                   showComboFlightModal={showComboFlightModal}
                   setShowComboFlightModal={setShowComboFlightModal}
@@ -1327,6 +1328,7 @@ const RouteContainer = (props) => {
                   tailored_id={tailored_id}
                   selectedBooking={selectedBooking}
                   itinerary_id={itinerary_id}
+                  edge={singleTransfer?.id}
                   selectedTransferHeading={selectedTransferHeading}
                   fetchData={fetchData}
                   setShowLoginModal={setShowLoginModal}
@@ -1337,8 +1339,8 @@ const RouteContainer = (props) => {
                   routeId={routeId}
                   mercuryTransfer={mercuryTransfer}
                   individual={individual}
-                  originCityId={originCityId}
-                  destinationCityId={destinationCityId}
+                  originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
+                  destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
                   comboStartDate={currentModeDepartureDate}
                   comboStartTime={currentModeDepartureTime}
                   _updateTaxiBookingHandler={_updateTaxiBookingHandler}
@@ -2044,6 +2046,7 @@ const NewMultiModeContainer = ({
                       <ComboFlight
                         key={option.id}
                         combo={true}
+                        edge={option?.id}
                         handleFlightSelect={handleFlightSelect}
                         showComboFlightModal={showComboFlightModal}
                         setShowComboFlightModal={setShowComboFlightModal}
@@ -2069,8 +2072,8 @@ const NewMultiModeContainer = ({
                         routeId={routeId}
                         mercuryTransfer={mercuryTransfer}
                         individual={individual}
-                        originCityId={option?.source?.city}
-                        destinationCityId={option?.destination?.city}
+                        originCityId={option?.source?.id}
+                        destinationCityId={option?.destination?.id}
                         isSelected={
                           selectedModeIds[currentStep - 1] === option.id
                         }
@@ -2083,6 +2086,8 @@ const NewMultiModeContainer = ({
                         onFilterApplied={handleFilterApplied}
                         dCityData={dCityData}
                         oCityData={oCityData}
+                        origin_itinerary_city_id={origin_itinerary_city_id}
+                        destination_itinerary_city_id={destination_itinerary_city_id}
                       />
                     );
                   }
@@ -2090,6 +2095,7 @@ const NewMultiModeContainer = ({
                     return (
                       <ComboTaxi
                         key={option.id}
+                        edge={option?.id}
                         combo={true}
                         handleFlightSelect={handleFlightSelect}
                         showTaxiModal={showTaxiModal}
@@ -2116,8 +2122,8 @@ const NewMultiModeContainer = ({
                         routeId={routeId}
                         mercuryTransfer={mercuryTransfer}
                         individual={individual}
-                        originCityId={option?.source?.city}
-                        destinationCityId={option?.destination?.city}
+                        originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
+                        destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
                         isSelected={
                           selectedModeIds[currentStep - 1] === option.id
                         }

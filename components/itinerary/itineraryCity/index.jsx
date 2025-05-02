@@ -271,6 +271,7 @@ const ItineraryCity = (props) => {
             setActivityBookings={props?.setActivityBookings}
             setItinerary={props?.setItinerary}
             setShowLoginModal={props?.setShowLoginModal}
+            index={props?.index}
           />
         )
       ) : null}
@@ -312,7 +313,7 @@ const ItineraryCity = (props) => {
                 : null
             }
             setShowDetails={setShowDetails}
-            id={props?.city?.hotels?.[0]?.id}
+            id={ stay[props?.index]?.id || props?.city?.hotels?.[0]?.id}
           />
           {images ? (
         <FullScreenGallery

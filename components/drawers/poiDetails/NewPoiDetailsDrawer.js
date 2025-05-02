@@ -27,13 +27,20 @@ const NewPoiDetailsDrawer = (props) => {
 
     try {
       const res = await axios.get(
-        `${MERCURY_HOST}/api/v1/geos/poi/${props?.id}/`
+        `${MERCURY_HOST}/api/v1/geos/poi/${props?.id}/?itinerary_city_id=${props?.itinerary_city_id}`
       );
       if (res.data?.data?.poi) {
         setData(res.data?.data?.poi);
       }
       setLoading(false);
     } catch (error) {
+      dispatch(
+        openNotification({
+          type: "error",
+          text: "Something went wrong! Please try after some time.",
+          heading: "Error!",
+        })
+      );
       console.log("poi drawer error is:", error);
     }
   };
@@ -47,27 +54,30 @@ const NewPoiDetailsDrawer = (props) => {
       };
       const res = await axios.post(
         `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/poi/add/`,
-        requestData,{
+        requestData,
+        {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
         }
       );
       var newItinerary = itinerary;
-      const itineraryCities=newItinerary?.cities?.map((item)=>{
-        console.log("city is:",item)
-        const city=item;
-        if(item.id==props?.itinerary_city_id){
-          const day_by_day=city?.day_by_day
-          console.log("city1 is:",props?.dayIndex)
-          day_by_day[props?.dayIndex].slab_elements=[...day_by_day[props?.dayIndex]?.slab_elements,res?.data]
-          city.day_by_day=day_by_day
-          console.log("city2 is:",day_by_day)
-
+      const itineraryCities = newItinerary?.cities?.map((item) => {
+        console.log("city is:", item);
+        const city = item;
+        if (item.id == props?.itinerary_city_id) {
+          const day_by_day = city?.day_by_day;
+          console.log("city1 is:", props?.dayIndex);
+          day_by_day[props?.dayIndex].slab_elements = [
+            ...day_by_day[props?.dayIndex]?.slab_elements,
+            res?.data,
+          ];
+          city.day_by_day = day_by_day;
+          console.log("city2 is:", day_by_day);
         }
         return city;
-      })
-      newItinerary.cities=itineraryCities
+      });
+      newItinerary.cities = itineraryCities;
       dispatch(setItinerary(newItinerary));
       props.openNotification({
         type: "success",
@@ -75,13 +85,14 @@ const NewPoiDetailsDrawer = (props) => {
         heading: "Success!",
       });
     } catch (error) {
-      console.log("error is:",error)
+      console.log("error is:", error);
       props.openNotification({
         type: "error",
         text: "Something went wrong! Please try after some time.",
         heading: "Error!",
       });
     }
+    return 1;
   };
 
   return (

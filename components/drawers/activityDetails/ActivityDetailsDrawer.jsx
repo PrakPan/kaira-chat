@@ -12,6 +12,7 @@ import { openNotification } from "../../../store/actions/notification";
 import ActivityDetailsSkeleton from "./ActivityDetailsSkeleton";
 import setItinerary from "../../../store/actions/itinerary";
 import { duration } from "@mui/material";
+import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 
 const ActivityDetailsDrawer = (props) => {
   //console.log("day by day:",props?.setItinerary)
@@ -22,6 +23,8 @@ const ActivityDetailsDrawer = (props) => {
   const [updateAmenities, setUpdateAmenities] = useState(false);
   const itineraryFilters = useSelector((state) => state.ItineraryFilters);
   const itinerary=useSelector((state)=>state.Itinerary)
+  const CallPaymentInfo=useSelector((state)=>state.CallPaymentInfo)
+
   console.log("itinerary is:",itinerary)
   const num_adults = props?.pax?.adults
   const num_children = props?.pax?.children
@@ -80,91 +83,106 @@ const ActivityDetailsDrawer = (props) => {
       });
   };
 
-  const updatedActivityBooking = () => {
+  const updatedActivityBooking = async () => {
     const requestData = {
       itinerary_city_id: props?.itinerary_city_id,
       trace_id: traceId,
     };
-
-    activityBooking
-      .post(`${router.query?.id}/bookings/activity/`, requestData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      })
-      .then((res) => {
-
-        const newItinerary = {
-          ...itinerary,
-          cities: itinerary?.cities?.map((city) => {
-            if (city?.city?.id === props?.cityId) {
-              const updatedActivities = [...(city?.activities || []), res?.data];
-        
-              const activityData={
-                activity:res?.data?.activity?.id,
-                booking:{
-                  id:res?.data?.id,
-                  pax:res?.data?.number_of_adults+res?.data?.number_of_children+res?.data?.number_of_infants,
-                  duration:res?.data?.duration
-                },
-                element_type:"activity",
-                heading:res?.data?.activity?.name,
-                icon:res?.data?.image,
-                poi:null,
-                rating:res?.data?.activity?.rating,
-                user_ratings_total:res?.data?.activity?.user_ratings_total
+  
+    try {
+      const res = await activityBooking.post(
+        `${router.query?.id}/bookings/activity/`,
+        requestData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      );
+  
+      dispatch(SetCallPaymentInfo(!CallPaymentInfo));
+  
+      const newItinerary = {
+        ...itinerary,
+        cities: itinerary?.cities?.map((city) => {
+          if (city?.city?.id === props?.cityId) {
+            const updatedActivities = [...(city?.activities || []), res?.data];
+  
+            const activityData = {
+              activity: res?.data?.activity?.id,
+              booking: {
+                id: res?.data?.id,
+                pax:
+                  res?.data?.number_of_adults +
+                  res?.data?.number_of_children +
+                  res?.data?.number_of_infants,
+                duration: res?.data?.duration,
+              },
+              element_type: "activity",
+              heading: res?.data?.activity?.name,
+              icon: res?.data?.image,
+              poi: null,
+              rating: res?.data?.activity?.rating,
+              user_ratings_total: res?.data?.activity?.user_ratings_total,
+            };
+  
+            const updatedDayByDay = city?.day_by_day?.map((day) => {
+              if (day?.date === props?.date) {
+                return {
+                  ...day,
+                  slab_elements: [...(day?.slab_elements || []), activityData],
+                };
               }
-              const updatedDayByDay = city?.day_by_day?.map((day) => {
-                if (day?.date === props?.date) {
-                  return {
-                    ...day,
-                    slab_elements: [...(day?.slab_elements || []), activityData],
-                  };
-                }
-                return day;
-              });
-        
-              return {
-                ...city,
-                activities: updatedActivities,
-                day_by_day: updatedDayByDay,
-              };
-            }
-            return city;
-          }),
-        };
-                
-        dispatch(setItinerary(newItinerary));
-
-        if(props?.activityBookings==null){
-          props?.setActivityBookings([res?.data])
-        }
-        else{
-          props.setActivityBookings([...props?.activityBookings, res?.data]);
-        }
-        props.openNotification({
-          type: "success",
-          text: `Added ${res?.data?.name} activity to the itinerary`,
-          heading: "Success!",
-        });
-      })
-      .catch((err) => {
-        console.log("error is:", err);
-        if (err?.response?.status === 403) {
-          props.openNotification({
-            text: "You are not allowed to make changes to this itinerary",
-            heading: "Error!",
-            type: "error",
-          });
-        } else {
-          props.openNotification({
-            text: "There seems to be a problem, please try again!",
-            heading: "Error!",
-            type: "error",
-          });
-        }
+              return day;
+            });
+  
+            return {
+              ...city,
+              activities: updatedActivities,
+              day_by_day: updatedDayByDay,
+            };
+          }
+          return city;
+        }),
+      };
+  
+      dispatch(setItinerary(newItinerary));
+  
+      if (props?.activityBookings == null) {
+        props?.setActivityBookings([res?.data]);
+      } else {
+        props.setActivityBookings([...props?.activityBookings, res?.data]);
+      }
+  
+      props.openNotification({
+        type: "success",
+        text: `Added ${res?.data?.name} activity to the itinerary`,
+        heading: "Success!",
       });
+  
+      return res; // ✅ return response so the caller knows it succeeded
+  
+    } catch (err) {
+      console.error("error is:", err);
+  
+      if (err?.response?.status === 403) {
+        props.openNotification({
+          text: "You are not allowed to make changes to this itinerary",
+          heading: "Error!",
+          type: "error",
+        });
+      } else {
+        props.openNotification({
+          text: "There seems to be a problem, please try again!",
+          heading: "Error!",
+          type: "error",
+        });
+      }
+  
+      throw err; // ❗ rethrow so the caller can handle error
+    }
   };
+  
 
   return (
     <Drawer
@@ -189,6 +207,7 @@ const ActivityDetailsDrawer = (props) => {
           filterState={filterState}
           setFilterState={setFilterState}
           setShowLoginModal={props?.setShowLoginModal}
+          itinerary_city_id={props?.itinerary_city_id}
         />
       ) : (
         <ActivityDetailsSkeleton

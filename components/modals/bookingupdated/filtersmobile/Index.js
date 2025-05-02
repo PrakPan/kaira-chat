@@ -252,6 +252,7 @@ export default function TemporaryDrawer(props) {
                       FILTERS={props?.FILTERS}
                       _addFilterHandler={props?._addFilterHandler}
                       updateUserStarHandler={props?.updateUserStarHandler}
+                      filters={props?.filters}
                     />
                   </div>
                 )}

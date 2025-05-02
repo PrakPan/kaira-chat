@@ -224,6 +224,7 @@ const TransferBooking = ({
     (state) => state.ItineraryStatus
   );
 
+  console.log("Originn Destin",origin,destination);
   useEffect(() => {
     setaddboking(booking?.user_selected);
   }, [booking?.user_selected]);
@@ -356,6 +357,7 @@ const TransferBooking = ({
     }
   };
 
+  console.log("Boooking",booking);
   return (
     <>
       {transfers_status === "PENDING" && mercuryItinerary ? (
@@ -800,12 +802,11 @@ const TransferBooking = ({
               check_in={check_in}
               routeId={id}
               city={
-                origin?.name != undefined ? origin?.name : origin?.city_name
+                origin?.city_name ||  origin?.name  
               }
               dcity={
-                destination?.name != undefined
-                  ? destination?.name
-                  : destination?.city_name
+                destination?.city_name || destination?.name
+                  
               }
               selectedBooking={selectedBooking}
               setSelectedBooking={setSelectedBooking}
@@ -857,6 +858,7 @@ const TransferBooking = ({
                   destinationCityId={destinationCityId}
                   type={"combo"}
                   setShowDrawer={setShowDrawer}
+                  getPaymentHandler={getPaymentHandler}
                 />
               </>
             ) : (
@@ -1182,12 +1184,12 @@ const TransferBooking = ({
               check_in={check_in}
               routeId={id}
               city={
-                origin?.name != undefined ? origin?.name : origin?.city_name
+                origin?.name != undefined ? origin?.name || origin?.city_name : null
               }
               dcity={
                 destination?.name != undefined
                   ? destination?.name
-                  : destination?.city_name
+                  || destination?.city_name : null
               }
               oCityData={oCityData}
               dCityData={dCityData}
@@ -1243,8 +1245,11 @@ const FlightBooking = ({
   loadbookings,
   type,
   setShowDrawer,
+  getPaymentHandler,
 }) => {
   const [showDetails, setShowDetails] = useState(false);
+
+  console.log("Inside Flight Booking",booking);
 
   const router = useRouter();
   function HandleFlights(i, label) {
@@ -1438,6 +1443,7 @@ const FlightBooking = ({
                 setShowDetails(false);
               }}
               type={type}
+              getPaymentHandler={getPaymentHandler}
             />
           </>
         )}

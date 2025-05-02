@@ -57,11 +57,17 @@ const RoomType = (props) => {
           </div>
 
           <div className="flex flex-col gap-1 items-end">
-            <button className="bg-[#F7E700] py-2 px-4 rounded-lg border-2 border-black hover:bg-black hover:text-white transition-all"
-              onClick={() => props.handleUpdateBooking(props.index)}
-            >
-              Add to Itinerary
-            </button>
+          <Button
+            onclick={props.handleUpdateBooking(props.index)}
+            bgColor={"#F7E700"}
+            borderRadius="8px"
+            fontWeight="400"
+            hoverColor="white"
+            height={"full"}
+            padding={"8px 16px"}
+          >
+            Add To Itinerary
+            </Button>
 
             <div className="text-sm">
               on {props.checkInDate} ({props.city})

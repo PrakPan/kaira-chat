@@ -19,6 +19,8 @@ import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 import LogInModal from "../Login";
 import { toast, ToastContainer } from "react-toastify";
 import { setTransfersBookings } from "../../../store/actions/transferBookingsStore";
+import ComboFlight from "./ComboFlight";
+import BackArrow from "../../ui/BackArrow";
 
 const GridContainer = styled.div`
 min-height: 65vh;
@@ -440,6 +442,7 @@ const Booking = (props) => {
         mobileWidth={"100%"}
         width={"50%"}
       >
+       {!props?.combo ? <>
         <ToastContainer />
         <SectionOne
           _FetchFlightsHandler={_FetchFlightsHandler}
@@ -592,6 +595,61 @@ const Booking = (props) => {
           mercuryTransfer={props?.mercuryTransfer}
           mercury={true}
         />
+        </> 
+        : 
+        <div className="p-3">
+         <BackArrow handleClick={()=>{
+                      props.setHideFlightModal(false);
+                      // setCurrentStep(0);
+                      // setIsRouteSelected(false);
+                    }}/>
+        <div className="text-lg md:text-xl lg:text-xl font-semibold mt-1">
+        Changing {props.selectedBooking?.name}
+        </div>
+          <ComboFlight
+                                    combo={false}
+                                    //handleFlightSelect={handleFlightSelect}
+                                   
+                   
+                                    showComboFlightModal={props?.showFlightModal}
+                                    setShowComboFlightModal={props?.setShowFlightModal}
+                                    setHideFlightModal={props.setHideFlightModal}
+                                    setHideBookingModal={props?.setHideBookingModal}
+                                    getPaymentHandler={props?.getPaymentHandler}
+                                    _updatePaymentHandler={props?._updatePaymentHandler}
+                                    _updateFlightBookingHandler={props?._updateFlightBookingHandler}
+                                    _updateBookingHandler={props?._updateBookingHandler}
+                                    alternates={props?.selectedBooking.id}
+                                    tailored_id={props?.selectedBooking["tailored_itinerary"]}
+                                    selectedBooking={props?.selectedBooking}
+                                    itinerary_id={props?.itinerary_id}
+                                    selectedTransferHeading={props?.route?.heading}
+                                    fetchData={props?.fetchData}
+                                    setShowLoginModal={props?.setShowLoginModal}
+                                    check_in={props?.route?.check_in}
+                                    _GetInTouch={props._GetInTouch}
+                                    daySlabIndex={props?.daySlabIndex}
+                                    elementIndex={props?.elementIndex}
+                                    routeId={props?.transferId}
+                                   // mercuryTransfer={mercuryTransfer}
+                                    //individual={individual}
+                                    originCityId={props?.selectedBooking?.originCityId}
+                                    destinationCityId={props?.selectedBooking?.destinationCityId}
+                                   // isSingleTransfer={true}
+                                    comboStartDate={props?.selectedBooking?.start_date}
+                                    comboStartTime={props?.selectedBooking?.start_date}
+                                    source_code={props?.selectedBooking?.source?.code || props.selectedBooking.origin_iata}
+                                    destination_code={props?.selectedBooking?.destination?.code || props.selectedBooking.destination_iata}
+                                  //   origin_itinerary_city_id={origin_itinerary_city_id}
+                                  // destination_itinerary_city_id={destination_itinerary_city_id}
+                                  // dCityData={dCityData}
+                                  //           oCityData={oCityData}
+                                          
+                                            
+                                            booking_id={props?.selectedBooking?.booking_id}
+                                            edge={props?.selectedBooking?.edge}
+                              />
+                              </div>}
       </Drawer>
     );
 

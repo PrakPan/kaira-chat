@@ -34,6 +34,26 @@ const PoiDetailsSkeleton = (props) => {
     font-size: 1.5rem;
     line-height: 2rem;
   `;
+
+  const GridImage = styled.div`
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(4, 0.4fr);
+  grid-column-gap: 6px;
+  grid-row-gap: 6px;
+  height: 19rem;
+`;
+
+const Child = styled.div`
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  grid-area: ${(props) => props.area};
+  ${(props) => props.className && `class="${props.className}"`};
+`;
+
   let isPageWide = media("(min-width: 768px)");
 
   return (
@@ -68,16 +88,56 @@ const PoiDetailsSkeleton = (props) => {
               style={{ fontSize: "2rem" }}
             />
           </div>
-          <div className="flex justify-between items-center">
-            <SkeletonCard width="180px" height="32px" />
-          </div>
           <div className="flex flex-col gap-4 opacity-100">
-            <div className="h-[180px] md:h-[300px] relative">
-              <SkeletonCard
-                width="100%"
-                height={isPageWide ? "300px" : "180px"}
-              />
-            </div>
+          <GridImage>
+            <Child area="1 / 1 / 5 / 4" className="div1">
+              <div
+                style={{
+                  display: "initial",
+                  height: "100%",
+                  overflow: "hidden",
+                }}
+              >
+                <SkeletonCard lottieDimension="50rem" />
+              </div>
+            </Child>
+
+            <Child area="1 / 8 / 5 / 11" className="div2 rounded-lg">
+              <div
+                style={{
+                  display: "initial",
+                  height: "100%",
+                  overflow: "hidden",
+                }}
+              >
+                <SkeletonCard lottieDimension="50rem" />
+              </div>
+            </Child>
+
+            <Child area="1 / 4 / 3 / 8" className="div3">
+              <div
+                style={{
+                  display: "initial",
+                  height: "100%",
+                  overflow: "hidden",
+                }}
+              >
+                <SkeletonCard lottieDimension="50rem" />
+              </div>
+            </Child>
+
+            <Child area="3 / 4 / 5 / 8" className="div4">
+              <div
+                style={{
+                  display: "initial",
+                  height: "100%",
+                  overflow: "hidden",
+                }}
+              >
+                <SkeletonCard lottieDimension="50rem" />
+              </div>
+            </Child>
+          </GridImage>
             <div className="flex flex-col gap-3">
               <SkeletonCard width="200px" height="28px" />
               <SkeletonCard width="100px" height="20px" />

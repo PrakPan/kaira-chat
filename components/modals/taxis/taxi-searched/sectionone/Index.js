@@ -75,6 +75,7 @@ const Section = (props) => {
           handleTaxiSelect={props.handleTaxiSelect}
           origin_itinerary_city_id={props?.origin_itinerary_city_id}
                 destination_itinerary_city_id={props?.destination_itinerary_city_id}
+                edge={props?.edge}
         ></Route>
       </Container>
     );

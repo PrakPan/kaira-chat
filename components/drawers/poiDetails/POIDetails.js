@@ -159,6 +159,7 @@ const POIDetails = (props) => {
     }
     setLoading(true);
     try {
+      console.log("activity props are:",props)
       const res = await axios.delete(
         `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/poi/delete/`,
         {
@@ -192,7 +193,7 @@ const POIDetails = (props) => {
         });
         newItinerary.cities = itineraryCities;
         props?.handleCloseDrawer(e);
-        props?.getPaymentHandler();
+        // props?.getPaymentHandler();
 
         dispatch(setItinerary(newItinerary));
         dispatch(
@@ -204,6 +205,7 @@ const POIDetails = (props) => {
         );
       }
     } catch (error) {
+      console.log("error is:",error)
       dispatch(
         openNotification({
           type: "error",

@@ -33,17 +33,21 @@ const POIDetailsDrawer = (props) => {
           `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/activity/${props?.activityData?.id}/`
         );
         setData(res?.data?.activity);
+        setData((prev)=>({
+          ...prev,
+          id:res?.data?.id
+        }))
         setLoading(false);
       } else {
         const res = await axios.get(
-          `${MERCURY_HOST}/api/v1/geos/poi/${props?.activityData?.id}/`
+          `${MERCURY_HOST}/api/v1/geos/poi/${props?.activityData?.id}/?itinerary_city_id=${props?.itinerary_city_id}`
         );
         setData(res?.data?.data?.poi);
         setLoading(false);
       }
     } else if (props?.activityData?.type == "poi") {
       const res = await axios.get(
-        `${MERCURY_HOST}/api/v1/geos/poi/${props?.activityData?.id}/`
+        `${MERCURY_HOST}/api/v1/geos/poi/${props?.activityData?.id}/?itinerary_city_id=${props?.itinerary_city_id}`
       );
       setData(res?.data?.data?.poi);
       setLoading(false);

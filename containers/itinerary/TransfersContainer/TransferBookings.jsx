@@ -10,6 +10,7 @@ import TransferEditDrawer from "../../../components/drawers/routeTransfer/Transf
 import TransferBooking from "./TransferBooking";
 import media from "../../../components/media";
 import Pin from "../../newitinerary/breif/route/Pin";
+import ComboFlight from "../../../components/modals/flights/ComboFlight";
 
 const CITY_COLOR_CODES = [
   "#000000", // shade of blue
@@ -292,99 +293,26 @@ const TransferBookings = (props) => {
               return null;
             })}
 
-            {itineraries?.cities?.length > 0 && (
-              <>
-                <PinSection
-                  key={`last-${
-                    itineraries?.cities?.[itineraries?.cities.length - 1]?.id
-                  }`}
-                  transfersPin
-                  setCurrentPopup={false}
-                  city={
-                    itineraries?.cities?.[itineraries?.cities.length - 1]?.city
-                      .name
-                  }
-                  index={itineraries?.cities.length - 1}
-                  pinColour={CITY_COLOR_CODES[itineraries?.cities.length % 7]}
-                />
-                <TransferBooking
-                  mercuryItinerary={props?.mercuryItinerary}
-                  loadbookings={props?.loadbookings}
-                  key={
-                    transferBooking?.intercity[
-                      `${
-                        itineraries?.cities?.[itineraries?.cities.length - 1]
-                          ?.id
-                      }:${itineraries?.end_city?.gmaps_place_id}`
-                    ]?.id
-                  }
-                  index={itineraries?.cities.length - 1}
-                  booking={
-                    transferBooking?.intercity[
-                      `${
-                        itineraries?.cities?.[itineraries?.cities.length - 1]
-                          ?.id
-                      }:${itineraries?.end_city?.gmaps_place_id}`
-                    ]
-                  }
-                  payment={props?.payment || null}
-                  token={props?.token || null}
-                  setShowLoginModal={props?.setShowLoginModal}
-                  _changeTaxiHandler={_changeTaxiHandler}
-                  _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
-                  getPaymentHandler={props?.getPaymentHandler}
-                  _changeFlightHandler={_changeFlightHandler}
-                  origin={
-                    itineraries?.cities?.[itineraries?.cities.length - 1].city
-                  }
-                  destination={itineraries?.end_city}
-                  oCityData={
-                    itineraries?.cities?.[itineraries?.cities.length - 1]
-                  }
-                  dCityData={itineraries?.end_city}
-                  id={itineraries?.end_city?.gmaps_place_id}
-                  check_in={itineraries?.end_date}
-                  selectedBooking={selectedBooking}
-                  setSelectedBooking={setSelectedBooking}
-                  originCityId={
-                    itineraries?.cities?.[itineraries?.cities.length - 1]?.id
-                  }
-                  destinationCityId={itineraries?.end_city?.gmaps_place_id}
-                  pinColour1={CITY_COLOR_CODES[itineraries?.cities?.length % 7]}
-                  pinColour2={"#000000"}
-                  _updateFlightBookingHandler={
-                    props._updateFlightBookingHandler
-                  }
-                />
-              </>
-            )}
-            <PinSection
-              key={-2}
-              transfersPin
-              setCurrentPopup={false}
-              city={itineraries?.end_city?.city_name}
-              index={-2}
-              pinColour={null}
-            />
-          </div>
+        
 
           <FlightModal
+           combo={true}
             getPaymentHandler={props?.getPaymentHandler}
             _updateFlightBookingHandler={props._updateFlightBookingHandler}
             _updateBookingHandler={props._updateBookingHandler}
-            setHideFlightModal={props.setHideFlightModal}
+           setHideFlightModal={props.setHideFlightModal}
             alternates={selectedBooking.id}
             tailored_id={selectedBooking["tailored_itinerary"]}
             _updatePaymentHandler={props._updatePaymentHandler}
             _updateFlightHandler={props._updateFlightHandler}
             setHideBookingModal={props.setHideBookingModal}
-            selectedBooking={selectedBooking}
+           selectedBooking={selectedBooking}
             setShowFlightModal={props?.setShowFlightModal}
             showFlightModal={props?.showFlightModal}
             itinerary_id={props?.itinerary_id}
             selectedTransferHeading={props?.route?.heading}
             fetchData={props?.fetchData}
-            setShowLoginModal={props?.setShowLoginModal}
+           setShowLoginModal={props?.setShowLoginModal}
             check_in={props?.route?.check_in}
             _GetInTouch={props._GetInTouch}
             daySlabIndex={daySlabIndex}
