@@ -81,11 +81,11 @@ const SlideTwo = (props) => {
         <div className="bg-[#FFEFE5] flex items-center gap-2 p-2 rounded-md w-fit">
           <input
             type="checkbox"
-            value={props.addTransfers}
-            onChange={(e) => props.setAddTransfers(e.target.checked)}
+            value={props.addFlights}
+            onChange={(e) => props.setAddFlights(e.target.checked)}
             className="focus:outline-none cursor-pointer"
           ></input>
-          <div className="text-sm">Add transfers to my itinerary?</div>
+          <div className="text-sm">Add flights to my itinerary?</div>
         </div>
       </Section>
 

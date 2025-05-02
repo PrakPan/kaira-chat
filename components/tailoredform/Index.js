@@ -136,7 +136,7 @@ const Enquiry = (props) => {
   const [itineraryId, setItineraryId] = useState(null);
   const [error, setError] = useState(null);
   const [addHotels, setAddHotels] = useState(false);
-  const [addTransfers, setAddTransfers] = useState(false);
+  const [addFlights, setAddFlights] = useState(false);
   const [loginComplete, setLoginComplete] = useState(false);
   const [defaultPriceRange, setDefaultPriceRange] = useState({
     min_price: 0,
@@ -540,7 +540,7 @@ const Enquiry = (props) => {
       number_of_infants: number_of_infants,
       room_configuration: roomConfiguration,
       add_hotels: addHotels,
-      add_transfers: addTransfers,
+      add_flights: addFlights,
     };
 
     setLoading(true);
@@ -751,8 +751,8 @@ const Enquiry = (props) => {
             setPriceRange={setPriceRange}
             addHotels={addHotels}
             setAddHotels={setAddHotels}
-            addTransfers={addTransfers}
-            setAddTransfers={setAddTransfers}
+            addFlights={addFlights}
+            setAddFlights={setAddFlights}
             setSlideIndex={setSlideIndex}
             setLoginComplete={setLoginComplete}
             defaultPriceRange={defaultPriceRange}
