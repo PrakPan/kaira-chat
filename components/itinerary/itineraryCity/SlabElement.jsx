@@ -330,10 +330,6 @@ const Recommendation = (props) => {
   };
 
   const handleActivity = async (poi, type) => {
-    // if (type=="activity"){
-    //   const res=await axios.get(`${MERCURY_HOST}/api/v1/geos/poi/${poi}/`)
-    // setActivityData(res?.data?.data?.poi)
-    // }
     setShowDrawer(true);
     setActivityData(() => ({
       id: poi,

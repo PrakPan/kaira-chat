@@ -68,8 +68,8 @@ const FlickityComp = (props) => {
             setPriceRange={props.setPriceRange}
             addHotels={props.addHotels}
             setAddHotels={props.setAddHotels}
-            addTransfers={props.addTransfers}
-            setAddTransfers={props.setAddTransfers}
+            addFlights={props.addFlights}
+            setAddFlights={props.setAddFlights}
             destination={props.destination}
             defaultPriceRange={props.defaultPriceRange}
           ></SlideTwo>

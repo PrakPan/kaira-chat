@@ -62,17 +62,17 @@ const PassengerDetails = () => {
           },
         }
       );
-      await axios.post(
-        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/guests/bookings/add/`,
-        {
-          guests: [input, ...adults, ...children],
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        }
-      );
+      // await axios.post(
+      //   `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/guests/bookings/add/`,
+      //   {
+      //     guests: [input, ...adults, ...children],
+      //   },
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+      //     },
+      //   }
+      // );
       dispatch(openNotification({
         type: "success",
         text: "Passengers Added Successfuly",
