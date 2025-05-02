@@ -618,7 +618,7 @@ const TransferEditDrawer = (props) => {
           <div className="mb-4 w-full">
             <div className="inline-block mb-3">
               <span className="bg-red-500 text-white px-3 py-1 rounded-md text-sm font-medium">
-                Recommended
+                RECOMMENDED
               </span>
             </div>
             
@@ -2069,8 +2069,8 @@ const NewMultiModeContainer = ({
                         routeId={routeId}
                         mercuryTransfer={mercuryTransfer}
                         individual={individual}
-                        originCityId={option?.source?.city}
-                        destinationCityId={option?.destination?.city}
+                        originCityId={option?.source?.id}
+                        destinationCityId={option?.destination?.id}
                         isSelected={
                           selectedModeIds[currentStep - 1] === option.id
                         }
@@ -2083,6 +2083,8 @@ const NewMultiModeContainer = ({
                         onFilterApplied={handleFilterApplied}
                         dCityData={dCityData}
                         oCityData={oCityData}
+                        origin_itinerary_city_id={origin_itinerary_city_id}
+                        destination_itinerary_city_id={destination_itinerary_city_id}
                       />
                     );
                   }
@@ -2116,8 +2118,8 @@ const NewMultiModeContainer = ({
                         routeId={routeId}
                         mercuryTransfer={mercuryTransfer}
                         individual={individual}
-                        originCityId={option?.source?.city}
-                        destinationCityId={option?.destination?.city}
+                        originCityId={option?.source?.id}
+                        destinationCityId={option?.destination?.id}
                         isSelected={
                           selectedModeIds[currentStep - 1] === option.id
                         }

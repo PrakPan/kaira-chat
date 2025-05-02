@@ -15,6 +15,7 @@ import Skeleton from "./Skeleton";
 import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 import { fetchTransferMode } from "../../../services/bookings/FetchTaxiRecommendations";
 import dayjs from "dayjs";
+import { add, format } from 'date-fns'; // Make sure to import these functions if used
 
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
@@ -62,106 +63,129 @@ const ComboTaxi = (props) => {
   const [quotes, setQuotes] = useState([]);
   const dispatch = useDispatch();
 
-  console.log("OCity,D", props?.selectedBooking, props?.oCityData,props?.dCityData);
+  const [showTimeDropdown, setShowTimeDropdown] = useState(false);
+  const [timeSlots, setTimeSlots] = useState([]);
+  const [selectedTime, setSelectedTime] = useState(null);
+  // New state to track the actual time value in HH:mm format
+  const [selectedTimeValue, setSelectedTimeValue] = useState(props?.comboStartTime || null);
 
-  console.log("Inside fetch dtaa", props?.showTaxiModal);
+  useEffect(() => {
+    if (props?.comboStartTime) {
+      const slots = [];
+      let Time = dayjs(props?.comboStartDate + "T" + props?.comboStartTime + ":00");
+      const date = new Date(Time);
+      date.setHours(0, 0, 0, 0);
 
-  console.log("START DATEEE",props?.comboStartDate,props?.comboStartTime);
+      let baseTime = dayjs(date.toISOString());
 
-   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
-    const [timeSlots, setTimeSlots] = useState([]);
-    const [selectedTime, setSelectedTime] = useState(null);
-  
-    useEffect(() => {
-      if (props?.comboStartTime) {
-        const slots = [];
-        let Time = dayjs(props?.comboStartDate + "T" + props?.comboStartTime + ":00");
-        const date = new Date(Time);
-        date.setHours(0, 0, 0, 0);
-  
-        let baseTime = dayjs(date.toISOString());
-  
-        const minutes = baseTime.minute();
-        const remainder = minutes % 30;
-  
-        if (remainder > 0) {
-          baseTime = baseTime.add(30 - remainder, "minute");
-        }
-  
-        const endTime = baseTime
-          .startOf("day")
-          .add(1, "day")
-          .subtract(1, "minute");
-  
-        while (baseTime.isBefore(endTime) || baseTime.isSame(endTime)) {
-          slots.push({
-            value: baseTime.format("HH:mm"),
-            display: baseTime.format("h:mm A"),
-          });
-          baseTime = baseTime.add(30, "minute");
-        }
-  
-        setTimeSlots(slots);
+      const minutes = baseTime.minute();
+      const remainder = minutes % 30;
+
+      if (remainder > 0) {
+        baseTime = baseTime.add(30 - remainder, "minute");
       }
-    }, [props?.comboStartTime]);
 
-   const addDaysToDate = (dateString, numberOfDays) => {
-        const date = new Date(dateString);
-        const newDate = add(date, { days: numberOfDays });
-        const formattedDate = format(newDate, "yyyy-MM-dd");
-        return formattedDate;
-      };
+      const endTime = baseTime
+        .startOf("day")
+        .add(1, "day")
+        .subtract(1, "minute");
+
+      while (baseTime.isBefore(endTime) || baseTime.isSame(endTime)) {
+        slots.push({
+          value: baseTime.format("HH:mm"), // Store in 24-hour format for API
+          display: baseTime.format("h:mm A"), // Display in 12-hour format for UI
+        });
+        baseTime = baseTime.add(30, "minute");
+      }
+
+      setTimeSlots(slots);
+      
+      // Set initial selected time display from props
+      const initialTimeDisplay = dayjs(props?.comboStartDate + "T" + props?.comboStartTime + ":00").format("h:mm A");
+      setSelectedTime(initialTimeDisplay);
+      setSelectedTimeValue(props?.comboStartTime);
+    }
+  }, [props?.comboStartTime, props?.comboStartDate]);
+
+  const addDaysToDate = (dateString, numberOfDays) => {
+    const date = new Date(dateString);
+    const newDate = add(date, { days: numberOfDays });
+    const formattedDate = format(newDate, "yyyy-MM-dd");
+    return formattedDate;
+  };
 
   useEffect(() => {
     if (props.showTaxiModal) {
-      console.log("Inside fetch dtaa", props.showTaxiModal);
+      console.log("Inside fetch data", props.showTaxiModal);
       fetchData();
     }
-  }, [props.alternates, props.budget, props.showTaxiModal,props?.comboStartDate,props?.comboStartTime]);
+  }, [props.alternates, props.budget, props.showTaxiModal, props?.comboStartDate, props?.comboStartTime]);
 
-   useEffect(() => {
-      const handleClickOutside = (event) => {
-        if (
-          showTimeDropdown &&
-          !event.target.closest(".time-dropdown-container")
-        ) {
-          setShowTimeDropdown(false);
-        }
-      };
-  
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
-    }, [showTimeDropdown]);
-
-    const handleTimeSelection = (slot) => {
-      setSelectedTime(slot.display);
-      setShowTimeDropdown(false);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        showTimeDropdown &&
+        !event.target.closest(".time-dropdown-container")
+      ) {
+        setShowTimeDropdown(false);
+      }
     };
 
-     const isValidUUID = (uuid) => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showTimeDropdown]);
+
+  const handleTimeSelection = (slot) => {
+    setSelectedTime(slot.display);
+    setSelectedTimeValue(slot.value);
+    setShowTimeDropdown(false);
+    
+    // If there's a callback to update parent component's time
+    if (props.onTimeChange) {
+      props.onTimeChange(slot.value);
+    } else {
+      // If no callback, trigger the API call directly with the new time
+      fetchDataWithNewTime(slot.value);
+    }
+  };
+
+  // Function to trigger API call with updated time
+  const fetchDataWithNewTime = (newTime) => {
+    const updatedProps = {
+      ...props,
+      comboStartTime: newTime
+    };
+    fetchDataWithProps(updatedProps);
+  };
+
+  const isValidUUID = (uuid) => {
     const regex =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     return regex.test(uuid);
   };
 
   const fetchData = () => {
-    console.log("Inside fetch dtaa");
+    fetchDataWithProps(props);
+  };
+
+  const fetchDataWithProps = (propsToUse) => {
+    console.log("Inside fetch data with time:", propsToUse?.comboStartTime);
     setError(false);
     setLoading(true);
     setUpdateLoadingState(false);
     setOptionsJSX([]);
 
     {
-      props?.mercury &&
+      propsToUse?.mercury &&
         fetchTransferMode.post("", {
-          origin: props?.origin,
-          destination: props?.destination,
+          origin: propsToUse?.origin,
+          destination: propsToUse?.destination,
           top_only: "false",
-          number_of_adults: props?.number_of_adults || 1,
-          number_of_children: props?.number_of_children || 0,
-          number_of_infants: props?.number_of_infants || 0,
+          number_of_adults: propsToUse?.number_of_adults || 1,
+          number_of_children: propsToUse?.number_of_children || 0,
+          number_of_infants: propsToUse?.number_of_infants || 0,
         });
     }
 
@@ -176,66 +200,61 @@ const ComboTaxi = (props) => {
       trips: [
         {
           start_date:
-            props?.comboStartDate || props.selectedBooking.check_in || start_date,
-          start_time: props?.comboStartTime || start_time,
+            propsToUse?.comboStartDate || propsToUse.selectedBooking.check_in || start_date,
+          start_time: propsToUse?.comboStartTime || start_time,
           number_of_travellers:
-            props?.plan?.number_of_adults + props?.plan?.number_of_children ||
+            propsToUse?.plan?.number_of_adults + propsToUse?.plan?.number_of_children ||
             1,
           trip_type: "one-way",
           origin: {
             city_id:
-              isValidUUID(props?.originCityId || props.selectedBooking?.origin?.city_id ||
-              props?.oCityData?.gmaps_place_id ||
-              props?.oCityData?.city?.id) ? props?.originCityId || props.selectedBooking?.origin?.city_id ||
-              props?.oCityData?.gmaps_place_id ||
-              props?.oCityData?.city?.id  : null,
+              isValidUUID(propsToUse?.originCityId || propsToUse.selectedBooking?.origin?.city_id ||
+              propsToUse?.oCityData?.gmaps_place_id ||
+              propsToUse?.oCityData?.city?.id) ? propsToUse?.originCityId || propsToUse.selectedBooking?.origin?.city_id ||
+              propsToUse?.oCityData?.gmaps_place_id ||
+              propsToUse?.oCityData?.city?.id  : null,
             hub_id: null,
             gmaps_place_id: null,
-            // address: props.selectedBooking?.origin?.shortName
-            //   ? props.selectedBooking?.origin?.shortName
-            //   : props.selectedBooking?.origin?.city_name ? props.selectedBooking?.origin?.city_name : (props?.oCityData.city_name || props?.oCityData?.city?.name),
             coordinates: {
-              latitude: props.selectedBooking?.origin?.lat
-                ? props.selectedBooking?.origin?.lat
-                : props?.oCityData?.latitude ||
-                  props?.oCityData?.city?.latitude,
-              longitude: props.selectedBooking?.origin?.lng
-                ? props.selectedBooking?.origin?.lng
-                : props?.oCityData?.longitude ||
-                  props?.oCityData?.city?.longitude,
+              latitude: propsToUse.selectedBooking?.origin?.lat
+                ? propsToUse.selectedBooking?.origin?.lat
+                : propsToUse?.oCityData?.latitude ||
+                  propsToUse?.oCityData?.city?.latitude,
+              longitude: propsToUse.selectedBooking?.origin?.lng
+                ? propsToUse.selectedBooking?.origin?.lng
+                : propsToUse?.oCityData?.longitude ||
+                  propsToUse?.oCityData?.city?.longitude,
             },
           },
           destination: {
             city_id:
-              isValidUUID(props?.destinationCityId || props.selectedBooking?.destination?.city_id ||
-              props?.dCityData?.gmaps_place_id ||
-              props?.dCityData?.city?.id ||
-              props?.destinationCityId) ? props?.destinationCityId || props.selectedBooking?.destination?.city_id ||
-              props?.dCityData?.gmaps_place_id ||
-              props?.dCityData?.city?.id ||
-              props?.destinationCityId : null,
+              isValidUUID(propsToUse?.destinationCityId || propsToUse.selectedBooking?.destination?.city_id ||
+              propsToUse?.dCityData?.gmaps_place_id ||
+              propsToUse?.dCityData?.city?.id ||
+              propsToUse?.destinationCityId) ? propsToUse?.destinationCityId || propsToUse.selectedBooking?.destination?.city_id ||
+              propsToUse?.dCityData?.gmaps_place_id ||
+              propsToUse?.dCityData?.city?.id ||
+              propsToUse?.destinationCityId : null,
             hub_id: null,
             gmaps_place_id: null,
-            // address: props.selectedBooking?.destination?.shortName
-            //   ? props.selectedBooking?.destination?.shortName
-            //   : props.selectedBooking?.destination?.city_name ? props.selectedBooking?.destination?.city_name :
-            //   (props?.dCityData.city_name || props?.dCityData?.city?.name),
             coordinates: {
-              latitude: props.selectedBooking?.destination?.lat
-                ? props.selectedBooking?.origin?.lat
-                : props?.dCityData?.latitude ||
-                  props?.dCityData?.city?.latitude,
-              longitude: props.selectedBooking?.destination?.lng
-                ? props.selectedBooking?.origin?.lng
-                : props?.dCityData?.longitude ||
-                  props?.dCityData?.city?.longitude,
+              latitude: propsToUse.selectedBooking?.destination?.lat
+                ? propsToUse.selectedBooking?.origin?.lat
+                : propsToUse?.dCityData?.latitude ||
+                  propsToUse?.dCityData?.city?.latitude,
+              longitude: propsToUse.selectedBooking?.destination?.lng
+                ? propsToUse.selectedBooking?.origin?.lng
+                : propsToUse?.dCityData?.longitude ||
+                  propsToUse?.dCityData?.city?.longitude,
             },
           },
         },
       ],
     };
 
-    props?.comboStartDate && axiosTaxiSearch
+    console.log("API Request Data:", requestData);
+
+    propsToUse?.comboStartDate && axiosTaxiSearch
       .post("", requestData)
       .then((res) => {
         if (res.data.success) {
@@ -328,79 +347,71 @@ const ComboTaxi = (props) => {
 
   if (props.token)
     return (
-      //   <Drawer
-      //     anchor={"right"}
-      //     backdrop
-      //     style={{ zIndex: 1501 }}
-      //     className="font-lexend"
-      //     show={props.showTaxiModal}
-      //     onHide={props.setHideTaxiModal}
-      //     mobileWidth={"100%"}
-      //     width="50%"
-      //   >
       <>
         <div>
           <GridContainer style={{ clear: "right" }}>
             <ContentContainer style={{ position: "relative" }}>
               <div className="p-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
-                          <div className="mb-2 sm:mb-0">
-                            <span className="text-sm text-gray-600">Departure Date: </span>
-                            <span className="font-semibold">
-                              {dayjs(props?.comboStartDate)?.format("DD MMM, YYYY")}
-                            </span>
-                          </div>
-              
-                          <div className="time-dropdown-container relative w-full sm:w-auto">
-                            <div
-                              className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
-                              onClick={() => setShowTimeDropdown(!showTimeDropdown)}
-                            >
-                              <span className="text-sm font-medium">
-                                Departure Time:{" "}
-                                {dayjs(props?.comboStartDate + "T" + props?.comboStartTime + ":00")?.format("HH:mm A") ||
-                                  "Select Time"}
-                              </span>
-                              <svg
-                                className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
-                                  showTimeDropdown ? "transform rotate-180" : ""
-                                }`}
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M19 9l-7 7-7-7"
-                                ></path>
-                              </svg>
-                            </div>
-              
-                            {showTimeDropdown && (
-                              <div className="absolute z-10 w-full sm:w-64 mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
-                                <div className="sticky -top-1 bg-gray-100 p-2 border-b">
-                                  <span className="font-medium text-sm">Select Time</span>
-                                </div>
-                                <div className="p-1">
-                                  {timeSlots.map((slot, index) => (
-                                    <div
-                                      key={index}
-                                      className={`p-2 hover:bg-blue-50 cursor-pointer text-sm rounded-md ${
-                                        selectedTime === slot.display ? "bg-blue-100" : ""
-                                      }`}
-                                      onClick={() => handleTimeSelection(slot)}
-                                    >
-                                      {slot.display}
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                          </div>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
+                  <div className="mb-2 sm:mb-0">
+                    <span className="text-sm text-gray-600">Departure Date: </span>
+                    <span className="font-semibold">
+                      {dayjs(props?.comboStartDate)?.format("DD MMM, YYYY")}
+                    </span>
+                  </div>
+        
+                  <div className="time-dropdown-container relative w-full sm:w-auto">
+                    <div
+                      className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
+                      onClick={() => setShowTimeDropdown(!showTimeDropdown)}
+                    >
+                      <span className="text-sm font-medium">
+                        Departure Time:{" "}
+                        {selectedTime || 
+                         (props?.comboStartTime ? 
+                           dayjs(props?.comboStartDate + "T" + props?.comboStartTime + ":00")?.format("h:mm A") : 
+                           "Select Time")}
+                      </span>
+                      <svg
+                        className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
+                          showTimeDropdown ? "transform rotate-180" : ""
+                        }`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M19 9l-7 7-7-7"
+                        ></path>
+                      </svg>
+                    </div>
+        
+                    {showTimeDropdown && (
+                      <div className="absolute z-10 w-full sm:w-64 mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
+                        <div className="sticky -top-1 bg-gray-100 p-2 border-b">
+                          <span className="font-medium text-sm">Select Time</span>
                         </div>
+                        <div className="p-1">
+                          {timeSlots.map((slot, index) => (
+                            <div
+                              key={index}
+                              className={`p-2 hover:bg-blue-50 cursor-pointer text-sm rounded-md ${
+                                selectedTime === slot.display ? "bg-blue-100" : ""
+                              }`}
+                              onClick={() => handleTimeSelection(slot)}
+                            >
+                              {slot.display}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
               {updateBookingState ? (
                 <div
@@ -437,9 +448,9 @@ const ComboTaxi = (props) => {
                         onTaxiSelect={() => setSelectedTaxiIndex(index)}
                         index={index}
                         start_date={props?.comboStartDate}
-                        start_time={props?.comboStartTime}
+                        start_time={selectedTimeValue || props?.comboStartTime} // Use the selected time value
                         origin_itinerary_city_id={props?.origin_itinerary_city_id}
-                destination_itinerary_city_id={props?.destination_itinerary_city_id}
+                        destination_itinerary_city_id={props?.destination_itinerary_city_id}
                       />
                     ))}
                     {loading && !quotes.length ? <Skeleton /> : null}
@@ -453,20 +464,6 @@ const ComboTaxi = (props) => {
                         margin="1rem auto"
                       />
                     </div>
-                  ) : null}
-
-                  {viewMoreStatus && !optionsJSX.length ? (
-                    <Button
-                      boxShadow
-                      onclickparam={null}
-                      onclick={_loadAccommodationsHandler}
-                      margin="0.25rem auto"
-                      borderWidth="1px"
-                      borderRadius="2rem"
-                      padding="0.25rem 1rem"
-                    >
-                      View More
-                    </Button>
                   ) : null}
                 </OptionsContainer>
               ) : null}
@@ -543,7 +540,6 @@ const ComboTaxi = (props) => {
           />
         )}
       </>
-      //   {/* </Drawer> */}
     );
   else
     return (

@@ -356,6 +356,7 @@ const TransferBooking = ({
     }
   };
 
+  console.log("Boooking",booking);
   return (
     <>
       {transfers_status === "PENDING" && mercuryItinerary ? (
@@ -1190,6 +1191,8 @@ const FlightBooking = ({
   setShowDrawer,
 }) => {
   const [showDetails, setShowDetails] = useState(false);
+
+  console.log("Inside Flight Booking",booking);
 
   const router = useRouter();
   function HandleFlights(i, label) {

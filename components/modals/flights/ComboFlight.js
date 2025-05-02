@@ -80,8 +80,7 @@ const ContentContainer = styled.div`
 `;
 
 const ComboFlight = (props) => {
-
-  console.log("TIMEE",props?.comboStartTime)
+  console.log("TIMEE", props?.comboStartTime);
   console.log(
     "Flight Selected Booking",
     props?.selectedBooking,
@@ -92,10 +91,10 @@ const ComboFlight = (props) => {
     props?.originCityId,
     props?.destinationCityId
   );
+  
   let isPageWide = media("(min-width: 768px)");
   const dispatch = useDispatch();
   const transferBookings = useSelector((state) => state.TransferBookings);
-  const [optionsJSX, setOptionsJSX] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filtersState, setFiltersState] = useState({
     order: "asc",
@@ -137,25 +136,56 @@ const ComboFlight = (props) => {
   const [showTransferEditDrawer, setShowTransferEditDrawer] = useState(false);
   const [flights, setFlights] = useState([]);
   const [selectedFlightIndex, setSelectedFlightIndex] = useState(null);
-  const [flightProvider,setProvider] = useState(null);
-
-  // console.log("Ord",props?.originCityId,props?.destinationCityId);
+  const [flightProvider, setProvider] = useState(null);
+  const [preferredDepartureTime, setPreferredDepartureTime] = useState("");
+  const [isFetching, setIsFetching] = useState(false);
+  const [timeUpdated, setTimeUpdated] = useState(false);
 
   useEffect(() => {
-    if (!isPageWide && props.showComboFlightModal) _FetchFlightsHandler();
+    function roundToNext30Min(dateTime) {
+      let minutes = dateTime.minute();
+      let addMinutes = minutes === 0 ? 0 : (minutes <= 30 ? (30 - minutes) : (60 - minutes));
+      return dateTime.add(addMinutes, 'minute').second(0);
+    }
+    
+    let baseTime;
+    if (props?.comboStartTime && props?.comboStartDate) {
+      baseTime = dayjs(getISOStringFromDateAndTime(props?.comboStartDate, props?.comboStartTime));
+    } else if (props?.selectedBooking?.check_in) {
+      baseTime = dayjs(props?.selectedBooking?.check_in.replace(" ", "T"));
+    } else {
+      baseTime = dayjs();
+    }
+    
+    const roundedTime = roundToNext30Min(baseTime);
+    
+    setPreferredDepartureTime(roundedTime.format("YYYY-MM-DDTHH:mm:ss"));
+  }, [props?.comboStartDate, props?.comboStartTime, props?.selectedBooking?.check_in]);
+
+  useEffect(() => {
+    if (!isPageWide && props.showComboFlightModal && preferredDepartureTime) {
+      _FetchFlightsHandler();
+    }
+    
     if (!props.showComboFlightModal) {
-      setOptionsJSX([]);
+      setFlights([]);
       setLoading(true);
     }
-  }, [props.showComboFlightModal]);
+  }, [props.showComboFlightModal, preferredDepartureTime]);
 
+  // Handle flight search for desktop
   useEffect(() => {
-    if (isPageWide && props.showComboFlightModal ) _FetchFlightsHandler();
-  }, [props.showComboFlightModal, props.token, filtersState, pax, classType,props?.comboStartDate,props?.comboStartTime]);
+    if (isPageWide && props.showComboFlightModal && preferredDepartureTime && props.token) {
+      if (timeUpdated || 
+          (props.showComboFlightModal && flights.length === 0)) {
+        _FetchFlightsHandler();
+        setTimeUpdated(false);
+      }
+    }
+  }, [props.showComboFlightModal, props.token, filtersState, pax, classType, preferredDepartureTime, timeUpdated]);
 
-  //console.log("Booking Data",props?.selectedBooking);
   function getISOStringFromDateAndTime(dateStr, timeStr) {
-    console.log("Date String",dateStr, timeStr,props?.comboStartDate,props?.comboStartTime);
+    console.log("Date String", dateStr, timeStr, props?.comboStartDate, props?.comboStartTime);
     const [year, month, day] = dateStr.split("-");
     const [hour, minute] = timeStr ? timeStr.split(":") : "00:00".split(":");
   
@@ -163,35 +193,22 @@ const ComboFlight = (props) => {
     return localDate.toISOString();
   }
 
-
-
-function roundToNext30Min(dateTime) {
-  let minutes = dateTime.minute();
-  let addMinutes = minutes === 0 ? 0 : (minutes <= 30 ? (30 - minutes) : (60 - minutes));
-  return dateTime.add(addMinutes, 'minute').second(0);
-}
-
-const preferredDepartureTime = (() => {
-  let baseTime;
-  if (props?.comboStartTime && props?.comboStartDate) {
-    baseTime = dayjs(getISOStringFromDateAndTime(props?.comboStartDate, props?.comboStartTime));
-  } else if (props?.selectedBooking?.check_in) {
-    baseTime = dayjs(props?.selectedBooking?.check_in.replace(" ", "T"));
-  } else {
-    baseTime = dayjs();
-  }
-  
-  const roundedTime = roundToNext30Min(baseTime);
-  return roundedTime.format("YYYY-MM-DDTHH:mm:ss");
-})();
+  const updatePreferredDepartureTime = (newDateTime) => {
+    setPreferredDepartureTime(newDateTime);
+    setTimeUpdated(true);
+  };
 
   const _FetchFlightsHandler = () => {
-    let options = [];
-    setOptionsJSX([]);
-    setFlightsCount(0);
+    // Prevent multiple API calls
+    if (isFetching) return;
+    
     setLoading(true);
+    setIsFetching(true); 
+    setFlightsCount(0);
+    setFlights([]); 
     setUpdateBookingState(false);
     setUnauthorized(false);
+    setNoResults(false); 
     setFetchingIsError({
       error: false,
       errorMsg: ``,
@@ -232,47 +249,29 @@ const preferredDepartureTime = (() => {
           }
         )
         .then((res) => {
+          setLoading(false);
+          setMoreLoadingState(false);
+          setIsFetching(false); 
+          
           const provider = res.data.provider;
           setProvider(provider);
           localStorage.setItem(`${provider}_trace_id`, res.data.trace_id);
 
-          if (res.data?.results.length) {
+          if (res.data?.results && res.data.results.length) {
             setFlights(res.data.results);
             setFlightsCount(res.data.results.length);
           } else {
             setFlights([]);
+            setFlightsCount(0);
+            setNoResults(true);
           }
-
-          if (res.data?.results.length) {
-            for (var i = 0; i < res.data.results.length; i++) {
-              options.push(
-                <Flight
-                  itinerary_id={props.itinerary_id}
-                  data={res.data.results[i]}
-                  selectedBooking={props.selectedBooking}
-                  _updateBookingHandler={_newUpdateBookingHandler}
-                  isSelected={false}
-                  provider={res.data?.provider}
-                  filtersState={filtersState}
-                  booking_id={props.selectedBooking?.booking_id}
-                  originCityId={props?.originCityId}
-                  destinationCityId={props?.destinationCityId}
-                  setTransferBookingsIntercity={ 
-                    props.setTransferBookingsIntercity
-                  }
-                  edge={props?.edge || props?.selectedBooking?.edge}
-                  onSelect={props?.onSelect}
-                  trace_id={res?.data?.trace_id}
-                ></Flight>
-              );
-            }
-            setOptionsJSX(options);
-            setFlightsCount(res.data.results.length);
-          }
-          setLoading(false);
         })
         .catch((err) => {
           setLoading(false);
+          setMoreLoadingState(false);
+          setIsFetching(false); 
+          setFlights([]);
+          setFlightsCount(0);
           setFetchingIsError({
             error: true,
             errorMsg: `Sorry, we could not find any flights from ${props.source_code || props.selectedBooking?.origin_iata} to ${props.destination_code || props.selectedBooking?.destination_iata} for given dates at the moment. Please contact us to complete this booking`,
@@ -280,14 +279,16 @@ const preferredDepartureTime = (() => {
         });
     } else {
       setLoading(false);
+      setMoreLoadingState(false);
+      setIsFetching(false); 
+      setFlights([]);
+      setFlightsCount(0);
       setFetchingIsError({
         error: true,
         errorMsg: `Sorry, we could not find any flights from ${props.source_code || props.selectedBooking?.origin_iata} to ${props.destination_code || props.selectedBooking?.destination_iata} for given dates at the moment. Please contact us to complete this booking`,
       });
     }
   };
-
- 
 
   const _newUpdateBookingHandler = ({
     booking_id,
@@ -321,31 +322,14 @@ const preferredDepartureTime = (() => {
       booking_id,
       trace_id: localStorage.getItem(`${flightProvider}_trace_id`),
       result_indices: [result_index],
-      source_itinerary_city: props?.originCityId,
-      destination_itinerary_city: props?.destinationCityId,
+      source_itinerary_city: props?.source_itinerary_city_id,
+      destination_itinerary_city: props?.destination_itinerary_city_id,
       edge: props?.edge || props?.selectedBooking?.edge,
     };
 
     //  console.log("originCityId + destinationCityId",props?.originCityId + ":" + props?.destinationCityId);
     console.log("Request Data", requestData);
-    // updateFlightBooking
-    //   .post(`${itinerary_id}/bookings/flight/`, requestData, {
-    //     headers: {
-    //       Authorization: `Bearer ${props.token}`,
-    //     },
-    //   })
-    //   .then((res) => {
-    //     props._updateFlightBookingHandler([res.data]);
-    //     props.getPaymentHandler();
-    //     setUpdateBookingState(false);
-    //     const updatedTransferBookings = {
-    //       ...transferBookings,
-    //       intercity: {
-    //         ...transferBookings.intercity,
-    //         [originCityId + ":" + destinationCityId]: res?.data,
-    //       },
-    //     };
-    //     dispatch(setTransfersBookings(updatedTransferBookings));
+    
     updateFlightBooking
       .post(`${itinerary_id}/bookings/flight/`, requestData, {
         headers: {
@@ -355,8 +339,8 @@ const preferredDepartureTime = (() => {
       .then((res) => {
         props._updateFlightBookingHandler([res.data]);
         props.getPaymentHandler();
+        setMoreLoadingState(false);
         setUpdateBookingState(false);
-
 
         const updatedTransferBookings = JSON.parse(
           JSON.stringify(transferBookings?.transferBookings)
@@ -364,72 +348,71 @@ const preferredDepartureTime = (() => {
         const bookingIdToUpdate = requestData?.booking_id;
 
         if(props?.combo){
+          Object.keys(updatedTransferBookings).forEach((category) => {
+            if (updatedTransferBookings[category]) {
+              Object.keys(updatedTransferBookings[category]).forEach((key) => {
+                const booking = updatedTransferBookings[category][key];
 
-        Object.keys(updatedTransferBookings).forEach((category) => {
-          if (updatedTransferBookings[category]) {
-            Object.keys(updatedTransferBookings[category]).forEach((key) => {
-              const booking = updatedTransferBookings[category][key];
+                if (!booking || Object.keys(booking).length === 0) {
+                  return;
+                }
 
-              if (!booking || Object.keys(booking).length === 0) {
-                return;
-              }
-
-              if (booking?.id === bookingIdToUpdate) {
-                updatedTransferBookings[category][key] = {
-                  ...booking,
-                  ...res.data,
-                };
-              } else if (
-                booking?.children &&
-                Array.isArray(booking.children) &&
-                booking.children.length > 0
-              ) {
-                let foundMatch = false;
-                const updatedChildren = booking.children.map((childBooking) => {
-                  if (childBooking && childBooking.id === bookingIdToUpdate) {
-                    foundMatch = true;
-                    return {
-                      ...childBooking,
-                      ...res.data,
-                    };
-                  }
-                  return childBooking;
-                });
-
-                if (foundMatch) {
+                if (booking?.id === bookingIdToUpdate) {
                   updatedTransferBookings[category][key] = {
                     ...booking,
-                    children: updatedChildren,
+                    ...res.data,
                   };
+                } else if (
+                  booking?.children &&
+                  Array.isArray(booking.children) &&
+                  booking.children.length > 0
+                ) {
+                  let foundMatch = false;
+                  const updatedChildren = booking.children.map((childBooking) => {
+                    if (childBooking && childBooking.id === bookingIdToUpdate) {
+                      foundMatch = true;
+                      return {
+                        ...childBooking,
+                        ...res.data,
+                      };
+                    }
+                    return childBooking;
+                  });
+
+                  if (foundMatch) {
+                    updatedTransferBookings[category][key] = {
+                      ...booking,
+                      children: updatedChildren,
+                    };
+                  }
                 }
-              }
-            });
-          }
-        });
+              });
+            }
+          });
 
-        dispatch(setTransfersBookings(updatedTransferBookings));
-        props?.getPaymentHandler();
-
-      }
-     else { dispatch(
-        updateSingleTransferBooking(
-          `${props?.origin_itinerary_city_id}:${props?.destination_itinerary_city_id}`,
-          res.data
-        )
-      );
-      props?.getPaymentHandler();
-    }
+          dispatch(setTransfersBookings(updatedTransferBookings));
+          props?.getPaymentHandler();
+        } else { 
+          dispatch(
+            updateSingleTransferBooking(
+              `${props?.origin_itinerary_city_id}:${props?.destination_itinerary_city_id}`,
+              res.data
+            )
+          );
+          props?.getPaymentHandler();
+        }
+        
         props.openNotification({
           type: "success",
           text: "Flight updated successfully.",
-          heading: "Sucess!",
+          heading: "Success!",
         });
         props.setHideFlightModal();
-       // toast.success("flight updated successfuly");
       })
       .catch((err) => {
         console.log("Error in Updating Flight",err.message);
         setUpdateBookingState(false);
+        setMoreLoadingState(false);
         setUnauthorized(true);
         props.openNotification({
           type: "error",
@@ -438,7 +421,7 @@ const preferredDepartureTime = (() => {
         });
         props.setHideFlightModal();
         
-        toast.error("some error occured");
+        toast.error("An error occurred while updating the flight");
       });
   };
 
@@ -469,13 +452,12 @@ const preferredDepartureTime = (() => {
         if (res.data.search && res.data.search.airline_names) {
           setFlightsCount(res.data.data);
         }
-        let options = optionsJSX.slice();
+        
         if (res.data?.Results.length) {
-          setFlights(res.data.Results);
-          setFlightsCount(res.data.Results.length);
-        } else {
-          setFlights([]);
+          setFlights(prevFlights => [...prevFlights, ...res.data.Results]);
+          setFlightsCount(prev => prev + res.data.Results.length);
         }
+        
         if (res.data.next_page) {
           setViewMoreStatus(true);
           setOffset(offset + 20);
@@ -483,16 +465,126 @@ const preferredDepartureTime = (() => {
           setViewMoreStatus(false);
           setOffset(0);
         }
-        setLoading(false);
       })
       .catch((err) => {
-        setLoading(false);
         setMoreLoadingState(false);
       });
   };
 
   const handleTransferEdit = (e) => {
     setShowTransferEditDrawer(true);
+  };
+
+  const renderFlightContent = () => {
+    if (updateBookingState) {
+      return (
+        <div
+          style={{
+            width: "max-content",
+            margin: "auto",
+            height: isPageWide ? "80vh" : "40vh",
+          }}
+          className="center-div font-lexend"
+        >
+          <LoadingLottie height={"5rem"} width={"5rem"} margin="none" />
+          Please wait while we update your flight
+        </div>
+      );
+    }
+
+    if (isFetchingError.error) {
+      return (
+        <div className="flex flex-row items-center justify-center h-[80vh] text-center font-lexend">
+          {isFetchingError.errorMsg}
+        </div>
+      );
+    }
+
+    if (noResults) {
+      return (
+        <p className="font-lexend text-center h-[80vh] flex items-center justify-center">
+          Oops, we couldn't find what you were searching!
+        </p>
+      );
+    }
+
+    if (unauthorized) {
+      return (
+        <div
+          style={{
+            width: "100%",
+            margin: "auto",
+            height: isPageWide ? "80vh" : "40vh",
+          }}
+          className="center-div text-center"
+        >
+          Oops, this action is not allowed on another user's itinerary
+        </div>
+      );
+    }
+
+    if (loading && flights.length === 0) {
+      return <Skeleton />;
+    }
+
+    if (!flights.length && !loading) {
+      return (
+        <div
+          style={{
+            textAlign: "center",
+            margin: "auto",
+            height: isPageWide ? "80vh" : "70vh",
+          }}
+          className="center-div"
+        >
+          Oops, it looks like there are no alternate flights available.
+        </div>
+      );
+    }
+
+    return (
+      <OptionsContainer id="options">
+        <div style={{ clear: "right" }}>
+          {flights.map((flight, index) => (
+            <Flight
+              key={index}
+              itinerary_id={props.itinerary_id}
+              data={flight}
+              selectedBooking={props.selectedBooking}
+              _updateBookingHandler={_newUpdateBookingHandler}
+              individual={props?.individual}
+              originCityId={props?.originCityId}
+              provider={flightProvider}
+              destinationCityId={props?.destinationCityId}
+              edge={props?.edge || props?.selectedBooking?.edge}
+              setTransferBookingsIntercity={
+                props.setTransferBookingsIntercity
+              }
+              onSelect={props.onSelect}
+              isSelected={selectedFlightIndex === index}
+              onFlightSelect={() => setSelectedFlightIndex(index)}
+              getPaymentHandler={props.getPaymentHandler}
+            />
+          ))}
+
+          {moreLoadingState && <Skeleton />}
+
+          {viewMoreStatus && !updateBookingState && flights.length > 0 && (
+            <Button
+              boxShadow
+              onclickparam={null}
+              onclick={_loadAccommodationsHandler}
+              margin="0.25rem auto"
+              borderWidth="1px"
+              borderRadius="2rem"
+              padding="0.25rem 1rem"
+            >
+              View More
+            </Button>
+          )}
+        </div>
+      </OptionsContainer>
+    );
   };
 
   if (props.token)
@@ -518,7 +610,8 @@ const preferredDepartureTime = (() => {
           handleTransferEdit={handleTransferEdit}
           mercuryTransfer={props?.mercuryTransfer}
           preferred_departure_time= {`${preferredDepartureTime}`}
-        ></ComboSection>
+          updatePreferredDepartureTime={updatePreferredDepartureTime}
+        />
 
         <GridContainer style={{ clear: "right" }}>
           <ContentContainer style={{ position: "relative" }}>
@@ -530,128 +623,10 @@ const preferredDepartureTime = (() => {
                 <LoadingLottie height={"5rem"} width={"5rem"} margin="none" />
                 Fetching best fares
               </div>
-            ) : null}
-
-            {updateBookingState ? (
-              <div
-                style={{
-                  width: "max-content",
-                  margin: "auto",
-                  height: isPageWide ? "80vh" : "40vh",
-                }}
-                className="center-div font-lexend"
-              >
-                <LoadingLottie height={"5rem"} width={"5rem"} margin="none" />
-                Please wait while we update your flight
-              </div>
-            ) : null}
-
-            {isFetchingError.error ? (
-              <div className="flex flex-row items-center justify-center h-[80vh] text-center font-lexend">
-                {isFetchingError.errorMsg}
-              </div>
-            ) : !noResults && !updateLoadingState && !unauthorized ? (
-              <OptionsContainer id="options">
-                <div style={{ clear: "right" }}>
-                  {flights.map((flight, index) => (
-                    <Flight
-                      key={index}
-                      itinerary_id={props.itinerary_id}
-                      data={flight}
-                      selectedBooking={props.selectedBooking}
-                      _updateBookingHandler={_newUpdateBookingHandler}
-                      individual={props?.individual}
-                      originCityId={props?.originCityId}
-                      provider={flightProvider}
-                      destinationCityId={props?.destinationCityId}
-                      edge={props?.edge || props?.selectedBooking?.edge}
-                      setTransferBookingsIntercity={
-                        props.setTransferBookingsIntercity
-                      }
-                      onSelect={props.onSelect}
-                      isSelected={selectedFlightIndex === index}
-                      onFlightSelect={() => setSelectedFlightIndex(index)}
-                      getPaymentHandler={props.getPaymentHandler}
-                    />
-                  ))}
-
-                  {loading && !flights.length ? <Skeleton /> : null}
-
-                  {!loading && !flights.length ? (
-                    <div
-                      style={{
-                        textAlign: "center",
-                        margin: "auto",
-                        height: isPageWide ? "80vh" : "70vh",
-                      }}
-                      className="center-div"
-                    >
-                      Oops, it looks like there are no alternate flights
-                      available.
-                    </div>
-                  ) : null}
-                </div>
-
-                {moreLoadingState ? <Skeleton /> : null}
-
-                {viewMoreStatus &&
-                !updateBookingState &&
-                !loading &&
-                flights.length ? (
-                  <Button
-                    boxShadow
-                    onclickparam={null}
-                    onclick={_loadAccommodationsHandler}
-                    margin="0.25rem auto"
-                    borderWidth="1px"
-                    borderRadius="2rem"
-                    padding="0.25rem 1rem"
-                  >
-                    View More
-                  </Button>
-                ) : null}
-              </OptionsContainer>
-            ) : null}
-
-            {unauthorized ? (
-              <div
-                style={{
-                  width: "100%",
-                  margin: "auto",
-                  height: isPageWide ? "80vh" : "40vh",
-                }}
-                className="center-div text-center"
-              >
-                Oops, this action is not allowed on another user's itinerary
-              </div>
-            ) : null}
-
-            {noResults && !unauthorized ? (
-              <p className="font-lexend text-center">
-                Oops, we couldn't find what you were searching!
-              </p>
-            ) : null}
+            ) : (
+              renderFlightContent()
+            )}
           </ContentContainer>
-          {/* {!isPageWide && (
-            <>
-              <Floating>
-                <FaFilter
-                  style={{ height: "18px", width: "18px", color: "white" }}
-                  cursor={"pointer"}
-                  onClick={(e) => {
-                    setShowFilter(true);
-                  }}
-                />
-              </Floating>
-              <FloatingView>
-                <TbArrowBack
-                  style={{ height: "28px", width: "28px" }}
-                  cursor={"pointer"}
-                  onClick={props.setHideFlightModal}
-                />
-              </FloatingView>
-            </>
-          )} */}
         </GridContainer>
 
         <TransferEditDrawer
