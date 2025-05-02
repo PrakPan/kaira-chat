@@ -194,7 +194,7 @@ export default function NewPoiBooking(props) {
                         d="M28.24,22c0.79-0.95,1.26-2.17,1.26-3.5c0-3.04-2.46-5.5-5.5-5.5c-1.71,0-3.24,0.78-4.24,2L28.4,4.74	c3.59,1.22,6.53,3.91,8.17,7.38L28.24,22z"
                       ></path>
                     </svg>
-                    Google Maps
+                    Result from Google Maps
                   </span>
                 )}
               </div>

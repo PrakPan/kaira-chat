@@ -15,6 +15,8 @@ import setItinerary from "../../../store/actions/itinerary";
 import ReviewPoi from "../../POIDetails/Reviews";
 import useMediaQuery from "../../media";
 import { openNotification } from "../../../store/actions/notification";
+import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
+
 import ImageLoader from "../../ImageLoader";
 import SkeletonCard from "../../ui/SkeletonCard";
 import BackArrow from "../../ui/BackArrow";
@@ -131,6 +133,8 @@ const ActivityDetails = (props) => {
 
   const dispatch = useDispatch();
 
+  const CallPaymentInfo=useSelector((state)=>state.CallPaymentInfo)
+
   const [ImagesLoaded, setImagesLoaded] = useState({
     0: false,
     1: false,
@@ -178,6 +182,8 @@ const ActivityDetails = (props) => {
           },
         }
       );
+      dispatch(SetCallPaymentInfo(!CallPaymentInfo));
+
 
       if (res?.status == 204) {
         const newItinerary = JSON.parse(JSON.stringify(itinerary));

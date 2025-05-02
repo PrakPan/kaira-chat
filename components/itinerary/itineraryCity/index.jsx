@@ -271,6 +271,7 @@ const ItineraryCity = (props) => {
             setActivityBookings={props?.setActivityBookings}
             setItinerary={props?.setItinerary}
             setShowLoginModal={props?.setShowLoginModal}
+            index={props?.index}
           />
         )
       ) : null}

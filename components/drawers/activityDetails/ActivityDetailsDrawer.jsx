@@ -12,6 +12,7 @@ import { openNotification } from "../../../store/actions/notification";
 import ActivityDetailsSkeleton from "./ActivityDetailsSkeleton";
 import setItinerary from "../../../store/actions/itinerary";
 import { duration } from "@mui/material";
+import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 
 const ActivityDetailsDrawer = (props) => {
   //console.log("day by day:",props?.setItinerary)
@@ -22,6 +23,8 @@ const ActivityDetailsDrawer = (props) => {
   const [updateAmenities, setUpdateAmenities] = useState(false);
   const itineraryFilters = useSelector((state) => state.ItineraryFilters);
   const itinerary=useSelector((state)=>state.Itinerary)
+  const CallPaymentInfo=useSelector((state)=>state.CallPaymentInfo)
+
   console.log("itinerary is:",itinerary)
   const num_adults = props?.pax?.adults
   const num_children = props?.pax?.children
@@ -93,6 +96,7 @@ const ActivityDetailsDrawer = (props) => {
         },
       })
       .then((res) => {
+        dispatch(SetCallPaymentInfo(!CallPaymentInfo))
 
         const newItinerary = {
           ...itinerary,
@@ -189,6 +193,7 @@ const ActivityDetailsDrawer = (props) => {
           filterState={filterState}
           setFilterState={setFilterState}
           setShowLoginModal={props?.setShowLoginModal}
+          itinerary_city_id={props?.itinerary_city_id}
         />
       ) : (
         <ActivityDetailsSkeleton

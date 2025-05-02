@@ -5,23 +5,27 @@ import { logEvent } from "../../../services/ga/Index";
 import ImageLoader from "../../ImageLoader";
 import ActivityAddDrawer from "../../drawers/poiDetails/activityAddDrawer";
 import { useRouter } from "next/router";
+import NewPoiDetailsDrawer from "../../drawers/poiDetails/NewPoiDetailsDrawer";
+import POIDetails from "../../drawers/poiDetails/POIDetails";
+import Drawer from "../../ui/Drawer";
 
 const CitySummary = (props) => {
-  const router=useRouter();
+  console.log("city summary is:", props);
+  const router = useRouter();
   const [dayByDay, setDayByDay] = useState(null);
   const [showDrawer, setShowDrawer] = useState(false);
   const [poi, setPoi] = useState(0);
   const [activities, setActivities] = useState(null);
-  const [dayByDayIndex,setDayByDayIndex] = useState(0);
+  const [dayByDayIndex, setDayByDayIndex] = useState(0);
   const [showAddDrawer, setShowAddDrawer] = useState(false);
   const [activityData, setActivityData] = useState({
     id: "",
     type: "",
   });
-  const [showBookingDetail,setShowBookingDetail] = useState(true);
+  var size=0;
+  const [showBookingDetail, setShowBookingDetail] = useState(true);
 
   const handleView = async (poi, type) => {
-
     try {
       setShowDrawer(true);
       setShowBookingDetail(true);
@@ -30,34 +34,42 @@ const CitySummary = (props) => {
         type: type,
       }));
     } catch (error) {
-      console.log("error is:",error)
+      console.log("error is:", error);
     }
-
-  };  
+  };
   useEffect(() => {
     let dayByDayArray = [];
-
-
+    var index=0;
     for (const daybyday of props.city.day_by_day) {
       for (const element of daybyday?.slab_elements) {
         if (element.element_type === "activity") {
+          element.dayIndex=index;
           dayByDayArray.push(element);
         }
       }
+      index+=1;
     }
     setActivities(props.city.activities);
     setDayByDay(dayByDayArray);
   }, [props.city]);
 
-  const handleActivity = (poiData,index) => {
+  const handleActivity = (poiData, index,dayIndex) => {
     // setPoi(e.target.id);
 
     setDayByDayIndex(index);
-    if(poiData?.booking?.id)
-      setShowBookingDetail(true);
+    console.log("poi data is:",poiData)
+    if (poiData?.booking?.id) setShowBookingDetail(true);
     setActivityData({
-      id:poiData?.booking?.id ? poiData?.booking?.id : poiData?.poi ? poiData?.poi : poiData?.activity ? poiData?.activity : null,
-      type:poiData?.element_type
+      id: poiData?.booking?.id
+        ? poiData?.booking?.id
+        : poiData?.poi
+        ? poiData?.poi
+        : poiData?.activity
+        ? poiData?.activity
+        : null,
+      type: poiData?.activity?"activity" : "poi",
+      index: index,
+      dayIndex:dayIndex
     });
     setPoi(poiData);
     setShowDrawer(true);
@@ -92,23 +104,29 @@ const CitySummary = (props) => {
           </div>
           <div className="text-sm font-normal flex flex-row items-center flex-wrap gap-1 w-[]">
             {dayByDay.map(
-              (poi, index) =>
-                index < 3 && (
+              (poi, index) =>{
+                if(!poi.activity){
+                  size+=1;
+                }
+                return (size <= 3 && !poi?.activity && (
+                  <>
                   <span
-                    onClick={()=>handleActivity(poi,index)}
+                    onClick={() => handleActivity(poi, index,poi.dayIndex)}
                     key={index}
                     id={index}
                     className="cursor-pointer hover:text-blue border-2 rounded-full px-2 lg:px-3 md:px-3 py-1"
                   >
                     {poi.heading}
                   </span>
-                )
+                  </>
+                ))}
+
             )}
             <span
               onClick={handleSeeMore}
               className="ml-2 text-blue hover:underline font-[600] text-[12px] leading-[22px] cursor-pointer"
             >
-              {dayByDay.length > 3 && `+${dayByDay?.length - 3} more`}
+              {size > 3 && `+${size - 3} more`}
             </span>
           </div>
         </div>
@@ -120,14 +138,11 @@ const CitySummary = (props) => {
         <div className="flex flex-col gap-2 w-full">
           <div className="flex flex-wrap gap-2">
             {activities?.map((item) => (
-              <div 
-              key={item.id}
-              className="flex gap-2 group w-[333px] p-[10px] border-[2px] rounded-[12px] shadow-none hover:cursor-pointer hover:bg-[rgb(254_250_216)] bg-opacity-100" onClick={() =>
-                handleView(
-                  item.id,
-                  "activity"
-                )
-              }>
+              <div
+                key={item.id}
+                className="flex gap-2 group w-[333px] p-[10px] border-[2px] rounded-[12px] shadow-none hover:cursor-pointer hover:bg-[rgb(254_250_216)] bg-opacity-100"
+                onClick={() => handleView(item.id, "activity")}
+              >
                 <div className="w-[50px]">
                   <ImageLoader
                     borderRadius={"5px"}
@@ -142,13 +157,24 @@ const CitySummary = (props) => {
                 </div>
                 <div>
                   <div className="flex gap-1">
-                  <div className="w-fit font-semibold  text-[12px] cursor-pointer">
-                    {item?.name}
-                  </div>
-                  <div className="hidden group-hover:!block">
-                  <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" class="mt-1" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill="none" d="M0 0h24v24H0z"></path><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 000-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg> 
-
-                  </div>
+                    <div className="w-fit font-semibold  text-[12px] cursor-pointer">
+                      {item?.name}
+                    </div>
+                    <div className="hidden group-hover:!block">
+                      <svg
+                        stroke="currentColor"
+                        fill="currentColor"
+                        stroke-width="0"
+                        viewBox="0 0 24 24"
+                        class="mt-1"
+                        height="1em"
+                        width="1em"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path fill="none" d="M0 0h24v24H0z"></path>
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 000-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
+                      </svg>
+                    </div>
                   </div>
                   <div className="flex gap-3 text-[12px] ">
                     <div className="w-auto flex items-center gap-1">
@@ -164,23 +190,31 @@ const CitySummary = (props) => {
                           fill="#01202B"
                         />
                       </svg>{" "}
-                      <div>{item?.pax || item?.number_of_adults+item?.number_of_children+item?.number_of_infants} tickets</div>
+                      <div>
+                        {item?.pax ||
+                          item?.number_of_adults +
+                            item?.number_of_children +
+                            item?.number_of_infants}{" "}
+                        tickets
+                      </div>
                     </div>
-                    {item?.duration && item?.duration!="0 hours" && <div className="w-auto flex items-center gap-1">
-                      <svg
-                        width="13"
-                        height="13"
-                        viewBox="0 0 13 13"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M6.32734 0.417969C3.01534 0.417969 0.333344 3.10597 0.333344 6.41797C0.333344 9.72997 3.01534 12.418 6.32734 12.418C9.64534 12.418 12.3333 9.72997 12.3333 6.41797C12.3333 3.10597 9.64534 0.417969 6.32734 0.417969ZM6.33334 11.218C3.68134 11.218 1.53334 9.06997 1.53334 6.41797C1.53334 3.76597 3.68134 1.61797 6.33334 1.61797C8.98534 1.61797 11.1333 3.76597 11.1333 6.41797C11.1333 9.06997 8.98534 11.218 6.33334 11.218ZM6.20134 3.41797H6.16534C5.92534 3.41797 5.73334 3.60997 5.73334 3.84997V6.68197C5.73334 6.89197 5.84134 7.08997 6.02734 7.19797L8.51734 8.69197C8.72134 8.81197 8.98534 8.75197 9.10534 8.54797C9.23134 8.34397 9.16534 8.07397 8.95534 7.95397L6.63334 6.57397V3.84997C6.63334 3.60997 6.44134 3.41797 6.20134 3.41797Z"
-                          fill="black"
-                        />
-                      </svg>
-                      {item?.duration}
-                    </div>}
+                    {item?.duration && item?.duration != "0 hours" && (
+                      <div className="w-auto flex items-center gap-1">
+                        <svg
+                          width="13"
+                          height="13"
+                          viewBox="0 0 13 13"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M6.32734 0.417969C3.01534 0.417969 0.333344 3.10597 0.333344 6.41797C0.333344 9.72997 3.01534 12.418 6.32734 12.418C9.64534 12.418 12.3333 9.72997 12.3333 6.41797C12.3333 3.10597 9.64534 0.417969 6.32734 0.417969ZM6.33334 11.218C3.68134 11.218 1.53334 9.06997 1.53334 6.41797C1.53334 3.76597 3.68134 1.61797 6.33334 1.61797C8.98534 1.61797 11.1333 3.76597 11.1333 6.41797C11.1333 9.06997 8.98534 11.218 6.33334 11.218ZM6.20134 3.41797H6.16534C5.92534 3.41797 5.73334 3.60997 5.73334 3.84997V6.68197C5.73334 6.89197 5.84134 7.08997 6.02734 7.19797L8.51734 8.69197C8.72134 8.81197 8.98534 8.75197 9.10534 8.54797C9.23134 8.34397 9.16534 8.07397 8.95534 7.95397L6.63334 6.57397V3.84997C6.63334 3.60997 6.44134 3.41797 6.20134 3.41797Z"
+                            fill="black"
+                          />
+                        </svg>
+                        {item?.duration}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -196,29 +230,33 @@ const CitySummary = (props) => {
             className=" text-blue cursor-pointer font-semibold underline"
             onClick={() => setShowAddDrawer(true)}
           >
-           + Add Activity in {props?.city?.city?.name}
+            + Add Activity in {props?.city?.city?.name}
           </p>
         </div>
       </div>
       {dayByDay && dayByDay.length ? (
-
-        <POIDetailsDrawer
-          itineraryDrawer
-          show={showDrawer}
-          iconId={
-            dayByDay?.[dayByDayIndex] ? dayByDay?.[dayByDayIndex]?.poi : dayByDay?.[dayByDayIndex]?.activity
-          }
-          handleCloseDrawer={handleCloseDrawer}
-          name={dayByDay?.[dayByDayIndex]?.heading }
-          image={dayByDay[dayByDayIndex].icon}
-          text={dayByDay[dayByDayIndex]?.text }
-          Topheading={"Select Our Point Of Interest"}
-          activityData={activityData}
-          showBookingDetail={showBookingDetail}
-          setShowLoginModal={props?.setShowLoginModal}
-          dayIndex={dayByDayIndex}
-          itinerary_city_id={props.city.id}
-        />
+        <>
+          <POIDetailsDrawer
+            itineraryDrawer
+            show={showDrawer}
+            handleCloseDrawer={handleCloseDrawer}
+            slabIndex={dayByDayIndex}
+            iconId={
+              dayByDay?.[dayByDayIndex]
+                ? dayByDay?.[dayByDayIndex]?.poi
+                : dayByDay?.[dayByDayIndex]?.activity
+            }
+            name={dayByDay?.[dayByDayIndex]?.heading}
+            image={dayByDay[dayByDayIndex].icon}
+            text={dayByDay[dayByDayIndex]?.text}
+            Topheading={"Select Our Point Of Interest"}
+            activityData={activityData}
+            showBookingDetail={showBookingDetail}
+            setShowLoginModal={props?.setShowLoginModal}
+            dayIndex={activityData.dayIndex}
+            itinerary_city_id={props.city.id}
+          />
+        </>
       ) : null}
       <ActivityAddDrawer
         showDrawer={showAddDrawer}
