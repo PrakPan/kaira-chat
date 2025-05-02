@@ -40,14 +40,14 @@ const POIDetailsDrawer = (props) => {
         setLoading(false);
       } else {
         const res = await axios.get(
-          `${MERCURY_HOST}/api/v1/geos/poi/${props?.activityData?.id}/`
+          `${MERCURY_HOST}/api/v1/geos/poi/${props?.activityData?.id}/?itinerary_city_id=${props?.itinerary_city_id}`
         );
         setData(res?.data?.data?.poi);
         setLoading(false);
       }
     } else if (props?.activityData?.type == "poi") {
       const res = await axios.get(
-        `${MERCURY_HOST}/api/v1/geos/poi/${props?.activityData?.id}/`
+        `${MERCURY_HOST}/api/v1/geos/poi/${props?.activityData?.id}/?itinerary_city_id=${props?.itinerary_city_id}`
       );
       setData(res?.data?.data?.poi);
       setLoading(false);
