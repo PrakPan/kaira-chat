@@ -179,7 +179,7 @@ export default function NewActivityBooking(props) {
                   className="p-[12px]"
                   onclick={() => handleClick(props.data?.id)}
                 >
-                  Add To Itinerary
+                  View Details
                 </Button>
               )}
             </div>
@@ -288,7 +288,7 @@ export default function NewActivityBooking(props) {
             className="p-[12px]"
             onclick={() => handleClick(props.data?.id)}
           >
-            Add To Itinerary
+            View Detail
           </Button>
           // <div
           //   className="h-full text-blue underline cursor-pointer"

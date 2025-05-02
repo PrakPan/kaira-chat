@@ -10,6 +10,7 @@ import TransferEditDrawer from "../../../components/drawers/routeTransfer/Transf
 import TransferBooking from "./TransferBooking";
 import media from "../../../components/media";
 import Pin from "../../newitinerary/breif/route/Pin";
+import ComboFlight from "../../../components/modals/flights/ComboFlight";
 
 const CITY_COLOR_CODES = [
   "#000000", // shade of blue
@@ -331,24 +332,26 @@ const TransferBookings = (props) => {
     />
 </div>
 
+        
 
           <FlightModal
+           combo={true}
             getPaymentHandler={props?.getPaymentHandler}
             _updateFlightBookingHandler={props._updateFlightBookingHandler}
             _updateBookingHandler={props._updateBookingHandler}
-            setHideFlightModal={props.setHideFlightModal}
+           setHideFlightModal={props.setHideFlightModal}
             alternates={selectedBooking.id}
             tailored_id={selectedBooking["tailored_itinerary"]}
             _updatePaymentHandler={props._updatePaymentHandler}
             _updateFlightHandler={props._updateFlightHandler}
             setHideBookingModal={props.setHideBookingModal}
-            selectedBooking={selectedBooking}
+           selectedBooking={selectedBooking}
             setShowFlightModal={props?.setShowFlightModal}
             showFlightModal={props?.showFlightModal}
             itinerary_id={props?.itinerary_id}
             selectedTransferHeading={props?.route?.heading}
             fetchData={props?.fetchData}
-            setShowLoginModal={props?.setShowLoginModal}
+           setShowLoginModal={props?.setShowLoginModal}
             check_in={props?.route?.check_in}
             _GetInTouch={props._GetInTouch}
             daySlabIndex={daySlabIndex}

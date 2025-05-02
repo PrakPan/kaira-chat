@@ -20,14 +20,15 @@ const Container = styled.div`
 `;
 
 const Section = (props) => {
+  console.log("filters are:",props?.filters)
   const [selectedStarCategory, setSelectedStarCategory] = useState([]);
   const [selectedUserStar, setSelectedUserStar] = useState([]);
   const [refundable, setRefundable] = useState(false)
   const [freeBreakfast, setFreeBreakfast] = useState(true)
-  const [selectedFacilities, setSelectedFacilities] = useState([]);
-  const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedFacilities, setSelectedFacilities] = useState(props?.filters?.facilities);
+  const [selectedTags, setSelectedTags] = useState(props?.facilities?.tags);
   const [budget, setBudget] = useState([props.filters.budget.price_lower_range, props.filters.budget.price_upper_range])
-  const [selectedTypes, setSelectedTypes] = useState(["All"]);
+  const [selectedTypes, setSelectedTypes] = useState(props?.filters?.type);
   const handleBudgetChange = () => {
     props.setFilters((prev)=>({
       ...prev,

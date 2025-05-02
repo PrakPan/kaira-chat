@@ -8,13 +8,12 @@ import Tags from "./Tags";
 import UserRatings from "./UserRatings";
 
 export default function Filters(props) {
-  console.log("filter is:",props.FILTERS);  // Check what 'type' actually contains
 
-  const [selectedUserStar, setSelectedUserStar] = useState([]);
-  const [selectedFacilities, setSelectedFacilities] = useState([]);
-  const [selectedTags, setSelectedTags] = useState([]);
-  const [selectedTypes, setSelectedTypes] = useState(["All"]);
-
+  const [selectedUserStar, setSelectedUserStar] = useState((props?.filters?.user_ratings?.length==0 || !props?.filters?.user_ratings )?[]:props?.filters?.user_ratings);
+  const [selectedFacilities, setSelectedFacilities] = useState((props?.filters?.facilities?.length==0 || !props?.filters?.facilities )?[]:props?.filters?.facilities);
+  const [selectedTags, setSelectedTags] = useState((props?.filters?.tags?.length==0 || !props?.filters?.tags )?[]:props?.filters?.tags);
+  const [selectedTypes, setSelectedTypes] = useState((props?.filters?.type?.length==0 || !props?.filters?.type )?["All"]:props?.filters?.type);
+console.log("type is:",(props?.filters?.type?.length==0 || !props?.filters?.type )?["All"]:props?.filters?.type)
   const handleApply = () => {
     props.updateUserStarHandler(selectedUserStar);
     props._addFilterHandler(selectedFacilities, "facilities");

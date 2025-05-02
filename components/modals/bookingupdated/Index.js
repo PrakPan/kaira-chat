@@ -93,8 +93,11 @@ const Booking = (props) => {
     facilities: null,
     tags: null,
     trace_id: null,
-    occupancies: itinerary?.hotels_config?.room_configuration,
+    occupancies: itinerary?.hotels_config?.room_configuration || [
+      { adults: 1, childAges: [] },
+    ],
     applyFilter: false,
+    page: 1,
   });
   const [filtersObj, setFiltersObj] = useState({
     type: [],
@@ -106,14 +109,20 @@ const Booking = (props) => {
   });
   const [selectSearch, setSelectedSearch] = useState("");
   const [showFilters, setShowFilters] = useState(false);
-  const debouncedSearch = useDebounce(selectSearch);
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (props?.showBookingModal && props?.selectedBooking?.check_in) {
+      console.log("Triggering fetchHotels due to change in dependency");
       fetchHotels();
     }
-  }, [filters.applyFilter, props?.showBookingModal, debouncedSearch]);
+  }, [selectSearch]);
+
+  useEffect(() => {
+    if (props?.showBookingModal && props?.selectedBooking?.check_in) {
+      fetchHotelsFilter();
+    }
+  }, [filters.applyFilter]);
 
   const getDate = (dateString) => {
     try {
@@ -230,8 +239,8 @@ const Booking = (props) => {
     });
   };
 
-  const fetchHotels = () => {
-    console.log("occupancies are:",filters.occupancies)
+  const fetchHotelsFilter = () => {
+    console.log("occupancies are:", filters.occupancies);
     setLoading(true);
     setUpdateLoadingState(true);
     setNoResults(false);
@@ -246,7 +255,7 @@ const Booking = (props) => {
       filter_by: {
         price_lower_range: filters.budget.price_lower_range,
         price_upper_range: filters.budget.price_upper_range,
-        hotel_name: debouncedSearch ? debouncedSearch : null,
+        hotel_name: selectSearch ? selectSearch : null,
         sub_location_ids: null,
         free_breakfast: filters.free_breakfast,
         is_refundable: filters.is_refundable,
@@ -255,7 +264,7 @@ const Booking = (props) => {
         type: filters.type && filters.type[0] !== "All" ? filters.type : null,
         star_category: filters.star_category,
         user_ratings: filters.user_ratings,
-        page: paginationStatus?.page,
+        page: filters?.page,
       },
       occupancies: filters.occupancies.map((room) => {
         return {
@@ -266,7 +275,7 @@ const Booking = (props) => {
       sort_by: {
         price_order: filters.sort === "price: high to low" ? "desc" : "asc",
       },
-      trace_id: paginationStatus?.traceId,
+      trace_id: filters?.trace_id,
     };
 
     hotelSearch
@@ -278,11 +287,6 @@ const Booking = (props) => {
       .then((res) => {
         setUpdateLoadingState(false);
         setProvider(res.data?.source);
-        setPaginationStatus({
-          traceId: res?.data?.trace_details?.id,
-          page: paginationStatus?.page + 1,
-          totalPages: res?.data?.total_pages,
-        });
 
         if (res.data?.trace_details?.id) {
           localStorage.setItem("trace_id", res?.data?.trace_details?.id);
@@ -346,19 +350,25 @@ const Booking = (props) => {
                 );
             }
           }
+          if (
+            filtersObj?.type?.length == 0 &&
+            filtersObj?.facilities?.length == 0 &&
+            filtersObj?.tags?.length == 0
+          ) {
             setDynamicFilters({
               accommodation_types: res.data?.available_types,
               facilities: res.data?.available_facilities,
               tags: res.data?.tags,
             });
+          }
+          setFilters((prev) => ({
+            ...prev,
+            facilities: res?.data?.selected_filters?.facilities,
+            type: res?.data?.selected_filters?.type,
+            tags: res?.data?.selected_filters?.tags,
+          }));
           setTotalCount(res?.data?.count);
           setMoreOptionsJSX([...moreOptionsJSX, ...options]);
-          setFilters((prev)=>({
-            ...prev,
-            facilities:res?.data?.selected_filters?.facilities,
-            type:res?.data?.selected_filters?.type,
-            tags:res?.data?.selected_filters?.tags
-          }))
         } else {
           setNoResults(true);
           setMoreOptionsJSX([]);
@@ -375,6 +385,188 @@ const Booking = (props) => {
       });
   };
 
+  const fetchHotels = () => {
+    console.log("occupancies are:", filters.occupancies);
+    setLoading(true);
+    setUpdateLoadingState(true);
+    setNoResults(false);
+    setFetchingIsError({
+      error: false,
+      errorMsg: "",
+    });
+    const requestData = {
+      check_in: getDate(props?.selectedBooking?.check_in),
+      check_out: getDate(props?.selectedBooking?.check_out),
+      city_id: props?.selectedBooking?.cityId,
+      filter_by: {
+        price_lower_range: filters.budget.price_lower_range,
+        price_upper_range: filters.budget.price_upper_range,
+        hotel_name: selectSearch ? selectSearch : null,
+        sub_location_ids: null,
+        free_breakfast: filters.free_breakfast,
+        is_refundable: filters.is_refundable,
+        facilities: filters.facilities,
+        tags: filters.tags,
+        type: filters.type && filters.type[0] !== "All" ? filters.type : null,
+        star_category: filters.star_category,
+        user_ratings: filters.user_ratings,
+        page: paginationStatus?.page,
+      },
+      occupancies: filters.occupancies.map((room) => {
+        return {
+          num_adults: room.adults,
+          child_ages: room.childAges,
+        };
+      }),
+      sort_by: {
+        price_order: filters.sort === "price: high to low" ? "desc" : "asc",
+      },
+      trace_id: paginationStatus?.traceId,
+    };
+
+    hotelSearch
+      .post("", requestData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      })
+      .then((res) => {
+        setUpdateLoadingState(false);
+        setProvider(res.data?.source);
+
+        if (res.data?.trace_details?.id) {
+          localStorage.setItem("trace_id", res?.data?.trace_details?.id);
+        }
+
+        if (res.data?.data?.length) {
+          if (res.data?.total_count) setTotalCount(res.data.total_count);
+          setNoResults(false);
+
+          let options = [];
+          for (var i = 0; i < res.data.data.length; i++) {
+            // if (res.data.data[i].name !== props?.selectedBooking.name)
+            if (
+              res.data.data[i]?.images &&
+              res.data.data[i]?.images?.length &&
+              res.data.data[i]?.price
+            ) {
+              let img = false;
+              for (let j = 0; j < res.data.data[i].images.length; j++) {
+                if (res.data.data[i].images[j]?.image) {
+                  img = res.data.data[i].images[j].image;
+                  break;
+                }
+              }
+
+              if (img)
+                options.push(
+                  <AccommodationSearched
+                    mercury
+                    source={res?.data?.data?.[i]?.source}
+                    handleClick={props?.handleClick}
+                    payment={props.payment}
+                    plan={props.plan}
+                    currentBooking={props.currentBooking}
+                    _setImagesHandler={props._setImagesHandler}
+                    itinerary_id={props.itinerary_id}
+                    tailored_id={props.tailored_id}
+                    accommodation={res.data.data[i]}
+                    selectedBooking={props.selectedBooking}
+                    key={i}
+                    images={res.data.data[i].images}
+                    banner_image={img}
+                    bookings={props.bookings}
+                    num_adults={(filters?.occupancies).reduce(
+                      (sum, room) => sum + (room.adults || 0),
+                      0
+                    )}
+                    occupancies={filters.occupancies}
+                    traceId={
+                      res.data?.trace_details?.id
+                        ? res.data.trace_details.id
+                        : ""
+                    }
+                    provider={res.data?.data?.[0]?.source}
+                    setUpdateBookingState={setUpdateBookingState}
+                    setUnauthorized={setUnauthorized}
+                    _updateStayBookingHandler={props._updateStayBookingHandler}
+                    getPaymentHandler={props.getPaymentHandler}
+                    setStayBookings={props.setStayBookings}
+                  ></AccommodationSearched>
+                );
+            }
+          }
+          if (
+            filtersObj?.type?.length == 0 &&
+            filtersObj?.facilities?.length == 0 &&
+            filtersObj?.tags?.length == 0
+          ) {
+            setDynamicFilters({
+              accommodation_types: res.data?.available_types,
+              facilities: res.data?.available_facilities,
+              tags: res.data?.tags,
+            });
+          }
+          setTotalCount(res?.data?.count);
+          setMoreOptionsJSX([...moreOptionsJSX, ...options]);
+          setFilters((prev) => ({
+            ...prev,
+            facilities: res?.data?.selected_filters?.facilities,
+            type: res?.data?.selected_filters?.type,
+            tags: res?.data?.selected_filters?.tags,
+            trace_id: paginationStatus?.traceId,
+            page: paginationStatus?.page,
+          }));
+          setPaginationStatus({
+            traceId: res?.data?.trace_details?.id,
+            page: paginationStatus?.page + 1,
+            totalPages: res?.data?.total_pages,
+          });
+        } else {
+          setNoResults(true);
+          setMoreOptionsJSX([]);
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log("new error:", err);
+        setLoading(false);
+        setFetchingIsError({
+          error: true,
+          errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
+        });
+      });
+  };
+
+  const handleClose = () => {
+    props?.setHideBookingModal();
+    resetPaginationStatus();
+    setMoreOptionsJSX([]);
+    setLoading(true);
+    setFilters((prev) => ({
+      free_breakfast: false,
+      is_refundable: false,
+      budget: {
+        price_lower_range: 1000,
+        price_upper_range: 10000,
+      },
+      star_category: null,
+      sort: "price: low to high",
+      type: null,
+      user_ratings: null,
+      facilities: null,
+      tags: null,
+      trace_id: null,
+      occupancies: itinerary?.hotels_config?.room_configuration || [
+        { adults: 1, childAges: [] },
+      ],
+      applyFilter: false,
+      page: 1,
+    }));
+    setMoreOptionsJSX([]);
+    setNoResults(false);
+  };
+
   if (props?.token)
     return (
       <div>
@@ -383,132 +575,231 @@ const Booking = (props) => {
           anchor={"right"}
           backdrop
           className="font-lexend "
-          onHide={() => {
-            props?.setHideBookingModal();
-            resetPaginationStatus();
-            setMoreOptionsJSX([]);
-            setFilters((prev) => ({
-              ...prev,
-              occupancies: itinerary?.hotels_config?.room_configuration,
-            }));
-          }}
+          onHide={handleClose}
           width={"50vw"}
           mobileWidth={"100vw"}
         >
-          {props?.showBookingModal ? (
-            <>
-              <div className="absolute right-[10px] top-[20px] z-[9999]">
-                {isError.error && (
-                  <Slide
-                    hideTime={8}
-                    onUnmount={() =>
-                      setIsError({
-                        error: false,
-                        errorMsg: "",
-                      })
-                    }
-                    isActive={isError.error}
-                    direction={-2}
-                    duration={1.3}
-                    ydistance={25}
-                  >
-                    <div className="text-white  font-lexend px-2 py-1 border-2 border-red bg-red-500 rounded-lg  text-center font-normal text-sm ">
-                      {isError.errorMsg}
+          <>
+            <div className="absolute right-[10px] top-[20px] z-[9999]">
+              {isError.error && (
+                <Slide
+                  hideTime={8}
+                  onUnmount={() =>
+                    setIsError({
+                      error: false,
+                      errorMsg: "",
+                    })
+                  }
+                  isActive={isError.error}
+                  direction={-2}
+                  duration={1.3}
+                  ydistance={25}
+                >
+                  <div className="text-white  font-lexend px-2 py-1 border-2 border-red bg-red-500 rounded-lg  text-center font-normal text-sm ">
+                    {isError.errorMsg}
+                  </div>
+                </Slide>
+              )}
+            </div>
+
+            <div className="sticky lg:w-[50vw] w-[100vw] py-2 top-0 bg-white z-[900]">
+              <SectionOne
+                booking_city={
+                  props?.selectedBooking?.city ||
+                  props?.selectedBooking?.city_name
+                }
+                setHideBookingModal={props?.setHideBookingModal}
+                selectSearch={selectSearch}
+                setSelectedSearch={setSelectedSearch}
+                fetchHotels={fetchHotels}
+                resetPaginationStatus={resetPaginationStatus}
+                setMoreOptionsJSX={setMoreOptionsJSX}
+                clickType={props?.currentBooking?.clickType}
+                setFilters={setFilters}
+                hotelsConf={
+                  itinerary?.hotels_config?.room_configuration || [
+                    { adults: 1, childAges: [] },
+                  ]
+                }
+                handleClose={handleClose}
+              ></SectionOne>
+
+              <SectionTwo
+                loading={loading}
+                showFilter={props?.showFilter}
+                setshowFilter={props?.setshowFilter}
+                filtersState={filtersState}
+                FILTERS={filtersObj}
+                _updateStarFilterHandler={_updateStarFilterHandler}
+                updateUserStarHandler={updateUserStarHandler}
+                _removeFilterHandler={_removeFilterHandler}
+                _addFilterHandler={_addFilterHandler}
+                booking_city={
+                  props?.selectedBooking?.city ||
+                  props?.selectedBooking?.city_name
+                }
+                No_of_stays={totalCount}
+                payment={props?.payment}
+                plan={props?.plan || props?.booking}
+                TotalCount={totalCount}
+                setShowFilters={setShowFilters}
+                showFilters={showFilters}
+                filters={filters}
+                setFilters={setFilters}
+              ></SectionTwo>
+            </div>
+
+            <div className="lg:w-[100%] w-[95%] mx-auto">
+              {unauthorized ? (
+                <p
+                  style={{
+                    borderRadius: "5px",
+                    padding: "0.25rem",
+                    backgroundColor: "rgba(255,0,0,0.1)",
+                    color: "red",
+                    margin: "1rem",
+                  }}
+                  className="text-center font-lexend"
+                >
+                  You're not authorized to take this action, please contact your
+                  experience captain.
+                </p>
+              ) : null}
+
+              <GridContainer style={{ clear: "right" }}>
+                <ContentContainer style={{ position: "relative" }}>
+                  {updateBookingState ? (
+                    <div
+                      style={{
+                        width: "max-content",
+                        margin: "auto",
+                        height: isPageWide ? "80vh" : "40vh",
+                      }}
+                      className="center-div text-center font-lexend"
+                    >
+                      <LoadingLottie
+                        height={"5rem"}
+                        width={"5rem"}
+                        margin="none"
+                      />
+                      Please wait while we update your bookings
                     </div>
-                  </Slide>
-                )}
-              </div>
+                  ) : null}
 
-              <div className="sticky lg:w-[50vw] w-[100vw] py-2 top-0 bg-white z-[900]">
-                <SectionOne
-                  booking_city={
-                    props?.selectedBooking?.city ||
-                    props?.selectedBooking?.city_name
-                  }
-                  setHideBookingModal={props?.setHideBookingModal}
-                  selectSearch={selectSearch}
-                  setSelectedSearch={setSelectedSearch}
-                  fetchHotels={fetchHotels}
-                  resetPaginationStatus={resetPaginationStatus}
-                  setMoreOptionsJSX={setMoreOptionsJSX}
-                  clickType={props?.currentBooking?.clickType}
-                  setFilters={setFilters}
-                  hotelsConf={itinerary?.hotels_config?.room_configuration}
-                ></SectionOne>
-
-                <SectionTwo
-                  loading={loading}
-                  showFilter={props?.showFilter}
-                  setshowFilter={props?.setshowFilter}
-                  filtersState={filtersState}
-                  FILTERS={filtersObj}
-                  _updateStarFilterHandler={_updateStarFilterHandler}
-                  updateUserStarHandler={updateUserStarHandler}
-                  _removeFilterHandler={_removeFilterHandler}
-                  _addFilterHandler={_addFilterHandler}
-                  booking_city={
-                    props?.selectedBooking?.city ||
-                    props?.selectedBooking?.city_name
-                  }
-                  No_of_stays={totalCount}
-                  payment={props?.payment}
-                  plan={props?.plan || props?.booking}
-                  TotalCount={totalCount}
-                  setShowFilters={setShowFilters}
-                  showFilters={showFilters}
-                  filters={filters}
-                  setFilters={setFilters}
-                ></SectionTwo>
-              </div>
-
-              <div className="lg:w-[100%] w-[95%] mx-auto">
-                {unauthorized ? (
-                  <p
-                    style={{
-                      borderRadius: "5px",
-                      padding: "0.25rem",
-                      backgroundColor: "rgba(255,0,0,0.1)",
-                      color: "red",
-                      margin: "1rem",
-                    }}
-                    className="text-center font-lexend"
-                  >
-                    You're not authorized to take this action, please contact
-                    your experience captain.
-                  </p>
-                ) : null}
-
-                <GridContainer style={{ clear: "right" }}>
-                  <ContentContainer style={{ position: "relative" }}>
-                    {updateBookingState ? (
-                      <div
-                        style={{
-                          width: "max-content",
-                          margin: "auto",
-                          height: isPageWide ? "80vh" : "40vh",
-                        }}
-                        className="center-div text-center font-lexend"
-                      >
-                        <LoadingLottie
-                          height={"5rem"}
-                          width={"5rem"}
-                          margin="none"
-                        />
-                        Please wait while we update your bookings
+                  {!loading && isFetchingError.error ? (
+                    <div className="flex flex-col items-center justify-center h-[80vh] gap-3">
+                      <div className="flex flex-row items-center justify-center text-center font-lexend">
+                        {isFetchingError.errorMsg}
                       </div>
-                    ) : null}
+                      <GetInTouchContainer>
+                        <Button
+                          color="#111"
+                          fontWeight="500"
+                          fontSize="1rem"
+                          borderWidth="1px"
+                          width="100%"
+                          borderRadius="8px"
+                          bgColor="#f8e000"
+                          padding="12px"
+                          onclick={props._GetInTouch}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              gap: "0.5rem",
+                              alignItems: "center",
+                            }}
+                          >
+                            <ImageLoader
+                              dimensions={{ height: 50, width: 50 }}
+                              dimensionsMobile={{ height: 50, width: 50 }}
+                              height={"20px"}
+                              width={"20px"}
+                              leftalign
+                              url={
+                                "media/icons/login/customer-service-black.png"
+                              }
+                            />{" "}
+                            <span>Get in touch!</span>
+                          </div>
+                        </Button>
+                      </GetInTouchContainer>
+                    </div>
+                  ) : loading ? (
+                    <Skeleton />
+                  ) : !noResults && !updateBookingState ? (
+                    <OptionsContainer id="options">
+                      <div className="mb-3">
+                        {moreOptionsJSX.length ? (
+                          <>
+                            {moreOptionsJSX?.map((item) => (
+                              <>{item}</>
+                            ))}
+                            {updateLoadingState && <Skeleton />}
+                          </>
+                        ) : null}
 
-                    {isFetchingError.error ? (
-                      <div className="flex flex-col items-center justify-center h-[80vh] gap-3">
-                        <div className="flex flex-row items-center justify-center text-center font-lexend">
-                          {isFetchingError.errorMsg}
-                        </div>
+                        {paginationStatus.page <
+                          paginationStatus.totalPages && (
+                          <div className="mt-3">
+                            {/* {viewMoreStatus ? ( */}
+                            <Button
+                              boxShadow
+                              onclickparam={null}
+                              onclick={fetchHotels}
+                              margin="0.25rem auto"
+                              borderWidth="1px"
+                              borderRadius="2rem"
+                              padding="0.25rem 1rem"
+                            >
+                              View More
+                            </Button>
+                            {/* // ) : selectSearch !== "" ? (
+                              //   <Button
+                              //     boxShadow
+                              //     onclickparam={null}
+                              //     onclick={handleClearSearch}
+                              //     margin="0.25rem auto"
+                              //     borderWidth="1px"
+                              //     borderRadius="2rem"
+                              //     padding="0.25rem 1rem"
+                              //   >
+                              //     Show All
+                              //   </Button>
+                              // ) : null} */}
+                          </div>
+                        )}
+                      </div>
+                    </OptionsContainer>
+                  ) : null}
+
+                  {!loading && noResults ? (
+                    <OptionsContainer className="px-2 center-div space-y-5">
+                      <div className="font-lexend center-div text-center">
+                        Oops, we couldn't find what you were searching but we
+                        are already adding new and approved accommodations to
+                        our database everyday!
+                      </div>
+                      {debouncedSearch !== "" ? (
+                        <Button
+                          boxShadow
+                          onclickparam={null}
+                          onclick={handleClearSearch}
+                          margin="0.25rem auto"
+                          borderWidth="1px"
+                          borderRadius="2rem"
+                          padding="0.25rem 1rem"
+                        >
+                          Show All
+                        </Button>
+                      ) : (
                         <GetInTouchContainer>
                           <Button
                             color="#111"
                             fontWeight="500"
                             fontSize="1rem"
-                            borderWidth="1px"
+                            borderWidth="2px"
                             width="100%"
                             borderRadius="8px"
                             bgColor="#f8e000"
@@ -537,134 +828,28 @@ const Booking = (props) => {
                             </div>
                           </Button>
                         </GetInTouchContainer>
-                      </div>
-                    ) : loading ? (
-                      <Skeleton />
-                    ) : !noResults && !updateBookingState ? (
-                      <OptionsContainer id="options">
-                        <div className="mb-3">
-                          {moreOptionsJSX.length ? (
-                            <>
-                              {moreOptionsJSX?.map((item) => (
-                                <>{item}</>
-                              ))}
-                              {updateLoadingState && <Skeleton />}
-                            </>
-                          ) : null}
-
-                          {paginationStatus.page <
-                            paginationStatus.totalPages && (
-                            <div className="mt-3">
-                              {/* {viewMoreStatus ? ( */}
-                              <Button
-                                boxShadow
-                                onclickparam={null}
-                                onclick={fetchHotels}
-                                margin="0.25rem auto"
-                                borderWidth="1px"
-                                borderRadius="2rem"
-                                padding="0.25rem 1rem"
-                              >
-                                View More
-                              </Button>
-                              {/* // ) : selectSearch !== "" ? (
-                              //   <Button
-                              //     boxShadow
-                              //     onclickparam={null}
-                              //     onclick={handleClearSearch}
-                              //     margin="0.25rem auto"
-                              //     borderWidth="1px"
-                              //     borderRadius="2rem"
-                              //     padding="0.25rem 1rem"
-                              //   >
-                              //     Show All
-                              //   </Button>
-                              // ) : null} */}
-                            </div>
-                          )}
-                        </div>
-                      </OptionsContainer>
-                    ) : null}
-
-                    {noResults ? (
-                      <OptionsContainer className="px-2 center-div space-y-5">
-                        <div className="font-lexend center-div text-center">
-                          Oops, we couldn't find what you were searching but we
-                          are already adding new and approved accommodations to
-                          our database everyday!
-                        </div>
-                        {debouncedSearch !== "" ? (
-                          <Button
-                            boxShadow
-                            onclickparam={null}
-                            onclick={handleClearSearch}
-                            margin="0.25rem auto"
-                            borderWidth="1px"
-                            borderRadius="2rem"
-                            padding="0.25rem 1rem"
-                          >
-                            Show All
-                          </Button>
-                        ) : (
-                          <GetInTouchContainer>
-                            <Button
-                              color="#111"
-                              fontWeight="500"
-                              fontSize="1rem"
-                              borderWidth="2px"
-                              width="100%"
-                              borderRadius="8px"
-                              bgColor="#f8e000"
-                              padding="12px"
-                              onclick={props._GetInTouch}
-                            >
-                              <div
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "center",
-                                  gap: "0.5rem",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <ImageLoader
-                                  dimensions={{ height: 50, width: 50 }}
-                                  dimensionsMobile={{ height: 50, width: 50 }}
-                                  height={"20px"}
-                                  width={"20px"}
-                                  leftalign
-                                  url={
-                                    "media/icons/login/customer-service-black.png"
-                                  }
-                                />{" "}
-                                <span>Get in touch!</span>
-                              </div>
-                            </Button>
-                          </GetInTouchContainer>
-                        )}
-                      </OptionsContainer>
-                    ) : null}
-                  </ContentContainer>
-                </GridContainer>
-              </div>
-              <div></div>
-              <ViewHotelDetails
-                mercury={true}
-                check_in={props?.selectedBooking.check_in}
-                check_out={props?.selectedBooking.check_out}
-                _setImagesHandler={props?._setImagesHandler}
-                onHide={() => setShowDetails(false)}
-                id={props?.currentBooking?.agoda_accommodation}
-                currentBooking={props?.currentBooking}
-                show={showDetails}
-                handleClick={props?.handleClick}
-                setStayBookings={props?.setStayBookings}
-                itineraryDaybyDay={props?.itineraryDaybyDay}
-                occupancies={filters.occupancies}
-              ></ViewHotelDetails>
-            </>
-          ) : (
-            <></>
-          )}
+                      )}
+                    </OptionsContainer>
+                  ) : null}
+                </ContentContainer>
+              </GridContainer>
+            </div>
+            <div></div>
+            <ViewHotelDetails
+              mercury={true}
+              check_in={props?.selectedBooking.check_in}
+              check_out={props?.selectedBooking.check_out}
+              _setImagesHandler={props?._setImagesHandler}
+              onHide={() => setShowDetails(false)}
+              id={props?.currentBooking?.agoda_accommodation}
+              currentBooking={props?.currentBooking}
+              show={showDetails}
+              handleClick={props?.handleClick}
+              setStayBookings={props?.setStayBookings}
+              itineraryDaybyDay={props?.itineraryDaybyDay}
+              occupancies={filters.occupancies}
+            ></ViewHotelDetails>
+          </>
         </Drawer>
       </div>
     );

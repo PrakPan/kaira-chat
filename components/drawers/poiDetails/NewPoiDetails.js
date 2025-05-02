@@ -17,6 +17,7 @@ import { useSelector } from "react-redux";
 import BackArrow from "../../ui/BackArrow";
 import styled from "styled-components";
 import ReviewPoi from "../../../components/POIDetails/Reviews";
+import { MERCURY_HOST } from "../../../services/constants";
 
 export const Title = styled.p`
   font-weight: 800;
@@ -107,6 +108,7 @@ const ScrollContainer = styled.div`
 
   // const Heading = styled.div
 `;
+
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
 export default function PoiDetails(props) {
@@ -124,6 +126,32 @@ export default function PoiDetails(props) {
     notSuitableFor: false,
     tipsTricks: false,
   });
+
+  const [ImagesLoaded, setImagesLoaded] = useState({
+    0: false,
+    1: false,
+    2: false,
+    3: false,
+  });
+
+  const [ImagesError, setImagesError] = useState({
+    0: false,
+    1: false,
+    2: false,
+    3: false,
+  });
+
+  function OnImageLoad(i) {
+    if (!ImagesLoaded[i]) {
+      setTimeout(
+        () =>
+          setImagesLoaded((prev) => {
+            return { ...prev, [i]: true };
+          }),
+        1000
+      );
+    }
+  }
 
   useEffect(() => {
     if (props.data?.amenities?.length) {
@@ -168,45 +196,110 @@ export default function PoiDetails(props) {
         </div>
 
         <div className={`flex flex-col gap-4 `}>
-          <div className="h-[180px] md:h-[300px]">
-            <div style={{ display: imageLoaded ? "initial" : "none" }}>
-              <ImageLoader
-                borderRadius="8px"
-                marginTop="23px"
-                widthMobile="100%"
-                width="100%"
-                height="100%"
-                url={
-                  props.data.image && !imageFail
-                    ? props.data.image
-                    : "media/icons/bookings/notfounds/noroom.png"
-                }
-                dimensionsMobile={{ width: 500, height: 295 }}
-                dimensions={{ width: 468, height: 295 }}
-                onload={() => {
-                  setTimeout(() => {
-                    setImageLoaded(true);
-                  }, 1000);
-                }}
-                onfail={() => {
-                  setImageFail(true);
-                  setImageLoaded(true);
-                }}
-                noLazy
-              ></ImageLoader>
-            </div>
+          {props?.data?.extra_images?.length > 0 && (
+            <GridImage>
+              <Child area="1 / 1 / 5 / 4" className="div1">
+                <Image
+                  src={
+                    props?.data?.extra_images?.[0]
+                      ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[0]?.photo_reference}`
+                      : "/media/icons/bookings/notfounds/noroom.png"
+                  }
+                  alt="Image 0"
+                  fill
+                  className="object-cover"
+                  onLoad={() => OnImageLoad(0)}
+                  onError={() => OnImageError(0)}
+                  priority
+                />
+                <div
+                  style={{
+                    display: !ImagesLoaded[0] ? "initial" : "none",
+                    height: "100%",
+                    overflow: "hidden",
+                  }}
+                >
+                  <SkeletonCard lottieDimension="50rem" />
+                </div>
+              </Child>
 
-            <div
-              style={{
-                display: !imageLoaded ? "initial" : "none",
-              }}
-            >
-              <SkeletonCard
-                width={"100%"}
-                height={isPageWide ? "300px" : "180px"}
-              />
-            </div>
-          </div>
+              <Child area="1 / 8 / 5 / 11" className="div2 rounded-lg">
+                <Image
+                  src={
+                    props?.data?.extra_images?.[1]
+                      ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[1]?.photo_reference}`
+                      : "/media/icons/bookings/notfounds/noroom.png"
+                  }
+                  alt="Image 1"
+                  fill
+                  className="object-cover"
+                  onLoad={() => OnImageLoad(1)}
+                  onError={() => OnImageError(1)}
+                  priority
+                />{" "}
+                <div
+                  style={{
+                    display: !ImagesLoaded[1] ? "initial" : "none",
+                    height: "100%",
+                    overflow: "hidden",
+                  }}
+                >
+                  <SkeletonCard lottieDimension="50rem" />
+                </div>
+              </Child>
+
+              <Child area="1 / 4 / 3 / 8" className="div3">
+                <Image
+                  src={
+                    props?.data?.extra_images?.[2]
+                      ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[2]?.photo_reference}`
+                      : "/media/icons/bookings/notfounds/noroom.png"
+                  }
+                  alt="Image 2"
+                  fill
+                  className="object-cover"
+                  onLoad={() => OnImageLoad(2)}
+                  onError={() => OnImageError(2)}
+                  priority
+                />
+                <div
+                  style={{
+                    display: !ImagesLoaded[2] ? "initial" : "none",
+                    height: "100%",
+                    overflow: "hidden",
+                  }}
+                >
+                  <SkeletonCard lottieDimension="50rem" />
+                </div>
+              </Child>
+
+              <Child area="3 / 4 / 5 / 8" className="div4">
+                <Image
+                  src={
+                    props?.data?.extra_images?.[3]
+                      ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[3]?.photo_reference}`
+                      : "/media/icons/bookings/notfounds/noroom.png"
+                  }
+                  alt="Image 3"
+                  fill
+                  className="object-cover"
+                  onLoad={() => OnImageLoad(3)}
+                  onError={() => OnImageError(3)}
+                  priority
+                />
+                <div
+                  style={{
+                    display: !ImagesLoaded[3] ? "initial" : "none",
+                    height: "100%",
+                    overflow: "hidden",
+                  }}
+                >
+                  <SkeletonCard lottieDimension="50rem" />
+                </div>
+              </Child>
+            </GridImage>
+          )}
+
           <div className="flex flex-col gap-3">
             <div className="text-[20px] font-[800]">{props.data.name}</div>
 
@@ -463,28 +556,36 @@ export default function PoiDetails(props) {
           </div>
         </div>
         {props.data?.timings && (
-            <div>
-              <Heading>Timings</Heading>
-              <Text>
-                {
-                  <div>
-                    {props.data.timings?.map((e, i) => {
-                      const index = e.indexOf(":");
-                      const day = e.slice(0, index).trim();
-                      const time = e.slice(index + 1).trim();
+          <div>
+            <Heading>Timings</Heading>
+            <Text>
+              {
+                <div>
+                  {props.data.timings?.map((e, i) => {
+                    const index = e.indexOf(":");
+                    const day = e.slice(0, index).trim();
+                    const time = e.slice(index + 1).trim();
 
-                      return (
-                        <div key={i} className="flex gap-[22px] mb-2">
-                          <div className="text-[14px] font-semibold">{day}</div>
-                          <div className={`text-[14px] font-normal bg-[#FAFAFA] px-[8px] py-[2px] rounded-[10px] ${time=="Closed"?" bg-[rgba(220,69,65,0.1)]  text-[#DC4541]":""}`}>{time}</div>
+                    return (
+                      <div key={i} className="flex gap-[22px] mb-2">
+                        <div className="text-[14px] font-semibold">{day}</div>
+                        <div
+                          className={`text-[14px] font-normal bg-[#FAFAFA] px-[8px] py-[2px] rounded-[10px] ${
+                            time == "Closed"
+                              ? " bg-[rgba(220,69,65,0.1)]  text-[#DC4541]"
+                              : ""
+                          }`}
+                        >
+                          {time}
                         </div>
-                      );
-                    })}
-                  </div>
-                }
-              </Text>
-            </div>
-          )}
+                      </div>
+                    );
+                  })}
+                </div>
+              }
+            </Text>
+          </div>
+        )}
         {props?.data?.reviews && (
           <div className="flex flex-col gap-[12px]">
             <div id="reviews-poi" className="flex justify-between">
