@@ -279,7 +279,7 @@ export default function NewPoiBooking(props) {
                     className="p-[12px]"
                     onclick={() => handleClick(props.data?.id)}
                   >
-                    View Detail
+                    View Details
                   </Button>
                 </div>
               )}

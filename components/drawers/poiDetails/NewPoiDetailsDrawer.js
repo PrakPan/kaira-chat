@@ -27,7 +27,7 @@ const NewPoiDetailsDrawer = (props) => {
 
     try {
       const res = await axios.get(
-        `${MERCURY_HOST}/api/v1/geos/poi/${props?.id}/`
+        `${MERCURY_HOST}/api/v1/geos/poi/${props?.id}/?itinerary_city_id=${props?.itinerary_city_id}`
       );
       if (res.data?.data?.poi) {
         setData(res.data?.data?.poi);
