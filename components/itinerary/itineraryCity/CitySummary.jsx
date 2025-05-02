@@ -217,7 +217,7 @@ const CitySummary = (props) => {
           showBookingDetail={showBookingDetail}
           setShowLoginModal={props?.setShowLoginModal}
           dayIndex={dayByDayIndex}
-          itinerary_city_id={props.city.city.id}
+          itinerary_city_id={props.city.id}
         />
       ) : null}
       <ActivityAddDrawer

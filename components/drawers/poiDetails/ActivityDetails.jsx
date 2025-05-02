@@ -184,8 +184,8 @@ const ActivityDetails = (props) => {
         var itineraryCities = newItinerary;
         itineraryCities = newItinerary.cities.map((city) => {
           const cityTemp = city;
-        
-          if (city.city.id === props?.itinerary_city_id) {
+        console.log("city is:",city,"itinerary city is:",props.itinerary_city_id)
+          if (city.id==props?.itinerary_city_id) {
             const elements = cityTemp.day_by_day[props?.dayIndex]?.slab_elements;
         
             console.log("Before filtering:", elements, "Remove ID:", props?.data?.id);
@@ -197,6 +197,8 @@ const ActivityDetails = (props) => {
               });
             }
           }
+
+          console.log("after filtering:",cityTemp.day_by_day[props?.dayIndex])
           cityTemp.activities=cityTemp?.activities?.filter((item)=>{
             return item?.id!=props?.data?.id
           })
@@ -208,7 +210,7 @@ const ActivityDetails = (props) => {
         props?.handleCloseDrawer(e);
         console.log("id is:",props.data.id,"new data is:",newItinerary)
         dispatch(setItinerary(newItinerary));
-        props?.getPaymentHandler();
+        // props?.getPaymentHandler();
         dispatch(
           openNotification({
             type: "success",
