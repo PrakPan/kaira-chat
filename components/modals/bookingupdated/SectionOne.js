@@ -31,16 +31,7 @@ const Section = (props) => {
       <BackArrow
         handleClick={() => {
           try {
-            props.setHideBookingModal();
-            props?.resetPaginationStatus();
-            props?.setMoreOptionsJSX([]);
-            props?.setFilters((prev) => ({
-              ...prev,
-              occupancies: props?.hotelsConf,
-            }));
-            // props?.setFilters((prev)=>({
-            //   ...prev,
-            //   props?.hotelsConf})));
+            props?.handleClose();
           } catch (error) {
             console.log("unable to close:", error);
           }

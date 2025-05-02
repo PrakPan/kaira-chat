@@ -115,6 +115,8 @@ const ScrollContainer = styled.div`
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
 const ActivityDetails = (props) => {
+  console.log("props data are:",props)
+
     let isPageWide = useMediaQuery("(min-width: 768px)");
 
   const isSmallScreen = useMediaQuery("(max-width:586px)");
@@ -156,6 +158,7 @@ const ActivityDetails = (props) => {
   }
 
   const handleDelete = async (e) => {
+    console.log("props data are:",props)
     if (!token) {
       props?.setShowLoginModal(true);
       return;
@@ -163,38 +166,47 @@ const ActivityDetails = (props) => {
     setLoading(true);
     try {
       const res = await axios.delete(
-        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/poi/delete/`,
+        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/activity/${props?.data?.id}/`,
         {
-          data: {
-            itinerary_city_id: props?.itinerary_city_id,
-            day_by_day_index: props?.dayIndex,
-            poi_index: props?.slabIndex,
-          },
+          // data: {
+          //   itinerary_city_id: props?.itinerary_city_id,
+          //   day_by_day_index: props?.dayIndex,
+          //   poi_index: props?.slabIndex,
+          // },
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
         }
       );
 
-      if (res?.status == 200) {
+      if (res?.status == 204) {
         const newItinerary = JSON.parse(JSON.stringify(itinerary));
         var itineraryCities = newItinerary;
         itineraryCities = newItinerary.cities.map((city) => {
           const cityTemp = city;
-          if (city.id === props?.itinerary_city_id) {
-            console.log(
-              "here:",
-              cityTemp.day_by_day[props?.dayIndex]?.slab_elements
-            );
-            cityTemp.day_by_day[props?.dayIndex]?.slab_elements.splice(
-              props?.slabIndex,
-              1
-            );
+        
+          if (city.city.id === props?.itinerary_city_id) {
+            const elements = cityTemp.day_by_day[props?.dayIndex]?.slab_elements;
+        
+            console.log("Before filtering:", elements, "Remove ID:", props?.data?.id);
+        
+            if (elements) {
+              cityTemp.day_by_day[props?.dayIndex].slab_elements = elements.filter((item) => {
+                const keep = item?.booking?.id !== props?.data?.id;
+                return keep;
+              });
+            }
           }
+          cityTemp.activities=cityTemp?.activities?.filter((item)=>{
+            return item?.id!=props?.data?.id
+          })
+        
           return cityTemp;
         });
+        
         newItinerary.cities = itineraryCities;
         props?.handleCloseDrawer(e);
+        console.log("id is:",props.data.id,"new data is:",newItinerary)
         dispatch(setItinerary(newItinerary));
         props?.getPaymentHandler();
         dispatch(
@@ -206,6 +218,8 @@ const ActivityDetails = (props) => {
         );
       }
     } catch (error) {
+
+      console.log("error is:",error)
       dispatch(
         openNotification({
           type: "error",

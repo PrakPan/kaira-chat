@@ -33,6 +33,10 @@ const POIDetailsDrawer = (props) => {
           `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/activity/${props?.activityData?.id}/`
         );
         setData(res?.data?.activity);
+        setData((prev)=>({
+          ...prev,
+          id:res?.data?.id
+        }))
         setLoading(false);
       } else {
         const res = await axios.get(

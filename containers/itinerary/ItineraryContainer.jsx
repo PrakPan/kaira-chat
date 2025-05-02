@@ -557,17 +557,17 @@ async function fetchData(poll) {
     // setLoadPricing(false);
   }, [CallPaymentInfo]);
 
-  useEffect(() => {
-    const fetchPassengers = async () => {
-      try {
-        const res = await axiosGetItinerary.get(`/${props.id}/guests/`);
-        dispatch(SetPassengers(res?.data));
-      } catch (error) {}
-    };
-    if (props?.token) {
-      fetchPassengers();
-    }
-  }, [props?.token]);
+  // useEffect(() => {
+  //   const fetchPassengers = async () => {
+  //     try {
+  //       const res = await axiosGetItinerary.get(`/${props.id}/guests/`);
+  //       dispatch(SetPassengers(res?.data));
+  //     } catch (error) {}
+  //   };
+  //   if (props?.token) {
+  //     fetchPassengers();
+  //   }
+  // }, [props?.token]);
 
   useEffect(() => {
     fetchData(true);

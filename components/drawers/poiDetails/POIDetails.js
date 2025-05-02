@@ -159,6 +159,7 @@ const POIDetails = (props) => {
     }
     setLoading(true);
     try {
+      console.log("activity props are:",props)
       const res = await axios.delete(
         `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/poi/delete/`,
         {
