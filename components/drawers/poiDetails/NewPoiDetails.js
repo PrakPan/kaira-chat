@@ -18,6 +18,8 @@ import BackArrow from "../../ui/BackArrow";
 import styled from "styled-components";
 import ReviewPoi from "../../../components/POIDetails/Reviews";
 import { MERCURY_HOST } from "../../../services/constants";
+import Button from "../../../components/ui/button/Index";
+import { PulseLoader } from "react-spinners";
 
 export const Title = styled.p`
   font-weight: 800;
@@ -115,8 +117,6 @@ export default function PoiDetails(props) {
   const isSmallScreen = media("(max-width:586px)");
 
   let isPageWide = media("(min-width: 768px)");
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [imageFail, setImageFail] = useState(false);
   const [stars, setStars] = useState([]);
   const [inclusiveCost, setInclusiveCost] = useState([]);
   const token = useSelector((state) => state.auth.token);
@@ -126,6 +126,8 @@ export default function PoiDetails(props) {
     notSuitableFor: false,
     tipsTricks: false,
   });
+
+  const [loading, setLoading] = useState(false);
 
   const [ImagesLoaded, setImagesLoaded] = useState({
     0: false,
@@ -180,12 +182,16 @@ export default function PoiDetails(props) {
   }, []);
 
   const handleUpdate = () => {
+    setLoading(true);
     if (!token) {
       props.setShowLoginModal(true);
       console.log("showing login drawer");
+      setLoading(false);
       return;
     }
-    props.updatedActivityBooking();
+    props.updatedActivityBooking().then(()=>{
+      setLoading(false);
+    });
   };
 
   return (
@@ -720,12 +726,21 @@ export default function PoiDetails(props) {
 
         <div className="border-t-2 fixed bottom-0 right-0 left-0 flex justify-end gap-1 py-[12px] px-[20px] bg-white shadow-md z-50">
           <div className="flex flex-col gap-1">
-            <button
-              onClick={handleUpdate}
-              className="bg-[#F7E700] py-2 px-4 border-2 border-black rounded-lg"
-            >
-              {props.data?.city && "Add to Itinerary"}
-            </button>
+            
+              <Button
+                onclick={handleUpdate}
+                bgColor={"#F7E700"}
+                borderRadius="8px"
+                fontWeight="400"
+                hoverColor="white"
+                height={"full"}
+                padding={"8px 16px"}
+                loading={loading}
+              >
+                
+                  <>{props.data?.city && "Add to Itinerary"}</>
+              </Button>
+
             {dateFormat(props?.date)}
           </div>
         </div>
