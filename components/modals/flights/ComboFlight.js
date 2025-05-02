@@ -158,7 +158,7 @@ const ComboFlight = (props) => {
     }
     
     const roundedTime = roundToNext30Min(baseTime);
-    
+
     setPreferredDepartureTime(roundedTime.format("YYYY-MM-DDTHH:mm:ss"));
   }, [props?.comboStartDate, props?.comboStartTime, props?.selectedBooking?.check_in]);
 
@@ -294,7 +294,8 @@ const ComboFlight = (props) => {
     booking_id,
     itinerary_id,
     result_index,
-    flightProvider
+    flightProvider,
+    edge
   }) => {
     if (props.handleFlightSelect) {
       props.handleFlightSelect({
@@ -548,6 +549,7 @@ const ComboFlight = (props) => {
           {flights.map((flight, index) => (
             <Flight
               key={index}
+             // edge={props?.edge}
               itinerary_id={props.itinerary_id}
               data={flight}
               selectedBooking={props.selectedBooking}
