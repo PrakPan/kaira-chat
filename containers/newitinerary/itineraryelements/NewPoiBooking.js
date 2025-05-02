@@ -89,14 +89,13 @@ export default function NewPoiBooking(props) {
                   src={
                     props?.data?.image?.photo_reference
                       ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.image?.photo_reference}`
-                      : "/media/icons/bookings/notfounds/noroom.png"
+                      : "https://images.thetarzanway.com/media/icons/bookings/notfounds/noroom.png"
                   }
                   alt="Image 1"
-                  className="object-cover"
                   priority
                   height="220"
                   width="251"
-                   borderRadius= "16px"
+                  className="object-cover rounded-lg [height:220px]"
                 />
               ) : (
                 <ImageLoader

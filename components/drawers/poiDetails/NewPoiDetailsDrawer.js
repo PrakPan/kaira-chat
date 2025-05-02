@@ -92,6 +92,7 @@ const NewPoiDetailsDrawer = (props) => {
         heading: "Error!",
       });
     }
+    return 1;
   };
 
   return (
