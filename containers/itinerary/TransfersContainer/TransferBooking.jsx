@@ -1143,33 +1143,7 @@ const TransferBooking = ({
                 </div>
               </>
             )}
-            {/* <TransferEditDrawer
-                    mercury
-                    addOrEdit={"transferAdd"}
-                    showDrawer={showDrawer}
-                    setShowDrawer={setShowDrawer}
-                    // selectedTransferHeading={origin}
-                    destination={destination_city_id}
-                    // check_in={check_in}
-                    // routeId={id}
-                    oCityData={oCityData}
-                    dCityData={dCityData}
-                    setShowLoginModal={setShowLoginModal}
-                    city={origin_city_name}
-                    dcity={destination_city_name}
-                    // originCityId={origin}
-                    // destinationCityId={destination}
-                    selectedBooking={selectedBooking}
-                    setSelectedBooking={setSelectedBooking}
-                    originCityId={
-                      oCityData?.city?.id || oCityData?.gmaps_place_id
-                    }
-                    destinationCityId={
-                      dCityData?.city?.id || dCityData?.gmaps_place_id
-                    }
-                    origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
-                    destination_itinerary_city_id={dCityData?.id || dCityData?.gmaps_place_id}
-                  /> */}
+          
             <TransferEditDrawer
               mercury
               addOrEdit={"transferAdd"}

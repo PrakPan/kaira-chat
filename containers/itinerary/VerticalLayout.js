@@ -114,11 +114,12 @@ const CityItem = ({
   const [loading, setLoading] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
 
+  console.log("Selllll",selectedBooking)
   const router = useRouter();
   const dispatch = useDispatch();
   let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
 
-  const handleEdit = async () => {
+  const handleEdit = async (combo) => {
     setLoading(true);
     console.log("inside show");
     try {
@@ -126,7 +127,7 @@ const CityItem = ({
       const res = await axios.get(
         `${MERCURY_HOST}/api/v1/itinerary/${
           router?.query?.id
-        }/bookings/${booking_type.toLowerCase()}/${booking_id}/`
+        }/bookings/${combo? `combo` : booking_type.toLowerCase()}/${booking_id}/`
       );
       setData(res?.data);
       setLoading(false);
@@ -276,7 +277,8 @@ const CityItem = ({
                 {transfer_type == "combo" ? (
                   <div
                     className={`flex flex-col ${upPresent && downPresent ? "group hover:cursor-pointer" : ""}`}
-                    onClick={async () => {
+                    onClick={() => {
+ upPresent && downPresent && handleEdit(true)
                       // const res = await axios.get(
                       //   `${MERCURY_HOST}/api/v1/itinerary/${
                       //     router?.query?.id
@@ -414,7 +416,7 @@ const CityItem = ({
             />
           ) : loading ? (
             <VehicleDetailLoader setHandleShow={setHandleShow} />
-          ) : booking_type === "Car" ? (
+          ) : booking_type === "Taxi" ? (
             <TaxiDetailModal
               data={data}
               setHandleShow={setHandleShow}
