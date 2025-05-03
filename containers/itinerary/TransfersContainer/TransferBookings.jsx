@@ -234,6 +234,7 @@ const TransferBookings = (props) => {
                 />
               }
             </>
+          
 
             {itineraries?.cities?.map((item, index) => {
               if (index < itineraries.cities.length - 1) {
@@ -293,6 +294,81 @@ const TransferBookings = (props) => {
               return null;
             })}
 
+            {itineraries?.cities?.length > 0 && (
+              <>
+                <PinSection
+                  key={`last-${
+                    itineraries?.cities?.[itineraries?.cities.length - 1]?.id
+                  }`}
+                  transfersPin
+                  setCurrentPopup={false}
+                  city={
+                    itineraries?.cities?.[itineraries?.cities.length - 1]?.city
+                      .name
+                  }
+                  index={itineraries?.cities.length - 1}
+                  pinColour={CITY_COLOR_CODES[itineraries?.cities.length % 7]}
+                />
+                <TransferBooking
+                  mercuryItinerary={props?.mercuryItinerary}
+                  loadbookings={props?.loadbookings}
+                  key={
+                    transferBooking?.intercity[
+                      `${
+                        itineraries?.cities?.[itineraries?.cities.length - 1]
+                          ?.id
+                      }:${itineraries?.end_city?.gmaps_place_id}`
+                    ]?.id
+                  }
+                  index={itineraries?.cities.length - 1}
+                  booking={
+                    transferBooking?.intercity[
+                      `${
+                        itineraries?.cities?.[itineraries?.cities.length - 1]
+                          ?.id
+                      }:${itineraries?.end_city?.gmaps_place_id}`
+                    ]
+                  }
+                  payment={props?.payment || null}
+                  token={props?.token || null}
+                  setShowLoginModal={props?.setShowLoginModal}
+                  _changeTaxiHandler={_changeTaxiHandler}
+                  _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
+                  getPaymentHandler={props?.getPaymentHandler}
+                  _changeFlightHandler={_changeFlightHandler}
+                  origin={
+                    itineraries?.cities?.[itineraries?.cities.length - 1].city
+                  }
+                  destination={itineraries?.end_city}
+                  oCityData={
+                    itineraries?.cities?.[itineraries?.cities.length - 1]
+                  }
+                  dCityData={itineraries?.end_city}
+                  id={itineraries?.end_city?.gmaps_place_id}
+                  check_in={itineraries?.end_date}
+                  selectedBooking={selectedBooking}
+                  setSelectedBooking={setSelectedBooking}
+                  originCityId={
+                    itineraries?.cities?.[itineraries?.cities.length - 1]?.id
+                  }
+                  destinationCityId={itineraries?.end_city?.gmaps_place_id}
+                  pinColour1={CITY_COLOR_CODES[itineraries?.cities?.length % 7]}
+                  pinColour2={"#000000"}
+                  _updateFlightBookingHandler={
+                    props._updateFlightBookingHandler
+                  }
+                />
+              </>
+            )}
+            <PinSection
+              key={-2}
+              transfersPin
+              setCurrentPopup={false}
+              city={itineraries?.end_city?.city_name}
+              index={-2}
+              pinColour={null}
+            />
+            </div>
         
 
           <FlightModal
@@ -367,7 +443,8 @@ const TransferBookings = (props) => {
           />
         </>
       }
-    </div>
+  </div>
+  
   );
 };
 
