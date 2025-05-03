@@ -34,6 +34,9 @@ const SlabElement = (props) => {
       ) : props.element.element_type === "recommendation" ? (
         <Recommendation
           element={props.element}
+          dayIndex={props?.dayIndex}
+          slabIndex={props?.slabIndex}
+          itinerary_city_id={props?.itinerary_city_id}
           setShowLoginModal={props?.setShowLoginModal}
         />
       ) : null}
@@ -506,6 +509,7 @@ const Recommendation = (props) => {
         Topheading={"Select Our Point Of Interest"}
         activityData={activityData}
         dayIndex={props?.dayIndex}
+        itinerary_city_id={props?.itinerary_city_id}
         slabIndex={props?.slabIndex}
       />
     </>

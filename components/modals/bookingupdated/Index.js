@@ -159,7 +159,7 @@ const Booking = (props) => {
   const resetPaginationStatus = () => {
     setPaginationStatus({
       traceId: null,
-      page: 1,
+      page: 0,
       totalPages: 1,
     });
   };
@@ -264,7 +264,7 @@ const Booking = (props) => {
         type: filters.type && filters.type[0] !== "All" ? filters.type : null,
         star_category: filters.star_category,
         user_ratings: filters.user_ratings,
-        page: filters?.page,
+        page: 1,
       },
       occupancies: filters.occupancies.map((room) => {
         return {
@@ -275,7 +275,7 @@ const Booking = (props) => {
       sort_by: {
         price_order: filters.sort === "price: high to low" ? "desc" : "asc",
       },
-      trace_id: filters?.trace_id,
+      trace_id: null,
     };
 
     hotelSearch
@@ -366,9 +366,16 @@ const Booking = (props) => {
             facilities: res?.data?.selected_filters?.facilities,
             type: res?.data?.selected_filters?.type,
             tags: res?.data?.selected_filters?.tags,
+            page: 1,
+            trace_id: null,
           }));
-          setTotalCount(res?.data?.count);
+          // setTotalCount(res?.data?.count);
           setMoreOptionsJSX(options);
+          setPaginationStatus({
+            traceId: res?.data?.trace_details?.id,
+            page: res?.data?.current_page,
+            totalPages: res?.data?.total_pages,
+          });
         } else {
           setNoResults(true);
           setMoreOptionsJSX([]);
@@ -410,7 +417,7 @@ const Booking = (props) => {
         type: filters.type && filters.type[0] !== "All" ? filters.type : null,
         star_category: filters.star_category,
         user_ratings: filters.user_ratings,
-        page: paginationStatus?.page,
+        page: paginationStatus?.page + 1,
       },
       occupancies: filters.occupancies.map((room) => {
         return {
@@ -507,7 +514,7 @@ const Booking = (props) => {
               tags: res.data?.tags,
             });
           }
-          setTotalCount(res?.data?.count);
+          // setTotalCount(res?.data?.count);
           setMoreOptionsJSX([...moreOptionsJSX, ...options]);
           setFilters((prev) => ({
             ...prev,
@@ -519,7 +526,7 @@ const Booking = (props) => {
           }));
           setPaginationStatus({
             traceId: res?.data?.trace_details?.id,
-            page: paginationStatus?.page + 1,
+            page: res?.data?.current_page,
             totalPages: res?.data?.total_pages,
           });
         } else {
@@ -726,8 +733,6 @@ const Booking = (props) => {
                         </Button>
                       </GetInTouchContainer>
                     </div>
-                  ) : loading ? (
-                    <Skeleton />
                   ) : !noResults && !updateBookingState ? (
                     <OptionsContainer id="options">
                       <div className="mb-3">
@@ -739,6 +744,8 @@ const Booking = (props) => {
                             {updateLoadingState && <Skeleton />}
                           </>
                         ) : null}
+                                          {loading && <Skeleton />}
+
 
                         {paginationStatus.page <
                           paginationStatus.totalPages && (

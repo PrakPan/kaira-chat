@@ -5,12 +5,8 @@ import { logEvent } from "../../../services/ga/Index";
 import ImageLoader from "../../ImageLoader";
 import ActivityAddDrawer from "../../drawers/poiDetails/activityAddDrawer";
 import { useRouter } from "next/router";
-import NewPoiDetailsDrawer from "../../drawers/poiDetails/NewPoiDetailsDrawer";
-import POIDetails from "../../drawers/poiDetails/POIDetails";
-import Drawer from "../../ui/Drawer";
 
 const CitySummary = (props) => {
-  console.log("city summary is:", props);
   const router = useRouter();
   const [dayByDay, setDayByDay] = useState(null);
   const [showDrawer, setShowDrawer] = useState(false);
@@ -22,16 +18,18 @@ const CitySummary = (props) => {
     id: "",
     type: "",
   });
-  var size=0;
+  var size = 0;
   const [showBookingDetail, setShowBookingDetail] = useState(true);
 
-  const handleView = async (poi, type) => {
+  const handleView = async (poi, type, dayIndex) => {
+    console.log("dayindex is:",dayIndex)
     try {
       setShowDrawer(true);
       setShowBookingDetail(true);
       setActivityData(() => ({
         id: poi,
         type: type,
+        dayIndex: dayIndex,
       }));
     } catch (error) {
       console.log("error is:", error);
@@ -39,25 +37,28 @@ const CitySummary = (props) => {
   };
   useEffect(() => {
     let dayByDayArray = [];
-    var index=0;
+    let activityArray=[]
+    var index = 0;
     for (const daybyday of props.city.day_by_day) {
       for (const element of daybyday?.slab_elements) {
         if (element.element_type === "activity") {
-          element.dayIndex=index;
+          element.dayIndex = index;
           dayByDayArray.push(element);
         }
       }
-      index+=1;
+      index += 1;
     }
+    index=0
+
     setActivities(props.city.activities);
     setDayByDay(dayByDayArray);
   }, [props.city]);
 
-  const handleActivity = (poiData, index,dayIndex) => {
+  const handleActivity = (poiData, index, dayIndex) => {
     // setPoi(e.target.id);
 
     setDayByDayIndex(index);
-    console.log("poi data is:",poiData)
+    console.log("poi data is:", poiData);
     if (poiData?.booking?.id) setShowBookingDetail(true);
     setActivityData({
       id: poiData?.booking?.id
@@ -67,9 +68,9 @@ const CitySummary = (props) => {
         : poiData?.activity
         ? poiData?.activity
         : null,
-      type: poiData?.activity?"activity" : "poi",
+      type: poiData?.activity ? "activity" : "poi",
       index: index,
-      dayIndex:dayIndex
+      dayIndex: dayIndex,
     });
     setPoi(poiData);
     setShowDrawer(true);
@@ -103,25 +104,26 @@ const CitySummary = (props) => {
             Explore:{" "}
           </div>
           <div className="text-sm font-normal flex flex-row items-center flex-wrap gap-1 w-[]">
-            {dayByDay.map(
-              (poi, index) =>{
-                if(!poi.activity){
-                  size+=1;
-                }
-                return (size <= 3 && !poi?.activity && (
+            {dayByDay.map((poi, index) => {
+              if (!poi.activity) {
+                size += 1;
+              }
+              return (
+                size <= 3 &&
+                !poi?.activity && (
                   <>
-                  <span
-                    onClick={() => handleActivity(poi, index,poi.dayIndex)}
-                    key={index}
-                    id={index}
-                    className="cursor-pointer hover:text-blue border-2 rounded-full px-2 lg:px-3 md:px-3 py-1"
-                  >
-                    {poi.heading}
-                  </span>
+                    <span
+                      onClick={() => handleActivity(poi, index, poi.dayIndex)}
+                      key={index}
+                      id={index}
+                      className="cursor-pointer hover:text-blue border-2 rounded-full px-2 lg:px-3 md:px-3 py-1"
+                    >
+                      {poi.heading}
+                    </span>
                   </>
-                ))}
-
-            )}
+                )
+              );
+            })}
             <span
               onClick={handleSeeMore}
               className="ml-2 text-blue hover:underline font-[600] text-[12px] leading-[22px] cursor-pointer"
@@ -141,7 +143,7 @@ const CitySummary = (props) => {
               <div
                 key={item.id}
                 className="flex gap-2 group w-[333px] p-[10px] border-[2px] rounded-[12px] shadow-none hover:cursor-pointer hover:bg-[rgb(254_250_216)] bg-opacity-100"
-                onClick={() => handleView(item.id, "activity")}
+                onClick={() => handleView(item.id, "activity", poi.dayIndex)}
               >
                 <div className="w-[50px]">
                   <ImageLoader

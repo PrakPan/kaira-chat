@@ -224,7 +224,7 @@ const TransferBooking = ({
     (state) => state.ItineraryStatus
   );
 
-  console.log("Originn Destin",origin,destination);
+  console.log("Originn Destin", origin, destination);
   useEffect(() => {
     setaddboking(booking?.user_selected);
   }, [booking?.user_selected]);
@@ -305,13 +305,13 @@ const TransferBooking = ({
   }
   const handleViewDetails = async (itineraryId, id, mode) => {
     try {
-      setLoading(true); 
-      setVehicleDetails(null); 
-      
+      setLoading(true);
+      setVehicleDetails(null);
+
       const res = await axios.get(
         `${MERCURY_HOST}/api/v1/itinerary/${itineraryId}/bookings/${mode}/${id}/`
       );
-      
+
       setVehicleDetails(res?.data);
       setShowVehicleDrawer(true);
       setLoading(false);
@@ -362,7 +362,7 @@ const TransferBooking = ({
     }
   };
 
-  console.log("Boooking",booking);
+  console.log("Boooking", booking);
   return (
     <>
       {transfers_status === "PENDING" && mercuryItinerary ? (
@@ -730,26 +730,30 @@ const TransferBooking = ({
                     onHide={() => setShowVehicleDrawer(false)}
                   >
                     {loading || !vehicleDetails ? (
-    <VehicleDetailLoader setHandleShow={setShowVehicleDrawer} />
-  ) : vehicleDetails?.booking_type?.toLowerCase() === "taxi" || vehicleDetails?.transfer_details?.mode === "taxi" ? (
-    <TaxiDetailModal
-      data={vehicleDetails}
-      loading={loading}
-      setIsOpen={setShowVehicleDrawer}
-      handleDelete={handleDelete}
-      setHandleShow={setShowVehicleDrawer}
-      booking={booking}
-    />
-  ) : (
-    <VehicleDetailModal
-      data={vehicleDetails}
-      loading={loading}
-      setIsOpen={setShowVehicleDrawer}
-      handleDelete={handleDelete}
-      setHandleShow={setShowVehicleDrawer}
-      booking={booking}
-    />
-  )}
+                      <VehicleDetailLoader
+                        setHandleShow={setShowVehicleDrawer}
+                      />
+                    ) : vehicleDetails?.booking_type?.toLowerCase() ===
+                        "taxi" ||
+                      vehicleDetails?.transfer_details?.mode === "taxi" ? (
+                      <TaxiDetailModal
+                        data={vehicleDetails}
+                        loading={loading}
+                        setIsOpen={setShowVehicleDrawer}
+                        handleDelete={handleDelete}
+                        setHandleShow={setShowVehicleDrawer}
+                        booking={booking}
+                      />
+                    ) : (
+                      <VehicleDetailModal
+                        data={vehicleDetails}
+                        loading={loading}
+                        setIsOpen={setShowVehicleDrawer}
+                        handleDelete={handleDelete}
+                        setHandleShow={setShowVehicleDrawer}
+                        booking={booking}
+                      />
+                    )}
                   </Drawer>
                 </div>
               )}
@@ -798,13 +802,8 @@ const TransferBooking = ({
               destination={destination?.id != undefined ? destination?.id : id}
               check_in={check_in}
               routeId={id}
-              city={
-                origin?.city_name ||  origin?.name  
-              }
-              dcity={
-                destination?.city_name || destination?.name
-                  
-              }
+              city={origin?.city_name || origin?.name}
+              dcity={destination?.city_name || destination?.name}
               selectedBooking={selectedBooking}
               setSelectedBooking={setSelectedBooking}
               oCityData={oCityData}
@@ -1143,7 +1142,7 @@ const TransferBooking = ({
                 </div>
               </>
             )}
-          
+
             <TransferEditDrawer
               mercury
               addOrEdit={"transferAdd"}
@@ -1155,12 +1154,14 @@ const TransferBooking = ({
               check_in={check_in}
               routeId={id}
               city={
-                origin?.name != undefined ? origin?.name || origin?.city_name : null
+                origin?.name != undefined
+                  ? origin?.name || origin?.city_name
+                  : null
               }
               dcity={
                 destination?.name != undefined
-                  ? destination?.name
-                  || destination?.city_name : null
+                  ? destination?.name || destination?.city_name
+                  : null
               }
               oCityData={oCityData}
               dCityData={dCityData}
@@ -1220,7 +1221,7 @@ const FlightBooking = ({
 }) => {
   const [showDetails, setShowDetails] = useState(false);
 
-  console.log("Inside Flight Booking",booking);
+  console.log("Inside Flight Booking", booking);
 
   const router = useRouter();
   function HandleFlights(i, label) {

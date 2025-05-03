@@ -117,9 +117,8 @@ const ScrollContainer = styled.div`
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
 const ActivityDetails = (props) => {
-  console.log("props data are:",props)
 
-    let isPageWide = useMediaQuery("(min-width: 768px)");
+  let isPageWide = useMediaQuery("(min-width: 768px)");
 
   const isSmallScreen = useMediaQuery("(max-width:586px)");
   const router = useRouter();
@@ -133,7 +132,7 @@ const ActivityDetails = (props) => {
 
   const dispatch = useDispatch();
 
-  const CallPaymentInfo=useSelector((state)=>state.CallPaymentInfo)
+  const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
 
   const [ImagesLoaded, setImagesLoaded] = useState({
     0: false,
@@ -162,7 +161,6 @@ const ActivityDetails = (props) => {
   }
 
   const handleDelete = async (e) => {
-    console.log("props data are:",props)
     if (!token) {
       props?.setShowLoginModal(true);
       return;
@@ -172,11 +170,6 @@ const ActivityDetails = (props) => {
       const res = await axios.delete(
         `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/activity/${props?.data?.id}/`,
         {
-          // data: {
-          //   itinerary_city_id: props?.itinerary_city_id,
-          //   day_by_day_index: props?.dayIndex,
-          //   poi_index: props?.slabIndex,
-          // },
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
@@ -184,39 +177,33 @@ const ActivityDetails = (props) => {
       );
       dispatch(SetCallPaymentInfo(!CallPaymentInfo));
 
-
       if (res?.status == 204) {
         const newItinerary = JSON.parse(JSON.stringify(itinerary));
-        var itineraryCities = newItinerary;
-        itineraryCities = newItinerary.cities.map((city) => {
-          const cityTemp = city;
-        console.log("city is:",city,"itinerary city is:",props.itinerary_city_id)
-          if (city.id==props?.itinerary_city_id) {
-            const elements = cityTemp.day_by_day[props?.dayIndex]?.slab_elements;
-        
-            console.log("Before filtering:", elements, "Remove ID:", props?.data?.id);
-        
-            if (elements) {
-              cityTemp.day_by_day[props?.dayIndex].slab_elements = elements.filter((item) => {
-                const keep = item?.booking?.id !== props?.data?.id;
-                return keep;
-              });
-            }
+      
+        const itineraryCities = newItinerary.cities.map((city) => {
+          if (city.id === props?.itinerary_city_id) {
+            city.day_by_day.forEach((day, index) => {
+              if (day?.slab_elements) {
+                day.slab_elements = day.slab_elements.filter(
+                  (item) => item?.booking?.id !== props?.data?.id
+                );
+              }
+            });
+      
+            city.activities = city.activities?.filter(
+              (item) => item?.id !== props?.data?.id
+            );
           }
-
-          console.log("after filtering:",cityTemp.day_by_day[props?.dayIndex])
-          cityTemp.activities=cityTemp?.activities?.filter((item)=>{
-            return item?.id!=props?.data?.id
-          })
-        
-          return cityTemp;
+      
+          return city;
         });
-        
+      
         newItinerary.cities = itineraryCities;
+      
         props?.handleCloseDrawer(e);
-        console.log("id is:",props.data.id,"new data is:",newItinerary)
+        console.log("Removed ID:", props.data.id, "Updated itinerary:", newItinerary);
         dispatch(setItinerary(newItinerary));
-        // props?.getPaymentHandler();
+      
         dispatch(
           openNotification({
             type: "success",
@@ -225,9 +212,9 @@ const ActivityDetails = (props) => {
           })
         );
       }
+      
     } catch (error) {
-
-      console.log("error is:",error)
+      console.log("error is:", error);
       dispatch(
         openNotification({
           type: "error",
@@ -293,7 +280,7 @@ const ActivityDetails = (props) => {
             </div>
           ) : (
             <BackContainer className=" font-lexend">
-              <BackArrow handleClick={(e)=>props.handleCloseDrawer(e)}/>
+              <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
             </BackContainer>
           )}
 
@@ -502,7 +489,6 @@ const ActivityDetails = (props) => {
             <></>
           )}
           <div className="flex flex-col gap-[12px]">
-  
             <div className="flex justify-end">
               {/* <div
                 style={{
