@@ -28,6 +28,9 @@ import { RiArrowDropRightLine, RiArrowGoForwardLine } from "react-icons/ri";
 import TaxiDetailModal from "../../components/modals/daybyday/TaxiDetailModal";
 import VehicleDetailLoader from "../../components/modals/daybyday/VehicleDetailLoader";
 import FlightDetailLoader from "../../components/modals/daybyday/FlightDetailLoader";
+import { AiOutlineRight } from "react-icons/ai";
+import BackArrow from "../../components/ui/BackArrow";
+import { PulseLoader } from "react-spinners";
 
 const Container = styled.div`
   display: flex;
@@ -113,6 +116,7 @@ const CityItem = ({
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
+  const [comboDetails,setComboDetails] =useState(false);
 
   console.log("Selllll",selectedBooking)
   const router = useRouter();
@@ -120,9 +124,13 @@ const CityItem = ({
   let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
 
   const handleEdit = async (combo) => {
+    if(combo){
+      setComboDetails(true);
+    }
     setLoading(true);
     console.log("inside show");
     try {
+
       setHandleShow(true);
       const res = await axios.get(
         `${MERCURY_HOST}/api/v1/itinerary/${
@@ -404,7 +412,7 @@ const CityItem = ({
         mobileWidth="100vw"
         width={`${!(booking_type === "Flight") ? "45vw" : "50vw"}`}
       >
-        <>
+       {!comboDetails ?  <>
           {booking_type === "Flight" ? (
             loading?<FlightDetailLoader/>:
             <FlightDetailModal
@@ -439,7 +447,61 @@ const CityItem = ({
               />
             </>
           )}
-        </>
+        </> : 
+        <div className="h-screen flex flex-col"> {/* Full height wrapper */}
+        <div className="p-4 flex flex-col flex-grow"> {/* Inner scrollable content */}
+          <BackArrow handleClick={() => {
+            setHandleShow(false);
+          }}/>
+      
+          <div className="text-lg md:text-xl lg:text-xl font-semibold p-3">
+            Transfer details from Srinagar to New Delhi
+          </div>
+      
+          <div className="flex justify-between items-center p-3 bg-white rounded-xl shadow-md w-full cursor-pointer hover:bg-gray-50 mb-4">
+            <div>
+              <span className="font-medium p-2 text-lg">Taxi to Srinagar </span>
+              <span className="text-gray-600 ml-1"></span>
+            </div>
+            <AiOutlineRight size={20} className="text-gray-400" />
+          </div>
+      
+          <div className="flex justify-between items-center p-3 bg-white rounded-xl shadow-md w-full cursor-pointer hover:bg-gray-50 mb-4">
+            <div>
+              <span className="font-medium p-2 text-lg">Flight to New Delhi</span>
+              <span className="text-gray-600 ml-1"></span>
+            </div>
+            <AiOutlineRight size={20} className="text-gray-400" />
+          </div>
+      
+          <div className="mt-auto p-4 bg-white">
+            <button className="w-full bg-red-500 text-white py-2 rounded-lg flex items-center justify-center">
+              <div style={{ position: "relative" }}>
+                <div className="flex gap-1 items-center text-white">
+                  <Image src="/delete.svg" width={"20"} height={"20"} />
+                  <div>Delete Booking</div>
+                </div>
+                {loading && (
+                  <PulseLoader
+                    style={{
+                      position: "absolute",
+                      top: "55%",
+                      left: "50%",
+                      transform: "translate(-50% , -50%)",
+                    }}
+                    size={12}
+                    speedMultiplier={0.6}
+                    color="#ffffff"
+                  />
+                )}
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+        
+        }
       </Drawer>
       {/* <Drawer
               show={show}
