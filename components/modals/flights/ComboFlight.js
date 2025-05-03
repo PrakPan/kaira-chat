@@ -140,8 +140,19 @@ const ComboFlight = (props) => {
   const [preferredDepartureTime, setPreferredDepartureTime] = useState("");
   const [isFetching, setIsFetching] = useState(false);
   const [timeUpdated, setTimeUpdated] = useState(false);
+  const [propsReady, setPropsReady] = useState(false);
 
   useEffect(() => {
+    if (props?.comboStartTime && props?.comboStartDate) {
+      setPropsReady(true);
+    } else if (props?.selectedBooking?.check_in) {
+      setPropsReady(true);
+    }
+  }, [props?.comboStartTime, props?.comboStartDate, props?.selectedBooking?.check_in]);
+
+  useEffect(() => {
+    if (!propsReady) return;
+    
     function roundToNext30Min(dateTime) {
       let minutes = dateTime.minute();
       let addMinutes = minutes === 0 ? 0 : (minutes <= 30 ? (30 - minutes) : (60 - minutes));
@@ -151,16 +162,18 @@ const ComboFlight = (props) => {
     let baseTime;
     if (props?.comboStartTime && props?.comboStartDate) {
       baseTime = dayjs(getISOStringFromDateAndTime(props?.comboStartDate, props?.comboStartTime));
+      console.log("1BaseTime", baseTime);
     } else if (props?.selectedBooking?.check_in) {
       baseTime = dayjs(props?.selectedBooking?.check_in.replace(" ", "T"));
+      console.log("2BaseTime", baseTime);
     } else {
       baseTime = dayjs();
+      console.log("3BaseTime", baseTime);
     }
     
     const roundedTime = roundToNext30Min(baseTime);
-
     setPreferredDepartureTime(roundedTime.format("YYYY-MM-DDTHH:mm:ss"));
-  }, [props?.comboStartDate, props?.comboStartTime, props?.selectedBooking?.check_in]);
+  }, [propsReady, props?.comboStartDate, props?.comboStartTime, props?.selectedBooking?.check_in]);
 
   useEffect(() => {
     if (!isPageWide && props.showComboFlightModal && preferredDepartureTime) {

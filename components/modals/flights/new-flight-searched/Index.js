@@ -52,7 +52,7 @@ const Flight = (props) => {
         </ClippathComp>
       ) : null}
 
-      <div className="flex flex-col gap-1 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-col gap-1 lg:flex-row lg:items-center w-full">
         <LogoContainer data={props.data} />
 
         <FlightDetails

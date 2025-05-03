@@ -6,10 +6,10 @@ import media from "../../../media";
 
 export default function LogoContainer({ data,height,width }) {
   return (
-    <div className="flex flex-row gap-2 items-center w-full">
+    <div className="flex">
       <Logo src={data?.segments[0]?.airline?.code} ht={height} wd={width} />
 
-      <div className="flex items-center gap-1 w-full">
+      {/* <div className="flex items-center gap-1 w-full">
         <div className="text-[18px] font-semibold">{data?.segments[0]?.airline?.name} |</div>
         <div className="text-[16px] text-gray-600 ">
           {data?.segments[0]?.airline?.code}-
@@ -20,7 +20,7 @@ export default function LogoContainer({ data,height,width }) {
             </span>
           ) : null}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

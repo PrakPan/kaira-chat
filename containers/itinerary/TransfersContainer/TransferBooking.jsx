@@ -305,13 +305,18 @@ const TransferBooking = ({
   }
   const handleViewDetails = async (itineraryId, id, mode) => {
     try {
-      setShowVehicleDrawer(true);
+      setLoading(true); 
+      setVehicleDetails(null); 
+      
       const res = await axios.get(
         `${MERCURY_HOST}/api/v1/itinerary/${itineraryId}/bookings/${mode}/${id}/`
       );
-      setLoading(false);
+      
       setVehicleDetails(res?.data);
+      setShowVehicleDrawer(true);
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       dispatch(
         openNotification({
           type: "error",
@@ -679,27 +684,27 @@ const TransferBooking = ({
                     className="font-lexend"
                     onHide={() => setShowVehicleDrawer(false)}
                   >
-                    {loading?<><VehicleDetailLoader setHandleShow={setShowVehicleDrawer}/></>:<>
-                    {vehicleDetails?.booking_type == "Taxi" ? (
-                      <TaxiDetailModal
-                        data={vehicleDetails}
-                        loading={loading}
-                        setIsOpen={setShowVehicleDrawer}
-                        handleDelete={handleDelete}
-                        setHandleShow={setShowVehicleDrawer}
-                        booking={booking}
-                      />
-                    ) : (
-                      <VehicleDetailModal
-                        data={vehicleDetails}
-                        loading={loading}
-                        setIsOpen={setShowVehicleDrawer}
-                        handleDelete={handleDelete}
-                        setHandleShow={setShowVehicleDrawer}
-                        booking={booking}
-                      />
-                    )}
-                    </>}
+                    {loading || !vehicleDetails ? (
+    <VehicleDetailLoader setHandleShow={setShowVehicleDrawer} />
+  ) : vehicleDetails?.booking_type?.toLowerCase() === "taxi" || vehicleDetails?.transfer_details?.mode === "taxi" ? (
+    <TaxiDetailModal
+      data={vehicleDetails}
+      loading={loading}
+      setIsOpen={setShowVehicleDrawer}
+      handleDelete={handleDelete}
+      setHandleShow={setShowVehicleDrawer}
+      booking={booking}
+    />
+  ) : (
+    <VehicleDetailModal
+      data={vehicleDetails}
+      loading={loading}
+      setIsOpen={setShowVehicleDrawer}
+      handleDelete={handleDelete}
+      setHandleShow={setShowVehicleDrawer}
+      booking={booking}
+    />
+  )}
                   </Drawer>
                 </div>
               )}
