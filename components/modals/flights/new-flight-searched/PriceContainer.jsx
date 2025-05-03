@@ -12,6 +12,7 @@ export default function PriceContainer({
   onSelect,
   trace_id,
   onFlightSelect,
+  edge,
 }) {
   const router = useRouter();
 
@@ -34,6 +35,7 @@ export default function PriceContainer({
         itinerary_id: selectedBooking.itinerary_id || router?.query?.id,
         result_index: data.resultIndex,
         flightProvider:provider,
+        edge:edge,
       });
     }
   };

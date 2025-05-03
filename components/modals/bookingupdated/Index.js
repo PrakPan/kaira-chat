@@ -368,7 +368,7 @@ const Booking = (props) => {
             tags: res?.data?.selected_filters?.tags,
           }));
           setTotalCount(res?.data?.count);
-          setMoreOptionsJSX([...moreOptionsJSX, ...options]);
+          setMoreOptionsJSX(options);
         } else {
           setNoResults(true);
           setMoreOptionsJSX([]);

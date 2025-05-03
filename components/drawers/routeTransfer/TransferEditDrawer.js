@@ -1277,6 +1277,7 @@ const RouteContainer = (props) => {
               singleTransfer?.mode === "Flight" ? (
                 <ComboFlight
                   combo={false}
+                  edge={singleTransfer?.id}
                   handleFlightSelect={handleFlightSelect}
                   showComboFlightModal={showComboFlightModal}
                   setShowComboFlightModal={setShowComboFlightModal}
@@ -1327,6 +1328,7 @@ const RouteContainer = (props) => {
                   tailored_id={tailored_id}
                   selectedBooking={selectedBooking}
                   itinerary_id={itinerary_id}
+                  edge={singleTransfer?.id}
                   selectedTransferHeading={selectedTransferHeading}
                   fetchData={fetchData}
                   setShowLoginModal={setShowLoginModal}
@@ -1337,8 +1339,8 @@ const RouteContainer = (props) => {
                   routeId={routeId}
                   mercuryTransfer={mercuryTransfer}
                   individual={individual}
-                  originCityId={originCityId}
-                  destinationCityId={destinationCityId}
+                  originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
+                  destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
                   comboStartDate={currentModeDepartureDate}
                   comboStartTime={currentModeDepartureTime}
                   _updateTaxiBookingHandler={_updateTaxiBookingHandler}
@@ -2044,6 +2046,7 @@ const NewMultiModeContainer = ({
                       <ComboFlight
                         key={option.id}
                         combo={true}
+                        edge={option?.id}
                         handleFlightSelect={handleFlightSelect}
                         showComboFlightModal={showComboFlightModal}
                         setShowComboFlightModal={setShowComboFlightModal}
@@ -2092,6 +2095,7 @@ const NewMultiModeContainer = ({
                     return (
                       <ComboTaxi
                         key={option.id}
+                        edge={option?.id}
                         combo={true}
                         handleFlightSelect={handleFlightSelect}
                         showTaxiModal={showTaxiModal}
@@ -2118,8 +2122,8 @@ const NewMultiModeContainer = ({
                         routeId={routeId}
                         mercuryTransfer={mercuryTransfer}
                         individual={individual}
-                        originCityId={option?.source?.id}
-                        destinationCityId={option?.destination?.id}
+                        originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
+                        destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
                         isSelected={
                           selectedModeIds[currentStep - 1] === option.id
                         }

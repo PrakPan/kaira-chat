@@ -13,7 +13,7 @@ import { connect, useDispatch } from "react-redux";
 import Tag from "../../../cards/bookings/activitybooking/imagecontainer/Tag";
 import ImageCarousel from "../../Carousel/ImageCarousel";
 import { PulseLoader } from "react-spinners";
-import { updateStays } from "../../../../store/actions/StayBookings";
+import { setStays, updateStays } from "../../../../store/actions/StayBookings";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { axiosDeleteBooking } from "../../../../services/itinerary/bookings";
@@ -23,6 +23,7 @@ import { useSelector } from "react-redux";
 import SetCallPaymentInfo from "../../../../store/actions/callPaymentInfo";
 import { openNotification } from "../../../../store/actions/notification";
 import { getStars } from "../../../itinerary/itineraryCity/SlabElement";
+import setItinerary from "../../../../store/actions/itinerary";
 const starRating = (rating) => {
   var stars = [];
   for (let i = 0; i < Math.floor(rating); i++) {
@@ -159,6 +160,8 @@ const HotelBookingDetails = (props) => {
   const isDesktop = useMediaQuery("(min-width:1148px)");
   const [loading, setLoading] = useState(false);
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
+  const itinerary=useSelector((state)=>state.Itinerary)
+  const stays=useSelector((state)=>state.Stays)
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -208,6 +211,7 @@ const HotelBookingDetails = (props) => {
 
   const handleDelete = async () => {
     try {
+      console.log("stays are:",stays)
       setLoading(true);
       const response = await axiosDeleteBooking.delete(
         `${id}/bookings/accommodation/${props?.id}/`,
@@ -219,8 +223,33 @@ const HotelBookingDetails = (props) => {
       );
 
       if (response.status === 204) {
+        const newItinerary=JSON.parse(JSON.stringify(itinerary))
+        var newStays=JSON.parse(JSON.stringify(stays))
+
+        newItinerary.cities=newItinerary.cities.map((item)=>{
+          if(item?.hotels?.id==props?.id){
+            item.hotels=[]
+          }
+          return item
+        })
+
+        newStays=newStays.map((item)=>{
+          if(item?.id===props?.id){
+            return{
+              check_in:item?.check_in,
+              check_out:item?.check_out,
+              city_id:item?.city_id,
+              city_name:item?.city_name,
+              duration:item?.duration,
+              trace_city_id:item?.trace_city_id
+            }
+          }
+        })
+
         dispatch(SetCallPaymentInfo(!CallPaymentInfo));
         dispatch(updateStays(props?.id));
+        dispatch(setStays(newStays))
+        dispatch(setItinerary(newItinerary))
         setLoading(false);
         dispatch(
           openNotification({

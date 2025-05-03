@@ -35,9 +35,10 @@ const VehicleDetailModal = ({
     source_address,
     destination_address,
     check_in,
-    check_out
+    check_out,
+    booking_type
   } = data;
-  console.log("day by day data is:",data)
+  console.log("day by day data is:",data,booking_type);
 
   const formatDateTime = (dateString) => {
     if (!dateString) return "";
@@ -84,7 +85,7 @@ const VehicleDetailModal = ({
               <div className="w-20 h-12 bg-gray-300 opacity-50 rounded-lg"></div>
             ) : (
               <TransfersIcon
-                TransportMode={transfer_details?.mode}
+                TransportMode={booking_type || transfer_details?.mode}
                 Instyle={{
                   fontSize:
                     transfer_details?.mode === "Bus" ? "2.5rem" : "3rem",

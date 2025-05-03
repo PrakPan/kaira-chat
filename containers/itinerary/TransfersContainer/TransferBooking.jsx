@@ -224,6 +224,7 @@ const TransferBooking = ({
     (state) => state.ItineraryStatus
   );
 
+  console.log("Originn Destin",origin,destination);
   useEffect(() => {
     setaddboking(booking?.user_selected);
   }, [booking?.user_selected]);
@@ -304,13 +305,18 @@ const TransferBooking = ({
   }
   const handleViewDetails = async (itineraryId, id, mode) => {
     try {
-      setShowVehicleDrawer(true);
+      setLoading(true); 
+      setVehicleDetails(null); 
+      
       const res = await axios.get(
         `${MERCURY_HOST}/api/v1/itinerary/${itineraryId}/bookings/${mode}/${id}/`
       );
-      setLoading(false);
+      
       setVehicleDetails(res?.data);
+      setShowVehicleDrawer(true);
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
       dispatch(
         openNotification({
           type: "error",
@@ -429,7 +435,7 @@ const TransferBooking = ({
               ) : (
                 <div className="mt-3 ml-1 md:ml-7 flex flex-col w-full">
                   <div className=" w-full items-center">
-                    <div className="font-medium text-[15px]  inline flex items-center gap-1">
+                    <div className="font-medium text-[15px] flex items-center gap-1">
                       <div className="text-[#C5C1C1]">
                         {getModeIcon(booking?.booking_type, 15)}
                       </div>
@@ -456,41 +462,84 @@ const TransferBooking = ({
                   <div
                     id={booking?.id}
                     className={`mb-2 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 
-                      ${!isPageWide ? "w-full" : "max-w-[54vw]"}`}
+                      ${!isPageWide ? "w-full max-w-[83vw]" : "max-w-[54vw]"}`}
                   >
                     <div className="flex flex-row items-center gap-1 w-full">
-                      <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
-                        { booking?.transfer_details?.quote?.taxi_category?.image ? (
-                          <ImageLoader
-                          //  is_url={booking?.image?.includes("gozo")}
-                            className=" object-contain"
-                            url={booking?.transfer_details?.quote?.taxi_category?.image}
-                            leftalign
-                            height={
-                              booking?.image?.includes("gozo") ? "3rem" : "4rem"
-                            }
-                            width={"4rem"}
-                            widthmobile="4rem"
-                            onfail={handleTransferImageFailed}
-                          ></ImageLoader>
-                        ) : (
-                          <div className="bg-[#D9D9D9] mr-[0.8rem] rounded-[11px] p-[10px]">
-                            <TransportIconFetcher
-                              TransportMode={booking?.booking_type}
-                              Instyle={{
-                                fontSize: "2.75rem",
-                              }}
-                              classname={" h-[34px] w-[34px]"}
-                              color="#000000"
-                            />
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex justify-between items-center w-full">
+                      {isPageWide && (
+                        <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
+                          {booking?.transfer_details?.quote?.taxi_category
+                            ?.image ? (
+                            <ImageLoader
+                              //  is_url={booking?.image?.includes("gozo")}
+                              className=" object-contain"
+                              url={
+                                booking?.transfer_details?.quote?.taxi_category
+                                  ?.image
+                              }
+                              leftalign
+                              height={
+                                booking?.image?.includes("gozo")
+                                  ? "3rem"
+                                  : "4rem"
+                              }
+                              width={"4rem"}
+                              widthmobile="4rem"
+                              onfail={handleTransferImageFailed}
+                            ></ImageLoader>
+                          ) : (
+                            <div className="bg-[#D9D9D9] mr-[0.8rem] rounded-[11px] p-[10px]">
+                              <TransportIconFetcher
+                                TransportMode={booking?.booking_type}
+                                Instyle={{
+                                  fontSize: "2.75rem",
+                                }}
+                                classname={" h-[34px] w-[34px]"}
+                                color="#000000"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      <div className="flex flex-wrap justify-between items-center w-full">
                         <div className="flex flex-col w-full">
                           <div className="flex justify-between w-full sm:text-sm text-[0.85rem]">
-                            <div className="text-[16px] font-medium w-full">
-                              <div className="w-full">
+                            <div className="text-[16px] font-medium w-full gap-2 flex">
+                              {!isPageWide ? (
+                                booking?.transfer_details?.quote?.taxi_category
+                                  ?.image ? (
+                                  <ImageLoader
+                                    //  is_url={booking?.image?.includes("gozo")}
+                                    className=" object-contain"
+                                    url={
+                                      booking?.transfer_details?.quote
+                                        ?.taxi_category?.image
+                                    }
+                                    leftalign
+                                    height={
+                                      booking?.image?.includes("gozo")
+                                        ? "3rem"
+                                        : "4rem"
+                                    }
+                                    width={"4rem"}
+                                    widthmobile="4rem"
+                                    onfail={handleTransferImageFailed}
+                                  ></ImageLoader>
+                                ) : (
+                                  <div className="bg-[#D9D9D9] mr-[0.8rem] rounded-[11px] p-[10px]">
+                                    <TransportIconFetcher
+                                      TransportMode={booking?.booking_type}
+                                      Instyle={{
+                                        fontSize: "2.75rem",
+                                      }}
+                                      classname={" h-[34px] w-[34px]"}
+                                      color="#000000"
+                                    />
+                                  </div>
+                                )
+                              ) : null}
+
+                              <div className="">
                                 {booking?.booking_type == "Taxi" ? (
                                   booking?.transfer_details &&
                                   booking?.transfer_details.gozo &&
@@ -529,9 +578,8 @@ const TransferBooking = ({
                                       ?.taxi_category?.model_name ||
                                       booking?.transfer_details?.quote
                                         ?.taxi_category?.model_name}
-
                                     &nbsp;{"("}
-                                    {booking?.type} 
+                                    {booking?.type}
                                     {")"}
                                   </div>
                                 )}
@@ -542,11 +590,11 @@ const TransferBooking = ({
                           </div>
 
                           {booking?.transfer_details && (
-                            <div className="text-[#01202B] font-normal flex  justify-start items-center mt-1 flex-wrap w-full">
+                            <div className="text-[#01202B] font-normal flex  justify-start items-center my-1 flex-wrap w-full">
                               <span className="pr-1 sm:text-sm text-[0.82rem]">
                                 Facilities:
                               </span>
-                              <span className="flex items-center gap-1">
+                              <span className="flex flex-wrap items-center gap-1">
                                 {(() => {
                                   const items = [];
 
@@ -561,7 +609,7 @@ const TransferBooking = ({
                                     items.push(
                                       <span
                                         key="seating"
-                                        className="sm:text-sm text-[0.74rem] font-normal"
+                                        className="sm:text-sm text-[0.74rem] font-normal text-nowrap"
                                       >
                                         {seating} Seat{seating > 1 ? "s" : ""}
                                       </span>
@@ -575,7 +623,7 @@ const TransferBooking = ({
                                     items.push(
                                       <span
                                         key="bags"
-                                        className="sm:text-sm text-[0.74rem] font-normal"
+                                        className="sm:text-sm text-[0.74rem] font-normal text-nowrap"
                                       >
                                         {bagCapacity} Luggage bags
                                       </span>
@@ -589,7 +637,7 @@ const TransferBooking = ({
                                     items.push(
                                       <span
                                         key="fuel"
-                                        className="sm:text-sm text-[0.74rem] font-normal"
+                                        className="sm:text-sm text-[0.74rem] font-normal text-nowrap"
                                       >
                                         {fuelType}
                                       </span>
@@ -612,24 +660,43 @@ const TransferBooking = ({
                           )}
                         </div>
 
-                        {!payment?.paid_user && (
-                          <>
-                            {booking?.booking_type === "Taxi" ? (
-                              <div className="flex flex-row items-center justify-end cursor-pointer pr-2">
-                                {addbooking ? (
-                                  <button
-                                    onClick={() => {
-                                      handleViewDetails(
-                                        router?.query?.id,
-                                        booking?.id,
-                                        booking?.booking_type?.toLowerCase()
-                                      );
-                                    }}
-                                    className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[0.6rem] sm:px-1 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000] "
-                                  >
-                                    {isDesktop ? "Change Taxi" : "Change"}
-                                  </button>
-                                ) : (
+                        <div className="ml-auto">
+                          {!payment?.paid_user && (
+                            <>
+                              {booking?.booking_type === "Taxi" ? (
+                                <div className="flex flex-row items-center justify-end cursor-pointer pr-2">
+                                  {addbooking ? (
+                                    <button
+                                      onClick={() => {
+                                        handleViewDetails(
+                                          router?.query?.id,
+                                          booking?.id,
+                                          booking?.booking_type?.toLowerCase()
+                                        );
+                                      }}
+                                      className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[0.6rem] sm:px-1 py-[6px] bg-[#FFFFFF] hover:text-white hover:bg-[#000000] "
+                                    >
+                                      {isDesktop ? "Change Taxi" : "Change"}
+                                    </button>
+                                  ) : (
+                                    <button
+                                      onClick={() => {
+                                        handleViewDetails(
+                                          router?.query?.id,
+                                          booking?.id,
+                                          booking?.booking_type?.toLowerCase()
+                                        );
+                                        setShowVehicleDrawer(true);
+                                      }}
+                                      className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                                    >
+                                      {/* Add Taxi */}
+                                      View Details
+                                    </button>
+                                  )}
+                                </div>
+                              ) : (
+                                <div className="flex flex-row items-center justify-end cursor-pointer pr-2">
                                   <button
                                     onClick={() => {
                                       handleViewDetails(
@@ -644,31 +711,15 @@ const TransferBooking = ({
                                     {/* Add Taxi */}
                                     View Details
                                   </button>
-                                )}
-                              </div>
-                            ) : (
-                              <div className="flex flex-row items-center justify-end cursor-pointer pr-2">
-                                <button
-                                  onClick={() => {
-                                    handleViewDetails(
-                                      router?.query?.id,
-                                      booking?.id,
-                                      booking?.booking_type?.toLowerCase()
-                                    );
-                                    setShowVehicleDrawer(true);
-                                  }}
-                                  className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
-                                >
-                                  {/* Add Taxi */}
-                                  View Details
-                                </button>
-                              </div>
-                            )}
-                          </>
-                        )}
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
+
                   <Drawer
                     show={showVehicleDrawer}
                     anchor="right"
@@ -678,27 +729,27 @@ const TransferBooking = ({
                     className="font-lexend"
                     onHide={() => setShowVehicleDrawer(false)}
                   >
-                    {loading?<><VehicleDetailLoader setHandleShow={setShowVehicleDrawer}/></>:<>
-                    {vehicleDetails?.booking_type == "Taxi" ? (
-                      <TaxiDetailModal
-                        data={vehicleDetails}
-                        loading={loading}
-                        setIsOpen={setShowVehicleDrawer}
-                        handleDelete={handleDelete}
-                        setHandleShow={setShowVehicleDrawer}
-                        booking={booking}
-                      />
-                    ) : (
-                      <VehicleDetailModal
-                        data={vehicleDetails}
-                        loading={loading}
-                        setIsOpen={setShowVehicleDrawer}
-                        handleDelete={handleDelete}
-                        setHandleShow={setShowVehicleDrawer}
-                        booking={booking}
-                      />
-                    )}
-                    </>}
+                    {loading || !vehicleDetails ? (
+    <VehicleDetailLoader setHandleShow={setShowVehicleDrawer} />
+  ) : vehicleDetails?.booking_type?.toLowerCase() === "taxi" || vehicleDetails?.transfer_details?.mode === "taxi" ? (
+    <TaxiDetailModal
+      data={vehicleDetails}
+      loading={loading}
+      setIsOpen={setShowVehicleDrawer}
+      handleDelete={handleDelete}
+      setHandleShow={setShowVehicleDrawer}
+      booking={booking}
+    />
+  ) : (
+    <VehicleDetailModal
+      data={vehicleDetails}
+      loading={loading}
+      setIsOpen={setShowVehicleDrawer}
+      handleDelete={handleDelete}
+      setHandleShow={setShowVehicleDrawer}
+      booking={booking}
+    />
+  )}
                   </Drawer>
                 </div>
               )}
@@ -748,12 +799,11 @@ const TransferBooking = ({
               check_in={check_in}
               routeId={id}
               city={
-                origin?.name != undefined ? origin?.name : origin?.city_name
+                origin?.city_name ||  origin?.name  
               }
               dcity={
-                destination?.name != undefined
-                  ? destination?.name
-                  : destination?.city_name
+                destination?.city_name || destination?.name
+                  
               }
               selectedBooking={selectedBooking}
               setSelectedBooking={setSelectedBooking}
@@ -805,6 +855,7 @@ const TransferBooking = ({
                   destinationCityId={destinationCityId}
                   type={"combo"}
                   setShowDrawer={setShowDrawer}
+                  getPaymentHandler={getPaymentHandler}
                 />
               </>
             ) : (
@@ -906,8 +957,8 @@ const TransferBooking = ({
                                     {book?.transfer_details?.quote
                                       ?.taxi_category?.model_name ||
                                       book?.transfer_details?.quote
-                                        ?.taxi_category?.model_name} &nbsp;
-
+                                        ?.taxi_category?.model_name}{" "}
+                                    &nbsp;
                                     {"("}
                                     {book?.type}
                                     {")"}
@@ -1059,7 +1110,9 @@ const TransferBooking = ({
                   >
                     {loading ? (
                       <>
-                        <VehicleDetailLoader setHandleShow={setShowVehicleDrawer}/>
+                        <VehicleDetailLoader
+                          setHandleShow={setShowVehicleDrawer}
+                        />
                       </>
                     ) : (
                       <>
@@ -1128,12 +1181,12 @@ const TransferBooking = ({
               check_in={check_in}
               routeId={id}
               city={
-                origin?.name != undefined ? origin?.name : origin?.city_name
+                origin?.name != undefined ? origin?.name || origin?.city_name : null
               }
               dcity={
                 destination?.name != undefined
                   ? destination?.name
-                  : destination?.city_name
+                  || destination?.city_name : null
               }
               oCityData={oCityData}
               dCityData={dCityData}
@@ -1189,6 +1242,7 @@ const FlightBooking = ({
   loadbookings,
   type,
   setShowDrawer,
+  getPaymentHandler,
 }) => {
   const [showDetails, setShowDetails] = useState(false);
 
@@ -1386,6 +1440,7 @@ const FlightBooking = ({
                 setShowDetails(false);
               }}
               type={type}
+              getPaymentHandler={getPaymentHandler}
             />
           </>
         )}

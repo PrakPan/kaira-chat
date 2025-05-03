@@ -12,12 +12,12 @@ import { IoIosArrowDown, IoIosArrowUp, IoMdClose } from "react-icons/io";
 import { IoFastFood, IoTicket } from "react-icons/io5";
 import { MdTransferWithinAStation } from "react-icons/md";
 import { BiSolidCustomize } from "react-icons/bi";
-import Travelers from "../poiDetails/filters/Travelers";
-import { color } from "framer-motion";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 import { Pax } from "./Pax";
 import BackArrow from "../../ui/BackArrow";
+import Button from "../../../components/ui/button/Index";
+import { PulseLoader } from "react-spinners";
 
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
@@ -35,6 +35,7 @@ export default function ActivityDetails(props) {
     tipsTricks: false,
     Amenities: false,
   });
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     if (props.data?.amenities?.length) {
       for (let amenity of props.data.amenities) {
@@ -62,11 +63,15 @@ export default function ActivityDetails(props) {
   }, []);
 
   const handleUpdate = () => {
+    setLoading(true);
     if (!token) {
       props?.setShowLoginModal(true);
+      setLoading(false);
       return;
     }
-    props.updatedActivityBooking();
+    props.updatedActivityBooking(setLoading).then(()=>{
+      setLoading(false)
+    });
   };
 
   const handleAmenityChange = (index, included) => {
@@ -87,7 +92,7 @@ export default function ActivityDetails(props) {
     <div className="h-[100vh] overflow-y-auto px-4">
       <div className="flex flex-col gap-4  mb-[100px]">
         <div className="sticky top-0 z-1 flex flex-row items-center gap-2 mt-4 bg-white">
-          <BackArrow handleClick={(e)=>props.handleCloseDrawer(e)}/>
+          <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
         </div>
         <div className="flex justify-between">
           <div className="text-[24px] font-semibold">Activity Details</div>
@@ -162,10 +167,9 @@ export default function ActivityDetails(props) {
 
           <div className="flex flex-col gap-3">
             <div className="flex justify-between">
-            <div className="text-[20px] font-[800]">{props.data.name}</div>
-            <Pax pax={props?.filterState} setPax={props?.setFilterState} />
-
-</div>
+              <div className="text-[20px] font-[800]">{props.data.name}</div>
+              <Pax pax={props?.filterState} setPax={props?.setFilterState} />
+            </div>
             {props?.data?.rating && (
               <div className="flex items-center gap-1">
                 {props.data?.rating && (
@@ -194,21 +198,20 @@ export default function ActivityDetails(props) {
                   )}
                 </div>
               </div>
-              
             )}
             {props.data?.experience_filters && (
-                  <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
-                    {props.data.experience_filters?.map((e, i) => (
-                      <span
-                        key={i}
-                        className={`border-2 rounded-full px-2 py-1`}
-                        style={{ backgroundColor: colors[i % colors.length] }}
-                      >
-                        {e}
-                      </span>
-                    ))}
-                  </div>
-                )}
+              <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
+                {props.data.experience_filters?.map((e, i) => (
+                  <span
+                    key={i}
+                    className={`border-2 rounded-full px-2 py-1`}
+                    style={{ backgroundColor: colors[i % colors.length] }}
+                  >
+                    {e}
+                  </span>
+                ))}
+              </div>
+            )}
             {props.data?.short_description && (
               <div className="flex flex-col gap-2">
                 <div className="text-[14px] text-[#01202B]">
@@ -415,20 +418,41 @@ export default function ActivityDetails(props) {
       <div className="border-t-2 fixed bottom-0 right-0 left-0 flex justify-end gap-1 py-[12px] px-[20px] bg-white shadow-md z-50 flex justify-between items-center">
         <div className="font-bold">
           <span className="text-[34px]">
-          ₹{getIndianPrice(Math.round(props.data.prices.total_price))}
-          <span className="text-[12px] font-normal"> for {props?.filterState.adults+props?.filterState?.children} people </span>
+            ₹{getIndianPrice(Math.round(props.data.prices.total_price))}
+            <span className="text-[12px] font-normal">
+              {" "}
+              for {props?.filterState.adults +
+                props?.filterState?.children}{" "}
+              people{" "}
+            </span>
           </span>
           <div className="text-gray-500 font-semiBold text-[#01202B] text-[14px]">
             Total Cost
           </div>
         </div>
         <div className="flex flex-col gap-1">
-          <button
+          <Button
+            onclick={handleUpdate}
+            bgColor={"#F7E700"}
+            borderRadius="8px"
+            fontWeight="400"
+            hoverColor="white"
+            height={"full"}
+            padding={"8px 16px"}
+            loading={loading}
+          >
+             
+              <div >
+                {props.data?.city && "Add to Itinerary"}
+              </div>
+          </Button>
+
+          {/* <button
             onClick={handleUpdate}
             className="bg-[#F7E700] py-2 px-4 border-2 border-black rounded-lg h-[40px]"
           >
             {props.data?.city && "Add to Itinerary"}
-          </button>
+          </button> */}
           {dateFormat(props?.date)}
         </div>
       </div>

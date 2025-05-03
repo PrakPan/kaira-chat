@@ -180,7 +180,7 @@ const SimpleTabsV2 = (props) => {
     { id: 2, label: "Itinerary", link: "Itenary" },
 
     { id: 3, label: "Stays", link: "Stays" },
-    { id: 4, label: "Transfers", link: "Transfers" }
+    { id: 4, label: "Transfers", link: "Transfers" },
   ];
 
   // if (props.transferBookings || props?.routes?.length) {
@@ -607,7 +607,9 @@ const SimpleTabsV2 = (props) => {
                   setStayBookings={props.setStayBookings}
                   _updateBookingHandler={props._updateBookingHandler}
                   _updateStayBookingHandler={props._updateStayBookingHandler}
-                  _updateFlightBookingHandler={props._updateFlightBookingHandler}
+                  _updateFlightBookingHandler={
+                    props._updateFlightBookingHandler
+                  }
                   _updatePaymentHandler={props._updatePaymentHandler}
                   getPaymentHandler={props.getPaymentHandler}
                   setShowBookingModal={() => props.setShowBookingModal(true)}
@@ -686,8 +688,8 @@ const SimpleTabsV2 = (props) => {
             )}
           </div>
 
-          {(props?.transferBookings && !props?.mercuryItinerary) ? (
-            <div id={"Transfers"}>
+          <div id={"Transfers"}>
+            {props?.transferBookings && !props?.mercuryItinerary ? (
               <TransfersContainer
                 setShowLoginModal={setShowLoginModal}
                 plan={props.plan}
@@ -714,33 +716,32 @@ const SimpleTabsV2 = (props) => {
                 fetchData={props.fetchData}
                 _GetInTouch={_GetInTouch}
               />
-            </div>
-          ) : (
-            <>
-              {props.transferBookings && (
-                <TransferBookings
-                  mercuryItinerary={props?.mercuryItinerary}
-                  setShowLoginModal={setShowLoginModal}
-                  showTaxiModal={props.showTaxiModal}
-                  _updateFlightBookingHandler={
-                    props._updateFlightBookingHandler
-                  }
-                  setShowTaxiModal={props.setShowTaxiModal}
-                  getPaymentHandler={props.getPaymentHandler}
-                  _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-                  _updatePaymentHandler={props._updatePaymentHandler}
-                  _updateBookingHandler={props._updateBookingHandler}
-                  showFlightModal={props.showFlightModal}
-                  setShowFlightModal={_handleFlighModalShow}
-                  setHideFlightModal={_handleFlightModalClose}
-                  setShowBookingModal={() => props.setShowBookingModal(true)}
-                  setHideBookingModal={props.setHideBookingModal}
-                  payment={props.payment}
-                  fetchData={props.fetchData}
-                  _GetInTouch={_GetInTouch}
-                />
-              )}
-              {/* {props.transferBookings && (
+            ) : (
+              <>
+                {props.transferBookings && (
+                  <TransferBookings
+                    mercuryItinerary={props?.mercuryItinerary}
+                    setShowLoginModal={setShowLoginModal}
+                    showTaxiModal={props.showTaxiModal}
+                    _updateFlightBookingHandler={
+                      props._updateFlightBookingHandler
+                    }
+                    setShowTaxiModal={props.setShowTaxiModal}
+                    getPaymentHandler={props.getPaymentHandler}
+                    _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+                    _updatePaymentHandler={props._updatePaymentHandler}
+                    _updateBookingHandler={props._updateBookingHandler}
+                    showFlightModal={props.showFlightModal}
+                    setShowFlightModal={_handleFlighModalShow}
+                    setHideFlightModal={_handleFlightModalClose}
+                    setShowBookingModal={() => props.setShowBookingModal(true)}
+                    setHideBookingModal={props.setHideBookingModal}
+                    payment={props.payment}
+                    fetchData={props.fetchData}
+                    _GetInTouch={_GetInTouch}
+                  />
+                )}
+                {/* {props.transferBookings && (
                 <TransferBookings
                   mercuryItinerary={props?.mercuryItinerary}
                   setShowLoginModal={setShowLoginModal}
@@ -763,8 +764,9 @@ const SimpleTabsV2 = (props) => {
                   _GetInTouch={_GetInTouch}
                 />
               )} */}
-            </>
-          )}
+              </>
+            )}
+          </div>
 
           {props.activityBookings && (
             <div id={"Activities"}>
@@ -924,7 +926,9 @@ const SimpleTabsV2 = (props) => {
                       _updateFlightBookingHandler={
                         props._updateFlightBookingHandler
                       }
-                      _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+                      _updateTaxiBookingHandler={
+                        props._updateTaxiBookingHandler
+                      }
                       setShowBookingModal={(val) =>
                         props.setShowStayBookingModal(val)
                       }

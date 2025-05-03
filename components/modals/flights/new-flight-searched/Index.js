@@ -52,7 +52,7 @@ const Flight = (props) => {
         </ClippathComp>
       ) : null}
 
-      <div className="flex flex-col gap-1 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-col gap-1 lg:flex-row lg:items-center w-full">
         <LogoContainer data={props.data} />
 
         <FlightDetails
@@ -88,6 +88,7 @@ const Flight = (props) => {
           onSelect={props?.onSelect}
           trace_id={props?.trace_id}
           onFlightSelect={props?.onFlightSelect}
+          edge={props?.edge}
         />
       </div>
       <div className="flex justify-center items-center">

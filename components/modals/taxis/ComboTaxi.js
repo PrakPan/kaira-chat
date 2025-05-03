@@ -66,7 +66,6 @@ const ComboTaxi = (props) => {
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
   const [timeSlots, setTimeSlots] = useState([]);
   const [selectedTime, setSelectedTime] = useState(null);
-  // New state to track the actual time value in HH:mm format
   const [selectedTimeValue, setSelectedTimeValue] = useState(props?.comboStartTime || null);
 
   useEffect(() => {
@@ -92,15 +91,14 @@ const ComboTaxi = (props) => {
 
       while (baseTime.isBefore(endTime) || baseTime.isSame(endTime)) {
         slots.push({
-          value: baseTime.format("HH:mm"), // Store in 24-hour format for API
-          display: baseTime.format("h:mm A"), // Display in 12-hour format for UI
+          value: baseTime.format("HH:mm"), 
+          display: baseTime.format("h:mm A"), 
         });
         baseTime = baseTime.add(30, "minute");
       }
 
       setTimeSlots(slots);
       
-      // Set initial selected time display from props
       const initialTimeDisplay = dayjs(props?.comboStartDate + "T" + props?.comboStartTime + ":00").format("h:mm A");
       setSelectedTime(initialTimeDisplay);
       setSelectedTimeValue(props?.comboStartTime);
@@ -142,16 +140,13 @@ const ComboTaxi = (props) => {
     setSelectedTimeValue(slot.value);
     setShowTimeDropdown(false);
     
-    // If there's a callback to update parent component's time
     if (props.onTimeChange) {
       props.onTimeChange(slot.value);
     } else {
-      // If no callback, trigger the API call directly with the new time
       fetchDataWithNewTime(slot.value);
     }
   };
 
-  // Function to trigger API call with updated time
   const fetchDataWithNewTime = (newTime) => {
     const updatedProps = {
       ...props,
@@ -214,7 +209,7 @@ const ComboTaxi = (props) => {
               propsToUse?.oCityData?.gmaps_place_id ||
               propsToUse?.oCityData?.city?.id  : null,
             hub_id: null,
-            gmaps_place_id: null,
+            gmaps_place_id: propsToUse?.oCityData?.gmaps_place_id,
             coordinates: {
               latitude: propsToUse.selectedBooking?.origin?.lat
                 ? propsToUse.selectedBooking?.origin?.lat
@@ -236,7 +231,7 @@ const ComboTaxi = (props) => {
               propsToUse?.dCityData?.city?.id ||
               propsToUse?.destinationCityId : null,
             hub_id: null,
-            gmaps_place_id: null,
+            gmaps_place_id: propsToUse?.dCityData?.gmaps_place_id,
             coordinates: {
               latitude: propsToUse.selectedBooking?.destination?.lat
                 ? propsToUse.selectedBooking?.origin?.lat
@@ -266,6 +261,7 @@ const ComboTaxi = (props) => {
               duration: res.data.data.duration,
               trace_id: res.data.trace_id,
               source: res.data.data?.source,
+
             }))
           );
         } else {
@@ -451,6 +447,7 @@ const ComboTaxi = (props) => {
                         start_time={selectedTimeValue || props?.comboStartTime} // Use the selected time value
                         origin_itinerary_city_id={props?.origin_itinerary_city_id}
                         destination_itinerary_city_id={props?.destination_itinerary_city_id}
+                        edge={props?.edge}
                       />
                     ))}
                     {loading && !quotes.length ? <Skeleton /> : null}
