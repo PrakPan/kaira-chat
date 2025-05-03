@@ -313,7 +313,7 @@ const ItineraryCity = (props) => {
                 : null
             }
             setShowDetails={setShowDetails}
-            id={props?.city?.hotels?.[0]?.id}
+            id={ stay[props?.index]?.id || props?.city?.hotels?.[0]?.id}
           />
           {images ? (
         <FullScreenGallery

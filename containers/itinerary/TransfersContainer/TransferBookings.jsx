@@ -150,10 +150,6 @@ const TransferBookings = (props) => {
     props.setShowTaxiModal(true);
   };
 
-  
-  console.log("itinerariesss", itineraries);
-
-
   return (
     <div
       id="transfers"
@@ -182,155 +178,120 @@ const TransferBookings = (props) => {
             />
           )}
 
-<div>
-  <>
-    <PinSection
-      key={-1}
-      transfersPin
-      setCurrentPopup={false}
-      city={itineraries?.start_city?.city_name}
-      index={-1}
-      pinColour={null}
-    />
+          <div>
+            <>
+              <PinSection
+                key={-1}
+                transfersPin
+                setCurrentPopup={false}
+                city={itineraries?.start_city?.city_name}
+                index={-1}
+                pinColour={null}
+              />
 
-    {(
-      <TransferBooking
-        mercuryItinerary={props?.mercuryItinerary}
-        loadbookings={props?.loadbookings}
-        key={transferBooking?.intercity[
-          `${itineraries?.start_city?.gmaps_place_id}:${itineraries?.cities?.[0]?.id}`
-        ]?.id}
-        index={-1}
-        booking={transferBooking?.intercity[
-          `${itineraries?.start_city?.gmaps_place_id}:${itineraries?.cities?.[0]?.id}`
-        ]}
-        payment={props?.payment}
-        token={props?.token}
-        setShowLoginModal={props?.setShowLoginModal}
-        _changeTaxiHandler={_changeTaxiHandler}
-        _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
-        getPaymentHandler={props?.getPaymentHandler}
-        _changeFlightHandler={_changeFlightHandler}
-        origin={itineraries?.start_city}
-        destination={itineraries?.cities?.[0].city}
-        oCityData={itineraries?.start_city}
-        dCityData={itineraries?.cities?.[0]}
-        id={itineraries?.start_city?.gmaps_place_id}
-        check_in={itineraries?.start_date}
-        selectedBooking={selectedBooking}
-        setSelectedBooking={setSelectedBooking}
-        originCityId={itineraries?.start_city?.gmaps_place_id}
-        destinationCityId={itineraries?.cities?.[0]?.id}
-        pinColour1={CITY_COLOR_CODES[0]}
-        pinColour2={itineraries?.cities?.length > 1 ? CITY_COLOR_CODES[1] : CITY_COLOR_CODES[0]}
-        _updateFlightBookingHandler={props._updateFlightBookingHandler}
-        _updatePaymentHandler={props._updatePaymentHandler}
-      />
-    )}
-  </>
+              {
+                <TransferBooking
+                  mercuryItinerary={props?.mercuryItinerary}
+                  loadbookings={props?.loadbookings}
+                  key={
+                    transferBooking?.intercity[
+                      `${itineraries?.start_city?.gmaps_place_id}:${itineraries?.cities?.[0]?.id}`
+                    ]?.id
+                  }
+                  index={-1}
+                  booking={
+                    transferBooking?.intercity[
+                      `${itineraries?.start_city?.gmaps_place_id}:${itineraries?.cities?.[0]?.id}`
+                    ]
+                  }
+                  payment={props?.payment}
+                  token={props?.token}
+                  setShowLoginModal={props?.setShowLoginModal}
+                  _changeTaxiHandler={_changeTaxiHandler}
+                  _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
+                  getPaymentHandler={props?.getPaymentHandler}
+                  _changeFlightHandler={_changeFlightHandler}
+                  origin={itineraries?.start_city}
+                  destination={itineraries?.cities?.[0].city}
+                  oCityData={itineraries?.start_city}
+                  dCityData={itineraries?.cities?.[0]}
+                  id={itineraries?.start_city?.gmaps_place_id}
+                  check_in={itineraries?.start_date}
+                  selectedBooking={selectedBooking}
+                  setSelectedBooking={setSelectedBooking}
+                  originCityId={itineraries?.start_city?.gmaps_place_id}
+                  destinationCityId={itineraries?.cities?.[0]?.id}
+                  pinColour1={CITY_COLOR_CODES[0]}
+                  pinColour2={
+                    itineraries?.cities?.length > 1
+                      ? CITY_COLOR_CODES[1]
+                      : CITY_COLOR_CODES[0]
+                  }
+                  _updateFlightBookingHandler={
+                    props._updateFlightBookingHandler
+                  }
+                  _updatePaymentHandler={props._updatePaymentHandler}
+                />
+              }
+            </>
 
-  {itineraries?.cities?.map((item, index) => {
-    if (index < itineraries.cities.length - 1) {
-      return (
-        <>
-          <PinSection
-            key={item.id}
-            transfersPin
-            setCurrentPopup={false}
-            city={item.city.name}
-            index={index}
-            pinColour={CITY_COLOR_CODES[(index + 1) % 7]}
-          />
-          <TransferBooking
-            mercuryItinerary={props?.mercuryItinerary}
-            loadbookings={props?.loadbookings}
-            key={transferBooking?.intercity[
-              `${item.id}:${itineraries?.cities?.[index + 1].id}`
-            ]?.id}
-            index={index}
-            booking={transferBooking?.intercity[
-              `${item.id}:${itineraries?.cities?.[index + 1].id}`
-            ]}
-            payment={props?.payment}
-            token={props?.token}
-            setShowLoginModal={props?.setShowLoginModal}
-            _changeTaxiHandler={_changeTaxiHandler}
-            _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
-            getPaymentHandler={props?.getPaymentHandler}
-            _updatePaymentHandler={props._updatePaymentHandler}
-            _changeFlightHandler={_changeFlightHandler}
-            origin={item.city}
-            destination={itineraries?.cities?.[index + 1].city}
-            oCityData={itineraries?.cities?.[index]}
-            dCityData={itineraries?.cities?.[index + 1]}
-            id={item.id}
-            check_in={item.start_date}
-            selectedBooking={selectedBooking}
-            setSelectedBooking={setSelectedBooking}
-            originCityId={item.id}
-            destinationCityId={itineraries?.cities?.[index + 1].id}
-            pinColour1={CITY_COLOR_CODES[(index + 1) % 7]}
-            pinColour2={CITY_COLOR_CODES[(index + 2) % 7]}
-            _updateFlightBookingHandler={props._updateFlightBookingHandler}
-          />
-        </>
-      );
-    }
-    return null; 
-  })}
-
-  {itineraries?.cities?.length > 0 && (
-    <>
-      <PinSection
-        key={`last-${itineraries?.cities?.[itineraries?.cities.length - 1]?.id}`}
-        transfersPin
-        setCurrentPopup={false}
-        city={itineraries?.cities?.[itineraries?.cities.length - 1]?.city.name}
-        index={itineraries?.cities.length - 1}
-        pinColour={CITY_COLOR_CODES[itineraries?.cities.length % 7]}
-      />
-      <TransferBooking
-        mercuryItinerary={props?.mercuryItinerary}
-        loadbookings={props?.loadbookings}
-        key={transferBooking?.intercity[
-          `${itineraries?.cities?.[itineraries?.cities.length - 1]?.id}:${itineraries?.end_city?.gmaps_place_id}`
-        ]?.id}
-        index={itineraries?.cities.length - 1}
-        booking={transferBooking?.intercity[
-          `${itineraries?.cities?.[itineraries?.cities.length - 1]?.id}:${itineraries?.end_city?.gmaps_place_id}`
-        ]}
-        payment={props?.payment || null}
-        token={props?.token || null}
-        setShowLoginModal={props?.setShowLoginModal}
-        _changeTaxiHandler={_changeTaxiHandler}
-        _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
-        getPaymentHandler={props?.getPaymentHandler}
-        _changeFlightHandler={_changeFlightHandler}
-        origin={itineraries?.cities?.[itineraries?.cities.length - 1].city}
-        destination={itineraries?.end_city}
-        oCityData={itineraries?.cities?.[itineraries?.cities.length - 1]}
-        dCityData={itineraries?.end_city}
-        id={itineraries?.end_city?.gmaps_place_id}
-        check_in={itineraries?.end_date}
-        selectedBooking={selectedBooking}
-        setSelectedBooking={setSelectedBooking}
-        originCityId={itineraries?.cities?.[itineraries?.cities.length - 1]?.id}
-        destinationCityId={itineraries?.end_city?.gmaps_place_id}
-        pinColour1={CITY_COLOR_CODES[itineraries?.cities?.length % 7]}
-        pinColour2={"#000000"}
-        _updateFlightBookingHandler={props._updateFlightBookingHandler}
-      />
-    </>
-  )}
-    <PinSection
-      key={-2}
-      transfersPin
-      setCurrentPopup={false}
-      city={itineraries?.end_city?.city_name} 
-      index={-2}
-      pinColour={null}
-    />
-</div>
+            {itineraries?.cities?.map((item, index) => {
+              if (index < itineraries.cities.length - 1) {
+                return (
+                  <>
+                    <PinSection
+                      key={item.id}
+                      transfersPin
+                      setCurrentPopup={false}
+                      city={item.city.name}
+                      index={index}
+                      pinColour={CITY_COLOR_CODES[(index + 1) % 7]}
+                    />
+                    <TransferBooking
+                      mercuryItinerary={props?.mercuryItinerary}
+                      loadbookings={props?.loadbookings}
+                      key={
+                        transferBooking?.intercity[
+                          `${item.id}:${itineraries?.cities?.[index + 1].id}`
+                        ]?.id
+                      }
+                      index={index}
+                      booking={
+                        transferBooking?.intercity[
+                          `${item.id}:${itineraries?.cities?.[index + 1].id}`
+                        ]
+                      }
+                      payment={props?.payment}
+                      token={props?.token}
+                      setShowLoginModal={props?.setShowLoginModal}
+                      _changeTaxiHandler={_changeTaxiHandler}
+                      _updateTaxiBookingHandler={
+                        props?._updateTaxiBookingHandler
+                      }
+                      getPaymentHandler={props?.getPaymentHandler}
+                      _updatePaymentHandler={props._updatePaymentHandler}
+                      _changeFlightHandler={_changeFlightHandler}
+                      origin={item.city}
+                      destination={itineraries?.cities?.[index + 1].city}
+                      oCityData={itineraries?.cities?.[index]}
+                      dCityData={itineraries?.cities?.[index + 1]}
+                      id={item.id}
+                      check_in={item.start_date}
+                      selectedBooking={selectedBooking}
+                      setSelectedBooking={setSelectedBooking}
+                      originCityId={item.id}
+                      destinationCityId={itineraries?.cities?.[index + 1].id}
+                      pinColour1={CITY_COLOR_CODES[(index + 1) % 7]}
+                      pinColour2={CITY_COLOR_CODES[(index + 2) % 7]}
+                      _updateFlightBookingHandler={
+                        props._updateFlightBookingHandler
+                      }
+                    />
+                  </>
+                );
+              }
+              return null;
+            })}
 
         
 
