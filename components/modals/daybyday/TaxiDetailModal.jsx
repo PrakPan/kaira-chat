@@ -67,23 +67,23 @@ const TaxiDetailModal = ({
       <div className="fixed inset-0 bg-gray-50 w-full h-full flex flex-col">
         <div className="p-4 flex items-center justify-between">
           <BackArrow handleClick={() => setHandleShow(false)} />
-          <div className="text-blue-600 font-medium">
-            {loading ? (
-              <div className="w-16 h-5 bg-gray-300 opacity-50 rounded"></div>
-            ) : (
-              "Change"
-            )}
-          </div>
         </div>
 
-        <div className="px-4">
-          <h1 className="text-xl font-bold text-gray-800">
+        <div className="px-4 flex justify-between">
+          <h1 className="text-xl font-bold text-gray-800 ">
             {loading ? (
               <div className="w-64 h-7 bg-gray-300 opacity-50 rounded"></div>
             ) : (
               `Taxi from ${source_address?.name} to ${destination_address?.name}`
             )}
           </h1>
+          <div className="text-blue font-medium underline cursor-pointer">
+            {loading ? (
+              <div className="w-16 h-5 bg-gray-300 opacity-50 rounded"></div>
+            ) : (
+              "Change"
+            )}
+          </div>
         </div>
 
         {/* Journey Card */}
@@ -125,11 +125,12 @@ const TaxiDetailModal = ({
                   ) : (
                     <>
                       <p className="font-bold text-lg">
-                        {source_address?.name || "Rasmeshwaram"}
+                        {source_address?.name}
                       </p>
-                      <p className="text-gray-600 text-sm">
-                        {depart.time || "05:30 PM"} | {depart.date || "Fri Apr 24, 2025"}
-                      </p>
+                      <p className="text-gray-600 text-sm flex flex-col sm:flex-row sm:gap-1">
+  <span>{depart.time}</span>
+  <span>{depart.date}</span>
+</p>
                     </>
                   )}
                 </div>
@@ -145,12 +146,13 @@ const TaxiDetailModal = ({
                     </>
                   ) : (
                     <>
-                      <p className="font-bold text-lg">
-                        {destination_address?.name || "Hyderabad"}
-                      </p>
-                      <p className="text-gray-600 text-sm">
-                        {arrival?.time || "05:30 PM"} | {arrival?.date || "Fri Apr 24, 2025"}
-                      </p>
+                      {destination_address?.name && <p className="font-bold text-lg">
+                        {destination_address?.name}
+                      </p>}
+                      <p className="text-gray-600 text-sm flex flex-col sm:flex-row sm:gap-1">
+  <span>{arrival.time ? arrival.time  : ""}</span>
+  <span>{arrival.date ? arrival.date : ""}</span>
+</p>
                     </>
                   )}
                 </div>
@@ -159,96 +161,71 @@ const TaxiDetailModal = ({
 
             {/* Taxi Details Section */}
             <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="font-semibold text-gray-800 mb-4">
-                {loading ? (
-                  <div className="w-24 h-5 bg-gray-300 opacity-50 rounded"></div>
-                ) : (
-                  "TAXI DETAILS"
-                )}
-              </p>
+  <p className="font-semibold text-gray-800 mb-4">
+    {loading ? (
+      <div className="w-24 h-5 bg-gray-300 opacity-50 rounded"></div>
+    ) : (
+      "TAXI DETAILS"
+    )}
+  </p>
 
-              <div className="flex gap-2">
-                {/* Taxi Image */}
-                <div className="border border-gray-200 rounded-lg mr-4 flex justify-center items-center" style={{ minWidth: '120px' }}>
-                  {loading ? (
-                    <div className="w-full h-24 bg-gray-300 opacity-50 rounded"></div>
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      {data?.transfer_details?.quote?.taxi_category?.image ? (
-                        <ImageLoader
-                          className="object-contain w-full h-full"
-                          url={data?.transfer_details?.quote?.taxi_category?.image}
-                          leftalign
-                          height={"100%"}
-                          width={"100%"}
-                        />
-                      ) : (
-                        <Image 
-                          src="/taxi-default.jpg" 
-                          width={120}
-                          height={90}
-                          alt="Taxi" 
-                          className="object-contain w-full h-full"
-                        />
-                      )}
-                    </div>
-                  )}
-                </div>
+  <div className="flex flex-col md:flex-row gap-4">
+    <div className="w-full md:w-auto border border-gray-200 rounded-lg p-3 flex justify-center items-center" style={{ height: '140px' }}>
+      {loading ? (
+        <div className="w-full h-full bg-gray-300 opacity-50 rounded"></div>
+      ) : (
+        <div className="flex items-center justify-center  h-full">
+          {data?.transfer_details?.quote?.taxi_category?.image ? (
+            <ImageLoader
+              className="object-contain max-w-full max-h-full"
+              url={data?.transfer_details?.quote?.taxi_category?.image}
+              leftalign
+              height="auto"
+              width="auto"
+            />
+          ) : (
+            <Image 
+              src="/taxi-default.jpg" 
+              width={140}
+              height={100}
+              alt="Taxi" 
+              className="object-contain max-h-full"
+            />
+          )}
+        </div>
+      )}
+    </div>
 
-                {/* Taxi Details Grid */}
-                <div className="flex-1">
-                  <div className="grid grid-cols-2 gap-4">
-                    {/* Model */}
-                    { model && <div>
-                      <p className="text-gray-500 text-sm">Model</p>
-                      <p className="font-semibold text-gray-800">
-                        {loading ? (
-                          <div className="w-20 h-5 bg-gray-300 opacity-50 rounded"></div>
-                        ) : (
-                          model
-                        )}
-                      </p>
-                    </div>}
+    {/* Taxi Details Grid - Full width on mobile */}
+    <div className="flex-1 w-full">
+      <div className="grid grid-cols-2 gap-4">
+        {/* Model */}
+        {model && <div>
+          <p className="text-gray-500 text-sm">Model</p>
+          <p className="font-semibold text-gray-800">{loading ? <div className="w-20 h-5 bg-gray-300 opacity-50 rounded"></div> : model}</p>
+        </div>}
 
-                    {/* Fuel Type */}
-                    { fuelType && <div>
-                      <p className="text-gray-500 text-sm">Fuel Type</p>
-                      <p className="font-semibold text-gray-800">
-                        {loading ? (
-                          <div className="w-20 h-5 bg-gray-300 opacity-50 rounded"></div>
-                        ) : (
-                          fuelType
-                        )}
-                      </p>
-                    </div>}
+        {/* Fuel Type */}
+        {fuelType && <div>
+          <p className="text-gray-500 text-sm">Fuel Type</p>
+          <p className="font-semibold text-gray-800">{loading ? <div className="w-20 h-5 bg-gray-300 opacity-50 rounded"></div> : fuelType}</p>
+        </div>}
 
-                    {/* Luggage Bags */}
-                   {luggageBags && <div>
-                      <p className="text-gray-500 text-sm">Luggage Bags</p>
-                      <p className="font-semibold text-gray-800">
-                        {loading ? (
-                          <div className="w-10 h-5 bg-gray-300 opacity-50 rounded"></div>
-                        ) : (
-                          luggageBags
-                        )}
-                      </p>
-                    </div>}
+        {/* Luggage Bags */}
+        {luggageBags && <div>
+          <p className="text-gray-500 text-sm">Luggage Bags</p>
+          <p className="font-semibold text-gray-800">{loading ? <div className="w-10 h-5 bg-gray-300 opacity-50 rounded"></div> : luggageBags}</p>
+        </div>}
 
-                    {/* Seat Capacity */}
-                   { seatCapacity && <div>
-                      <p className="text-gray-500 text-sm">Seat Capacity</p>
-                      <p className="font-semibold text-gray-800">
-                        {loading ? (
-                          <div className="w-24 h-5 bg-gray-300 opacity-50 rounded"></div>
-                        ) : (
-                          seatCapacity
-                        )}
-                      </p>
-                    </div>}
-                  </div>
-                </div>
-              </div>
-            </div>
+        {/* Seat Capacity */}
+        {seatCapacity && <div>
+          <p className="text-gray-500 text-sm">Seat Capacity</p>
+          <p className="font-semibold text-gray-800">{loading ? <div className="w-24 h-5 bg-gray-300 opacity-50 rounded"></div> : seatCapacity}</p>
+        </div>}
+      </div>
+    </div>
+  </div>
+</div>
           </div>
         </div>
 
