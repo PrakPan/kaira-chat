@@ -48,6 +48,7 @@ const items = [
   { id: 2, label: "Places To Visit", link: "" },
 ];
 const ActivityAddDrawer = (props) => {
+  console.log("start date is:", props?.start_date);
   const isDesktop = useMediaQuery("(min-width:767px)");
   const [selectedExprience, setSelectedExprience] = useState(-1);
   const [nextUrl, setNextUrl] = useState(null);
@@ -62,8 +63,8 @@ const ActivityAddDrawer = (props) => {
   const [offSet, setOffSet] = useState(0);
   const [showDynamicfilters, setShowDynamicfilters] = useState(false);
   const itineraryFilters = useSelector((state) => state.ItineraryFilters);
-  const itinerary=useSelector((state)=>state.Itinerary)
-  const num_adults = itinerary.number_of_adults
+  const itinerary = useSelector((state) => state.Itinerary);
+  const num_adults = itinerary.number_of_adults;
   const [filterState, setFilterState] = useState({
     recommended_only: false,
     rating: ["All"],
@@ -319,7 +320,6 @@ const ActivityAddDrawer = (props) => {
 
               if (res.data.next) {
                 setShowMoreResults(true);
-                setOffSet((prev) => prev + 30);
               } else {
                 setShowMoreResults(false);
                 setOffSet(0);
@@ -376,10 +376,39 @@ const ActivityAddDrawer = (props) => {
 
   const handleViewMore = async () => {
     setShowSkeleton(true);
+    console.log("element type is:",elementType)
+
     try {
-      const res = await axios.get(nextUrl);
+     
+
       let options = [];
       if (elementType == "Activity" || elementType == "") {
+        const requestData = {
+          city: props?.cityID,
+          start_date: getDate(startDate),
+          number_of_adults: pax?.adults || 1,
+          number_of_children: pax?.children || 0,
+          traveler_ages: filterState.pax.traveler_ages,
+          filter_by: {
+            name: debouncedSearch,
+            recommended_only: filterState.recommended_only,
+            rating: filterState.rating,
+            category:
+              filterState.category && filterState.category[0] !== "All"
+                ? filterState.category
+                : null,
+            tour_type:
+              filterState.tour_type && filterState.tour_type[0] !== "All"
+                ? filterState.tour_type
+                : null,
+            guide:
+              filterState.guide && filterState.guide[0] !== "All"
+                ? filterState.guide
+                : null,
+          },
+          sort_by: {},
+        };
+        const res = await axios.post(nextUrl, requestData);
         for (var i = 0; i < res.data.data.activities.length; i++) {
           options.push(
             <NewActivityBooking
@@ -405,7 +434,16 @@ const ActivityAddDrawer = (props) => {
           );
         }
         setOptions((prev) => [...prev, ...options]);
+        setNextUrl(res?.data?.next);
+        if (res.data.next) {
+          setShowMoreResults(true);
+        } else {
+          setShowMoreResults(false);
+          setOffSet(0);
+        }
       } else {
+        const res = await axios.get(nextUrl);
+
         for (var i = 0; i < res.data.data.pois.length; i++) {
           options.push(
             <NewPoiBooking
@@ -453,7 +491,7 @@ const ActivityAddDrawer = (props) => {
   const handleScroll = (e) => {
     const { offsetHeight, scrollTop, scrollHeight } = e.target;
     if (offsetHeight + scrollTop >= scrollHeight) {
-      if (showMoreResults) fetchData(true);
+      if (showMoreResults) handleViewMore(true);
     }
   };
 
@@ -537,25 +575,25 @@ const ActivityAddDrawer = (props) => {
               defaultValue={props?.date}
             >
               {[...Array(props.duration)].map((_, i) => {
-                let baseDate = props?.mercuryItinerary
-                  ? new Date(props?.date)
-                  : new Date(convertToISODate(props?.date));
-                if (isNaN(baseDate.getTime())) {
-                  baseDate = null;
-                } else {
-                  baseDate.setDate(baseDate.getDate() + i);
-                }
+                const baseDateStr = props?.mercuryItinerary
+                  ? props?.start_date
+                  : convertToISODate(props?.start_date);
 
-                const formattedDate = baseDate
-                  ? getHumanDate(baseDate?.toISOString()?.split("T")[0])
-                  : null;
+                const baseDate = new Date(baseDateStr);
+                if (isNaN(baseDate.getTime())) return null;
+
+                const currentDate = new Date(baseDate);
+                currentDate.setDate(currentDate.getDate() + i);
+
+                const pad = (n) => (n < 10 ? `0${n}` : n);
+                const isoDate = `${currentDate.getFullYear()}-${pad(
+                  currentDate.getMonth() + 1
+                )}-${pad(currentDate.getDate())}`;
+                const formattedDate = getHumanDate(isoDate);
 
                 return (
-                  <option key={i} className="w-full" value={formattedDate}>
-                    <div className="!font-bold text-[14px]">
-                      {formattedDate + " | "}
-                    </div>
-                    <span>Day {i + 1}</span>
+                  <option key={i} value={isoDate}>
+                    {formattedDate} | Day {i + 1}
                   </option>
                 );
               })}
@@ -607,49 +645,37 @@ const ActivityAddDrawer = (props) => {
                 ref={calendarRef}
               >
                 <div className="font-medium text-[14px]">Select Days</div>
-                {[...Array(props.duration)].map((_, i) => (
-                  <div
-                    className="cursor-pointer"
-                    onClick={() => {
-                      setStartDate(
-                        getHumanDate(
-                          new Date(
-                            props?.mercuryItinerary
-                              ? new Date(props?.date).setDate(
-                                  new Date(props?.date).getDate() + i
-                                )
-                              : new Date(convertToISODate(props?.date)).setDate(
-                                  new Date(
-                                    convertToISODate(props?.date)
-                                  ).getDate() + i
-                                )
-                          )
-                            .toISOString()
-                            .split("T")[0]
-                        )
-                      );
-                    }}
-                  >
-                    <span className="font-bold text-[14px]">
-                      {getHumanDate(
-                        new Date(
-                          props?.mercuryItinerary
-                            ? new Date(props?.date).setDate(
-                                new Date(props?.date).getDate() + i
-                              )
-                            : new Date(convertToISODate(props?.date)).setDate(
-                                new Date(
-                                  convertToISODate(props?.date)
-                                ).getDate() + i
-                              )
-                        )
-                          ?.toISOString()
-                          ?.split("T")[0]
-                      ) + " | "}
-                    </span>
-                    <span>Day {i + 1}</span>
-                  </div>
-                ))}
+                {[...Array(props.duration)].map((_, i) => {
+                  const baseDateStr = props?.mercuryItinerary
+                    ? props?.date
+                    : convertToISODate(props?.date);
+
+                  const baseDate = new Date(baseDateStr);
+                  const currentDate = new Date(baseDate);
+                  currentDate.setDate(currentDate.getDate() + i);
+
+                  // Pad function to ensure two digits
+                  const pad = (n) => (n < 10 ? `0${n}` : n);
+
+                  const year = currentDate.getFullYear();
+                  const month = pad(currentDate.getMonth() + 1); // +1 because months are 0-indexed
+                  const day = pad(currentDate.getDate());
+
+                  const dateString = `${year}-${month}-${day}`; // "YYYY-MM-DD"
+
+                  return (
+                    <div
+                      key={i}
+                      className="cursor-pointer"
+                      onClick={() => setStartDate(dateString)}
+                    >
+                      <span className="font-bold text-[14px]">
+                        {dateString + " | "}
+                      </span>
+                      <span>Day {i + 1}</span>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -737,7 +763,7 @@ const ActivityAddDrawer = (props) => {
           {(elementType === "Activity" ? loaded : !loadingPoi) ? (
             options.length ? (
               <div
-                onScroll={handleScroll}
+                // onScroll={handleScroll}
                 className="flex flex-col items-center mb-3 h-[calc(100vh-270px)] overflow-y-scroll"
               >
                 {options}

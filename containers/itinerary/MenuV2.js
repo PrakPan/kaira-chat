@@ -1164,6 +1164,7 @@ const SimpleTabsV2 = (props) => {
               id={props.itinerary_id}
               token={props.token}
               loadpricing={props?.loadpricing}
+              setLoadPricing={props?.setLoadPricing}
               payment={props?.payment}
               itineraryDate={props?.itineraryDate}
               mercuryItinerary={props?.mercuryItinerary}
