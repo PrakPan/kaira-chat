@@ -87,7 +87,9 @@ const ItineraryContainer = (props) => {
   // const [cityTransferBookings, setCityTransferBookings] = useState(null);
   const [loadbookings, setLoadBookings] = useState(false);
   const [loadpricing, setLoadPricing] = useState(false);
-  const cityTransferBookings = useSelector(state=>state.TransferBookings)?.transferBookings
+  const cityTransferBookings = useSelector(
+    (state) => state.TransferBookings
+  )?.transferBookings;
 
   const [polling, setPolling] = useState(true);
 
@@ -229,7 +231,7 @@ const ItineraryContainer = (props) => {
         .catch((error) => {
           setPaymentLoading(false);
         });
-    }else{
+    } else {
       getPaymentInfo();
     }
   };
@@ -271,7 +273,7 @@ const ItineraryContainer = (props) => {
         }
       }
 
-      console.log("Prepared stays data:", stays); 
+      console.log("Prepared stays data:", stays);
 
       setStayBookings(stays);
       dispatch(setStays(stays));
@@ -288,7 +290,7 @@ const ItineraryContainer = (props) => {
     }
   };
 
-  const getPaymentInfo = () => {
+  const getPaymentInfo = async () => {
     console.log("I'm Inside Payment");
     let stay_data = {};
     let activity_data = {};
@@ -296,64 +298,63 @@ const ItineraryContainer = (props) => {
     let flight_data = {};
     const token = localStorage.getItem("access_token");
 
-    axiosGetPaymentInfo
-      .get(props.id + "/cart/", {
+    try {
+      const res = await axiosGetPaymentInfo.get(props.id + "/cart/", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
-      .then((res) => {
-        let data = res.data;
-        setPayment(data);
-        dispatch(setItineraryStatus("pricing_status", "SUCCESS"));
-
-        for (let category in data.summary) {
-          let categoryData = data.summary[category];
-
-          if (category === "Stays") {
-            stay_data = { ...categoryData };
-          } else if (category === "Activities") {
-            activity_data = { ...categoryData };
-          } else if (category === "Transfers") {
-            transfer_data = { ...categoryData };
-          } else if (category === "Flights") {
-            flight_data = { ...categoryData };
-          }
-        }
-
-        // console.log("Stay Data:", stay_data);
-        // console.log("Activity Data:", activity_data);
-        // console.log("Transfer Data:", transfer_data);
-        // console.log("Flight Data:", flight_data);
-
-        // setStayBookings(stay_data);
-        // setActivityBookings(activity_data);
-        // setTransferBookings(transfer_data);
-        // setFlightBookings(flight_data);
-
-        // setStayBookings(stay_bookings);
-        //       if (activity_bookings.length) {
-        //         setActivityBookings(activity_bookings);
-        //       } else {
-        //         setActivityBookings(null);
-        //       }
-
-        //       if (flight_bookings.length) {
-        //         setFlightBookings(flight_bookings);
-        //       } else {
-        //         setFlightBookings(null);
-        //       }
-
-        //       if (transfer_bookings.length) {
-        //         setTransferBookings(transfer_bookings);
-        //       } else {
-        //         setTransferBookings(null);
-        //       }
-      })
-      .catch((error) => {
-        console.log("ERROR[PaymentInfo][Itinerary]", error);
-        setPaymentLoading(false);
       });
+
+      let data = res.data;
+      setPayment(data);
+      dispatch(setItineraryStatus("pricing_status", "SUCCESS"));
+
+      for (let category in data.summary) {
+        let categoryData = data.summary[category];
+
+        if (category === "Stays") {
+          stay_data = { ...categoryData };
+        } else if (category === "Activities") {
+          activity_data = { ...categoryData };
+        } else if (category === "Transfers") {
+          transfer_data = { ...categoryData };
+        } else if (category === "Flights") {
+          flight_data = { ...categoryData };
+        }
+      }
+
+      // console.log("Stay Data:", stay_data);
+      // console.log("Activity Data:", activity_data);
+      // console.log("Transfer Data:", transfer_data);
+      // console.log("Flight Data:", flight_data);
+
+      // setStayBookings(stay_data);
+      // setActivityBookings(activity_data);
+      // setTransferBookings(transfer_data);
+      // setFlightBookings(flight_data);
+
+      // setStayBookings(stay_bookings);
+      //       if (activity_bookings.length) {
+      //         setActivityBookings(activity_bookings);
+      //       } else {
+      //         setActivityBookings(null);
+      //       }
+
+      //       if (flight_bookings.length) {
+      //         setFlightBookings(flight_bookings);
+      //       } else {
+      //         setFlightBookings(null);
+      //       }
+
+      //       if (transfer_bookings.length) {
+      //         setTransferBookings(transfer_bookings);
+      //       } else {
+      //         setTransferBookings(null);
+      //       }
+    } catch (error) {
+      console.log("ERROR[PaymentInfo][Itinerary]", error);
+      setPaymentLoading(false);
+    }
   };
 
   const getAccommodationAndActivitiesHandler = () => {
@@ -420,7 +421,7 @@ const ItineraryContainer = (props) => {
         setTransferBookings(data);
         // setCityTransferBookings(data);
         dispatch(setTransfersBookings(data));
-        console.log("New Transfer Data",data);
+        console.log("New Transfer Data", data);
       })
       .catch((err) => {
         console.error("Error fetching all bookings", err.message);
@@ -433,7 +434,7 @@ const ItineraryContainer = (props) => {
     return data;
   }
 
-async function fetchData(poll) {
+  async function fetchData(poll) {
     if (TRAVELER_ITINERARIES.includes(props.id))
       setIsPastTravelerItinerary(true);
     const fetchStatus = async () => {
@@ -452,13 +453,16 @@ async function fetchData(poll) {
           dispatch(setItineraryStatus("hotels_status", "FAILURE"));
         }
 
-        const allStatusesCompleted = ["ITINERARY", "TRANSFERS", "PRICING", "HOTELS"].every(
-          key => status?.[key] === "SUCCESS" || status?.[key] === "FAILURE"
+        const allStatusesCompleted = [
+          "ITINERARY",
+          "TRANSFERS",
+          "PRICING",
+          "HOTELS",
+        ].every(
+          (key) => status?.[key] === "SUCCESS" || status?.[key] === "FAILURE"
         );
 
-        if (
-         allStatusesCompleted
-        ) {
+        if (allStatusesCompleted) {
           setPolling(false);
         } else {
           setPolling(true);
@@ -493,7 +497,7 @@ async function fetchData(poll) {
           }
 
           dispatch(setItinerary(data));
-         // props.setItinerary(data);
+          // props.setItinerary(data);
           props.setItineraryDaybyDay(data);
           props.setBreif(data);
           setCities(data?.cities);
@@ -520,13 +524,12 @@ async function fetchData(poll) {
           // }, 20000);
         }
 
-        if(hotels === "FAILURE" && !hotelsSuccessRef.current){
+        if (hotels === "FAILURE" && !hotelsSuccessRef.current) {
           hotelsSuccessRef.current = true;
           getAllStays();
         }
 
-
-        if(transfers === "FAILURE" && !transfersSuccessRef.current){
+        if (transfers === "FAILURE" && !transfersSuccessRef.current) {
           transfersSuccessRef.current = true;
           getAllBookings();
         }
@@ -536,7 +539,7 @@ async function fetchData(poll) {
           setLoadPricing(true);
           getPaymentInfo();
         }
-        if(pricing === "FAILURE" && !pricingSuccessRef.current){
+        if (pricing === "FAILURE" && !pricingSuccessRef.current) {
           pricingSuccessRef.current = true;
           getPaymentInfo();
         }
@@ -550,11 +553,23 @@ async function fetchData(poll) {
     }
   }
   useEffect(() => {
-    if (payment != null) {
-      pricingSuccessRef.current = true;
-      getPaymentInfo();
-    }
-    // setLoadPricing(false);
+    const start=Date.now()
+    const fetchPaymentInfo = async () => {
+      setLoadPricing(false);
+      try {
+        if (payment != null) {
+          pricingSuccessRef.current = true;
+          await getPaymentInfo();
+        }
+      } catch (error) {
+      } finally {
+        const end = Date.now(); // End time
+      console.log("finally called after", (end - start), "ms");
+        setLoadPricing(true);
+      }
+    };
+
+    fetchPaymentInfo();
   }, [CallPaymentInfo]);
 
   // useEffect(() => {
@@ -1055,10 +1070,10 @@ async function fetchData(poll) {
       <div id="itinerary-anchor">
         <Menu
           mercuryItinerary
-          loadbookings={!
-          loadbookings}
+          loadbookings={!loadbookings}
           resetRef={resetRef}
           loadpricing={!loadpricing}
+          setLoadPricing={setLoadPricing}
           showMercuryItinerary={showMercuryItinerary}
           hasUserPaid={hasUserPaid}
           isDatePresent={isDatePresent}

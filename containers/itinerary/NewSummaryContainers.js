@@ -26,10 +26,10 @@ const NewSummaryContainer = (props) => {
   const [couponSlide, setCouponSlide] = useState(false);
   const [isDatePast, setIsDatePast] = useState(false);
   const [iscouponApplied, setiscouponApplied] = useState(
-    props.payment?.coupon ? true : false,
+    props.payment?.coupon ? true : false
   );
   const [inputValue, setInputValue] = useState(
-    props.payment?.coupon ? props.payment?.coupon?.code : "",
+    props.payment?.coupon ? props.payment?.coupon?.code : ""
   );
   const [couponLoading, setCouponLoading] = useState(false);
   const [isSucess, setIsSucess] = useState({
@@ -70,7 +70,7 @@ const NewSummaryContainer = (props) => {
           headers: {
             Authorization: `Bearer ${props.token}`,
           },
-        },
+        }
       )
       .then((res) => {
         setCouponLoading(false);
@@ -120,7 +120,7 @@ const NewSummaryContainer = (props) => {
           headers: {
             Authorization: `Bearer ${props.token}`,
           },
-        },
+        }
       )
       .then((res) => {
         setCouponLoading(false);
@@ -257,7 +257,7 @@ const NewSummaryContainer = (props) => {
     </div>
   );
 
-//  console.log("Iti1",props?.itinerary)
+  //  console.log("Iti1",props?.itinerary)
   return (
     <SummaryContainer
       className="font-lexend ml-4 flex flex-col rounded-xl shadow-md  border-2 border-[#ECEAEA] shadow-[#ECEAEA] mt-5"
@@ -266,6 +266,8 @@ const NewSummaryContainer = (props) => {
     >
       {couponSlide ? (
         <CouponSlide
+          loadpricing={props?.loadpricing}
+          setLoadPricing={props?.setLoadPricing}
           itinerary_id={props.itinerary_id}
           closeCouponSlide={() => setCouponSlide(false)}
           setInputValue={setInputValue}
@@ -277,6 +279,7 @@ const NewSummaryContainer = (props) => {
         <NewBookingSlide
           {...props}
           loadpricing={props?.loadpricing}
+          setLoadPricing={props?.setLoadPricing}
           itinerary={props?.itinerary}
           openCouponSlide={() => setCouponSlide(true)}
           setiscouponApplied={setiscouponApplied}
@@ -321,4 +324,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(NewSummaryContainer);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(NewSummaryContainer);
