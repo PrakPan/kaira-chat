@@ -1362,6 +1362,7 @@ const FlightBooking = ({
               numStops={booking?.transfer_details?.items?.[0]?.stop_count}
               setShowDetails={setShowDetails}
               type={type}
+            
             />
           </div>
         </div>

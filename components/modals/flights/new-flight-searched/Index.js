@@ -110,12 +110,13 @@ const Flight = (props) => {
             resultIndex={props.data?.result_index}
             setShowDetails={setShowDetails}
             individual={props?.individual}
-            booking_id={props?.booking_id}
             originCityId={props.originCityId}
             destinationCityId={props.destinationCityId}
             setTransferBookingsIntercity={props.setTransferBookingsIntercity}
             edge={props?.edge}
             getPaymentHandler={props.getPaymentHandler}
+            booking_id={props?.selectedBooking?.id}
+            combo={props?.combo}
           />
         </div>
       )}

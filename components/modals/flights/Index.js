@@ -128,17 +128,17 @@ const Booking = (props) => {
 
  // console.log("Ord",props?.originCityId,props?.destinationCityId);
 
-  useEffect(() => {
-    if (!isPageWide && props.showFlightModal) _FetchFlightsHandler();
-    if (!props.showFlightModal) {
-      setOptionsJSX([]);
-      setLoading(true);
-    }
-  }, [props.showFlightModal]);
+  // useEffect(() => {
+  //   if (!isPageWide && props.showFlightModal) _FetchFlightsHandler();
+  //   if (!props.showFlightModal) {
+  //     setOptionsJSX([]);
+  //     setLoading(true);
+  //   }
+  // }, [props.showFlightModal]);
 
-  useEffect(() => {
-    if (isPageWide && props.showFlightModal) _FetchFlightsHandler();
-  }, [props.showFlightModal, props.token, filtersState, pax, classType]);
+  // useEffect(() => {
+  //   if (isPageWide && props.showFlightModal) _FetchFlightsHandler();
+  // }, [props.showFlightModal, props.token, filtersState, pax, classType]);
 
   //console.log("Booking Data",props?.selectedBooking);
   const _FetchFlightsHandler = () => {
@@ -606,8 +606,47 @@ const Booking = (props) => {
         <div className="text-lg md:text-xl lg:text-xl font-semibold mt-1">
         Changing {props.selectedBooking?.name}
         </div>
+
+         {/* <ComboFlight
+                                     combo={false}
+                                     edge={singleTransfer?.id}
+                                     handleFlightSelect={handleFlightSelect}
+                                     showComboFlightModal={showComboFlightModal}
+                                     setShowComboFlightModal={setShowComboFlightModal}
+                                     setHideFlightModal={hideDrawer}
+                                     setHideBookingModal={setHideBookingModal}
+                                     getPaymentHandler={getPaymentHandler}
+                                     _updatePaymentHandler={_updatePaymentHandler}
+                                     _updateFlightBookingHandler={_updateFlightBookingHandler}
+                                     _updateBookingHandler={_updateBookingHandler}
+                                     alternates={alternates}
+                                     tailored_id={tailored_id}
+                                     selectedBooking={selectedBooking}
+                                     itinerary_id={itinerary_id}
+                                     selectedTransferHeading={selectedTransferHeading}
+                                     fetchData={fetchData}
+                                     setShowLoginModal={setShowLoginModal}
+                                     check_in={check_in}
+                                     _GetInTouch={_GetInTouch}
+                                     daySlabIndex={daySlabIndex}
+                                     elementIndex={elementIndex}
+                                     routeId={routeId}
+                                     mercuryTransfer={mercuryTransfer}
+                                     individual={individual}
+                                     originCityId={originCityId}
+                                     destinationCityId={destinationCityId}
+                                     isSingleTransfer={true}
+                                     comboStartDate={currentModeDepartureDate}
+                                     comboStartTime={currentModeDepartureTime}
+                                     source_code={singleTransfer?.source?.code}
+                                     destination_code={singleTransfer?.destination?.code}
+                                     origin_itinerary_city_id={origin_itinerary_city_id}
+                                   destination_itinerary_city_id={destination_itinerary_city_id}
+                                   dCityData={dCityData}
+                                             oCityData={oCityData}
+                                   /> */}
           <ComboFlight
-                                    combo={false}
+                                    combo={true}
                                     //handleFlightSelect={handleFlightSelect}
                                    
                    
@@ -644,6 +683,7 @@ const Booking = (props) => {
                                   // destination_itinerary_city_id={destination_itinerary_city_id}
                                   // dCityData={dCityData}
                                   //           oCityData={oCityData}
+                                  token={props?.token}
                                           
                                             
                                             booking_id={props?.selectedBooking?.booking_id}

@@ -141,69 +141,118 @@ const ComboFlight = (props) => {
   const [isFetching, setIsFetching] = useState(false);
   const [timeUpdated, setTimeUpdated] = useState(false);
   const [propsReady, setPropsReady] = useState(false);
+  const [dateTimeInitialized, setDateTimeInitialized] = useState(false);
 
   useEffect(() => {
     if (props?.comboStartTime && props?.comboStartDate) {
       setPropsReady(true);
-    } else if (props?.selectedBooking?.check_in) {
+    }
+     else if (props?.selectedBooking?.check_in) {
       setPropsReady(true);
     }
   }, [props?.comboStartTime, props?.comboStartDate, props?.selectedBooking?.check_in]);
 
   useEffect(() => {
-    if (!propsReady) return;
+    if (dateTimeInitialized) return;
     
-    function roundToNext30Min(dateTime) {
-      let minutes = dateTime.minute();
-      let addMinutes = minutes === 0 ? 0 : (minutes <= 30 ? (30 - minutes) : (60 - minutes));
-      return dateTime.add(addMinutes, 'minute').second(0);
+    function roundToNext30Min(input) {
+      try {
+        const dateTime = dayjs(input);
+        if (!dateTime.isValid()) {
+          console.error("Invalid date input:", input);
+          return null;
+        }
+        
+        const minutes = dateTime.minute();
+        const addMinutes = minutes === 0 ? 0 : (minutes <= 30 ? 30 - minutes : 60 - minutes);
+        
+        return dateTime.add(addMinutes, 'minute').second(0).millisecond(0);
+      } catch (error) {
+        console.error("Error processing date:", error);
+        return dayjs();
+      }
     }
     
     let baseTime;
     if (props?.comboStartTime && props?.comboStartDate) {
-      baseTime = dayjs(getISOStringFromDateAndTime(props?.comboStartDate, props?.comboStartTime));
-      console.log("1BaseTime", baseTime);
+      try {
+        baseTime = dayjs(getISOStringFromDateAndTime(props?.comboStartDate, props?.comboStartTime));
+        console.log("Using combo start time/date");
+      } catch (error) {
+        console.error("Error with combo time/date:", error);
+        baseTime = dayjs();
+      }
     } else if (props?.selectedBooking?.check_in) {
-      baseTime = dayjs(props?.selectedBooking?.check_in.replace(" ", "T"));
-      console.log("2BaseTime", baseTime);
+      try {
+        baseTime = dayjs(props?.selectedBooking?.check_in.replace(" ", "T"));
+        console.log("Using check_in time");
+      } catch (error) {
+        console.error("Error with check_in:", error);
+        baseTime = dayjs();
+      }
     } else {
       baseTime = dayjs();
-      console.log("3BaseTime", baseTime);
+      console.log("Using current time");
+    }
+    
+    if (!baseTime.isValid()) {
+      baseTime = dayjs();
     }
     
     const roundedTime = roundToNext30Min(baseTime);
-    setPreferredDepartureTime(roundedTime.format("YYYY-MM-DDTHH:mm:ss"));
-  }, [propsReady, props?.comboStartDate, props?.comboStartTime, props?.selectedBooking?.check_in]);
+    if (roundedTime) {
+      setPreferredDepartureTime(roundedTime.format("YYYY-MM-DDTHH:mm:ss"));
+      setDateTimeInitialized(true);
+    }
+  }, [props?.comboStartDate, props?.comboStartTime, props?.selectedBooking?.check_in]);
 
   useEffect(() => {
-    if (!isPageWide && props.showComboFlightModal && preferredDepartureTime) {
-      _FetchFlightsHandler();
-    }
+    // Only proceed if we have a valid departure time
+    if (!preferredDepartureTime) return;
     
-    if (!props.showComboFlightModal) {
-      setFlights([]);
-      setLoading(true);
+    // Debug log (only once)
+    console.log("Flight search conditions:", {
+      showModal: props.showComboFlightModal,
+      hasToken: !!props.token,
+      preferredTime: preferredDepartureTime,
+      isDesktop: isPageWide,
+      flightsCount: flights.length,
+      timeUpdated
+    });
+    
+    const shouldFetchFlights = props.showComboFlightModal && 
+                               props.token && 
+                               preferredDepartureTime && 
+                               (timeUpdated || flights.length === 0);
+    
+    if (shouldFetchFlights && !isFetching) {
+      console.log("Fetching flights with time:", preferredDepartureTime);
+      _FetchFlightsHandler();
+      setTimeUpdated(false);
     }
-  }, [props.showComboFlightModal, preferredDepartureTime]);
+  }, [props.showComboFlightModal, props.token, preferredDepartureTime, isPageWide, timeUpdated, flights.length, filtersState, pax, classType]);
 
-  // Handle flight search for desktop
-  useEffect(() => {
-    if (isPageWide && props.showComboFlightModal && preferredDepartureTime && props.token) {
-      if (timeUpdated || 
-          (props.showComboFlightModal && flights.length === 0)) {
-        _FetchFlightsHandler();
-        setTimeUpdated(false);
-      }
-    }
-  }, [props.showComboFlightModal, props.token, filtersState, pax, classType, preferredDepartureTime, timeUpdated]);
+
 
   function getISOStringFromDateAndTime(dateStr, timeStr) {
-    console.log("Date String", dateStr, timeStr, props?.comboStartDate, props?.comboStartTime);
-    const [year, month, day] = dateStr.split("-");
-    const [hour, minute] = timeStr ? timeStr.split(":") : "00:00".split(":");
-  
-    const localDate = new Date(year, month - 1, day, hour, minute);
-    return localDate.toISOString();
+    try {
+      if (!dateStr) throw new Error("No date provided");
+      
+      const [year, month, day] = dateStr.split("-");
+      const [hour, minute] = timeStr ? timeStr.split(":") : ["00", "00"];
+      
+      // Validate inputs
+      if (!year || !month || !day) throw new Error("Invalid date format");
+      
+      const localDate = new Date(year, month - 1, day, hour || 0, minute || 0);
+      
+      if (isNaN(localDate.getTime())) throw new Error("Invalid date created");
+      
+      return localDate.toISOString();
+    } catch (error) {
+      console.error("Error creating ISO date:", error);
+      return new Date().toISOString(); // Fallback to current date
+    }
   }
 
   const updatePreferredDepartureTime = (newDateTime) => {
@@ -213,22 +262,26 @@ const ComboFlight = (props) => {
 
   const _FetchFlightsHandler = () => {
     // Prevent multiple API calls
-    if (isFetching) return;
+    if (isFetching) {
+      console.log("Skip fetch - already fetching");
+      return;
+    }
+    
+    console.log("Starting flight fetch with time:", preferredDepartureTime);
     
     setLoading(true);
-    setIsFetching(true); 
+    setIsFetching(true);
     setFlightsCount(0);
-    setFlights([]); 
+    setFlights([]);
     setUpdateBookingState(false);
     setUnauthorized(false);
-    setNoResults(false); 
+    setNoResults(false);
     setFetchingIsError({
       error: false,
       errorMsg: ``,
     });
 
     if (props.selectedBooking && props.token) {
-      console.log("Inside Flight");
       const requestData = {
         adult_count: pax.adults,
         child_count: pax.children,
@@ -237,12 +290,14 @@ const ComboFlight = (props) => {
         journey_type: "1",
         origin: props.source_code || props.selectedBooking.origin_iata,
         destination: props.destination_code || props.selectedBooking.destination_iata,
-        preferred_departure_time: `${preferredDepartureTime}`,
+        preferred_departure_time: preferredDepartureTime,
         flight_cabin_class: classType.value,
       };
 
-      console.log("Inside Flight", requestData);
-      props?.comboStartDate && axiosFlightSearch
+      console.log("Flight search request:", requestData);
+      
+      // Only proceed if we have a valid date
+      axiosFlightSearch
         .post(
           `?${filtersState.sort_by}_order=${filtersState.order}${
             filtersState.departure_time_period
@@ -262,9 +317,10 @@ const ComboFlight = (props) => {
           }
         )
         .then((res) => {
+          console.log("Flight search successful");
           setLoading(false);
           setMoreLoadingState(false);
-          setIsFetching(false); 
+          setIsFetching(false);
           
           const provider = res.data.provider;
           setProvider(provider);
@@ -280,9 +336,10 @@ const ComboFlight = (props) => {
           }
         })
         .catch((err) => {
+          console.error("Flight search error:", err);
           setLoading(false);
           setMoreLoadingState(false);
-          setIsFetching(false); 
+          setIsFetching(false);
           setFlights([]);
           setFlightsCount(0);
           setFetchingIsError({
@@ -291,9 +348,10 @@ const ComboFlight = (props) => {
           });
         });
     } else {
+      console.log("Missing required data for flight search");
       setLoading(false);
       setMoreLoadingState(false);
-      setIsFetching(false); 
+      setIsFetching(false);
       setFlights([]);
       setFlightsCount(0);
       setFetchingIsError({
@@ -537,7 +595,7 @@ const ComboFlight = (props) => {
       );
     }
 
-    if (loading && flights.length === 0) {
+    if (loading) {
       return <Skeleton />;
     }
 
@@ -568,9 +626,9 @@ const ComboFlight = (props) => {
               selectedBooking={props.selectedBooking}
               _updateBookingHandler={_newUpdateBookingHandler}
               individual={props?.individual}
-              originCityId={props?.originCityId}
+              originCityId={props?.origin_itinerary_city_id}
               provider={flightProvider}
-              destinationCityId={props?.destinationCityId}
+              destinationCityId={props?.destination_itinerary_city_id}
               edge={props?.edge || props?.selectedBooking?.edge}
               setTransferBookingsIntercity={
                 props.setTransferBookingsIntercity
@@ -579,6 +637,7 @@ const ComboFlight = (props) => {
               isSelected={selectedFlightIndex === index}
               onFlightSelect={() => setSelectedFlightIndex(index)}
               getPaymentHandler={props.getPaymentHandler}
+              combo={props?.combo}
             />
           ))}
 

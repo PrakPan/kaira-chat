@@ -28,6 +28,7 @@ const FlightDetailModal = ({
   destinationCityId,
   drawer,
   onChange,
+  isEmbedded
 }) => {
   const router = useRouter();
   const fareRules = fareRule?.fareRuleDetail;
@@ -73,14 +74,14 @@ const FlightDetailModal = ({
 
   return (
     <div className="relative flex flex-col gap-4 rounded-md px-3 py-2">
-      <div className="flex flex-col gap-2">
+     { !isEmbedded && <div className="flex flex-col gap-2">
         <Heading>
           <div className="flex flex-row items-center gap-2">
             <BackArrow handleClick={() => setShowDetails((prev) => !prev)} />
           </div>
         </Heading>
       </div>
-
+}
       {!onChange && !drawer && <Text>{name}</Text>}
       <div className="flex flex-col gap-2 p-2">
         <FlightSegment
@@ -112,7 +113,7 @@ const FlightDetailModal = ({
           ></div>
         </div>
       )}
-      <div className="p-4 bg-white">
+     { !isEmbedded && <div className="p-4 bg-white">
         <button
           className="w-full  text-white py-2 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
           onClick={handleDelete}
@@ -142,7 +143,7 @@ const FlightDetailModal = ({
             )}
           </div>
         </button>
-      </div>
+      </div>}
 
       <ToastContainer />
     </div>

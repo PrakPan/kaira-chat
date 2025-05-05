@@ -31,6 +31,7 @@ import FlightDetailLoader from "../../components/modals/daybyday/FlightDetailLoa
 import { AiOutlineRight } from "react-icons/ai";
 import BackArrow from "../../components/ui/BackArrow";
 import { PulseLoader } from "react-spinners";
+import TransferDrawer from "./TransferDrawer";
 
 const Container = styled.div`
   display: flex;
@@ -179,7 +180,7 @@ const CityItem = ({
       dispatch(
         openNotification({
           type: "error",
-          text: `${err.response?.data?.errors[0]?.message[0]}`,
+          text: `${err.response?.data?.errors[0]?.detail}`,
           heading: "Error!",
         })
       );
@@ -402,7 +403,17 @@ const CityItem = ({
         }
       />
 
-      <Drawer
+{    handleShow &&   <TransferDrawer
+   show={handleShow}
+   setHandleShow={setHandleShow}
+   data={data}
+   booking_type={booking_type}
+   loading={loading}
+   handleDelete={handleDelete}
+   city={city}
+/>}
+
+      {/* <Drawer
         show={handleShow}
         anchor={"right"}
         backdrop
@@ -449,8 +460,8 @@ const CityItem = ({
           )}
         </> : 
         <div className="h-screen flex flex-col"> {/* Full height wrapper */}
-        <div className="p-4 flex flex-col flex-grow"> {/* Inner scrollable content */}
-          <BackArrow handleClick={() => {
+        {/* <div className="p-4 flex flex-col flex-grow"> {/* Inner scrollable content */}
+          {/* <BackArrow handleClick={() => {
             setHandleShow(false);
           }}/>
       
@@ -502,7 +513,7 @@ const CityItem = ({
       
         
         }
-      </Drawer>
+      </Drawer> */}
       {/* <Drawer
               show={show}
               anchor="right"

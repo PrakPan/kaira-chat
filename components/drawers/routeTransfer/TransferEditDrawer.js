@@ -3328,8 +3328,10 @@ const OtherTransfer = ({
   const [showPax, setShowPax] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [localSelectedData, setLocalSelectedData] = useState([]);
-  const [isResultSelected,setIsResultSelected] = useState(false);
-  const itinerary_id = useSelector(state=>state.ItineraryId);
+  const [isResultSelected, setIsResultSelected] = useState(false);
+  const itinerary_id = useSelector(state => state.ItineraryId);
+  const [departureTime, setDepartureTime] = useState(currentModeDepartureTime || "00:00");
+  const [showTimeDropdown, setShowTimeDropdown] = useState(false);
   
   const [pax, setPax] = useState({
     adults: selectedBooking?.pax?.number_of_adults
@@ -3342,8 +3344,39 @@ const OtherTransfer = ({
       ? selectedBooking.pax.number_of_infants
       : number_of_infants,
   });
+  const generateTimeOptions = () => {
+    const options = [];
+    for (let hour = 0; hour < 24; hour++) {
+      for (let minute = 0; minute < 60; minute += 30) {
+        const hour12 = hour % 12 || 12;
+        const period = hour < 12 ? 'AM' : 'PM';
+        const formattedHour = hour12.toString().padStart(2, '0');
+        const formattedMinute = minute.toString().padStart(2, '0');
+        const display = `${formattedHour}:${formattedMinute} ${period}`;
+        const value = `${hour.toString().padStart(2, '0')}:${formattedMinute}`;
+        
+        options.push({ display, value });
+      }
+    }
+    return options;
+  };
 
-  // Initialize localSelectedData from parent component's selected data
+  const timeOptions = generateTimeOptions();
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        setShowTimeDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [ref]);
+
   useEffect(() => {
     if (setSelectedData && Array.isArray(transfer)) {
       const initialData = Array(transfer.length).fill(undefined);
@@ -3423,6 +3456,7 @@ const OtherTransfer = ({
       currentSelection.selectedPrice?.result_index === priceIndex
     );
   };
+  
   const handleUpdateTransfer = async () => {
     handleUpdateTransferWithData(localSelectedData);
   };
@@ -3493,7 +3527,13 @@ const OtherTransfer = ({
     return newDate.format("YYYY-MM-DD");
   };
 
-  const handleUpdateTransferWithData = async (updatedData) => {
+  const handleTimeSelect = (time) => {
+    setDepartureTime(time.value);
+    setShowTimeDropdown(false);
+    // Only updates the UI, no API call triggered
+  };
+
+  const handleUpdateTransferWithData = async (updatedData, newTime = null) => {
     setUpdateLoading(true);
     
     try {
@@ -3544,7 +3584,7 @@ const OtherTransfer = ({
         })
         .filter(Boolean); 
         
-      if (transfersPayload.length === 0) {
+      if (transfersPayload.length === 0 && !newTime) {
         throw new Error("No valid transfer options selected");
       }
 
@@ -3553,7 +3593,10 @@ const OtherTransfer = ({
         (oCityData?.start_date && oCityData?.duration != null
           ? addDaysToDate(oCityData.start_date, oCityData.duration)
           : dayjs().format("YYYY-MM-DD"));
-          
+      
+      // Use the new time if provided, otherwise use the current state
+      const timeToUse = newTime || departureTime;
+      
       const requestBody = {
         destination_itinerary_city: isValidUUID(destination_itinerary_city_id)
           ? destination_itinerary_city_id
@@ -3564,7 +3607,7 @@ const OtherTransfer = ({
         number_of_adults: number_of_adults || 2,
         number_of_children: number_of_children || 0,
         number_of_infants: number_of_infants || 0,
-        start_datetime: baseStartDate + "T00:00:00",
+        start_datetime: `${baseStartDate}T${timeToUse}:00`,
         transfers: transfersPayload,
       };
 
@@ -3596,17 +3639,25 @@ const OtherTransfer = ({
 
       getPaymentHandler();
 
-      console.log("Key to update",origin_itinerary_city_id,destination_itinerary_city_id)
+      console.log("Key to update", origin_itinerary_city_id, destination_itinerary_city_id);
 
       console.log("Transfer updated successfully:", data);
 
-     hideDrawer();
+      if (!newTime) {
+        hideDrawer();
 
-      dispatch(openNotification({
-        text: `Transfer from ${city || transfer[0]?.source?.city_name} to ${dcity || transfer[0]?.destination?.city_name} has been updated successfully!`,
-        heading: "Success!",
-        type: "success",
-      }));
+        dispatch(openNotification({
+          text: `Transfer from ${city || transfer[0]?.source?.city_name} to ${dcity || transfer[0]?.destination?.city_name} has been updated successfully!`,
+          heading: "Success!",
+          type: "success",
+        }));
+      } else {
+        dispatch(openNotification({
+          text: `Departure time updated successfully!`,
+          heading: "Success!",
+          type: "success",
+        }));
+      }
     } catch (error) {
       console.error("Error updating transfer:", error);
       dispatch(openNotification({
@@ -3618,6 +3669,23 @@ const OtherTransfer = ({
       setUpdateLoading(false);
       setLoadingOptionId(null);
     }
+  };
+
+  const formatTimeForDisplay = (timeValue) => {
+    if (!timeValue) return "";
+    
+    // Find the corresponding display time from timeOptions
+    const timeOption = timeOptions.find(option => option.value === timeValue);
+    if (timeOption) {
+      return timeOption.display;
+    }
+    
+    // Fallback formatting in case the exact time isn't in the options
+    const [hours, minutes] = timeValue.split(':');
+    const hour = parseInt(hours, 10);
+    const hour12 = hour % 12 || 12;
+    const period = hour < 12 ? 'AM' : 'PM';
+    return `${hour12}:${minutes} ${period}`;
   };
 
   return (
@@ -3638,14 +3706,38 @@ const OtherTransfer = ({
             <span className="font-semibold">{currentModeDepartureDate}</span>
           </div>
 
-          <div className="time-dropdown-container relative w-full sm:w-auto">
+          <div className="time-dropdown-container relative w-full sm:w-auto" ref={ref}>
             <div
               className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
+              onClick={() => setShowTimeDropdown(prev => !prev)}
             >
               <span className="text-sm font-medium">
-                Departure Time: {currentModeDepartureTime}
+                Departure Time: {formatTimeForDisplay(departureTime)}
               </span>
+              <svg
+                className={`w-4 h-4 transition-transform ${showTimeDropdown ? 'transform rotate-180' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
             </div>
+            
+            {showTimeDropdown && (
+              <div className="absolute right-0 z-10 mt-1 w-48 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
+                {timeOptions.map((time, index) => (
+                  <div
+                    key={index}
+                    className="p-2 hover:bg-gray-100 cursor-pointer text-sm"
+                    onClick={() => handleTimeSelect(time)}
+                  >
+                    {time.display}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
