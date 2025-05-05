@@ -227,7 +227,9 @@ const HotelBookingDetails = (props) => {
         var newStays = JSON.parse(JSON.stringify(stays));
 
         newItinerary.cities = newItinerary.cities.map((item) => {
-          if (item?.hotels?.id == props?.id) {
+          console.log("updated booking 1 is:", item?.hotels);
+          if (item?.hotels?.[0]?.id == props?.id) {
+            console.log("updated booking  is:", item?.hotels);
             item.hotels = [];
           }
           return item;
@@ -244,6 +246,7 @@ const HotelBookingDetails = (props) => {
               trace_city_id: item?.trace_city_id,
             };
           }
+          return item;
         });
 
         dispatch(SetCallPaymentInfo(!CallPaymentInfo));
@@ -969,7 +972,7 @@ const HotelBookingDetails = (props) => {
               )}
             </div>
             <div>
-              Check out: {props?.data?.hotel_details?.check_out.date}
+              Check out: {props?.data?.hotel_details?.check_out.date}|
               {props?.data?.hotel_details?.check_out.begin_time && (
                 <>
                   |
@@ -977,8 +980,7 @@ const HotelBookingDetails = (props) => {
                     dateFormat(props?.data?.hotel_details?.check_out.begin_time)
                   )}
                 </>
-              )}
-            </div>
+              )}            </div>
           </CheckInText>
         ) : (
           <></>
@@ -1045,7 +1047,7 @@ const HotelBookingDetails = (props) => {
         </div>
       ) : null}
 
-      {props?.data?.hotel_details?.rates?.[0]?.rooms?.length>=0 && (
+      {props?.data?.hotel_details?.rates?.[0]?.rooms?.length > 0 && (
         <>
           <Heading>Room Information</Heading>
           <div className="flex flex-col gap-3">
@@ -1262,7 +1264,6 @@ const HotelBookingDetails = (props) => {
               </svg>
             </div>
             <Address style={{ fontSize: "14px" }}>
-              {console.log("address is:",props?.data?.hotel_details)}
               {props?.data?.hotel_details?.addr1
                 ? props?.data?.hotel_details?.addr1 + ", "
                 : ""}{" "}
@@ -1327,7 +1328,35 @@ const HotelBookingDetails = (props) => {
           </div>
         </div>
       ) : (
-        <></>
+        <div className="flex justify-end">
+          <button
+            className=" right-0 text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
+            onClick={handleDelete}
+          >
+            <div style={{ position: "relative" }}>
+              <div
+                className="flex gap-1 items-center p-1"
+                style={loading ? { visibility: "hidden" } : {}}
+              >
+                <NextImage src="/delete.svg" width={"20"} height={"20"} />{" "}
+                Delete Booking
+              </div>
+              {loading && (
+                <PulseLoader
+                  style={{
+                    position: "absolute",
+                    top: "55%",
+                    left: "50%",
+                    transform: "translate(-50% , -50%)",
+                  }}
+                  size={12}
+                  speedMultiplier={0.6}
+                  color="#ffffff"
+                />
+              )}
+            </div>
+          </button>
+        </div>
       )}
     </Container>
   );
