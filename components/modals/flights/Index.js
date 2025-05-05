@@ -618,7 +618,7 @@ const Booking = (props) => {
           mercuryTransfer={props?.mercuryTransfer}
           mercury={true}
         />
-        </> 
+        </> )
         : 
         <div className="p-3">
          <BackArrow handleClick={()=>{
