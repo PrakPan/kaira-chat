@@ -160,8 +160,8 @@ const HotelBookingDetails = (props) => {
   const isDesktop = useMediaQuery("(min-width:1148px)");
   const [loading, setLoading] = useState(false);
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
-  const itinerary=useSelector((state)=>state.Itinerary)
-  const stays=useSelector((state)=>state.Stays)
+  const itinerary = useSelector((state) => state.Itinerary);
+  const stays = useSelector((state) => state.Stays);
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -211,7 +211,7 @@ const HotelBookingDetails = (props) => {
 
   const handleDelete = async () => {
     try {
-      console.log("stays are:",stays)
+      console.log("stays are:", stays);
       setLoading(true);
       const response = await axiosDeleteBooking.delete(
         `${id}/bookings/accommodation/${props?.id}/`,
@@ -223,33 +223,33 @@ const HotelBookingDetails = (props) => {
       );
 
       if (response.status === 204) {
-        const newItinerary=JSON.parse(JSON.stringify(itinerary))
-        var newStays=JSON.parse(JSON.stringify(stays))
+        const newItinerary = JSON.parse(JSON.stringify(itinerary));
+        var newStays = JSON.parse(JSON.stringify(stays));
 
-        newItinerary.cities=newItinerary.cities.map((item)=>{
-          if(item?.hotels?.id==props?.id){
-            item.hotels=[]
+        newItinerary.cities = newItinerary.cities.map((item) => {
+          if (item?.hotels?.id == props?.id) {
+            item.hotels = [];
           }
-          return item
-        })
+          return item;
+        });
 
-        newStays=newStays.map((item)=>{
-          if(item?.id===props?.id){
-            return{
-              check_in:item?.check_in,
-              check_out:item?.check_out,
-              city_id:item?.city_id,
-              city_name:item?.city_name,
-              duration:item?.duration,
-              trace_city_id:item?.trace_city_id
-            }
+        newStays = newStays.map((item) => {
+          if (item?.id === props?.id) {
+            return {
+              check_in: item?.check_in,
+              check_out: item?.check_out,
+              city_id: item?.city_id,
+              city_name: item?.city_name,
+              duration: item?.duration,
+              trace_city_id: item?.trace_city_id,
+            };
           }
-        })
+        });
 
         dispatch(SetCallPaymentInfo(!CallPaymentInfo));
         dispatch(updateStays(props?.id));
-        dispatch(setStays(newStays))
-        dispatch(setItinerary(newItinerary))
+        dispatch(setStays(newStays));
+        dispatch(setItinerary(newItinerary));
         setLoading(false);
         dispatch(
           openNotification({
@@ -288,13 +288,13 @@ const HotelBookingDetails = (props) => {
           </Address>
         </div>
 
-            <Button
-              padding="7px 25px"
-              borderRadius="7px"
-              onclick={() => props.BookingButtonFun()}
-            >
-              Change
-            </Button>
+        <Button
+          padding="7px 25px"
+          borderRadius="7px"
+          onclick={() => props.BookingButtonFun()}
+        >
+          Change
+        </Button>
       </FlexBox>
 
       {props?.data?.hotel_details?.rating && (
@@ -954,18 +954,30 @@ const HotelBookingDetails = (props) => {
       )}
 
       <DetailsContainer>
-        {props?.data?.hotel_details?.check_in?.begin_time &&
-        props?.data?.hotel_details?.check_out?.time ? (
+        {props?.data?.hotel_details?.check_in?.date &&
+        props?.data?.hotel_details?.check_out?.date ? (
           <CheckInText>
             <div className="">
-              Check in: {dateFormat(props?.data?.hotel_details?.check_in.date)}|
-              {getHumanTime(
-                dateFormat(props?.data?.hotel_details?.check_in.begin_time)
+              Check in: {dateFormat(props?.data?.hotel_details?.check_in.date)}
+              {props?.data?.hotel_details?.check_in.begin_time && (
+                <>
+                  |
+                  {getHumanTime(
+                    dateFormat(props?.data?.hotel_details?.check_in.begin_time)
+                  )}
+                </>
               )}
             </div>
             <div>
-              Check out: {props?.data?.hotel_details?.check_out.date}|
-              {getHumanTime(props?.data?.hotel_details?.check_out.time)}
+              Check out: {props?.data?.hotel_details?.check_out.date}
+              {props?.data?.hotel_details?.check_out.begin_time && (
+                <>
+                  |
+                  {getHumanTime(
+                    dateFormat(props?.data?.hotel_details?.check_out.begin_time)
+                  )}
+                </>
+              )}
             </div>
           </CheckInText>
         ) : (
@@ -1033,7 +1045,7 @@ const HotelBookingDetails = (props) => {
         </div>
       ) : null}
 
-      {props?.data?.hotel_details?.rates?.[0]?.rooms?.[0]?.description && (
+      {props?.data?.hotel_details?.rates?.[0]?.rooms?.length>=0 && (
         <>
           <Heading>Room Information</Heading>
           <div className="flex flex-col gap-3">
@@ -1059,9 +1071,11 @@ const HotelBookingDetails = (props) => {
                         ></div>
                       ) : null}
                     </div>
-                    {room?.images?.length>0&&<div className="flex flex-col items-center justify-center gap-3 md:w-[40%] h-[250px]">
-                      <ImageCarousel images={room?.images} />
-                    </div>}
+                    {room?.images?.length > 0 && (
+                      <div className="flex flex-col items-center justify-center gap-3 md:w-[40%] h-[250px]">
+                        <ImageCarousel images={room?.images} />
+                      </div>
+                    )}
                   </div>
 
                   {room?.facilities ? (
@@ -1089,27 +1103,30 @@ const HotelBookingDetails = (props) => {
 
       {props?.data?.hotel_details?.category_ratings && (
         <div>
-          <Heading >Ratings</Heading>
+          <Heading>Ratings</Heading>
           <table>
-              <tbody>
-          {props?.data?.hotel_details?.category_ratings.map((item, index) => (
-                            <tr>
-
-            {item?.category != "recommendation_percent" && (
-              <>
-                <td className="">{item?.category?.slice(0,1).toUpperCase()+item?.category?.slice(1,item?.category?.length)}</td>
-                <td className="flex items-center gap-1">
-                    <div className="flex text-[#FFD201]">
-                      {getStars(item?.rating)}
-                    </div>
-                    {item?.rating}
-                  </td>
-                  </>
-            )}
-            </tr>
-          ))}
-
-          </tbody>
+            <tbody>
+              {props?.data?.hotel_details?.category_ratings.map(
+                (item, index) => (
+                  <tr>
+                    {item?.category != "recommendation_percent" && (
+                      <>
+                        <td className="">
+                          {item?.category?.slice(0, 1).toUpperCase() +
+                            item?.category?.slice(1, item?.category?.length)}
+                        </td>
+                        <td className="flex items-center gap-1">
+                          <div className="flex text-[#FFD201]">
+                            {getStars(item?.rating)}
+                          </div>
+                          {item?.rating}
+                        </td>
+                      </>
+                    )}
+                  </tr>
+                )
+              )}
+            </tbody>
           </table>
         </div>
       )}
@@ -1245,6 +1262,7 @@ const HotelBookingDetails = (props) => {
               </svg>
             </div>
             <Address style={{ fontSize: "14px" }}>
+              {console.log("address is:",props?.data?.hotel_details)}
               {props?.data?.hotel_details?.addr1
                 ? props?.data?.hotel_details?.addr1 + ", "
                 : ""}{" "}
