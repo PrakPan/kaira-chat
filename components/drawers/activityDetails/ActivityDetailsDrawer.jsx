@@ -25,7 +25,6 @@ const ActivityDetailsDrawer = (props) => {
   const itinerary=useSelector((state)=>state.Itinerary)
   const CallPaymentInfo=useSelector((state)=>state.CallPaymentInfo)
 
-  console.log("itinerary is:",itinerary)
   const num_adults = props?.pax?.adults
   const num_children = props?.pax?.children
   console
@@ -84,12 +83,13 @@ const ActivityDetailsDrawer = (props) => {
   };
 
   const updatedActivityBooking = async () => {
-    const requestData = {
-      itinerary_city_id: props?.itinerary_city_id,
-      trace_id: traceId,
-    };
   
     try {
+      const requestData = {
+        itinerary_city_id: props?.itinerary_city_id,
+        trace_id: traceId,
+      };
+
       const res = await activityBooking.post(
         `${router.query?.id}/bookings/activity/`,
         requestData,
@@ -179,7 +179,7 @@ const ActivityDetailsDrawer = (props) => {
         });
       }
   
-      throw err; // ❗ rethrow so the caller can handle error
+      return err; // ❗ rethrow so the caller can handle error
     }
   };
   

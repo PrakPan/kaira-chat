@@ -1,5 +1,32 @@
 import Image from "next/image";
-import { EXPERIENCE_FILTERS_BOX } from "../../../../services/constants";
+
+
+export const EXPERIENCE_FILTERS_BOX = [
+  {
+    display: "Nature and Spiritual",
+    actual: ["Nature and Retreat", "Isolated", "Spiritual"],
+  },
+  {
+    display: "Adventure",
+    actual: ["Adventure and Outdoors"],
+  },
+  {
+    display: "Heritage and Art",
+    actual: ["Heritage", "Art and Culture"],
+  },
+  {
+    display: "Nightlife and Shopping",
+    actual: ["Nightlife and Events", "Shopping"],
+  },
+  {
+    display: "Hidden gems",
+    actual: ["Hidden Gem"],
+  },
+  {
+    display: "Romantic",
+    actual: ["Romantic"],
+  },
+];
 
 export default function ExperienceFilters(props) {
   const handleExperienceFilters = (experienceFilter) => {

@@ -64,7 +64,7 @@ const Details = (props) => {
     (state) => state.ItineraryStatus
   );
 
-  const passengersDetail=useSelector((state)=>state.Passengers)
+  const passengersDetail = useSelector((state) => state.Passengers);
   //console.log("Iti",props?.itinerary);
 
   useEffect(() => {
@@ -73,6 +73,9 @@ const Details = (props) => {
     script.async = true;
     document.body.appendChild(script);
   }, []);
+  useEffect(()=>{
+    console.log("loading is:",props.loadpricing)
+  },[props.loadpricing])
 
   const getCurrentDateIfOlder = (dateString) => {
     const currentDate = startOfDay(new Date()); // Get the current date at the start of the day
@@ -495,7 +498,7 @@ const Details = (props) => {
 
   return (
     <>
-      {pricing_status === "PENDING" ? (
+      {(pricing_status === "PENDING" ||props?.loadpricing ) ? (
         <div className="bg-[#F7E70033] -mt-[1rem] -mx-[1rem] mb-0">
           <PricingSkeleton />
         </div>
@@ -545,23 +548,23 @@ const Details = (props) => {
                 >
                   {props?.payment && <span>₹</span>}
                   {props?.payment && (
-                    <div>
-                      {props?.payment?.pay_only_for_one ||
-                      props?.payment?.show_per_person_cost
-                        ? getIndianPrice(
-                            Math.round(
-                              Math.round(
-                                props.payment?.per_person_discounted_cost
+                        <div>
+                          {props?.payment?.pay_only_for_one ||
+                          props?.payment?.show_per_person_cost
+                            ? getIndianPrice(
+                                Math.round(
+                                  Math.round(
+                                    props.payment?.per_person_discounted_cost
+                                  )
+                                )
                               )
-                            )
-                          )
-                        : getIndianPrice(
-                            Math.round(
-                              Math.round(props.payment?.discounted_cost)
-                            )
-                          )}
-                      {"/-"}
-                    </div>
+                            : getIndianPrice(
+                                Math.round(
+                                  Math.round(props.payment?.discounted_cost)
+                                )
+                              )}
+                          {"/-"}
+                        </div>
                   )}
                 </div>
 
@@ -1071,7 +1074,8 @@ const Details = (props) => {
               </GetInTouchContainer>
             )
           ) : pricing_status === "FAILURE" ? ( */}
-            {props?.token &&<GetInTouchContainer>
+          {props?.token && (
+            <GetInTouchContainer>
               <Button
                 color="#111"
                 fontWeight="500"
@@ -1102,8 +1106,8 @@ const Details = (props) => {
                   <span>Get in touch!</span>
                 </div>
               </Button>
-            </GetInTouchContainer>}
-          
+            </GetInTouchContainer>
+          )}
 
           {!props.token && pricing_status === "SUCCESS" ? (
             <Button
@@ -1231,7 +1235,7 @@ const Details = (props) => {
         backdrop
         width={"100%"}
         mobileWidth={"100%"}
-        style={{zIndex:1601}}
+        style={{ zIndex: 1601 }}
         className="font-lexend"
         onHide={() => setShowSetPassenger(false)}
       >

@@ -79,12 +79,15 @@ const ContentContainer = styled.div`
 `;
 
 const Booking = (props) => {
-
-  console.log("Flight Selected Booking",props?.selectedBooking);
-  console.log("Flight Selected Booking",props?.originCityId,props?.destinationCityId);
+  console.log("Flight Selected Booking", props?.selectedBooking);
+  console.log(
+    "Flight Selected Booking",
+    props?.originCityId,
+    props?.destinationCityId
+  );
   let isPageWide = media("(min-width: 768px)");
   const dispatch = useDispatch();
-  const transferBookings = useSelector((state)=>state.TransferBookings)
+  const transferBookings = useSelector((state) => state.TransferBookings);
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filtersState, setFiltersState] = useState({
@@ -126,7 +129,7 @@ const Booking = (props) => {
   });
   const [showTransferEditDrawer, setShowTransferEditDrawer] = useState(false);
 
- // console.log("Ord",props?.originCityId,props?.destinationCityId);
+  // console.log("Ord",props?.originCityId,props?.destinationCityId);
 
   // useEffect(() => {
   //   if (!isPageWide && props.showFlightModal) _FetchFlightsHandler();
@@ -209,7 +212,9 @@ const Booking = (props) => {
                   booking_id={props.selectedBooking?.booking_id}
                   originCityId={props?.originCityId}
                   destinationCityId={props?.destinationCityId}
-                  setTransferBookingsIntercity={props.setTransferBookingsIntercity}
+                  setTransferBookingsIntercity={
+                    props.setTransferBookingsIntercity
+                  }
                   edge={props?.edge || props?.selectedBooking?.edge}
                 ></Flight>
               );
@@ -267,13 +272,13 @@ const Booking = (props) => {
       booking_id,
       trace_id: localStorage.getItem(`${provider}_trace_id`),
       result_indices: [result_index],
-      source_itinerary_city:props?.originCityId,
-      destination_itinerary_city:props?.destinationCityId,
-      edge: props?.edge || props?.selectedBooking?.edge
+      source_itinerary_city: props?.originCityId,
+      destination_itinerary_city: props?.destinationCityId,
+      edge: props?.edge || props?.selectedBooking?.edge,
     };
 
-  //  console.log("originCityId + destinationCityId",props?.originCityId + ":" + props?.destinationCityId);
-   console.log("Request Data",requestData);
+    //  console.log("originCityId + destinationCityId",props?.originCityId + ":" + props?.destinationCityId);
+    console.log("Request Data", requestData);
     // updateFlightBooking
     //   .post(`${itinerary_id}/bookings/flight/`, requestData, {
     //     headers: {
@@ -293,59 +298,64 @@ const Booking = (props) => {
     //     };
     //     dispatch(setTransfersBookings(updatedTransferBookings));
     updateFlightBooking
-    .post(`${itinerary_id}/bookings/flight/`, requestData, {
-      headers: {
-        Authorization: `Bearer ${props.token}`,
-      },
-    })
-    .then((res) => {
-      props._updateFlightBookingHandler([res.data]);
-      props.getPaymentHandler();
-      setUpdateBookingState(false);
-      
-      const updatedTransferBookings = JSON.parse(JSON.stringify(transferBookings?.transferBookings));
-      const bookingIdToUpdate = requestData?.booking_id;
-      
-      Object.keys(updatedTransferBookings).forEach((category) => {
-        if (updatedTransferBookings[category]) {
-          Object.keys(updatedTransferBookings[category]).forEach((key) => {
-            const booking = updatedTransferBookings[category][key];
-            
-            if (!booking || Object.keys(booking).length === 0) {
-              return;
-            }
+      .post(`${itinerary_id}/bookings/flight/`, requestData, {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+        },
+      })
+      .then((res) => {
+        props._updateFlightBookingHandler([res.data]);
+        props.getPaymentHandler();
+        setUpdateBookingState(false);
 
-            if (booking?.id === bookingIdToUpdate) {
-              updatedTransferBookings[category][key] = {
-                ...booking, 
-                ...res.data  
-              };
-            } 
-            else if (booking?.children && Array.isArray(booking.children) && booking.children.length > 0) {
-              let foundMatch = false;
-              const updatedChildren = booking.children.map(childBooking => {
-                if (childBooking && childBooking.id === bookingIdToUpdate) {
-                  foundMatch = true;
-                  return {
-                    ...childBooking,  
-                    ...res.data      
-                  };
-                }
-                return childBooking; 
-              });
-              
-              if (foundMatch) {
+        const updatedTransferBookings = JSON.parse(
+          JSON.stringify(transferBookings?.transferBookings)
+        );
+        const bookingIdToUpdate = requestData?.booking_id;
+
+        Object.keys(updatedTransferBookings).forEach((category) => {
+          if (updatedTransferBookings[category]) {
+            Object.keys(updatedTransferBookings[category]).forEach((key) => {
+              const booking = updatedTransferBookings[category][key];
+
+              if (!booking || Object.keys(booking).length === 0) {
+                return;
+              }
+
+              if (booking?.id === bookingIdToUpdate) {
                 updatedTransferBookings[category][key] = {
                   ...booking,
-                  children: updatedChildren
+                  ...res.data,
                 };
+              } else if (
+                booking?.children &&
+                Array.isArray(booking.children) &&
+                booking.children.length > 0
+              ) {
+                let foundMatch = false;
+                const updatedChildren = booking.children.map((childBooking) => {
+                  if (childBooking && childBooking.id === bookingIdToUpdate) {
+                    foundMatch = true;
+                    return {
+                      ...childBooking,
+                      ...res.data,
+                    };
+                  }
+                  return childBooking;
+                });
+
+                if (foundMatch) {
+                  updatedTransferBookings[category][key] = {
+                    ...booking,
+                    children: updatedChildren,
+                  };
+                }
               }
-            }
-          });
-        }
-      });
-      
-      dispatch(setTransfersBookings(updatedTransferBookings));
+            });
+          }
+        });
+
+        dispatch(setTransfersBookings(updatedTransferBookings));
         props.openNotification({
           type: "success",
           text: "Flight updated successfully.",
@@ -405,7 +415,9 @@ const Booking = (props) => {
                 originCityId={props?.originCityId}
                 destinationCityId={props?.destinationCityId}
                 edge={props?.edge || props?.selectedBooking?.edge}
-                setTransferBookingsIntercity={props.setTransferBookingsIntercity}
+                setTransferBookingsIntercity={
+                  props.setTransferBookingsIntercity
+                }
               ></Flight>
             );
           }
@@ -442,140 +454,151 @@ const Booking = (props) => {
         mobileWidth={"100%"}
         width={"50%"}
       >
-       {!props?.combo ? <>
-        <ToastContainer />
-        <SectionOne
-          _FetchFlightsHandler={_FetchFlightsHandler}
-          setHideBookingModal={props.setHideBookingModal}
-          showFilter={showFilter}
-          setShowFilter={setShowFilter}
-          filtersState={filtersState}
-          setFiltersState={setFiltersState}
-          flightCount={flightCount}
-          setHideFlightModal={props.setHideFlightModal}
-          text={props.selectedBooking?.name}
-          selectedBooking={props.selectedBooking}
-          pax={pax}
-          setPax={setPax}
-          classType={classType}
-          setClassType={setClassType}
-          handleTransferEdit={handleTransferEdit}
-          mercuryTransfer={props?.mercuryTransfer}
-        ></SectionOne>
+        {!props?.combo ? (
+          <>
+            <ToastContainer />
+            <SectionOne
+              _FetchFlightsHandler={_FetchFlightsHandler}
+              setHideBookingModal={props.setHideBookingModal}
+              showFilter={showFilter}
+              setShowFilter={setShowFilter}
+              filtersState={filtersState}
+              setFiltersState={setFiltersState}
+              flightCount={flightCount}
+              setHideFlightModal={props.setHideFlightModal}
+              text={props.selectedBooking?.name}
+              selectedBooking={props.selectedBooking}
+              pax={pax}
+              setPax={setPax}
+              classType={classType}
+              setClassType={setClassType}
+              handleTransferEdit={handleTransferEdit}
+              mercuryTransfer={props?.mercuryTransfer}
+            ></SectionOne>
 
-        <GridContainer style={{ clear: "right" }}>
-          <ContentContainer style={{ position: "relative" }}>
-            {updateLoadingState && !updateBookingState ? (
-              <div
-                className="center-div"
-                style={{ width: "max-content", margin: "auto" }}
-              >
-                <LoadingLottie height={"5rem"} width={"5rem"} margin="none" />
-                Fetching best fares
-              </div>
-            ) : null}
-
-            {updateBookingState ? (
-              <div
-                style={{
-                  width: "max-content",
-                  margin: "auto",
-                  height: isPageWide ? "80vh" : "40vh",
-                }}
-                className="center-div font-lexend"
-              >
-                <LoadingLottie height={"5rem"} width={"5rem"} margin="none" />
-                Please wait while we update your flight
-              </div>
-            ) : null}
-
-            {isFetchingError.error ? (
-              <div className="flex flex-row items-center justify-center h-[80vh] text-center font-lexend">
-                {isFetchingError.errorMsg}
-              </div>
-            ) : !noResults && !updateLoadingState && !unauthorized ? (
-              <OptionsContainer id="options">
-                <div style={{ clear: "right" }}>
-                  {optionsJSX.length && !updateBookingState ? optionsJSX : null}
-
-                  {loading && !optionsJSX.length ? <Skeleton /> : null}
-
-                  {!loading && !optionsJSX.length ? (
-                    <div
-                      style={{
-                        textAlign: "center",
-                        margin: "auto",
-                        height: isPageWide ? "80vh" : "70vh",
-                      }}
-                      className="center-div"
-                    >
-                      Oops, it looks like there are no alternate flights
-                      available.
-                    </div>
-                  ) : null}
-                </div>
-
-                {moreLoadingState ? <Skeleton /> : null}
-
-                {viewMoreStatus &&
-                !updateBookingState &&
-                !loading &&
-                optionsJSX.length ? (
-                  <Button
-                    boxShadow
-                    onclickparam={null}
-                    onclick={_loadAccommodationsHandler}
-                    margin="0.25rem auto"
-                    borderWidth="1px"
-                    borderRadius="2rem"
-                    padding="0.25rem 1rem"
+            <GridContainer style={{ clear: "right" }}>
+              <ContentContainer style={{ position: "relative" }}>
+                {updateLoadingState && !updateBookingState ? (
+                  <div
+                    className="center-div"
+                    style={{ width: "max-content", margin: "auto" }}
                   >
-                    View More
-                  </Button>
+                    <LoadingLottie
+                      height={"5rem"}
+                      width={"5rem"}
+                      margin="none"
+                    />
+                    Fetching best fares
+                  </div>
                 ) : null}
-              </OptionsContainer>
-            ) : null}
 
-            {unauthorized ? (
-              <div
-                style={{
-                  width: "100%",
-                  margin: "auto",
-                  height: isPageWide ? "80vh" : "40vh",
-                }}
-                className="center-div text-center"
-              >
-                Oops, this action is not allowed on another user's itinerary
-              </div>
-            ) : null}
+                {updateBookingState ? (
+                  <div
+                    style={{
+                      width: "max-content",
+                      margin: "auto",
+                      height: isPageWide ? "80vh" : "40vh",
+                    }}
+                    className="center-div font-lexend"
+                  >
+                    <LoadingLottie
+                      height={"5rem"}
+                      width={"5rem"}
+                      margin="none"
+                    />
+                    Please wait while we update your flight
+                  </div>
+                ) : null}
 
-            {noResults && !unauthorized ? (
-              <p className="font-lexend text-center">
-                Oops, we couldn't find what you were searching!
-              </p>
-            ) : null}
-          </ContentContainer>
-          {!isPageWide && (
-            <>
-              <Floating>
-                <FaFilter
-                  style={{ height: "18px", width: "18px", color: "white" }}
-                  cursor={"pointer"}
-                  onClick={(e) => {
-                    setShowFilter(true);
-                  }}
-                />
-              </Floating>
-              <FloatingView>
-                <TbArrowBack
-                  style={{ height: "28px", width: "28px" }}
-                  cursor={"pointer"}
-                  onClick={props.setHideFlightModal}
-                />
-              </FloatingView>
-            </>
-          )}
-        </GridContainer>
+                {isFetchingError.error ? (
+                  <div className="flex flex-row items-center justify-center h-[80vh] text-center font-lexend">
+                    {isFetchingError.errorMsg}
+                  </div>
+                ) : !noResults && !updateLoadingState && !unauthorized ? (
+                  <OptionsContainer id="options">
+                    <div style={{ clear: "right" }}>
+                      {optionsJSX.length && !updateBookingState
+                        ? optionsJSX
+                        : null}
+
+                      {loading && !optionsJSX.length ? <Skeleton /> : null}
+
+                      {!loading && !optionsJSX.length ? (
+                        <div
+                          style={{
+                            textAlign: "center",
+                            margin: "auto",
+                            height: isPageWide ? "80vh" : "70vh",
+                          }}
+                          className="center-div"
+                        >
+                          Oops, it looks like there are no alternate flights
+                          available.
+                        </div>
+                      ) : null}
+                    </div>
+
+                    {moreLoadingState ? <Skeleton /> : null}
+
+                    {viewMoreStatus &&
+                    !updateBookingState &&
+                    !loading &&
+                    optionsJSX.length ? (
+                      <Button
+                        boxShadow
+                        onclickparam={null}
+                        onclick={_loadAccommodationsHandler}
+                        margin="0.25rem auto"
+                        borderWidth="1px"
+                        borderRadius="2rem"
+                        padding="0.25rem 1rem"
+                      >
+                        View More
+                      </Button>
+                    ) : null}
+                  </OptionsContainer>
+                ) : null}
+
+                {unauthorized ? (
+                  <div
+                    style={{
+                      width: "100%",
+                      margin: "auto",
+                      height: isPageWide ? "80vh" : "40vh",
+                    }}
+                    className="center-div text-center"
+                  >
+                    Oops, this action is not allowed on another user's itinerary
+                  </div>
+                ) : null}
+
+                {noResults && !unauthorized ? (
+                  <p className="font-lexend text-center">
+                    Oops, we couldn't find what you were searching!
+                  </p>
+                ) : null}
+              </ContentContainer>
+              {!isPageWide && (
+                <>
+                  <Floating>
+                    <FaFilter
+                      style={{ height: "18px", width: "18px", color: "white" }}
+                      cursor={"pointer"}
+                      onClick={(e) => {
+                        setShowFilter(true);
+                      }}
+                    />
+                  </Floating>
+                  <FloatingView>
+                    <TbArrowBack
+                      style={{ height: "28px", width: "28px" }}
+                      cursor={"pointer"}
+                      onClick={props.setHideFlightModal}
+                    />
+                  </FloatingView>
+                </>
+              )}
+            </GridContainer>
 
         <TransferEditDrawer
           itinerary_id={props?.itinerary_id}
@@ -721,12 +744,6 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(mapStateToPros, mapDispatchToProps)(Booking);
 
-
-
-
-
-
-
 // {
 //   "booking_id": "7ad0b554-7efd-4d53-9ca6-eb21873950de",
 //   "trace_id": "aa92d7fc-2c68-459e-8063-7831dbc26a87",
@@ -737,7 +754,6 @@ export default connect(mapStateToPros, mapDispatchToProps)(Booking);
 //   "destination_itinerary_city": "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
 //   "edge": "016b1fbe-8c17-4115-a5ea-77052b60b820"
 // }
-
 
 // {
 //   "trace_id": "ebeffef4-c015-400b-806f-ea8f066ee604",
