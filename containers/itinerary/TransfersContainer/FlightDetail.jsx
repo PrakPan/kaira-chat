@@ -15,6 +15,7 @@ import { openNotification } from "../../../store/actions/notification";
 import BackArrow from "../../../components/ui/BackArrow";
 import styled from "styled-components";
 import { FaPlane } from "react-icons/fa";
+import PulseLoader from "react-spinners/PulseLoader";
 
 const DottedLine = styled.div`
   position: relative;
@@ -67,18 +68,26 @@ const Details = ({
   transferBookings,
   edge,
   getPaymentHandler,
+  combo
 }) => {
   // console.log("transferbookings is:",transferBookings)
   const router = useRouter();
   const [fareRules, setFareRules] = useState(fareRule?.[0]?.fareRuleDetail);
   const [fareRulesLoading, setFareRulesLoading] = useState(false);
   const [fareRUlesError, setFareRulesError] = useState(false);
+  const [loading,setLoading] =useState(false);
   const dispatch = useDispatch();
   useEffect(() => {
     if (fareRules == null) {
       getFareRules();
     }
   }, []);
+
+  const isValidUUID = (uuid) => {
+    const regex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return regex.test(uuid);
+  };
 
   const getFareRules = async () => {
     setFareRulesLoading(true);
@@ -149,7 +158,7 @@ const Details = ({
           ></div>
         </div>
       )}
-      {provider && (
+      {provider && !combo && (
         <div className="flex justify-end">
           <Generalbuttonstyle
             bgColor={"#F7E700"}
@@ -161,6 +170,7 @@ const Details = ({
             onclickparam={null}
             onClick={async () => {
               try {
+                // setLoading(true);
                 if (individual == true) {
                   const res = await axios.post(
                     MERCURY_HOST +
@@ -174,14 +184,15 @@ const Details = ({
                   getPaymentHandler();
                 } else {
                   // console.log("updating",originCityId)
+                  setLoading(true);
                   const res = await axios.post(
                     MERCURY_HOST +
                       `/api/v1/itinerary/${router?.query?.id}/bookings/flight/`,
                     {
                       trace_id: localStorage.getItem(`${provider}_trace_id`),
                       result_indices: [resultIndex],
-                      source_itinerary_city: originCityId,
-                      destination_itinerary_city: destinationCityId,
+                      source_itinerary_city: isValidUUID(originCityId) ? originCityId : null,
+                      destination_itinerary_city: isValidUUID(destinationCityId) ? destinationCityId : null ,
                       booking_id: booking_id,
                       edge: edge,
                     },
@@ -193,6 +204,7 @@ const Details = ({
                       },
                     }
                   );
+                  setLoading(false);
                   const updatedTransferBookings = {
                     ...transferBookings,
                     intercity: {
@@ -211,6 +223,7 @@ const Details = ({
                   );
                 }
               } catch (error) {
+                setLoading(false);
                 dispatch(
                   openNotification({
                     type: "error",
@@ -222,8 +235,20 @@ const Details = ({
             }}
             className="z-[1600]"
           >
-            {individual ? <>Book Now</> : <>Add To Itinerary</>}
-          </Generalbuttonstyle>
+             <div style={{ visibility: loading ? "hidden" : "visible" }}>
+    {individual ? "Book Now" : "Add To Itinerary"}
+  </div>
+
+  {loading && (
+    <div className="absolute inset-0 flex justify-center items-center">
+      <PulseLoader
+        size={12}
+        speedMultiplier={0.6}
+        color="#000000"
+      />
+    </div>
+  )}
+    </Generalbuttonstyle>
         </div>
       )}
       <ToastContainer />

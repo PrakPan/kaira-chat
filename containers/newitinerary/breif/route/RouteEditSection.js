@@ -626,13 +626,13 @@ const RouteEditSection = (props) => {
         )}
       </div>
 
-      <ActionPanel
+      {!itineraryLoading && <ActionPanel
         setEdit={props.setEdit}
         editDestination={editDestination}
         setEditDestination={setEditDestination}
         handleSaveButton={handleSaveButton}
         itineraryLoading={itineraryLoading}
-      />
+      />}
     </div>
   );
 };
@@ -2208,14 +2208,14 @@ export const ActionPanel = (props) => {
         >
           {editDestination ? "Cancel" : "Back"}
         </button>}
-        <button
+        {<button
           onClick={handleSaveButton}
           className="bg-[#F7E700] px-5 py-2 rounded-lg border-2 border-black hover:text-white hover:bg-black transition ease-in-out duration-500"
         >
          { itineraryLoading ? (
                              <PulseLoader size={14} speedMultiplier={0.6} color="black" />
                            ) : "Save"}
-        </button>
+        </button>}
       </div>
     </div>
   );

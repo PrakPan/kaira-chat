@@ -4,11 +4,18 @@ import styled from "styled-components";
 import Image from "next/image";
 import BackArrow from "../../ui/BackArrow";
 import ImageLoader from "../../ImageLoader";
+import { Generalbuttonstyle } from "../../ui/button/Generallinkbutton";
 
 const BackText = styled.div`
   font-size: 1.5rem;
   line-height: 2rem;
 `;
+
+const Text = styled.div`
+  font-size: 1.5rem;
+  line-height: 2rem;
+`;
+
 
 const TaxiDetailModal = ({
   data,
@@ -18,6 +25,7 @@ const TaxiDetailModal = ({
   loading,
   booking,
   type,
+  isEmbedded
 }) => {
   if (!data) return null;
 
@@ -50,6 +58,13 @@ const TaxiDetailModal = ({
     };
   };
 
+   const addMinutesToDate = (dateString, minutes) => {
+    console.log("Date String", dateString);
+    const date = new Date(dateString);
+    console.log("date is:")
+    date.setMinutes(date.getMinutes() + minutes);
+    return formatDateTime(date.toISOString());
+  };
   const departure = check_in || transfer_details?.start_datetime || transfer_details?.gozo?.start_date;
   const duration = transfer_details?.duration;
   const arrival = formatDateTime(check_out) || addMinutesToDate(departure, duration);
@@ -64,10 +79,10 @@ const TaxiDetailModal = ({
 
   return (
     <>
-      <div className="fixed inset-0 bg-gray-50 w-full h-full flex flex-col">
-        <div className="p-4 flex items-center justify-between">
+      <div className=" bg-gray-50 w-full h-full flex flex-col">
+       { !isEmbedded && <div className="p-4 flex items-center justify-between">
           <BackArrow handleClick={() => setHandleShow(false)} />
-        </div>
+        </div>}
 
         <div className="px-4 flex justify-between">
           <h1 className="text-xl font-bold text-gray-800 ">
@@ -77,13 +92,24 @@ const TaxiDetailModal = ({
               `Taxi from ${source_address?.name} to ${destination_address?.name}`
             )}
           </h1>
-          <div className="text-blue font-medium underline cursor-pointer">
-            {loading ? (
+          {!isEmbedded  && 
+                  <div className="font-lexend flex justify-between items-start !m-0">
+                {loading ? (
               <div className="w-16 h-5 bg-gray-300 opacity-50 rounded"></div>
             ) : (
-              "Change"
+              <>
+              {/* <Text>{name}</Text> */}
+                    <Generalbuttonstyle
+                      borderRadius={"7px"}
+                      fontSize={"1rem"}
+                      padding={"7px 25px"}
+                      onClick={()=>{console.log("")}}
+                    >
+                      Change
+                    </Generalbuttonstyle>
+                    </>
             )}
-          </div>
+          </div>}
         </div>
 
         {/* Journey Card */}
@@ -95,7 +121,7 @@ const TaxiDetailModal = ({
               <div className="absolute left-0 right-1/2 border-t border-dashed border-gray-300 h-0" style={{ marginRight: "20px" }}></div>
               
               {/* Distance and duration pill */}
-              <div className="bg-gray-200 px-4 py-1 rounded-full text-sm z-10">
+              <div className="bg-gray-200 px-4 py-1 rounded-full text-sm">
                 {loading ? (
                   <div className="w-24 h-4 bg-gray-300 opacity-50 rounded"></div>
                 ) : (

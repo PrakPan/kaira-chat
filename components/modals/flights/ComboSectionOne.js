@@ -190,15 +190,15 @@ const ComboSection = (props) => {
         {/* Date and Time Selection */}
         <div className="">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
-            <div className="mb-2 sm:mb-0">
+            {preferred_departure_time && <div className="mb-2 sm:mb-0">
               <span className="text-sm text-gray-600">Departure Date: </span>
               <span className="font-semibold">
                 {dayjs(preferred_departure_time)?.format("DD MMM, YYYY")}
               </span>
-            </div>
+            </div>}
 
             <div className="time-dropdown-container relative w-full sm:w-auto">
-              <div
+              {(selectedTime || preferred_departure_time) && <div
                 className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
                 onClick={() => !isLoading && setShowTimeDropdown(!showTimeDropdown)}
               >
@@ -222,7 +222,7 @@ const ComboSection = (props) => {
                     d="M19 9l-7 7-7-7"
                   ></path>
                 </svg>
-              </div>
+              </div>}
 
               {showTimeDropdown && (
                 <div className="absolute z-10 w-full sm:w-64 mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
