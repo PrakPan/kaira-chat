@@ -431,6 +431,7 @@ const TransferBooking = ({
                   originCityId={originCityId}
                   destinationCityId={destinationCityId}
                   setShowDrawer={setShowDrawer}
+                  getPaymentHandler={getPaymentHandler}
                 />
               ) : (
                 <div className="mt-3 ml-1 md:ml-7 flex flex-col w-full">

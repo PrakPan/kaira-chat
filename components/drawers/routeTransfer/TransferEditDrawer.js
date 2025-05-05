@@ -1543,6 +1543,7 @@ const NewMultiModeContainer = ({
   const [updateLoading, setUpdateLoading] = useState(false);
   const [comboStartTime, setComboStartTime] = useState(null);
   const [comboStartDate, setComboStartDate] = useState(null);
+  const [showTimeDropdown, setShowTimeDropdown] = useState(false);
 
   // Added state variables to track API fetching status
   const [skipFlightFetch, setSkipFlightFetch] = useState(false);
@@ -1658,6 +1659,54 @@ const NewMultiModeContainer = ({
     setSkipTaxiFetch(false);
   };
 
+  // Generate time options in 30-minute increments
+  const generateTimeOptions = () => {
+    const options = [];
+    for (let hour = 0; hour < 24; hour++) {
+      for (let minute = 0; minute < 60; minute += 30) {
+        const hourFormatted = hour.toString().padStart(2, '0');
+        const minuteFormatted = minute.toString().padStart(2, '0');
+        const time = `${hourFormatted}:${minuteFormatted}`;
+        
+        // Convert to 12-hour format for display
+        const period = hour >= 12 ? 'PM' : 'AM';
+        const displayHour = hour % 12 || 12;
+        const displayTime = `${displayHour}:${minuteFormatted} ${period}`;
+        
+        options.push({ value: time, display: displayTime });
+      }
+    }
+    return options;
+  };
+
+  const timeOptions = generateTimeOptions();
+
+  const handleTimeSelect = (time) => {
+    setCurrentModeDepartureTime(time);
+    setShowTimeDropdown(false);
+    
+    // Update the selected data with the new time
+    if (selectedModeIds[currentStep - 1]) {
+      const currentSelectedData = { ...selectedData[currentStep - 1] };
+      currentSelectedData.departure_time = `${currentModeDepartureDate}T${time}`;
+      
+      setSelectedData((prev) => {
+        const newData = [...prev];
+        newData[currentStep - 1] = currentSelectedData;
+        return newData;
+      });
+      
+      // If this is already selected, update the handler to pass the new time
+      const currentTransfer = transfer[currentStep - 1];
+      handleSelect(
+        currentStep - 1,
+        currentSelectedData,
+        currentTransfer,
+        currentTransfer.mode
+      );
+    }
+  };
+
   const handleModeSelect = (index, id, searchData = null, mode = null) => {
     const isDeselecting = selectedModeIds[index] === id;
 
@@ -1680,6 +1729,11 @@ const NewMultiModeContainer = ({
       }));
 
       if (searchData) {
+        // Add departure time to the data for non-flight/taxi modes
+        if (mode !== "Flight" && mode !== "Taxi") {
+          searchData.departure_time = `${currentModeDepartureDate}T${currentModeDepartureTime}`;
+        }
+        
         setSelectedData((prev) => {
           const newData = [...prev];
           newData[index] = searchData;
@@ -1688,6 +1742,11 @@ const NewMultiModeContainer = ({
       } else {
         const selectedTransfer = transfer.find((item) => item.id === id);
         if (selectedTransfer) {
+          // Add departure time to the transfer data
+          if (selectedTransfer.mode !== "Flight" && selectedTransfer.mode !== "Taxi") {
+            selectedTransfer.departure_time = `${currentModeDepartureDate}T${currentModeDepartureTime}`;
+          }
+          
           setSelectedData((prev) => {
             const newData = [...prev];
             newData[index] = selectedTransfer;
@@ -1762,6 +1821,8 @@ const NewMultiModeContainer = ({
                       p.currency === item.selectedPrice.currency
                   )
                 : 0,
+              // Include departure time for other modes
+              start_time: item.departure_time || `${currentModeDepartureDate}T${currentModeDepartureTime}`,
             };
           }
         });
@@ -1915,32 +1976,25 @@ const NewMultiModeContainer = ({
     }
   }, [currentStep, transfer]);
 
+  // Close time dropdown when clicking outside
+  useEffect(() => {
+    if (showTimeDropdown) {
+      const handleClickOutside = (event) => {
+        const dropdownElement = document.getElementById('time-dropdown');
+        if (dropdownElement && !dropdownElement.contains(event.target)) {
+          setShowTimeDropdown(false);
+        }
+      };
+
+      document.addEventListener('click', handleClickOutside);
+      return () => {
+        document.removeEventListener('click', handleClickOutside);
+      };
+    }
+  }, [showTimeDropdown]);
+
   return (
     <div className="w-full bg-white">
-      {/* <div className="p-3 md:p-4 border-b">
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center">
-          <div className="flex gap-3 md:gap-4">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={true}
-                className="mr-1 md:mr-2 h-3 w-3 md:h-4 md:w-4 accent-blue-600"
-              />
-              <span className="text-sm md:text-base">One - Way Trip</span>
-            </label>
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={false}
-                className="mr-1 md:mr-2 h-3 w-3 md:h-4 md:w-4"
-              />
-              <span className="text-sm md:text-base">Two - Way Trip</span>
-            </label>
-          </div>
-        </div>
-      </div> */}
-
-      {console.log("current step is:", currentStep)}
       {currentStep === 0 && (
         <div
           className="flex justify-between items-center p-3 md:p-4 border border-b cursor-pointer shadow-md"
@@ -1948,7 +2002,6 @@ const NewMultiModeContainer = ({
         >
           <div className="text-sm md:text-base">
             <span className="font-medium">
-              {/* {sequencedModes.join(", ")} */}
               {name}{" "}
             </span>
             <p className="font-normal">
@@ -2130,7 +2183,6 @@ const NewMultiModeContainer = ({
                         onSelect={handleTaxiSelection}
                         comboStartDate={comboStartDate}
                         comboStartTime={comboStartTime}
-                        // skipFetch={skipTaxiFetch}
                         onFilterApplied={handleFilterApplied}
                         dCityData={dCityData}
                         oCityData={oCityData}
@@ -2152,17 +2204,51 @@ const NewMultiModeContainer = ({
                               </span>
                             </div>
 
-                            <div className="time-dropdown-container relative w-full sm:w-auto">
+                            <div className="time-dropdown-container relative w-full sm:w-auto" id="time-dropdown">
                               <div
                                 className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
-                                onClick={() =>
-                                  setShowTimeDropdown(!showTimeDropdown)
-                                }
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setShowTimeDropdown(!showTimeDropdown);
+                                }}
                               >
                                 <span className="text-sm font-medium">
-                                  Departure Time: {currentModeDepartureTime}
+                                  Departure Time: {
+                                    timeOptions.find(t => t.value === currentModeDepartureTime)?.display || 
+                                    currentModeDepartureTime
+                                  }
                                 </span>
+                                <svg 
+                                  xmlns="http://www.w3.org/2000/svg" 
+                                  className="h-4 w-4 ml-2" 
+                                  fill="none" 
+                                  viewBox="0 0 24 24" 
+                                  stroke="currentColor"
+                                >
+                                  <path 
+                                    strokeLinecap="round" 
+                                    strokeLinejoin="round" 
+                                    strokeWidth={2} 
+                                    d={showTimeDropdown ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"} 
+                                  />
+                                </svg>
                               </div>
+                              
+                              {showTimeDropdown && (
+                                <div className="absolute right-0 mt-1 bg-white border rounded-md shadow-lg z-50 w-48 max-h-60 overflow-y-auto">
+                                  {timeOptions.map((time, idx) => (
+                                    <div
+                                      key={idx}
+                                      className={`p-2 hover:bg-gray-100 cursor-pointer text-sm ${
+                                        time.value === currentModeDepartureTime ? 'bg-gray-100 font-medium' : ''
+                                      }`}
+                                      onClick={() => handleTimeSelect(time.value)}
+                                    >
+                                      {time.display}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
