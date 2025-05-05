@@ -333,7 +333,11 @@ const SimpleTabsV2 = (props) => {
         <div className="w-full z-[20] sticky flex flex-row top-[2px] justify-end -mt-[55px] ">
           <div className="z-[99] absolute  md:top-[0px] top-[0px] w-[20rem]">
             <div className="flex flex-row justify-between ">
-              <div className="flex flex-col">
+             { (pricing_status === "PENDING") ? <div className="flex flex-col animate-pulse w-full max-w-[120px]">
+  <div className="h-3 w-20 bg-gray-300 rounded mb-1"></div>
+  <div className="h-5 w-24 bg-gray-400 rounded"></div>
+</div>
+: <div className="flex flex-col">
                 <div className="text-[0.725rem]">
                   {props?.payment?.pay_only_for_one ||
                   props?.payment?.show_per_person_cost
@@ -383,7 +387,7 @@ const SimpleTabsV2 = (props) => {
                     </span>
                   </div>
                 ) : null}
-              </div>
+              </div>}
 
               {props?.token && props?.payment?.paid_user && (
                 <div className="border-[1px] flex my-2 justify-center items-center text-[#04AA32] text-center  text-medium border-[#04AA32] px-[2px] py-[1px]">
