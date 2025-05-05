@@ -61,6 +61,7 @@ const SlideTwo = (props) => {
               numberOfInfants={props.numberOfInfants}
               setNumberOfInfants={props.setNumberOfInfants}
               setRoomConfiguration={props.setRoomConfiguration}
+              groupType={props.groupType}
             ></Pax>
 
             <div className="space-y-1">
