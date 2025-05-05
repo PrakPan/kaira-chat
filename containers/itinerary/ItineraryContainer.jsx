@@ -588,56 +588,37 @@ const ItineraryContainer = (props) => {
     fetchData(true);
   }, [props.id]);
 
+ 
   useEffect(() => {
     let interval;
-    let callCount = 0;
-
+    
     console.log("Polling:", polling);
-
+    
     if (polling) {
       fetchData(true);
-
+      
       interval = setInterval(() => {
-        if (callCount < 15) {
-          fetchData(true);
-          callCount++;
-        } else {
-          if (
-            itinerary_status === "FAILURE" &&
-            transfers_status === "FAILURE" &&
-            pricing_status === "FAILURE" &&
-            hotels_status === "FAILURE"
-          ) {
-            router.push("/thank-you");
-          } else {
-            if (pricing_status === "FAILURE") {
-              dispatch(setItineraryStatus("pricing_status", "FAILURE"));
-            }
-            if (transfers_status === "FAILURE") {
-              dispatch(setItineraryStatus("transfers_status", "FAILURE"));
-            }
-            if (hotels_status === "FAILURE") {
-              dispatch(setItineraryStatus("hotels_status", "FAILURE"));
-            }
-            if (
-              pricing_status === "PENDING" ||
-              transfers_status === "PENDING" ||
-              itinerary_status === "PENDING" ||
-              hotels_status === "PENDING"
-            ) {
-              fetchData(true);
-              setPolling(true);
-            }
-          }
-          clearInterval(interval);
+        if (
+          (itinerary_status === "FAILURE" &&
+          transfers_status === "FAILURE" &&
+          pricing_status === "FAILURE" &&
+          hotels_status === "FAILURE") || itinerary_status === "SUCCESS" &&
+          transfers_status === "SUCCESS" &&
+          pricing_status === "SUCCESS" &&
+          hotels_status === "SUCCESS"
+        ) {
+          clearInterval(interval); 
+          router.push("/thank-you"); 
+          return; 
         }
+        fetchData(true);
       }, 5000);
     } else {
       clearInterval(interval);
     }
-
+    
     return () => clearInterval(interval);
-  }, [polling]);
+  }, [polling, itinerary_status, transfers_status, pricing_status, hotels_status]);
 
   const _updateTransferBooking = (arr1, arr2) => {
     const combinedArray = [...arr1]; // Copy arr1 to avoid modifying the original array
