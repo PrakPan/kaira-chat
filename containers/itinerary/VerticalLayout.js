@@ -166,6 +166,9 @@ const CityItem = ({
         dispatch(updateTransferBookings(bookingIdToDelete));
         setLoading(false);
         getPaymentHandler();
+        
+        setVisible(true);
+        setHandleShow(false);
         dispatch(
           openNotification({
             type: "success",
@@ -173,8 +176,6 @@ const CityItem = ({
             heading: "Success!",
           })
         );
-        setVisible(true);
-        setHandleShow(false);
       }
     } catch (err) {
       dispatch(

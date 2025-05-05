@@ -2273,7 +2273,7 @@ const NewMultiModeContainer = ({
                                 <div>
                                   <div className="font-semibold text-sm md:text-base">
                                     {option.text}{" "}
-                                    {priceOption.name
+                                     {priceOption.name
                                       ? `- ${priceOption.name}`
                                       : ""}
                                   </div>
