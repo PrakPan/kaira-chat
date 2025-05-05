@@ -319,14 +319,25 @@ const Pax = (props) => {
   const [travelers, setTravelers] = useState(2);
   const [rooms, setRooms] = useState([
     {
-      adults: 2,
+      adults: props?.groupType === "Solo" ? 1 : 2,
       children: 0,
-      infants:0,
+      infants: 0,
       childAges: [],
     },
   ]);
   const [groupType, setGroupType] = useState("Friends");
   const [showError, setShowError] = useState(false);
+
+  useEffect(() => {
+    setRooms([
+      {
+        adults: props?.groupType === "Solo" ? 1 : 2,
+        children: 0,
+        infants: 0,
+        childAges: [],
+      },
+    ]);
+  }, [props?.groupType]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -347,7 +358,7 @@ const Pax = (props) => {
     for (let room of rooms) {
       total += room.adults;
       total += room.children;
-      total+=room.infants
+      total += room.infants;
     }
     setTravelers(total);
   }, [rooms]);
@@ -359,7 +370,7 @@ const Pax = (props) => {
         {
           adults: 1,
           children: 0,
-          infants:0,
+          infants: 0,
           childAges: [],
         },
       ]);
@@ -380,15 +391,17 @@ const Pax = (props) => {
   };
 
   const handleDone = () => {
-
-    props?.setRoomConfiguration(rooms)
-    props?.setNumberOfAdults(rooms.reduce((sum,room)=>sum+room.adults,0))
-    props?.setNumberOfChildren(rooms.reduce((sum,room)=>sum+room.children,0))
-    props?.setNumberOfInfants(rooms.reduce((sum,room)=>sum+room.infants,0))
+    props?.setRoomConfiguration(rooms);
+    props?.setNumberOfAdults(rooms.reduce((sum, room) => sum + room.adults, 0));
+    props?.setNumberOfChildren(
+      rooms.reduce((sum, room) => sum + room.children, 0)
+    );
+    props?.setNumberOfInfants(
+      rooms.reduce((sum, room) => sum + room.infants, 0)
+    );
 
     setShowError(false);
     setIsRoomExpanded(false);
-    
   };
 
   return (
@@ -463,7 +476,7 @@ const Pax = (props) => {
 const Room = ({ index, data, setRooms, showError, removeRoom }) => {
   const [adults, setAdults] = useState(data.adults);
   const [children, setChildren] = useState(data.children);
-  const [infants,setInfants]=useState(data.infants)
+  const [infants, setInfants] = useState(data.infants);
   const [childAges, setChildAges] = useState(data.childAges);
 
   useEffect(() => {
@@ -474,13 +487,13 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
               ...room,
               adults: adults,
               children: children,
-              infants:infants,
+              infants: infants,
               childAges: childAges,
             }
           : room
       )
     );
-  }, [adults, children, childAges,infants, index, setRooms]);
+  }, [adults, children, childAges, infants, index, setRooms]);
 
   const handleAdults = (increment) => {
     if (increment && adults < 14) {
@@ -547,8 +560,6 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
         </div>
       </div>
 
-    
-
       <div className="flex justify-between items-center mb-3">
         <div>
           <div className="font-medium">Children</div>
@@ -614,7 +625,7 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
             />
           ))}
         </div>
-      )} 
+      )}
     </div>
   );
 };
@@ -675,13 +686,15 @@ const ChildAge = ({ index, child, age, setChildAges, showError }) => {
         <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
           {Array.from({ length: 13 }, (_, i) => (
             <>
-            {i>=2&&<div
-              key={i}
-              onClick={() => handleChildAge(i)}
-              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-            >
-              {i}
-            </div>}
+              {i >= 2 && (
+                <div
+                  key={i}
+                  onClick={() => handleChildAge(i)}
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                >
+                  {i}
+                </div>
+              )}
             </>
           ))}
         </div>

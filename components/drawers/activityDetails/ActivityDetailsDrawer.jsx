@@ -105,7 +105,7 @@ const ActivityDetailsDrawer = (props) => {
       const newItinerary = {
         ...itinerary,
         cities: itinerary?.cities?.map((city) => {
-          if (city?.city?.id === props?.cityId) {
+          if (city?.id === props?.itinerary_city_id) {
             const updatedActivities = [...(city?.activities || []), res?.data];
   
             const activityData = {

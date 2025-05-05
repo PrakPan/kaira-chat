@@ -1079,7 +1079,7 @@ const SimpleTabsV2 = (props) => {
               )}
             </div>
 
-            {props.activityBookings && props?.mercuryItinerary ? (
+            {props?.mercuryItinerary ? (
               <div id={"Activities"}>
                 <ActivityBookings
                   mercuryItinerary={props?.mercuryItinerary}

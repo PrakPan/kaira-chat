@@ -9,7 +9,6 @@ const TailoredFormMobileModal = (props) => {
   return (
     <Modal
       height={!isPageWide && "100%"}
-      overflow={"none"}
       borderRadius={"12px"}
       show={props.show}
       backdrop={true}
