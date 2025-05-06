@@ -2384,6 +2384,7 @@ const handleBackButton = () => {
                             </div>
 
                             <div className="time-dropdown-container relative w-full sm:w-auto" id="time-dropdown">
+                            <div className="time-dropdown-container relative w-full sm:w-auto" id="time-dropdown">
                               <div
                                 className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
                                 onClick={(e) => {
@@ -2392,6 +2393,10 @@ const handleBackButton = () => {
                                 }}
                               >
                                 <span className="text-sm font-medium">
+                                  Departure Time: {
+                                    timeOptions.find(t => t.value === currentModeDepartureTime)?.display || 
+                                    currentModeDepartureTime
+                                  }
                                   Departure Time: {
                                     timeOptions.find(t => t.value === currentModeDepartureTime)?.display || 
                                     currentModeDepartureTime
@@ -2411,7 +2416,38 @@ const handleBackButton = () => {
                                     d={showTimeDropdown ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"} 
                                   />
                                 </svg>
+                                <svg 
+                                  xmlns="http://www.w3.org/2000/svg" 
+                                  className="h-4 w-4 ml-2" 
+                                  fill="none" 
+                                  viewBox="0 0 24 24" 
+                                  stroke="currentColor"
+                                >
+                                  <path 
+                                    strokeLinecap="round" 
+                                    strokeLinejoin="round" 
+                                    strokeWidth={2} 
+                                    d={showTimeDropdown ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"} 
+                                  />
+                                </svg>
                               </div>
+                              
+                              {showTimeDropdown && (
+                                <div className="absolute right-0 mt-1 bg-white border rounded-md shadow-lg z-50 w-48 max-h-60 overflow-y-auto">
+                                  {timeOptions.map((time, idx) => (
+                                    <div
+                                      key={idx}
+                                      className={`p-2 hover:bg-gray-100 cursor-pointer text-sm ${
+                                        time.value === currentModeDepartureTime ? 'bg-gray-100 font-medium' : ''
+                                      }`}
+                                      onClick={() => handleTimeSelect(time.value)}
+                                    >
+                                      {time.display}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
                               
                               {showTimeDropdown && (
                                 <div className="absolute right-0 mt-1 bg-white border rounded-md shadow-lg z-50 w-48 max-h-60 overflow-y-auto">
