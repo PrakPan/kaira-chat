@@ -9,6 +9,7 @@ import { PulseLoader } from "react-spinners";
 import VehicleDetailModal from "../../components/modals/daybyday/VehicleModal";
 import VehicleDetailLoader from "../../components/modals/daybyday/VehicleDetailLoader";
 import { AiOutlineRight, AiOutlineDown } from "react-icons/ai";
+import { Generalbuttonstyle } from "../../components/ui/button/Generallinkbutton";
 
 const TransferDrawer = ({
   show,
@@ -17,7 +18,22 @@ const TransferDrawer = ({
   booking_type,
   loading,
   handleDelete,
-  city
+  city,
+   _updateFlightBookingHandler,
+      _updatePaymentHandler,
+      getPaymentHandler,
+      oCityData,
+          dCityData,
+          setShowLoginModal,
+          dcity,
+          selectedBooking,
+          setSelectedBooking,
+          originCityId,
+          destinationCityId,
+          origin_itinerary_city_id,
+          destination_itinerary_city_id,
+          setShowDrawer,
+  
 }) => {
 
   const [expandedIndexes, setExpandedIndexes] = useState([]);
@@ -137,6 +153,25 @@ const TransferDrawer = ({
               setHandleShow={setHandleShow}
               handleDelete={handleDelete}
               loading={loading}
+               _updateFlightBookingHandler={_updateFlightBookingHandler}
+                  _updatePaymentHandler={_updatePaymentHandler}
+                  getPaymentHandler={getPaymentHandler}
+                  oCityData={oCityData}
+                      dCityData={dCityData}
+                      setShowLoginModal={setShowLoginModal}
+                      city={city}
+                      dcity={dcity}
+                      selectedBooking={selectedBooking}
+                      setSelectedBooking={setSelectedBooking}
+                      originCityId={originCityId}
+                      destinationCityId={destinationCityId}
+                      origin_itinerary_city_id={origin_itinerary_city_id}
+                      destination_itinerary_city_id={
+                        destination_itinerary_city_id
+                      }
+                      setShowDrawer={setShowDrawer}
+            
+              
             />
           ) : (
             <VehicleDetailModal
@@ -151,13 +186,32 @@ const TransferDrawer = ({
         <div className="h-screen flex flex-col">
           <div className="p-4 border-b">
             <BackArrow handleClick={() => setHandleShow(false)} />
+            <div className="flex justify-between">
+            <div>
             <div className="text-xl font-semibold mt-2">
               {data.name || `${data.children[0]?.source_address?.name || ''} to ${data.children[data.children.length - 1]?.destination_address?.name || ''}`}
             </div>
             <div className="text-sm text-gray-500 mt-1">
               {data.duration || `${data.children.length} transfers`}
             </div>
+            </div>
+            <div>
+                    <Generalbuttonstyle
+                      borderRadius={"7px"}
+                      fontSize={"1rem"}
+                      padding={"7px 25px"}
+                      onClick={()=>{
+                        setHandleShow(false);
+                        setShowDrawer(true);
+                        //setShowTaxi(true);console.log("")
+                      }}
+                    >
+                      Change
+                    </Generalbuttonstyle>
+                    </div>
+                    </div>
           </div>
+
             
           <div className="flex-grow overflow-auto py-4 pb-24 ">
             {data.children.map((child, index) => renderDetailContent(child, index))}

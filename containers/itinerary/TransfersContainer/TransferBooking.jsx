@@ -892,6 +892,7 @@ const TransferBooking = ({
                         handleDelete={handleDelete}
                         setHandleShow={setShowVehicleDrawer}
                         booking={booking}
+                        setShowDrawer={setShowDrawer}
                       />
                     ) : (
                       <VehicleDetailModal
@@ -901,11 +902,49 @@ const TransferBooking = ({
                         handleDelete={handleDelete}
                         setHandleShow={setShowVehicleDrawer}
                         booking={booking}
+                        setShowDrawer={setShowDrawer}
                       />
                     )}
                   </Drawer>
                 </div>
               )}
+               <TransferEditDrawer
+              mercury
+              addOrEdit={"transferAdd"}
+              showDrawer={showDrawer}
+              setShowDrawer={setShowDrawer}
+              selectedTransferHeading={origin}
+              origin={origin?.id != undefined ? origin?.id : id}
+              destination={destination?.id != undefined ? destination?.id : id}
+              check_in={check_in}
+              routeId={id}
+              city={
+                origin?.name != undefined
+                  ? origin?.name || origin?.city_name
+                  : null
+              }
+              dcity={
+                destination?.name != undefined
+                  ? destination?.name || destination?.city_name
+                  : null
+              }
+              oCityData={oCityData}
+              dCityData={dCityData}
+              selectedBooking={selectedBooking}
+              setSelectedBooking={setSelectedBooking}
+              originCityId={originCityId}
+              destinationCityId={destinationCityId}
+              getPaymentHandler={getPaymentHandler}
+              _updateFlightBookingHandler={_updateFlightBookingHandler}
+              _updatePaymentHandler={_updatePaymentHandler}
+              setShowLoginModal={setShowLoginModal}
+              origin_itinerary_city_id={
+                oCityData?.id || oCityData?.gmaps_place_id
+              }
+              destination_itinerary_city_id={
+                dCityData?.id || dCityData?.gmaps_place_id
+              }
+            />
             </>
           </Container>
         ) : (
@@ -1004,6 +1043,7 @@ const TransferBooking = ({
                   type={"combo"}
                   setShowDrawer={setShowDrawer}
                   getPaymentHandler={getPaymentHandler}
+                  
                 />
               </>
             ) : (
@@ -1485,6 +1525,8 @@ const TransferBooking = ({
                             setHandleShow={setShowVehicleDrawer}
                             booking={booking}
                             type={"combo"}
+                            setShowDrawer={setShowDrawer}
+                            noChange={true}
                           />
                         ) : (
                           <VehicleDetailModal
@@ -1495,6 +1537,7 @@ const TransferBooking = ({
                             setHandleShow={setShowVehicleDrawer}
                             booking={booking}
                             type={"combo"}
+                            setShowDrawer={setShowDrawer}
                           />
                         )}
                       </>

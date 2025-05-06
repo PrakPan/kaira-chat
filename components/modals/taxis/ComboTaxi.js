@@ -3,7 +3,7 @@ import styled from "styled-components";
 import media from "../../media";
 import axiosTaxiSearch from "../../../services/bookings/TaxiSearch";
 import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
-import { connect, useDispatch } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import Button from "../../ui/button/Index";
 import LogInModal from "../Login";
 import SectionOne from "./SectionOne";
@@ -67,6 +67,7 @@ const ComboTaxi = (props) => {
   const [timeSlots, setTimeSlots] = useState([]);
   const [selectedTime, setSelectedTime] = useState(null);
   const [selectedTimeValue, setSelectedTimeValue] = useState(props?.comboStartTime || null);
+  const {number_of_adults,number_of_children,number_of_infants} = useSelector(state=>state.Itinerary);
 
   useEffect(() => {
     if (props?.comboStartTime) {
@@ -178,9 +179,9 @@ const ComboTaxi = (props) => {
           origin: propsToUse?.origin,
           destination: propsToUse?.destination,
           top_only: "false",
-          number_of_adults: propsToUse?.number_of_adults || 1,
-          number_of_children: propsToUse?.number_of_children || 0,
-          number_of_infants: propsToUse?.number_of_infants || 0,
+          number_of_adults: number_of_adults || 1,
+          number_of_children: number_of_children || 0,
+          number_of_infants: number_of_infants || 0,
         });
     }
 
@@ -198,7 +199,7 @@ const ComboTaxi = (props) => {
             propsToUse?.comboStartDate || propsToUse.selectedBooking.check_in || start_date,
           start_time: propsToUse?.comboStartTime || start_time,
           number_of_travellers:
-            propsToUse?.plan?.number_of_adults + propsToUse?.plan?.number_of_children ||
+            number_of_adults + number_of_children ||
             1,
           trip_type: "one-way",
           origin: {
@@ -329,6 +330,7 @@ const ComboTaxi = (props) => {
       })
       .catch((err) => {
         setUpdateBookingState(false);
+        console.log("Error updating Taxi",err.message)
         dispatch(openNotification({
           type: "error",
           text: "There seems to be a problem, please try again!",
@@ -349,13 +351,14 @@ const ComboTaxi = (props) => {
             <ContentContainer style={{ position: "relative" }}>
               <div className="p-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
-                  <div className="mb-2 sm:mb-0">
+                 {props?.comboStartDate &&  <div className="mb-2 sm:mb-0">
                     <span className="text-sm text-gray-600">Departure Date: </span>
                     <span className="font-semibold">
                       {dayjs(props?.comboStartDate)?.format("DD MMM, YYYY")}
                     </span>
-                  </div>
+                  </div>}
         
+                  {(selectedTime || props?.comboStartTime) && 
                   <div className="time-dropdown-container relative w-full sm:w-auto">
                     <div
                       className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
@@ -407,6 +410,7 @@ const ComboTaxi = (props) => {
                       </div>
                     )}
                   </div>
+                  }
                 </div>
               </div>
               {updateBookingState ? (
