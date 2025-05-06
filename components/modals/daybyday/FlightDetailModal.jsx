@@ -28,7 +28,7 @@ const FlightDetailModal = ({
   destinationCityId,
   drawer,
   onChange,
-  isEmbedded
+  isEmbedded,
 }) => {
   const router = useRouter();
   const fareRules = fareRule?.fareRuleDetail;
@@ -82,12 +82,13 @@ const FlightDetailModal = ({
         </Heading>
       </div>
 }
-      {!onChange && !drawer && <Text>{name}</Text>}
+      {!onChange && !drawer && !isEmbedded && <Text>{name}</Text>}
       <div className="flex flex-col gap-2 p-2">
         <FlightSegment
           segments={segments}
           originCityId={originCityId}
           destinationCityId={destinationCityId}
+          combo={isEmbedded}
         />
       </div>
 

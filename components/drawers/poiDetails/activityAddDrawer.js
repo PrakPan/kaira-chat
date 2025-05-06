@@ -298,7 +298,7 @@ const ActivityAddDrawer = (props) => {
                     setShowDrawer={props?.setShowDrawer}
                     data={res.data.data.activities[i]}
                     setLoginModal={props.setShowLoginModal}
-                    date={props.date}
+                    date={startDate}
                     getAccommodationAndActivitiesHandler={
                       props.getAccommodationAndActivitiesHandler
                     }
@@ -356,7 +356,7 @@ const ActivityAddDrawer = (props) => {
               setShowDrawer={props?.setShowDrawer}
               data={res.data.data.pois[i]}
               setLoginModal={props.setShowLoginModal}
-              date={props.date}
+              date={startDate}
               cityId={props?.cityID}
               itinerary_city_id={props?.itinerary_city_id}
               dayIndex={props?.day_slab_index}
@@ -418,7 +418,7 @@ const ActivityAddDrawer = (props) => {
               setShowDrawer={props?.setShowDrawer}
               data={res.data.data.activities[i]}
               setLoginModal={props.setShowLoginModal}
-              date={props.date}
+              date={startDate}
               getAccommodationAndActivitiesHandler={
                 props.getAccommodationAndActivitiesHandler
               }
@@ -451,7 +451,7 @@ const ActivityAddDrawer = (props) => {
               setShowDrawer={props?.setShowDrawer}
               data={res.data.data.pois[i]}
               setLoginModal={props.setShowLoginModal}
-              date={props.date}
+              date={startDate}
               cityId={props?.cityID}
               itinerary_city_id={props?.itinerary_city_id}
               dayIndex={props?.day_slab_index}

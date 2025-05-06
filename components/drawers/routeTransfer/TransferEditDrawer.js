@@ -1110,7 +1110,7 @@ const RouteContainer = (props) => {
     currentModeDepartureDate,
     setCurrentModeDepartureDate,
     setCurrentModeDepartureTime,
-    currentModeDepartureTime,
+     currentModeDepartureTime,
     showOtherTrasfer,
     setShowOtherTrasfer,
     name,
@@ -1545,11 +1545,10 @@ const NewMultiModeContainer = ({
   const [comboStartDate, setComboStartDate] = useState(null);
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
 
-  // Added state variables to track API fetching status
   const [skipFlightFetch, setSkipFlightFetch] = useState(false);
   const [skipTaxiFetch, setSkipTaxiFetch] = useState(false);
   const [hasAppliedFilters, setHasAppliedFilters] = useState(false);
-
+  const {number_of_adults,number_of_children,number_of_infants} = useSelector(state => state.Itinerary);
   const sequencedModes = transfer.map((t) => t.mode);
 
   console.log("Selected Data", selectedData);
@@ -1587,6 +1586,119 @@ const NewMultiModeContainer = ({
       : "";
   };
 
+  const propagateTimeChanges = (startIndex) => {
+    setSelectedData((prev) => {
+      const newData = [...prev];
+      
+      for (let i = startIndex; i < transfer.length; i++) {
+        if (newData[i-1] && newData[i]) {
+          // Get the previous step's arrival time
+          const prevArrivalTime = newData[i-1].arrival_time;
+          
+          if (prevArrivalTime) {
+            let arrivalMoment = dayjs(prevArrivalTime);
+            let newDepartureTime = arrivalMoment.add(1, 'hour');
+            
+            const newDepartureDate = newDepartureTime.format("YYYY-MM-DD");
+            const newDepartureTimeStr = newDepartureTime.format("HH:mm");
+            
+            // Set the new departure time for the current step
+            newData[i] = {
+              ...newData[i],
+              departure_time: `${newDepartureDate}T${newDepartureTimeStr}`
+            };
+            
+            // If this is a non-Flight/non-Taxi mode, calculate its arrival time
+            if (newData[i].mode !== "Flight" && newData[i].mode !== "Taxi") {
+              const newDepartureDateTime = dayjs(`${newDepartureDate}T${newDepartureTimeStr}`);
+              const newArrivalDateTime = newDepartureDateTime.add(newData[i].duration || 0, 'minute');
+              newData[i].arrival_time = newArrivalDateTime.format('YYYY-MM-DDTHH:mm');
+            }
+          }
+        }
+      }
+      
+      return newData;
+    });
+  };
+  
+  const handleTimeSelect = (time) => {
+    setCurrentModeDepartureTime(time);
+    setComboStartTime(time);
+    setShowTimeDropdown(false);
+    
+    if (selectedModeIds[currentStep - 1]) {
+      const currentTransfer = transfer[currentStep - 1];
+      const currentSelectedData = { ...selectedData[currentStep - 1] };
+      
+      // Update departure time for the current step
+      currentSelectedData.departure_time = `${currentModeDepartureDate}T${time}`;
+      
+      // For non-Flight/non-Taxi, calculate arrival time based on duration
+      if (currentTransfer.mode !== "Flight" && currentTransfer.mode !== "Taxi") {
+        const departureDateTime = dayjs(`${currentModeDepartureDate}T${time}`);
+        const arrivalDateTime = departureDateTime.add(currentSelectedData.duration || 0, 'minute');
+        currentSelectedData.arrival_time = arrivalDateTime.format('YYYY-MM-DDTHH:mm');
+      }
+      
+      setSelectedData((prev) => {
+        const newData = [...prev];
+        newData[currentStep - 1] = currentSelectedData;
+        
+        // Update all subsequent steps
+        for (let i = currentStep; i < transfer.length; i++) {
+          if (newData[i-1] && newData[i]) {
+            const prevArrivalTime = newData[i-1].arrival_time;
+            
+            if (prevArrivalTime) {
+              let arrivalMoment = dayjs(prevArrivalTime);
+              let newDepartureTime = arrivalMoment.add(1, 'hour');
+              
+              const newDepartureDate = newDepartureTime.format("YYYY-MM-DD");
+              const newDepartureTimeStr = newDepartureTime.format("HH:mm");
+              
+              newData[i] = {
+                ...newData[i],
+                departure_time: `${newDepartureDate}T${newDepartureTimeStr}`
+              };
+              
+              // If this is a non-Flight/non-Taxi mode, calculate its arrival time
+              if (newData[i].mode !== "Flight" && newData[i].mode !== "Taxi") {
+                const newDepartureDateTime = dayjs(`${newDepartureDate}T${newDepartureTimeStr}`);
+                const newArrivalDateTime = newDepartureDateTime.add(newData[i].duration || 0, 'minute');
+                newData[i].arrival_time = newArrivalDateTime.format('YYYY-MM-DDTHH:mm');
+              }
+            }
+          }
+        }
+        
+        return newData;
+      });
+      
+      // Handle select for the current step
+      const currentTransferData = transfer[currentStep - 1];
+      handleSelect(
+        currentStep - 1,
+        currentSelectedData,
+        currentTransferData,
+        currentTransferData.mode
+      );
+      
+      // Handle select for all subsequent steps
+      selectedData.forEach((data, index) => {
+        if (index >= currentStep && data) {
+          const modeTransfer = transfer[index];
+          handleSelect(
+            index,
+            selectedData[index],
+            modeTransfer,
+            modeTransfer.mode
+          );
+        }
+      });
+    }
+  };
+
   const getCurrentTransfer = () => {
     return currentStep > 0 && currentStep <= transfer.length
       ? [transfer[currentStep - 1]]
@@ -1605,41 +1717,6 @@ const NewMultiModeContainer = ({
     return regex.test(uuid);
   };
 
-  const handleBackButton = () => {
-    const currentTransfer = transfer[currentStep - 1];
-    if (currentTransfer.mode === "Flight") {
-      setSkipFlightFetch(true);
-      setShowComboFlightModal(false);
-    } else if (currentTransfer.mode === "Taxi") {
-      setSkipTaxiFetch(true);
-      setShowComboTaxiModal(false);
-    }
-
-    
-    if (currentStep === 1) {
-      setCurrentStep(0); 
-      return;
-    }
-
-    setSelectedModeIds((prev) => {
-      const newSelections = { ...prev };
-      for (let i = currentStep - 1; i < totalSteps; i++) {
-        delete newSelections[i];
-      }
-      return newSelections;
-    });
-
-    setSelectedData((prev) => {
-      const newData = [...prev];
-      for (let i = currentStep - 1; i < totalSteps; i++) {
-        newData[i] = undefined;
-      }
-      return newData;
-    });
-
-    setCurrentStep(currentStep - 1);
-  };
-
   const handleNextStep = () => {
     const currentTransfer = transfer[currentStep - 1];
     if (currentTransfer.mode === "Flight") {
@@ -1649,9 +1726,73 @@ const NewMultiModeContainer = ({
       setSkipTaxiFetch(true);
       setShowComboTaxiModal(false);
     }
-
+  
+    // Set up time for the next step based on current step's arrival time
+    const currentSelectedData = selectedData[currentStep - 1];
+    if (currentSelectedData && currentSelectedData.arrival_time && currentStep < transfer.length) {
+      let arrivalMoment = dayjs(currentSelectedData.arrival_time);
+      let nextDepartureTime = arrivalMoment.add(1, 'hour');
+      
+      const newDepartureDate = nextDepartureTime.format("YYYY-MM-DD");
+      const newDepartureTimeStr = nextDepartureTime.format("HH:mm");
+      
+      setCurrentModeDepartureDate(newDepartureDate);
+      setCurrentModeDepartureTime(newDepartureTimeStr);
+      setComboStartDate(newDepartureDate);
+      setComboStartTime(newDepartureTimeStr);
+    }
+  
     setCurrentStep(currentStep + 1);
   };
+
+const handleBackButton = () => {
+  const currentTransfer = transfer[currentStep - 1];
+  if (currentTransfer.mode === "Flight") {
+    setSkipFlightFetch(true);
+    setShowComboFlightModal(false);
+  } else if (currentTransfer.mode === "Taxi") {
+    setSkipTaxiFetch(true);
+    setShowComboTaxiModal(false);
+  }
+  
+  if (currentStep === 1) {
+    setCurrentStep(0); 
+    return;
+  }
+
+  const prevStepData = selectedData[currentStep - 2];
+  if (prevStepData && prevStepData.departure_time) {
+    const departureDateTime = dayjs(prevStepData.departure_time);
+    const departureDate = departureDateTime.format("YYYY-MM-DD");
+    const departureTime = departureDateTime.format("HH:mm");
+    
+    setCurrentModeDepartureDate(departureDate);
+    setCurrentModeDepartureTime(departureTime);
+    setComboStartDate(departureDate);
+    setComboStartTime(departureTime);
+  }
+
+  setSelectedModeIds((prev) => {
+    const newSelections = { ...prev };
+    for (let i = currentStep - 1; i < totalSteps; i++) {
+      delete newSelections[i];
+    }
+    return newSelections;
+  });
+
+  setSelectedData((prev) => {
+    const newData = [...prev];
+    for (let i = currentStep - 1; i < totalSteps; i++) {
+      newData[i] = undefined;
+    }
+    return newData;
+  });
+
+  setCurrentStep(currentStep - 1);
+};
+
+
+
 
   const handleFilterApplied = () => {
     setHasAppliedFilters(true);
@@ -1659,7 +1800,6 @@ const NewMultiModeContainer = ({
     setSkipTaxiFetch(false);
   };
 
-  // Generate time options in 30-minute increments
   const generateTimeOptions = () => {
     const options = [];
     for (let hour = 0; hour < 24; hour++) {
@@ -1668,7 +1808,6 @@ const NewMultiModeContainer = ({
         const minuteFormatted = minute.toString().padStart(2, '0');
         const time = `${hourFormatted}:${minuteFormatted}`;
         
-        // Convert to 12-hour format for display
         const period = hour >= 12 ? 'PM' : 'AM';
         const displayHour = hour % 12 || 12;
         const displayTime = `${displayHour}:${minuteFormatted} ${period}`;
@@ -1681,57 +1820,37 @@ const NewMultiModeContainer = ({
 
   const timeOptions = generateTimeOptions();
 
-  const handleTimeSelect = (time) => {
-    setCurrentModeDepartureTime(time);
-    setShowTimeDropdown(false);
-    
-    // Update the selected data with the new time
-    if (selectedModeIds[currentStep - 1]) {
-      const currentSelectedData = { ...selectedData[currentStep - 1] };
-      currentSelectedData.departure_time = `${currentModeDepartureDate}T${time}`;
-      
-      setSelectedData((prev) => {
-        const newData = [...prev];
-        newData[currentStep - 1] = currentSelectedData;
-        return newData;
-      });
-      
-      // If this is already selected, update the handler to pass the new time
-      const currentTransfer = transfer[currentStep - 1];
-      handleSelect(
-        currentStep - 1,
-        currentSelectedData,
-        currentTransfer,
-        currentTransfer.mode
-      );
-    }
-  };
 
   const handleModeSelect = (index, id, searchData = null, mode = null) => {
     const isDeselecting = selectedModeIds[index] === id;
-
+  
     if (isDeselecting) {
       setSelectedModeIds((prev) => {
         const newSelections = { ...prev };
         delete newSelections[index];
         return newSelections;
       });
-
+  
       setSelectedData((prev) => {
         const newData = [...prev];
         newData[index] = undefined;
         return newData;
       });
+     
     } else {
       setSelectedModeIds((prev) => ({
         ...prev,
         [index]: id,
       }));
-
+  
       if (searchData) {
-        // Add departure time to the data for non-flight/taxi modes
         if (mode !== "Flight" && mode !== "Taxi") {
+          // For non-Flight/non-Taxi modes, calculate arrival_time based on duration
+          const departureDateTime = dayjs(`${currentModeDepartureDate}T${currentModeDepartureTime}`);
+          const arrivalDateTime = departureDateTime.add(searchData.duration || 0, 'minute');
+          
           searchData.departure_time = `${currentModeDepartureDate}T${currentModeDepartureTime}`;
+          searchData.arrival_time = arrivalDateTime.format('YYYY-MM-DDTHH:mm');
         }
         
         setSelectedData((prev) => {
@@ -1742,9 +1861,13 @@ const NewMultiModeContainer = ({
       } else {
         const selectedTransfer = transfer.find((item) => item.id === id);
         if (selectedTransfer) {
-          // Add departure time to the transfer data
           if (selectedTransfer.mode !== "Flight" && selectedTransfer.mode !== "Taxi") {
+            // For non-Flight/non-Taxi modes, calculate arrival_time based on duration
+            const departureDateTime = dayjs(`${currentModeDepartureDate}T${currentModeDepartureTime}`);
+            const arrivalDateTime = departureDateTime.add(selectedTransfer.duration || 0, 'minute');
+            
             selectedTransfer.departure_time = `${currentModeDepartureDate}T${currentModeDepartureTime}`;
+            selectedTransfer.arrival_time = arrivalDateTime.format('YYYY-MM-DDTHH:mm');
           }
           
           setSelectedData((prev) => {
@@ -1755,7 +1878,8 @@ const NewMultiModeContainer = ({
         }
       }
     }
-
+  
+    console.log("Selllmon",selectedData);
     handleSelect(
       transferIndex,
       isDeselecting
@@ -1764,6 +1888,11 @@ const NewMultiModeContainer = ({
       transfer,
       mode
     );
+    
+    // Propagate time changes to all subsequent steps
+    if (!isDeselecting && index < transfer.length - 1) {
+      propagateTimeChanges(index + 1);
+    }
   };
 
   const handleFlightSelection = (flightData) => {
@@ -1821,7 +1950,6 @@ const NewMultiModeContainer = ({
                       p.currency === item.selectedPrice.currency
                   )
                 : 0,
-              // Include departure time for other modes
               start_time: item.departure_time || `${currentModeDepartureDate}T${currentModeDepartureTime}`,
             };
           }
@@ -1839,9 +1967,9 @@ const NewMultiModeContainer = ({
           source_itinerary_city: isValidUUID(origin_itinerary_city_id)
             ? origin_itinerary_city_id
             : null,
-          number_of_adults: 2,
-          number_of_children: 0,
-          number_of_infants: 0,
+          number_of_adults: number_of_adults,
+          number_of_children: number_of_children,
+          number_of_infants: number_of_infants,
           start_datetime: baseStartDate + "T00:00:00",
           transfers: transfersPayload,
         };
@@ -1909,47 +2037,60 @@ const NewMultiModeContainer = ({
 
   useEffect(() => {
     if (currentStep < 1 || currentStep > transfer.length) return;
-
+  
     const currentTransfer = transfer[currentStep - 1];
-
+  
     const baseStartDate = selectedBooking?.check_in
       ? dayjs(selectedBooking?.check_in).format("YYYY-MM-DD")
       : dCityData?.start_date ??
         (oCityData?.start_date && oCityData?.duration != null
           ? addDaysToDate(oCityData.start_date, oCityData.duration)
           : null);
-
-    console.log(
-      "Start Dtae",
-      selectedBooking,
-      selectedBooking?.check_in,
-      dCityData?.start_date,
-      oCityData.start_date,
-      oCityData.duration,
-      baseStartDate
-    );
+    
     let calculatedStartTime;
-
+  
     if (currentStep === 1) {
       calculatedStartTime = dayjs(`${baseStartDate} 12:00`);
     } else {
+      // Check for previous step's arrival time
       const prevSelected = selectedData[currentStep - 2];
       const prevArrivalTime = prevSelected?.arrival_time;
-
+  
       if (prevArrivalTime) {
+        // If previous step has arrival_time, use it + 1 hour
         let arrivalMoment = dayjs(prevArrivalTime);
-        calculatedStartTime = arrivalMoment.add(1, "hour");
-        const updatedStartDate = calculatedStartTime.format("YYYY-MM-DD");
-        setComboStartDate(updatedStartDate);
+        calculatedStartTime = arrivalMoment.add(1, 'hour');
+      } else if (prevSelected?.departure_time && prevSelected?.duration) {
+        // If previous step has no arrival_time but has departure_time and duration,
+        // calculate arrival_time = departure_time + duration + 1 hour
+        let departureDateTime = dayjs(prevSelected.departure_time);
+        let calculatedArrival = departureDateTime.add(prevSelected.duration, 'minute');
+        calculatedStartTime = calculatedArrival.add(1, 'hour');
+        
+        // Store this calculated arrival time for future reference
+        setSelectedData(prev => {
+          const newData = [...prev];
+          if (newData[currentStep - 2]) {
+            newData[currentStep - 2] = {
+              ...newData[currentStep - 2],
+              arrival_time: calculatedArrival.format('YYYY-MM-DDTHH:mm')
+            };
+          }
+          return newData;
+        });
       } else {
+        // Fallback to noon if no previous information available
         calculatedStartTime = dayjs(`${baseStartDate} 12:00`);
       }
     }
+    
+    // Set the calculated time to state
     setCurrentModeDepartureDate(calculatedStartTime.format("YYYY-MM-DD"));
     setComboStartDate(calculatedStartTime.format("YYYY-MM-DD"));
     setComboStartTime(calculatedStartTime.format("HH:mm"));
     setCurrentModeDepartureTime(calculatedStartTime.format("HH:mm"));
-
+  
+    // Initialize Flight or Taxi modes
     if (["Flight", "Taxi"].includes(currentTransfer.mode)) {
       if (!selectedModeIds[currentStep - 1]) {
         handleSelect(
@@ -1958,12 +2099,12 @@ const NewMultiModeContainer = ({
           "",
           currentTransfer.mode
         );
-
+  
         if (currentTransfer.mode === "Flight") {
           if (!skipFlightFetch) setShowComboFlightModal(true);
           else setSkipFlightFetch(false);
         }
-
+  
         if (currentTransfer.mode === "Taxi") {
           if (!skipTaxiFetch) setShowComboTaxiModal(true);
           else setSkipTaxiFetch(false);
@@ -1975,8 +2116,46 @@ const NewMultiModeContainer = ({
       }
     }
   }, [currentStep, transfer]);
+  
+  // useEffect for propagating time changes based on selectedData changes
+  useEffect(() => {
+    if (Object.keys(selectedModeIds).length > 0) {
+      for (let i = 0; i < transfer.length - 1; i++) {
+        // If current step has data but next step doesn't, and current has arrival time
+        if (selectedData[i] && !selectedData[i+1] && selectedData[i].arrival_time) {
+          let arrivalMoment = dayjs(selectedData[i].arrival_time);
+          let nextDepartureTime = arrivalMoment.add(1, 'hour');
+          
+          // If this is the step before current step, update current step's departure time
+          if (i === currentStep - 2) {
+            setCurrentModeDepartureDate(nextDepartureTime.format("YYYY-MM-DD"));
+            setCurrentModeDepartureTime(nextDepartureTime.format("HH:mm"));
+            setComboStartDate(nextDepartureTime.format("YYYY-MM-DD"));
+            setComboStartTime(nextDepartureTime.format("HH:mm"));
+          }
+        }
+        // Check for non-Flight/non-Taxi modes that might be missing arrival_time
+        else if (selectedData[i] && !selectedData[i].arrival_time && 
+                selectedData[i].departure_time && selectedData[i].duration &&
+                selectedData[i].mode !== "Flight" && selectedData[i].mode !== "Taxi") {
+          
+          // Calculate and store arrival_time
+          const departureDateTime = dayjs(selectedData[i].departure_time);
+          const arrivalDateTime = departureDateTime.add(selectedData[i].duration, 'minute');
+          
+          setSelectedData(prev => {
+            const newData = [...prev];
+            newData[i] = {
+              ...newData[i],
+              arrival_time: arrivalDateTime.format('YYYY-MM-DDTHH:mm')
+            };
+            return newData;
+          });
+        }
+      }
+    }
+  }, [selectedData, selectedModeIds]);
 
-  // Close time dropdown when clicking outside
   useEffect(() => {
     if (showTimeDropdown) {
       const handleClickOutside = (event) => {
@@ -2205,6 +2384,7 @@ const NewMultiModeContainer = ({
                             </div>
 
                             <div className="time-dropdown-container relative w-full sm:w-auto" id="time-dropdown">
+                            <div className="time-dropdown-container relative w-full sm:w-auto" id="time-dropdown">
                               <div
                                 className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
                                 onClick={(e) => {
@@ -2213,6 +2393,10 @@ const NewMultiModeContainer = ({
                                 }}
                               >
                                 <span className="text-sm font-medium">
+                                  Departure Time: {
+                                    timeOptions.find(t => t.value === currentModeDepartureTime)?.display || 
+                                    currentModeDepartureTime
+                                  }
                                   Departure Time: {
                                     timeOptions.find(t => t.value === currentModeDepartureTime)?.display || 
                                     currentModeDepartureTime
@@ -2232,7 +2416,38 @@ const NewMultiModeContainer = ({
                                     d={showTimeDropdown ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"} 
                                   />
                                 </svg>
+                                <svg 
+                                  xmlns="http://www.w3.org/2000/svg" 
+                                  className="h-4 w-4 ml-2" 
+                                  fill="none" 
+                                  viewBox="0 0 24 24" 
+                                  stroke="currentColor"
+                                >
+                                  <path 
+                                    strokeLinecap="round" 
+                                    strokeLinejoin="round" 
+                                    strokeWidth={2} 
+                                    d={showTimeDropdown ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"} 
+                                  />
+                                </svg>
                               </div>
+                              
+                              {showTimeDropdown && (
+                                <div className="absolute right-0 mt-1 bg-white border rounded-md shadow-lg z-50 w-48 max-h-60 overflow-y-auto">
+                                  {timeOptions.map((time, idx) => (
+                                    <div
+                                      key={idx}
+                                      className={`p-2 hover:bg-gray-100 cursor-pointer text-sm ${
+                                        time.value === currentModeDepartureTime ? 'bg-gray-100 font-medium' : ''
+                                      }`}
+                                      onClick={() => handleTimeSelect(time.value)}
+                                    >
+                                      {time.display}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
                               
                               {showTimeDropdown && (
                                 <div className="absolute right-0 mt-1 bg-white border rounded-md shadow-lg z-50 w-48 max-h-60 overflow-y-auto">
@@ -2273,7 +2488,7 @@ const NewMultiModeContainer = ({
                                 <div>
                                   <div className="font-semibold text-sm md:text-base">
                                     {option.text}{" "}
-                                    {priceOption.name
+                                     {priceOption.name
                                       ? `- ${priceOption.name}`
                                       : ""}
                                   </div>

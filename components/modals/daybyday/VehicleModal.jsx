@@ -20,7 +20,8 @@ const VehicleDetailModal = ({
   handleDelete,
   loading,
   booking,
-  type
+  type,
+  isEmbedded
 }) => {
   if (!data) return null;
   // const [loading, setLoading] = useState(false);
@@ -75,11 +76,11 @@ const VehicleDetailModal = ({
 
   return (
     <>
-      <div className="fixed inset-0 bg-gray-50 w-full h-full flex flex-col">
-        <div className="p-4 flex items-center">
+      <div className=" bg-gray-50 w-full h-full flex flex-col">
+        {!isEmbedded && <div className="p-4 flex items-center">
           <BackArrow handleClick={()=>setHandleShow(false)}/>
-        </div>
-        <div className="flex items-center px-4">
+        </div>}
+        {!isEmbedded && <div className="flex items-center px-4">
           <div className="bg-blue-100 rounded-lg p-2 mr-3">
             {loading ? (
               <div className="w-20 h-12 bg-gray-300 opacity-50 rounded-lg"></div>
@@ -102,7 +103,7 @@ const VehicleDetailModal = ({
               name
             )}
           </span>
-        </div>
+        </div>}
 
         {/* Ticket Section Label */}
         <div className="px-4 pt-2 pb-2">
@@ -243,15 +244,6 @@ const VehicleDetailModal = ({
                   </>
                 )}
               </div>
-            </div>
-
-            {/* Profile Icon */}
-            <div className="absolute bottom-6 right-6 bg-blue-500 text-white w-8 h-8 flex items-center justify-center rounded-full shadow">
-              {loading ? (
-                <div className="w-4 h-4 bg-gray-300 opacity-50 rounded"></div>
-              ) : (
-                <span className="font-semibold">D</span>
-              )}
             </div>
           </div>
         </div>

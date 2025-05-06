@@ -81,6 +81,7 @@ const CityItem = ({
   _updateFlightBookingHandler,
   _updatePaymentHandler,
   getPaymentHandler,
+  _updateTaxiBookingHandler,
 }) => {
   const { transfers_status } = useSelector((state) => state.ItineraryStatus);
   const correctIcon = (TransportMode) => {
@@ -166,6 +167,9 @@ const CityItem = ({
         dispatch(updateTransferBookings(bookingIdToDelete));
         setLoading(false);
         getPaymentHandler();
+        
+        setVisible(true);
+        setHandleShow(false);
         dispatch(
           openNotification({
             type: "success",
@@ -173,8 +177,6 @@ const CityItem = ({
             heading: "Success!",
           })
         );
-        setVisible(true);
-        setHandleShow(false);
       }
     } catch (err) {
       dispatch(
@@ -391,6 +393,7 @@ const CityItem = ({
         setShowLoginModal={setShowLoginModal}
         city={origin_city_name}
         dcity={destination_city_name}
+        _updateTaxiBookingHandler={_updateTaxiBookingHandler}
         // originCityId={origin}
         // destinationCityId={destination}
         selectedBooking={selectedBooking}
@@ -410,7 +413,24 @@ const CityItem = ({
    booking_type={booking_type}
    loading={loading}
    handleDelete={handleDelete}
+   setShowDrawer={setShowDrawer}
    city={city}
+   _updateFlightBookingHandler={_updateFlightBookingHandler}
+    _updatePaymentHandler={_updatePaymentHandler}
+    getPaymentHandler={getPaymentHandler}
+    oCityData={oCityData}
+        dCityData={dCityData}
+        setShowLoginModal={setShowLoginModal}
+        dcity={destination_city_name}
+        selectedBooking={selectedBooking}
+        setSelectedBooking={setSelectedBooking}
+        originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
+        destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
+        origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
+        destination_itinerary_city_id={
+          dCityData?.id || dCityData?.gmaps_place_id
+        }
+
 />}
 
       {/* <Drawer

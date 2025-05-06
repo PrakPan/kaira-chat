@@ -145,7 +145,7 @@ const Details = ({
           Something went wrong, please try again
         </div>
       ) : (
-        <div className="flex flex-col">
+        fareRules && <> <div className="flex flex-col">
           <div className="w-fit py-2 mb-2 text-lg font-bold">
             Fare Details and Rules
           </div>
@@ -157,6 +157,7 @@ const Details = ({
             className="flex flex-col gap-1 text-sm ml-4"
           ></div>
         </div>
+        </>
       )}
       {provider && !combo && (
         <div className="flex justify-end">
@@ -235,19 +236,21 @@ const Details = ({
             }}
             className="z-[1600]"
           >
-             <div style={{ visibility: loading ? "hidden" : "visible" }}>
-    {individual ? "Book Now" : "Add To Itinerary"}
-  </div>
+              <div className="flex justify-center items-center relative min-w-[120px] h-[24px]">
+    <span className={`${loading ? "invisible" : "visible"}`}>
+      {individual ? "Book Now" : "Add To Itinerary"}
+    </span>
 
-  {loading && (
-    <div className="absolute inset-0 flex justify-center items-center">
-      <PulseLoader
-        size={12}
-        speedMultiplier={0.6}
-        color="#000000"
-      />
-    </div>
-  )}
+    {loading && (
+      <div className="absolute inset-0 flex justify-center items-center">
+        <PulseLoader
+          size={12}
+          speedMultiplier={0.6}
+          color="#000000"
+        />
+      </div>
+    )}
+  </div>
     </Generalbuttonstyle>
         </div>
       )}

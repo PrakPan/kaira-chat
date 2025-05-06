@@ -511,6 +511,7 @@ const Recommendation = (props) => {
         dayIndex={props?.dayIndex}
         itinerary_city_id={props?.itinerary_city_id}
         slabIndex={props?.slabIndex}
+        setShowLoginModal={props?.setShowLoginModal}
       />
     </>
   );

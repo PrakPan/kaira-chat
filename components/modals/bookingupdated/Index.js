@@ -383,8 +383,10 @@ const Booking = (props) => {
         setLoading(false);
       })
       .catch((err) => {
-        console.log("new error:", err);
         setLoading(false);
+        setUpdateLoadingState(false)
+        setMoreOptionsJSX([])
+
         setFetchingIsError({
           error: true,
           errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
@@ -393,7 +395,6 @@ const Booking = (props) => {
   };
 
   const fetchHotels = () => {
-    console.log("occupancies are:", filters.occupancies);
     setLoading(true);
     setUpdateLoadingState(true);
     setNoResults(false);
@@ -538,6 +539,19 @@ const Booking = (props) => {
       .catch((err) => {
         console.log("new error:", err);
         setLoading(false);
+        setUpdateLoadingState(false)
+        if (err?.response.status==400){
+          setPaginationStatus(()=>({
+            traceId:null,
+            page:1,
+            totalPages:1
+          }))
+        }
+        props.openNotification({
+          text: "Sorry, No more hotels available!",
+          heading: "Error!",
+          type: "error",
+        })
         setFetchingIsError({
           error: true,
           errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
@@ -693,7 +707,7 @@ const Booking = (props) => {
                     </div>
                   ) : null}
 
-                  {!loading && isFetchingError.error ? (
+                  {!loading && isFetchingError.error && moreOptionsJSX?.length==0 ? (
                     <div className="flex flex-col items-center justify-center h-[80vh] gap-3">
                       <div className="flex flex-row items-center justify-center text-center font-lexend">
                         {isFetchingError.errorMsg}
