@@ -153,9 +153,9 @@ const TaxiDetailModal = ({
                 style={{ marginRight: "20px" }}
               ></div>
 
-              <div className="bg-gray-200 px-4 py-1 rounded-full text-sm">
+              <div className="bg-gray-200 px-4 py-1 rounded-full text-sm z-10 relative">
                 {loading ? (
-                  <div className="w-24 h-4 bg-gray-300 opacity-50 rounded"></div>
+                  <div className="w-24 h-4 bg-gray-300 opacity-50 rounded "></div>
                 ) : (
                   `${distance} | ${duration_text}`
                 )}
