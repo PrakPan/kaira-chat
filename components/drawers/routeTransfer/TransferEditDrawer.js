@@ -3833,10 +3833,8 @@ const OtherTransfer = ({
   const handleTimeSelect = (time) => {
     setDepartureTime(time.value);
     setShowTimeDropdown(false);
-    
-    // Trigger API call with new time
-    const newTime = time.value;
-    handleUpdateTransferWithData(localSelectedData, newTime);
+    // const newTime = time.value;
+    // handleUpdateTransferWithData(localSelectedData, newTime);
   };
 
   const buildRequestPayload = (updatedData, newTime = null) => {
