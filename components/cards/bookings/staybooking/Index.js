@@ -143,6 +143,7 @@ const Booking = (props) => {
           onHide={() => setShowDetails(false)}
           id={props.data.accommodation}
           show={showDetails}
+          setShowLoginModal={props.setShowLoginModal}
         ></AccommodationModal>
       </Container>
     </div>

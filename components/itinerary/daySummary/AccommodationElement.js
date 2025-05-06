@@ -234,6 +234,7 @@ export default function AccommodationElement(props) {
           city_id: city_id,
         }}
         BookingButtonFun={() => null}
+        setShowLoginModal={props.setShowLoginModal}
       ></AccommodationModal>
 
       {images ? (

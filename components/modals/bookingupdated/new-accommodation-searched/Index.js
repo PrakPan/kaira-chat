@@ -50,6 +50,7 @@ const Accommodation = (props) => {
         setStayBookings={props.setStayBookings}
         occupancies={props.occupancies}
         source={props.source}
+        setShowLoginModal={props?.setShowLoginModal}
       ></ViewHotelDetails>
     </div>
   );

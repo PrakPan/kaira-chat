@@ -157,6 +157,7 @@ const getRoomImage = (images) => {
 };
 
 const HotelBookingDetails = (props) => {
+  console.log("hotel details are:",props)
   const isDesktop = useMediaQuery("(min-width:1148px)");
   const [loading, setLoading] = useState(false);
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
@@ -211,7 +212,10 @@ const HotelBookingDetails = (props) => {
 
   const handleDelete = async () => {
     try {
-      console.log("stays are:", stays);
+      if(!localStorage.getItem("access_token")) {
+        props?.setShowLoginModal(true)
+        return
+      }
       setLoading(true);
       const response = await axiosDeleteBooking.delete(
         `${id}/bookings/accommodation/${props?.id}/`,
@@ -972,12 +976,12 @@ const HotelBookingDetails = (props) => {
               )}
             </div>
             <div>
-              Check out: {props?.data?.hotel_details?.check_out.date}|
-              {props?.data?.hotel_details?.check_out.begin_time && (
+              Check out: {props?.data?.hotel_details?.check_out.date}
+              {props?.data?.hotel_details?.check_out.time && (
                 <>
                   |
                   {getHumanTime(
-                    dateFormat(props?.data?.hotel_details?.check_out.begin_time)
+                    dateFormat(props?.data?.hotel_details?.check_out.time)
                   )}
                 </>
               )}            </div>

@@ -289,6 +289,7 @@ const NewSummaryContainer = (props) => {
           mercuryItinerary={props?.mercuryItinerary}
           itineraryDate={props?.itineraryDate}
           _GetInTouch={props?._GetInTouch}
+          loading={props?.loading}
           setShowLoginModal={props?.setShowLoginModal}
         />
       )}

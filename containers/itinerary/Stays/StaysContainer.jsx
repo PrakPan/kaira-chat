@@ -250,7 +250,10 @@ const StaysContainer = (props) => {
         }
         bookingFunData={bookingFunData}
         BookingButtonFun={() =>{
-          console.log("booking func is:",bookingFunData)
+          if(!localStorage.getItem("access_token")){
+            props?.setShowLoginModal(true)
+            return
+          }
           handleClickAc(
             bookingFunData.index,
             bookingFunData.booking,
@@ -262,6 +265,7 @@ const StaysContainer = (props) => {
         setShowDetails={setShowDetails}
         CityData={props?.CityData}
         handleCloseDrawer={handleCloseDrawer}
+        setShowLoginModal={props.setShowLoginModal}
       ></ViewHotelDetails>
       <AccommodationModal
         mercury
@@ -291,6 +295,7 @@ const StaysContainer = (props) => {
         setShowDetails={setShowDetails}
         CityData={props?.CityData}
         handleCloseDrawer={handleCloseDrawer}
+        setShowLoginModal={props.setShowLoginModal}
       />
       <BookingModal
         mercury

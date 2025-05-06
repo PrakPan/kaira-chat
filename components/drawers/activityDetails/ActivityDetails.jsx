@@ -65,8 +65,8 @@ export default function ActivityDetails(props) {
   const handleUpdate = () => {
     setLoading(true);
     if (!token) {
-      props?.setShowLoginModal(true);
       setLoading(false);
+      props?.setShowLoginModal(true);
       return;
     }
     props.updatedActivityBooking(setLoading).then(()=>{

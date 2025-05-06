@@ -233,70 +233,6 @@ const TransferBooking = ({
     setTransferImageFailed(true);
   };
 
-  function HandleTransport(book, label) {
-    if (!token) {
-      return setShowLoginModal(true);
-    }
-    let name = book["name"];
-    let costings_breakdown = booking["transfer_details"];
-    let cost = book?.transfer_details?.prices?.price;
-    let itinerary_id = booking["itinerary_id"];
-    let itinerary_name = book?.name;
-    let tailored_id = booking["tailored_itinerary"];
-    let id = book?.id;
-    let check_in = book?.check_in;
-    let check_out = book?.check_out;
-    let pax = {
-      number_of_adults: booking["number_of_adults"],
-      number_of_children: booking["number_of_children"],
-      number_of_infants: booking["number_of_infants"],
-    };
-    let city = booking["city"];
-    let taxi_type = booking["taxi_type"];
-    let transfer_type = booking["transfer_type"];
-    let destination_city = booking["destination_address"]["shortName"];
-    let origin_iata =
-      booking?.transfer_details?.items?.[0]?.segments?.[0]?.origin?.city_code;
-    let destination_iata =
-      booking?.transfer_details?.items?.[0]?.segments?.[
-        booking?.transfer_details?.items?.[0].segments?.length - 1
-      ]?.destination?.city_code;
-    let origin = booking["source_address"];
-    let destination = booking["destination_address"];
-
-    _changeTaxiHandler(
-      name,
-      itinerary_id,
-      tailored_id,
-      id,
-      check_in,
-      check_out,
-      pax,
-      city,
-      itinerary_name,
-      cost,
-      costings_breakdown,
-      origin_iata,
-      destination_iata,
-      destination_city,
-      taxi_type,
-      transfer_type,
-      origin,
-      destination,
-      selectedBooking
-    );
-
-    logEvent({
-      action: "Transfer_Add_Change",
-      params: {
-        page: "Itinerary Page",
-        event_category: "Button Click",
-        event_label: label,
-        event_value: booking?.heading,
-        event_action: "Transfers",
-      },
-    });
-  }
   function truncateString(str, maxLength) {
     if (str.length > maxLength) {
       return str.slice(0, maxLength - 3) + "...";
@@ -328,7 +264,10 @@ const TransferBooking = ({
   };
 
   const handleDelete = async (book) => {
-    //  dispatch(updateTransferBookings(id));
+    if (!localStorage.getItem("access_token")){
+      setShowLoginModal(true);
+      return;
+    }
     try {
       setLoading(true);
       const response = await axiosDeleteBooking.delete(
@@ -1402,6 +1341,7 @@ const FlightBooking = ({
               }}
               type={type}
               getPaymentHandler={getPaymentHandler}
+              setShowLoginModal={setShowLoginModal}
             />
           </>
         )}
