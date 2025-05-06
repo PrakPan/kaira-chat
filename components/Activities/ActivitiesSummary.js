@@ -75,7 +75,6 @@ const ActivitiesSummary = (props) => {
     };
   
     const handleCloseDrawer = (e) => {
-      setViewMoreDiscription();
       if (e) e.stopPropagation(e);
       setShowDrawer(false);
     };

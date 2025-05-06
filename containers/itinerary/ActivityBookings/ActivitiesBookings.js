@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import ActivitiesSummary from "../../../components/Activities/ActivitiesSummary";
 
 const ActivitiesBookings = (props) => {
-  var showActivities=false;
+  const [showActivities,setShowActivities]=useState(false)
 
   return (
     <div
@@ -17,7 +17,7 @@ const ActivitiesBookings = (props) => {
       </div>}
       {props?.itinerary?.cities?.map((city, index1) => {
         return city?.activities?.map((item, index) => {
-          showActivities=true
+          {showActivities==false&&setShowActivities(true)}
           return <ActivitiesSummary city={city} item={item} index={index} index1={index1}/>;
         });
       })}
