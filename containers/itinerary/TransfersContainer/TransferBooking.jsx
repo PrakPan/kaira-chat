@@ -937,6 +937,7 @@ const TransferBooking = ({
               getPaymentHandler={getPaymentHandler}
               _updateFlightBookingHandler={_updateFlightBookingHandler}
               _updatePaymentHandler={_updatePaymentHandler}
+              _updateTaxiBookingHandler={_updateTaxiBookingHandler}
               setShowLoginModal={setShowLoginModal}
               origin_itinerary_city_id={
                 oCityData?.id || oCityData?.gmaps_place_id
@@ -1557,6 +1558,7 @@ const TransferBooking = ({
               destination={destination?.id != undefined ? destination?.id : id}
               check_in={check_in}
               routeId={id}
+              _updateTaxiBookingHandler={_updateTaxiBookingHandler}
               city={
                 origin?.name != undefined
                   ? origin?.name || origin?.city_name

@@ -2397,10 +2397,7 @@ const handleBackButton = () => {
                                     timeOptions.find(t => t.value === currentModeDepartureTime)?.display || 
                                     currentModeDepartureTime
                                   }
-                                  Departure Time: {
-                                    timeOptions.find(t => t.value === currentModeDepartureTime)?.display || 
-                                    currentModeDepartureTime
-                                  }
+                                  
                                 </span>
                                 <svg 
                                   xmlns="http://www.w3.org/2000/svg" 
@@ -3634,6 +3631,9 @@ const OtherTransfer = ({
   const [departureTime, setDepartureTime] = useState(currentModeDepartureTime || "00:00");
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
   
+  // Store the last request data to compare changes
+  const [lastRequestData, setLastRequestData] = useState(null);
+  
   const [pax, setPax] = useState({
     adults: selectedBooking?.pax?.number_of_adults
       ? selectedBooking.pax.number_of_adults
@@ -3664,7 +3664,6 @@ const OtherTransfer = ({
 
   const timeOptions = generateTimeOptions();
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (ref.current && !ref.current.contains(event.target)) {
@@ -3716,6 +3715,9 @@ const OtherTransfer = ({
       }
     }
   }, [selectedResult]);
+
+  useEffect(() => {
+  }, [pax]);
 
   const isValidUUID = (uuid) => {
     const regex =
@@ -3831,102 +3833,124 @@ const OtherTransfer = ({
   const handleTimeSelect = (time) => {
     setDepartureTime(time.value);
     setShowTimeDropdown(false);
-    // Only updates the UI, no API call triggered
+    
+    // Trigger API call with new time
+    const newTime = time.value;
+    handleUpdateTransferWithData(localSelectedData, newTime);
+  };
+
+  const buildRequestPayload = (updatedData, newTime = null) => {
+    if (!Array.isArray(transfer) || transfer.length === 0) {
+      throw new Error("Transfer data is missing");
+    }
+
+    const transfersPayload = updatedData
+      .filter(Boolean) 
+      .map((item, arrayIndex) => {
+        const transferItem = transfer[arrayIndex] || transfer[0];
+        
+        if (!transferItem) {
+          console.error(`Transfer item for index ${arrayIndex} is missing`);
+          return null;
+        }
+
+        const transferObj = {
+          booking_type: transferItem.mode,
+          edge_id: transferItem.id,
+        };
+
+        if (transferItem.mode === "Flight") {
+          return {
+            ...transferObj,
+            result_index: item.resultIndex || item.result_index || 0,
+            trace_id: item?.trace_id || localStorage.getItem("Travclan_trace_id") || "",
+          };
+        } else if (transferItem.mode === "Taxi") {
+          return {
+            ...transferObj,
+            trace_id: item.trace_id || "",
+            result_index: item.result_index || 0,
+            source: item.source || "",
+          };
+        } else {
+          let resultIndex = 0;
+          
+          if (item.selectedPrice) {
+            resultIndex = item.selectedPrice.result_index || 0;
+          }
+          
+          return {
+            ...transferObj,
+            result_index: resultIndex,
+          };
+        }
+      })
+      .filter(Boolean);
+      
+    if (transfersPayload.length === 0 && !newTime) {
+      throw new Error("No valid transfer options selected");
+    }
+
+    const baseStartDate =
+      dCityData?.start_date ??
+      (oCityData?.start_date && oCityData?.duration != null
+        ? addDaysToDate(oCityData.start_date, oCityData.duration)
+        : dayjs().format("YYYY-MM-DD"));
+  
+    const timeToUse = newTime || departureTime;
+    
+  
+    const requestBody = {
+      destination_itinerary_city: isValidUUID(destination_itinerary_city_id)
+        ? destination_itinerary_city_id
+        : null,
+      source_itinerary_city: isValidUUID(origin_itinerary_city_id)
+        ? origin_itinerary_city_id
+        : null,
+      number_of_adults: pax.adults,
+      number_of_children: pax.children,
+      number_of_infants: pax.infants,
+      start_datetime: `${baseStartDate}T${timeToUse}:00`,
+      transfers: transfersPayload,
+    };
+
+    if (selectedBooking?.id) {
+      requestBody.booking_id = selectedBooking.id;
+    }
+
+    return requestBody;
   };
 
   const handleUpdateTransferWithData = async (updatedData, newTime = null) => {
-    setUpdateLoading(true);
-    
     try {
-      if (!Array.isArray(transfer) || transfer.length === 0) {
-        throw new Error("Transfer data is missing");
-      }
-
-      const transfersPayload = updatedData
-        .filter(Boolean) 
-        .map((item, arrayIndex) => {
-          const transferItem = transfer[arrayIndex] || transfer[0];
-          
-          if (!transferItem) {
-            console.error(`Transfer item for index ${arrayIndex} is missing`);
-            return null;
-          }
-
-          const transferObj = {
-            booking_type: transferItem.mode,
-            edge_id: transferItem.id,
-          };
-
-          if (transferItem.mode === "Flight") {
-            return {
-              ...transferObj,
-              result_index: item.resultIndex || item.result_index || 0,
-              trace_id: item?.trace_id || localStorage.getItem("Travclan_trace_id") || "",
-            };
-          } else if (transferItem.mode === "Taxi") {
-            return {
-              ...transferObj,
-              trace_id: item.trace_id || "",
-              result_index: item.result_index || 0,
-              source: item.source || "",
-            };
-          } else {
-            let resultIndex = 0;
-            
-            if (item.selectedPrice) {
-              resultIndex = item.selectedPrice.result_index || 0;
-            }
-            
-            return {
-              ...transferObj,
-              result_index: resultIndex,
-            };
-          }
-        })
-        .filter(Boolean); 
+      const newRequestBody = buildRequestPayload(updatedData, newTime);
+      
+      if (lastRequestData && 
+          newTime === null && 
+          JSON.stringify(lastRequestData.transfers) === JSON.stringify(newRequestBody.transfers) &&
+          lastRequestData.start_datetime === newRequestBody.start_datetime &&
+          (lastRequestData.number_of_adults !== newRequestBody.number_of_adults ||
+           lastRequestData.number_of_children !== newRequestBody.number_of_children ||
+           lastRequestData.number_of_infants !== newRequestBody.number_of_infants)) {
         
-      if (transfersPayload.length === 0 && !newTime) {
-        throw new Error("No valid transfer options selected");
+        console.log("Only pax changed, not making API call");
+        setLastRequestData(newRequestBody);
+        return;
       }
-
-      const baseStartDate =
-        dCityData?.start_date ??
-        (oCityData?.start_date && oCityData?.duration != null
-          ? addDaysToDate(oCityData.start_date, oCityData.duration)
-          : dayjs().format("YYYY-MM-DD"));
+      setUpdateLoading(true);
       
-      // Use the new time if provided, otherwise use the current state
-      const timeToUse = newTime || departureTime;
+      console.log("Sending request body:", newRequestBody);
       
-      const requestBody = {
-        destination_itinerary_city: isValidUUID(destination_itinerary_city_id)
-          ? destination_itinerary_city_id
-          : null,
-        source_itinerary_city: isValidUUID(origin_itinerary_city_id)
-          ? origin_itinerary_city_id
-          : null,
-        number_of_adults: number_of_adults || 2,
-        number_of_children: number_of_children || 0,
-        number_of_infants: number_of_infants || 0,
-        start_datetime: `${baseStartDate}T${timeToUse}:00`,
-        transfers: transfersPayload,
-      };
-
-      if (selectedBooking?.id) {
-        requestBody.booking_id = selectedBooking.id;
-      }
-
-      console.log("Sending request body:", requestBody);
-
       const response = await UpdateTransferMode.post(
         `${itinerary_id}/bookings/transfer/`,
-        requestBody,
+        newRequestBody,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
         }
       );
+      setLastRequestData(newRequestBody);
 
       const data = response.data;
       setIsResultSelected(true);
@@ -3941,7 +3965,6 @@ const OtherTransfer = ({
       getPaymentHandler();
 
       console.log("Key to update", origin_itinerary_city_id, destination_itinerary_city_id);
-
       console.log("Transfer updated successfully:", data);
 
       if (!newTime) {
@@ -3974,19 +3997,22 @@ const OtherTransfer = ({
 
   const formatTimeForDisplay = (timeValue) => {
     if (!timeValue) return "";
-    
-    // Find the corresponding display time from timeOptions
+  
     const timeOption = timeOptions.find(option => option.value === timeValue);
     if (timeOption) {
       return timeOption.display;
     }
-    
-    // Fallback formatting in case the exact time isn't in the options
+  
     const [hours, minutes] = timeValue.split(':');
     const hour = parseInt(hours, 10);
     const hour12 = hour % 12 || 12;
     const period = hour < 12 ? 'AM' : 'PM';
     return `${hour12}:${minutes} ${period}`;
+  };
+
+  const handlePaxChange = (newPax) => {
+    setPax(newPax);
+  
   };
 
   return (
@@ -3996,7 +4022,7 @@ const OtherTransfer = ({
           <Pax
             setShowPax={setShowPax}
             pax={pax}
-            setPax={setPax}
+            setPax={handlePaxChange} 
             showPax={showPax}
             combo={true}
           />
@@ -4051,10 +4077,10 @@ const OtherTransfer = ({
             priceOption.currency === "INR" ? "₹" : priceOption.currency;
           const priceOptionId = `${otherTransfer.id}-${priceIndex}`;
           
-          // Check if this specific price option is selected
+        
           const isOptionSelected = isPriceOptionSelected(otherTransfer.id, priceIndex);
           
-          // Check if this option is currently loading
+        
           const isOptionLoading = loadingOptionId === priceOptionId;
 
           return (

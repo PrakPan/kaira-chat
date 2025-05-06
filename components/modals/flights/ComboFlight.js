@@ -142,6 +142,7 @@ const ComboFlight = (props) => {
   const [timeUpdated, setTimeUpdated] = useState(false);
   const [propsReady, setPropsReady] = useState(false);
   const [dateTimeInitialized, setDateTimeInitialized] = useState(false);
+  const [paxChanged, setPaxChanged] = useState(false);
 
   useEffect(() => {
     if (props?.comboStartTime && props?.comboStartDate) {
@@ -206,6 +207,18 @@ const ComboFlight = (props) => {
     }
   }, [props?.comboStartDate, props?.comboStartTime, props?.selectedBooking?.check_in]);
 
+  // Add effect to track pax changes
+  useEffect(() => {
+    // Skip on initial render
+    if (paxChanged) {
+      console.log("Pax changed, setting timeUpdated to trigger new search");
+      setTimeUpdated(true);
+    } else {
+      // Set paxChanged to true after initial render
+      setPaxChanged(true);
+    }
+  }, [pax]);
+
   useEffect(() => {
     // Only proceed if we have a valid departure time
     if (!preferredDepartureTime) return;
@@ -217,7 +230,8 @@ const ComboFlight = (props) => {
       preferredTime: preferredDepartureTime,
       isDesktop: isPageWide,
       flightsCount: flights.length,
-      timeUpdated
+      timeUpdated,
+      pax
     });
     
     const shouldFetchFlights = props.showComboFlightModal && 
@@ -230,9 +244,7 @@ const ComboFlight = (props) => {
       _FetchFlightsHandler();
       setTimeUpdated(false);
     }
-  }, [props.showComboFlightModal, props.token, preferredDepartureTime, isPageWide, timeUpdated, flights.length, filtersState, pax, classType]);
-
-
+  }, [props.showComboFlightModal, props.token, preferredDepartureTime, isPageWide, timeUpdated]);
 
   function getISOStringFromDateAndTime(dateStr, timeStr) {
     try {
@@ -260,6 +272,12 @@ const ComboFlight = (props) => {
     setTimeUpdated(true);
   };
 
+  // Update the setPax function to trigger refetching
+  const handlePaxChange = (newPax) => {
+    setPax(newPax);
+    setTimeUpdated(true);  // This will trigger a new search
+  };
+
   const _FetchFlightsHandler = () => {
     // Prevent multiple API calls
     if (isFetching) {
@@ -268,6 +286,7 @@ const ComboFlight = (props) => {
     }
     
     console.log("Starting flight fetch with time:", preferredDepartureTime);
+    console.log("Using pax values:", pax);
     
     setLoading(true);
     setIsFetching(true);
@@ -678,12 +697,12 @@ const ComboFlight = (props) => {
           text={props.selectedBooking?.name}
           selectedBooking={props.selectedBooking}
           pax={pax}
-          setPax={setPax}
+          setPax={handlePaxChange}  // Using our new pax handler
           classType={classType}
           setClassType={setClassType}
           handleTransferEdit={handleTransferEdit}
           mercuryTransfer={props?.mercuryTransfer}
-          preferred_departure_time= {`${preferredDepartureTime}`}
+          preferred_departure_time={`${preferredDepartureTime}`}
           updatePreferredDepartureTime={updatePreferredDepartureTime}
         />
 
