@@ -152,8 +152,8 @@ const CityItem = ({
       setLoading(true);
       const response = await axiosDeleteBooking.delete(
         `${
-          dataPassed?.itinerary_id
-        }/bookings/${dataPassed?.booking_type?.toLowerCase()}/${
+          router?.query?.id
+        }/bookings/${dataPassed?.booking_type?.includes(',') ? `combo` : dataPassed?.booking_type?.toLowerCase()}/${
           dataPassed?.id
         }/`,
         {
