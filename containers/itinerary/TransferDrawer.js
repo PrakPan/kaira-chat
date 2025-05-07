@@ -73,7 +73,7 @@ const TransferDrawer = ({
               booking_id={transferData?.id}
               setShowDetails={null}
               name={transferData?.name}
-              isEmbedded={true}
+              isEmbedded={false}
               setShowLoginModal={setShowLoginModal}
             />
           );
@@ -84,7 +84,7 @@ const TransferDrawer = ({
               setHandleShow={null}
               handleDelete={null}
               loading={loading}
-              isEmbedded={true}
+              isEmbedded={false}
             />
           );
         default:
@@ -94,7 +94,7 @@ const TransferDrawer = ({
               setHandleShow={null}
               handleDelete={null}
               loading={loading}
-              isEmbedded={true}
+              isEmbedded={false}
             />
           );
       }

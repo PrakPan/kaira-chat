@@ -25,10 +25,12 @@ const ComboSection = (props) => {
   
   useEffect(() => {
     if (preferred_departure_time) {
+      
       const time = dayjs(preferred_departure_time);
+      console.log("There",time);
       setSelectedTime(time.format("h:mm A"));
     }
-  }, [preferred_departure_time]);
+  }, []);
 
   useEffect(() => {
     if (preferred_departure_time) {
@@ -114,6 +116,7 @@ const ComboSection = (props) => {
     // Pass the updated time to parent component
     if (updatePreferredDepartureTime) {
       updatePreferredDepartureTime(newDateTime.format("YYYY-MM-DDTHH:mm:ss"));
+    //  setSelectedTime(newDateTime.format("h:mm A"));
     }
     
     // Add a slight delay before triggering flight search

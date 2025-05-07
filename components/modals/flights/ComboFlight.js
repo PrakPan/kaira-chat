@@ -187,7 +187,7 @@ const ComboFlight = (props) => {
           console.log("Using combo start time/date:", isoString);
           if (!isoString) {
             console.error("Failed to generate ISO string from date and time");
-            return; // Exit early if ISO string creation failed
+            return; 
           }
           baseTime = dayjs(isoString);
         } catch (error) {
@@ -325,7 +325,7 @@ const ComboFlight = (props) => {
       errorMsg: ``,
     });
 
-    if (props.selectedBooking && props.token) {
+    if (props.token) {
       const requestData = {
         adult_count: pax.adults,
         child_count: pax.children,
