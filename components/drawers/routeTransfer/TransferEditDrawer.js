@@ -1153,7 +1153,9 @@ const RouteContainer = (props) => {
       dCityData?.start_date,
       oCityData.start_date,
       oCityData.duration,
-      baseStartDate
+      baseStartDate,
+      dCityData,
+      oCityData
     );
     let calculatedStartTime;
 
