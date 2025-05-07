@@ -149,8 +149,8 @@ const ActivitiesSummary = (props) => {
                   ))
                 ) : (
                   <div className="font-light">
-                    {props?.item?.activity?.short_description.slice(0, 250)}
-                    {props?.item?.activity?.short_description.length ? (
+                    { props?.item?.activity?.short_description ? props?.item?.activity?.short_description?.slice(0, 250) : null}
+                    {props?.item?.activity?.short_description && props?.item?.activity?.short_description?.length  ? (
                       <button
                         id={props?.index}
                         onClick={handleMoreDiscription}

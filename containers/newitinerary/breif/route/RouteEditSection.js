@@ -401,6 +401,7 @@ const RouteEditSection = (props) => {
   };
 
   const submitData = () => {
+    
     const data = {
       itinerary_id: props.ItineraryId || props?.itinerary?.ItineraryId,
       start_date: startDate,
@@ -429,6 +430,8 @@ const RouteEditSection = (props) => {
         place_id: destinations[destinations.length - 1].cityData.place_id,
       },
     };
+
+    console.log("New Request Data",data);
 
     const headers = {
       "Content-Type": "application/json",
@@ -1063,6 +1066,7 @@ export const Destination = (props) => {
     setDestinations((prev) => {
       const updatedDestinations = prev.filter((dest, i) => i !== index);
       updateLatLong(updatedDestinations);
+      updateDestinationsDates(updatedDestinations);
       return updatedDestinations;
     });
 
@@ -1316,6 +1320,8 @@ export const DestinationPopUp = (props) => {
   const handleUpdateDestination = () => {
     setDestinationChanges(true);
 
+    console.log("New Desti",destination);
+
     setDestinations((prev) => {
       let destinations = [...prev];
       const curDestination = destinations[index];
@@ -1329,7 +1335,8 @@ export const DestinationPopUp = (props) => {
             endingCity: curDestination.endingCity,
             cityData: {
               ...destination,
-              duration: nights
+              duration: nights,
+              place_id: destination?.place_id,
             },
           };
         } else {
@@ -1341,7 +1348,8 @@ export const DestinationPopUp = (props) => {
               ...destination,
               nights: nights,
               color: curDestination.cityData.color,
-              duration: nights
+              duration: nights,
+              
             },
           };
         }
