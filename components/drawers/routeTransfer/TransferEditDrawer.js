@@ -97,7 +97,7 @@ const TransferEditDrawer = (props) => {
     _updateFlightBookingHandler,
   } = props;
 
-  console.log("Originn", originCityId, destinationCityId);
+  console.log("Origin & Destination Iti", origin_itinerary_city_id, destination_itinerary_city_id);
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
   const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
@@ -1194,6 +1194,7 @@ const RouteContainer = (props) => {
   }, [currentStep, transfer]);
 
   const totalDistance = transfer.reduce((sum, t) => sum + (t.distance || 0), 0);
+  console.log("Origin & Desti Single Transfer",origin_itinerary_city_id)
 
   return (
     <>
@@ -1308,7 +1309,7 @@ const RouteContainer = (props) => {
                   comboStartTime={currentModeDepartureTime}
                   source_code={singleTransfer?.source?.code}
                   destination_code={singleTransfer?.destination?.code}
-                  origin_itinerary_city_id={origin_itinerary_city_id}
+                  source_itinerary_city_id={origin_itinerary_city_id}
                 destination_itinerary_city_id={destination_itinerary_city_id}
                 dCityData={dCityData}
                           oCityData={oCityData}
@@ -2318,7 +2319,7 @@ const handleBackButton = () => {
                         onFilterApplied={handleFilterApplied}
                         dCityData={dCityData}
                         oCityData={oCityData}
-                        origin_itinerary_city_id={origin_itinerary_city_id}
+                        source_itinerary_city_id={origin_itinerary_city_id}
                         destination_itinerary_city_id={destination_itinerary_city_id}
                       />
                     );
@@ -2413,20 +2414,7 @@ const handleBackButton = () => {
                                     d={showTimeDropdown ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"} 
                                   />
                                 </svg>
-                                <svg 
-                                  xmlns="http://www.w3.org/2000/svg" 
-                                  className="h-4 w-4 ml-2" 
-                                  fill="none" 
-                                  viewBox="0 0 24 24" 
-                                  stroke="currentColor"
-                                >
-                                  <path 
-                                    strokeLinecap="round" 
-                                    strokeLinejoin="round" 
-                                    strokeWidth={2} 
-                                    d={showTimeDropdown ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"} 
-                                  />
-                                </svg>
+                          
                               </div>
                               
                               {showTimeDropdown && (

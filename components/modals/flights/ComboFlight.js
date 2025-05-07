@@ -144,6 +144,8 @@ const ComboFlight = (props) => {
   const [dateTimeInitialized, setDateTimeInitialized] = useState(false);
   const [paxChanged, setPaxChanged] = useState(false);
 
+  console.log("Source Itinerary",props?.source_itinerary_city_id,props?.destination_itinerary_city_id)
+
   useEffect(() => {
     if (props?.comboStartTime && props?.comboStartDate) {
       setPropsReady(true);

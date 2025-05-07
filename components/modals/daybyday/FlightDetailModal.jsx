@@ -66,6 +66,7 @@ const FlightDetailModal = ({
             heading: "Success!",
           })
         );
+        setHandleShow(false);
       }
     } catch (err) {
       dispatch(
@@ -89,7 +90,8 @@ const FlightDetailModal = ({
         </Heading>
       </div>
 }
-      {!drawer && !isEmbedded && <> <Text>{name}</Text>
+      {!drawer && !isEmbedded && 
+      <div className="flex justify-between"> <Text>{name}</Text>
       {(
                   <div className="font-lexend flex justify-between items-start !m-0">
                     {loading ? (
@@ -113,7 +115,7 @@ const FlightDetailModal = ({
                     )}
                   </div>
                 )}
-            </>
+            </div>
       }
       <div className="flex flex-col gap-2 p-2">
         <FlightSegment
