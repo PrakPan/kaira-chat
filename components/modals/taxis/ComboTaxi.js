@@ -172,6 +172,7 @@ const ComboTaxi = (props) => {
     setLoading(true);
     setUpdateLoadingState(false);
     setOptionsJSX([]);
+    setQuotes([]);
 
     {
       propsToUse?.mercury &&

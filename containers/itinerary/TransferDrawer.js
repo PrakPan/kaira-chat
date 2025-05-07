@@ -74,7 +74,7 @@ const TransferDrawer = ({
               setShowDetails={null}
               name={transferData?.name}
               isEmbedded={true}
-              setShowLoginModal={props?.setShowLoginModal}
+              setShowLoginModal={setShowLoginModal}
             />
           );
         case "Taxi":
@@ -142,7 +142,10 @@ const TransferDrawer = ({
                 booking_id={data?.id}
                 setShowDetails={setHandleShow}
                 name={city}
-                setShowLoginModal={props?.setShowLoginModal}
+                setShowLoginModal={setShowLoginModal}
+                onChange={true}
+                setShowDrawer={setShowDrawer}
+                setHandleShow={setHandleShow}
               />
             )
           ) : loading ? (

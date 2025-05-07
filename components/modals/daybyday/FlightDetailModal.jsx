@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import { openNotification } from "../../../store/actions/notification";
 import BackArrow from "../../ui/BackArrow";
+import { Generalbuttonstyle } from "../../ui/button/Generallinkbutton";
 
 export const Text = styled.div`
   font-size: 1.5rem;
@@ -29,6 +30,8 @@ const FlightDetailModal = ({
   drawer,
   onChange,
   isEmbedded,
+  setShowDrawer,
+  setHandleShow
 }) => {
   const router = useRouter();
   const fareRules = fareRule?.fareRuleDetail;
@@ -86,7 +89,32 @@ const FlightDetailModal = ({
         </Heading>
       </div>
 }
-      {!onChange && !drawer && !isEmbedded && <Text>{name}</Text>}
+      {!drawer && !isEmbedded && <> <Text>{name}</Text>
+      {(
+                  <div className="font-lexend flex justify-between items-start !m-0">
+                    {loading ? (
+                      <div className="w-16 h-5 bg-gray-300 opacity-50 rounded"></div>
+                    ) : (
+                      <>
+                        {/* <Text>{name}</Text> */}
+                        <Generalbuttonstyle
+                          borderRadius={"7px"}
+                          fontSize={"1rem"}
+                          padding={"7px 25px"}
+                          onClick={() => {
+                            setHandleShow(false);
+                            setShowDrawer(true);
+                            //setShowTaxi(true);console.log("")
+                          }}
+                        >
+                          Change
+                        </Generalbuttonstyle>
+                      </>
+                    )}
+                  </div>
+                )}
+            </>
+      }
       <div className="flex flex-col gap-2 p-2">
         <FlightSegment
           segments={segments}
