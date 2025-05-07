@@ -796,6 +796,7 @@ const SimpleTabsV2 = (props) => {
                 activityBookings={props.activityBookings}
                 payment={props.payment}
                 booking={props.booking}
+                setShowLoginModal={setShowLoginModal}
               />
             </div>
           )}
@@ -855,8 +856,9 @@ const SimpleTabsV2 = (props) => {
                       itineraryDate={props?.itineraryDate}
                       mercuryItinerary={props?.mercuryItinerary}
                       itinerary={props.itinerary}
-                      _GetInTouch={props._GetInTouch}
+                      _GetInTouch={()=>_GetInTouch()}
                       setShowLoginModal={setShowLoginModal}
+                      loading={loading}
                     />
                   )
                 ) : (
@@ -1104,6 +1106,7 @@ const SimpleTabsV2 = (props) => {
                   activityBookings={props.activityBookings}
                   payment={props.payment}
                   booking={props.booking}
+                  setShowLoginModal={setShowLoginModal}
                 />
               </div>
             ) : (

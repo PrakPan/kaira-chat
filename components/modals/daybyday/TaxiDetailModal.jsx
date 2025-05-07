@@ -7,6 +7,7 @@ import ImageLoader from "../../ImageLoader";
 import { Generalbuttonstyle } from "../../ui/button/Generallinkbutton";
 import ComboTaxi from "../taxis/ComboTaxi";
 import { useState } from "react";
+import { FaTaxi } from "react-icons/fa";
 
 const BackText = styled.div`
   font-size: 1.5rem;
@@ -243,12 +244,7 @@ const TaxiDetailModal = ({
                           className="w-full h-full object-contain"
                         />
                       ) : (
-                        <Image
-                          src="/taxi-default.jpg"
-                          alt="Taxi"
-                          fill
-                          className="object-contain"
-                        />
+                        <FaTaxi className="w-16 h-16 text-gray-400" />
                       )}
                     </div>
                   )}
@@ -256,60 +252,60 @@ const TaxiDetailModal = ({
 
                 <div className="flex-1 w-full">
                   <div className="grid grid-cols-2 gap-4">
-                    {model && (
+                    {
                       <div>
                         <p className="text-gray-500 text-sm">Model</p>
                         <p className="font-semibold text-gray-800">
                           {loading ? (
                             <div className="w-20 h-5 bg-gray-300 opacity-50 rounded"></div>
                           ) : (
-                            model
+                            model ? model : "NA"
                           )}
                         </p>
                       </div>
-                    )}
+                    }
 
                     {/* Fuel Type */}
-                    {fuelType && (
+                    {
                       <div>
                         <p className="text-gray-500 text-sm">Fuel Type</p>
                         <p className="font-semibold text-gray-800">
                           {loading ? (
                             <div className="w-20 h-5 bg-gray-300 opacity-50 rounded"></div>
                           ) : (
-                            fuelType
+                            fuelType ? fuelType : "NA"
                           )}
                         </p>
                       </div>
-                    )}
+                    }
 
                     {/* Luggage Bags */}
-                    {luggageBags && (
+                    {
                       <div>
                         <p className="text-gray-500 text-sm">Luggage Bags</p>
                         <p className="font-semibold text-gray-800">
                           {loading ? (
                             <div className="w-10 h-5 bg-gray-300 opacity-50 rounded"></div>
                           ) : (
-                            luggageBags
+                            luggageBags ? luggageBags : "NA"
                           )}
                         </p>
                       </div>
-                    )}
+                    }
 
                     {/* Seat Capacity */}
-                    {seatCapacity && (
+                    {
                       <div>
                         <p className="text-gray-500 text-sm">Seat Capacity</p>
                         <p className="font-semibold text-gray-800">
                           {loading ? (
                             <div className="w-24 h-5 bg-gray-300 opacity-50 rounded"></div>
                           ) : (
-                            seatCapacity
+                            seatCapacity ? seatCapacity : "NA"
                           )}
                         </p>
                       </div>
-                    )}
+                    }
                   </div>
                 </div>
               </div>

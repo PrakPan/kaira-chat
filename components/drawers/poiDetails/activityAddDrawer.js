@@ -48,7 +48,7 @@ const items = [
   { id: 2, label: "Places To Visit", link: "" },
 ];
 const ActivityAddDrawer = (props) => {
-  console.log("start date is:", props?.start_date);
+  console.log("start date is:", props?.setShowLoginModal);
   const isDesktop = useMediaQuery("(min-width:767px)");
   const [selectedExprience, setSelectedExprience] = useState(-1);
   const [nextUrl, setNextUrl] = useState(null);

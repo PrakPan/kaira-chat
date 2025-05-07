@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import { openNotification } from "../../../store/actions/notification";
 import BackArrow from "../../ui/BackArrow";
+import { Generalbuttonstyle } from "../../ui/button/Generallinkbutton";
 
 export const Text = styled.div`
   font-size: 1.5rem;
@@ -29,6 +30,8 @@ const FlightDetailModal = ({
   drawer,
   onChange,
   isEmbedded,
+  setShowDrawer,
+  setHandleShow
 }) => {
   const router = useRouter();
   const fareRules = fareRule?.fareRuleDetail;
@@ -38,6 +41,10 @@ const FlightDetailModal = ({
   const dispatch = useDispatch();
 
   const handleDelete = async () => {
+    if(!localStorage.getItem("access_token")){
+      props?.setShowLoginModal(true)
+      return
+    }
     try {
       setLoading(true);
       const response = await axiosDeleteBooking.delete(
@@ -59,6 +66,7 @@ const FlightDetailModal = ({
             heading: "Success!",
           })
         );
+        setHandleShow(false);
       }
     } catch (err) {
       dispatch(
@@ -82,7 +90,33 @@ const FlightDetailModal = ({
         </Heading>
       </div>
 }
-      {!onChange && !drawer && !isEmbedded && <Text>{name}</Text>}
+      {!drawer && !isEmbedded && 
+      <div className="flex justify-between"> <Text>{name}</Text>
+      {(
+                  <div className="font-lexend flex justify-between items-start !m-0">
+                    {loading ? (
+                      <div className="w-16 h-5 bg-gray-300 opacity-50 rounded"></div>
+                    ) : (
+                      <>
+                        {/* <Text>{name}</Text> */}
+                        <Generalbuttonstyle
+                          borderRadius={"7px"}
+                          fontSize={"1rem"}
+                          padding={"7px 25px"}
+                          onClick={() => {
+                            setHandleShow(false);
+                            setShowDrawer(true);
+                            //setShowTaxi(true);console.log("")
+                          }}
+                        >
+                          Change
+                        </Generalbuttonstyle>
+                      </>
+                    )}
+                  </div>
+                )}
+            </div>
+      }
       <div className="flex flex-col gap-2 p-2">
         <FlightSegment
           segments={segments}

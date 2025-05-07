@@ -76,7 +76,8 @@ const Details = ({
   setTransferBookingsIntercity,
   onChange,
   type,
-  getPaymentHandler
+  getPaymentHandler,
+  setShowLoginModal
 }) => {
   const router = useRouter();
   const [fareRules, setFareRules] = useState(fareRule?.[0]?.fareRuleDetail);
@@ -85,6 +86,10 @@ const Details = ({
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const handleDelete = async () => {
+    if(!localStorage?.getItem("access_token")){
+      setShowLoginModal(true)
+      return
+    }
     try {
       setLoading(true);
       const response = await axiosDeleteBooking.delete(

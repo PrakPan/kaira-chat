@@ -15,7 +15,7 @@ import { duration } from "@mui/material";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 
 const ActivityDetailsDrawer = (props) => {
-  //console.log("day by day:",props?.setItinerary)
+  console.log("activity detail props are:",props)
   const router = useRouter();
   const [data, setData] = useState(null);
   const [traceId, setTraceId] = useState(null);

@@ -118,26 +118,25 @@ const CityItem = ({
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
-  const [comboDetails,setComboDetails] =useState(false);
+  const [comboDetails, setComboDetails] = useState(false);
 
-  console.log("Selllll",selectedBooking)
+  console.log("Selllll", selectedBooking);
   const router = useRouter();
   const dispatch = useDispatch();
   let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
 
   const handleEdit = async (combo) => {
-    if(combo){
+    if (combo) {
       setComboDetails(true);
     }
     setLoading(true);
     console.log("inside show");
     try {
-
       setHandleShow(true);
       const res = await axios.get(
-        `${MERCURY_HOST}/api/v1/itinerary/${
-          router?.query?.id
-        }/bookings/${combo? `combo` : booking_type.toLowerCase()}/${booking_id}/`
+        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/${
+          combo ? `combo` : booking_type.toLowerCase()
+        }/${booking_id}/`
       );
       setData(res?.data);
       setLoading(false);
@@ -147,15 +146,19 @@ const CityItem = ({
   };
 
   const handleDelete = async (val) => {
+    if (!localStorage?.getItem("access_token")) {
+      setShowLoginModal(true);
+      return;
+    }
     const dataPassed = val != null ? val : data;
     try {
       setLoading(true);
       const response = await axiosDeleteBooking.delete(
-        `${
-          router?.query?.id
-        }/bookings/${dataPassed?.booking_type?.includes(',') ? `combo` : dataPassed?.booking_type?.toLowerCase()}/${
-          dataPassed?.id
-        }/`,
+        `${router?.query?.id}/bookings/${
+          dataPassed?.booking_type?.includes(",")
+            ? `combo`
+            : dataPassed?.booking_type?.toLowerCase()
+        }/${dataPassed?.id}/`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -167,7 +170,7 @@ const CityItem = ({
         dispatch(updateTransferBookings(bookingIdToDelete));
         setLoading(false);
         getPaymentHandler();
-        
+
         setVisible(true);
         setHandleShow(false);
         dispatch(
@@ -259,8 +262,12 @@ const CityItem = ({
         } ${!upPresent && downPresent && "mb-[41px]"}`}
       >
         {!(upPresent && downPresent) && <div className="">{city} </div>}
-        {(transfers_status === "PENDING") ? (
-          (upPresent && downPresent) ? <TransferSkeleton /> : ""
+        {transfers_status === "PENDING" ? (
+          upPresent && downPresent ? (
+            <TransferSkeleton />
+          ) : (
+            ""
+          )
         ) : (
           <div className=" text-[16px] font-[500] flex gap-1">
             {(booking_id || city) && !visible ? (
@@ -287,9 +294,13 @@ const CityItem = ({
                 </div>
                 {transfer_type == "combo" ? (
                   <div
-                    className={`flex flex-col ${upPresent && downPresent ? "group hover:cursor-pointer" : ""}`}
+                    className={`flex flex-col ${
+                      upPresent && downPresent
+                        ? "group hover:cursor-pointer"
+                        : ""
+                    }`}
                     onClick={() => {
- upPresent && downPresent && handleEdit(true)
+                      upPresent && downPresent && handleEdit(true);
                       // const res = await axios.get(
                       //   `${MERCURY_HOST}/api/v1/itinerary/${
                       //     router?.query?.id
@@ -335,11 +346,17 @@ const CityItem = ({
                   </div>
                 ) : (
                   <div
-                    className={`flex flex-col ${upPresent && downPresent ? "group hover:cursor-pointer" : ""}`}
+                    className={`flex flex-col ${
+                      upPresent && downPresent
+                        ? "group hover:cursor-pointer"
+                        : ""
+                    }`}
                     onClick={() => upPresent && downPresent && handleEdit()}
                   >
                     <div className="flex gap-2 items-center ">
-                     {(upPresent && downPresent) && <div className="group-hover:text-blue ">{city} </div>}
+                      {upPresent && downPresent && (
+                        <div className="group-hover:text-blue ">{city} </div>
+                      )}
                       {upPresent && downPresent && (
                         <div className="">
                           <FaPen
@@ -406,32 +423,33 @@ const CityItem = ({
         }
       />
 
-{    handleShow &&   <TransferDrawer
-   show={handleShow}
-   setHandleShow={setHandleShow}
-   data={data}
-   booking_type={booking_type}
-   loading={loading}
-   handleDelete={handleDelete}
-   setShowDrawer={setShowDrawer}
-   city={city}
-   _updateFlightBookingHandler={_updateFlightBookingHandler}
-    _updatePaymentHandler={_updatePaymentHandler}
-    getPaymentHandler={getPaymentHandler}
-    oCityData={oCityData}
-        dCityData={dCityData}
-        setShowLoginModal={setShowLoginModal}
-        dcity={destination_city_name}
-        selectedBooking={selectedBooking}
-        setSelectedBooking={setSelectedBooking}
-        originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
-        destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
-        origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
-        destination_itinerary_city_id={
-          dCityData?.id || dCityData?.gmaps_place_id
-        }
-
-/>}
+      {handleShow && (
+        <TransferDrawer
+          show={handleShow}
+          setHandleShow={setHandleShow}
+          data={data}
+          booking_type={booking_type}
+          loading={loading}
+          handleDelete={handleDelete}
+          setShowDrawer={setShowDrawer}
+          city={city}
+          _updateFlightBookingHandler={_updateFlightBookingHandler}
+          _updatePaymentHandler={_updatePaymentHandler}
+          getPaymentHandler={getPaymentHandler}
+          oCityData={oCityData}
+          dCityData={dCityData}
+          setShowLoginModal={setShowLoginModal}
+          dcity={destination_city_name}
+          selectedBooking={selectedBooking}
+          setSelectedBooking={setSelectedBooking}
+          originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
+          destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
+          origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
+          destination_itinerary_city_id={
+            dCityData?.id || dCityData?.gmaps_place_id
+          }
+        />
+      )}
 
       {/* <Drawer
         show={handleShow}
@@ -480,8 +498,8 @@ const CityItem = ({
           )}
         </> : 
         <div className="h-screen flex flex-col"> {/* Full height wrapper */}
-        {/* <div className="p-4 flex flex-col flex-grow"> {/* Inner scrollable content */}
-          {/* <BackArrow handleClick={() => {
+      {/* <div className="p-4 flex flex-col flex-grow"> {/* Inner scrollable content */}
+      {/* <BackArrow handleClick={() => {
             setHandleShow(false);
           }}/>
       

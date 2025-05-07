@@ -279,6 +279,7 @@ const POI = (props) => {
                   handleClick={props?.handleClick}
                   setShowDetails={props?.setShowDetails}
                   id={props?.id}
+                  setShowLoginModal={props?.setShowLoginModal}
                 />
               ) : (
                 <Overview

@@ -33,6 +33,7 @@ import PricingSkeleton from "../../../components/itinerary/Skeleton/PricingSkele
 import Drawer from "../../../components/ui/Drawer";
 import PassengerDetails from "../../../components/modals/passenger-details/PassengerDetails";
 import { IoMdClose } from "react-icons/io";
+import { PulseLoader } from "react-spinners";
 
 const GetInTouchContainer = styled.div`
   &:hover img {
@@ -59,7 +60,7 @@ const Details = (props) => {
     return formattedDate;
   };
   const [showSetPassenger, setShowSetPassenger] = useState(false);
-
+  const [getInTouchLoading,setGetInTouchLoading]=useState(false)
   const { itinerary_status, transfers_status, pricing_status } = useSelector(
     (state) => state.ItineraryStatus
   );
@@ -467,7 +468,7 @@ const Details = (props) => {
       },
     });
 
-    window.location.href = urls.WHATSAPP + "?text=" + message;
+    window.open(urls.WHATSAPP + "?text=" + encodeURIComponent(message), "_blank");
   };
 
   const handleTermsConditions = () => {
@@ -1103,7 +1104,7 @@ const Details = (props) => {
                     leftalign
                     url={"media/icons/login/customer-service-black.png"}
                   />{" "}
-                  <span>Get in touch!</span>
+                  {props?.loading?<PulseLoader/>:<span>Get in touch!</span>}
                 </div>
               </Button>
             </GetInTouchContainer>
@@ -1154,7 +1155,7 @@ const Details = (props) => {
                       leftalign
                       url={"media/icons/login/customer-service-black.png"}
                     />{" "}
-                    <span>Get in touch!</span>
+                  {props?.loading?<PulseLoader/>:<span>Get in touch!</span>}
                   </div>
                 </Button>
               </GetInTouchContainer>

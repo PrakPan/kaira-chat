@@ -117,6 +117,7 @@ const Flight = (props) => {
             getPaymentHandler={props.getPaymentHandler}
             booking_id={props?.selectedBooking?.id}
             combo={props?.combo}
+            setShowLoginModal={props?.setShowLoginModal}
           />
         </div>
       )}

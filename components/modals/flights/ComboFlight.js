@@ -144,6 +144,10 @@ const ComboFlight = (props) => {
   const [dateTimeInitialized, setDateTimeInitialized] = useState(false);
   const [paxChanged, setPaxChanged] = useState(false);
 
+  
+
+  console.log("Source Itinerary",props?.source_itinerary_city_id,props?.destination_itinerary_city_id)
+
   useEffect(() => {
     if (props?.comboStartTime && props?.comboStartDate) {
       setPropsReady(true);
@@ -153,15 +157,16 @@ const ComboFlight = (props) => {
     }
   }, [props?.comboStartTime, props?.comboStartDate, props?.selectedBooking?.check_in]);
 
+
   useEffect(() => {
-    if (dateTimeInitialized) return;
+    console.log("Combo S", props?.comboStartDate, props?.comboStartTime, dateTimeInitialized, propsReady);
     
     function roundToNext30Min(input) {
       try {
         const dateTime = dayjs(input);
         if (!dateTime.isValid()) {
           console.error("Invalid date input:", input);
-          return null;
+          return null; // Don't fallback to current time
         }
         
         const minutes = dateTime.minute();
@@ -170,51 +175,90 @@ const ComboFlight = (props) => {
         return dateTime.add(addMinutes, 'minute').second(0).millisecond(0);
       } catch (error) {
         console.error("Error processing date:", error);
-        return dayjs();
+        return null; // Don't fallback to current time
       }
     }
     
-    let baseTime;
-    if (props?.comboStartTime && props?.comboStartDate) {
-      try {
-        baseTime = dayjs(getISOStringFromDateAndTime(props?.comboStartDate, props?.comboStartTime));
-        console.log("Using combo start time/date");
-      } catch (error) {
-        console.error("Error with combo time/date:", error);
-        baseTime = dayjs();
+    if (propsReady && (!dateTimeInitialized || timeUpdated)) {
+      let baseTime;
+      if (props?.comboStartTime && props?.comboStartDate) {
+        try {
+          const isoString = getISOStringFromDateAndTime(props?.comboStartDate, props?.comboStartTime);
+          console.log("Using combo start time/date:", isoString);
+          if (!isoString) {
+            console.error("Failed to generate ISO string from date and time");
+            return; // Exit early if ISO string creation failed
+          }
+          baseTime = dayjs(isoString);
+        } catch (error) {
+          console.error("Error with combo time/date:", error);
+          return; // Exit early if there's an error
+        }
+      } else if (props?.selectedBooking?.check_in) {
+        try {
+          baseTime = dayjs(props?.selectedBooking?.check_in.replace(" ", "T"));
+          console.log("Using check_in time:", props?.selectedBooking?.check_in);
+        } catch (error) {
+          console.error("Error with check_in:", error);
+          return; // Exit early if there's an error
+        }
+      } else {
+        console.log("No valid date source available");
+        return; // Exit early if no date sources are available
       }
-    } else if (props?.selectedBooking?.check_in) {
-      try {
-        baseTime = dayjs(props?.selectedBooking?.check_in.replace(" ", "T"));
-        console.log("Using check_in time");
-      } catch (error) {
-        console.error("Error with check_in:", error);
-        baseTime = dayjs();
+  
+      if (!baseTime.isValid()) {
+        console.error("Date not valid");
+        return; // Exit early if date is invalid
       }
-    } else {
-      baseTime = dayjs();
-      console.log("Using current time");
-    }
-    
-    if (!baseTime.isValid()) {
-      baseTime = dayjs();
-    }
-    
-    const roundedTime = roundToNext30Min(baseTime);
-    if (roundedTime) {
-      setPreferredDepartureTime(roundedTime.format("YYYY-MM-DDTHH:mm:ss"));
-      setDateTimeInitialized(true);
-    }
-  }, [props?.comboStartDate, props?.comboStartTime, props?.selectedBooking?.check_in]);
 
-  // Add effect to track pax changes
+      const roundedTime = roundToNext30Min(baseTime);
+      if (roundedTime) {
+        console.log("Setting preferred departure time to:", roundedTime.format("YYYY-MM-DDTHH:mm:ss"));
+        setPreferredDepartureTime(roundedTime.format("YYYY-MM-DDTHH:mm:ss"));
+        setDateTimeInitialized(true);
+        if (timeUpdated) {
+          setTimeUpdated(false);
+        }
+      }
+    }
+     
+  
+      
+  }, [props?.comboStartDate, props?.comboStartTime, props?.selectedBooking?.check_in, propsReady, dateTimeInitialized, timeUpdated]);
+
+  function getISOStringFromDateAndTime(dateStr, timeStr) {
+    try {
+      if (!dateStr) throw new Error("No date provided");
+      
+      const [year, month, day] = dateStr.split("-");
+      const [hour, minute] = timeStr ? timeStr.split(":") : ["00", "00"];
+      
+
+      if (!year || !month || !day) throw new Error("Invalid date format");
+      
+      const localDate = new Date(year, month - 1, day, hour || 0, minute || 0);
+      
+      if (isNaN(localDate.getTime())) {
+        console.error("Invalid date created from inputs:", {dateStr, timeStr});
+        throw new Error("Invalid date created");
+      }
+      
+      return localDate.toISOString();
+    } catch (error) {
+      console.error("Error creating ISO date:", error);
+      return null;
+    }
+  }
+
+  
+
   useEffect(() => {
-    // Skip on initial render
     if (paxChanged) {
       console.log("Pax changed, setting timeUpdated to trigger new search");
       setTimeUpdated(true);
     } else {
-      // Set paxChanged to true after initial render
+      
       setPaxChanged(true);
     }
   }, [pax]);
@@ -246,26 +290,7 @@ const ComboFlight = (props) => {
     }
   }, [props.showComboFlightModal, props.token, preferredDepartureTime, isPageWide, timeUpdated]);
 
-  function getISOStringFromDateAndTime(dateStr, timeStr) {
-    try {
-      if (!dateStr) throw new Error("No date provided");
-      
-      const [year, month, day] = dateStr.split("-");
-      const [hour, minute] = timeStr ? timeStr.split(":") : ["00", "00"];
-      
-      // Validate inputs
-      if (!year || !month || !day) throw new Error("Invalid date format");
-      
-      const localDate = new Date(year, month - 1, day, hour || 0, minute || 0);
-      
-      if (isNaN(localDate.getTime())) throw new Error("Invalid date created");
-      
-      return localDate.toISOString();
-    } catch (error) {
-      console.error("Error creating ISO date:", error);
-      return new Date().toISOString(); // Fallback to current date
-    }
-  }
+ 
 
   const updatePreferredDepartureTime = (newDateTime) => {
     setPreferredDepartureTime(newDateTime);
@@ -486,7 +511,7 @@ const ComboFlight = (props) => {
         } else { 
           dispatch(
             updateSingleTransferBooking(
-              `${props?.origin_itinerary_city_id}:${props?.destination_itinerary_city_id}`,
+              `${props?.source_itinerary_city_id}:${props?.destination_itinerary_city_id}`,
               res.data
             )
           );
@@ -507,12 +532,12 @@ const ComboFlight = (props) => {
         setUnauthorized(true);
         props.openNotification({
           type: "error",
-          text: "Oops, this action is not allowed on another user's itinerary.",
+          text: `This flight is currently not available at the moment.`,
           heading: "Error!",
         });
         props.setHideFlightModal();
         
-        toast.error("An error occurred while updating the flight");
+     //   toast.error("An error occurred while updating the flight");
       });
   };
 
@@ -645,7 +670,7 @@ const ComboFlight = (props) => {
               selectedBooking={props.selectedBooking}
               _updateBookingHandler={_newUpdateBookingHandler}
               individual={props?.individual}
-              originCityId={props?.origin_itinerary_city_id}
+              originCityId={props?.source_itinerary_city_id}
               provider={flightProvider}
               destinationCityId={props?.destination_itinerary_city_id}
               edge={props?.edge || props?.selectedBooking?.edge}
