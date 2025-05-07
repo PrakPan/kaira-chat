@@ -346,6 +346,7 @@ const Booking = (props) => {
                     _updateStayBookingHandler={props._updateStayBookingHandler}
                     getPaymentHandler={props.getPaymentHandler}
                     setStayBookings={props.setStayBookings}
+                    setShowLoginModal={props?.setShowLoginModal}
                   ></AccommodationSearched>
                 );
             }
@@ -500,6 +501,7 @@ const Booking = (props) => {
                     _updateStayBookingHandler={props._updateStayBookingHandler}
                     getPaymentHandler={props.getPaymentHandler}
                     setStayBookings={props.setStayBookings}
+                    setShowLoginModal={props?.setShowLoginModal}
                   ></AccommodationSearched>
                 );
             }
@@ -869,6 +871,7 @@ const Booking = (props) => {
               setStayBookings={props?.setStayBookings}
               itineraryDaybyDay={props?.itineraryDaybyDay}
               occupancies={filters.occupancies}
+              setShowLoginModal={props?.setShowLoginModal}
             ></ViewHotelDetails>
           </>
         </Drawer>

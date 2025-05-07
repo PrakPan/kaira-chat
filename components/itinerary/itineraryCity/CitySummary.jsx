@@ -275,6 +275,7 @@ const CitySummary = (props) => {
         day="Day 1"
         duration={props.city.duration}
         setItinerary={props?.setItinerary}
+        setShowLoginModal={props?.setShowLoginModal}
       ></ActivityAddDrawer>
     </div>
   );

@@ -219,7 +219,7 @@ const ActivitiesSummary = (props) => {
                 bgColor="#f8e000"
                   onclick={() => handleView(props?.item?.id, "activity")}
                 >
-                  <div className="text-[#01202B] ">View Detail</div>
+                  <div >View Detail</div>
                 </Button>
               </div>
               <POIDetailsDrawer
@@ -237,6 +237,7 @@ const ActivitiesSummary = (props) => {
                 dayIndex={props?.index1}
                 itinerary_city_id={props?.city?.id}
                 showBookingDetail
+                setShowLoginModal={props?.setShowLoginModal}
               />
             </div>
           </div>

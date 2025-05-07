@@ -38,6 +38,10 @@ const FlightDetailModal = ({
   const dispatch = useDispatch();
 
   const handleDelete = async () => {
+    if(!localStorage.getItem("access_token")){
+      props?.setShowLoginModal(true)
+      return
+    }
     try {
       setLoading(true);
       const response = await axiosDeleteBooking.delete(

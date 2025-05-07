@@ -366,6 +366,7 @@ const HotelsBooking = (props) => {
         setHideBookingModal={props.setHideBookingModal}
         AddHotel={AddHotel}
         _GetInTouch={props._GetInTouch}
+        setShowLoginModal={props.setShowLoginModal}
       ></BookingModal>
 
       {!isDesktop && props.showBookingModal && (

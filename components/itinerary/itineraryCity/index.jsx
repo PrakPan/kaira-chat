@@ -16,7 +16,8 @@ import { logEvent } from "../../../services/ga/Index";
 import { toast } from "react-toastify";
 import BackArrow from "../../ui/BackArrow";
 import { openNotification } from "../../../store/actions/notification";
-import FullScreenGallery from "../../fullscreengallery/Index"
+import FullScreenGallery from "../../fullscreengallery/Index";
+import Skeleton from "../../modals/ViewHotelDetails/Skeleton"
 const Container = styled.div`
   padding: 0 0.75rem 0.75rem 0.75rem;
   @media screen and (min-width: 768px) {
@@ -72,6 +73,7 @@ const ItineraryCity = (props) => {
   const router = useRouter();
   const [viewMore, setViewMore] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
   const { token } = useSelector((state) => state.auth);
   const stay = useSelector((state) => state.Stays);
@@ -84,10 +86,10 @@ const ItineraryCity = (props) => {
     setImages(images);
   };
 
-  const fetchDetails = () => {
-    console.log("stays are:", stay);
+  const fetchDetails = async() => {
     setShowDetails(true);
-    bookingDetails
+    setLoading(true);
+    await bookingDetails
       .get(
         `/${router?.query?.id}/bookings/accommodation/${
           stay[props?.index].id
@@ -111,6 +113,7 @@ const ItineraryCity = (props) => {
         );
         setShowDetails(false);
       });
+    setLoading(false);
   };
   const handleStay = (e, label, value, clickType) => {
     console.log("Props?.city", props?.city);
@@ -284,45 +287,58 @@ const ItineraryCity = (props) => {
         width={"50%"}
         mobileWidth={"100%"}
       >
-        <Container>
-          <BackContainer className=" font-lexend">
-            <BackArrow handleClick={() => setShowDetails(false)} />
-          </BackContainer>
-          <HotelBookingDetails
-            _setImagesHandler={_setImagesHandler}
-            user_rating={props.city.hotels[0]?.rating}
-            number_of_reviews={props.city.hotels[0]?.user_ratings_total}
-            data={data}
-            BookingButtonFun={() => {
-              props.handleClickAc(
-                props.index,
-                stay[props.index],
-                stay[props?.index]?.city_id
-              );
-            }}
-            images={
-              data?.hotel_details?.images ? data?.hotel_details?.images : []
-            }
-            experience_filters={props.poi ? props.poi.experience_filters : null}
-            name={
-              props?.city?.hotels[0]?.name ? props?.city?.hotels[0]?.name : null
-            }
-            duration={
-              props?.city?.hotels[0]?.duration
-                ? props?.city?.hotels[0]?.duration
-                : null
-            }
-            setShowDetails={setShowDetails}
-            id={ stay ? stay[props?.index]?.id : props?.city?.hotels?.[0]?.id}
-          />
-          {images ? (
-        <FullScreenGallery
-          mercury
-          closeGalleryHandler={() => setImages(null)}
-          images={images}
-        ></FullScreenGallery>
-      ) : null}
-        </Container>
+        {loading ? (
+          <Skeleton />
+        ) : (
+          <Container>
+            <BackContainer className=" font-lexend">
+              <BackArrow handleClick={() => setShowDetails(false)} />
+            </BackContainer>
+            <HotelBookingDetails
+              _setImagesHandler={_setImagesHandler}
+              user_rating={props.city.hotels[0]?.rating}
+              number_of_reviews={props.city.hotels[0]?.user_ratings_total}
+              data={data}
+              BookingButtonFun={() => {
+                if (!localStorage.getItem("access_token")) {
+                  props?.setShowLoginModal(true);
+                  return;
+                }
+                props.handleClickAc(
+                  props.index,
+                  stay[props.index],
+                  stay[props?.index]?.city_id
+                );
+              }}
+              images={
+                data?.hotel_details?.images ? data?.hotel_details?.images : []
+              }
+              experience_filters={
+                props.poi ? props.poi.experience_filters : null
+              }
+              name={
+                props?.city?.hotels[0]?.name
+                  ? props?.city?.hotels[0]?.name
+                  : null
+              }
+              duration={
+                props?.city?.hotels[0]?.duration
+                  ? props?.city?.hotels[0]?.duration
+                  : null
+              }
+              setShowDetails={setShowDetails}
+              id={stay ? stay[props?.index]?.id : props?.city?.hotels?.[0]?.id}
+              setShowLoginModal={props?.setShowLoginModal}
+            />
+            {images ? (
+              <FullScreenGallery
+                mercury
+                closeGalleryHandler={() => setImages(null)}
+                images={images}
+              ></FullScreenGallery>
+            ) : null}
+          </Container>
+        )}
       </Drawer>
     </div>
   );

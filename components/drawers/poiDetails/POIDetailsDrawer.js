@@ -15,7 +15,7 @@ import ActivityDetails from "./ActivityDetails";
 import ActivityDetailsSkeleton from "../activityDetails/ActivityDetailsSkeleton";
 
 const POIDetailsDrawer = (props) => {
-
+console.log("props activities summary are:",props)
   const [data, setData] = useState(props?.data || []);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
