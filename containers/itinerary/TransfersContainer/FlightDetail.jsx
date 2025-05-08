@@ -122,7 +122,7 @@ const Details = ({
   };
 
   return (
-    <div className="relative flex flex-col gap-4 rounded-md px-3 py-2">
+    <div className="relative flex flex-col gap-4 rounded-md">
       {drawer && (
         <div className="flex flex-col gap-2">
           <Heading>

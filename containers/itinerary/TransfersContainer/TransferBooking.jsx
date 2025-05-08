@@ -1048,7 +1048,7 @@ const TransferBooking = ({
                             booking={booking}
                             type={"combo"}
                             setShowDrawer={setShowDrawer}
-                           // noChange={true}
+                            // noChange={true}
                           />
                         ) : (
                           <VehicleDetailModal
@@ -1223,8 +1223,6 @@ const FlightBooking = ({
     if (booking?.number_of_children > 1) child = " Childs";
     else child = " Child";
   } catch {}
-
-  console.log("flight >>>>", booking.transfer_details);
 
   return (
     <div className="mt-3 ml-1 md:ml-7 flex flex-col w-full items-center justify-center ">
