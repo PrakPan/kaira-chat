@@ -1,7 +1,11 @@
 import { connect, useSelector } from "react-redux";
 import HotelBooking from "./HotelBooking";
 import React, { useState } from "react";
+import media from "../../../components/media";
+
 const StaysContainer = (props) => {
+  let isPageWide = media("(min-width: 768px)");
+
   // console.log("CITTT",props?.cities)
   const { hotels_status } = useSelector((state) => state.ItineraryStatus);
   return (
