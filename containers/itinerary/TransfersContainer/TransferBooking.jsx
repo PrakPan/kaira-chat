@@ -1046,7 +1046,7 @@ const TransferBooking = ({
                             booking={booking}
                             type={"combo"}
                             setShowDrawer={setShowDrawer}
-                            noChange={true}
+                           // noChange={true}
                           />
                         ) : (
                           <VehicleDetailModal
@@ -1336,8 +1336,8 @@ const FlightBooking = ({
               originCityId={"karan"}
               destinationCityId={destinationCityId}
               onChange={() => {
-                HandleFlights(index, "Change Flight");
                 setShowDetails(false);
+                HandleFlights(index, "Change Flight");
               }}
               type={type}
               getPaymentHandler={getPaymentHandler}
