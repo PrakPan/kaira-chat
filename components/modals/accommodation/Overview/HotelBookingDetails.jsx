@@ -976,7 +976,7 @@ const HotelBookingDetails = (props) => {
               )}
             </div>
             <div>
-              Check out: {props?.data?.hotel_details?.check_out.date}
+              Check out: {dateFormat(props?.data?.hotel_details?.check_out.date)}
               {props?.data?.hotel_details?.check_out.time && (
                 <>
                   |

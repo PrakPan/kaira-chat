@@ -303,6 +303,7 @@ export default function NewActivityBooking(props) {
         itineraryDrawer
         date={props.date}
         show={showDetails.show}
+        setShowDetails={setShowDetails}
         activityId={props.data?.id}
         handleCloseDrawer={handleCloseDrawer}
         Topheading={"Select Our Activity"}
@@ -318,6 +319,7 @@ export default function NewActivityBooking(props) {
         setActivityBookings={props.setActivityBookings}
         setShowLoginModal={props?.setLoginModal}
         pax={props?.pax}
+        setShowDrawer={props?.setShowDrawer}
       />
       {props.data?.is_very_popular && (
         <div className="absolute top-6 -left-2 z-[1]">
