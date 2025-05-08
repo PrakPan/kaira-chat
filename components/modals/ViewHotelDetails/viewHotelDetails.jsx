@@ -128,7 +128,7 @@ const CallPaymentInfo=useSelector((state)=>state.CallPaymentInfo)
         occupancies: props?.occupancies?.map((item)=>{
           return {
             num_adults:item.adults,
-            child_age:item.childAges
+            child_ages:item.childAges
           }
         }),
         source: props?.source,

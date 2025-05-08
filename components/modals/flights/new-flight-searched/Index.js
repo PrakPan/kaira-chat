@@ -52,8 +52,13 @@ const Flight = (props) => {
         </ClippathComp>
       ) : null}
 
-      <div className="flex flex-col gap-1 lg:flex-row lg:items-center w-full">
-        <LogoContainer data={props.data} />
+      <div className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
+        <div className="flex items-center gap-2">
+          <LogoContainer data={props.data} />
+          <div className="text-xs font-semibold">
+            {props.data?.segments?.[0]?.airline?.name}
+          </div>
+        </div>
 
         <FlightDetails
           data={props.data}
@@ -78,8 +83,8 @@ const Flight = (props) => {
             finalFare: props.data?.final_fare,
             isRefundable: props.data?.is_refundable,
             duration:
-            props.data?.segments[props.data?.segments?.length-1]?.destination?.arrival_time
-            
+              props.data?.segments[props.data?.segments?.length - 1]
+                ?.destination?.arrival_time,
           }}
           isSelected={props.isSelected}
           selectedBooking={props.selectedBooking}
@@ -100,9 +105,10 @@ const Flight = (props) => {
           )}
         </div>
       </div>
+
       {viewMore && (
         <div
-          className={`mb-2 mt-2  w-full lg:block ${"mb-2 mt-2 lg:block flex flex-col p-3 px-2"} cursor-pointer relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA] lg:p-5 `}
+          className={`mb-2 mt-2  w-full lg:block ${"mb-2 mt-2 lg:block flex flex-col p-1"} cursor-pointer relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA] md:p-5 `}
         >
           <Details
             segments={props.data?.segments}

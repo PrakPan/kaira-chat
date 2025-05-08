@@ -119,6 +119,7 @@ const Booking = (props) => {
   }, [selectSearch]);
 
   useEffect(() => {
+    setMoreOptionsJSX([])
     if (props?.showBookingModal && props?.selectedBooking?.check_in) {
       fetchHotelsFilter();
     }
@@ -588,6 +589,7 @@ const Booking = (props) => {
     }));
     setMoreOptionsJSX([]);
     setNoResults(false);
+    props?.setShowBookingModal(false)
   };
 
   if (props?.token)

@@ -159,7 +159,7 @@ const ActivityDetailsDrawer = (props) => {
         text: `Added ${res?.data?.name} activity to the itinerary`,
         heading: "Success!",
       });
-  
+      props?.setShowDrawer(false)
       return res; // ✅ return response so the caller knows it succeeded
   
     } catch (err) {

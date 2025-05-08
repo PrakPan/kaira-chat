@@ -62,15 +62,16 @@ export default function ActivityDetails(props) {
     setStars(stars);
   }, []);
 
-  const handleUpdate = () => {
+  const handleUpdate = (e) => {
     setLoading(true);
     if (!token) {
       setLoading(false);
       props?.setShowLoginModal(true);
       return;
     }
-    props.updatedActivityBooking(setLoading).then(()=>{
+    props.updatedActivityBooking(e).then(()=>{
       setLoading(false)
+      props?.handleCloseDrawer(e)
     });
   };
 
