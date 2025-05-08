@@ -230,6 +230,37 @@ const Booking = (props) => {
     };
     dispatch(setItineraryFilters({ [heading]: oldfilters[heading] }));
   };
+  const handleClose = () => {
+    props?.setHideBookingModal();
+    resetPaginationStatus();
+    setMoreOptionsJSX([]);
+    setLoading(true);
+    setFilters((prev) => ({
+      free_breakfast: false,
+      is_refundable: false,
+      budget: {
+        price_lower_range: 1000,
+        price_upper_range: 10000,
+      },
+      star_category: null,
+      sort: "price: low to high",
+      type: null,
+      user_ratings: null,
+      facilities: null,
+      tags: null,
+      trace_id: null,
+      occupancies: itinerary?.hotels_config?.room_configuration || [
+        { adults: 1, childAges: [] },
+      ],
+      applyFilter: false,
+      page: 1,
+    }));
+    setMoreOptionsJSX([]);
+    setNoResults(false);
+    props?.setShowBookingModal(false)
+    setShowDetails(false)
+    props.onHide()
+  };
 
   const setDynamicFilters = (filters) => {
     setFiltersObj({
@@ -348,6 +379,7 @@ const Booking = (props) => {
                     getPaymentHandler={props.getPaymentHandler}
                     setStayBookings={props.setStayBookings}
                     setShowLoginModal={props?.setShowLoginModal}
+                    handleClose={handleClose}
                   ></AccommodationSearched>
                 );
             }
@@ -503,6 +535,7 @@ const Booking = (props) => {
                     getPaymentHandler={props.getPaymentHandler}
                     setStayBookings={props.setStayBookings}
                     setShowLoginModal={props?.setShowLoginModal}
+                    handleClose={handleClose}
                   ></AccommodationSearched>
                 );
             }
@@ -562,35 +595,7 @@ const Booking = (props) => {
       });
   };
 
-  const handleClose = () => {
-    props?.setHideBookingModal();
-    resetPaginationStatus();
-    setMoreOptionsJSX([]);
-    setLoading(true);
-    setFilters((prev) => ({
-      free_breakfast: false,
-      is_refundable: false,
-      budget: {
-        price_lower_range: 1000,
-        price_upper_range: 10000,
-      },
-      star_category: null,
-      sort: "price: low to high",
-      type: null,
-      user_ratings: null,
-      facilities: null,
-      tags: null,
-      trace_id: null,
-      occupancies: itinerary?.hotels_config?.room_configuration || [
-        { adults: 1, childAges: [] },
-      ],
-      applyFilter: false,
-      page: 1,
-    }));
-    setMoreOptionsJSX([]);
-    setNoResults(false);
-    props?.setShowBookingModal(false)
-  };
+
 
   if (props?.token)
     return (
@@ -874,6 +879,7 @@ const Booking = (props) => {
               itineraryDaybyDay={props?.itineraryDaybyDay}
               occupancies={filters.occupancies}
               setShowLoginModal={props?.setShowLoginModal}
+              handleClose={handleClose}
             ></ViewHotelDetails>
           </>
         </Drawer>
