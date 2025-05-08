@@ -86,7 +86,7 @@ const ActivitiesSummary = (props) => {
         className="flex gap-1 pt-4  flex-col justify-start"
       >
         <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
-          {props?.city?.city?.name} {props?.item.duration && <span>({props?.item?.duration})</span>}
+          {props?.city?.city?.name}
         </div>
         <div
           id={props?.index}
