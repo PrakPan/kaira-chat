@@ -108,7 +108,7 @@ const Flight = (props) => {
 
       {viewMore && (
         <div
-          className={`mb-2 mt-2  w-full lg:block ${"mb-2 mt-2 lg:block flex flex-col p-1"} cursor-pointer relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA] md:p-5 `}
+          className={`mt-2 w-full lg:block flex flex-col p-1 md:p-5 cursor-pointer relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA]`}
         >
           <Details
             segments={props.data?.segments}
