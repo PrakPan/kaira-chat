@@ -8,6 +8,7 @@ import styled from "styled-components";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import Image from "next/image";
 import BackArrow from "../../ui/BackArrow";
+import { Generalbuttonstyle } from "../../ui/button/Generallinkbutton";
 
 const BackText = styled.div`
   font-size: 1.5rem;
@@ -21,7 +22,8 @@ const VehicleDetailModal = ({
   loading,
   booking,
   type,
-  isEmbedded
+  isEmbedded,
+  setShowDrawer
 }) => {
   if (!data) return null;
   // const [loading, setLoading] = useState(false);
@@ -80,6 +82,7 @@ const VehicleDetailModal = ({
         {!isEmbedded && <div className="p-4 flex items-center">
           <BackArrow handleClick={()=>setHandleShow(false)}/>
         </div>}
+        <div className="flex justify-between">
         {!isEmbedded && <div className="flex items-center px-4">
           <div className="bg-blue-100 rounded-lg p-2 mr-3">
             {loading ? (
@@ -104,6 +107,30 @@ const VehicleDetailModal = ({
             )}
           </span>
         </div>}
+        {!isEmbedded && (
+                    <div className="font-lexend flex justify-between items-start !m-0 p-4">
+                      {loading ? (
+                        <div className="w-16 h-5 bg-gray-300 opacity-50 rounded"></div>
+                      ) : (
+                        <>
+                          {/* <Text>{name}</Text> */}
+                          <Generalbuttonstyle
+                            borderRadius={"7px"}
+                            fontSize={"1rem"}
+                            padding={"7px 25px"}
+                            onClick={() => {
+                              setHandleShow(false);
+                              setShowDrawer(true);
+                              //setShowTaxi(true);console.log("")
+                            }}
+                          >
+                            Change
+                          </Generalbuttonstyle>
+                        </>
+                      )}
+                    </div>
+                  )}
+        </div>
 
         {/* Ticket Section Label */}
         <div className="px-4 pt-2 pb-2">

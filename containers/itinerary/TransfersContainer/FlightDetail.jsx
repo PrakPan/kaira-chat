@@ -192,8 +192,8 @@ const Details = ({
                     {
                       trace_id: localStorage.getItem(`${provider}_trace_id`),
                       result_indices: [resultIndex],
-                      source_itinerary_city: isValidUUID(originCityId) ? originCityId : null,
-                      destination_itinerary_city: isValidUUID(destinationCityId) ? destinationCityId : null ,
+                      source_itinerary_city: (originCityId) ? originCityId : null,
+                      destination_itinerary_city: (destinationCityId) ? destinationCityId : null ,
                       booking_id: booking_id,
                       edge: edge,
                     },

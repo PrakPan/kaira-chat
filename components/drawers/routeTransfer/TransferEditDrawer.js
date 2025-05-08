@@ -343,8 +343,8 @@ const TransferEditDrawer = (props) => {
       };
     });
     // setShowFlightModal(false);
-    setShowTaxiModal(false);
-    setShowComboTaxiModal(false);
+   // setShowTaxiModal(false);
+   // setShowComboTaxiModal(false);
   };
 
   const handleRoundTripSelect = (trace_id, cab_id) => {
@@ -1749,19 +1749,25 @@ const NewMultiModeContainer = ({
   };
 
 const handleBackButton = () => {
-  const currentTransfer = transfer[currentStep - 1];
-  if (currentTransfer.mode === "Flight") {
-    setSkipFlightFetch(true);
-    setShowComboFlightModal(false);
-  } else if (currentTransfer.mode === "Taxi") {
-    setSkipTaxiFetch(true);
-    setShowComboTaxiModal(false);
-  }
-  
+
   if (currentStep === 1) {
     setCurrentStep(0); 
     return;
   }
+  
+
+  const currentTransfer = transfer[currentStep - 2];
+  console.log("Current Transfer",currentTransfer,currentStep)
+  if (currentTransfer.mode === "Flight") {
+   // setSkipFlightFetch(true);
+    setShowComboFlightModal(true);
+  } else if (currentTransfer.mode === "Taxi") {
+    console.log("Inside fetch")
+   // setSkipTaxiFetch(true);
+    setShowComboTaxiModal(true);
+  }
+  
+  
 
   const prevStepData = selectedData[currentStep - 2];
   if (prevStepData && prevStepData.departure_time) {
@@ -1964,10 +1970,8 @@ const handleBackButton = () => {
             ? addDaysToDate(oCityData.start_date, oCityData.duration)
             : dayjs().format("YYYY-MM-DD"));
         const requestBody = {
-          destination_itinerary_city: isValidUUID(destination_itinerary_city_id)
-            ? destination_itinerary_city_id
-            : null,
-          source_itinerary_city: isValidUUID(origin_itinerary_city_id)
+          destination_itinerary_city: (destination_itinerary_city_id),
+          source_itinerary_city: (origin_itinerary_city_id)
             ? origin_itinerary_city_id
             : null,
           number_of_adults: number_of_adults,
@@ -2373,6 +2377,22 @@ const handleBackButton = () => {
                   }
 
                   if (option.prices && option.prices.length > 0) {
+                    const formatTimeForDisplay = (timeValue) => {
+                      console.log("Time Value",timeValue);
+                       if (!timeValue) return "";
+                     
+                       const timeOption = timeOptions.find(option => option.value === timeValue);
+                       if (timeOption) {
+                         return timeOption.display;
+                       }
+                      
+                     
+                       const [hours, minutes] = timeValue.split(':');
+                       const hour = parseInt(hours, 10);
+                       const hour12 = hour % 12 || 12;
+                       const period = hour < 12 ? 'AM' : 'PM';
+                       return `${hour12}:${minutes} ${period}`;
+                     };
                     return (
                       <>
                         <div className="p-4">
@@ -2396,10 +2416,11 @@ const handleBackButton = () => {
                                 }}
                               >
                                 <span className="text-sm font-medium">
-                                  Departure Time: {
+                                  Departure Time: {formatTimeForDisplay(currentModeDepartureTime)}
+                                  {/* {
                                     timeOptions.find(t => t.value === currentModeDepartureTime)?.display || 
                                     currentModeDepartureTime
-                                  }
+                                  } */}
                                   
                                 </span>
                                 <svg 
@@ -2485,12 +2506,12 @@ const handleBackButton = () => {
                                       Math.ceil(option?.duration / 60)}{" "}
                                     hours | {option.distance} kms
                                   </div>
-                                  <div className="text-xs md:text-sm">
+                                 { priceOption?.class && <div className="text-xs md:text-sm">
                                     <span className="font-semibold">
                                       Facilities:
                                     </span>{" "}
                                     {priceOption?.class}
-                                  </div>
+                                  </div>}
                                   {priceOption.description && (
                                     <div className="text-xs md:text-sm text-gray-700 mt-1">
                                       {priceOption.description}
@@ -3889,10 +3910,10 @@ const OtherTransfer = ({
     
   
     const requestBody = {
-      destination_itinerary_city: isValidUUID(destination_itinerary_city_id)
+      destination_itinerary_city: (destination_itinerary_city_id)
         ? destination_itinerary_city_id
         : null,
-      source_itinerary_city: isValidUUID(origin_itinerary_city_id)
+      source_itinerary_city: (origin_itinerary_city_id)
         ? origin_itinerary_city_id
         : null,
       number_of_adults: pax.adults,
@@ -3984,12 +4005,14 @@ const OtherTransfer = ({
   };
 
   const formatTimeForDisplay = (timeValue) => {
+   console.log("Time Value",timeValue);
     if (!timeValue) return "";
   
     const timeOption = timeOptions.find(option => option.value === timeValue);
     if (timeOption) {
       return timeOption.display;
     }
+   
   
     const [hours, minutes] = timeValue.split(':');
     const hour = parseInt(hours, 10);

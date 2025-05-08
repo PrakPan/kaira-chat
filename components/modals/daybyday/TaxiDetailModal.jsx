@@ -44,6 +44,7 @@ const TaxiDetailModal = ({
   destination_itinerary_city_id,
   setShowDrawer,
   noChange,
+  noHeading
 }) => {
   if (!data) return null;
 
@@ -118,7 +119,7 @@ const TaxiDetailModal = ({
             {loading ? (
               <div className="w-64 h-7 bg-gray-300 opacity-50 rounded"></div>
             ) : (
-              `Taxi from ${source_address?.name} to ${destination_address?.name}`
+            !noHeading &&  `Taxi from ${source_address?.name} to ${destination_address?.name}`
             )}
           </h1>
           {!isEmbedded && !noChange && (

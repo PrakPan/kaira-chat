@@ -85,6 +85,7 @@ const TransferDrawer = ({
               handleDelete={null}
               loading={loading}
               isEmbedded={true}
+              noHeading={true}
             />
           );
         default:
@@ -95,6 +96,7 @@ const TransferDrawer = ({
               handleDelete={null}
               loading={loading}
               isEmbedded={true}
+              setShowDrawer={setShowDrawer}
             />
           );
       }
@@ -128,7 +130,7 @@ const TransferDrawer = ({
       className="font-lexend"
       onHide={setHandleShow}
       mobileWidth="100vw"
-      width={`${booking_type !== "Flight" ? "45vw" : "50vw"}`}
+      width={"50vw"}
     >
       {!isCombo ? (
         <>
@@ -178,6 +180,8 @@ const TransferDrawer = ({
               setHandleShow={setHandleShow}
               handleDelete={handleDelete}
               loading={loading}
+              setShowDrawer={setShowDrawer}
+
             />
           )}
         </>
