@@ -140,7 +140,7 @@ const {number_of_adults,number_of_children,number_of_infants} = useSelector(stat
     const requestData = {
       start_datetime: `${getDate(check_in)}T00:00:00`,
       number_of_travellers:
-        props?.plan?.number_of_adults + props?.plan?.number_of_children,
+      number_of_adults  + number_of_children + number_of_infants,
     };
 
     {
@@ -1121,6 +1121,7 @@ const RouteContainer = (props) => {
   const [singleTransfer, setSingleTransfer] = useState(transfer[0]);
   const [comboStartDate, setComboStartDate] = useState(null);
   const [comboStartTime, setComboStartTime] = useState(null);
+  const {number_of_adults,number_of_children,number_of_infants} = useSelector(state => state.Itinerary);
 
   const handleViewMore = () => {
     setViewMore((prev) => !prev);
@@ -1362,8 +1363,8 @@ const RouteContainer = (props) => {
                   mercuryTransfer={mercuryTransfer}
                   transfer={transfer}
                   number_of_travellers={
-                    props?.plan?.number_of_adults +
-                    props?.plan?.number_of_children
+                    number_of_adults +
+                    number_of_children + number_of_infants
                   }
                   check_in={check_in}
                   currentStep={currentStep}
