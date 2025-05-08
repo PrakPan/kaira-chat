@@ -1039,13 +1039,13 @@ const HotelBookingDetails = (props) => {
         </div>
       ))}
 
-      {props?.data?.hotel_details?.check_in?.instructions?.length ? (
+      {props?.data?.hotel_details?.description ? (
         <div className="flex flex-col gap-1">
           <div className="text-lg font-bold">About</div>
           <div
-            className="text-[14px] ml-[-30px]"
+            className="text-[14px] "
             dangerouslySetInnerHTML={{
-              __html: props?.data?.hotel_details?.check_in?.instructions[0],
+              __html: props?.data?.hotel_details?.description,
             }}
           ></div>
         </div>
@@ -1068,14 +1068,14 @@ const HotelBookingDetails = (props) => {
                           {room?.name}
                         </div>
                       )}
-                      {room?.description ? (
+                      {/* {room?.description ? (
                         <div
                           dangerouslySetInnerHTML={{
                             __html: room.description,
                           }}
                           className=""
                         ></div>
-                      ) : null}
+                      ) : null} */}
                     </div>
                     {room?.images?.length > 0 && (
                       <div className="flex flex-col items-center justify-center gap-3 md:w-[40%] h-[250px]">

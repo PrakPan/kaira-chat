@@ -124,7 +124,7 @@ const RoomType = (props) => {
             <div className="flex flex-col gap-3">
               {props.rooms.map((room, index) => (
                 <div key={index} className="flex flex-col gap-3">
-                  <div key={index} className="flex flex-col md:flex-row gap-1 justify-between">
+                  <div key={index} className="flex flex-col md:flex-row gap-1 justify-center">
                     {room?.description ? (
                       <div dangerouslySetInnerHTML={{
                         __html: room.description

@@ -1257,14 +1257,13 @@ const FlightBooking = ({
           className={` w-full 
           `}
         >
-          <div className="flex items-center gap-2 w-full">
-            <FlightLogoContainer
-              data={booking?.transfer_details?.items?.[0]}
-              height={34}
-              width={34}
-            />
-
-            <div className="h-fit">
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-2">
+              <FlightLogoContainer
+                data={booking?.transfer_details?.items?.[0]}
+                height={34}
+                width={34}
+              />
               <div className="text-xs font-semibold">
                 {
                   booking?.transfer_details?.items?.[0]?.segments?.[0]?.airline

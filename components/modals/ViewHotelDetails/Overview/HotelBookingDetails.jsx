@@ -954,13 +954,13 @@ const HotelBookingDetails = (props) => {
         </div>
       ))}
 
-      {props?.data?.check_in?.instructions?.length ? (
+      {props?.data?.description ? (
         <div className="flex flex-col gap-1">
           <div className="text-lg font-bold">About</div>
           <div
-            className="text-[14px] ml-[-30px]"
+            className="text-[14px]"
             dangerouslySetInnerHTML={{
-              __html: props?.data?.check_in?.instructions[0],
+              __html: props?.data?.description,
             }}
           ></div>
         </div>

@@ -378,6 +378,7 @@ export default function NewPoiBooking(props) {
           id={props.data?.id}
           dayIndex={props?.dayIndex | 0}
           setShowLoginModal={props.setShowLoginModal}
+          setShowDrawer={props?.setShowDrawer}
         />
 
         {props?.data?.added_in_itinerary?.selected ? (

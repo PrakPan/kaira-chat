@@ -91,6 +91,7 @@ const NewPoiDetailsDrawer = (props) => {
         text: "Something went wrong! Please try after some time.",
         heading: "Error!",
       });
+      return 0
     }
     return 1;
   };
@@ -118,6 +119,7 @@ const NewPoiDetailsDrawer = (props) => {
           itinerary_city_id={props?.itinerary_city_id}
           dayIndex={props?.dayIndex}
           setShowLoginModal={props.setShowLoginModal}
+          setShowDrawer={props?.setShowDrawer}
         />
       ) : (
         <PoiDetailsSkeleton
