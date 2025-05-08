@@ -104,6 +104,7 @@ const ComboFlight = (props) => {
     airline_name: "",
     sort_by: "Price",
   });
+  const {number_of_adults,number_of_children,number_of_infants} = useSelector(state=>state.Itinerary)
   const [limit, setLimit] = useState(20);
   const [offset, setOffset] = useState(0);
   const [viewMoreStatus, setViewMoreStatus] = useState(false);
@@ -119,15 +120,15 @@ const ComboFlight = (props) => {
   const [unauthorized, setUnauthorized] = useState(false);
   const [flightCount, setFlightsCount] = useState(0);
   const [pax, setPax] = useState({
-    adults: props.selectedBooking?.pax?.number_of_adults
+    adults: number_of_adults || (props.selectedBooking?.pax?.number_of_adults
       ? props.selectedBooking.pax.number_of_adults
-      : 1,
-    children: props.selectedBooking?.pax?.number_of_children
+      : 1),
+    children: number_of_children || (props.selectedBooking?.pax?.number_of_children
       ? props.selectedBooking.pax.number_of_children
-      : 0,
-    infants: props.selectedBooking?.pax?.number_of_infants
+      : 0),
+    infants: number_of_infants ||  (props.selectedBooking?.pax?.number_of_infants
       ? props.selectedBooking.pax.number_of_infants
-      : 0,
+      : 0),
   });
   const [classType, setClassType] = useState({
     key: "All",
