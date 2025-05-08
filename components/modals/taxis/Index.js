@@ -3,7 +3,7 @@ import styled from "styled-components";
 import media from "../../media";
 import axiosTaxiSearch from "../../../services/bookings/TaxiSearch";
 import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import Button from "../../ui/button/Index";
 import LogInModal from "../Login";
 import SectionOne from "./SectionOne";
@@ -57,7 +57,8 @@ const Booking = (props) => {
   const [noResults, setNoResults] = useState(false);
   const [showTransferEditDrawer, setShowTransferEditDrawer] = useState(false);
   const [isMercury, setIsMercury] = useState(false);
-
+   const {number_of_adults,number_of_children,number_of_infants} = useSelector(state => state.Itinerary);
+ 
  // console.log("OCity,D",props?.oCityData,props?.dCityData);
 
   useEffect(() => {
@@ -74,7 +75,7 @@ const Booking = (props) => {
 
     {props?.mercury && 
       fetchTransferMode
-      .post("",{origin: props?.origin, destination: props?.destination, top_only:"false",number_of_adults:props?.number_of_adults || 1,number_of_children: props?.number_of_children || 0, number_of_infants: props?.number_of_infants || 0})
+      .post("",{origin: props?.origin, destination: props?.destination, top_only:"false",number_of_adults:number_of_adults || 1,number_of_children: number_of_children || 0, number_of_infants: number_of_infants || 0})
     }
 
     const now = new Date();
@@ -90,7 +91,7 @@ const Booking = (props) => {
           start_date: props.selectedBooking.check_in || start_date,
           start_time: start_time,
           number_of_travellers:
-            props?.plan?.number_of_adults + props?.plan?.number_of_children || 1,
+            number_of_adults + number_of_children + number_of_infants,
           trip_type: "one-way",
           origin: {
             city_id: props.selectedBooking?.origin?.city_id || props?.oCityData?.gmaps_place_id || props?.oCityData?.city?.id,

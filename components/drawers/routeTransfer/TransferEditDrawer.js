@@ -123,7 +123,7 @@ const TransferEditDrawer = (props) => {
   const [currentModeDepartureTime, setCurrentModeDepartureTime] =
     useState(null);
     const [selectedTransferIndex, setSelectedTransferIndex] = useState(null);
-
+const {number_of_adults,number_of_children,number_of_infants} = useSelector(state=>state.Itinerary)
   // console.log("SELECTED BOOKING",city,dcity,oCityData,dCityData,mercuryTransfer?.destination?.city_name);
 
   useEffect(() => {
@@ -140,7 +140,7 @@ const TransferEditDrawer = (props) => {
     const requestData = {
       start_datetime: `${getDate(check_in)}T00:00:00`,
       number_of_travellers:
-        props?.plan?.number_of_adults + props?.plan?.number_of_children,
+      number_of_adults  + number_of_children + number_of_infants,
     };
 
     {
@@ -157,9 +157,9 @@ const TransferEditDrawer = (props) => {
                   props?.destination ||
                   mercuryTransfer?.destination?.city ||
                   destinationCityId,
-                number_of_adults: props?.plan?.number_of_adults || 1,
-                number_of_children: props?.plan?.number_of_children || 1,
-                number_of_infants: props?.plan?.number_of_infants || 1,
+                number_of_adults: number_of_adults || props?.plan?.number_of_adults || 1,
+                number_of_children: number_of_children ||  props?.plan?.number_of_children || 0,
+                number_of_infants: number_of_infants || props?.plan?.number_of_infants || 0,
                 //top_only: "false",
               },
               {
@@ -1121,6 +1121,7 @@ const RouteContainer = (props) => {
   const [singleTransfer, setSingleTransfer] = useState(transfer[0]);
   const [comboStartDate, setComboStartDate] = useState(null);
   const [comboStartTime, setComboStartTime] = useState(null);
+  const {number_of_adults,number_of_children,number_of_infants} = useSelector(state => state.Itinerary);
 
   const handleViewMore = () => {
     setViewMore((prev) => !prev);
@@ -1362,8 +1363,8 @@ const RouteContainer = (props) => {
                   mercuryTransfer={mercuryTransfer}
                   transfer={transfer}
                   number_of_travellers={
-                    props?.plan?.number_of_adults +
-                    props?.plan?.number_of_children
+                    number_of_adults +
+                    number_of_children + number_of_infants
                   }
                   check_in={check_in}
                   currentStep={currentStep}

@@ -92,8 +92,9 @@ export default function FlightDetails({
           </Plan>
         </div>
       </div>
+
       <div className="flex justify-between items-center">
-        <div className=" flex flex-col items-center">
+        <div className=" flex flex-col items-center text-nowrap">
           <div className="text-[14px] font-semibold">
             {origin?.departure_time
               ? `${new Date(origin?.departure_time)
@@ -110,6 +111,7 @@ export default function FlightDetails({
             ({origin?.city_code})
           </div>
         </div>
+
         {isNonStop || numStops == 0 ? (
           <div className="text-sm text-gray-600 text-[#C5C1C1]">Non-stop</div>
         ) : (
@@ -122,7 +124,7 @@ export default function FlightDetails({
             }}
             className="relative"
           >
-            <div className="text-sm text-blue cursor-pointer">
+            <div className="text-sm text-blue cursor-pointer text-center max-w-[80%] md:max-w-[100%] mx-auto">
               {segments?.length - 1} stop{segments?.length - 1 !== 1 && "s"}
               {" via "}
               <span className="text-wrap">
@@ -165,7 +167,7 @@ export default function FlightDetails({
           </div>
         )}
 
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center text-nowrap">
           <div className="text-[14px] font-semibold">
             {destination?.arrival_time
               ? `${new Date(destination?.arrival_time)

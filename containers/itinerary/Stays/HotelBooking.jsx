@@ -23,6 +23,7 @@ import { CONTENT_SERVER_HOST } from "../../../services/constants";
 import { isDateOlderThanCurrent } from "../../../helper/isDateOlderThanCurrent";
 import { format, parse } from "date-fns";
 import { connect, useSelector } from "react-redux";
+import * as ga from "../../../services/ga/Index";
 
 const RoomTypeGrid = styled.div`
   display: grid;

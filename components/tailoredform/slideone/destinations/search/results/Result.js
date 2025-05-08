@@ -2,14 +2,13 @@ import { FaMapMarkerAlt } from "react-icons/fa";
 import styled from "styled-components";
 import moment from "moment";
 
-
 const Container = styled.div`
   display: grid;
   grid-template-columns: 34px 1fr;
   gap: 12px;
   align-items: center;
   margin-block: 1rem;
-  border-radius: 50px;
+  border-radius: 30px;
   &:hover {
     background: #f0f0f0;
   }
@@ -22,17 +21,6 @@ const MarkerContainer = styled.div`
   padding-top: 10px;
 `;
 
-const Text = styled.div`
-  font-weight: 500;
-  p {
-    font-weight: 400;
-    margin-bottom: 0rem;
-    margin-top: 4px;
-    font-size: 12px;
-    color: #7e7e7e;
-  }
-`;
-
 const Result = (props) => {
   const _handleClick = (e) => {
     e.stopPropagation();
@@ -41,18 +29,34 @@ const Result = (props) => {
 
     if (props.result?.start_date && props.result?.end_date) {
       props.setValueStart(moment(props.result.start_date));
-      props.setValueEnd(moment(props.result.end_date))
+      props.setValueEnd(moment(props.result.end_date));
     }
 
     if (props.setShowResults) props.setShowResults(false);
     props.setFocusSearch(false);
   };
 
-  console.log("Prop Result",props?.result);
+  const getParent = (path) => {
+    const links = path.split("/");
+    const parent = path
+      .split("/")
+      .map((part) => capitalizeFirstLetter(part))
+      .join("/");
+
+    return parent;
+  };
+
+  const capitalizeFirstLetter = (string) => {
+    const words = string.split("_");
+    const newString = words
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+    return newString;
+  };
 
   return (
     <Container
-      className="font-lexend"
+      className="font-lexend p-2"
       onClick={(e) => {
         _handleClick(e),
           props._updateDestinationHandler(
@@ -65,10 +69,12 @@ const Result = (props) => {
       <MarkerContainer>
         <FaMapMarkerAlt />
       </MarkerContainer>
-      <Text>
-        <div>{props.name}</div>
-        <p>{props.result.parent}</p>
-      </Text>
+      <div className="">
+        <div className="font-[500]">{props.name}</div>
+        <p className="text-blue text-xs font-light mb-0">
+          {getParent(props.result.path)}
+        </p>
+      </div>
     </Container>
   );
 };

@@ -200,8 +200,7 @@ const ComboTaxi = (props) => {
             propsToUse?.comboStartDate || propsToUse.selectedBooking.check_in || start_date,
           start_time: propsToUse?.comboStartTime || start_time,
           number_of_travellers:
-            number_of_adults + number_of_children ||
-            1,
+            number_of_adults + number_of_children + number_of_infants,
           trip_type: "one-way",
           origin: {
             city_id:
