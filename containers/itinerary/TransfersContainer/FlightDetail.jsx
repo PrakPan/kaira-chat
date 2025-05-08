@@ -68,14 +68,14 @@ const Details = ({
   transferBookings,
   edge,
   getPaymentHandler,
-  combo
+  combo,
 }) => {
   // console.log("transferbookings is:",transferBookings)
   const router = useRouter();
   const [fareRules, setFareRules] = useState(fareRule?.[0]?.fareRuleDetail);
   const [fareRulesLoading, setFareRulesLoading] = useState(false);
   const [fareRUlesError, setFareRulesError] = useState(false);
-  const [loading,setLoading] =useState(false);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   useEffect(() => {
     if (fareRules == null) {
@@ -145,19 +145,23 @@ const Details = ({
           Something went wrong, please try again
         </div>
       ) : (
-        fareRules && <> <div className="flex flex-col">
-          <div className="w-fit py-2 mb-2 text-lg font-bold">
-            Fare Details and Rules
-          </div>
+        fareRules && (
+          <>
+            {" "}
+            <div className="flex flex-col">
+              <div className="w-fit py-2 mb-2 text-lg font-bold">
+                Fare Details and Rules
+              </div>
 
-          <div
-            dangerouslySetInnerHTML={{
-              __html: fareRules,
-            }}
-            className="flex flex-col gap-1 text-sm ml-4"
-          ></div>
-        </div>
-        </>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: fareRules,
+                }}
+                className="flex flex-col gap-1 text-sm ml-4"
+              ></div>
+            </div>
+          </>
+        )
       )}
       {provider && !combo && (
         <div className="flex justify-end">
@@ -192,8 +196,10 @@ const Details = ({
                     {
                       trace_id: localStorage.getItem(`${provider}_trace_id`),
                       result_indices: [resultIndex],
-                      source_itinerary_city: (originCityId) ? originCityId : null,
-                      destination_itinerary_city: (destinationCityId) ? destinationCityId : null ,
+                      source_itinerary_city: originCityId ? originCityId : null,
+                      destination_itinerary_city: destinationCityId
+                        ? destinationCityId
+                        : null,
                       booking_id: booking_id,
                       edge: edge,
                     },
@@ -236,22 +242,22 @@ const Details = ({
             }}
             className="z-[1600]"
           >
-              <div className="flex justify-center items-center relative min-w-[120px] h-[24px]">
-    <span className={`${loading ? "invisible" : "visible"}`}>
-      {individual ? "Book Now" : "Add To Itinerary"}
-    </span>
+            <div className="flex justify-center items-center relative min-w-[120px] h-[24px]">
+              <span className={`${loading ? "invisible" : "visible"}`}>
+                {individual ? "Book Now" : "Add To Itinerary"}
+              </span>
 
-    {loading && (
-      <div className="absolute inset-0 flex justify-center items-center">
-        <PulseLoader
-          size={12}
-          speedMultiplier={0.6}
-          color="#000000"
-        />
-      </div>
-    )}
-  </div>
-    </Generalbuttonstyle>
+              {loading && (
+                <div className="absolute inset-0 flex justify-center items-center">
+                  <PulseLoader
+                    size={12}
+                    speedMultiplier={0.6}
+                    color="#000000"
+                  />
+                </div>
+              )}
+            </div>
+          </Generalbuttonstyle>
         </div>
       )}
       <ToastContainer />
