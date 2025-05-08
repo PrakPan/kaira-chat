@@ -264,7 +264,7 @@ const TransferBooking = ({
   };
 
   const handleDelete = async (book) => {
-    if (!localStorage.getItem("access_token")){
+    if (!localStorage.getItem("access_token")) {
       setShowLoginModal(true);
       return;
     }
@@ -618,44 +618,46 @@ const TransferBooking = ({
                   </Drawer>
                 </div>
               )}
-               <TransferEditDrawer
-              mercury
-              addOrEdit={"transferAdd"}
-              showDrawer={showDrawer}
-              setShowDrawer={setShowDrawer}
-              selectedTransferHeading={origin}
-              origin={origin?.id != undefined ? origin?.id : id}
-              destination={destination?.id != undefined ? destination?.id : id}
-              check_in={check_in}
-              routeId={id}
-              city={
-                origin?.name != undefined
-                  ? origin?.name || origin?.city_name
-                  : null
-              }
-              dcity={
-                destination?.name != undefined
-                  ? destination?.name || destination?.city_name
-                  : null
-              }
-              oCityData={oCityData}
-              dCityData={dCityData}
-              selectedBooking={selectedBooking}
-              setSelectedBooking={setSelectedBooking}
-              originCityId={originCityId}
-              destinationCityId={destinationCityId}
-              getPaymentHandler={getPaymentHandler}
-              _updateFlightBookingHandler={_updateFlightBookingHandler}
-              _updatePaymentHandler={_updatePaymentHandler}
-              _updateTaxiBookingHandler={_updateTaxiBookingHandler}
-              setShowLoginModal={setShowLoginModal}
-              origin_itinerary_city_id={
-                oCityData?.id || oCityData?.gmaps_place_id
-              }
-              destination_itinerary_city_id={
-                dCityData?.id || dCityData?.gmaps_place_id
-              }
-            />
+              <TransferEditDrawer
+                mercury
+                addOrEdit={"transferAdd"}
+                showDrawer={showDrawer}
+                setShowDrawer={setShowDrawer}
+                selectedTransferHeading={origin}
+                origin={origin?.id != undefined ? origin?.id : id}
+                destination={
+                  destination?.id != undefined ? destination?.id : id
+                }
+                check_in={check_in}
+                routeId={id}
+                city={
+                  origin?.name != undefined
+                    ? origin?.name || origin?.city_name
+                    : null
+                }
+                dcity={
+                  destination?.name != undefined
+                    ? destination?.name || destination?.city_name
+                    : null
+                }
+                oCityData={oCityData}
+                dCityData={dCityData}
+                selectedBooking={selectedBooking}
+                setSelectedBooking={setSelectedBooking}
+                originCityId={originCityId}
+                destinationCityId={destinationCityId}
+                getPaymentHandler={getPaymentHandler}
+                _updateFlightBookingHandler={_updateFlightBookingHandler}
+                _updatePaymentHandler={_updatePaymentHandler}
+                _updateTaxiBookingHandler={_updateTaxiBookingHandler}
+                setShowLoginModal={setShowLoginModal}
+                origin_itinerary_city_id={
+                  oCityData?.id || oCityData?.gmaps_place_id
+                }
+                destination_itinerary_city_id={
+                  dCityData?.id || dCityData?.gmaps_place_id
+                }
+              />
             </>
           </Container>
         ) : (
@@ -1221,6 +1223,9 @@ const FlightBooking = ({
     if (booking?.number_of_children > 1) child = " Childs";
     else child = " Child";
   } catch {}
+
+  console.log("flight >>>>", booking.transfer_details);
+
   return (
     <div className="mt-3 ml-1 md:ml-7 flex flex-col w-full items-center justify-center ">
       <div className=" w-full items-center">
@@ -1245,6 +1250,7 @@ const FlightBooking = ({
           Duration: {booking?.duration}
         </div>
       </div>
+
       <div
         id={booking?.id}
         className={`mb-2 mt-2  w-full lg:block ${"mb-2 mt-2 lg:block flex flex-col p-3 "} cursor-pointer relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA] lg:p-5 w-full`}
@@ -1253,12 +1259,22 @@ const FlightBooking = ({
           className={` w-full 
           `}
         >
-          <div className="flex justify-between w-full">
+          <div className="flex items-center gap-2 w-full">
             <FlightLogoContainer
               data={booking?.transfer_details?.items?.[0]}
               height={34}
               width={34}
             />
+
+            <div className="h-fit">
+              <div className="text-xs font-semibold">
+                {
+                  booking?.transfer_details?.items?.[0]?.segments?.[0]?.airline
+                    ?.name
+                }
+              </div>
+            </div>
+
             {window.innerWidth >= 1000 && (
               <div>
                 <button
@@ -1272,6 +1288,7 @@ const FlightBooking = ({
               </div>
             )}
           </div>
+
           <div className="flex-grow">
             <FlightDetails
               data={booking?.transfer_details?.items?.[0]}
@@ -1291,6 +1308,7 @@ const FlightBooking = ({
             />
           </div>
         </div>
+
         <div
           className={`flex ${
             window.innerWidth < 1000 ? "justify-between" : "justify-center"
@@ -1310,6 +1328,7 @@ const FlightBooking = ({
           )}
         </div>
       </div>
+
       <Drawer
         show={showDetails}
         anchor={"right"}
