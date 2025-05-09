@@ -1458,6 +1458,7 @@ const Booking = (props) => {
                 setShowBookingModal={props.setShowBookingModal}
                 showBookingModal={props.showBookingModal}
                 setHideBookingModal={props.setHideBookingModal}
+                onHide={_handleLoginClose}
               ></BookingModal>
 
               {props.traveleritinerary ? (
@@ -1814,6 +1815,7 @@ const Booking = (props) => {
               setShowBookingModal={props.setShowBookingModal}
               showBookingModal={props.showBookingModal}
               setHideBookingModal={props.setHideBookingModal}
+              onHide={_handleLoginClose}
             ></BookingModal>
 
             {props.traveleritinerary ? (
