@@ -471,6 +471,7 @@ const DaybyDay = ({
         stayBookings={stayBookings}
         setStayBookings={setStayBookings}
         itineraryDaybyDay={itineraryDaybyDay}
+        onHide={()=>{}}
       ></BookingModal>
     </>
   );

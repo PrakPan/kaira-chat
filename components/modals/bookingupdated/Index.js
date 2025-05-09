@@ -114,7 +114,7 @@ const Booking = (props) => {
   useEffect(() => {
     if (props?.showBookingModal && props?.selectedBooking?.check_in) {
       console.log("Triggering fetchHotels due to change in dependency");
-      fetchHotels();
+      fetchHotelsFilter();
     }
   }, [selectSearch]);
 

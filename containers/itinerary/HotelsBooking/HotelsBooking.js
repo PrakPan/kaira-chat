@@ -367,6 +367,7 @@ const HotelsBooking = (props) => {
         AddHotel={AddHotel}
         _GetInTouch={props._GetInTouch}
         setShowLoginModal={props.setShowLoginModal}
+        onHide={_handleLoginClose}
       ></BookingModal>
 
       {!isDesktop && props.showBookingModal && (

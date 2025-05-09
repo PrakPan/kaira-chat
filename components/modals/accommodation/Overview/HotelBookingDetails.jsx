@@ -157,7 +157,7 @@ const getRoomImage = (images) => {
 };
 
 const HotelBookingDetails = (props) => {
-  console.log("hotel details are:",props)
+  console.log("hotel details are:", props);
   const isDesktop = useMediaQuery("(min-width:1148px)");
   const [loading, setLoading] = useState(false);
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
@@ -212,9 +212,9 @@ const HotelBookingDetails = (props) => {
 
   const handleDelete = async () => {
     try {
-      if(!localStorage.getItem("access_token")) {
-        props?.setShowLoginModal(true)
-        return
+      if (!localStorage.getItem("access_token")) {
+        props?.setShowLoginModal(true);
+        return;
       }
       setLoading(true);
       const response = await axiosDeleteBooking.delete(
@@ -976,7 +976,8 @@ const HotelBookingDetails = (props) => {
               )}
             </div>
             <div>
-              Check out: {dateFormat(props?.data?.hotel_details?.check_out.date)}
+              Check out:{" "}
+              {dateFormat(props?.data?.hotel_details?.check_out.date)}
               {props?.data?.hotel_details?.check_out.time && (
                 <>
                   |
@@ -984,7 +985,8 @@ const HotelBookingDetails = (props) => {
                     dateFormat(props?.data?.hotel_details?.check_out.time)
                   )}
                 </>
-              )}            </div>
+              )}{" "}
+            </div>
           </CheckInText>
         ) : (
           <></>
@@ -1107,35 +1109,57 @@ const HotelBookingDetails = (props) => {
         </>
       )}
 
-      {props?.data?.hotel_details?.category_ratings && (
-        <div>
-          <Heading>Ratings</Heading>
-          <table>
-            <tbody>
-              {props?.data?.hotel_details?.category_ratings.map(
-                (item, index) => (
-                  <tr>
-                    {item?.category != "recommendation_percent" && (
-                      <>
-                        <td className="">
-                          {item?.category?.slice(0, 1).toUpperCase() +
-                            item?.category?.slice(1, item?.category?.length)}
-                        </td>
-                        <td className="flex items-center gap-1">
-                          <div className="flex text-[#FFD201]">
-                            {getStars(item?.rating)}
-                          </div>
-                          {item?.rating}
-                        </td>
-                      </>
-                    )}
-                  </tr>
-                )
-              )}
-            </tbody>
-          </table>
+      {props?.data?.hotel_details?.rates?.map((room, index) => (
+        <div className="flex flex-col gap-3">
+          {room?.polices ? (
+            <>
+              <div className="text-lg font-bold mt-4">Policies</div>
+              {room.polices.map((item, index) => (
+                <div className="flex flex-col gap-2">
+                  <div className="text-lg font-semibold">{item.type}</div>
+                  <div
+                    className="text-[14px]"
+                    dangerouslySetInnerHTML={{
+                      __html: item.text,
+                    }}
+                  ></div>
+                </div>
+              ))}
+            </>
+          ) : null}
         </div>
-      )}
+      ))}
+
+      {props?.data?.hotel_details?.category_ratings &&
+        props?.data?.hotel_details?.category_ratings.length > 0 && (
+          <div>
+            <Heading>Ratings</Heading>
+            <table>
+              <tbody>
+                {props?.data?.hotel_details?.category_ratings.map(
+                  (item, index) => (
+                    <tr>
+                      {item?.category != "recommendation_percent" && (
+                        <>
+                          <td className="">
+                            {item?.category?.slice(0, 1).toUpperCase() +
+                              item?.category?.slice(1, item?.category?.length)}
+                          </td>
+                          <td className="flex items-center gap-1">
+                            <div className="flex text-[#FFD201]">
+                              {getStars(item?.rating)}
+                            </div>
+                            {item?.rating}
+                          </td>
+                        </>
+                      )}
+                    </tr>
+                  )
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
 
       {props?.data?.hotel_details?.recommendations &&
       props?.data?.hotel_details?.recommendations?.length ? (
