@@ -248,6 +248,8 @@ console.log("hotel name:",data?.name)
             text: `${data?.name} added to itinerary Successfully`,
             heading: "Success!",
           });
+          props?.handleClose()
+          props?.onHide()
         } catch (error) {
           props.openNotification({
             type: "error",
@@ -305,6 +307,7 @@ console.log("hotel name:",data?.name)
                   setShowDetails={props?.setShowDetails}
                   id={props?.id}
                   setShowLoginModal={props.setShowLoginModal}
+                  onHide={props?.onHide}
                 />
               ) : (
                 <Overview

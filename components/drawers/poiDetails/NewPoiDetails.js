@@ -181,7 +181,7 @@ export default function PoiDetails(props) {
     setStars(stars);
   }, []);
 
-  const handleUpdate = () => {
+  const handleUpdate = (e) => {
     setLoading(true);
     if (!token) {
       props.setShowLoginModal(true);
@@ -189,8 +189,12 @@ export default function PoiDetails(props) {
       setLoading(false);
       return;
     }
-    props.updatedActivityBooking().then(()=>{
+    props.updatedActivityBooking().then((res)=>{
       setLoading(false);
+      if (res!=0){
+      props?.setShowDrawer(false);
+      props?.handleCloseDrawer(e)
+      }
     });
   };
 

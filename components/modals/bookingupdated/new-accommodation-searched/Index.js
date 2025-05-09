@@ -26,6 +26,8 @@ const Accommodation = (props) => {
         banner_imcurage={props.banner_image}
         handleClick={props?.handleClick}
         key={props?.key}
+        handleClose={props?.handleClose}
+
       />
 
       <ViewHotelDetails
@@ -51,6 +53,7 @@ const Accommodation = (props) => {
         occupancies={props.occupancies}
         source={props.source}
         setShowLoginModal={props?.setShowLoginModal}
+        handleClose={props?.handleClose}
       ></ViewHotelDetails>
     </div>
   );

@@ -218,12 +218,13 @@ const HotelBookingDetails = (props) => {
             <Button
               padding="7px 25px"
               borderRadius="7px"
-              onclick={() =>{ 
-                if(!localStorage.getItem("access_token")){
-                  props?.setShowLoginModal(true)
-                  return
+              onclick={() => {
+                if (!localStorage.getItem("access_token")) {
+                  props?.setShowLoginModal(true);
+                  return;
                 }
-                props.BookingButtonFun()}}
+                props.BookingButtonFun();
+              }}
             >
               Change
             </Button>
@@ -954,13 +955,13 @@ const HotelBookingDetails = (props) => {
         </div>
       ))}
 
-      {props?.data?.check_in?.instructions?.length ? (
+      {props?.data?.description ? (
         <div className="flex flex-col gap-1">
           <div className="text-lg font-bold">About</div>
           <div
-            className="text-[14px] ml-[-30px]"
+            className="text-[14px]"
             dangerouslySetInnerHTML={{
-              __html: props?.data?.check_in?.instructions[0],
+              __html: props?.data?.description,
             }}
           ></div>
         </div>
@@ -989,25 +990,27 @@ const HotelBookingDetails = (props) => {
                       ></div>
                     ) : null}
                   </div>
-                  {room?.images&& room?.images?.length>0&&<div className="flex flex-col items-center justify-center gap-3 md:w-[40%] h-[250px]">
-                    <ImageCarousel images={room?.images} />
-                  </div>}
+                  {room?.images && room?.images?.length > 0 && (
+                    <div className="flex flex-col items-center justify-center gap-3 md:w-[40%] h-[250px]">
+                      <ImageCarousel images={room?.images} />
+                    </div>
+                  )}
                 </div>
 
                 {room?.facilities ? (
                   <div className="flex flex-col gap-2">
                     <div className="text-lg font-semibold">Amenities</div>
                     <div className="text-[14px]">
-                        <div className="flex flex-wrap gap-2">
-                          {room.facilities.map((item, index) => (
-                            <div key={index}>
-                              <div className="bg-[#FAFAFA] p-[8px] rounded-[10px]">
-                                {item}
-                              </div>
+                      <div className="flex flex-wrap gap-2">
+                        {room.facilities.map((item, index) => (
+                          <div key={index}>
+                            <div className="bg-[#FAFAFA] p-[8px] rounded-[10px]">
+                              {item}
                             </div>
-                          ))}
-                        </div>
+                          </div>
+                        ))}
                       </div>
+                    </div>
                   </div>
                 ) : null}
               </div>
@@ -1016,7 +1019,8 @@ const HotelBookingDetails = (props) => {
         </>
       )}
 
-      {props?.data?.recommendations && props?.data?.recommendations?.length>0 ? (
+      {props?.data?.recommendations &&
+      props?.data?.recommendations?.length > 0 ? (
         <>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>
             Room Recommendations
@@ -1032,32 +1036,34 @@ const HotelBookingDetails = (props) => {
       ) : (
         <></>
       )}
-      {props?.data?.category_ratings && props?.data?.category_ratings?.length>0 && (
-        <div>
-          <Heading >Ratings</Heading>
-          <table>
+      {props?.data?.category_ratings &&
+        props?.data?.category_ratings?.length > 0 && (
+          <div>
+            <Heading>Ratings</Heading>
+            <table>
               <tbody>
-          {props?.data?.category_ratings.map((item, index) => (
-                            <tr>
-
-            {item?.category != "recommendation_percent" && (
-              <>
-                <td className="">{item?.category?.slice(0,1).toUpperCase()+item?.category?.slice(1,item?.category?.length)}</td>
-                <td className="flex items-center gap-1">
-                    <div className="flex text-[#FFD201]">
-                      {getStars(item?.rating)}
-                    </div>
-                    {item?.rating}
-                  </td>
-                  </>
-            )}
-            </tr>
-          ))}
-
-          </tbody>
-          </table>
-        </div>
-      )}
+                {props?.data?.category_ratings.map((item, index) => (
+                  <tr>
+                    {item?.category != "recommendation_percent" && (
+                      <>
+                        <td className="">
+                          {item?.category?.slice(0, 1).toUpperCase() +
+                            item?.category?.slice(1, item?.category?.length)}
+                        </td>
+                        <td className="flex items-center gap-1">
+                          <div className="flex text-[#FFD201]">
+                            {getStars(item?.rating)}
+                          </div>
+                          {item?.rating}
+                        </td>
+                      </>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
       {props?.data?.google_maps_link ? (
         <div>

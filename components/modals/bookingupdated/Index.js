@@ -112,14 +112,18 @@ const Booking = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (props?.showBookingModal && props?.selectedBooking?.check_in) {
-      console.log("Triggering fetchHotels due to change in dependency");
-      fetchHotels();
+    if (
+      props?.showBookingModal &&
+      props?.selectedBooking?.check_in &&
+      (selectSearch.length > 2 || selectSearch.length == 0)
+    ) {
+      setMoreOptionsJSX([]);
+      fetchHotelsFilter();
     }
   }, [selectSearch]);
 
   useEffect(() => {
-    setMoreOptionsJSX([])
+    setMoreOptionsJSX([]);
     if (props?.showBookingModal && props?.selectedBooking?.check_in) {
       fetchHotelsFilter();
     }
@@ -230,6 +234,37 @@ const Booking = (props) => {
     };
     dispatch(setItineraryFilters({ [heading]: oldfilters[heading] }));
   };
+  const handleClose = () => {
+    props?.setHideBookingModal();
+    resetPaginationStatus();
+    setMoreOptionsJSX([]);
+    setLoading(true);
+    setFilters((prev) => ({
+      free_breakfast: false,
+      is_refundable: false,
+      budget: {
+        price_lower_range: 1000,
+        price_upper_range: 10000,
+      },
+      star_category: null,
+      sort: "price: low to high",
+      type: null,
+      user_ratings: null,
+      facilities: null,
+      tags: null,
+      trace_id: null,
+      occupancies: itinerary?.hotels_config?.room_configuration || [
+        { adults: 1, childAges: [] },
+      ],
+      applyFilter: false,
+      page: 1,
+    }));
+    setMoreOptionsJSX([]);
+    setNoResults(false);
+    props?.setShowBookingModal(false);
+    setShowDetails(false);
+    props.onHide();
+  };
 
   const setDynamicFilters = (filters) => {
     setFiltersObj({
@@ -241,7 +276,6 @@ const Booking = (props) => {
   };
 
   const fetchHotelsFilter = () => {
-    console.log("occupancies are:", filters.occupancies);
     setLoading(true);
     setUpdateLoadingState(true);
     setNoResults(false);
@@ -348,6 +382,7 @@ const Booking = (props) => {
                     getPaymentHandler={props.getPaymentHandler}
                     setStayBookings={props.setStayBookings}
                     setShowLoginModal={props?.setShowLoginModal}
+                    handleClose={handleClose}
                   ></AccommodationSearched>
                 );
             }
@@ -386,8 +421,8 @@ const Booking = (props) => {
       })
       .catch((err) => {
         setLoading(false);
-        setUpdateLoadingState(false)
-        setMoreOptionsJSX([])
+        setUpdateLoadingState(false);
+        setMoreOptionsJSX([]);
 
         setFetchingIsError({
           error: true,
@@ -503,6 +538,7 @@ const Booking = (props) => {
                     getPaymentHandler={props.getPaymentHandler}
                     setStayBookings={props.setStayBookings}
                     setShowLoginModal={props?.setShowLoginModal}
+                    handleClose={handleClose}
                   ></AccommodationSearched>
                 );
             }
@@ -542,54 +578,24 @@ const Booking = (props) => {
       .catch((err) => {
         console.log("new error:", err);
         setLoading(false);
-        setUpdateLoadingState(false)
-        if (err?.response.status==400){
-          setPaginationStatus(()=>({
-            traceId:null,
-            page:1,
-            totalPages:1
-          }))
+        setUpdateLoadingState(false);
+        if (err?.response.status == 400) {
+          setPaginationStatus(() => ({
+            traceId: null,
+            page: 1,
+            totalPages: 1,
+          }));
         }
         props.openNotification({
           text: "Sorry, No more hotels available!",
           heading: "Error!",
           type: "error",
-        })
+        });
         setFetchingIsError({
           error: true,
           errorMsg: `Sorry, we could not find any hotels in ${props?.selectedBooking?.city} for given dates at the moment. Please contact us to complete this booking`,
         });
       });
-  };
-
-  const handleClose = () => {
-    props?.setHideBookingModal();
-    resetPaginationStatus();
-    setMoreOptionsJSX([]);
-    setLoading(true);
-    setFilters((prev) => ({
-      free_breakfast: false,
-      is_refundable: false,
-      budget: {
-        price_lower_range: 1000,
-        price_upper_range: 10000,
-      },
-      star_category: null,
-      sort: "price: low to high",
-      type: null,
-      user_ratings: null,
-      facilities: null,
-      tags: null,
-      trace_id: null,
-      occupancies: itinerary?.hotels_config?.room_configuration || [
-        { adults: 1, childAges: [] },
-      ],
-      applyFilter: false,
-      page: 1,
-    }));
-    setMoreOptionsJSX([]);
-    setNoResults(false);
-    props?.setShowBookingModal(false)
   };
 
   if (props?.token)
@@ -711,7 +717,9 @@ const Booking = (props) => {
                     </div>
                   ) : null}
 
-                  {!loading && isFetchingError.error && moreOptionsJSX?.length==0 ? (
+                  {!loading &&
+                  isFetchingError.error &&
+                  moreOptionsJSX?.length == 0 ? (
                     <div className="flex flex-col items-center justify-center h-[80vh] gap-3">
                       <div className="flex flex-row items-center justify-center text-center font-lexend">
                         {isFetchingError.errorMsg}
@@ -762,8 +770,7 @@ const Booking = (props) => {
                             {updateLoadingState && <Skeleton />}
                           </>
                         ) : null}
-                                          {loading && <Skeleton />}
-
+                        {loading && <Skeleton />}
 
                         {paginationStatus.page <
                           paginationStatus.totalPages && (
@@ -874,6 +881,7 @@ const Booking = (props) => {
               itineraryDaybyDay={props?.itineraryDaybyDay}
               occupancies={filters.occupancies}
               setShowLoginModal={props?.setShowLoginModal}
+              handleClose={handleClose}
             ></ViewHotelDetails>
           </>
         </Drawer>

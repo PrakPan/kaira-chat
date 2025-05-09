@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ImageLoader from "../../../components/ImageLoader";
 import { BsCalendar2, BsPeopleFill, BsPlus } from "react-icons/bs";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
@@ -234,6 +234,10 @@ const HotelBooking = ({
     setShowBookingModal(true);
   }
 
+  useEffect(()=>{
+console.log("component show etails are:",openViewDetails)
+  },[openViewDetails])
+
   const _setImagesHandler = (images) => {
     setImages(images);
   };
@@ -289,6 +293,11 @@ const HotelBooking = ({
     });
     setShowBookingModal(true);
   };
+
+  const closeBookingModal=()=>{
+    setShowBookingModal(false)
+    setShowDetails(false)
+  }
 
   return (
     <div className={`${!isPageWide ? "max-w-fit" : "max-w-[54vw]"}`}>
@@ -701,6 +710,7 @@ const HotelBooking = ({
         CityData={CityData}
         handleCloseDrawer={handleCloseDrawer}
         setShowLoginModal={setShowLoginModal}
+        handleClose={closeBookingModal}
       ></ViewHotelDetails>
       <AccommodationModal
         mercury
@@ -716,7 +726,6 @@ const HotelBooking = ({
         BookingButton={!isDateOlderThanCurrent(start_date) ? true : false}
         bookingFunData={bookingFunData}
         BookingButtonFun={() => {
-          console.log("booking func is:", bookingFunData);
           handleClickAc(
             bookingFunData.index,
             bookingFunData.booking,
@@ -758,6 +767,7 @@ const HotelBooking = ({
         stayBookings={stayBookings}
         setStayBookings={setStayBookings}
         CityData={CityData}
+        onHide={() => setOpenViewDetails(false)}
       ></BookingModal>
 
       {images ? (

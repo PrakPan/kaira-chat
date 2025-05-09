@@ -55,7 +55,7 @@ export default function Category(props) {
             className="border-2 p-2 rounded-full bg-[#F6F6F6] cursor-pointer flex items-center gap-1"
           >
             {category}
-            {isSelectedCategory({category})&&<span><Image src="/tick.svg" width={"15"} height={15} alt="tick"/></span>}
+            {isSelectedCategory(category)&&<span><Image src="/tick.svg" width={"15"} height={15} alt="tick"/></span>}
           </div>
         ))}
       </div>
