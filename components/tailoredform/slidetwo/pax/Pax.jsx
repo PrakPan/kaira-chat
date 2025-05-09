@@ -414,7 +414,7 @@ const Pax = (props) => {
         onClick={() => setIsRoomExpanded(!isRoomExpanded)}
       >
         <div className="flex justify-between w-full">
-          <span className="text-gray-700">Room</span>
+          <span className="text-gray-700">Room Configuration</span>
           {isRoomExpanded ? (
             <IoChevronUp size={18} />
           ) : (

@@ -3,6 +3,7 @@ import SlideOne from "./slideone/SlideOne";
 import SlideTwo from "./slidetwo/SlideTwo";
 import { fadeIn } from "react-animations";
 import Login from "../userauth/LogInModal";
+import SlideThree from "./slidethree/SlideThree";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 
@@ -76,7 +77,26 @@ const FlickityComp = (props) => {
         </Card>
       ) : null}
 
-      {props.slideIndex === 2 && (!props.token || props.phone === "null") ? (
+      {props.slideIndex === 2 && (
+        <SlideThree
+          numberOfAdults={props.numberOfAdults}
+          setNumberOfAdults={props.setNumberOfAdults}
+          numberOfChildren={props.numberOfChildren}
+          setNumberOfChildren={props.setNumberOfChildren}
+          numberOfInfants={props.numberOfInfants}
+          setNumberOfInfants={props.setNumberOfInfants}
+          setRoomConfiguration={props.setRoomConfiguration}
+          addHotels={props.addHotels}
+          setAddHotels={props.setAddHotels}
+          groupType={props.groupType}
+          setBudget={props.setBudget}
+          setPriceRange={props.setPriceRange}
+          destination={props.destination}
+          defaultPriceRange={props.defaultPriceRange}
+        />
+      )}
+
+      {props.slideIndex === 3 && (!props.token || props.phone === "null") ? (
         <Login
           nospacing
           noheading

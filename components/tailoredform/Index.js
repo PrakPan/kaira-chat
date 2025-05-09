@@ -98,7 +98,7 @@ const Enquiry = (props) => {
   const [slideIndex, setSlideIndex] = useState(0);
   const [valueStart, setValueStart] = useState(null);
   const [valueEnd, setValueEnd] = useState(null);
-  const [numberOfAdults, setNumberOfAdults] = useState(2);
+  const [numberOfAdults, setNumberOfAdults] = useState(1);
   const [numberOfChildren, setNumberOfChildren] = useState(0);
   const [numberOfInfants, setNumberOfInfants] = useState(0);
   const [budget, setBudget] = useState("Affordable");
@@ -118,7 +118,7 @@ const Enquiry = (props) => {
   const [showCities, setShowCities] = useState(false);
   const [showSearchStarting, setShowSearchStarting] = useState(false);
   const [focusedDate, setFocusedDate] = useState(null);
-  const [groupType, setGroupType] = useState(null);
+  const [groupType, setGroupType] = useState("Solo");
   const [startingLocation, setStartingLocation] = useState(false);
   const isPageLoaded = usePageLoaded();
   const [destination, setDestination] = useState(
@@ -407,6 +407,10 @@ const Enquiry = (props) => {
   const _SlideTwoSubmitHandler = () => {
     if (!submitSecondSlide) return setShowPopup({ ...showPopup, group: true });
     setShowPopup(popupObj);
+    setSlideIndex(slideIndex + 1);
+  };
+
+  const _SlideThreeSubmitHandler = () => {
     setSlideIndex(slideIndex + 1);
   };
 
@@ -760,7 +764,7 @@ const Enquiry = (props) => {
 
           {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
-          {slideIndex === 0 ? (
+          {slideIndex === 0 || slideIndex === 1 ? (
             <Button
               fontSize="1rem"
               width={!isPageWide ? "auto" : "100%"}
@@ -780,14 +784,20 @@ const Enquiry = (props) => {
               borderRadius="5px"
               borderWidth="1px"
               bgColor="#f7e700"
-              onclick={() => _SlideOneSubmitHandler()}
+              onclick={() => {
+                if (slideIndex === 0) {
+                  _SlideOneSubmitHandler();
+                } else {
+                  _SlideTwoSubmitHandler();
+                }
+              }}
               loading={isLoading}
             >
               Continue
             </Button>
           ) : null}
 
-          {slideIndex === 1 ? (
+          {slideIndex === 2 ? (
             !props.token || props.phone === "null" ? (
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
                 <Button
@@ -809,7 +819,7 @@ const Enquiry = (props) => {
                   borderRadius="5px"
                   borderWidth="1px"
                   bgColor="#f7e700"
-                  onclick={_SlideTwoSubmitHandler}
+                  onclick={_SlideThreeSubmitHandler}
                   loading={isLoading && submitted}
                 >
                   Continue
