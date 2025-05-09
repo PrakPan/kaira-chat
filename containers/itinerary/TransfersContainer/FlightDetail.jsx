@@ -224,7 +224,7 @@ const Details = ({
                   dispatch(
                     openNotification({
                       type: "success",
-                      text: "Updated booking Successfuly",
+                      text: "Updated booking Successfully",
                       heading: "Success!",
                     })
                   );

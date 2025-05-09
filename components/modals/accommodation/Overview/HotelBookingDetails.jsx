@@ -261,7 +261,7 @@ const HotelBookingDetails = (props) => {
         dispatch(
           openNotification({
             type: "success",
-            text: `${props?.data?.hotel_details?.name} booking deleted successfuly`,
+            text: `${props?.data?.hotel_details?.name} booking deleted successfully`,
             heading: "Success!",
           })
         );
@@ -1111,7 +1111,7 @@ const HotelBookingDetails = (props) => {
 
       {props?.data?.hotel_details?.rates?.map((room, index) => (
         <div className="flex flex-col gap-3">
-          {room?.polices ? (
+          {room?.polices && room?.polices?.length>0 ? (
             <>
               <div className="text-lg font-bold mt-4">Policies</div>
               {room.polices.map((item, index) => (

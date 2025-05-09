@@ -203,7 +203,7 @@ const RoomType = (props) => {
 
       {open && (
         <div className="flex flex-col gap-3">
-          {props.data?.polices
+          {props.data?.polices && props?.data?.polices?.length>0
             ? props.data.polices.map((item, index) => (
                 <div className="flex flex-col gap-2">
                   <div className="text-lg font-semibold">{item.type}</div>

@@ -62,7 +62,7 @@ const FlightDetailModal = ({
         dispatch(
           openNotification({
             type: "success",
-            text: "Booking deleted Successfuly",
+            text: "Booking deleted Successfully",
             heading: "Success!",
           })
         );
