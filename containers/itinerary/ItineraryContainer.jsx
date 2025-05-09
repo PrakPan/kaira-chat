@@ -92,6 +92,7 @@ const ItineraryContainer = (props) => {
   )?.transferBookings;
 
   const [polling, setPolling] = useState(true);
+  const [consecutiveErrors, setConsecutiveErrors] = useState(0);
 
   const itinerarySuccessRef = useRef(false);
   const pricingSuccessRef = useRef(false);
@@ -437,10 +438,14 @@ const ItineraryContainer = (props) => {
   async function fetchData(poll) {
     if (TRAVELER_ITINERARIES.includes(props.id))
       setIsPastTravelerItinerary(true);
+    
     const fetchStatus = async () => {
       try {
         const res = await axiosGetItineraryStatus.get(`/${props.id}/status/`);
         const status = res.data?.celery;
+        
+        // Reset error count on successful API call
+        setConsecutiveErrors(0);
 
         if (status?.PRICING === "FAILURE") {
           dispatch(setItineraryStatus("pricing_status", "FAILURE"));
@@ -475,7 +480,17 @@ const ItineraryContainer = (props) => {
           status?.PRICING
         );
       } catch (err) {
-        console.error("[ERROR]: axiosGetItineraryStatus: ", err.message);
+        console.error("[ERROR]: axiosGetItineraryStatus: ", err.message, err.response?.status);
+        
+        if (
+            err.response?.data?.errors?.[0]?.message?.[0]?.includes("Itinerary matching query does not exist")) {
+          
+          console.log("Itinerary not found error detected, redirecting to v1 version");
+          setPolling(false);
+          router.push(`/itinerary/v1/${props.id}`);
+          return;
+        }
+        handleApiError();
       }
     };
 
@@ -544,10 +559,36 @@ const ItineraryContainer = (props) => {
           getPaymentInfo();
         }
       } catch (err) {
-        console.error("[ERROR]: axiosGetItinerary: ", err.message);
+        console.error("[ERROR]: axiosGetItinerary: ", err.message, err.response?.status);
+      
+        if (
+            err.response?.data?.errors?.[0]?.message?.[0]?.includes("Itinerary matching query does not exist")) {
+          
+          console.log("Itinerary not found error detected in fetchItinerary, redirecting to v1 version");
+          setPolling(false);
+          router.push(`/itinerary/v1/${props.id}`);
+          return;
+        }
+      
+        handleApiError();
         setItineraryLoading(false);
       }
     };
+    const handleApiError = () => {
+      setConsecutiveErrors(prev => {
+        const newCount = prev + 1;
+        console.log(`API error occurred. Consecutive errors: ${newCount}`);
+        
+        if (newCount >= 2) {
+          console.log("Two consecutive API errors detected, redirecting to thank you page");
+          setPolling(false);
+          router.push("/thank-you");
+        }
+        
+        return newCount;
+      });
+    };
+    
     if (poll) {
       fetchStatus();
     }
@@ -621,7 +662,7 @@ const ItineraryContainer = (props) => {
   }, [polling, itinerary_status, transfers_status, pricing_status, hotels_status]);
 
   const _updateTransferBooking = (arr1, arr2) => {
-    const combinedArray = [...arr1]; // Copy arr1 to avoid modifying the original array
+    const combinedArray = [...arr1]; // Copy arr1 to avoid modifying the original array 
 
     arr2.forEach((element) => {
       const newId = element.id;

@@ -108,7 +108,7 @@ const Details = ({
         dispatch(
           openNotification({
             type: "success",
-            text: `${name} deleted successfuly`,
+            text: `${name} deleted successfully`,
             heading: "Success!",
           })
         );

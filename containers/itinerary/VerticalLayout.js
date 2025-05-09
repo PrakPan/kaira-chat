@@ -176,7 +176,7 @@ const CityItem = ({
         dispatch(
           openNotification({
             type: "success",
-            text: `${city} deleted successfuly`,
+            text: `${city} deleted successfully`,
             heading: "Success!",
           })
         );

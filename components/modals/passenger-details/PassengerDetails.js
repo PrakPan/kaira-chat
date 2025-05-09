@@ -75,7 +75,7 @@ const PassengerDetails = () => {
       // );
       dispatch(openNotification({
         type: "success",
-        text: "Passengers Added Successfuly",
+        text: "Passengers Added Successfully",
         heading: "Success!",
       }))
     } catch (error) {

@@ -287,7 +287,7 @@ const TransferBooking = ({
         setLoading(false);
         openNotification({
           type: "success",
-          text: "Booking deleted successfuly",
+          text: "Booking deleted successfully",
           heading: "Success!",
         });
       }

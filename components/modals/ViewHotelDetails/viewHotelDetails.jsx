@@ -245,7 +245,7 @@ console.log("hotel name:",data?.name)
           props.setStayBookings(stayBookings);
           props.openNotification({
             type: "success",
-            text: `${data?.name} added to itinerary Successfuly`,
+            text: `${data?.name} added to itinerary Successfully`,
             heading: "Success!",
           });
         } catch (error) {

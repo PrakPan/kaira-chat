@@ -261,7 +261,7 @@ const HotelBookingDetails = (props) => {
         dispatch(
           openNotification({
             type: "success",
-            text: `${props?.data?.hotel_details?.name} booking deleted successfuly`,
+            text: `${props?.data?.hotel_details?.name} booking deleted successfully`,
             heading: "Success!",
           })
         );
