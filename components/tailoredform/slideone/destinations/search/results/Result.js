@@ -37,11 +37,11 @@ const Result = (props) => {
   };
 
   const getParent = (path) => {
+    if (!path) return "";
+
     const links = path.split("/");
-    const parent = path
-      .split("/")
-      .map((part) => capitalizeFirstLetter(part))
-      .join("/");
+    links.pop();
+    const parent = links.map((part) => capitalizeFirstLetter(part)).join(" > ");
 
     return parent;
   };
@@ -71,7 +71,7 @@ const Result = (props) => {
       </MarkerContainer>
       <div className="">
         <div className="font-[500]">{props.name}</div>
-        <p className="text-blue text-xs font-light mb-0">
+        <p className="text-[#7e7e7e] text-[12px] font-[400] mb-0">
           {getParent(props.result.path)}
         </p>
       </div>
