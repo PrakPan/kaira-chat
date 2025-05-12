@@ -764,7 +764,7 @@ const Enquiry = (props) => {
 
           {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
-          {slideIndex === 0 || slideIndex === 1 ? (
+          {slideIndex === 0 ? (
             <Button
               fontSize="1rem"
               width={!isPageWide ? "auto" : "100%"}
@@ -784,20 +784,72 @@ const Enquiry = (props) => {
               borderRadius="5px"
               borderWidth="1px"
               bgColor="#f7e700"
-              onclick={() => {
-                if (slideIndex === 0) {
-                  _SlideOneSubmitHandler();
-                } else {
-                  _SlideTwoSubmitHandler();
-                }
-              }}
+              onclick={_SlideOneSubmitHandler}
               loading={isLoading}
             >
               Continue
             </Button>
           ) : null}
 
-          {slideIndex === 2 ? (
+          {slideIndex === 1 ? (
+            !props.token || props.phone === "null" || addHotels ? (
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <Button
+                  fontSize="1rem"
+                  width={!isPageWide ? "auto" : "100%"}
+                  style={
+                    !isPageWide
+                      ? {
+                          position: "fixed",
+                          left: "1rem",
+                          right: "1rem",
+                          bottom: "0",
+                        }
+                      : {}
+                  }
+                  padding="0.5rem 2rem"
+                  fontWeight="500"
+                  margin="1rem 0"
+                  borderRadius="5px"
+                  borderWidth="1px"
+                  bgColor="#f7e700"
+                  onclick={_SlideTwoSubmitHandler}
+                  loading={isLoading && submitted}
+                >
+                  Continue
+                </Button>
+              </div>
+            ) : (
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <Button
+                  fontSize="1rem"
+                  width={!isPageWide ? "auto" : "100%"}
+                  style={
+                    !isPageWide
+                      ? {
+                          position: "fixed",
+                          left: "1rem",
+                          right: "1rem",
+                          bottom: "0",
+                        }
+                      : {}
+                  }
+                  padding="0.5rem 2rem"
+                  fontWeight="500"
+                  margin="1rem 0"
+                  borderRadius="5px"
+                  borderWidth="1px"
+                  bgColor="#f7e700"
+                  loading={loading}
+                  onclick={_submitDataHandler}
+                >
+                  Get Itinerary!
+                </Button>
+              </div>
+            )
+          ) : null}
+
+          {slideIndex === 2 && addHotels ? (
             !props.token || props.phone === "null" ? (
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
                 <Button
