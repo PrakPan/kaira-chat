@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import SlabElement from "./SlabElement";
 import media from "../../media";
 import ActivityAddDrawer from "../../drawers/poiDetails/activityAddDrawer";
+import { useSelector } from "react-redux";
 
 const CityDay = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [showAddDrawer, setShowAddDrawer] = useState(false);
   const [elements, setElements] = useState([]); 
+  const {finalized_status} = useSelector(state=>state.ItineraryStatus);
   useEffect(() => {
     let elements = [];
     for (let elem of props.day.slab_elements) {
@@ -56,13 +58,16 @@ const CityDay = (props) => {
           </>
         ))}
 
-        <button
+        {(finalized_status === "PENDING") ? 
+         <div className="mt-3 w-48 h-[20px] bg-gray-300 rounded animate-pulse"></div> 
+         :
+         <button
           onClick={() => setShowAddDrawer(true)}
           className="mt-3  w-fit text-[14px] text-blue underline font-semibold"
         >
           + Add activities on {convertDateFormat(props?.day?.date)}
         </button>
-
+}
         {/* <div className="py-3">
           <button className="bg-[#F7E700] text-black text-sm font-normal py-1 px-3 rounded border-1 border-black">
             + Add Sightseeing Taxi

@@ -468,6 +468,7 @@ const ItineraryContainer = (props) => {
         );
 
         if (allStatusesCompleted) {
+          dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
           setPolling(false);
         } else {
           setPolling(true);

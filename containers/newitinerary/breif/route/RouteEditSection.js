@@ -282,6 +282,7 @@ const RouteEditSection = (props) => {
 
         if (allStatusesCompleted) {
           console.log("Status update complete", itinerary_status, transfers_status, pricing_status, hotels_status);
+          dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
           setItineraryLoading(false);
           setWaitingForStatusUpdate(false);
           dispatch(openNotification({
