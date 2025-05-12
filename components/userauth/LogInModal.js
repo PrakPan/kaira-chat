@@ -485,7 +485,7 @@ const LogIn = React.memo((props) => {
 
           <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
             {whatsapp ? <ImCheckboxChecked /> : <ImCheckboxUnchecked />}
-            Receive OTP on WhatsApp
+            Get Booking Updates on WhatsApp
             <IoLogoWhatsapp className="text-lg text-[#4DA750]" />
           </WhatsappCheckBox>
 
