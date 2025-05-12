@@ -469,7 +469,7 @@ const ActivityAddDrawer = (props) => {
   };
 
   const searchHandler = (e) => {
-    if (e.target.id === "icon" && selectSearch.trim().length > 0) {
+    if (e.target.id === "icon" && debouncedSearch.trim().length > 0) {
       fetchData();
     } else {
       setSelectedSearch(e.target.value);
