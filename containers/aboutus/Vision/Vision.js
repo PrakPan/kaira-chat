@@ -35,13 +35,14 @@ const Vision = (props) => {
           Innovating and simplifying travel through:
         </p>
         <div className={classes.IconsContainer}>
-          <div>
+          <div className="">
             <div className="center-div" style={{ margin: "0 1.5rem" }}>
               <ImageLoader
                 dimensions={{ height: 100, width: 100 }}
-                width="1.6rem"
-                height="1.6rem"
+                width="4.5rem"
+                height="4.5rem"
                 url={"media/icons/values/personalised.svg"}
+                resizeMode="cover"
               />
             </div>
             <p className={classes.IconText}>Personalized</p>
@@ -51,8 +52,8 @@ const Vision = (props) => {
             <div className="center-div" style={{ margin: "0 1.5rem" }}>
               <ImageLoader
                 dimensions={{ height: 100, width: 100 }}
-                width="1.6rem"
-                height="1.6rem"
+                width="4.5rem"
+                height="4.5rem"
                 url={"media/icons/values/oneclick.svg"}
               />
             </div>
@@ -63,8 +64,8 @@ const Vision = (props) => {
             <div className="center-div" style={{ margin: "0 1.5rem" }}>
               <ImageLoader
                 dimensions={{ height: 100, width: 100 }}
-                width="1.6rem"
-                height="1.6rem"
+                width="4.5rem"
+                height="4.5rem"
                 url={"media/icons/values/247.svg"}
               />
             </div>

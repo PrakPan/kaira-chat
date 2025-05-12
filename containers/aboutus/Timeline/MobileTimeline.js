@@ -15,10 +15,11 @@ const Timeline = (props) => {
         >
           <div>
             <ImageLoader
-              widthmobile="50%"
+              widthmobile="150px"
+              heightmobile="150px"
               url={content.timeline[i].image}
               borderRadius="50%"
-              dimensionsMobile={{ width: 400, height: 400 }}
+              // dimensionsMobile={{ width: 400, height: 400 }}
               fit="cover"
             ></ImageLoader>
             <div className="center-div">
@@ -51,12 +52,13 @@ const Timeline = (props) => {
           className={classes.RightBorder}
           style={{ borderWidth: "3.5px 7px" }}
         >
-          <div style={{}}>
+          <div className="">
             <ImageLoader
-              widthmobile="50%"
+              widthmobile="150px"
+              heightmobile="150px"
               url={content.timeline[i].image}
               borderRadius="50%"
-              dimensionsMobile={{ width: 400, height: 400 }}
+              // dimensionsMobile={{ width: 400, height: 400 }}
             ></ImageLoader>
             <div className="center-div">
               <p className={classes.TextHeading}>
@@ -74,6 +76,7 @@ const Timeline = (props) => {
       cards.push(<div></div>);
     }
   }
+  
   return (
     <div className={classes.Container}>
       <div
