@@ -143,10 +143,10 @@ export default function ActivityDetails(props) {
                   <div className="text-[14px]">
                     {props.data.ideal_duration_number}{" "}
                     {props.data.ideal_duration_number > 1
-                      ? props.data?.ideal_duration_unit.toLowerCase()
+                      ? props.data?.ideal_duration_unit?.toLowerCase()
                       : props.data?.ideal_duration_unit
-                          .toLowerCase()
-                          .slice(0, -1)}
+                          ?.toLowerCase()
+                          ?.slice(0, -1)}
                   </div>
                 </div>
               ) : (
@@ -416,10 +416,10 @@ export default function ActivityDetails(props) {
           ) : null}
         </div>
       </div>
-      <div className="border-t-2 fixed bottom-0 right-0 left-0 flex justify-end gap-1 py-[12px] px-[20px] bg-white shadow-md z-50 flex justify-between items-center">
-        <div className="font-bold">
+      <div className={`border-t-2 fixed bottom-0 right-0 left-0  gap-1 py-[12px] px-[20px] bg-white shadow-md z-50 flex ${!props.data.prices.total_price ? "justify-end": "justify-between"} items-center`}>
+        {props.data.prices.total_price && <div className="font-bold">
           <span className="text-[34px]">
-            ₹{getIndianPrice(Math.round(props.data.prices.total_price))}
+            ₹{props.data.prices.total_price && (props.data.prices.total_price > 0) ? getIndianPrice(Math.round(props.data.prices.total_price)) : props.data.prices.total_price}
             <span className="text-[12px] font-normal">
               {" "}
               for {props?.filterState.adults +
@@ -430,8 +430,8 @@ export default function ActivityDetails(props) {
           <div className="text-gray-500 font-semiBold text-[#01202B] text-[14px]">
             Total Cost
           </div>
-        </div>
-        <div className="flex flex-col gap-1">
+        </div>}
+        <div className={`flex flex-col gap-1`}>
           <Button
             onclick={handleUpdate}
             bgColor={"#F7E700"}
