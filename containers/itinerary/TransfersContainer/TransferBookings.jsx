@@ -285,7 +285,7 @@ const TransferBookings = (props) => {
         const connectionKey = `${sourceKey}:${destKey}`;
 
         const intercityBooking = transferBooking?.intercity[connectionKey];
-        if (intercityBooking && Object.keys(intercityBooking).length > 0) {
+        if (intercityBooking && Object.keys(intercityBooking).length >= 0) {
           sections.push(
             <TransferBooking
               mercuryItinerary={props?.mercuryItinerary}
@@ -382,7 +382,7 @@ const TransferBookings = (props) => {
       
      
       const intercityBooking = transferBooking?.intercity[connectionKey];
-      if (intercityBooking && Object.keys(intercityBooking).length > 0) {
+      if (intercityBooking && Object.keys(intercityBooking).length >= 0) {
         sections.push(
           <TransferBooking
             mercuryItinerary={props?.mercuryItinerary}

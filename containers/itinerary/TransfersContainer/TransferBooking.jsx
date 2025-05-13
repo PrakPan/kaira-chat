@@ -209,6 +209,7 @@ const TransferBooking = ({
   _updateTaxiBookingHandler,
   _updatePaymentHandler,
   getPaymentHandler,
+  isIntracity,
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
