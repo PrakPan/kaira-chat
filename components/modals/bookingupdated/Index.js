@@ -69,6 +69,7 @@ const Booking = (props) => {
     error: false,
     errorMsg: "",
   });
+ 
   const [loading, setLoading] = useState(false);
   const [nextPage, setNextPage] = useState(1);
   const [provider, setProvider] = useState(null);
@@ -110,17 +111,18 @@ const Booking = (props) => {
   const [selectSearch, setSelectedSearch] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const dispatch = useDispatch();
+  const debouncedSearch = useDebounce(selectSearch);
 
   useEffect(() => {
     if (
       props?.showBookingModal &&
       props?.selectedBooking?.check_in &&
-      (selectSearch.length > 2 || selectSearch.length == 0)
+      (debouncedSearch.length > 2 || debouncedSearch.length == 0)
     ) {
       setMoreOptionsJSX([]);
       fetchHotelsFilter();
     }
-  }, [selectSearch]);
+  }, [debouncedSearch]);
 
   useEffect(() => {
     setMoreOptionsJSX([]);

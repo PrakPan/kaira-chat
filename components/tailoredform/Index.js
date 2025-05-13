@@ -98,7 +98,7 @@ const Enquiry = (props) => {
   const [slideIndex, setSlideIndex] = useState(0);
   const [valueStart, setValueStart] = useState(null);
   const [valueEnd, setValueEnd] = useState(null);
-  const [numberOfAdults, setNumberOfAdults] = useState(2);
+  const [numberOfAdults, setNumberOfAdults] = useState(1);
   const [numberOfChildren, setNumberOfChildren] = useState(0);
   const [numberOfInfants, setNumberOfInfants] = useState(0);
   const [budget, setBudget] = useState("Affordable");
@@ -118,7 +118,7 @@ const Enquiry = (props) => {
   const [showCities, setShowCities] = useState(false);
   const [showSearchStarting, setShowSearchStarting] = useState(false);
   const [focusedDate, setFocusedDate] = useState(null);
-  const [groupType, setGroupType] = useState(null);
+  const [groupType, setGroupType] = useState("Solo");
   const [startingLocation, setStartingLocation] = useState(false);
   const isPageLoaded = usePageLoaded();
   const [destination, setDestination] = useState(
@@ -407,6 +407,10 @@ const Enquiry = (props) => {
   const _SlideTwoSubmitHandler = () => {
     if (!submitSecondSlide) return setShowPopup({ ...showPopup, group: true });
     setShowPopup(popupObj);
+    setSlideIndex(slideIndex + 1);
+  };
+
+  const _SlideThreeSubmitHandler = () => {
     setSlideIndex(slideIndex + 1);
   };
 
@@ -780,7 +784,7 @@ const Enquiry = (props) => {
               borderRadius="5px"
               borderWidth="1px"
               bgColor="#f7e700"
-              onclick={() => _SlideOneSubmitHandler()}
+              onclick={_SlideOneSubmitHandler}
               loading={isLoading}
             >
               Continue
@@ -788,7 +792,7 @@ const Enquiry = (props) => {
           ) : null}
 
           {slideIndex === 1 ? (
-            !props.token || props.phone === "null" ? (
+            !props.token || props.phone === "null" || addHotels ? (
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
                 <Button
                   fontSize="1rem"
@@ -810,6 +814,64 @@ const Enquiry = (props) => {
                   borderWidth="1px"
                   bgColor="#f7e700"
                   onclick={_SlideTwoSubmitHandler}
+                  loading={isLoading && submitted}
+                >
+                  Continue
+                </Button>
+              </div>
+            ) : (
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <Button
+                  fontSize="1rem"
+                  width={!isPageWide ? "auto" : "100%"}
+                  style={
+                    !isPageWide
+                      ? {
+                          position: "fixed",
+                          left: "1rem",
+                          right: "1rem",
+                          bottom: "0",
+                        }
+                      : {}
+                  }
+                  padding="0.5rem 2rem"
+                  fontWeight="500"
+                  margin="1rem 0"
+                  borderRadius="5px"
+                  borderWidth="1px"
+                  bgColor="#f7e700"
+                  loading={loading}
+                  onclick={_submitDataHandler}
+                >
+                  Get Itinerary!
+                </Button>
+              </div>
+            )
+          ) : null}
+
+          {slideIndex === 2 && addHotels ? (
+            !props.token || props.phone === "null" ? (
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <Button
+                  fontSize="1rem"
+                  width={!isPageWide ? "auto" : "100%"}
+                  style={
+                    !isPageWide
+                      ? {
+                          position: "fixed",
+                          left: "1rem",
+                          right: "1rem",
+                          bottom: "0",
+                        }
+                      : {}
+                  }
+                  padding="0.5rem 2rem"
+                  fontWeight="500"
+                  margin="1rem 0"
+                  borderRadius="5px"
+                  borderWidth="1px"
+                  bgColor="#f7e700"
+                  onclick={_SlideThreeSubmitHandler}
                   loading={isLoading && submitted}
                 >
                   Continue

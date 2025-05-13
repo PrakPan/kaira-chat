@@ -39,13 +39,13 @@ export default function NewActivityBooking(props) {
     setShowDetails({ show: false, data: {} });
   };
 
-  const handleClick = async (id) => {
-    const res = await axios.get(
-      `${MERCURY_HOST}/api/v1/ancillaries/activity/${id}`
-    );
+   const handleClick = async (id) => {
+  //   const res = await axios.get(
+  //     `${MERCURY_HOST}/api/v1/ancillaries/activity/${id}`
+  //   );
     setShowDetails({
       show: true,
-      data: res?.data?.data?.activity,
+      data:"" //res?.data?.data?.activity,
     });
   };
 

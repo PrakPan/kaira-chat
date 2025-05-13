@@ -5,6 +5,7 @@ import { logEvent } from "../../../services/ga/Index";
 import ImageLoader from "../../ImageLoader";
 import ActivityAddDrawer from "../../drawers/poiDetails/activityAddDrawer";
 import { useRouter } from "next/router";
+import { useSelector } from "react-redux";
 
 const CitySummary = (props) => {
   const router = useRouter();
@@ -14,6 +15,7 @@ const CitySummary = (props) => {
   const [activities, setActivities] = useState(null);
   const [dayByDayIndex, setDayByDayIndex] = useState(0);
   const [showAddDrawer, setShowAddDrawer] = useState(false);
+  const {finalized_status} = useSelector(state=>state.ItineraryStatus);
   const [activityData, setActivityData] = useState({
     id: "",
     type: "",
@@ -228,12 +230,15 @@ const CitySummary = (props) => {
           >
             Add Activity
           </button> */}
-          <p
+         {(finalized_status === "PENDING") ? 
+         <div className="mt-3 w-48 h-[20px] bg-gray-300 rounded animate-pulse"></div> 
+         :
+         <p
             className=" text-blue cursor-pointer font-semibold underline"
             onClick={() => setShowAddDrawer(true)}
           >
             + Add Activity in {props?.city?.city?.name}
-          </p>
+          </p>}
         </div>
       </div>
       {dayByDay && dayByDay.length ? (
