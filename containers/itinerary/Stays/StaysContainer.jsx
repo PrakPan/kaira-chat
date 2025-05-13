@@ -1,4 +1,4 @@
-import { connect, useSelector } from "react-redux";
+import { connect, useSelector } from "react-redux"; 
 import HotelBooking from "./HotelBooking";
 import React, { useState } from "react";
 import media from "../../../components/media";
