@@ -119,6 +119,7 @@ console.log("selected guide is:",selectedGuide)
                       setSelectedTourTypes(["All"]);
                       setSelectedGuide(["All"]);
                       props.setChanged(false);
+                      setExperienceFilters(["All"]);
                     }}
                   >
                     Reset all
