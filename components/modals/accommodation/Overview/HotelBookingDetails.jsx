@@ -24,6 +24,8 @@ import SetCallPaymentInfo from "../../../../store/actions/callPaymentInfo";
 import { openNotification } from "../../../../store/actions/notification";
 import { getStars } from "../../../itinerary/itineraryCity/SlabElement";
 import setItinerary from "../../../../store/actions/itinerary";
+import { BsPeopleFill, BsPlus } from "react-icons/bs";
+import { BiBed } from "react-icons/bi";
 const starRating = (rating) => {
   var stars = [];
   for (let i = 0; i < Math.floor(rating); i++) {
@@ -1065,6 +1067,9 @@ const HotelBookingDetails = (props) => {
             {props?.data?.hotel_details?.rates?.[0]?.rooms.map(
               (room, index) => (
                 <div key={index} className="flex flex-col gap-3">
+                  <div className="w-fit bg-[#FAFAFA] p-[8px] rounded-[10px]">
+                                {`Room ${index+1}`}
+                  </div>
                   <div
                     key={index}
                     className="flex flex-col md:flex-row gap-1 justify-between"
@@ -1075,6 +1080,32 @@ const HotelBookingDetails = (props) => {
                           {room?.name}
                         </div>
                       )}
+                      <p className="my-0">
+                        {room?.number_of_adults ? (
+                                                <div className="text-sm font-[400] gap-2 flex flex-row items-center">
+                                                  <BsPeopleFill className="text-sm text-[#7A7A7A]" />
+                                                  <div className="text-sm font-[400] min-w-fit">
+                                                    {room.number_of_adults} {room.number_of_adults == 1 ?"Adult" : "Adults"} {room?.number_of_children > 0 ? room?.number_of_children + " Children" : null}
+                                                  </div>
+                                                </div>
+                                              ) : (
+                                                <></>
+                        )}
+                      </p>
+                      <p>
+                        {room?.beds && room?.beds?.map((bed,index)=>{
+                         return  bed?.type  &&
+                                            bed?.count > 0 ? (
+                                              <div className="flex flex-row items-center my-0">
+                                               <BiBed className="text-sm text-[#7A7A7A]" />
+                                                <div className="text-sm font-[400] line-clamp-1">
+                                                  {bed?.type}{" "} x
+                                                  {bed?.count}
+                                                </div>
+                                              </div>
+                                            ) : null
+                        })}
+                      </p>
                       {/* {room?.description ? (
                         <div
                           dangerouslySetInnerHTML={{
