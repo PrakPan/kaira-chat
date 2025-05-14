@@ -61,6 +61,21 @@ const FloatingVContaineriew = styled.div`
   z-index: 2;
   cursor: pointer;
 `;
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 10px;
+  background: #f7e700;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  left: 90%;
+  z-index: 2;
+  cursor: pointer;
+`;
+
 
 const ErrorContainer = styled.div`
   display: flex;

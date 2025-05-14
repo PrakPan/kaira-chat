@@ -1,9 +1,12 @@
 import Pax from "../slidetwo/pax/Pax.jsx";
 import BudgetSlider from "../slidetwo/preferences/BudgetSlider.jsx";
+import Question from "../Question.js";
 
 export default function SlideThree(props) {
   return (
-    <div className="my-5 space-y-5">
+    <div className="my-3 space-y-5">
+      <Question>Hotel Preference</Question>
+
       <Pax
         numberOfAdults={props.numberOfAdults}
         setNumberOfAdults={props.setNumberOfAdults}
