@@ -174,9 +174,9 @@ const VehicleDetailModal = ({
               </div>
 
               <div className="flex flex-col items-center">
-                <span className="text-sm">
+                <span className="text-xs md:text-sm">
                   {loading ? (
-                    <div className="w-12 h-3 bg-gray-300 opacity-50 rounded"></div>
+                    <div className="w-4 md:w-12 h-3 bg-gray-300 opacity-50 rounded"></div>
                   ) : (
                     `
                     ${
@@ -186,7 +186,7 @@ const VehicleDetailModal = ({
                     `
                   )}
                 </span>
-                <div className="border-t border-dashed w-64"></div>
+                <div className="border-t border-dashed w-6 md:w-64"></div>
               </div>
 
               <div className="flex flex-col items-end">

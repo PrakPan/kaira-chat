@@ -448,8 +448,8 @@ const POIDetails = (props) => {
           )}
           {props?.data?.reviews && (
             <div className="flex flex-col gap-[12px]">
-              <div id="reviews-poi" className="flex justify-between">
-                <Heading>Reviews</Heading>
+              <div id="reviews-poi" className="flex !items-center justify-between">
+                <div className="text-[18px] font-extrabold">Reviews</div>
 
                 <Reviews>
                   {props.data.rating ? (

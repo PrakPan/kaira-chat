@@ -5,12 +5,13 @@ const ReviewPoi = ({ review }) => {
   const [viewMore, setViewMore] = useState(false);
   return (
     <div className="w-[289px] h-[208px] border rounded-[10px] p-[12px]">
-      <GoogleImageLoader
+      <div className="w-[39px]"><GoogleImageLoader
         url={review?.profile_photo_url}
         width={"39px"}
         height={"40px"}
         noLazy
       />
+      </div>
       <div className="text-[16px]">{review?.author_name}</div>
       <div>
         <span style={{ color: "#FFD201" }}>★</span> <span className="text-[12px]">{review?.rating}</span>
