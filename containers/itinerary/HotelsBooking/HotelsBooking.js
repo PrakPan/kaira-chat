@@ -328,12 +328,17 @@ const HotelsBooking = (props) => {
           !isDateOlderThanCurrent(props?.plan?.start_date) ? true : false
         }
         bookingFunData={bookingFunData}
-        BookingButtonFun={() =>
+        BookingButtonFun={() =>{
+          if (!localStorage.getItem("access_token")) {
+            props.setShowLoginModal(true);
+            return;
+          }
           handleClickAc(
             bookingFunData.index,
             bookingFunData.booking,
             bookingFunData.city_id
           )
+        }
         }
         provider={currentBooking?.source}
       ></AccommodationModal>
