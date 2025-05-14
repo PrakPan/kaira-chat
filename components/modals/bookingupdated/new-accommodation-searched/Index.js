@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import AccommodationModal from "../../accommodation/Index";
 import NewHotelBooking from "./NewHotelBooking";
 import ViewHotelDetails from "../../ViewHotelDetails/viewHotelDetails";
 

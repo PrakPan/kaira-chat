@@ -298,7 +298,12 @@ const HotelBookingDetails = (props) => {
         <Button
           padding="7px 25px"
           borderRadius="7px"
-          onclick={() => props.BookingButtonFun()}
+          onclick={() => {
+            if (!localStorage.getItem("access_token")) {
+              props?.setShowLoginModal(true);
+              return;
+            }
+            props.BookingButtonFun()}}
         >
           Change
         </Button>

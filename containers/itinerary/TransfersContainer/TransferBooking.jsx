@@ -209,6 +209,9 @@ const TransferBooking = ({
   _updateTaxiBookingHandler,
   _updatePaymentHandler,
   getPaymentHandler,
+  isIntracity,
+  isAirport,
+  AirportTransferType
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -379,20 +382,34 @@ const TransferBooking = ({
                       <div className="text-[#C5C1C1]">
                         {getModeIcon(booking?.booking_type, 15)}
                       </div>
-                      {booking?.transfer_details?.source?.name}{" "}
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 12 12"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
-                          fill="#1F1F1F"
-                        />
-                      </svg>{" "}
-                      {booking?.transfer_details?.destination?.name}
+                      {isIntracity ? (
+                        <>
+                          {booking?.booking_type} in{" "}
+                          {booking?.transfer_details?.source?.name}
+                        </>
+                      ) : isAirport ? (
+                        <>
+                          Airport {AirportTransferType} in{" "}
+                          {booking?.transfer_details?.source?.name}
+                        </>
+                      ) : (
+                        <>
+                          {booking?.transfer_details?.source?.name}{" "}
+                          <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 12 12"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
+                              fill="#1F1F1F"
+                            />
+                          </svg>{" "}
+                          {booking?.transfer_details?.destination?.name}
+                        </>
+                      )}
                     </div>
                     <div className="text-[10px] ml-[20px]">
                       Duration: {booking?.duration}
@@ -603,6 +620,7 @@ const TransferBooking = ({
                         setHandleShow={setShowVehicleDrawer}
                         booking={booking}
                         setShowDrawer={setShowDrawer}
+                        noChange={isIntracity||isAirport}
                       />
                     ) : (
                       <VehicleDetailModal
@@ -613,6 +631,7 @@ const TransferBooking = ({
                         setHandleShow={setShowVehicleDrawer}
                         booking={booking}
                         setShowDrawer={setShowDrawer}
+                        noChange={isIntracity||isAirport}
                       />
                     )}
                   </Drawer>
@@ -770,20 +789,34 @@ const TransferBooking = ({
                       <div className="text-[#C5C1C1]">
                         {getModeIcon(book?.booking_type, 15)}
                       </div>
-                      {book?.transfer_details?.source?.name}{" "}
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 12 12"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
-                          fill="#1F1F1F"
-                        />
-                      </svg>{" "}
-                      {book?.transfer_details?.destination?.name}
+                      {isIntracity ? (
+                        <>
+                          {book?.booking_type} in{" "}
+                          {book?.transfer_details?.source?.name}
+                        </>
+                      ) :  isAirport ? (
+                        <>
+                          Airport {AirportTransferType} in{" "}
+                          {booking?.transfer_details?.source?.name}
+                        </>
+                      ) :(
+                        <>
+                          {book?.transfer_details?.source?.name}{" "}
+                          <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 12 12"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
+                              fill="#1F1F1F"
+                            />
+                          </svg>{" "}
+                          {book?.transfer_details?.destination?.name}
+                        </>
+                      )}
                     </div>
                     <div className="text-[10px] ml-[20px]">
                       Duration: {booking?.duration}
@@ -1048,6 +1081,7 @@ const TransferBooking = ({
                             booking={booking}
                             type={"combo"}
                             setShowDrawer={setShowDrawer}
+                            noChange={isIntracity||isAirport}
                             // noChange={true}
                           />
                         ) : (
@@ -1060,6 +1094,7 @@ const TransferBooking = ({
                             booking={booking}
                             type={"combo"}
                             setShowDrawer={setShowDrawer}
+                            noChange={isIntracity||isAirport}
                           />
                         )}
                       </>

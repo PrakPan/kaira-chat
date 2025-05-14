@@ -56,6 +56,7 @@ const HotelBooking = ({
   start_date,
   setStayBookings
 }) => {
+  console.log("HB",booking);
   let isPageWide = media("(min-width: 768px)");
   const [imageFail, setImageFail] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -513,7 +514,7 @@ console.log("component show etails are:",openViewDetails)
                         <div className="text-sm font-[400] gap-2 flex flex-row items-center">
                           <BsPeopleFill className="text-sm text-[#7A7A7A]" />
                           <div className="text-sm font-[400] min-w-fit">
-                            {booking.number_of_adults} Adults
+                            {booking.number_of_adults} Adults {booking?.number_of_children ? booking?.number_of_children + " Children" : null}
                           </div>
                         </div>
                       ) : (

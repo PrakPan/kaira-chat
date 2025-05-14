@@ -59,7 +59,7 @@ export default function ExperienceFilters(props) {
 
   return (
     <div className="flex flex-col justify-start items-baseline">
-      <div className="mb-2 font-medium">Filters</div>
+      {/* <div className="mb-2 font-medium">Filters</div> */}
 
       <div className="flex flex-row items-center gap-2 flex-wrap">
         <div
