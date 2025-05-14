@@ -984,7 +984,8 @@ const TransferBooking = ({
                                       handleViewDetails(
                                         router?.query?.id,
                                         book?.id,
-                                        book?.booking_type.toLowerCase()
+                                        "combo"
+                                        // book?.booking_type.toLowerCase()
                                       );
                                     }}
                                     className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
@@ -1039,8 +1040,8 @@ const TransferBooking = ({
                               onClick={() => {
                                 handleViewDetails(
                                   router?.query?.id,
-                                  booking?.id,
-                                  booking?.booking_type.toLowerCase()
+                                  book?.id,
+                                  book?.booking_type.toLowerCase()
                                 );
                                 setShowVehicleDrawer(true);
                               }}
