@@ -227,7 +227,7 @@ const TransferBooking = ({
     (state) => state.ItineraryStatus
   );
 
-  console.log("Originn Destin", origin, destination);
+
   useEffect(() => {
     setaddboking(booking?.user_selected);
   }, [booking?.user_selected]);

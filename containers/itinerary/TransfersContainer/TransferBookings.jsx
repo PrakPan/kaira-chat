@@ -186,7 +186,7 @@ const TransferBookings = (props) => {
       const airportBookings = transferBooking?.airport[sourceKey] || [];
       const intracityBookings = transferBooking?.intracity[sourceKey] || [];
       
-      if (intercityBooking && Object.keys(intercityBooking).length > 0) {
+      if (intercityBooking && Object.keys(intercityBooking).length >= 0) {
         sections.push(
           <TransferBooking
             mercuryItinerary={props?.mercuryItinerary}
