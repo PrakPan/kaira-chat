@@ -69,13 +69,43 @@ const TripInfoContainer = styled.div`
   gap: 0.5rem;
   margin: 0.75rem 0;
   align-items: center;
+  flex-wrap: wrap;
+
+  @media (max-width: 767px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 `;
+
 
 const InfoGroup = styled.div`
   display: flex;
   gap: 1rem;
   flex: 1;
+
+  @media (max-width: 767px) {
+    width: 100%;
+    justify-content: space-between;
+  }
 `;
+
+
+const PriceActionContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.5rem;
+
+  @media (max-width: 767px) {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+  }
+`;
+
 
 const InfoItem = styled.div`
   display: flex;
@@ -96,13 +126,6 @@ const InfoText = styled.p`
   color: rgba(91, 89, 89, 1);
 `;
 
-const PriceActionContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-`;
 
 const Cost = styled.p`
   font-weight: 800;
@@ -160,39 +183,8 @@ const ComboSection = (props) => {
       props?.onSelect(data);
      
     }else return;
-
-    // setLoading(true);
-
-    // const requestData = {
-    //   source: props.data.source,
-    //   trace_id: props.data.trace_id,
-    //   result_index: props.data.result_index
-    // }
-
-    // axiosTaxiBooking.post(`${props.selectedBooking.itinerary_id}/bookings/taxi/`, requestData).then(res => {
-    //   setLoading(false);
-    //   props.openNotification({
-    //     type: "success",
-    //     text: "Taxi changed successfully.",
-    //     heading: "Success!",
-    //   });
-    //   props._updateTaxiBookingHandler([res.data]);
-    //   props.getPaymentHandler();
-    //   props.setHideBookingModal()
-    // }).catch(err => {
-    //   setLoading(false);
-    //   props.openNotification({
-    //     type: "error",
-    //     text: "There seems to be a problem, please try again after some time!",
-    //     heading: "Error!",
-    //   });
-    //   props.setHideBookingModal()
-    // })
   }
 
-
-
-  // Calculate bag capacity
   let bagCapacity = 0;
   if (props.data?.taxi_category?.bag_capacity) {
     bagCapacity += props.data.taxi_category.bag_capacity;
@@ -253,25 +245,7 @@ const ComboSection = (props) => {
           </TaxiHeading>
 
           {isPageWide && <ModelText>{props.data?.taxi_category?.model_name}</ModelText>}
-          
-          {/* <RouteContainer>
-            <Location>
-              {props.selectedBooking.city}
-            </Location>
-            <div style={{ margin: "0 2px" }}>
-              <ImageLoader
-                url="media/icons/bookings/next.png"
-                leftalign
-                dimensions={{ width: 200, height: 200 }}
-                width="1.25rem"
-                widthmobile="1.25rem"
-                noLazy
-              />
-            </div>
-            <Location>
-              {props.selectedBooking.destination_city}
-            </Location>
-          </RouteContainer> */}
+        
 
           <TripInfoContainer>
             <ImageLoader

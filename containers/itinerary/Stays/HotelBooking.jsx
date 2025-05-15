@@ -300,6 +300,8 @@ console.log("component show etails are:",openViewDetails)
     setShowDetails(false)
   }
 
+  console.log("Show B",showBookingModal);
+
   return (
     <div className={`${!isPageWide ? "max-w-fit" : "max-w-[54vw]"}`}>
       {hotels_status === "PENDING" ? (
@@ -383,6 +385,7 @@ console.log("component show etails are:",openViewDetails)
               <div
                 className={`relative lg:h-[12rem] lg:w-[30%] w-full  h-[12rem]`}
               >
+                Ruk ja Bhaiiii
                 <div style={{ display: imageLoaded ? "initial" : "none" }}>
                   <ImageLoader
                     dimensions={{ width: 400, height: 400 }}

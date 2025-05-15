@@ -210,7 +210,7 @@ const Section = (props) => {
 
           <div
             style={{ display: "flex", gap: "1rem" }}
-            className="flex flex-row justify-between w-full"
+            className="flex flex-col md:flex-row justify-between w-full"
           >
             <div className="flex flex-row gap-[1rem]">
               {props.data?.distance?.text ? (
@@ -232,8 +232,8 @@ const Section = (props) => {
               ) : null}
             </div>
 
-            <div className="flex flex-col gap-2">
-              <div className="center-div" style={{ marginRight: "0.5rem" }}>
+            <div className="flex flex-row md:flex-col justify-end md:justify-center gap-2">
+              <div className="md:center-div" style={{ marginRight: "0.5rem" }}>
                 <Cost>
                   {"₹" +
                     getIndianPrice(Math.ceil(props.data.price.total)) +

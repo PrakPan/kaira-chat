@@ -436,6 +436,8 @@ const Booking = (props) => {
       });
   };
 
+   console.log("Show B Inside",props?.showBookingModal)
+   
   const fetchHotels = () => {
     setLoading(true);
     setUpdateLoadingState(true);
