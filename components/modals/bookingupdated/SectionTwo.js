@@ -83,7 +83,7 @@ const Section = (props) => {
         booking_city={props.booking_city}
         No_of_stays={props.No_of_stays}
         totalCount={props.TotalCount}
-        plan={props?.plan[0]}
+        plan={props?.plan && props?.plan?.length ? props?.plan[0]: null}
         setShowFilters={props.setShowFilters}
         showFilters={props.showFilters}
         filters={props.filters}

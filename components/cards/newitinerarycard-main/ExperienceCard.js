@@ -94,9 +94,9 @@ const ExperienceCard = (props) => {
       <ContentContainer className="">
         <Info
           PW={props.PW}
-          owner={props.data.owner}
-          user_name={props.data.user_name}
-          locations={props.locations}
+          owner={props.data.owner || props?.data?.curated_by}
+          user_name={props.data.user_name || props?.data?.curated_by}
+          locations={props.locations || props?.data?.cities}
           FONT_SIZES_DESKTOP={FONT_SIZES_DESKTOP}
           name={name}
           id={props.id}
@@ -106,9 +106,9 @@ const ExperienceCard = (props) => {
       </ContentContainer>
 
       {props.data ? (
-        props.data.payment_info ? (
-          props.data.payment_info.summary ? (
-            <Summary summary={props.data.payment_info.summary}></Summary>
+        props.data.payment_information ? (
+          props.data.payment_information.summary ? (
+            <Summary summary={props.data.payment_information.summary}></Summary>
           ) : null
         ) : null
       ) : null}
@@ -123,13 +123,13 @@ const ExperienceCard = (props) => {
       >
         <Cost
           PW={props.PW}
-          coupon_applied={props.data?.payment_info?.coupon_usage}
-          discounted_cost={props.data?.payment_info?.discounted_cost}
-          show_per_person={props.data?.payment_info?.show_per_person_cost}
+          coupon_applied={props.data?.payment_information?.coupon_usage}
+          discounted_cost={props.data?.payment_information?.discounted_cost}
+          show_per_person={props.data?.payment_information?.per_person_discounted_cost}
           persons={
-            props.data?.number_of_adults +
+            (props.data?.number_of_adults +
             props.data?.number_of_children +
-            props.data?.number_of_infants
+            props.data?.number_of_infants) || props?.data?.payment_information?.pax
           }
           starting_cost={props.starting_cost}
         ></Cost>
