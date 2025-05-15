@@ -1101,6 +1101,7 @@ const Details = (props) => {
                     dimensionsMobile={{ height: 50, width: 50 }}
                     height={"20px"}
                     width={"20px"}
+                    widthmobile={"20px"}
                     leftalign
                     url={"media/icons/login/customer-service-black.png"}
                   />{" "}
@@ -1152,6 +1153,7 @@ const Details = (props) => {
                       dimensionsMobile={{ height: 50, width: 50 }}
                       height={"20px"}
                       width={"20px"}
+                       widthmobile={"20px"}
                       leftalign
                       url={"media/icons/login/customer-service-black.png"}
                     />{" "}

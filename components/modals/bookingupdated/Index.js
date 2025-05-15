@@ -238,7 +238,6 @@ const Booking = (props) => {
     dispatch(setItineraryFilters({ [heading]: oldfilters[heading] }));
   };
   const handleClose = () => {
-    // props?.setShowBookingModal(false);
     // props?.setHideBookingModal();
     resetPaginationStatus();
     
@@ -268,7 +267,7 @@ const Booking = (props) => {
     setNoResults(false);
     props?.setShowBookingModal(false);
     setShowDetails(false);
-    // props.onHide();
+    props.onHide();
   };
 
   const setDynamicFilters = (filters) => {
@@ -437,7 +436,7 @@ const Booking = (props) => {
   };
 
    console.log("Show B Inside",props?.showBookingModal)
-   
+
   const fetchHotels = () => {
     setLoading(true);
     setUpdateLoadingState(true);
