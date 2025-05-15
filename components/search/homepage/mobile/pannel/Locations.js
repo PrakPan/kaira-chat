@@ -68,21 +68,23 @@ const Locations = (props) => {
   if (props.hotlocations) {
     for (var i = 0; i < 5; i++) {
       const data = props.hotlocations[i];
+      if(props.hotlocations[i]?.name){
       locations.push(
-        <LocationContainer href={"/" + data.path}>
+        <LocationContainer href={"/" + data?.path}>
           <MarkerContainer>
             <FaMapMarkerAlt />
           </MarkerContainer>
           <Text>
-            <div>{props.hotlocations[i].name}</div>
-            {props.hotlocations[i].parent ? (
-              <p>{props.hotlocations[i].parent}</p>
+            <div>{props.hotlocations[i]?.name}</div>
+            {props.hotlocations[i]?.parent ? (
+              <p>{props.hotlocations[i]?.parent}</p>
             ) : (
-              <p>{props.hotlocations[i].state?.name}</p>
+              <p>{props.hotlocations[i]?.state?.name}</p>
             )}
           </Text>
         </LocationContainer>
       );
+    }
     }
   } else {
     for (var i = 0; i < 5; i++) {
