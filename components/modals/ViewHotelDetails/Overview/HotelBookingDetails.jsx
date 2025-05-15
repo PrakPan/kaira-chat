@@ -997,7 +997,7 @@ const HotelBookingDetails = (props) => {
                   )}
                 </div>
 
-                {room?.facilities ? (
+                {room?.facilities  && room?.facilities?.length ? (
                   <div className="flex flex-col gap-2">
                     <div className="text-lg font-semibold">Amenities</div>
                     <div className="text-[14px]">
