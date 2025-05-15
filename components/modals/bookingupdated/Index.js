@@ -112,6 +112,7 @@ const Booking = (props) => {
   const [showFilters, setShowFilters] = useState(false);
   const dispatch = useDispatch();
   const debouncedSearch = useDebounce(selectSearch);
+  console.log("Modal C",props?.showBookingModal);
 
   useEffect(() => {
     if (
@@ -237,8 +238,10 @@ const Booking = (props) => {
     dispatch(setItineraryFilters({ [heading]: oldfilters[heading] }));
   };
   const handleClose = () => {
-    props?.setHideBookingModal();
+    // props?.setShowBookingModal(false);
+    // props?.setHideBookingModal();
     resetPaginationStatus();
+    
     setMoreOptionsJSX([]);
     setLoading(true);
     setFilters((prev) => ({
@@ -265,7 +268,7 @@ const Booking = (props) => {
     setNoResults(false);
     props?.setShowBookingModal(false);
     setShowDetails(false);
-    props.onHide();
+    // props.onHide();
   };
 
   const setDynamicFilters = (filters) => {

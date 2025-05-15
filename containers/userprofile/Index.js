@@ -73,8 +73,8 @@ const UserDashboard = (props) => {
         },
       })
       .then((res) => {
-        if (res.data.count) {
-          setTotalPlans(res.data.count);
+        if (res.data?.results) {
+          setTotalPlans(res.data?.results);
         }
         if (res.data.next) {
           setShowMoreResults(true);
@@ -83,7 +83,7 @@ const UserDashboard = (props) => {
           setShowMoreResults(false);
           setOffSet(0);
         }
-        const plansarr = res.data.results;
+        const plansarr = res.data?.data?.plans;
 
         if (showMore) setMyPlansArr((prev) => [...prev, ...plansarr]);
         else setMyPlansArr(plansarr);
@@ -200,7 +200,7 @@ const UserDashboard = (props) => {
                         : null
                       : null
                   }
-                  rating={plan?.rating}
+                  rating={plan?.rating_count}
                   slug={plan?.slug}
                   id={plan?.id}
                   budget={plan?.budget}
@@ -217,9 +217,9 @@ const UserDashboard = (props) => {
                   }
                   location={plan["experience_region"]}
                   starting_cost={
-                    plan?.payment_info
-                      ? plan?.payment_info?.per_person_total_cost
-                        ? plan?.payment_info?.per_person_total_cost
+                    plan?.payment_information
+                      ? plan?.payment_information?.per_person_discounted_cost
+                        ? plan?.payment_information?.per_person_discounted_cost
                         : plan?.starting_price
                       : plan?.starting_price
                   }

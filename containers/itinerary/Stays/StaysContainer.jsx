@@ -41,7 +41,7 @@ const StaysContainer = (props) => {
                 _GetInTouch={props._GetInTouch}
                 CityData={props?.CityData}
                 start_date={props?.plan?.start_date}
-                setShowBookingModal={props?.setShowBookingModal}
+                // setShowBookingModal={props?.setShowBookingModal}
               />
             </>
           ))
