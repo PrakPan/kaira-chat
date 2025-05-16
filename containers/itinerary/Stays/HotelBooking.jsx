@@ -235,9 +235,6 @@ const HotelBooking = ({
     setShowBookingModal(true);
   }
 
-  useEffect(()=>{
-console.log("component show etails are:",openViewDetails)
-  },[openViewDetails])
 
   const _setImagesHandler = (images) => {
     setImages(images);

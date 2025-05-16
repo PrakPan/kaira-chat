@@ -619,7 +619,7 @@ const SimpleTabsV2 = (props) => {
                   }
                   _updatePaymentHandler={props._updatePaymentHandler}
                   getPaymentHandler={props.getPaymentHandler}
-                  setShowBookingModal={() => props.setShowBookingModal(true)}
+                  setShowBookingModal={props.setShowBookingModal}
                   showBookingModal={props.showBookingModal}
                   setHideBookingModal={props.setHideBookingModal}
                   setShowLoginModal={setShowLoginModal}

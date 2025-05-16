@@ -179,6 +179,7 @@ const DaybyDay = ({
     setBookingFunData({ index: i, booking: data, city_id: city_id });
     setShowDetails(true);
   }
+  console.log("component show modal1 is:",props?.showBookingModal)
 
   return (
     <>
