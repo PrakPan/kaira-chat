@@ -235,9 +235,6 @@ const HotelBooking = ({
     setShowBookingModal(true);
   }
 
-  useEffect(()=>{
-console.log("component show etails are:",openViewDetails)
-  },[openViewDetails])
 
   const _setImagesHandler = (images) => {
     setImages(images);
@@ -299,6 +296,8 @@ console.log("component show etails are:",openViewDetails)
     setShowBookingModal(false)
     setShowDetails(false)
   }
+
+  console.log("Show B",showBookingModal);
 
   return (
     <div className={`${!isPageWide ? "max-w-fit" : "max-w-[54vw]"}`}>
@@ -383,6 +382,7 @@ console.log("component show etails are:",openViewDetails)
               <div
                 className={`relative lg:h-[12rem] lg:w-[30%] w-full  h-[12rem]`}
               >
+                
                 <div style={{ display: imageLoaded ? "initial" : "none" }}>
                   <ImageLoader
                     dimensions={{ width: 400, height: 400 }}

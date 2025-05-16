@@ -7,7 +7,7 @@ import { closeNotification } from "../../store/actions/notification";
 
 const Container = styled.div`
   position: fixed;
-  right: 2rem;
+  right: 0px;
   top: ${(props) => (props.show ? "1%" : "-100%")};
   transition: 0.5s top;
   z-index: ${(props) => props.zIndex};
@@ -121,7 +121,7 @@ function NotificationPopup(props) {
 
   return _document
     ? ReactDOM.createPortal(
-        <Container zIndex={props.zIndex || "5000"} show={props.show}>
+        <Container zIndex={props.zIndex || "5000"} show={props.show} className="md:!right-[2rem]">
           <PopupContainer color={color.color} show={props.show} bg={color.bg}>
             <Text>{props.text}</Text>
             <div>

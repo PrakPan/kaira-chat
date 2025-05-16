@@ -1096,7 +1096,7 @@ const HotelBookingDetails = (props) => {
                         {room?.beds && room?.beds?.map((bed,index)=>{
                          return  bed?.type  &&
                                             bed?.count > 0 ? (
-                                              <div className="flex flex-row items-center my-0">
+                                              <div className="flex flex-row gap-2 items-center my-0">
                                                <BiBed className="text-sm text-[#7A7A7A]" />
                                                 <div className="text-sm font-[400] line-clamp-1">
                                                   {bed?.type}{" "} x
@@ -1122,7 +1122,7 @@ const HotelBookingDetails = (props) => {
                     )}
                   </div>
 
-                  {room?.facilities ? (
+                  {room?.facilities && room?.facilities?.length ? (
                     <div className="flex flex-col gap-2">
                       <div className="text-lg font-semibold">Amenities</div>
                       <div className="text-[14px]">
