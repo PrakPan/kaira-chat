@@ -13,6 +13,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import styled from 'styled-components';
+import Script from "next/script";
 
 function MyApp({ Component, pageProps, store }) {
   const router = useRouter();
@@ -136,6 +137,23 @@ function MyApp({ Component, pageProps, store }) {
           rel="stylesheet"
         />
       </Head>
+      <body>
+      <Script
+            src="https://app.crmone.com/assets/scripts/integrate-widgets.js"
+            strategy="afterInteractive"
+            onLoad={() => {
+              if (window) {
+                // @ts-ignore 
+                window.createBot({
+                  botId: "680b71a4a47fab68f44972ab",
+                  internalLoad: true
+                });
+              } else {
+                console.error("window is not defined")
+              }
+            }}
+          />
+          </body>
       <div ref={ref}>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <Theme>

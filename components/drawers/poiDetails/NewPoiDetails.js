@@ -201,7 +201,7 @@ export default function PoiDetails(props) {
   return (
     <div className="flex flex-col gap-4 pb-[100px] h-[100vh] overflow-y-auto">
       <div className="flex flex-col gap-4 px-[20px] pb-4">
-        <div className="sticky top-0 z-1 flex flex-row items-center gap-2 mt-4 bg-white">
+        <div className="sticky top-0 z-1 flex flex-row items-center gap-2 pt-4 bg-white">
           <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
         </div>
 

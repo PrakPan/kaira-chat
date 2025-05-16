@@ -154,14 +154,14 @@ export default class MyDocument extends Document {
         </Head>
 
         <body>
-          <script src="https://app.crmone.com/assets/scripts/integrate-widgets.js" />
+          {/* <script src="https://app.crmone.com/assets/scripts/integrate-widgets.js" />
           <script
             dangerouslySetInnerHTML={{
               __html: `
               createBot({ botId: "680b71a4a47fab68f44972ab" });
             `,
             }}
-          />
+          /> */}
           <style>
           {`
             #chatbot-iframe-container {
