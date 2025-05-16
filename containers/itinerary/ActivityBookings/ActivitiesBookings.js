@@ -8,8 +8,7 @@ const ActivitiesBookings = (props) => {
   return (
     <div
       id="activities"
-      className="w-full lg:w-auto"
-      style={{ width: "calc(54vw + 30px)" }}
+      className="w-full  md:w-auto"
     >
       {showActivities && (
         <div className="cursor-pointer font-lexend mb-2  mt-8 font-bold text-3xl group text-[#262626] transition duration-300 max-w-fit">

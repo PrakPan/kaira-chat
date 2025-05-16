@@ -333,61 +333,64 @@ const SimpleTabsV2 = (props) => {
         <div className="w-full z-[20] sticky flex flex-row top-[2px] justify-end -mt-[55px] ">
           <div className="z-[99] absolute  md:top-[0px] top-[0px] w-[20rem]">
             <div className="flex flex-row justify-between ">
-             { (pricing_status === "PENDING") ? <div className="flex flex-col animate-pulse w-full max-w-[120px]">
-  <div className="h-3 w-20 bg-gray-300 rounded mb-1"></div>
-  <div className="h-5 w-24 bg-gray-400 rounded"></div>
-</div>
-: <div className="flex flex-col">
-                <div className="text-[0.725rem]">
-                  {props?.payment?.pay_only_for_one ||
-                  props?.payment?.show_per_person_cost
-                    ? "Per Person"
-                    : props.payment?.is_estimated_price
-                    ? `${
-                        props.payment.total_cost === 0
-                          ? "No Bookings"
-                          : "Estimated Price"
-                      }`
-                    : "Total Cost"}
+              {pricing_status === "PENDING" ? (
+                <div className="flex flex-col animate-pulse w-full max-w-[120px]">
+                  <div className="h-3 w-20 bg-gray-300 rounded mb-1"></div>
+                  <div className="h-5 w-24 bg-gray-400 rounded"></div>
                 </div>
-                {props.payment ? (
-                  <div>
-                    <span className="font-bold">
-                      ₹{" "}
-                      {!props?.mercuryItinerary
-                        ? props?.payment?.pay_only_for_one ||
-                          props?.payment?.show_per_person_cost
+              ) : (
+                <div className="flex flex-col">
+                  <div className="text-[0.725rem]">
+                    {props?.payment?.pay_only_for_one ||
+                    props?.payment?.show_per_person_cost
+                      ? "Per Person"
+                      : props.payment?.is_estimated_price
+                      ? `${
+                          props.payment.total_cost === 0
+                            ? "No Bookings"
+                            : "Estimated Price"
+                        }`
+                      : "Total Cost"}
+                  </div>
+                  {props.payment ? (
+                    <div>
+                      <span className="font-bold">
+                        ₹{" "}
+                        {!props?.mercuryItinerary
+                          ? props?.payment?.pay_only_for_one ||
+                            props?.payment?.show_per_person_cost
+                            ? getIndianPrice(
+                                Math.round(
+                                  Math.round(
+                                    props.payment.per_person_discounted_cost
+                                  ) / 100
+                                )
+                              )
+                            : getIndianPrice(
+                                Math.round(
+                                  Math.round(props.payment.discounted_cost)
+                                )
+                              )
+                          : props?.payment?.pay_only_for_one ||
+                            props?.payment?.show_per_person_cost
                           ? getIndianPrice(
                               Math.round(
                                 Math.round(
                                   props.payment.per_person_discounted_cost
-                                ) / 100
+                                )
                               )
                             )
                           : getIndianPrice(
                               Math.round(
                                 Math.round(props.payment.discounted_cost)
                               )
-                            )
-                        : props?.payment?.pay_only_for_one ||
-                          props?.payment?.show_per_person_cost
-                        ? getIndianPrice(
-                            Math.round(
-                              Math.round(
-                                props.payment.per_person_discounted_cost
-                              )
-                            )
-                          )
-                        : getIndianPrice(
-                            Math.round(
-                              Math.round(props.payment.discounted_cost)
-                            )
-                          )}
-                      {"/-"}
-                    </span>
-                  </div>
-                ) : null}
-              </div>}
+                            )}
+                        {"/-"}
+                      </span>
+                    </div>
+                  ) : null}
+                </div>
+              )}
 
               {props?.token && props?.payment?.paid_user && (
                 <div className="border-[1px] flex my-2 justify-center items-center text-[#04AA32] text-center  text-medium border-[#04AA32] px-[2px] py-[1px]">
@@ -772,7 +775,7 @@ const SimpleTabsV2 = (props) => {
             )}
           </div>
 
-          {props.activityBookings && (
+          
             <div id={"Activities"}>
               <ActivityBookings
                 plan={props.plan}
@@ -799,7 +802,6 @@ const SimpleTabsV2 = (props) => {
                 setShowLoginModal={setShowLoginModal}
               />
             </div>
-          )}
 
           <Modal
             centered
@@ -856,7 +858,7 @@ const SimpleTabsV2 = (props) => {
                       itineraryDate={props?.itineraryDate}
                       mercuryItinerary={props?.mercuryItinerary}
                       itinerary={props.itinerary}
-                      _GetInTouch={()=>_GetInTouch()}
+                      _GetInTouch={() => _GetInTouch()}
                       setShowLoginModal={setShowLoginModal}
                       loading={loading}
                     />
@@ -1082,7 +1084,7 @@ const SimpleTabsV2 = (props) => {
             </div>
 
             {props?.mercuryItinerary ? (
-              <div id={"Activities"}>
+              <div id={"Activities"} className="w-full">
                 <ActivityBookings
                   mercuryItinerary={props?.mercuryItinerary}
                   plan={props.plan}
