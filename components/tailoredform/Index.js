@@ -180,7 +180,7 @@ const Enquiry = (props) => {
     console.log("PROPS", props);
     selectedObj = [
       {
-        destination_id: routerquery.page_id || props.page_id,
+        id: routerquery.page_id || props.page_id,
         name: routerquery.destination || props.destination,
         input_id: initialInputId,
       },
@@ -207,7 +207,7 @@ const Enquiry = (props) => {
     ];
   }
 
-  //console.log("SelectedObj",selectedObj,routerquery);
+  console.log("SelectedObj",selectedObj,routerquery);
 
   const _handleHideBlack = () => {
     // setShowBlack(false);

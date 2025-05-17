@@ -64,6 +64,8 @@ const SearchPannel = (props) => {
   const [showP, setShowP] = useState(false);
   const ref = useRef();
 
+  
+
   useEffect(() => {
     const checkIfClickedOutside = (e) => {
       if (ref.current && !ref.current.contains(e.target)) {

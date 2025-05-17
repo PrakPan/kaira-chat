@@ -95,7 +95,7 @@ const ComboFlight = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const dispatch = useDispatch();
   const transferBookings = useSelector((state) => state.TransferBookings);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [filtersState, setFiltersState] = useState({
     order: "asc",
     non_stop_flights: true,
@@ -118,7 +118,7 @@ const ComboFlight = (props) => {
   const [showFilter, setShowFilter] = useState(false);
   const [noResults, setNoResults] = useState(false);
   const [unauthorized, setUnauthorized] = useState(false);
-  const [flightCount, setFlightsCount] = useState(0);
+  const [flightCount, setFlightsCount] = useState(props?.flightResults ? props?.flightResults?.length : 0);
   const [pax, setPax] = useState({
     adults: number_of_adults || (props.selectedBooking?.pax?.number_of_adults
       ? props.selectedBooking.pax.number_of_adults
@@ -135,7 +135,7 @@ const ComboFlight = (props) => {
     value: 1,
   });
   const [showTransferEditDrawer, setShowTransferEditDrawer] = useState(false);
-  const [flights, setFlights] = useState([]);
+  const [flights, setFlights] = useState(props?.flightResults ? props?.flightResults : []);
   const [selectedFlightIndex, setSelectedFlightIndex] = useState(null);
   const [flightProvider, setProvider] = useState(null);
   const [preferredDepartureTime, setPreferredDepartureTime] = useState("");
@@ -195,7 +195,7 @@ const ComboFlight = (props) => {
           console.error("Error with combo time/date:", error);
           return; // Exit early if there's an error
         }
-      } else if (props?.selectedBooking?.check_in) {
+      } else if (props?.selectedBooking?.check_in) { 
         try {
           baseTime = dayjs(props?.selectedBooking?.check_in.replace(" ", "T"));
           console.log("Using check_in time:", props?.selectedBooking?.check_in);
@@ -265,10 +265,9 @@ const ComboFlight = (props) => {
   }, [pax]);
 
   useEffect(() => {
-    // Only proceed if we have a valid departure time
+   
     if (!preferredDepartureTime) return;
-    
-    // Debug log (only once)
+
     console.log("Flight search conditions:", {
       showModal: props.showComboFlightModal,
       hasToken: !!props.token,
@@ -292,6 +291,20 @@ const ComboFlight = (props) => {
   }, [props.showComboFlightModal, props.token, preferredDepartureTime, isPageWide, timeUpdated]);
 
  
+
+  useEffect(() => {
+     console.log("F Resu",props?.flightResults,props?.selectedData);
+  if (props?.flightResults?.length && props?.selectedData?.resultIndex !== undefined) {
+    console.log("F Resu",props?.flightResults,props?.selectedData);
+    const selectedIndex = props.flightResults.findIndex(
+      (flight) => flight?.result_index === props.selectedData?.resultIndex
+    );
+
+    if (selectedIndex !== -1) {
+      setSelectedFlightIndex(selectedIndex);
+    }
+  }
+}, [props.flightResults, props.selectedData]);
 
   const updatePreferredDepartureTime = (newDateTime) => {
     setPreferredDepartureTime(newDateTime);
@@ -318,6 +331,7 @@ const ComboFlight = (props) => {
     setIsFetching(true);
     setFlightsCount(0);
     setFlights([]);
+    props?.setFlightResults([]);
     setUpdateBookingState(false);
     setUnauthorized(false);
     setNoResults(false);
@@ -373,9 +387,11 @@ const ComboFlight = (props) => {
 
           if (res.data?.results && res.data.results.length) {
             setFlights(res.data.results);
+             props?.setFlightResults(res.data.results);
             setFlightsCount(res.data.results.length);
           } else {
             setFlights([]);
+             props?.setFlightResults([]);
             setFlightsCount(0);
             setNoResults(true);
           }
@@ -386,6 +402,7 @@ const ComboFlight = (props) => {
           setMoreLoadingState(false);
           setIsFetching(false);
           setFlights([]);
+           props?.setFlightResults([]);
           setFlightsCount(0);
           setFetchingIsError({
             error: true,
@@ -398,6 +415,7 @@ const ComboFlight = (props) => {
       setMoreLoadingState(false);
       setIsFetching(false);
       setFlights([]);
+       props?.setFlightResults([]);
       setFlightsCount(0);
       setFetchingIsError({
         error: true,
@@ -572,6 +590,7 @@ const ComboFlight = (props) => {
         
         if (res.data?.Results.length) {
           setFlights(prevFlights => [...prevFlights, ...res.data.Results]);
+          props?.setFlightResults(prevFlights => [...prevFlights, ...res.data.Results]);
           setFlightsCount(prev => prev + res.data.Results.length);
         }
         
@@ -644,7 +663,7 @@ const ComboFlight = (props) => {
       return <Skeleton />;
     }
 
-    if (!flights.length && !loading) {
+    if (noResults) {
       return (
         <div
           style={{
