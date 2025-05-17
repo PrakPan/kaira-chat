@@ -1215,6 +1215,7 @@ const RouteContainer = (props) => {
   const [comboStartDate, setComboStartDate] = useState(null);
   const [comboStartTime, setComboStartTime] = useState(null);
   const [flightResults,setFlightResults] = useState([]);
+   const [taxiResults,setTaxiResults] = useState([]);
   const { number_of_adults, number_of_children, number_of_infants } =
     useSelector((state) => state.Itinerary);
 
@@ -1453,6 +1454,8 @@ const RouteContainer = (props) => {
                   destination_itinerary_city_id={destination_itinerary_city_id}
                   dCityData={dCityData}
                   oCityData={oCityData}
+                  taxiResults={taxiResults}
+                  setTaxiResults={setTaxiResults}
                 />
               ) : (
                 <OtherTransfer
