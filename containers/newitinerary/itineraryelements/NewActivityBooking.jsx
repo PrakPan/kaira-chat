@@ -279,17 +279,20 @@ export default function NewActivityBooking(props) {
             </TransparentButton>
           </div>
         ) : (
+          <div className="w-full flex justify-end">
           <Button
             bgColor={"#F7E700"}
             borderRadius="8px"
             fontWeight="400"
             hoverColor="white"
             height={"full"}
-            className="p-[12px]"
+            className="p-[12px] !w-full"
+            width={"100%"}
             onclick={() => handleClick(props.data?.id)}
           >
             View Detail
           </Button>
+          </div>
           // <div
           //   className="h-full text-blue underline cursor-pointer"
           //   onClick={() => handleClick(props.data?.id)}
