@@ -2473,9 +2473,9 @@ const NewMultiModeContainer = ({
                         onFilterApplied={handleFilterApplied}
                         dCityData={dCityData}
                         oCityData={oCityData}
-                        source_itinerary_city_id={origin_itinerary_city_id}
+                        source_itinerary_city_id={ option?.source?.city || origin_itinerary_city_id}
                         destination_itinerary_city_id={
-                          destination_itinerary_city_id
+                         option?.destination?.city || destination_itinerary_city_id
                         }
                         setFlightResults={setFlightResults}
                         flightResults={flightResults}
@@ -2515,10 +2515,10 @@ const NewMultiModeContainer = ({
                         mercuryTransfer={mercuryTransfer}
                         individual={individual}
                         originCityId={
-                          oCityData?.city?.id || oCityData?.gmaps_place_id
+                          option?.source?.city || oCityData?.city?.id || oCityData?.gmaps_place_id
                         }
                         destinationCityId={
-                          dCityData?.city?.id || dCityData?.gmaps_place_id
+                          option?.destination?.city || dCityData?.city?.id || dCityData?.gmaps_place_id
                         }
                         isSelected={
                           selectedModeIds[currentStep - 1] === option.id
