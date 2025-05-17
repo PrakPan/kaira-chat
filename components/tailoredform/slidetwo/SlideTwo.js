@@ -66,7 +66,9 @@ const SlideTwo = (props) => {
             <button
               className="flex items-center justify-center text-blue"
               onClick={() => props.setNumberOfAdults((prev) => prev + 1)}
-              disabled={props.numberOfAdults >= 14}
+              disabled={props.numberOfAdults >= 14 || props?.groupType === 
+                'Solo' 
+              }
             >
               +
             </button>
