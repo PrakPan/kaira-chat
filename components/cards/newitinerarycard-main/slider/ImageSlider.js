@@ -81,7 +81,7 @@ const ImageSlider = (props) => {
             "N/" +
             (parseInt(props.duration_number) + 1) +
             "D"
-          : props.duration}
+          : props.duration ? (props.duration === 1 ? "Night" : "Nights") : null}
       </DurationContainer>
     </Container>
   );

@@ -1649,6 +1649,8 @@ const NewMultiModeContainer = ({
 
   const [skipFlightFetch, setSkipFlightFetch] = useState(false);
   const [skipTaxiFetch, setSkipTaxiFetch] = useState(false);
+  const [flightResults,setFlightResults] = useState([]);
+   const [taxiResults,setTaxiResults] = useState([]);
   const [hasAppliedFilters, setHasAppliedFilters] = useState(false);
   const { number_of_adults, number_of_children, number_of_infants } =
     useSelector((state) => state.Itinerary);
@@ -1839,10 +1841,10 @@ const NewMultiModeContainer = ({
   const handleNextStep = () => {
     const currentTransfer = transfer[currentStep - 1];
     if (currentTransfer.mode === "Flight") {
-      setSkipFlightFetch(true);
+      // setSkipFlightFetch(true);
       setShowComboFlightModal(false);
     } else if (currentTransfer.mode === "Taxi") {
-      setSkipTaxiFetch(true);
+      // setSkipTaxiFetch(true);
       setShowComboTaxiModal(false);
     }
 
@@ -1918,7 +1920,7 @@ const NewMultiModeContainer = ({
 
   const handleFilterApplied = () => {
     setHasAppliedFilters(true);
-    setSkipFlightFetch(false);
+    // setSkipFlightFetch(false);
     setSkipTaxiFetch(false);
   };
 
@@ -2237,12 +2239,12 @@ const NewMultiModeContainer = ({
 
         if (currentTransfer.mode === "Flight") {
           if (!skipFlightFetch) setShowComboFlightModal(true);
-          else setSkipFlightFetch(false);
+          // else setSkipFlightFetch(false);
         }
 
         if (currentTransfer.mode === "Taxi") {
           if (!skipTaxiFetch) setShowComboTaxiModal(true);
-          else setSkipTaxiFetch(false);
+          // else setSkipTaxiFetch(false);
         }
       }
     } else {
@@ -2469,6 +2471,9 @@ const NewMultiModeContainer = ({
                         destination_itinerary_city_id={
                           destination_itinerary_city_id
                         }
+                        setFlightResults={setFlightResults}
+                        flightResults={flightResults}
+                        selectedData={selectedData && selectedData?.length ? selectedData?.[index] : null}
                       />
                     );
                   }
@@ -2518,6 +2523,9 @@ const NewMultiModeContainer = ({
                         onFilterApplied={handleFilterApplied}
                         dCityData={dCityData}
                         oCityData={oCityData}
+                        skipTaxiFetch={skipTaxiFetch}
+                        setTaxiResults={setTaxiResults}
+                        taxiResults={taxiResults}
                       />
                     );
                   }

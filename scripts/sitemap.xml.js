@@ -22,7 +22,8 @@ const generateSitemap = async () => {
   const countries = await axios.get(
     "https://apis.tarzanway.com/poi/country/all?fields=path"
   );
-  const countriesData = countries.data;
+  const countriesData = countries.data;  
+
   let countriesPaths = countriesData.map((object) => {
     return { title: "Country Planner", link: BASE_URL + "/" + object.path };
   });

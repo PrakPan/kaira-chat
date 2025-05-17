@@ -73,7 +73,7 @@ export default function FlightDetails({
   }
 
   return (
-    <div className="lg:w-[100%] flex flex-col  gap-2  mt-4">
+    <div className=" w-full lg:w-[100%]  flex flex-col  gap-2  mt-4">
       <div className="flex flex-col items-center gap-2 text-[#C5C1C1]">
         <div
           className="w-full"

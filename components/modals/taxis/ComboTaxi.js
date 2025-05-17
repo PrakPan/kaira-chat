@@ -52,7 +52,7 @@ const ComboTaxi = (props) => {
   const [optionsJSX, setOptionsJSX] = useState([]);
   const [moreOptionsJSX, setMoreOptionsJSX] = useState([]);
   const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [viewMoreStatus, setViewMoreStatus] = useState(false);
   const [updateBookingState, setUpdateBookingState] = useState(false);
   const [updateLoadingState, setUpdateLoadingState] = useState(false);
@@ -60,7 +60,7 @@ const ComboTaxi = (props) => {
   const [showTransferEditDrawer, setShowTransferEditDrawer] = useState(false);
   const [isMercury, setIsMercury] = useState(false);
   const [selectedTaxiIndex, setSelectedTaxiIndex] = useState(null);
-  const [quotes, setQuotes] = useState([]);
+  const [quotes, setQuotes] = useState(props?.taxiResults ? props?.taxiResults : []);
   const dispatch = useDispatch();
 
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
@@ -114,7 +114,7 @@ const ComboTaxi = (props) => {
   };
 
   useEffect(() => {
-    if (props.showTaxiModal) {
+    if (props.showTaxiModal && !quotes.length) {
       console.log("Inside fetch data", props.showTaxiModal);
       fetchData();
     }
@@ -173,6 +173,7 @@ const ComboTaxi = (props) => {
     setUpdateLoadingState(false);
     setOptionsJSX([]);
     setQuotes([]);
+    props?.setTaxiResults([]);
 
     {
       propsToUse?.mercury &&
@@ -265,16 +266,28 @@ const ComboTaxi = (props) => {
 
             }))
           );
+           props?.setTaxiResults(res.data.data.quotes.map((q, i) => ({
+              ...q,
+              distance: res.data.data.distance,
+              duration: res.data.data.duration,
+              trace_id: res.data.trace_id,
+              source: res.data.data?.source,
+
+            })));
         } else {
           setNoResults(true);
           setViewMoreStatus(false);
           setQuotes([]);
+           props?.setTaxiResults([]);
         }
         setLoading(false);
       })
       .catch((err) => {
+        setQuotes([]);
+        props?.setTaxiResults([]);
         setLoading(false);
         setError(true);
+
         dispatch(openNotification({
           type: "error",
           text: "There seems to be a problem, please try again later!",
