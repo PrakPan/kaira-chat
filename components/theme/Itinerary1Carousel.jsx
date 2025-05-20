@@ -62,7 +62,7 @@ const Itinerary1Carousel = (props) => {
             key={itinerary.short_text}
             id={itinerary.id}
             number_of_adults={itinerary.payment_information.pax}
-            duration={duration ? duration + " Nights" : null}
+            duration={duration ? duration : null}
             starting_cost={
               itinerary.payment_information
                 ? itinerary.payment_information.show_per_person_cost
