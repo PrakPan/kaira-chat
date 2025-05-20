@@ -182,7 +182,7 @@ const ItineraryCard = (props) => {
             props.data?.payment_information?.show_per_person_cost
           }
           persons={props.data?.payment_information.pax}
-          starting_cost={props.starting_cost * 100}
+          starting_cost={props.starting_cost}
         ></Cost>
 
         <Button
