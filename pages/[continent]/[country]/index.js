@@ -54,7 +54,7 @@ const TravelPlanner = (props) => {
         continetCarousel={props?.continetCarousel}
         data={props?.Data}
         locations={props?.locations}
-        page_id={props?.page_id || ""}
+        page_id={props.page_id || ""}
         type={props?.Type}
       ></CountryPage>
     </Layout>
@@ -91,15 +91,17 @@ export async function getStaticProps(context) {
   let locations = [];
   const continetCarousel = [];
   let hotLocationSearch = [];
-  let pageId=null;
+  let pageId="";
   let Type="Country"
   const { continent, country } = context.params;
   const path = `${continent}/${country}`;
 
   try{
     const res=await axios.get(`${MERCURY_HOST}/api/v1/geos/pages/all/?path=${path}`)
+    if (res?.data?.path){
     pageId=res?.data?.path?.id
     Type=res.data.path.type
+    }
   } catch(err){
     console.error("Path api error:",err)
   }
