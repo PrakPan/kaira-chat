@@ -54,7 +54,7 @@ const TravelPlanner = (props) => {
         continetCarousel={props?.continetCarousel}
         data={props?.Data}
         locations={props?.locations}
-        page_id={props.page_id}
+        page_id={props?.page_id || ""}
         type={props?.Type}
       ></CountryPage>
     </Layout>

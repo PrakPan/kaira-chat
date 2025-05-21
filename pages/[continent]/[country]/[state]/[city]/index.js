@@ -70,7 +70,7 @@ const Experience = (props) => {
         reccomendedCitiesData={props.reccomendedCitiesData}
         cityData={props.cityData}
         id={router.query.city}
-        page_id={props.page_id}
+        page_id={props.page_id || ""}
         type={props?.Type}
       ></CityPage>
     </Layout>
