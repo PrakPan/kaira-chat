@@ -8,6 +8,7 @@ import axiospagelistinstance from "../../../services/pages/list";
 import axioslocationsinstance from "../../../services/search/search";
 import setHotLocationSearch from "../../../store/actions/hotLocationSearch";
 import axios from "axios";
+import { MERCURY_HOST } from "../../../services/constants";
 
 const TravelPlanner = (props) => {
   useEffect(() => {
