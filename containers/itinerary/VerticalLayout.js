@@ -167,7 +167,7 @@ const CityItem = ({
       );
 
       if (response.status === 204) {
-        dispatch(updateTransferBookings(bookingIdToDelete));
+        dispatch(updateTransferBookings(dataPassed?.id));
         setLoading(false);
         getPaymentHandler();
 
