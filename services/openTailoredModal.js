@@ -41,5 +41,6 @@ export function closeTailoredModal(router) {
   delete router.query["tailored-travel"];
   delete router.query["page_id"];
   delete router.query["destination"];
+  router?.query["type"] && delete router.query["type"]
   router.push(router, undefined, { scroll: false, shallow: true });
 }

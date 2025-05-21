@@ -40,7 +40,7 @@ const Experience = (props) => {
         {isPageWide ? (
           <DesktopPersonaliseBanner
             onclick={() =>
-              openTailoredModal(router, props.cityData.id, props.cityData.name)
+              openTailoredModal(router, props.cityData.id, props.cityData.name,props.type)
             }
             text={validateTextSize(
               `Craft a personalized itinerary to ${props.cityData.name} now!`,
@@ -59,11 +59,12 @@ const Experience = (props) => {
         <div>
           <HeroBanner
             image={props.cityData.images[0].image}
-            page_id={props.cityData.id}
             destination={props.cityData.name}
             cities={props.reccomendedCitiesData}
             title={`${props.cityData.name} Trip Planner`}
             page={"City Page"}
+            page_id={props?.page_id}
+            type={props?.type}
           />
 
           <NewMenu
