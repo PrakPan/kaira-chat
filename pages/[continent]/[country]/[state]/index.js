@@ -102,16 +102,20 @@ export async function getStaticProps(context) {
   var locations = [];
   let data = null;
   let hotLocationSearch = [];
-  let pageId=null;
-  let Type="Country"
+  let pageId = "";
+  let Type = "Country";
   const { continent, country, state } = context.params;
   const path = `${continent}/${country}/${state}`;
-  try{
-    const res=await axios.get(`${MERCURY_HOST}/api/v1/geos/pages/all/?path=${path}`)
-    pageId=res?.data?.path?.id
-    Type=res.data.path.type
-  } catch(err){
-    console.error("Path api error:",err)
+  try {
+    const res = await axios.get(
+      `${MERCURY_HOST}/api/v1/geos/pages/all/?path=${path}`
+    );
+    if (res?.data?.path) {
+      pageId = res?.data?.path?.id;
+      Type = res.data.path.type;
+    }
+  } catch (err) {
+    console.error("Path api error:", err);
   }
 
   try {
@@ -164,8 +168,8 @@ export async function getStaticProps(context) {
       locations,
       path,
       hotLocationSearch,
-      page_id:pageId,
-      Type
+      page_id: pageId,
+      Type,
     },
   };
 }
