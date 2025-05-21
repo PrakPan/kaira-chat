@@ -108,7 +108,6 @@ export async function getStaticProps(context) {
   const path = `${continent}/${country}/${state}`;
   try{
     const res=await axios.get(`${MERCURY_HOST}/api/v1/geos/pages/all/?path=${path}`)
-    console.log("path api response is:",res)
     pageId=res?.data?.path?.id
     Type=res.data.path.type
   } catch(err){

@@ -7,6 +7,7 @@ import axioscountrydetailsinstance from "../../../services/pages/country";
 import axiospagelistinstance from "../../../services/pages/list";
 import axioslocationsinstance from "../../../services/search/search";
 import setHotLocationSearch from "../../../store/actions/hotLocationSearch";
+import axios from "axios";
 
 const TravelPlanner = (props) => {
   useEffect(() => {
@@ -97,7 +98,6 @@ export async function getStaticProps(context) {
 
   try{
     const res=await axios.get(`${MERCURY_HOST}/api/v1/geos/pages/all/?path=${path}`)
-    console.log("path api response is:",res)
     pageId=res?.data?.path?.id
     Type=res.data.path.type
   } catch(err){
