@@ -318,7 +318,7 @@ const ComboFlight = (props) => {
   if (props?.flightResults?.length && props?.selectedData?.resultIndex !== undefined) {
     console.log("F Resu",props?.flightResults,props?.selectedData);
     const selectedIndex = props.flightResults.findIndex(
-      (flight) => flight?.result_index === props.selectedData?.resultIndex
+      (flight) => flight?.result_index === (props.selectedData?.resultIndex || props.selectedData?.result_index)
     );
 
     if (selectedIndex !== -1) {
