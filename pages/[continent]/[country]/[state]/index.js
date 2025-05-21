@@ -152,7 +152,7 @@ export async function getStaticProps(context) {
       locations,
       path,
       hotLocationSearch,
-      page_id: PagesToIdMapping[path],
+      page_id:PagesToIdMapping[path]!=undefined?PagesToIdMapping[path]:"",
       Type,
     },
   };

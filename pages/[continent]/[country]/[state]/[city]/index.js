@@ -178,7 +178,6 @@ export async function getStaticProps(context){
   })
 
   await Promise.all([cityDataPromise,recommendedCityPromise,hotDestinationPromise]);
-  console.log("type is:",Type)
 
   if (!data) {
     return {
@@ -191,7 +190,7 @@ export async function getStaticProps(context){
       reccomendedCitiesData,
       path,
       hotLocationSearch,
-      page_id:PagesToIdMapping[path],
+      page_id:PagesToIdMapping[path]!=undefined?PagesToIdMapping[path]:"",
       Type
     },
   };
