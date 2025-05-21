@@ -121,14 +121,16 @@ export async function getStaticProps(context) {
   let reccomendedCitiesData = [];
   let data = null;
   let hotLocationSearch = [];
-  let Id=null
+  let Id=""
   let Type="Country"
   const { continent, country, state, city } = context.params;
   const path = `${continent}/${country}/${state}/${city}`;
   try{
     const res=await axios.get(`${MERCURY_HOST}/api/v1/geos/pages/all/?path=${path}`)
+    if (res?.data?.path){
     Id=res?.data?.path?.id
     Type=res?.data?.path?.type
+    }
   } catch(err){
 
   }

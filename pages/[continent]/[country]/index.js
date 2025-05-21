@@ -91,7 +91,7 @@ export async function getStaticProps(context) {
   let locations = [];
   const continetCarousel = [];
   let hotLocationSearch = [];
-  let pageId=null;
+  let pageId="";
   let Type="Country"
   const { continent, country } = context.params;
   const path = `${continent}/${country}`;
