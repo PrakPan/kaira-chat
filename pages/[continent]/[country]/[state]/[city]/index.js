@@ -129,7 +129,6 @@ export async function getStaticProps(context) {
     const res=await axios.get(`${MERCURY_HOST}/api/v1/geos/pages/all/?path=${path}`)
     Id=res?.data?.path?.id
     Type=res?.data?.path?.type
-    console.log("res is:",res)
   } catch(err){
 
   }
