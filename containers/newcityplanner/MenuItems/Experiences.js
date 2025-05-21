@@ -8,6 +8,8 @@ import SwiperCarousel from "../../../components/SwiperCarousel";
 var i;
 
 const Experiences = (props) => {
+  console.log("Cost is:",props)
+
   let isPageWide = media("(min-width: 768px)");
 
   const TextRefs = [

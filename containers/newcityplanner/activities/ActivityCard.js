@@ -116,6 +116,7 @@ export default function ActivityCard(props) {
         ActivityiconId={props.data.id}
         handleCloseDrawer={handleCloseDrawer}
         name={props.data.name}
+        removeDelete={props?.removeDelete}
       >
         {props.setEnquiryOpen ? (
           <button

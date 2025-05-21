@@ -19,6 +19,7 @@ import ReviewPoi from "../../POIDetails/Reviews";
 import useMediaQuery from "../../media";
 import { openNotification } from "../../../store/actions/notification";
 import BackArrow from "../../ui/BackArrow";
+import ImageLoader from "../../ImageLoader";
 export const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -116,6 +117,7 @@ const ScrollContainer = styled.div`
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
 const POIDetails = (props) => {
+  console.log("poi details are:", props);
   const isSmallScreen = useMediaQuery("(max-width:586px)");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -159,7 +161,7 @@ const POIDetails = (props) => {
     }
     setLoading(true);
     try {
-      console.log("activity props are:",props)
+      console.log("activity props are:", props);
       const res = await axios.delete(
         `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/poi/delete/`,
         {
@@ -205,7 +207,7 @@ const POIDetails = (props) => {
         );
       }
     } catch (error) {
-      console.log("error is:",error)
+      console.log("error is:", error);
       dispatch(
         openNotification({
           type: "error",
@@ -276,7 +278,7 @@ const POIDetails = (props) => {
           )}
 
           <>
-            {props?.data?.extra_images?.length > 0 && (
+            {props?.data?.extra_images?.length > 0 ? (
               <GridImage>
                 <Child area="1 / 1 / 5 / 4" className="div1">
                   <Image
@@ -378,6 +380,22 @@ const POIDetails = (props) => {
                   </div>
                 </Child>
               </GridImage>
+            ) : (
+              <>
+                <ImageLoader
+                  fit="cover"
+                  url={
+                    props?.data?.image
+                      ? props?.data?.image
+                      : "media/website/grey.png"
+                  }
+                  dimensions={{ width: 1600, height: 608 }}
+                  dimensionsMobile={{ width: 1600, height: 608 }}
+                  width="100%"
+                  borderRadius="5px"
+                  className="rounded-md"
+                ></ImageLoader>
+              </>
             )}
           </>
           <div className="">
@@ -423,7 +441,7 @@ const POIDetails = (props) => {
             </div>
           )}
 
-{props.data?.timings && (
+          {props.data?.timings && (
             <div>
               <Heading>Timings</Heading>
               <Text>
@@ -437,7 +455,15 @@ const POIDetails = (props) => {
                       return (
                         <div key={i} className="flex gap-[22px] mb-2">
                           <div className="text-[14px] font-semibold">{day}</div>
-                          <div className={`text-[14px] font-normal bg-[#FAFAFA] px-[8px] py-[2px] rounded-[10px] ${time=="Closed"?" bg-[rgba(220,69,65,0.1)] text-[#DC4541]":""}`}>{time}</div>
+                          <div
+                            className={`text-[14px] font-normal bg-[#FAFAFA] px-[8px] py-[2px] rounded-[10px] ${
+                              time == "Closed"
+                                ? " bg-[rgba(220,69,65,0.1)] text-[#DC4541]"
+                                : ""
+                            }`}
+                          >
+                            {time}
+                          </div>
                         </div>
                       );
                     })}
@@ -448,7 +474,10 @@ const POIDetails = (props) => {
           )}
           {props?.data?.reviews && (
             <div className="flex flex-col gap-[12px]">
-              <div id="reviews-poi" className="flex !items-center justify-between">
+              <div
+                id="reviews-poi"
+                className="flex !items-center justify-between"
+              >
                 <div className="text-[18px] font-extrabold">Reviews</div>
 
                 <Reviews>
@@ -491,10 +520,12 @@ const POIDetails = (props) => {
               )}
             </div>
           )}
-          {props.data?.tips && props.data?.tips.length ? (
+          {props.data?.tips && props.data?.tips.length > 0 ? (
             <div>
               <Heading>Tips</Heading>
-              <Text>{tips}</Text>
+              {props?.data?.tips.map((item) => (
+                <Text>{item}</Text>
+              ))}
             </div>
           ) : (
             <></>
@@ -584,33 +615,35 @@ const POIDetails = (props) => {
                 </a>
               </div>
 
-              <button
-                className=" right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
-                onClick={handleDelete}
-              >
-                <div style={{ position: "relative" }}>
-                  <div
-                    className="flex gap-1 items-center p-1"
-                    style={loading ? { visibility: "hidden" } : {}}
-                  >
-                    <Image src="/delete.svg" width={"20"} height={"20"} />{" "}
-                    Remove from Itinerary
+              {!(props?.removeDelete == true) && (
+                <button
+                  className=" right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
+                  onClick={handleDelete}
+                >
+                  <div style={{ position: "relative" }}>
+                    <div
+                      className="flex gap-1 items-center p-1"
+                      style={loading ? { visibility: "hidden" } : {}}
+                    >
+                      <Image src="/delete.svg" width={"20"} height={"20"} />{" "}
+                      Remove from Itinerary
+                    </div>
+                    {loading && (
+                      <PulseLoader
+                        style={{
+                          position: "absolute",
+                          top: "55%",
+                          left: "50%",
+                          transform: "translate(-50% , -50%)",
+                        }}
+                        size={12}
+                        speedMultiplier={0.6}
+                        color="#ffffff"
+                      />
+                    )}
                   </div>
-                  {loading && (
-                    <PulseLoader
-                      style={{
-                        position: "absolute",
-                        top: "55%",
-                        left: "50%",
-                        transform: "translate(-50% , -50%)",
-                      }}
-                      size={12}
-                      speedMultiplier={0.6}
-                      color="#ffffff"
-                    />
-                  )}
-                </div>
-              </button>
+                </button>
+              )}
             </div>
           </div>
 

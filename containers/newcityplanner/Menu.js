@@ -125,6 +125,7 @@ const Menu = (props) => {
             data={props.data}
             activities={props.data.activities}
             city={props.data.name}
+            removeDelete={props?.removeDelete}
           />
         </MenuItem>
       ) : null}
@@ -145,6 +146,7 @@ const Menu = (props) => {
             thingsToDoPage={props.thingsToDoPage}
             pois={props.data.pois}
             city={props.data.name}
+            removeDelete={props?.removeDelete}
           />
         </MenuItem>
       )}

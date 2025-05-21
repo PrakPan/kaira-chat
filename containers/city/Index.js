@@ -71,6 +71,7 @@ const Experience = (props) => {
             data={props.cityData}
             destination={props.cityData.name}
             nearbyCities={props.reccomendedCitiesData}
+            removeDelete={true}
           />
         </div>
       </div>
