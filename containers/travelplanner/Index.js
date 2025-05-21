@@ -58,6 +58,7 @@ const MapContainer = styled.div`
 `;
 
 const Homepage = (props) => {
+  console.log("HeroBanner props:",props)
   const router = useRouter();
   let isPageWide = media("(min-width: 768px)");
   const [userItineraries, setUserItineraries] = useState([]);
@@ -255,7 +256,8 @@ const Homepage = (props) => {
     >
       <HeroBanner
         image={props.experienceData.image}
-        page_id={props.experienceData.id}
+        page_id={props.page_id}
+        type={props.type}
         destination={props.experienceData.destination}
         cities={props.experienceData.locations}
         children_cities={props.experienceData.children}

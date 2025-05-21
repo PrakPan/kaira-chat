@@ -4,6 +4,7 @@ import media from "../media";
 import TailoredForm from "../tailoredform/Index";
 
 const TailoredFormMobileModal = (props) => {
+  console.log("TailoredFormMobile props:",props)
   let isPageWide = media("(min-width: 768px)");
 
   return (
@@ -22,6 +23,7 @@ const TailoredFormMobileModal = (props) => {
         tailoredFormModal
         destinationType={props.destinationType}
         page_id={props.page_id}
+        type={props?.type}
         children_cities={props.children_cities}
         destination={props.destination}
         cities={props.cities}

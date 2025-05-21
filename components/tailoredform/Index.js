@@ -89,6 +89,7 @@ const LoadingText = styled.div`
 `;
 
 const Enquiry = (props) => {
+  console.log("Enquiry Props:",props)
   const router = useRouter();
   const routerquery = router.query;
   const initialInputId = Date.now();
@@ -176,16 +177,27 @@ const Enquiry = (props) => {
 
   var selectedObj;
 
-  if (routerquery.state && !routerquery.city) {
+  if ((routerquery.state && !routerquery.city)||props?.type=="State") {
     console.log("PROPS", props);
     selectedObj = [
       {
         id: routerquery.page_id || props.page_id,
         name: routerquery.destination || props.destination,
         input_id: initialInputId,
+        type:"State"
       },
     ];
-  } else if (routerquery.country) {
+  } else if(props?.type=="City" || router?.query.type=="City"){
+    console.log("PROPS3", props);
+    selectedObj = [
+      {
+        id: routerquery.page_id || props.page_id,
+        name: routerquery.destination || props.destination,
+        input_id: initialInputId,
+        type: "City",
+      },
+    ];
+  }else if (routerquery.country || props?.type=="Country") {
     console.log("PROPS2", props);
     selectedObj = [
       {
@@ -195,8 +207,8 @@ const Enquiry = (props) => {
         type: "Country",
       },
     ];
-  } else {
-    console.log("PROPS3", props);
+  }  else {
+    console.log("PROPS4", props);
     selectedObj = [
       {
         id: routerquery.page_id || props.page_id,
@@ -246,6 +258,7 @@ const Enquiry = (props) => {
           cityids.indexOf(selectedCities[i].id) == -1 &&
           selectedCities[i].id
         ) {
+          console.log("selected city is:",selectedCities[i])
           if (selectedCities[i].type == "State")
             stateIds.push(selectedCities[i].id);
           else if (selectedCities[i].type == "Country")

@@ -8,6 +8,8 @@ import axiossearchallinstance from "../../../../services/search/all";
 import axiospagelistinstance from "../../../../services/pages/list";
 import axioslocationsinstance from "../../../../services/search/search";
 import setHotLocationSearch from "../../../../store/actions/hotLocationSearch";
+import axios from "axios";
+import { MERCURY_HOST } from "../../../../services/constants";
 
 const TravelPlanner = (props) => {
   useEffect(() => {
@@ -56,6 +58,8 @@ const TravelPlanner = (props) => {
       <StatePage
         experienceData={props.Data}
         locations={props.locations}
+        page_id={props.page_id}
+        type={props?.Type}
       ></StatePage>
     </Layout>
   );
@@ -98,8 +102,18 @@ export async function getStaticProps(context) {
   var locations = [];
   let data = null;
   let hotLocationSearch = [];
+  let pageId=null;
+  let Type="Country"
   const { continent, country, state } = context.params;
   const path = `${continent}/${country}/${state}`;
+  try{
+    const res=await axios.get(`${MERCURY_HOST}/api/v1/geos/pages/all/?path=${path}`)
+    console.log("path api response is:",res)
+    pageId=res?.data?.path?.id
+    Type=res.data.path.type
+  } catch(err){
+    console.error("Path api error:",err)
+  }
 
   try {
     const res = await axiosTravelPlannerInstance.get(
@@ -151,6 +165,8 @@ export async function getStaticProps(context) {
       locations,
       path,
       hotLocationSearch,
+      page_id:pageId,
+      Type
     },
   };
 }

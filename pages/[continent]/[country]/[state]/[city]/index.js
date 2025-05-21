@@ -9,6 +9,8 @@ import axiosPoiCityInstance from "../../../../../services/poi/city";
 import axiosReccommendedCityInstance from "../../../../../services/poi/reccommededcities";
 import axioslocationsinstance from "../../../../../services/search/search";
 import setHotLocationSearch from "../../../../../store/actions/hotLocationSearch";
+import { CONTENT_SERVER_HOST, MERCURY_HOST } from "../../../../../services/constants";
+import axios from "axios";
 
 const Experience = (props) => {
   const router = useRouter();
@@ -68,6 +70,8 @@ const Experience = (props) => {
         reccomendedCitiesData={props.reccomendedCitiesData}
         cityData={props.cityData}
         id={router.query.city}
+        page_id={props.page_id}
+        type={props?.Type}
       ></CityPage>
     </Layout>
   );
@@ -117,11 +121,21 @@ export async function getStaticProps(context) {
   let reccomendedCitiesData = [];
   let data = null;
   let hotLocationSearch = [];
+  let Id=null
+  let Type="Country"
   const { continent, country, state, city } = context.params;
   const path = `${continent}/${country}/${state}/${city}`;
+  try{
+    const res=await axios.get(`${MERCURY_HOST}/api/v1/geos/pages/all/?path=${path}`)
+    Id=res?.data?.path?.id
+    Type=res?.data?.path?.type
+    console.log("res is:",res)
+  } catch(err){
+
+  }
 
   try {
-    const res = await axiosPoiCityInstance.get(`/?slug=${context.params.city}`);
+    const res = await axios.get(`${CONTENT_SERVER_HOST}/poi/city/?slug=${context.params.city}`);
     data = res.data;
   } catch (err) {
     console.error(
@@ -178,6 +192,8 @@ export async function getStaticProps(context) {
       reccomendedCitiesData,
       path,
       hotLocationSearch,
+      page_id:Id,
+      Type
     },
   };
 }
