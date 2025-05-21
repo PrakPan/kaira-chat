@@ -137,6 +137,14 @@ const TransferEditDrawer = (props) => {
     useSelector((state) => state.Itinerary);
   // console.log("SELECTED BOOKING",city,dcity,oCityData,dCityData,mercuryTransfer?.destination?.city_name);
 
+  const [skipFlightFetch, setSkipFlightFetch] = useState(false);
+  const [skipTaxiFetch, setSkipTaxiFetch] = useState(false);
+  const [flightResults, setFlightResults] = useState([]);
+  const [taxiResults, setTaxiResults] = useState([]);
+
+
+  console.log("FFRR",flightResults)
+  console.log("FFRR",taxiResults)
   useEffect(() => {
     if (showDrawer) {
       fetchRoutes();
@@ -445,6 +453,10 @@ const TransferEditDrawer = (props) => {
         setCurrentStep(0);
         setIsRouteSelected(false);
         setShowOtherTrasfer(false);
+        setSkipFlightFetch(false);
+        setSkipTaxiFetch(false);
+        setFlightResults([]);
+        setTaxiResults([]);
       }}
     >
       <div className="relative px-2 bg-white z-[900] flex flex-col gap-4 pt-4 pb-[100px] justify-start items-start mx-auto w-[98%] min-h-screen">
@@ -455,7 +467,11 @@ const TransferEditDrawer = (props) => {
                 handleClick={() => {
                   setShowDrawer(false);
                   setCurrentStep(0);
+                  setSkipFlightFetch(false);
+                  setSkipTaxiFetch(false);
                   setIsRouteSelected(false);
+                   setFlightResults([]);
+                  setTaxiResults([]);
                 }}
               />
             </>
@@ -792,6 +808,14 @@ const TransferEditDrawer = (props) => {
                           setCurrentModeDepartureTime={
                             setCurrentModeDepartureTime
                           }
+                          skipTaxiFetch={skipTaxiFetch}
+                          skipFlightFetch={skipFlightFetch}
+                          setSkipFlightFetch={setSkipFlightFetch}
+                          setSkipTaxiFetch={setSkipTaxiFetch}
+                          flightResults={flightResults}
+                          taxiResults={taxiResults}
+                          setFlightResults={setFlightResults}
+                          setTaxiResults={setTaxiResults}
                         />
                       ) : (
                         <RouteContainer
@@ -943,6 +967,14 @@ const TransferEditDrawer = (props) => {
                         setCurrentModeDepartureTime={
                           setCurrentModeDepartureTime
                         }
+                        skipTaxiFetch={skipTaxiFetch}
+                        skipFlightFetch={skipFlightFetch}
+                        setSkipFlightFetch={setSkipFlightFetch}
+                        setSkipTaxiFetch={setSkipTaxiFetch}
+                        flightResults={flightResults}
+                          taxiResults={taxiResults}
+                          setFlightResults={setFlightResults}
+                          setTaxiResults={setTaxiResults}
                       />
                     ) : (
                       <RouteContainer
@@ -1643,6 +1675,11 @@ const NewMultiModeContainer = ({
   setCurrentModeDepartureDate,
   currentModeDepartureTime,
   setCurrentModeDepartureTime,
+  skipTaxiFetch,
+  skipFlightFetch,
+  setSkipFlightFetch,
+  setSkipTaxiFetch,
+  flightResults,taxiResults,setFlightResults,setTaxiResults,
 }) => {
   let isPageWide = media("(min-width: 768px)");
   const [expanded, setExpanded] = useState(false);
@@ -1655,10 +1692,8 @@ const NewMultiModeContainer = ({
   const [comboStartDate, setComboStartDate] = useState(null);
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
   const [transferResults, setTransferResults] = useState([]);
-  const [skipFlightFetch, setSkipFlightFetch] = useState(false);
-  const [skipTaxiFetch, setSkipTaxiFetch] = useState(false);
-  const [flightResults, setFlightResults] = useState([]);
-  const [taxiResults, setTaxiResults] = useState([]);
+ 
+  
   const [hasAppliedFilters, setHasAppliedFilters] = useState(false);
   const { number_of_adults, number_of_children, number_of_infants } =
     useSelector((state) => state.Itinerary);
@@ -2504,6 +2539,7 @@ const NewMultiModeContainer = ({
                       <ComboTaxi
                         index={index}
                         key={option.id}
+                        KEY={key}
                         edge={option?.id}
                         combo={true}
                         handleFlightSelect={handleFlightSelect}
@@ -2552,9 +2588,7 @@ const NewMultiModeContainer = ({
                         oCityData={oCityData}
                         taxiResults={taxiResults[key]}
                         skipTaxiFetch={!!taxiResults[key]}
-                        setTaxiResults={(data) =>
-                          setTaxiResults((prev) => ({ ...prev, [key]: data }))
-                        }
+                        setTaxiResults={setTaxiResults}
                         transferResults={transferResults}
                         setTransferResults={setTransferResults}
                         selectedData={

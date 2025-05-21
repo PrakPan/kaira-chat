@@ -187,7 +187,11 @@ const ComboTaxi = (props) => {
     setUpdateLoadingState(false);
     setOptionsJSX([]);
     setQuotes([]);
-    props?.setTaxiResults([]);
+    props?.setTaxiResults((prev)=>{
+         let newData = {...prev};
+         delete newData[props?.KEY];
+         return newData;
+        })
 
     {
       propsToUse?.mercury &&
@@ -280,24 +284,28 @@ const ComboTaxi = (props) => {
 
             }))
           );
-           props?.setTaxiResults(res.data.data.quotes.map((q, i) => ({
+           props?.setTaxiResults((prev)=>{
+         let newData = {...prev};
+
+         newData[props?.KEY] = res.data.data.quotes.map((q, i) => ({
               ...q,
               distance: res.data.data.distance,
               duration: res.data.data.duration,
               trace_id: res.data.trace_id,
               source: res.data.data?.source,
 
-            })));
-        } else {
+            }));
+            return newData
+        })} else {
           setNoResults(true);
           setViewMoreStatus(false);
           setQuotes([]);
-          props?.setTransferResults((prev)=>{
-      let newData=[...prev];
-      newData[props?.index] = [];
-      return newData;
-    })
-           props?.setTaxiResults([]);
+
+          props?.setTaxiResults((prev)=>{
+         let newData = {...prev};
+         delete newData[props?.KEY];
+         return newData;
+        })
         }
         setLoading(false);
       })
@@ -308,7 +316,11 @@ const ComboTaxi = (props) => {
       newData[props?.index] = [];
       return newData;
     })
-        props?.setTaxiResults([]);
+        props?.setTaxiResults((prev)=>{
+         let newData = {...prev};
+         delete newData[props?.KEY];
+         return newData;
+        })
         setLoading(false);
         setError(true);
 
