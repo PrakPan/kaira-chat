@@ -138,6 +138,7 @@ const Index = (props) => {
         <HeroBanner
           image={props?.data?.image}
           page_id={props?.data?.id}
+          type={props?.type}
           destination={props?.data?.name}
           title={`${props?.data?.name} Trip Planner`}
           page={"Country Page"}

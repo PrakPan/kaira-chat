@@ -70,7 +70,7 @@ const FullImgContent = (props) => {
     if (isPageWide) {
       setShowTailoredModal(true);
     } else {
-      openTailoredModal(router, props.page_id, props.destination);
+      openTailoredModal(router, props.page_id, props.destination,props.type);
     }
 
     logEvent({
@@ -162,6 +162,7 @@ const FullImgContent = (props) => {
         <div style={{ marginTop: "1.2rem" }}>
           <TailoredForm
             page_id={props.page_id}
+            type={props?.type}
             children_cities={props.children_cities}
             destination={props.destination}
             cities={props.cities}
@@ -216,6 +217,7 @@ const FullImgContent = (props) => {
       <TailoredFormMobileModal
         destinationType={"city-planner"}
         page_id={props.page_id}
+        type={props?.type}
         children_cities={props.children_cities}
         destination={props.destination}
         cities={props.cities}
