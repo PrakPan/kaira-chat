@@ -2526,7 +2526,7 @@ const NewMultiModeContainer = ({
                         }
                         selectedData={
                           selectedData && selectedData?.length
-                            ? selectedData?.[index]
+                            ? selectedData?.[currentStep - 1]
                             : null
                         }
                         transferResults={transferResults}
@@ -2593,7 +2593,7 @@ const NewMultiModeContainer = ({
                         setTransferResults={setTransferResults}
                         selectedData={
                           selectedData && selectedData?.length
-                            ? selectedData?.[index]
+                            ? selectedData?.[currentStep - 1]
                             : null
                         }
                       />
