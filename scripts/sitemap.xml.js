@@ -2,6 +2,7 @@
 const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
+const { MERCURY_HOST } = require("../services/constants");
 
 const generateSitemap = async () => {
   const BASE_URL = "https://thetarzanway.com";
@@ -105,6 +106,14 @@ const generateSitemap = async () => {
         .join("")}
     </urlset>
   `;
+  const PagesToIdJson = await axios.get(
+    `https://dev.mercury.tarzanway.com/api/v1/geos/pages/all/`
+  );
+  fs.writeFileSync(
+    path.join(process.cwd(), "public", "PagesToIdMapping.json"),
+    JSON.stringify(PagesToIdJson.data, null, 2),
+    "utf8"
+  );
 
   fs.writeFileSync(
     path.join(process.cwd(), "public", "sitemap.xml"),
