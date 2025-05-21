@@ -95,10 +95,10 @@ const Locations = (props) => {
           <Text>
             <div>{props.hotlocations[i]?.name}</div>
             {props.hotlocations[i]?.parent ? (
-              <p>{props.hotlocations[i]?.parent}</p>
+              <p className="text-[#7e7e7e] text-[12px] font-[400] mb-0">{props.hotlocations[i]?.parent}</p>
             ) : props.hotlocations[i]?.state?.name ? (
-              <p>{props.hotlocations[i]?.state?.name}</p>
-            ) : props.hotlocations[i]?.path ? getParent(props.hotlocations[i]?.path) : null}
+              <p className="text-[#7e7e7e] text-[12px] font-[400] mb-0"> {props.hotlocations[i]?.state?.name}</p>
+            ) : props.hotlocations[i]?.path ? <p className="text-[#7e7e7e] text-[12px] font-[400] mb-0"> {getParent(props.hotlocations[i]?.path)}</p>: null}
           </Text>
         </LocationContainer>
       );

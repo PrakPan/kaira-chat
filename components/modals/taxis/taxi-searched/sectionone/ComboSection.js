@@ -9,6 +9,7 @@ import Accordion, { AccordionDetails, AccordionSummary } from "../../../../ui/Ac
 import { connect } from "react-redux";
 import { openNotification } from "../../../../../store/actions/notification";
 import dayjs from "dayjs";
+import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im";
 
 
 // Styled components
@@ -185,6 +186,21 @@ const ComboSection = (props) => {
     }else return;
   }
 
+  const handleOnSelect = ()=>{
+      props.onTaxiSelect?.(props?.index);
+                
+                  const arrivalTime = calculateArrivalTime(
+                    props.start_date,
+                    props.start_time,
+                    props.data?.duration?.value ?? 0
+                  );
+                
+                  handleUpdate({ 
+                    ...props.data, 
+                    booking_type: "Taxi",
+                    arrival_time: arrivalTime 
+                  });
+  }
   let bagCapacity = 0;
   if (props.data?.taxi_category?.bag_capacity) {
     bagCapacity += props.data.taxi_category.bag_capacity;
@@ -284,27 +300,19 @@ const ComboSection = (props) => {
               {loading ? (
                 <PulseLoader size={8} speedMultiplier={0.6} color="#111" />
               ) : (
-                <input type="checkbox" 
-                //onClick={()=>handleUpdate({...props?.data,"booking_type":"Taxi"})}
-                style={{ width: "1.25rem", height: "1.25rem" }}
-                checked={props.isSelected}
-                onChange={() => { 
-                  props.onTaxiSelect?.(props?.index);
-                
-                  const arrivalTime = calculateArrivalTime(
-                    props.start_date,
-                    props.start_time,
-                    props.data?.duration?.value ?? 0
-                  );
-                
-                  handleUpdate({ 
-                    ...props.data, 
-                    booking_type: "Taxi",
-                    arrival_time: arrivalTime 
-                  });
-                }}
-                ></input>
-              )}
+               props?.isSelected ? (
+            <div className="flex items-center gap-1">
+              <ImCheckboxChecked className="inline" /> Selected
+            </div>
+          ) : (
+            <div
+              className="flex items-center gap-1 cursor-pointer"
+              onClick={handleOnSelect}
+            >
+              <ImCheckboxUnchecked className="inline" /> Select
+            </div>
+          ))}
+              
             </PriceActionContainer>
           </TripInfoContainer>
 

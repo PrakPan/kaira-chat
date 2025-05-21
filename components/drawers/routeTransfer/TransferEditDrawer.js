@@ -1214,8 +1214,8 @@ const RouteContainer = (props) => {
   const [singleTransfer, setSingleTransfer] = useState(transfer[0]);
   const [comboStartDate, setComboStartDate] = useState(null);
   const [comboStartTime, setComboStartTime] = useState(null);
-  const [flightResults,setFlightResults] = useState([]);
-   const [taxiResults,setTaxiResults] = useState([]);
+  const [flightResults, setFlightResults] = useState([]);
+  const [taxiResults, setTaxiResults] = useState([]);
   const { number_of_adults, number_of_children, number_of_infants } =
     useSelector((state) => state.Itinerary);
 
@@ -1414,6 +1414,7 @@ const RouteContainer = (props) => {
                   oCityData={oCityData}
                   flightResults={flightResults}
                   setFlightResults={setFlightResults}
+                  skipFetch={false}
                 />
               ) : singleTransfer?.mode === "Taxi" ? (
                 <ComboTaxi
@@ -1456,6 +1457,7 @@ const RouteContainer = (props) => {
                   oCityData={oCityData}
                   taxiResults={taxiResults}
                   setTaxiResults={setTaxiResults}
+                  skipTaxiResults={false}
                 />
               ) : (
                 <OtherTransfer
@@ -1642,7 +1644,7 @@ const NewMultiModeContainer = ({
   currentModeDepartureTime,
   setCurrentModeDepartureTime,
 }) => {
-   let isPageWide = media("(min-width: 768px)");
+  let isPageWide = media("(min-width: 768px)");
   const [expanded, setExpanded] = useState(false);
   const [selectedModeIds, setSelectedModeIds] = useState({});
   const [selectedData, setSelectedData] = useState([]);
@@ -1652,11 +1654,11 @@ const NewMultiModeContainer = ({
   const [comboStartTime, setComboStartTime] = useState(null);
   const [comboStartDate, setComboStartDate] = useState(null);
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
-
+  const [transferResults, setTransferResults] = useState([]);
   const [skipFlightFetch, setSkipFlightFetch] = useState(false);
   const [skipTaxiFetch, setSkipTaxiFetch] = useState(false);
-  const [flightResults,setFlightResults] = useState([]);
-   const [taxiResults,setTaxiResults] = useState([]);
+  const [flightResults, setFlightResults] = useState([]);
+  const [taxiResults, setTaxiResults] = useState([]);
   const [hasAppliedFilters, setHasAppliedFilters] = useState(false);
   const { number_of_adults, number_of_children, number_of_infants } =
     useSelector((state) => state.Itinerary);
@@ -2326,6 +2328,8 @@ const NewMultiModeContainer = ({
     }
   }, [showTimeDropdown]);
 
+  console.log("Transfer Results", transferResults);
+
   return (
     <div className="w-full bg-white">
       {currentStep === 0 && (
@@ -2387,7 +2391,7 @@ const NewMultiModeContainer = ({
                       </span>
                     </div>
 
-                    {index < transfer.length - 1  && transfer.length < 3 && (
+                    {index < transfer.length - 1 && transfer.length < 3 && (
                       <div
                         className={`h-[2px] ${
                           currentStep === index + 2
@@ -2428,6 +2432,7 @@ const NewMultiModeContainer = ({
             {currentStep >= 1 && currentStep <= totalSteps && (
               <div className="space-y-3 md:space-y-4">
                 {getCurrentTransfer().map((option, index) => {
+                  const key = `${currentStep}-${option.id}`;
                   if (option.mode === "Flight") {
                     return (
                       <ComboFlight
@@ -2469,23 +2474,35 @@ const NewMultiModeContainer = ({
                         comboStartTime={comboStartTime}
                         source_code={option?.source?.code}
                         destination_code={option?.destination?.code}
-                        skipFetch={skipFlightFetch}
                         onFilterApplied={handleFilterApplied}
                         dCityData={dCityData}
                         oCityData={oCityData}
-                        source_itinerary_city_id={ option?.source?.city || origin_itinerary_city_id}
-                        destination_itinerary_city_id={
-                         option?.destination?.city || destination_itinerary_city_id
+                        source_itinerary_city_id={
+                          option?.source?.city || origin_itinerary_city_id
                         }
-                        setFlightResults={setFlightResults}
-                        flightResults={flightResults}
-                        selectedData={selectedData && selectedData?.length ? selectedData?.[index] : null}
+                        destination_itinerary_city_id={
+                          option?.destination?.city ||
+                          destination_itinerary_city_id
+                        }
+                        flightResults={flightResults[key]}
+                        skipFetch={!!flightResults[key]}
+                        setFlightResults={(data) =>
+                          setFlightResults((prev) => ({ ...prev, [key]: data }))
+                        }
+                        selectedData={
+                          selectedData && selectedData?.length
+                            ? selectedData?.[index]
+                            : null
+                        }
+                        transferResults={transferResults}
+                        setTransferResults={setTransferResults}
                       />
                     );
                   }
                   if (option.mode === "Taxi") {
                     return (
                       <ComboTaxi
+                        index={index}
                         key={option.id}
                         edge={option?.id}
                         combo={true}
@@ -2515,10 +2532,14 @@ const NewMultiModeContainer = ({
                         mercuryTransfer={mercuryTransfer}
                         individual={individual}
                         originCityId={
-                          option?.source?.city || oCityData?.city?.id || oCityData?.gmaps_place_id
+                          option?.source?.city ||
+                          oCityData?.city?.id ||
+                          oCityData?.gmaps_place_id
                         }
                         destinationCityId={
-                          option?.destination?.city || dCityData?.city?.id || dCityData?.gmaps_place_id
+                          option?.destination?.city ||
+                          dCityData?.city?.id ||
+                          dCityData?.gmaps_place_id
                         }
                         isSelected={
                           selectedModeIds[currentStep - 1] === option.id
@@ -2529,9 +2550,18 @@ const NewMultiModeContainer = ({
                         onFilterApplied={handleFilterApplied}
                         dCityData={dCityData}
                         oCityData={oCityData}
-                        skipTaxiFetch={skipTaxiFetch}
-                        setTaxiResults={setTaxiResults}
-                        taxiResults={taxiResults}
+                        taxiResults={taxiResults[key]}
+                        skipTaxiFetch={!!taxiResults[key]}
+                        setTaxiResults={(data) =>
+                          setTaxiResults((prev) => ({ ...prev, [key]: data }))
+                        }
+                        transferResults={transferResults}
+                        setTransferResults={setTransferResults}
+                        selectedData={
+                          selectedData && selectedData?.length
+                            ? selectedData?.[index]
+                            : null
+                        }
                       />
                     );
                   }
@@ -2703,7 +2733,7 @@ const NewMultiModeContainer = ({
                                 </div>
                               </div>
 
-                              <div className="flex flex-col md:flex-col gap-2 items-center md:items-center justify-center">
+                              <div className="flex flex-col md:flex-col gap-2 items-end md:items-center justify-center">
                                 <div className="font-semibold text-sm md:text-base">
                                   {currency} {price} {`/-`}
                                 </div>
@@ -2772,7 +2802,7 @@ const NewMultiModeContainer = ({
                             </div>
                           </div>
                         </div>
-                        <div className="flex flex-row md:flex-col items-center md:items-end justify-between">
+                        <div className="flex flex-row md:flex-col items-end md:items-end justify-between">
                           <div className="font-semibold text-sm md:text-base">
                             Price unavailable
                           </div>
@@ -4333,7 +4363,7 @@ const OtherTransfer = ({
                   )}
                 </div>
               </div>
-              <div className="flex flex-col md:flex-col gap-2 items-center md:items-end justify-between">
+              <div className="flex flex-col md:flex-col gap-2 items-end md:items-end justify-between">
                 <div className="text-md font-bold">
                   <span
                     className="!font-[lexend]"
