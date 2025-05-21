@@ -114,11 +114,25 @@ const ComboTaxi = (props) => {
   };
 
   useEffect(() => {
-    if (props.showTaxiModal && !quotes.length) {
+    if (props.showTaxiModal && !props?.skipTaxiFetch) {
       console.log("Inside fetch data", props.showTaxiModal);
       fetchData();
     }
   }, [props.alternates, props.budget, props.showTaxiModal, props?.comboStartDate, props?.comboStartTime]);
+
+  useEffect(() => {
+     console.log("T Resu",props?.taxiResults,props?.selectedData);
+  if (props?.taxiResults?.length && props?.selectedData?.result_index !== undefined) {
+    console.log("T Resu",props?.taxiResults,props?.selectedData);
+    const selectedIndex = props.taxiResults.findIndex(
+      (taxi) => taxi?.result_index === props.selectedData?.result_index
+    );
+
+    if (selectedIndex !== -1) {
+      setSelectedTaxiIndex(selectedIndex);
+    }
+  }
+}, [props.taxiResults, props.selectedData]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -278,12 +292,22 @@ const ComboTaxi = (props) => {
           setNoResults(true);
           setViewMoreStatus(false);
           setQuotes([]);
+          props?.setTransferResults((prev)=>{
+      let newData=[...prev];
+      newData[props?.index] = [];
+      return newData;
+    })
            props?.setTaxiResults([]);
         }
         setLoading(false);
       })
       .catch((err) => {
         setQuotes([]);
+        props?.setTransferResults((prev)=>{
+      let newData=[...prev];
+      newData[props?.index] = [];
+      return newData;
+    })
         props?.setTaxiResults([]);
         setLoading(false);
         setError(true);

@@ -131,7 +131,7 @@ const NewResults = (props) => {
             </MarkerContainer>
             <Text>
               <div>{e.name}</div>
-              {e.parent ? <p>{e.parent}</p> : e?.path ? getParent(e.path) : null }
+              {e.parent ? <p className="text-[#7e7e7e] text-[12px] font-[400] mb-0">{e.parent}</p> : e?.path ? <p className="text-[#7e7e7e] text-[12px] font-[400] mb-0">{getParent(e.path)}</p> : null }
             </Text>
           </LocationContainer>
         ))}

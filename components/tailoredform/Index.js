@@ -38,7 +38,7 @@ const Container = styled.div`
     ${(props) => props.tailoredFormModal && "height : 100%"};
     margin: auto 0;
 
-    min-height: 400px;
+    min-height: 500px;
   }
 `;
 
