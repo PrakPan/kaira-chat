@@ -58,7 +58,7 @@ const TravelPlanner = (props) => {
       <StatePage
         experienceData={props.Data}
         locations={props.locations}
-        page_id={props.page_id}
+        page_id={props.page_id || ""}
         type={props?.Type}
       ></StatePage>
     </Layout>
