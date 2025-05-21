@@ -175,6 +175,7 @@ console.log("props activities summary are:",props)
               itinerary_city_id={props?.itinerary_city_id}
               setShowLoginModal={props?.setShowLoginModal}
               getPaymentHandler={props?.getPaymentHandler}
+              removeDelete={props?.removeDelete}
             >
               {props.children}
             </POIDetails>
