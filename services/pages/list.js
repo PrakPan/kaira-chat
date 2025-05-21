@@ -8,5 +8,6 @@ const instance = axios.create({
 export default instance;
 
 export const axiosPageList = axios.create({
-  baseURL:  MERCURY_HOST + "/api/v1/website/pages/",
+  // baseURL:  MERCURY_HOST + "/api/v1/website/pages/",
+  baseURL:  "https://dev.mercury.tarzanway.com" + "/api/v1/website/pages/",
 });
