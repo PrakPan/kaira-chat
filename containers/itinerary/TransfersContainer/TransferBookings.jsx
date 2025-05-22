@@ -582,8 +582,7 @@ const TransferBookings = (props) => {
       const airportBookings = transferBooking?.airport[sourceKey] || [];
       const intracityBookings = transferBooking?.intracity[sourceKey] || [];
 
-
-       if (airportBookings.length > 0) {
+      if (airportBookings.length > 0) {
         const sortedBookings = sortByCheckIn(airportBookings);
 
         sortedBookings?.map((booking, index) => {
@@ -756,7 +755,7 @@ const TransferBookings = (props) => {
         });
       }
 
-     
+      
     }
 
     sections.push(
