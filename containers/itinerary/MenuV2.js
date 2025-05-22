@@ -80,6 +80,7 @@ const SimpleTabsV2 = (props) => {
   )?.transferBookings;
   const { pricing_status } = useSelector((state) => state.ItineraryStatus);
   const stays = useSelector((state) => state.Stays);
+  const itneraryId = useSelector(state=>state.ItineraryId);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -136,16 +137,22 @@ const SimpleTabsV2 = (props) => {
     setLoading(true);
 
     if (props.token) {
-      const email = localStorage.getItem("email");
-      const name = localStorage.getItem("name");
-      const phone = localStorage.getItem("phone");
-      axiosLeadChat
-        .post("/", {
-          email: email,
-          name: name,
-          phone: phone,
-          source: "Itinerary",
-          query_message: `I need help in completing booking.`,
+      // const email = localStorage.getItem("email");
+      // const name = localStorage.getItem("name");
+      // const phone = localStorage.getItem("phone");
+      // axiosLeadChat
+      //   .post("/", {
+      //     email: email,
+      //     name: name,
+      //     phone: phone,
+      //     source: "Itinerary",
+      //     query_message: `I need help in completing booking.`,
+      //   })
+         axiosLeadChat
+           .get(`${itneraryId}/get_in_touch/`,{
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
         })
         .then((res) => {
           props.openNotification({

@@ -2,7 +2,6 @@
 const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
-const { MERCURY_HOST } = require("../services/constants");
 
 const generateSitemap = async () => {
   const BASE_URL = "https://thetarzanway.com";
