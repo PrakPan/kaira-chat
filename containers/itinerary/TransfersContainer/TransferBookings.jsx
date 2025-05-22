@@ -582,6 +582,56 @@ const TransferBookings = (props) => {
       const airportBookings = transferBooking?.airport[sourceKey] || [];
       const intracityBookings = transferBooking?.intracity[sourceKey] || [];
 
+
+       if (airportBookings.length > 0) {
+        const sortedBookings = sortByCheckIn(airportBookings);
+
+        sortedBookings?.map((booking, index) => {
+          if(booking?.is_airport_drop){
+          sections.push(
+            <TransferBooking
+              mercuryItinerary={props?.mercuryItinerary}
+              loadbookings={props?.loadbookings}
+              key={`airport-${booking?.id}-${index}`}
+              index={-1}
+              booking={booking}
+              payment={props?.payment}
+              token={props?.token}
+              setShowLoginModal={props?.setShowDrawer}
+              _changeTaxiHandler={_changeTaxiHandler}
+              _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
+              getPaymentHandler={props?.getPaymentHandler}
+              _changeFlightHandler={_changeFlightHandler}
+              origin={itineraries?.start_city}
+              destination={
+                booking.transfer_details?.destination || itineraries?.start_city
+              }
+              oCityData={itineraries?.start_city}
+              dCityData={itineraries?.start_city}
+              id={itineraries?.start_city?.gmaps_place_id}
+              check_in={booking.check_in}
+              selectedBooking={selectedBooking}
+              setSelectedBooking={setSelectedBooking}
+              originCityId={itineraries?.start_city?.gmaps_place_id}
+              destinationCityId={itineraries?.start_city?.gmaps_place_id}
+              pinColour1={CITY_COLOR_CODES[itineraries?.cities?.length % 7]}
+              pinColour2={
+                index == sortedBookings?.length - 1
+                  ? "#000000"
+                  : sortedBookings?.length == 0
+                  ? "#000000"
+                  : CITY_COLOR_CODES[itineraries?.cities?.length % 7]
+              }
+              _updateFlightBookingHandler={props._updateFlightBookingHandler}
+              _updatePaymentHandler={props._updatePaymentHandler}
+              isAirport={true}
+              AirportTransferType={"Drop"}
+            />
+          );
+        }
+        });
+      }
+
       if (intercityBooking && Object.keys(intercityBooking).length >= 0) {
         sections.push(
           <TransferBooking
@@ -706,54 +756,7 @@ const TransferBookings = (props) => {
         });
       }
 
-      if (airportBookings.length > 0) {
-        const sortedBookings = sortByCheckIn(airportBookings);
-
-        sortedBookings?.map((booking, index) => {
-          if(booking?.is_airport_drop){
-          sections.push(
-            <TransferBooking
-              mercuryItinerary={props?.mercuryItinerary}
-              loadbookings={props?.loadbookings}
-              key={`airport-${booking?.id}-${index}`}
-              index={-1}
-              booking={booking}
-              payment={props?.payment}
-              token={props?.token}
-              setShowLoginModal={props?.setShowDrawer}
-              _changeTaxiHandler={_changeTaxiHandler}
-              _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
-              getPaymentHandler={props?.getPaymentHandler}
-              _changeFlightHandler={_changeFlightHandler}
-              origin={itineraries?.start_city}
-              destination={
-                booking.transfer_details?.destination || itineraries?.start_city
-              }
-              oCityData={itineraries?.start_city}
-              dCityData={itineraries?.start_city}
-              id={itineraries?.start_city?.gmaps_place_id}
-              check_in={booking.check_in}
-              selectedBooking={selectedBooking}
-              setSelectedBooking={setSelectedBooking}
-              originCityId={itineraries?.start_city?.gmaps_place_id}
-              destinationCityId={itineraries?.start_city?.gmaps_place_id}
-              pinColour1={CITY_COLOR_CODES[itineraries?.cities?.length % 7]}
-              pinColour2={
-                index == sortedBookings?.length - 1
-                  ? "#000000"
-                  : intracity?.length == 0
-                  ? "#000000"
-                  : CITY_COLOR_CODES[itineraries?.cities?.length % 7]
-              }
-              _updateFlightBookingHandler={props._updateFlightBookingHandler}
-              _updatePaymentHandler={props._updatePaymentHandler}
-              isAirport={true}
-              AirportTransferType={"Drop"}
-            />
-          );
-        }
-        });
-      }
+     
     }
 
     sections.push(
