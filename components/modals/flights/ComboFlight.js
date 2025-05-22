@@ -352,7 +352,9 @@ const ComboFlight = (props) => {
     setIsFetching(true);
     setFlightsCount(0);
     setFlights([]);
+    if(props?.setFlightResults){
     props?.setFlightResults([]);
+    }
     setUpdateBookingState(false);
     setUnauthorized(false);
     setNoResults(false);
@@ -408,10 +410,12 @@ const ComboFlight = (props) => {
 
           if (res.data?.results && res.data.results.length) {
             setFlights(res.data.results);
+             if(props?.setFlightResults)
              props?.setFlightResults(res.data.results);
             setFlightsCount(res.data.results.length);
           } else {
             setFlights([]);
+             if(props?.setFlightResults)
              props?.setFlightResults([]);
             setFlightsCount(0);
             setNoResults(true);
@@ -423,6 +427,7 @@ const ComboFlight = (props) => {
           setMoreLoadingState(false);
           setIsFetching(false);
           setFlights([]);
+          if(props?.setFlightResults)
            props?.setFlightResults([]);
           setFlightsCount(0);
           setFetchingIsError({
@@ -436,6 +441,7 @@ const ComboFlight = (props) => {
       setMoreLoadingState(false);
       setIsFetching(false);
       setFlights([]);
+      if(props?.setFlightResults)
        props?.setFlightResults([]);
       setFlightsCount(0);
       setFetchingIsError({
@@ -611,6 +617,7 @@ const ComboFlight = (props) => {
         
         if (res.data?.Results.length) {
           setFlights(prevFlights => [...prevFlights, ...res.data.Results]);
+          if(props?.setFlightResults)
           props?.setFlightResults(prevFlights => [...prevFlights, ...res.data.Results]);
           setFlightsCount(prev => prev + res.data.Results.length);
         }
