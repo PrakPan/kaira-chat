@@ -11,7 +11,7 @@ import axioslocationsinstance from "../../../../../services/search/search";
 import setHotLocationSearch from "../../../../../store/actions/hotLocationSearch";
 import { CONTENT_SERVER_HOST, MERCURY_HOST } from "../../../../../services/constants";
 import axios from "axios";
-
+import * as PagesToIdMapping from "../../../../../public/PagesToIdMapping.json"
 const Experience = (props) => {
   const router = useRouter();
   useEffect(() => {
@@ -70,7 +70,7 @@ const Experience = (props) => {
         reccomendedCitiesData={props.reccomendedCitiesData}
         cityData={props.cityData}
         id={router.query.city}
-        page_id={props.page_id || ""}
+        page_id={props.page_id}
         type={props?.Type}
       ></CityPage>
     </Layout>
@@ -117,46 +117,37 @@ export async function getStaticPaths() {
   };
 }
 
-export async function getStaticProps(context) {
+export async function getStaticProps(context){
   let reccomendedCitiesData = [];
   let data = null;
   let hotLocationSearch = [];
   let Id=""
-  let Type="Country"
+  let Type="City"
   const { continent, country, state, city } = context.params;
   const path = `${continent}/${country}/${state}/${city}`;
-  try{
-    const res=await axios.get(`${MERCURY_HOST}/api/v1/geos/pages/all/?path=${path}`)
-    if (res?.data?.path){
-    Id=res?.data?.path?.id
-    Type=res?.data?.path?.type
-    }
-  } catch(err){
 
-  }
+  // const IdPromise=axios.get(`${MERCURY_HOST}/api/v1/geos/pages/all/?path=${path}`).then(res=>{
+  //   if (res?.data?.path){
+  //     Id=res?.data?.path?.id
+  //     Type=res?.data?.path?.type
+  //     }
+  // }).catch(err=>{
+  //   console.log("Id fetching error for path:",path)
+  // })
 
-  try {
-    const res = await axios.get(`${CONTENT_SERVER_HOST}/poi/city/?slug=${context.params.city}`);
-    data = res.data;
-  } catch (err) {
+  const cityDataPromise=axios.get(`${CONTENT_SERVER_HOST}/poi/city/?slug=${context.params.city}`).then((res)=>{
+    data=res.data
+  }).catch((err)=>{
     console.error(
       `[ERROR][cityPage:axiosPoiCityInstance][/?slug=${context.params.city}]: `,
       err.message
     );
-  }
+  })
 
-  if (!data) {
-    return {
-      notFound: true,
-    };
-  }
-
-  try {
-    const resp = await axiosReccommendedCityInstance.get(
-      `/?slug=${context.params.city}&limit=6`
-    );
-
-    const reccoData = resp.data;
+  const recommendedCityPromise=axiosReccommendedCityInstance.get(
+    `/?slug=${context.params.city}&limit=6`
+  ).then((res)=>{
+    const reccoData = res.data;
     reccomendedCitiesData = reccoData.map((e) => ({
       id: e.id,
       image: e.image,
@@ -167,37 +158,128 @@ export async function getStaticProps(context) {
       path: e.path,
       budget: e.budget,
     }));
-  } catch (err) {
+  }).catch((err)=>{
     console.error(
       `[ERROR][cityPage:axiosReccommendedCityInstance][/?slug=${context.params.city}&limit=6]: `,
       err.message
     );
-  }
+  })
 
-  try {
-    const response = await axioslocationsinstance.get(
-      `hot_destinations/?state=${state}/`
-    );
+  const hotDestinationPromise=await axioslocationsinstance.get(
+    `hot_destinations/?state=${state}/`
+  ).then((response)=>{
     if (response.data?.length) {
       hotLocationSearch = response.data;
     }
-  } catch (err) {
+  }).catch((err)=>{
     console.log(
       `[ERROR][CityPage][axioslocationsinstance:/hot_destinations/?state=${state}/]`
     );
-  }
+  })
 
+  await Promise.all([cityDataPromise,recommendedCityPromise,hotDestinationPromise]);
+
+  if (!data) {
+    return {
+      notFound: true,
+    };
+  }
   return {
     props: {
       cityData: data,
       reccomendedCitiesData,
       path,
       hotLocationSearch,
-      page_id:Id,
+      page_id:PagesToIdMapping[path]!=undefined?PagesToIdMapping[path]:"",
       Type
     },
   };
 }
+
+// export async function getStaticProps(context) {
+//   console.log("start:",new Date())
+//   let reccomendedCitiesData = [];
+//   let data = null;
+//   let hotLocationSearch = [];
+//   let Id=""
+//   let Type="Country"
+//   const { continent, country, state, city } = context.params;
+//   const path = `${continent}/${country}/${state}/${city}`;
+
+//   try{
+//     const res=await axios.get(`${MERCURY_HOST}/api/v1/geos/pages/all/?path=${path}`)
+//     if (res?.data?.path){
+//     Id=res?.data?.path?.id
+//     Type=res?.data?.path?.type
+//     }
+//   } catch(err){
+
+//   }
+
+//   try {
+//     const res = await axios.get(`${CONTENT_SERVER_HOST}/poi/city/?slug=${context.params.city}`);
+//     data = res.data;
+//   } catch (err) {
+//     console.error(
+//       `[ERROR][cityPage:axiosPoiCityInstance][/?slug=${context.params.city}]: `,
+//       err.message
+//     );
+//   }
+
+//   if (!data) {
+//     return {
+//       notFound: true,
+//     };
+//   }
+
+//   try {
+//     const resp = await axiosReccommendedCityInstance.get(
+//       `/?slug=${context.params.city}&limit=6`
+//     );
+
+//     const reccoData = resp.data;
+//     reccomendedCitiesData = reccoData.map((e) => ({
+//       id: e.id,
+//       image: e.image,
+//       lat: e.lat,
+//       long: e.long,
+//       most_popular_for: e.most_popular_for,
+//       name: e.name,
+//       path: e.path,
+//       budget: e.budget,
+//     }));
+//   } catch (err) {
+//     console.error(
+//       `[ERROR][cityPage:axiosReccommendedCityInstance][/?slug=${context.params.city}&limit=6]: `,
+//       err.message
+//     );
+//   }
+
+//   try {
+//     const response = await axioslocationsinstance.get(
+//       `hot_destinations/?state=${state}/`
+//     );
+//     if (response.data?.length) {
+//       hotLocationSearch = response.data;
+//     }
+//   } catch (err) {
+//     console.log(
+//       `[ERROR][CityPage][axioslocationsinstance:/hot_destinations/?state=${state}/]`
+//     );
+//   }
+//   console.log("end:",new Date())
+
+//   return {
+//     props: {
+//       cityData: data,
+//       reccomendedCitiesData,
+//       path,
+//       hotLocationSearch,
+//       page_id:Id,
+//       Type
+//     },
+//   };
+// }
 
 const mapDispatchToProps = (dispatch) => {
   return {

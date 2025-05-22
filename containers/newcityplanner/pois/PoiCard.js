@@ -190,6 +190,7 @@ export default function PoiCard(props) {
         ActivityiconId={props.isActivity ? props.data.id : null}
         handleCloseDrawer={handleCloseDrawer}
         name={props.data.name}
+        removeDelete={props?.removeDelete}
       />
     </Container>
   );
