@@ -3,13 +3,15 @@ import { connect } from "react-redux";
 import { useEffect } from "react";
 import Layout from "../../../components/Layout";
 import CountryPage from "../../../containers/country/Index";
-import axioscountrydetailsinstance from "../../../services/pages/country";
+import axioscountrydetailsinstance, {
+  getCountryPaths,
+} from "../../../services/pages/country";
 import axiospagelistinstance from "../../../services/pages/list";
 import axioslocationsinstance from "../../../services/search/search";
 import setHotLocationSearch from "../../../store/actions/hotLocationSearch";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
-import * as PagesToIdMapping from "../../../public/PagesToIdMapping.json"
+import * as PagesToIdMapping from "../../../public/PagesToIdMapping.json";
 
 const TravelPlanner = (props) => {
   useEffect(() => {
@@ -66,7 +68,9 @@ const TravelPlanner = (props) => {
 export async function getStaticPaths() {
   let paths = [];
   try {
-    const res = await axioscountrydetailsinstance.get("all/?fields=path");
+    const res = await getCountryPaths.get(
+      `${MERCURY_HOST}/api/v1/geos/search/all/?type=Country`
+    );
     const data = res.data;
     for (var i = 0; i < data.length; i++) {
       const pathArr = data[i].path.split("/");
@@ -88,144 +92,52 @@ export async function getStaticPaths() {
   };
 }
 
-export async function getStaticProps(context) {
-  let data = null;
-  let locations = [];
-  let continetCarousel = [];
-  let hotLocationSearch = [];
-  let Type = "Country";
-  const { continent, country } = context.params;
-  const path = `${continent}/${country}`;
-  let pageId = null;
-
-  try {
-    const res = await axios.get(`${MERCURY_HOST}/api/v1/geos/pages/all/?path=${path}`);
-    if (res?.data?.path) {
-      pageId = res.data.path.id;
-      Type = res.data.path.type;
-    }
-  } catch (err) {
-    console.error("Path api error:", err);
-  }
-
-  try {
-    const [countryRes, continentRes, hotDestRes] = await Promise.all([
-      axioscountrydetailsinstance.get(`${country}/`),
-      axiospagelistinstance("/?page_type=Continent&fields=destination,tagline,image,path"),
-      axioslocationsinstance.get(`hot_destinations/?country=${country}/`)
-    ]);
-
-    data = countryRes.data;
-    if (!data) {
-      return {
-        notFound: true,
-      };
-    }
-    locations = data.see_also;
-
-    if (hotDestRes?.data?.length) {
-      hotLocationSearch = hotDestRes.data;
-    }
-
-    const continentData = continentRes.data;
-    const continentPromises = continentData.map(async (cont) => {
-      const resp = await axioscountrydetailsinstance(
-        `/all/?continent=${cont.destination}&fields=id,name,path,tagline,image,is_hot_location,best_time`
-      );
-      const hot_data = resp.data.filter((d) => d.is_hot_location).slice(0, 6);
-      return {
-        ...cont,
-        hot_destinations: hot_data,
-      };
-    });
-
-    continetCarousel = await Promise.all(continentPromises);
-
-  } catch (err) {
-    console.error("[ERROR][countryPage:getStaticProps]: ", err.message);
-  }
-
-  return {
-    props: {
-      Data: data,
-      locations,
-      continetCarousel,
-      path,
-      hotLocationSearch,
-      page_id:PagesToIdMapping[path]!=undefined?PagesToIdMapping[path]:"",
-      Type,
-    },
-  };
-}
-
-
 // export async function getStaticProps(context) {
 //   let data = null;
 //   let locations = [];
-//   const continetCarousel = [];
+//   let continetCarousel = [];
 //   let hotLocationSearch = [];
-//   let Type="Country"
+//   let Type = "Country";
 //   const { continent, country } = context.params;
 //   const path = `${continent}/${country}`;
-
-//   try{
-//     const res=await axios.get(`${MERCURY_HOST}/api/v1/geos/pages/all/?path=${path}`)
-//     if (res?.data?.path){
-//     pageId=res?.data?.path?.id
-//     Type=res.data.path.type
-//     }
-//   } catch(err){
-//     console.error("Path api error:",err)
-//   }
-
+//   let pageId = PagesToIdMapping[path]!=undefined?PagesToIdMapping[path]:"";
 
 //   try {
-//     const res = await axioscountrydetailsinstance.get(
-//       `${context.params.country}/`
-//     );
-//     data = res.data;
+//     const [countryRes, continentRes, hotDestRes] = await Promise.all([
+//       axioscountrydetailsinstance.get(      `${MERCURY_HOST}/api/v1/geos/search/all/?type=Country`      ),
+//       axiospagelistinstance.get("/?page_type=Continent&fields=destination,tagline,image,path"),
+//       axioslocationsinstance.get(`hot_destinations/?country=${country}/`)
+//     ]);
 
-//     locations = data.see_also;
-
+//     data = countryRes.data;
+//     console.log("data is:",data)
 //     if (!data) {
 //       return {
 //         notFound: true,
 //       };
 //     }
+//     locations = data.see_also;
 
-//     const continentData = await axiospagelistinstance(
-//       "/?page_type=Continent&fields=destination,tagline,image,path"
-//     );
-//     for (let i = 0; i < continentData.data.length; i++) {
-//       const countrydetailsResponse = await axioscountrydetailsinstance(
-//         `/all/?continent=${continentData.data[i].destination}&fields=id,name,path,tagline,image,is_hot_location,best_time`
-//       );
-
-//       let hot_data = countrydetailsResponse.data.filter(
-//         (d) => d.is_hot_location
-//       );
-//       hot_data = hot_data.slice(0, 6);
-
-//       continetCarousel.push({
-//         ...continentData.data[i],
-//         hot_destinations: hot_data,
-//       });
+//     if (hotDestRes?.data?.length) {
+//       hotLocationSearch = hotDestRes.data;
 //     }
+
+//     const continentData = continentRes.data;
+//     const continentPromises = continentData.map(async (cont) => {
+//       const resp = await axioscountrydetailsinstance.get(
+//         `/all/?continent=${cont.destination}&fields=id,name,path,tagline,image,is_hot_location,best_time`
+//       );
+//       const hot_data = resp.data.filter((d) => d.is_hot_location).slice(0, 6);
+//       return {
+//         ...cont,
+//         hot_destinations: hot_data,
+//       };
+//     });
+
+//     continetCarousel = await Promise.all(continentPromises);
+
 //   } catch (err) {
 //     console.error("[ERROR][countryPage:getStaticProps]: ", err.message);
-//   }
-
-//   try {
-//     const response = await axioslocationsinstance.get(
-//       `hot_destinations/?country=${country}/`
-//     );
-//     if (response.data?.length) {
-//       hotLocationSearch = response.data;
-//     }
-//   } catch (err) {
-//     console.log(
-//       `[ERROR][CountryPage][axioslocationsinstance:/hot_destinations/?continent=${continent}/]`
-//     );
 //   }
 
 //   return {
@@ -235,11 +147,87 @@ export async function getStaticProps(context) {
 //       continetCarousel,
 //       path,
 //       hotLocationSearch,
-//       page_id:PagesToIdMapping[path],
-//       Type
+//       page_id:PagesToIdMapping[path]!=undefined?PagesToIdMapping[path]:"",
+//       Type,
 //     },
 //   };
 // }
+
+export async function getStaticProps(context) {
+  let data = null;
+  let locations = [];
+  const continetCarousel = [];
+  let hotLocationSearch = [];
+  let Type = "Country";
+  const { continent, country } = context.params;
+  const path = `${continent}/${country}`;
+  let pageId = PagesToIdMapping[path]!=undefined?PagesToIdMapping[path]:"";
+
+
+  try {
+    //dev api
+    const res = await axios.get(
+      `${MERCURY_HOST}/api/v1/geos/search/all/?type=Country`
+    );
+    data = res.data;
+    console.log('data is:', data)
+    locations = data?.see_also || [];
+
+    if (!data) {
+      return {
+        notFound: true,
+      };
+    }
+
+    //add in api
+    const continentData = await axiospagelistinstance.get(
+      "/?page_type=Continent&fields=destination,tagline,image,path"
+    );
+    for (let i = 0; i < continentData.data.length; i++) {
+      const countrydetailsResponse = await axioscountrydetailsinstance(
+        `/all/?continent=${continentData.data[i].destination}&fields=id,name,path,tagline,image,is_hot_location,best_time`
+      );
+
+      let hot_data = countrydetailsResponse.data.filter(
+        (d) => d.is_hot_location
+      );
+      hot_data = hot_data.slice(0, 6);
+
+      continetCarousel.push({
+        ...continentData.data[i],
+        hot_destinations: hot_data,
+      });
+    }
+  } catch (err) {
+    console.error("[ERROR][countryPage:getStaticProps]: ", err.message);
+  }
+
+  try {
+    //dev api
+    const response = await axioslocationsinstance.get(
+      `hot_destinations/?country=${country}/`
+    );
+    if (response.data?.length) {
+      hotLocationSearch = response.data;
+    }
+  } catch (err) {
+    console.log(
+      `[ERROR][CountryPage][axioslocationsinstance:/hot_destinations/?continent=${continent}/]`
+    );
+  }
+
+  return {
+    props: {
+      Data: data,
+      locations,
+      continetCarousel,
+      path,
+      hotLocationSearch,
+      page_id: PagesToIdMapping[path],
+      Type,
+    },
+  };
+}
 
 const mapDispatchToProps = (dispatch) => {
   return {

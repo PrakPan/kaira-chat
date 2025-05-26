@@ -38,9 +38,9 @@ const LocationsBlog = (props) => {
                   data={props.locations[i]}
                   location={props.locations[i].name}
                   heading={
-                    props.locations[i]?.tagline
-                      ? props.locations[i].tagline
-                      : props.locations[i]?.text
+                    props.locations[i]?.name
+                      ? props.locations[i].name
+                      : props.locations[i]?.name
                   }
                   img={props.locations[i].image}
                   path={

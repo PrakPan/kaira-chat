@@ -72,109 +72,109 @@ const Homepage = (props) => {
     let iti_exclusive = [];
     let iti_customer = [];
     try {
-      for (var i = 0; i < props.experienceData.itinerary_data.length; i++) {
-        if (props.experienceData.itinerary_data[i].owner === "TTW")
+      for (var i = 0; i < props.experienceData.itineraries.length; i++) {
+        if (props.experienceData.itineraries[i].owner === "TTW")
           iti_exclusive.push(
             <ExperienceCard
-              data={props.experienceData.itinerary_data[i]}
-              key={props.experienceData.itinerary_data[i].short_text}
+              data={props.experienceData.itineraries[i]}
+              key={props.experienceData.itineraries[i].short_text}
               hardcoded={
-                props.experienceData.itinerary_data[i].payment_info
+                props.experienceData.itineraries[i].payment_info
                   ? true
                   : false
               }
               filter={
-                props.experienceData.itinerary_data[i].experience_filters
-                  ? props.experienceData.itinerary_data[i].experience_filters[0]
+                props.experienceData.itineraries[i].experience_filters
+                  ? props.experienceData.itineraries[i].experience_filters[0]
                   : null
               }
-              rating={props.experienceData.itinerary_data[i].rating}
-              slug={props.experienceData.itinerary_data[i].slug}
-              id={props.experienceData.itinerary_data[i].id}
+              rating={props.experienceData.itineraries[i].rating}
+              slug={props.experienceData.itineraries[i].slug}
+              id={props.experienceData.itineraries[i].id}
               number_of_adults={
-                props.experienceData.itinerary_data[i].number_of_adults
+                props.experienceData.itineraries[i].number_of_adults
               }
               locations={
-                props.experienceData.itinerary_data[i]["itinerary_locations"]
+                props.experienceData.itineraries[i]["itinerary_locations"]
               }
-              text={props.experienceData.itinerary_data[i].short_text}
-              experience={props.experienceData.itinerary_data[i].name}
+              text={props.experienceData.itineraries[i].short_text}
+              experience={props.experienceData.itineraries[i].name}
               cost={
-                props.experienceData.itinerary_data[i].payment_info
-                  ? props.experienceData.itinerary_data[i].payment_info.length
-                    ? props.experienceData.itinerary_data[i].payment_info[0]
+                props.experienceData.itineraries[i].payment_info
+                  ? props.experienceData.itineraries[i].payment_info.length
+                    ? props.experienceData.itineraries[i].payment_info[0]
                         .cost
                     : null
                   : null
               }
               duration_number={
-                props.experienceData.itinerary_data[i].duration_number
+                props.experienceData.itineraries[i].duration_number
               }
               duration_unit={
-                props.experienceData.itinerary_data[i].duration_unit
+                props.experienceData.itineraries[i].duration_unit
               }
               location={
-                props.experienceData.itinerary_data[i]["experience_region"]
+                props.experienceData.itineraries[i]["experience_region"]
               }
               starting_cost={
-                props.experienceData.itinerary_data[i].payment_info
-                  ? props.experienceData.itinerary_data[i].payment_info
+                props.experienceData.itineraries[i].payment_info
+                  ? props.experienceData.itineraries[i].payment_info
                       .per_person_total_cost
-                  : props.experienceData.itinerary_data[i].starting_price
+                  : props.experienceData.itineraries[i].starting_price
               }
-              images={props.experienceData.itinerary_data[i].images}
+              images={props.experienceData.itineraries[i].images}
             ></ExperienceCard>
           );
         else
           iti_customer.push(
             <ExperienceCard
-              data={props.experienceData.itinerary_data[i]}
-              key={props.experienceData.itinerary_data[i].short_text}
+              data={props.experienceData.itineraries[i]}
+              key={props.experienceData.itineraries[i].short_text}
               hardcoded={
-                props.experienceData.itinerary_data[i].payment_info
+                props.experienceData.itineraries[i].payment_info
                   ? true
                   : false
               }
               filter={
-                props.experienceData.itinerary_data[i].experience_filters
-                  ? props.experienceData.itinerary_data[i].experience_filters[0]
+                props.experienceData.itineraries[i].experience_filters
+                  ? props.experienceData.itineraries[i].experience_filters[0]
                   : null
               }
-              rating={props.experienceData.itinerary_data[i].rating}
-              slug={props.experienceData.itinerary_data[i].slug}
-              id={props.experienceData.itinerary_data[i].id}
+              rating={props.experienceData.itineraries[i].rating}
+              slug={props.experienceData.itineraries[i].slug}
+              id={props.experienceData.itineraries[i].id}
               number_of_adults={
-                props.experienceData.itinerary_data[i].number_of_adults
+                props.experienceData.itineraries[i].number_of_adults
               }
               locations={
-                props.experienceData.itinerary_data[i]["itinerary_locations"]
+                props.experienceData.itineraries[i]["itinerary_locations"]
               }
-              text={props.experienceData.itinerary_data[i].short_text}
-              experience={props.experienceData.itinerary_data[i].name}
+              text={props.experienceData.itineraries[i].short_text}
+              experience={props.experienceData.itineraries[i].name}
               cost={
-                props.experienceData.itinerary_data[i].payment_info
-                  ? props.experienceData.itinerary_data[i].payment_info.length
-                    ? props.experienceData.itinerary_data[i].payment_info[0]
+                props.experienceData.itineraries[i].payment_info
+                  ? props.experienceData.itineraries[i].payment_info.length
+                    ? props.experienceData.itineraries[i].payment_info[0]
                         .cost
                     : null
                   : null
               }
               duration_number={
-                props.experienceData.itinerary_data[i].duration_number
+                props.experienceData.itineraries[i].duration_number
               }
               duration_unit={
-                props.experienceData.itinerary_data[i].duration_unit
+                props.experienceData.itineraries[i].duration_unit
               }
               location={
-                props.experienceData.itinerary_data[i]["experience_region"]
+                props.experienceData.itineraries[i]["experience_region"]
               }
               starting_cost={
-                props.experienceData.itinerary_data[i].payment_info
-                  ? props.experienceData.itinerary_data[i].payment_info
+                props.experienceData.itineraries[i].payment_info
+                  ? props.experienceData.itineraries[i].payment_info
                       .per_person_total_cost
-                  : props.experienceData.itinerary_data[i].starting_price
+                  : props.experienceData.itineraries[i].starting_price
               }
-              images={props.experienceData.itinerary_data[i].images}
+              images={props.experienceData.itineraries[i].images}
             ></ExperienceCard>
           );
       }
@@ -192,15 +192,15 @@ const Homepage = (props) => {
   useEffect(() => {
     const user = [];
     const ttw = [];
-    if (props.experienceData.itinerary_data) {
-      props.experienceData.itinerary_data.map((e) => {
+    if (props.experienceData.itineraries) {
+      props.experienceData.itineraries.map((e) => {
         if (e.owner !== "TTW") user.push(e);
         else ttw.push(e);
       });
     }
     setUserItineraries(user);
     setTTWItineraries(ttw);
-  }, [props.experienceData.itinerary_data]);
+  }, [props.experienceData.itineraries]);
 
   useEffect(() => {
     // The counter changed!
@@ -303,7 +303,7 @@ const Homepage = (props) => {
               {heading.name}
             </H3>
             <Experiences
-              experiences={heading?.itinerary_data}
+              experiences={heading?.itineraries}
               page={"State Page"}
             ></Experiences>
 
@@ -345,7 +345,7 @@ const Homepage = (props) => {
           <Overview
             locations={props.experienceData.locations}
             overview_heading={overviewHeading}
-            overview_text={props.experienceData.overview_text}
+            overview_text={props.experienceData.short_description}
           ></Overview>
           <MapContainer>
             {props.experienceData.locations &&

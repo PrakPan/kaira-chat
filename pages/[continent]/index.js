@@ -8,8 +8,13 @@ import axiospagelistinstance from "../../services/pages/list";
 import axiospagedetailsinstance from "../../services/pages/pagedetails";
 import axioslocationsinstance from "../../services/search/search";
 import setHotLocationSearch from "../../store/actions/hotLocationSearch";
+import { useRouter } from "next/router";
 
 const TravelPlanner = (props) => {
+  const router = useRouter();
+  if (router.isFallback) {
+    return <div>Loading...</div>; // fallback loading UI
+  }
   useEffect(() => {
     props.setHotLocationSearch(props.hotLocationSearch);
   }, []);
@@ -95,6 +100,7 @@ export async function getStaticProps(context) {
   const path = `${continent}`;
 
   try {
+    // prod server
     const res = await axiospagedetailsinstance(
       "/?link=" + context.params.continent
     );
@@ -110,9 +116,12 @@ export async function getStaticProps(context) {
   }
 
   try {
+    // mercury
     const themeData = await axiospagelistinstance(
       "/?page_type=Continent&fields=destination,tagline,image,path"
     );
+    console.log("data is:",themeData)
+
     contientTheme = themeData.data;
   } catch (err) {
     console.error(err.message);
@@ -120,6 +129,7 @@ export async function getStaticProps(context) {
 
   try {
     for (let i = 0; i < contientTheme.length; i++) {
+      // prod api
       const countrydetailsResponse = await axioscountrydetailsinstance(
         `/all/?continent=${contientTheme[i].destination}&fields=id,name,path,tagline,image,is_hot_location,best_time,budget`
       );
@@ -143,6 +153,7 @@ export async function getStaticProps(context) {
   }
 
   try {
+    // mercury
     const response = await axioslocationsinstance.get(
       `hot_destinations/?continent=${continent}/`
     );

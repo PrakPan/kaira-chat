@@ -14,6 +14,7 @@ import * as PagesToIdMapping from "../../../../public/PagesToIdMapping.json"
 
 const TravelPlanner = (props) => {
   useEffect(() => {
+    console.log("props are:",props)
     props.setHotLocationSearch(props.hotLocationSearch);
   }, []);
 
@@ -70,7 +71,7 @@ export async function getStaticPaths() {
   let paths = [];
 
   try {
-    const res = await axiossearchallinstance.get("/all/");
+    const res = await axiossearchallinstance.get("/all/?type=State");
     const data = res.data;
 
     const allPaths = [...data];
@@ -107,27 +108,30 @@ export async function getStaticProps(context) {
   let locations = [];
   let hotLocationSearch = [];
   let Type = "State";
+  let Id=PagesToIdMapping[path]!=undefined?PagesToIdMapping[path]:""
 
 
-  const dataPromise = axiosTravelPlannerInstance
-    .get(`/?link=${state}`)
+  await axios
+    .get(`${MERCURY_HOST}/api/v1/geos/state/${Id}`)
     .then(res => {
-      data = res.data;
+      data = res.data.data.state;
     })
     .catch(err => {
       console.log(`[ERROR][statePage:axiosTravelPlannerInstance][${state}]: `, err.message);
     });
 
-  const locationsPromise = axiospagelistinstance
-    .get(`/?country=${country}&page_type=Destination&fields=id,ancestors,path,destination,name,tagline,image,link,budget`)
+
+    //calling prod api
+  await axios
+    .get(`${MERCURY_HOST}/api/v1/geos/state/?fields=id,name,budget,tagline&country_name=${country}&limit=100`)
     .then(res => {
-      locations = res.data;
+      locations = res.data.data.states;
     })
     .catch(err => {
       console.log(`[ERROR][statePage:axiospagelistinstance][${country}]: `, err.message);
     });
 
-  const hotLocationPromise = axioslocationsinstance
+  await axioslocationsinstance
     .get(`hot_destinations/?state=${state}/`)
     .then(res => {
       if (res.data?.length) {
@@ -137,14 +141,17 @@ export async function getStaticProps(context) {
     .catch(err => {
       console.log(`[ERROR][StatePage][axioslocationsinstance:/hot_destinations/?state=${state}/]`, err.message);
     });
+    console.log("length of locations:",locations.length)
 
-  await Promise.all([ dataPromise, locationsPromise, hotLocationPromise]);
+
+  // await Promise.all([ dataPromise, locationsPromise, hotLocationPromise]);
 
   if (!data) {
     return {
       notFound: true,
     };
   }
+
 
   return {
     props: {
