@@ -66,14 +66,18 @@ const Continentcarousel = (props) => {
 
     for (let i = 0; i < props.data.length; i++) {
       let hd = props.data[i].hot_destinations.length;
+      console.log("data of ith index is:", props.data[i]);
       cardsArr.push(
         <GridContainer key={i}>
           <Card
-            location={props.data[i].destination}
+            location={props.data[i].slug
+              .split("_")
+              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(" ")}
             heading={props.data[i].tagline}
-            img={props.data[i].image}
+            img={props.data[i].overview_image}
             continent
-            path={props.data[i].path}
+            path={props.data[i].slug}
             page={props.page}
           />
 

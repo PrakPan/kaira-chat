@@ -85,9 +85,7 @@ export async function getStaticPaths() {
   let paths = [];
 
   try {
-    // const res = await axiossearchInstance.get(
-    //   "/?type=Location&fields=path,cta"
-    // );
+    //mercury api
     const res = await axios.get(
       `${MERCURY_HOST}/api/v1/geos/search/all/?type=City`
     );
@@ -130,15 +128,7 @@ export async function getStaticProps(context){
   let reccomendedCitiesData
   let hotLocationSearch
 
-  // const IdPromise=axios.get(`${MERCURY_HOST}/api/v1/geos/pages/all/?path=${path}`).then(res=>{
-  //   if (res?.data?.path){
-  //     Id=res?.data?.path?.id
-  //     Type=res?.data?.path?.type
-  //     }
-  // }).catch(err=>{
-  //   console.log("Id fetching error for path:",path)
-  // })
-
+  //mercury api
   await axios.get(`${MERCURY_HOST}/api/v1/geos/city/${Id}/`).then((res)=>{
     data= res.data.data.city
   }).catch((err)=>{
@@ -149,8 +139,7 @@ export async function getStaticProps(context){
     return null
   })
 
-  //calling prod api
-
+ // mercury api
   await axiosReccommendedCityInstance.get(
     `/?city_id=${Id}`
   ).then((res)=>{
@@ -173,6 +162,7 @@ export async function getStaticProps(context){
     return []
   })
 
+  //mercury api
   await axioslocationsinstance.get(
     `hot_destinations/?state=${state}/`
   ).then((response)=>{
@@ -185,8 +175,6 @@ export async function getStaticProps(context){
     );
     return []
   })
-
-  // const [data, reccomendedCitiesData, hotLocationSearch] = await Promise.all([cityDataPromise,recommendedCityPromise,hotDestinationPromise]);
 
   if (!data) {
     console.log("here")

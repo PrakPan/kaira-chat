@@ -169,8 +169,8 @@ const Homepage = (props) => {
                 props.experienceData.itineraries[i]["experience_region"]
               }
               starting_cost={
-                props.experienceData.itineraries[i].payment_info
-                  ? props.experienceData.itineraries[i].payment_info
+                props.experienceData.itineraries[i].payment_information
+                  ? props.experienceData.itineraries[i].payment_information
                       .per_person_total_cost
                   : props.experienceData.itineraries[i].starting_price
               }
@@ -204,7 +204,9 @@ const Homepage = (props) => {
 
   useEffect(() => {
     // The counter changed!
-    setOverviewHeading(props.experienceData.overview_heading);
+    setOverviewHeading(`A little about ${props.experienceData.slug.split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ")}`);
     return () => setOverviewHeading(null);
   }, [router.query.link, props.experienceData]);
 
@@ -258,7 +260,7 @@ const Homepage = (props) => {
         image={props.experienceData.image}
         page_id={props.page_id}
         type={props.type}
-        destination={props.experienceData.destination}
+        destination={props.experienceData.slug}
         cities={props.experienceData.locations}
         children_cities={props.experienceData.children}
         title={props.experienceData.banner_heading}
@@ -363,7 +365,7 @@ const Homepage = (props) => {
         <Button
           onclick={() =>
             handlePlanButtonClick(
-              `A little about ${props?.experienceData?.destination}`
+              `A little about ${props?.experienceData?.slug}`
             )
           }
           borderWidth="1px"
@@ -373,7 +375,9 @@ const Homepage = (props) => {
           padding="0.5rem 2rem"
         >
           {props.experienceData.page_type !== "Theme"
-            ? `Craft a trip to ${props.experienceData.destination} now!`
+            ? `Craft a trip to ${props.experienceData.slug.split("_")
+              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+              .join(" ")} now!`
             : "Create your travel plan now!"}
         </Button>
       </SetWidthContainer>

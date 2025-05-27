@@ -68,6 +68,7 @@ const TravelPlanner = (props) => {
 export async function getStaticPaths() {
   let paths = [];
   try {
+    //mercury api
     const res = await getCountryPaths.get(
       `${MERCURY_HOST}/api/v1/geos/search/all/?type=Country`
     );
@@ -167,10 +168,9 @@ export async function getStaticProps(context) {
   try {
     //dev api
     const res = await axios.get(
-      `${MERCURY_HOST}/api/v1/geos/search/all/?type=Country`
+      `${MERCURY_HOST}/api/v1/geos/country/${pageId}`
     );
-    data = res.data;
-    console.log('data is:', data)
+    data = res.data.data.country;
     locations = data?.see_also || [];
 
     if (!data) {
@@ -181,20 +181,22 @@ export async function getStaticProps(context) {
 
     //add in api
     const continentData = await axiospagelistinstance.get(
-      "/?page_type=Continent&fields=destination,tagline,image,path"
+      "/?page_type=Continent&fields=id,page_type,slug,overview_image,tagline"
     );
-    for (let i = 0; i < continentData.data.length; i++) {
-      const countrydetailsResponse = await axioscountrydetailsinstance(
-        `/all/?continent=${continentData.data[i].destination}&fields=id,name,path,tagline,image,is_hot_location,best_time`
+    for (let i = 0; i < continentData.data.data.pages.length; i++) {
+      let continentSlug=continentData.data.data.pages[i].slug
+      
+      const countrydetailsResponse = await axioscountrydetailsinstance.get(
+        `?limit=100&offset=0&continent=${continentSlug}`
       );
 
-      let hot_data = countrydetailsResponse.data.filter(
+      let hot_data = countrydetailsResponse.data.data.countries.filter(
         (d) => d.is_hot_location
       );
       hot_data = hot_data.slice(0, 6);
 
       continetCarousel.push({
-        ...continentData.data[i],
+        ...continentData.data.data.pages[i],
         hot_destinations: hot_data,
       });
     }
