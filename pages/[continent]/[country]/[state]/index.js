@@ -10,10 +10,11 @@ import axioslocationsinstance from "../../../../services/search/search";
 import setHotLocationSearch from "../../../../store/actions/hotLocationSearch";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../../services/constants";
-import * as PagesToIdMapping from "../../../../public/PagesToIdMapping.json"
+import * as PagesToIdMapping from "../../../../public/PagesToIdMapping.json";
 
 const TravelPlanner = (props) => {
   useEffect(() => {
+    console.log("props are:", props);
     props.setHotLocationSearch(props.hotLocationSearch);
   }, []);
 
@@ -70,7 +71,8 @@ export async function getStaticPaths() {
   let paths = [];
 
   try {
-    const res = await axiossearchallinstance.get("/all/");
+    // mercury api
+    const res = await axiossearchallinstance.get("/all/?type=State");
     const data = res.data;
 
     const allPaths = [...data];
@@ -107,38 +109,51 @@ export async function getStaticProps(context) {
   let locations = [];
   let hotLocationSearch = [];
   let Type = "State";
+  let Id = PagesToIdMapping[path] != undefined ? PagesToIdMapping[path] : "";
 
-
-  const dataPromise = axiosTravelPlannerInstance
-    .get(`/?link=${state}`)
-    .then(res => {
-      data = res.data;
+  //mercury api
+  await axios
+    .get(`${MERCURY_HOST}/api/v1/geos/state/${Id}`)
+    .then((res) => {
+      data = res.data.data.state;
     })
-    .catch(err => {
-      console.log(`[ERROR][statePage:axiosTravelPlannerInstance][${state}]: `, err.message);
+    .catch((err) => {
+      console.log(
+        `[ERROR][statePage:axiosTravelPlannerInstance][${state}]: `,
+        err.message
+      );
     });
 
-  const locationsPromise = axiospagelistinstance
-    .get(`/?country=${country}&page_type=Destination&fields=id,ancestors,path,destination,name,tagline,image,link,budget`)
-    .then(res => {
-      locations = res.data;
+  //mercury api
+  await axios
+    .get(
+      `${MERCURY_HOST}/api/v1/geos/state/?fields=id,name,budget,tagline&country_name=${country}&limit=100`
+    )
+    .then((res) => {
+      locations = res.data.data.states;
     })
-    .catch(err => {
-      console.log(`[ERROR][statePage:axiospagelistinstance][${country}]: `, err.message);
+    .catch((err) => {
+      console.log(
+        `[ERROR][statePage:axiospagelistinstance][${country}]: `,
+        err.message
+      );
     });
 
-  const hotLocationPromise = axioslocationsinstance
+  //mercury api
+  await axioslocationsinstance
     .get(`hot_destinations/?state=${state}/`)
-    .then(res => {
+    .then((res) => {
       if (res.data?.length) {
         hotLocationSearch = res.data;
       }
     })
-    .catch(err => {
-      console.log(`[ERROR][StatePage][axioslocationsinstance:/hot_destinations/?state=${state}/]`, err.message);
+    .catch((err) => {
+      console.log(
+        `[ERROR][StatePage][axioslocationsinstance:/hot_destinations/?state=${state}/]`,
+        err.message
+      );
     });
-
-  await Promise.all([ dataPromise, locationsPromise, hotLocationPromise]);
+  console.log("length of locations:", locations.length);
 
   if (!data) {
     return {
@@ -152,12 +167,12 @@ export async function getStaticProps(context) {
       locations,
       path,
       hotLocationSearch,
-      page_id:PagesToIdMapping[path]!=undefined?PagesToIdMapping[path]:"",
+      page_id:
+        PagesToIdMapping[path] != undefined ? PagesToIdMapping[path] : "",
       Type,
     },
   };
 }
-
 
 // export async function getStaticProps(context) {
 //   var locations = [];

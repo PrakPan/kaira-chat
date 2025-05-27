@@ -13,7 +13,11 @@ import { CONTENT_SERVER_HOST, MERCURY_HOST } from "../../../../../services/const
 import axios from "axios";
 import * as PagesToIdMapping from "../../../../../public/PagesToIdMapping.json"
 const Experience = (props) => {
+  console.log("experience props are:",props)
   const router = useRouter();
+  if (router.isFallback) {
+    return <div>Loading...</div>; // fallback loading UI
+  }
   useEffect(() => {
     props.setHotLocationSearch(props.hotLocationSearch);
   }, []);
@@ -81,11 +85,9 @@ export async function getStaticPaths() {
   let paths = [];
 
   try {
-    // const res = await axiossearchInstance.get(
-    //   "/?type=Location&fields=path,cta"
-    // );
-    const res = await instance1.get(
-      "/?type=Location&fields=path,cta"
+    //mercury api
+    const res = await axios.get(
+      `${MERCURY_HOST}/api/v1/geos/search/all/?type=City`
     );
 
     const data = res.data;
@@ -118,79 +120,77 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps(context){
-  let reccomendedCitiesData = [];
-  let data = null;
-  let hotLocationSearch = [];
-  let Id=""
-  let Type="City"
   const { continent, country, state, city } = context.params;
   const path = `${continent}/${country}/${state}/${city}`;
+  let Id=PagesToIdMapping[path]!=undefined?PagesToIdMapping[path]:""
+  let Type="City"
+  let data
+  let reccomendedCitiesData
+  let hotLocationSearch
 
-  // const IdPromise=axios.get(`${MERCURY_HOST}/api/v1/geos/pages/all/?path=${path}`).then(res=>{
-  //   if (res?.data?.path){
-  //     Id=res?.data?.path?.id
-  //     Type=res?.data?.path?.type
-  //     }
-  // }).catch(err=>{
-  //   console.log("Id fetching error for path:",path)
-  // })
-
-  const cityDataPromise=axios.get(`${CONTENT_SERVER_HOST}/poi/city/?slug=${context.params.city}`).then((res)=>{
-    data=res.data
+  //mercury api
+  await axios.get(`${MERCURY_HOST}/api/v1/geos/city/${Id}/`).then((res)=>{
+    data= res.data.data.city
   }).catch((err)=>{
     console.error(
       `[ERROR][cityPage:axiosPoiCityInstance][/?slug=${context.params.city}]: `,
       err.message
     );
+    return null
   })
 
-  const recommendedCityPromise=axiosReccommendedCityInstance.get(
-    `/?slug=${context.params.city}&limit=6`
+ // mercury api
+  await axiosReccommendedCityInstance.get(
+    `/?city_id=${Id}`
   ).then((res)=>{
-    const reccoData = res.data;
-    reccomendedCitiesData = reccoData.map((e) => ({
+    const reccoData = res.data.data;
+    reccomendedCitiesData= reccoData.map((e) => ({
       id: e.id,
       image: e.image,
-      lat: e.lat,
-      long: e.long,
+      lat: e.latitude,
+      long: e.longitude,
       most_popular_for: e.most_popular_for,
       name: e.name,
       path: e.path,
-      budget: e.budget,
+      budget: e?.budget,
     }));
   }).catch((err)=>{
     console.error(
-      `[ERROR][cityPage:axiosReccommendedCityInstance][/?slug=${context.params.city}&limit=6]: `,
+      `[ERROR][cityPage:axiosReccommendedCityInstance][/?city_id=${Id}]: `,
       err.message
     );
+    return []
   })
 
-  const hotDestinationPromise=await axioslocationsinstance.get(
+  //mercury api
+  await axioslocationsinstance.get(
     `hot_destinations/?state=${state}/`
   ).then((response)=>{
     if (response.data?.length) {
-      hotLocationSearch = response.data;
+      hotLocationSearch= response.data;
     }
   }).catch((err)=>{
     console.log(
       `[ERROR][CityPage][axioslocationsinstance:/hot_destinations/?state=${state}/]`
     );
+    return []
   })
 
-  await Promise.all([cityDataPromise,recommendedCityPromise,hotDestinationPromise]);
-
   if (!data) {
+    console.log("here")
     return {
       notFound: true,
     };
   }
+
+  console.log("data is:",data.name)
   return {
     props: {
       cityData: data,
       reccomendedCitiesData,
       path,
       hotLocationSearch,
-      page_id:PagesToIdMapping[path]!=undefined?PagesToIdMapping[path]:"",
+      page_id:Id,
       Type
     },
   };

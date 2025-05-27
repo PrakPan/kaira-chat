@@ -10,6 +10,10 @@ export default function ActivityCard(props) {
   const [show, setShow] = useState(false);
   const [stars, setStars] = useState(null);
   const [hover, setHover] = useState(false);
+  const activityData={
+    type:"activity",
+    id:props.dataid
+  }
 
   useEffect(() => {
     if (props?.data && props.data?.rating) {
@@ -99,10 +103,10 @@ export default function ActivityCard(props) {
         </div>
       </div>
 
-      {props?.data?.cost ? (
+      {props?.data?.pricing?.total_price ? (
         <div className="flex flex-col">
           <div className="flex flex-row items-center text-[20px] font-bold">
-            ₹{getIndianPrice(props.data.cost)}/-
+            ₹{getIndianPrice(props?.data?.pricing?.total_price)}/-
             <span className="text-[12px] font-[400] ml-2">per person</span>
           </div>
           <div className="text-[12px] font-light text-[#7A7A7A]">
@@ -117,6 +121,7 @@ export default function ActivityCard(props) {
         handleCloseDrawer={handleCloseDrawer}
         name={props.data.name}
         removeDelete={props?.removeDelete}
+        // activityData={activityData}
       >
         {props.setEnquiryOpen ? (
           <button
