@@ -78,7 +78,7 @@ const Menu = (props) => {
     <MenuContainer thingsToDoPage={props.thingsToDoPage}>
       <PathNavigation path={props.data?.path} />
 
-      {!!props.data.itineraries.length && (
+      {!!props.data.itinerary_data.length && (
         <MenuItem id="Itinerary">
           <H3
             style={{
@@ -88,7 +88,7 @@ const Menu = (props) => {
           >
             Trips by our users to {props.data.name}
           </H3>
-          <TopRecommendations itineraries={props.data.itineraries} />
+          <TopRecommendations itinerary_data={props.data.itinerary_data} />
         </MenuItem>
       )}
 

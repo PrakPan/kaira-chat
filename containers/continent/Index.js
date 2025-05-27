@@ -60,7 +60,6 @@ const MapInfo = styled.div`
 `;
 
 const Index = (props) => {
-  console.log("locations is:",props.locations)
   const router = useRouter();
   let isPageWide = media("(min-width: 768px)");
   const [userItineraries, setUserItineraries] = useState([]);
@@ -68,21 +67,16 @@ const Index = (props) => {
 
   useEffect(() => {
     const hot_locations = [];
-    if (props?.data?.cities) {
-      props.data.cities.map((location, i) => {
+    if (props?.data?.locations) {
+      props.data.locations.map((location, i) => {
         if (location?.is_hot_location) {
           hot_locations.push(location);
         }
       });
     }
-    props?.data?.components?.map((item)=>{
-      if(item.carousel=="itinerary-1"){
-        setUserItineraries(item.itineraries)
-      }
-    })
-    console.log("locations is:",hot_locations)
     setHotLocations(hot_locations);
-  }, [props?.data?.components?.[0]?.itineraries]);
+    setUserItineraries(props?.data?.itinerary_data);
+  }, [props?.data?.itinerary_data]);
 
   const InfoWindowContainer = (location) => (
     <MapInfo>
@@ -135,10 +129,7 @@ const Index = (props) => {
         <HeroBanner
           image={props.data.image}
           page_id={props.data.id}
-          title={`${props.data.slug
-            .split("_")
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(" ")} Trip Planner`}
+          title={`${props.data.destination} Trip Planner`}
           page={"Continent Page"}
         />
 
@@ -188,10 +179,10 @@ const Index = (props) => {
             ></Overview>
 
             <MapContainer>
-              {props.data.cities && props.data.cities.length ? (
+              {props.data.locations && props.data.locations.length ? (
                 <MapBox
                   InfoWindowContainer={InfoWindowContainer}
-                  locations={props.data.cities}
+                  locations={props.data.locations}
                   height="300px"
                 />
               ) : null}
@@ -242,8 +233,8 @@ const Index = (props) => {
                     : "2.5rem 0 4.5rem 0",
                 }}
               >
-                {props.data.slug
-                  ? "Popular locations to visit in " + props.data.slug
+                {props.data.destination
+                  ? "Popular locations to visit in " + props.data.destination
                   : "Popular Locations"}
               </H3>
               <Locations

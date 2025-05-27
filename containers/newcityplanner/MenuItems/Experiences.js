@@ -43,10 +43,8 @@ const Experiences = (props) => {
           experience={props.experiences[i].name}
           images={props.experiences[i].images}
           starting_cost={
-            props.experiences[i]?.payment_information
-              ? props.experiences[i].payment_information?.show_per_person_cost
-                ? props.experiences[i].payment_information.per_person_discounted_cost
-                : props.experiences[i].payment_information?.discounted_cost
+            props.experiences[i].payment_info
+              ? props.experiences[i].payment_info.per_person_total_cost
               : null
           }
           duration={
@@ -101,11 +99,11 @@ const Experiences = (props) => {
             }
             location={props.experiences[j]["experience_region"]}
             starting_cost={
-              props.experiences[j]?.payment_information
-                ? props.experiences[j].payment_information?.show_per_person_cost
-                  ? props.experiences[j].payment_information.per_person_discounted_cost
-                  : props.experiences[j].payment_information?.discounted_cost
-                : null
+              props.experiences[j].payment_info
+                ? props.experiences[j].payment_info.per_person_total_cost
+                  ? props.experiences[j].payment_info.per_person_total_cost
+                  : props.experiences[j].starting_price
+                : props.experiences[j].starting_price
             }
             images={props.experiences[j].images}
             locations={props.experiences[j].itinerary_locations}

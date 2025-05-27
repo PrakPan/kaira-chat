@@ -40,7 +40,7 @@ const Experiences = (props) => {
             key={props.experiences[i].id}
             slug={props.experiences[i].slug}
             rating={props.experiences[i].rating}
-            budget={props.experiences[i].payment_information.per_person_discounted_cost}
+            budget={props.experiences[i].budget}
             group_type={props.experience[i].group_type}
             number_of_adults={props.experience[i].number_of_adults}
             filter={props.experiences[i].experience_filters[0]}
@@ -49,10 +49,10 @@ const Experiences = (props) => {
             experience={props.experiences[i].name}
             images={props.experiences[i].images}
             starting_cost={
-              props.experiences[i]?.payment_information
-                ? props.experiences[i].payment_information?.show_per_person_cost
-                  ? props.experiences[i].payment_information.per_person_discounted_cost
-                  : props.experiences[i].payment_information?.discounted_cost
+              props.experiences[i]?.payment_info
+                ? props.experiences[i].payment_info?.show_per_person_cost
+                  ? props.experiences[i].payment_info.per_person_total_cost
+                  : props.experiences[i].payment_info?.total_cost
                 : null
             }
             duration={
@@ -68,7 +68,6 @@ const Experiences = (props) => {
             location={props.experiences[i].locations[0].name}
             locations={props.experiences[i].itinerary_locations}
             hardcoded={props.experiences[i].payment_info ? true : false}
-            PW={true}
           ></ExperienceCard>
         );
       }
@@ -108,16 +107,15 @@ const Experiences = (props) => {
               }
               location={props.experiences[j]["experience_region"]}
               starting_cost={
-                props.experiences[j]?.payment_information
-                  ? props.experiences[j].payment_information?.show_per_person_cost
-                    ? props.experiences[j].payment_information.per_person_discounted_cost
-                    : props.experiences[j].payment_information?.discounted_cost
-                  : null
+                props.experiences[j].payment_info
+                  ? props.experiences[j].payment_info.show_per_person_cost
+                    ? props.experiences[j].payment_info.per_person_total_cost
+                    : props.experiences[j].payment_info.total_cost
+                  : props.experiences[j].starting_price
               }
               images={props.experiences[j].images}
               locations={props.experiences[j].itinerary_locations}
               page={props?.page}
-              PW={true}
             ></ExperienceCard>
           );
         }

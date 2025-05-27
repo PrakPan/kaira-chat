@@ -23,7 +23,7 @@ const Mapbox = React.memo((props) => {
         const bounds = leaflet
           .featureGroup(
             props.locations.map((location) =>
-              leaflet.marker([location.latitude, location.longitude])
+              leaflet.marker([location.lat, location.long])
             )
           )
           .getBounds();
@@ -68,7 +68,7 @@ const Mapbox = React.memo((props) => {
 
   return props?.locations ? (
     <MapContainer
-      center={{ lat: props?.locations[0]?.latitude, lng: props?.locations[0]?.longitude }}
+      center={{ lat: props?.locations[0]?.lat, lng: props?.locations[0]?.long }}
       zoom={props.defaultZoom || 1}
       style={{
         height: props.height || "100%",
@@ -83,8 +83,8 @@ const Mapbox = React.memo((props) => {
             key={location.id}
             animate
             position={[
-              location?.latitude ? location.latitude : "",
-              location?.longitude ? location.longitude : "",
+              location?.lat ? location.lat : "",
+              location?.long ? location.long : "",
             ]}
             draggable={false}
             icon={customIcon}

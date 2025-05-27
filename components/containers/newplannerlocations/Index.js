@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import SwiperCarousel from "../../SwiperCarousel";
 
 const LocationsBlog = (props) => {
-  console.log("locaion props are:".props)
   const router = useRouter();
   const [cardsToShowJSX, setCardsToShowJSX] = useState([]);
   const [cardsToShowJSXmobile, setCardsToShowJSXmobile] = useState([]);
@@ -39,9 +38,9 @@ const LocationsBlog = (props) => {
                   data={props.locations[i]}
                   location={props.locations[i].name}
                   heading={
-                    props.locations[i]?.name
-                      ? props.locations[i].name
-                      : props.locations[i]?.name
+                    props.locations[i]?.tagline
+                      ? props.locations[i].tagline
+                      : props.locations[i]?.text
                   }
                   img={props.locations[i].image}
                   path={

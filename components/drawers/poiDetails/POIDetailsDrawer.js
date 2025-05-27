@@ -15,7 +15,7 @@ import ActivityDetails from "./ActivityDetails";
 import ActivityDetailsSkeleton from "../activityDetails/ActivityDetailsSkeleton";
 
 const POIDetailsDrawer = (props) => {
-  console.log("props activities summary are:", props);
+console.log("props activities summary are:",props)
   const [data, setData] = useState(props?.data || []);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -32,10 +32,10 @@ const POIDetailsDrawer = (props) => {
           `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/activity/${props?.activityData?.id}/`
         );
         setData(res?.data?.activity);
-        setData((prev) => ({
+        setData((prev)=>({
           ...prev,
-          id: res?.data?.id,
-        }));
+          id:res?.data?.id
+        }))
         setLoading(false);
       } else {
         const res = await axios.get(
@@ -58,15 +58,11 @@ const POIDetailsDrawer = (props) => {
       setLoading(false);
     } else if (props.ActivityiconId && props.themePage) {
       activityDetail
-        .post(
-          `${props.ActivityiconId}/`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            },
-          }
-        )
+        .post(`${props.ActivityiconId}/`, {},{
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        })
         .then((res) => {
           if (res.data.success) setData(res.data.data.activity);
           else throw new Error(res.data?.message);
@@ -85,21 +81,16 @@ const POIDetailsDrawer = (props) => {
           setLoading(false);
         });
     } else if (props.ActivityiconId) {
-      activityDetail
-        .post(
-          `/${props.ActivityiconId}/`,
+      axiosPOIActivityInstance
+        .get(`/?id=${props.ActivityiconId}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
-          },
-          {
-            start_date: "2025-06-20",
-            number_of_adults: 1,
           }
         )
         .then((res) => {
-          if (res.data?.data?.activity?.name) setData(res.data?.data?.activity);
+          if (res.data.name) setData(res.data);
           else throw new Error(res.data?.message);
           setLoading(false);
         })
@@ -114,11 +105,13 @@ const POIDetailsDrawer = (props) => {
     } else {
       if (props.iconId) {
         axiosPOIdetailsInstance
-          .get(`/?id=${props.iconId}`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            },
-          })
+          .get(`/?id=${props.iconId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+              },
+            }
+          )
           .then((res) => {
             if (res.data.name) setData(res.data);
             else throw new Error(res.data?.message);
@@ -156,37 +149,36 @@ const POIDetailsDrawer = (props) => {
     >
       {!loading ? (
         <>
-          {props?.activityData?.type != "poi" ? (
+          {props?.activityData?.type == "activity" ? (
             <>
-              <ActivityDetails
-                itineraryDrawer={props.itineraryDrawer}
-                data={data}
-                handleCloseDrawer={props.handleCloseDrawer}
-                dayIndex={props?.dayIndex}
-                slabIndex={props?.slabIndex}
-                itinerary_city_id={props?.itinerary_city_id}
-                setShowLoginModal={props?.setShowLoginModal}
-                getPaymentHandler={props?.getPaymentHandler}
-                removeDelete={props?.removeDelete}
-              >
-                {props?.children}
-              </ActivityDetails>
+            <ActivityDetails
+              itineraryDrawer={props.itineraryDrawer}
+              data={data}
+              handleCloseDrawer={props.handleCloseDrawer}
+              dayIndex={props?.dayIndex}
+              slabIndex={props?.slabIndex}
+              itinerary_city_id={props?.itinerary_city_id}
+              setShowLoginModal={props?.setShowLoginModal}
+              getPaymentHandler={props?.getPaymentHandler}
+            >
+              {props?.children}
+            </ActivityDetails>
             </>
           ) : (
             <>
-              <POIDetails
-                itineraryDrawer={props.itineraryDrawer}
-                data={data}
-                handleCloseDrawer={props.handleCloseDrawer}
-                dayIndex={props?.dayIndex}
-                slabIndex={props?.slabIndex}
-                itinerary_city_id={props?.itinerary_city_id}
-                setShowLoginModal={props?.setShowLoginModal}
-                getPaymentHandler={props?.getPaymentHandler}
-                removeDelete={props?.removeDelete}
-              >
-                {props.children}
-              </POIDetails>
+            <POIDetails
+              itineraryDrawer={props.itineraryDrawer}
+              data={data}
+              handleCloseDrawer={props.handleCloseDrawer}
+              dayIndex={props?.dayIndex}
+              slabIndex={props?.slabIndex}
+              itinerary_city_id={props?.itinerary_city_id}
+              setShowLoginModal={props?.setShowLoginModal}
+              getPaymentHandler={props?.getPaymentHandler}
+              removeDelete={props?.removeDelete}
+            >
+              {props.children}
+            </POIDetails>
             </>
           )}
 
@@ -194,15 +186,16 @@ const POIDetailsDrawer = (props) => {
             {props.children}
           </div>
         </>
-      ) : (
-        <>
-          {props?.activityData?.type == "activity" ? (
-            <ActivityDetailsSkeleton />
-          ) : (
-            <PoiDetailsNew />
-          )}
+      ) :
+      <>
+        {props?.activityData?.type == "activity" ? (
+          <ActivityDetailsSkeleton/>
+        ) : (
+          <PoiDetailsNew />
+        )}
         </>
-      )}
+      
+      }
     </Drawer>
   );
 };
