@@ -277,7 +277,7 @@ export const FlightSegment = ({ segments }) => {
 
   return (
     <div className="max-w-full bg-[#FCFAFA] p-[20px] border-[#ECE8E8] border-2 rounded-[12px] text-[rgba(0,0,0,0.85)] text-sm leading-[21px]">
-      {segments.map((segment, i) => (
+      {segments?.map((segment, i) => (
         <div key={i}>
           {i !== 0 && (
             <div className="text-center  my-[30px]">

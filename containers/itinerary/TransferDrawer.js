@@ -33,6 +33,7 @@ const TransferDrawer = ({
   origin_itinerary_city_id,
   destination_itinerary_city_id,
   setShowDrawer,
+  isIntracity,
 }) => {
   const [expandedIndexes, setExpandedIndexes] = useState([]);
   const isCombo = data?.children && data?.children.length > 0;
@@ -53,7 +54,7 @@ const TransferDrawer = ({
   const renderDetailContent = (transferData, index) => {
     const type = transferData?.booking_type;
     const childTitle = `${index + 1}. ${
-      transferData.name || `${transferData.transfer_type} Transfer`
+      transferData.name || `${transferData.booking_type} Transfer`
     }`;
     const isExpanded = expandedIndexes.includes(index);
 
@@ -173,6 +174,7 @@ const TransferDrawer = ({
               origin_itinerary_city_id={origin_itinerary_city_id}
               destination_itinerary_city_id={destination_itinerary_city_id}
               setShowDrawer={setShowDrawer}
+              noChange={isIntracity}
             />
           ) : (
             <VehicleDetailModal
