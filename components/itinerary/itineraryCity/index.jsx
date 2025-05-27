@@ -264,6 +264,7 @@ const ItineraryCity = (props) => {
               setShowLoginModal={props?.setShowLoginModal}
               activityBookings={props?.activityBookings}
               setActivityBookings={props?.setActivityBookings}
+              intracityBookings={props?.intracityBookings}
             />
           </>
         ) : (
@@ -275,6 +276,7 @@ const ItineraryCity = (props) => {
             setItinerary={props?.setItinerary}
             setShowLoginModal={props?.setShowLoginModal}
             index={props?.index}
+            intracityBookings={props?.intracityBookings}
           />
         )
       ) : null}
