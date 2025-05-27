@@ -4,34 +4,34 @@ const fs = require("fs");
 const path = require("path");
 
 const generateSitemap = async () => {
-  const BASE_URL = "https://thetarzanway.com";
+  const BASE_URL = "https://dev.thetarzanway.com";
 
   // Fetch continents list
   const continents = await axios.get(
-    "https://apis.tarzanway.com/page/list?page_type=Continent&fields=path"
+    "https://dev.mercury.tarzanway.com/page/list?page_type=Continent&fields=path"
   );
   const continentsData = continents.data;
   let continentsPaths = continentsData.map((object) => {
     return {
       title: "Continent Planner",
-      link: BASE_URL + "/" + object.path,
+      link: BASE_URL + "/" + object.slug,
     };
   });
 
   // Fetch countries list
   const countries = await axios.get(
-    "https://apis.tarzanway.com/poi/country/all?fields=path"
+    "https://dev.mercury.tarzanway.com/api/v1/geos/country/?fields=path"
   );
-  const countriesData = countries.data;
+  const countriesData = countries.data.data.countries;
   let countriesPaths = countriesData.map((object) => {
     return { title: "Country Planner", link: BASE_URL + "/" + object.path };
   });
 
   // Fetch states list
   const states = await axios.get(
-    "https://apis.tarzanway.com/search/all/?type=State&fields=path"
+    "https://dev.mercury.tarzanway.com/api/v1/geos/state/?fields=path"
   );
-  const statesData = states.data;
+  const statesData = states.data.data.states;
 
   let statesPaths = statesData.map((object) => {
     return {
@@ -42,9 +42,9 @@ const generateSitemap = async () => {
 
   // Fetch cities list
   const cities = await axios.get(
-    "https://apis.tarzanway.com/search/all/?type=Location&fields=path"
+    "https://dev.mercury.tarzanway.com/api/v1/geos/city/?fields=path"
   );
-  const citiesData = cities.data;
+  const citiesData = cities.data.data.cities;
 
   let cityPaths = citiesData.map((object) => {
     return { title: "City Planner", link: BASE_URL + "/" + object.path };
