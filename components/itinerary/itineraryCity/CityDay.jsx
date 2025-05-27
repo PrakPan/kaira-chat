@@ -25,25 +25,6 @@ const CityDay = (props) => {
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   }
 
-  const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => {
-  const checkInDate = booking?.check_in?.split(" ")[0]; 
-  return checkInDate === props?.day?.date;
-});
-
-  const formattedTaxiDetails = matchingIntracityBookings?.map((booking, index) => ({
-  id: booking.id,
-  date: `Day ${index + 1}, ${new Date(booking.check_in).toLocaleDateString('en-US', {
-    month: 'short',
-    day: '2-digit',
-  })}`,
-  fromLocation: booking.transfer_details?.source?.name || 'Unknown Source',
-  toLocation: booking.transfer_details?.destination?.name || 'Unknown Destination',
-  passengers:
-    booking.number_of_adults +
-    booking.number_of_children +
-    booking.number_of_infants,
-  duration: booking.transfer_details?.duration?.text || 'N/A',
-}));
   return (
     <div id="cityday" className="flex flex-col md:flex-row md:border-b-2">
       <div
@@ -86,38 +67,7 @@ const CityDay = (props) => {
         >
           + Add activities on {convertDateFormat(props?.day?.date)}
         </button>
-
-
 }
-
-        {matchingIntracityBookings && formattedTaxiDetails && (matchingIntracityBookings?.length > 0) && (
-        <>
-        <hr />
-        <div className="text-sm font-normal flex flex-col gap-1 w-auto md:flex-row mt-2 b-2">
-          <div className="text-[14px] font-medium leading-[22px] w-[80px]">
-            Taxi:
-          </div>
-          <div className="flex flex-col gap-4 w-full">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {formattedTaxiDetails.map((taxi) => (
-                <div key={taxi.id} className="flex flex-col">
-                  <div className="text-[12px] text-gray-600 mb-1">
-                    {taxi.date}
-                  </div>
-                  <div className="w-full h-px bg-gray-200 mb-2"></div>
-                  <div className="text-[14px] font-medium text-black mb-1">
-                    {taxi.fromLocation} to {taxi.toLocation}
-                  </div>
-                  <div className="text-[12px] text-gray-600">
-                    {taxi.passengers} passengers | Duration: {taxi.duration}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-        </>
-      )}
         {/* <div className="py-3">
           <button className="bg-[#F7E700] text-black text-sm font-normal py-1 px-3 rounded border-1 border-black">
             + Add Sightseeing Taxi
