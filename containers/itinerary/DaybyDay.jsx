@@ -52,6 +52,9 @@ const DaybyDay = ({
   const [dates, setDates] = useState({ check_in: "", check_out: "" });
   const [showFilter, setshowFilter] = useState(false);
   const [showModal, setShowModal] = useState(false);
+    const transferBooking = useSelector(
+      (state) => state.TransferBookings
+    )?.transferBookings;
 
   let isPageWide = media("(min-width: 768px)");
   console.log("Inside DaybyDay Itinerary", itinerary);
@@ -181,6 +184,19 @@ const DaybyDay = ({
   }
   console.log("component show modal1 is:",props?.showBookingModal)
 
+   const parseDate = (dateString) => {
+      if (!dateString) return null;
+      return new Date(dateString);
+    };
+
+   const sortByCheckIn = (bookings) => {
+    return [...bookings].sort((a, b) => {
+      const dateA = parseDate(a.check_in);
+      const dateB = parseDate(b.check_in);
+      return dateA - dateB;
+    });
+  };
+
   return (
     <>
       <div
@@ -283,6 +299,18 @@ const DaybyDay = ({
           {itineraryDaybyDay?.cities?.map((city, index) => {
             var idMapping =
               city?.id + ":" + itineraryDaybyDay?.cities?.[index + 1]?.id;
+
+            let sourceKey = city?.id;
+            let airportBookings = transferBooking?.airport[sourceKey] || [];
+            let intracityBookings = transferBooking?.intracity[sourceKey] || [];
+
+            if(airportBookings?.length > 0){
+               airportBookings= sortByCheckIn(airportBookings);
+            }
+            if(intracityBookings?.length > 0){
+               intracityBookings= sortByCheckIn(intracityBookings);
+            }
+           
             return (
               <>
                 <ItineraryCity
@@ -299,6 +327,7 @@ const DaybyDay = ({
                   setShowLoginModal={setShowLoginModal}
                   handleClickAc={handleClickAc}
                   index={index}
+                  intracityBookings={intracityBookings}
                 />
                 {index != itineraryDaybyDay?.cities?.length - 1 && (
                   <div>
@@ -309,6 +338,9 @@ const DaybyDay = ({
                       bookingIdToDelete={idMapping}
                       key={city.id}
                       city={transferBookings?.intercity?.[idMapping]?.name}
+                      sourceKey={sourceKey}
+                      airportBookings={airportBookings}
+                      intracityBookings={intracityBookings}
                       duration={
                         transferBookings?.intercity?.[idMapping]?.duration
                       }
@@ -354,6 +386,16 @@ const DaybyDay = ({
             setShowLoginModal={setShowLoginModal}
             key={endCity?.gmaps_place_id}
             loadbookings={loadbookings}
+            airportBookings={transferBooking?.airport[itineraryDaybyDay?.cities?.[
+                  itineraryDaybyDay?.cities?.length - 1
+                ]?.id] ? sortByCheckIn(transferBooking?.airport[itineraryDaybyDay?.cities?.[
+                  itineraryDaybyDay?.cities?.length - 1
+                ]?.id]) : [] }
+            intracityBookings={transferBooking?.intracity[itineraryDaybyDay?.cities?.[
+                  itineraryDaybyDay?.cities?.length - 1
+                ]?.id] ? sortByCheckIn(transferBooking?.intracity[itineraryDaybyDay?.cities?.[
+                  itineraryDaybyDay?.cities?.length - 1
+                ]?.id]) :  []}
             city={
               transferBookings?.intercity?.[
                 itineraryDaybyDay?.cities?.[

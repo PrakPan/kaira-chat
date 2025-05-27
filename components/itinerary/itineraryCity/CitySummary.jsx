@@ -6,6 +6,7 @@ import ImageLoader from "../../ImageLoader";
 import ActivityAddDrawer from "../../drawers/poiDetails/activityAddDrawer";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
+import { FaTaxi } from "react-icons/fa6";
 
 const CitySummary = (props) => {
   const router = useRouter();
@@ -97,6 +98,21 @@ const CitySummary = (props) => {
     setShowBookingDetail(false);
     setShowDrawer(false);
   };
+
+   const formattedTaxiDetails = props?.intracityBookings?.map((booking, index) => ({
+  id: booking.id,
+  date: `Day ${index + 1}, ${new Date(booking.check_in).toLocaleDateString('en-US', {
+    month: 'short',
+    day: '2-digit',
+  })}`,
+  fromLocation: booking.transfer_details?.source?.name || 'Unknown Source',
+  toLocation: booking.transfer_details?.destination?.name || 'Unknown Destination',
+  passengers:
+    booking.number_of_adults +
+    booking.number_of_children +
+    booking.number_of_infants,
+  duration: booking.transfer_details?.duration?.text || 'N/A',
+}));
 
   return (
     <div className="p-3 flex flex-col gap-3">
@@ -241,6 +257,42 @@ const CitySummary = (props) => {
           </p>}
         </div>
       </div>
+
+
+{props?.intracityBookings && formattedTaxiDetails && props?.intracityBookings?.length > 0 && (
+  <div className="text-sm font-normal flex flex-col gap-1 w-auto md:flex-row">
+    <div className="text-[14px] font-medium leading-[22px] w-[80px]">
+      Taxi:
+    </div>
+    <div className="flex flex-col gap-4 w-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {formattedTaxiDetails.map((taxi) => (
+          <div
+            key={taxi.id}
+            className="flex flex-col border border-gray-300 rounded-lg p-4 shadow-sm"
+          >
+            <div className="flex items-center text-[12px] text-gray-600 mb-1 gap-2">
+              <FaTaxi size={14} className="text-blue-600" />
+              <span>{taxi.date}</span>
+            </div>
+
+            <div className="w-full h-px bg-gray-200 mb-2" />
+
+            <div className="flex items-center text-[14px] font-medium text-black mb-1 gap-2">
+              {/* <FaTaxi  size={16} className="text-blue-600" /> */}
+              <span>{taxi.fromLocation} to {taxi.toLocation}</span>
+            </div>
+
+            <div className="text-[12px] text-gray-600">
+              {taxi.passengers} passengers | Duration: {taxi.duration}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
+
       {dayByDay && dayByDay.length ? (
         <>
           <POIDetailsDrawer
