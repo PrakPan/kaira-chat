@@ -229,16 +229,19 @@ const ComboTaxi = (props) => {
               propsToUse?.oCityData?.gmaps_place_id ||
               propsToUse?.oCityData?.city?.id  : null,
             hub_id: props?.sourceHubId ? props?.sourceHubId: null,
-            gmaps_place_id: propsToUse?.oCityData?.gmaps_place_id,
+            gmaps_place_id: null,
+            // propsToUse?.oCityData?.gmaps_place_id,
             coordinates: {
-              latitude: propsToUse.selectedBooking?.origin?.lat
-                ? propsToUse.selectedBooking?.origin?.lat
-                : propsToUse?.oCityData?.latitude ||
-                  propsToUse?.oCityData?.city?.latitude,
-              longitude: propsToUse.selectedBooking?.origin?.lng
-                ? propsToUse.selectedBooking?.origin?.lng
-                : propsToUse?.oCityData?.longitude ||
-                  propsToUse?.oCityData?.city?.longitude,
+              latitude: null,
+              // propsToUse.selectedBooking?.origin?.lat
+              //   ? propsToUse.selectedBooking?.origin?.lat
+              //   : propsToUse?.oCityData?.latitude ||
+              //     propsToUse?.oCityData?.city?.latitude,
+              longitude: null,
+              // propsToUse.selectedBooking?.origin?.lng
+              //   ? propsToUse.selectedBooking?.origin?.lng
+              //   : propsToUse?.oCityData?.longitude ||
+              //     propsToUse?.oCityData?.city?.longitude,
             },
           },
           destination: {
@@ -250,17 +253,20 @@ const ComboTaxi = (props) => {
               propsToUse?.dCityData?.gmaps_place_id ||
               propsToUse?.dCityData?.city?.id ||
               propsToUse?.destinationCityId : null,
-            hub_id: props?.destinationHubId ? props?.sourceHubId: null,
-            gmaps_place_id: propsToUse?.dCityData?.gmaps_place_id,
+            hub_id: propsToUse?.destinationHubId ? propsToUse?.destinationHubId: null,
+            gmaps_place_id: null,
+            //  propsToUse?.dCityData?.gmaps_place_id,
             coordinates: {
-              latitude: propsToUse.selectedBooking?.destination?.lat
-                ? propsToUse.selectedBooking?.origin?.lat
-                : propsToUse?.dCityData?.latitude ||
-                  propsToUse?.dCityData?.city?.latitude,
-              longitude: propsToUse.selectedBooking?.destination?.lng
-                ? propsToUse.selectedBooking?.origin?.lng
-                : propsToUse?.dCityData?.longitude ||
-                  propsToUse?.dCityData?.city?.longitude,
+              latitude: null,
+              //  propsToUse.selectedBooking?.destination?.lat
+              //   ? propsToUse.selectedBooking?.origin?.lat
+              //   : propsToUse?.dCityData?.latitude ||
+              //     propsToUse?.dCityData?.city?.latitude,
+              longitude: null
+              //  propsToUse.selectedBooking?.destination?.lng
+              //   ? propsToUse.selectedBooking?.origin?.lng
+              //   : propsToUse?.dCityData?.longitude ||
+              //     propsToUse?.dCityData?.city?.longitude,
             },
           },
         },
