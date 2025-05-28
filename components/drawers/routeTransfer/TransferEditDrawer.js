@@ -1480,6 +1480,8 @@ const RouteContainer = (props) => {
                   destinationCityId={
                     dCityData?.city?.id || dCityData?.gmaps_place_id
                   }
+                  sourceRouteCityId={singleTransfer?.source?.city}
+                  destinationRouteCityId={singleTransfer?.destination?.city}
                   sourceHubId={singleTransfer?.source?.id}
                   destinationHubId={singleTransfer?.destination?.id}
                   comboStartDate={currentModeDepartureDate}
@@ -2579,6 +2581,8 @@ const NewMultiModeContainer = ({
                           dCityData?.city?.id ||
                           dCityData?.gmaps_place_id
                         }
+                        sourceRouteCityId={option?.source?.city}
+                        destinationRouteCityId={option?.destination?.city}
                         sourceHubId={option?.source?.id}
                         destinationHubId={option?.destination?.id}
                         isSelected={
