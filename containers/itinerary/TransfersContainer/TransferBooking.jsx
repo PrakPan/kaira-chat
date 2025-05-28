@@ -531,7 +531,7 @@ const TransferBooking = ({
                                           key="fuel"
                                           className="sm:text-sm text-[0.74rem] font-normal"
                                         >
-                                          {fuelType}
+                                          Fuel Type: {fuelType}
                                         </span>
                                       );
                                     }
@@ -954,7 +954,7 @@ const TransferBooking = ({
                                         key="fuel"
                                         className="sm:text-sm text-[0.74rem] font-normal"
                                       >
-                                        {fuelType}
+                                        Fuel Type: {fuelType}
                                       </span>
                                     );
                                   }

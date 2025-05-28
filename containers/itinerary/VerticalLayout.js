@@ -72,7 +72,9 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
     ? 'Airport Pickup & Drop Added'
     : hasPickup
       ? 'Airport Pickup Added'
-      : 'Airport Drop Added';
+      : hasDrop ? 'Airport Drop Added' : null;
+
+
 
   const handleClick = () => {
     if (hasPickup && !hasDrop) {
@@ -125,6 +127,10 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
            (book.number_of_children || 0) +
            (book.number_of_infants || 0);
   };
+
+
+    if(!displayText)
+    return;
 
   return (
     <div key={-3} className="group relative flex items-center gap-2">
@@ -341,7 +347,9 @@ const CityItem = ({
         setLoading(false);
         getPaymentHandler();
 
+        if(!isIntracity){
         setVisible(true);
+        }
         setHandleShow(false);
         dispatch(
           openNotification({
@@ -514,7 +522,7 @@ const formattedTime = (dateObj) => dateObj.toLocaleTimeString("en-US", {
     </div>
 
   
-{airportBookings && airportBookings.length > 0 && (booking_id || city) && !visible && (
+{airportBookings && (airportBookings.length > 0) && (booking_id || city) && !visible && (
   <div className="flex flex-col gap-1 ml-5 mb-[1.5rem] ">
       <AirportBookingItem
         key={booking_id}
