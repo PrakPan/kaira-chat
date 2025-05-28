@@ -1480,6 +1480,8 @@ const RouteContainer = (props) => {
                   destinationCityId={
                     dCityData?.city?.id || dCityData?.gmaps_place_id
                   }
+                  sourceHubId={singleTransfer?.source?.id}
+                  destinationHubId={singleTransfer?.destination?.id}
                   comboStartDate={currentModeDepartureDate}
                   comboStartTime={currentModeDepartureTime}
                   _updateTaxiBookingHandler={_updateTaxiBookingHandler}

@@ -129,8 +129,8 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
   };
 
 
-    if(!displayText)
-    return;
+    // if(!displayText)
+    // return;
 
   return (
     <div key={-3} className="group relative flex items-center gap-2">
