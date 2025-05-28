@@ -20,20 +20,26 @@ export const updateTransferBookings = (bookingIdToDelete) => {
     
     Object.keys(updatedData).forEach((category) => {
       if (updatedData[category]) {
-        Object.keys(updatedData[category]).forEach((key) => {
-          if (updatedData[category][key]?.children && Array.isArray(updatedData[category][key].children)) {
-            const updatedChildren = updatedData[category][key].children.map((combo) => {
-              if (combo.id === bookingIdToDelete) {
-                return { ...combo, id: "" };
-              }
-              return combo;
-            });
-            updatedData[category][key].children = updatedChildren;
-          }
-          if (updatedData[category][key]?.id === bookingIdToDelete) {
-            updatedData[category][key] = {};
-          }
-        });
+        
+        if (category === 'intercity') {
+          
+          Object.keys(updatedData[category]).forEach((key) => {
+            if (updatedData[category][key]?.id === bookingIdToDelete) {
+              updatedData[category][key] = {};
+            }
+          });
+        } else if (category === 'intracity' || category === 'airport') {
+          Object.keys(updatedData[category]).forEach((key) => {
+            if (Array.isArray(updatedData[category][key])) {
+              updatedData[category][key] = updatedData[category][key].map((booking) => {
+                if (booking.id === bookingIdToDelete) {
+                  return {};
+                }
+                return booking;
+              });
+            }
+          });
+        }
       }
     });
     

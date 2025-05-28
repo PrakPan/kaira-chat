@@ -2577,6 +2577,8 @@ const NewMultiModeContainer = ({
                           dCityData?.city?.id ||
                           dCityData?.gmaps_place_id
                         }
+                        sourceHubId={option?.source?.id}
+                        destinationHubId={option?.destination?.id}
                         isSelected={
                           selectedModeIds[currentStep - 1] === option.id
                         }

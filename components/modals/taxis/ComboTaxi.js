@@ -228,7 +228,7 @@ const ComboTaxi = (props) => {
               propsToUse?.oCityData?.city?.id) ? propsToUse?.originCityId || propsToUse.selectedBooking?.origin?.city_id ||
               propsToUse?.oCityData?.gmaps_place_id ||
               propsToUse?.oCityData?.city?.id  : null,
-            hub_id: null,
+            hub_id: props?.sourceHubId ? props?.sourceHubId: null,
             gmaps_place_id: propsToUse?.oCityData?.gmaps_place_id,
             coordinates: {
               latitude: propsToUse.selectedBooking?.origin?.lat
@@ -250,7 +250,7 @@ const ComboTaxi = (props) => {
               propsToUse?.dCityData?.gmaps_place_id ||
               propsToUse?.dCityData?.city?.id ||
               propsToUse?.destinationCityId : null,
-            hub_id: null,
+            hub_id: props?.destinationHubId ? props?.sourceHubId: null,
             gmaps_place_id: propsToUse?.dCityData?.gmaps_place_id,
             coordinates: {
               latitude: propsToUse.selectedBooking?.destination?.lat
