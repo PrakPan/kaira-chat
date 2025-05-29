@@ -277,6 +277,11 @@ const ItineraryCity = (props) => {
             setShowLoginModal={props?.setShowLoginModal}
             index={props?.index}
             intracityBookings={props?.intracityBookings}
+            _updateFlightBookingHandler={props?._updateFlightBookingHandler}
+                      _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
+                      _updatePaymentHandler={props?._updatePaymentHandler}
+                      getPaymentHandler={props?.getPaymentHandler}
+           
           />
         )
       ) : null}
@@ -342,6 +347,8 @@ const ItineraryCity = (props) => {
           </Container>
         )}
       </Drawer>
+
+      
     </div>
   );
 };

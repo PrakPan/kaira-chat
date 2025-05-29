@@ -33,7 +33,7 @@ export const updateTransferBookings = (bookingIdToDelete) => {
             if (Array.isArray(updatedData[category][key])) {
               updatedData[category][key] = updatedData[category][key].map((booking) => {
                 if (booking.id === bookingIdToDelete) {
-                  return {};
+                  return [];
                 }
                 return booking;
               });

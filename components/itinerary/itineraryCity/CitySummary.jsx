@@ -5,8 +5,12 @@ import { logEvent } from "../../../services/ga/Index";
 import ImageLoader from "../../ImageLoader";
 import ActivityAddDrawer from "../../drawers/poiDetails/activityAddDrawer";
 import { useRouter } from "next/router";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { FaTaxi } from "react-icons/fa6";
+import TransferDrawer from "../../../containers/itinerary/TransferDrawer";
+import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
+import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
+import { openNotification } from "../../../store/actions/notification";
 
 const CitySummary = (props) => {
   const router = useRouter();
@@ -23,6 +27,10 @@ const CitySummary = (props) => {
   });
   var size = 0;
   const [showBookingDetail, setShowBookingDetail] = useState(true);
+  const [handleShowTaxi,setHandleShowTaxi] = useState(false);
+  const [taxiData,setTaxiData] = useState(null);
+  const [loading,setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   const handleView = async (poi, type, dayIndex) => {
     console.log("dayindex is:",dayIndex)
@@ -100,6 +108,7 @@ const CitySummary = (props) => {
   };
 
    const formattedTaxiDetails = props?.intracityBookings?.map((booking, index) => ({
+  ...booking,
   id: booking.id,
   date: `Day ${index + 1}, ${new Date(booking.check_in).toLocaleDateString('en-US', {
     month: 'short',
@@ -112,8 +121,61 @@ const CitySummary = (props) => {
     booking.number_of_children +
     booking.number_of_infants,
   duration: booking.transfer_details?.duration?.text || 'N/A',
+  
 }));
 
+const handleTaxi = ()=>{
+  setHandleShowTaxi(true);
+}
+
+ const handleDelete = async (val) => {
+    if (!localStorage?.getItem("access_token")) {
+      props?.setShowLoginModal(true);
+      return;
+    }
+    const dataPassed = val != null ? val : taxiData;
+    try {
+      setLoading(true);
+      const response = await axiosDeleteBooking.delete(
+        `${router?.query?.id}/bookings/${
+          dataPassed?.booking_type?.includes(",")
+            ? `combo`
+            : dataPassed?.booking_type?.toLowerCase()
+        }/${dataPassed?.id}/`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      );
+
+      if (response.status === 204) {
+        dispatch(updateTransferBookings(dataPassed?.id));
+        setLoading(false);
+        props?.getPaymentHandler();
+
+        setHandleShowTaxi(false);
+        dispatch(
+          openNotification({
+            type: "success",
+            text: `Taxi deleted successfully`,
+            heading: "Success!",
+          })
+        );
+      }
+    } catch (err) {
+      dispatch(
+        openNotification({
+          type: "error",
+          text: `${err.response?.data?.errors[0]?.detail}`,
+          heading: "Error!",
+        })
+      );
+      setLoading(false);
+    }
+  };
+
+  console.log("IIII",props?.intracityBookings,formattedTaxiDetails,props?.intracityBookings?.length)
   return (
     <div className="p-3 flex flex-col gap-3">
       {dayByDay && dayByDay.length ? (
@@ -260,16 +322,17 @@ const CitySummary = (props) => {
 
 
 {props?.intracityBookings && formattedTaxiDetails && props?.intracityBookings?.length > 0 && (
-  <div className="text-sm font-normal flex flex-col gap-1 w-auto md:flex-row">
+  <div className="text-sm font-normal flex flex-col gap-1 w-auto md:flex-row" >
     <div className="text-[14px] font-medium leading-[22px] w-[80px]">
       Taxi:
     </div>
-    <div className="flex flex-col gap-4 w-full">
+    <div className="flex flex-col gap-4 w-full " >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {formattedTaxiDetails.map((taxi) => (
           <div
             key={taxi.id}
-            className="flex flex-col border border-gray-300 rounded-lg p-4 shadow-sm"
+            className="flex flex-col border border-gray-300 rounded-lg p-4 shadow-sm cursor-pointer"
+            onClick={()=>{setTaxiData(taxi); handleTaxi(); }}
           >
             <div className="flex items-center text-[12px] text-gray-600 mb-1 gap-2">
               <FaTaxi size={14} className="text-blue-600" />
@@ -334,6 +397,33 @@ const CitySummary = (props) => {
         setItinerary={props?.setItinerary}
         setShowLoginModal={props?.setShowLoginModal}
       ></ActivityAddDrawer>
+
+      {handleShowTaxi && (
+          <TransferDrawer
+            show={handleShowTaxi}
+            setHandleShow={setHandleShowTaxi}
+            data={taxiData}
+            booking_type={taxiData?.transferType || taxiData?.booking_type}
+             loading={loading}
+            handleDelete={handleDelete}
+            setShowDrawer={setHandleShowTaxi}
+            // city={city}
+            _updateFlightBookingHandler={props?._updateFlightBookingHandler}
+            _updatePaymentHandler={props?._updatePaymentHandler}
+            getPaymentHandler={props?.getPaymentHandler}
+            // oCityData={oCityData}
+            // dCityData={dCityData}
+            setShowLoginModal={props?.setShowLoginModal}
+            // dcity={destination_city_name}
+            // selectedBooking={selectedBooking}
+            // setSelectedBooking={setSelectedBooking}
+            // originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
+            // destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
+            // origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
+            // destination_itinerary_city_id={dCityData?.id || dCityData?.gmaps_place_id}
+            isIntracity={true}
+          />
+        )}
     </div>
   );
 };

@@ -328,6 +328,11 @@ const DaybyDay = ({
                   handleClickAc={handleClickAc}
                   index={index}
                   intracityBookings={intracityBookings}
+                  _updateFlightBookingHandler={_updateFlightBookingHandler}
+                 _updateTaxiBookingHandler={_updateTaxiBookingHandler}
+                _updatePaymentHandler={_updatePaymentHandler}
+                getPaymentHandler={getPaymentHandler}
+
                 />
                 {index != itineraryDaybyDay?.cities?.length - 1 && (
                   <div>
