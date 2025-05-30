@@ -89,7 +89,7 @@ const LoadingText = styled.div`
 `;
 
 const Enquiry = (props) => {
-  console.log("Enquiry Props:",props)
+  console.log("Enquiry Props:", props);
   const router = useRouter();
   const routerquery = router.query;
   const initialInputId = Date.now();
@@ -177,17 +177,29 @@ const Enquiry = (props) => {
 
   var selectedObj;
 
-  if ((routerquery.state && !routerquery.city)||props?.type=="State") {
+  if (router?.query?.type == "Page" || props?.type == "Page") {
+    selectedObj = [
+      {
+        id: routerquery.page_id || props.page_id,
+        name: routerquery.destination || props.destination,
+        input_id: initialInputId,
+        type: "Page",
+      },
+    ];
+  } else if (
+    (routerquery.state && !routerquery.city) ||
+    props?.type == "State"
+  ) {
     console.log("PROPS", props);
     selectedObj = [
       {
         id: routerquery.page_id || props.page_id,
         name: routerquery.destination || props.destination,
         input_id: initialInputId,
-        type:"State"
+        type: "State",
       },
     ];
-  } else if(props?.type=="City" || router?.query.type=="City"){
+  } else if (props?.type == "City" || router?.query.type == "City") {
     console.log("PROPS3", props);
     selectedObj = [
       {
@@ -197,7 +209,7 @@ const Enquiry = (props) => {
         type: "City",
       },
     ];
-  }else if (routerquery.country || props?.type=="Country") {
+  } else if (routerquery.country || props?.type == "Country") {
     console.log("PROPS2", props);
     selectedObj = [
       {
@@ -207,7 +219,7 @@ const Enquiry = (props) => {
         type: "Country",
       },
     ];
-  }  else {
+  } else {
     console.log("PROPS4", props);
     selectedObj = [
       {
@@ -219,7 +231,7 @@ const Enquiry = (props) => {
     ];
   }
 
-  console.log("SelectedObj",selectedObj,routerquery);
+  console.log("SelectedObj", selectedObj, routerquery);
 
   const _handleHideBlack = () => {
     // setShowBlack(false);
@@ -239,6 +251,7 @@ const Enquiry = (props) => {
     let countryIds = [];
     let continentIds = [];
     let preferences = [];
+    let pageIds = [];
 
     for (var i = 0; i < selectedPreferences.length; i++) {
       for (var j = 0; j < EXPERIENCE_FILTERS_BOX.length; j++) {
@@ -258,8 +271,10 @@ const Enquiry = (props) => {
           cityids.indexOf(selectedCities[i].id) == -1 &&
           selectedCities[i].id
         ) {
-          console.log("selected city is:",selectedCities[i])
-          if (selectedCities[i].type == "State")
+          console.log("selected city is:", selectedCities[i]);
+          if (selectedCities[i].type == "Page") {
+            pageIds.push(selectedCities[i].id);
+          } else if (selectedCities[i].type == "State")
             stateIds.push(selectedCities[i].id);
           else if (selectedCities[i].type == "Country")
             countryIds.push(selectedCities[i].id);
@@ -322,6 +337,7 @@ const Enquiry = (props) => {
     if (continentIds.length) data.destination_id = continentIds;
     if (stateIds.length) data.state_id = stateIds;
     if (countryIds.length) data.country_id = countryIds;
+    if (pageIds.length) data.page_id=pageIds
     if (cityids.length) data.city_id = cityids;
     if (locations.length) data.locations = locations;
     if (start_date === "1970-01-01") data.start_date = "";
@@ -439,6 +455,7 @@ const Enquiry = (props) => {
     let countryIds = [];
     let continentIds = [];
     let preferences = [];
+    let pageIds = [];
 
     for (var i = 0; i < selectedPreferences.length; i++) {
       for (var j = 0; j < EXPERIENCE_FILTERS_BOX.length; j++) {
@@ -458,7 +475,9 @@ const Enquiry = (props) => {
           cityids.indexOf(selectedCities[i].id) == -1 &&
           selectedCities[i].id
         ) {
-          if (selectedCities[i].type == "State")
+          if (selectedCities[i].type == "Page") {
+            pageIds.push(selectedCities[i].id);
+          } else if (selectedCities[i].type == "State")
             stateIds.push(selectedCities[i].id);
           else if (selectedCities[i].type == "Country")
             countryIds.push(selectedCities[i].id);
@@ -486,6 +505,7 @@ const Enquiry = (props) => {
       pages: [], // Page ids (from web customization) to build itinerary - Theme pages and continent itineraries
       states: stateIds, // State ids to build itinerary
       countries: countryIds, // Country ids to build itinerary
+      pages: pageIds,
       end_location: {}, // If empty, it is same as start_location
       start_date: start_date, // YYYY-MM-DD
       end_date: end_date, // YYYY-MM-DD

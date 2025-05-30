@@ -14,13 +14,13 @@ const Container = styled.div`
   position: relative;
 `;
 
-export default function Activity1Carousel(props) {
+export default function Poi1Carousel(props) {
   let isPageWide = media("(min-width: 768px)");
 
   return (
     <SwiperCarousel
-      cards={props.activities.map((activity, index) => (
-        <ActivityCard key={index} data={activity} {...activity} />
+      cards={props.pois.map((activity, index) => (
+        <PoiCard key={index} data={activity} {...activity} />
       ))}
       slidesPerView={isPageWide ? 4 : 1}
       // spaceBetween={25}
@@ -31,10 +31,14 @@ export default function Activity1Carousel(props) {
   );
 }
 
-const ActivityCard = ({ data, id, image, name, short_description }) => {
+const PoiCard = ({ data, id, image, name, short_description }) => {
   let isPageWide = media("(min-width: 768px)");
   const [show, setShow] = useState(false);
   const [hover, setHover] = useState(false);
+  const activityData={
+    type:"poi",
+    id:id
+  }
 
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
@@ -106,10 +110,12 @@ const ActivityCard = ({ data, id, image, name, short_description }) => {
       <POIDetailsDrawer
         // themePage
         show={show}
+        iconId={id}
         ActivityiconId={id}
         handleCloseDrawer={handleCloseDrawer}
         name={name}
         data={data}
+        activityData={activityData}
         removeDelete={true}
       >
         <PlanYourTripButton />

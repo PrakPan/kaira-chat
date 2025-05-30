@@ -17,11 +17,23 @@ import SwiperLocations from "../../components/containers/SwiperLocations/Index";
 import Continentcarousel from "../../components/continentcarousel/continentcarousel";
 import AsSeenIn from "../testimonial/AsSeenIn";
 import PathNavigation from "../travelplanner/PathNavigation";
-import Experience from "../../components/containers/Experiences";
 import Locations from "../../components/containers/newplannerlocations/Index";
 import dynamic from "next/dynamic";
 import { logEvent } from "../../services/ga/Index.js";
 import H3 from "../../components/heading/H3.js";
+import Navigation from "../../components/theme/Navigation.jsx";
+import PrimaryHeading from "../../components/heading/PrimaryHeading.jsx";
+import SecondaryHeading from "../../components/heading/Secondary.jsx";
+import Destination1Carousel from "../../components/theme/Destination1Carousel.jsx";
+import { PlanYourTripButton } from "../travelplanner/ThemePage.jsx";
+import Itinerary1Carousel from "../../components/theme/Itinerary1Carousel.jsx";
+import Image from "next/image.js";
+import Itinerary2Carousel from "../../components/theme/Itinerary2Carousel.jsx";
+import Activity1Carousel from "../../components/theme/Activity1Carousel.jsx";
+import Reviews1Carousel from "../../components/theme/Reviews1Carousel.jsx";
+import Poi1Carousel from "../../components/theme/Poi1Carousel.jsx";
+import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst.js";
+
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -60,7 +72,7 @@ const MapInfo = styled.div`
 `;
 
 const Index = (props) => {
-  console.log("locations is:",props.locations)
+  console.log("locations is:", props.locations);
   const router = useRouter();
   let isPageWide = media("(min-width: 768px)");
   const [userItineraries, setUserItineraries] = useState([]);
@@ -70,17 +82,15 @@ const Index = (props) => {
     const hot_locations = [];
     if (props?.data?.cities) {
       props.data.cities.map((location, i) => {
-        if (location?.is_hot_location) {
           hot_locations.push(location);
-        }
       });
     }
-    props?.data?.components?.map((item)=>{
-      if(item.carousel=="itinerary-1"){
-        setUserItineraries(item.itineraries)
+    props?.data?.components?.map((item) => {
+      if (item.carousel == "itinerary-1") {
+        setUserItineraries(item.itineraries);
       }
-    })
-    console.log("locations is:",hot_locations)
+    });
+    console.log("locations is:", hot_locations);
     setHotLocations(hot_locations);
   }, [props?.data?.components?.[0]?.itineraries]);
 
@@ -135,11 +145,10 @@ const Index = (props) => {
         <HeroBanner
           image={props.data.image}
           page_id={props.data.id}
-          title={`${props.data.slug
-            .split("_")
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(" ")} Trip Planner`}
+          title={`${convertDbNameToCapitalFirst(props.data.slug)} Trip Planner`}
           page={"Continent Page"}
+          type={props.type}
+          destination={props.destination}
         />
 
         <SetWidthContainer>
@@ -153,7 +162,11 @@ const Index = (props) => {
                   margin: isPageWide ? "3.5rem 0rem" : "1.5rem 0.5rem",
                 }}
               >
-                Top countries to visit in {props.data.destination}
+                Top countries to visit in{" "}
+                {props.destination
+                  .split("_")
+                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                  .join(" ")}
               </H3>
               <SwiperLocations
                 locations={props.locations}
@@ -213,24 +226,101 @@ const Index = (props) => {
             Create your travel plan now!
           </Button>
 
-          {userItineraries.length ? (
-            <>
-              <H3
-                style={{
-                  textAlign: isPageWide ? "left" : "center",
-                  margin: !isPageWide
-                    ? "2.5rem 0.5rem 1.5rem 0.5rem"
-                    : "2.5rem 0 2.5rem 0",
-                }}
-              >
-                Trips by our users
-              </H3>
-              <Experience
-                experiences={userItineraries}
-                page={"Continent Page"}
-              />
-            </>
-          ) : null}
+          {props?.data?.components?.length > 0 &&
+            props?.data?.components?.map((component) => (
+              <>
+                <div className="mx-3 space-y-12 mt-5">
+                  <div className="space-y-3">
+                    <PrimaryHeading className="mx-auto text-center">
+                      {component?.heading}
+                    </PrimaryHeading>
+                    <SecondaryHeading className="mx-auto text-center">
+                      {component.text}
+                    </SecondaryHeading>
+                  </div>
+
+                  {component.carousel === "destination-1" ? (
+                    <>
+                      <Destination1Carousel
+                        handlePlanButton={handlePlanButton}
+                        setDestination={setDestination}
+                        packages={[
+                          ...component.cities,
+                          ...component.states,
+                          ...component.countries,
+                        ]}
+                      />
+                      <PlanYourTripButton text={"Start your journey now!"} />
+                    </>
+                  ) : component.carousel === "destination-2" ? (
+                    <></>
+                  ) : component.carousel === "itinerary-1" ? (
+                    <>
+                      <Itinerary1Carousel itineraries={component.itineraries} />
+                      <PlanYourTripButton />
+                    </>
+                  ) : component.carousel === "itinerary-2" ? (
+                    <div className="w-full relative">
+                      {props.slug === "honeymoon-2025" && (
+                        <>
+                          <Image
+                            src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/red-hearts.png`}
+                            className="object-fill absolute -left-[1rem] top-[10rem] md:-left-[9rem] md:top-0"
+                            alt="Tilted Hearts"
+                            height={300}
+                            width={500}
+                            style={{
+                              opacity: "50%",
+                            }}
+                          />
+
+                          <Image
+                            src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/red-hearts.png`}
+                            className="object-fill absolute -right-[1rem] top-[35rem] md:-right-[6rem] md:top-0"
+                            alt="Tilted Hearts"
+                            height={300}
+                            width={500}
+                            style={{
+                              opacity: "50%",
+                            }}
+                          />
+                        </>
+                      )}
+
+                      <Itinerary2Carousel elements={component.elements} />
+                    </div>
+                  ) : component.carousel === "activity-1" ? (
+                    <>
+                      <Activity1Carousel activities={component.activities} />{" "}
+                      <PlanYourTripButton text={"Create your free itinerary"} />
+                    </>
+                  ) : component.carousel === "review-1" ? (
+                    <div className="relative">
+                      {props.slug === "honeymoon-2025" && (
+                        <div className="-z-10 w-fit absolute -top-[16rem] right-0 md:-top-[9rem] overflow-hidden">
+                          <Image
+                            src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/tilted-heart.png`}
+                            className="object-fill"
+                            alt="Tilted Hearts"
+                            height={200}
+                            width={200}
+                            style={{ transform: "rotate(45deg)" }}
+                          />
+                        </div>
+                      )}
+
+                      <Reviews1Carousel reviews={component.reviews} />
+                      <PlanYourTripButton />
+                    </div>
+                  ) : component.carousel == "poi-1" ? (
+                    <>
+                    <Poi1Carousel pois={component.pois} />
+                    <PlanYourTripButton />
+                    </>
+                  ) : null}
+                </div>
+              </>
+            ))}
 
           {hotLocations.length ? (
             <>
@@ -243,7 +333,13 @@ const Index = (props) => {
                 }}
               >
                 {props.data.slug
-                  ? "Popular locations to visit in " + props.data.slug
+                  ? "Popular locations to visit in " +
+                    props.data.slug
+                      .split("_")
+                      .map(
+                        (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                      )
+                      .join(" ")
                   : "Popular Locations"}
               </H3>
               <Locations

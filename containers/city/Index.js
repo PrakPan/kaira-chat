@@ -8,6 +8,7 @@ import MobileBanner from "./Banner/Mobile";
 import HeroBanner from "../../components/containers/HeroBanner/HeroBanner";
 import validateTextSize from "../../services/textSizeValidator";
 import openTailoredModal from "../../services/openTailoredModal";
+import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst";
 
 const Experience = (props) => {
   const [galleryOpen, setGalleryOpen] = useState(false);
@@ -59,7 +60,7 @@ const Experience = (props) => {
         <div>
           <HeroBanner
             image={props.cityData.images[0].image}
-            destination={props.cityData.name}
+            destination={convertDbNameToCapitalFirst(props.cityData.name)}
             cities={props.reccomendedCitiesData}
             title={`${props.cityData.name} Trip Planner`}
             page={"City Page"}

@@ -90,19 +90,19 @@ export async function getStaticPaths() {
       `${MERCURY_HOST}/api/v1/geos/search/all/?type=City`
     );
 
-    const data = res.data;
+    let data = res.data;
 
     for (var i = 0; i < data.length; i++) {
       const pathArr = data[i].path.split("/");
       var [continentSlug, countrySlug, stateSlug, citySlug] = pathArr;
-      if (data[i].cta) {
+      if (data[i]) {
         paths.push({
           params: {
             continent: continentSlug,
             country: countrySlug,
             state: stateSlug,
             city: citySlug,
-          },
+          }
         });
       }
     }

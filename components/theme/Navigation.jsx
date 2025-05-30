@@ -9,6 +9,7 @@ import Itinerary2Carousel from "./Itinerary2Carousel";
 import Activity1Carousel from "./Activity1Carousel";
 import Reviews1Carousel from "./Reviews1Carousel";
 import PrimaryHeading from "../heading/PrimaryHeading";
+import Poi1Carousel from "./Poi1Carousel";
 
 export default function Navigation({ components }) {
   let isPageWide = media("(min-width: 768px)");
@@ -184,6 +185,8 @@ const ComponentDisplay = ({ component, handlePlanButton, setDestination }) => (
       <Activity1Carousel activities={component.activities} />
     ) : component.carousel === "review-1" ? (
       <Reviews1Carousel reviews={component.reviews} />
+    ) : component.carousel === "poi-1" ? (
+      <Poi1Carousel activities={component.pois} />
     ) : null}
   </div>
 );
