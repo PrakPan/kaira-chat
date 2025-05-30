@@ -10,13 +10,18 @@ import { connect } from "react-redux";
 import { openNotification } from "../../../../../store/actions/notification";
 import dayjs from "dayjs";
 import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im";
+import { FaCar } from "react-icons/fa";
+import { PiTaxiLight } from "react-icons/pi";
 
 
 // Styled components
+// const Container = styled.div`
+//    border-bottom: 1px solid rgba(238, 238, 238, 1);
+//   padding: 1rem 0.75rem;
+//   margin-bottom: 0.5rem;
+// `;
 const Container = styled.div`
-  border-bottom: 1px solid rgba(238, 238, 238, 1);
   padding: 1rem 0.75rem;
-  margin-bottom: 0.5rem;
 `;
 
 const TaxiCard = styled.div`
@@ -26,11 +31,17 @@ const TaxiCard = styled.div`
   gap: 1rem;
 `;
 
+// const ImageContainer = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   min-width: 30px;
+// `;
 const ImageContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 90px;
+  min-width: 10px;
 `;
 
 const DetailsContainer = styled.div`
@@ -39,7 +50,15 @@ const DetailsContainer = styled.div`
   flex-direction: column;
 `;
 
+// const TaxiHeading = styled.p`
+//   font-size: 16px;
+//   font-weight: 700;
+//   margin: 0 0 0.2rem 0;
+//   line-height: 1.2;
+// `;
 const TaxiHeading = styled.p`
+  display: flex;
+  justify-content: space-between;
   font-size: 16px;
   font-weight: 700;
   margin: 0 0 0.2rem 0;
@@ -91,21 +110,23 @@ const InfoGroup = styled.div`
 `;
 
 
-const PriceActionContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 0.5rem;
+// const PriceActionContainer = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   align-items: flex-start;
+//   justify-content: center;
+//   gap: 0.5rem;
 
-  @media (max-width: 767px) {
-    width: 100%;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 0.5rem;
-  }
-`;
+//   @media (max-width: 767px) {
+//     width: 100%;
+//     flex-direction: row;
+//     justify-content: space-between;
+//     align-items: center;
+//     margin-top: 0.5rem;
+//   }
+// `;
+
+
 
 
 const InfoItem = styled.div`
@@ -165,7 +186,6 @@ const SeatInfo = styled.p`
 `;
 
 const FacilitiesContainer = styled.div`
-  margin-top: 0.75rem;
 `;
 
 const AccordionText = styled.div`
@@ -217,9 +237,10 @@ const ComboSection = (props) => {
 
   return (
     <Container className="font-lexend">
+     
       <TaxiCard>
         <ImageContainer>
-          {props.data?.taxi_category?.image ? (
+          {/* {props.data?.taxi_category?.image ? (
             <ImageLoader
               is_url
               noLazy
@@ -228,20 +249,21 @@ const ComboSection = (props) => {
               widthmobile="90%"
               height="auto"
             />
-          ) : (
-            <ImageLoader
+          ) : ( */}
+            {/* <ImageLoader
               url={"media/icons/bookings/car (2).png"}
               width="90%"
               widthmobile="90%"
               height="auto"
-            />
-          )}
-          <TaxiHeading className="text-center">
+            /> */}
+          {/* )} */}
+          <PiTaxiLight size={18}/>
+          {/* <TaxiHeading className="text-center">
             {props.data.taxi_category.type}
           </TaxiHeading>
           <SeatInfo>
             {props.data?.taxi_category?.seating_capacity + "-seater"}
-          </SeatInfo>
+          </SeatInfo> */}
         </ImageContainer>
 
         <DetailsContainer>
@@ -258,13 +280,18 @@ const ComboSection = (props) => {
             ) : (
               "One-way Taxi"
             )}
+          <div>
+          <Cost>{"₹" + getIndianPrice(Math.ceil(props.data.price.total)) + "/-"}</Cost>
+          </div>
+        
           </TaxiHeading>
 
-          {isPageWide && <ModelText>{props.data?.taxi_category?.model_name}</ModelText>}
-        
+          {<ModelText>{props.data?.taxi_category?.model_name}</ModelText>}
 
-          <TripInfoContainer>
-            <ImageLoader
+          
+
+          {/* <TripInfoContainer> */}
+            {/* <ImageLoader
               url="media/icons/bookings/distance.png"
               height="1.5rem"
               width="1.5rem"
@@ -273,9 +300,9 @@ const ComboSection = (props) => {
               margin="0"
               leftalign
               noLazy
-            />
+            /> */}
 
-            <InfoGroup>
+            {/* <InfoGroup>
               {props.data?.distance?.text && (
                 <InfoItem>
                   <InfoHeading>
@@ -293,11 +320,11 @@ const ComboSection = (props) => {
                   <InfoText className="font-nunito">Included</InfoText>
                 </InfoItem>
               )}
-            </InfoGroup>
-
-            <PriceActionContainer>
-              <Cost>{"₹" + getIndianPrice(Math.ceil(props.data.price.total)) + "/-"}</Cost>
-              {loading ? (
+            </InfoGroup> */}
+{/* 
+            <PriceActionContainer> */}
+              {/* <Cost>{"₹" + getIndianPrice(Math.ceil(props.data.price.total)) + "/-"}</Cost> */}
+              {/* {loading ? (
                 <PulseLoader size={8} speedMultiplier={0.6} color="#111" />
               ) : (
                props?.isSelected ? (
@@ -311,11 +338,17 @@ const ComboSection = (props) => {
             >
               <ImCheckboxUnchecked className="inline" /> Select
             </div>
-          ))}
+          ))} */}
               
-            </PriceActionContainer>
-          </TripInfoContainer>
+            {/* </PriceActionContainer> */}
+          {/* </TripInfoContainer> */}
 
+          <div className="flex flex-row justify-between">
+
+          <div className="flex flex-row gap-2">
+            <div className="font-bold text-lg p-[0.4rem]">
+            {props.data?.taxi_category?.seating_capacity + "-seater"}
+          </div>
           <FacilitiesContainer>
             <Accordion
               borderRadius="0.5rem"
@@ -348,8 +381,29 @@ const ComboSection = (props) => {
               </AccordionDetails>
             </Accordion>
           </FacilitiesContainer>
+           </div>
+           <div className="p-[0.4rem]">
+           {loading ? (
+                <PulseLoader size={8} speedMultiplier={0.6} color="#111" />
+              ) : (
+               props?.isSelected ? (
+            <div className="flex items-center gap-1">
+              <ImCheckboxChecked className="inline" /> 
+            </div>
+          ) : (
+            <div
+              className="flex items-center gap-1 cursor-pointer"
+              onClick={handleOnSelect}
+            >
+              <ImCheckboxUnchecked className="inline" /> 
+            </div>
+          ))}
+          </div>
+          </div>
+          
         </DetailsContainer>
       </TaxiCard>
+       <hr/>
     </Container>
   );
 };

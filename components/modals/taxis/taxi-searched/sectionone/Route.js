@@ -11,10 +11,9 @@ import { openNotification } from "../../../../../store/actions/notification";
 import { updateSingleTransferBooking } from "../../../../../store/actions/transferBookingsStore";
 
 const Container = styled.div`
-  padding: 0.75rem 0.5rem;
-  display: flex;
-  flex-direction: column;
-  max-width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 `;
 
 const RouteContainer = styled.div`
@@ -68,6 +67,15 @@ const Cost = styled.p`
   @media screen and (min-width: 768px) {
     font-size: 1.25rem;
   }
+`;
+
+const TaxiHeading = styled.p`
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 0.2rem 0;
+  line-height: 1.2;
 `;
 
 const Section = (props) => {
@@ -148,12 +156,13 @@ const Section = (props) => {
   if (props.data)
     return (
       <Container>
-        <Heading>
+        <TaxiHeading>
+        {/* <Heading> */}
           {props.data?.taxi_category?.type ? (
             <>
               {props.data.taxi_category.type}{" "}
               <>
-                {props.data.taxi_category?.fuel_type && isPageWide ? (
+                {props.data.taxi_category?.fuel_type ? (
                   `(${props.data.taxi_category.fuel_type})`
                 ) : (
                   <></>
@@ -165,11 +174,20 @@ const Section = (props) => {
           ) : (
             "One-way Taxi"
           )}
-        </Heading>
+        {/* </Heading> */}
 
-        {isPageWide && (
+         <div>
+                  <Cost>{"₹" + getIndianPrice(Math.ceil(props.data.price.total)) + "/-"}</Cost>
+        </div>
+        </TaxiHeading>
+
+        { (
           <ModelText>{props.data?.taxi_category?.model_name}</ModelText>
         )}
+
+        
+
+        
         {/* <RouteContainer className="font-lexend">
           <Location className="font-lexend">
             {props.selectedBooking.city}
@@ -197,7 +215,7 @@ const Section = (props) => {
             marginTop: "0.75rem",
           }}
         >
-          <ImageLoader
+          {/* <ImageLoader
             url="media/icons/bookings/distance.png"
             height="1.5rem"
             width="1.5rem"
@@ -206,13 +224,13 @@ const Section = (props) => {
             margin="0"
             leftalign
             noLazy
-          ></ImageLoader>
+          ></ImageLoader> */}
 
           <div
             style={{ display: "flex", gap: "1rem" }}
             className="flex flex-col md:flex-row justify-between w-full"
           >
-            <div className="flex flex-row gap-[1rem]">
+            {/* <div className="flex flex-row gap-[1rem]">
               {props.data?.distance?.text ? (
                 <div>
                   <IconHeading className="font-lexend">
@@ -230,15 +248,15 @@ const Section = (props) => {
                   <Text className="font-nunito">Included</Text>
                 </div>
               ) : null}
-            </div>
+            </div> */}
 
             <div className="flex flex-row md:flex-col justify-end md:justify-center gap-2">
               <div className="md:center-div" style={{ marginRight: "0.5rem" }}>
-                <Cost>
+                {/* <Cost>
                   {"₹" +
                     getIndianPrice(Math.ceil(props.data.price.total)) +
                     "/-"}
-                </Cost>
+                </Cost> */}
               </div>
 
               <div>

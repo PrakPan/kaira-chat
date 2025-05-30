@@ -31,6 +31,7 @@ const CityDay = (props) => {
 });
 
   const formattedTaxiDetails = matchingIntracityBookings?.map((booking, index) => ({
+  ...booking,
   id: booking.id,
   date: `Day ${index + 1}, ${new Date(booking.check_in).toLocaleDateString('en-US', {
     month: 'short',
@@ -42,7 +43,7 @@ const CityDay = (props) => {
     booking.number_of_adults +
     booking.number_of_children +
     booking.number_of_infants,
-  duration: booking.transfer_details?.duration?.text || 'N/A',
+  // duration: booking.transfer_details?.duration?.text || 'N/A',
 }));
   return (
     <div id="cityday" className="flex flex-col md:flex-row md:border-b-2">
@@ -100,13 +101,13 @@ const CityDay = (props) => {
           <div className="flex flex-col gap-4 w-full">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {formattedTaxiDetails.map((taxi) => (
-                <div key={taxi.id} className="flex flex-col">
+                <div key={taxi.id} className="flex flex-col hover:cursor-pointer hover:bg-[rgb(254_250_216)]">
                   <div className="text-[12px] text-gray-600 mb-1">
                     {taxi.date}
                   </div>
                   <div className="w-full h-px bg-gray-200 mb-2"></div>
                   <div className="text-[14px] font-medium text-black mb-1">
-                    {taxi.fromLocation} to {taxi.toLocation}
+                    <span>{taxi?.name ? taxi.name : taxi.fromLocation + 'to' + taxi.toLocation}</span>
                   </div>
                   <div className="text-[12px] text-gray-600">
                     {taxi.passengers} passengers | Duration: {taxi.duration}

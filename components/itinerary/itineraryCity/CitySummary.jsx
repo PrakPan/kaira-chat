@@ -120,7 +120,7 @@ const CitySummary = (props) => {
     booking.number_of_adults +
     booking.number_of_children +
     booking.number_of_infants,
-  duration: booking.transfer_details?.duration?.text || 'N/A',
+  // duration: booking.transfer_details?.duration?.text || 'N/A',
   
 }));
 
@@ -331,7 +331,7 @@ const handleTaxi = ()=>{
         {formattedTaxiDetails.map((taxi) => (
           <div
             key={taxi.id}
-            className="flex flex-col border border-gray-300 rounded-lg p-4 shadow-sm cursor-pointer"
+            className="flex flex-col border border-gray-300 rounded-lg p-4 shadow-sm hover:cursor-pointer hover:bg-[rgb(254_250_216)]"
             onClick={()=>{setTaxiData(taxi); handleTaxi(); }}
           >
             <div className="flex items-center text-[12px] text-gray-600 mb-1 gap-2">
@@ -343,7 +343,7 @@ const handleTaxi = ()=>{
 
             <div className="flex items-center text-[14px] font-medium text-black mb-1 gap-2">
               {/* <FaTaxi  size={16} className="text-blue-600" /> */}
-              <span>{taxi.fromLocation} to {taxi.toLocation}</span>
+              <span>{taxi?.name ? taxi.name : taxi.fromLocation + 'to' + taxi.toLocation}</span>
             </div>
 
             <div className="text-[12px] text-gray-600">
