@@ -6,6 +6,26 @@ import PriceContainer from "./PriceContainer";
 import { useState, useEffect } from "react";
 import ViewMoreButton from "../../../itinerary/daySummary/ViewMoreButton";
 import Details from "../../../../containers/itinerary/TransfersContainer/FlightDetail";
+import { getIndianPrice } from "../../../../services/getIndianPrice";
+import media from "../../../media";
+// const Container = styled.div`
+//   width: 95%;
+//   background-color: white;
+//   margin: auto;
+//   ${(props) =>
+//     props.isSelected &&
+//     "background : #FFFBBB ; border : 1px solid #F7E700!important"};
+//   border-radius: 10px;
+//   height: 100%;
+//   margin-bottom: 0.5rem;
+//   @media screen and (min-width: 768px) {
+//     background: white;
+//     width: 100%;
+//     border-radius: 10px;
+//     position: relative;
+//   }
+// `;
+
 const Container = styled.div`
   width: 95%;
   background-color: white;
@@ -13,13 +33,11 @@ const Container = styled.div`
   ${(props) =>
     props.isSelected &&
     "background : #FFFBBB ; border : 1px solid #F7E700!important"};
-  border-radius: 10px;
   height: 100%;
   margin-bottom: 0.5rem;
   @media screen and (min-width: 768px) {
     background: white;
     width: 100%;
-    border-radius: 10px;
     position: relative;
   }
 `;
@@ -34,32 +52,42 @@ function convertMinutesToHours(minutes) {
   return `${hours}h ${mins}m`;
 }
 
-const Flight = (props) => {
+const Flight = (props) => { 
   const [showDetails, setShowDetails] = useState(false);
   const [viewMore, setViewMore] = useState(false);
+  let isPageWide = media("(min-width: 768px)");
   const handleView = () => {
     setViewMore((prev) => !prev);
   };
   return (
     <Container
-      className="relative border p-3 space-y-2 overflow-x-hidden"
+      className="relative border-b p-2 space-y-2 overflow-x-hidden"
       isSelected={props.isSelected}
-      style={{ borderRadius: "10px" }}
+      // style={{ borderBottom: "1px" }}
     >
-      {props.data?.is_refundable ? (
+      {/* {props.data?.is_refundable ? (
         <ClippathComp className="absolute top-0 right-0 w-fit text-xs bg-[#F8E000] pr-2 pl-4 py-1 rounded-tr-lg">
           Refundable
         </ClippathComp>
-      ) : null}
+      ) : null} */}
 
-      <div className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-center gap-2">
-          <LogoContainer data={props.data} />
-          <div className="text-xs font-semibold">
-            {props.data?.segments?.[0]?.airline?.name}
+      <div className="flex flex-row gap-1 justify-between md:flex-row md:items-center md:justify-between">
+        <div className="flex items-center gap-2 justify-center">
+          <LogoContainer data={props.data} width={32} height={32}/>
+          <div className="text-sm font-semibold">
+            {props.data?.segments?.[0]?.airline?.name} {isPageWide && <>| <span className="font-normal">{props.data?.segments?.[0]?.airline?.code}-{props.data?.segments?.[0]?.airline?.flight_number}</span></>}
           </div>
+          {props.data?.is_refundable && <p className="bg-[#fdeeee] text-[#EF7D7D] px-2 py-1 mb-0 rounded-md text-xs font-medium">
+            Refundable
+          </p>}
         </div>
+        <div className="text-lg font-bold">
+                  {props.data?.final_fare ? `₹${getIndianPrice(props.data?.final_fare)}` : null}
+        </div>
+      </div>
 
+      <div className="flex flex-col w-full gap-1 md:flex-row md:items-center md:justify-between">
+        <div className="w-[70%]">
         <FlightDetails
           data={props.data}
           origin={props.data?.segments[0]?.origin}
@@ -76,7 +104,7 @@ const Flight = (props) => {
           segments={props.data?.segments}
           setShowDetails={setShowDetails}
         />
-
+        </div>
         <PriceContainer
           data={{
             resultIndex: props.data?.result_index,
@@ -94,10 +122,14 @@ const Flight = (props) => {
           trace_id={props?.trace_id}
           onFlightSelect={props?.onFlightSelect}
           edge={props?.edge}
+          booking_id={props?.booking_id}
         />
       </div>
-      <div className="flex justify-center items-center">
-        <div className="ml-0 lg:ml-[64px]">
+
+        
+      
+      <div className="flex justify-start items-center">
+        <div className="ml-0">
           {!viewMore ? (
             <ViewMoreButton text="View more" handler={handleView} />
           ) : (

@@ -18,10 +18,22 @@ import { FaFilter } from "react-icons/fa";
 import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 import LogInModal from "../Login";
 import { toast, ToastContainer } from "react-toastify";
-import { setTransfersBookings, updateSingleTransferBooking } from "../../../store/actions/transferBookingsStore";
+import {
+  setTransfersBookings,
+  updateSingleTransferBooking,
+} from "../../../store/actions/transferBookingsStore";
 import ComboSection from "./ComboSectionOne";
 import dayjs from "dayjs";
 
+// const GridContainer = styled.div`
+// min-height: 65vh;
+// max-height: 40vh;
+// overflow-x: hidden;
+
+// @media screen and (min-width: 768px) {
+//     min-height: 90vh;
+//     overflow-y: scroll;
+// `;
 const GridContainer = styled.div`
 min-height: 65vh;
 max-height: 40vh;
@@ -29,7 +41,6 @@ overflow-x: hidden;
 
 @media screen and (min-width: 768px) {
     min-height: 90vh;
-    overflow-y: scroll;
 `;
 
 const FloatingView = styled.div`
@@ -91,7 +102,7 @@ const ComboFlight = (props) => {
     props?.originCityId,
     props?.destinationCityId
   );
-  
+
   let isPageWide = media("(min-width: 768px)");
   const dispatch = useDispatch();
   const transferBookings = useSelector((state) => state.TransferBookings);
@@ -104,7 +115,8 @@ const ComboFlight = (props) => {
     airline_name: "",
     sort_by: "Price",
   });
-  const {number_of_adults,number_of_children,number_of_infants} = useSelector(state=>state.Itinerary)
+  const { number_of_adults, number_of_children, number_of_infants } =
+    useSelector((state) => state.Itinerary);
   const [limit, setLimit] = useState(20);
   const [offset, setOffset] = useState(0);
   const [viewMoreStatus, setViewMoreStatus] = useState(false);
@@ -118,24 +130,34 @@ const ComboFlight = (props) => {
   const [showFilter, setShowFilter] = useState(false);
   const [noResults, setNoResults] = useState(false);
   const [unauthorized, setUnauthorized] = useState(false);
-  const [flightCount, setFlightsCount] = useState(props?.flightResults ? props?.flightResults?.length : 0);
+  const [flightCount, setFlightsCount] = useState(
+    props?.flightResults ? props?.flightResults?.length : 0
+  );
   const [pax, setPax] = useState({
-    adults: number_of_adults || (props.selectedBooking?.pax?.number_of_adults
-      ? props.selectedBooking.pax.number_of_adults
-      : 1),
-    children: number_of_children || (props.selectedBooking?.pax?.number_of_children
-      ? props.selectedBooking.pax.number_of_children
-      : 0),
-    infants: number_of_infants ||  (props.selectedBooking?.pax?.number_of_infants
-      ? props.selectedBooking.pax.number_of_infants
-      : 0),
+    adults:
+      number_of_adults ||
+      (props.selectedBooking?.pax?.number_of_adults
+        ? props.selectedBooking.pax.number_of_adults
+        : 1),
+    children:
+      number_of_children ||
+      (props.selectedBooking?.pax?.number_of_children
+        ? props.selectedBooking.pax.number_of_children
+        : 0),
+    infants:
+      number_of_infants ||
+      (props.selectedBooking?.pax?.number_of_infants
+        ? props.selectedBooking.pax.number_of_infants
+        : 0),
   });
   const [classType, setClassType] = useState({
     key: "All",
     value: 1,
   });
   const [showTransferEditDrawer, setShowTransferEditDrawer] = useState(false);
-  const [flights, setFlights] = useState(props?.flightResults ? props?.flightResults : []);
+  const [flights, setFlights] = useState(
+    props?.flightResults ? props?.flightResults : []
+  );
   const [selectedFlightIndex, setSelectedFlightIndex] = useState(null);
   const [flightProvider, setProvider] = useState(null);
   const [preferredDepartureTime, setPreferredDepartureTime] = useState("");
@@ -145,23 +167,33 @@ const ComboFlight = (props) => {
   const [dateTimeInitialized, setDateTimeInitialized] = useState(false);
   const [paxChanged, setPaxChanged] = useState(false);
 
-  
-
-  console.log("Source Itinerary",props?.source_itinerary_city_id,props?.destination_itinerary_city_id)
+  console.log(
+    "Source Itinerary",
+    props?.source_itinerary_city_id,
+    props?.destination_itinerary_city_id
+  );
 
   useEffect(() => {
     if (props?.comboStartTime && props?.comboStartDate) {
       setPropsReady(true);
-    }
-     else if (props?.selectedBooking?.check_in) {
+    } else if (props?.selectedBooking?.check_in) {
       setPropsReady(true);
     }
-  }, [props?.comboStartTime, props?.comboStartDate, props?.selectedBooking?.check_in]);
-
+  }, [
+    props?.comboStartTime,
+    props?.comboStartDate,
+    props?.selectedBooking?.check_in,
+  ]);
 
   useEffect(() => {
-    console.log("Combo S", props?.comboStartDate, props?.comboStartTime, dateTimeInitialized, propsReady);
-    
+    console.log(
+      "Combo S",
+      props?.comboStartDate,
+      props?.comboStartTime,
+      dateTimeInitialized,
+      propsReady
+    );
+
     function roundToNext30Min(input) {
       try {
         const dateTime = dayjs(input);
@@ -169,53 +201,60 @@ const ComboFlight = (props) => {
           console.error("Invalid date input:", input);
           return null; // Don't fallback to current time
         }
-        
+
         const minutes = dateTime.minute();
-        const addMinutes = minutes === 0 ? 0 : (minutes <= 30 ? 30 - minutes : 60 - minutes);
-        
-        return dateTime.add(addMinutes, 'minute').second(0).millisecond(0);
+        const addMinutes =
+          minutes === 0 ? 0 : minutes <= 30 ? 30 - minutes : 60 - minutes;
+
+        return dateTime.add(addMinutes, "minute").second(0).millisecond(0);
       } catch (error) {
         console.error("Error processing date:", error);
         return null; // Don't fallback to current time
       }
     }
-    
+
     if (propsReady && (!dateTimeInitialized || timeUpdated)) {
       let baseTime;
       if (props?.comboStartTime && props?.comboStartDate) {
         try {
-          const isoString = getISOStringFromDateAndTime(props?.comboStartDate, props?.comboStartTime);
+          const isoString = getISOStringFromDateAndTime(
+            props?.comboStartDate,
+            props?.comboStartTime
+          );
           console.log("Using combo start time/date:", isoString);
           if (!isoString) {
             console.error("Failed to generate ISO string from date and time");
-            return; 
+            return;
           }
           baseTime = dayjs(isoString);
         } catch (error) {
           console.error("Error with combo time/date:", error);
-          return; // Exit early if there's an error
+          return;
         }
-      } else if (props?.selectedBooking?.check_in) { 
+      } else if (props?.selectedBooking?.check_in) {
         try {
           baseTime = dayjs(props?.selectedBooking?.check_in.replace(" ", "T"));
           console.log("Using check_in time:", props?.selectedBooking?.check_in);
         } catch (error) {
           console.error("Error with check_in:", error);
-          return; // Exit early if there's an error
+          return;
         }
       } else {
         console.log("No valid date source available");
-        return; // Exit early if no date sources are available
+        return;
       }
-  
+
       if (!baseTime.isValid()) {
         console.error("Date not valid");
-        return; // Exit early if date is invalid
+        return;
       }
 
       const roundedTime = roundToNext30Min(baseTime);
       if (roundedTime) {
-        console.log("Setting preferred departure time to:", roundedTime.format("YYYY-MM-DDTHH:mm:ss"));
+        console.log(
+          "Setting preferred departure time to:",
+          roundedTime.format("YYYY-MM-DDTHH:mm:ss")
+        );
         setPreferredDepartureTime(roundedTime.format("YYYY-MM-DDTHH:mm:ss"));
         setDateTimeInitialized(true);
         if (timeUpdated) {
@@ -223,28 +262,34 @@ const ComboFlight = (props) => {
         }
       }
     }
-     
-  
-      
-  }, [props?.comboStartDate, props?.comboStartTime, props?.selectedBooking?.check_in, propsReady, dateTimeInitialized, timeUpdated]);
+  }, [
+    props?.comboStartDate,
+    props?.comboStartTime,
+    props?.selectedBooking?.check_in,
+    propsReady,
+    dateTimeInitialized,
+    timeUpdated,
+  ]);
 
   function getISOStringFromDateAndTime(dateStr, timeStr) {
     try {
       if (!dateStr) throw new Error("No date provided");
-      
+
       const [year, month, day] = dateStr.split("-");
       const [hour, minute] = timeStr ? timeStr.split(":") : ["00", "00"];
-      
 
       if (!year || !month || !day) throw new Error("Invalid date format");
-      
+
       const localDate = new Date(year, month - 1, day, hour || 0, minute || 0);
-      
+
       if (isNaN(localDate.getTime())) {
-        console.error("Invalid date created from inputs:", {dateStr, timeStr});
+        console.error("Invalid date created from inputs:", {
+          dateStr,
+          timeStr,
+        });
         throw new Error("Invalid date created");
       }
-      
+
       return localDate.toISOString();
     } catch (error) {
       console.error("Error creating ISO date:", error);
@@ -252,22 +297,16 @@ const ComboFlight = (props) => {
     }
   }
 
-  
-
   useEffect(() => {
     if (paxChanged) {
       console.log("Pax changed, setting timeUpdated to trigger new search");
       setTimeUpdated(true);
     } else {
-      
       setPaxChanged(true);
     }
   }, [pax]);
 
-
-
   useEffect(() => {
-   
     if (!preferredDepartureTime) return;
 
     console.log("Flight search conditions:", {
@@ -277,55 +316,73 @@ const ComboFlight = (props) => {
       isDesktop: isPageWide,
       flightsCount: flights.length,
       timeUpdated,
-      pax
+      pax,
     });
-    
-    const shouldFetchFlights = props.showComboFlightModal && 
-                               props.token && 
-                               preferredDepartureTime && 
-                               (timeUpdated || flights.length === 0);
-    
-                               
-      console.log("FFFF",props.showComboFlightModal,
-                               props.token,
-                               preferredDepartureTime,timeUpdated)
-    
+
+    const shouldFetchFlights =
+      props.showComboFlightModal &&
+      props.token &&
+      preferredDepartureTime &&
+      (timeUpdated || flights.length === 0);
+
+    console.log(
+      "FFFF",
+      props.showComboFlightModal,
+      props.token,
+      preferredDepartureTime,
+      timeUpdated
+    );
+
     if (shouldFetchFlights && !isFetching) {
       console.log("Fetching flights with time:", preferredDepartureTime);
       _FetchFlightsHandler();
       setTimeUpdated(false);
     }
-  }, [props.showComboFlightModal, props.token, preferredDepartureTime, isPageWide, timeUpdated]);
-
- 
-    useEffect(()=>{
-     if (!preferredDepartureTime) return;
-
-     const shouldFetchFlights = props.showComboFlightModal && 
-                               props.token && 
-                               preferredDepartureTime;
-
-      console.log("FFFF",props.showComboFlightModal,
-                               props.token,
-                               preferredDepartureTime,!flights.length,!props?.skipFetch)
-      if(!props?.skipFetch && shouldFetchFlights){
-         _FetchFlightsHandler();
-      }
-  },[props.showComboFlightModal, props.token,props?.skipFetch , isPageWide])
+  }, [
+    props.showComboFlightModal,
+    props.token,
+    preferredDepartureTime,
+    isPageWide,
+    timeUpdated,
+  ]);
 
   useEffect(() => {
-     console.log("F Resu",props?.flightResults,props?.selectedData);
-  if (props?.flightResults?.length && props?.selectedData?.resultIndex !== undefined) {
-    console.log("F Resu",props?.flightResults,props?.selectedData);
-    const selectedIndex = props.flightResults.findIndex(
-      (flight) => flight?.result_index === (props.selectedData?.resultIndex || props.selectedData?.result_index)
-    );
+    if (!preferredDepartureTime) return;
 
-    if (selectedIndex !== -1) {
-      setSelectedFlightIndex(selectedIndex);
+    const shouldFetchFlights =
+      props.showComboFlightModal && props.token && preferredDepartureTime;
+
+    console.log(
+      "FFFF",
+      props.showComboFlightModal,
+      props.token,
+      preferredDepartureTime,
+      !flights.length,
+      !props?.skipFetch
+    );
+    if (!props?.skipFetch && shouldFetchFlights) {
+      _FetchFlightsHandler();
     }
-  }
-}, [props.flightResults, props.selectedData]);
+  }, [props.showComboFlightModal, props.token, props?.skipFetch, isPageWide]);
+
+  useEffect(() => {
+    console.log("F Resu", props?.flightResults, props?.selectedData);
+    if (
+      props?.flightResults?.length &&
+      props?.selectedData?.resultIndex !== undefined
+    ) {
+      console.log("F Resu", props?.flightResults, props?.selectedData);
+      const selectedIndex = props.flightResults.findIndex(
+        (flight) =>
+          flight?.result_index ===
+          (props.selectedData?.resultIndex || props.selectedData?.result_index)
+      );
+
+      if (selectedIndex !== -1) {
+        setSelectedFlightIndex(selectedIndex);
+      }
+    }
+  }, [props.flightResults, props.selectedData]);
 
   const updatePreferredDepartureTime = (newDateTime) => {
     setPreferredDepartureTime(newDateTime);
@@ -335,7 +392,7 @@ const ComboFlight = (props) => {
   // Update the setPax function to trigger refetching
   const handlePaxChange = (newPax) => {
     setPax(newPax);
-    setTimeUpdated(true);  // This will trigger a new search
+    setTimeUpdated(true); // This will trigger a new search
   };
 
   const _FetchFlightsHandler = () => {
@@ -344,16 +401,16 @@ const ComboFlight = (props) => {
       console.log("Skip fetch - already fetching");
       return;
     }
-    
+
     console.log("Starting flight fetch with time:", preferredDepartureTime);
     console.log("Using pax values:", pax);
-    
+
     setLoading(true);
     setIsFetching(true);
     setFlightsCount(0);
     setFlights([]);
-    if(props?.setFlightResults){
-    props?.setFlightResults([]);
+    if (props?.setFlightResults) {
+      props?.setFlightResults([]);
     }
     setUpdateBookingState(false);
     setUnauthorized(false);
@@ -371,13 +428,14 @@ const ComboFlight = (props) => {
         direct_flight: filtersState.non_stop_flights ? "true" : "false",
         journey_type: "1",
         origin: props.source_code || props.selectedBooking.origin_iata,
-        destination: props.destination_code || props.selectedBooking.destination_iata,
+        destination:
+          props.destination_code || props.selectedBooking.destination_iata,
         preferred_departure_time: preferredDepartureTime,
         flight_cabin_class: classType.value,
       };
 
       console.log("Flight search request:", requestData);
-      
+
       // Only proceed if we have a valid date
       axiosFlightSearch
         .post(
@@ -403,20 +461,19 @@ const ComboFlight = (props) => {
           setLoading(false);
           setMoreLoadingState(false);
           setIsFetching(false);
-          
+
           const provider = res.data.provider;
           setProvider(provider);
           localStorage.setItem(`${provider}_trace_id`, res.data.trace_id);
 
           if (res.data?.results && res.data.results.length) {
             setFlights(res.data.results);
-             if(props?.setFlightResults)
-             props?.setFlightResults(res.data.results);
+            if (props?.setFlightResults)
+              props?.setFlightResults(res.data.results);
             setFlightsCount(res.data.results.length);
           } else {
             setFlights([]);
-             if(props?.setFlightResults)
-             props?.setFlightResults([]);
+            if (props?.setFlightResults) props?.setFlightResults([]);
             setFlightsCount(0);
             setNoResults(true);
           }
@@ -427,12 +484,15 @@ const ComboFlight = (props) => {
           setMoreLoadingState(false);
           setIsFetching(false);
           setFlights([]);
-          if(props?.setFlightResults)
-           props?.setFlightResults([]);
+          if (props?.setFlightResults) props?.setFlightResults([]);
           setFlightsCount(0);
           setFetchingIsError({
             error: true,
-            errorMsg: `Sorry, we could not find any flights from ${props.source_code || props.selectedBooking?.origin_iata} to ${props.destination_code || props.selectedBooking?.destination_iata} for given dates at the moment. Please contact us to complete this booking`,
+            errorMsg: `Sorry, we could not find any flights from ${
+              props.source_code || props.selectedBooking?.origin_iata
+            } to ${
+              props.destination_code || props.selectedBooking?.destination_iata
+            } for given dates at the moment. Please contact us to complete this booking`,
           });
         });
     } else {
@@ -441,14 +501,23 @@ const ComboFlight = (props) => {
       setMoreLoadingState(false);
       setIsFetching(false);
       setFlights([]);
-      if(props?.setFlightResults)
-       props?.setFlightResults([]);
+      if (props?.setFlightResults) props?.setFlightResults([]);
       setFlightsCount(0);
       setFetchingIsError({
         error: true,
-        errorMsg: `Sorry, we could not find any flights from ${props.source_code || props.selectedBooking?.origin_iata} to ${props.destination_code || props.selectedBooking?.destination_iata} for given dates at the moment. Please contact us to complete this booking`,
+        errorMsg: `Sorry, we could not find any flights from ${
+          props.source_code || props.selectedBooking?.origin_iata
+        } to ${
+          props.destination_code || props.selectedBooking?.destination_iata
+        } for given dates at the moment. Please contact us to complete this booking`,
       });
     }
+  };
+
+   const isValidUUID = (uuid) => {
+    const regex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return regex.test(uuid);
   };
 
   const _newUpdateBookingHandler = ({
@@ -456,7 +525,7 @@ const ComboFlight = (props) => {
     itinerary_id,
     result_index,
     flightProvider,
-    edge
+    edge,
   }) => {
     if (props.handleFlightSelect) {
       props.handleFlightSelect({
@@ -484,14 +553,14 @@ const ComboFlight = (props) => {
       booking_id,
       trace_id: localStorage.getItem(`${flightProvider}_trace_id`),
       result_indices: [result_index],
-      source_itinerary_city: props?.source_itinerary_city_id,
-      destination_itinerary_city: props?.destination_itinerary_city_id,
+      source_itinerary_city: isValidUUID(props?.source_itinerary_city_id) ? props?.source_itinerary_city_id : null,
+      destination_itinerary_city: isValidUUID(props?.destination_itinerary_city_id) ? props?.destination_itinerary_city_id : null,
       edge: props?.edge || props?.selectedBooking?.edge,
     };
 
     //  console.log("originCityId + destinationCityId",props?.originCityId + ":" + props?.destinationCityId);
     console.log("Request Data", requestData);
-    
+
     updateFlightBooking
       .post(`${itinerary_id}/bookings/flight/`, requestData, {
         headers: {
@@ -509,7 +578,7 @@ const ComboFlight = (props) => {
         );
         const bookingIdToUpdate = requestData?.booking_id;
 
-        if(props?.combo){
+        if (props?.combo) {
           Object.keys(updatedTransferBookings).forEach((category) => {
             if (updatedTransferBookings[category]) {
               Object.keys(updatedTransferBookings[category]).forEach((key) => {
@@ -530,16 +599,21 @@ const ComboFlight = (props) => {
                   booking.children.length > 0
                 ) {
                   let foundMatch = false;
-                  const updatedChildren = booking.children.map((childBooking) => {
-                    if (childBooking && childBooking.id === bookingIdToUpdate) {
-                      foundMatch = true;
-                      return {
-                        ...childBooking,
-                        ...res.data,
-                      };
+                  const updatedChildren = booking.children.map(
+                    (childBooking) => {
+                      if (
+                        childBooking &&
+                        childBooking.id === bookingIdToUpdate
+                      ) {
+                        foundMatch = true;
+                        return {
+                          ...childBooking,
+                          ...res.data,
+                        };
+                      }
+                      return childBooking;
                     }
-                    return childBooking;
-                  });
+                  );
 
                   if (foundMatch) {
                     updatedTransferBookings[category][key] = {
@@ -554,7 +628,7 @@ const ComboFlight = (props) => {
 
           dispatch(setTransfersBookings(updatedTransferBookings));
           props?.getPaymentHandler();
-        } else { 
+        } else {
           dispatch(
             updateSingleTransferBooking(
               `${props?.source_itinerary_city_id}:${props?.destination_itinerary_city_id}`,
@@ -563,7 +637,7 @@ const ComboFlight = (props) => {
           );
           props?.getPaymentHandler();
         }
-        
+
         props.openNotification({
           type: "success",
           text: "Flight updated successfully.",
@@ -572,7 +646,7 @@ const ComboFlight = (props) => {
         props.setHideFlightModal();
       })
       .catch((err) => {
-        console.log("Error in Updating Flight",err.message);
+        console.log("Error in Updating Flight", err.message);
         setUpdateBookingState(false);
         setMoreLoadingState(false);
         setUnauthorized(true);
@@ -582,8 +656,8 @@ const ComboFlight = (props) => {
           heading: "Error!",
         });
         props.setHideFlightModal();
-        
-     //   toast.error("An error occurred while updating the flight");
+
+        //   toast.error("An error occurred while updating the flight");
       });
   };
 
@@ -614,14 +688,17 @@ const ComboFlight = (props) => {
         if (res.data.search && res.data.search.airline_names) {
           setFlightsCount(res.data.data);
         }
-        
+
         if (res.data?.Results.length) {
-          setFlights(prevFlights => [...prevFlights, ...res.data.Results]);
-          if(props?.setFlightResults)
-          props?.setFlightResults(prevFlights => [...prevFlights, ...res.data.Results]);
-          setFlightsCount(prev => prev + res.data.Results.length);
+          setFlights((prevFlights) => [...prevFlights, ...res.data.Results]);
+          if (props?.setFlightResults)
+            props?.setFlightResults((prevFlights) => [
+              ...prevFlights,
+              ...res.data.Results,
+            ]);
+          setFlightsCount((prev) => prev + res.data.Results.length);
         }
-        
+
         if (res.data.next_page) {
           setViewMoreStatus(true);
           setOffset(offset + 20);
@@ -712,7 +789,7 @@ const ComboFlight = (props) => {
           {flights.map((flight, index) => (
             <Flight
               key={index}
-             // edge={props?.edge}
+              // edge={props?.edge}
               itinerary_id={props.itinerary_id}
               data={flight}
               selectedBooking={props.selectedBooking}
@@ -722,14 +799,13 @@ const ComboFlight = (props) => {
               provider={flightProvider}
               destinationCityId={props?.destination_itinerary_city_id}
               edge={props?.edge || props?.selectedBooking?.edge}
-              setTransferBookingsIntercity={
-                props.setTransferBookingsIntercity
-              }
+              setTransferBookingsIntercity={props.setTransferBookingsIntercity}
               onSelect={props.onSelect}
               isSelected={selectedFlightIndex === index}
               onFlightSelect={() => setSelectedFlightIndex(index)}
               getPaymentHandler={props.getPaymentHandler}
               combo={props?.combo}
+              booking_id={props?.booking_id}
             />
           ))}
 
@@ -757,7 +833,7 @@ const ComboFlight = (props) => {
     return (
       <div className="w-full">
         <ToastContainer />
-        
+
         <ComboSection
           _FetchFlightsHandler={_FetchFlightsHandler}
           setHideBookingModal={props.setHideBookingModal}
@@ -770,7 +846,7 @@ const ComboFlight = (props) => {
           text={props.selectedBooking?.name}
           selectedBooking={props.selectedBooking}
           pax={pax}
-          setPax={handlePaxChange}  // Using our new pax handler
+          setPax={handlePaxChange} // Using our new pax handler
           classType={classType}
           setClassType={setClassType}
           handleTransferEdit={handleTransferEdit}
@@ -812,6 +888,7 @@ const ComboFlight = (props) => {
           selectedBooking={props.selectedBooking}
           mercuryTransfer={props?.mercuryTransfer}
           mercury={true}
+          booking_id={props?.booking_id}
         />
       </div>
     );

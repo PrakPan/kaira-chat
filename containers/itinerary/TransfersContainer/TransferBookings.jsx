@@ -192,6 +192,7 @@ const TransferBookings = (props) => {
         sortedIntracity.forEach((booking, index) => {
           sections.push(
             <TransferBooking
+              booking_id={booking?.id}
               mercuryItinerary={props?.mercuryItinerary}
               loadbookings={props?.loadbookings}
               key={`intracity-${booking.id}-${index}`}
@@ -233,6 +234,7 @@ const TransferBookings = (props) => {
       if (intercityBooking && Object.keys(intercityBooking).length >= 0) {
         sections.push(
           <TransferBooking
+            booking_id={intercityBooking?.id}
             mercuryItinerary={props?.mercuryItinerary}
             loadbookings={props?.loadbookings}
             key={intercityBooking.id || `intercity-${connectionKey}`}
@@ -429,6 +431,7 @@ const TransferBookings = (props) => {
         if (intercityBooking && Object.keys(intercityBooking).length >= 0) {
           sections.push(
             <TransferBooking
+              booking_id={intercityBooking?.id}
               mercuryItinerary={props?.mercuryItinerary}
               loadbookings={props?.loadbookings}
               key={intercityBooking.id || `intercity-${connectionKey}`}

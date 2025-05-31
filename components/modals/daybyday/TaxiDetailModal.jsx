@@ -101,6 +101,7 @@ const TaxiDetailModal = ({
     `${transfer_details?.distance?.value} km`;
   const duration_text = transfer_details?.duration?.text;
   const model = transfer_details?.quote?.taxi_category?.model_name;
+  const taxiType = transfer_details?.quote?.taxi_category?.type;
   const fuelType = transfer_details?.quote?.taxi_category?.fuel_type;
   const luggageBags = transfer_details?.quote?.taxi_category?.bag_capacity;
   const seatCapacity = transfer_details?.quote?.taxi_category?.seating_capacity;
@@ -119,7 +120,7 @@ const TaxiDetailModal = ({
             {loading ? (
               <div className="w-64 h-7 bg-gray-300 opacity-50 rounded"></div>
             ) : (
-            !noHeading &&  `Taxi from ${source_address?.name} to ${destination_address?.name}`
+            !noHeading && (data?.name || `Taxi from ${source_address?.name} to ${destination_address?.name}`)
             )}
           </h1>
           {!isEmbedded && !noChange && (
@@ -159,7 +160,7 @@ const TaxiDetailModal = ({
                 {loading ? (
                   <div className="w-24 h-4 bg-gray-300 opacity-50 rounded "></div>
                 ) : (
-                  `${distance} | ${duration_text}`
+                  (data?.transfer_type === "sightseeing" && (source_address && Object.keys(source_address).length === 0  && (destination_address && Object.keys(destination_address).length === 0))) ? `250 km per day | 1 days`: `${distance} | ${duration_text}`
                 )}
               </div>
 
@@ -184,7 +185,7 @@ const TaxiDetailModal = ({
                   ) : (
                     <>
                       <p className="font-bold text-lg">
-                        {source_address?.name}
+                        { (data?.transfer_type === "sightseeing" && (source_address && Object.keys(source_address).length === 0  && (destination_address && Object.keys(destination_address).length === 0))) ? 'Sightseeing Taxi': source_address?.name }
                       </p>
                       <p className="text-gray-600 text-sm flex flex-col sm:flex-row sm:gap-1">
                         <span>{depart.time}</span>
@@ -209,10 +210,10 @@ const TaxiDetailModal = ({
                           {destination_address?.name}
                         </p>
                       )}
-                      <p className="text-gray-600 text-sm flex flex-col sm:flex-row sm:gap-1">
+                     {arrival.time && arrival.date && <p className="text-gray-600 text-sm flex flex-col sm:flex-row sm:gap-1">
                         <span>{arrival.time ? arrival.time : ""}</span>
                         <span>{arrival.date ? arrival.date : ""}</span>
-                      </p>
+                      </p>}
                     </>
                   )}
                 </div>
@@ -229,6 +230,7 @@ const TaxiDetailModal = ({
               </p>
 
               <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex flex-col gap-4 items-center">
                 <div
                   className="w-full md:w-auto border border-gray-200 rounded-lg  flex justify-center items-center"
                   style={{ height: "140px" }}
@@ -236,6 +238,7 @@ const TaxiDetailModal = ({
                   {loading ? (
                     <div className="w-full h-full bg-gray-300 opacity-50 rounded"></div>
                   ) : (
+                    
                     <div className="w-full md:w-[180px] h-[140px] relative flex justify-center items-center">
                       {data?.transfer_details?.quote?.taxi_category?.image ? (
                         <ImageLoader
@@ -248,7 +251,21 @@ const TaxiDetailModal = ({
                         <FaTaxi className="w-16 h-16 text-gray-400" />
                       )}
                     </div>
+  
                   )}
+                  
+                </div>
+
+                {taxiType && <div>
+                      <p className="text-gray-500 text-sm"><span className="font-semibold text-gray-800">
+                          {loading ? (
+                            <div className="w-20 h-5 bg-gray-300 opacity-50 rounded"></div>
+                          ) : (
+                            taxiType ? taxiType : ""
+                          )}
+                      </span></p>
+                     
+                    </div>}
                 </div>
 
                 <div className="flex-1 w-full">

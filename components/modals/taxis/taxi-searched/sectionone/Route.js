@@ -11,10 +11,9 @@ import { openNotification } from "../../../../../store/actions/notification";
 import { updateSingleTransferBooking } from "../../../../../store/actions/transferBookingsStore";
 
 const Container = styled.div`
-  padding: 0.75rem 0.5rem;
-  display: flex;
-  flex-direction: column;
-  max-width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 `;
 
 const RouteContainer = styled.div`
@@ -70,6 +69,15 @@ const Cost = styled.p`
   }
 `;
 
+const TaxiHeading = styled.p`
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 0.2rem 0;
+  line-height: 1.2;
+`;
+
 const Section = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [loading, setLoading] = useState(false);
@@ -94,6 +102,7 @@ const Section = (props) => {
 
 
     const requestData = {
+      booking_id:props?.booking_id,
       source: props.data.source,
       trace_id: props.data.trace_id,
       result_index: props.data.result_index,
@@ -148,12 +157,13 @@ const Section = (props) => {
   if (props.data)
     return (
       <Container>
-        <Heading>
+        <TaxiHeading>
+        {/* <Heading> */}
           {props.data?.taxi_category?.type ? (
             <>
               {props.data.taxi_category.type}{" "}
               <>
-                {props.data.taxi_category?.fuel_type && isPageWide ? (
+                {props.data.taxi_category?.fuel_type ? (
                   `(${props.data.taxi_category.fuel_type})`
                 ) : (
                   <></>
@@ -165,11 +175,20 @@ const Section = (props) => {
           ) : (
             "One-way Taxi"
           )}
-        </Heading>
+        {/* </Heading> */}
 
-        {isPageWide && (
+         <div>
+                  <Cost>{"₹" + getIndianPrice(Math.ceil(props.data.price.total)) + "/-"}</Cost>
+        </div>
+        </TaxiHeading>
+
+        { (
           <ModelText>{props.data?.taxi_category?.model_name}</ModelText>
         )}
+
+        
+
+        
         {/* <RouteContainer className="font-lexend">
           <Location className="font-lexend">
             {props.selectedBooking.city}
@@ -197,7 +216,7 @@ const Section = (props) => {
             marginTop: "0.75rem",
           }}
         >
-          <ImageLoader
+          {/* <ImageLoader
             url="media/icons/bookings/distance.png"
             height="1.5rem"
             width="1.5rem"
@@ -206,13 +225,13 @@ const Section = (props) => {
             margin="0"
             leftalign
             noLazy
-          ></ImageLoader>
+          ></ImageLoader> */}
 
           <div
             style={{ display: "flex", gap: "1rem" }}
             className="flex flex-col md:flex-row justify-between w-full"
           >
-            <div className="flex flex-row gap-[1rem]">
+            {/* <div className="flex flex-row gap-[1rem]">
               {props.data?.distance?.text ? (
                 <div>
                   <IconHeading className="font-lexend">
@@ -230,18 +249,36 @@ const Section = (props) => {
                   <Text className="font-nunito">Included</Text>
                 </div>
               ) : null}
-            </div>
+            </div> */}
 
             <div className="flex flex-row md:flex-col justify-end md:justify-center gap-2">
               <div className="md:center-div" style={{ marginRight: "0.5rem" }}>
-                <Cost>
+                {/* <Cost>
                   {"₹" +
                     getIndianPrice(Math.ceil(props.data.price.total)) +
                     "/-"}
-                </Cost>
+                </Cost> */}
               </div>
 
-              <div>
+              
+            </div>
+          </div>
+        </div>
+
+       
+       <div className="flex justify-between">
+
+        <SectionFour
+          setHideBookingModal={props.setHideBookingModal}
+          _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+          getPaymentHandler={props.getPaymentHandler}
+          selectedBooking={props.selectedBooking}
+          _updateSearchedTaxi={props._updateSearchedTaxi}
+          data={props.data}
+          setShowTaxiModal={props.setShowTaxiModal}
+        ></SectionFour>
+
+        <div className="p-[0.4rem]">
                 {loading ? (
                   <PulseLoader size={8} speedMultiplier={0.6} color="#111" />
                 ) : (
@@ -267,19 +304,8 @@ const Section = (props) => {
                   </label>
                 )}
               </div>
-            </div>
-          </div>
         </div>
-
-        <SectionFour
-          setHideBookingModal={props.setHideBookingModal}
-          _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-          getPaymentHandler={props.getPaymentHandler}
-          selectedBooking={props.selectedBooking}
-          _updateSearchedTaxi={props._updateSearchedTaxi}
-          data={props.data}
-          setShowTaxiModal={props.setShowTaxiModal}
-        ></SectionFour>
+        <hr/>
       </Container>
     );
   else return null;
