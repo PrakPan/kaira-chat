@@ -489,6 +489,7 @@ const ComboTaxi = (props) => {
                     {quotes.map((quote, index) => (
                       <TaxiSearched
                         key={index}
+                         booking_id={props?.booking_id}
                         setHideBookingModal={props.setHideTaxiModal}
                         _updateSearchedTaxi={_updateSearchedTaxi}
                         selectedBooking={props.selectedBooking}
@@ -572,6 +573,7 @@ const ComboTaxi = (props) => {
             dCityData={props?.dCityData}
             isMercury={isMercury}
             mercury={props?.mercury}
+             booking_id={props?.booking_id}
           />
         ) : (
           <TransferEditDrawer
@@ -594,6 +596,7 @@ const ComboTaxi = (props) => {
             dcity={props?.dcity}
             oCityData={props?.oCityData}
             dCityData={props?.dCityData}
+            booking_id={props?.booking_id}
           />
         )}
       </>

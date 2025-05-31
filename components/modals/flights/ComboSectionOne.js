@@ -306,7 +306,7 @@ const ComboSection = (props) => {
         </div>
       </div>
 
-      <div className="flex justify-between p-2 bg-gray-50 border-t">
+      {/* <div className="flex justify-between p-2 bg-gray-50 border-t">
         <div className="text-sm">
           {isLoading ? (
             <span className="flex items-center">
@@ -322,7 +322,7 @@ const ComboSection = (props) => {
             </>
           )}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

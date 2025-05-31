@@ -50,12 +50,14 @@ export const Logo = ({ src, wd, ht }) => {
         }}
       >
         <Image
-          fill
+          
           alt=""
           src={`https://d31aoa0ehgvjdi.cloudfront.net/media/airlines/${src}.png`}
           onLoad={() => {
             setImageLoaded(true);
           }}
+          width={wd ? wd : "50"}
+          height ={ht ? ht : "50"}
         ></Image>
       </div>
     </>

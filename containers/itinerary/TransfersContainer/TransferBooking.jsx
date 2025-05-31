@@ -211,7 +211,8 @@ const TransferBooking = ({
   getPaymentHandler,
   isIntracity,
   isAirport,
-  AirportTransferType
+  AirportTransferType,
+  booking_id,
 }) => {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -361,6 +362,7 @@ const TransferBooking = ({
               {booking?.booking_type === "Flight" ? (
                 <FlightBooking
                   booking={booking}
+                  booking_id={booking_id}
                   notificationText={notificationText}
                   plan={plan}
                   tripsPage={tripsPage}
@@ -385,16 +387,16 @@ const TransferBooking = ({
                       {isIntracity ? (
                         <>
                           {booking?.booking_type} in{" "}
-                          {booking?.transfer_details?.source?.name}
+                          {booking?.transfer_details?.source?.name || booking?.transfer_details?.source?.city_name}
                         </>
                       ) : isAirport ? (
                         <>
                           Airport {AirportTransferType} in{" "}
-                          {booking?.transfer_details?.source?.name}
+                          {booking?.transfer_details?.source?.name || booking?.transfer_details?.source?.city_name}
                         </>
                       ) : (
                         <>
-                          {booking?.transfer_details?.source?.name}{" "}
+                          {booking?.transfer_details?.source?.name || booking?.transfer_details?.source?.city_name}{" "}
                           <svg
                             width="12"
                             height="12"
@@ -407,7 +409,7 @@ const TransferBooking = ({
                               fill="#1F1F1F"
                             />
                           </svg>{" "}
-                          {booking?.transfer_details?.destination?.name}
+                          {booking?.transfer_details?.destination?.name || booking?.transfer_details?.destination?.city_name}
                         </>
                       )}
                     </div>
@@ -639,6 +641,7 @@ const TransferBooking = ({
               )}
               <TransferEditDrawer
                 mercury
+                booking_id={selectedBooking?.id || booking_id}
                 addOrEdit={"transferAdd"}
                 showDrawer={showDrawer}
                 setShowDrawer={setShowDrawer}
@@ -713,6 +716,7 @@ const TransferBooking = ({
             )}
             <TransferEditDrawer
               mercury
+               booking_id={selectedBooking?.id || booking_id}
               addOrEdit={"transferAdd"}
               showDrawer={showDrawer}
               setShowDrawer={setShowDrawer}
@@ -746,8 +750,10 @@ const TransferBooking = ({
             />
           </div>
         )
-      ) : (
-        booking?.children?.map((book, index) => (
+      ) : 
+        <>
+       { booking?.children?.map((book, index) => (
+
           <ComboContainer>
             <div className="relative">
               <LineContainer>
@@ -792,16 +798,16 @@ const TransferBooking = ({
                       {isIntracity ? (
                         <>
                           {book?.booking_type} in{" "}
-                          {book?.transfer_details?.source?.name}
+                          {book?.transfer_details?.source?.name || book?.transfer_details?.source?.city_name}
                         </>
                       ) :  isAirport ? (
                         <>
                           Airport {AirportTransferType} in{" "}
-                          {booking?.transfer_details?.source?.name}
+                          {booking?.transfer_details?.source?.name || booking?.transfer_details?.source?.city_name}
                         </>
                       ) :(
                         <>
-                          {book?.transfer_details?.source?.name}{" "}
+                          {book?.transfer_details?.source?.name || book?.transfer_details?.source?.city_name}{" "}
                           <svg
                             width="12"
                             height="12"
@@ -814,7 +820,7 @@ const TransferBooking = ({
                               fill="#1F1F1F"
                             />
                           </svg>{" "}
-                          {book?.transfer_details?.destination?.name}
+                          {book?.transfer_details?.destination?.name || book?.transfer_details?.destination?.city_name}
                         </>
                       )}
                     </div>
@@ -1105,9 +1111,17 @@ const TransferBooking = ({
               </>
             )}
 
-            <TransferEditDrawer
+            
+          </ComboContainer>
+          
+        ))
+        
+      
+        }
+        <TransferEditDrawer
               mercury
               addOrEdit={"transferAdd"}
+               booking_id={selectedBooking?.id || booking_id}
               showDrawer={showDrawer}
               setShowDrawer={setShowDrawer}
               selectedTransferHeading={origin}
@@ -1143,9 +1157,9 @@ const TransferBooking = ({
                 dCityData?.id || dCityData?.gmaps_place_id
               }
             />
-          </ComboContainer>
-        ))
-      )}
+      </>
+
+      }
     </>
   );
 };
@@ -1181,6 +1195,7 @@ const FlightBooking = ({
   type,
   setShowDrawer,
   getPaymentHandler,
+  booking_id,
 }) => {
   const [showDetails, setShowDetails] = useState(false);
 
@@ -1191,54 +1206,56 @@ const FlightBooking = ({
     if (!token) {
       return setShowLoginModal(true);
     }
+    setShowDetails(false);
+    setShowDrawer(true)
 
-    let name = booking["name"];
-    let costings_breakdown = booking["costings_breakdown"]; //not prsent
-    let cost = booking["booking_cost"]; //not present
-    let itinerary_id = router.query.id; // not present
-    let itinerary_name = booking["name"]; // not present
-    let tailored_id = booking["tailored_itinerary"]; // not present
-    let id = booking["id"];
-    let check_in =
-      booking?.transfer_details?.items?.[0]?.segments[0]?.origin
-        ?.departure_time;
-    let check_out = booking["check_out"]; // not present
-    let pax = {
-      number_of_adults: booking["number_of_adults"],
-      number_of_children: booking["number_of_children"],
-      number_of_infants: booking["number_of_infants"],
-    };
-    let city = booking["city"];
-    let taxi_type = booking["taxi_type"];
-    let transfer_type = booking["transfer_type"];
-    let destination_city = booking["destination_city"];
-    let origin_iata = booking?.transfer_details?.source?.code;
-    let destination_iata = booking?.transfer_details?.destination?.code;
-    let user_selected = booking?.user_selected;
-    let edge = booking?.edge;
-    _changeFlightHandler(
-      name,
-      itinerary_id,
-      tailored_id,
-      id,
-      check_in,
-      check_out,
-      pax,
-      city,
-      itinerary_name,
-      cost,
-      costings_breakdown,
-      origin_iata,
-      destination_iata,
-      destination_city,
-      taxi_type,
-      transfer_type,
-      user_selected,
-      booking?.id,
-      originCityId,
-      destinationCityId,
-      edge
-    );
+    // let name = booking["name"];
+    // let costings_breakdown = booking["costings_breakdown"]; //not prsent
+    // let cost = booking["booking_cost"]; //not present
+    // let itinerary_id = router.query.id; // not present
+    // let itinerary_name = booking["name"]; // not present
+    // let tailored_id = booking["tailored_itinerary"]; // not present
+    // let id = booking["id"];
+    // let check_in =
+    //   booking?.transfer_details?.items?.[0]?.segments[0]?.origin
+    //     ?.departure_time;
+    // let check_out = booking["check_out"]; // not present
+    // let pax = {
+    //   number_of_adults: booking["number_of_adults"],
+    //   number_of_children: booking["number_of_children"],
+    //   number_of_infants: booking["number_of_infants"],
+    // };
+    // let city = booking["city"];
+    // let taxi_type = booking["taxi_type"];
+    // let transfer_type = booking["transfer_type"];
+    // let destination_city = booking["destination_city"];
+    // let origin_iata = booking?.transfer_details?.source?.code;
+    // let destination_iata = booking?.transfer_details?.destination?.code;
+    // let user_selected = booking?.user_selected;
+    // let edge = booking?.edge;
+    // _changeFlightHandler(
+    //   name,
+    //   itinerary_id,
+    //   tailored_id,
+    //   id,
+    //   check_in,
+    //   check_out,
+    //   pax,
+    //   city,
+    //   itinerary_name,
+    //   cost,
+    //   costings_breakdown,
+    //   origin_iata,
+    //   destination_iata,
+    //   destination_city,
+    //   taxi_type,
+    //   transfer_type,
+    //   user_selected,
+    //   booking?.id,
+    //   originCityId,
+    //   destinationCityId,
+    //   edge
+    // );
 
     logEvent({
       action: "Transfer_Add_Change",
@@ -1265,7 +1282,7 @@ const FlightBooking = ({
       <div className=" w-full items-center">
         <div className="font-medium text-[15px]  inline flex items-center gap-1">
           <FaPlaneDeparture color="#C5C1C1" />
-          {booking?.transfer_details?.source?.name}{" "}
+          {booking?.transfer_details?.source?.name || booking?.transfer_details?.source?.city_name}{" "}
           <svg
             width="12"
             height="12"
@@ -1278,7 +1295,7 @@ const FlightBooking = ({
               fill="#1F1F1F"
             />
           </svg>{" "}
-          {booking?.transfer_details?.destination?.name}
+          {booking?.transfer_details?.destination?.name || booking?.transfer_details?.destination?.city_name}
         </div>
         <div className="text-[10px] ml-[20px]">
           Duration: {booking?.duration}

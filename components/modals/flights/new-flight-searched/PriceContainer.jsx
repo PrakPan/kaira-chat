@@ -13,6 +13,7 @@ export default function PriceContainer({
   trace_id,
   onFlightSelect,
   edge,
+  booking_id,
 }) {
   const router = useRouter();
 
@@ -31,7 +32,7 @@ export default function PriceContainer({
     } else {
       console.log("Inside updateBo")
       _updateBookingHandler({
-        booking_id: selectedBooking.id,
+        booking_id: selectedBooking.id || booking_id,
         itinerary_id: selectedBooking.itinerary_id || router?.query?.id,
         result_index: data.resultIndex,
         flightProvider:provider,
@@ -43,23 +44,23 @@ export default function PriceContainer({
   return (
     <div className="flex md:flex-col justify-between items-center">
       <div className="flex flex-col gap-1">
-        <div className="text-lg font-bold">
+        {/* <div className="text-lg font-bold">
           {data.finalFare ? `₹${getIndianPrice(data.finalFare)}` : null}
-        </div>
+        </div> */}
       </div>
 
       {_updateBookingHandler && (
         <div>
           {isSelected ? (
             <div className="flex items-center gap-1">
-              <ImCheckboxChecked className="inline" /> Selected
+              <ImCheckboxChecked className="inline" /> 
             </div>
           ) : (
             <div
               className="flex items-center gap-1 cursor-pointer"
               onClick={handleSelect}
             >
-              <ImCheckboxUnchecked className="inline" /> Select
+              <ImCheckboxUnchecked className="inline" /> 
             </div>
           )}
         </div>

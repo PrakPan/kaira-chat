@@ -130,7 +130,7 @@ const DaybyDay = ({
   };
 
   function handleClickAc(i, data, city_id, clickType) {
-    console.log("Inside DayByDay");
+    console.log("Inside DayByDay",stayBookings[i]);
     let name = stayBookings[i]?.["name"];
     let itinerary_id = stayBookings[i]?.["itinerary_id"];
     let itinerary_name = stayBookings[i]?.["itinerary_name"];

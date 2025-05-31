@@ -101,6 +101,7 @@ const TransferEditDrawer = (props) => {
     originCityId,
     destinationCityId,
     _updateFlightBookingHandler,
+     booking_id,
   } = props;
 
   console.log(
@@ -744,6 +745,7 @@ const TransferEditDrawer = (props) => {
                       1 ? (
                         <NewMultiModeContainer
                           key={selectedTransferIndex}
+                          booking_id={booking_id}
                           name={transfers[selectedTransferIndex]?.name}
                           transferIndex={selectedTransferIndex}
                           transfer={transfers[selectedTransferIndex]?.transfers}
@@ -823,6 +825,7 @@ const TransferEditDrawer = (props) => {
                             setSelectedMercuryTransfer
                           }
                           key={selectedTransferIndex}
+                          booking_id={booking_id}
                           name={transfers[selectedTransferIndex]?.name}
                           transferIndex={selectedTransferIndex}
                           transfer={transfers[selectedTransferIndex]?.transfers}
@@ -903,6 +906,7 @@ const TransferEditDrawer = (props) => {
                     transfers[selectedTransferIndex]?.transfers?.length > 1 ? (
                       <NewMultiModeContainer
                         key={selectedTransferIndex}
+                        booking_id={booking_id}
                         name={transfers[selectedTransferIndex]?.name}
                         transferIndex={selectedTransferIndex}
                         transfer={transfers[selectedTransferIndex]?.transfers}
@@ -979,6 +983,7 @@ const TransferEditDrawer = (props) => {
                     ) : (
                       <RouteContainer
                         setSelectedMercuryTransfer={setSelectedMercuryTransfer}
+                        booking_id={booking_id}
                         key={selectedTransferIndex}
                         name={transfers[selectedTransferIndex]?.name}
                         transferIndex={selectedTransferIndex}
@@ -1241,6 +1246,7 @@ const RouteContainer = (props) => {
     name,
     _updateTaxiBookingHandler,
     hideDrawer,
+    booking_id,
   } = props;
   const [viewMore, setViewMore] = useState(false);
   const [singleTransfer, setSingleTransfer] = useState(transfer[0]);
@@ -1410,6 +1416,7 @@ const RouteContainer = (props) => {
                 <ComboFlight
                   combo={false}
                   edge={singleTransfer?.id}
+                  booking_id={booking_id}
                   handleFlightSelect={handleFlightSelect}
                   showComboFlightModal={showComboFlightModal}
                   setShowComboFlightModal={setShowComboFlightModal}
@@ -1451,6 +1458,7 @@ const RouteContainer = (props) => {
               ) : singleTransfer?.mode === "Taxi" ? (
                 <ComboTaxi
                   handleFlightSelect={handleFlightSelect}
+                  booking_id={booking_id}
                   showTaxiModal={showTaxiModal}
                   setShowComboTaxiModal={setShowComboTaxiModal}
                   setHideTaxiModal={hideDrawer}
@@ -1498,6 +1506,7 @@ const RouteContainer = (props) => {
               ) : (
                 <OtherTransfer
                   showOtherTransfer={showOtherTrasfer}
+                  booking_id={booking_id}
                   setShowOtherTrasfer={setShowOtherTrasfer}
                   selectedResult={selectedResult}
                   selectedBooking={selectedBooking}
@@ -1684,6 +1693,7 @@ const NewMultiModeContainer = ({
   setSkipFlightFetch,
   setSkipTaxiFetch,
   flightResults,taxiResults,setFlightResults,setTaxiResults,
+  booking_id,
 }) => {
   let isPageWide = media("(min-width: 768px)");
   const [expanded, setExpanded] = useState(false);
@@ -2158,7 +2168,7 @@ const NewMultiModeContainer = ({
         };
 
         if (selectedBooking) {
-          requestBody.booking_id = selectedBooking?.id;
+          requestBody.booking_id = selectedBooking?.id || booking_id;
         }
 
         const response = await UpdateTransferMode.post(
@@ -3878,6 +3888,7 @@ const OtherTransfer = ({
   city,
   dcity,
   mercury,
+  booking_id,
 }) => {
   const ref = useRef(null);
   const dispatch = useDispatch();
@@ -4175,8 +4186,8 @@ const OtherTransfer = ({
       transfers: transfersPayload,
     };
 
-    if (selectedBooking?.id) {
-      requestBody.booking_id = selectedBooking.id;
+    if (selectedBooking?.id || booking_id) {
+      requestBody.booking_id = selectedBooking.id || booking_id;
     }
 
     return requestBody;

@@ -102,6 +102,7 @@ const Section = (props) => {
 
 
     const requestData = {
+      booking_id:props?.booking_id,
       source: props.data.source,
       trace_id: props.data.trace_id,
       result_index: props.data.result_index,
@@ -259,7 +260,25 @@ const Section = (props) => {
                 </Cost> */}
               </div>
 
-              <div>
+              
+            </div>
+          </div>
+        </div>
+
+       
+       <div className="flex justify-between">
+
+        <SectionFour
+          setHideBookingModal={props.setHideBookingModal}
+          _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+          getPaymentHandler={props.getPaymentHandler}
+          selectedBooking={props.selectedBooking}
+          _updateSearchedTaxi={props._updateSearchedTaxi}
+          data={props.data}
+          setShowTaxiModal={props.setShowTaxiModal}
+        ></SectionFour>
+
+        <div className="p-[0.4rem]">
                 {loading ? (
                   <PulseLoader size={8} speedMultiplier={0.6} color="#111" />
                 ) : (
@@ -285,19 +304,8 @@ const Section = (props) => {
                   </label>
                 )}
               </div>
-            </div>
-          </div>
         </div>
-
-        <SectionFour
-          setHideBookingModal={props.setHideBookingModal}
-          _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
-          getPaymentHandler={props.getPaymentHandler}
-          selectedBooking={props.selectedBooking}
-          _updateSearchedTaxi={props._updateSearchedTaxi}
-          data={props.data}
-          setShowTaxiModal={props.setShowTaxiModal}
-        ></SectionFour>
+        <hr/>
       </Container>
     );
   else return null;

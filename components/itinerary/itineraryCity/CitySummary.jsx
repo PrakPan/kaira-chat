@@ -11,6 +11,10 @@ import TransferDrawer from "../../../containers/itinerary/TransferDrawer";
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 import { openNotification } from "../../../store/actions/notification";
+import { BsPeopleFill } from "react-icons/bs";
+import { MERCURY_HOST } from "../../../services/constants";
+import axios from "axios";
+import { FaEdit } from "react-icons/fa";
 
 const CitySummary = (props) => {
   const router = useRouter();
@@ -20,20 +24,20 @@ const CitySummary = (props) => {
   const [activities, setActivities] = useState(null);
   const [dayByDayIndex, setDayByDayIndex] = useState(0);
   const [showAddDrawer, setShowAddDrawer] = useState(false);
-  const {finalized_status} = useSelector(state=>state.ItineraryStatus);
+  const { finalized_status } = useSelector((state) => state.ItineraryStatus);
   const [activityData, setActivityData] = useState({
     id: "",
     type: "",
   });
   var size = 0;
   const [showBookingDetail, setShowBookingDetail] = useState(true);
-  const [handleShowTaxi,setHandleShowTaxi] = useState(false);
-  const [taxiData,setTaxiData] = useState(null);
-  const [loading,setLoading] = useState(false);
+  const [handleShowTaxi, setHandleShowTaxi] = useState(false);
+  const [taxiData, setTaxiData] = useState(null);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
 
   const handleView = async (poi, type, dayIndex) => {
-    console.log("dayindex is:",dayIndex)
+    console.log("dayindex is:", dayIndex);
     try {
       setShowDrawer(true);
       setShowBookingDetail(true);
@@ -48,7 +52,7 @@ const CitySummary = (props) => {
   };
   useEffect(() => {
     let dayByDayArray = [];
-    let activityArray=[]
+    let activityArray = [];
     var index = 0;
     for (const daybyday of props.city.day_by_day) {
       for (const element of daybyday?.slab_elements) {
@@ -59,7 +63,7 @@ const CitySummary = (props) => {
       }
       index += 1;
     }
-    index=0
+    index = 0;
 
     setActivities(props.city.activities);
     setDayByDay(dayByDayArray);
@@ -105,30 +109,70 @@ const CitySummary = (props) => {
     if (e) e.stopPropagation(e);
     setShowBookingDetail(false);
     setShowDrawer(false);
+
   };
 
-   const formattedTaxiDetails = props?.intracityBookings?.map((booking, index) => ({
-  ...booking,
-  id: booking.id,
-  date: `Day ${index + 1}, ${new Date(booking.check_in).toLocaleDateString('en-US', {
-    month: 'short',
-    day: '2-digit',
-  })}`,
-  fromLocation: booking.transfer_details?.source?.name || 'Unknown Source',
-  toLocation: booking.transfer_details?.destination?.name || 'Unknown Destination',
-  passengers:
-    booking.number_of_adults +
-    booking.number_of_children +
-    booking.number_of_infants,
-  // duration: booking.transfer_details?.duration?.text || 'N/A',
-  
-}));
 
-const handleTaxi = ()=>{
-  setHandleShowTaxi(true);
-}
 
- const handleDelete = async (val) => {
+  const formattedTaxiDetails = props?.intracityBookings?.map(
+    (booking, index) => {
+      
+const checkInDate = new Date(booking?.check_in);
+const checkOutDate = new Date(booking?.check_out);
+
+const formattedCheckIn = checkInDate?.toLocaleDateString("en-US", {
+  month: "short",
+  day: "2-digit",
+});
+const formattedCheckOut = checkOutDate?.toLocaleDateString("en-US", {
+  month: "short",
+  day: "2-digit",
+});
+    return  {
+      ...booking,
+      id: booking.id,
+      date: formattedCheckIn === formattedCheckOut
+    ? `Day ${index + 1}, ${formattedCheckIn}`
+    :  `${formattedCheckIn} to ${formattedCheckOut}`,
+      fromLocation: booking.transfer_details?.source?.name || "",
+      toLocation:
+        booking.transfer_details?.destination?.name || "",
+      passengers:
+        booking.number_of_adults +
+        booking.number_of_children +
+        booking.number_of_infants,
+      // duration: booking.transfer_details?.duration?.text || 'N/A',
+    }
+
+  }
+  );
+
+  const handleTaxi = async (id) => {
+    console.log("Innnn");
+    setHandleShowTaxi(true);
+    try {
+      setLoading(true);
+      setTaxiData(null);
+
+      const res = await axios.get(
+        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/taxi/${id}/`
+      );
+
+      setTaxiData(res?.data);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      dispatch(
+        openNotification({
+          type: "error",
+          text: `${error.response?.data?.errors[0]?.message[0]}`,
+          heading: "Error!",
+        })
+      );
+    }
+  };
+
+  const handleDelete = async (val) => {
     if (!localStorage?.getItem("access_token")) {
       props?.setShowLoginModal(true);
       return;
@@ -175,7 +219,12 @@ const handleTaxi = ()=>{
     }
   };
 
-  console.log("IIII",props?.intracityBookings,formattedTaxiDetails,props?.intracityBookings?.length)
+  console.log(
+    "IIII",
+    props?.intracityBookings,
+    formattedTaxiDetails,
+    props?.intracityBookings?.length
+  );
   return (
     <div className="p-3 flex flex-col gap-3">
       {dayByDay && dayByDay.length ? (
@@ -308,53 +357,150 @@ const handleTaxi = ()=>{
           >
             Add Activity
           </button> */}
-         {(finalized_status === "PENDING") ? 
-         <div className="mt-3 w-48 h-[20px] bg-gray-300 rounded animate-pulse"></div> 
-         :
-         <p
-            className=" text-blue cursor-pointer font-semibold underline"
-            onClick={() => setShowAddDrawer(true)}
-          >
-            + Add Activity in {props?.city?.city?.name}
-          </p>}
+          {finalized_status === "PENDING" ? (
+            <div className="mt-3 w-48 h-[20px] bg-gray-300 rounded animate-pulse"></div>
+          ) : (
+            <p
+              className=" text-blue cursor-pointer font-semibold underline"
+              onClick={() => setShowAddDrawer(true)}
+            >
+              + Add Activity in {props?.city?.city?.name}
+            </p>
+          )}
         </div>
       </div>
 
-
-{props?.intracityBookings && formattedTaxiDetails && props?.intracityBookings?.length > 0 && (
-  <div className="text-sm font-normal flex flex-col gap-1 w-auto md:flex-row" >
-    <div className="text-[14px] font-medium leading-[22px] w-[80px]">
-      Taxi:
-    </div>
-    <div className="flex flex-col gap-4 w-full " >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {formattedTaxiDetails.map((taxi) => (
-          <div
-            key={taxi.id}
-            className="flex flex-col border border-gray-300 rounded-lg p-4 shadow-sm hover:cursor-pointer hover:bg-[rgb(254_250_216)]"
-            onClick={()=>{setTaxiData(taxi); handleTaxi(); }}
-          >
-            <div className="flex items-center text-[12px] text-gray-600 mb-1 gap-2">
-              <FaTaxi size={14} className="text-blue-600" />
-              <span>{taxi.date}</span>
+      {props?.intracityBookings &&
+        formattedTaxiDetails &&
+        props?.intracityBookings?.length > 0 && (
+          <div className="text-sm font-normal flex flex-col gap-1 w-auto md:flex-row">
+            <div className="text-[14px] font-medium leading-[22px] w-[80px]">
+              {formattedTaxiDetails?.length > 0 && <>Taxi:</>}{" "}
             </div>
+            <div className="flex flex-col gap-2 w-full">
+              <div className="flex flex-wrap gap-2">
+                {formattedTaxiDetails?.map((item) => (
+                  <>
+                    <div
+                      key={item.id}
+                      className="flex gap-2 group w-[333px] p-[10px] border-[2px] rounded-[12px] shadow-none hover:cursor-pointer hover:bg-[rgb(254_250_216)] bg-opacity-100 "
+                      onClick={() => handleTaxi(item.id)}
+                    >
+                      <div className="hidden hover:block cursor-pointer">
+                        <FaEdit />
+                      </div>
 
-            <div className="w-full h-px bg-gray-200 mb-2" />
+                      <div className="w-[50px] h-[50px] flex items-center justify-center ">
+                        <ImageLoader
+                          borderRadius="5px"
+                          style={{
+                            width: "48px",
+                            height: "48px",
+                            objectFit: "contain",
+                            cursor: "pointer",
+                            margin: "auto",
+                            // display: "block",
+                          }}
+                          url={
+                            item?.transfer_details?.quote?.taxi_category?.image
+                          }
+                        />
+                      </div>
 
-            <div className="flex items-center text-[14px] font-medium text-black mb-1 gap-2">
-              {/* <FaTaxi  size={16} className="text-blue-600" /> */}
-              <span>{taxi?.name ? taxi.name : taxi.fromLocation + 'to' + taxi.toLocation}</span>
-            </div>
-
-            <div className="text-[12px] text-gray-600">
-              {taxi.passengers} passengers | Duration: {taxi.duration}
+                      <div>
+                        <span className="font-semibold  text-[12px]">
+                          {item.date}
+                        </span>
+                        <div className="w-full h-px bg-gray-200 mb-2" />
+                        <div className="flex gap-1 relative">
+                          <div className="w-fit font-semibold  text-[12px] cursor-pointer">
+                            {item?.name}
+                          </div>
+                          {/* <div className="hidden group-hover:!block ">
+                      <svg
+                        stroke="currentColor"
+                        fill="currentColor"
+                        stroke-width="0"
+                        viewBox="0 0 24 24"
+                        class="mt-1"
+                        height="1em"
+                        width="1em"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path fill="none" d="M0 0h24v24H0z"></path>
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 000-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
+                      </svg>
+                    </div> */}
+                        </div>
+                        <div className="flex gap-3 text-[12px] ">
+                          <div className="w-auto flex items-center gap-1">
+                            <BsPeopleFill />
+                            <div>
+                              {item?.pax ||
+                                item?.number_of_adults +
+                                  item?.number_of_children +
+                                  item?.number_of_infants}{" "}
+                              Passenger
+                            </div>
+                          </div>
+                          {item?.duration && item?.duration != "0 hours" && (
+                            <div className="w-auto flex items-center gap-1">
+                              <svg
+                                width="13"
+                                height="13"
+                                viewBox="0 0 13 13"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  d="M6.32734 0.417969C3.01534 0.417969 0.333344 3.10597 0.333344 6.41797C0.333344 9.72997 3.01534 12.418 6.32734 12.418C9.64534 12.418 12.3333 9.72997 12.3333 6.41797C12.3333 3.10597 9.64534 0.417969 6.32734 0.417969ZM6.33334 11.218C3.68134 11.218 1.53334 9.06997 1.53334 6.41797C1.53334 3.76597 3.68134 1.61797 6.33334 1.61797C8.98534 1.61797 11.1333 3.76597 11.1333 6.41797C11.1333 9.06997 8.98534 11.218 6.33334 11.218ZM6.20134 3.41797H6.16534C5.92534 3.41797 5.73334 3.60997 5.73334 3.84997V6.68197C5.73334 6.89197 5.84134 7.08997 6.02734 7.19797L8.51734 8.69197C8.72134 8.81197 8.98534 8.75197 9.10534 8.54797C9.23134 8.34397 9.16534 8.07397 8.95534 7.95397L6.63334 6.57397V3.84997C6.63334 3.60997 6.44134 3.41797 6.20134 3.41797Z"
+                                  fill="black"
+                                />
+                              </svg>
+                              {item?.duration}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ))}
+              </div>
             </div>
           </div>
-        ))}
-      </div>
-    </div>
-  </div>
-)}
+          // <div className="text-sm font-normal flex flex-col gap-1 w-auto md:flex-row" >
+          //   <div className="text-[14px] font-medium leading-[22px] w-[80px]">
+          //     Taxi:
+          //   </div>
+          //   <div className="flex flex-col gap-4 w-full " >
+          //     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          //       {formattedTaxiDetails.map((taxi) => (
+          //         <div
+          //           key={taxi.id}
+          //           className="flex flex-col border border-gray-300 rounded-lg p-4 shadow-sm hover:cursor-pointer hover:bg-[rgb(254_250_216)]"
+          //           onClick={()=>{setTaxiData(taxi); handleTaxi(); }}
+          //         >
+          //           <div className="flex items-center text-[12px] text-gray-600 mb-1 gap-2">
+          //             <FaTaxi size={14} className="text-blue-600" />
+          //             <span>{taxi.date}</span>
+          //           </div>
+
+          //           <div className="w-full h-px bg-gray-200 mb-2" />
+
+          //           <div className="flex items-center text-[14px] font-medium text-black mb-1 gap-2">
+          //             {/* <FaTaxi  size={16} className="text-blue-600" /> */}
+          //             <span>{taxi?.name ? taxi.name : taxi.fromLocation + 'to' + taxi.toLocation}</span>
+          //           </div>
+
+          //           <div className="text-[12px] text-gray-600">
+          //             {taxi.passengers} passengers | Duration: {taxi.duration}
+          //           </div>
+          //         </div>
+          //       ))}
+          //     </div>
+          //   </div>
+          // </div>
+        )}
 
       {dayByDay && dayByDay.length ? (
         <>
@@ -399,31 +545,31 @@ const handleTaxi = ()=>{
       ></ActivityAddDrawer>
 
       {handleShowTaxi && (
-          <TransferDrawer
-            show={handleShowTaxi}
-            setHandleShow={setHandleShowTaxi}
-            data={taxiData}
-            booking_type={taxiData?.transferType || taxiData?.booking_type}
-             loading={loading}
-            handleDelete={handleDelete}
-            setShowDrawer={setHandleShowTaxi}
-            // city={city}
-            _updateFlightBookingHandler={props?._updateFlightBookingHandler}
-            _updatePaymentHandler={props?._updatePaymentHandler}
-            getPaymentHandler={props?.getPaymentHandler}
-            // oCityData={oCityData}
-            // dCityData={dCityData}
-            setShowLoginModal={props?.setShowLoginModal}
-            // dcity={destination_city_name}
-            // selectedBooking={selectedBooking}
-            // setSelectedBooking={setSelectedBooking}
-            // originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
-            // destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
-            // origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
-            // destination_itinerary_city_id={dCityData?.id || dCityData?.gmaps_place_id}
-            isIntracity={true}
-          />
-        )}
+        <TransferDrawer
+          show={handleShowTaxi}
+          setHandleShow={setHandleShowTaxi}
+          data={taxiData}
+          booking_type={taxiData?.transferType || taxiData?.booking_type}
+          loading={loading}
+          handleDelete={handleDelete}
+          setShowDrawer={setHandleShowTaxi}
+          // city={city}
+          _updateFlightBookingHandler={props?._updateFlightBookingHandler}
+          _updatePaymentHandler={props?._updatePaymentHandler}
+          getPaymentHandler={props?.getPaymentHandler}
+          // oCityData={oCityData}
+          // dCityData={dCityData}
+          setShowLoginModal={props?.setShowLoginModal}
+          // dcity={destination_city_name}
+          // selectedBooking={selectedBooking}
+          // setSelectedBooking={setSelectedBooking}
+          // originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
+          // destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
+          // origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
+          // destination_itinerary_city_id={dCityData?.id || dCityData?.gmaps_place_id}
+          isIntracity={true}
+        />
+      )}
     </div>
   );
 };

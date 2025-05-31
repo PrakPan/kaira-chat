@@ -45,6 +45,7 @@ const Booking = (props) => {
       start_date={props?.start_date}
       start_time={props?.start_time}
       edge={props?.edge}
+       booking_id={props?.booking_id}
     ></ComboSection>
       :
       <SectionOne
@@ -59,7 +60,9 @@ const Booking = (props) => {
         origin_itinerary_city_id={props?.origin_itinerary_city_id}
         destination_itinerary_city_id={props?.destination_itinerary_city_id}
         edge={props?.edge}
-      ></SectionOne>}
+         booking_id={props?.booking_id}
+      ></SectionOne>
+      }
     </Container>
   );
 };

@@ -557,7 +557,7 @@ const formattedTime = (dateObj) => dateObj.toLocaleTimeString("en-US", {
     destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
     origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
     destination_itinerary_city_id={dCityData?.id || dCityData?.gmaps_place_id}
-
+     booking_id={booking_id}
   />
 
   {handleShow && (
@@ -584,6 +584,8 @@ const formattedTime = (dateObj) => dateObj.toLocaleTimeString("en-US", {
       origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
       destination_itinerary_city_id={dCityData?.id || dCityData?.gmaps_place_id}
       isIntracity={isIntracity}
+      booking_id={booking_id}
+     
     />
   )}
 </Container>

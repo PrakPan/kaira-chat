@@ -42,6 +42,10 @@ const Section = (props) => {
 
   return (
     <Container className="font-lexend">
+      <div className="flex flex-row gap-2">
+            <div className="font-bold text-lg p-[0.4rem]">
+            {props.data?.taxi_category?.seating_capacity + "-seater"}
+          </div>
       <FlexBox>
         <Accordion
           borderRadius="0.5rem"
@@ -79,6 +83,7 @@ const Section = (props) => {
           </AccordionDetails>
         </Accordion>
       </FlexBox>
+      </div>
     </Container>
   );
 };
