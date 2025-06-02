@@ -68,7 +68,7 @@ const Experiences = (props) => {
             location={props.experiences[i].locations[0].name}
             locations={props.experiences[i].itinerary_locations}
             hardcoded={props.experiences[i].payment_info ? true : false}
-            PW={true}
+            // PW={true}
           ></ExperienceCard>
         );
       }
@@ -117,7 +117,7 @@ const Experiences = (props) => {
               images={props.experiences[j].images}
               locations={props.experiences[j].itinerary_locations}
               page={props?.page}
-              PW={true}
+              // PW={true}
             ></ExperienceCard>
           );
         }

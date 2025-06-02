@@ -33,7 +33,7 @@ import Activity1Carousel from "../../components/theme/Activity1Carousel.jsx";
 import Reviews1Carousel from "../../components/theme/Reviews1Carousel.jsx";
 import Poi1Carousel from "../../components/theme/Poi1Carousel.jsx";
 import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst.js";
-
+import Poi from "../newcityplanner/pois/Index.js"
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -314,7 +314,15 @@ const Index = (props) => {
                     </div>
                   ) : component.carousel == "poi-1" ? (
                     <>
-                    <Poi1Carousel pois={component.pois} />
+                    <Poi
+                    data={props?.data}
+                    pois={component.pois}
+                    city={props.destination}
+                    page={"Continent Page"}
+                removeDelete={true}
+                />
+
+                    {/* <Poi1Carousel pois={component.pois} /> */}
                     <PlanYourTripButton />
                     </>
                   ) : null}

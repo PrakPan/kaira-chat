@@ -72,7 +72,16 @@ const PoiCard = ({ data, id, image, name, short_description }) => {
       onClick={handleActivityClick}
       className="group cursor-pointer py-2"
     >
-      <div className="flex flex-col h-full gap-3">
+      <PoiCard
+                key={id}
+                data={data}
+                showDrawer={show}
+                setShowDrawer={setShow}
+                _handleOpen={()=>setShow(true)}
+                handleCloseDrawer={handleCloseDrawer}
+                removeDelete={true}
+              />
+      {/* <div className="flex flex-col h-full gap-3">
         <div className="relative group h-full overflow-hidden group-hover:scale-105 transition-all">
           <ImageLoader
             url={image}
@@ -105,7 +114,7 @@ const PoiCard = ({ data, id, image, name, short_description }) => {
             {short_description}
           </SecondaryHeading>
         </div>
-      </div>
+      </div> */}
 
       <POIDetailsDrawer
         // themePage
