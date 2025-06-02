@@ -7,7 +7,10 @@ const Container = styled.div`
   overflow-x: hidden;
   position: relative;
   margin: auto;
+  width: 97%;
+  
   @media screen and (min-width: 768px) {
+    width: 90%;
   }
 `;
 
@@ -15,20 +18,50 @@ const SkeletonContainer = styled.div`
   border-radius: 10px;
   margin-bottom: 0.5rem;
   display: grid;
-  grid-template-columns: 7.5rem auto;
+  grid-template-columns: 15rem;
+  
   @media screen and (min-width: 768px) {
-    grid-template-columns: 8.5rem auto;
+    grid-template-columns: 18rem;
   }
 `;
 
 const DetailsContainer = styled.div`
   padding: 0.75rem 0.5rem;
+  width:100%;
 `;
+
+const HeaderSection = styled.div`
+  padding: 1rem;
+  margin-bottom: 1rem;
+  
+  .header-flex {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    
+    @media screen and (min-width: 640px) {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+  
+  .time-section {
+    width: 100%;
+    
+    @media screen and (min-width: 640px) {
+      width: auto;
+    }
+  }
+`;
+
 function Skeleton() {
   let isPageWide = media("(min-width: 768px)");
+  
+  
   const SkeletonItem = (
     <SkeletonContainer className="border">
-      <div
+      {/* <div
         className="center-dv"
         style={{
           padding: "0.75rem 0rem",
@@ -40,7 +73,7 @@ function Skeleton() {
         <div style={{ padding: "0 0.5rem" }}>
           <SkeletonCard />
         </div>
-      </div>
+      </div> */}
       {isPageWide ? (
         <DetailsContainer>
           <SkeletonCard
@@ -71,7 +104,7 @@ function Skeleton() {
               marginBottom: "10px",
             }}
           >
-            <SkeletonCard height="24px" borderRadius="0.25rem" width="20%" />{" "}
+            <SkeletonCard height="24px" borderRadius="0.25rem" width="20%" />
             <SkeletonCard height="24px" borderRadius="0.25rem" width="30%" />
           </div>
         </DetailsContainer>
@@ -98,13 +131,14 @@ function Skeleton() {
             mb="4px"
           />
           <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <SkeletonCard height="24px" borderRadius="0.25rem" width="5.5rem" />{" "}
+            <SkeletonCard height="24px" borderRadius="0.25rem" width="5.5rem" />
             <SkeletonCard height="24px" borderRadius="0.25rem" width="5.5rem" />
           </div>
         </DetailsContainer>
       )}
     </SkeletonContainer>
   );
+  
   return (
     <Container>
       {[SkeletonItem, SkeletonItem, SkeletonItem, SkeletonItem, SkeletonItem]}

@@ -8,23 +8,7 @@ import ViewMoreButton from "../../../itinerary/daySummary/ViewMoreButton";
 import Details from "../../../../containers/itinerary/TransfersContainer/FlightDetail";
 import { getIndianPrice } from "../../../../services/getIndianPrice";
 import media from "../../../media";
-// const Container = styled.div`
-//   width: 95%;
-//   background-color: white;
-//   margin: auto;
-//   ${(props) =>
-//     props.isSelected &&
-//     "background : #FFFBBB ; border : 1px solid #F7E700!important"};
-//   border-radius: 10px;
-//   height: 100%;
-//   margin-bottom: 0.5rem;
-//   @media screen and (min-width: 768px) {
-//     background: white;
-//     width: 100%;
-//     border-radius: 10px;
-//     position: relative;
-//   }
-// `;
+
 
 const Container = styled.div`
   width: 95%;
@@ -63,13 +47,7 @@ const Flight = (props) => {
     <Container
       className="relative border-b p-2 space-y-2 overflow-x-hidden"
       isSelected={props.isSelected}
-      // style={{ borderBottom: "1px" }}
     >
-      {/* {props.data?.is_refundable ? (
-        <ClippathComp className="absolute top-0 right-0 w-fit text-xs bg-[#F8E000] pr-2 pl-4 py-1 rounded-tr-lg">
-          Refundable
-        </ClippathComp>
-      ) : null} */}
 
       <div className="flex flex-row gap-1 justify-between md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-2 justify-center">
@@ -131,9 +109,9 @@ const Flight = (props) => {
       <div className="flex justify-start items-center">
         <div className="ml-0">
           {!viewMore ? (
-            <ViewMoreButton text="View more" handler={handleView} />
+            <ViewMoreButton text="View Details" handler={handleView} />
           ) : (
-            <ViewMoreButton text="View Less" handler={handleView} />
+            <ViewMoreButton text="Hide Details" handler={handleView} />
           )}
         </div>
       </div>

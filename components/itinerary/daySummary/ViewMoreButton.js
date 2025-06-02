@@ -2,10 +2,10 @@ export default function ViewMoreButton({ text, handler, isMob }) {
   return (
     <div
       onClick={handler}
-      className={`flex items-center justify-center font-bold rounded md:rounded-lg lg:rounded-lg p-1 text-sm hover:bg-black hover:text-white hover:border-black`}
+      className={`flex items-center justify-center font-bold rounded md:rounded-lg lg:rounded-lg p-1 text-sm hover:bg-black hover:text-white border  hover:border-black`}
     >
       <button className={``}>{text}</button>
-      {text === "View more" ? (
+      {text === "View Details" ? (
         <svg
           stroke="currentColor"
           fill="currentColor"
