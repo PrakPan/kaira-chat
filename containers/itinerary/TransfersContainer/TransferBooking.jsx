@@ -384,10 +384,24 @@ const TransferBooking = ({
                       <div className="text-[#C5C1C1]">
                         {getModeIcon(booking?.booking_type, 15)}
                       </div>
-                      {isIntracity ? (
-                        <>
+                      {isIntracity  ?  (
+                         (booking?.transfer_details?.source?.name || booking?.transfer_details?.source?.city_name) && (booking?.transfer_details?.destination?.name || booking?.transfer_details?.destination?.city_name) ? <>
                           {booking?.booking_type} in{" "}
                           {booking?.transfer_details?.source?.name || booking?.transfer_details?.source?.city_name}
+                        </> : <>
+                         <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 12 12"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
+                              fill="#1F1F1F"
+                            />
+                          </svg>{" "} 
+                          {booking?.name}
                         </>
                       ) : isAirport ? (
                         <>
@@ -395,7 +409,7 @@ const TransferBooking = ({
                           {booking?.transfer_details?.source?.name || booking?.transfer_details?.source?.city_name}
                         </>
                       ) : (
-                        <>
+                        (booking?.transfer_details?.source?.name || booking?.transfer_details?.source?.city_name) && (booking?.transfer_details?.destination?.name || booking?.transfer_details?.destination?.city_name) ? <>
                           {booking?.transfer_details?.source?.name || booking?.transfer_details?.source?.city_name}{" "}
                           <svg
                             width="12"
@@ -408,8 +422,22 @@ const TransferBooking = ({
                               d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
                               fill="#1F1F1F"
                             />
-                          </svg>{" "}
+                          </svg>{" "} 
                           {booking?.transfer_details?.destination?.name || booking?.transfer_details?.destination?.city_name}
+                        </> : <>
+                         <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 12 12"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
+                              fill="#1F1F1F"
+                            />
+                          </svg>{" "} 
+                          {booking?.name}
                         </>
                       )}
                     </div>
@@ -795,18 +823,18 @@ const TransferBooking = ({
                       <div className="text-[#C5C1C1]">
                         {getModeIcon(book?.booking_type, 15)}
                       </div>
-                      {isIntracity ? (
-                        <>
+                        {isIntracity  ?  (
+                         (book?.transfer_details?.source?.name || book?.transfer_details?.source?.city_name) && (book?.transfer_details?.destination?.name || book?.transfer_details?.destination?.city_name) && <>
                           {book?.booking_type} in{" "}
                           {book?.transfer_details?.source?.name || book?.transfer_details?.source?.city_name}
                         </>
-                      ) :  isAirport ? (
+                      ) : isAirport ? (
                         <>
                           Airport {AirportTransferType} in{" "}
-                          {booking?.transfer_details?.source?.name || booking?.transfer_details?.source?.city_name}
+                          {book?.transfer_details?.source?.name || book?.transfer_details?.source?.city_name}
                         </>
-                      ) :(
-                        <>
+                      ) : (
+                        (book?.transfer_details?.source?.name || book?.transfer_details?.source?.city_name) && (book?.transfer_details?.destination?.name || book?.transfer_details?.destination?.city_name) ? <>
                           {book?.transfer_details?.source?.name || book?.transfer_details?.source?.city_name}{" "}
                           <svg
                             width="12"
@@ -819,13 +847,27 @@ const TransferBooking = ({
                               d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
                               fill="#1F1F1F"
                             />
-                          </svg>{" "}
+                          </svg>{" "} 
                           {book?.transfer_details?.destination?.name || book?.transfer_details?.destination?.city_name}
+                        </> : <>
+                         <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 12 12"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
+                              fill="#1F1F1F"
+                            />
+                          </svg>{" "} 
+                          {book?.name}
                         </>
                       )}
                     </div>
                     <div className="text-[10px] ml-[20px]">
-                      Duration: {booking?.duration}
+                      Duration: {book?.duration}
                     </div>
                   </div>
 
