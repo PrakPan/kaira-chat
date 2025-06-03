@@ -173,9 +173,11 @@ console.log("props activities summary are:",props)
               dayIndex={props?.dayIndex}
               slabIndex={props?.slabIndex}
               itinerary_city_id={props?.itinerary_city_id}
+              cityID={props?.cityID}
               setShowLoginModal={props?.setShowLoginModal}
               getPaymentHandler={props?.getPaymentHandler}
               removeDelete={props?.removeDelete}
+              date={props?.date}
             >
               {props.children}
             </POIDetails>

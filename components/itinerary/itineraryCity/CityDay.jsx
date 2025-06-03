@@ -11,12 +11,12 @@ import ImageLoader from "../../ImageLoader";
 const CityDay = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [showAddDrawer, setShowAddDrawer] = useState(false);
-  const [elements, setElements] = useState([]); 
-  const {finalized_status} = useSelector(state=>state.ItineraryStatus);
-   const [handleShowTaxi, setHandleShowTaxi] = useState(false);
-    const [taxiData, setTaxiData] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const dispatch = useDispatch();
+  const [elements, setElements] = useState([]);
+  const { finalized_status } = useSelector((state) => state.ItineraryStatus);
+  const [handleShowTaxi, setHandleShowTaxi] = useState(false);
+  const [taxiData, setTaxiData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     let elements = [];
@@ -34,12 +34,14 @@ const CityDay = (props) => {
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   }
 
-  const matchingIntracityBookings = props?.intracityBookings?.filter((booking) => {
-  const checkInDate = booking?.check_in?.split(" ")[0]; 
-  return checkInDate === props?.day?.date;
-});
+  const matchingIntracityBookings = props?.intracityBookings?.filter(
+    (booking) => {
+      const checkInDate = booking?.check_in?.split(" ")[0];
+      return checkInDate === props?.day?.date;
+    }
+  );
 
- const handleTaxi = async (id) => {
+  const handleTaxi = async (id) => {
     console.log("Innnn");
     setHandleShowTaxi(true);
     try {
@@ -64,35 +66,39 @@ const CityDay = (props) => {
     }
   };
 
-  const formattedTaxiDetails = matchingIntracityBookings?.map((booking, index) => {
+  const formattedTaxiDetails = matchingIntracityBookings?.map(
+    (booking, index) => {
+      const checkInDate = new Date(booking?.check_in);
+      const checkOutDate = new Date(booking?.check_out);
 
-    
-const checkInDate = new Date(booking?.check_in);
-const checkOutDate = new Date(booking?.check_out);
+      const formattedCheckIn = checkInDate?.toLocaleDateString("en-US", {
+        month: "short",
+        day: "2-digit",
+      });
+      const formattedCheckOut = checkOutDate?.toLocaleDateString("en-US", {
+        month: "short",
+        day: "2-digit",
+      });
 
-const formattedCheckIn = checkInDate?.toLocaleDateString("en-US", {
-  month: "short",
-  day: "2-digit",
-});
-const formattedCheckOut = checkOutDate?.toLocaleDateString("en-US", {
-  month: "short",
-  day: "2-digit",
-});
-    
-    return {
-  ...booking,
-  id: booking.id,
-  date: formattedCheckIn === formattedCheckOut
-    ? `Day ${index + 1}, ${formattedCheckIn}`
-    :  `${formattedCheckIn} to ${formattedCheckOut}`,
-  fromLocation: booking.transfer_details?.source?.name || 'Unknown Source',
-  toLocation: booking.transfer_details?.destination?.name || 'Unknown Destination',
-  passengers:
-    booking.number_of_adults +
-    booking.number_of_children +
-    booking.number_of_infants,
-  // duration: booking.transfer_details?.duration?.text || 'N/A',
-}});
+      return {
+        ...booking,
+        id: booking.id,
+        date:
+          formattedCheckIn === formattedCheckOut
+            ? `Day ${index + 1}, ${formattedCheckIn}`
+            : `${formattedCheckIn} to ${formattedCheckOut}`,
+        fromLocation:
+          booking.transfer_details?.source?.name || "Unknown Source",
+        toLocation:
+          booking.transfer_details?.destination?.name || "Unknown Destination",
+        passengers:
+          booking.number_of_adults +
+          booking.number_of_children +
+          booking.number_of_infants,
+        // duration: booking.transfer_details?.duration?.text || 'N/A',
+      };
+    }
+  );
   return (
     <div id="cityday" className="flex flex-col md:flex-row md:border-b-2">
       <div
@@ -120,72 +126,75 @@ const formattedCheckOut = checkOutDate?.toLocaleDateString("en-US", {
               dayIndex={props?.index}
               slabIndex={index}
               setShowLoginModal={props?.setShowLoginModal}
+              date={props?.date}
+              cityID={props.city.id}
             />
 
             {index !== elements.length - 1 ? <hr /> : null}
           </>
         ))}
 
-        {(finalized_status === "PENDING") ? 
-         <div className="mt-3 w-48 h-[20px] bg-gray-300 rounded animate-pulse"></div> 
-         :
-         <button
-          onClick={() => setShowAddDrawer(true)}
-          className="mt-3  w-fit text-[14px] text-blue underline font-semibold"
-        >
-          + Add activities on {convertDateFormat(props?.day?.date)}
-        </button>
+        {finalized_status === "PENDING" ? (
+          <div className="mt-3 w-48 h-[20px] bg-gray-300 rounded animate-pulse"></div>
+        ) : (
+          <button
+            onClick={() => setShowAddDrawer(true)}
+            className="mt-3  w-fit text-[14px] text-blue underline font-semibold"
+          >
+            + Add activities on {convertDateFormat(props?.day?.date)}
+          </button>
+        )}
 
+        {matchingIntracityBookings &&
+          formattedTaxiDetails &&
+          matchingIntracityBookings?.length > 0 && (
+            <>
+              <hr />
+              <div className="text-sm font-normal flex flex-col gap-1 w-auto md:flex-row">
+                <div className="text-[14px] font-medium leading-[22px] w-[80px]">
+                  {formattedTaxiDetails?.length > 0 && <>Taxi:</>}{" "}
+                </div>
+                <div className="flex flex-col gap-2 w-full">
+                  <div className="flex flex-wrap gap-2">
+                    {formattedTaxiDetails?.map((item) => (
+                      <>
+                        <div
+                          key={item.id}
+                          className="flex gap-2 group w-[333px] p-[10px] border-[2px] rounded-[12px] shadow-none  hover:bg-[rgb(254_250_216)] bg-opacity-100 "
+                          // onClick={() => handleTaxi(item.id)}
+                        >
+                          <div className="hidden hover:block cursor-pointer">
+                            <FaEdit />
+                          </div>
 
-}
+                          <div className="w-[50px] h-[50px] flex items-center justify-center ">
+                            <ImageLoader
+                              borderRadius="5px"
+                              style={{
+                                width: "48px",
+                                height: "48px",
+                                objectFit: "contain",
+                                cursor: "pointer",
+                                margin: "auto",
+                                // display: "block",
+                              }}
+                              url={
+                                item?.transfer_details?.quote?.taxi_category
+                                  ?.image
+                              }
+                            />
+                          </div>
 
-        {matchingIntracityBookings && formattedTaxiDetails && (matchingIntracityBookings?.length > 0) && (
-        <>
-        <hr />
-        <div className="text-sm font-normal flex flex-col gap-1 w-auto md:flex-row">
-                    <div className="text-[14px] font-medium leading-[22px] w-[80px]">
-                      {formattedTaxiDetails?.length > 0 && <>Taxi:</>}{" "}
-                    </div>
-                    <div className="flex flex-col gap-2 w-full">
-                      <div className="flex flex-wrap gap-2">
-                        {formattedTaxiDetails?.map((item) => (
-                          <>
-                            <div
-                              key={item.id}
-                              className="flex gap-2 group w-[333px] p-[10px] border-[2px] rounded-[12px] shadow-none  hover:bg-[rgb(254_250_216)] bg-opacity-100 "
-                              // onClick={() => handleTaxi(item.id)}
-                            >
-                              <div className="hidden hover:block cursor-pointer">
-                                <FaEdit />
+                          <div>
+                            <span className="font-semibold  text-[12px]">
+                              {item.date}
+                            </span>
+                            <div className="w-full h-px bg-gray-200 mb-2" />
+                            <div className="flex gap-1 relative">
+                              <div className="w-fit font-semibold  text-[12px] cursor-pointer">
+                                {item?.name}
                               </div>
-        
-                              <div className="w-[50px] h-[50px] flex items-center justify-center ">
-                                <ImageLoader
-                                  borderRadius="5px"
-                                  style={{
-                                    width: "48px",
-                                    height: "48px",
-                                    objectFit: "contain",
-                                    cursor: "pointer",
-                                    margin: "auto",
-                                    // display: "block",
-                                  }}
-                                  url={
-                                    item?.transfer_details?.quote?.taxi_category?.image
-                                  }
-                                />
-                              </div>
-        
-                              <div>
-                                <span className="font-semibold  text-[12px]">
-                                  {item.date}
-                                </span>
-                                <div className="w-full h-px bg-gray-200 mb-2" />
-                                <div className="flex gap-1 relative">
-                                  <div className="w-fit font-semibold  text-[12px] cursor-pointer">
-                                    {item?.name}
-                                  </div>
-                                  {/* <div className="hidden group-hover:!block ">
+                              {/* <div className="hidden group-hover:!block ">
                               <svg
                                 stroke="currentColor"
                                 fill="currentColor"
@@ -268,31 +277,31 @@ const formattedCheckOut = checkOutDate?.toLocaleDateString("en-US", {
       ></ActivityAddDrawer>
 
       {handleShowTaxi && (
-              <TransferDrawer
-                show={handleShowTaxi}
-                setHandleShow={setHandleShowTaxi}
-                data={taxiData}
-                booking_type={taxiData?.transferType || taxiData?.booking_type}
-                loading={loading}
-                handleDelete={handleDelete}
-                setShowDrawer={setHandleShowTaxi}
-                // city={city}
-                _updateFlightBookingHandler={props?._updateFlightBookingHandler}
-                _updatePaymentHandler={props?._updatePaymentHandler}
-                getPaymentHandler={props?.getPaymentHandler}
-                // oCityData={oCityData}
-                // dCityData={dCityData}
-                setShowLoginModal={props?.setShowLoginModal}
-                // dcity={destination_city_name}
-                // selectedBooking={selectedBooking}
-                // setSelectedBooking={setSelectedBooking}
-                // originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
-                // destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
-                // origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
-                // destination_itinerary_city_id={dCityData?.id || dCityData?.gmaps_place_id}
-                isIntracity={true}
-              />
-            )}
+        <TransferDrawer
+          show={handleShowTaxi}
+          setHandleShow={setHandleShowTaxi}
+          data={taxiData}
+          booking_type={taxiData?.transferType || taxiData?.booking_type}
+          loading={loading}
+          handleDelete={handleDelete}
+          setShowDrawer={setHandleShowTaxi}
+          // city={city}
+          _updateFlightBookingHandler={props?._updateFlightBookingHandler}
+          _updatePaymentHandler={props?._updatePaymentHandler}
+          getPaymentHandler={props?.getPaymentHandler}
+          // oCityData={oCityData}
+          // dCityData={dCityData}
+          setShowLoginModal={props?.setShowLoginModal}
+          // dcity={destination_city_name}
+          // selectedBooking={selectedBooking}
+          // setSelectedBooking={setSelectedBooking}
+          // originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
+          // destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
+          // origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
+          // destination_itinerary_city_id={dCityData?.id || dCityData?.gmaps_place_id}
+          isIntracity={true}
+        />
+      )}
     </div>
   );
 };

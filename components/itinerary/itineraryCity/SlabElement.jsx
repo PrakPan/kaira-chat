@@ -30,6 +30,7 @@ const SlabElement = (props) => {
           slabIndex={props?.slabIndex}
           itinerary_city_id={props?.itinerary_city_id}
           setShowLoginModal={props?.setShowLoginModal}
+          cityID={props?.cityID}
         />
       ) : props.element.element_type === "recommendation" ? (
         <Recommendation
@@ -38,6 +39,7 @@ const SlabElement = (props) => {
           slabIndex={props?.slabIndex}
           itinerary_city_id={props?.itinerary_city_id}
           setShowLoginModal={props?.setShowLoginModal}
+          cityID={props?.cityID}
         />
       ) : null}
     </div>
@@ -149,23 +151,25 @@ const Activity = (props) => {
                           width={13.33}
                           height={10.67}
                         />
-                        {props?.element?.booking?.pax} ticket{props?.element?.booking?.pax>1?"s":""}
+                        {props?.element?.booking?.pax} ticket
+                        {props?.element?.booking?.pax > 1 ? "s" : ""}
                       </div>
                     )}
-                    {props.element?.booking?.duration && props.element?.booking?.duration!=="0 hours" && (
-                      <div className="flex text-[12px] font-medium items-center gap-1">
-                        <Image
-                          src="/clock.svg"
-                          alt="clock"
-                          width={13.33}
-                          height={10.67}
-                        />
-                        {props.element?.booking?.duration}
-                      </div>
-                    ) }
+                    {props.element?.booking?.duration &&
+                      props.element?.booking?.duration !== "0 hours" && (
+                        <div className="flex text-[12px] font-medium items-center gap-1">
+                          <Image
+                            src="/clock.svg"
+                            alt="clock"
+                            width={13.33}
+                            height={10.67}
+                          />
+                          {props.element?.booking?.duration}
+                        </div>
+                      )}
                   </div>
                 </div>
-              ): (
+              ) : (
                 <div className="flex">
                   <div className="flex  items-center">
                     {getStars(props.element?.rating)}
@@ -253,17 +257,21 @@ const Activity = (props) => {
                           width={13.33}
                           height={10.67}
                         />
-                        {props?.element?.booking?.pax} ticket{props?.element?.booking?.pax>1?"s":""}
+                        {props?.element?.booking?.pax} ticket
+                        {props?.element?.booking?.pax > 1 ? "s" : ""}
                       </div>
-                      {props.element?.booking?.duration && props.element?.booking?.duration!=="0 hours" &&<div className="flex text-[12px] font-medium items-center gap-1">
-                        <Image
-                          src="/clock.svg"
-                          alt="clock"
-                          width={13.33}
-                          height={10.67}
-                        />
-                        {props.element?.booking?.duration}
-                      </div>}
+                      {props.element?.booking?.duration &&
+                        props.element?.booking?.duration !== "0 hours" && (
+                          <div className="flex text-[12px] font-medium items-center gap-1">
+                            <Image
+                              src="/clock.svg"
+                              alt="clock"
+                              width={13.33}
+                              height={10.67}
+                            />
+                            {props.element?.booking?.duration}
+                          </div>
+                        )}
                     </div>
                   </div>
                 ) : (
@@ -313,6 +321,8 @@ const Activity = (props) => {
         slabIndex={props?.slabIndex}
         showBookingDetail={showBookingDetail}
         setShowLoginModal={props?.setShowLoginModal}
+        date={props?.date}
+        cityID={props?.cityID}
       />
     </>
   );
@@ -512,6 +522,7 @@ const Recommendation = (props) => {
         itinerary_city_id={props?.itinerary_city_id}
         slabIndex={props?.slabIndex}
         setShowLoginModal={props?.setShowLoginModal}
+        cityID={props?.cityID}
       />
     </>
   );

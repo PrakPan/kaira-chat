@@ -20,6 +20,9 @@ import useMediaQuery from "../../media";
 import { openNotification } from "../../../store/actions/notification";
 import BackArrow from "../../ui/BackArrow";
 import ImageLoader from "../../ImageLoader";
+import Button from "../../ui/button/Index";
+import Drawer from "../../ui/Drawer";
+import AddPoi from "../AddPoi";
 export const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -127,6 +130,7 @@ const POIDetails = (props) => {
   const itinerary = useSelector((state) => state.Itinerary);
   const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
+  const [showDrawer, setShowDrawer] = useState(false);
 
   const [ImagesLoaded, setImagesLoaded] = useState({
     0: false,
@@ -272,8 +276,21 @@ const POIDetails = (props) => {
               />
             </div>
           ) : (
-            <BackContainer className=" font-lexend">
+            <BackContainer className="flex justify-between font-lexend">
               <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
+              <Button
+                padding="7px 25px"
+                borderRadius="7px"
+                onclick={() => {
+                  if (!token) {
+                    props?.setShowLoginModal(true);
+                    return;
+                  }
+                  setShowDrawer(true);
+                }}
+              >
+                Change
+              </Button>
             </BackContainer>
           )}
 
@@ -647,12 +664,26 @@ const POIDetails = (props) => {
             </div>
           </div>
 
-          {/* {images?.length > 0 && (
-        <FullScreenGalleryGoogle
-          closeGalleryHandler={() => setImages(null)}
-          images={images}
-        ></FullScreenGalleryGoogle>
-      )}  */}
+          <Drawer
+            show={showDrawer}
+            anchor={"right"}
+            backdrop
+            width={"50%"}
+            mobileWidth={"100%"}
+            className="font-lexend"
+            style={{ zIndex: 1505 }}
+            onHide={() => setShowDrawer(false)}
+          >
+            <AddPoi
+            cityID={props?.cityID}
+            date={props?.date}
+            setShowDrawer={setShowDrawer}
+            itinerary_city_id={props?.itinerary_city_id}
+            dayIndex={props?.dayIndex}
+            slabIndex={props?.slabIndex}
+            setShowLoginModal={props?.setShowLoginModal}
+            />
+          </Drawer>
           <ToastContainer />
         </Container>
       ) : null}
