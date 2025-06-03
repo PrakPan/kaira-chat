@@ -376,11 +376,9 @@ const ActivityAddDrawer = (props) => {
 
   const handleViewMore = async () => {
     setShowSkeleton(true);
-    console.log("element type is:",elementType)
+    console.log("element type is:", elementType);
 
     try {
-     
-
       let options = [];
       if (elementType == "Activity" || elementType == "") {
         const requestData = {
