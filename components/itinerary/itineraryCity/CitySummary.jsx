@@ -375,7 +375,7 @@ const CitySummary = (props) => {
                       className="group relative flex gap-2 w-[333px] p-[10px] border-[2px] rounded-[12px] shadow-none cursor-pointer hover:bg-[rgb(254_250_216)] bg-opacity-100"
                       onClick={() => handleTaxi(item.id)}
                     >
-                      <div className="absolute top-2 right-2 opacity-0 group-hover:!opacity-100 transition-opacity duration-200 z-10">
+                    <div className="absolute top-2 sm:top-[10px] right-2 opacity-0 group-hover:!opacity-100 transition-opacity duration-200 z-10 p-1">
                         <FaPen size={12} />
                       </div>
 
@@ -397,16 +397,16 @@ const CitySummary = (props) => {
                       </div>
 
                       <div>
-                        <span className="font-semibold  text-[12px]">
+                        <span className="font-normal text-[12px] text-[#8a989d]">
                           {item.date}
                         </span>
                         <div className="w-full h-px bg-gray-200 mb-2" />
                         <div className="flex gap-1 relative">
-                          <div className="w-fit font-semibold  text-[12px]">
+                          <div className="w-fit font-[450] text-[12px] ">
                             {item?.name}
                           </div>
                         </div>
-                        <div className="flex gap-3 text-[12px] ">
+                        <div className="flex gap-3 text-[12px] font-normal">
                           <div className="w-auto flex items-center gap-1">
                             <BsPeopleFill />
                             <div>
