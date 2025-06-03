@@ -2,17 +2,15 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { connect, useDispatch, useSelector } from "react-redux";
 import Drawer from "../../ui/Drawer";
-import { getDate } from "../../../helper/DateUtils";
 import { openNotification } from "../../../store/actions/notification";
-import { toast, ToastContainer } from "react-toastify";
-import PoiDetails from "./NewPoiDetails";
+import {  ToastContainer } from "react-toastify";
 import { MERCURY_HOST } from "../../../services/constants";
 import axios from "axios";
 import setItinerary from "../../../store/actions/itinerary";
 import PoiDetailsSkeleton from "./PoiDetailsSkelton";
+import ChangePoiDetails from "./ChangePoiDetails";
 
-const NewPoiDetailsDrawer = (props) => {
-  console.log("day by day:",props)
+const ChangePoiDetailDrawer = (props) => {
   const router = useRouter();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -41,7 +39,6 @@ const NewPoiDetailsDrawer = (props) => {
           heading: "Error!",
         })
       );
-      console.log("poi drawer error is:", error);
     }
   };
 
@@ -51,6 +48,7 @@ const NewPoiDetailsDrawer = (props) => {
         itinerary_city_id: props?.itinerary_city_id,
         poi_id: props?.id,
         day_by_day_index: props?.dayIndex || 0,
+        poi_index:props?.slabIndex
       };
       const res = await axios.post(
         `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/poi/add/`,
@@ -63,21 +61,16 @@ const NewPoiDetailsDrawer = (props) => {
       );
       var newItinerary = itinerary;
       const itineraryCities = newItinerary?.cities?.map((item) => {
-        console.log("city is:", item);
         const city = item;
         if (item.id == props?.itinerary_city_id) {
-          const day_by_day = city?.day_by_day;
-          console.log("city1 is:", props?.dayIndex);
-          day_by_day[props?.dayIndex].slab_elements = [
-            ...day_by_day[props?.dayIndex]?.slab_elements,
-            res?.data,
-          ];
+          const day_by_day = [...city?.day_by_day];
+          day_by_day[props?.dayIndex].slab_elements[props.slabIndex] = res?.data;
           city.day_by_day = day_by_day;
-          console.log("city2 is:", day_by_day);
         }
         return city;
       });
       newItinerary.cities = itineraryCities;
+      console.log("new itinerary is:",newItinerary)
       dispatch(setItinerary(newItinerary));
       props.openNotification({
         type: "success",
@@ -103,13 +96,13 @@ const NewPoiDetailsDrawer = (props) => {
       backdrop
       width={"50%"}
       mobileWidth={"100%"}
-      style={{ zIndex: props.itineraryDrawer ? 1503 : 1501 }}
+      style={{ zIndex: 1506 }}
       className="font-lexend"
       onHide={props.handleCloseDrawer}
     >
       <ToastContainer />
       {!loading ? (
-        <PoiDetails
+        <ChangePoiDetails
           itineraryDrawer={props.itineraryDrawer}
           data={data}
           date={props.date}
@@ -145,4 +138,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToPros, mapDispatchToProps)(NewPoiDetailsDrawer);
+export default connect(mapStateToPros, mapDispatchToProps)(ChangePoiDetailDrawer);

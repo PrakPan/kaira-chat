@@ -99,7 +99,7 @@ const LoadingBoxGradient = styled.div`
   animation: ${shimmer} 2s ease-in-out infinite;
 `;
 
-export default function SkeletonCard({
+export default function  SkeletonCard({
   width,
   height,
   mt,
