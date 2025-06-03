@@ -183,14 +183,15 @@ const TransferBookings = (props) => {
       const connectionKey = `${sourceKey}:${destKey}`;
 
       const intercityBooking = transferBooking?.intercity[connectionKey];
-      const airportBookings = transferBooking?.airport[sourceKey] || [];
+      const airportBookings = transferBooking?.airport[destKey] || [];
       const intracityBookings = transferBooking?.intracity[sourceKey] || [];
 
-       if (airportBookings.length > 0) {
+      
+      if (airportBookings.length > 0) {
         const sortedBookings = sortByCheckIn(airportBookings);
 
         sortedBookings?.map((booking, index) => {
-          if(booking?.is_airport_pickup){
+          if(booking?.is_airport_drop){
           sections.push(
             <TransferBooking
               mercuryItinerary={props?.mercuryItinerary}
@@ -228,7 +229,7 @@ const TransferBookings = (props) => {
               _updateFlightBookingHandler={props._updateFlightBookingHandler}
               _updatePaymentHandler={props._updatePaymentHandler}
               isAirport={true}
-              AirportTransferType={"Pickup"}
+              AirportTransferType={"Drop"}
             />
           );
         }
@@ -316,13 +317,11 @@ const TransferBookings = (props) => {
 
      
 
-     
-
       if (airportBookings.length > 0) {
         const sortedBookings = sortByCheckIn(airportBookings);
 
         sortedBookings?.map((booking, index) => {
-          if(booking?.is_airport_drop){
+          if(booking?.is_airport_pickup){
           sections.push(
             <TransferBooking
               mercuryItinerary={props?.mercuryItinerary}
@@ -360,12 +359,14 @@ const TransferBookings = (props) => {
               _updateFlightBookingHandler={props._updateFlightBookingHandler}
               _updatePaymentHandler={props._updatePaymentHandler}
               isAirport={true}
-              AirportTransferType={"Drop"}
+              AirportTransferType={"Pickup"}
             />
           );
         }
         });
       }
+
+      
     }
 
     itineraries?.cities?.forEach((item, index) => {
@@ -386,7 +387,7 @@ const TransferBookings = (props) => {
         const connectionKey = `${sourceKey}:${destKey}`;
 
         const intercityBooking = transferBooking?.intercity[connectionKey];
-        const airportBookings = transferBooking?.airport[sourceKey] || [];
+        const airportBookings = transferBooking?.airport[destKey] || [];
         const intracityBookings = transferBooking?.intracity[sourceKey] || [];
 
           if (airportBookings.length > 0) {
@@ -590,7 +591,7 @@ const TransferBookings = (props) => {
       const connectionKey = `${sourceKey}:${destKey}`;
 
       const intercityBooking = transferBooking?.intercity[connectionKey];
-      const airportBookings = transferBooking?.airport[sourceKey] || [];
+      const airportBookings = transferBooking?.airport[destKey] || [];
       const intracityBookings = transferBooking?.intracity[sourceKey] || [];
 
 

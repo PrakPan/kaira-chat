@@ -262,6 +262,7 @@ const DaybyDay = ({
                   itineraryDaybyDay?.cities?.[0]?.id
               ]?.booking_type
             }
+            airportBookings = {transferBooking?.airport[itineraryDaybyDay?.cities?.[0]?.id] || []}
             transfer_type={
               transferBookings?.intercity?.[
                 startCity?.gmaps_place_id +
@@ -301,7 +302,7 @@ const DaybyDay = ({
               city?.id + ":" + itineraryDaybyDay?.cities?.[index + 1]?.id;
 
             let sourceKey = city?.id;
-            let airportBookings = transferBooking?.airport[sourceKey] || [];
+            let airportBookings = transferBooking?.airport[itineraryDaybyDay?.cities?.[index + 1]?.id] || [];
             let intracityBookings = transferBooking?.intracity[sourceKey] || [];
 
             if(airportBookings?.length > 0){
