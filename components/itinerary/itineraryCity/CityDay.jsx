@@ -205,11 +205,14 @@ const formattedCheckOut = checkOutDate?.toLocaleDateString("en-US", {
                                   <div className="w-auto flex items-center gap-1">
                                     <BsPeopleFill />
                                     <div>
-                                      {item?.pax ||
-                                        item?.number_of_adults +
-                                          item?.number_of_children +
-                                          item?.number_of_infants}{" "}
-                                      Passenger
+                                       {(() => {
+                                const pax =
+                                  item?.pax ??
+                                  item?.number_of_adults +
+                                    item?.number_of_children +
+                                    item?.number_of_infants;
+                                return `${pax} Passenger${pax > 1 ? "s" : ""}`;
+                              })()}
                                     </div>
                                   </div>
                                   {item?.duration && item?.duration != "0 hours" && (

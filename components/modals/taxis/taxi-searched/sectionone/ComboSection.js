@@ -356,7 +356,7 @@ const ComboSection = (props) => {
               setOpen={setOpen}
               iconStyle={{ right: "unset", left: "75px" }}
             >
-              <AccordionSummary style={isPageWide ? { padding: "0.5rem 0" } : {}}>
+              <AccordionSummary style={isPageWide ? { padding: "0.5rem 0" } : {padding: "0.5rem 0"}}>
                 Facilities
               </AccordionSummary>
 

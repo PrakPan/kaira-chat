@@ -12,7 +12,9 @@ import { connect } from "react-redux";
 
 const Container = styled.div`
   margin: 0;
+  width: 100%;
   @media screen and (min-width: 768px) {
+  width: 100%;
   }
 `;
 
@@ -22,7 +24,7 @@ const FlexBox = styled.div`
   gap: 0.5rem;
   @media screen and (min-width: 768px) {
     display: grid;
-    grid-template-columns: auto 14rem;
+    grid-template-columns: auto;
     gap: 0;
   }
 `;
@@ -42,8 +44,8 @@ const Section = (props) => {
 
   return (
     <Container className="font-lexend">
-      <div className="flex flex-row gap-2">
-            <div className="font-bold text-lg p-[0.4rem]">
+      <div className="flex flex-row gap-2 w-full">
+            <div className="font-bold text-lg p-[0.4rem] w-fit">
             {props.data?.taxi_category?.seating_capacity + "-seater"}
           </div>
       <FlexBox>
@@ -54,7 +56,7 @@ const Section = (props) => {
           iconStyle={{ right: "unset", left: "75px" }}
         >
           <AccordionSummary
-            style={isPageWide ? { padding: "0.5rem 0rem" } : {}}
+            style={isPageWide ? { padding: "0.5rem 0rem" } : {padding: "0.5rem"}}
           >
             Facilities
           </AccordionSummary>

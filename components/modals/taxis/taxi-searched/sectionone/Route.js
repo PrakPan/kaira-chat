@@ -208,14 +208,14 @@ const Section = (props) => {
           </Location>
         </RouteContainer> */}
 
-        <div
+        {/* <div
           style={{
             display: "flex",
             gap: "0.5rem",
             marginBottom: "0.75rem",
             marginTop: "0.75rem",
           }}
-        >
+        > */}
           {/* <ImageLoader
             url="media/icons/bookings/distance.png"
             height="1.5rem"
@@ -227,10 +227,10 @@ const Section = (props) => {
             noLazy
           ></ImageLoader> */}
 
-          <div
+          {/* <div
             style={{ display: "flex", gap: "1rem" }}
             className="flex flex-col md:flex-row justify-between w-full"
-          >
+          > */}
             {/* <div className="flex flex-row gap-[1rem]">
               {props.data?.distance?.text ? (
                 <div>
@@ -251,19 +251,19 @@ const Section = (props) => {
               ) : null}
             </div> */}
 
-            <div className="flex flex-row md:flex-col justify-end md:justify-center gap-2">
+            {/* <div className="flex flex-row md:flex-col justify-end md:justify-center gap-2">
               <div className="md:center-div" style={{ marginRight: "0.5rem" }}>
                 {/* <Cost>
                   {"₹" +
                     getIndianPrice(Math.ceil(props.data.price.total)) +
                     "/-"}
                 </Cost> */}
-              </div>
+              {/* </div>
 
               
-            </div>
-          </div>
-        </div>
+            </div> 
+          </div> */}
+        {/* </div> */}
 
        
        <div className="flex justify-between">

@@ -7,59 +7,72 @@ const POIDetailsSkeleton = (props) => {
   let isPageWide = media("(min-width: 768px)");
 
   const Container = styled.div`
-    @media screen and (max-width: 768px) {
-      width: 95%;
-      margin: auto;
+    width: 95%;
+    background-color: white;
+    margin: auto;
+    height: 100%;
+    margin-bottom: 0.5rem;
+    @media screen and (min-width: 768px) {
+      background: white;
+      width: 100%;
+      position: relative;
     }
   `;
 
   const SkeletonContainer = styled.div`
+    border-bottom: 1px solid #e5e5e5;
+    padding: 0.5rem;
+    overflow-x: hidden;
+    width: 100%;
+  `;
+
+  const HeaderSection = styled.div`
+    display: flex;
+    flex-direction: row;
+    gap: 0.25rem;
+    justify-content: space-between;
     margin-bottom: 0.5rem;
-    width: 100%;
-    height: 223px;
-    border-radius: 10px;
-    padding: 0.75rem;
+    
     @media screen and (min-width: 768px) {
-      height: 140px;
-      padding: 0rem;
-      display: grid;
-      grid-template-columns: 1fr 8.5rem;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
     }
   `;
 
-  const DetailsContainer = styled.div`
-    @media screen and (min-width: 768px) {
-      display: grid;
-      grid-template-columns: auto 6fr;
-      gap: 1.2rem;
-      padding: 1rem 0rem 1rem 0.5rem;
-    }
-  `;
-
-  const LogoContainer = styled.div`
-    width: 100%;
-    display: grid;
-    grid-template-columns: 50px auto;
-    gap: 1rem;
+  const AirlineSection = styled.div`
+    display: flex;
     align-items: center;
-    margin-bottom: 1rem;
+    gap: 0.5rem;
+    justify-content: center;
+  `;
+
+  // Flight details section
+  const FlightDetailsSection = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 0.25rem;
+    
     @media screen and (min-width: 768px) {
-      width: 80px;
-      margin-bottom: 1rem;
-      display: initial;
+      width: 100%;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
     }
   `;
 
-  const DetailsGridContainer = styled.div`
+  const FlightDetailsContainer = styled.div`
+    width: 70%;
     display: grid;
-    grid-template-columns: 105px auto 105px;
+    grid-template-columns: 40px 120px 40px;
     grid-column-gap: 0.5rem;
     grid-row-gap: 0.25rem;
     line-height: 1;
-    margin-block: auto;
     height: 65px;
+    
     @media screen and (min-width: 768px) {
-      grid-template-columns: 140px auto 140px;
+      grid-template-columns: 60px 200px 60px;
     }
   `;
 
@@ -76,7 +89,7 @@ const POIDetailsSkeleton = (props) => {
       right: 0;
       bottom: 0;
       background-image: linear-gradient(to right, #7a7a7a 5px, transparent 5px);
-      background-size: 9px 100%; /* Adjust this value to change the spacing between the dots */
+      background-size: 9px 100%;
     }
   `;
 
@@ -101,186 +114,105 @@ const POIDetailsSkeleton = (props) => {
 
   const PriceContainer = styled.div`
     display: flex;
-    justify-content: space-between;
-    margin: 2.5rem 0 0 0;
-
-    @media screen and (min-width: 768px) {
-      flex-direction: column;
-      margin: 0.5rem 0.5rem 0 0.5rem;
-      padding: 0.75rem;
-      justify-content: initial;
-      align-items: center;
-    }
+    justify-content: flex-end;
+    align-items: center;
+    min-width: 120px;
   `;
 
-  const DesktopSkeleton = (
-    <SkeletonContainer className="border">
-      <DetailsContainer>
-        <LogoContainer>
-          <SkeletonCard
-            width={isPageWide ? "80px" : "50px"}
-            height={isPageWide ? "80px" : "50px"}
-            mb="0.5rem"
-            borderRadius={"50%"}
-          />
-          <SkeletonCard
-            width={isPageWide ? "80px" : "50px"}
-            height={"15px"}
-            mb="0.5rem"
-            borderRadius={"3px"}
-            mt="0.25rem"
-          />
-        </LogoContainer>
-        <DetailsGridContainer>
-          <SkeletonCard borderRadius={"3px"} height="24px" />
-
-          <div style={{ height: "20px" }}>
-            <div
-              style={{
-                margin: "0",
-                position: "relative",
-                height: "0px",
-                top: "50%",
-              }}
-            >
-              <Circle style={{ left: 0 }} />
-              <DottedLine></DottedLine>
-              <Circle style={{ right: 0 }} />
-              <Plan>
-                <FaPlane style={{ fontSize: "1.25rem" }} />
-              </Plan>
-            </div>
-          </div>
-          <SkeletonCard borderRadius={"3px"} height="24px" />
-          <div
-            style={{
-              height: "32px",
-              display: "flex",
-              justifyContent: "space-between",
-              flexDirection: "column",
-            }}
-          >
-            <SkeletonCard borderRadius={"3px"} width={"70%"} height="14px" />
-            <SkeletonCard borderRadius={"3px"} width={"50%"} height="14px" />
-          </div>
-          <div style={{ height: "40px" }}></div>
-          <div
-            style={{
-              height: "32px",
-              display: "flex",
-              justifyContent: "space-between",
-              flexDirection: "column",
-            }}
-          >
-            <SkeletonCard borderRadius={"3px"} width={"70%"} height="14px" />
-            <SkeletonCard borderRadius={"3px"} width={"50%"} height="14px" />
-          </div>
-        </DetailsGridContainer>
-      </DetailsContainer>
-      <PriceContainer>
-        <SkeletonCard borderRadius={"3px"} width={"100%"} height="30px" />
-        <SkeletonCard
-          borderRadius={"3px"}
-          mt="0.35rem"
-          width={"90%"}
-          height="20px"
-        />
-        <SkeletonCard
-          borderRadius={"3px"}
-          mt="0.65rem"
-          width={"85%"}
-          height="24px"
-        />
-      </PriceContainer>
-    </SkeletonContainer>
-  );
-
-  const MobileSkeleton = (
-    <SkeletonContainer className="border">
-      <DetailsContainer>
-        <LogoContainer>
-          <SkeletonCard width={"50px"} height={"50px"} borderRadius={"50%"} />
-          <div>
-            <SkeletonCard width={"30%"} height={"15px"} borderRadius={"3px"} />
+  const SkeletonComponent = (
+    <Container>
+      <SkeletonContainer>
+        <HeaderSection>
+          <AirlineSection>
             <SkeletonCard
-              width={"50%"}
-              height={"15px"}
-              borderRadius={"3px"}
-              mt="0.25rem"
+              width="32px"
+              height="32px"
+              borderRadius="4px"
             />
-          </div>
-        </LogoContainer>
-        <DetailsGridContainer>
-          <SkeletonCard borderRadius={"3px"} height="24px" />
-
-          <div style={{ height: "20px" }}>
-            <div
-              style={{
-                margin: "0",
-                position: "relative",
-                height: "0px",
-                top: "50%",
-              }}
-            >
-              <Circle style={{ left: 0 }} />
-              <DottedLine></DottedLine>
-              <Circle style={{ right: 0 }} />
-              <Plan>
-                <FaPlane style={{ fontSize: "1.25rem" }} />
-              </Plan>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <SkeletonCard
+                width={isPageWide ? "180px" : "120px"}
+                height="14px"
+                borderRadius="3px"
+              />
+              {isPageWide && (
+                <SkeletonCard
+                  width="80px"
+                  height="12px"
+                  borderRadius="3px"
+                />
+              )}
             </div>
-          </div>
-          <SkeletonCard borderRadius={"3px"} height="24px" />
-          <div
-            style={{
-              height: "32px",
-              display: "flex",
-              justifyContent: "space-between",
-              flexDirection: "column",
-            }}
-          >
-            <SkeletonCard borderRadius={"3px"} width={"70%"} height="14px" />
-            <SkeletonCard borderRadius={"3px"} width={"50%"} height="14px" />
-          </div>
-          <div style={{ height: "40px" }}></div>
-          <div
-            style={{
-              height: "32px",
-              display: "flex",
-              justifyContent: "space-between",
-              flexDirection: "column",
-            }}
-          >
-            <SkeletonCard borderRadius={"3px"} width={"70%"} height="14px" />
-            <SkeletonCard borderRadius={"3px"} width={"50%"} height="14px" />
-          </div>
-        </DetailsGridContainer>
-      </DetailsContainer>
-      <PriceContainer>
-        <SkeletonCard borderRadius={"3px"} width={"50%"} height="24px" />
-        <SkeletonCard borderRadius={"3px"} width={"30%"} height="24px" />
-      </PriceContainer>
-    </SkeletonContainer>
+          </AirlineSection>
+
+          <SkeletonCard
+            width="80px"
+            height="24px"
+            borderRadius="3px"
+          />
+        </HeaderSection>
+
+        <FlightDetailsSection>
+          <FlightDetailsContainer>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <SkeletonCard borderRadius="3px" height="20px" width="100%" />
+              <SkeletonCard borderRadius="3px" height="14px" width="70%" />
+            </div>
+
+            <div style={{ height: "20px", position: "relative" }}>
+              <div
+                style={{
+                  margin: "0",
+                  position: "relative",
+                  height: "0px",
+                  top: "50%",
+                }}
+              >
+                <Circle style={{ left: 0 }} />
+                <DottedLine />
+                <Circle style={{ right: 0 }} />
+                <Plan>
+                  <FaPlane style={{ fontSize: "1.25rem", color: "#7a7a7a" }} />
+                </Plan>
+              </div>
+              <div style={{ 
+                position: "absolute", 
+                top: "25px", 
+                left: "50%", 
+                transform: "translateX(-50%)",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "2px"
+              }}>
+                <SkeletonCard borderRadius="3px" width="60px" height="12px" />
+                <SkeletonCard borderRadius="3px" width="45px" height="10px" />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <SkeletonCard borderRadius="3px" height="20px" width="100%" />
+              <SkeletonCard borderRadius="3px" height="14px" width="70%" />
+            </div>
+          </FlightDetailsContainer>
+
+          <PriceContainer>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
+              <SkeletonCard borderRadius="3px" width="20px" height="20px" />
+            </div>
+          </PriceContainer>
+        </FlightDetailsSection>
+      </SkeletonContainer>
+    </Container>
   );
 
   return (
-    <Container>
-      {isPageWide
-        ? [
-            DesktopSkeleton,
-            DesktopSkeleton,
-            DesktopSkeleton,
-            DesktopSkeleton,
-            DesktopSkeleton,
-          ]
-        : [
-            MobileSkeleton,
-            MobileSkeleton,
-            MobileSkeleton,
-            MobileSkeleton,
-            MobileSkeleton,
-          ]}
-    </Container>
+    <div>
+      {Array.from({ length: 5 }, (_, index) => (
+        <div key={index}>{SkeletonComponent}</div>
+      ))}
+    </div>
   );
 };
 

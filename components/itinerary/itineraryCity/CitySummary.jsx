@@ -14,7 +14,7 @@ import { openNotification } from "../../../store/actions/notification";
 import { BsPeopleFill } from "react-icons/bs";
 import { MERCURY_HOST } from "../../../services/constants";
 import axios from "axios";
-import { FaEdit } from "react-icons/fa";
+import { FaEdit, FaPen } from "react-icons/fa";
 
 const CitySummary = (props) => {
   const router = useRouter();
@@ -109,42 +109,37 @@ const CitySummary = (props) => {
     if (e) e.stopPropagation(e);
     setShowBookingDetail(false);
     setShowDrawer(false);
-
   };
-
-
 
   const formattedTaxiDetails = props?.intracityBookings?.map(
     (booking, index) => {
-      
-const checkInDate = new Date(booking?.check_in);
-const checkOutDate = new Date(booking?.check_out);
+      const checkInDate = new Date(booking?.check_in);
+      const checkOutDate = new Date(booking?.check_out);
 
-const formattedCheckIn = checkInDate?.toLocaleDateString("en-US", {
-  month: "short",
-  day: "2-digit",
-});
-const formattedCheckOut = checkOutDate?.toLocaleDateString("en-US", {
-  month: "short",
-  day: "2-digit",
-});
-    return  {
-      ...booking,
-      id: booking.id,
-      date: formattedCheckIn === formattedCheckOut
-    ? `Day ${index + 1}, ${formattedCheckIn}`
-    :  `${formattedCheckIn} to ${formattedCheckOut}`,
-      fromLocation: booking.transfer_details?.source?.name || "",
-      toLocation:
-        booking.transfer_details?.destination?.name || "",
-      passengers:
-        booking.number_of_adults +
-        booking.number_of_children +
-        booking.number_of_infants,
-      // duration: booking.transfer_details?.duration?.text || 'N/A',
+      const formattedCheckIn = checkInDate?.toLocaleDateString("en-US", {
+        month: "short",
+        day: "2-digit",
+      });
+      const formattedCheckOut = checkOutDate?.toLocaleDateString("en-US", {
+        month: "short",
+        day: "2-digit",
+      });
+      return {
+        ...booking,
+        id: booking.id,
+        date:
+          formattedCheckIn === formattedCheckOut
+            ? `Day ${index + 1}, ${formattedCheckIn}`
+            : `${formattedCheckIn} to ${formattedCheckOut}`,
+        fromLocation: booking.transfer_details?.source?.name || "",
+        toLocation: booking.transfer_details?.destination?.name || "",
+        passengers:
+          booking.number_of_adults +
+          booking.number_of_children +
+          booking.number_of_infants,
+        // duration: booking.transfer_details?.duration?.text || 'N/A',
+      };
     }
-
-  }
   );
 
   const handleTaxi = async (id) => {
@@ -351,12 +346,6 @@ const formattedCheckOut = checkOutDate?.toLocaleDateString("en-US", {
               </div>
             ))}
           </div>
-          {/* <button
-            className="bg-black text-white w-[120px] h-[38px] rounded-md px-[12px] py-[6px]"
-            onClick={() => setShowAddDrawer(true)}
-          >
-            Add Activity
-          </button> */}
           {finalized_status === "PENDING" ? (
             <div className="mt-3 w-48 h-[20px] bg-gray-300 rounded animate-pulse"></div>
           ) : (
@@ -383,11 +372,11 @@ const formattedCheckOut = checkOutDate?.toLocaleDateString("en-US", {
                   <>
                     <div
                       key={item.id}
-                      className="flex gap-2 group w-[333px] p-[10px] border-[2px] rounded-[12px] shadow-none hover:cursor-pointer hover:bg-[rgb(254_250_216)] bg-opacity-100 "
+                      className="group relative flex gap-2 w-[333px] p-[10px] border-[2px] rounded-[12px] shadow-none cursor-pointer hover:bg-[rgb(254_250_216)] bg-opacity-100"
                       onClick={() => handleTaxi(item.id)}
                     >
-                      <div className="hidden hover:block cursor-pointer">
-                        <FaEdit />
+                      <div className="absolute top-2 right-2 opacity-0 group-hover:!opacity-100 transition-opacity duration-200 z-10">
+                        <FaPen size={12} />
                       </div>
 
                       <div className="w-[50px] h-[50px] flex items-center justify-center ">
@@ -413,34 +402,22 @@ const formattedCheckOut = checkOutDate?.toLocaleDateString("en-US", {
                         </span>
                         <div className="w-full h-px bg-gray-200 mb-2" />
                         <div className="flex gap-1 relative">
-                          <div className="w-fit font-semibold  text-[12px] cursor-pointer">
+                          <div className="w-fit font-semibold  text-[12px]">
                             {item?.name}
                           </div>
-                          {/* <div className="hidden group-hover:!block ">
-                      <svg
-                        stroke="currentColor"
-                        fill="currentColor"
-                        stroke-width="0"
-                        viewBox="0 0 24 24"
-                        class="mt-1"
-                        height="1em"
-                        width="1em"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path fill="none" d="M0 0h24v24H0z"></path>
-                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 000-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
-                      </svg>
-                    </div> */}
                         </div>
                         <div className="flex gap-3 text-[12px] ">
                           <div className="w-auto flex items-center gap-1">
                             <BsPeopleFill />
                             <div>
-                              {item?.pax ||
-                                item?.number_of_adults +
-                                  item?.number_of_children +
-                                  item?.number_of_infants}{" "}
-                              Passenger
+                              {(() => {
+                                const pax =
+                                  item?.pax ??
+                                  item?.number_of_adults +
+                                    item?.number_of_children +
+                                    item?.number_of_infants;
+                                return `${pax} Passenger${pax > 1 ? "s" : ""}`;
+                              })()}
                             </div>
                           </div>
                           {item?.duration && item?.duration != "0 hours" && (
@@ -468,38 +445,6 @@ const formattedCheckOut = checkOutDate?.toLocaleDateString("en-US", {
               </div>
             </div>
           </div>
-          // <div className="text-sm font-normal flex flex-col gap-1 w-auto md:flex-row" >
-          //   <div className="text-[14px] font-medium leading-[22px] w-[80px]">
-          //     Taxi:
-          //   </div>
-          //   <div className="flex flex-col gap-4 w-full " >
-          //     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          //       {formattedTaxiDetails.map((taxi) => (
-          //         <div
-          //           key={taxi.id}
-          //           className="flex flex-col border border-gray-300 rounded-lg p-4 shadow-sm hover:cursor-pointer hover:bg-[rgb(254_250_216)]"
-          //           onClick={()=>{setTaxiData(taxi); handleTaxi(); }}
-          //         >
-          //           <div className="flex items-center text-[12px] text-gray-600 mb-1 gap-2">
-          //             <FaTaxi size={14} className="text-blue-600" />
-          //             <span>{taxi.date}</span>
-          //           </div>
-
-          //           <div className="w-full h-px bg-gray-200 mb-2" />
-
-          //           <div className="flex items-center text-[14px] font-medium text-black mb-1 gap-2">
-          //             {/* <FaTaxi  size={16} className="text-blue-600" /> */}
-          //             <span>{taxi?.name ? taxi.name : taxi.fromLocation + 'to' + taxi.toLocation}</span>
-          //           </div>
-
-          //           <div className="text-[12px] text-gray-600">
-          //             {taxi.passengers} passengers | Duration: {taxi.duration}
-          //           </div>
-          //         </div>
-          //       ))}
-          //     </div>
-          //   </div>
-          // </div>
         )}
 
       {dayByDay && dayByDay.length ? (

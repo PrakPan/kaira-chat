@@ -483,6 +483,7 @@ const ComboTaxi = (props) => {
                 </div>
               ) : null}
 
+              
               {!noResults && !error && !updateBookingState ? (
                 <OptionsContainer id="options">
                   <div style={{ clear: "right" }}>
