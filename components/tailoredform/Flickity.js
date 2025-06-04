@@ -15,7 +15,7 @@ const Card = styled.div`
 
 const FlickityComp = (props) => {
   return (
-    <div style={{ width: "100%" }}>
+    <div style={{ width: "100%" }} className="">
       {!props.slideIndex ? (
         <Card>
           <SlideOne
