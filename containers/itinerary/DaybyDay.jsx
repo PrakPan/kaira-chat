@@ -248,6 +248,11 @@ const DaybyDay = ({
                   itineraryDaybyDay?.cities?.[0]?.id
               ]?.name
             }
+             booking={transferBookings?.intercity?.[
+                startCity?.gmaps_place_id +
+                  ":" +
+                  itineraryDaybyDay?.cities?.[0]?.id
+              ]}
             duration={
               transferBookings?.intercity?.[
                 startCity?.gmaps_place_id +
@@ -364,6 +369,7 @@ const DaybyDay = ({
                       onClick={() => alert(`Clicked`)}
                       upPresent={true}
                       downPresent={true}
+                      booking={transferBookings?.intercity?.[idMapping]}
                       booking_id={transferBookings?.intercity?.[idMapping]?.id}
                       width={width}
                       length={itineraryDaybyDay?.cities?.length}

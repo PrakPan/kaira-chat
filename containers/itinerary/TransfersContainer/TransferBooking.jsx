@@ -360,6 +360,8 @@ const TransferBooking = ({
             </div>
             <>
               {booking?.booking_type === "Flight" ? (
+                <>
+                <div className="absolute w-[20px] border border-black ml-4 mt-[27px]"></div>
                 <FlightBooking
                   booking={booking}
                   booking_id={booking_id}
@@ -377,8 +379,12 @@ const TransferBooking = ({
                   setShowDrawer={setShowDrawer}
                   getPaymentHandler={getPaymentHandler}
                 />
+                </>
               ) : (
+                <>
+                 <div className="absolute w-[20px] border border-black ml-4 mt-[27px]"></div>
                 <div className="mt-3 ml-1 md:ml-7 flex flex-col w-full">
+                 
                   <div className=" w-full items-center">
                     <div className="font-medium text-[15px] flex items-center gap-1">
                       <div className="text-[#C5C1C1]">
@@ -403,12 +409,24 @@ const TransferBooking = ({
                           </svg>{" "} 
                           {booking?.name}
                         </>
-                      ) : isAirport ? (
+                      ) : isAirport ? booking?.transfer_details?.source?.name && booking?.transfer_details?.source?.city_name ? (
                         <>
-                          Airport {AirportTransferType} in{" "}
-                          {booking?.transfer_details?.source?.name || booking?.transfer_details?.source?.city_name}
-                        </>
-                      ) : (
+                          
+                          {booking?.transfer_details?.source?.name}
+                          <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 12 12"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
+                              fill="#1F1F1F"
+                            />
+                          </svg>{" "} { booking?.transfer_details?.source?.city_name}
+                        </> ) : booking?.name
+                       : (
                         (booking?.transfer_details?.source?.name || booking?.transfer_details?.source?.city_name) && (booking?.transfer_details?.destination?.name || booking?.transfer_details?.destination?.city_name) ? <>
                           {booking?.transfer_details?.source?.name || booking?.transfer_details?.source?.city_name}{" "}
                           <svg
@@ -666,6 +684,7 @@ const TransferBooking = ({
                     )}
                   </Drawer>
                 </div>
+                </>
               )}
               <TransferEditDrawer
                 mercury
