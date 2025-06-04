@@ -408,7 +408,7 @@ export default function ActivityDetails(props) {
                     index={index}
                     amenity={amenity}
                     handleAmenityChange={handleAmenityChange}
-                    travelers={props.filterState.pax.number_of_travelers}
+                    travelers={props.filterState?.number_of_travelers}
                   />
                 ))}
               </div>
