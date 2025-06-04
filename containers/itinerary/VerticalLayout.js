@@ -62,8 +62,8 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
   const [showTooltip, setShowTooltip] = useState(false);
 
  
-  const pickupBooking = booking.find(book => book.is_airport_pickup);
-  const dropBooking = booking.find(book => book.is_airport_drop);
+  const pickupBooking = booking.find(book => book?.is_airport_pickup);
+  const dropBooking = booking.find(book => book?.is_airport_drop);
 
   const hasPickup = Boolean(pickupBooking);
   const hasDrop = Boolean(dropBooking);

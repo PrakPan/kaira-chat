@@ -302,7 +302,11 @@ const DaybyDay = ({
               city?.id + ":" + itineraryDaybyDay?.cities?.[index + 1]?.id;
 
             let sourceKey = city?.id;
-            let airportBookings = transferBooking?.airport[itineraryDaybyDay?.cities?.[index + 1]?.id] || [];
+            let airportBookings = transferBooking?.airport[sourceKey]?.map((booking,index)=>{
+                    if(booking?.is_airport_drop){
+                      return booking;
+                    }
+          }) || [];
             let intracityBookings = transferBooking?.intracity[sourceKey] || [];
 
             if(airportBookings?.length > 0){
@@ -382,6 +386,7 @@ const DaybyDay = ({
                       _updateTaxiBookingHandler={_updateTaxiBookingHandler}
                       _updatePaymentHandler={_updatePaymentHandler}
                       getPaymentHandler={getPaymentHandler}
+
                     />
                   </div>
                 )}
@@ -392,11 +397,12 @@ const DaybyDay = ({
             setShowLoginModal={setShowLoginModal}
             key={endCity?.gmaps_place_id}
             loadbookings={loadbookings}
-            airportBookings={transferBooking?.airport[itineraryDaybyDay?.cities?.[
-                  itineraryDaybyDay?.cities?.length - 1
-                ]?.id] ? sortByCheckIn(transferBooking?.airport[itineraryDaybyDay?.cities?.[
-                  itineraryDaybyDay?.cities?.length - 1
-                ]?.id]) : [] }
+            // airportBookings={transferBooking?.airport[itineraryDaybyDay?.cities?.[
+            //       itineraryDaybyDay?.cities?.length - 1
+            //     ]?.id] ? sortByCheckIn(transferBooking?.airport[itineraryDaybyDay?.cities?.[
+            //       itineraryDaybyDay?.cities?.length - 1
+            //     ]?.id]) : [] }
+            airportBookings = {transferBooking?.airport[endCity?.gmaps_place_id] || []}
             intracityBookings={transferBooking?.intracity[itineraryDaybyDay?.cities?.[
                   itineraryDaybyDay?.cities?.length - 1
                 ]?.id] ? sortByCheckIn(transferBooking?.intracity[itineraryDaybyDay?.cities?.[
