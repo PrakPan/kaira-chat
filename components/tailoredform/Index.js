@@ -37,7 +37,6 @@ const Container = styled.div`
   @media screen and (min-width: 768px) {
     ${(props) => props.tailoredFormModal && "height : 100%"};
     margin: auto 0;
-
     min-height: 500px;
   }
 `;
@@ -89,7 +88,7 @@ const LoadingText = styled.div`
 `;
 
 const Enquiry = (props) => {
-  console.log("Enquiry Props:",props)
+  console.log("Enquiry Props:", props);
   const router = useRouter();
   const routerquery = router.query;
   const initialInputId = Date.now();
@@ -177,17 +176,17 @@ const Enquiry = (props) => {
 
   var selectedObj;
 
-  if ((routerquery.state && !routerquery.city)||props?.type=="State") {
+  if ((routerquery.state && !routerquery.city) || props?.type == "State") {
     console.log("PROPS", props);
     selectedObj = [
       {
         id: routerquery.page_id || props.page_id,
         name: routerquery.destination || props.destination,
         input_id: initialInputId,
-        type:"State"
+        type: "State",
       },
     ];
-  } else if(props?.type=="City" || router?.query.type=="City"){
+  } else if (props?.type == "City" || router?.query.type == "City") {
     console.log("PROPS3", props);
     selectedObj = [
       {
@@ -197,7 +196,7 @@ const Enquiry = (props) => {
         type: "City",
       },
     ];
-  }else if (routerquery.country || props?.type=="Country") {
+  } else if (routerquery.country || props?.type == "Country") {
     console.log("PROPS2", props);
     selectedObj = [
       {
@@ -207,7 +206,7 @@ const Enquiry = (props) => {
         type: "Country",
       },
     ];
-  }  else {
+  } else {
     console.log("PROPS4", props);
     selectedObj = [
       {
@@ -219,10 +218,7 @@ const Enquiry = (props) => {
     ];
   }
 
-  console.log("SelectedObj",selectedObj,routerquery);
-
   const _handleHideBlack = () => {
-    // setShowBlack(false);
     setShowCities(false);
     setShowSearchStarting(false);
   };
@@ -258,7 +254,7 @@ const Enquiry = (props) => {
           cityids.indexOf(selectedCities[i].id) == -1 &&
           selectedCities[i].id
         ) {
-          console.log("selected city is:",selectedCities[i])
+          console.log("selected city is:", selectedCities[i]);
           if (selectedCities[i].type == "State")
             stateIds.push(selectedCities[i].id);
           else if (selectedCities[i].type == "Country")
@@ -329,45 +325,6 @@ const Enquiry = (props) => {
     if (startingLocation) data;
 
     completeItineraryCreate();
-
-    // setLoading(true);
-    // localStorage.removeItem("MyPlans");
-
-    // axiostailoredinstance
-    //   .post("", data, {
-    //     headers: {
-    //       Authorization: `Bearer ${props.token}`,
-    //     },
-    //   })
-    //   .then((response) => {
-    //     setSubmitted(true);
-    //     if (!response.data.auto_itinerary_created) {
-    //       router.push("/thank-you");
-    //     } else {
-    //       if (response.data.loader_time) {
-    //         window.location.href =
-    //           "/itinerary/" +
-    //           response.data.itinerary.itinerary_id +
-    //           "?t=" +
-    //           response.data.loader_time;
-    //       } else {
-    //         window.location.href =
-    //           "/itinerary/" + response.data.itinerary.itinerary_id;
-    //       }
-    //       setLoading(false);
-
-    //       logEvent({
-    //         action: "conversion",
-    //         params: {
-    //           send_to: "AW-738037519/IF5rCMyxhL8ZEI-e9t8C",
-    //         },
-    //       });
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     setLoading(false);
-    //     router.push("/thank-you");
-    //   });
   };
 
   const _prevSlideHandler = () => {
@@ -409,7 +366,6 @@ const Enquiry = (props) => {
     }
 
     setShowPopup(popupObj);
-    // setSlideIndex(slideIndex + 1);
     if (props.HeroBanner && isPageWide) {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -575,24 +531,12 @@ const Enquiry = (props) => {
         window.location.href = `/itinerary/${itineraryId}`;
         window.scrollTo(0, 0);
 
-        // if (!response.data?.auto_itinerary_created) {
-        //   router.push("/thank-you");
-        // } else {
-        // if (response.data.time) {
-        // router.push(`/itinerary/${itineraryId}?t=60`);
-
-        // } else {
-        //   router.push(`/itinerary/${itineraryId}`);
-        // }
-
         logEvent({
           action: "conversion",
           params: {
             send_to: "AW-738037519/IF5rCMyxhL8ZEI-e9t8C",
           },
         });
-
-        // }
       })
       .catch((err) => {
         console.log("ERROR >>>", err);
@@ -602,7 +546,6 @@ const Enquiry = (props) => {
       });
   };
 
-  // if (!loading && !submitted)
   return (
     <>
       {showBlack && !props.tailoredFormModal ? (
@@ -712,7 +655,7 @@ const Enquiry = (props) => {
           </div>
         </div>
 
-        <div style={{ padding: "0 1rem", width: "100%" }}>
+        <div style={{ padding: "0 1rem", width: "100%" }} className="h-full">
           <div
             style={{
               borderStyle: "solid none none none",
@@ -923,19 +866,6 @@ const Enquiry = (props) => {
       </Container>
     </>
   );
-  // else
-  //   return (
-  //     <>
-  //       {showBlack && !props.tailoredFormModal ? (
-  //         <BlackContainer onClick={() => setShowBlack(false)}></BlackContainer>
-  //       ) : null}
-
-  //       <Container className="border center-div">
-  //         <LoadingLottie height="50%" width="50%"></LoadingLottie>
-  //         <LoadingText>Finalizing your plan...</LoadingText>
-  //       </Container>
-  //     </>
-  //   );
 };
 
 const mapStateToPros = (state) => {
