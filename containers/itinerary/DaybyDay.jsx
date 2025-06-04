@@ -307,11 +307,9 @@ const DaybyDay = ({
               city?.id + ":" + itineraryDaybyDay?.cities?.[index + 1]?.id;
 
             let sourceKey = city?.id;
-            let airportBookings = transferBooking?.airport[sourceKey]?.map((booking,index)=>{
-                    if(booking?.is_airport_drop){
-                      return booking;
-                    }
-          }) || [];
+            let airportBookings = transferBooking?.airport[sourceKey]?.filter(
+  (booking) => booking?.is_airport_drop
+) || [];
             let intracityBookings = transferBooking?.intracity[sourceKey] || [];
 
             if(airportBookings?.length > 0){

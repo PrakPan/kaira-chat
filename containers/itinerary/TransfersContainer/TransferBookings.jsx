@@ -187,7 +187,7 @@ const TransferBookings = (props) => {
       const airportDropBookings = transferBooking?.airport[sourceKey] || [];
       const intracityBookings = transferBooking?.intracity[sourceKey] || [];
 
-      console.log("Date Diff",airportDropBookings[0]?.check_in?.split(" ")[0],itineraries?.cities?.[0]?.start_date)
+     
       
       if (airportDropBookings.length > 0) {
         const sortedBookings = sortByCheckIn(airportDropBookings);

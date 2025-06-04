@@ -390,7 +390,7 @@ const TransferBooking = ({
                       <div className="text-[#C5C1C1]">
                         {getModeIcon(booking?.booking_type, 15)}
                       </div>
-                      {isIntracity  ?  (
+                      {isIntracity  ? booking?.transfer_type == "sightseeing" ? booking?.name: (
                          (booking?.transfer_details?.source?.name || booking?.transfer_details?.source?.city_name) && (booking?.transfer_details?.destination?.name || booking?.transfer_details?.destination?.city_name) ? <>
                           {booking?.booking_type} in{" "}
                           {booking?.transfer_details?.source?.name || booking?.transfer_details?.source?.city_name}
@@ -409,23 +409,26 @@ const TransferBooking = ({
                           </svg>{" "} 
                           {booking?.name}
                         </>
-                      ) : isAirport ? booking?.transfer_details?.source?.name && booking?.transfer_details?.source?.city_name ? (
-                        <>
+                      ) : isAirport ? 
+                      // booking?.transfer_details?.source?.name && booking?.transfer_details?.source?.city_name ? 
+                      // (
+                      //   <>
                           
-                          {booking?.transfer_details?.source?.name}
-                          <svg
-                            width="12"
-                            height="12"
-                            viewBox="0 0 12 12"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
-                              fill="#1F1F1F"
-                            />
-                          </svg>{" "} { booking?.transfer_details?.source?.city_name}
-                        </> ) : booking?.name
+                      //     {booking?.transfer_details?.source?.name}
+                      //     <svg
+                      //       width="12"
+                      //       height="12"
+                      //       viewBox="0 0 12 12"
+                      //       fill="none"
+                      //       xmlns="http://www.w3.org/2000/svg"
+                      //     >
+                      //       <path
+                      //         d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
+                      //         fill="#1F1F1F"
+                      //       />
+                      //     </svg>{" "} { booking?.transfer_details?.source?.city_name}
+                      //   </> ) 
+                        booking?.name
                        : (
                         (booking?.transfer_details?.source?.name || booking?.transfer_details?.source?.city_name) && (booking?.transfer_details?.destination?.name || booking?.transfer_details?.destination?.city_name) ? <>
                           {booking?.transfer_details?.source?.name || booking?.transfer_details?.source?.city_name}{" "}
