@@ -112,13 +112,13 @@ const Cost = (props) => {
                 <StrikedCost>
                   {" "}
                   {"₹ " +
-                    getIndianPrice(Math.round(props.discounted_cost/100))}
+                    getIndianPrice(Math.round(props.discounted_cost))}
                 </StrikedCost>
               ) : (
                 <StrikedCost>
                   {" "}
                   {"₹ " +
-                    getIndianPrice(Math.round(props.discounted_cost/100))}
+                    getIndianPrice(Math.round(props.discounted_cost))}
                 </StrikedCost>
               ))}
 
@@ -130,7 +130,7 @@ const Cost = (props) => {
                   className="font-lexend"
                 >
                   {"₹" +
-                    getIndianPrice(Math.round(props.starting_cost/100)) +
+                    getIndianPrice(Math.round(props.starting_cost)) +
                     "/-"}
                 </Text>
               ) : (
@@ -140,7 +140,7 @@ const Cost = (props) => {
                   className="font-lexend"
                 >
                   {"₹" +
-                    getIndianPrice(Math.round(props.starting_cost/100)) +
+                    getIndianPrice(Math.round(props.starting_cost)) +
                     "/-"}
                 </GITText>
               )}
