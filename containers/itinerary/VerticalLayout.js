@@ -232,7 +232,8 @@ const CityItem = ({
   getPaymentHandler,
   _updateTaxiBookingHandler,
   airportBookings,
-  intracityBookings
+  intracityBookings,
+  booking,
 }) => {
   console.log("Airpo",airportBookings,intracityBookings)
   const { transfers_status } = useSelector((state) => state.ItineraryStatus);
@@ -456,13 +457,12 @@ const formattedTime = (dateObj) => dateObj.toLocaleTimeString("en-US", {
             <>
               {/* Icon Section */}
               <div className="mt-[4px] flex items-start">
-                {city?.includes(",")
-                  ? city?.split(",").map((text, i) => {
-                      const mode = extractMode(text.trim());
+                {booking?.children ? booking?.children?.map((book, i) => {
+                      const mode = extractMode(book?.booking_type);
                       return (
                         <>
                           {correctIcon(mode)}
-                          {i < city.split(",").length - 1 && (
+                          {i < booking?.children?.length - 1 && (
                             <span>
                               <RiArrowDropRightLine size={18} />
                             </span>

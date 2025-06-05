@@ -21,15 +21,15 @@ const Rooms = (props) => {
     let rooms_arr = [];
     if (props.data) {
       for (var i = 0; i < props.data.length; i++) {
-        if (props.data[i]?.total_rate) {
+        if (props.data[i]?.final_rate) {
           rooms_arr.push(
             <RoomType
             currentBooking={props?.currentBooking}
               key={i}
               index={i}
-              price={props.data[i].total_rate}
-              data={props.data[i].rates[0]}
-              rooms={getRooms(props.data[i].rates)}
+              price={props.data[i].final_rate}
+              data={props.data[i]}
+              rooms={getRooms(props.data[i])}
               handleUpdateBooking={handleUpdateBooking}
               selectedRecommendation={selectedRecommendation && selectedRecommendation === i}
               setSelectedRecommendation={setSelectedRecommendation}
@@ -46,9 +46,9 @@ const Rooms = (props) => {
   const getRooms = (rates) => {
     if (rates) {
       let rooms = [];
-      for (const rate of rates) {
-        rooms.push(...rate?.rooms)
-      }
+      // for (const rate of rates) {
+        rooms.push(...rates?.rooms)
+      // }
       return rooms;
     }
     return [];
@@ -57,6 +57,7 @@ const Rooms = (props) => {
   return (
     <div className="flex flex-col gap-3">
       {rooms}
+     
     </div>
   );
 };

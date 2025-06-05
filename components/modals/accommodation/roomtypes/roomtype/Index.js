@@ -7,6 +7,7 @@ import { dateFormat } from "../../../../../helper/DateUtils";
 import { useState } from "react";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 import ImageCarousel from "../../../Carousel/ImageCarousel";
+import CancellationPolicy from "../CancellationPolicy";
 
 const ImageContainer = styled.div`
   height: 85px;
@@ -37,7 +38,7 @@ const RoomType = (props) => {
       <div className="flex flex-col gap-1">
         <div className="flex flex-row items-center h-fit gap-2">
           <div className="text-md md:text-lg font-bold">
-            Recommendation {props.index + 1}
+            Room {props.index + 1}
           </div>
           {props.rooms.length > 1 && (
             <div className="text-blue">
@@ -61,7 +62,7 @@ const RoomType = (props) => {
             {"₹" + getIndianPrice(Math.round(props.data?.final_rate))}
           </div>
 
-          <div className="flex flex-col gap-1 items-end">
+          {/* <div className="flex flex-col gap-1 items-end">
             <Button
               onclick={props.handleUpdateBooking(props.index)}
               bgColor={"#F7E700"}
@@ -77,7 +78,7 @@ const RoomType = (props) => {
             <div className="text-sm">
               on {props.checkInDate} ({props.city})
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -218,6 +219,7 @@ const RoomType = (props) => {
             : null}
         </div>
       )}
+      <CancellationPolicy policies={props?.data?.cancellation_policies}/>
     </div>
   );
 };

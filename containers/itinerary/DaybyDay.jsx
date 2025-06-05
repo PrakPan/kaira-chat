@@ -248,6 +248,11 @@ const DaybyDay = ({
                   itineraryDaybyDay?.cities?.[0]?.id
               ]?.name
             }
+             booking={transferBookings?.intercity?.[
+                startCity?.gmaps_place_id +
+                  ":" +
+                  itineraryDaybyDay?.cities?.[0]?.id
+              ]}
             duration={
               transferBookings?.intercity?.[
                 startCity?.gmaps_place_id +
@@ -302,11 +307,9 @@ const DaybyDay = ({
               city?.id + ":" + itineraryDaybyDay?.cities?.[index + 1]?.id;
 
             let sourceKey = city?.id;
-            let airportBookings = transferBooking?.airport[sourceKey]?.map((booking,index)=>{
-                    if(booking?.is_airport_drop){
-                      return booking;
-                    }
-          }) || [];
+            let airportBookings = transferBooking?.airport[sourceKey]?.filter(
+  (booking) => booking?.is_airport_drop
+) || [];
             let intracityBookings = transferBooking?.intracity[sourceKey] || [];
 
             if(airportBookings?.length > 0){
@@ -364,6 +367,7 @@ const DaybyDay = ({
                       onClick={() => alert(`Clicked`)}
                       upPresent={true}
                       downPresent={true}
+                      booking={transferBookings?.intercity?.[idMapping]}
                       booking_id={transferBookings?.intercity?.[idMapping]?.id}
                       width={width}
                       length={itineraryDaybyDay?.cities?.length}
