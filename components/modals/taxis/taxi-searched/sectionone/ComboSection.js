@@ -5,14 +5,16 @@ import { axiosTaxiBooking } from "../../../../../services/bookings/UpdateTaxiGoz
 import ImageLoader from "../../../../ImageLoader";
 import { PulseLoader } from "react-spinners";
 import { getIndianPrice } from "../../../../../services/getIndianPrice";
-import Accordion, { AccordionDetails, AccordionSummary } from "../../../../ui/Accordion";
+import Accordion, {
+  AccordionDetails,
+  AccordionSummary,
+} from "../../../../ui/Accordion";
 import { connect } from "react-redux";
 import { openNotification } from "../../../../../store/actions/notification";
 import dayjs from "dayjs";
 import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im";
 import { FaCar } from "react-icons/fa";
 import { PiTaxiLight } from "react-icons/pi";
-
 
 // Styled components
 // const Container = styled.div`
@@ -97,7 +99,6 @@ const TripInfoContainer = styled.div`
   }
 `;
 
-
 const InfoGroup = styled.div`
   display: flex;
   gap: 1rem;
@@ -108,7 +109,6 @@ const InfoGroup = styled.div`
     justify-content: space-between;
   }
 `;
-
 
 // const PriceActionContainer = styled.div`
 //   display: flex;
@@ -125,9 +125,6 @@ const InfoGroup = styled.div`
 //     margin-top: 0.5rem;
 //   }
 // `;
-
-
-
 
 const InfoItem = styled.div`
   display: flex;
@@ -148,7 +145,6 @@ const InfoText = styled.p`
   color: rgba(91, 89, 89, 1);
 `;
 
-
 const Cost = styled.p`
   font-weight: 800;
   font-size: 1rem;
@@ -164,15 +160,15 @@ const SelectButton = styled.button`
   border: 2px solid black;
   border-radius: 0.5rem;
   padding: 0.5rem 1rem;
-  background-color: #F7E700;
+  background-color: #f7e700;
   font-weight: 600;
   transition: all 0.3s;
-  
+
   &:hover {
     background-color: black;
     color: white;
   }
-  
+
   &:focus {
     outline: none;
   }
@@ -185,8 +181,7 @@ const SeatInfo = styled.p`
   text-align: center;
 `;
 
-const FacilitiesContainer = styled.div`
-`;
+const FacilitiesContainer = styled.div``;
 
 const AccordionText = styled.div`
   font-size: 13px;
@@ -198,29 +193,27 @@ const ComboSection = (props) => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
-
   const handleUpdate = (data) => {
     if (props.onSelect) {
       props?.onSelect(data);
-     
-    }else return;
-  }
+    } else return;
+  };
 
-  const handleOnSelect = ()=>{
-      props.onTaxiSelect?.(props?.index);
-                
-                  const arrivalTime = calculateArrivalTime(
-                    props.start_date,
-                    props.start_time,
-                    props.data?.duration?.value ?? 0
-                  );
-                
-                  handleUpdate({ 
-                    ...props.data, 
-                    booking_type: "Taxi",
-                    arrival_time: arrivalTime 
-                  });
-  }
+  const handleOnSelect = () => {
+    props.onTaxiSelect?.(props?.index);
+
+    const arrivalTime = calculateArrivalTime(
+      props.start_date,
+      props.start_time,
+      props.data?.duration?.value ?? 0
+    );
+
+    handleUpdate({
+      ...props.data,
+      booking_type: "Taxi",
+      arrival_time: arrivalTime,
+    });
+  };
   let bagCapacity = 0;
   if (props.data?.taxi_category?.bag_capacity) {
     bagCapacity += props.data.taxi_category.bag_capacity;
@@ -237,7 +230,6 @@ const ComboSection = (props) => {
 
   return (
     <Container className="font-lexend">
-     
       <TaxiCard>
         <ImageContainer>
           {/* {props.data?.taxi_category?.image ? (
@@ -250,14 +242,14 @@ const ComboSection = (props) => {
               height="auto"
             />
           ) : ( */}
-            {/* <ImageLoader
+          {/* <ImageLoader
               url={"media/icons/bookings/car (2).png"}
               width="90%"
               widthmobile="90%"
               height="auto"
             /> */}
           {/* )} */}
-          <PiTaxiLight size={18}/>
+          <PiTaxiLight size={18} />
           {/* <TaxiHeading className="text-center">
             {props.data.taxi_category.type}
           </TaxiHeading>
@@ -271,27 +263,27 @@ const ComboSection = (props) => {
             {props.data?.taxi_category?.type ? (
               <>
                 {props.data.taxi_category.type}{" "}
-                {props.data.taxi_category?.fuel_type && isPageWide ? (
-                  `(${props.data.taxi_category.fuel_type})`
-                ) : null}
+                {props.data.taxi_category?.fuel_type && isPageWide
+                  ? `(${props.data.taxi_category.fuel_type})`
+                  : null}
               </>
-            ) : props.selectedBooking.transfer_type === "Intercity round-trip" ? (
+            ) : props.selectedBooking.transfer_type ===
+              "Intercity round-trip" ? (
               "Round-trip Taxi"
             ) : (
               "One-way Taxi"
             )}
-          <div>
-          <Cost>{"₹" + getIndianPrice(Math.ceil(props.data.price.total)) + "/-"}</Cost>
-          </div>
-        
+            <div>
+              <Cost>
+                {"₹" + getIndianPrice(Math.ceil(props.data.price.total)) + "/-"}
+              </Cost>
+            </div>
           </TaxiHeading>
 
           {<ModelText>{props.data?.taxi_category?.model_name}</ModelText>}
 
-          
-
           {/* <TripInfoContainer> */}
-            {/* <ImageLoader
+          {/* <ImageLoader
               url="media/icons/bookings/distance.png"
               height="1.5rem"
               width="1.5rem"
@@ -302,7 +294,7 @@ const ComboSection = (props) => {
               noLazy
             /> */}
 
-            {/* <InfoGroup>
+          {/* <InfoGroup>
               {props.data?.distance?.text && (
                 <InfoItem>
                   <InfoHeading>
@@ -321,10 +313,10 @@ const ComboSection = (props) => {
                 </InfoItem>
               )}
             </InfoGroup> */}
-{/* 
+          {/* 
             <PriceActionContainer> */}
-              {/* <Cost>{"₹" + getIndianPrice(Math.ceil(props.data.price.total)) + "/-"}</Cost> */}
-              {/* {loading ? (
+          {/* <Cost>{"₹" + getIndianPrice(Math.ceil(props.data.price.total)) + "/-"}</Cost> */}
+          {/* {loading ? (
                 <PulseLoader size={8} speedMultiplier={0.6} color="#111" />
               ) : (
                props?.isSelected ? (
@@ -339,71 +331,82 @@ const ComboSection = (props) => {
               <ImCheckboxUnchecked className="inline" /> Select
             </div>
           ))} */}
-              
-            {/* </PriceActionContainer> */}
+
+          {/* </PriceActionContainer> */}
           {/* </TripInfoContainer> */}
 
           <div className="flex flex-row justify-between">
+            <div className="flex flex-row gap-2">
+              <div className="font-bold text-lg p-[0.4rem]">
+                {props.data?.taxi_category?.seating_capacity + "-seater"}
+              </div>
+              <FacilitiesContainer>
+                <Accordion
+                  borderRadius="0.5rem"
+                  open={open}
+                  setOpen={setOpen}
+                  iconStyle={{ right: "unset", left: "75px" }}
+                >
+                  <AccordionSummary
+                    style={
+                      isPageWide
+                        ? { padding: "0.5rem 0" }
+                        : { padding: "0.5rem 0" }
+                    }
+                  >
+                    Facilities
+                  </AccordionSummary>
 
-          <div className="flex flex-row gap-2">
-            <div className="font-bold text-lg p-[0.4rem]">
-            {props.data?.taxi_category?.seating_capacity + "-seater"}
-          </div>
-          <FacilitiesContainer>
-            <Accordion
-              borderRadius="0.5rem"
-              open={open}
-              setOpen={setOpen}
-              iconStyle={{ right: "unset", left: "75px" }}
-            >
-              <AccordionSummary style={isPageWide ? { padding: "0.5rem 0" } : {padding: "0.5rem 0"}}>
-                Facilities
-              </AccordionSummary>
+                  <AccordionDetails
+                    style={!isPageWide ? { marginBottom: "1rem" } : {}}
+                  >
+                    {props.data?.instructions &&
+                    props.data?.instructions?.length ? (
+                      <AccordionText>
+                        {props.data.instructions.map((e, index) => (
+                          <div
+                            key={index}
+                            style={{ marginLeft: isPageWide ? "0.75rem" : "" }}
+                          >
+                            - {e}
+                          </div>
+                        ))}
+                      </AccordionText>
+                    ) : null}
 
-              <AccordionDetails style={!isPageWide ? { marginBottom: "1rem" } : {}}>
-                {props.data?.instructions && props.data?.instructions?.length ? (
-                  <AccordionText>
-                    {props.data.instructions.map((e, index) => (
-                      <div key={index} style={{ marginLeft: isPageWide ? "0.75rem" : "" }}>
-                        - {e}
-                      </div>
-                    ))}
-                  </AccordionText>
-                ) : null}
-
-                {bagCapacity > 0 && (
-                  <AccordionText>
-                    <div style={{ marginLeft: isPageWide ? "0.75rem" : "" }}>
-                      - {bagCapacity} Luggage bags
-                    </div>
-                  </AccordionText>
-                )}
-              </AccordionDetails>
-            </Accordion>
-          </FacilitiesContainer>
-           </div>
-           <div className="p-[0.4rem]">
-           {loading ? (
+                    {bagCapacity > 0 && (
+                      <AccordionText>
+                        <div
+                          style={{ marginLeft: isPageWide ? "0.75rem" : "" }}
+                        >
+                          - {bagCapacity} Luggage bags
+                        </div>
+                      </AccordionText>
+                    )}
+                  </AccordionDetails>
+                </Accordion>
+              </FacilitiesContainer>
+            </div>
+            <div className="p-[0.4rem] flex items-center justify-center">
+              {loading ? (
                 <PulseLoader size={8} speedMultiplier={0.6} color="#111" />
+              ) : props?.isSelected ? (
+                <div className="flex items-center gap-1">
+                  <ImCheckboxChecked className="inline" />
+                </div>
               ) : (
-               props?.isSelected ? (
-            <div className="flex items-center gap-1">
-              <ImCheckboxChecked className="inline" /> 
+                <div
+                  className="flex items-center gap-1 cursor-pointer"
+                  onClick={handleOnSelect}
+                >
+                  <ImCheckboxUnchecked className="inline" />
+                </div>
+              )}
             </div>
-          ) : (
-            <div
-              className="flex items-center gap-1 cursor-pointer"
-              onClick={handleOnSelect}
-            >
-              <ImCheckboxUnchecked className="inline" /> 
-            </div>
-          ))}
           </div>
-          </div>
-          
         </DetailsContainer>
       </TaxiCard>
-       <hr/>
+      <hr />
     </Container>
   );
 };

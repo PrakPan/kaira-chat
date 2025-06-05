@@ -845,15 +845,16 @@ const TransferBooking = ({
                       <div className="text-[#C5C1C1]">
                         {getModeIcon(book?.booking_type, 15)}
                       </div>
-                        {isIntracity  ?  (
+                        {isIntracity  ? book?.transfer_type == "sightseeing" ? book?.name  : (
                          (book?.transfer_details?.source?.name || book?.transfer_details?.source?.city_name) && (book?.transfer_details?.destination?.name || book?.transfer_details?.destination?.city_name) && <>
                           {book?.booking_type} in{" "}
                           {book?.transfer_details?.source?.name || book?.transfer_details?.source?.city_name}
                         </>
                       ) : isAirport ? (
                         <>
-                          Airport {AirportTransferType} in{" "}
-                          {book?.transfer_details?.source?.name || book?.transfer_details?.source?.city_name}
+                        {book?.name}
+                          {/* Airport {AirportTransferType} in{" "}
+                          {book?.transfer_details?.source?.name || book?.transfer_details?.source?.city_name} */}
                         </>
                       ) : (
                         (book?.transfer_details?.source?.name || book?.transfer_details?.source?.city_name) && (book?.transfer_details?.destination?.name || book?.transfer_details?.destination?.city_name) ? <>

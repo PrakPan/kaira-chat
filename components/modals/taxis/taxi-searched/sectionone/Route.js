@@ -278,32 +278,33 @@ const Section = (props) => {
           setShowTaxiModal={props.setShowTaxiModal}
         ></SectionFour>
 
-        <div className="p-[0.4rem]">
-                {loading ? (
-                  <PulseLoader size={8} speedMultiplier={0.6} color="#111" />
-                ) : (
-                  <label
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent:"center",
-                      gap: "0.5rem",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <input
-                      type="checkbox"
-                      onChange={(e) => {
-                        if (e.target.checked) handleUpdate();
-                      }}
-                      style={{ width: "1.25rem", height: "1.25rem" }}
-                    />
-                    {/* <span className="font-lexend" style={{ fontSize: "14px" }}>
-                      Select
-                    </span> */}
-                  </label>
-                )}
-              </div>
+        <div className="p-[0.4rem] flex items-center justify-center">
+  {!loading ? (
+    <label
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "0.5rem",
+        cursor: "pointer",
+      }}
+    >
+      <input
+        type="checkbox"
+        onChange={(e) => {
+          if (e.target.checked) handleUpdate();
+        }}
+        style={{ width: "1.25rem", height: "1.25rem" }}
+      />
+      {/* <span className="font-lexend" style={{ fontSize: "14px" }}>
+        Select
+      </span> */}
+    </label>
+  ) : (
+    <PulseLoader size={8} speedMultiplier={0.6} color="#111" />
+  )}
+</div>
+
         </div>
         <hr/>
       </Container>

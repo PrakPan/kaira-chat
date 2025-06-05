@@ -61,7 +61,7 @@ const RoomType = (props) => {
 
         <div className="flex flex-row items-center justify-between">
           <div className="text-xl md:text-2xl font-bold">
-            {"₹" + getIndianPrice(Math.round(props.data?.final_rate))}
+            {"₹" + getIndianPrice(Math.round(props.price))}
           </div>
 
           <div className="flex flex-col gap-1 items-end">
