@@ -60,8 +60,8 @@ const PinWrapper = styled.div`
 
 const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downPresent }) => {
   const [showTooltip, setShowTooltip] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
 
- 
   const pickupBooking = booking.find(book => book?.is_airport_pickup);
   const dropBooking = booking.find(book => book?.is_airport_drop);
 
@@ -74,10 +74,10 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
       ? 'Airport Pickup Added'
       : hasDrop ? 'Airport Drop Added' : null;
 
-
-
   const handleClick = () => {
-    if (hasPickup && !hasDrop) {
+    if (hasPickup && hasDrop) {
+      setShowDetails(!showDetails);
+    } else if (hasPickup && !hasDrop) {
       handleIntracityBookings(upPresent && downPresent, { ...pickupBooking, selectedType: 'Airport Pickup' });
     } else if (!hasPickup && hasDrop) {
       handleIntracityBookings(upPresent && downPresent, { ...dropBooking, selectedType: 'Airport Drop' });
@@ -87,12 +87,14 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
   const handlePickupClick = (e) => {
     e.stopPropagation();
     setShowTooltip(false);
+    setShowDetails(false);
     handleIntracityBookings(upPresent && downPresent, { ...pickupBooking, selectedType: 'Airport Pickup' });
   };
 
   const handleDropClick = (e) => {
     e.stopPropagation();
     setShowTooltip(false);
+    setShowDetails(false);
     handleIntracityBookings(upPresent && downPresent, { ...dropBooking, selectedType: 'Airport Drop' });
   };
 
@@ -128,53 +130,90 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
            (book.number_of_infants || 0);
   };
 
-
-    // if(!displayText)
-    // return;
-
   return (
-    <div key={-3} className="group relative flex items-center gap-2">
-      {/* Main Display Text */}
-      <span
-        className={`text-blue font-[500] text-[14px] ${
-          (hasPickup && !hasDrop) || (!hasPickup && hasDrop)
-            ? 'hover:underline cursor-pointer'
-            : ''
-        }`}
-        onClick={handleClick}
-      >
-        {displayText}
-      </span>
-
-      {/* Tooltip Trigger Icon */}
-      <div className="relative">
-        <div
-          className="w-4 h-4 rounded-full bg-white text-gray-400 flex items-center justify-center text-[14px] font-bold hover:bg-blue-700 transition-colors cursor-pointer"
-          onMouseEnter={() => setShowTooltip(true)}
-          onMouseLeave={() => setShowTooltip(false)}
+    <div key={-3} className="group relative">
+      <div className="flex items-center gap-2">
+        <span
+          className={`text-blue font-[500] text-[14px] ${
+            displayText ? 'hover:underline cursor-pointer' : ''
+          }`}
+          onClick={handleClick}
         >
-          <LuInfo size={16} strokeWidth={2.5} />
-     </div>
+          {displayText}
+        </span>
 
-        {/* Tooltip Content */}
-        {showTooltip && (
+        <div className="relative">
           <div
-            className="absolute left-6 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600 whitespace-nowrap"
-            style={{ zIndex: 10000 }}
+            className="w-4 h-4 rounded-full bg-white text-gray-400 flex items-center justify-center text-[14px] font-bold hover:bg-blue-700 transition-colors cursor-pointer"
             onMouseEnter={() => setShowTooltip(true)}
             onMouseLeave={() => setShowTooltip(false)}
           >
-            <div className="flex flex-col gap-1">
+            <LuInfo size={16} strokeWidth={2.5} />
+          </div>
+
+          {showTooltip && (
+            <div
+              className="absolute left-6 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600 whitespace-nowrap"
+              style={{ zIndex: 10000 }}
+              onMouseEnter={() => setShowTooltip(true)}
+              onMouseLeave={() => setShowTooltip(false)}
+            >
+              <div className="flex flex-col gap-1">
+                {hasPickup && (
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
+                      onClick={handlePickupClick}
+                    >
+                      {pickupBooking?.name}:
+                    </span>
+                    <span className="text-gray-200">
+                      {/* {getPassengerCount(pickupBooking)} Passenger{getPassengerCount(pickupBooking) !== 1 ? 's' : ''}  */}
+                      • Date {formatDate(pickupBooking.check_in)} • Time {formatTime(pickupBooking.check_in)}
+                    </span>
+                  </div>
+                )}
+                {hasDrop && (
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
+                      onClick={handleDropClick}
+                    >
+                      {dropBooking?.name}:
+                    </span>
+                    <span className="text-gray-200">
+                      {/* {getPassengerCount(dropBooking)} Passenger{getPassengerCount(dropBooking) !== 1 ? 's' : ''}  */}
+                      • Date {formatDate(dropBooking.check_out || dropBooking.check_in)} • Time {formatTime(dropBooking.check_out || dropBooking.check_in)}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <div className="absolute left-0 top-1/2 transform -translate-x-1 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-900"></div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Details Dropdown - Shows below the text when both pickup and drop are present */}
+      {showDetails && hasPickup && hasDrop && (
+        <div className="relative mt-2">
+          <div
+            className="absolute bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600"
+            style={{ zIndex: 10000 }}
+          >
+            <div className="flex flex-col gap-2">
               {hasPickup && (
                 <div className="flex items-center gap-2">
                   <span
                     className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
                     onClick={handlePickupClick}
                   >
-                    Pickup:
+                    {pickupBooking?.name}:
                   </span>
                   <span className="text-gray-200">
-                    {getPassengerCount(pickupBooking)} Passenger{getPassengerCount(pickupBooking) !== 1 ? 's' : ''} • Date {formatDate(pickupBooking.check_in)} • Time {formatTime(pickupBooking.check_in)}
+                    {/* {getPassengerCount(pickupBooking)} Passenger{getPassengerCount(pickupBooking) !== 1 ? 's' : ''}  */}
+                    • Date {formatDate(pickupBooking.check_in)} • Time {formatTime(pickupBooking.check_in)}
                   </span>
                 </div>
               )}
@@ -184,20 +223,21 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
                     className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
                     onClick={handleDropClick}
                   >
-                    Drop:
+                    {dropBooking?.name}:
                   </span>
                   <span className="text-gray-200">
-                    {getPassengerCount(dropBooking)} Passenger{getPassengerCount(dropBooking) !== 1 ? 's' : ''} • Date {formatDate(dropBooking.check_out || dropBooking.check_in)} • Time {formatTime(dropBooking.check_out || dropBooking.check_in)}
+                    {/* {getPassengerCount(dropBooking)} Passenger{getPassengerCount(dropBooking) !== 1 ? 's' : ''}  */}
+                    • Date {formatDate(dropBooking.check_out || dropBooking.check_in)} • Time {formatTime(dropBooking.check_out || dropBooking.check_in)}
                   </span>
                 </div>
               )}
             </div>
 
-
-            <div className="absolute left-0 top-1/2 transform -translate-x-1 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-900"></div>
+            {/* Upward pointing arrow */}
+            <div className="absolute left-4 top-0 transform -translate-y-1 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
