@@ -26,6 +26,7 @@ import { getStars } from "../../../itinerary/itineraryCity/SlabElement";
 import setItinerary from "../../../../store/actions/itinerary";
 import { BsPeopleFill, BsPlus } from "react-icons/bs";
 import { BiBed } from "react-icons/bi";
+import { RxCross2 } from "react-icons/rx";
 const starRating = (rating) => {
   var stars = [];
   for (let i = 0; i < Math.floor(rating); i++) {
@@ -279,6 +280,8 @@ const HotelBookingDetails = (props) => {
       setLoading(false);
     }
   };
+   
+
   return (
     <Container>
       <FlexBox>
@@ -1000,18 +1003,67 @@ const HotelBookingDetails = (props) => {
         )}
       </DetailsContainer>
 
-      {props?.data?.hotel_details?.rates?.map((room, index) => (
+      {/* {props?.data?.hotel_details?.rates?.map((rate, index) => (
+              <div
+                key={index}
+                className="flex flex-col gap-3 bg-white p-2 rounded-lg"
+              >
+                {rate?.rooms && rate?.rooms?.map((room,index)=>{<div className="flex flex-row gap-3">
+                  {getRoomImage(room?.images) && (
+                    <ImageContainer>
+                      <ImageLoader
+                        noLazy
+                        height={isDesktop ? "85px" : "75px"}
+                        width={isDesktop ? "85px" : "75px"}
+                        borderRadius="10px"
+                        dimensions={{ height: 200, width: 200 }}
+                        url={getRoomImage(room?.images)}
+                      />
+                    </ImageContainer>
+                  )}
+      
+                  <div className="w-full">
+                    {room.name ? (
+                      <div className="w-full text-[14px] font-[400] md:text-lg md:font-semibold">
+                        {room.name}{" "}
+                        <span>
+                          <RxCross2 className="inline" /> 1 room
+                        </span>
+                      </div>
+                    ) : null}
+      
+                    {room?.number_of_adults && room?.number_of_adults !== "0" ? (
+                      <div className="flex flex-row gap-1">
+                        <div className="text-md font-semibold">Sleeps</div>
+                        <div>
+                          {room.number_of_adults > 1
+                            ? `${room.number_of_adults} Adults`
+                            : `${room.number_of_adults} Adult`}
+                          {room?.number_of_children &&
+                          room?.number_of_children !== "0"
+                            ? `, ${room.number_of_children} Children`
+                            : null}
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>})}
+              </div>
+            ))} */}
+
+      {/* {props?.data?.hotel_details?.rates?.map((rate, index) => (
         <div
           key={index}
           className="flex flex-col gap-3 bg-white p-2 rounded-lg"
         >
-          <div className="flex flex-row gap-3">
+          
+          {rate?.rooms?.map((room,i)=>(<div className="flex flex-row gap-3 w-1/3 md:w-1/2">
             {getRoomImage(room?.images) && (
               <ImageContainer>
                 <ImageLoader
                   noLazy
-                  height={isPageWide ? "85px" : "75px"}
-                  width={isPageWide ? "85px" : "75px"}
+                  height={isDesktop ? "85px" : "75px"}
+                  width={isDesktop ? "85px" : "75px"}
                   borderRadius="10px"
                   dimensions={{ height: 200, width: 200 }}
                   url={getRoomImage(room?.images)}
@@ -1019,9 +1071,9 @@ const HotelBookingDetails = (props) => {
               </ImageContainer>
             )}
 
-            <div className="w-full">
+            <div className="w-full text-[12px]">
               {room.name ? (
-                <div className="w-full text-[14px] font-[400] md:text-lg md:font-semibold">
+                <div className="w-full  font-[400] md:font-semibold mt-[1.2rem]">
                   {room.name}{" "}
                   <span>
                     <RxCross2 className="inline" /> 1 room
@@ -1031,7 +1083,7 @@ const HotelBookingDetails = (props) => {
 
               {room?.number_of_adults && room?.number_of_adults !== "0" ? (
                 <div className="flex flex-row gap-1">
-                  <div className="text-md font-semibold">Sleeps</div>
+                  <div className="font-semibold">Sleeps</div>
                   <div>
                     {room.number_of_adults > 1
                       ? `${room.number_of_adults} Adults`
@@ -1044,9 +1096,9 @@ const HotelBookingDetails = (props) => {
                 </div>
               ) : null}
             </div>
-          </div>
+          </div>))}
         </div>
-      ))}
+      ))} */}
 
       {props?.data?.hotel_details?.description ? (
         <div className="flex flex-col gap-1">
@@ -1060,13 +1112,28 @@ const HotelBookingDetails = (props) => {
         </div>
       ) : null}
 
-      {props?.data?.hotel_details?.rates?.[0]?.rooms?.length > 0 && (
+      {props?.data?.hotel_details?.rates && (
         <>
           <Heading>Room Information</Heading>
-          <div className="flex flex-col gap-3">
-            {props?.data?.hotel_details?.rates?.[0]?.rooms.map(
-              (room, index) => (
-                <div key={index} className="flex flex-col gap-3">
+
+          <Rooms
+            data={props?.data?.hotel_details?.rates}
+            checkInDate={props?.data?.check_in?.split(" ")[0]}
+            city={props?.data?.hotel_details?.city}
+            updateBooking={props?.updateBooking}
+          ></Rooms>
+        </>
+      )}
+      {/* <Heading>Room Information</Heading>
+      {props?.data?.hotel_details?.rates && props?.data?.hotel_details?.rates?.map((rate,index)=>(
+       <>
+       
+       {rate?.rooms && rate?.rooms?.length > 0 && rate?.rooms?.map((room,index)=>( <>
+        
+          <div className="flex flex-col gap-3"> */}
+            {/* {props?.data?.hotel_details?.rates?.[0]?.rooms.map(
+              (room, index) => ( */}
+                {/* <div key={index} className="flex flex-col gap-3">
                   <div className="w-fit bg-[#FAFAFA] p-[8px] rounded-[10px]">
                                 {`Room ${index+1}`}
                   </div>
@@ -1114,15 +1181,15 @@ const HotelBookingDetails = (props) => {
                           className=""
                         ></div>
                       ) : null} */}
-                    </div>
+                    {/* </div>
                     {room?.images?.length > 0 && (
                       <div className="flex flex-col items-center justify-center gap-3 md:w-[40%] h-[250px]">
                         <ImageCarousel images={room?.images} />
                       </div>
                     )}
-                  </div>
+                  </div> */}
 
-                  {room?.facilities && room?.facilities?.length ? (
+                  {/* {room?.facilities && room?.facilities?.length ? (
                     <div className="flex flex-col gap-2">
                       <div className="text-lg font-semibold">Amenities</div>
                       <div className="text-[14px]">
@@ -1137,15 +1204,17 @@ const HotelBookingDetails = (props) => {
                         </div>
                       </div>
                     </div>
-                  ) : null}
-                </div>
-              )
-            )}
-          </div>
+                  ) : null} */}
+                {/* </div>  */}
+              {/* )
+            )} */}
+          {/* </div>
         </>
-      )}
+      ))} */}
+      {/* </>
+    ))} */}
 
-      {props?.data?.hotel_details?.rates?.map((room, index) => (
+      {/* {props?.data?.hotel_details?.rates?.map((room, index) => (
         <div className="flex flex-col gap-3">
           {room?.polices && room?.polices?.length>0 ? (
             <>
@@ -1164,7 +1233,7 @@ const HotelBookingDetails = (props) => {
             </>
           ) : null}
         </div>
-      ))}
+      ))} */}
 
       {props?.data?.hotel_details?.category_ratings &&
         props?.data?.hotel_details?.category_ratings.length > 0 && (
@@ -1197,23 +1266,7 @@ const HotelBookingDetails = (props) => {
           </div>
         )}
 
-      {props?.data?.hotel_details?.recommendations &&
-      props?.data?.hotel_details?.recommendations?.length ? (
-        <>
-          <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>
-            Room Recommendations
-          </Heading>
-
-          <Rooms
-            data={props?.data?.hotel_details?.recommendations}
-            checkInDate={props?.data?.hotel_details?.check_in?.date}
-            city={props?.data?.hotel_details?.city}
-            updateBooking={props.updateBooking}
-          ></Rooms>
-        </>
-      ) : (
-        <></>
-      )}
+      
 
       {props?.data?.hotel_details?.google_maps_link ? (
         <div>
