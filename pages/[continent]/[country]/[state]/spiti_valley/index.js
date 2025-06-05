@@ -114,7 +114,6 @@ export async function getStaticProps(context) {
        path+"/"
     );
 
-    console.log("res is:",res.data.data)
     data = res.data.data;
 
   } catch (err) {

@@ -59,7 +59,7 @@ const Child = styled.div`
   return (
     <Container width={props.width} className="gap-4 ">
       {!props.itineraryDrawer ? (
-        <div onClick={props.handleCloseDrawer}>
+        <div onClick={(e)=>props.handleCloseDrawer(e)}>
           <TbArrowBack
             style={{ height: "32px", width: "32px" }}
             cursor={"pointer"}

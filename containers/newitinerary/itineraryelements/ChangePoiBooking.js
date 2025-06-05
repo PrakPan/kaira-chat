@@ -42,7 +42,7 @@ export default function ChangePoiBooking(props) {
   }, [props?.data]);
 
   const handleCloseDrawer = (e) => {
-    if (e) e.stopPropagation(e);
+    if (e) {e.stopPropagation(e);}
     setShowDetails({ show: false, data: {} });
     props?.handleClose()
   };
@@ -373,6 +373,7 @@ export default function ChangePoiBooking(props) {
           itineraryDrawer
           date={props.date}
           show={showDetails.show}
+          setShowDetails={setShowDetails}
           handleCloseDrawer={handleCloseDrawer}
           Topheading={"Select Poi"}
           cityId={props?.cityId}

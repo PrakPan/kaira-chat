@@ -8,13 +8,16 @@ import DyamicFilters from "../poiDetails/filters/DynamicFilters";
 import { IoMdSearch } from "react-icons/io";
 import Image from "next/image";
 import ChangePoiBooking from "../../../containers/newitinerary/itineraryelements/ChangePoiBooking";
+import PoiDetailsSkeleton from "../poiDetails/PoiDetailsSkelton";
+import POIDetailsSkeleton from "../../../containers/newitinerary/itineraryelements/PoiListSkeleton";
+import H3 from "../../heading/H3";
+import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";
 
 const AddPoi = (props) => {
-    console.log("add poi is:",props)
+  console.log("props are:", props);
   const elementType = "POI";
   const [selectSearch, setSelectedSearch] = useState("");
   const debouncedSearch = useDebounce(selectSearch);
-  const [showDrawwer, setShowDrawer] = useState(false);
   const [startDate, setStartDate] = useState(props?.date);
   const [changed, setChanged] = useState(false);
   const [filterState, setFilterState] = useState({
@@ -34,20 +37,21 @@ const AddPoi = (props) => {
   });
 
   const filtersRef = useRef(null);
-  const calendarRef = useRef(null);
 
   const [showDynamicfilters, setShowDynamicfilters] = useState(false);
   const [nextUrl, setNextUrl] = useState(null);
   const [options, setOptions] = useState([]);
-
-  const convertToISODate = (dateStr) => {
-    if (!dateStr) return;
-    const [day, month, year] = dateStr?.split("/");
-    return `${year}-${month?.padStart(2, "0")}-${day?.padStart(2, "0")}`;
-  };
+  const [totalResults, setTotalResults] = useState(0);
 
   const searchHandler = (e) => {
     setSelectedSearch(e.target.value);
+  };
+
+  const handleRecommneded = () => {
+    setFilterState((prev) => ({
+      ...prev,
+      recommended_only: !filterState.recommended_only,
+    }));
   };
 
   useEffect(() => {
@@ -64,6 +68,12 @@ const AddPoi = (props) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [debouncedSearch, filterState]);
+
+  const handleClose = () => {
+    console.log("clicked");
+    props?.setShowDrawer(false);
+    props?.handleCloseDrawer();
+  };
 
   const fetchPois = async () => {
     try {
@@ -92,20 +102,20 @@ const AddPoi = (props) => {
           ></ChangePoiBooking>
         );
       }
-      console.log("size of result is:", result.length);
       setNextUrl(res?.data?.next);
       setOptions(result);
+      setTotalResults(res?.data?.results);
     } catch (error) {
       console.log("loading poi error:", error);
     }
   };
 
-  const handleClose = () => {
-    props?.setShowDrawer(false);
-  };
   return (
     <div className="flex flex-col gap-2 p-2">
       <BackArrow handleClick={(e) => props.setShowDrawer(false)} />
+      <H3>
+        Replacing {props?.name} in {props?.cityName}
+      </H3>
       <div className="grid w-full gap-2 min-[583px]:grid-cols-[3fr_1fr]">
         <div className=" flex flex-row items-center relative h-[44px]">
           <IoMdSearch
@@ -160,9 +170,56 @@ const AddPoi = (props) => {
         </div>
       </div>
       <div>
-      {options?.map((item) => {
-        return item;
-      })}
+        <div className="flex flex-row items-center justify-between w-full mb-[20px]">
+          <div>
+            Showing {options.length} attractions
+            {totalResults ? ` out of ${totalResults}` : null}
+            {props?.cityName ? ` in ${props?.cityName}` : null}
+          </div>
+          <div className="max-[583px]:hidden">
+            <button
+              onClick={handleRecommneded}
+              className="flex flex-row items-center gap-1 cursor-pointer"
+            >
+              <CheckboxFormComponent checked={filterState.recommended_only} />
+              Top Recommended
+            </button>
+          </div>
+        </div>
+        <div className="min-[583px]:hidden flex justify-between w-full mb-2">
+          <button
+            onClick={handleRecommneded}
+            className="flex flex-row items-center gap-1 cursor-pointer"
+          >
+            <CheckboxFormComponent checked={filterState.recommended_only} />
+            Top Recommended
+          </button>
+          <div className="flex gap-4">
+            <div
+              className="relative px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2  cursor-pointer"
+              onClick={() => setShowDynamicfilters(true)}
+            >
+              <Image
+                src="/filter.svg"
+                width={"20"}
+                height={"20"}
+                color="white"
+              />
+              {changed && (
+                <div className="absolute -right-1 -top-1 h-[20px] w-[20px] rounded-full !bg-red-500"></div>
+              )}
+            </div>
+          </div>
+        </div>
+        {options?.length > 0 ? (
+          <>
+            {options?.map((item) => {
+              return item;
+            })}
+          </>
+        ) : (
+          <POIDetailsSkeleton />
+        )}
       </div>
     </div>
   );

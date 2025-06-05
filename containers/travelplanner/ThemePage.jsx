@@ -311,7 +311,10 @@ export const PlanYourTripButton = (props) => {
   const handlePlanButton = () => {
     if (isPageWide) {
       setShowTailoredModal(true);
-    } else {
+    } else if(props?.type){
+      openTailoredModal(router, props.page_id, props.destination,props.type);
+    }
+    else{
       openTailoredModal(router, props.page_id, props.destination);
     }
 
