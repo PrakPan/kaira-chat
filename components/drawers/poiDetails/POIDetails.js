@@ -278,21 +278,24 @@ const POIDetails = (props) => {
           ) : (
             <BackContainer className="flex justify-between font-lexend">
               <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
-              <Button
-                padding="7px 25px"
-                borderRadius="7px"
-                onclick={() => {
-                  if (!token) {
-                    props?.setShowLoginModal(true);
-                    return;
-                  }
-                  setShowDrawer(true);
-                }}
-              >
-                Change
-              </Button>
             </BackContainer>
           )}
+          <div className="flex justify-between">
+            <Title>{props.data.name}</Title>
+            {!(props?.removeChange===true)&&<Button
+              padding="7px 25px"
+              borderRadius="7px"
+              onclick={() => {
+                if (!token) {
+                  props?.setShowLoginModal(true);
+                  return;
+                }
+                setShowDrawer(true);
+              }}
+            >
+              Change
+            </Button>}
+          </div>
 
           <>
             {props?.data?.extra_images?.length > 0 ? (
@@ -416,7 +419,6 @@ const POIDetails = (props) => {
             )}
           </>
           <div className="">
-            <Title>{props.data.name}</Title>
             {props.data?.experience_filters && (
               <Text>{experience_filters}</Text>
             )}
@@ -675,13 +677,16 @@ const POIDetails = (props) => {
             onHide={() => setShowDrawer(false)}
           >
             <AddPoi
-            cityID={props?.cityID}
-            date={props?.date}
-            setShowDrawer={setShowDrawer}
-            itinerary_city_id={props?.itinerary_city_id}
-            dayIndex={props?.dayIndex}
-            slabIndex={props?.slabIndex}
-            setShowLoginModal={props?.setShowLoginModal}
+              cityID={props?.cityID}
+              date={props?.date}
+              setShowDrawer={setShowDrawer}
+              handleCloseDrawer={props?.handleCloseDrawer}
+              itinerary_city_id={props?.itinerary_city_id}
+              dayIndex={props?.dayIndex}
+              slabIndex={props?.slabIndex}
+              setShowLoginModal={props?.setShowLoginModal}
+              name={props.name}
+              cityName={props?.cityName}
             />
           </Drawer>
           <ToastContainer />

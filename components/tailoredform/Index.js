@@ -23,6 +23,7 @@ const fadeInAnimation = keyframes`${fadeIn}`;
 
 const Container = styled.div`
   height: max-content;
+  padding: 2px;
   color: black;
   z-index: ${(props) => (props.showBlack ? "1006" : "2")};
   position: relative;

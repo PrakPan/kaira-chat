@@ -6,7 +6,6 @@ import MobileBanner from "../city/Banner/Mobile";
 import media from "../../components/media";
 import validateTextSize from "../../services/textSizeValidator";
 import styled from "styled-components";
-import Overview from "../travelplanner/Overview";
 import openTailoredModal from "../../services/openTailoredModal";
 import Button from "../../components/ui/button/Index";
 import BannerTwo from "../travelplanner/BannerTwo";
@@ -31,9 +30,10 @@ import Image from "next/image.js";
 import Itinerary2Carousel from "../../components/theme/Itinerary2Carousel.jsx";
 import Activity1Carousel from "../../components/theme/Activity1Carousel.jsx";
 import Reviews1Carousel from "../../components/theme/Reviews1Carousel.jsx";
-import Poi1Carousel from "../../components/theme/Poi1Carousel.jsx";
 import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst.js";
-import Poi from "../newcityplanner/pois/Index.js"
+import Poi from "../newcityplanner/pois/Index.js";
+import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile.js";
+import Overview from "../themes/Overview.jsx";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -77,12 +77,19 @@ const Index = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [userItineraries, setUserItineraries] = useState([]);
   const [hotLocations, setHotLocations] = useState([]);
+  const [showTailoredModal,setShowTailoredModal]=useState(false)
+  const [destination, setDestination] = useState(null);
+
+
+  const handlePlanButton = (pageId, destination, type) => {
+    handlePlanButtonClick
+  };
 
   useEffect(() => {
     const hot_locations = [];
     if (props?.data?.cities) {
       props.data.cities.map((location, i) => {
-          hot_locations.push(location);
+        hot_locations.push(location);
       });
     }
     props?.data?.components?.map((item) => {
@@ -106,7 +113,7 @@ const Index = (props) => {
   );
 
   const handlePlanButtonClick = (location) => {
-    openTailoredModal(router, props.data.id, props.data.destination);
+    openTailoredModal(router, props.data.id, convertDbNameToCapitalFirst(props.data.slug),props.type);
 
     logEvent({
       action: "Plan_Itinerary",
@@ -194,13 +201,17 @@ const Index = (props) => {
             </>
           ) : null}
 
-          <MapGridContainer>
+          {/* <MapGridContainer> */}
             <Overview
-              overview_heading={props.data.overview_heading}
-              overview_text={props.data.overview_text}
+              heading={props.data.overview_heading}
+              text={props.data.overview_text}
+              image={props.data.overview_image}
+              slug={props.data.slug}
+              page_id={props.data.id}
+              destination={convertDbNameToCapitalFirst(props.data.slug)}
             ></Overview>
 
-            <MapContainer>
+            {/* <MapContainer>
               {props.data.cities && props.data.cities.length ? (
                 <MapBox
                   InfoWindowContainer={InfoWindowContainer}
@@ -208,8 +219,8 @@ const Index = (props) => {
                   height="300px"
                 />
               ) : null}
-            </MapContainer>
-          </MapGridContainer>
+            </MapContainer> */}
+          {/* </MapGridContainer> */}
 
           <Button
             onclick={() =>
@@ -242,7 +253,7 @@ const Index = (props) => {
                   {component.carousel === "destination-1" ? (
                     <>
                       <Destination1Carousel
-                        handlePlanButton={handlePlanButton}
+                        handlePlanButton={handlePlanButtonClick}
                         setDestination={setDestination}
                         packages={[
                           ...component.cities,
@@ -250,14 +261,14 @@ const Index = (props) => {
                           ...component.countries,
                         ]}
                       />
-                      <PlanYourTripButton text={"Start your journey now!"} />
-                    </>
+                      <PlanYourTripButton   page_id={props.data.id} destination={convertDbNameToCapitalFirst(props.data.slug)} type={props?.type}/>
+                      </>
                   ) : component.carousel === "destination-2" ? (
                     <></>
                   ) : component.carousel === "itinerary-1" ? (
                     <>
                       <Itinerary1Carousel itineraries={component.itineraries} />
-                      <PlanYourTripButton />
+                      <PlanYourTripButton   page_id={props.data.id} destination={convertDbNameToCapitalFirst(props.data.slug)} type={props?.type}/>
                     </>
                   ) : component.carousel === "itinerary-2" ? (
                     <div className="w-full relative">
@@ -292,7 +303,7 @@ const Index = (props) => {
                   ) : component.carousel === "activity-1" ? (
                     <>
                       <Activity1Carousel activities={component.activities} />{" "}
-                      <PlanYourTripButton text={"Create your free itinerary"} />
+                      <PlanYourTripButton   page_id={props.data.id} destination={convertDbNameToCapitalFirst(props.data.slug)} type={props?.type}/>
                     </>
                   ) : component.carousel === "review-1" ? (
                     <div className="relative">
@@ -310,53 +321,26 @@ const Index = (props) => {
                       )}
 
                       <Reviews1Carousel reviews={component.reviews} />
-                      <PlanYourTripButton />
+                      <PlanYourTripButton   page_id={props.data.id} destination={convertDbNameToCapitalFirst(props.data.slug)} type={props?.type}/>
                     </div>
                   ) : component.carousel == "poi-1" ? (
                     <>
-                    <Poi
-                    data={props?.data}
-                    pois={component.pois}
-                    city={props.destination}
-                    page={"Continent Page"}
-                removeDelete={true}
-                />
+                      <Poi
+                        data={props?.data}
+                        pois={component.pois}
+                        city={props.destination}
+                        page={"Continent Page"}
+                        removeDelete={true}
+                        removeChange={true}
+                      />
 
-                    {/* <Poi1Carousel pois={component.pois} /> */}
-                    <PlanYourTripButton />
+                      {/* <Poi1Carousel pois={component.pois} /> */}
+                      <PlanYourTripButton   page_id={props.data.id} destination={convertDbNameToCapitalFirst(props.data.slug)} type={props?.type}/>
                     </>
                   ) : null}
                 </div>
               </>
             ))}
-
-          {hotLocations.length ? (
-            <>
-              <H3
-                style={{
-                  textAlign: isPageWide ? "left" : "center",
-                  margin: !isPageWide
-                    ? "2.5rem 0.5rem 1.5rem 0.5rem"
-                    : "2.5rem 0 4.5rem 0",
-                }}
-              >
-                {props.data.slug
-                  ? "Popular locations to visit in " +
-                    props.data.slug
-                      .split("_")
-                      .map(
-                        (word) => word.charAt(0).toUpperCase() + word.slice(1)
-                      )
-                      .join(" ")
-                  : "Popular Locations"}
-              </H3>
-              <Locations
-                locations={hotLocations}
-                page={"Continent Page"}
-                viewall
-              ></Locations>
-            </>
-          ) : null}
 
           <H3
             style={{
@@ -437,6 +421,15 @@ const Index = (props) => {
           <ChatWithUs planner page_id={props.data.id}></ChatWithUs>
         </SetWidthContainer>
       </div>
+      <TailoredFormMobileModal
+        destinationType={destination?.type}
+        page_id={destination?.pageId}
+        destination={destination?.name}
+        onHide={() => {
+          setShowTailoredModal(false);
+        }}
+        show={showTailoredModal}
+      />
     </div>
   );
 };

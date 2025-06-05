@@ -196,6 +196,7 @@ export default function PoiCard(props) {
         name={props.data.name}
         removeDelete={props?.removeDelete}
         activityData={activityData}
+        removeChange={props?.removeChange}
       />
     </Container>
   );

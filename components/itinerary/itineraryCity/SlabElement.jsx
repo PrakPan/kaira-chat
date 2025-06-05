@@ -31,6 +31,7 @@ const SlabElement = (props) => {
           itinerary_city_id={props?.itinerary_city_id}
           setShowLoginModal={props?.setShowLoginModal}
           cityID={props?.cityID}
+          cityName={props?.cityName}
         />
       ) : props.element.element_type === "recommendation" ? (
         <Recommendation
@@ -40,6 +41,7 @@ const SlabElement = (props) => {
           itinerary_city_id={props?.itinerary_city_id}
           setShowLoginModal={props?.setShowLoginModal}
           cityID={props?.cityID}
+          cityName={props?.cityName}
         />
       ) : null}
     </div>
@@ -323,6 +325,7 @@ const Activity = (props) => {
         setShowLoginModal={props?.setShowLoginModal}
         date={props?.date}
         cityID={props?.cityID}
+        cityName={props?.cityName}
       />
     </>
   );
@@ -523,6 +526,7 @@ const Recommendation = (props) => {
         slabIndex={props?.slabIndex}
         setShowLoginModal={props?.setShowLoginModal}
         cityID={props?.cityID}
+        cityName={props?.cityName}
       />
     </>
   );

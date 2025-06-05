@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { connect, useDispatch, useSelector } from "react-redux";
 import Drawer from "../../ui/Drawer";
 import { openNotification } from "../../../store/actions/notification";
-import {  ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import { MERCURY_HOST } from "../../../services/constants";
 import axios from "axios";
 import setItinerary from "../../../store/actions/itinerary";
@@ -48,7 +48,7 @@ const ChangePoiDetailDrawer = (props) => {
         itinerary_city_id: props?.itinerary_city_id,
         poi_id: props?.id,
         day_by_day_index: props?.dayIndex || 0,
-        poi_index:props?.slabIndex
+        poi_index: props?.slabIndex,
       };
       const res = await axios.post(
         `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/poi/add/`,
@@ -64,13 +64,14 @@ const ChangePoiDetailDrawer = (props) => {
         const city = item;
         if (item.id == props?.itinerary_city_id) {
           const day_by_day = [...city?.day_by_day];
-          day_by_day[props?.dayIndex].slab_elements[props.slabIndex] = res?.data;
+          day_by_day[props?.dayIndex].slab_elements[props.slabIndex] =
+            res?.data;
           city.day_by_day = day_by_day;
         }
         return city;
       });
       newItinerary.cities = itineraryCities;
-      console.log("new itinerary is:",newItinerary)
+      console.log("new itinerary is:", newItinerary);
       dispatch(setItinerary(newItinerary));
       props.openNotification({
         type: "success",
@@ -84,7 +85,7 @@ const ChangePoiDetailDrawer = (props) => {
         text: "Something went wrong! Please try after some time.",
         heading: "Error!",
       });
-      return 0
+      return 0;
     }
     return 1;
   };
@@ -98,12 +99,16 @@ const ChangePoiDetailDrawer = (props) => {
       mobileWidth={"100%"}
       style={{ zIndex: 1506 }}
       className="font-lexend"
-      onHide={props.handleCloseDrawer}
+      onHide={(e) => {
+        props.setShowDetails({ show: false, data: {} });
+
+      }}
     >
       <ToastContainer />
       {!loading ? (
         <ChangePoiDetails
           itineraryDrawer={props.itineraryDrawer}
+          setShowDetails={props.setShowDetails}
           data={data}
           date={props.date}
           handleCloseDrawer={props.handleCloseDrawer}
@@ -138,4 +143,7 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToPros, mapDispatchToProps)(ChangePoiDetailDrawer);
+export default connect(
+  mapStateToPros,
+  mapDispatchToProps
+)(ChangePoiDetailDrawer);

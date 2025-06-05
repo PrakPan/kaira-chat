@@ -186,6 +186,9 @@ const POIDetailsDrawer = (props) => {
               getPaymentHandler={props?.getPaymentHandler}
               removeDelete={props?.removeDelete}
               date={props?.date}
+              name={props.name}
+              cityName={props?.cityName}
+              removeChange={props?.removeChange}
             >
               {props.children}
             </POIDetails>

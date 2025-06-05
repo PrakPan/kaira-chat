@@ -198,6 +198,7 @@ export default function ChangePoiDetails(props) {
       return;
     }
     props.updatedActivityBooking().then((res)=>{
+      console.log("clicked here")
       setLoading(false);
       if (res!=0){
       props?.setShowDrawer(false);
@@ -210,7 +211,7 @@ export default function ChangePoiDetails(props) {
     <div className="flex flex-col gap-4 pb-[100px] h-[100vh] overflow-y-auto">
       <div className="flex flex-col gap-4 px-[20px] pb-4">
         <div className="sticky top-0 z-1 flex flex-row items-center gap-2 pt-4 bg-white">
-          <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
+          <BackArrow handleClick={() =>         props.setShowDetails({ show: false, data: {} })} />
         </div>
 
         <div className={`flex flex-col gap-4 `}>

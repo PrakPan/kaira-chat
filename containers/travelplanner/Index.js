@@ -235,7 +235,7 @@ const Homepage = (props) => {
     openTailoredModal(
       router,
       props.experienceData.id,
-      props.experienceData.destination
+      convertDbNameToCapitalFirst(props.experienceData.slug)
     );
 
     logEvent({
@@ -279,8 +279,8 @@ const Homepage = (props) => {
                 : "2.5rem 0.5rem 1.5rem 0.5rem",
             }}
           >
-            {props.experienceData.destination
-              ? "Top locations across " + props.experienceData.destination
+            {props.experienceData.slug
+              ? "Top locations across " + convertDbNameToCapitalFirst(props.experienceData?.slug)
               : "Top Locations"}
           </H3>
           <Locations

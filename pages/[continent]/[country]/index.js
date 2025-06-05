@@ -93,66 +93,6 @@ export async function getStaticPaths() {
   };
 }
 
-// export async function getStaticProps(context) {
-//   let data = null;
-//   let locations = [];
-//   let continetCarousel = [];
-//   let hotLocationSearch = [];
-//   let Type = "Country";
-//   const { continent, country } = context.params;
-//   const path = `${continent}/${country}`;
-//   let pageId = PagesToIdMapping[path]!=undefined?PagesToIdMapping[path]:"";
-
-//   try {
-//     const [countryRes, continentRes, hotDestRes] = await Promise.all([
-//       axioscountrydetailsinstance.get(      `${MERCURY_HOST}/api/v1/geos/search/all/?type=Country`      ),
-//       axiospagelistinstance.get("/?page_type=Continent&fields=destination,tagline,image,path"),
-//       axioslocationsinstance.get(`hot_destinations/?country=${country}/`)
-//     ]);
-
-//     data = countryRes.data;
-//     console.log("data is:",data)
-//     if (!data) {
-//       return {
-//         notFound: true,
-//       };
-//     }
-//     locations = data.see_also;
-
-//     if (hotDestRes?.data?.length) {
-//       hotLocationSearch = hotDestRes.data;
-//     }
-
-//     const continentData = continentRes.data;
-//     const continentPromises = continentData.map(async (cont) => {
-//       const resp = await axioscountrydetailsinstance.get(
-//         `/all/?continent=${cont.destination}&fields=id,name,path,tagline,image,is_hot_location,best_time`
-//       );
-//       const hot_data = resp.data.filter((d) => d.is_hot_location).slice(0, 6);
-//       return {
-//         ...cont,
-//         hot_destinations: hot_data,
-//       };
-//     });
-
-//     continetCarousel = await Promise.all(continentPromises);
-
-//   } catch (err) {
-//     console.error("[ERROR][countryPage:getStaticProps]: ", err.message);
-//   }
-
-//   return {
-//     props: {
-//       Data: data,
-//       locations,
-//       continetCarousel,
-//       path,
-//       hotLocationSearch,
-//       page_id:PagesToIdMapping[path]!=undefined?PagesToIdMapping[path]:"",
-//       Type,
-//     },
-//   };
-// }
 
 export async function getStaticProps(context) {
   let data = null;
@@ -166,7 +106,7 @@ export async function getStaticProps(context) {
 
 
   try {
-    //dev api
+    //mercury api
     const res = await axios.get(
       `${MERCURY_HOST}/api/v1/geos/country/${pageId}`
     );
@@ -179,7 +119,7 @@ export async function getStaticProps(context) {
       };
     }
 
-    //add in api
+    //mercury api
     const continentData = await axiospagelistinstance.get(
       "/?page_type=Continent&fields=id,page_type,slug,overview_image,tagline,path"
     );
