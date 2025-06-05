@@ -22,6 +22,7 @@ import AsSeenIn from "../testimonial/AsSeenIn";
 import PathNavigation from "./PathNavigation.js";
 import { logEvent } from "../../services/ga/Index";
 import H3 from "../../components/heading/H3";
+import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst.js";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -204,9 +205,7 @@ const Homepage = (props) => {
 
   useEffect(() => {
     // The counter changed!
-    setOverviewHeading(`A little about ${props.experienceData.slug.split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ")}`);
+    setOverviewHeading(`A little about ${convertDbNameToCapitalFirst(props.experienceData.slug)}`);
     return () => setOverviewHeading(null);
   }, [router.query.link, props.experienceData]);
 
@@ -260,7 +259,7 @@ const Homepage = (props) => {
         image={props.experienceData.image}
         page_id={props.page_id}
         type={props.type}
-        destination={props.experienceData.slug}
+        destination={convertDbNameToCapitalFirst(props.experienceData.slug)}
         cities={props.experienceData.locations}
         children_cities={props.experienceData.children}
         title={props.experienceData.banner_heading}
@@ -375,9 +374,7 @@ const Homepage = (props) => {
           padding="0.5rem 2rem"
         >
           {props.experienceData.page_type !== "Theme"
-            ? `Craft a trip to ${props.experienceData.slug.split("_")
-              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(" ")} now!`
+            ? `Craft a trip to ${convertDbNameToCapitalFirst(props.experienceData.slug)} now!`
             : "Create your travel plan now!"}
         </Button>
       </SetWidthContainer>

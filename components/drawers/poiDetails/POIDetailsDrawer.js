@@ -114,7 +114,7 @@ const POIDetailsDrawer = (props) => {
     } else {
       if (props.iconId) {
         axiosPOIdetailsInstance
-          .get(`/?id=${props.iconId}`, {
+          .get(`/${props.iconId}/`, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },

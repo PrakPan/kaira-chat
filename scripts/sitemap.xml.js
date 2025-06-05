@@ -10,7 +10,7 @@ const generateSitemap = async () => {
   const continents = await axios.get(
     "https://dev.mercury.tarzanway.com/page/list?page_type=Continent&fields=path"
   );
-  const continentsData = continents.data;
+  const continentsData = continents.data.data.pages;
   let continentsPaths = continentsData.map((object) => {
     return {
       title: "Continent Planner",
@@ -50,6 +50,12 @@ const generateSitemap = async () => {
     return { title: "City Planner", link: BASE_URL + "/" + object.path };
   });
 
+  const subRegions=await axios.get("https://dev.mercury.tarzanway.com/api/v1/website/pages/?page_type=Subregion&fields=path")
+  const subRegionsData=subRegions.data.data.pages
+  let subRegionsPaths=subRegionsData.map((object)=>{
+    return {title:"Subregion Planner",link:BASE_URL+"/"+object.path}
+  })
+
   // Fetch trips list
   const response = await axios.get(
     "https://suppliers.tarzanway.com/sales/itinerary/indexed/"
@@ -86,6 +92,7 @@ const generateSitemap = async () => {
     ...countriesPaths,
     ...statesPaths,
     ...cityPaths,
+    ...subRegionsPaths,
     ...tripsPaths,
   ];
 
