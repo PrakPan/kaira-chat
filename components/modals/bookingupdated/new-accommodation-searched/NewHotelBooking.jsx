@@ -72,17 +72,20 @@ export default function NewHotelBooking({
 
             <div className="flex flex-col gap-2 text-[#01202B] lg:w-[70%] w-full justify-between">
               <div className="flex flex-col gap-2">
-                <div className="flex flex-row justify-between items-center">
-                  <div className={`text-2xl font-semibold `}>
-                    <div className="flex gap-2">
-                      {booking?.name}
+                <div className="flex flex-row justify-between">
+                  <div className={`text-2xl font-semibold`}>
+            
+                     <p> {booking?.name}</p>
+                  
+                  </div>
+                  <div>
                       {booking?.refundable && (
-                        <p className="bg-[#fdeeee] text-[#EF7D7D] px-2 py-2 mb-0 rounded-md text-xs font-medium">
+                        <p className=" bg-[#fdeeee] text-[#EF7D7D] px-2 py-2 mb-0 rounded-md text-xs font-medium">
                           Refundable
                         </p>
                       )}
-                    </div>
                   </div>
+                  
                 </div>
 
                 {booking && (
