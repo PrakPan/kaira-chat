@@ -19,13 +19,13 @@ const CancellationPolicy = ({ policies }) => {
             return (
               <div key={j} className="text-sm text-gray-700">
                 <p>
-                  From <strong>{start}</strong> to <strong>{end}</strong>:
+                  If cancelled between <strong>{start}</strong> to <strong>{end}</strong>:
                 </p>
                 <p>
-                  - <strong>{rule.value}%</strong> cancellation charge
+                  - <strong>{rule.value}%</strong> refundable
                 </p>
                 <p>
-                  - Estimated cancellation fee: <strong>₹{rule.estimatedValue}</strong>
+                  - Estimated refundable amount: <strong>₹{rule.estimatedValue}</strong>
                 </p>
               </div>
             );
