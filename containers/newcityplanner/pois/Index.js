@@ -106,7 +106,7 @@ const Poi = (props) => {
             ))}
         </Items>
 
-        <Button
+        {/* <Button
           onClick={() => {
             more < props.pois.length
               ? setMore(more + 4)
@@ -122,7 +122,7 @@ const Poi = (props) => {
                 8,
                 "Craft a trip now!"
               )}
-        </Button>
+        </Button> */}
       </div>
 
       <div className="hidden-desktop">
