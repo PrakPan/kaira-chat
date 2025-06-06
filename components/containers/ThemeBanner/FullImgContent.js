@@ -132,6 +132,8 @@ const FullImgContent = (props) => {
                 style={{
                   lineHeight: isPageWide ? "35px" : "20px",
                   fontSize: isPageWide ? "25px" : "20px",
+                  textAlign: "left",
+                  marginLeft: "10px"
                 }}
               >
                 Say goodbye to packages.
