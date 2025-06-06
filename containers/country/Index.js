@@ -251,6 +251,7 @@ const Index = (props) => {
                 handlePlanButtonClick={handlePlanButtonClick}
                 page={"Country Page"}
                 removeDelete={true}
+                removeChange={true}
               />
             </MenuItem>
           ) : null}
