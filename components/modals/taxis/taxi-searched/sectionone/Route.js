@@ -143,10 +143,12 @@ const Section = (props) => {
       .catch((err) => {
         setLoading(false);
         console.log("Error Changing Taxi", err.message);
+        const errorMsg =
+            err?.response?.data?.errors?.[0]?.message?.[0] || err.message ;
         dispatch(
           openNotification({
             type: "error",
-            text: "There seems to be a problem, please try again after some time!",
+            text: errorMsg || "There seems to be a problem, please try again after some time!",
             heading: "Error!",
           })
         );

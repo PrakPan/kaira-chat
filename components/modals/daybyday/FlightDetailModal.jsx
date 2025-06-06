@@ -69,10 +69,12 @@ const FlightDetailModal = ({
         setHandleShow(false);
       }
     } catch (err) {
+      const errorMsg =
+            err?.response?.data?.errors?.[0]?.message?.[0] || err.message ;
       dispatch(
         openNotification({
           type: "error",
-          text: `${err.message}`,
+          text: errorMsg,
           heading: "Error!",
         })
       );

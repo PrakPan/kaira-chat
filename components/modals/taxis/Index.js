@@ -216,9 +216,11 @@ const Booking = (props) => {
       })
       .catch((err) => {
         setUpdateBookingState(false);
+        const errorMsg =
+            err?.response?.data?.errors?.[0]?.message?.[0] || err.message ;
         props.openNotification({
           type: "error",
-          text: "There seems to be a problem, please try again!",
+          text: errorMsg || "There seems to be a problem, please try again!",
           heading: "Error!",
         });
       });

@@ -427,10 +427,12 @@ const CityItem = ({
         );
       }
     } catch (err) {
+      const errorMsg =
+            err?.response?.data?.errors?.[0]?.message?.[0] || err.response?.data?.errors[0]?.detail || err.message ;
       dispatch(
         openNotification({
           type: "error",
-          text: `${err.response?.data?.errors[0]?.detail}`,
+          text: errorMsg,
           heading: "Error!",
         })
       );
