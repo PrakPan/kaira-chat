@@ -160,7 +160,7 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
   };
 
   return (
-    <div key={-3} className="group relative" ref={dropdownRef}>
+    displayText ? <div key={-3} className="group relative" ref={dropdownRef}>
       <div className="flex items-center gap-2">
         <span
           className={`text-blue font-[500] text-[14px] ${
@@ -264,7 +264,7 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
           </div>
         </div>
       )}
-    </div>
+    </div> : null
   );
 };
 
@@ -301,7 +301,7 @@ const CityItem = ({
   intracityBookings,
   booking,
 }) => {
-  console.log("Airpo",airportBookings,intracityBookings)
+
   const { transfers_status } = useSelector((state) => state.ItineraryStatus);
   const correctIcon = (TransportMode) => {
     switch (TransportMode) {
@@ -340,6 +340,7 @@ const CityItem = ({
   const [comboDetails, setComboDetails] = useState(false);
   const [transferType,setTransferType] = useState(null);
   const [isIntracity,setIsIntracity] = useState(false);
+  const [error,setError] = useState(false);
 
   console.log("Selllll", selectedBooking);
   const router = useRouter();
@@ -362,7 +363,16 @@ const CityItem = ({
       setData(res?.data);
       setLoading(false);
     } catch (error) {
+
       setLoading(false);
+      setError(true);
+      const errorMsg =
+            error?.response?.data?.errors?.[0]?.message?.[0] || error.message ;
+      dispatch(openNotification({
+                text: errorMsg,
+                heading: "Error!",
+                type: "error",
+              }));
     }
   };
 
@@ -384,6 +394,7 @@ const CityItem = ({
       setData(res?.data);
       setLoading(false);
     } catch (error) {
+      setError(true);
       setLoading(false);
     }
   };
@@ -473,6 +484,7 @@ const formattedTime = (dateObj) => dateObj.toLocaleTimeString("en-US", {
   hour12: true,
 });
 
+  
 
   return (
     <Container>
@@ -568,6 +580,19 @@ const formattedTime = (dateObj) => dateObj.toLocaleTimeString("en-US", {
                     Duration: {duration}
                   </div>
                 )}
+
+                {airportBookings && (airportBookings.length > 0) && (booking_id || city) && !visible && (
+  <div className="flex flex-col gap-1  mb-[1.5rem] ">
+      <AirportBookingItem
+        key={booking_id}
+        booking={airportBookings}
+        handleIntracityBookings={handleIntracityBookings}
+        upPresent={upPresent}
+        downPresent={downPresent}
+      />
+    {/* ))} */}
+  </div>
+)}
               </div>
             </>
           ) : isPageWide ? (
@@ -590,18 +615,7 @@ const formattedTime = (dateObj) => dateObj.toLocaleTimeString("en-US", {
     </div>
 
   
-{airportBookings && (airportBookings.length > 0) && (booking_id || city) && !visible && (
-  <div className="flex flex-col gap-1 ml-5 mb-[1.5rem] ">
-      <AirportBookingItem
-        key={booking_id}
-        booking={airportBookings}
-        handleIntracityBookings={handleIntracityBookings}
-        upPresent={upPresent}
-        downPresent={downPresent}
-      />
-    {/* ))} */}
-  </div>
-)}
+
   </div>
 
   <TransferEditDrawer
@@ -626,11 +640,13 @@ const formattedTime = (dateObj) => dateObj.toLocaleTimeString("en-US", {
     origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
     destination_itinerary_city_id={dCityData?.id || dCityData?.gmaps_place_id}
      booking_id={booking_id}
+     
   />
 
   {handleShow && (
     <TransferDrawer
       show={handleShow}
+      error={error}
       setHandleShow={setHandleShow}
       data={data}
       booking_type={transferType || booking_type}

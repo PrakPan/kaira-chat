@@ -31,7 +31,8 @@ const FlightDetailModal = ({
   onChange,
   isEmbedded,
   setShowDrawer,
-  setHandleShow
+  setHandleShow,
+  error
 }) => {
   const router = useRouter();
   const fareRules = fareRule?.fareRuleDetail;
@@ -39,6 +40,7 @@ const FlightDetailModal = ({
   const fareRUlesError = false;
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
 
   const handleDelete = async () => {
     if(!localStorage.getItem("access_token")){
@@ -81,6 +83,21 @@ const FlightDetailModal = ({
       setLoading(false);
     }
   };
+
+  if (error) {
+        return (
+          <div
+            style={{
+              textAlign: "center",
+              margin: "auto",
+              height: isPageWide ? "80vh" : "70vh",
+            }}
+            className="center-div"
+          >
+            Oops, unable to get the details at the moment.
+          </div>
+        );
+      }
 
   return (
     <div className="relative flex flex-col gap-4 rounded-md px-3 py-2">

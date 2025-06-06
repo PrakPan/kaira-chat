@@ -34,6 +34,7 @@ const TransferDrawer = ({
   destination_itinerary_city_id,
   setShowDrawer,
   isIntracity,
+  error
 }) => {
   const [expandedIndexes, setExpandedIndexes] = useState([]);
   const isCombo = data?.children && data?.children.length > 0;
@@ -103,6 +104,9 @@ const TransferDrawer = ({
       }
     };
 
+    
+
+
     return (
       <div key={`${transferData.id}-${index}`} className="mb-6">
         <div
@@ -149,6 +153,7 @@ const TransferDrawer = ({
                 onChange={true}
                 setShowDrawer={setShowDrawer}
                 setHandleShow={setHandleShow}
+                error={error}
               />
             )
           ) : loading ? (
