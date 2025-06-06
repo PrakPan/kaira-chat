@@ -186,7 +186,7 @@ const ComponentDisplay = ({ component, handlePlanButton, setDestination }) => (
       <Activity1Carousel activities={component.activities} />
     ) : component.carousel === "review-1" ? (
       <Reviews1Carousel reviews={component.reviews} />
-    ) : component.carousel === "poi-1" ? (
+    ) : component.carousel === "destination-5" ? (
       <Poi 
        elevation={component?.elevation}
                           data={component?.data}
