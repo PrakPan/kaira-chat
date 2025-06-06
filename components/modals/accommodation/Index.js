@@ -227,9 +227,11 @@ const POI = (props) => {
               heading: "Success!",
             });
           } catch (error) {
+            const errorMsg =
+            error?.response?.data?.errors?.[0]?.message?.[0] || error.message ;
             props.openNotification({
               type: "error",
-              text: "Something went wrong! Please try after some time.",
+              text: errorMsg || "Something went wrong! Please try after some time.",
               heading: "Error!",
             });
             console.error("Error updating stay bookings:", error);
@@ -237,13 +239,16 @@ const POI = (props) => {
         })
         .catch((err) => {
           props.setUpdateBookingState(false);
+          const errorMsg =
+            err?.response?.data?.errors?.[0]?.message?.[0] || err.message ;
           props.openNotification({
             type: "error",
-            text: "Something went wrong! Please try after some time.",
+            text: errorMsg || "Something went wrong! Please try after some time.",
             heading: "Error!",
           });
         });
     } catch (error) {
+      
       props.openNotification({
         type: "error",
         text: `${error.response?.data?.errors[0]?.message[0]}`,

@@ -86,9 +86,11 @@ const NewPoiDetailsDrawer = (props) => {
       });
     } catch (error) {
       console.log("error is:", error);
+      const errorMsg =
+     error?.response?.data?.errors?.[0]?.message?.[0] || error.message || "Something went wrong! Please try after some time.";
       props.openNotification({
         type: "error",
-        text: "Something went wrong! Please try after some time.",
+        text: errorMsg,
         heading: "Error!",
       });
       return 0

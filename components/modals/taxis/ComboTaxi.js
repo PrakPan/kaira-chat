@@ -387,9 +387,11 @@ const ComboTaxi = (props) => {
       .catch((err) => {
         setUpdateBookingState(false);
         console.log("Error updating Taxi",err.message)
+        const errorMsg =
+            err?.response?.data?.errors?.[0]?.message?.[0] || err.message ;
         dispatch(openNotification({
           type: "error",
-          text: "There seems to be a problem, please try again!",
+          text: errorMsg || "There seems to be a problem, please try again!",
           heading: "Error!",
         }));
       });

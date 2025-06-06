@@ -296,9 +296,11 @@ const TransferBooking = ({
         });
       }
     } catch (err) {
+      const errorMsg =
+            err?.response?.data?.errors?.[0]?.message?.[0] || err.message ;
       openNotification({
         type: "error",
-        text: `${err.message}`,
+        text: errorMsg,
         heading: "Error!",
       });
       setLoading(false);
