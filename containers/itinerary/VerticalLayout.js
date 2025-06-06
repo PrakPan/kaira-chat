@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import Pin from "../newitinerary/breif/route/Pin";
 import { IoCar } from "react-icons/io5";
 import { MdOutlineFlightTakeoff } from "react-icons/md";
@@ -58,9 +58,12 @@ const PinWrapper = styled.div`
 
 `;
 
+
+
 const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downPresent }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+  const dropdownRef = useRef(null);
 
   const pickupBooking = booking.find(book => book?.is_airport_pickup);
   const dropBooking = booking.find(book => book?.is_airport_drop);
@@ -69,14 +72,33 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
   const hasDrop = Boolean(dropBooking);
 
   const displayText = hasPickup && hasDrop
-    ? 'Airport Pickup & Drop Added'
+    ? 'Pickup & Drop Added'
     : hasPickup
-      ? 'Airport Pickup Added'
-      : hasDrop ? 'Airport Drop Added' : null;
+      ? 'Pickup Added'
+      : hasDrop ? 'Drop Added' : null;
+
+  // Handle clicking outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDetails(false);
+      }
+    };
+
+    if (showDetails) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showDetails]);
 
   const handleClick = () => {
     if (hasPickup && hasDrop) {
       setShowDetails(!showDetails);
+      // Close hover tooltip when showing dropdown
+      setShowTooltip(false);
     } else if (hasPickup && !hasDrop) {
       handleIntracityBookings(upPresent && downPresent, { ...pickupBooking, selectedType: 'Airport Pickup' });
     } else if (!hasPickup && hasDrop) {
@@ -96,6 +118,13 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
     setShowTooltip(false);
     setShowDetails(false);
     handleIntracityBookings(upPresent && downPresent, { ...dropBooking, selectedType: 'Airport Drop' });
+  };
+
+  const handleInfoHover = (show) => {
+    // Only show hover tooltip if dropdown is not open
+    if (!showDetails) {
+      setShowTooltip(show);
+    }
   };
 
   const formatDate = (dateString) => {
@@ -131,7 +160,7 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
   };
 
   return (
-    <div key={-3} className="group relative">
+    <div key={-3} className="group relative" ref={dropdownRef}>
       <div className="flex items-center gap-2">
         <span
           className={`text-blue font-[500] text-[14px] ${
@@ -145,18 +174,19 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
         <div className="relative">
           <div
             className="w-4 h-4 rounded-full bg-white text-gray-400 flex items-center justify-center text-[14px] font-bold hover:bg-blue-700 transition-colors cursor-pointer"
-            onMouseEnter={() => setShowTooltip(true)}
-            onMouseLeave={() => setShowTooltip(false)}
+            onMouseEnter={() => handleInfoHover(true)}
+            onMouseLeave={() => handleInfoHover(false)}
           >
             <LuInfo size={16} strokeWidth={2.5} />
           </div>
 
-          {showTooltip && (
+          {/* Hover Tooltip - Only shows when dropdown is not open */}
+          {showTooltip && !showDetails && (
             <div
               className="absolute left-6 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600 whitespace-nowrap"
               style={{ zIndex: 10000 }}
-              onMouseEnter={() => setShowTooltip(true)}
-              onMouseLeave={() => setShowTooltip(false)}
+              onMouseEnter={() => handleInfoHover(true)}
+              onMouseLeave={() => handleInfoHover(false)}
             >
               <div className="flex flex-col gap-1">
                 {hasPickup && (
@@ -168,7 +198,6 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
                       {pickupBooking?.name}:
                     </span>
                     <span className="text-gray-200">
-                      {/* {getPassengerCount(pickupBooking)} Passenger{getPassengerCount(pickupBooking) !== 1 ? 's' : ''}  */}
                       • Date {formatDate(pickupBooking.check_in)} • Time {formatTime(pickupBooking.check_in)}
                     </span>
                   </div>
@@ -182,7 +211,6 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
                       {dropBooking?.name}:
                     </span>
                     <span className="text-gray-200">
-                      {/* {getPassengerCount(dropBooking)} Passenger{getPassengerCount(dropBooking) !== 1 ? 's' : ''}  */}
                       • Date {formatDate(dropBooking.check_out || dropBooking.check_in)} • Time {formatTime(dropBooking.check_out || dropBooking.check_in)}
                     </span>
                   </div>
@@ -199,34 +227,32 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
       {showDetails && hasPickup && hasDrop && (
         <div className="relative mt-2">
           <div
-            className="absolute bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600"
+            className="absolute bg-gray-900 text-white text-xs rounded-md px-2 py-2 shadow-xl border border-gray-600 min-w-[320px] max-w-[450px] md:w-[800px]"
             style={{ zIndex: 10000 }}
           >
             <div className="flex flex-col gap-2">
               {hasPickup && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-start gap-2 flex-wrap">
                   <span
-                    className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
+                    className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors whitespace-nowrap"
                     onClick={handlePickupClick}
                   >
                     {pickupBooking?.name}:
                   </span>
-                  <span className="text-gray-200">
-                    {/* {getPassengerCount(pickupBooking)} Passenger{getPassengerCount(pickupBooking) !== 1 ? 's' : ''}  */}
+                  <span className="text-gray-200 flex-1">
                     • Date {formatDate(pickupBooking.check_in)} • Time {formatTime(pickupBooking.check_in)}
                   </span>
                 </div>
               )}
               {hasDrop && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-start gap-2 flex-wrap">
                   <span
-                    className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
+                    className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors whitespace-nowrap"
                     onClick={handleDropClick}
                   >
                     {dropBooking?.name}:
                   </span>
-                  <span className="text-gray-200">
-                    {/* {getPassengerCount(dropBooking)} Passenger{getPassengerCount(dropBooking) !== 1 ? 's' : ''}  */}
+                  <span className="text-gray-200 flex-1">
                     • Date {formatDate(dropBooking.check_out || dropBooking.check_in)} • Time {formatTime(dropBooking.check_out || dropBooking.check_in)}
                   </span>
                 </div>
