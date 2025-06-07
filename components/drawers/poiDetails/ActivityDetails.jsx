@@ -19,6 +19,7 @@ import { openNotification } from "../../../store/actions/notification";
 import ImageLoader from "../../ImageLoader";
 import SkeletonCard from "../../ui/SkeletonCard";
 import BackArrow from "../../ui/BackArrow";
+import { Pax } from "./Pax";
 export const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -128,6 +129,7 @@ const ActivityDetails = (props) => {
   const token = useSelector((state) => state.auth.token);
   const [imageLoaded, setImageLoaded] = useState(false);
 
+
   const dispatch = useDispatch();
 
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
@@ -170,7 +172,7 @@ const ActivityDetails = (props) => {
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
+          }
         }
       );
 
@@ -382,7 +384,14 @@ const ActivityDetails = (props) => {
             {props.data?.experience_filters && (
               <Text>{experience_filters}</Text>
             )}
-            {props.data?.prices?.total_price&&<div className={"mb-2"}>Cost: ₹ {props.data?.prices?.total_price} /- Per person</div>}
+            {props.data?.prices?.total_price && (
+              <div className={"mb-2 flex flex-col gap-1"}>
+                <div >
+                  Cost: ₹ {props.data?.prices?.total_price} /- Per person
+                </div>
+                <Pax pax={props.pax} setPax={props.setPax}/>
+              </div>
+            )}
             {aboutText != null && aboutText != undefined && (
               <div>
                 <Text

@@ -17,11 +17,15 @@ const NewPOIDetailsDrawer = (props) => {
   console.log("props activities summary are:", props);
   const [data, setData] = useState(props?.data || []);
   const [loading, setLoading] = useState(false);
+  const [pax,setPax]=useState({
+    adults:1,
+    children:0
+  })
   const router = useRouter();
 
   useEffect(() => {
     if (props.show) fetchData();
-  }, [props.show]);
+  }, [props.show,pax]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -59,7 +63,10 @@ const NewPOIDetailsDrawer = (props) => {
       activityDetail
         .post(
           `${props.ActivityiconId}/`,
-          {},
+          {
+            number_of_adults:pax.adults,
+            number_of_children:pax.children
+          },
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -167,6 +174,8 @@ const NewPOIDetailsDrawer = (props) => {
                 setShowLoginModal={props?.setShowLoginModal}
                 getPaymentHandler={props?.getPaymentHandler}
                 removeDelete={props?.removeDelete}
+                pax={pax}
+                setPax={setPax}
               >
                 {props?.children}
               </ActivityDetails>
