@@ -44,10 +44,12 @@ const TaxiDetailModal = ({
   destination_itinerary_city_id,
   setShowDrawer,
   noChange,
-  noHeading
+  noHeading,
+  error
 }) => {
   if (!data) return null;
 
+   let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
   console.log("Selllec", selectedBooking);
   const {
     name,
@@ -106,6 +108,21 @@ const TaxiDetailModal = ({
   const luggageBags = transfer_details?.quote?.taxi_category?.bag_capacity;
   const seatCapacity = transfer_details?.quote?.taxi_category?.seating_capacity;
 
+  if (error) {
+        return (
+          <div
+            style={{
+              textAlign: "center",
+              margin: "auto",
+              height: isPageWide ? "80vh" : "70vh",
+            }}
+            className="center-div"
+          >
+            Oops, unable to get the details at the moment.
+          </div>
+        );
+      }
+
   return !showTaxi ? (
     <>
       <div className=" bg-gray-50 w-full h-full flex flex-col">
@@ -134,6 +151,7 @@ const TaxiDetailModal = ({
                     borderRadius={"7px"}
                     fontSize={"1rem"}
                     padding={"7px 25px"}
+                    marginMobile={"0px 0px 0px 2px"}
                     onClick={() => {
                       setHandleShow(false);
                       setShowDrawer(true);

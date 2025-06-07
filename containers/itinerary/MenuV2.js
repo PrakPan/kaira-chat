@@ -1458,7 +1458,7 @@ const SimpleTabsV2 = (props) => {
 
       <div
         onClick={() => setShareMobile((prev) => !prev)}
-        className="z-[999] fixed bottom-[160px] right-[16px] md:hidden bg-black  p-[18px] w-fit flex items-center justify-center rounded-full cursor-pointer"
+        className="z-[999] fixed bottom-[160px] right-[22px] md:right-[16px] md:hidden bg-black  p-[18px] w-fit flex items-center justify-center rounded-full cursor-pointer"
       >
         <BsShareFill className="text-[25px] text-white " />
       </div>
