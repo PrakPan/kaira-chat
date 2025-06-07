@@ -1058,6 +1058,7 @@ export const Destination = (props) => {
   } = props;
 
   const [popUp, setPopUp] = useState(false);
+  const isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
 
   const handleRemoveDestination = (e) => {
     e.stopPropagation();
@@ -1183,7 +1184,7 @@ export const Destination = (props) => {
             <div className="text-sm text-gray-500">
               {!(startingCity || endingCity) && cityData?.nights
                 ? `${cityData.nights} ${
-                    cityData.nights > 1 ? "Nights" : "Night"
+                    cityData.nights > 1  ? isPageWide ? "Nights" : "N" : isPageWide ? "Night" : "N"
                   }`
                 : null}
             </div>

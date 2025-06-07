@@ -14,6 +14,7 @@ const POIDetailsSkeleton = (props) => {
     gap: 1.5rem;
     position: relative;
     margin-bottom: 1rem;
+    width:100%;
 
     @media screen and (min-width: 768px) {
       flex-direction: row;

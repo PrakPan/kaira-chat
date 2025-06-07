@@ -34,8 +34,10 @@ const TransferDrawer = ({
   destination_itinerary_city_id,
   setShowDrawer,
   isIntracity,
+  error
 }) => {
   const [expandedIndexes, setExpandedIndexes] = useState([]);
+  let isPageWide = media("(min-width: 768px)");
   const isCombo = data?.children && data?.children.length > 0;
   useEffect(() => {
     if (show && isCombo && data?.children?.length > 0) {
@@ -103,6 +105,9 @@ const TransferDrawer = ({
       }
     };
 
+    
+
+
     return (
       <div key={`${transferData.id}-${index}`} className="mb-6">
         <div
@@ -149,6 +154,7 @@ const TransferDrawer = ({
                 onChange={true}
                 setShowDrawer={setShowDrawer}
                 setHandleShow={setHandleShow}
+                error={error}
               />
             )
           ) : loading ? (
@@ -175,6 +181,7 @@ const TransferDrawer = ({
               destination_itinerary_city_id={destination_itinerary_city_id}
               setShowDrawer={setShowDrawer}
               noChange={isIntracity}
+              error={error}
             />
           ) : (
             <VehicleDetailModal
@@ -183,12 +190,24 @@ const TransferDrawer = ({
               handleDelete={handleDelete}
               loading={loading}
               setShowDrawer={setShowDrawer}
+              error={error}
 
             />
           )}
         </>
       ) : (
-        <div className="h-screen flex flex-col">
+        error ? <>
+          <div
+            style={{
+              textAlign: "center",
+              margin: "auto",
+              height: isPageWide ? "80vh" : "70vh",
+            }}
+            className="center-div"
+          >
+            Oops, unable to get the details at the moment.
+          </div>
+      </> :<div className="h-screen flex flex-col">
           <div className="p-4 border-b">
             <BackArrow handleClick={() => setHandleShow(false)} />
             <div className="flex justify-between">

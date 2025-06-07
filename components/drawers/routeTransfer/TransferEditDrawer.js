@@ -647,7 +647,7 @@ const TransferEditDrawer = (props) => {
                 <div className="w-full flex flex-col items-center gap-3">
                   {currentStep === 0 ? (
                     <>
-                      {transfers && transfers.length > 0 && (
+                      {transfers && transfers.length > 0 &&  (
                         <div className="mb-4 w-full">
                           <div className="inline-block mb-3">
                             <span className="bg-red-500 text-white px-3 py-1 rounded-md text-sm font-medium">
@@ -664,10 +664,11 @@ const TransferEditDrawer = (props) => {
                             }}
                           >
                             <div>
-                              <span className="font-medium p-2 text-lg">
-                                {transfers[0]?.name} |
+                              <span className="font-medium p-2 text-md md:text-lg">
+                                {transfers[0]?.name} {isDesktop ? "|" :""}
                               </span>
-                              <span className="text-gray-600 ml-1">
+                              <span className="text-gray-600 ml-1 text-md md:text-lg">
+                                {isDesktop ? "" :<br/>}
                                 {Math.ceil(
                                   transfers[0].transfers.reduce(
                                     (sum, t) => sum + (t.duration || 0),
@@ -699,7 +700,7 @@ const TransferEditDrawer = (props) => {
                           </div>
 
                           {transfers.slice(1).map((transfer, idx) => {
-                            const index = idx + 1; // Actual index in the transfers array
+                            const index = idx + 1; 
                             return (
                               <div
                                 key={index}
@@ -710,10 +711,11 @@ const TransferEditDrawer = (props) => {
                                 }}
                               >
                                 <div>
-                                  <span className="font-medium p-2 text-lg">
-                                    {transfer?.name} |
+                                  <span className="font-medium p-1 md:p-2 text-left text-md md:text-lg">
+                                    {transfer?.name} {isDesktop ? "|" :""}
                                   </span>
-                                  <span className="text-gray-600 ml-1">
+                                  <span className="text-gray-600 ml-1 text-md md:text-lg">
+                                    {isDesktop ? "" :<br/>}
                                     {Math.ceil(
                                       transfer.transfers.reduce(
                                         (sum, t) => sum + (t.duration || 0),

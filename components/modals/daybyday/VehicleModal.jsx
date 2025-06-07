@@ -23,11 +23,13 @@ const VehicleDetailModal = ({
   booking,
   type,
   isEmbedded,
-  setShowDrawer
+  setShowDrawer,error
 }) => {
   if (!data) return null;
+
   // const [loading, setLoading] = useState(false);
   // const transfer = useSelector((state) => state.Itinerary);
+   let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
   const {
     name,
     transfer_details,
@@ -76,6 +78,21 @@ const VehicleDetailModal = ({
   const arrival = formatDateTime(check_out) ||  addMinutesToDate(departure, duration);
   const depart = formatDateTime(departure);
 
+  if (error) {
+        return (
+          <div
+            style={{
+              textAlign: "center",
+              margin: "auto",
+              height: isPageWide ? "80vh" : "70vh",
+            }}
+            className="center-div"
+          >
+            Oops, unable to get the details at the moment.
+          </div>
+        );
+      }
+
   return (
     <>
       <div className=" bg-gray-50 w-full h-full flex flex-col">
@@ -83,8 +100,8 @@ const VehicleDetailModal = ({
           <BackArrow handleClick={()=>setHandleShow(false)}/>
         </div>}
         <div className="flex justify-between">
-        {!isEmbedded && <div className="flex items-center px-4">
-          <div className="bg-blue-100 rounded-lg p-2 mr-3">
+        {!isEmbedded &&  <div className="flex items-center px-4">
+          {isPageWide && <div className="bg-blue-100 rounded-lg p-2 mr-3">
             {loading ? (
               <div className="w-20 h-12 bg-gray-300 opacity-50 rounded-lg"></div>
             ) : (
@@ -98,8 +115,8 @@ const VehicleDetailModal = ({
                 classname={{ width: 80, height: 75 }}
               />
             )}
-          </div>
-          <span className="text-xl font-semibold text-gray-800">
+          </div>}
+          <span className=" md:text-xl font-semibold text-gray-800">
             {loading ? (
               <div className="w-32 h-5 bg-gray-300 opacity-50 rounded"></div>
             ) : (
