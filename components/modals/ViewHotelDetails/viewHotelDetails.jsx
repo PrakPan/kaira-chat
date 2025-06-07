@@ -251,6 +251,7 @@ console.log("hotel name:",data?.name)
           props?.handleClose()
           props?.onHide()
         } catch (error) {
+          
           props.openNotification({
             type: "error",
             text: `${error.response?.data?.errors[0]?.message[0]}`,

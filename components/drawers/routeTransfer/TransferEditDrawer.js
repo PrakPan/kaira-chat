@@ -2213,8 +2213,10 @@ const NewMultiModeContainer = ({
         setUpdateLoading(false);
       } catch (error) {
         setUpdateLoading(false);
+        const errorMsg =
+        error?.response?.data?.errors?.[0]?.message?.[0] || error.message || "Error updating Transfers!";
         openNotification({
-          text: "Error updating Transfers!",
+          text: errorMsg,
           heading: "Error!",
           type: "error",
         });
@@ -4269,10 +4271,13 @@ const OtherTransfer = ({
         );
       }
     } catch (error) {
+      const errorMsg =
+     error?.response?.data?.errors?.[0]?.message?.[0] || error.message || "Error updating Transfers!";
+
       console.error("Error updating transfer:", error);
       dispatch(
         openNotification({
-          text: error.message || "Error updating Transfers!",
+          text: errorMsg,
           heading: "Error!",
           type: "error",
         })

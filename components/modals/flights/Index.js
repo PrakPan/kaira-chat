@@ -366,9 +366,11 @@ const Booking = (props) => {
       .catch((err) => {
         setUpdateBookingState(false);
         setUnauthorized(true);
+        const errorMsg =
+            err?.response?.data?.errors?.[0]?.message?.[0] || err.message ;
         props.openNotification({
           type: "error",
-          text: "Oops, this action is not allowed on another user's itinerary.",
+          text: errorMsg || "Oops, this action is not allowed on another user's itinerary.",
           heading: "Error!",
         });
         props.setHideFlightModal();
