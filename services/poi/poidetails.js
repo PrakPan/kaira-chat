@@ -1,8 +1,8 @@
 import axios from "axios";
-import { CONTENT_SERVER_HOST } from "../constants";
+import { CONTENT_SERVER_HOST, MERCURY_HOST } from "../constants";
 
 const instance = axios.create({
-  baseURL: CONTENT_SERVER_HOST + "/poi/detail/",
+  baseURL: MERCURY_HOST + "/poi/detail/",
 });
 
 export default instance;
