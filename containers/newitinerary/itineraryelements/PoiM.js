@@ -810,7 +810,7 @@ const ItineraryPoiElementM = (props) => {
         />
       </Drawer>
 
-      {!isDesktop && showDrawer && (
+      {/* {!isDesktop && showDrawer && (
         <div className="absolute bottom-0 right-10 z-[1510]">
           <FloatingView>
             <TbArrowBack
@@ -820,7 +820,7 @@ const ItineraryPoiElementM = (props) => {
             />
           </FloatingView>
         </div>
-      )}
+      )} */}
 
       {!isDesktop && showDrawer && (
         <div className="absolute bottom-0 right-10 z-[1502]">

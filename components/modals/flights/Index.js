@@ -592,13 +592,13 @@ const Booking = (props) => {
                       }}
                     />
                   </Floating>
-                  <FloatingView>
+                  {/* <FloatingView>
                     <TbArrowBack
                       style={{ height: "28px", width: "28px" }}
                       cursor={"pointer"}
                       onClick={props.setHideFlightModal}
                     />
-                  </FloatingView>
+                  </FloatingView> */}
                 </>
               )}
             </GridContainer>

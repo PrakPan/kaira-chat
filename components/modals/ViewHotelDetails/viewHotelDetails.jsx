@@ -336,7 +336,7 @@ console.log("hotel name:",data?.name)
               Oops! There seems to be a problem, please try again later!
             </ErrorContainer>
           )}
-          {!isPageWide && (
+          {/* {!isPageWide && (
             <FloatingView>
               <TbArrowBack
                 style={{ height: "28px", width: "28px" }}
@@ -344,7 +344,7 @@ console.log("hotel name:",data?.name)
                 onClick={props.onHide}
               />
             </FloatingView>
-          )}
+          )} */}
         </Container>
       ) : (
         <Skeleton onHide={props.onHide} />
