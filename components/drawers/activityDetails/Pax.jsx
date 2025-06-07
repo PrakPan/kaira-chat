@@ -87,8 +87,8 @@ export const Pax = ({ pax, setPax, combo }) => {
         }}
         className="flex items-center bg-[#F5F5F5] px-[16px] py-[8px] rounded-[4px]"
       >
-        <div className="text-[14px] font-medium">Travellers Details</div>
-        <div className="text-[14px] font-medium">&nbsp;|&nbsp;</div>
+        <div className="text-[10px] md:text-[14px] font-medium">Travellers Details</div>
+        <div className="text-[10px] md:text-[14px] font-medium">&nbsp;|&nbsp;</div>
         <div className="flex">
           <div className="text-[10px] font-medium">
             {adults} Adults and {children} Children 

@@ -322,7 +322,7 @@ const POI = (props) => {
               Oops! There seems to be a problem, please try again later!
             </ErrorContainer>
           )}
-          {!isPageWide && (
+          {/* {!isPageWide && (
             <FloatingView>
               <TbArrowBack
                 style={{ height: "28px", width: "28px" }}
@@ -330,7 +330,7 @@ const POI = (props) => {
                 onClick={props.onHide}
               />
             </FloatingView>
-          )}
+          )} */}
         </Container>
       ) : (
         <Skeleton onHide={props.onHide} />

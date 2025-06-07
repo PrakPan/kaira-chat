@@ -390,7 +390,7 @@ const HotelsBooking = (props) => {
         </div>
       )}
 
-      {!isDesktop && props.showBookingModal && (
+      {/* {!isDesktop && props.showBookingModal && (
         <div className="absolute bottom-0 right-10 z-[1510]">
           <FloatingView>
             <TbArrowBack
@@ -400,7 +400,7 @@ const HotelsBooking = (props) => {
             />
           </FloatingView>
         </div>
-      )}
+      )} */}
 
       {props.token && props.showBookingModal && (
         <MakeYourPersonalised

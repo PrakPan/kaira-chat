@@ -518,225 +518,130 @@ const ActivityAddDrawer = (props) => {
       width={"50%"}
       mobileWidth={"100%"}
       style={{ zIndex: 1501 }}
-      className="font-lexend"
+      className={`font-lexend `}
       onHide={() => props.setShowDrawer(false)}
     >
-      <div className="px-2 py-4 !font-[lexend]">
-        <div className="sticky  top-0 bg-white z-[900] flex flex-col gap-3  pb-1 justify-start items-start mx-auto w-[98%]">
-          <div className="flex flex-row gap-[20px] my-0 justify-between w-full items-center">
-            <div className="flex flex-row gap-3 items-center">
-              <IoMdClose
-                onClick={() => props.setShowDrawer(false)}
-                className="hover-pointer"
-                style={{
-                  fontSize: "1.75rem",
-                  textAlign: "right",
-                }}
-              ></IoMdClose>
-            </div>
-          </div>
-          <div className="flex max-[582px]:flex-col max-[582px]:!items-start justify-between w-full items-center">
-            <div className=" line-clamp-1 text-[24px] font-semibold ">
-              Add {elementType == "POI" ? "Places to visit" : elementType} in{" "}
-              {props.cityName}
-            </div>
-            {elementType == "Activity" && (
-              <Pax
-                setShowPax={setShowPax}
-                pax={pax}
-                setPax={setPax}
-                showPax={showPax}
-              />
-            )}
-          </div>
-          <div className="grid w-full gap-2 min-[583px]:grid-cols-[3fr_2fr_1fr]">
-            <div className=" flex flex-row items-center relative h-[44px]">
-              <IoMdSearch
-                id={"icon"}
-                onClick={searchHandler}
-                className="absolute cursor-pointer left-4 text-2xl"
-              />
-
-              <input
-                type="text"
-                value={selectSearch}
-                onChange={searchHandler}
-                placeholder={`Search ${
-                  elementType === "POI" ? "attractions" : "activities"
-                }`}
-                className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700] h-[44px]"
-              ></input>
-            </div>
-            <select
-              className="px-[16px] py-[12px] rounded-[8px] bg-white border-1 border-[#979393] h-[44px] text-[14px] font-medium flex items-center justify-between max-[583px]:hidden"
-              onChange={(e) => setStartDate(e.target.value)}
-              defaultValue={props?.date}
-            >
-              {[...Array(props.duration)].map((_, i) => {
-                const baseDateStr = props?.mercuryItinerary
-                  ? props?.start_date
-                  : convertToISODate(props?.start_date);
-
-                const baseDate = new Date(baseDateStr);
-                if (isNaN(baseDate.getTime())) return null;
-
-                const currentDate = new Date(baseDate);
-                currentDate.setDate(currentDate.getDate() + i);
-
-                const pad = (n) => (n < 10 ? `0${n}` : n);
-                const isoDate = `${currentDate.getFullYear()}-${pad(
-                  currentDate.getMonth() + 1
-                )}-${pad(currentDate.getDate())}`;
-                const formattedDate = getHumanDate(isoDate);
-
-                return (
-                  <option key={i} value={isoDate}>
-                    {formattedDate} | Day {i + 1}
-                  </option>
-                );
-              })}
-            </select>
-
-            <div className="relative inline-block">
-              <div
-                className="relative px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2 max-[583px]:hidden cursor-pointer"
-                onClick={() => setShowDynamicfilters(true)}
-              >
-                <Image
-                  src="/filter.svg"
-                  width={20}
-                  height={20}
-                  alt="Filter Icon"
-                />
-                <button>Filters</button>
-                {changed && (
-                  <div className="absolute -right-1 -top-1 h-[20px] w-[20px] rounded-full bg-red-500"></div>
-                )}
+      <>
+        <div className={`px-2  !font-[lexend] overflow-y-scroll h-[100vh]`}>
+          <div className="py-4 bg-white z-[900] flex flex-col gap-3  pb-1 justify-start items-start mx-auto w-[98%]">
+            <div className="flex flex-row gap-[20px] justify-between w-full items-center">
+              <div className="flex flex-row gap-3 items-center">
+                <IoMdClose
+                  onClick={() => props.setShowDrawer(false)}
+                  className="hover-pointer"
+                  style={{
+                    fontSize: "1.75rem",
+                    textAlign: "right",
+                  }}
+                ></IoMdClose>
               </div>
-
-              {showDynamicfilters && (
-                <div
-                  className={`
-        z-50 bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm z-[1091]
-        min-[584px]:absolute min-[584px]:top-[calc(100%+8px)] min-[584px]:right-0
-        max-[583px]:fixed max-[583px]:bottom-0 max-[583px]:w-full
-      `}
-                  ref={filtersRef}
-                >
-                  <DyamicFilters
-                    filters={filtersObj}
-                    showFilter={showDynamicfilters}
-                    setshowFilter={setShowDynamicfilters}
-                    filterState={filterState}
-                    setFilterState={setFilterState}
-                    FILTERS={filtersObj}
-                    setChanged={setChanged}
-                    elementType={elementType}
-                  />
-                </div>
+            </div>
+            <div className="flex max-[582px]:flex-col max-[582px]:!items-start justify-between w-full items-center">
+              <div className=" line-clamp-1 text-[24px] font-semibold ">
+                Add {elementType == "POI" ? "Places to visit" : elementType} in{" "}
+                {props.cityName}
+              </div>
+              {elementType == "Activity" && (
+                <Pax
+                  setShowPax={setShowPax}
+                  pax={pax}
+                  setPax={setPax}
+                  showPax={showPax}
+                />
               )}
             </div>
+            <div className="grid w-full gap-2 min-[583px]:grid-cols-[3fr_2fr_1fr]">
+              <div className=" flex flex-row items-center relative h-[44px]">
+                <IoMdSearch
+                  id={"icon"}
+                  onClick={searchHandler}
+                  className="absolute cursor-pointer left-4 text-2xl"
+                />
 
-            {showCalender && (
-              <div
-                className="fixed bottom-0 w-full bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm z-[1091]"
-                ref={calendarRef}
+                <input
+                  type="text"
+                  value={selectSearch}
+                  onChange={searchHandler}
+                  placeholder={`Search ${
+                    elementType === "POI" ? "attractions" : "activities"
+                  }`}
+                  className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700] h-[44px]"
+                ></input>
+              </div>
+              <select
+                className="px-[16px] py-[12px] rounded-[8px] bg-white border-1 border-[#979393] h-[44px] text-[14px] font-medium flex items-center justify-between max-[583px]:hidden"
+                onChange={(e) => setStartDate(e.target.value)}
+                defaultValue={props?.date}
               >
-                <div className="font-medium text-[14px]">Select Days</div>
                 {[...Array(props.duration)].map((_, i) => {
                   const baseDateStr = props?.mercuryItinerary
-                    ? props?.date
-                    : convertToISODate(props?.date);
+                    ? props?.start_date
+                    : convertToISODate(props?.start_date);
 
                   const baseDate = new Date(baseDateStr);
+                  if (isNaN(baseDate.getTime())) return null;
+
                   const currentDate = new Date(baseDate);
                   currentDate.setDate(currentDate.getDate() + i);
 
-                  // Pad function to ensure two digits
                   const pad = (n) => (n < 10 ? `0${n}` : n);
-
-                  const year = currentDate.getFullYear();
-                  const month = pad(currentDate.getMonth() + 1); // +1 because months are 0-indexed
-                  const day = pad(currentDate.getDate());
-
-                  const dateString = `${year}-${month}-${day}`; // "YYYY-MM-DD"
+                  const isoDate = `${currentDate.getFullYear()}-${pad(
+                    currentDate.getMonth() + 1
+                  )}-${pad(currentDate.getDate())}`;
+                  const formattedDate = getHumanDate(isoDate);
 
                   return (
-                    <div
-                      key={i}
-                      className="cursor-pointer"
-                      onClick={() => setStartDate(dateString)}
-                    >
-                      <span className="font-bold text-[14px]">
-                        {dateString + " | "}
-                      </span>
-                      <span>Day {i + 1}</span>
-                    </div>
+                    <option key={i} value={isoDate}>
+                      {formattedDate} | Day {i + 1}
+                    </option>
                   );
                 })}
-              </div>
-            )}
-          </div>
+              </select>
 
-          {!isDesktop && (
-            <div className="absolute bottom-0 right-10 z-[1502]">
-              <div className="fixed bottom-[10px] right-[10px] bg-[#01202b] rounded-full w-[50px] h-[50px] flex items-center justify-center">
-                <FaFilter
-                  className="text-white"
-                  style={{ height: "18px", width: "18px" }}
-                  cursor={"pointer"}
-                  onClick={(e) => {
-                    setShowDynamicfilters(true);
-                  }}
-                />
-              </div>
-            </div>
-          )}
-          <div className="min-[583px]:hidden flex justify-between w-full">
-            <button
-              onClick={handleRecommneded}
-              className="flex flex-row items-center gap-1 cursor-pointer"
-            >
-              <CheckboxFormComponent checked={recommended} />
-              Top Recommended
-            </button>
-            <div className="flex gap-4">
-              <div
-                className="rounded-[12px] border-2 px-[16px] py-[12px] border-black cursor-pointer"
-                onClick={() => setShowCalender(true)}
-              >
-                <Image
-                  src="/calender.svg"
-                  width={"20"}
-                  height={"20"}
-                  color="white"
-                />
-              </div>
-              <div
-                className="relative px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2  cursor-pointer"
-                onClick={() => setShowDynamicfilters(true)}
-              >
-                <Image
-                  src="/filter.svg"
-                  width={"20"}
-                  height={"20"}
-                  color="white"
-                />
-                {changed && (
-                  <div className="absolute -right-1 -top-1 h-[20px] w-[20px] rounded-full !bg-red-500"></div>
+              <div className="relative inline-block">
+                <div
+                  className="relative px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2 max-[583px]:hidden cursor-pointer"
+                  onClick={() => setShowDynamicfilters(true)}
+                >
+                  <Image
+                    src="/filter.svg"
+                    width={20}
+                    height={20}
+                    alt="Filter Icon"
+                  />
+                  <button>Filters</button>
+                  {changed && (
+                    <div className="absolute -right-1 -top-1 h-[20px] w-[20px] rounded-full bg-red-500"></div>
+                  )}
+                </div>
+
+                {showDynamicfilters && (
+                  <div
+                    className={`
+      z-[1091] bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm
+
+      min-[584px]:absolute min-[584px]:top-[calc(100%+8px)] min-[584px]:right-0 min-[584px]:block 
+
+       max-[583px]:fixed max-[583px]:bottom-0 max-[583px]:w-full max-[583px]:left-0 max-[583px]:block
+    `}
+                    ref={filtersRef}
+                  >
+                    <DyamicFilters
+                      filters={filtersObj}
+                      showFilter={showDynamicfilters}
+                      setshowFilter={setShowDynamicfilters}
+                      filterState={filterState}
+                      setFilterState={setFilterState}
+                      FILTERS={filtersObj}
+                      setChanged={setChanged}
+                      elementType={elementType}
+                    />
+                  </div>
                 )}
               </div>
             </div>
-          </div>
 
-          <div className="flex flex-row items-center justify-between w-full mb-[20px]">
-            <div>
-              Showing {options.length}
-              {elementType === "POI" ? " attractions" : " activities"}
-              {totalResults ? ` out of ${totalResults}` : null}
-              {props?.cityName ? ` in ${props?.cityName}` : null}
-            </div>
-            <div className="max-[583px]:hidden">
+            <div className="min-[583px]:hidden flex justify-between w-full">
               <button
                 onClick={handleRecommneded}
                 className="flex flex-row items-center gap-1 cursor-pointer"
@@ -744,105 +649,192 @@ const ActivityAddDrawer = (props) => {
                 <CheckboxFormComponent checked={recommended} />
                 Top Recommended
               </button>
+              <div className="flex gap-4">
+                <div
+                  className="rounded-[12px] border-2 px-[16px] py-[12px] border-black cursor-pointer"
+                  onClick={() => setShowCalender(true)}
+                >
+                  <Image
+                    src="/calender.svg"
+                    width={"20"}
+                    height={"20"}
+                    color="white"
+                  />
+                </div>
+                <div
+                  className="relative px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2  cursor-pointer"
+                  onClick={() => setShowDynamicfilters(true)}
+                >
+                  <Image
+                    src="/filter.svg"
+                    width={"20"}
+                    height={"20"}
+                    color="white"
+                  />
+                  {changed && (
+                    <div className="absolute -right-1 -top-1 h-[20px] w-[20px] rounded-full !bg-red-500"></div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-row items-center justify-between w-full mb-[20px]">
+              <div>
+                Showing {options.length}
+                {elementType === "POI" ? " attractions" : " activities"}
+                {totalResults ? ` out of ${totalResults}` : null}
+                {props?.cityName ? ` in ${props?.cityName}` : null}
+              </div>
+              <div className="max-[583px]:hidden">
+                <button
+                  onClick={handleRecommneded}
+                  className="flex flex-row items-center gap-1 cursor-pointer"
+                >
+                  <CheckboxFormComponent checked={recommended} />
+                  Top Recommended
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+{/* <div className="z-[900]"> */}
+          <Navigation
+            items={items}
+            BarName="TabsName"
+            ClickHandler={ClickHandler}
+            selectedItem={
+              elementType === "Activity" ? `${items[0].id}` : `${items[1].id}`
+            }
+          />
+          {/* </div> */}
 
-        <Navigation
-          items={items}
-          BarName="TabsName"
-          ClickHandler={ClickHandler}
-          selectedItem={
-            elementType === "Activity" ? `${items[0].id}` : `${items[1].id}`
-          }
-        />
-
-        <>
-          {(elementType === "Activity" ? loaded : !loadingPoi) ? (
-            options.length ? (
-              <div
-                // onScroll={handleScroll}
-                className="flex flex-col items-center mb-3 h-[calc(100vh-270px)] overflow-y-scroll"
-              >
-                {options}
-                {showSkeleton && <PoiListSkeleton />}
-                {nextUrl !== null ? (
-                  <Button
-                    boxShadow
-                    onclickparam={null}
-                    onclick={handleViewMore}
-                    margin="0.25rem auto"
-                    borderWidth="1px"
-                    borderRadius="2rem"
-                    padding="0.25rem 1rem"
-                  >
-                    View more
-                  </Button>
-                ) : null}
-              </div>
-            ) : (
-              <div className="flex flex-col items-center gap-3">
-                <EmptyMsg className="flex flex-row items-start px-1">
-                  <BiErrorCircle className="" />
-                  <span className="">
-                    Oops, it looks like there are no{" "}
-                    {elementType === "POI" ? "places to visit" : "things to do"}{" "}
-                    available.
-                  </span>
-                </EmptyMsg>
-                {debouncedSearch !== "" ? (
-                  <Button
-                    boxShadow
-                    onclickparam={null}
-                    onclick={handleClearSearch}
-                    margin="0.25rem auto"
-                    borderWidth="1px"
-                    borderRadius="2rem"
-                    padding="0.25rem 1rem"
-                  >
-                    Show All
-                  </Button>
-                ) : (
-                  <GetInTouchContainer className="">
+          <>
+            {(elementType === "Activity" ? loaded : !loadingPoi) ? (
+              options.length ? (
+                <div
+                  // onScroll={handleScroll}
+                  className="z-[99] flex flex-col items-center mb-3 h-[calc(100vh-270px)]"
+                >
+                  {options}
+                  {showSkeleton && <PoiListSkeleton />}
+                  {nextUrl !== null ? (
                     <Button
-                      color="#111"
-                      fontWeight="500"
-                      fontSize="1rem"
-                      borderWidth="2px"
-                      width="100%"
-                      borderRadius="8px"
-                      bgColor="#f8e000"
-                      padding="12px"
-                      onclick={props._GetInTouch}
+                      boxShadow
+                      onclickparam={null}
+                      onclick={handleViewMore}
+                      margin="0.25rem auto"
+                      borderWidth="1px"
+                      borderRadius="2rem"
+                      padding="0.25rem 1rem"
                     >
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          gap: "0.5rem",
-                          alignItems: "center",
-                        }}
-                      >
-                        <ImageLoader
-                          dimensions={{ height: 50, width: 50 }}
-                          dimensionsMobile={{ height: 50, width: 50 }}
-                          height={"20px"}
-                          width={"20px"}
-                          leftalign
-                          url={"media/icons/login/customer-service-black.png"}
-                        />{" "}
-                        <span className="">Get in touch!</span>
-                      </div>
+                      View more
                     </Button>
-                  </GetInTouchContainer>
-                )}
-              </div>
-            )
-          ) : (
-            <PoiListSkeleton />
-          )}
-        </>
-      </div>
+                  ) : null}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-3">
+                  <EmptyMsg className="flex flex-row items-start px-1">
+                    <BiErrorCircle className="" />
+                    <span className="">
+                      Oops, it looks like there are no{" "}
+                      {elementType === "POI"
+                        ? "places to visit"
+                        : "things to do"}{" "}
+                      available.
+                    </span>
+                  </EmptyMsg>
+                  {debouncedSearch !== "" ? (
+                    <Button
+                      boxShadow
+                      onclickparam={null}
+                      onclick={handleClearSearch}
+                      margin="0.25rem auto"
+                      borderWidth="1px"
+                      borderRadius="2rem"
+                      padding="0.25rem 1rem"
+                    >
+                      Show All
+                    </Button>
+                  ) : (
+                    <GetInTouchContainer className="">
+                      <Button
+                        color="#111"
+                        fontWeight="500"
+                        fontSize="1rem"
+                        borderWidth="2px"
+                        width="100%"
+                        borderRadius="8px"
+                        bgColor="#f8e000"
+                        padding="12px"
+                        onclick={props._GetInTouch}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            gap: "0.5rem",
+                            alignItems: "center",
+                          }}
+                        >
+                          <ImageLoader
+                            dimensions={{ height: 50, width: 50 }}
+                            dimensionsMobile={{ height: 50, width: 50 }}
+                            height={"20px"}
+                            width={"20px"}
+                            leftalign
+                            url={"media/icons/login/customer-service-black.png"}
+                          />{" "}
+                          <span className="">Get in touch!</span>
+                        </div>
+                      </Button>
+                    </GetInTouchContainer>
+                  )}
+                </div>
+              )
+            ) : (
+              <PoiListSkeleton />
+            )}
+          </>
+        </div>
+        {showCalender && (
+          <div
+            className="fixed bottom-0 w-full bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm z-[1091]"
+            ref={calendarRef}
+          >
+            <div className="font-medium text-[14px]">Select Days</div>
+            {[...Array(props.duration)].map((_, i) => {
+              const baseDateStr = props?.mercuryItinerary
+                ? props?.date
+                : convertToISODate(props?.date);
+
+              const baseDate = new Date(baseDateStr);
+              const currentDate = new Date(baseDate);
+              currentDate.setDate(currentDate.getDate() + i);
+
+              // Pad function to ensure two digits
+              const pad = (n) => (n < 10 ? `0${n}` : n);
+
+              const year = currentDate.getFullYear();
+              const month = pad(currentDate.getMonth() + 1); // +1 because months are 0-indexed
+              const day = pad(currentDate.getDate());
+
+              const dateString = `${year}-${month}-${day}`; // "YYYY-MM-DD"
+
+              return (
+                <div
+                  key={i}
+                  className="cursor-pointer"
+                  onClick={() => setStartDate(dateString)}
+                >
+                  <span className="font-bold text-[14px]">
+                    {dateString + " | "}
+                  </span>
+                  <span>Day {i + 1}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </>
     </Drawer>
   );
 };

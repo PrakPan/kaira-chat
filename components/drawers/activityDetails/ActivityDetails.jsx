@@ -69,9 +69,9 @@ export default function ActivityDetails(props) {
       props?.setShowLoginModal(true);
       return;
     }
-    props.updatedActivityBooking(e).then(()=>{
-      setLoading(false)
-      props?.handleCloseDrawer(e)
+    props.updatedActivityBooking(e).then(() => {
+      setLoading(false);
+      props?.handleCloseDrawer(e);
     });
   };
 
@@ -169,8 +169,9 @@ export default function ActivityDetails(props) {
           <div className="flex flex-col gap-3">
             <div className="flex justify-between">
               <div className="text-[20px] font-[800]">{props.data.name}</div>
-              <Pax pax={props?.filterState} setPax={props?.setFilterState} />
             </div>
+            <Pax pax={props?.filterState} setPax={props?.setFilterState} />
+
             {props?.data?.rating && (
               <div className="flex items-center gap-1">
                 {props.data?.rating && (
@@ -416,45 +417,50 @@ export default function ActivityDetails(props) {
           ) : null}
         </div>
       </div>
-      <div className={`border-t-2 fixed bottom-0 right-0 left-0  gap-1 py-[12px] px-[20px] bg-white shadow-md z-50 flex ${!props.data.prices.total_price ? "justify-end": "justify-between"} items-center`}>
-        {props.data.prices.total_price && <div className="font-bold">
-          <span className="text-[34px]">
-            ₹{props.data.prices.total_price && (props.data.prices.total_price > 0) ? getIndianPrice(Math.round(props.data.prices.total_price)) : props.data.prices.total_price}
-            <span className="text-[12px] font-normal">
-              {" "}
-              for {props?.filterState.adults +
-                props?.filterState?.children}{" "}
-              people{" "}
-            </span>
-          </span>
-          <div className="text-gray-500 font-semiBold text-[#01202B] text-[14px]">
-            Total Cost
-          </div>
-        </div>}
-        <div className={`flex flex-col gap-1`}>
+      <div
+        className={`border-t-2 fixed bottom-0 right-0 left-0  gap-1 py-[12px] px-[20px] bg-white shadow-md z-50 
+        `}
+      >
+        <div className="flex justify-between items-center">
+          <>
+            {props.data.prices.total_price && (
+              <div className="font-bold">
+                <span className="text-[14px] sm:text-[34px]">
+                  ₹
+                  {props.data.prices.total_price &&
+                  props.data.prices.total_price > 0
+                    ? getIndianPrice(Math.round(props.data.prices.total_price))
+                    : props.data.prices.total_price}
+                  <span className="text-[10px] md:text-[12px] font-normal">
+                    {" "}
+                    for{" "}
+                    {props?.filterState.adults +
+                      props?.filterState?.children}{" "}
+                    people{" "}
+                  </span>
+                </span>
+              </div>
+            )}
+          </>
           <Button
             onclick={handleUpdate}
             bgColor={"#F7E700"}
             borderRadius="8px"
+            hoverBgColor="black"
             fontWeight="400"
-            hoverColor="white"
             height={"full"}
-            padding={"8px 16px"}
             loading={loading}
           >
-             
-              <div >
-                {props.data?.city && "Add to Itinerary"}
-              </div>
+            <div>{props.data?.city && "Add to Itinerary"}</div>
           </Button>
-
-          {/* <button
-            onClick={handleUpdate}
-            className="bg-[#F7E700] py-2 px-4 border-2 border-black rounded-lg h-[40px]"
-          >
-            {props.data?.city && "Add to Itinerary"}
-          </button> */}
-          {dateFormat(props?.date)}
+        </div>
+        <div className={`flex justify-between items-center`}>
+          <div className="text-gray-500 font-semiBold text-[#01202B] text-[14px]">
+            Total Cost
+          </div>
+          <div className="text-[14px] sm:text-[16px]">
+            {dateFormat(props?.date)}
+          </div>
         </div>
       </div>
     </div>
