@@ -37,7 +37,7 @@ const TransferDrawer = ({
   error
 }) => {
   const [expandedIndexes, setExpandedIndexes] = useState([]);
-   const isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
+   const  isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
   const isCombo = data?.children && data?.children.length > 0;
   useEffect(() => {
     if (show && isCombo && data?.children?.length > 0) {

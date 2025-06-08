@@ -60,7 +60,7 @@ const Flight = (props) => {
           </p>}
         </div>
         <div className="text-lg font-bold">
-                  {props.data?.final_fare ? `₹${getIndianPrice(props.data?.final_fare)}` : null}
+                  {props.data?.final_fare ? `₹${getIndianPrice(props.data?.final_fare)} /-` : null}
         </div>
       </div>
 
