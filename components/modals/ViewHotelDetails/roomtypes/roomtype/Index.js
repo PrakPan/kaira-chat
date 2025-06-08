@@ -225,6 +225,13 @@ const RoomType = (props) => {
           ) : null}
         </div>
       )}
+
+      <div
+                    className="text-[14px]"
+                    dangerouslySetInnerHTML={{
+                      __html: props?.data?.cancellation_policies,
+                    }}
+                  ></div>
     </div>
   );
 };
