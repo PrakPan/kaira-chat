@@ -58,6 +58,7 @@ export const updateSingleTransferBooking = (keyPath, data) => {
     const currentTransferBookings = state.TransferBookings?.transferBookings;
 
 
+    console.log("Redux DBD",keyPath, data)
     if (!currentTransferBookings) {
       console.error("Transfer bookings not found in state");
       return;
@@ -66,11 +67,17 @@ export const updateSingleTransferBooking = (keyPath, data) => {
     const updatedData = JSON.parse(JSON.stringify(currentTransferBookings));
 
     if (updatedData.intercity && updatedData.intercity[keyPath]) {
+      try{
       updatedData.intercity[keyPath] = data;
+      console.log("Redux DBD",updatedData);
+      
       dispatch({
         type: actionTypes.UPDATE_SINGLE_TRANSFER,
         payload: updatedData,
       });
+    }catch(err){
+      console.log("Redux DBD",err.message);
+    }
     } else {
       console.error(`Key path ${keyPath} not found in intercity bookings`);
     }

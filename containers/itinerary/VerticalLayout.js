@@ -65,6 +65,9 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
 
   const pickupBookings = booking.filter(book => book?.is_airport_pickup);
   const dropBookings = booking.filter(book => book?.is_airport_drop);
+  const noPickupDropBookings = booking.filter(book => !book?.is_airport_drop && !book?.is_airport_pickup);
+
+
 
   const correctIcon = (TransportMode) => {
     switch (TransportMode) {
@@ -96,18 +99,22 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
     }
   };
 
+  console.log("Bkin",booking)
+
   const hasPickup = pickupBookings.length > 0;
   const hasDrop = dropBookings.length > 0;
 
 const getDisplayText = () => {
   if (hasPickup && hasDrop) {
-    const pickupIcons = [...new Set(pickupBookings.map(book => book?.booking_type))].map(type => correctIcon(type));
-    const dropIcons = [...new Set(dropBookings.map(book => book?.booking_type))].map(type => correctIcon(type));
+    const allTypes = [...new Set([
+      ...pickupBookings.map(book => book?.booking_type),
+      ...dropBookings.map(book => book?.booking_type)
+    ])];
+    const uniqueIcons = allTypes.map(type => correctIcon(type));
     
     return (
       <div className="flex items-center gap-1">
-        {pickupIcons}
-        {dropIcons}
+        {uniqueIcons}
         <span>Pickup & Drop Added</span>
       </div>
     );
@@ -128,6 +135,7 @@ const getDisplayText = () => {
       </div>
     );
   } else if (booking && booking.length > 0) {
+     
 
     return (
       <div className="flex items-center gap-2">
@@ -261,6 +269,20 @@ const getDisplayText = () => {
           </span>
           <span className="text-gray-200">
             • Date {formatDate(dropBooking.check_out || dropBooking.check_in)} • Time {formatTime(dropBooking.check_out || dropBooking.check_in)}
+          </span>
+        </div>
+      ))}
+
+      {noPickupDropBookings.map((book, index) => (
+        <div key={`drop-${index}`} className="flex items-center gap-2">
+          <span
+            className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
+            onClick={(e) => handleBookingClick(e, book, 'Airport Drop')}
+          >
+            {book?.name}:
+          </span>
+          <span className="text-gray-200">
+            • Date {formatDate(book.check_out || book.check_in)} • Time {formatTime(book.check_out || book.check_in)}
           </span>
         </div>
       ))}
@@ -431,6 +453,7 @@ const CityItem = ({
   let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
 
   const handleEdit = async (combo) => {
+    setIsIntracity(false);
     if (combo) {
       setComboDetails(true);
     }
@@ -568,6 +591,8 @@ const CityItem = ({
       minute: "2-digit",
       hour12: true,
     });
+
+    console.log("Redux DBD",booking_id,city,!visible)
 
   return (
     <Container>
