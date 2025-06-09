@@ -193,7 +193,7 @@ const TransferBookings = (props) => {
         const sortedBookings = sortByCheckIn(airportDropBookings);
 
         sortedBookings?.map((booking, index) => {
-          if(booking?.is_airport_drop && booking?.check_in?.split(" ")[0] <= itineraries?.cities?.[0]?.start_date){
+          if((booking?.is_airport_drop || (!booking?.is_airport_drop && !booking?.is_airport_pickup)) && booking?.check_in?.split(" ")[0] <= itineraries?.cities?.[0]?.start_date){
           sections.push(
             <TransferBooking
               mercuryItinerary={props?.mercuryItinerary}
@@ -397,7 +397,7 @@ const TransferBookings = (props) => {
           const sortedBookings = sortByCheckIn(airportBookings);
 
           sortedBookings?.map((booking, idx) => {
-            if(booking?.is_airport_drop){
+            if(booking?.is_airport_drop || (!booking?.is_airport_drop && !booking?.is_airport_pickup)){
             sections.push(
               <TransferBooking
                 mercuryItinerary={props?.mercuryItinerary}
@@ -572,7 +572,7 @@ const TransferBookings = (props) => {
           const sortedBookings = sortByCheckIn(airportNextBookings);
 
           sortedBookings?.map((booking, idx) => {
-            if(booking?.is_airport_pickup){
+            if(booking?.is_airport_pickup || (!booking?.is_airport_pickup && !booking?.is_airport_drop)){
             sections.push(
               <TransferBooking
                 mercuryItinerary={props?.mercuryItinerary}

@@ -308,7 +308,7 @@ const DaybyDay = ({
 
             let sourceKey = city?.id;
             let airportBookings = transferBooking?.airport[sourceKey]?.filter(
-  (booking) => booking?.is_airport_drop
+  (booking) => booking?.is_airport_drop || (!booking?.is_airport_drop && !booking?.is_airport_pickup)
 ) || [];
             let intracityBookings = transferBooking?.intracity[sourceKey] || [];
 

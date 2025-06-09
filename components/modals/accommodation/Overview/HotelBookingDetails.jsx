@@ -284,13 +284,13 @@ const HotelBookingDetails = (props) => {
           <Name>{props?.data?.hotel_details?.name}</Name>
           <Address>
             {props?.data?.hotel_details?.addr1
-              ? props?.data?.hotel_details?.addr1 + ", "
+              ? props?.data?.hotel_details?.addr1 
               : ""}{" "}
             {props?.data?.hotel_details?.addr2
-              ? props?.data?.hotel_details?.addr2 + ", "
+              ? ", " + props?.data?.hotel_details?.addr2
               : ""}{" "}
             {props?.data?.hotel_details?.city_name
-              ? props?.data?.hotel_details?.city_name
+              ? ", " + props?.data?.hotel_details?.city_name
               : ""}
           </Address>
         </div>
