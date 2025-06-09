@@ -264,13 +264,13 @@ export const SocialShareMobile = ({
   return (
     <div
       onClick={(e) => closeShare(e)}
-      className={`fixed bottom-[160px] right-4 z-[999] w-fit drop-shadow-2xl shadow-2xl border-2 border-black rounded-md transition-all popup ${open && "open-popup"}`}
+      className="fixed inset-0 z-[999] flex items-end justify-center p-4 bg-black bg-opacity-50"
     >
-      <div className="w-full animate-popOut flex flex-col justify-center gap-3 items-center">
+      <div className="w-full max-w-sm animate-popOut flex flex-col justify-center gap-3 items-center">
         <div
           ref={ref}
-          className={`w-full bg-white rounded-md flex flex-col gap-3 p-3`}
-          >
+          className="w-full bg-white rounded-lg flex flex-col gap-3 p-4 max-h-[70vh] overflow-y-auto"
+        >
           <SocialShare
             itineraryName={itineraryName}
             itineraryImage={itineraryImage}
@@ -282,9 +282,9 @@ export const SocialShareMobile = ({
 
         <div
           onClick={() => setShare(false)}
-          className="bg-white p-2 rounded-full cursor-pointer"
+          className="bg-white p-3 rounded-full cursor-pointer shadow-lg"
         >
-          <IoMdClose className="text-2xl" />
+          <IoMdClose className="text-xl" />
         </div>
       </div>
     </div>

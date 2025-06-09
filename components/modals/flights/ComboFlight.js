@@ -647,12 +647,14 @@ const ComboFlight = (props) => {
       })
       .catch((err) => {
         console.log("Error in Updating Flight", err.message);
+        const errorMsg =
+            err?.response?.data?.errors?.[0]?.message?.[0] || err.message || `This flight is currently not available at the moment.`;
         setUpdateBookingState(false);
         setMoreLoadingState(false);
         setUnauthorized(true);
         props.openNotification({
           type: "error",
-          text: `This flight is currently not available at the moment.`,
+          text: errorMsg,
           heading: "Error!",
         });
         props.setHideFlightModal();

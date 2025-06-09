@@ -116,15 +116,15 @@ export default function FlightDetails({
           <div className="text-sm text-gray-600 text-[#C5C1C1]">Non-stop</div>
         ) : (
           <div
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
+            // onMouseEnter={() => setIsHovered(true)}
+            // onMouseLeave={() => setIsHovered(false)}
             onClick={() => {
               setShowDetails((prev) => !prev);
-              setIsHovered(false);
+              // setIsHovered(false);
             }}
             className="relative"
           >
-            <div className="text-sm text-blue cursor-pointer text-center max-w-[80%] md:max-w-[100%] mx-auto">
+            <div className="text-sm text-blue  text-center max-w-[80%] md:max-w-[100%] mx-auto">
               {segments?.length - 1} stop{segments?.length - 1 !== 1 && "s"}
               {" via "}
               <span className="text-wrap">
