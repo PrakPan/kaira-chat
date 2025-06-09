@@ -27,6 +27,7 @@ import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import NewPoiBooking from "../../../containers/newitinerary/itineraryelements/NewPoiBooking";
 import Drawer from "../../ui/Drawer";
+import BackArrow from "../../ui/BackArrow";
 
 const EmptyMsg = styled.div`
   margin-top: 5rem;
@@ -526,14 +527,7 @@ const ActivityAddDrawer = (props) => {
           <div className="py-4 bg-white z-[900] flex flex-col gap-3  pb-1 justify-start items-start mx-auto w-[98%]">
             <div className="flex flex-row gap-[20px] justify-between w-full items-center">
               <div className="flex flex-row gap-3 items-center">
-                <IoMdClose
-                  onClick={() => props.setShowDrawer(false)}
-                  className="hover-pointer"
-                  style={{
-                    fontSize: "1.75rem",
-                    textAlign: "right",
-                  }}
-                ></IoMdClose>
+              <BackArrow handleClick={() =>  props.setShowDrawer(false)} />
               </div>
             </div>
             <div className="flex max-[582px]:flex-col max-[582px]:!items-start justify-between w-full items-center">
@@ -712,10 +706,10 @@ const ActivityAddDrawer = (props) => {
               options.length ? (
                 <div
                   // onScroll={handleScroll}
-                  className="z-[99] flex flex-col items-center mb-3 h-[calc(100vh-270px)]"
+                  className="z-[99] flex flex-col items-center mb-3 h-[calc(100vh-360px)]"
                 >
                   {options}
-                  {showSkeleton && <PoiListSkeleton />}
+                  <div className="w-[100%]">{showSkeleton && <PoiListSkeleton />}</div>
                   {nextUrl !== null ? (
                     <Button
                       boxShadow

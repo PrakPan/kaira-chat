@@ -525,7 +525,7 @@ const POIDetails = (props) => {
               {isSmallScreen ? (
                 <>
                   {props?.data?.reviews?.map((item) => (
-                    <div className="w-[289px]">
+                    <div className="w-full">
                       <ReviewPoi review={item} />
                     </div>
                   ))}
