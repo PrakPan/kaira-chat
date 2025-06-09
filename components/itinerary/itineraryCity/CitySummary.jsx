@@ -17,6 +17,7 @@ import axios from "axios";
 import { FaEdit, FaPen } from "react-icons/fa";
 
 const CitySummary = (props) => {
+  console.log("city summary props are:",props.city)
   const router = useRouter();
   const [dayByDay, setDayByDay] = useState(null);
   const [showDrawer, setShowDrawer] = useState(false);
@@ -471,6 +472,8 @@ const CitySummary = (props) => {
             setShowLoginModal={props?.setShowLoginModal}
             dayIndex={activityData.dayIndex}
             itinerary_city_id={props.city.id}
+            cityID={props.city.city.id}
+            cityName={props.city.city.name}
           />
         </>
       ) : null}

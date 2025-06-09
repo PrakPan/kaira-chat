@@ -97,6 +97,13 @@ export default function ChangePoiBooking(props) {
                   priority
                   height="220"
                   width="251"
+                  style={{width:"100%"}}
+                  onLoad={() => {
+                    setImageLoaded(true);
+                  }}
+                  onError={() => {
+                    setImageLoaded(true);
+                  }}
                   className="object-cover rounded-lg [height:220px]"
                 />
               ) : (
@@ -300,24 +307,46 @@ export default function ChangePoiBooking(props) {
             }}
             className="relative"
           >
-            <ImageLoader
-              fit="cover"
-              url={
-                props?.data?.image
-                  ? props.data?.image
-                  : "media/website/grey.png"
-              }
-              width="100%"
-              height="220px"
-              display="absolute"
-              noLazy={true}
-              onload={() => {
-                setImageLoaded(true);
-              }}
-              onfail={() => {
-                setImageLoaded(true);
-              }}
-            ></ImageLoader>
+            {props?.data?.source == "Gmaps" ? (
+                <Image
+                  src={
+                    props?.data?.image?.photo_reference
+                      ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.image?.photo_reference}`
+                      : "https://images.thetarzanway.com/media/icons/bookings/notfounds/noroom.png"
+                  }
+                  alt="Image 1"
+                  priority
+                  height="220"
+                  width="251"
+                  style={{width:"100%"}}
+                  onLoad={() => {
+                    setImageLoaded(true);
+                  }}
+                  onError={() => {
+                    setImageLoaded(true);
+                  }}
+                  className="object-cover rounded-lg [height:220px]"
+                />
+              ) : (
+                <ImageLoader
+                  fit="cover"
+                  url={
+                    props?.data?.image
+                      ? props.data?.image
+                      : "media/website/grey.png"
+                  }
+                  width="100%"
+                  height="220px"
+                  display="absolute"
+                  noLazy={true}
+                  onload={() => {
+                    setImageLoaded(true);
+                  }}
+                  onfail={() => {
+                    setImageLoaded(true);
+                  }}
+                ></ImageLoader>
+              )}
             {/* {props.data?.is_very_popular && (
               <div className="absolute top-4 left-0 z-[1090]">
                 <ClippathComp className="text-[12px] font-medium bg-red-400 text-white  px-[16px] py-[8px] -mr-2 md:-mr-3 z-[1090]">

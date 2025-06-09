@@ -264,7 +264,7 @@ const HotelBookingDetails = (props) => {
       }
     } catch (err) {
       const errorMsg =
-            err?.response?.data?.errors?.[0]?.message?.[0] || err.message ;
+        err?.response?.data?.errors?.[0]?.message?.[0] || err.message;
       dispatch(
         openNotification({
           type: "error",
@@ -275,24 +275,12 @@ const HotelBookingDetails = (props) => {
       setLoading(false);
     }
   };
-   
 
   return (
     <Container>
       <FlexBox>
         <div>
           <Name>{props?.data?.hotel_details?.name}</Name>
-          <Address>
-            {props?.data?.hotel_details?.addr1
-              ? props?.data?.hotel_details?.addr1 + ", "
-              : ""}{" "}
-            {props?.data?.hotel_details?.addr2
-              ? props?.data?.hotel_details?.addr2 + ", "
-              : ""}{" "}
-            {props?.data?.hotel_details?.city_name
-              ? props?.data?.hotel_details?.city_name
-              : ""}
-          </Address>
         </div>
 
         <Button
@@ -303,7 +291,8 @@ const HotelBookingDetails = (props) => {
               props?.setShowLoginModal(true);
               return;
             }
-            props.BookingButtonFun()}}
+            props.BookingButtonFun();
+          }}
         >
           Change
         </Button>
@@ -998,7 +987,6 @@ const HotelBookingDetails = (props) => {
         )}
       </DetailsContainer>
 
-
       {props?.data?.hotel_details?.description ? (
         <div className="flex flex-col gap-1">
           <div className="text-lg font-bold">About</div>
@@ -1055,21 +1043,17 @@ const HotelBookingDetails = (props) => {
           </div>
         )}
 
-      
-
       {props?.data?.hotel_details?.google_maps_link ? (
         <div>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Location</Heading>
           <Address style={{ fontSize: "14px" }}>
-            {props?.data?.hotel_details?.addr1
-              ? props?.data?.hotel_details?.addr1 + ", "
-              : ""}{" "}
-            {props?.data?.hotel_details?.addr2
-              ? props?.data?.hotel_details?.addr2 + ", "
-              : ""}{" "}
-            {props?.data?.hotel_details?.city
-              ? props?.data?.hotel_details?.city
-              : ""}
+            {[
+              props?.data?.hotel_details?.addr1,
+              props?.data?.hotel_details?.addr2,
+              props?.data?.hotel_details?.city,
+            ]
+              .filter(Boolean)
+              .join(", ")}
           </Address>
           <div
             style={{
@@ -1170,15 +1154,13 @@ const HotelBookingDetails = (props) => {
               </svg>
             </div>
             <Address style={{ fontSize: "14px" }}>
-              {props?.data?.hotel_details?.addr1
-                ? props?.data?.hotel_details?.addr1 + ", "
-                : ""}{" "}
-              {props?.data?.hotel_details?.addr2
-                ? props?.data?.hotel_details?.addr2 + ", "
-                : ""}{" "}
-              {props?.data?.hotel_details?.city
-                ? props?.data?.hotel_details?.city
-                : ""}
+              {[
+                props?.data?.hotel_details?.addr1,
+                props?.data?.hotel_details?.addr2,
+                props?.data?.hotel_details?.city,
+              ]
+                .filter(Boolean)
+                .join(", ")}
             </Address>
           </div>
           <div className="flex justify-between">

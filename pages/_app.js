@@ -12,7 +12,7 @@ import { GOOGLE_CLIENT_ID } from "../services/constants";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import dynamic from "next/dynamic";
 import Head from "next/head";
-import styled from 'styled-components';
+import styled from "styled-components";
 import Script from "next/script";
 
 function MyApp({ Component, pageProps, store }) {
@@ -123,8 +123,6 @@ function MyApp({ Component, pageProps, store }) {
     };
   }, [router.events]);
 
-
-
   return (
     <>
       <Head>
@@ -138,22 +136,45 @@ function MyApp({ Component, pageProps, store }) {
         />
       </Head>
       <body>
-      <Script
-            src="https://app.crmone.com/assets/scripts/integrate-widgets.js"
-            strategy="afterInteractive"
-            onLoad={() => {
-              if (window) {
-                // @ts-ignore 
-                window.createBot({
-                  botId: "680b71a4a47fab68f44972ab",
-                  internalLoad: true
-                });
-              } else {
-                console.error("window is not defined")
-              }
-            }}
-          />
-          </body>
+        <Script
+          src="https://app.crmone.com/assets/scripts/integrate-widgets.js"
+          strategy="afterInteractive"
+          onLoad={() => {
+            if (typeof window !== "undefined") {
+              const userId = localStorage.getItem("user_id");
+              const name = localStorage.getItem("name") || "";
+              const phone = localStorage.getItem("phone");
+              const email = localStorage.getItem("email");
+
+              const [first_name = "", last_name = ""] = name.split(" ");
+
+              const contactDetail =
+                userId && first_name && phone && email
+                  ? {
+                      id: userId,
+                      first_name,
+                      last_name,
+                      phone,
+                      email,
+                    }
+                  : null;
+
+                  console.log("contact detail is:",contactDetail)
+
+              const config = {
+                botId: "680b71a4a47fab68f44972ab",
+                // internalLoad: true,
+                ...(contactDetail ? { contactDetail } : {}),
+              };
+
+              // @ts-ignore
+              window.createBot(config);
+            } else {
+              console.error("window is not defined");
+            }
+          }}
+        />
+      </body>
       <div ref={ref}>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <Theme>

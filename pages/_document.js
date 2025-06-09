@@ -178,14 +178,13 @@ export default class MyDocument extends Document {
               border: none;
             }
 
+
           @media (max-width: 765px) {
             #chatbot-iframe-container {
               margin-bottom: 60px;
               margin-right: 16px;
             }
-              #simple-popover {  
-                height: 50% !important; 
-              }  
+        
           }
         `}
         </style>
