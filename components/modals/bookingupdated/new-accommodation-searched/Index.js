@@ -8,7 +8,10 @@ const Accommodation = (props) => {
     (sum, room) => sum + (room.adults || 0),
     0
   )
-  // console.log("num_adults:", num_adults);
+  const num_children=props.occupancies?.reduce(
+    (sum,room)=>sum+(room.childAges?.length || 0),0
+  )
+  console.log("num_children:", num_children);
   return (
     <div>
       <NewHotelBooking
@@ -21,6 +24,7 @@ const Accommodation = (props) => {
         alternates={props.alternates}
         selectedBooking={props.selectedBooking}
         num_adults={num_adults}
+        num_children={num_children}
         openDetails={() => setShowDetails(true)}
         banner_imcurage={props.banner_image}
         handleClick={props?.handleClick}
