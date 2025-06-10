@@ -4,23 +4,24 @@ import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import ImageLoader from "../../components/ImageLoader";
 import SwiperCarousel from "../../components/SwiperCarousel.js";
 import media from "../../components/media";
+import POIDetailsDrawer from "../../components/drawers/poiDetails/POIDetailsDrawer";
 import { logEvent } from "../../services/ga/Index";
 import { PlanYourTripButton } from "../../containers/travelplanner/ThemePage.jsx";
-import TertiaryHeading from "../heading/Tertiary.jsx";
-import NewPOIDetailsDrawer from "../drawers/poiDetails/NewPOIDetailsDrawer.js";
+import SecondaryHeading from "../heading/Secondary.jsx";
 
 const Container = styled.div`
   width: 100%;
   position: relative;
 `;
 
-export default function Activity1Carousel(props) {
+export default function Poi1Carousel(props) {
+  console.log("pois are:", props);
   let isPageWide = media("(min-width: 768px)");
 
   return (
     <SwiperCarousel
-      cards={props.activities.map((activity, index) => (
-        <ActivityCard key={index} scale={props.scale} data={activity} {...activity} />
+      cards={props.pois.map((activity, index) => (
+        <PoiCard key={index} data={activity} {...activity} />
       ))}
       slidesPerView={isPageWide ? 4 : 1}
       // spaceBetween={25}
@@ -31,11 +32,14 @@ export default function Activity1Carousel(props) {
   );
 }
 
-const ActivityCard = ({ data, scale, id, image, name, short_description }) => {
-  
+const PoiCard = ({ data, id, image, name, short_description }) => {
   let isPageWide = media("(min-width: 768px)");
   const [show, setShow] = useState(false);
   const [hover, setHover] = useState(false);
+  const activityData = {
+    type: "poi",
+    id: id,
+  };
 
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
@@ -69,16 +73,23 @@ const ActivityCard = ({ data, scale, id, image, name, short_description }) => {
       onClick={handleActivityClick}
       className="group cursor-pointer py-2"
     >
-      <div className="flex flex-col h-full gap-3">
-      <div className="relative group h-full overflow-hidden rounded-lg">
-      <div className={`w-full h-full ${scale ? "hover:scale-110" : "group-hover:scale-105"} transition-all`}>
+      <PoiCard
+        key={id}
+        data={data}
+        showDrawer={show}
+        setShowDrawer={setShow}
+        _handleOpen={() => setShow(true)}
+        handleCloseDrawer={handleCloseDrawer}
+        removeDelete={true}
+      />
+      {/* <div className="flex flex-col h-full gap-3">
+        <div className="relative group h-full overflow-hidden group-hover:scale-105 transition-all">
           <ImageLoader
             url={image}
             width={isPageWide ? "282px" : "350px"}
             height={isPageWide ? "282px" : "350px"}
             borderRadius="10px"
           />
-      </div>
 
           {data.rating ? (
             <div
@@ -100,23 +111,25 @@ const ActivityCard = ({ data, scale, id, image, name, short_description }) => {
 
         <div className="">
           <h3 className="text-[16px] leading-[28px] font-[700]">{name}</h3>
-          <TertiaryHeading className="line-clamp-3">
+          <SecondaryHeading className="line-clamp-3">
             {short_description}
-          </TertiaryHeading>
+          </SecondaryHeading>
         </div>
-      </div>
+      </div> */}
 
-      <NewPOIDetailsDrawer
-        themePage
+      <POIDetailsDrawer
+        // themePage
         show={show}
+        iconId={id}
         ActivityiconId={id}
         handleCloseDrawer={handleCloseDrawer}
         name={name}
         data={data}
+        activityData={activityData}
         removeDelete={true}
       >
         <PlanYourTripButton />
-      </NewPOIDetailsDrawer>
+      </POIDetailsDrawer>
     </Container>
   );
 };

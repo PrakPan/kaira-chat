@@ -11,7 +11,7 @@ import Reviews1Carousel from "./Reviews1Carousel";
 import PrimaryHeading from "../heading/PrimaryHeading";
 import Poi from "../../containers/newcityplanner/pois/Index";
 
-export default function Navigation({ components,slug }) {
+export default function Navigation({ components, slug }) {
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
@@ -72,7 +72,7 @@ export default function Navigation({ components,slug }) {
   );
 }
 
-const NavigationMenu = ({ navItems, activeTab, setActiveTab,slug}) => {
+const NavigationMenu = ({ navItems, activeTab, setActiveTab, slug }) => {
   let isPageWide = media("(min-width: 768px)");
   const tabsRef = useRef(null);
   const [showTabs, setShowTabs] = useState(false);
@@ -109,7 +109,7 @@ const NavigationMenu = ({ navItems, activeTab, setActiveTab,slug}) => {
               onClick={() => handleClick(index)}
               className={`text-nowrap cursor-pointer border-1 rounded-full px-3 md:px-5 py-2 md:py-3 font-semibold text-[15px] text-[#7C7C7C] ${
                 activeTab == index ? "border-black bg-[#F7E700] text-black" : ""
-              }  ${slug === "perfect-proposals-2025" ? "mx-auto" :""}` }
+              }  ${slug === "perfect-proposals-2025" ? "mx-auto" : ""}`}
             >
               {tab.heading}
             </div>
@@ -117,9 +117,19 @@ const NavigationMenu = ({ navItems, activeTab, setActiveTab,slug}) => {
         </div>
       )}
 
-      <div className={`flex gap-3 flex-row items-center ${slug === "perfect-proposals-2025" ? "" :"justify-between"} overflow-auto hide-scrollbar`}>
+      <div
+        className={`flex gap-3 flex-row items-center ${
+          slug === "perfect-proposals-2025" ? "" : "justify-between"
+        } overflow-auto hide-scrollbar`}
+      >
         {isPageWide ? (
-          <div className={` flex flex-row items-center ${slug === "perfect-proposals-2025" ? "gap-1 w-[60vw] mx-auto" :"gap-3 w-full"}  overflow-x-auto hide-scrollbar`}>
+          <div
+            className={` flex flex-row items-center ${
+              slug === "perfect-proposals-2025"
+                ? "gap-1 w-[60vw] mx-auto"
+                : "gap-3 w-full"
+            }  overflow-x-auto hide-scrollbar`}
+          >
             {navItems.map((tab, index) => (
               <div
                 key={tab.heading}
@@ -128,7 +138,7 @@ const NavigationMenu = ({ navItems, activeTab, setActiveTab,slug}) => {
                   activeTab == index
                     ? "border-black bg-[#F7E700] text-black"
                     : ""
-                } ${slug === "perfect-proposals-2025" ? "mx-auto" :""} `}
+                } ${slug === "perfect-proposals-2025" ? "mx-auto" : ""} `}
               >
                 {tab.heading}
               </div>
@@ -187,12 +197,13 @@ const ComponentDisplay = ({ component, handlePlanButton, setDestination }) => (
     ) : component.carousel === "review-1" ? (
       <Reviews1Carousel reviews={component.reviews} />
     ) : component.carousel === "destination-5" ? (
-      <Poi 
-       elevation={component?.elevation}
-                          data={component?.data}
-                          thingsToDoPage={component?.thingsToDoPage}
-                          pois={component?.pois}
-                          city={component?.name} />
+      <Poi
+        elevation={component?.elevation}
+        data={component?.data}
+        thingsToDoPage={component?.thingsToDoPage}
+        pois={component?.pois}
+        city={component?.name}
+      />
     ) : null}
   </div>
 );

@@ -1,0 +1,568 @@
+import React, { useEffect } from "react";
+import styled from "styled-components";
+import { useState } from "react";
+import { TbArrowBack } from "react-icons/tb";
+import { FaStar, FaStarHalfAlt } from "react-icons/fa";
+import { IoMdClose } from "react-icons/io";
+import { MERCURY_HOST } from "../../../services/constants";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { PulseLoader } from "react-spinners";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import setItinerary from "../../../store/actions/itinerary";
+import ReviewPoi from "../../POIDetails/Reviews";
+import useMediaQuery from "../../media";
+import { openNotification } from "../../../store/actions/notification";
+
+import ImageLoader from "../../ImageLoader";
+import SkeletonCard from "../../ui/SkeletonCard";
+import BackArrow from "../../ui/BackArrow";
+import { Pax } from "./Pax";
+export const Title = styled.p`
+  font-weight: 800;
+  font-size: 20px;
+`;
+
+export const Reviews = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  p,
+  u {
+    font-size: 12px;
+    color: #7a7a7a;
+  }
+  u {
+    margin-inline: 0.2rem;
+  }
+`;
+
+export const Text = styled.p`
+  font-size: 14px;
+`;
+
+export const Heading = styled.p`
+  font-size: 18px;
+  font-weight: 800;
+`;
+
+const Container = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  font-family: Lexend;
+  padding: ${(props) => (props.itineraryDrawer ? "0 1rem 1rem 1rem" : "1rem")};
+`;
+
+const BackContainer = styled.div`
+  margin: 0;
+  display: flex;
+  gap: 0.5rem;
+  position: sticky;
+  z-index: 1;
+  background: white;
+  top: 0;
+  padding-block: 0.75rem;
+
+  @media screen and (min-width: 768px) {
+    padding-block: 1rem;
+  }
+`;
+
+const BackText = styled.div`
+  font-size: 1.5rem;
+  line-height: 2rem;
+`;
+
+const GridImage = styled.div`
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(4, 0.4fr);
+  grid-column-gap: 6px;
+  grid-row-gap: 6px;
+  height: 19rem;
+`;
+
+const Child = styled.div`
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  grid-area: ${(props) => props.area};
+  ${(props) => props.className && `class="${props.className}"`};
+`;
+const ScrollContainer = styled.div`
+  display: flex;
+  gap: 21px;
+  height: 210px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  // const Heading = styled.div
+`;
+// const Heading = styled.div`
+//   font-weight: 600;
+//   font-size: 20px;
+//   margin-block: 1rem 1rem;
+// `;
+const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
+
+const ActivityDetails = (props) => {
+  let isPageWide = useMediaQuery("(min-width: 768px)");
+
+  const isSmallScreen = useMediaQuery("(max-width:586px)");
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [aboutText, setAboutText] = useState(
+    props?.data?.overview ?? props?.data?.short_description
+  );
+  const itinerary = useSelector((state) => state.Itinerary);
+  const token = useSelector((state) => state.auth.token);
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+
+  const dispatch = useDispatch();
+
+  const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
+
+  const [ImagesLoaded, setImagesLoaded] = useState({
+    0: false,
+    1: false,
+    2: false,
+    3: false,
+  });
+
+  const [ImagesError, setImagesError] = useState({
+    0: false,
+    1: false,
+    2: false,
+    3: false,
+  });
+
+  function OnImageLoad(i) {
+    if (!ImagesLoaded[i]) {
+      setTimeout(
+        () =>
+          setImagesLoaded((prev) => {
+            return { ...prev, [i]: true };
+          }),
+        1000
+      );
+    }
+  }
+
+  const handleDelete = async (e) => {
+    if (!token) {
+      props?.setShowLoginModal(true);
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await axios.delete(
+        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/activity/${props?.data?.id}/`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          }
+        }
+      );
+
+      if (res?.status == 204) {
+        const newItinerary = JSON.parse(JSON.stringify(itinerary));
+
+        const itineraryCities = newItinerary.cities.map((city) => {
+          if (city.id === props?.itinerary_city_id) {
+            city.day_by_day.forEach((day, index) => {
+              if (day?.slab_elements) {
+                day.slab_elements = day.slab_elements.filter(
+                  (item) => item?.booking?.id !== props?.data?.id
+                );
+              }
+            });
+
+            city.activities = city.activities?.filter(
+              (item) => item?.id !== props?.data?.id
+            );
+          }
+
+          return city;
+        });
+
+        newItinerary.cities = itineraryCities;
+
+        props?.handleCloseDrawer(e);
+        console.log(
+          "Removed ID:",
+          props.data.id,
+          "Updated itinerary:",
+          newItinerary
+        );
+        dispatch(setItinerary(newItinerary));
+
+        dispatch(
+          openNotification({
+            type: "success",
+            text: `${props?.data?.name} has been removed from your itinerary`,
+            heading: "Success!",
+          })
+        );
+      }
+    } catch (error) {
+      console.log("error is:", error);
+      const errorMsg =
+        error?.response?.data?.errors?.[0]?.message?.[0] ||
+        error.message ||
+        "Something went wrong! Please try after some time.";
+      dispatch(
+        openNotification({
+          type: "error",
+          text: errorMsg,
+          heading: "Error!",
+        })
+      );
+    }
+    setLoading(false);
+  };
+
+  function OnImageError(i) {
+    if (!ImagesError[i]) {
+      setImagesError((prev) => {
+        return { ...prev, [i]: true };
+      });
+    }
+  }
+
+  var experience_filters = (
+    <div className="flex flex-wrap gap-2">
+      {props.data.experience_filters?.map((e, i) => (
+        <div
+          key={i}
+          className={`border-2 rounded-full px-2 py-1`}
+          style={{ backgroundColor: colors[i % colors.length] }}
+        >
+          {e}
+        </div>
+      ))}
+    </div>
+  );
+
+  var tips = (
+    <ul style={{ paddingLeft: "0.5rem" }}>
+      {props.data.tips_tricks?.map((e, i) => (
+        <li key={i}>- {e}</li>
+      ))}
+    </ul>
+  );
+
+  var stars = [];
+  for (let i = 0; i < Math.floor(props.data.rating); i++) {
+    stars.push(<FaStar />);
+  }
+
+  if (Math.floor(props.data.rating) < props.data.rating)
+    stars.push(<FaStarHalfAlt />);
+
+  return (
+    <>
+      {props?.data ? (
+        <Container itineraryDrawer={props.itineraryDrawer}>
+          {!props.itineraryDrawer ? (
+            <div>
+              <TbArrowBack
+                style={{ height: "32px", width: "32px" }}
+                cursor={"pointer"}
+                onClick={(e) => {
+                  props.handleCloseDrawer(e);
+                }}
+              />
+            </div>
+          ) : (
+            <BackContainer className=" font-lexend">
+              <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
+            </BackContainer>
+          )}
+
+          <>
+            {props?.data?.image && (
+              <div>
+                {" "}
+                <div className="h-[180px] md:h-[300px] relative">
+                  <div style={{ display: imageLoaded ? "initial" : "none" }}>
+                    <ImageLoader
+                      borderRadius="8px"
+                      marginTop="23px"
+                      widthMobile="100%"
+                      width="100%"
+                      height="100%"
+                      url={
+                        props.data.image
+                          ? props.data.image
+                          : "media/icons/bookings/notfounds/noroom.png"
+                      }
+                      dimensionsMobile={{ width: 500, height: 295 }}
+                      dimensions={{ width: 468, height: 295 }}
+                      onload={() => {
+                        setTimeout(() => {
+                          setImageLoaded(true);
+                        }, 1000);
+                      }}
+                      onfail={() => {
+                        setImageLoaded(true);
+                      }}
+                      noLazy
+                    ></ImageLoader>
+                  </div>
+
+                  <div
+                    style={{
+                      display: !imageLoaded ? "initial" : "none",
+                    }}
+                  >
+                    <SkeletonCard
+                      width={"100%"}
+                      height={isPageWide ? "300px" : "180px"}
+                    />
+                  </div>
+                </div>
+                {/* <div
+                  style={{
+                    height: "220px",
+                    width: "100%",
+                    overflow: "hidden",
+                    borderRadius: "16px",
+                    display: imageLoaded ? "block" : "none",
+                  }}
+                  className="relative"
+                >
+                  <ImageLoader
+                    fit="cover"
+                    url={
+                      props?.data?.image
+                        ? props.data?.image
+                        : "media/website/grey.png"
+                    }
+                    borderRadius="8px"
+                    marginTop="23px"
+                    widthMobile="100%"
+                    width="100%"
+                    height="100%"
+                    display="absolute"
+                    noLazy={true}
+                    onload={() => {
+                      setImageLoaded(true);
+                    }}
+                    onfail={() => {
+                      setImageLoaded(true);
+                    }}
+                  ></ImageLoader>
+                </div>
+                <div
+                  style={{
+                    height: "220px",
+                    width: "251px",
+                    overflow: "hidden",
+                    borderRadius: "16px",
+                    display: !imageLoaded ? "block" : "none",
+                  }}
+                >
+                  <SkeletonCard height={"100%"} />
+                </div> */}
+              </div>
+            )}
+          </>
+          <div className="">
+            <Title>{props.data.name}</Title>
+            {props.data?.experience_filters && (
+              <Text>{experience_filters}</Text>
+            )}
+            {props.data?.prices?.total_price && (
+              <div className={"mb-2 flex flex-col gap-1"}>
+                <div >
+                  Cost: ₹ {props.data?.prices?.total_price} /- Per person
+                </div>
+                <Pax pax={props.pax} setPax={props.setPax}/>
+              </div>
+            )}
+            {aboutText != null && aboutText != undefined && (
+              <div>
+                <Text
+                  onClick={() =>
+                    setAboutText(
+                      props?.data?.overview || props.data.short_description
+                    )
+                  }
+                >
+                  {aboutText}
+                </Text>
+              </div>
+            )}
+            {props.data?.address && (
+              <div>
+                <span className="font-bold pr-1">Address:</span>{" "}
+                {props.data.address}
+              </div>
+            )}
+          </div>
+
+          {props.data?.cost ? (
+            <div className="flex flex-row">
+              Cost: <span className="font-semibold px-1">₹</span>
+              {props.data.cost}
+              {" /- "}
+              {"Per person"}
+            </div>
+          ) : props.data?.pricing?.total_price ? (
+            <div className="flex flex-row">
+              Cost: <span className="font-semibold px-1">₹</span>
+              {props.data.pricing.total_price}
+              {" /- "}
+              {"Per person"}
+            </div>
+          ) : null}
+
+          {props.data?.getting_around && (
+            <div>
+              <Heading>Getting Around</Heading>
+              <Text>{props.data.getting_around}</Text>
+            </div>
+          )}
+
+          {props.data?.timings && (
+            <div>
+              <Heading>Timings</Heading>
+              <Text>
+                {
+                  <ul>
+                    {props.data.timings?.map((e, i) => (
+                      <li key={i}>{e}</li>
+                    ))}
+                  </ul>
+                }
+              </Text>
+            </div>
+          )}
+          {props?.data?.reviews && (
+            <div className="flex flex-col gap-[12px]">
+              <div id="reviews-poi" className="flex justify-between">
+                <Heading>Reviews</Heading>
+
+                <Reviews>
+                  {props.data.rating ? (
+                    <div
+                      style={{ color: "#FFD201" }}
+                      className="flex flex-row gap-1"
+                    >
+                      {stars}
+                    </div>
+                  ) : null}
+
+                  <div className="flex items-center">
+                    {props.data?.rating ? (
+                      <p className="m-0">{props.data.rating}</p>
+                    ) : null}
+
+                    {/* {props.data?.user_ratings_total ? (
+                      <u> {props.data.user_ratings_total} user reviews</u>
+                    ) : null} */}
+                  </div>
+                </Reviews>
+              </div>
+              {isSmallScreen ? (
+                <>
+                  {props?.data?.reviews?.map((item) => (
+                    <div className="w-[289px]">
+                      <ReviewPoi review={item} />
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <ScrollContainer>
+                  {props?.data?.reviews?.map((item) => (
+                    <div className="w-[289px]">
+                      <ReviewPoi review={item} />
+                    </div>
+                  ))}
+                </ScrollContainer>
+              )}
+            </div>
+          )}
+          {props.data?.tips && props.data?.tips.length ? (
+            <div>
+              <Heading>Tips</Heading>
+              <Text>{tips}</Text>
+            </div>
+          ) : (
+            <></>
+          )}
+          <div className="flex flex-col gap-[12px]">
+            <div className="flex justify-end">
+              {/* <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.75rem",
+                  justifyContent: "left",
+                }}
+              >
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${
+                    props?.data?.latitude
+                  },${props?.data?.longitude}+(${props?.data?.name
+                    ?.split(" ")
+                    .join("+")})`}
+                  target="_blank"
+                  style={{ color: "#0000EE", fontSize: "14px" }}
+                >
+                  View on Google Maps
+                </a>
+              </div> */}
+
+              {props?.removeDelete ? (
+                <></>
+              ) : (
+                <button
+                  className=" right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
+                  onClick={handleDelete}
+                >
+                  <div style={{ position: "relative" }}>
+                    <div
+                      className="flex gap-1 items-center p-1"
+                      style={loading ? { visibility: "hidden" } : {}}
+                    >
+                      <Image src="/delete.svg" width={"20"} height={"20"} />{" "}
+                      Remove from Itinerary
+                    </div>
+                    {loading && (
+                      <PulseLoader
+                        style={{
+                          position: "absolute",
+                          top: "55%",
+                          left: "50%",
+                          transform: "translate(-50% , -50%)",
+                        }}
+                        size={12}
+                        speedMultiplier={0.6}
+                        color="#ffffff"
+                      />
+                    )}
+                  </div>
+                </button>
+              )}
+            </div>
+          </div>
+        </Container>
+      ) : null}
+    </>
+  );
+};
+
+export default ActivityDetails;

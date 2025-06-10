@@ -1,10 +1,10 @@
 import styled, { keyframes } from "styled-components";
 import ImageLoader from "../../../components/ImageLoader";
 import { MdNavigateNext } from "react-icons/md";
-import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
 import { useEffect, useState } from "react";
 import { logEvent } from "../../../services/ga/Index";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
+import NewPOIDetailsDrawer from "../../../components/drawers/poiDetails/NewPOIDetailsDrawer";
 
 const LeftSlideIn = keyframes`
   from {
@@ -113,6 +113,10 @@ const Overlay = styled.div`
 export default function PoiCard(props) {
   const [show, setShow] = useState(false);
   const [stars, setStars] = useState(null);
+  const activityData={
+    type:"poi",
+    id:props.data.id
+  }
 
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
@@ -184,12 +188,14 @@ export default function PoiCard(props) {
         </Typography>
       )}
 
-      <POIDetailsDrawer
+      <NewPOIDetailsDrawer
         show={show}
         iconId={props.data.id}
         ActivityiconId={props.isActivity ? props.data.id : null}
         handleCloseDrawer={handleCloseDrawer}
         name={props.data.name}
+        activityData={activityData}
+        removeDelete
       />
     </Container>
   );
