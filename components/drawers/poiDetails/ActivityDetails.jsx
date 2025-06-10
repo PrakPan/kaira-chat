@@ -439,7 +439,7 @@ const ActivityDetails = (props) => {
           )}
           {props?.data?.reviews && (
             <div className="flex flex-col gap-[12px]">
-              <div id="reviews-poi" className="flex justify-between">
+              <div id="reviews-poi" className="flex justify-between items-center">
                 <Heading>Reviews</Heading>
 
                 <Reviews>
@@ -466,7 +466,7 @@ const ActivityDetails = (props) => {
               {isSmallScreen ? (
                 <>
                   {props?.data?.reviews?.map((item) => (
-                    <div className="w-[289px]">
+                    <div className="w-full">
                       <ReviewPoi review={item} />
                     </div>
                   ))}

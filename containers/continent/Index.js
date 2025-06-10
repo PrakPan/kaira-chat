@@ -208,6 +208,7 @@ const Index = (props) => {
               image={props.data.overview_image}
               slug={props.data.slug}
               page_id={props.data.id}
+              type={props.type}
               destination={convertDbNameToCapitalFirst(props.data.slug)}
             ></Overview>
 
