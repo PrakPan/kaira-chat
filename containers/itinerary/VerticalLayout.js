@@ -99,7 +99,7 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
     }
   };
 
-  console.log("Bkin",booking)
+  
 
   const hasPickup = pickupBookings.length > 0;
   const hasDrop = dropBookings.length > 0;
@@ -406,6 +406,8 @@ const CityItem = ({
   booking,
 }) => {
   const { transfers_status } = useSelector((state) => state.ItineraryStatus);
+
+  console.log("Bkin",airportBookings);
   
   const correctIcon = (TransportMode) => {
     switch (TransportMode?.toLowerCase()) {
@@ -645,7 +647,7 @@ const CityItem = ({
                 airportBookings && airportBookings.length > 0 ? "mt-5" : null
               }`}
             >
-              {(booking_id || city) && !visible ? (
+              {(booking_id || city) && (!visible || booking_id) ? (
                 <>
                   {/* Icon Section */}
                   <div className="mt-[4px] flex items-start">
