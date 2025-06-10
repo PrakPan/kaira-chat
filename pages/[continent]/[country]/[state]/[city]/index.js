@@ -126,7 +126,7 @@ export async function getStaticProps(context){
   let Type="City"
   let data
   let reccomendedCitiesData
-  let hotLocationSearch
+  let hotLocationSearch=[]
 
   //mercury api
   await axios.get(`${MERCURY_HOST}/api/v1/geos/city/${Id}/`).then((res)=>{
@@ -163,15 +163,12 @@ export async function getStaticProps(context){
   })
 
   //mercury api
-  console.log("response d")
   await axioslocationsinstance.get(
     `hot_destinations/?state=${state}`
   ).then((response)=>{
-    console.log("respone data is:",response.data)
 
     if (response.data?.length) {
 
-      console.log("respone data is:",response.data)
       hotLocationSearch= response.data;
     }
   }).catch((err)=>{
