@@ -163,10 +163,15 @@ export async function getStaticProps(context){
   })
 
   //mercury api
+  console.log("response d")
   await axioslocationsinstance.get(
-    `hot_destinations/?state=${state}/`
+    `hot_destinations/?state=${state}`
   ).then((response)=>{
+    console.log("respone data is:",response.data)
+
     if (response.data?.length) {
+
+      console.log("respone data is:",response.data)
       hotLocationSearch= response.data;
     }
   }).catch((err)=>{
