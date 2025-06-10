@@ -21,15 +21,43 @@ const SlideTwo = (props) => {
     }
   }, []);
 
+  useEffect(() => {
+    props.setRoomConfiguration([
+      {
+        adults: props.numberOfAdults,
+        children: props.numberOfChildren,
+        infants: props.numberOfInfants,
+        childAges: Array.from({ length: props.numberOfChildren }, (_, i) => 0),
+      },
+    ]);
+  }, [props.numberOfAdults, props.numberOfChildren, props.numberOfInfants]);
+
   const _handleShowPax = (grouptype) => {
     if (grouptype === "Solo") {
       props.setNumberOfAdults(1);
       props.setNumberOfChildren(0);
       props.setNumberOfInfants(0);
+      props.setRoomConfiguration([
+        {
+          adults: 1,
+          children: 0,
+          infants: 0,
+          childAges: [],
+        },
+      ]);
     } else {
       props.setNumberOfAdults(2);
       props.setNumberOfChildren(0);
       props.setNumberOfInfants(0);
+
+      props.setRoomConfiguration([
+        {
+          adults: 2,
+          children: 0,
+          infants: 0,
+          childAges: [],
+        },
+      ]);
     }
     props.setGroupType(grouptype);
     props.setSubmitSecondSlide(true);
@@ -66,8 +94,8 @@ const SlideTwo = (props) => {
             <button
               className="flex items-center justify-center text-blue"
               onClick={() => props.setNumberOfAdults((prev) => prev + 1)}
-              disabled={props.numberOfAdults >= 14 || props?.groupType === 
-                'Solo' 
+              disabled={
+                props.numberOfAdults >= 14 || props?.groupType === "Solo"
               }
             >
               +

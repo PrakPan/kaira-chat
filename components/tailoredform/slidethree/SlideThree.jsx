@@ -13,6 +13,7 @@ export default function SlideThree(props) {
         numberOfChildren={props.numberOfChildren}
         setNumberOfChildren={props.setNumberOfChildren}
         numberOfInfants={props.numberOfInfants}
+        roomConfiguration={props.roomConfiguration}
         setNumberOfInfants={props.setNumberOfInfants}
         setRoomConfiguration={props.setRoomConfiguration}
         groupType={props.groupType}
