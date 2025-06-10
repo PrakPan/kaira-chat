@@ -57,7 +57,7 @@ const PinWrapper = styled.div`
   align-items: center;
 `;
 
-const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downPresent }) => {
+const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downPresent, onBookingDelete }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const dropdownRef = useRef(null);
@@ -66,8 +66,6 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
   const pickupBookings = booking.filter(book => book?.is_airport_pickup);
   const dropBookings = booking.filter(book => book?.is_airport_drop);
   const noPickupDropBookings = booking.filter(book => !book?.is_airport_drop && !book?.is_airport_pickup);
-
-
 
   const correctIcon = (TransportMode) => {
     switch (TransportMode) {
@@ -99,57 +97,60 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
     }
   };
 
-  
-
   const hasPickup = pickupBookings.length > 0;
   const hasDrop = dropBookings.length > 0;
 
-const getDisplayText = () => {
-  if (hasPickup && hasDrop) {
-    const allTypes = [...new Set([
-      ...pickupBookings.map(book => book?.booking_type),
-      ...dropBookings.map(book => book?.booking_type)
-    ])];
-    const uniqueIcons = allTypes.map(type => correctIcon(type));
+  const getDisplayText = () => {
+    const currentPickupBookings = booking.filter(book => book?.is_airport_pickup);
+    const currentDropBookings = booking.filter(book => book?.is_airport_drop);
+    const currentNoPickupDropBookings = booking.filter(book => !book?.is_airport_drop && !book?.is_airport_pickup);
     
-    return (
-      <div className="flex items-center gap-1">
-        {uniqueIcons}
-        <span>Pickup & Drop Added</span>
-      </div>
-    );
-  } else if (hasPickup) {
-    const pickupIcons = [...new Set(pickupBookings.map(book => book?.booking_type))].map(type => correctIcon(type));
-    return (
-      <div className="flex items-center gap-1">
-        {pickupIcons}
-        <span>Pickup Added</span>
-      </div>
-    );
-  } else if (hasDrop) {
-    const dropIcons = [...new Set(dropBookings.map(book => book?.booking_type))].map(type => correctIcon(type));
-    return (
-      <div className="flex items-center gap-1">
-        {dropIcons}
-        <span>Drop Added</span>
-      </div>
-    );
-  } else if (booking && booking.length > 0) {
-     
+    const hasCurrentPickup = currentPickupBookings.length > 0;
+    const hasCurrentDrop = currentDropBookings.length > 0;
 
-    return (
-      <div className="flex items-center gap-2">
-        {booking.map((book, index) => (
-          <div key={index} className="flex items-center gap-1">
-            {correctIcon(book?.booking_type)}
-            <span>{book?.name}</span>
-          </div>
-        ))}
-      </div>
-    );
-  }
-  return null;
-};
+    if (hasCurrentPickup && hasCurrentDrop) {
+      const allTypes = [...new Set([
+        ...currentPickupBookings.map(book => book?.booking_type),
+        ...currentDropBookings.map(book => book?.booking_type)
+      ])];
+      const uniqueIcons = allTypes.map(type => correctIcon(type));
+      
+      return (
+        <div className="flex items-center gap-1">
+          {uniqueIcons}
+          <span>Pickup & Drop Added</span>
+        </div>
+      );
+    } else if (hasCurrentPickup) {
+      const pickupIcons = [...new Set(currentPickupBookings.map(book => book?.booking_type))].map(type => correctIcon(type));
+      return (
+        <div className="flex items-center gap-1">
+          {pickupIcons}
+          <span>Pickup Added</span>
+        </div>
+      );
+    } else if (hasCurrentDrop) {
+      const dropIcons = [...new Set(currentDropBookings.map(book => book?.booking_type))].map(type => correctIcon(type));
+      return (
+        <div className="flex items-center gap-1">
+          {dropIcons}
+          <span>Drop Added</span>
+        </div>
+      );
+    } else if (currentNoPickupDropBookings.length > 0) {
+      return (
+        <div className="flex items-center gap-2">
+          {currentNoPickupDropBookings.map((book, index) => (
+            <div key={index} className="flex items-center gap-1">
+              {correctIcon(book?.booking_type)}
+              <span>{book?.name}</span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
 
   const displayText = getDisplayText();
 
@@ -169,33 +170,33 @@ const getDisplayText = () => {
     };
   }, [showDetails]);
 
- const handleClick = () => {
-  if (hasPickup && hasDrop) {
-    setShowDetails(!showDetails);
-    setShowTooltip(false);
-  } else if (hasPickup && !hasDrop) {
-    if (pickupBookings.length === 1) {
-      handleIntracityBookings(upPresent && downPresent, { ...pickupBookings[0], selectedType: 'Airport Pickup' });
-    } else {
+  const handleClick = () => {
+    if (hasPickup && hasDrop) {
       setShowDetails(!showDetails);
       setShowTooltip(false);
+    } else if (hasPickup && !hasDrop) {
+      if (pickupBookings.length === 1) {
+        handleIntracityBookings(upPresent && downPresent, { ...pickupBookings[0], selectedType: 'Airport Pickup' });
+      } else {
+        setShowDetails(!showDetails);
+        setShowTooltip(false);
+      }
+    } else if (!hasPickup && hasDrop) {
+      if (dropBookings.length === 1) {
+        handleIntracityBookings(upPresent && downPresent, { ...dropBookings[0], selectedType: 'Airport Drop' });
+      } else {
+        setShowDetails(!showDetails);
+        setShowTooltip(false);
+      }
+    } else if (booking && booking.length > 0) {
+      if (booking.length === 1) {
+        handleIntracityBookings(upPresent && downPresent, { ...booking[0], selectedType: 'Airport Transfer' });
+      } else {
+        setShowDetails(!showDetails);
+        setShowTooltip(false);
+      }
     }
-  } else if (!hasPickup && hasDrop) {
-    if (dropBookings.length === 1) {
-      handleIntracityBookings(upPresent && downPresent, { ...dropBookings[0], selectedType: 'Airport Drop' });
-    } else {
-      setShowDetails(!showDetails);
-      setShowTooltip(false);
-    }
-  } else if (booking && booking.length > 0) {
-    if (booking.length === 1) {
-      handleIntracityBookings(upPresent && downPresent, { ...booking[0], selectedType: 'Airport Transfer' });
-    } else {
-      setShowDetails(!showDetails);
-      setShowTooltip(false);
-    }
-  }
-};
+  };
 
   const handleBookingClick = (e, bookingItem, type) => {
     e.stopPropagation();
@@ -236,12 +237,6 @@ const getDisplayText = () => {
     }
   };
 
-  const getPassengerCount = (book) => {
-    return (book.number_of_adults || 0) +
-           (book.number_of_children || 0) +
-           (book.number_of_infants || 0);
-  };
-
   const renderTooltipContent = () => (
     <div className="flex flex-col gap-1">
       {pickupBookings.map((pickupBooking, index) => (
@@ -258,7 +253,6 @@ const getDisplayText = () => {
         </div>
       ))}
       
-      {/* Render all drop bookings */}
       {dropBookings.map((dropBooking, index) => (
         <div key={`drop-${index}`} className="flex items-center gap-2">
           <span
@@ -274,10 +268,10 @@ const getDisplayText = () => {
       ))}
 
       {noPickupDropBookings.map((book, index) => (
-        <div key={`drop-${index}`} className="flex items-center gap-2">
+        <div key={`other-${index}`} className="flex items-center gap-2">
           <span
             className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
-            onClick={(e) => handleBookingClick(e, book, 'Airport Drop')}
+            onClick={(e) => handleBookingClick(e, book, 'Airport Transfer')}
           >
             {book?.name}:
           </span>
@@ -305,7 +299,6 @@ const getDisplayText = () => {
         </div>
       ))}
       
-      {/* Render all drop bookings */}
       {dropBookings.map((dropBooking, index) => (
         <div key={`dropdown-drop-${index}`} className="flex items-start gap-2 flex-wrap">
           <span
@@ -316,6 +309,20 @@ const getDisplayText = () => {
           </span>
           {isPageWide && <span className="text-gray-200 flex-1">
             • Date {formatDate(dropBooking.check_out || dropBooking.check_in)} • Time {formatTime(dropBooking.check_out || dropBooking.check_in)}
+          </span>}
+        </div>
+      ))}
+
+      {noPickupDropBookings.map((book, index) => (
+        <div key={`dropdown-other-${index}`} className="flex items-start gap-2 flex-wrap">
+          <span
+            className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors whitespace-nowrap"
+            onClick={(e) => handleBookingClick(e, book, 'Airport Transfer')}
+          >
+            {book?.name}:
+          </span>
+          {isPageWide && <span className="text-gray-200 flex-1">
+            • Date {formatDate(book.check_out || book.check_in)} • Time {formatTime(book.check_out || book.check_in)}
           </span>}
         </div>
       ))}
@@ -361,11 +368,10 @@ const getDisplayText = () => {
         {showDetails && (hasPickup && hasDrop || pickupBookings.length > 1 || dropBookings.length > 1) && (
           <div className="relative mt-2">
             <div
-              className="absolute  bg-gray-900 text-white text-xs rounded-md px-2 py-2 shadow-xl border border-gray-600 min-w-fit md:min-w-[320px] max-w-[450px] md:w-[800px]"
+              className="absolute bg-gray-900 text-white text-xs rounded-md px-2 py-2 shadow-xl border border-gray-600 min-w-fit md:min-w-[320px] max-w-[450px] md:w-[800px]"
               style={{ zIndex: 10000 }}
             >
               {renderDropdownContent()}
-              {/* Upward pointing arrow */}
               <div className="absolute left-4 top-0 transform -translate-y-1 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>
             </div>
           </div>
@@ -407,7 +413,7 @@ const CityItem = ({
 }) => {
   const { transfers_status } = useSelector((state) => state.ItineraryStatus);
 
-  console.log("Bkin",airportBookings);
+  console.log("Booking data:", airportBookings);
   
   const correctIcon = (TransportMode) => {
     switch (TransportMode?.toLowerCase()) {
@@ -448,11 +454,24 @@ const CityItem = ({
   const [transferType, setTransferType] = useState(null);
   const [isIntracity, setIsIntracity] = useState(false);
   const [error, setError] = useState(false);
+  const [currentAirportBookings, setCurrentAirportBookings] = useState(airportBookings || []);
 
   console.log("Selected Booking", selectedBooking);
   const router = useRouter();
   const dispatch = useDispatch();
   let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
+
+  useEffect(() => {
+    setCurrentAirportBookings(airportBookings || []);
+  }, [airportBookings]);
+
+  useEffect(() => {
+    if (!booking_id) {
+      setVisible(true);
+    } else {
+      setVisible(false);
+    }
+  }, [booking_id]);
 
   const handleEdit = async (combo) => {
     setIsIntracity(false);
@@ -509,58 +528,64 @@ const CityItem = ({
   };
 
   const handleDelete = async (val) => {
-    if (!localStorage?.getItem("access_token")) {
-      setShowLoginModal(true);
-      return;
-    }
-    const dataPassed = val != null ? val : data;
-    try {
-      setLoading(true);
-      const response = await axiosDeleteBooking.delete(
-        `${router?.query?.id}/bookings/${
-          dataPassed?.booking_type?.includes(",")
-            ? `combo`
-            : dataPassed?.booking_type?.toLowerCase()
-        }/${dataPassed?.id}/`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        }
-      );
-
-      if (response.status === 204) {
-        dispatch(updateTransferBookings(dataPassed?.id));
-        setLoading(false);
-        getPaymentHandler();
-
-        if (!isIntracity) {
-          setVisible(true);
-        }
-        setHandleShow(false);
-        dispatch(
-          openNotification({
-            type: "success",
-            text: `${city} deleted successfully`,
-            heading: "Success!",
-          })
-        );
+  if (!localStorage?.getItem("access_token")) {
+    setShowLoginModal(true);
+    return;
+  }
+  const dataPassed = val != null ? val : data;
+  try {
+    setLoading(true);
+    const response = await axiosDeleteBooking.delete(
+      `${router?.query?.id}/bookings/${
+        dataPassed?.booking_type?.includes(",")
+          ? `combo`
+          : dataPassed?.booking_type?.toLowerCase()
+      }/${dataPassed?.id}/`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
       }
-    } catch (err) {
-      const errorMsg =
-        err?.response?.data?.errors?.[0]?.message?.[0] ||
-        err.response?.data?.errors[0]?.detail ||
-        err.message;
+    );
+
+    if (response.status === 204) {
+      dispatch(updateTransferBookings(dataPassed?.id));
+      setLoading(false);
+      getPaymentHandler();
+
+      if (isIntracity) {
+        setCurrentAirportBookings(prev => 
+          prev.filter(booking => booking.id !== dataPassed?.id)
+        );
+      } else {
+        setVisible(true);
+      }
+      
+      setHandleShow(false);
       dispatch(
         openNotification({
-          type: "error",
-          text: errorMsg,
-          heading: "Error!",
+          type: "success",
+          text: `${city} deleted successfully`,
+          heading: "Success!",
         })
       );
-      setLoading(false);
     }
-  };
+  } catch (err) {
+    const errorMsg =
+      err?.response?.data?.errors?.[0]?.message?.[0] ||
+      err.response?.data?.errors[0]?.detail ||
+      err.message;
+    dispatch(
+      openNotification({
+        type: "error",
+        text: errorMsg,
+        heading: "Error!",
+      })
+    );
+    setLoading(false);
+  }
+};
+
 
   const extractMode = (text) => {
     const lowerText = text.toLowerCase();
@@ -594,7 +619,7 @@ const CityItem = ({
       hour12: true,
     });
 
-    console.log("Redux DBD",booking_id,city,!visible)
+  console.log("Redux DBD", booking_id, city, visible);
 
   return (
     <Container>
@@ -632,7 +657,7 @@ const CityItem = ({
         } ${!upPresent && downPresent && "mb-[41px]"}`}
       >
         {/* City and Duration Section - Aligned with Pin */}
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col  gap-3">
           {!(upPresent && downPresent) && <div className="">{city}</div>}
 
           {transfers_status === "PENDING" ? (
@@ -642,12 +667,12 @@ const CityItem = ({
               ""
             )
           ) : (
-            <div
+            (upPresent && downPresent) && <div
               className={`text-[16px] font-[500] flex gap-1 ${
-                airportBookings && airportBookings.length > 0 ? "mt-5" : null
+                currentAirportBookings && currentAirportBookings.length > 0 ? "mt-5" : null
               }`}
             >
-              {(booking_id || city) && (!visible || booking_id) ? (
+              {(booking_id || city) && !visible ? (
                 <>
                   {/* Icon Section */}
                   <div className="mt-[4px] flex items-start">
@@ -702,20 +727,6 @@ const CityItem = ({
                       </div>
                     )}
 
-                    {airportBookings &&
-                      airportBookings.length > 0 &&
-                      (booking_id || city) &&
-                      !visible && (
-                        <div className="flex flex-col gap-1 mt-1 mb-[1.5rem]">
-                          <AirportBookingItem
-                            key={booking_id}
-                            booking={airportBookings}
-                            handleIntracityBookings={handleIntracityBookings}
-                            upPresent={upPresent}
-                            downPresent={downPresent}
-                          />
-                        </div>
-                      )}
                   </div>
                 </>
               ) : isPageWide ? (
@@ -736,6 +747,18 @@ const CityItem = ({
               )}
             </div>
           )}
+             {currentAirportBookings &&
+  currentAirportBookings.length > 0 && (
+    <div className="flex flex-col gap-1 mt-1 mb-[1.5rem]">
+      <AirportBookingItem
+        key={`airport-${booking_id || 'no-main'}`}
+        booking={currentAirportBookings}
+        handleIntracityBookings={handleIntracityBookings}
+        upPresent={upPresent}
+        downPresent={downPresent}
+      />
+    </div>
+  )}
         </div>
       </div>
 
