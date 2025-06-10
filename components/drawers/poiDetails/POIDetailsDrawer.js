@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Drawer from "../../ui/Drawer";
-import POIDetailsSkeleton from "./POIDetailsSkeleton";
 import POIDetails from "./POIDetails";
 import { useEffect } from "react";
 import axiosPOIdetailsInstance from "../../../services/poi/poidetails";

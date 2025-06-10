@@ -49,7 +49,6 @@ const items = [
   { id: 2, label: "Places To Visit", link: "" },
 ];
 const ActivityAddDrawer = (props) => {
-  console.log("start date is:", props?.setShowLoginModal);
   const isDesktop = useMediaQuery("(min-width:767px)");
   const [selectedExprience, setSelectedExprience] = useState(-1);
   const [nextUrl, setNextUrl] = useState(null);
@@ -98,9 +97,14 @@ const ActivityAddDrawer = (props) => {
 
   const filtersRef = useRef(null);
   const calendarRef = useRef(null);
+  const [height, setHeight] = useState(0);
 
   const [showSkeleton, setShowSkeleton] = useState(false);
   useEffect(() => {
+    const updateHeight = () => setHeight(window.innerHeight);
+    updateHeight(); // initial run
+    window.addEventListener("resize", updateHeight);
+
     const handleClickOutside = (event) => {
       if (filtersRef.current && !filtersRef.current.contains(event.target)) {
         setShowDynamicfilters(false);
@@ -114,6 +118,7 @@ const ActivityAddDrawer = (props) => {
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("resize", updateHeight);
     };
   }, []);
 
@@ -377,7 +382,6 @@ const ActivityAddDrawer = (props) => {
 
   const handleViewMore = async () => {
     setShowSkeleton(true);
-    console.log("element type is:", elementType);
 
     try {
       let options = [];
@@ -459,8 +463,8 @@ const ActivityAddDrawer = (props) => {
           );
         }
         setOptions((prev) => [...prev, ...options]);
+        setNextUrl(res?.data?.next);
       }
-      setNextUrl(res?.data?.next);
     } catch (error) {
       console.log("error is:", error);
     }
@@ -485,13 +489,6 @@ const ActivityAddDrawer = (props) => {
       ...prev,
       recommended_only: !recommended,
     }));
-  };
-
-  const handleScroll = (e) => {
-    const { offsetHeight, scrollTop, scrollHeight } = e.target;
-    if (offsetHeight + scrollTop >= scrollHeight) {
-      if (showMoreResults) handleViewMore(true);
-    }
   };
 
   const convertToISODate = (dateStr) => {
@@ -523,11 +520,14 @@ const ActivityAddDrawer = (props) => {
       onHide={() => props.setShowDrawer(false)}
     >
       <>
-        <div className={`px-2  !font-[lexend] overflow-y-scroll h-[100vh]`}>
+        <div
+          className={`px-2  !font-[lexend] overflow-y-scroll`}
+          style={{ height: `${height}px` }}
+        >
           <div className="py-4 bg-white z-[900] flex flex-col gap-3  pb-1 justify-start items-start mx-auto w-[98%]">
             <div className="flex flex-row gap-[20px] justify-between w-full items-center">
               <div className="flex flex-row gap-3 items-center">
-              <BackArrow handleClick={() =>  props.setShowDrawer(false)} />
+                <BackArrow handleClick={() => props.setShowDrawer(false)} />
               </div>
             </div>
             <div className="flex max-[582px]:flex-col max-[582px]:!items-start justify-between w-full items-center">
@@ -690,7 +690,7 @@ const ActivityAddDrawer = (props) => {
               </div>
             </div>
           </div>
-{/* <div className="z-[900]"> */}
+          {/* <div className="z-[900]"> */}
           <Navigation
             items={items}
             BarName="TabsName"
@@ -709,7 +709,9 @@ const ActivityAddDrawer = (props) => {
                   className="z-[99] flex flex-col items-center mb-3 h-[calc(100vh-360px)]"
                 >
                   {options}
-                  <div className="w-[100%]">{showSkeleton && <PoiListSkeleton />}</div>
+                  <div className="w-[100%]">
+                    {showSkeleton && <PoiListSkeleton />}
+                  </div>
                   {nextUrl !== null ? (
                     <Button
                       boxShadow

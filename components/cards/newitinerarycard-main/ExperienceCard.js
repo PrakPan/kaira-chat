@@ -12,7 +12,7 @@ import { useState } from "react";
 const fadeInAnimation = keyframes`${fadeIn}`;
 
 const Container = styled.div`
-  width: 70%;
+  width: 100%;
   animation: 1s ${fadeInAnimation};
   display: flex;
   flex-direction: column;
@@ -24,7 +24,6 @@ const Container = styled.div`
     &:hover {
       cursor: pointer;
     }
-      width:100%;
   }
 `;
 

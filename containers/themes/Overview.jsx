@@ -20,7 +20,12 @@ export default function Overview(props) {
     if (isPageWide) {
       setShowTailoredModal(true);
     } else {
-      openTailoredModal(router, props.page_id, props.destination);
+      if(props?.type){
+        openTailoredModal(router, props.page_id, props.destination,props.type);
+      }
+      else{
+        openTailoredModal(router, props.page_id, props.destination);
+      }
     }
 
     logEvent({

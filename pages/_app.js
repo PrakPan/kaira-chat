@@ -163,8 +163,7 @@ function MyApp({ Component, pageProps, store }) {
 
               const config = {
                 botId: "680b71a4a47fab68f44972ab",
-                // internalLoad: true,
-                ...(contactDetail ? { contactDetail } : {}),
+                ...(contactDetail ? { contactDetail } : {internalLoad: true}),
               };
 
               // @ts-ignore

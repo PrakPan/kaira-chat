@@ -21,6 +21,8 @@ const AddPoi = (props) => {
   const debouncedSearch = useDebounce(selectSearch);
   const [startDate, setStartDate] = useState(props?.date);
   const [changed, setChanged] = useState(false);
+  const [height, setHeight] = useState(0);
+
   const [filterState, setFilterState] = useState({
     recommended_only: false,
     rating: ["All"],
@@ -58,6 +60,7 @@ const AddPoi = (props) => {
 
   const handleViewMore = async () => {
     setShowSkeleton(true);
+    let options=[]
     try {
       const res = await axios.get(nextUrl);
 
@@ -146,16 +149,27 @@ const AddPoi = (props) => {
     }
   };
 
+  useEffect(() => {
+    const updateHeight = () => setHeight(window.innerHeight);
+    updateHeight();
+    window.addEventListener("resize", updateHeight);
+
+    return () => window.removeEventListener("resize", updateHeight);
+  }, []);
+
   return (
     <>
-      <div className=" flex flex-col gap-3 overflow-y-scroll h-[100vh]">
+      <div
+        className=" flex flex-col gap-3 overflow-y-scroll"
+        style={{ height: `${height}px` }}
+      >
         <div className=" z-[900] flex flex-col gap-3  bg-white px-2 py-4">
           <BackArrow handleClick={(e) => props.setShowDrawer(false)} />
           <H3>
             Replacing {props?.name} in {props?.cityName}
           </H3>
           <div className="grid w-full gap-2 min-[583px]:grid-cols-[3fr_1fr]">
-            <div className=" flex flex-row items-center  h-[44px]">
+            <div className="relative flex flex-row items-center  h-[44px]">
               <IoMdSearch
                 id={"icon"}
                 onClick={searchHandler}
