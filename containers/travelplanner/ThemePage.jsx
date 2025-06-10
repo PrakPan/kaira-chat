@@ -37,6 +37,7 @@ import PathNavigation from "./PathNavigation.js";
 import ThemeBackground from "../../components/theme/ThemeBackgroundImages.jsx";
 import { imgUrlEndPoint } from "../../components/theme/ThemeConstants.js";
 import BudgetFriendly from "../../components/theme/BudgetFriendly.jsx";
+import ImageCarousel from "./ImageCaraousel.js";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -474,6 +475,13 @@ export default function ThemePage(props) {
                           data={props.continetCarousel}
                           page={"Country Page"}
                         ></Continentcarousel>
+                        <PlanYourTripButton
+                          text={"Create your travel plan now!"}
+                        />
+                      </>
+                    ) : component.carousel === "Image Caraousel" ? (
+                      <>
+                        <ImageCarousel/>
                         <PlanYourTripButton
                           text={"Create your travel plan now!"}
                         />
