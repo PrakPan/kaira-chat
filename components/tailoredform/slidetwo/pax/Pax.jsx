@@ -13,15 +13,9 @@ const Pax = (props) => {
       0 + props?.numberOfInfants ||
       0
   );
-  const [rooms, setRooms] = useState([
-    {
-      adults: props?.numberOfAdults || 2,
-      children: props?.numberOfChildren || 0,
-      infants: props?.numberOfInfants || 0,
-      childAges: [],
-    },
-  ]);
+  const [rooms, setRooms] = useState(props.roomConfiguration);
   const [showError, setShowError] = useState(false);
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -195,11 +189,11 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
     }
   };
 
-  const handleChildren = (type) => {
-    if (type === "plus" && children < 13) {
+  const handleChildren = (increment) => {
+    if (increment && children < 13) {
       setChildren((prev) => prev + 1);
       setChildAges((prev) => [...prev, null]);
-    } else if (type === "minus" && children >= 2) {
+    } else if (children >= 1) {
       setChildren((prev) => prev - 1);
       setChildAges((prev) => prev.slice(0, -1));
     }
@@ -254,15 +248,15 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
             className={`flex items-center justify-center ${
               children > 0 ? "text-blue" : "text-gray-300"
             }`}
-            onClick={() => handleChildren("minus")}
-            disabled={children >= 3}
+            onClick={() => handleChildren(false)}
+            disabled={children < 1}
           >
             -
           </button>
           <span className="mx-2 w-6 text-center">{children}</span>
           <button
             className=" flex items-center justify-center text-blue"
-            onClick={() => handleChildren("plus")}
+            onClick={() => handleChildren(true)}
             disabled={children > 12}
           >
             +

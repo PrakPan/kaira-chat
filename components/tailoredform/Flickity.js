@@ -86,6 +86,7 @@ const FlickityComp = (props) => {
             setNumberOfChildren={props.setNumberOfChildren}
             numberOfInfants={props.numberOfInfants}
             setNumberOfInfants={props.setNumberOfInfants}
+            roomConfiguration={props.roomConfiguration}
             setRoomConfiguration={props.setRoomConfiguration}
             addHotels={props.addHotels}
             setAddHotels={props.setAddHotels}
