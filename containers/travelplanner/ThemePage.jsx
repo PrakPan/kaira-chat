@@ -38,6 +38,7 @@ import ThemeBackground from "../../components/theme/ThemeBackgroundImages.jsx";
 import { imgUrlEndPoint } from "../../components/theme/ThemeConstants.js";
 import BudgetFriendly from "../../components/theme/BudgetFriendly.jsx";
 import ImageCarousel from "./ImageCaraousel.js";
+import Element from "../newcityplanner/elements/Index.js";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -342,8 +343,6 @@ export default function ThemePage(props) {
                         />
                         <PlanYourTripButton text={"Start your journey now!"} />
                       </>
-                    ) : component.carousel === "destination-2" ? (
-                      <></>
                     ) : component.carousel === "itinerary-1" ? (
                       <>
                         <Itinerary1Carousel
@@ -451,6 +450,19 @@ export default function ThemePage(props) {
                         <Activity2
                           data={component.activities}
                           activities={component?.activities}
+                          city={component?.name}
+                          // handlePlanButtonClick={()=>{}}
+                          // {handlePlanButtonClick}
+                          slug={props?.slug}
+                          page={"Country Page"}
+                        />
+                        <PlanYourTripButton text={"Plan Itinerary For Free"} />
+                      </>
+                    ) : component.carousel === "destination-2" ? (
+                      <>
+                        <Element
+                          data={component.elements}
+                          elements={component?.elements}
                           city={component?.name}
                           // handlePlanButtonClick={()=>{}}
                           // {handlePlanButtonClick}

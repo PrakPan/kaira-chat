@@ -50,9 +50,9 @@ const ImageCarousel = ({ images = [], title = "Gallery Section" }) => {
     <div className="w-full max-w-7xl mx-auto px-4 py-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+        {/* <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
           {title}
-        </h2>
+        </h2> */}
         
         {/* Desktop Navigation */}
         {isDesktop && (
