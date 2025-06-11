@@ -14,6 +14,7 @@ import dynamic from "next/dynamic";
 import Head from "next/head";
 import styled from "styled-components";
 import Script from "next/script";
+import restartBot from "../helper/RestartBot";
 
 function MyApp({ Component, pageProps, store }) {
   const router = useRouter();
@@ -122,6 +123,10 @@ function MyApp({ Component, pageProps, store }) {
       router.events.off("routeChangeComplete", handleRouteChange);
     };
   }, [router.events]);
+  // In a client-side context
+  
+  
+
 
   return (
     <>
@@ -140,37 +145,8 @@ function MyApp({ Component, pageProps, store }) {
           src="https://app.crmone.com/assets/scripts/integrate-widgets.js"
           strategy="afterInteractive"
           onLoad={() => {
-            if (typeof window !== "undefined") {
-              const userId = localStorage.getItem("user_id");
-              const name = localStorage.getItem("name") || "";
-              const phone = localStorage.getItem("phone");
-              const email = localStorage.getItem("email");
-
-              const [first_name = "", last_name = ""] = name.split(" ");
-
-              const contactDetail =
-                userId && first_name && phone && email
-                  ? {
-                      id: userId,
-                      first_name,
-                      last_name,
-                      phone,
-                      email,
-                    }
-                  : null;
-
-                  console.log("contact detail is:",contactDetail)
-
-              const config = {
-                botId: "680b71a4a47fab68f44972ab",
-                ...(contactDetail ? { contactDetail } : {internalLoad: true}),
-              };
-
-              // @ts-ignore
-              window.createBot(config);
-            } else {
-              console.error("window is not defined");
-            }
+            console.log("CRMOne bot script loaded");
+            restartBot(); // Start bot once script is ready
           }}
         />
       </body>
