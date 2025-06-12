@@ -6,6 +6,7 @@ import Drawer from "../../../components/ui/Drawer";
 import H8 from "../../../components/heading/H8";
 import SkeletonCard from "../../../components/ui/SkeletonCard";
 import { imgUrlEndPoint } from "../../../components/theme/ThemeConstants";
+import { PlanYourTripButton } from "../../travelplanner/ThemePage";
 
 const Text = styled.p`
   font-size: 14px;
@@ -33,6 +34,7 @@ const ImageContainer = styled.div`
   flex-shrink: 0;
   overflow: hidden;
 `;
+
 
 const BackContainer = styled.div`
   margin: 0;
@@ -90,8 +92,10 @@ export default function ElementCard(props) {
         <div className="h-[60%] overflow-hidden rounded-lg">
           <ImageLoader
             url={props?.data?.image || placeholderImage}
-            dimensions={{ width: 500, height: 200 }}
+            dimensions={{ width: 500, height: 500 }}
             dimensionsMobile={{ width: 500, height: 200 }}
+            width="100%"
+            height="100%"
             borderRadius="8px"
             noLazy
             hoverpointer
@@ -208,6 +212,7 @@ export default function ElementCard(props) {
               </Text>
             </div>
           )}
+           <PlanYourTripButton />
         </Container>
       </Drawer>
     </>
