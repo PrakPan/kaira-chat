@@ -46,7 +46,8 @@ const BackContainer = styled.div`
 const FloatingView = styled.div`
   position: sticky;
   bottom: 10px;
-  background: #f7e700;
+  background: black;
+  color: white;
   border-radius: 50%;
   width: 50px;
   height: 50px;
@@ -336,7 +337,7 @@ console.log("hotel name:",data?.name)
               Oops! There seems to be a problem, please try again later!
             </ErrorContainer>
           )}
-          {/* {!isPageWide && (
+          {!isPageWide && (
             <FloatingView>
               <TbArrowBack
                 style={{ height: "28px", width: "28px" }}
@@ -344,7 +345,7 @@ console.log("hotel name:",data?.name)
                 onClick={props.onHide}
               />
             </FloatingView>
-          )} */}
+          )}
         </Container>
       ) : (
         <Skeleton onHide={props.onHide} />

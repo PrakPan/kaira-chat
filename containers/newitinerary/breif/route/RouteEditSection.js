@@ -42,11 +42,13 @@ import { getDate, getDateString } from "../../../../helper/DateUtils";
 import { dateFormat } from "../../../../helper/DateUtils";
 import { openNotification } from "../../../../store/actions/notification";
 import setItinerary from "../../../../store/actions/itinerary";
+import { TbArrowBack } from "react-icons/tb";
 
 import setItineraryStatus from "../../../../store/actions/itineraryStatus";
 import Spinner from "../../../loaderbar/Index";
 import { axiosGetItineraryStatus } from "../../../../services/itinerary/daybyday/preview";
 import { PulseLoader } from "react-spinners";
+import useDebounce from "../../../../hooks/useDebounce"
 
 const Container = styled.div`
   position: relative;
@@ -159,6 +161,21 @@ const CITY_COLOR_CODES = [
   "#008080", // shade of teal
   "#7d5e7d", // shade of purple
 ];
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 10px;
+  background: black;
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  left: 90%;
+  z-index: 2;
+  cursor: pointer;
+`;
 
 const RouteEditSection = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
@@ -547,7 +564,7 @@ const RouteEditSection = (props) => {
   return (
     <div
       onClick={(e) => handleOutsideClick(e)}
-      className="fixed inset-0 flex flex-col items-center bg-white z-[999]"
+      className="fixed inset-0 flex flex-col items-center bg-white z-[1025]"
     >
       {/* {loading && <Loader />} */}
       <Header
@@ -628,6 +645,17 @@ const RouteEditSection = (props) => {
           // />
           ""
         )}
+        {!isDesktop && (
+            <FloatingView>
+              <TbArrowBack
+                style={{ height: "28px", width: "28px" }}
+                cursor={"pointer"}
+                onClick={editDestination
+                  ? () => props.setEdit(false)
+                  : () => setEditDestination(true)}
+              />
+            </FloatingView>
+          )}
       </div>
 
       {!itineraryLoading && <ActionPanel
@@ -1226,6 +1254,7 @@ export const DestinationPopUp = (props) => {
   const [search, setSearch] = useState(
     (cityData?.city_name || cityData?.name || cityData?.text) ?? ""
   );
+  const debouncedSearch=useDebounce(search)
   const [destination, setDestination] = useState(cityData);
   const [nights, setNights] = useState(cityData?.nights ?? 1);
   const [searchResults, setSearchResults] = useState(null);
@@ -1240,7 +1269,6 @@ export const DestinationPopUp = (props) => {
 
   const handleSearch = (e) => {
     if (e.target.value) {
-      handleDestinationSeach(e.target.value);
 
       logEvent({
         action: "Route Edit",
@@ -1254,6 +1282,9 @@ export const DestinationPopUp = (props) => {
     }
     setSearch(e.target.value);
   };
+  useEffect(()=>{
+    handleDestinationSeach(debouncedSearch)
+  },[debouncedSearch])
 
   const handleDestinationSeach = (value) => {
     if (startingCity || endingCity) {

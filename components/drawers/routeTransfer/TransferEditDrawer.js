@@ -47,6 +47,22 @@ import dayjs from "dayjs";
 import { updateSingleTransferBooking } from "../../../store/actions/transferBookingsStore";
 import BackArrow from "../../ui/BackArrow";
 import { Pax } from "../activityDetails/Pax";
+import { TbArrowBack } from "react-icons/tb";
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 10px;
+  background: black;
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  left: 90%;
+  z-index: 901;
+  cursor: pointer;
+`;
 
 const ClippathComp = styled.div`
   clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 95% 50%, 100% 0%);
@@ -101,14 +117,9 @@ const TransferEditDrawer = (props) => {
     originCityId,
     destinationCityId,
     _updateFlightBookingHandler,
-     booking_id,
+    booking_id,
   } = props;
 
-  console.log(
-    "Origin & Destination Iti",
-    origin_itinerary_city_id,
-    destination_itinerary_city_id
-  );
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [roundTripSuggestions, setRoundTripSuggestions] = useState(null);
   const [multiCitySuggestions, setMultiCitySuggestions] = useState(null);
@@ -142,10 +153,6 @@ const TransferEditDrawer = (props) => {
   const [skipTaxiFetch, setSkipTaxiFetch] = useState(false);
   const [flightResults, setFlightResults] = useState([]);
   const [taxiResults, setTaxiResults] = useState([]);
-
-
-  console.log("FFRR",flightResults)
-  console.log("FFRR",taxiResults)
   useEffect(() => {
     if (showDrawer) {
       fetchRoutes();
@@ -471,7 +478,7 @@ const TransferEditDrawer = (props) => {
                   setSkipFlightFetch(false);
                   setSkipTaxiFetch(false);
                   setIsRouteSelected(false);
-                   setFlightResults([]);
+                  setFlightResults([]);
                   setTaxiResults([]);
                 }}
               />
@@ -647,7 +654,7 @@ const TransferEditDrawer = (props) => {
                 <div className="w-full flex flex-col items-center gap-3">
                   {currentStep === 0 ? (
                     <>
-                      {transfers && transfers.length > 0 &&  (
+                      {transfers && transfers.length > 0 && (
                         <div className="mb-4 w-full">
                           <div className="inline-block mb-3">
                             <span className="bg-red-500 text-white px-3 py-1 rounded-md text-sm font-medium">
@@ -665,10 +672,10 @@ const TransferEditDrawer = (props) => {
                           >
                             <div>
                               <span className="font-medium p-2 text-md md:text-lg">
-                                {transfers[0]?.name} {isDesktop ? "|" :""}
+                                {transfers[0]?.name} {isDesktop ? "|" : ""}
                               </span>
                               <span className="text-gray-600 ml-1 text-md md:text-lg">
-                                {isDesktop ? "" :<br/>}
+                                {isDesktop ? "" : <br />}
                                 {Math.ceil(
                                   transfers[0].transfers.reduce(
                                     (sum, t) => sum + (t.duration || 0),
@@ -700,7 +707,7 @@ const TransferEditDrawer = (props) => {
                           </div>
 
                           {transfers.slice(1).map((transfer, idx) => {
-                            const index = idx + 1; 
+                            const index = idx + 1;
                             return (
                               <div
                                 key={index}
@@ -712,10 +719,10 @@ const TransferEditDrawer = (props) => {
                               >
                                 <div>
                                   <span className="font-medium p-1 md:p-2 text-left text-md md:text-lg">
-                                    {transfer?.name} {isDesktop ? "|" :""}
+                                    {transfer?.name} {isDesktop ? "|" : ""}
                                   </span>
                                   <span className="text-gray-600 ml-1 text-md md:text-lg">
-                                    {isDesktop ? "" :<br/>}
+                                    {isDesktop ? "" : <br />}
                                     {Math.ceil(
                                       transfer.transfers.reduce(
                                         (sum, t) => sum + (t.duration || 0),
@@ -978,9 +985,9 @@ const TransferEditDrawer = (props) => {
                         setSkipFlightFetch={setSkipFlightFetch}
                         setSkipTaxiFetch={setSkipTaxiFetch}
                         flightResults={flightResults}
-                          taxiResults={taxiResults}
-                          setFlightResults={setFlightResults}
-                          setTaxiResults={setTaxiResults}
+                        taxiResults={taxiResults}
+                        setFlightResults={setFlightResults}
+                        setTaxiResults={setTaxiResults}
                       />
                     ) : (
                       <RouteContainer
@@ -1171,6 +1178,23 @@ const TransferEditDrawer = (props) => {
           dCityData?.city?.id
         }
       ></TaxiModal>
+      {!isDesktop && (
+        <FloatingView>
+          <TbArrowBack
+            style={{ height: "28px", width: "28px" }}
+            cursor={"pointer"}
+            onClick={() => {
+              setShowDrawer(false);
+              setCurrentStep(0);
+              setSkipFlightFetch(false);
+              setSkipTaxiFetch(false);
+              setIsRouteSelected(false);
+              setFlightResults([]);
+              setTaxiResults([]);
+            }}
+          />
+        </FloatingView>
+      )}
     </Drawer>
   );
 };
@@ -1694,7 +1718,10 @@ const NewMultiModeContainer = ({
   skipFlightFetch,
   setSkipFlightFetch,
   setSkipTaxiFetch,
-  flightResults,taxiResults,setFlightResults,setTaxiResults,
+  flightResults,
+  taxiResults,
+  setFlightResults,
+  setTaxiResults,
   booking_id,
 }) => {
   let isPageWide = media("(min-width: 768px)");
@@ -1708,8 +1735,7 @@ const NewMultiModeContainer = ({
   const [comboStartDate, setComboStartDate] = useState(null);
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
   const [transferResults, setTransferResults] = useState([]);
- 
-  
+
   const [hasAppliedFilters, setHasAppliedFilters] = useState(false);
   const { number_of_adults, number_of_children, number_of_infants } =
     useSelector((state) => state.Itinerary);
@@ -2216,7 +2242,9 @@ const NewMultiModeContainer = ({
       } catch (error) {
         setUpdateLoading(false);
         const errorMsg =
-        error?.response?.data?.errors?.[0]?.message?.[0] || error.message || "Error updating Transfers!";
+          error?.response?.data?.errors?.[0]?.message?.[0] ||
+          error.message ||
+          "Error updating Transfers!";
         openNotification({
           text: errorMsg,
           heading: "Error!",
@@ -4274,7 +4302,9 @@ const OtherTransfer = ({
       }
     } catch (error) {
       const errorMsg =
-     error?.response?.data?.errors?.[0]?.message?.[0] || error.message || "Error updating Transfers!";
+        error?.response?.data?.errors?.[0]?.message?.[0] ||
+        error.message ||
+        "Error updating Transfers!";
 
       console.error("Error updating transfer:", error);
       dispatch(

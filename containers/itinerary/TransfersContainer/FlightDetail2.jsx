@@ -21,6 +21,23 @@ import { openNotification } from "../../../store/actions/notification";
 import BackArrow from "../../../components/ui/BackArrow";
 import { FaPlane } from "react-icons/fa";
 import styled from "styled-components";
+import { TbArrowBack } from "react-icons/tb";
+import useMediaQuery from "../../../components/media";
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 10px;
+  background: black;
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  left: 90%;
+  z-index: 2;
+  cursor: pointer;
+`;
 
 const DottedLine = styled.div`
   position: relative;
@@ -79,6 +96,8 @@ const Details = ({
   getPaymentHandler,
   setShowLoginModal
 }) => {
+  const isDesktop = useMediaQuery("(min-width:768px)");
+
   const router = useRouter();
   const [fareRules, setFareRules] = useState(fareRule?.[0]?.fareRuleDetail);
   const [fareRulesLoading, setFareRulesLoading] = useState(false);
@@ -213,6 +232,15 @@ const Details = ({
           ></div>
         </div>
       )}
+      {!isDesktop && (
+            <FloatingView>
+              <TbArrowBack
+                style={{ height: "28px", width: "28px" }}
+                cursor={"pointer"}
+                onClick={() => setShowDetails((prev) => !prev)}
+              />
+            </FloatingView>
+          )}
       {type != "combo" && (
         <div className="w-full flex justify-end">
           <button

@@ -13,8 +13,27 @@ import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";
 import Button from "../../../components/ui/button/Index";
 import { openNotification } from "../../../store/actions/notification";
 import { useDispatch } from "react-redux";
+import { TbArrowBack } from "react-icons/tb";
+import styled from "styled-components";
+import useMediaQuery from "../../media";
 
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 10px;
+  background: black;
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  left: 90%;
+  z-index: 901;
+  cursor: pointer;
+`;
 const AddPoi = (props) => {
+  const isDesktop = useMediaQuery("(min-width:768px)");
   const dispatch = useDispatch();
   const elementType = "POI";
   const [selectSearch, setSelectedSearch] = useState("");
@@ -301,6 +320,15 @@ const AddPoi = (props) => {
             elementType={elementType}
           />
         </div>
+      )}
+       {!isDesktop && (
+        <FloatingView>
+          <TbArrowBack
+            style={{ height: "28px", width: "28px" }}
+            cursor={"pointer"}
+            onClick={(e) => props.setShowDrawer(false)}
+          />
+        </FloatingView>
       )}
     </>
   );
