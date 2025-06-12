@@ -4,9 +4,7 @@ import { useState } from "react";
 import { TbArrowBack } from "react-icons/tb";
 import SkeletonCard from "../../ui/SkeletonCard";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
-import { IoMdClose } from "react-icons/io";
-import ReviewComponent from "../../Reviews/Reviews";
-import { GOOGLE_MAPS_API_KEY, MERCURY_HOST } from "../../../services/constants";
+import { MERCURY_HOST } from "../../../services/constants";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { PulseLoader } from "react-spinners";
@@ -14,7 +12,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import setItinerary from "../../../store/actions/itinerary";
-import { toast, ToastContainer } from "react-toastify";
+import {  ToastContainer } from "react-toastify";
 import ReviewPoi from "../../POIDetails/Reviews";
 import useMediaQuery from "../../media";
 import { openNotification } from "../../../store/actions/notification";
@@ -23,6 +21,21 @@ import ImageLoader from "../../ImageLoader";
 import Button from "../../ui/button/Index";
 import Drawer from "../../ui/Drawer";
 import AddPoi from "../AddPoi";
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 10px;
+  background: black;
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  left: 90%;
+  z-index: 901;
+  cursor: pointer;
+`;
 export const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -120,6 +133,7 @@ const ScrollContainer = styled.div`
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
 const POIDetails = (props) => {
+  const isDesktop = useMediaQuery("(min-width:768px)");
   const isSmallScreen = useMediaQuery("(max-width:586px)");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -691,6 +705,15 @@ const POIDetails = (props) => {
             />
           </Drawer>
           <ToastContainer />
+          {!isDesktop && (
+        <FloatingView>
+          <TbArrowBack
+            style={{ height: "28px", width: "28px" }}
+            cursor={"pointer"}
+            onClick={(e) => props.handleCloseDrawer(e)}
+          />
+        </FloatingView>
+      )}
         </Container>
       ) : null}
     </>

@@ -57,18 +57,18 @@ const Floating = styled.div`
 `;
 
 const FloatingView = styled.div`
-  position: fixed;
-
-  bottom: 68px;
-  background: #f7e700;
+  position: sticky;
+  bottom: 10px;
+  background: black;
+  color: white;
   border-radius: 50%;
   width: 50px;
   height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
-  right: 10px;
-
+  left: 90%;
+  z-index: 2;
   cursor: pointer;
 `;
 
@@ -810,7 +810,7 @@ const ItineraryPoiElementM = (props) => {
         />
       </Drawer>
 
-      {/* {!isDesktop && showDrawer && (
+      {!isDesktop && showDrawer && (
         <div className="absolute bottom-0 right-10 z-[1510]">
           <FloatingView>
             <TbArrowBack
@@ -820,7 +820,7 @@ const ItineraryPoiElementM = (props) => {
             />
           </FloatingView>
         </div>
-      )} */}
+      )}
 
       {!isDesktop && showDrawer && (
         <div className="absolute bottom-0 right-10 z-[1502]">

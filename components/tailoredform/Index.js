@@ -107,7 +107,7 @@ const Enquiry = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [roomConfiguration, setRoomConfiguration] = useState([
     {
-      adults: 0,
+      adults: 1,
       children: 0,
       childAges: [],
     },
@@ -154,10 +154,10 @@ const Enquiry = (props) => {
     let tempInfants = numberOfInfants;
     while (tempadults != 0) {
       if (tempadults >= 2) {
-        distribution.push({ adults: 2 });
+        distribution.push({ adults: 2,children:0 });
         tempadults -= 2;
       } else {
-        distribution.push({ adults: tempadults });
+        distribution.push({ adults: tempadults,children:0  });
         tempadults = 0;
       }
     }

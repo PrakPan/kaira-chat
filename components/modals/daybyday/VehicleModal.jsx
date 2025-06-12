@@ -9,7 +9,22 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import Image from "next/image";
 import BackArrow from "../../ui/BackArrow";
 import { Generalbuttonstyle } from "../../ui/button/Generallinkbutton";
-
+import { TbArrowBack } from "react-icons/tb";
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 10px;
+  background: black;
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  left: 90%;
+  z-index: 2;
+  cursor: pointer;
+`;
 const BackText = styled.div`
   font-size: 1.5rem;
   line-height: 2rem;
@@ -292,6 +307,16 @@ const VehicleDetailModal = ({
           </div>
         </div>
 
+
+        {!isPageWide && (
+            <FloatingView>
+              <TbArrowBack
+                style={{ height: "28px", width: "28px" }}
+                cursor={"pointer"}
+                onClick={()=>setHandleShow(false)}
+              />
+            </FloatingView>
+          )}
         {/* Delete Booking Button (Fixed) */}
         {handleDelete && type!="combo"&&(
           <div className="p-4 bg-white">
