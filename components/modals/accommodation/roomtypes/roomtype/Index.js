@@ -40,34 +40,11 @@ const RoomType = (props) => {
           <div className="text-md md:text-lg font-bold">
             Room {props.index + 1}
           </div>
-          {(props.rooms.length > 1 || 
-            props.rooms.some(room => 
-              room?.description || 
-              room?.images?.length > 0 || 
-              room?.facilities?.length > 0
-            ) ||
-            (props.data?.polices && props.data.polices.length > 0) ||
-            props.data?.cancellation_policies
-          ) && (
-            <div className="text-blue">
-              {open ? (
-                <div className="flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer">
-                  <div>Hide details</div>
-                  <IoIosArrowUp className="text-xl" />
-                </div>
-              ) : (
-                <div className="flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer">
-                  <div>See details</div>
-                  <IoIosArrowDown className="text-xl" />
-                </div>
-              )}
-            </div>
-          )}
         </div>
 
         <div className="flex flex-row items-center justify-between">
           <div className="text-xl md:text-2xl font-bold">
-            {"₹" + getIndianPrice(Math.round(props.data?.final_rate))}
+            {"₹" + getIndianPrice(Math.round(props.data?.final_rate)) + "/-"} <span className="font-normal text-sm">for {props?.duration === 1  ? props?.duration + " Night" : props?.duration + " Nights"}  </span>
           </div>
         </div>
       </div>
@@ -102,7 +79,7 @@ const RoomType = (props) => {
               ) : null}
 
               {room?.number_of_adults && room?.number_of_adults !== "0" ? (
-                <div className="flex flex-row gap-1">
+                <div className="flex flex-col md:flex-row gap-1 items-start md:items-center md:justify-start">
                   <div className="text-md font-semibold">Sleeps</div>
                   <div>
                     {room.number_of_adults > 1
@@ -113,8 +90,14 @@ const RoomType = (props) => {
                       ? `, ${room.number_of_children} Children`
                       : null}
                   </div>
+                  {(props?.data?.board_basis &&  <p className="bg-[#e6f9ec] text-[#3BAF75] px-2 py-2 mb-0 rounded-md text-xs font-medium">
+
+                          {props?.data?.board_basis?.description}
+                        </p>)}
                 </div>
               ) : null}
+
+              
 
               {(props.rooms.length === 1 && (
                 room?.description || 
@@ -163,7 +146,7 @@ const RoomType = (props) => {
                 </div>
                 <div className="flex justify-end w-full">
                   {room?.images?.length > 0 && (
-                    <div className="flex flex-col items-center justify-center gap-3 md:w-[40%] h-[250px]">
+                    <div className="flex flex-col items-center justify-center gap-3 md:w-[80%] h-[250px]">
                       <ImageCarousel images={room?.images} />
                     </div>
                   )}
@@ -211,12 +194,25 @@ const RoomType = (props) => {
         </div>
       )}
       
+      <div>
+
+      {props?.data?.cancellation_policies && <>
+      <div className="flex flex-col">
+      <div className="text-bold text-lg">Cancellation Policy</div>
+       <p className="bg-[#fdeeee] text-[#EF7D7D] px-2 py-2 mb-0 rounded-md text-xs font-medium w-fit">
+
+                         {( props?.data?.refundability == "NonRefundable" ? "Non-Refundable" : "Refundable")}
+                        </p>
+      </div>
+
       <div
-        className="text-[14px]"
-        dangerouslySetInnerHTML={{
-          __html: props?.data?.cancellation_policies,
-        }}
-      ></div>
+                    className="text-[14px]"
+                    dangerouslySetInnerHTML={{
+                      __html: props?.data?.cancellation_policies,
+                    }}
+                  ></div>
+    </>}
+      </div>
     </div>
   );
 };

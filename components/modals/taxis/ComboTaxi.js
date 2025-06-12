@@ -318,11 +318,13 @@ const ComboTaxi = (props) => {
       })
       .catch((err) => {
         setQuotes([]);
+        if(props?.setTransferResults){
         props?.setTransferResults((prev)=>{
       let newData=[...prev];
       newData[props?.index] = [];
       return newData;
     })
+  }
         props?.setTaxiResults((prev)=>{
          let newData = {...prev};
          delete newData[props?.KEY];

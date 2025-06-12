@@ -1123,6 +1123,7 @@ const HotelBookingDetails = (props) => {
             checkInDate={props?.data?.check_in?.split(" ")[0]}
             city={props?.data?.hotel_details?.city}
             updateBooking={props?.updateBooking}
+            duration={props?.data?.duration}
           ></Rooms>
         </>
       )}

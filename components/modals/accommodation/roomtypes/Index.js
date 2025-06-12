@@ -35,6 +35,7 @@ const Rooms = (props) => {
               setSelectedRecommendation={setSelectedRecommendation}
               checkInDate={props.check_in?.date}
               city={props.city}
+              duration={props?.duration}
             ></RoomType>
           );
         }
