@@ -16,7 +16,8 @@ const ImageContainer = styled.div`
 
 const RoomType = (props) => {
   let isPageWide = media("(min-width: 768px)");
-  const [open, setOpen] = useState(false);
+  // Initialize open state for each room
+  const [openRooms, setOpenRooms] = useState({});
 
   const getRoomImage = (images) => {
     if (images && images.length) {
@@ -30,11 +31,16 @@ const RoomType = (props) => {
     return null;
   };
 
+  // Function to toggle specific room details
+  const toggleRoomDetails = (roomIndex) => {
+    setOpenRooms(prev => ({
+      ...prev,
+      [roomIndex]: !prev[roomIndex]
+    }));
+  };
+
   return (
-    <div
-      onClick={() => setOpen((prev) => !prev)}
-      className="bg-[#F4F4F4] flex flex-col gap-3 p-3 rounded-lg cursor-pointer"
-    >
+    <div className="bg-[#F4F4F4] flex flex-col gap-3 p-3 rounded-lg">
       <div className="flex flex-col gap-1">
         <div className="flex flex-row items-center h-fit gap-2">
           <div className="text-md md:text-lg font-bold">
@@ -82,8 +88,11 @@ const RoomType = (props) => {
                 (props.data?.polices && props.data.polices.length > 0) ||
                 props.data?.cancellation_policies
               )) && (
-                <div className="text-blue font-normal text-sm">
-                  {open ? (
+                <div 
+                  className="text-blue font-normal text-sm"
+                  onClick={() => toggleRoomDetails(index)}
+                >
+                  {openRooms[index] ? (
                     <div className="w-fit flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer">
                       <div>Hide details</div>
                       <IoIosArrowUp className="text-xl" />
@@ -124,7 +133,7 @@ const RoomType = (props) => {
             </div>
           </div>
 
-          {open && (
+          {openRooms[index] && (
             <div className="flex flex-col gap-3">
               <div
                 className={`flex flex-col md:flex-row gap-1 ${
@@ -177,7 +186,8 @@ const RoomType = (props) => {
         </div>
       ))}
 
-      {open && (
+      {/* Global policies and cancellation - show only if any room is open */}
+      {Object.values(openRooms).some(isOpen => isOpen) && (
         <div className="flex flex-col gap-3">
           {props.data?.polices && props?.data?.polices?.length > 0
             ? props.data.polices.map((item, index) => (
@@ -196,23 +206,21 @@ const RoomType = (props) => {
       )}
       
       <div>
+        {props?.data?.cancellation_policies && Object.values(openRooms).some(isOpen => isOpen) && <>
+          <div className="flex flex-col">
+            <div className="font-semibold text-lg">Cancellation Policy</div>
+            <p className="bg-[#fdeeee] text-[#EF7D7D] px-2 py-2 mb-0 rounded-md text-xs font-medium w-fit">
+              {( props?.data?.refundability == "NonRefundable" ? "Non-Refundable" : "Refundable")}
+            </p>
+          </div>
 
-      {props?.data?.cancellation_policies && <>
-      <div className="flex flex-col">
-      <div className="font-semibold text-lg">Cancellation Policy</div>
-       <p className="bg-[#fdeeee] text-[#EF7D7D] px-2 py-2 mb-0 rounded-md text-xs font-medium w-fit">
-
-                         {( props?.data?.refundability == "NonRefundable" ? "Non-Refundable" : "Refundable")}
-                        </p>
-      </div>
-
-      <div
-                    className="text-[14px]"
-                    dangerouslySetInnerHTML={{
-                      __html: props?.data?.cancellation_policies,
-                    }}
-                  ></div>
-    </>}
+          <div
+            className="text-[14px]"
+            dangerouslySetInnerHTML={{
+              __html: props?.data?.cancellation_policies,
+            }}
+          ></div>
+        </>}
       </div>
     </div>
   );
