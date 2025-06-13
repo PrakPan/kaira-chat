@@ -75,6 +75,27 @@ const RoomType = (props) => {
                   <span>
                     <RxCross2 className="inline" /> 1 room
                   </span>
+                   {(props.rooms.length && (
+                room?.description || 
+                room?.images?.length > 0 || 
+                room?.facilities?.length > 0 ||
+                (props.data?.polices && props.data.polices.length > 0) ||
+                props.data?.cancellation_policies
+              )) && (
+                <div className="text-blue font-normal text-sm">
+                  {open ? (
+                    <div className="w-fit flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer">
+                      <div>Hide details</div>
+                      <IoIosArrowUp className="text-xl" />
+                    </div>
+                  ) : (
+                    <div className="w-fit flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer">
+                      <div>See details</div>
+                      <IoIosArrowDown className="text-xl" />
+                    </div>
+                  )}
+                </div>
+              )}
                 </div>
               ) : null}
 
@@ -99,27 +120,7 @@ const RoomType = (props) => {
 
               
 
-              {(props.rooms.length === 1 && (
-                room?.description || 
-                room?.images?.length > 0 || 
-                room?.facilities?.length > 0 ||
-                (props.data?.polices && props.data.polices.length > 0) ||
-                props.data?.cancellation_policies
-              )) && (
-                <div className="text-blue">
-                  {open ? (
-                    <div className="w-fit flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer">
-                      <div>Hide details</div>
-                      <IoIosArrowUp className="text-xl" />
-                    </div>
-                  ) : (
-                    <div className="w-fit flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer">
-                      <div>See details</div>
-                      <IoIosArrowDown className="text-xl" />
-                    </div>
-                  )}
-                </div>
-              )}
+             
             </div>
           </div>
 
@@ -198,7 +199,7 @@ const RoomType = (props) => {
 
       {props?.data?.cancellation_policies && <>
       <div className="flex flex-col">
-      <div className="text-bold text-lg">Cancellation Policy</div>
+      <div className="font-semibold text-lg">Cancellation Policy</div>
        <p className="bg-[#fdeeee] text-[#EF7D7D] px-2 py-2 mb-0 rounded-md text-xs font-medium w-fit">
 
                          {( props?.data?.refundability == "NonRefundable" ? "Non-Refundable" : "Refundable")}
