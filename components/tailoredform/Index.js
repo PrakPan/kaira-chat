@@ -774,6 +774,7 @@ let dist=divideTravellers()
             setSelectedPreferences={setSelectedPreferences}
             setSubmitSecondSlide={setSubmitSecondSlide}
             eventDates={props.eventDates}
+            roomConfiguration={roomConfiguration}
             setRoomConfiguration={setRoomConfiguration}
             priceRange={priceRange}
             setPriceRange={setPriceRange}

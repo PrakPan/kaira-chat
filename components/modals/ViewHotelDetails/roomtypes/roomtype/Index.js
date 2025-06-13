@@ -61,7 +61,7 @@ const RoomType = (props) => {
 
         <div className="flex flex-row items-center justify-between">
           <div className="text-xl md:text-2xl font-bold">
-            {"₹" + getIndianPrice(Math.round(props.price))}
+            {"₹" + getIndianPrice(Math.round(props.price)) + "/-"}
           </div>
 
           <div className="flex flex-col gap-1 items-end">
@@ -109,7 +109,7 @@ const RoomType = (props) => {
               ) : null}
 
               {room?.number_of_adults && room?.number_of_adults !== "0" ? (
-                <div className="flex flex-row gap-1">
+                <div className="flex flex-col md:flex-row gap-1 items-center justify-start">
                   <div className="text-md font-semibold">Sleeps</div>
                   <div>
                     {room.number_of_adults > 1
@@ -119,7 +119,11 @@ const RoomType = (props) => {
                     room?.number_of_children !== "0"
                       ? `, ${room.number_of_children} Children`
                       : null}
-                  </div>
+                  </div> 
+                   {(props?.data?.board_basis &&  <p className="bg-[#e6f9ec] text-[#3BAF75] px-2 py-2 mb-0 rounded-md text-xs font-medium">
+
+                          {props?.data?.board_basis?.description}
+                        </p>)}
                 </div>
               ) : null}
 
@@ -226,12 +230,22 @@ const RoomType = (props) => {
         </div>
       )}
 
+      {props?.data?.cancellation_policies && <>
+      <div className="flex flex-col">
+      <div className="text-bold text-lg">Cancellation Policy</div>
+       <p className="bg-[#fdeeee] text-[#EF7D7D] px-2 py-2 mb-0 rounded-md text-xs font-medium w-fit">
+
+                         {( props?.data?.refundability == "NonRefundable" ? "Non-Refundable" : "Refundable")}
+                        </p>
+      </div>
+
       <div
                     className="text-[14px]"
                     dangerouslySetInnerHTML={{
                       __html: props?.data?.cancellation_policies,
                     }}
                   ></div>
+    </>}
     </div>
   );
 };

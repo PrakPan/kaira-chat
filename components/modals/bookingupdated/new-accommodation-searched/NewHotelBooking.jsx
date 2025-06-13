@@ -72,10 +72,10 @@ export default function NewHotelBooking({
 
             <div className="flex flex-col gap-2 text-[#01202B] lg:w-[70%] w-full justify-between">
               <div className="flex flex-col gap-2">
-                <div className="flex flex-row justify-between">
-                  <div className={`text-2xl font-semibold`}>
+                <div className="mb-0 flex flex-row justify-between">
+                  <div className={`text-2xl font-semibold mb-0`}>
             
-                     <p> {booking?.name}</p>
+                     <p className="mb-0"> {booking?.name}</p>
                   
                   </div>
                   <div>
