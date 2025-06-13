@@ -16,7 +16,6 @@ const Pax = (props) => {
 
   const [showError, setShowError] = useState(false);
 
-
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -161,7 +160,6 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
     }
   };
 
-
   const handleChildren = (type) => {
     if (type === "plus" && children < 13) {
       setChildren((prev) => prev + 1);
@@ -229,7 +227,7 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
           <span className="mx-2 w-6 text-center">{children}</span>
           <button
             className=" flex items-center justify-center text-blue"
-            onClick={() => handleChildren(true)}
+            onClick={() => handleChildren("plus")}
             disabled={children > 12}
           >
             +
