@@ -109,9 +109,10 @@ const RoomType = (props) => {
               ) : null}
 
               {room?.number_of_adults && room?.number_of_adults !== "0" ? (
-                <div className="flex flex-col md:flex-row gap-1 items-center justify-start">
+                <div className="flex flex-col md:flex-row gap-1 items-start md:items-center">
+                  <div className="flex flex-row gap-2">
                   <div className="text-md font-semibold">Sleeps</div>
-                  <div>
+                  <div >
                     {room.number_of_adults > 1
                       ? `${room.number_of_adults} Adults`
                       : `${room.number_of_adults} Adult`}
@@ -120,6 +121,7 @@ const RoomType = (props) => {
                       ? `, ${room.number_of_children} Children`
                       : null}
                   </div> 
+                  </div>
                    {(props?.data?.board_basis &&  <p className="bg-[#e6f9ec] text-[#3BAF75] px-2 py-2 mb-0 rounded-md text-xs font-medium">
 
                           {props?.data?.board_basis?.description}
@@ -177,7 +179,7 @@ const RoomType = (props) => {
                     </div>
                     <div className="flex justify-end w-full">
                       {room?.images?.length > 0 && (
-                        <div className="flex flex-col items-center justify-center gap-3 md:w-[80%] h-[250px]">
+                        <div className="flex flex-col items-center justify-center gap-3 w-[100%] md:w-[80%] h-[250px]">
                           <ImageCarousel images={room?.images} />
                         </div>
                       )}
