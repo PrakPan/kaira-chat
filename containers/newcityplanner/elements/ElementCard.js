@@ -212,7 +212,7 @@ export default function ElementCard(props) {
               </Text>
             </div>
           )}
-           <PlanYourTripButton />
+           <PlanYourTripButton className="bg-[#F7E700]"/>
         </Container>
       </Drawer>
     </>

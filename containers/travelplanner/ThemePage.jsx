@@ -96,7 +96,7 @@ export default function ThemePage(props) {
 
   return (
     <div className="mb-5">
-      {props?.slug === 'la-tomatina-spain-2025' && <ThemeHeadline text={`Join the World's Biggest Tomato Fight – La Tomatina 2025`} />}
+      {/* {props?.slug === 'la-tomatina-spain-2025' && <ThemeHeadline text={`Join the World's Biggest Tomato Fight – La Tomatina 2025`} />} */}
       {isPageWide ? (
         <DesktopPersonaliseBanner
           onclick={() =>
@@ -224,7 +224,7 @@ export default function ThemePage(props) {
                 !component.parent && (
                   <div key={index} className="mx-3 space-y-12 mt-5">
                     <div className="space-y-3">
-                      {props?.slug === "perfect-proposals-2025" && (component?.priority == 13 || component?.priority == 9) ? "" :<PrimaryHeading
+                      {(props?.slug === "perfect-proposals-2025" && (component?.priority == 13 || component?.priority == 9)) || props?.slug === "la-tomatina-spain-2025" ? "" :<PrimaryHeading
                         className={` ${
                           props?.slug != "japan-cherry-blossom"
                             ? "mx-auto text-center"
@@ -598,7 +598,7 @@ export const PlanYourTripButton = (props) => {
 
   return (
     <div className="flex items-center justify-center mt-5 bg-white">
-      <SecondaryButton onClick={handlePlanButton}>
+      <SecondaryButton onClick={handlePlanButton} className={props?.className}>
         {props.text
           ? props.text
           : props.slug === "honeymoon-2025"
