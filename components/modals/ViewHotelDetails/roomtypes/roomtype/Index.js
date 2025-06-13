@@ -36,7 +36,7 @@ const RoomType = (props) => {
           <div className="text-md md:text-lg font-bold">
             Recommendation {props.index + 1}
           </div>
-          {props.rooms.length > 1 && (
+          {/* {props.rooms.length > 1 && (
             <div className="text-blue">
               {open ? (
                 <div
@@ -56,7 +56,7 @@ const RoomType = (props) => {
                 </div>
               )}
             </div>
-          )}
+          )} */}
         </div>
 
         <div className="flex flex-row items-center justify-between">
@@ -232,7 +232,7 @@ const RoomType = (props) => {
 
       {props?.data?.cancellation_policies && <>
       <div className="flex flex-col">
-      <div className="text-bold text-lg">Cancellation Policy</div>
+      <div className="font-semibold text-lg">Cancellation Policy</div>
        <p className="bg-[#fdeeee] text-[#EF7D7D] px-2 py-2 mb-0 rounded-md text-xs font-medium w-fit">
 
                          {( props?.data?.refundability == "NonRefundable" ? "Non-Refundable" : "Refundable")}
