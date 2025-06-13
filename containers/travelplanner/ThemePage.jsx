@@ -39,6 +39,7 @@ import { imgUrlEndPoint } from "../../components/theme/ThemeConstants.js";
 import BudgetFriendly from "../../components/theme/BudgetFriendly.jsx";
 import ImageCarousel from "./ImageCaraousel.js";
 import Element from "../newcityplanner/elements/Index.js";
+import ThemeHeadline from "./ThemeHeadines.js";
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -95,6 +96,7 @@ export default function ThemePage(props) {
 
   return (
     <div className="mb-5">
+      {props?.slug === 'la-tomatina-spain-2025' && <ThemeHeadline text={`Join the World's Biggest Tomato Fight – La Tomatina 2025`} />}
       {isPageWide ? (
         <DesktopPersonaliseBanner
           onclick={() =>

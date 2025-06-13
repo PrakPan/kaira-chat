@@ -82,7 +82,7 @@ const FullImgContent = (props) => {
       params: {
         page: props.page ? props.page : "",
         event_category: "Button Click",
-        event_label: "Plan Itinerary For Free!",
+        event_label: "Plan Itinerary For Free!", 
         event_action: "Banner",
       },
     });
