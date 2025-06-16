@@ -163,7 +163,6 @@ const Enquiry = (props) => {
     }
 
     let childIdx = 0;
-    let infantIdx = 0;
 
     while (tempChildren != 0) {
       if (!distribution[childIdx % distribution.length].children) {
@@ -179,19 +178,17 @@ const Enquiry = (props) => {
     }
 
     while (tempInfants != 0) {
-      if (!distribution[infantIdx % distribution.length].children) {
-        distribution[infantIdx % distribution.length].children = 0;
+      if (!distribution[childIdx % distribution.length].children) {
+        distribution[childIdx % distribution.length].children = 0;
       }
-      distribution[infantIdx % distribution.length].children += 1;
+      distribution[childIdx % distribution.length].children += 1;
       tempInfants -= 1;
-      if (!distribution[infantIdx % distribution.length].childAges) {
-        distribution[infantIdx % distribution.length].childAges = [];
+      if (!distribution[childIdx % distribution.length].childAges) {
+        distribution[childIdx % distribution.length].childAges = [];
       }
-      distribution[infantIdx % distribution.length].childAges.push(1);
-      infantIdx += 1;
+      distribution[childIdx % distribution.length].childAges.push(1);
+      childIdx += 1;
     }
-
-    console.log('distribution is:',distribution)
 
     return distribution;
 
@@ -785,7 +782,6 @@ let dist=divideTravellers()
             setSlideIndex={setSlideIndex}
             setLoginComplete={setLoginComplete}
             defaultPriceRange={defaultPriceRange}
-            roomConfiguration={roomConfiguration}
           ></Flickity>
 
           {error ? <p className="text-sm text-red-600">{error}</p> : null}

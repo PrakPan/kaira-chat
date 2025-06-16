@@ -23,77 +23,22 @@ import { updateTransferBookings } from "../../../store/actions/transferBookingsS
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { FaPlaneDeparture } from "react-icons/fa";
 import VehicleDetailLoader from "../../../components/modals/daybyday/VehicleDetailLoader";
-const GridContainer = styled.div`
-  width: auto;
-  overflow: auto;
+import { TbArrowBack } from "react-icons/tb";
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 60px;
+  left: 100%;
+  background: black;
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
   display: flex;
-  flex-direction: row;
-  @media screen and (min-width: 768px) {
-    width: auto;
-    overflow: none;
-  }
-`;
-
-var Line = styled.hr`
-  background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
-    ${(props) =>
-      props.pinColour
-        ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
-        : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
-
-  background-size: 8px 3px, 100% 3px;
-
-  color: #c80000;
-  -webkit-transform: rotate(90deg);
-  position: absolute;
-
-  height: 1px;
-
-  border: 2px;
-
-  width: ${(props) => (props.Transfers ? `19rem` : `5rem`)};
-
-  top: ${(props) => (props.Transfers ? `128px` : `23px`)};
-  right: ${(props) => (props.Transfers ? `-134px` : `-25px`)};
-  opacity: initial;
-  z-index: -1;
-  @media screen and (min-width: 768px) {
-    width: 12.3rem;
-    height: 1px;
-    top: ${(props) => (props.end ? `1rem` : `5rem`)};
-    right: -81px;
-  }
-`;
-
-Line = styled.div`
-  position: absolute;
-  top: 0;
-  left: 10px;
-  bottom: 0;
-  right: -25px;
-
-  width: 2px;
-  background-image: linear-gradient(
-      to bottom,
-      ${(props) => props.pinColour1 || "black"} 0%,
-      ${(props) => props.pinColour1 || "black"} 50%,
-      ${(props) => props.pinColour2 || "gray"} 50%,
-      ${(props) => props.pinColour2 || "gray"} 100%
-    ),
-    repeating-linear-gradient(
-      to bottom,
-      transparent,
-      transparent 4px,
-      black 4px,
-      black 8px
-    );
-  background-blend-mode: src-in;
-
-  z-index: -1;
-
-  @media screen and (min-width: 768px) {
-    right: -81px;
-  }
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  z-index: 2;
+  cursor: pointer;
 `;
 
 const LineContainer = styled.div`
@@ -228,7 +173,6 @@ const TransferBooking = ({
     (state) => state.ItineraryStatus
   );
 
-
   useEffect(() => {
     setaddboking(booking?.user_selected);
   }, [booking?.user_selected]);
@@ -297,7 +241,7 @@ const TransferBooking = ({
       }
     } catch (err) {
       const errorMsg =
-            err?.response?.data?.errors?.[0]?.message?.[0] || err.message ;
+        err?.response?.data?.errors?.[0]?.message?.[0] || err.message;
       openNotification({
         type: "error",
         text: errorMsg,
@@ -363,250 +307,290 @@ const TransferBooking = ({
             <>
               {booking?.booking_type === "Flight" ? (
                 <>
-                <div className="absolute w-[20px] border border-black ml-4 mt-[27px]"></div>
-                <FlightBooking
-                  booking={booking}
-                  booking_id={booking_id}
-                  notificationText={notificationText}
-                  plan={plan}
-                  tripsPage={tripsPage}
-                  openNotification={openNotification}
-                  payment={payment}
-                  index={index}
-                  _changeFlightHandler={_changeFlightHandler}
-                  token={token}
-                  setShowLoginModal={setShowLoginModal}
-                  originCityId={originCityId}
-                  destinationCityId={destinationCityId}
-                  setShowDrawer={setShowDrawer}
-                  getPaymentHandler={getPaymentHandler}
-                />
+                  <div className="absolute w-[20px] border border-black ml-4 mt-[27px]"></div>
+                  <FlightBooking
+                    booking={booking}
+                    booking_id={booking_id}
+                    notificationText={notificationText}
+                    plan={plan}
+                    tripsPage={tripsPage}
+                    openNotification={openNotification}
+                    payment={payment}
+                    index={index}
+                    _changeFlightHandler={_changeFlightHandler}
+                    token={token}
+                    setShowLoginModal={setShowLoginModal}
+                    originCityId={originCityId}
+                    destinationCityId={destinationCityId}
+                    setShowDrawer={setShowDrawer}
+                    getPaymentHandler={getPaymentHandler}
+                  />
                 </>
               ) : (
                 <>
-                 <div className="absolute w-[20px] border border-black ml-4 mt-[27px]"></div>
-                <div className="mt-3 ml-1 md:ml-7 flex flex-col w-full">
-                 
-                  <div className=" w-full items-center">
-                    <div className="font-medium text-[15px] flex items-center gap-1">
-                      <div className="text-[#C5C1C1]">
-                        {getModeIcon(booking?.booking_type, 15)}
-                      </div>
-                      {isIntracity  ? booking?.transfer_type == "sightseeing" ? booking?.name: (
-                         (booking?.transfer_details?.source?.name || booking?.transfer_details?.source?.city_name) && (booking?.transfer_details?.destination?.name || booking?.transfer_details?.destination?.city_name) ? <>
-                          {booking?.booking_type} in{" "}
-                          {booking?.transfer_details?.source?.name || booking?.transfer_details?.source?.city_name}
-                        </> : <>
-                         <svg
-                            width="12"
-                            height="12"
-                            viewBox="0 0 12 12"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
-                              fill="#1F1F1F"
-                            />
-                          </svg>{" "} 
-                          {booking?.name}
-                        </>
-                      ) : isAirport ? 
-                      // booking?.transfer_details?.source?.name && booking?.transfer_details?.source?.city_name ? 
-                      // (
-                      //   <>
-                          
-                      //     {booking?.transfer_details?.source?.name}
-                      //     <svg
-                      //       width="12"
-                      //       height="12"
-                      //       viewBox="0 0 12 12"
-                      //       fill="none"
-                      //       xmlns="http://www.w3.org/2000/svg"
-                      //     >
-                      //       <path
-                      //         d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
-                      //         fill="#1F1F1F"
-                      //       />
-                      //     </svg>{" "} { booking?.transfer_details?.source?.city_name}
-                      //   </> ) 
-                        booking?.name
-                       : (
-                        (booking?.transfer_details?.source?.name || booking?.transfer_details?.source?.city_name) && (booking?.transfer_details?.destination?.name || booking?.transfer_details?.destination?.city_name) ? <>
-                          {booking?.transfer_details?.source?.name || booking?.transfer_details?.source?.city_name}{" "}
-                          <svg
-                            width="12"
-                            height="12"
-                            viewBox="0 0 12 12"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
-                              fill="#1F1F1F"
-                            />
-                          </svg>{" "} 
-                          {booking?.transfer_details?.destination?.name || booking?.transfer_details?.destination?.city_name}
-                        </> : <>
-                         <svg
-                            width="12"
-                            height="12"
-                            viewBox="0 0 12 12"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
-                              fill="#1F1F1F"
-                            />
-                          </svg>{" "} 
-                          {booking?.name}
-                        </>
-                      )}
-                    </div>
-                    <div className="text-[10px] ml-[20px]">
-                      Duration: {booking?.duration}
-                    </div>
-                  </div>
-
-                  <>
-                    <div
-                      id={booking?.id}
-                      className={`mb-2 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ${
-                        !isPageWide ? "w-full" : "max-w-[54vw]"
-                      }`}
-                    >
-                      <div className="flex flex-row items-start md:items-center justify-between gap-1 w-full">
-                        <div className="grid place-items-center md:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
-                          {booking?.booking_type === "Taxi" ? (
+                  <div className="absolute w-[20px] border border-black ml-4 mt-[27px]"></div>
+                  <div className="mt-3 ml-1 md:ml-7 flex flex-col w-full">
+                    <div className=" w-full items-center">
+                      <div className="font-medium text-[15px] flex items-center gap-1">
+                        <div className="text-[#C5C1C1]">
+                          {getModeIcon(booking?.booking_type, 15)}
+                        </div>
+                        {isIntracity ? (
+                          booking?.transfer_type == "sightseeing" ? (
+                            booking?.name
+                          ) : (booking?.transfer_details?.source?.name ||
+                              booking?.transfer_details?.source?.city_name) &&
+                            (booking?.transfer_details?.destination?.name ||
+                              booking?.transfer_details?.destination
+                                ?.city_name) ? (
                             <>
-                              {booking?.transfer_details?.quote?.taxi_category
-                                ?.image ? (
-                                <ImageLoader
-                                  className="object-contain border rounded-[11px]"
-                                  url={
-                                    booking?.transfer_details?.quote
-                                      ?.taxi_category?.image
-                                  }
-                                  leftalign
-                                  height={
-                                    booking?.image?.includes("gozo")
-                                      ? "3rem"
-                                      : "4rem"
-                                  }
-                                  //  width={"4rem"}
-                                  //  widthmobile="4rem"
-                                  onfail={handleTransferImageFailed}
-                                />
-                              ) : (
-                                <div className="bg-[#D9D9D9] mr-[0.8rem] rounded-[11px] p-[10px]">
-                                  <TransportIconFetcher
-                                    TransportMode={booking?.booking_type}
-                                    Instyle={{
-                                      fontSize: "2.75rem",
-                                    }}
-                                    classname={" h-[34px] w-[34px]"}
-                                    color="#000000"
-                                  />
-                                </div>
-                              )}
+                              {booking?.booking_type} in{" "}
+                              {booking?.transfer_details?.source?.name ||
+                                booking?.transfer_details?.source?.city_name}
                             </>
                           ) : (
-                            <div className="bg-[#D9D9D9] mr-[0.8rem] rounded-[11px] p-[10px]">
-                              <TransportIconFetcher
-                                TransportMode={booking?.booking_type}
-                                Instyle={{
-                                  fontSize: "2.75rem",
-                                }}
-                                classname={" h-[34px] w-[34px]"}
-                                color="#000000"
+                            <>
+                              <svg
+                                width="12"
+                                height="12"
+                                viewBox="0 0 12 12"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
+                                  fill="#1F1F1F"
+                                />
+                              </svg>{" "}
+                              {booking?.name}
+                            </>
+                          )
+                        ) : isAirport ? (
+                          // booking?.transfer_details?.source?.name && booking?.transfer_details?.source?.city_name ?
+                          // (
+                          //   <>
+
+                          //     {booking?.transfer_details?.source?.name}
+                          //     <svg
+                          //       width="12"
+                          //       height="12"
+                          //       viewBox="0 0 12 12"
+                          //       fill="none"
+                          //       xmlns="http://www.w3.org/2000/svg"
+                          //     >
+                          //       <path
+                          //         d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
+                          //         fill="#1F1F1F"
+                          //       />
+                          //     </svg>{" "} { booking?.transfer_details?.source?.city_name}
+                          //   </> )
+                          booking?.name
+                        ) : (booking?.transfer_details?.source?.name ||
+                            booking?.transfer_details?.source?.city_name) &&
+                          (booking?.transfer_details?.destination?.name ||
+                            booking?.transfer_details?.destination
+                              ?.city_name) ? (
+                          <>
+                            {booking?.transfer_details?.source?.name ||
+                              booking?.transfer_details?.source?.city_name}{" "}
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 12 12"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
+                                fill="#1F1F1F"
                               />
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex justify-between items-center w-full">
-                          <div className="flex flex-col  w-full">
-                            <div className="text-[16px] font-medium w-full">
-                              <>{booking?.name}</>
-                            </div>
-                            <div className="flex sm:text-sm text-[14px]  flex-row text-[#7A7A7A] font-light items-center">
-                              <>{booking?.type}</>
-                            </div>
+                            </svg>{" "}
+                            {booking?.transfer_details?.destination?.name ||
+                              booking?.transfer_details?.destination?.city_name}
+                          </>
+                        ) : (
+                          <>
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 12 12"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
+                                fill="#1F1F1F"
+                              />
+                            </svg>{" "}
+                            {booking?.name}
+                          </>
+                        )}
+                      </div>
+                      <div className="text-[10px] ml-[20px]">
+                        Duration: {booking?.duration}
+                      </div>
+                    </div>
 
-                            {booking?.transfer_details && (
-                              <div className="text-[#01202B] font-normal flex  justify-start items-center mt-1 flex-wrap">
-                                <span className="pr-1 sm:text-sm text-[0.82rem]">
-                                  Facilities:
-                                </span>
-                                <span className="flex items-center gap-1">
-                                  {(() => {
-                                    const details = [];
-
-                                    const seatingCapacity =
+                    <>
+                      <div
+                        id={booking?.id}
+                        className={`mb-2 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ${
+                          !isPageWide ? "w-full" : "max-w-[54vw]"
+                        }`}
+                      >
+                        <div className="flex flex-row items-start md:items-center justify-between gap-1 w-full">
+                          <div className="grid place-items-center md:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
+                            {booking?.booking_type === "Taxi" ? (
+                              <>
+                                {booking?.transfer_details?.quote?.taxi_category
+                                  ?.image ? (
+                                  <ImageLoader
+                                    className="object-contain border rounded-[11px]"
+                                    url={
                                       booking?.transfer_details?.quote
-                                        ?.taxi_category?.seating_capacity ??
-                                      booking?.number_of_adults +
-                                        booking?.number_of_children +
-                                        booking?.number_of_infants;
-
-                                    if (seatingCapacity) {
-                                      details.push(
-                                        <span
-                                          key="seater"
-                                          className="sm:text-sm text-[0.74rem] font-normal"
-                                        >
-                                          {seatingCapacity} Seat
-                                          {seatingCapacity > 1 ? "s" : ""}
-                                        </span>
-                                      );
+                                        ?.taxi_category?.image
                                     }
-
-                                    const bagCapacity =
-                                      booking?.transfer_details?.quote
-                                        ?.taxi_category?.bag_capacity;
-                                    if (bagCapacity > 0) {
-                                      details.push(
-                                        <span
-                                          key="bags"
-                                          className="sm:text-sm text-[0.74rem] font-normal"
-                                        >
-                                          {bagCapacity} Luggage bags
-                                        </span>
-                                      );
+                                    leftalign
+                                    height={
+                                      booking?.image?.includes("gozo")
+                                        ? "3rem"
+                                        : "4rem"
                                     }
-
-                                    const fuelType =
-                                      booking?.transfer_details?.quote
-                                        ?.taxi_category?.fuel_type;
-                                    if (fuelType) {
-                                      details.push(
-                                        <span
-                                          key="fuel"
-                                          className="sm:text-sm text-[0.74rem] font-normal"
-                                        >
-                                          Fuel Type: {fuelType}
-                                        </span>
-                                      );
-                                    }
-
-                                    return details.map((item, index) => (
-                                      <React.Fragment key={index}>
-                                        {item}
-                                        {index !== details.length - 1 && (
-                                          <span className="sm:text-sm text-[0.74rem] font-normal mx-1">
-                                            |
-                                          </span>
-                                        )}
-                                      </React.Fragment>
-                                    ));
-                                  })()}
-                                </span>
+                                    //  width={"4rem"}
+                                    //  widthmobile="4rem"
+                                    onfail={handleTransferImageFailed}
+                                  />
+                                ) : (
+                                  <div className="bg-[#D9D9D9] mr-[0.8rem] rounded-[11px] p-[10px]">
+                                    <TransportIconFetcher
+                                      TransportMode={booking?.booking_type}
+                                      Instyle={{
+                                        fontSize: "2.75rem",
+                                      }}
+                                      classname={" h-[34px] w-[34px]"}
+                                      color="#000000"
+                                    />
+                                  </div>
+                                )}
+                              </>
+                            ) : (
+                              <div className="bg-[#D9D9D9] mr-[0.8rem] rounded-[11px] p-[10px]">
+                                <TransportIconFetcher
+                                  TransportMode={booking?.booking_type}
+                                  Instyle={{
+                                    fontSize: "2.75rem",
+                                  }}
+                                  classname={" h-[34px] w-[34px]"}
+                                  color="#000000"
+                                />
                               </div>
                             )}
                           </div>
+                          <div className="flex justify-between items-center w-full">
+                            <div className="flex flex-col  w-full">
+                              <div className="text-[16px] font-medium w-full">
+                                <>{booking?.name}</>
+                              </div>
+                              <div className="flex sm:text-sm text-[14px]  flex-row text-[#7A7A7A] font-light items-center">
+                                <>{booking?.type}</>
+                              </div>
+
+                              {booking?.transfer_details && (
+                                <div className="text-[#01202B] font-normal flex  justify-start items-center mt-1 flex-wrap">
+                                  <span className="pr-1 sm:text-sm text-[0.82rem]">
+                                    Facilities:
+                                  </span>
+                                  <span className="flex items-center gap-1">
+                                    {(() => {
+                                      const details = [];
+
+                                      const seatingCapacity =
+                                        booking?.transfer_details?.quote
+                                          ?.taxi_category?.seating_capacity ??
+                                        booking?.number_of_adults +
+                                          booking?.number_of_children +
+                                          booking?.number_of_infants;
+
+                                      if (seatingCapacity) {
+                                        details.push(
+                                          <span
+                                            key="seater"
+                                            className="sm:text-sm text-[0.74rem] font-normal"
+                                          >
+                                            {seatingCapacity} Seat
+                                            {seatingCapacity > 1 ? "s" : ""}
+                                          </span>
+                                        );
+                                      }
+
+                                      const bagCapacity =
+                                        booking?.transfer_details?.quote
+                                          ?.taxi_category?.bag_capacity;
+                                      if (bagCapacity > 0) {
+                                        details.push(
+                                          <span
+                                            key="bags"
+                                            className="sm:text-sm text-[0.74rem] font-normal"
+                                          >
+                                            {bagCapacity} Luggage bags
+                                          </span>
+                                        );
+                                      }
+
+                                      const fuelType =
+                                        booking?.transfer_details?.quote
+                                          ?.taxi_category?.fuel_type;
+                                      if (fuelType) {
+                                        details.push(
+                                          <span
+                                            key="fuel"
+                                            className="sm:text-sm text-[0.74rem] font-normal"
+                                          >
+                                            Fuel Type: {fuelType}
+                                          </span>
+                                        );
+                                      }
+
+                                      return details.map((item, index) => (
+                                        <React.Fragment key={index}>
+                                          {item}
+                                          {index !== details.length - 1 && (
+                                            <span className="sm:text-sm text-[0.74rem] font-normal mx-1">
+                                              |
+                                            </span>
+                                          )}
+                                        </React.Fragment>
+                                      ));
+                                    })()}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                            {!payment?.paid_user && (
+                              <>
+                                <div className="pr-2">
+                                  <button
+                                    onClick={() => {
+                                      handleViewDetails(
+                                        router?.query?.id,
+                                        booking?.id,
+                                        booking?.booking_type.toLowerCase()
+                                      );
+                                      setShowVehicleDrawer(true);
+                                    }}
+                                    className="hidden md:!block w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                                  >
+                                    View Details
+                                  </button>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                        <div className="md:hidden w-full">
                           {!payment?.paid_user && (
                             <>
-                              <div className="pr-2">
+                              <div className="pr-2 w-full">
                                 <button
                                   onClick={() => {
                                     handleViewDetails(
@@ -616,7 +600,7 @@ const TransferBooking = ({
                                     );
                                     setShowVehicleDrawer(true);
                                   }}
-                                  className="hidden md:!block w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                                  className="md:hidden mt-2 w-full text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                                 >
                                   View Details
                                 </button>
@@ -625,70 +609,57 @@ const TransferBooking = ({
                           )}
                         </div>
                       </div>
-                      <div className="md:hidden w-full">
-                        {!payment?.paid_user && (
-                          <>
-                            <div className="pr-2 w-full">
-                              <button
-                                onClick={() => {
-                                  handleViewDetails(
-                                    router?.query?.id,
-                                    booking?.id,
-                                    booking?.booking_type.toLowerCase()
-                                  );
-                                  setShowVehicleDrawer(true);
-                                }}
-                                className="md:hidden mt-2 w-full text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
-                              >
-                                View Details
-                              </button>
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </>
+                    </>
 
-                  <Drawer
-                    show={showVehicleDrawer}
-                    anchor="right"
-                    mobileWidth="100vw"
-                    width="50vw"
-                    style={1503}
-                    className="font-lexend"
-                    onHide={() => setShowVehicleDrawer(false)}
-                  >
-                    {loading || !vehicleDetails ? (
-                      <VehicleDetailLoader
-                        setHandleShow={setShowVehicleDrawer}
-                      />
-                    ) : vehicleDetails?.booking_type?.toLowerCase() ===
-                        "taxi" ||
-                      vehicleDetails?.transfer_details?.mode === "taxi" ? (
-                      <TaxiDetailModal
-                        data={vehicleDetails}
-                        loading={loading}
-                        setIsOpen={setShowVehicleDrawer}
-                        handleDelete={handleDelete}
-                        setHandleShow={setShowVehicleDrawer}
-                        booking={booking}
-                        setShowDrawer={setShowDrawer}
-                        noChange={isIntracity||isAirport}
-                      />
-                    ) : (
-                      <VehicleDetailModal
-                        data={vehicleDetails}
-                        loading={loading}
-                        setIsOpen={setShowVehicleDrawer}
-                        handleDelete={handleDelete}
-                        setHandleShow={setShowVehicleDrawer}
-                        booking={booking}
-                        setShowDrawer={setShowDrawer}
-                        noChange={isIntracity||isAirport}
-                      />
-                    )}
-                  </Drawer>
-                </div>
+                    <Drawer
+                      show={showVehicleDrawer}
+                      anchor="right"
+                      mobileWidth="100vw"
+                      width="50vw"
+                      style={1503}
+                      className="font-lexend"
+                      onHide={() => setShowVehicleDrawer(false)}
+                    >
+                      {loading || !vehicleDetails ? (
+                        <VehicleDetailLoader
+                          setHandleShow={setShowVehicleDrawer}
+                        />
+                      ) : vehicleDetails?.booking_type?.toLowerCase() ===
+                          "taxi" ||
+                        vehicleDetails?.transfer_details?.mode === "taxi" ? (
+                        <TaxiDetailModal
+                          data={vehicleDetails}
+                          loading={loading}
+                          setIsOpen={setShowVehicleDrawer}
+                          handleDelete={handleDelete}
+                          setHandleShow={setShowVehicleDrawer}
+                          booking={booking}
+                          setShowDrawer={setShowDrawer}
+                          noChange={isIntracity || isAirport}
+                        />
+                      ) : (
+                        <VehicleDetailModal
+                          data={vehicleDetails}
+                          loading={loading}
+                          setIsOpen={setShowVehicleDrawer}
+                          handleDelete={handleDelete}
+                          setHandleShow={setShowVehicleDrawer}
+                          booking={booking}
+                          setShowDrawer={setShowDrawer}
+                          noChange={isIntracity || isAirport}
+                        />
+                      )}
+                     {!isPageWide && (
+                          <FloatingView>
+                            <TbArrowBack
+                              style={{ height: "28px", width: "28px" }}
+                              cursor={"pointer"}
+                              onClick={() => setShowVehicleDrawer(false)}
+                            />
+                          </FloatingView>
+                        )}
+                    </Drawer>
+                  </div>
                 </>
               )}
               <TransferEditDrawer
@@ -768,7 +739,7 @@ const TransferBooking = ({
             )}
             <TransferEditDrawer
               mercury
-               booking_id={selectedBooking?.id || booking_id}
+              booking_id={selectedBooking?.id || booking_id}
               addOrEdit={"transferAdd"}
               showDrawer={showDrawer}
               setShowDrawer={setShowDrawer}
@@ -802,273 +773,308 @@ const TransferBooking = ({
             />
           </div>
         )
-      ) : 
+      ) : (
         <>
-       { booking?.children?.map((book, index) => (
-
-          <ComboContainer>
-            <div className="relative">
-              <LineContainer>
-                <HalfLine Transfers={Transfer} color={"#000000"} />
-                <HalfLine Transfers={Transfer} color={"#000000"} />
-              </LineContainer>
-            </div>
-            {book?.booking_type === "Flight" ? (
-              <>
-                <div className="absolute w-[20px] border border-black ml-4 mt-[27px]"></div>
-                <FlightBooking
-                  key={index}
-                  booking={book}
-                  notificationText={notificationText}
-                  plan={plan}
-                  tripsPage={tripsPage}
-                  openNotification={openNotification}
-                  payment={payment}
-                  index={index}
-                  _changeFlightHandler={_changeFlightHandler}
-                  token={token}
-                  setShowLoginModal={setShowLoginModal}
-                  originCityId={originCityId}
-                  destinationCityId={destinationCityId}
-                  type={"combo"}
-                  setShowDrawer={setShowDrawer}
-                  getPaymentHandler={getPaymentHandler}
-                />
-              </>
-            ) : (
-              <>
-                <div className="absolute w-[20px] border border-black ml-4 mt-[28px]"></div>
-                <div
-                  key={index}
-                  className="mt-3 ml-1 md:ml-7 flex flex-col w-full"
-                >
-                  <div className=" w-full items-center">
-                    <div className="font-medium text-[15px]  inline flex items-center gap-1">
-                      <div className="text-[#C5C1C1]">
-                        {getModeIcon(book?.booking_type, 15)}
-                      </div>
-                        {isIntracity  ? book?.transfer_type == "sightseeing" ? book?.name  : (
-                         (book?.transfer_details?.source?.name || book?.transfer_details?.source?.city_name) && (book?.transfer_details?.destination?.name || book?.transfer_details?.destination?.city_name) && <>
-                          {book?.booking_type} in{" "}
-                          {book?.transfer_details?.source?.name || book?.transfer_details?.source?.city_name}
-                        </>
-                      ) : isAirport ? (
-                        <>
-                        {book?.name}
-                          {/* Airport {AirportTransferType} in{" "}
-                          {book?.transfer_details?.source?.name || book?.transfer_details?.source?.city_name} */}
-                        </>
-                      ) : (
-                        (book?.transfer_details?.source?.name || book?.transfer_details?.source?.city_name) && (book?.transfer_details?.destination?.name || book?.transfer_details?.destination?.city_name) ? <>
-                          {book?.transfer_details?.source?.name || book?.transfer_details?.source?.city_name}{" "}
-                          <svg
-                            width="12"
-                            height="12"
-                            viewBox="0 0 12 12"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
-                              fill="#1F1F1F"
-                            />
-                          </svg>{" "} 
-                          {book?.transfer_details?.destination?.name || book?.transfer_details?.destination?.city_name}
-                        </> : <>
-                         <svg
-                            width="12"
-                            height="12"
-                            viewBox="0 0 12 12"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
-                              fill="#1F1F1F"
-                            />
-                          </svg>{" "} 
-                          {book?.name}
-                        </>
-                      )}
-                    </div>
-                    <div className="text-[10px] ml-[20px]">
-                      Duration: {book?.duration}
-                    </div>
-                  </div>
-
+          {booking?.children?.map((book, index) => (
+            <ComboContainer>
+              <div className="relative">
+                <LineContainer>
+                  <HalfLine Transfers={Transfer} color={"#000000"} />
+                  <HalfLine Transfers={Transfer} color={"#000000"} />
+                </LineContainer>
+              </div>
+              {book?.booking_type === "Flight" ? (
+                <>
+                  <div className="absolute w-[20px] border border-black ml-4 mt-[27px]"></div>
+                  <FlightBooking
+                    key={index}
+                    booking={book}
+                    notificationText={notificationText}
+                    plan={plan}
+                    tripsPage={tripsPage}
+                    openNotification={openNotification}
+                    payment={payment}
+                    index={index}
+                    _changeFlightHandler={_changeFlightHandler}
+                    token={token}
+                    setShowLoginModal={setShowLoginModal}
+                    originCityId={originCityId}
+                    destinationCityId={destinationCityId}
+                    type={"combo"}
+                    setShowDrawer={setShowDrawer}
+                    getPaymentHandler={getPaymentHandler}
+                  />
+                </>
+              ) : (
+                <>
+                  <div className="absolute w-[20px] border border-black ml-4 mt-[28px]"></div>
                   <div
-                    id={book?.id}
-                    className={`mb-2 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ${
-                      !isPageWide ? "w-full" : "max-w-[54vw]"
-                    }`}
+                    key={index}
+                    className="mt-3 ml-1 md:ml-7 flex flex-col w-full"
                   >
-                    <div className="flex flex-row items-center justify-between gap-1 w-full">
-                      <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
-                        {book?.booking_type === "Taxi" ? (
-                          <ImageLoader
-                            className="object-contain border rounded-[11px]"
-                            url={
-                              book?.transfer_details?.quote?.taxi_category
-                                ?.image
-                            }
-                            leftalign
-                            height={
-                              book?.image?.includes("gozo") ? "3rem" : "4rem"
-                            }
-                            // width={"4rem"}
-                            // widthmobile="4rem"
-                            onfail={handleTransferImageFailed}
-                          />
+                    <div className=" w-full items-center">
+                      <div className="font-medium text-[15px]  inline flex items-center gap-1">
+                        <div className="text-[#C5C1C1]">
+                          {getModeIcon(book?.booking_type, 15)}
+                        </div>
+                        {isIntracity ? (
+                          book?.transfer_type == "sightseeing" ? (
+                            book?.name
+                          ) : (
+                            (book?.transfer_details?.source?.name ||
+                              book?.transfer_details?.source?.city_name) &&
+                            (book?.transfer_details?.destination?.name ||
+                              book?.transfer_details?.destination
+                                ?.city_name) && (
+                              <>
+                                {book?.booking_type} in{" "}
+                                {book?.transfer_details?.source?.name ||
+                                  book?.transfer_details?.source?.city_name}
+                              </>
+                            )
+                          )
+                        ) : isAirport ? (
+                          <>
+                            {book?.name}
+                            {/* Airport {AirportTransferType} in{" "}
+                          {book?.transfer_details?.source?.name || book?.transfer_details?.source?.city_name} */}
+                          </>
+                        ) : (book?.transfer_details?.source?.name ||
+                            book?.transfer_details?.source?.city_name) &&
+                          (book?.transfer_details?.destination?.name ||
+                            book?.transfer_details?.destination?.city_name) ? (
+                          <>
+                            {book?.transfer_details?.source?.name ||
+                              book?.transfer_details?.source?.city_name}{" "}
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 12 12"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
+                                fill="#1F1F1F"
+                              />
+                            </svg>{" "}
+                            {book?.transfer_details?.destination?.name ||
+                              book?.transfer_details?.destination?.city_name}
+                          </>
                         ) : (
-                          <div className="bg-[#D9D9D9] mr-[0.8rem] rounded-[11px] p-[10px]">
-                            <TransportIconFetcher
-                              TransportMode={book?.booking_type}
-                              Instyle={{
-                                fontSize: "2.75rem",
-                              }}
-                              classname={" h-[34px] w-[34px]"}
-                              color="#000000"
-                            />
-                          </div>
+                          <>
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 12 12"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
+                                fill="#1F1F1F"
+                              />
+                            </svg>{" "}
+                            {book?.name}
+                          </>
                         )}
                       </div>
-                      <div className="flex justify-between items-center w-full">
-                        <div className="flex flex-col  w-full">
-                          <div className="text-[16px] font-medium w-full">
-                            {book?.booking_type == "Taxi" ? (
-                              book?.transfer_details &&
-                              book?.transfer_details.gozo &&
-                              book?.transfer_details.gozo.model ? (
-                                isPageWide ? (
-                                  book?.transfer_details.gozo.model
-                                ) : (
-                                  truncateString(
-                                    book?.transfer_details.gozo.model,
-                                    25
-                                  )
-                                )
-                              ) : (
-                                <div className="w-full">{book?.name}</div>
-                              )
-                            ) : (
-                              <>{book?.name}</>
-                            )}
-                          </div>
-                          <div className="flex sm:text-sm text-[14px]  flex-row text-[#7A7A7A] font-light items-center">
-                            {book?.booking_type == "Taxi" ? (
-                              <>
-                                {book?.transfer_details?.quote?.taxi_category
-                                  ?.type && (
-                                  <div>
-                                    {book?.transfer_details?.quote
-                                      ?.taxi_category?.model_name ||
-                                      book?.transfer_details?.quote
-                                        ?.taxi_category?.model_name}{" "}
-                                    &nbsp;
-                                    {"("}
-                                    {book?.type}
-                                    {")"}
-                                  </div>
-                                )}
-                              </>
-                            ) : (
-                              <>{book?.type}</>
-                            )}
-                          </div>
+                      <div className="text-[10px] ml-[20px]">
+                        Duration: {book?.duration}
+                      </div>
+                    </div>
 
-                          {book?.transfer_details && (
-                            <div className="text-[#01202B] font-normal flex  justify-start items-center mt-1 flex-wrap">
-                              <span className="pr-1 sm:text-sm text-[0.82rem]">
-                                Facilities:
-                              </span>
-                              <span className="flex items-center gap-1">
-                                {(() => {
-                                  const details = [];
-
-                                  const seatingCapacity =
-                                    book?.transfer_details?.quote?.taxi_category
-                                      ?.seating_capacity ??
-                                    book?.number_of_adults +
-                                      book?.number_of_children +
-                                      book?.number_of_infants;
-
-                                  if (seatingCapacity) {
-                                    details.push(
-                                      <span
-                                        key="seater"
-                                        className="sm:text-sm text-[0.74rem] font-normal"
-                                      >
-                                        {seatingCapacity} Seat
-                                        {seatingCapacity > 1 ? "s" : ""}
-                                      </span>
-                                    );
-                                  }
-
-                                  const bagCapacity =
-                                    book?.transfer_details?.quote?.taxi_category
-                                      ?.bag_capacity;
-                                  if (bagCapacity > 0) {
-                                    details.push(
-                                      <span
-                                        key="bags"
-                                        className="sm:text-sm text-[0.74rem] font-normal"
-                                      >
-                                        {bagCapacity} Luggage bags
-                                      </span>
-                                    );
-                                  }
-
-                                  const fuelType =
-                                    book?.transfer_details?.quote?.taxi_category
-                                      ?.fuel_type;
-                                  if (fuelType) {
-                                    details.push(
-                                      <span
-                                        key="fuel"
-                                        className="sm:text-sm text-[0.74rem] font-normal"
-                                      >
-                                        Fuel Type: {fuelType}
-                                      </span>
-                                    );
-                                  }
-
-                                  return details.map((item, index) => (
-                                    <React.Fragment key={index}>
-                                      {item}
-                                      {index !== details.length - 1 && (
-                                        <span className="sm:text-sm text-[0.74rem] font-normal mx-1">
-                                          |
-                                        </span>
-                                      )}
-                                    </React.Fragment>
-                                  ));
-                                })()}
-                              </span>
+                    <div
+                      id={book?.id}
+                      className={`mb-2 mt-3 w-full flex flex-col lg:flex-row lg:items-center space-y-3 items-start justify-between py-[30px] cursor-pointer relative shadow-sm rounded-2xl transition-all border-[1px] hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA]  hover:border-[#F7E700] shadow-[#ECEAEA] lg:p-3 p-2 ${
+                        !isPageWide ? "w-full" : "max-w-[54vw]"
+                      }`}
+                    >
+                      <div className="flex flex-row items-center justify-between gap-1 w-full">
+                        <div className="grid place-items-center lg:min-w-[6rem] min-w-[4rem] lg:min-h-[6rem] min-h-[4rem] rounded-2xl">
+                          {book?.booking_type === "Taxi" ? (
+                            <ImageLoader
+                              className="object-contain border rounded-[11px]"
+                              url={
+                                book?.transfer_details?.quote?.taxi_category
+                                  ?.image
+                              }
+                              leftalign
+                              height={
+                                book?.image?.includes("gozo") ? "3rem" : "4rem"
+                              }
+                              // width={"4rem"}
+                              // widthmobile="4rem"
+                              onfail={handleTransferImageFailed}
+                            />
+                          ) : (
+                            <div className="bg-[#D9D9D9] mr-[0.8rem] rounded-[11px] p-[10px]">
+                              <TransportIconFetcher
+                                TransportMode={book?.booking_type}
+                                Instyle={{
+                                  fontSize: "2.75rem",
+                                }}
+                                classname={" h-[34px] w-[34px]"}
+                                color="#000000"
+                              />
                             </div>
                           )}
                         </div>
-                        {!payment?.paid_user && (
-                          <div className="hidden md:!block">
-                            {book?.booking_type === "Taxi" ? (
-                              <div className=" flex flex-row items-center justify-end cursor-pointer pr-2">
-                                {addbooking ? (
-                                  <button
-                                    onClick={() => {
-                                      handleViewDetails(
-                                        router?.query?.id,
-                                        book?.id,
-                                        "combo"
-                                        // book?.booking_type.toLowerCase()
-                                      );
-                                    }}
-                                    className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
-                                  >
-                                    {isDesktop ? "Change Taxi" : "Change"}
-                                  </button>
+                        <div className="flex justify-between items-center w-full">
+                          <div className="flex flex-col  w-full">
+                            <div className="text-[16px] font-medium w-full">
+                              {book?.booking_type == "Taxi" ? (
+                                book?.transfer_details &&
+                                book?.transfer_details.gozo &&
+                                book?.transfer_details.gozo.model ? (
+                                  isPageWide ? (
+                                    book?.transfer_details.gozo.model
+                                  ) : (
+                                    truncateString(
+                                      book?.transfer_details.gozo.model,
+                                      25
+                                    )
+                                  )
                                 ) : (
+                                  <div className="w-full">{book?.name}</div>
+                                )
+                              ) : (
+                                <>{book?.name}</>
+                              )}
+                            </div>
+                            <div className="flex sm:text-sm text-[14px]  flex-row text-[#7A7A7A] font-light items-center">
+                              {book?.booking_type == "Taxi" ? (
+                                <>
+                                  {book?.transfer_details?.quote?.taxi_category
+                                    ?.type && (
+                                    <div>
+                                      {book?.transfer_details?.quote
+                                        ?.taxi_category?.model_name ||
+                                        book?.transfer_details?.quote
+                                          ?.taxi_category?.model_name}{" "}
+                                      &nbsp;
+                                      {"("}
+                                      {book?.type}
+                                      {")"}
+                                    </div>
+                                  )}
+                                </>
+                              ) : (
+                                <>{book?.type}</>
+                              )}
+                            </div>
+
+                            {book?.transfer_details && (
+                              <div className="text-[#01202B] font-normal flex  justify-start items-center mt-1 flex-wrap">
+                                <span className="pr-1 sm:text-sm text-[0.82rem]">
+                                  Facilities:
+                                </span>
+                                <span className="flex items-center gap-1">
+                                  {(() => {
+                                    const details = [];
+
+                                    const seatingCapacity =
+                                      book?.transfer_details?.quote
+                                        ?.taxi_category?.seating_capacity ??
+                                      book?.number_of_adults +
+                                        book?.number_of_children +
+                                        book?.number_of_infants;
+
+                                    if (seatingCapacity) {
+                                      details.push(
+                                        <span
+                                          key="seater"
+                                          className="sm:text-sm text-[0.74rem] font-normal"
+                                        >
+                                          {seatingCapacity} Seat
+                                          {seatingCapacity > 1 ? "s" : ""}
+                                        </span>
+                                      );
+                                    }
+
+                                    const bagCapacity =
+                                      book?.transfer_details?.quote
+                                        ?.taxi_category?.bag_capacity;
+                                    if (bagCapacity > 0) {
+                                      details.push(
+                                        <span
+                                          key="bags"
+                                          className="sm:text-sm text-[0.74rem] font-normal"
+                                        >
+                                          {bagCapacity} Luggage bags
+                                        </span>
+                                      );
+                                    }
+
+                                    const fuelType =
+                                      book?.transfer_details?.quote
+                                        ?.taxi_category?.fuel_type;
+                                    if (fuelType) {
+                                      details.push(
+                                        <span
+                                          key="fuel"
+                                          className="sm:text-sm text-[0.74rem] font-normal"
+                                        >
+                                          Fuel Type: {fuelType}
+                                        </span>
+                                      );
+                                    }
+
+                                    return details.map((item, index) => (
+                                      <React.Fragment key={index}>
+                                        {item}
+                                        {index !== details.length - 1 && (
+                                          <span className="sm:text-sm text-[0.74rem] font-normal mx-1">
+                                            |
+                                          </span>
+                                        )}
+                                      </React.Fragment>
+                                    ));
+                                  })()}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                          {!payment?.paid_user && (
+                            <div className="hidden md:!block">
+                              {book?.booking_type === "Taxi" ? (
+                                <div className=" flex flex-row items-center justify-end cursor-pointer pr-2">
+                                  {addbooking ? (
+                                    <button
+                                      onClick={() => {
+                                        handleViewDetails(
+                                          router?.query?.id,
+                                          book?.id,
+                                          "combo"
+                                          // book?.booking_type.toLowerCase()
+                                        );
+                                      }}
+                                      className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
+                                    >
+                                      {isDesktop ? "Change Taxi" : "Change"}
+                                    </button>
+                                  ) : (
+                                    <button
+                                      onClick={() => {
+                                        console.log("clicked");
+                                        handleViewDetails(
+                                          router?.query?.id,
+                                          book?.id,
+                                          book?.booking_type.toLowerCase()
+                                        );
+                                        setShowVehicleDrawer(true);
+                                      }}
+                                      className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                                    >
+                                      {/* Add Taxi */}
+                                      View Details
+                                    </button>
+                                  )}
+                                </div>
+                              ) : (
+                                <div className="pr-2">
                                   <button
                                     onClick={() => {
-                                      console.log("clicked");
                                       handleViewDetails(
                                         router?.query?.id,
                                         book?.id,
@@ -1081,152 +1087,137 @@ const TransferBooking = ({
                                     {/* Add Taxi */}
                                     View Details
                                   </button>
-                                )}
-                              </div>
-                            ) : (
-                              <div className="pr-2">
-                                <button
-                                  onClick={() => {
-                                    handleViewDetails(
-                                      router?.query?.id,
-                                      book?.id,
-                                      book?.booking_type.toLowerCase()
-                                    );
-                                    setShowVehicleDrawer(true);
-                                  }}
-                                  className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
-                                >
-                                  {/* Add Taxi */}
-                                  View Details
-                                </button>
-                              </div>
-                            )}
-                          </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="md:hidden w-full">
+                        {!payment?.paid_user && (
+                          <>
+                            <div className="pr-2 w-full">
+                              <button
+                                onClick={() => {
+                                  handleViewDetails(
+                                    router?.query?.id,
+                                    book?.id,
+                                    book?.booking_type.toLowerCase()
+                                  );
+                                  setShowVehicleDrawer(true);
+                                }}
+                                className="md:hidden mt-2 w-full text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                              >
+                                View Details
+                              </button>
+                            </div>
+                          </>
                         )}
                       </div>
                     </div>
-                    <div className="md:hidden w-full">
-                      {!payment?.paid_user && (
-                        <>
-                          <div className="pr-2 w-full">
-                            <button
-                              onClick={() => {
-                                handleViewDetails(
-                                  router?.query?.id,
-                                  book?.id,
-                                  book?.booking_type.toLowerCase()
-                                );
-                                setShowVehicleDrawer(true);
-                              }}
-                              className="md:hidden mt-2 w-full text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
-                            >
-                              View Details
-                            </button>
-                          </div>
-                        </>
-                      )}
+                    <div className="h-full">
+                      <Drawer
+                        show={showVehicleDrawer}
+                        anchor="right"
+                        mobileWidth="100vw"
+                        width="50vw"
+                        style={1503}
+                        className="font-lexend"
+                        onHide={() => setShowVehicleDrawer(false)}
+                      >
+                        {loading ? (
+                          <>
+                            <VehicleDetailLoader
+                              setHandleShow={setShowVehicleDrawer}
+                            />
+                          </>
+                        ) : (
+                          <>
+                            {vehicleDetails?.booking_type == "Taxi" ? (
+                              <TaxiDetailModal
+                                data={vehicleDetails}
+                                loading={loading}
+                                setIsOpen={setShowVehicleDrawer}
+                                handleDelete={handleDelete}
+                                setHandleShow={setShowVehicleDrawer}
+                                booking={booking}
+                                type={"combo"}
+                                setShowDrawer={setShowDrawer}
+                                noChange={isIntracity || isAirport}
+                                // noChange={true}
+                              />
+                            ) : (
+                              <VehicleDetailModal
+                                data={vehicleDetails}
+                                loading={loading}
+                                setIsOpen={setShowVehicleDrawer}
+                                handleDelete={handleDelete}
+                                setHandleShow={setShowVehicleDrawer}
+                                booking={booking}
+                                type={"combo"}
+                                setShowDrawer={setShowDrawer}
+                                noChange={isIntracity || isAirport}
+                              />
+                            )}
+                          </>
+                        )}
+                        {!isPageWide && (
+                          <FloatingView>
+                            <TbArrowBack
+                              style={{ height: "28px", width: "28px" }}
+                              cursor={"pointer"}
+                              onClick={() => setShowVehicleDrawer(false)}
+                            />
+                          </FloatingView>
+                        )}
+                      </Drawer>
                     </div>
                   </div>
-
-                  <Drawer
-                    show={showVehicleDrawer}
-                    anchor="right"
-                    mobileWidth="100vw"
-                    width="50vw"
-                    style={1503}
-                    className="font-lexend"
-                    onHide={() => setShowVehicleDrawer(false)}
-                  >
-                    {loading ? (
-                      <>
-                        <VehicleDetailLoader
-                          setHandleShow={setShowVehicleDrawer}
-                        />
-                      </>
-                    ) : (
-                      <>
-                        {vehicleDetails?.booking_type == "Taxi" ? (
-                          <TaxiDetailModal
-                            data={vehicleDetails}
-                            loading={loading}
-                            setIsOpen={setShowVehicleDrawer}
-                            handleDelete={handleDelete}
-                            setHandleShow={setShowVehicleDrawer}
-                            booking={booking}
-                            type={"combo"}
-                            setShowDrawer={setShowDrawer}
-                            noChange={isIntracity||isAirport}
-                            // noChange={true}
-                          />
-                        ) : (
-                          <VehicleDetailModal
-                            data={vehicleDetails}
-                            loading={loading}
-                            setIsOpen={setShowVehicleDrawer}
-                            handleDelete={handleDelete}
-                            setHandleShow={setShowVehicleDrawer}
-                            booking={booking}
-                            type={"combo"}
-                            setShowDrawer={setShowDrawer}
-                            noChange={isIntracity||isAirport}
-                          />
-                        )}
-                      </>
-                    )}
-                  </Drawer>
-                </div>
-              </>
-            )}
-
-            
-          </ComboContainer>
-          
-        ))
-        
-      
-        }
-        <TransferEditDrawer
-              mercury
-              addOrEdit={"transferAdd"}
-               booking_id={selectedBooking?.id || booking_id}
-              showDrawer={showDrawer}
-              setShowDrawer={setShowDrawer}
-              selectedTransferHeading={origin}
-              origin={origin?.id != undefined ? origin?.id : id}
-              destination={destination?.id != undefined ? destination?.id : id}
-              check_in={check_in}
-              routeId={id}
-              _updateTaxiBookingHandler={_updateTaxiBookingHandler}
-              city={
-                origin?.name != undefined
-                  ? origin?.name || origin?.city_name
-                  : null
-              }
-              dcity={
-                destination?.name != undefined
-                  ? destination?.name || destination?.city_name
-                  : null
-              }
-              oCityData={oCityData}
-              dCityData={dCityData}
-              selectedBooking={selectedBooking}
-              setSelectedBooking={setSelectedBooking}
-              originCityId={originCityId}
-              destinationCityId={destinationCityId}
-              getPaymentHandler={getPaymentHandler}
-              _updateFlightBookingHandler={_updateFlightBookingHandler}
-              _updatePaymentHandler={_updatePaymentHandler}
-              setShowLoginModal={setShowLoginModal}
-              origin_itinerary_city_id={
-                oCityData?.id || oCityData?.gmaps_place_id
-              }
-              destination_itinerary_city_id={
-                dCityData?.id || dCityData?.gmaps_place_id
-              }
-            />
-      </>
-
-      }
+                </>
+              )}
+            </ComboContainer>
+          ))}
+          <TransferEditDrawer
+            mercury
+            addOrEdit={"transferAdd"}
+            booking_id={selectedBooking?.id || booking_id}
+            showDrawer={showDrawer}
+            setShowDrawer={setShowDrawer}
+            selectedTransferHeading={origin}
+            origin={origin?.id != undefined ? origin?.id : id}
+            destination={destination?.id != undefined ? destination?.id : id}
+            check_in={check_in}
+            routeId={id}
+            _updateTaxiBookingHandler={_updateTaxiBookingHandler}
+            city={
+              origin?.name != undefined
+                ? origin?.name || origin?.city_name
+                : null
+            }
+            dcity={
+              destination?.name != undefined
+                ? destination?.name || destination?.city_name
+                : null
+            }
+            oCityData={oCityData}
+            dCityData={dCityData}
+            selectedBooking={selectedBooking}
+            setSelectedBooking={setSelectedBooking}
+            originCityId={originCityId}
+            destinationCityId={destinationCityId}
+            getPaymentHandler={getPaymentHandler}
+            _updateFlightBookingHandler={_updateFlightBookingHandler}
+            _updatePaymentHandler={_updatePaymentHandler}
+            setShowLoginModal={setShowLoginModal}
+            origin_itinerary_city_id={
+              oCityData?.id || oCityData?.gmaps_place_id
+            }
+            destination_itinerary_city_id={
+              dCityData?.id || dCityData?.gmaps_place_id
+            }
+          />
+        </>
+      )}
     </>
   );
 };
@@ -1266,7 +1257,7 @@ const FlightBooking = ({
 }) => {
   const [showDetails, setShowDetails] = useState(false);
 
-  console.log("Inside Flight Booking", booking);
+  let isPageWide = media("(min-width: 768px)");
 
   const router = useRouter();
   function HandleFlights(i, label) {
@@ -1274,55 +1265,7 @@ const FlightBooking = ({
       return setShowLoginModal(true);
     }
     setShowDetails(false);
-    setShowDrawer(true)
-
-    // let name = booking["name"];
-    // let costings_breakdown = booking["costings_breakdown"]; //not prsent
-    // let cost = booking["booking_cost"]; //not present
-    // let itinerary_id = router.query.id; // not present
-    // let itinerary_name = booking["name"]; // not present
-    // let tailored_id = booking["tailored_itinerary"]; // not present
-    // let id = booking["id"];
-    // let check_in =
-    //   booking?.transfer_details?.items?.[0]?.segments[0]?.origin
-    //     ?.departure_time;
-    // let check_out = booking["check_out"]; // not present
-    // let pax = {
-    //   number_of_adults: booking["number_of_adults"],
-    //   number_of_children: booking["number_of_children"],
-    //   number_of_infants: booking["number_of_infants"],
-    // };
-    // let city = booking["city"];
-    // let taxi_type = booking["taxi_type"];
-    // let transfer_type = booking["transfer_type"];
-    // let destination_city = booking["destination_city"];
-    // let origin_iata = booking?.transfer_details?.source?.code;
-    // let destination_iata = booking?.transfer_details?.destination?.code;
-    // let user_selected = booking?.user_selected;
-    // let edge = booking?.edge;
-    // _changeFlightHandler(
-    //   name,
-    //   itinerary_id,
-    //   tailored_id,
-    //   id,
-    //   check_in,
-    //   check_out,
-    //   pax,
-    //   city,
-    //   itinerary_name,
-    //   cost,
-    //   costings_breakdown,
-    //   origin_iata,
-    //   destination_iata,
-    //   destination_city,
-    //   taxi_type,
-    //   transfer_type,
-    //   user_selected,
-    //   booking?.id,
-    //   originCityId,
-    //   destinationCityId,
-    //   edge
-    // );
+    setShowDrawer(true);
 
     logEvent({
       action: "Transfer_Add_Change",
@@ -1349,7 +1292,8 @@ const FlightBooking = ({
       <div className=" w-full items-center">
         <div className="font-medium text-[15px]  inline flex items-center gap-1">
           <FaPlaneDeparture color="#C5C1C1" />
-          {booking?.transfer_details?.source?.name || booking?.transfer_details?.source?.city_name}{" "}
+          {booking?.transfer_details?.source?.name ||
+            booking?.transfer_details?.source?.city_name}{" "}
           <svg
             width="12"
             height="12"
@@ -1362,7 +1306,8 @@ const FlightBooking = ({
               fill="#1F1F1F"
             />
           </svg>{" "}
-          {booking?.transfer_details?.destination?.name || booking?.transfer_details?.destination?.city_name}
+          {booking?.transfer_details?.destination?.name ||
+            booking?.transfer_details?.destination?.city_name}
         </div>
         <div className="text-[10px] ml-[20px]">
           Duration: {booking?.duration}
@@ -1461,6 +1406,7 @@ const FlightBooking = ({
         {originCityId !== undefined && destinationCityId !== undefined && (
           <>
             <Details
+            cancellationPolicy={booking?.cancellation_policies}
               segments={booking?.transfer_details?.items?.[0]?.segments}
               resultIndex={booking?.transfer_details?.items?.[0]?.result_index}
               setShowDetails={setShowDetails}
@@ -1482,6 +1428,15 @@ const FlightBooking = ({
           </>
         )}
       </Drawer>
+      {!isPageWide && (
+        <FloatingView>
+          <TbArrowBack
+            style={{ height: "28px", width: "28px" }}
+            cursor={"pointer"}
+            onClick={() => setHandleShow(false)}
+          />
+        </FloatingView>
+      )}
     </div>
   );
 };

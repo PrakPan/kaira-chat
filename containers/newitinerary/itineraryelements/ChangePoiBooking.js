@@ -443,7 +443,7 @@ export default function ChangePoiBooking(props) {
             padding="12px"
             onclick={() => handleClick(props.data?.id)}
           >
-            Change
+            Replace
           </Button>
         )}
       </div>

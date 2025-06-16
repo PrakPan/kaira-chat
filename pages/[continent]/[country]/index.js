@@ -11,7 +11,7 @@ import axioslocationsinstance from "../../../services/search/search";
 import setHotLocationSearch from "../../../store/actions/hotLocationSearch";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
-import * as PagesToIdMapping from "../../../public/PagesToIdMapping.json";
+import * as PagesToIdMapping from "../../../data/PagesToIdMapping.json";
 
 const TravelPlanner = (props) => {
   useEffect(() => {

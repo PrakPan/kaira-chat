@@ -1009,6 +1009,7 @@ const HotelBookingDetails = (props) => {
             city={props?.data?.hotel_details?.city}
             updateBooking={props?.updateBooking}
             duration={props?.data?.duration}
+            cancellationPolicy={props?.data?.cancellation_policies}
           ></Rooms>
         </>
       )}

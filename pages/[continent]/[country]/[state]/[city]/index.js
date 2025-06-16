@@ -11,7 +11,7 @@ import axioslocationsinstance from "../../../../../services/search/search";
 import setHotLocationSearch from "../../../../../store/actions/hotLocationSearch";
 import { CONTENT_SERVER_HOST, MERCURY_HOST } from "../../../../../services/constants";
 import axios from "axios";
-import * as PagesToIdMapping from "../../../../../public/PagesToIdMapping.json"
+import * as PagesToIdMapping from "../../../../../data/PagesToIdMapping.json"
 const Experience = (props) => {
   console.log("experience props are:",props)
   const router = useRouter();

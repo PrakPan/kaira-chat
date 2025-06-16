@@ -23,9 +23,12 @@ import { FaPlane } from "react-icons/fa";
 import styled from "styled-components";
 import { TbArrowBack } from "react-icons/tb";
 import useMediaQuery from "../../../components/media";
+import VehicleDetailLoader from "../../../components/modals/daybyday/VehicleDetailLoader";
+
 const FloatingView = styled.div`
   position: sticky;
-  bottom: 10px;
+  bottom: 60px;
+  left: 100%;
   background: black;
   color: white;
   border-radius: 50%;
@@ -34,7 +37,7 @@ const FloatingView = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  left: 90%;
+  margin-right: 16px;
   z-index: 2;
   cursor: pointer;
 `;
@@ -79,7 +82,6 @@ const Plan = styled.div`
 const Details = ({
   originCityId,
   destinationCityId,
-  segments,
   provider,
   resultIndex,
   setShowDetails,
@@ -94,20 +96,23 @@ const Details = ({
   onChange,
   type,
   getPaymentHandler,
-  setShowLoginModal
+  setShowLoginModal,
+  cancellationPolicy,
 }) => {
+  console.log("booking id is:", booking_id);
   const isDesktop = useMediaQuery("(min-width:768px)");
 
   const router = useRouter();
-  const [fareRules, setFareRules] = useState(fareRule?.[0]?.fareRuleDetail);
+  const [fareRules, setFareRules] = useState(null);
   const [fareRulesLoading, setFareRulesLoading] = useState(false);
   const [fareRUlesError, setFareRulesError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [segments, setSegments] = useState([]);
   const dispatch = useDispatch();
   const handleDelete = async () => {
-    if(!localStorage?.getItem("access_token")){
-      setShowLoginModal(true)
-      return
+    if (!localStorage?.getItem("access_token")) {
+      setShowLoginModal(true);
+      return;
     }
     try {
       setLoading(true);
@@ -134,7 +139,7 @@ const Details = ({
       }
     } catch (err) {
       const errorMsg =
-            err?.response?.data?.errors?.[0]?.message?.[0] || err.message ;
+        err?.response?.data?.errors?.[0]?.message?.[0] || err.message;
       dispatch(
         openNotification({
           type: "error",
@@ -147,23 +152,22 @@ const Details = ({
   };
 
   useEffect(() => {
-    if (fareRules == null) {
-      getFareRules();
-    }
+    getFareRules();
   }, []);
-
   const getFareRules = async () => {
     setFareRulesLoading(true);
     setFareRulesError(false);
 
     let traceId;
     if (booking_id) {
+      console.log("here");
       const res = await axios.get(
         `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/flight/${booking_id}`
       );
       setFareRules(
         res?.data?.transfer_details?.items?.[0]?.fare_rule?.[0]?.fareRuleDetail
       );
+      setSegments(res?.data?.transfer_details?.items?.[0]?.segments);
       setFareRulesLoading(false);
     } else {
       const data = {
@@ -185,7 +189,7 @@ const Details = ({
   };
 
   return (
-    <div className="relative flex flex-col gap-4 rounded-md px-3 py-2">
+    <div className="relative flex flex-col gap-4 rounded-md px-3 py-2 h-full">
       {drawer && (
         <div className="flex flex-col gap-2">
           <Heading>
@@ -193,89 +197,105 @@ const Details = ({
           </Heading>
         </div>
       )}
-      {onChange && (
-        <div className="font-lexend flex justify-between items-start !m-0">
-          <Text>{name}</Text>
-          <Generalbuttonstyle
-            borderRadius={"7px"}
-            fontSize={"1rem"}
-            padding={"7px 25px"}
-            onClick={onChange}
-          >
-            Change
-          </Generalbuttonstyle>
-        </div>
-      )}
-      <div className="flex flex-col gap-2 p-2 ">
-        <FlightSegment segments={segments} />
-      </div>
-
       {fareRulesLoading ? (
-        <div className="flex items-center justify-center">
-          <div className="w-5 h-5 border-4 border-t-[#F8E000] rounded-full animate-spin"></div>
+        <div className="h-full flex items-center justify-center">
+          <VehicleDetailLoader setHandleShow={setFareRulesLoading} />
         </div>
       ) : fareRUlesError ? (
         <div className="text-sm text-center">
           Something went wrong, please try again
         </div>
       ) : (
-        <div className="flex flex-col">
-          <div className="w-fit py-2 mb-2 text-lg font-bold">
-            Fare Details and Rules
+        <>
+          {onChange && (
+            <div className="font-lexend flex justify-between items-start !m-0">
+              <Text>{name}</Text>
+              <Generalbuttonstyle
+                borderRadius={"7px"}
+                fontSize={"1rem"}
+                padding={"7px 25px"}
+                onClick={onChange}
+              >
+                Change
+              </Generalbuttonstyle>
+            </div>
+          )}
+          <div className="flex flex-col gap-2 p-2 ">
+            <FlightSegment segments={segments} />
           </div>
 
-          <div
-            dangerouslySetInnerHTML={{
-              __html: fareRules,
-            }}
-            className="flex flex-col gap-1 text-sm ml-4"
-          ></div>
-        </div>
+          <div className="flex flex-col">
+            <div className="w-fit py-2 mb-2 text-lg font-bold">
+              Fare Details and Rules
+            </div>
+
+            <div
+              dangerouslySetInnerHTML={{
+                __html: fareRules,
+              }}
+              className="flex flex-col gap-1 text-sm ml-4"
+            ></div>
+          </div>
+          {cancellationPolicy && (
+            <div className="flex flex-col">
+              <div className="w-fit py-2 mb-2 text-lg font-bold">
+                Cancellation Policies
+              </div>
+
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: cancellationPolicy,
+                }}
+                className="flex flex-col gap-1 text-sm ml-4"
+              ></div>
+            </div>
+          )}
+
+          {type != "combo" && (
+            <div className="w-full flex justify-end">
+              <button
+                className="right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515] p-2"
+                onClick={handleDelete}
+                disabled={loading}
+              >
+                <div style={{ position: "relative" }}>
+                  <div
+                    className="flex gap-1 items-center"
+                    style={loading ? { visibility: "hidden" } : {}}
+                  >
+                    <div>
+                      <Image src="/delete.svg" width={"20"} height={"20"} />
+                    </div>
+                    <div>Delete Booking</div>
+                  </div>
+                  {loading && (
+                    <PulseLoader
+                      style={{
+                        position: "absolute",
+                        top: "55%",
+                        left: "50%",
+                        transform: "translate(-50% , -50%)",
+                      }}
+                      size={12}
+                      speedMultiplier={0.6}
+                      color="#ffffff"
+                    />
+                  )}
+                </div>
+              </button>
+            </div>
+          )}
+        </>
       )}
       {!isDesktop && (
-            <FloatingView>
-              <TbArrowBack
-                style={{ height: "28px", width: "28px" }}
-                cursor={"pointer"}
-                onClick={() => setShowDetails((prev) => !prev)}
-              />
-            </FloatingView>
-          )}
-      {type != "combo" && (
-        <div className="w-full flex justify-end">
-          <button
-            className="right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515] p-2"
-            onClick={handleDelete}
-            disabled={loading}
-          >
-            <div style={{ position: "relative" }}>
-              <div
-                className="flex gap-1 items-center"
-                style={loading ? { visibility: "hidden" } : {}}
-              >
-                <div>
-                  <Image src="/delete.svg" width={"20"} height={"20"} />
-                </div>
-                <div>Delete Booking</div>
-              </div>
-              {loading && (
-                <PulseLoader
-                  style={{
-                    position: "absolute",
-                    top: "55%",
-                    left: "50%",
-                    transform: "translate(-50% , -50%)",
-                  }}
-                  size={12}
-                  speedMultiplier={0.6}
-                  color="#ffffff"
-                />
-              )}
-            </div>
-          </button>
-        </div>
+        <FloatingView>
+          <TbArrowBack
+            style={{ height: "28px", width: "28px" }}
+            cursor={"pointer"}
+            onClick={() => setShowDetails((prev) => !prev)}
+          />
+        </FloatingView>
       )}
-
       <ToastContainer />
     </div>
   );
@@ -375,18 +395,28 @@ const FlightSegment = ({ segments }) => {
                 <div className=" flex flex-row gap-3 justify-between w-full">
                   {["origin"].map((key) => (
                     <div key={key} className="flex flex-col w-full">
-                       {segment[key]?.terminal&&<div className="flex ">
-                        {segment[key]?.terminal.split(" ")[0]=="Terminal"?"":"Terminal"} {segment[key]?.terminal}{" "}
-                        </div>}
+                      {segment[key]?.terminal && (
+                        <div className="flex ">
+                          {segment[key]?.terminal.split(" ")[0] == "Terminal"
+                            ? ""
+                            : "Terminal"}{" "}
+                          {segment[key]?.terminal}{" "}
+                        </div>
+                      )}
                     </div>
                   ))}
 
                   {["destination"].map((key) => (
                     <div key={key} className="flex flex-col w-full">
                       <div className="text-[10px] sm:text-[12px] font-normal m-0 flex justify-end">
-                        {segment[key]?.terminal&&<div className="flex ">
-                          {segment[key]?.terminal.split(" ")[0]=="Terminal"?"":"Terminal"} {segment[key]?.terminal}{" "}
-                        </div>}
+                        {segment[key]?.terminal && (
+                          <div className="flex ">
+                            {segment[key]?.terminal.split(" ")[0] == "Terminal"
+                              ? ""
+                              : "Terminal"}{" "}
+                            {segment[key]?.terminal}{" "}
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}

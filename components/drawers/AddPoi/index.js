@@ -19,7 +19,8 @@ import useMediaQuery from "../../media";
 
 const FloatingView = styled.div`
   position: sticky;
-  bottom: 10px;
+  bottom: 60px;
+  left: 100%;
   background: black;
   color: white;
   border-radius: 50%;
@@ -28,7 +29,7 @@ const FloatingView = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  left: 90%;
+  margin-right: 16px;
   z-index: 901;
   cursor: pointer;
 `;

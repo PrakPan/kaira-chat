@@ -12,9 +12,28 @@ import { useRouter } from "next/router";
 import PoiDetailsNew from "./PoiDetailsNew";
 import ActivityDetails from "./ActivityDetails";
 import ActivityDetailsSkeleton from "../activityDetails/ActivityDetailsSkeleton";
+import useMediaQuery from "../../media";
+import { TbArrowBack } from "react-icons/tb";
+import styled from "styled-components";
 
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 60px;
+  left: 100%;
+  background: black;
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  z-index: 901;
+  cursor: pointer;
+`;
 const POIDetailsDrawer = (props) => {
-  console.log("props activities summary are:", props);
+  const isDesktop = useMediaQuery("(min-width:768px)");
   const [data, setData] = useState(props?.data || []);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -206,6 +225,15 @@ const POIDetailsDrawer = (props) => {
             <PoiDetailsNew />
           )}
         </>
+      )}
+       {!isDesktop && (
+        <FloatingView>
+          <TbArrowBack
+            style={{ height: "28px", width: "28px" }}
+            cursor={"pointer"}
+            onClick={(e) => props.handleCloseDrawer(e)}
+          />
+        </FloatingView>
       )}
     </Drawer>
   );

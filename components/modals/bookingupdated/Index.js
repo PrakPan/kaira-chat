@@ -18,9 +18,11 @@ import ImageLoader from "../../../components/ImageLoader";
 import { setItineraryFilters } from "../../../store/actions/setItineraryFilters";
 import ViewHotelDetails from "../ViewHotelDetails/viewHotelDetails";
 import { TbArrowBack } from "react-icons/tb";
+
 const FloatingView = styled.div`
   position: sticky;
-  bottom: 10px;
+  bottom: 60px;
+  left: 100%;
   background: black;
   color: white;
   border-radius: 50%;
@@ -29,10 +31,11 @@ const FloatingView = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  left: 90%;
-  z-index: 1251;
+  margin-right: 16px;
+  z-index: 251;
   cursor: pointer;
 `;
+
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
 
@@ -83,7 +86,7 @@ const Booking = (props) => {
     error: false,
     errorMsg: "",
   });
- 
+
   const [loading, setLoading] = useState(false);
   const [nextPage, setNextPage] = useState(1);
   const [provider, setProvider] = useState(null);
@@ -126,7 +129,7 @@ const Booking = (props) => {
   const [showFilters, setShowFilters] = useState(false);
   const dispatch = useDispatch();
   const debouncedSearch = useDebounce(selectSearch);
-  console.log("Modal C",props?.showBookingModal);
+  console.log("Modal C", props?.showBookingModal);
 
   useEffect(() => {
     if (
@@ -254,7 +257,7 @@ const Booking = (props) => {
   const handleClose = () => {
     // props?.setHideBookingModal();
     resetPaginationStatus();
-    
+
     setMoreOptionsJSX([]);
     setLoading(true);
     setFilters((prev) => ({
@@ -449,7 +452,7 @@ const Booking = (props) => {
       });
   };
 
-   console.log("Show B Inside",props?.showBookingModal)
+  console.log("Show B Inside", props?.showBookingModal);
 
   const fetchHotels = () => {
     setLoading(true);
@@ -887,14 +890,14 @@ const Booking = (props) => {
               </GridContainer>
             </div>
             {!isPageWide && (
-        <FloatingView>
-          <TbArrowBack
-            style={{ height: "28px", width: "28px" }}
-            cursor={"pointer"}
-            onClick={handleClose}
-          />
-        </FloatingView>
-      )}
+              <FloatingView>
+                <TbArrowBack
+                  style={{ height: "28px", width: "28px" }}
+                  cursor={"pointer"}
+                  onClick={handleClose}
+                />
+              </FloatingView>
+            )}
             <ViewHotelDetails
               mercury={true}
               check_in={props?.selectedBooking.check_in}

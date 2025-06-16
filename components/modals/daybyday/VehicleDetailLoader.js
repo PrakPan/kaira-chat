@@ -11,11 +11,8 @@ const BackText = styled.div`
 
 const VehicleDetailLoader = ({ setHandleShow }) => {
   return (
-    <div className="fixed inset-0 bg-gray-50 w-full h-full flex flex-col overflow-hidden">
+    <div className=" bg-gray-50 w-full h-full flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="p-4 flex items-center bg-white shadow-sm">
-        <BackArrow handleClick={() => setHandleShow(false)} />
-      </div>
 
       {/* Vehicle Info */}
       <div className="flex items-center px-4 py-3 bg-white">
@@ -28,7 +25,7 @@ const VehicleDetailLoader = ({ setHandleShow }) => {
       </div>
 
       {/* Title */}
-      <div className="px-4 pt-2 pb-2 bg-white">
+      <div className="px-4 pt-2 pb-2 bg-white ">
         <div className="w-24 h-5 bg-gray-300 opacity-50 rounded"></div>
       </div>
 

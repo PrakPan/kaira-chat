@@ -197,12 +197,12 @@ export default function ChangePoiDetails(props) {
       setLoading(false);
       return;
     }
-    props.updatedActivityBooking().then((res)=>{
-      console.log("clicked here")
+    props.updatedActivityBooking().then((res) => {
+      console.log("clicked here");
       setLoading(false);
-      if (res!=0){
-      props?.setShowDrawer(false);
-      props?.handleCloseDrawer(e)
+      if (res != 0) {
+        props?.setShowDrawer(false);
+        props?.handleCloseDrawer(e);
       }
     });
   };
@@ -211,7 +211,9 @@ export default function ChangePoiDetails(props) {
     <div className="flex flex-col gap-4 pb-[100px] h-[100vh] overflow-y-auto">
       <div className="flex flex-col gap-4 px-[20px] pb-4">
         <div className="sticky top-0 z-1 flex flex-row items-center gap-2 pt-4 bg-white">
-          <BackArrow handleClick={() =>         props.setShowDetails({ show: false, data: {} })} />
+          <BackArrow
+            handleClick={() => props.setShowDetails({ show: false, data: {} })}
+          />
         </div>
 
         <div className={`flex flex-col gap-4 `}>
@@ -739,20 +741,18 @@ export default function ChangePoiDetails(props) {
 
         <div className="border-t-2 fixed bottom-0 right-0 left-0 flex justify-end gap-1 py-[12px] px-[20px] bg-white shadow-md z-50">
           <div className="flex flex-col gap-1">
-            
-              <Button
-                onclick={handleUpdate}
-                bgColor={"#F7E700"}
-                borderRadius="8px"
-                fontWeight="400"
-                hoverColor="white"
-                height={"full"}
-                padding={"8px 16px"}
-                loading={loading}
-              >
-                
-                  <>{props.data?.city && "Add to Itinerary"}</>
-              </Button>
+            <Button
+              onclick={handleUpdate}
+              bgColor={"#F7E700"}
+              borderRadius="8px"
+              fontWeight="400"
+              hoverColor="white"
+              height={"full"}
+              padding={"8px 16px"}
+              loading={loading}
+            >
+              <>{props.data?.city && "Add to Itinerary"}</>
+            </Button>
 
             {dateFormat(props?.date)}
           </div>

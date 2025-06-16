@@ -1,15 +1,11 @@
 import React from "react";
-import { IoClose } from "react-icons/io5";
 import TransfersIcon from "../../../helper/TransfersIcon";
 import Pin from "../../../containers/newitinerary/breif/route/Pin";
-import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { PulseLoader } from "react-spinners";
 import styled from "styled-components";
-import { RiDeleteBin6Line } from "react-icons/ri";
 import Image from "next/image";
 import BackArrow from "../../ui/BackArrow";
 import { Generalbuttonstyle } from "../../ui/button/Generallinkbutton";
-import { TbArrowBack } from "react-icons/tb";
 const FloatingView = styled.div`
   position: sticky;
   bottom: 10px;
@@ -38,13 +34,14 @@ const VehicleDetailModal = ({
   booking,
   type,
   isEmbedded,
-  setShowDrawer,error
+  setShowDrawer,
+  error,
 }) => {
   if (!data) return null;
 
   // const [loading, setLoading] = useState(false);
   // const transfer = useSelector((state) => state.Itinerary);
-   let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
+  let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
   const {
     name,
     transfer_details,
@@ -56,9 +53,9 @@ const VehicleDetailModal = ({
     destination_address,
     check_in,
     check_out,
-    booking_type
+    booking_type,
   } = data;
-  console.log("day by day data is:",data,booking_type);
+  console.log("day by day data is:", data, booking_type);
 
   const formatDateTime = (dateString) => {
     if (!dateString) return "";
@@ -81,87 +78,96 @@ const VehicleDetailModal = ({
   const addMinutesToDate = (dateString, minutes) => {
     console.log("Date String", dateString);
     const date = new Date(dateString);
-    console.log("date is:")
+    console.log("date is:");
     date.setMinutes(date.getMinutes() + minutes);
     return formatDateTime(date.toISOString());
   };
 
   const departure =
-    check_in||transfer_details?.start_datetime || transfer_details?.gozo?.start_date ;
+    check_in ||
+    transfer_details?.start_datetime ||
+    transfer_details?.gozo?.start_date;
   const duration = transfer_details?.duration;
 
-  const arrival = formatDateTime(check_out) ||  addMinutesToDate(departure, duration);
+  const arrival =
+    formatDateTime(check_out) || addMinutesToDate(departure, duration);
   const depart = formatDateTime(departure);
 
   if (error) {
-        return (
-          <div
-            style={{
-              textAlign: "center",
-              margin: "auto",
-              height: isPageWide ? "80vh" : "70vh",
-            }}
-            className="center-div"
-          >
-            Oops, unable to get the details at the moment.
-          </div>
-        );
-      }
+    return (
+      <div
+        style={{
+          textAlign: "center",
+          margin: "auto",
+          height: isPageWide ? "80vh" : "70vh",
+        }}
+        className="center-div"
+      >
+        Oops, unable to get the details at the moment.
+      </div>
+    );
+  }
 
   return (
     <>
       <div className=" bg-gray-50 w-full h-full flex flex-col">
-        {!isEmbedded && <div className="p-4 flex items-center">
-          <BackArrow handleClick={()=>setHandleShow(false)}/>
-        </div>}
-        <div className="flex justify-between">
-        {!isEmbedded &&  <div className="flex items-center px-4">
-          {isPageWide && <div className="bg-blue-100 rounded-lg p-2 mr-3">
-            {loading ? (
-              <div className="w-20 h-12 bg-gray-300 opacity-50 rounded-lg"></div>
-            ) : (
-              <TransfersIcon
-                TransportMode={booking_type || transfer_details?.mode}
-                Instyle={{
-                  fontSize:
-                    transfer_details?.mode === "Bus" ? "2.5rem" : "3rem",
-                  color: "black",
-                }}
-                classname={{ width: 80, height: 75 }}
-              />
-            )}
-          </div>}
-          <span className=" md:text-xl font-semibold text-gray-800">
-            {loading ? (
-              <div className="w-32 h-5 bg-gray-300 opacity-50 rounded"></div>
-            ) : (
-              name
-            )}
-          </span>
-        </div>}
         {!isEmbedded && (
-                    <div className="font-lexend flex justify-between items-start !m-0 p-4">
-                      {loading ? (
-                        <div className="w-16 h-5 bg-gray-300 opacity-50 rounded"></div>
-                      ) : (
-                        <>
-                          {/* <Text>{name}</Text> */}
-                          <Generalbuttonstyle
-                            borderRadius={"7px"}
-                            fontSize={"1rem"}
-                            padding={"7px 25px"}
-                            onClick={() => {
-                              setHandleShow(false);
-                              setShowDrawer(true);
-                              //setShowTaxi(true);console.log("")
-                            }}
-                          >
-                            Change
-                          </Generalbuttonstyle>
-                        </>
-                      )}
-                    </div>
+          <div className="p-4 flex items-center">
+            <BackArrow handleClick={() => setHandleShow(false)} />
+          </div>
+        )}
+        <div className="flex justify-between">
+          {!isEmbedded && (
+            <div className="flex items-center px-4">
+              {isPageWide && (
+                <div className="bg-blue-100 rounded-lg p-2 mr-3">
+                  {loading ? (
+                    <div className="w-20 h-12 bg-gray-300 opacity-50 rounded-lg"></div>
+                  ) : (
+                    <TransfersIcon
+                      TransportMode={booking_type || transfer_details?.mode}
+                      Instyle={{
+                        fontSize:
+                          transfer_details?.mode === "Bus" ? "2.5rem" : "3rem",
+                        color: "black",
+                      }}
+                      classname={{ width: 80, height: 75 }}
+                    />
                   )}
+                </div>
+              )}
+              <span className=" md:text-xl font-semibold text-gray-800">
+                {loading ? (
+                  <div className="w-32 h-5 bg-gray-300 opacity-50 rounded"></div>
+                ) : (
+                  name
+                )}
+              </span>
+            </div>
+          )}
+          {!isEmbedded && (
+            <div className="font-lexend flex justify-between items-start !m-0 p-4">
+              {loading ? (
+                <div className="w-16 h-5 bg-gray-300 opacity-50 rounded"></div>
+              ) : (
+                <>
+                  {/* <Text>{name}</Text> */}
+                  <Generalbuttonstyle
+                    borderRadius={"7px"}
+                    fontSize={"1rem"}
+                    padding={"7px 25px"}
+                    onClick={() => {
+                      setHandleShow(false);
+                      setShowDrawer(true);
+                      //setShowTaxi(true);console.log("")
+                    }}
+                  >
+                    Change
+                  </Generalbuttonstyle>
+                </>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Ticket Section Label */}
@@ -307,20 +313,19 @@ const VehicleDetailModal = ({
           </div>
         </div>
 
-
-        {!isPageWide && (
-            <FloatingView>
-              <TbArrowBack
-                style={{ height: "28px", width: "28px" }}
-                cursor={"pointer"}
-                onClick={()=>setHandleShow(false)}
-              />
-            </FloatingView>
-          )}
+        {/* {!isPageWide && (
+          <FloatingView>
+            <TbArrowBack
+              style={{ height: "28px", width: "28px" }}
+              cursor={"pointer"}
+              onClick={() => setHandleShow(false)}
+            />
+          </FloatingView>
+        )} */}
         {/* Delete Booking Button (Fixed) */}
-        {handleDelete && type!="combo"&&(
+        {handleDelete && type != "combo" && (
           <div className="p-4 bg-white">
-            {console.log("type is:",type)}
+            {console.log("type is:", type)}
             <button
               className="w-full bg-red-500 text-white py-2 rounded-lg flex items-center justify-center"
               onClick={() => handleDelete(booking)}

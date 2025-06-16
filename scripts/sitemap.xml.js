@@ -8,7 +8,7 @@ const generateSitemap = async () => {
 
   // Fetch continents list
   const continents = await axios.get(
-    "https://dev.mercury.tarzanway.com/page/list?page_type=Continent&fields=path"
+    `${BASE_URL}/page/list?page_type=Continent&fields=path`
   );
   const continentsData = continents.data.data.pages;
   let continentsPaths = continentsData.map((object) => {
@@ -20,7 +20,7 @@ const generateSitemap = async () => {
 
   // Fetch countries list
   const countries = await axios.get(
-    "https://dev.mercury.tarzanway.com/api/v1/geos/country/?fields=path"
+    `${BASE_URL}/api/v1/geos/country/?fields=path`
   );
   const countriesData = countries.data.data.countries;
   let countriesPaths = countriesData.map((object) => {
@@ -29,7 +29,7 @@ const generateSitemap = async () => {
 
   // Fetch states list
   const states = await axios.get(
-    "https://dev.mercury.tarzanway.com/api/v1/geos/state/?fields=path"
+    `${BASE_URL}/api/v1/geos/state/?fields=path`
   );
   const statesData = states.data.data.states;
 
@@ -42,7 +42,7 @@ const generateSitemap = async () => {
 
   // Fetch cities list
   const cities = await axios.get(
-    "https://dev.mercury.tarzanway.com/api/v1/geos/city/?fields=path"
+    `${BASE_URL}/api/v1/geos/city/?fields=path`
   );
   const citiesData = cities.data.data.cities;
 
@@ -50,7 +50,7 @@ const generateSitemap = async () => {
     return { title: "City Planner", link: BASE_URL + "/" + object.path };
   });
 
-  const subRegions=await axios.get("https://dev.mercury.tarzanway.com/api/v1/website/pages/?page_type=Subregion&fields=path")
+  const subRegions=await axios.get(`${BASE_URL}/api/v1/website/pages/?page_type=Subregion&fields=path`)
   const subRegionsData=subRegions.data.data.pages
   let subRegionsPaths=subRegionsData.map((object)=>{
     return {title:"Subregion Planner",link:BASE_URL+"/"+object.path}
@@ -113,10 +113,10 @@ const generateSitemap = async () => {
     </urlset>
   `;
   const PagesToIdJson = await axios.get(
-    `https://dev.mercury.tarzanway.com/api/v1/geos/pages/all/`
+    `${BASE_URL}/api/v1/geos/pages/all/`
   );
   fs.writeFileSync(
-    path.join(process.cwd(), "public", "PagesToIdMapping.json"),
+    path.join(process.cwd(),"data", "PagesToIdMapping.json"),
     JSON.stringify(PagesToIdJson.data, null, 2),
     "utf8"
   );

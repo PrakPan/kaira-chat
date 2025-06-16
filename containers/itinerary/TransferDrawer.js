@@ -10,6 +10,24 @@ import VehicleDetailModal from "../../components/modals/daybyday/VehicleModal";
 import VehicleDetailLoader from "../../components/modals/daybyday/VehicleDetailLoader";
 import { AiOutlineRight, AiOutlineDown } from "react-icons/ai";
 import { Generalbuttonstyle } from "../../components/ui/button/Generallinkbutton";
+import { TbArrowBack } from "react-icons/tb";
+import styled from "styled-components";
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 60px;
+  left: 100%;
+  background: black;
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  z-index: 2;
+  cursor: pointer;
+`;
 
 const TransferDrawer = ({
   show,
@@ -34,10 +52,10 @@ const TransferDrawer = ({
   destination_itinerary_city_id,
   setShowDrawer,
   isIntracity,
-  error
+  error,
 }) => {
   const [expandedIndexes, setExpandedIndexes] = useState([]);
-   const  isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
+  const isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
   const isCombo = data?.children && data?.children.length > 0;
   useEffect(() => {
     if (show && isCombo && data?.children?.length > 0) {
@@ -105,9 +123,6 @@ const TransferDrawer = ({
       }
     };
 
-    
-
-
     return (
       <div key={`${transferData.id}-${index}`} className="mb-6">
         <div
@@ -121,7 +136,6 @@ const TransferDrawer = ({
             <AiOutlineRight className="text-gray-600" />
           )}
         </div>
-
         {isExpanded && <div className="mt-3">{renderDetailsByType()}</div>}
       </div>
     );
@@ -191,12 +205,11 @@ const TransferDrawer = ({
               loading={loading}
               setShowDrawer={setShowDrawer}
               error={error}
-
             />
           )}
         </>
-      ) : (
-        error ? <>
+      ) : error ? (
+        <>
           <div
             style={{
               textAlign: "center",
@@ -207,7 +220,9 @@ const TransferDrawer = ({
           >
             Oops, unable to get the details at the moment.
           </div>
-      </> :<div className="h-screen flex flex-col">
+        </>
+      ) : (
+        <div className="h-screen flex flex-col">
           <div className="p-4 border-b">
             <BackArrow handleClick={() => setHandleShow(false)} />
             <div className="flex justify-between">
@@ -288,6 +303,15 @@ const TransferDrawer = ({
             </button>
           </div>
         </div>
+      )}
+      {!isPageWide && (
+        <FloatingView>
+          <TbArrowBack
+            style={{ height: "28px", width: "28px" }}
+            cursor={"pointer"}
+            onClick={() => setShowDetails((prev) => !prev)}
+          />
+        </FloatingView>
       )}
     </Drawer>
   );

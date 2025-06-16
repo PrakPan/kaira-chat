@@ -18,7 +18,8 @@ import { Pax } from "./Pax";
 import BackArrow from "../../ui/BackArrow";
 import Button from "../../../components/ui/button/Index";
 import { PulseLoader } from "react-spinners";
-
+import { TbArrowBack } from "react-icons/tb";
+import styled from "styled-components";
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
 export default function ActivityDetails(props) {
