@@ -206,13 +206,7 @@ const RoomType = (props) => {
       )}
 
       <div>
-        {props?.data?.cancellation_policies && Object.values(openRooms).some(isOpen => isOpen) && <>
-          <div className="flex flex-col">
-            <div className="font-semibold text-lg">Cancellation Policy</div>
-            <p className="bg-[#fdeeee] text-[#EF7D7D] px-2 py-2 mb-0 rounded-md text-xs font-medium w-fit">
-              {( props?.data?.refundability == "NonRefundable" ? "Non-Refundable" : "Refundable")}
-            </p>
-          </div>
+        {props?.cancellationPolicy && Object.values(openRooms).some(isOpen => isOpen) && <>
 
           <div
             className="text-[14px]"
