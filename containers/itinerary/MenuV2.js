@@ -1424,39 +1424,7 @@ const SimpleTabsV2 = (props) => {
                 //   </Button>
                 // )
               // ) 
-              <GetInTouchContainer className="">
-                      <Button
-                        color="#111"
-                        fontWeight="600"
-                        fontSize="0.85rem"
-                        borderWidth="2px"
-                        width="10rem"
-                        borderRadius="8px"
-                        bgColor="#f8e000"
-                        loading={loading}
-                        onclick={handleGetInTouch}
-                      >
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            gap: "0.5rem",
-                            alignItems: "center",
-                          }}
-                        >
-                          <ImageLoader
-                            dimensions={{ height: 50, width: 50 }}
-                            dimensionsMobile={{ height: 50, width: 50 }}
-                            height={"20px"}
-                            width={"20px"}
-                            widthmobile={"20px"}
-                            leftalign
-                            url={"media/icons/login/customer-service-black.png"}
-                          />{" "}
-                          <span>Get in touch!</span>
-                        </div>
-                      </Button>
-                    </GetInTouchContainer>}
+              null}
             </>
           )}
         </div>
