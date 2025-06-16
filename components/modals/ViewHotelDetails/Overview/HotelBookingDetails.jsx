@@ -12,12 +12,7 @@ import SkeletonCard from "../../../ui/SkeletonCard";
 import { connect, useDispatch } from "react-redux";
 import Tag from "../../../cards/bookings/activitybooking/imagecontainer/Tag";
 import ImageCarousel from "../../Carousel/ImageCarousel";
-import { PulseLoader } from "react-spinners";
-import { updateStays } from "../../../../store/actions/StayBookings";
 import { useRouter } from "next/router";
-import { toast } from "react-toastify";
-import { axiosDeleteBooking } from "../../../../services/itinerary/bookings";
-import { RiDeleteBin6Line } from "react-icons/ri";
 import { dateFormat } from "../../../../helper/DateUtils";
 import { getStars } from "../../../itinerary/itineraryCity/SlabElement";
 const starRating = (rating) => {

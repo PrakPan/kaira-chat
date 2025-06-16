@@ -111,21 +111,22 @@ const RoomType = (props) => {
               {room?.number_of_adults && room?.number_of_adults !== "0" ? (
                 <div className="flex flex-col md:flex-row gap-1 items-start md:items-center">
                   <div className="flex flex-row gap-2">
-                  <div className="text-md font-semibold">Sleeps</div>
-                  <div >
-                    {room.number_of_adults > 1
-                      ? `${room.number_of_adults} Adults`
-                      : `${room.number_of_adults} Adult`}
-                    {room?.number_of_children &&
-                    room?.number_of_children !== "0"
-                      ? `, ${room.number_of_children} Children`
-                      : null}
-                  </div> 
+                    <div className="text-md font-semibold">Sleeps</div>
+                    <div>
+                      {room.number_of_adults > 1
+                        ? `${room.number_of_adults} Adults`
+                        : `${room.number_of_adults} Adult`}
+                      {room?.number_of_children &&
+                      room?.number_of_children !== "0"
+                        ? `, ${room.number_of_children} Children`
+                        : null}
+                    </div>
                   </div>
-                   {(props?.data?.board_basis &&  <p className="bg-[#e6f9ec] text-[#3BAF75] px-2 py-2 mb-0 rounded-md text-xs font-medium">
-
-                          {props?.data?.board_basis?.description}
-                        </p>)}
+                  {props?.data?.board_basis && (
+                    <p className="bg-[#e6f9ec] text-[#3BAF75] px-2 py-2 mb-0 rounded-md text-xs font-medium">
+                      {props?.data?.board_basis?.description}
+                    </p>
+                  )}
                 </div>
               ) : null}
 
@@ -213,9 +214,9 @@ const RoomType = (props) => {
 
       {open && (
         <div className="flex flex-col gap-3">
-          {(props.data?.polices && props?.data?.polices?.length>0) ? (
+          {props.data?.polices && props?.data?.polices?.length > 0 ? (
             <>
-            <div className="text-lg font-bold">Policies</div>
+              <div className="text-lg font-bold">Policies</div>
               {props.data.polices.map((item, index) => (
                 <div className="flex flex-col gap-2">
                   <div className="text-lg font-semibold">{item.type}</div>
@@ -232,22 +233,17 @@ const RoomType = (props) => {
         </div>
       )}
 
-      {props?.data?.cancellation_policies && <>
-      <div className="flex flex-col">
-      <div className="font-semibold text-lg">Cancellation Policy</div>
-       <p className="bg-[#fdeeee] text-[#EF7D7D] px-2 py-2 mb-0 rounded-md text-xs font-medium w-fit">
+      {props?.data?.cancellation_policies && (
+        <>
 
-                         {( props?.data?.refundability == "NonRefundable" ? "Non-Refundable" : "Refundable")}
-                        </p>
-      </div>
-
-      <div
-                    className="text-[14px]"
-                    dangerouslySetInnerHTML={{
-                      __html: props?.data?.cancellation_policies,
-                    }}
-                  ></div>
-    </>}
+          <div
+            className="text-[14px]"
+            dangerouslySetInnerHTML={{
+              __html: props?.data?.cancellation_policies,
+            }}
+          ></div>
+        </>
+      )}
     </div>
   );
 };
