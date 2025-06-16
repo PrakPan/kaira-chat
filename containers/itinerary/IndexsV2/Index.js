@@ -765,12 +765,13 @@ const Itinerary = (props) => {
         <OldSpinner></OldSpinner>
       </div>
     );
-  } else
-    return (
-      <div>
-        <Spinner></Spinner>
-      </div>
-    );
+  }
+  //  else
+  //   return (
+  //     <div>
+  //       <Spinner></Spinner>
+  //     </div>
+  //   );
 };
 
 const mapStateToPros = (state) => {
