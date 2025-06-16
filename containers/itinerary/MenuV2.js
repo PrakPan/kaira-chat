@@ -861,6 +861,10 @@ const SimpleTabsV2 = (props) => {
                       _GetInTouch={() => _GetInTouch()}
                       setShowLoginModal={setShowLoginModal}
                       loading={loading}
+                      social_title={props?.social_title}
+                      social_description={props?.social_description}
+                      itineraryName={props.itinerary.name}
+                      itineraryImage={props?.itinerary?.images?.[0]}
                     />
                   )
                 ) : (
@@ -1180,6 +1184,10 @@ const SimpleTabsV2 = (props) => {
               itinerary={props.itinerary}
               _GetInTouch={_GetInTouch}
               setShowLoginModal={setShowLoginModal}
+              social_title={props?.social_title}
+              social_description={props?.social_description}
+              itineraryName={props.itinerary.name}
+              itineraryImage={props?.itinerary?.images?.[0]}
             />
           ) : null}
         </SplitScreen>

@@ -309,7 +309,7 @@ const TransferDrawer = ({
           <TbArrowBack
             style={{ height: "28px", width: "28px" }}
             cursor={"pointer"}
-            onClick={() => setShowDetails((prev) => !prev)}
+            onClick={() => setHandleShow(false)}
           />
         </FloatingView>
       )}
