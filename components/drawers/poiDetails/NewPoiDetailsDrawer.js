@@ -10,9 +10,28 @@ import { MERCURY_HOST } from "../../../services/constants";
 import axios from "axios";
 import setItinerary from "../../../store/actions/itinerary";
 import PoiDetailsSkeleton from "./PoiDetailsSkelton";
+import { TbArrowBack } from "react-icons/tb";
+import useMediaQuery from "../../media";
+import styled from "styled-components";
 
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 100px;
+  left: 100%;
+  background: black;
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  z-index: 51;
+  cursor: pointer;
+`;
 const NewPoiDetailsDrawer = (props) => {
-  console.log("day by day:",props)
+  const isDesktop = useMediaQuery("(min-width:767px)");
   const router = useRouter();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -129,6 +148,15 @@ const NewPoiDetailsDrawer = (props) => {
           name={props.name}
           handleCloseDrawer={props.handleCloseDrawer}
         />
+      )}
+      {!isDesktop && (
+        <FloatingView>
+          <TbArrowBack
+            style={{ height: "28px", width: "28px" }}
+            cursor={"pointer"}
+            onClick={(e) => props.handleCloseDrawer(e)}
+          />
+        </FloatingView>
       )}
     </Drawer>
   );

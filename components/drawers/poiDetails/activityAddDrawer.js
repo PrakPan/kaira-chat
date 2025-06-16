@@ -28,7 +28,24 @@ import { MERCURY_HOST } from "../../../services/constants";
 import NewPoiBooking from "../../../containers/newitinerary/itineraryelements/NewPoiBooking";
 import Drawer from "../../ui/Drawer";
 import BackArrow from "../../ui/BackArrow";
+import { TbArrowBack } from "react-icons/tb";
 
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 60px;
+  left: 100%;
+  background: black;
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  z-index: 1;
+  cursor: pointer;
+`;
 const EmptyMsg = styled.div`
   margin-top: 5rem;
   text-align: center;
@@ -831,6 +848,16 @@ const ActivityAddDrawer = (props) => {
           </div>
         )}
       </>
+
+      {!isDesktop && (
+        <FloatingView>
+          <TbArrowBack
+            style={{ height: "28px", width: "28px" }}
+            cursor={"pointer"}
+            onClick={(e) => props.setShowDrawer(false)}
+          />
+        </FloatingView>
+      )}
     </Drawer>
   );
 };

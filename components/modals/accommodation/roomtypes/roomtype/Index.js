@@ -7,7 +7,6 @@ import { dateFormat } from "../../../../../helper/DateUtils";
 import { useState } from "react";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 import ImageCarousel from "../../../Carousel/ImageCarousel";
-import CancellationPolicy from "../CancellationPolicy";
 
 const ImageContainer = styled.div`
   height: 85px;
@@ -50,7 +49,13 @@ const RoomType = (props) => {
 
         <div className="flex flex-row items-center justify-between">
           <div className="text-xl md:text-2xl font-bold">
-            {"₹" + getIndianPrice(Math.round(props.data?.final_rate)) + "/-"} <span className="font-normal text-sm">for {props?.duration === 1  ? props?.duration + " Night" : props?.duration + " Nights"}  </span>
+            {"₹" + getIndianPrice(Math.round(props.data?.final_rate)) + "/-"}{" "}
+            <span className="font-normal text-sm">
+              for{" "}
+              {props?.duration === 1
+                ? props?.duration + " Night"
+                : props?.duration + " Nights"}{" "}
+            </span>
           </div>
         </div>
       </div>
@@ -120,16 +125,13 @@ const RoomType = (props) => {
                       ? `, ${room.number_of_children} Children`
                       : null}
                   </div>
-                  {(props?.data?.board_basis &&  <p className="bg-[#e6f9ec] text-[#3BAF75] px-2 py-2 mb-0 rounded-md text-xs font-medium">
-
-                          {props?.data?.board_basis?.description}
-                        </p>)}
+                  {props?.data?.board_basis && (
+                    <p className="bg-[#e6f9ec] text-[#3BAF75] px-2 py-2 mb-0 rounded-md text-xs font-medium">
+                      {props?.data?.board_basis?.description}
+                    </p>
+                  )}
                 </div>
               ) : null}
-
-              
-
-             
             </div>
           </div>
 
@@ -165,9 +167,7 @@ const RoomType = (props) => {
 
               {room?.facilities?.length > 0 ? (
                 <div className="flex flex-col gap-2">
-                  <div className="text-lg font-semibold">
-                    Room Amenities
-                  </div>
+                  <div className="text-lg font-semibold">Room Amenities</div>
                   <div className="text-[14px]">
                     <div className="flex flex-wrap gap-2">
                       {room.facilities.map((item, facilityIndex) => (
@@ -204,7 +204,7 @@ const RoomType = (props) => {
             : null}
         </div>
       )}
-      
+
       <div>
         {props?.data?.cancellation_policies && Object.values(openRooms).some(isOpen => isOpen) && <>
           <div className="flex flex-col">

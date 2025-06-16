@@ -48,7 +48,7 @@ import setItineraryStatus from "../../../../store/actions/itineraryStatus";
 import Spinner from "../../../loaderbar/Index";
 import { axiosGetItineraryStatus } from "../../../../services/itinerary/daybyday/preview";
 import { PulseLoader } from "react-spinners";
-import useDebounce from "../../../../hooks/useDebounce"
+import useDebounce from "../../../../hooks/useDebounce";
 
 const Container = styled.div`
   position: relative;
@@ -163,7 +163,8 @@ const CITY_COLOR_CODES = [
 ];
 const FloatingView = styled.div`
   position: sticky;
-  bottom: 10px;
+  bottom: 60px;
+  left: 100%;
   background: black;
   color: white;
   border-radius: 50%;
@@ -172,7 +173,7 @@ const FloatingView = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  left: 90%;
+  margin-right: 16px;
   z-index: 2;
   cursor: pointer;
 `;
@@ -198,11 +199,10 @@ const RouteEditSection = (props) => {
   const [polling, setPolling] = useState(false);
   const [pollingInterval, setPollingInterval] = useState(null);
   const destinationRef = useRef(null);
-  const itinerary = useSelector(state => state.Itinerary);
+  const itinerary = useSelector((state) => state.Itinerary);
   const [waitingForStatusUpdate, setWaitingForStatusUpdate] = useState(false);
   const { itinerary_status, transfers_status, pricing_status, hotels_status } =
-      useSelector((state) => state.ItineraryStatus);
-
+    useSelector((state) => state.ItineraryStatus);
 
   function addDaysToDate(dateString, daysToAdd) {
     const date = new Date(dateString);
@@ -216,7 +216,7 @@ const RouteEditSection = (props) => {
   }
 
   console.log("Props.routes", props?.routes);
-  
+
   useEffect(() => {
     const cities = [];
     if (props?.routes) {
@@ -228,23 +228,39 @@ const RouteEditSection = (props) => {
             ...props.routes[i],
             city_name:
               props.routes[i]?.city_name || props.routes[i]?.city?.name,
-              checkin_date: (i === 0 ? itinerary?.start_date : (i === props.routes.length - 1 ? itinerary?.end_date : getDate(
-                props.routes[i].checkin_date || props.routes[i]?.start_date || 
-                (i === 0 ? itinerary?.start_date : (i === props.routes.length - 1 ? itinerary?.end_date : null))
-              ))) || null,
-              checkout_date: (i === 0 ? itinerary?.start_date : (i === props.routes.length - 1 ? itinerary?.end_date : getDate(
-                props.routes[i].checkout_date ||
-                addDaysToDate(
-                  props.routes[i]?.start_date,
-                  props.routes[i]?.duration
-                ) 
-                )
-              )) || null,
+            checkin_date:
+              (i === 0
+                ? itinerary?.start_date
+                : i === props.routes.length - 1
+                ? itinerary?.end_date
+                : getDate(
+                    props.routes[i].checkin_date ||
+                      props.routes[i]?.start_date ||
+                      (i === 0
+                        ? itinerary?.start_date
+                        : i === props.routes.length - 1
+                        ? itinerary?.end_date
+                        : null)
+                  )) || null,
+            checkout_date:
+              (i === 0
+                ? itinerary?.start_date
+                : i === props.routes.length - 1
+                ? itinerary?.end_date
+                : getDate(
+                    props.routes[i].checkout_date ||
+                      addDaysToDate(
+                        props.routes[i]?.start_date,
+                        props.routes[i]?.duration
+                      )
+                  )) || null,
             city_id: props?.routes[i]?.city_id || props?.routes[i]?.city?.id,
             place_id:
               props.routes[i]?.place_id || props.routes[i]?.gmaps_place_id,
             duration: props?.routes[i]?.duration,
-            id: props?.routes[i]?.hasOwnProperty('id') ? props?.routes[i]?.id : null,
+            id: props?.routes[i]?.hasOwnProperty("id")
+              ? props?.routes[i]?.id
+              : null,
             color: CITY_COLOR_CODES[i % 7],
             lat:
               props?.routes[i]?.lat ||
@@ -293,50 +309,76 @@ const RouteEditSection = (props) => {
   }, [destinations, startDate, endDate]);
 
   useEffect(() => {
-      if (waitingForStatusUpdate) {
-        const allStatusesCompleted = [itinerary_status, transfers_status, pricing_status, hotels_status]
-        .every(status => status === "SUCCESS" || status === "FAILURE");
+    if (waitingForStatusUpdate) {
+      const allStatusesCompleted = [
+        itinerary_status,
+        transfers_status,
+        pricing_status,
+        hotels_status,
+      ].every((status) => status === "SUCCESS" || status === "FAILURE");
 
-        if (allStatusesCompleted) {
-          console.log("Status update complete", itinerary_status, transfers_status, pricing_status, hotels_status);
-          dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
-          setItineraryLoading(false);
-          setWaitingForStatusUpdate(false);
-          dispatch(openNotification({
-                    type: "success",
-                    text: "Itinerary has been updated successfully.",
-                    heading: "Sucess!",
-                  }))
-          props.setEdit(false);
-        }
+      if (allStatusesCompleted) {
+        console.log(
+          "Status update complete",
+          itinerary_status,
+          transfers_status,
+          pricing_status,
+          hotels_status
+        );
+        dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
+        setItineraryLoading(false);
+        setWaitingForStatusUpdate(false);
+        dispatch(
+          openNotification({
+            type: "success",
+            text: "Itinerary has been updated successfully.",
+            heading: "Sucess!",
+          })
+        );
+        props.setEdit(false);
       }
-  }, [itinerary_status,transfers_status,pricing_status,hotels_status,itineraryLoading,waitingForStatusUpdate]);
+    }
+  }, [
+    itinerary_status,
+    transfers_status,
+    pricing_status,
+    hotels_status,
+    itineraryLoading,
+    waitingForStatusUpdate,
+  ]);
 
   const fetchItineraryStatus = async (itineraryId) => {
     try {
       const res = await axiosGetItineraryStatus.get(`/${itineraryId}/status/`);
       const status = res.data?.celery;
-      dispatch(setItineraryStatus("pricing_status", status?.PRICING || "PENDING"));
-      dispatch(setItineraryStatus("transfers_status", status?.TRANSFERS || "PENDING"));
-      dispatch(setItineraryStatus("hotels_status", status?.HOTELS || "PENDING"));
-      dispatch(setItineraryStatus("itinerary_status", status?.ITINERARY || "PENDING"));
+      dispatch(
+        setItineraryStatus("pricing_status", status?.PRICING || "PENDING")
+      );
+      dispatch(
+        setItineraryStatus("transfers_status", status?.TRANSFERS || "PENDING")
+      );
+      dispatch(
+        setItineraryStatus("hotels_status", status?.HOTELS || "PENDING")
+      );
+      dispatch(
+        setItineraryStatus("itinerary_status", status?.ITINERARY || "PENDING")
+      );
       fetchItinerary();
     } catch (err) {
       console.error("[ERROR]: axiosGetItineraryStatus: ", err.message);
     }
   };
 
-  const  fetchItinerary = async  (
-  ) => {   
-   props?.resetRef();
-   setWaitingForStatusUpdate(true);
-   props.fetchData(true);
+  const fetchItinerary = async () => {
+    props?.resetRef();
+    setWaitingForStatusUpdate(true);
+    props.fetchData(true);
   };
 
   const startStatusPolling = (itineraryId) => {
     setItineraryLoading(true);
     setPolling(true);
-    
+
     fetchItineraryStatus(itineraryId);
   };
 
@@ -419,7 +461,6 @@ const RouteEditSection = (props) => {
   };
 
   const submitData = () => {
-    
     const data = {
       itinerary_id: props.ItineraryId || props?.itinerary?.ItineraryId,
       start_date: startDate,
@@ -433,7 +474,7 @@ const RouteEditSection = (props) => {
             city_id: dest.cityData.city_id || dest.cityData.resource_id,
             check_in: dest.cityData.checkin_date,
             check_out: dest.cityData.checkout_date,
-            id: dest.cityData?.hasOwnProperty('id') ? dest.cityData?.id : null,
+            id: dest.cityData?.hasOwnProperty("id") ? dest.cityData?.id : null,
             duration: dest.cityData?.duration || dest.cityData?.nights,
             start_date: dest.cityData.checkin_date || startDate,
           };
@@ -449,7 +490,7 @@ const RouteEditSection = (props) => {
       },
     };
 
-    console.log("New Request Data",data);
+    console.log("New Request Data", data);
 
     const headers = {
       "Content-Type": "application/json",
@@ -461,7 +502,8 @@ const RouteEditSection = (props) => {
         .post("", data, { headers })
         .then((response) => {
           setLoading(false);
-          const itineraryId = props.ItineraryId || props?.itinerary?.ItineraryId;
+          const itineraryId =
+            props.ItineraryId || props?.itinerary?.ItineraryId;
           startStatusPolling(itineraryId);
         })
         .catch((err) => {
@@ -495,7 +537,8 @@ const RouteEditSection = (props) => {
         .then((response) => {
           dispatch(setItinerary(response.data));
           setLoading(false);
-          const itineraryId = props.ItineraryId || props?.itinerary?.ItineraryId;
+          const itineraryId =
+            props.ItineraryId || props?.itinerary?.ItineraryId;
           startStatusPolling(itineraryId);
         })
         .catch((err) => {
@@ -559,9 +602,8 @@ const RouteEditSection = (props) => {
     }
   };
 
- 
-  
   return (
+    <>
     <div
       onClick={(e) => handleOutsideClick(e)}
       className="fixed inset-0 flex flex-col items-center bg-white z-[1025]"
@@ -605,7 +647,7 @@ const RouteEditSection = (props) => {
         setEditDestination={setEditDestination}
       />
 
-     {itineraryLoading && <Spinner isEdit={true} />}
+      {itineraryLoading && <Spinner isEdit={true} />}
 
       <div className="w-full h-fit md:w-[85%] lg:w-[85%] px-3 hide-scrollbar overflow-y-auto py-5">
         {editDestination && !itineraryLoading ? (
@@ -645,27 +687,34 @@ const RouteEditSection = (props) => {
           // />
           ""
         )}
-        {!isDesktop && (
-            <FloatingView>
-              <TbArrowBack
-                style={{ height: "28px", width: "28px" }}
-                cursor={"pointer"}
-                onClick={editDestination
-                  ? () => props.setEdit(false)
-                  : () => setEditDestination(true)}
-              />
-            </FloatingView>
-          )}
       </div>
 
-      {!itineraryLoading && <ActionPanel
-        setEdit={props.setEdit}
-        editDestination={editDestination}
-        setEditDestination={setEditDestination}
-        handleSaveButton={handleSaveButton}
-        itineraryLoading={itineraryLoading}
-      />}
+      {!itineraryLoading && (
+        <ActionPanel
+          setEdit={props.setEdit}
+          editDestination={editDestination}
+          setEditDestination={setEditDestination}
+          handleSaveButton={handleSaveButton}
+          itineraryLoading={itineraryLoading}
+        />
+      )}
+      
+      {!isDesktop && (
+        <FloatingView>
+          <TbArrowBack
+            style={{ height: "28px", width: "28px" }}
+            cursor={"pointer"}
+            onClick={
+              editDestination
+                ? () => props.setEdit(false)
+                : () => setEditDestination(true)
+            }
+          />
+        </FloatingView>
+      )}
     </div>
+   
+    </>
   );
 };
 
@@ -1212,7 +1261,13 @@ export const Destination = (props) => {
             <div className="text-sm text-gray-500">
               {!(startingCity || endingCity) && cityData?.nights
                 ? `${cityData.nights} ${
-                    cityData.nights > 1  ? isPageWide ? "Nights" : "N" : isPageWide ? "Night" : "N"
+                    cityData.nights > 1
+                      ? isPageWide
+                        ? "Nights"
+                        : "N"
+                      : isPageWide
+                      ? "Night"
+                      : "N"
                   }`
                 : null}
             </div>
@@ -1254,7 +1309,7 @@ export const DestinationPopUp = (props) => {
   const [search, setSearch] = useState(
     (cityData?.city_name || cityData?.name || cityData?.text) ?? ""
   );
-  const debouncedSearch=useDebounce(search)
+  const debouncedSearch = useDebounce(search);
   const [destination, setDestination] = useState(cityData);
   const [nights, setNights] = useState(cityData?.nights ?? 1);
   const [searchResults, setSearchResults] = useState(null);
@@ -1269,7 +1324,6 @@ export const DestinationPopUp = (props) => {
 
   const handleSearch = (e) => {
     if (e.target.value) {
-
       logEvent({
         action: "Route Edit",
         params: {
@@ -1282,9 +1336,9 @@ export const DestinationPopUp = (props) => {
     }
     setSearch(e.target.value);
   };
-  useEffect(()=>{
-    handleDestinationSeach(debouncedSearch)
-  },[debouncedSearch])
+  useEffect(() => {
+    handleDestinationSeach(debouncedSearch);
+  }, [debouncedSearch]);
 
   const handleDestinationSeach = (value) => {
     if (startingCity || endingCity) {
@@ -1353,16 +1407,16 @@ export const DestinationPopUp = (props) => {
   const handleUpdateDestination = () => {
     setDestinationChanges(true);
 
-    console.log("New Desti",destination);
+    console.log("New Desti", destination);
 
     setDestinations((prev) => {
       let destinations = [...prev];
       const curDestination = destinations[index];
 
       if (curDestination) {
-        console.log("Currr",curDestination)
+        console.log("Currr", curDestination);
         if (curDestination.startingCity || curDestination.endingCity) {
-          console.log("Currr Is start end",curDestination)
+          console.log("Currr Is start end", curDestination);
           destinations[index] = {
             startingCity: curDestination.startingCity,
             endingCity: curDestination.endingCity,
@@ -1373,7 +1427,7 @@ export const DestinationPopUp = (props) => {
             },
           };
         } else {
-          console.log("Currr Is not start end",curDestination)
+          console.log("Currr Is not start end", curDestination);
           destinations[index] = {
             startingCity: curDestination.startingCity,
             endingCity: curDestination.endingCity,
@@ -1382,7 +1436,6 @@ export const DestinationPopUp = (props) => {
               nights: nights,
               color: curDestination.cityData.color,
               duration: nights,
-              
             },
           };
         }
@@ -2233,30 +2286,41 @@ export const DatePicker = (props) => {
 };
 
 export const ActionPanel = (props) => {
-  const { setEdit, setEditDestination, editDestination, handleSaveButton, itineraryLoading } =
-    props;
+  const {
+    setEdit,
+    setEditDestination,
+    editDestination,
+    handleSaveButton,
+    itineraryLoading,
+  } = props;
 
   return (
     <div className="w-full fixed bottom-0 bg-white py-2 md:py-3 lg:py-3 flex items-center justify-center border-t-2 shadow-lg px-2">
       <div className="flex flex-row gap-4">
-       { !itineraryLoading && <button
-          onClick={
-            editDestination
-              ? () => setEdit(false)
-              : () => setEditDestination(true)
-          }
-          className="px-5 py-2 rounded-lg border-2 border-black hover:text-white hover:bg-black transition ease-in-out duration-500"
-        >
-          {editDestination ? "Cancel" : "Back"}
-        </button>}
-        {<button
-          onClick={handleSaveButton}
-          className="bg-[#F7E700] px-5 py-2 rounded-lg border-2 border-black hover:text-white hover:bg-black transition ease-in-out duration-500"
-        >
-         { itineraryLoading ? (
-                             <PulseLoader size={14} speedMultiplier={0.6} color="black" />
-                           ) : "Save"}
-        </button>}
+        {!itineraryLoading && (
+          <button
+            onClick={
+              editDestination
+                ? () => setEdit(false)
+                : () => setEditDestination(true)
+            }
+            className="px-5 py-2 rounded-lg border-2 border-black hover:text-white hover:bg-black transition ease-in-out duration-500"
+          >
+            {editDestination ? "Cancel" : "Back"}
+          </button>
+        )}
+        {
+          <button
+            onClick={handleSaveButton}
+            className="bg-[#F7E700] px-5 py-2 rounded-lg border-2 border-black hover:text-white hover:bg-black transition ease-in-out duration-500"
+          >
+            {itineraryLoading ? (
+              <PulseLoader size={14} speedMultiplier={0.6} color="black" />
+            ) : (
+              "Save"
+            )}
+          </button>
+        }
       </div>
     </div>
   );

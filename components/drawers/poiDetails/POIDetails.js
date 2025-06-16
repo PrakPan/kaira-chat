@@ -12,7 +12,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import setItinerary from "../../../store/actions/itinerary";
-import {  ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import ReviewPoi from "../../POIDetails/Reviews";
 import useMediaQuery from "../../media";
 import { openNotification } from "../../../store/actions/notification";
@@ -21,21 +21,8 @@ import ImageLoader from "../../ImageLoader";
 import Button from "../../ui/button/Index";
 import Drawer from "../../ui/Drawer";
 import AddPoi from "../AddPoi";
-const FloatingView = styled.div`
-  position: sticky;
-  bottom: 10px;
-  background: black;
-  color: white;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  left: 90%;
-  z-index: 901;
-  cursor: pointer;
-`;
+
+
 export const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -226,7 +213,9 @@ const POIDetails = (props) => {
     } catch (error) {
       console.log("error is:", error);
       const errorMsg =
-     error?.response?.data?.errors?.[0]?.message?.[0] || error.message || "Something went wrong! Please try after some time.";
+        error?.response?.data?.errors?.[0]?.message?.[0] ||
+        error.message ||
+        "Something went wrong! Please try after some time.";
       dispatch(
         openNotification({
           type: "error",
@@ -297,19 +286,21 @@ const POIDetails = (props) => {
           )}
           <div className="flex justify-between">
             <Title>{props.data.name}</Title>
-            {!(props?.removeChange===true)&&<Button
-              padding="7px 25px"
-              borderRadius="7px"
-              onclick={() => {
-                if (!token) {
-                  props?.setShowLoginModal(true);
-                  return;
-                }
-                setShowDrawer(true);
-              }}
-            >
-              Change
-            </Button>}
+            {!(props?.removeChange === true) && (
+              <Button
+                padding="7px 25px"
+                borderRadius="7px"
+                onclick={() => {
+                  if (!token) {
+                    props?.setShowLoginModal(true);
+                    return;
+                  }
+                  setShowDrawer(true);
+                }}
+              >
+                Change
+              </Button>
+            )}
           </div>
 
           <>
@@ -705,15 +696,6 @@ const POIDetails = (props) => {
             />
           </Drawer>
           <ToastContainer />
-          {!isDesktop && (
-        <FloatingView>
-          <TbArrowBack
-            style={{ height: "28px", width: "28px" }}
-            cursor={"pointer"}
-            onClick={(e) => props.handleCloseDrawer(e)}
-          />
-        </FloatingView>
-      )}
         </Container>
       ) : null}
     </>

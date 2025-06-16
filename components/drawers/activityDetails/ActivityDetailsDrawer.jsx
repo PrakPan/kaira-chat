@@ -13,28 +13,47 @@ import ActivityDetailsSkeleton from "./ActivityDetailsSkeleton";
 import setItinerary from "../../../store/actions/itinerary";
 import { duration } from "@mui/material";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
+import { TbArrowBack } from "react-icons/tb";
+import styled from "styled-components";
+import media from "../../media";
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 100px;
+  left: 100%;
+  background: black;
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  z-index: 51;
+  cursor: pointer;
+`;
 
 const ActivityDetailsDrawer = (props) => {
-  console.log("activity detail props are:",props)
+  let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [data, setData] = useState(null);
   const [traceId, setTraceId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [updateAmenities, setUpdateAmenities] = useState(false);
   const itineraryFilters = useSelector((state) => state.ItineraryFilters);
-  const itinerary=useSelector((state)=>state.Itinerary)
-  const CallPaymentInfo=useSelector((state)=>state.CallPaymentInfo)
+  const itinerary = useSelector((state) => state.Itinerary);
+  const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
 
-  const num_adults = props?.pax?.adults
-  const num_children = props?.pax?.children
-  console
+  const num_adults = props?.pax?.adults;
+  const num_children = props?.pax?.children;
+  console;
   const [filterState, setFilterState] = useState({
-    number_of_travelers:  num_adults + num_children,
+    number_of_travelers: num_adults + num_children,
     traveler_ages: Array(num_adults).fill(null),
     children: num_children,
     adults: num_adults,
   });
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (props.show) fetchData();
@@ -56,13 +75,11 @@ const ActivityDetailsDrawer = (props) => {
     }
 
     activityDetail
-      .post(`/${props.activityId}/`, requestData,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        }
-      )
+      .post(`/${props.activityId}/`, requestData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      })
       .then((res) => {
         setTraceId(res.data?.trace_id);
         if (res.data?.data?.activity.name) {
@@ -83,7 +100,6 @@ const ActivityDetailsDrawer = (props) => {
   };
 
   const updatedActivityBooking = async () => {
-  
     try {
       const requestData = {
         itinerary_city_id: props?.itinerary_city_id,
@@ -99,15 +115,15 @@ const ActivityDetailsDrawer = (props) => {
           },
         }
       );
-  
+
       dispatch(SetCallPaymentInfo(!CallPaymentInfo));
-  
+
       const newItinerary = {
         ...itinerary,
         cities: itinerary?.cities?.map((city) => {
           if (city?.id === props?.itinerary_city_id) {
             const updatedActivities = [...(city?.activities || []), res?.data];
-  
+
             const activityData = {
               activity: res?.data?.activity?.id,
               booking: {
@@ -125,7 +141,7 @@ const ActivityDetailsDrawer = (props) => {
               rating: res?.data?.activity?.rating,
               user_ratings_total: res?.data?.activity?.user_ratings_total,
             };
-  
+
             const updatedDayByDay = city?.day_by_day?.map((day) => {
               if (day?.date === props?.date) {
                 return {
@@ -135,7 +151,7 @@ const ActivityDetailsDrawer = (props) => {
               }
               return day;
             });
-  
+
             return {
               ...city,
               activities: updatedActivities,
@@ -145,26 +161,25 @@ const ActivityDetailsDrawer = (props) => {
           return city;
         }),
       };
-  
+
       dispatch(setItinerary(newItinerary));
-  
+
       if (props?.activityBookings == null) {
         props?.setActivityBookings([res?.data]);
       } else {
         props.setActivityBookings([...props?.activityBookings, res?.data]);
       }
-  
+
       props.openNotification({
         type: "success",
         text: `Added ${res?.data?.name} activity to the itinerary`,
         heading: "Success!",
       });
-      props?.setShowDrawer(false)
+      props?.setShowDrawer(false);
       return res; // ✅ return response so the caller knows it succeeded
-  
     } catch (err) {
       console.error("error is:", err);
-  
+
       if (err?.response?.status === 403) {
         props.openNotification({
           text: "You are not allowed to make changes to this itinerary",
@@ -178,11 +193,10 @@ const ActivityDetailsDrawer = (props) => {
           type: "error",
         });
       }
-  
+
       return err; // ❗ rethrow so the caller can handle error
     }
   };
-  
 
   return (
     <Drawer
@@ -215,6 +229,16 @@ const ActivityDetailsDrawer = (props) => {
           name={props.name}
           handleCloseDrawer={props.handleCloseDrawer}
         />
+      )}
+
+      {!isPageWide && (
+        <FloatingView>
+          <TbArrowBack
+            style={{ height: "28px", width: "28px" }}
+            cursor={"pointer"}
+            onClick={(e) => props.handleCloseDrawer(e)}
+          />
+        </FloatingView>
       )}
     </Drawer>
   );

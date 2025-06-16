@@ -17,7 +17,28 @@ import { toast } from "react-toastify";
 import BackArrow from "../../ui/BackArrow";
 import { openNotification } from "../../../store/actions/notification";
 import FullScreenGallery from "../../fullscreengallery/Index";
-import Skeleton from "../../modals/ViewHotelDetails/Skeleton"
+import Skeleton from "../../modals/ViewHotelDetails/Skeleton";
+import media from "../../media";
+
+import { TbArrowBack } from "react-icons/tb";
+
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 60px;
+  left: 100%;
+  background: black;
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  z-index: 251;
+  cursor: pointer;
+`;
+
 const Container = styled.div`
   padding: 0 0.75rem 0.75rem 0.75rem;
   @media screen and (min-width: 768px) {
@@ -40,36 +61,9 @@ const BackContainer = styled.div`
   }
 `;
 
-const BackText = styled.div`
-  font-size: 1.5rem;
-  line-height: 2rem;
-`;
-
-const FloatingVContaineriew = styled.div`
-  position: sticky;
-  bottom: 10px;
-  background: #f7e700;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  left: 90%;
-  z-index: 2;
-  cursor: pointer;
-`;
-
-const ErrorContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  width: 90%;
-  margin: auto;
-  text-align: center;
-`;
 const ItineraryCity = (props) => {
+  let isPageWide = media("(min-width: 768px)");
+
   const router = useRouter();
   const [viewMore, setViewMore] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
@@ -86,7 +80,7 @@ const ItineraryCity = (props) => {
     setImages(images);
   };
 
-  const fetchDetails = async() => {
+  const fetchDetails = async () => {
     setShowDetails(true);
     setLoading(true);
     await bookingDetails
@@ -278,10 +272,9 @@ const ItineraryCity = (props) => {
             index={props?.index}
             intracityBookings={props?.intracityBookings}
             _updateFlightBookingHandler={props?._updateFlightBookingHandler}
-                      _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
-                      _updatePaymentHandler={props?._updatePaymentHandler}
-                      getPaymentHandler={props?.getPaymentHandler}
-           
+            _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
+            _updatePaymentHandler={props?._updatePaymentHandler}
+            getPaymentHandler={props?.getPaymentHandler}
           />
         )
       ) : null}
@@ -346,9 +339,16 @@ const ItineraryCity = (props) => {
             ) : null}
           </Container>
         )}
+        {!isPageWide && (
+          <FloatingView>
+            <TbArrowBack
+              style={{ height: "28px", width: "28px" }}
+              cursor={"pointer"}
+              onClick={() => setShowDetails(false)}
+            />
+          </FloatingView>
+        )}
       </Drawer>
-
-      
     </div>
   );
 };

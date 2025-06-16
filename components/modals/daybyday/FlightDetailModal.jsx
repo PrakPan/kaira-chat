@@ -16,7 +16,8 @@ import { Generalbuttonstyle } from "../../ui/button/Generallinkbutton";
 import { TbArrowBack } from "react-icons/tb";
 const FloatingView = styled.div`
   position: sticky;
-  bottom: 10px;
+  bottom: 0;
+  right: 0;
   background: black;
   color: white;
   border-radius: 50%;
@@ -25,7 +26,8 @@ const FloatingView = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  left: 90%;
+  margin-bottom: 60px;
+  margin-right: 16px;
   z-index: 2;
   cursor: pointer;
 `;
@@ -199,7 +201,7 @@ const FlightDetailModal = ({
                   <div>
                     <Image src="/delete.svg" width={"20"} height={"20"} />
                   </div>{" "}
-                  <div>Delete= Booking</div>
+                  <div>Delete Booking</div>
                 </div>
               </div>
               {loading && (
@@ -219,8 +221,7 @@ const FlightDetailModal = ({
           </button>
         </div>
       )}
-
-      {!isPageWide && (
+      {/* {!isPageWide && (
         <FloatingView>
           <TbArrowBack
             style={{ height: "28px", width: "28px" }}
@@ -228,7 +229,7 @@ const FlightDetailModal = ({
             onClick={() => setShowDetails((prev) => !prev)}
           />
         </FloatingView>
-      )}
+      )} */}
 
       <ToastContainer />
     </div>

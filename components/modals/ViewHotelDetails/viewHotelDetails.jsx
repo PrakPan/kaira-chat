@@ -42,10 +42,10 @@ const BackContainer = styled.div`
   }
 `;
 
-
 const FloatingView = styled.div`
   position: sticky;
-  bottom: 10px;
+  bottom: 60px;
+  left: 100%;
   background: black;
   color: white;
   border-radius: 50%;
@@ -54,10 +54,11 @@ const FloatingView = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  left: 90%;
-  z-index: 2;
+  margin-right: 16px;
+  z-index: 900;
   cursor: pointer;
 `;
+
 
 const BackText = styled.div`
   font-size: 1.5rem;
@@ -90,7 +91,7 @@ const ErrorContainer = styled.div`
 `;
 
 const ViewHotelDetails = (props) => {
-  console.log("login props are:",props)
+  console.log("login props are:", props);
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -98,8 +99,8 @@ const ViewHotelDetails = (props) => {
   const [error, setError] = useState(false);
   const itineraryDaybyDay = useSelector((state) => state.Itinerary);
   const [drawerWidth, setDrawerWidth] = useState("50%");
-const dispatch=useDispatch()
-const CallPaymentInfo=useSelector((state)=>state.CallPaymentInfo)
+  const dispatch = useDispatch();
+  const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
   useEffect(() => {
     const handleResize = () => {
       setDrawerWidth(window.innerWidth <= 986 ? "100%" : "50%");
@@ -126,23 +127,21 @@ const CallPaymentInfo=useSelector((state)=>state.CallPaymentInfo)
         check_in: (props?.check_in).split("/").join("-"),
         check_out: (props?.check_out).split("/").join("-"),
         hotel_id: props?.id,
-        occupancies: props?.occupancies?.map((item)=>{
+        occupancies: props?.occupancies?.map((item) => {
           return {
-            num_adults:item.adults,
-            child_ages:item.childAges
-          }
+            num_adults: item.adults,
+            child_ages: item.childAges,
+          };
         }),
         source: props?.source,
         currency: "INR",
       };
       hotelDetails
-        .post("", requestData,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            },
-          }
-        )
+        .post("", requestData, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        })
         .then((res) => {
           setLoading(false);
           setData(res.data);
@@ -172,7 +171,8 @@ const CallPaymentInfo=useSelector((state)=>state.CallPaymentInfo)
         paramsObj.source = "Agoda";
       }
       fetchaccommodations
-        .get("", { params: paramsObj,
+        .get("", {
+          params: paramsObj,
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
@@ -201,7 +201,7 @@ const CallPaymentInfo=useSelector((state)=>state.CallPaymentInfo)
       (item) => item?.city?.id == props.plan[index].city_id
     );
     // console.log("Iti City",itinerary_city);
-console.log("hotel name:",data?.name)
+    console.log("hotel name:", data?.name);
     const requestData = {
       rates: rates,
       itinerary_code: data?.itinerary_code,
@@ -225,7 +225,7 @@ console.log("hotel name:",data?.name)
       .then((response) => {
         props._updateStayBookingHandler([response.data]);
         props.setUpdateBookingState(false);
-        dispatch(SetCallPaymentInfo(!CallPaymentInfo))
+        dispatch(SetCallPaymentInfo(!CallPaymentInfo));
         setTimeout(() => {
           props.getPaymentHandler();
         }, 1000);
@@ -249,10 +249,9 @@ console.log("hotel name:",data?.name)
             text: `${data?.name} added to itinerary Successfully`,
             heading: "Success!",
           });
-          props?.handleClose()
-          props?.onHide()
+          props?.handleClose();
+          props?.onHide();
         } catch (error) {
-          
           props.openNotification({
             type: "error",
             text: `${error.response?.data?.errors[0]?.message[0]}`,
@@ -283,7 +282,7 @@ console.log("hotel name:",data?.name)
       {!loading ? (
         <Container>
           <BackContainer className=" font-lexend">
-            <BackArrow handleClick={props.onHide}/>
+            <BackArrow handleClick={props.onHide} />
           </BackContainer>
           {!error ? (
             <div>
@@ -337,18 +336,18 @@ console.log("hotel name:",data?.name)
               Oops! There seems to be a problem, please try again later!
             </ErrorContainer>
           )}
-          {!isPageWide && (
-            <FloatingView>
-              <TbArrowBack
-                style={{ height: "28px", width: "28px" }}
-                cursor={"pointer"}
-                onClick={props.onHide}
-              />
-            </FloatingView>
-          )}
         </Container>
       ) : (
         <Skeleton onHide={props.onHide} />
+      )}
+      {!isPageWide && (
+        <FloatingView>
+          <TbArrowBack
+            style={{ height: "28px", width: "28px" }}
+            cursor={"pointer"}
+            onClick={props.onHide}
+          />
+        </FloatingView>
       )}
     </Drawer>
   );
