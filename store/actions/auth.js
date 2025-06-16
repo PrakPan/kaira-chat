@@ -187,6 +187,16 @@ export const checkAuthState = () => {
       //Token expired
       const expirationDate = new Date(localStorage.getItem("expirationDate"));
       if (expirationDate <= new Date()) {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("name");
+        localStorage.removeItem("email");
+        localStorage.removeItem("phone");
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("expirationDate");
+        localStorage.removeItem("MyPlans");
+        localStorage.removeItem("user_image");
+
+        restartBot()
         dispatch(authLogout());
         //refresh token
       }

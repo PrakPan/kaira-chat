@@ -1428,15 +1428,6 @@ const FlightBooking = ({
           </>
         )}
       </Drawer>
-      {!isPageWide && (
-        <FloatingView>
-          <TbArrowBack
-            style={{ height: "28px", width: "28px" }}
-            cursor={"pointer"}
-            onClick={() => setHandleShow(false)}
-          />
-        </FloatingView>
-      )}
     </div>
   );
 };
