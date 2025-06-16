@@ -43,7 +43,7 @@ const PinSection = (props) => {
   
 
   return (
-    <Container className="cursor-pointer w-fit" onClick={() => handleClick()}>
+    <Container className="cursor-pointer w-fit" onClick={() => {if(props?.mercury) handleClick();}}>
       {props?.mercury ?
        <BriefPin duration={props.duration} pinColour={props.pinColour} index={props?.index} length={props?.length}/> : <Pin duration={props.duration} pinColour={props.pinColour} index={props?.index} length={props?.length}></Pin>}
       <Heading
@@ -64,10 +64,10 @@ const PinSection = (props) => {
           <></>
         ) : (
           <IconContainer className="IconContainer">
-            <MdNavigateNext
+           {props?.mercury && <MdNavigateNext
               style={{ fontSize: "1.5rem" }}
               className="AnimateRight"
-            />
+            />}
           </IconContainer>
         )}
       </Heading>

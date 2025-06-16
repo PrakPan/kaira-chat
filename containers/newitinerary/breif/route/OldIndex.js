@@ -92,6 +92,7 @@ const Route = (props) => {
       for (var i = 0; i < props.routes.length; i += 2) {
         locationsArr.push(
           <PinSection
+            version={"v1"}
             startingCity={i === 0}
             endingCity={i === props.routes.length - 1}
             setCurrentPopup={props.setCurrentPopup}
@@ -156,6 +157,7 @@ const Route = (props) => {
             ) {
               locationsArr.push(
                 <PinSection
+                  version={"v1"}
                   setCurrentPopup={props.setCurrentPopup}
                   handlemap={handlemap}
                   dayId={
@@ -215,6 +217,7 @@ const Route = (props) => {
         for (var i = 0; i < props.breif.city_slabs.length; i++) {
           locationsArr.push(
             <PinSection
+              version={"v1"}
               startingCity={i === 0}
               endingCity={i === props.breif.city_slabs.length - 1}
               setCurrentPopup={props.setCurrentPopup}
