@@ -547,7 +547,7 @@ const OldSimpleTabsV2 = (props) => {
               getAccommodationAndActivitiesHandler={
                 props.getAccommodationAndActivitiesHandler
               }
-              setShowBookingModal={() => props.setShowBookingModal(true)}
+              setShowBookingModal={props.setShowBookingModal}
               _GetInTouch={_GetInTouch}
             ></NewItenaryDBDMob>
           </div>
@@ -566,7 +566,7 @@ const OldSimpleTabsV2 = (props) => {
               _updateStayBookingHandler={props._updateStayBookingHandler}
               _updatePaymentHandler={props._updatePaymentHandler}
               getPaymentHandler={props.getPaymentHandler}
-              setShowBookingModal={() => props.setShowBookingModal(true)}
+              setShowBookingModal={props.setShowBookingModal}
               showBookingModal={props.showBookingModal}
               setHideBookingModal={props.setHideBookingModal}
               payment={props.payment}
@@ -594,7 +594,7 @@ const OldSimpleTabsV2 = (props) => {
                 showFlightModal={props.showFlightModal}
                 setShowFlightModal={_handleFlighModalShow}
                 setHideFlightModal={_handleFlightModalClose}
-                setShowBookingModal={() => props.setShowBookingModal(true)}
+                setShowBookingModal={props.setShowBookingModal}
                 setHideBookingModal={props.setHideBookingModal}
                 payment={props.payment}
                 transferBookings={props?.transferBookings}
@@ -625,7 +625,7 @@ const OldSimpleTabsV2 = (props) => {
                 _updatePaymentHandler={props._updatePaymentHandler}
                 flightBookings={props.flightBookings}
                 getPaymentHandler={props.getPaymentHandler}
-                setShowBookingModal={() => props.setShowBookingModal(true)}
+                setShowBookingModal={props.setShowBookingModal}
                 showBookingModal={props.showBookingModal}
                 setHideBookingModal={props.setHideBookingModal}
                 activityBookings={props.activityBookings}
@@ -745,7 +745,7 @@ const OldSimpleTabsV2 = (props) => {
                     getAccommodationAndActivitiesHandler={
                       props.getAccommodationAndActivitiesHandler
                     }
-                    setShowBookingModal={() => props.setShowBookingModal(true)}
+                    setShowBookingModal={props.setShowBookingModal}
                     _GetInTouch={_GetInTouch}
                   ></NewItenaryMain>
                 )}
@@ -764,7 +764,7 @@ const OldSimpleTabsV2 = (props) => {
                   transferBookings={props.transferBookings}
                   stayBookings={props.stayBookings}
                   activityBookings={props.activityBookings}
-                  setShowBookingModal={() => props.setShowBookingModal(true)}
+                  setShowBookingModal={props.setShowBookingModal}
                   _GetInTouch={_GetInTouch}
                 ></NewItenaryDBDMob>
               </div>
@@ -793,7 +793,7 @@ const OldSimpleTabsV2 = (props) => {
                   _updateStayBookingHandler={props._updateStayBookingHandler}
                   _updatePaymentHandler={props._updatePaymentHandler}
                   getPaymentHandler={props.getPaymentHandler}
-                  setShowBookingModal={() => props.setShowBookingModal(true)}
+                  setShowBookingModal={props.setShowBookingModal}
                   showBookingModal={props.showBookingModal}
                   setHideBookingModal={props.setHideBookingModal}
                   payment={props.payment}
@@ -825,7 +825,7 @@ const OldSimpleTabsV2 = (props) => {
                   showFlightModal={props.showFlightModal}
                   setShowFlightModal={_handleFlighModalShow}
                   setHideFlightModal={_handleFlightModalClose}
-                  setShowBookingModal={() => props.setShowBookingModal(true)}
+                  setShowBookingModal={props.setShowBookingModal}
                   setHideBookingModal={props.setHideBookingModal}
                   payment={props.payment}
                   transferBookings={props?.transferBookings}
@@ -856,7 +856,7 @@ const OldSimpleTabsV2 = (props) => {
                   _updatePaymentHandler={props._updatePaymentHandler}
                   flightBookings={props.flightBookings}
                   getPaymentHandler={props.getPaymentHandler}
-                  setShowBookingModal={() => props.setShowBookingModal(true)}
+                  setShowBookingModal={props.setShowBookingModal}
                   showBookingModal={props.showBookingModal}
                   setHideBookingModal={props.setHideBookingModal}
                   activityBookings={props.activityBookings}
