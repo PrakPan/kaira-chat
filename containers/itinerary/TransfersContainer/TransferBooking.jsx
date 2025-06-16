@@ -486,7 +486,7 @@ const TransferBooking = ({
                               </div>
                             )}
                           </div>
-                          <div className="flex justify-between items-center w-full">
+                          <div className="flex flex-col md:flex-row justify-between items-center w-full">
                             <div className="flex flex-col  w-full">
                               <div className="text-[16px] font-medium w-full">
                                 <>{booking?.name}</>
@@ -495,7 +495,7 @@ const TransferBooking = ({
                                 <>{booking?.type}</>
                               </div>
 
-                              {booking?.transfer_details && (
+                              {isPageWide && booking?.transfer_details && (
                                 <div className="text-[#01202B] font-normal flex  justify-start items-center mt-1 flex-wrap">
                                   <span className="pr-1 sm:text-sm text-[0.82rem]">
                                     Facilities:
@@ -566,6 +566,7 @@ const TransferBooking = ({
                                 </div>
                               )}
                             </div>
+
                             {!payment?.paid_user && (
                               <>
                                 <div className="pr-2">
@@ -587,6 +588,64 @@ const TransferBooking = ({
                             )}
                           </div>
                         </div>
+                        {!isPageWide && booking?.transfer_details && (
+                          <div className="text-[#01202B] font-normal flex flex-col mt-1 sm:text-sm text-[0.82rem]">
+                            <span className="pr-1">Facilities:</span>
+                            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1">
+                              {(() => {
+                                const details = [];
+
+                                const seatingCapacity =
+                                  booking?.transfer_details?.quote
+                                    ?.taxi_category?.seating_capacity ??
+                                  booking?.number_of_adults +
+                                    booking?.number_of_children +
+                                    booking?.number_of_infants;
+
+                                if (seatingCapacity) {
+                                  details.push(
+                                    `${seatingCapacity} Seat${
+                                      seatingCapacity > 1 ? "s" : ""
+                                    }`
+                                  );
+                                }
+
+                                const bagCapacity =
+                                  booking?.transfer_details?.quote
+                                    ?.taxi_category?.bag_capacity;
+                                if (bagCapacity > 0) {
+                                  details.push(
+                                    `${bagCapacity} Luggage bag${
+                                      bagCapacity > 1 ? "s" : ""
+                                    }`
+                                  );
+                                }
+
+                                const fuelType =
+                                  booking?.transfer_details?.quote
+                                    ?.taxi_category?.fuel_type;
+                                if (fuelType) {
+                                  details.push(`Fuel: ${fuelType}`);
+                                }
+
+                                return details.map((text, index) => (
+                                  <span
+                                    key={index}
+                                    className="sm:text-sm text-[0.74rem] font-normal flex items-center"
+                                  >
+                                    {text}
+                                    {index !== details.length - 1 && (
+                                      <span className="mx-1 text-[#666]">
+                                        |
+                                      </span>
+                                    )}
+                                  </span>
+                                ));
+                              })()}
+                            </div>
+                          </div>
+                        )}
+
                         <div className="md:hidden w-full">
                           {!payment?.paid_user && (
                             <>
@@ -964,7 +1023,7 @@ const TransferBooking = ({
                               )}
                             </div>
 
-                            {book?.transfer_details && (
+                            {isPageWide && book?.transfer_details && (
                               <div className="text-[#01202B] font-normal flex  justify-start items-center mt-1 flex-wrap">
                                 <span className="pr-1 sm:text-sm text-[0.82rem]">
                                   Facilities:
@@ -1093,6 +1152,61 @@ const TransferBooking = ({
                           )}
                         </div>
                       </div>
+                      {!isPageWide && book?.transfer_details && (
+                        <div className="text-[#01202B] font-normal flex flex-col mt-1 sm:text-sm text-[0.82rem]">
+                          <span className="pr-1">Facilities:</span>
+                          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1">
+                            {(() => {
+                              const details = [];
+
+                              const seatingCapacity =
+                                book?.transfer_details?.quote?.taxi_category
+                                  ?.seating_capacity ??
+                                book?.number_of_adults +
+                                  book?.number_of_children +
+                                  book?.number_of_infants;
+
+                              if (seatingCapacity) {
+                                details.push(
+                                  `${seatingCapacity} Seat${
+                                    seatingCapacity > 1 ? "s" : ""
+                                  }`
+                                );
+                              }
+
+                              const bagCapacity =
+                                book?.transfer_details?.quote?.taxi_category
+                                  ?.bag_capacity;
+                              if (bagCapacity > 0) {
+                                details.push(
+                                  `${bagCapacity} Luggage bag${
+                                    bagCapacity > 1 ? "s" : ""
+                                  }`
+                                );
+                              }
+
+                              const fuelType =
+                                book?.transfer_details?.quote?.taxi_category
+                                  ?.fuel_type;
+                              if (fuelType) {
+                                details.push(`Fuel: ${fuelType}`);
+                              }
+
+                              return details.map((text, index) => (
+                                <span
+                                  key={index}
+                                  className="sm:text-sm text-[0.74rem] font-normal flex items-center"
+                                >
+                                  {text}
+                                  {index !== details.length - 1 && (
+                                    <span className="mx-1 text-[#666]">|</span>
+                                  )}
+                                </span>
+                              ));
+                            })()}
+                          </div>
+                        </div>
+                      )}
                       <div className="md:hidden w-full">
                         {!payment?.paid_user && (
                           <>
@@ -1115,63 +1229,53 @@ const TransferBooking = ({
                         )}
                       </div>
                     </div>
-                    <div className="h-full">
-                      <Drawer
-                        show={showVehicleDrawer}
-                        anchor="right"
-                        mobileWidth="100vw"
-                        width="50vw"
-                        style={1503}
-                        className="font-lexend"
-                        onHide={() => setShowVehicleDrawer(false)}
-                      >
-                        {loading ? (
-                          <>
-                            <VehicleDetailLoader
+
+                    <Drawer
+                      show={showVehicleDrawer}
+                      anchor="right"
+                      mobileWidth="100vw"
+                      width="50vw"
+                      style={1503}
+                      className="font-lexend"
+                      onHide={() => setShowVehicleDrawer(false)}
+                    >
+                      {loading ? (
+                        <>
+                          <VehicleDetailLoader
+                            setHandleShow={setShowVehicleDrawer}
+                          />
+                        </>
+                      ) : (
+                        <>
+                          {vehicleDetails?.booking_type == "Taxi" ? (
+                            <TaxiDetailModal
+                              data={vehicleDetails}
+                              loading={loading}
+                              setIsOpen={setShowVehicleDrawer}
+                              handleDelete={handleDelete}
                               setHandleShow={setShowVehicleDrawer}
+                              booking={booking}
+                              type={"combo"}
+                              setShowDrawer={setShowDrawer}
+                              noChange={isIntracity || isAirport}
+                              // noChange={true}
                             />
-                          </>
-                        ) : (
-                          <>
-                            {vehicleDetails?.booking_type == "Taxi" ? (
-                              <TaxiDetailModal
-                                data={vehicleDetails}
-                                loading={loading}
-                                setIsOpen={setShowVehicleDrawer}
-                                handleDelete={handleDelete}
-                                setHandleShow={setShowVehicleDrawer}
-                                booking={booking}
-                                type={"combo"}
-                                setShowDrawer={setShowDrawer}
-                                noChange={isIntracity || isAirport}
-                                // noChange={true}
-                              />
-                            ) : (
-                              <VehicleDetailModal
-                                data={vehicleDetails}
-                                loading={loading}
-                                setIsOpen={setShowVehicleDrawer}
-                                handleDelete={handleDelete}
-                                setHandleShow={setShowVehicleDrawer}
-                                booking={booking}
-                                type={"combo"}
-                                setShowDrawer={setShowDrawer}
-                                noChange={isIntracity || isAirport}
-                              />
-                            )}
-                          </>
-                        )}
-                        {!isPageWide && (
-                          <FloatingView>
-                            <TbArrowBack
-                              style={{ height: "28px", width: "28px" }}
-                              cursor={"pointer"}
-                              onClick={() => setShowVehicleDrawer(false)}
+                          ) : (
+                            <VehicleDetailModal
+                              data={vehicleDetails}
+                              loading={loading}
+                              setIsOpen={setShowVehicleDrawer}
+                              handleDelete={handleDelete}
+                              setHandleShow={setShowVehicleDrawer}
+                              booking={booking}
+                              type={"combo"}
+                              setShowDrawer={setShowDrawer}
+                              noChange={isIntracity || isAirport}
                             />
-                          </FloatingView>
-                        )}
-                      </Drawer>
-                    </div>
+                          )}
+                        </>
+                      )}
+                    </Drawer>
                   </div>
                 </>
               )}
@@ -1266,6 +1370,54 @@ const FlightBooking = ({
     }
     setShowDetails(false);
     setShowDrawer(true);
+
+    // let name = booking["name"];
+    // let costings_breakdown = booking["costings_breakdown"]; //not prsent
+    // let cost = booking["booking_cost"]; //not present
+    // let itinerary_id = router.query.id; // not present
+    // let itinerary_name = booking["name"]; // not present
+    // let tailored_id = booking["tailored_itinerary"]; // not present
+    // let id = booking["id"];
+    // let check_in =
+    //   booking?.transfer_details?.items?.[0]?.segments[0]?.origin
+    //     ?.departure_time;
+    // let check_out = booking["check_out"]; // not present
+    // let pax = {
+    //   number_of_adults: booking["number_of_adults"],
+    //   number_of_children: booking["number_of_children"],
+    //   number_of_infants: booking["number_of_infants"],
+    // };
+    // let city = booking["city"];
+    // let taxi_type = booking["taxi_type"];
+    // let transfer_type = booking["transfer_type"];
+    // let destination_city = booking["destination_city"];
+    // let origin_iata = booking?.transfer_details?.source?.code;
+    // let destination_iata = booking?.transfer_details?.destination?.code;
+    // let user_selected = booking?.user_selected;
+    // let edge = booking?.edge;
+    // _changeFlightHandler(
+    //   name,
+    //   itinerary_id,
+    //   tailored_id,
+    //   id,
+    //   check_in,
+    //   check_out,
+    //   pax,
+    //   city,
+    //   itinerary_name,
+    //   cost,
+    //   costings_breakdown,
+    //   origin_iata,
+    //   destination_iata,
+    //   destination_city,
+    //   taxi_type,
+    //   transfer_type,
+    //   user_selected,
+    //   booking?.id,
+    //   originCityId,
+    //   destinationCityId,
+    //   edge
+    // );
 
     logEvent({
       action: "Transfer_Add_Change",

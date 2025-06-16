@@ -1185,7 +1185,7 @@ const SimpleTabsV2 = (props) => {
         </SplitScreen>
       ) : null}
 
-      <div className="z-10 sticky shadow-lg z-2 bottom-[0px] bg-white px-1 py-2 md:hidden -mx-5">
+      <div className="z-10 fixed bottom-0 left-0 right-0 shadow-lg bg-white px-4 py-2 md:hidden">
         <div className="flex flex-row justify-between items-center mx-3">
           <div className="flex flex-col">
             <div className="flex justify-between">
@@ -1317,9 +1317,9 @@ const SimpleTabsV2 = (props) => {
                   ITINERARY_STATUSES?.itinerary_finalized ||
                   pricing_status === "SUCCESS") &&
                 !props.payment?.paid_user &&
-                props.payment?.user_allowed_to_pay ? (
-                  props.payment.total_cost > 0 ||
-                  props?.payment?.discounted_cost > 0 ? (
+                // props.payment?.user_allowed_to_pay ? (
+                  (props.payment.total_cost > 0 ||
+                  props?.payment?.discounted_cost > 0) ? (
                     <div className="">
                       <Button
                         color="#111"
@@ -1336,24 +1336,26 @@ const SimpleTabsV2 = (props) => {
                         View Inclusions
                       </Button>
                     </div>
-                  ) : (
-                    <div className="">
-                      <Button
-                        color="#111"
-                        fontWeight="600"
-                        fontSize="0.85rem"
-                        borderWidth="1px"
-                        width="10rem"
-                        borderRadius="8px"
-                        bgColor="#f8e000"
-                        onclick={() => handleButtonClick("Add Hotels")}
-                      >
-                        Add Hotels
-                      </Button>
-                    </div>
                   )
-                ) : !props.payment.paid_user ? (
-                  props.payment.is_registration_needed ? (
+                  //  : (
+                  //   <div className="">
+                  //     <Button
+                  //       color="#111"
+                  //       fontWeight="600"
+                  //       fontSize="0.85rem"
+                  //       borderWidth="1px"
+                  //       width="10rem"
+                  //       borderRadius="8px"
+                  //       bgColor="#f8e000"
+                  //       onclick={() => handleButtonClick("Add Hotels")}
+                  //     >
+                  //       Add Hotels
+                  //     </Button>
+                  //   </div>
+                  // )
+                // ) 
+                : !props.payment.paid_user ? (
+                  // props.payment.is_registration_needed ? (
                     <div className="">
                       <Button
                         color="#111"
@@ -1370,7 +1372,8 @@ const SimpleTabsV2 = (props) => {
                         View Inclusions
                       </Button>
                     </div>
-                  ) : (
+                  )
+                   : (
                     <GetInTouchContainer className="">
                       <Button
                         color="#111"
@@ -1405,21 +1408,55 @@ const SimpleTabsV2 = (props) => {
                       </Button>
                     </GetInTouchContainer>
                   )
-                ) : (
-                  <Button
-                    color="#111"
-                    fontWeight="600"
-                    fontSize="0.85rem"
-                    borderWidth="1px"
-                    width="10rem"
-                    borderRadius="8px"
-                    bgColor="#f8e000"
-                    onclick={() => handleButtonClick("View Bookingstays")}
-                  >
-                    View Bookings
-                  </Button>
-                )
-              ) : null}
+                ) :
+                //  (
+                //   <Button
+                //     color="#111"
+                //     fontWeight="600"
+                //     fontSize="0.85rem"
+                //     borderWidth="1px"
+                //     width="10rem"
+                //     borderRadius="8px"
+                //     bgColor="#f8e000"
+                //     onclick={() => handleButtonClick("View Bookingstays")}
+                //   >
+                //     View Bookings
+                //   </Button>
+                // )
+              // ) 
+              <GetInTouchContainer className="">
+                      <Button
+                        color="#111"
+                        fontWeight="600"
+                        fontSize="0.85rem"
+                        borderWidth="2px"
+                        width="10rem"
+                        borderRadius="8px"
+                        bgColor="#f8e000"
+                        loading={loading}
+                        onclick={handleGetInTouch}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            gap: "0.5rem",
+                            alignItems: "center",
+                          }}
+                        >
+                          <ImageLoader
+                            dimensions={{ height: 50, width: 50 }}
+                            dimensionsMobile={{ height: 50, width: 50 }}
+                            height={"20px"}
+                            width={"20px"}
+                            widthmobile={"20px"}
+                            leftalign
+                            url={"media/icons/login/customer-service-black.png"}
+                          />{" "}
+                          <span>Get in touch!</span>
+                        </div>
+                      </Button>
+                    </GetInTouchContainer>}
             </>
           )}
         </div>
