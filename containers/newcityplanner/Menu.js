@@ -12,6 +12,9 @@ import AsSeenIn from "../testimonial/AsSeenIn";
 import PathNavigation from "../travelplanner/PathNavigation";
 import H3 from "../../components/heading/H3";
 import media from "../../components/media";
+import openTailoredModal from "../../services/openTailoredModal";
+import { useRouter } from "next/router";
+import { logEvent } from "../../services/ga/Index";
 
 const MenuContainer = styled.div`
   width: 95%;
@@ -74,11 +77,26 @@ const P = styled.p`link
 
 const Menu = (props) => {
   let isPageWide = media("(min-width: 768px)");
+  const router=useRouter()
+  const handlePlanButtonClick = () => {
+    openTailoredModal(router, props.data.id, props.data.name,props.type)
+
+    logEvent({
+      action: "Plan_Itinerary",
+      params: {
+        page: props.page ? props.page : "Home Page",
+        event_category: "Button Click",
+        event_label: "Plan Itinerary For Free",
+        event_action: "How it works?",
+      },
+    });
+  };
+
   return (
     <MenuContainer thingsToDoPage={props.thingsToDoPage}>
       <PathNavigation path={props.data?.path} />
 
-      {!!props.data.itinerary_data.length && (
+      {!!props.data.itineraries.length && (
         <MenuItem id="Itinerary">
           <H3
             style={{
@@ -88,7 +106,7 @@ const Menu = (props) => {
           >
             Trips by our users to {props.data.name}
           </H3>
-          <TopRecommendations itinerary_data={props.data.itinerary_data} />
+          <TopRecommendations itineraries={props.data.itineraries} />
         </MenuItem>
       )}
 
@@ -126,6 +144,7 @@ const Menu = (props) => {
             activities={props.data.activities}
             city={props.data.name}
             removeDelete={props?.removeDelete}
+            handlePlanButtonClick={handlePlanButtonClick}
           />
         </MenuItem>
       ) : null}
@@ -147,6 +166,7 @@ const Menu = (props) => {
             pois={props.data.pois}
             city={props.data.name}
             removeDelete={props?.removeDelete}
+            removeChange={true}
           />
         </MenuItem>
       )}

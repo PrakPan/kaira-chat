@@ -13,10 +13,10 @@ export default function NewHotelBooking({
   openDetails,
   duration,
   num_adults,
+  num_children,
   handleClick,
   key,
 }) {
-  console.log("num_adults:", num_adults);
 
   const starRating = (rating) => {
     var stars = [];
@@ -130,7 +130,7 @@ export default function NewHotelBooking({
                     <div className="text-sm font-[400] gap-2 flex flex-row items-center">
                       <BsPeopleFill className="text-sm text-[#7A7A7A]" />
                       <div className=" text-sm font-[400] min-w-fit">
-                        {num_adults} Adults
+                        {num_adults + num_children} {num_adults + num_children>1?"Travellers":"Traveller"}
                       </div>
                     </div>
                   </div>

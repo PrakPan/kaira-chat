@@ -4,9 +4,7 @@ import { useState } from "react";
 import { TbArrowBack } from "react-icons/tb";
 import SkeletonCard from "../../ui/SkeletonCard";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
-import { IoMdClose } from "react-icons/io";
-import ReviewComponent from "../../Reviews/Reviews";
-import { GOOGLE_MAPS_API_KEY, MERCURY_HOST } from "../../../services/constants";
+import { MERCURY_HOST } from "../../../services/constants";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { PulseLoader } from "react-spinners";
@@ -14,7 +12,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import setItinerary from "../../../store/actions/itinerary";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import ReviewPoi from "../../POIDetails/Reviews";
 import useMediaQuery from "../../media";
 import { openNotification } from "../../../store/actions/notification";
@@ -23,6 +21,8 @@ import ImageLoader from "../../ImageLoader";
 import Button from "../../ui/button/Index";
 import Drawer from "../../ui/Drawer";
 import AddPoi from "../AddPoi";
+
+
 export const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -120,7 +120,7 @@ const ScrollContainer = styled.div`
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
 const POIDetails = (props) => {
-  console.log("poi details are:", props);
+  const isDesktop = useMediaQuery("(min-width:768px)");
   const isSmallScreen = useMediaQuery("(max-width:586px)");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -213,7 +213,9 @@ const POIDetails = (props) => {
     } catch (error) {
       console.log("error is:", error);
       const errorMsg =
-     error?.response?.data?.errors?.[0]?.message?.[0] || error.message || "Something went wrong! Please try after some time.";
+        error?.response?.data?.errors?.[0]?.message?.[0] ||
+        error.message ||
+        "Something went wrong! Please try after some time.";
       dispatch(
         openNotification({
           type: "error",
@@ -280,6 +282,11 @@ const POIDetails = (props) => {
           ) : (
             <BackContainer className="flex justify-between font-lexend">
               <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
+            </BackContainer>
+          )}
+          <div className="flex justify-between">
+            <Title>{props.data.name}</Title>
+            {!(props?.removeChange === true) && (
               <Button
                 padding="7px 25px"
                 borderRadius="7px"
@@ -293,8 +300,8 @@ const POIDetails = (props) => {
               >
                 Change
               </Button>
-            </BackContainer>
-          )}
+            )}
+          </div>
 
           <>
             {props?.data?.extra_images?.length > 0 ? (
@@ -418,7 +425,6 @@ const POIDetails = (props) => {
             )}
           </>
           <div className="">
-            <Title>{props.data.name}</Title>
             {props.data?.experience_filters && (
               <Text>{experience_filters}</Text>
             )}
@@ -523,7 +529,7 @@ const POIDetails = (props) => {
               {isSmallScreen ? (
                 <>
                   {props?.data?.reviews?.map((item) => (
-                    <div className="w-[289px]">
+                    <div className="w-full">
                       <ReviewPoi review={item} />
                     </div>
                   ))}
@@ -677,13 +683,16 @@ const POIDetails = (props) => {
             onHide={() => setShowDrawer(false)}
           >
             <AddPoi
-            cityID={props?.cityID}
-            date={props?.date}
-            setShowDrawer={setShowDrawer}
-            itinerary_city_id={props?.itinerary_city_id}
-            dayIndex={props?.dayIndex}
-            slabIndex={props?.slabIndex}
-            setShowLoginModal={props?.setShowLoginModal}
+              cityID={props?.cityID}
+              date={props?.date}
+              setShowDrawer={setShowDrawer}
+              handleCloseDrawer={props?.handleCloseDrawer}
+              itinerary_city_id={props?.itinerary_city_id}
+              dayIndex={props?.dayIndex}
+              slabIndex={props?.slabIndex}
+              setShowLoginModal={props?.setShowLoginModal}
+              name={props.name}
+              cityName={props?.cityName}
             />
           </Drawer>
           <ToastContainer />

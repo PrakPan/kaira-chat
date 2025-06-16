@@ -80,7 +80,7 @@ const SimpleTabsV2 = (props) => {
   )?.transferBookings;
   const { pricing_status } = useSelector((state) => state.ItineraryStatus);
   const stays = useSelector((state) => state.Stays);
-  const itneraryId = useSelector(state=>state.ItineraryId);
+  const itneraryId = useSelector((state) => state.ItineraryId);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -148,8 +148,8 @@ const SimpleTabsV2 = (props) => {
       //     source: "Itinerary",
       //     query_message: `I need help in completing booking.`,
       //   })
-         axiosLeadChat
-           .get(`${itneraryId}/get_in_touch/`,{
+      axiosLeadChat
+        .get(`${itneraryId}/get_in_touch/`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
@@ -658,22 +658,20 @@ const SimpleTabsV2 = (props) => {
           <div id={"Stays"}>
             {props.mercuryItinerary ? (
               <StaysContainer
-                 payment={props.payment}
-                    _updateBookingHandler={props._updateBookingHandler}
-                    _updateStayBookingHandler={props._updateStayBookingHandler}
-                    _updatePaymentHandler={props._updatePaymentHandler}
-                    getPaymentHandler={props.getPaymentHandler}
-                    setShowBookingModal={() =>
-                      props.setShowBookingModal(true)
-                    }
-                    showBookingModal={props.showBookingModal}
-                    setHideBookingModal={props.setHideBookingModal}
-                    setShowLoginModal={setShowLoginModal}
-                    _GetInTouch={_GetInTouch}
-                    stayBookings={stays}
-                    setStayBookings={props.setStayBookings}
-                    CityData={CityData}
-                    cities={props?.cities}
+                payment={props.payment}
+                _updateBookingHandler={props._updateBookingHandler}
+                _updateStayBookingHandler={props._updateStayBookingHandler}
+                _updatePaymentHandler={props._updatePaymentHandler}
+                getPaymentHandler={props.getPaymentHandler}
+                setShowBookingModal={() => props.setShowBookingModal(true)}
+                showBookingModal={props.showBookingModal}
+                setHideBookingModal={props.setHideBookingModal}
+                setShowLoginModal={setShowLoginModal}
+                _GetInTouch={_GetInTouch}
+                stayBookings={stays}
+                setStayBookings={props.setStayBookings}
+                CityData={CityData}
+                cities={props?.cities}
               />
             ) : (
               <HotelsBooking
@@ -782,33 +780,28 @@ const SimpleTabsV2 = (props) => {
             )}
           </div>
 
-          
-            <div id={"Activities"}>
-              <ActivityBookings
-                plan={props.plan}
-                hasUserPaid={
-                  props.payment
-                    ? props.payment.paid_user
-                      ? true
-                      : false
-                    : false
-                }
-                budget={props.budget}
-                stayBookings={props.stayBookings}
-                _updateBookingHandler={props._updateBookingHandler}
-                _updateStayBookingHandler={props._updateStayBookingHandler}
-                _updatePaymentHandler={props._updatePaymentHandler}
-                flightBookings={props.flightBookings}
-                getPaymentHandler={props.getPaymentHandler}
-                setShowBookingModal={() => props.setShowBookingModal(true)}
-                showBookingModal={props.showBookingModal}
-                setHideBookingModal={props.setHideBookingModal}
-                activityBookings={props.activityBookings}
-                payment={props.payment}
-                booking={props.booking}
-                setShowLoginModal={setShowLoginModal}
-              />
-            </div>
+          <div id={"Activities"}>
+            <ActivityBookings
+              plan={props.plan}
+              hasUserPaid={
+                props.payment ? (props.payment.paid_user ? true : false) : false
+              }
+              budget={props.budget}
+              stayBookings={props.stayBookings}
+              _updateBookingHandler={props._updateBookingHandler}
+              _updateStayBookingHandler={props._updateStayBookingHandler}
+              _updatePaymentHandler={props._updatePaymentHandler}
+              flightBookings={props.flightBookings}
+              getPaymentHandler={props.getPaymentHandler}
+              setShowBookingModal={() => props.setShowBookingModal(true)}
+              showBookingModal={props.showBookingModal}
+              setHideBookingModal={props.setHideBookingModal}
+              activityBookings={props.activityBookings}
+              payment={props.payment}
+              booking={props.booking}
+              setShowLoginModal={setShowLoginModal}
+            />
+          </div>
 
           <Modal
             centered

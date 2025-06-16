@@ -64,7 +64,8 @@ const FloatingVContaineriew = styled.div`
 const FloatingView = styled.div`
   position: sticky;
   bottom: 10px;
-  background: #f7e700;
+  background: black;
+  color: white;
   border-radius: 50%;
   width: 50px;
   height: 50px;

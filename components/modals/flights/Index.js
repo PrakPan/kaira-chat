@@ -34,14 +34,15 @@ max-height: 40vh;
 const FloatingView = styled.div`
   position: sticky;
   bottom: 10px;
-  background: #f7e700;
+  background: black;
+  color: white;
   border-radius: 50%;
   width: 50px;
   height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
-  left: 85%;
+  left: 90%;
   z-index: 2;
   cursor: pointer;
 `;

@@ -113,6 +113,10 @@ const Overlay = styled.div`
 export default function PoiCard(props) {
   const [show, setShow] = useState(false);
   const [stars, setStars] = useState(null);
+  const activityData={
+    type:"poi",
+    id:props.data.id
+  }
 
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
@@ -191,6 +195,8 @@ export default function PoiCard(props) {
         handleCloseDrawer={handleCloseDrawer}
         name={props.data.name}
         removeDelete={props?.removeDelete}
+        activityData={activityData}
+        removeChange={props?.removeChange}
       />
     </Container>
   );

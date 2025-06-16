@@ -206,10 +206,10 @@ const HotelBookingDetails = (props) => {
       <FlexBox>
         <div>
           <Name>{props?.data?.name}</Name>
-          <Address>
-            {props?.data?.addr1 ? props?.data?.addr1 + ", " : ""}{" "}
-            {props?.data?.addr2 ? props?.data?.addr2 + ", " : ""}{" "}
-            {props?.data?.city_name ? props?.data?.city_name : ""}
+          <Address style={{ fontSize: "14px" }}>
+            {[props?.data?.addr1, props?.data?.addr2, props?.data?.city]
+              .filter(Boolean)
+              .join(", ")}
           </Address>
         </div>
         {props.payment && props.token ? (
@@ -997,7 +997,7 @@ const HotelBookingDetails = (props) => {
                   )}
                 </div>
 
-                {room?.facilities  && room?.facilities?.length ? (
+                {room?.facilities && room?.facilities?.length ? (
                   <div className="flex flex-col gap-2">
                     <div className="text-lg font-semibold">Amenities</div>
                     <div className="text-[14px]">
@@ -1070,9 +1070,9 @@ const HotelBookingDetails = (props) => {
         <div>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Location</Heading>
           <Address style={{ fontSize: "14px" }}>
-            {props?.data?.addr1 ? props?.data?.addr1 + ", " : ""}{" "}
-            {props?.data?.addr2 ? props?.data?.addr2 + ", " : ""}{" "}
-            {props?.data?.city ? props?.data?.city : ""}
+            {[props?.data?.addr1, props?.data?.addr2, props?.data?.city]
+              .filter(Boolean)
+              .join(", ")}
           </Address>
           <div
             style={{
@@ -1173,9 +1173,9 @@ const HotelBookingDetails = (props) => {
               </svg>
             </div>
             <Address style={{ fontSize: "14px" }}>
-              {props?.data?.addr1 ? props?.data.addr1 + ", " : ""}{" "}
-              {props?.data?.addr2 ? props?.data.addr2 + ", " : ""}{" "}
-              {props?.data?.city_name ? props?.data.city : ""}
+              {[props?.data?.addr1, props?.data?.addr2, props?.data?.city]
+                .filter(Boolean)
+                .join(", ")}
             </Address>
           </div>
           <div className="flex justify-between">

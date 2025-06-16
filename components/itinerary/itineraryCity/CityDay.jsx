@@ -17,6 +17,7 @@ const CityDay = (props) => {
   const [taxiData, setTaxiData] = useState(null);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  console.log('props are:',props)
 
   useEffect(() => {
     let elements = [];
@@ -128,6 +129,7 @@ const CityDay = (props) => {
               setShowLoginModal={props?.setShowLoginModal}
               date={props?.date}
               cityID={props.city.id}
+              cityName={props.city.name}
             />
 
             {index !== elements.length - 1 ? <hr /> : null}

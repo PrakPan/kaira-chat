@@ -6,8 +6,28 @@ import axioscitydatainstance, { cityDetail } from "../../../services/poi/city";
 import { useEffect } from "react";
 import { useState } from "react";
 import CityDetailsSkeleton from "./CityDetailsSkeleton";
+import styled from "styled-components";
+import media from "../../../components/media.js";
+
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 60px;
+  left: 100%;
+  background: black;
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  z-index: 901;
+  cursor: pointer;
+`;
 
 const CityDetailsDrawer = (props) => {
+  let isPageWide = media("(min-width: 768px)");
   const [data, setData] = useState(null);
   const getCityData = async () => {
     try {
@@ -57,7 +77,17 @@ const CityDetailsDrawer = (props) => {
         ) : (
           <CityDetailsSkeleton></CityDetailsSkeleton>
         )}
-        <div></div>
+        {!isPageWide && (
+        <FloatingView>
+          <TbArrowBack
+            style={{ height: "28px", width: "28px" }}
+            cursor={"pointer"}
+            onClick={() => {
+              props.onHide()
+            }}
+          />
+        </FloatingView>
+      )}
       </div>
     </Drawer>
   );

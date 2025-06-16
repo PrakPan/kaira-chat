@@ -439,7 +439,7 @@ const ActivityDetails = (props) => {
           )}
           {props?.data?.reviews && (
             <div className="flex flex-col gap-[12px]">
-              <div id="reviews-poi" className="flex justify-between">
+              <div id="reviews-poi" className="flex justify-between items-center">
                 <Heading>Reviews</Heading>
 
                 <Reviews>
@@ -466,7 +466,7 @@ const ActivityDetails = (props) => {
               {isSmallScreen ? (
                 <>
                   {props?.data?.reviews?.map((item) => (
-                    <div className="w-[289px]">
+                    <div className="w-full">
                       <ReviewPoi review={item} />
                     </div>
                   ))}
@@ -513,7 +513,7 @@ const ActivityDetails = (props) => {
                 </a>
               </div> */}
 
-              <button
+              {props?.removeDelete?<></>:<button
                 className=" right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
                 onClick={handleDelete}
               >
@@ -524,7 +524,7 @@ const ActivityDetails = (props) => {
                   >
                     <Image src="/delete.svg" width={"20"} height={"20"} />{" "}
                     Remove from Itinerary
-                  </div>
+                  </div> 
                   {loading && (
                     <PulseLoader
                       style={{
@@ -539,7 +539,7 @@ const ActivityDetails = (props) => {
                     />
                   )}
                 </div>
-              </button>
+              </button>}
             </div>
           </div>
         </Container>

@@ -17,6 +17,7 @@ export default function SlideThree(props) {
         setNumberOfInfants={props.setNumberOfInfants}
         setRoomConfiguration={props.setRoomConfiguration}
         groupType={props.groupType}
+        roomConfiguration={props.roomConfiguration}
       ></Pax>
 
       <div className="space-y-1">

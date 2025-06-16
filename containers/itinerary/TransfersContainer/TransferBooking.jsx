@@ -23,77 +23,22 @@ import { updateTransferBookings } from "../../../store/actions/transferBookingsS
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { FaPlaneDeparture } from "react-icons/fa";
 import VehicleDetailLoader from "../../../components/modals/daybyday/VehicleDetailLoader";
-const GridContainer = styled.div`
-  width: auto;
-  overflow: auto;
+import { TbArrowBack } from "react-icons/tb";
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 60px;
+  left: 100%;
+  background: black;
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
   display: flex;
-  flex-direction: row;
-  @media screen and (min-width: 768px) {
-    width: auto;
-    overflow: none;
-  }
-`;
-
-var Line = styled.hr`
-  background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
-    ${(props) =>
-      props.pinColour
-        ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
-        : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
-
-  background-size: 8px 3px, 100% 3px;
-
-  color: #c80000;
-  -webkit-transform: rotate(90deg);
-  position: absolute;
-
-  height: 1px;
-
-  border: 2px;
-
-  width: ${(props) => (props.Transfers ? `19rem` : `5rem`)};
-
-  top: ${(props) => (props.Transfers ? `128px` : `23px`)};
-  right: ${(props) => (props.Transfers ? `-134px` : `-25px`)};
-  opacity: initial;
-  z-index: -1;
-  @media screen and (min-width: 768px) {
-    width: 12.3rem;
-    height: 1px;
-    top: ${(props) => (props.end ? `1rem` : `5rem`)};
-    right: -81px;
-  }
-`;
-
-Line = styled.div`
-  position: absolute;
-  top: 0;
-  left: 10px;
-  bottom: 0;
-  right: -25px;
-
-  width: 2px;
-  background-image: linear-gradient(
-      to bottom,
-      ${(props) => props.pinColour1 || "black"} 0%,
-      ${(props) => props.pinColour1 || "black"} 50%,
-      ${(props) => props.pinColour2 || "gray"} 50%,
-      ${(props) => props.pinColour2 || "gray"} 100%
-    ),
-    repeating-linear-gradient(
-      to bottom,
-      transparent,
-      transparent 4px,
-      black 4px,
-      black 8px
-    );
-  background-blend-mode: src-in;
-
-  z-index: -1;
-
-  @media screen and (min-width: 768px) {
-    right: -81px;
-  }
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  z-index: 2;
+  cursor: pointer;
 `;
 
 const LineContainer = styled.div`
@@ -763,6 +708,15 @@ const TransferBooking = ({
                           noChange={isIntracity || isAirport}
                         />
                       )}
+                     {!isPageWide && (
+                          <FloatingView>
+                            <TbArrowBack
+                              style={{ height: "28px", width: "28px" }}
+                              cursor={"pointer"}
+                              onClick={() => setShowVehicleDrawer(false)}
+                            />
+                          </FloatingView>
+                        )}
                     </Drawer>
                   </div>
                 </>
@@ -1407,7 +1361,7 @@ const FlightBooking = ({
 }) => {
   const [showDetails, setShowDetails] = useState(false);
 
-  console.log("Inside Flight Booking", booking);
+  let isPageWide = media("(min-width: 768px)");
 
   const router = useRouter();
   function HandleFlights(i, label) {
@@ -1604,6 +1558,7 @@ const FlightBooking = ({
         {originCityId !== undefined && destinationCityId !== undefined && (
           <>
             <Details
+            cancellationPolicy={booking?.cancellation_policies}
               segments={booking?.transfer_details?.items?.[0]?.segments}
               resultIndex={booking?.transfer_details?.items?.[0]?.result_index}
               setShowDetails={setShowDetails}
@@ -1625,6 +1580,15 @@ const FlightBooking = ({
           </>
         )}
       </Drawer>
+      {!isPageWide && (
+        <FloatingView>
+          <TbArrowBack
+            style={{ height: "28px", width: "28px" }}
+            cursor={"pointer"}
+            onClick={() => setHandleShow(false)}
+          />
+        </FloatingView>
+      )}
     </div>
   );
 };

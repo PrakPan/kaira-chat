@@ -5,17 +5,16 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import Button from "../../../ui/button/Index";
 
 const Pax = (props) => {
+  console.log("distribution is 1:",props)
   const containerRef = useRef(null);
   const [isRoomExpanded, setIsRoomExpanded] = useState(false);
   const [travelers, setTravelers] = useState(
-    props?.numberOfAdults ||
-      2 + props?.numberOfChildren ||
-      0 + props?.numberOfInfants ||
-      0
+    props?.numberOfAdults || 1 + props?.numberOfChildren || 0
   );
   const [rooms, setRooms] = useState(props.roomConfiguration);
-  const [showError, setShowError] = useState(false);
+  props?.setRoomConfiguration(rooms);
 
+  const [showError, setShowError] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -36,7 +35,6 @@ const Pax = (props) => {
     for (let room of rooms) {
       total += room.adults;
       total += room.children;
-      total += room.infants;
     }
     setTravelers(total);
   }, [rooms]);
@@ -48,7 +46,6 @@ const Pax = (props) => {
         {
           adults: 1,
           children: 0,
-          infants: 0,
           childAges: [],
         },
       ]);
@@ -59,24 +56,8 @@ const Pax = (props) => {
     setRooms((prev) => prev.slice(0, -1));
   };
 
-  const checkError = () => {
-    for (let room of rooms) {
-      if (room.childAges.includes(null)) {
-        return true;
-      }
-    }
-    return false;
-  };
-
   const handleDone = () => {
     props?.setRoomConfiguration(rooms);
-    props?.setNumberOfAdults(rooms.reduce((sum, room) => sum + room.adults, 0));
-    props?.setNumberOfChildren(
-      rooms.reduce((sum, room) => sum + room.children, 0)
-    );
-    props?.setNumberOfInfants(
-      rooms.reduce((sum, room) => sum + room.infants, 0)
-    );
 
     setShowError(false);
     setIsRoomExpanded(false);
@@ -154,7 +135,6 @@ const Pax = (props) => {
 const Room = ({ index, data, setRooms, showError, removeRoom }) => {
   const [adults, setAdults] = useState(data.adults);
   const [children, setChildren] = useState(data.children);
-  const [infants, setInfants] = useState(data.infants);
   const [childAges, setChildAges] = useState(data.childAges);
 
   useEffect(() => {
@@ -165,13 +145,12 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
               ...room,
               adults: adults,
               children: children,
-              infants: infants,
               childAges: childAges,
             }
           : room
       )
     );
-  }, [adults, children, childAges, infants, index, setRooms]);
+  }, [adults, children, childAges, index, setRooms]);
 
   const handleAdults = (increment) => {
     if (increment && adults < 14) {
@@ -181,19 +160,11 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
     }
   };
 
-  const handleInfants = (increment) => {
-    if (increment && adults < 14) {
-      setInfants((prev) => prev + 1);
-    } else if (!increment && adults > 1) {
-      setInfants((prev) => prev - 1);
-    }
-  };
-
-  const handleChildren = (increment) => {
-    if (increment && children < 13) {
+  const handleChildren = (type) => {
+    if (type === "plus" && children < 13) {
       setChildren((prev) => prev + 1);
-      setChildAges((prev) => [...prev, null]);
-    } else if (children >= 1) {
+      setChildAges((prev) => [...prev, 10]);
+    } else if (type === "minus" && children >= 1) {
       setChildren((prev) => prev - 1);
       setChildAges((prev) => prev.slice(0, -1));
     }
@@ -241,49 +212,23 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
       <div className="flex justify-between items-center mb-3">
         <div>
           <div className="font-medium">Children</div>
-          <div className="text-xs text-gray-500">2-12 years</div>
+          <div className="text-xs text-gray-500">1-12 years</div>
         </div>
         <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
           <button
             className={`flex items-center justify-center ${
               children > 0 ? "text-blue" : "text-gray-300"
             }`}
-            onClick={() => handleChildren(false)}
-            disabled={children < 1}
+            onClick={() => handleChildren("minus")}
+            disabled={children == 0}
           >
             -
           </button>
           <span className="mx-2 w-6 text-center">{children}</span>
           <button
             className=" flex items-center justify-center text-blue"
-            onClick={() => handleChildren(true)}
+            onClick={() => handleChildren("plus")}
             disabled={children > 12}
-          >
-            +
-          </button>
-        </div>
-      </div>
-
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <div className="font-medium">Infants</div>
-          <div className="text-xs text-gray-500"> {`<2 years`}</div>
-        </div>
-        <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
-          <button
-            className={` flex items-center justify-center  ${
-              infants > 0 ? "text-blue " : "text-gray-300"
-            }`}
-            onClick={() => handleInfants(false)}
-            disabled={infants <= 0}
-          >
-            -
-          </button>
-          <span className="mx-2 w-6 text-center">{infants}</span>
-          <button
-            className="flex items-center justify-center text-blue"
-            onClick={() => handleInfants(true)}
-            disabled={infants > 4}
           >
             +
           </button>
@@ -364,7 +309,7 @@ const ChildAge = ({ index, child, age, setChildAges, showError }) => {
         <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
           {Array.from({ length: 13 }, (_, i) => (
             <>
-              {i >= 2 && (
+              {i >= 1 && (
                 <div
                   key={i}
                   onClick={() => handleChildAge(i)}

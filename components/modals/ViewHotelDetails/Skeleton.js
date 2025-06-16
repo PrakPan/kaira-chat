@@ -18,20 +18,6 @@ const Container = styled.div`
   }
 `;
 
-const FloatingView = styled.div`
-  position: sticky;
-  bottom: 10px;
-  background: #f7e700;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  left: 90%;
-  z-index: 2;
-  cursor: pointer;
-`;
 
 const BackContainer = styled.div`
   margin: 0;
@@ -81,13 +67,7 @@ const POIDetailsSkeleton = (props) => {
       </div>
 
       <SkeletonCard width={isPageWide ? "100%" : "100%"} height={"150px"} />
-      <FloatingView>
-        <TbArrowBack
-          style={{ height: "28px", width: "28px" }}
-          cursor={"pointer"}
-          onClick={props.onHide}
-        />
-      </FloatingView>
+
     </Container>
   );
 };

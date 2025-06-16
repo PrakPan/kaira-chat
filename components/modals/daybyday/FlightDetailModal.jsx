@@ -13,7 +13,24 @@ import Image from "next/image";
 import { openNotification } from "../../../store/actions/notification";
 import BackArrow from "../../ui/BackArrow";
 import { Generalbuttonstyle } from "../../ui/button/Generallinkbutton";
-
+import { TbArrowBack } from "react-icons/tb";
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 0;
+  right: 0;
+  background: black;
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 60px;
+  margin-right: 16px;
+  z-index: 2;
+  cursor: pointer;
+`;
 export const Text = styled.div`
   font-size: 1.5rem;
   line-height: 2rem;
@@ -32,7 +49,7 @@ const FlightDetailModal = ({
   isEmbedded,
   setShowDrawer,
   setHandleShow,
-  error
+  error,
 }) => {
   const router = useRouter();
   const fareRules = fareRule?.fareRuleDetail;
@@ -43,9 +60,9 @@ const FlightDetailModal = ({
   let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
 
   const handleDelete = async () => {
-    if(!localStorage.getItem("access_token")){
-      props?.setShowLoginModal(true)
-      return
+    if (!localStorage.getItem("access_token")) {
+      props?.setShowLoginModal(true);
+      return;
     }
     try {
       setLoading(true);
@@ -72,7 +89,7 @@ const FlightDetailModal = ({
       }
     } catch (err) {
       const errorMsg =
-            err?.response?.data?.errors?.[0]?.message?.[0] || err.message ;
+        err?.response?.data?.errors?.[0]?.message?.[0] || err.message;
       dispatch(
         openNotification({
           type: "error",
@@ -85,57 +102,60 @@ const FlightDetailModal = ({
   };
 
   if (error) {
-        return (
-          <div
-            style={{
-              textAlign: "center",
-              margin: "auto",
-              height: isPageWide ? "80vh" : "70vh",
-            }}
-            className="center-div"
-          >
-            Oops, unable to get the details at the moment.
-          </div>
-        );
-      }
+    return (
+      <div
+        style={{
+          textAlign: "center",
+          margin: "auto",
+          height: isPageWide ? "80vh" : "70vh",
+        }}
+        className="center-div"
+      >
+        Oops, unable to get the details at the moment.
+      </div>
+    );
+  }
 
   return (
     <div className="relative flex flex-col gap-4 rounded-md px-3 py-2">
-     { !isEmbedded && <div className="flex flex-col gap-2">
-        <Heading>
-          <div className="flex flex-row items-center gap-2">
-            <BackArrow handleClick={() => setShowDetails((prev) => !prev)} />
-          </div>
-        </Heading>
-      </div>
-}
-      {!drawer && !isEmbedded && 
-      <div className="flex justify-between"> <Text>{name}</Text>
-      {(
-                  <div className="font-lexend flex justify-between items-start !m-0">
-                    {loading ? (
-                      <div className="w-16 h-5 bg-gray-300 opacity-50 rounded"></div>
-                    ) : (
-                      <>
-                        {/* <Text>{name}</Text> */}
-                        <Generalbuttonstyle
-                          borderRadius={"7px"}
-                          fontSize={"1rem"}
-                          padding={"7px 25px"}
-                          onClick={() => {
-                            setHandleShow(false);
-                            setShowDrawer(true);
-                            //setShowTaxi(true);console.log("")
-                          }}
-                        >
-                          Change
-                        </Generalbuttonstyle>
-                      </>
-                    )}
-                  </div>
-                )}
+      {!isEmbedded && (
+        <div className="flex flex-col gap-2">
+          <Heading>
+            <div className="flex flex-row items-center gap-2">
+              <BackArrow handleClick={() => setShowDetails((prev) => !prev)} />
             </div>
-      }
+          </Heading>
+        </div>
+      )}
+      {!drawer && !isEmbedded && (
+        <div className="flex justify-between">
+          {" "}
+          <Text>{name}</Text>
+          {
+            <div className="font-lexend flex justify-between items-start !m-0">
+              {loading ? (
+                <div className="w-16 h-5 bg-gray-300 opacity-50 rounded"></div>
+              ) : (
+                <>
+                  {/* <Text>{name}</Text> */}
+                  <Generalbuttonstyle
+                    borderRadius={"7px"}
+                    fontSize={"1rem"}
+                    padding={"7px 25px"}
+                    onClick={() => {
+                      setHandleShow(false);
+                      setShowDrawer(true);
+                      //setShowTaxi(true);console.log("")
+                    }}
+                  >
+                    Change
+                  </Generalbuttonstyle>
+                </>
+              )}
+            </div>
+          }
+        </div>
+      )}
       <div className="flex flex-col gap-2 p-2">
         <FlightSegment
           segments={segments}
@@ -167,37 +187,49 @@ const FlightDetailModal = ({
           ></div>
         </div>
       )}
-     { !isEmbedded && <div className="p-4 bg-white">
-        <button
-          className="w-full  text-white py-2 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
-          onClick={handleDelete}
-          disabled={loading}
-        >
-          <div style={{ position: "relative" }}>
-            <div style={loading ? { visibility: "hidden" } : {}}>
-              <div className="flex gap-1 items-center">
-                <div>
-                  <Image src="/delete.svg" width={"20"} height={"20"} />
-                </div>{" "}
-                <div>Delete Booking</div>
+
+      {!isEmbedded && (
+        <div className="p-4 bg-white">
+          <button
+            className="w-full  text-white py-2 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
+            onClick={handleDelete}
+            disabled={loading}
+          >
+            <div style={{ position: "relative" }}>
+              <div style={loading ? { visibility: "hidden" } : {}}>
+                <div className="flex gap-1 items-center">
+                  <div>
+                    <Image src="/delete.svg" width={"20"} height={"20"} />
+                  </div>{" "}
+                  <div>Delete Booking</div>
+                </div>
               </div>
+              {loading && (
+                <PulseLoader
+                  style={{
+                    position: "absolute",
+                    top: "55%",
+                    left: "50%",
+                    transform: "translate(-50% , -50%)",
+                  }}
+                  size={12}
+                  speedMultiplier={0.6}
+                  color="#ffffff"
+                />
+              )}
             </div>
-            {loading && (
-              <PulseLoader
-                style={{
-                  position: "absolute",
-                  top: "55%",
-                  left: "50%",
-                  transform: "translate(-50% , -50%)",
-                }}
-                size={12}
-                speedMultiplier={0.6}
-                color="#ffffff"
-              />
-            )}
-          </div>
-        </button>
-      </div>}
+          </button>
+        </div>
+      )}
+      {/* {!isPageWide && (
+        <FloatingView>
+          <TbArrowBack
+            style={{ height: "28px", width: "28px" }}
+            cursor={"pointer"}
+            onClick={() => setShowDetails((prev) => !prev)}
+          />
+        </FloatingView>
+      )} */}
 
       <ToastContainer />
     </div>

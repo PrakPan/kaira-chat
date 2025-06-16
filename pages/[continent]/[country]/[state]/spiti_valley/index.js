@@ -1,17 +1,18 @@
 import Head from "next/head";
 import { useEffect } from "react";
 import { connect } from "react-redux";
-import Layout from "../../components/Layout";
-import ContinentPage from "../../containers/continent/Index";
-import axioscountrydetailsinstance from "../../services/pages/country";
-import axiospagelistinstance from "../../services/pages/list";
-import axiospagedetailsinstance from "../../services/pages/pagedetails";
-import axioslocationsinstance from "../../services/search/search";
-import setHotLocationSearch from "../../store/actions/hotLocationSearch";
+import Layout from "../../../../../components/Layout";
+import ContinentPage from "../../../../../containers/continent/Index";
+import axioscountrydetailsinstance from "../../../../../services/pages/country";
+import axiospagelistinstance from "../../../../../services/pages/list";
+import axiospagedetailsinstance from "../../../../../services/pages/pagedetails";
+import axioslocationsinstance from "../../../../../services/search/search";
+import setHotLocationSearch from "../../../../../store/actions/hotLocationSearch";
 import { useRouter } from "next/router";
-import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapitalFirst";
+import { convertDbNameToCapitalFirst } from "../../../../../helper/convertDbnameToCapitalFirst";
 
 const TravelPlanner = (props) => {
+  
   const router = useRouter();
   if (router.isFallback) {
     return <div>Loading...</div>; // fallback loading UI
@@ -27,10 +28,7 @@ const TravelPlanner = (props) => {
       page="Continent Page"
     >
       <Head>
-        <title>{`${props.Data.slug
-              .split("_")
-              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-              .join(" ")} Trip Planner & Itinerary | Travel Company | India | The Tarzan Way`}</title>
+        <title>{`${convertDbNameToCapitalFirst(props.Data.slug)} Trip Planner & Itinerary | Travel Company | India | The Tarzan Way`}</title>
         <meta
           name="description"
           content={`${props.Data.meta_description}`}
@@ -65,7 +63,7 @@ const TravelPlanner = (props) => {
         locations={props.locations}
         continetCarousel={props.continetCarousel}
         destination={convertDbNameToCapitalFirst(props.Data.slug)}
-        type={props.Type}
+        type="Page"
       ></ContinentPage>
     </Layout>
   );
@@ -76,15 +74,19 @@ export async function getStaticPaths() {
   try {
     //mercury api
     const res = await axiospagelistinstance.get(
-      "?page_type=Continent&fields=path"
+      "?page_type=Subregion&fields=path"
     );
     const data = res.data.data.pages;
+    const pathArr = data[i].path.split("/");
+      var [continentSlug, countrySlug, stateSlug, citySlug] = pathArr;
 
     for (var i = 0; i < data.length; i++) {
       paths.push({
-        params: {
-          continent: data[i]['path'],
-        },
+        params: {  
+          continent: continentSlug,
+          country: countrySlug,
+          state: stateSlug
+        },  
       });
     }
   } catch (err) {
@@ -103,14 +105,15 @@ export async function getStaticProps(context) {
   let locations = [];
   const continetCarousel = [];
   let hotLocationSearch = [];
-  const { continent } = context.params;
-  const path = `${continent}`;
+  const { continent, country, state } = context.params;
+  const path = `spiti_valley`;
 
   try {
     // mercury server
     const res = await axiospagedetailsinstance.get(
-       context.params.continent
+       path+"/"
     );
+
     data = res.data.data;
 
   } catch (err) {
@@ -136,10 +139,9 @@ export async function getStaticProps(context) {
 
   try {
     for (let i = 0; i < contientTheme.length; i++) {
-      console.log("continent path is:",contientTheme[i].path)
       // mercury api
       const countrydetailsResponse = await axioscountrydetailsinstance.get(
-        `?limit=100&offset=0&continent=${contientTheme[i].path}`
+        `?limit=100&offset=0&continent=${contientTheme[i].slug}`
       );
 
       if (contientTheme[i].slug === continent) {
@@ -181,8 +183,7 @@ export async function getStaticProps(context) {
       continetCarousel,
       path,
       hotLocationSearch,
-      destination:continent,
-      Type:"Page"
+      destination:continent
     },
   };
 }

@@ -17,7 +17,24 @@ import useDebounce from "../../../hooks/useDebounce";
 import ImageLoader from "../../../components/ImageLoader";
 import { setItineraryFilters } from "../../../store/actions/setItineraryFilters";
 import ViewHotelDetails from "../ViewHotelDetails/viewHotelDetails";
-// import { getDate } from "../../../helper/DateUtils";
+import { TbArrowBack } from "react-icons/tb";
+
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 60px;
+  left: 100%;
+  background: black;
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  z-index: 251;
+  cursor: pointer;
+`;
 
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
@@ -69,7 +86,7 @@ const Booking = (props) => {
     error: false,
     errorMsg: "",
   });
- 
+
   const [loading, setLoading] = useState(false);
   const [nextPage, setNextPage] = useState(1);
   const [provider, setProvider] = useState(null);
@@ -112,7 +129,7 @@ const Booking = (props) => {
   const [showFilters, setShowFilters] = useState(false);
   const dispatch = useDispatch();
   const debouncedSearch = useDebounce(selectSearch);
-  console.log("Modal C",props?.showBookingModal);
+  console.log("Modal C", props?.showBookingModal);
 
   useEffect(() => {
     if (
@@ -240,7 +257,7 @@ const Booking = (props) => {
   const handleClose = () => {
     // props?.setHideBookingModal();
     resetPaginationStatus();
-    
+
     setMoreOptionsJSX([]);
     setLoading(true);
     setFilters((prev) => ({
@@ -435,7 +452,7 @@ const Booking = (props) => {
       });
   };
 
-   console.log("Show B Inside",props?.showBookingModal)
+  console.log("Show B Inside", props?.showBookingModal);
 
   const fetchHotels = () => {
     setLoading(true);
@@ -639,7 +656,7 @@ const Booking = (props) => {
               )}
             </div>
 
-            <div className="sticky lg:w-[50vw] w-[100vw] py-2 top-0 bg-white z-[900]">
+            <div className="lg:sticky lg:w-[50vw] w-[100vw] py-2 top-0 bg-white z-[900]">
               <SectionOne
                 booking_city={
                   props?.selectedBooking?.city ||
@@ -872,7 +889,15 @@ const Booking = (props) => {
                 </ContentContainer>
               </GridContainer>
             </div>
-            <div></div>
+            {!isPageWide && (
+              <FloatingView>
+                <TbArrowBack
+                  style={{ height: "28px", width: "28px" }}
+                  cursor={"pointer"}
+                  onClick={handleClose}
+                />
+              </FloatingView>
+            )}
             <ViewHotelDetails
               mercury={true}
               check_in={props?.selectedBooking.check_in}

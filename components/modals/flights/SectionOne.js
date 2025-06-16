@@ -426,7 +426,7 @@ const Section = (props) => {
               </Button>
             </ButtonContainer>
           </Container>
-          {!isPageWide && (
+          {/* {!isPageWide && (
             <FloatingView>
               <TbArrowBack
                 style={{ height: "28px", width: "28px" }}
@@ -434,7 +434,7 @@ const Section = (props) => {
                 onClick={() => props.setShowFilter(false)}
               />
             </FloatingView>
-          )}
+          )} */}
         </Drawer>
       )}
     </Container>

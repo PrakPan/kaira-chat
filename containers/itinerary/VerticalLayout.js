@@ -9,28 +9,15 @@ import axios from "axios";
 import { MERCURY_HOST } from "../../services/constants";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { ToastContainer, toast } from "react-toastify";
 import { axiosDeleteBooking } from "../../services/itinerary/bookings";
 import {
-  setTransferBookings,
   updateTransferBookings,
 } from "../../store/actions/transferBookingsStore";
 import { useDispatch, useSelector } from "react-redux";
 import TransferEditDrawer from "../../components/drawers/routeTransfer/TransferEditDrawer";
-import VehicleDetailModal from "../../components/modals/daybyday/VehicleModal";
-import Drawer from "../../components/ui/Drawer";
-import FlightDetailModal from "../../components/modals/daybyday/FlightDetailModal";
 import TransferSkeleton from "../../components/itinerary/Skeleton/TransferSkeleton";
-import media from "../../components/media";
 import { openNotification } from "../../store/actions/notification";
-import Image from "next/image";
-import { RiArrowDropRightLine, RiArrowGoForwardLine } from "react-icons/ri";
-import TaxiDetailModal from "../../components/modals/daybyday/TaxiDetailModal";
-import VehicleDetailLoader from "../../components/modals/daybyday/VehicleDetailLoader";
-import FlightDetailLoader from "../../components/modals/daybyday/FlightDetailLoader";
-import { AiOutlineRight } from "react-icons/ai";
-import BackArrow from "../../components/ui/BackArrow";
-import { PulseLoader } from "react-spinners";
+import { RiArrowDropRightLine } from "react-icons/ri";
 import TransferDrawer from "./TransferDrawer";
 import { LuInfo } from "react-icons/lu";
 
@@ -57,15 +44,23 @@ const PinWrapper = styled.div`
   align-items: center;
 `;
 
-const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downPresent, onBookingDelete }) => {
+const AirportBookingItem = ({
+  booking,
+  handleIntracityBookings,
+  upPresent,
+  downPresent,
+  onBookingDelete,
+}) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const dropdownRef = useRef(null);
   let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
 
-  const pickupBookings = booking.filter(book => book?.is_airport_pickup);
-  const dropBookings = booking.filter(book => book?.is_airport_drop);
-  const noPickupDropBookings = booking.filter(book => !book?.is_airport_drop && !book?.is_airport_pickup);
+  const pickupBookings = booking.filter((book) => book?.is_airport_pickup);
+  const dropBookings = booking.filter((book) => book?.is_airport_drop);
+  const noPickupDropBookings = booking.filter(
+    (book) => !book?.is_airport_drop && !book?.is_airport_pickup
+  );
 
   const correctIcon = (TransportMode) => {
     switch (TransportMode) {
@@ -101,20 +96,26 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
   const hasDrop = dropBookings.length > 0;
 
   const getDisplayText = () => {
-    const currentPickupBookings = booking.filter(book => book?.is_airport_pickup);
-    const currentDropBookings = booking.filter(book => book?.is_airport_drop);
-    const currentNoPickupDropBookings = booking.filter(book => !book?.is_airport_drop && !book?.is_airport_pickup);
-    
+    const currentPickupBookings = booking.filter(
+      (book) => book?.is_airport_pickup
+    );
+    const currentDropBookings = booking.filter((book) => book?.is_airport_drop);
+    const currentNoPickupDropBookings = booking.filter(
+      (book) => !book?.is_airport_drop && !book?.is_airport_pickup
+    );
+
     const hasCurrentPickup = currentPickupBookings.length > 0;
     const hasCurrentDrop = currentDropBookings.length > 0;
 
     if (hasCurrentPickup && hasCurrentDrop) {
-      const allTypes = [...new Set([
-        ...currentPickupBookings.map(book => book?.booking_type),
-        ...currentDropBookings.map(book => book?.booking_type)
-      ])];
-      const uniqueIcons = allTypes.map(type => correctIcon(type));
-      
+      const allTypes = [
+        ...new Set([
+          ...currentPickupBookings.map((book) => book?.booking_type),
+          ...currentDropBookings.map((book) => book?.booking_type),
+        ]),
+      ];
+      const uniqueIcons = allTypes.map((type) => correctIcon(type));
+
       return (
         <div className="flex items-center gap-1">
           {uniqueIcons}
@@ -122,7 +123,9 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
         </div>
       );
     } else if (hasCurrentPickup) {
-      const pickupIcons = [...new Set(currentPickupBookings.map(book => book?.booking_type))].map(type => correctIcon(type));
+      const pickupIcons = [
+        ...new Set(currentPickupBookings.map((book) => book?.booking_type)),
+      ].map((type) => correctIcon(type));
       return (
         <div className="flex items-center gap-1">
           {pickupIcons}
@@ -130,7 +133,9 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
         </div>
       );
     } else if (hasCurrentDrop) {
-      const dropIcons = [...new Set(currentDropBookings.map(book => book?.booking_type))].map(type => correctIcon(type));
+      const dropIcons = [
+        ...new Set(currentDropBookings.map((book) => book?.booking_type)),
+      ].map((type) => correctIcon(type));
       return (
         <div className="flex items-center gap-1">
           {dropIcons}
@@ -162,11 +167,11 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
     };
 
     if (showDetails) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showDetails]);
 
@@ -176,21 +181,30 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
       setShowTooltip(false);
     } else if (hasPickup && !hasDrop) {
       if (pickupBookings.length === 1) {
-        handleIntracityBookings(upPresent && downPresent, { ...pickupBookings[0], selectedType: 'Airport Pickup' });
+        handleIntracityBookings(upPresent && downPresent, {
+          ...pickupBookings[0],
+          selectedType: "Airport Pickup",
+        });
       } else {
         setShowDetails(!showDetails);
         setShowTooltip(false);
       }
     } else if (!hasPickup && hasDrop) {
       if (dropBookings.length === 1) {
-        handleIntracityBookings(upPresent && downPresent, { ...dropBookings[0], selectedType: 'Airport Drop' });
+        handleIntracityBookings(upPresent && downPresent, {
+          ...dropBookings[0],
+          selectedType: "Airport Drop",
+        });
       } else {
         setShowDetails(!showDetails);
         setShowTooltip(false);
       }
     } else if (booking && booking.length > 0) {
       if (booking.length === 1) {
-        handleIntracityBookings(upPresent && downPresent, { ...booking[0], selectedType: 'Airport Transfer' });
+        handleIntracityBookings(upPresent && downPresent, {
+          ...booking[0],
+          selectedType: "Airport Transfer",
+        });
       } else {
         setShowDetails(!showDetails);
         setShowTooltip(false);
@@ -202,7 +216,10 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
     e.stopPropagation();
     setShowTooltip(false);
     setShowDetails(false);
-    handleIntracityBookings(upPresent && downPresent, { ...bookingItem, selectedType: type });
+    handleIntracityBookings(upPresent && downPresent, {
+      ...bookingItem,
+      selectedType: type,
+    });
   };
 
   const handleInfoHover = (show) => {
@@ -214,26 +231,26 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
   const formatDate = (dateString) => {
     try {
       const date = new Date(dateString);
-      return date.toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
+      return date.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
       });
     } catch (e) {
-      return dateString?.split(' ')[0] || 'N/A';
+      return dateString?.split(" ")[0] || "N/A";
     }
   };
 
   const formatTime = (dateString) => {
     try {
       const date = new Date(dateString);
-      return date.toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
+      return date.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
       });
     } catch (e) {
-      return dateString?.split(' ')[1]?.substring(0, 5) || 'N/A';
+      return dateString?.split(" ")[1]?.substring(0, 5) || "N/A";
     }
   };
 
@@ -243,26 +260,30 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
         <div key={`pickup-${index}`} className="flex items-center gap-2">
           <span
             className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
-            onClick={(e) => handleBookingClick(e, pickupBooking, 'Airport Pickup')}
+            onClick={(e) =>
+              handleBookingClick(e, pickupBooking, "Airport Pickup")
+            }
           >
             {pickupBooking?.name}:
           </span>
           <span className="text-gray-200">
-            • Date {formatDate(pickupBooking.check_in)} • Time {formatTime(pickupBooking.check_in)}
+            • Date {formatDate(pickupBooking.check_in)} • Time{" "}
+            {formatTime(pickupBooking.check_in)}
           </span>
         </div>
       ))}
-      
+
       {dropBookings.map((dropBooking, index) => (
         <div key={`drop-${index}`} className="flex items-center gap-2">
           <span
             className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
-            onClick={(e) => handleBookingClick(e, dropBooking, 'Airport Drop')}
+            onClick={(e) => handleBookingClick(e, dropBooking, "Airport Drop")}
           >
             {dropBooking?.name}:
           </span>
           <span className="text-gray-200">
-            • Date {formatDate(dropBooking.check_out || dropBooking.check_in)} • Time {formatTime(dropBooking.check_out || dropBooking.check_in)}
+            • Date {formatDate(dropBooking.check_out || dropBooking.check_in)} •
+            Time {formatTime(dropBooking.check_out || dropBooking.check_in)}
           </span>
         </div>
       ))}
@@ -271,12 +292,13 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
         <div key={`other-${index}`} className="flex items-center gap-2">
           <span
             className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
-            onClick={(e) => handleBookingClick(e, book, 'Airport Transfer')}
+            onClick={(e) => handleBookingClick(e, book, "Airport Transfer")}
           >
             {book?.name}:
           </span>
           <span className="text-gray-200">
-            • Date {formatDate(book.check_out || book.check_in)} • Time {formatTime(book.check_out || book.check_in)}
+            • Date {formatDate(book.check_out || book.check_in)} • Time{" "}
+            {formatTime(book.check_out || book.check_in)}
           </span>
         </div>
       ))}
@@ -286,63 +308,83 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
   const renderDropdownContent = () => (
     <div className="flex flex-col gap-2">
       {pickupBookings.map((pickupBooking, index) => (
-        <div key={`dropdown-pickup-${index}`} className="flex items-start gap-2 flex-wrap">
+        <div
+          key={`dropdown-pickup-${index}`}
+          className="flex items-start gap-2 flex-wrap"
+        >
           <span
             className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors whitespace-nowrap"
-            onClick={(e) => handleBookingClick(e, pickupBooking, 'Airport Pickup')}
+            onClick={(e) =>
+              handleBookingClick(e, pickupBooking, "Airport Pickup")
+            }
           >
             {pickupBooking?.name}:
           </span>
-          {isPageWide && <span className="text-gray-200 flex-1">
-            • Date {formatDate(pickupBooking.check_in)} • Time {formatTime(pickupBooking.check_in)}
-          </span>}
+          {isPageWide && (
+            <span className="text-gray-200 flex-1">
+              • Date {formatDate(pickupBooking.check_in)} • Time{" "}
+              {formatTime(pickupBooking.check_in)}
+            </span>
+          )}
         </div>
       ))}
-      
+
       {dropBookings.map((dropBooking, index) => (
-        <div key={`dropdown-drop-${index}`} className="flex items-start gap-2 flex-wrap">
+        <div
+          key={`dropdown-drop-${index}`}
+          className="flex items-start gap-2 flex-wrap"
+        >
           <span
             className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors whitespace-nowrap"
-            onClick={(e) => handleBookingClick(e, dropBooking, 'Airport Drop')}
+            onClick={(e) => handleBookingClick(e, dropBooking, "Airport Drop")}
           >
             {dropBooking?.name}:
           </span>
-          {isPageWide && <span className="text-gray-200 flex-1">
-            • Date {formatDate(dropBooking.check_out || dropBooking.check_in)} • Time {formatTime(dropBooking.check_out || dropBooking.check_in)}
-          </span>}
+          {isPageWide && (
+            <span className="text-gray-200 flex-1">
+              • Date {formatDate(dropBooking.check_out || dropBooking.check_in)}{" "}
+              • Time {formatTime(dropBooking.check_out || dropBooking.check_in)}
+            </span>
+          )}
         </div>
       ))}
 
       {noPickupDropBookings.map((book, index) => (
-        <div key={`dropdown-other-${index}`} className="flex items-start gap-2 flex-wrap">
+        <div
+          key={`dropdown-other-${index}`}
+          className="flex items-start gap-2 flex-wrap"
+        >
           <span
             className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors whitespace-nowrap"
-            onClick={(e) => handleBookingClick(e, book, 'Airport Transfer')}
+            onClick={(e) => handleBookingClick(e, book, "Airport Transfer")}
           >
             {book?.name}:
           </span>
-          {isPageWide && <span className="text-gray-200 flex-1">
-            • Date {formatDate(book.check_out || book.check_in)} • Time {formatTime(book.check_out || book.check_in)}
-          </span>}
+          {isPageWide && (
+            <span className="text-gray-200 flex-1">
+              • Date {formatDate(book.check_out || book.check_in)} • Time{" "}
+              {formatTime(book.check_out || book.check_in)}
+            </span>
+          )}
         </div>
       ))}
     </div>
   );
 
-  return (
-    displayText ? (
-      <div key={-3} className="group relative" ref={dropdownRef}>
-        <div className="flex items-center gap-2">
-          <span
-            className={`text-blue font-[500] text-[14px] ${
-              displayText ? 'hover:underline cursor-pointer' : ''
-            }`}
-            onClick={handleClick}
-          >
-            {displayText}
-          </span>
+  return displayText ? (
+    <div key={-3} className="group relative" ref={dropdownRef}>
+      <div className="flex items-center gap-2">
+        <span
+          className={`text-blue font-[500] text-[14px] ${
+            displayText ? "hover:underline cursor-pointer" : ""
+          }`}
+          onClick={handleClick}
+        >
+          {displayText}
+        </span>
 
-          {isPageWide && <div className="relative">
+        {isPageWide && (
+          <div className="relative">
             <div
               className="w-4 h-4 rounded-full bg-white text-gray-400 flex items-center justify-center text-[14px] font-bold hover:bg-blue-700 transition-colors cursor-pointer"
               onMouseEnter={() => handleInfoHover(true)}
@@ -362,10 +404,14 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
                 <div className="absolute left-0 top-1/2 transform -translate-x-1 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-900"></div>
               </div>
             )}
-          </div>}
-        </div>
+          </div>
+        )}
+      </div>
 
-        {showDetails && (hasPickup && hasDrop || pickupBookings.length > 1 || dropBookings.length > 1) && (
+      {showDetails &&
+        ((hasPickup && hasDrop) ||
+          pickupBookings.length > 1 ||
+          dropBookings.length > 1) && (
           <div className="relative mt-2">
             <div
               className="absolute bg-gray-900 text-white text-xs rounded-md px-2 py-2 shadow-xl border border-gray-600 min-w-fit md:min-w-[320px] max-w-[450px] md:w-[800px]"
@@ -376,9 +422,8 @@ const AirportBookingItem = ({ booking, handleIntracityBookings, upPresent, downP
             </div>
           </div>
         )}
-      </div>
-    ) : null
-  );
+    </div>
+  ) : null;
 };
 
 const CityItem = ({
@@ -414,7 +459,7 @@ const CityItem = ({
   const { transfers_status } = useSelector((state) => state.ItineraryStatus);
 
   console.log("Booking data:", airportBookings);
-  
+
   const correctIcon = (TransportMode) => {
     switch (TransportMode?.toLowerCase()) {
       case "flight":
@@ -454,7 +499,9 @@ const CityItem = ({
   const [transferType, setTransferType] = useState(null);
   const [isIntracity, setIsIntracity] = useState(false);
   const [error, setError] = useState(false);
-  const [currentAirportBookings, setCurrentAirportBookings] = useState(airportBookings || []);
+  const [currentAirportBookings, setCurrentAirportBookings] = useState(
+    airportBookings || []
+  );
 
   console.log("Selected Booking", selectedBooking);
   const router = useRouter();
@@ -528,64 +575,63 @@ const CityItem = ({
   };
 
   const handleDelete = async (val) => {
-  if (!localStorage?.getItem("access_token")) {
-    setShowLoginModal(true);
-    return;
-  }
-  const dataPassed = val != null ? val : data;
-  try {
-    setLoading(true);
-    const response = await axiosDeleteBooking.delete(
-      `${router?.query?.id}/bookings/${
-        dataPassed?.booking_type?.includes(",")
-          ? `combo`
-          : dataPassed?.booking_type?.toLowerCase()
-      }/${dataPassed?.id}/`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      }
-    );
+    if (!localStorage?.getItem("access_token")) {
+      setShowLoginModal(true);
+      return;
+    }
+    const dataPassed = val != null ? val : data;
+    try {
+      setLoading(true);
+      const response = await axiosDeleteBooking.delete(
+        `${router?.query?.id}/bookings/${
+          dataPassed?.booking_type?.includes(",")
+            ? `combo`
+            : dataPassed?.booking_type?.toLowerCase()
+        }/${dataPassed?.id}/`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      );
 
-    if (response.status === 204) {
-      dispatch(updateTransferBookings(dataPassed?.id));
-      setLoading(false);
-      getPaymentHandler();
+      if (response.status === 204) {
+        dispatch(updateTransferBookings(dataPassed?.id));
+        setLoading(false);
+        getPaymentHandler();
 
-      if (isIntracity) {
-        setCurrentAirportBookings(prev => 
-          prev.filter(booking => booking.id !== dataPassed?.id)
+        if (isIntracity) {
+          setCurrentAirportBookings((prev) =>
+            prev.filter((booking) => booking.id !== dataPassed?.id)
+          );
+        } else {
+          setVisible(true);
+        }
+
+        setHandleShow(false);
+        dispatch(
+          openNotification({
+            type: "success",
+            text: `${city} deleted successfully`,
+            heading: "Success!",
+          })
         );
-      } else {
-        setVisible(true);
       }
-      
-      setHandleShow(false);
+    } catch (err) {
+      const errorMsg =
+        err?.response?.data?.errors?.[0]?.message?.[0] ||
+        err.response?.data?.errors[0]?.detail ||
+        err.message;
       dispatch(
         openNotification({
-          type: "success",
-          text: `${city} deleted successfully`,
-          heading: "Success!",
+          type: "error",
+          text: errorMsg,
+          heading: "Error!",
         })
       );
+      setLoading(false);
     }
-  } catch (err) {
-    const errorMsg =
-      err?.response?.data?.errors?.[0]?.message?.[0] ||
-      err.response?.data?.errors[0]?.detail ||
-      err.message;
-    dispatch(
-      openNotification({
-        type: "error",
-        text: errorMsg,
-        heading: "Error!",
-      })
-    );
-    setLoading(false);
-  }
-};
-
+  };
 
   const extractMode = (text) => {
     const lowerText = text.toLowerCase();
@@ -667,156 +713,161 @@ const CityItem = ({
               ""
             )
           ) : (
-            (upPresent && downPresent) && <div
-              className={`text-[16px] font-[500] flex gap-1 ${
-                currentAirportBookings && currentAirportBookings.length > 0 ? "mt-5" : null
-              }`}
-            >
-              {(booking_id || city) && !visible ? (
-                <>
-                  {/* Icon Section */}
-                  <div className="mt-[4px] flex items-start">
-                    {booking?.children
-                      ? booking?.children?.map((book, i) => {
-                          const mode = extractMode(book?.booking_type);
-                          return (
-                            <React.Fragment key={i}>
-                              {correctIcon(mode)}
-                              {i < booking?.children?.length - 1 && (
-                                <span>
-                                  <RiArrowDropRightLine size={18} />
-                                </span>
-                              )}
-                            </React.Fragment>
-                          );
-                        })
-                      : correctIcon(booking_type)}
-                  </div>
+            upPresent &&
+            downPresent && (
+              <div
+                className={`text-[16px] font-[500] flex gap-1 ${
+                  currentAirportBookings && currentAirportBookings.length > 0
+                    ? "mt-5"
+                    : null
+                }`}
+              >
+                {(booking_id || city) && !visible ? (
+                  <>
+                    {/* Icon Section */}
+                    <div className="mt-[4px] flex items-start">
+                      {booking?.children
+                        ? booking?.children?.map((book, i) => {
+                            const mode = extractMode(book?.booking_type);
+                            return (
+                              <React.Fragment key={i}>
+                                {correctIcon(mode)}
+                                {i < booking?.children?.length - 1 && (
+                                  <span>
+                                    <RiArrowDropRightLine size={18} />
+                                  </span>
+                                )}
+                              </React.Fragment>
+                            );
+                          })
+                        : correctIcon(booking_type)}
+                    </div>
 
-                  {/* City and Duration Section */}
-                  <div className="flex flex-col">
-                    <div
-                      className={`flex items-center gap-2 ${
-                        upPresent && downPresent
-                          ? "group hover:cursor-pointer"
-                          : ""
-                      }`}
-                      onClick={() => {
-                        upPresent &&
-                          downPresent &&
-                          handleEdit(transfer_type === "combo");
-                      }}
-                    >
-                      <div className="group-hover:text-blue">
-                        {upPresent && downPresent ? city : ""}
+                    {/* City and Duration Section */}
+                    <div className="flex flex-col">
+                      <div
+                        className={`flex items-center gap-2 ${
+                          upPresent && downPresent
+                            ? "group hover:cursor-pointer"
+                            : ""
+                        }`}
+                        onClick={() => {
+                          upPresent &&
+                            downPresent &&
+                            handleEdit(transfer_type === "combo");
+                        }}
+                      >
+                        <div className="group-hover:text-blue">
+                          {upPresent && downPresent ? city : ""}
+                        </div>
+                        {upPresent && downPresent && (
+                          <div className="">
+                            <FaPen
+                              size={12}
+                              className="transition-transform group-hover:scale-150 duration-300 group-hover:text-yellow-500"
+                            />
+                          </div>
+                        )}
                       </div>
-                      {upPresent && downPresent && (
-                        <div className="">
-                          <FaPen
-                            size={12}
-                            className="transition-transform group-hover:scale-150 duration-300 group-hover:text-yellow-500"
-                          />
+
+                      {/* Duration */}
+                      {duration && (
+                        <div className="font-[400] text-[12px]">
+                          Duration: {duration}
                         </div>
                       )}
                     </div>
-
-                    {/* Duration */}
-                    {duration && (
-                      <div className="font-[400] text-[12px]">
-                        Duration: {duration}
-                      </div>
-                    )}
-
-                  </div>
-                </>
-              ) : isPageWide ? (
-                <button
-                  onClick={() => setShowDrawer(true)}
-                  className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
-                >
-                  + Add Transfer from {origin_city_name} to{" "}
-                  {destination_city_name}
-                </button>
-              ) : (
-                <button
-                  onClick={() => setShowDrawer(true)}
-                  className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
-                >
-                  + Add Transfer
-                </button>
-              )}
+                  </>
+                ) : isPageWide ? (
+                  <button
+                    onClick={() => setShowDrawer(true)}
+                    className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
+                  >
+                    + Add Transfer from {origin_city_name} to{" "}
+                    {destination_city_name}
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setShowDrawer(true)}
+                    className="text-[14px] font-[600] leading-[60px] text-blue hover:underline"
+                  >
+                    + Add Transfer
+                  </button>
+                )}
+              </div>
+            )
+          )}
+          {currentAirportBookings && currentAirportBookings.length > 0 && (
+            <div className="flex flex-col gap-1 mt-1 mb-[1.5rem]">
+              <AirportBookingItem
+                key={`airport-${booking_id || "no-main"}`}
+                booking={currentAirportBookings}
+                handleIntracityBookings={handleIntracityBookings}
+                upPresent={upPresent}
+                downPresent={downPresent}
+              />
             </div>
           )}
-             {currentAirportBookings &&
-  currentAirportBookings.length > 0 && (
-    <div className="flex flex-col gap-1 mt-1 mb-[1.5rem]">
-      <AirportBookingItem
-        key={`airport-${booking_id || 'no-main'}`}
-        booking={currentAirportBookings}
-        handleIntracityBookings={handleIntracityBookings}
-        upPresent={upPresent}
-        downPresent={downPresent}
-      />
-    </div>
-  )}
         </div>
       </div>
 
-  <TransferEditDrawer
-    mercury
-    addOrEdit={"transferAdd"}
-    showDrawer={showDrawer}
-    setShowDrawer={setShowDrawer}
-    destination={destination_city_id}
-    _updateFlightBookingHandler={_updateFlightBookingHandler}
-    _updatePaymentHandler={_updatePaymentHandler}
-    getPaymentHandler={getPaymentHandler}
-    oCityData={oCityData}
-    dCityData={dCityData}
-    setShowLoginModal={setShowLoginModal}
-    city={origin_city_name}
-    dcity={destination_city_name}
-    _updateTaxiBookingHandler={_updateTaxiBookingHandler}
-    selectedBooking={selectedBooking}
-    setSelectedBooking={setSelectedBooking}
-    originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
-    destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
-    origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
-    destination_itinerary_city_id={dCityData?.id || dCityData?.gmaps_place_id}
-     booking_id={booking_id}
-     
-  />
+      <TransferEditDrawer
+        mercury
+        addOrEdit={"transferAdd"}
+        showDrawer={showDrawer}
+        setShowDrawer={setShowDrawer}
+        destination={destination_city_id}
+        _updateFlightBookingHandler={_updateFlightBookingHandler}
+        _updatePaymentHandler={_updatePaymentHandler}
+        getPaymentHandler={getPaymentHandler}
+        oCityData={oCityData}
+        dCityData={dCityData}
+        setShowLoginModal={setShowLoginModal}
+        city={origin_city_name}
+        dcity={destination_city_name}
+        _updateTaxiBookingHandler={_updateTaxiBookingHandler}
+        selectedBooking={selectedBooking}
+        setSelectedBooking={setSelectedBooking}
+        originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
+        destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
+        origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
+        destination_itinerary_city_id={
+          dCityData?.id || dCityData?.gmaps_place_id
+        }
+        booking_id={booking_id}
+      />
 
-  {handleShow && (
-    <TransferDrawer
-      show={handleShow}
-      error={error}
-      setHandleShow={setHandleShow}
-      data={data}
-      booking_type={transferType || booking_type}
-      loading={loading}
-      handleDelete={handleDelete}
-      setShowDrawer={setShowDrawer}
-      city={city}
-      _updateFlightBookingHandler={_updateFlightBookingHandler}
-      _updatePaymentHandler={_updatePaymentHandler}
-      getPaymentHandler={getPaymentHandler}
-      oCityData={oCityData}
-      dCityData={dCityData}
-      setShowLoginModal={setShowLoginModal}
-      dcity={destination_city_name}
-      selectedBooking={selectedBooking}
-      setSelectedBooking={setSelectedBooking}
-      originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
-      destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
-      origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
-      destination_itinerary_city_id={dCityData?.id || dCityData?.gmaps_place_id}
-      isIntracity={isIntracity}
-      booking_id={booking_id}
-     
-    />
-  )}
-</Container>
+      {handleShow && (
+        <TransferDrawer
+          show={handleShow}
+          error={error}
+          setHandleShow={setHandleShow}
+          data={data}
+          booking_type={transferType || booking_type}
+          loading={loading}
+          handleDelete={handleDelete}
+          setShowDrawer={setShowDrawer}
+          city={city}
+          _updateFlightBookingHandler={_updateFlightBookingHandler}
+          _updatePaymentHandler={_updatePaymentHandler}
+          getPaymentHandler={getPaymentHandler}
+          oCityData={oCityData}
+          dCityData={dCityData}
+          setShowLoginModal={setShowLoginModal}
+          dcity={destination_city_name}
+          selectedBooking={selectedBooking}
+          setSelectedBooking={setSelectedBooking}
+          originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
+          destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
+          origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
+          destination_itinerary_city_id={
+            dCityData?.id || dCityData?.gmaps_place_id
+          }
+          isIntracity={isIntracity}
+          booking_id={booking_id}
+        />
+      )}
+    </Container>
   );
 };
 

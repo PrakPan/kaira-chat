@@ -119,7 +119,7 @@ const SlideTwo = (props) => {
                 props.numberOfChildren > 0 ? "text-blue" : "text-gray-300"
               }`}
               onClick={() => props.setNumberOfChildren((prev) => prev - 1)}
-              disabled={props.numberOfChildren >= 3}
+              disabled={props.numberOfChildren == 0}
             >
               -
             </button>

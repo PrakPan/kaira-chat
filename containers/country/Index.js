@@ -82,8 +82,8 @@ const Index = (props) => {
       });
     }
     setHotLocations(hot_locations);
-    setUserItineraries(props?.data?.itinerary_data);
-  }, [props?.data?.itinerary_data, props?.data?.loccations]);
+    setUserItineraries(props?.data?.itineraries);
+  }, [props?.data?.itineraries, props?.data?.loccations]);
 
   const InfoWindowContainer = (location) => (
     <MapInfo>
@@ -229,6 +229,7 @@ const Index = (props) => {
                 city={props?.data?.name}
                 handlePlanButtonClick={handlePlanButtonClick}
                 page={"Country Page"}
+                removeDelete
               />
             </div>
           ) : null}
@@ -249,6 +250,8 @@ const Index = (props) => {
                 city={props?.data?.name}
                 handlePlanButtonClick={handlePlanButtonClick}
                 page={"Country Page"}
+                removeDelete={true}
+                removeChange={true}
               />
             </MenuItem>
           ) : null}

@@ -1,19 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import styled from "styled-components";
 import media from "../../media";
-import axiosTaxiSearch from "../../../services/bookings/TaxiSearch";
-import axiosbookingupdateinstance from "../../../services/bookings/UpdateBookings";
 import { connect } from "react-redux";
 import Button from "../../ui/button/Index";
 import LogInModal from "../Login";
 import SectionOne from "./SectionOne";
 import LoadingLottie from "../../ui/LoadingLottie";
-import TaxiSearched from "./taxi-searched/Index";
 import Drawer from "../../ui/Drawer";
 import { openNotification } from "../../../store/actions/notification";
 import Skeleton from "./Skeleton";
 import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
-import { fetchTransferMode } from "../../../services/bookings/FetchTaxiRecommendations";
 
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {

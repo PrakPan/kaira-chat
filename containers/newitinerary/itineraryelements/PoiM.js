@@ -57,18 +57,18 @@ const Floating = styled.div`
 `;
 
 const FloatingView = styled.div`
-  position: fixed;
-
-  bottom: 68px;
-  background: #f7e700;
+  position: sticky;
+  bottom: 10px;
+  background: black;
+  color: white;
   border-radius: 50%;
   width: 50px;
   height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
-  right: 10px;
-
+  left: 90%;
+  z-index: 2;
   cursor: pointer;
 `;
 

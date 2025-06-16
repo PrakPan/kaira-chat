@@ -23,6 +23,7 @@ const fadeInAnimation = keyframes`${fadeIn}`;
 
 const Container = styled.div`
   height: max-content;
+  padding: 2px;
   color: black;
   z-index: ${(props) => (props.showBlack ? "1006" : "2")};
   position: relative;
@@ -89,6 +90,7 @@ const LoadingText = styled.div`
 
 const Enquiry = (props) => {
   console.log("Enquiry Props:", props);
+  console.log("Enquiry Props:", props);
   const router = useRouter();
   const routerquery = router.query;
   const initialInputId = Date.now();
@@ -105,7 +107,7 @@ const Enquiry = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [roomConfiguration, setRoomConfiguration] = useState([
     {
-      adults: 2,
+      adults: 1,
       children: 0,
       childAges: [],
     },
@@ -144,17 +146,53 @@ const Enquiry = (props) => {
   });
   let isPageWide = media("(min-width: 768px)");
 
-  useEffect(() => {
-    if (groupType === "Solo") {
-      setRoomConfiguration([
-        {
-          adults: 1,
-          children: 0,
-          childAges: [],
-        },
-      ]);
+  const divideTravellers = () => {
+    let distribution = [];
+
+    let tempadults = numberOfAdults;
+    let tempChildren = numberOfChildren;
+    let tempInfants = numberOfInfants;
+    while (tempadults != 0) {
+      if (tempadults >= 2) {
+        distribution.push({ adults: 2,children:0 });
+        tempadults -= 2;
+      } else {
+        distribution.push({ adults: tempadults,children:0  });
+        tempadults = 0;
+      }
     }
-  }, [groupType]);
+
+    let childIdx = 0;
+
+    while (tempChildren != 0) {
+      if (!distribution[childIdx % distribution.length].children) {
+        distribution[childIdx % distribution.length].children = 0;
+      }
+      distribution[childIdx % distribution.length].children += 1;
+      tempChildren -= 1;
+      if (!distribution[childIdx % distribution.length].childAges) {
+        distribution[childIdx % distribution.length].childAges = [];
+      }
+      distribution[childIdx % distribution.length].childAges.push(10);
+      childIdx += 1;
+    }
+
+    while (tempInfants != 0) {
+      if (!distribution[childIdx % distribution.length].children) {
+        distribution[childIdx % distribution.length].children = 0;
+      }
+      distribution[childIdx % distribution.length].children += 1;
+      tempInfants -= 1;
+      if (!distribution[childIdx % distribution.length].childAges) {
+        distribution[childIdx % distribution.length].childAges = [];
+      }
+      distribution[childIdx % distribution.length].childAges.push(1);
+      childIdx += 1;
+    }
+
+    return distribution;
+
+  };
 
   useEffect(() => {
     if (loginComplete && props.token && props.phone !== "null") {
@@ -176,7 +214,19 @@ const Enquiry = (props) => {
 
   var selectedObj;
 
-  if ((routerquery.state && !routerquery.city) || props?.type == "State") {
+  if (router?.query?.type == "Page" || props?.type == "Page") {
+    selectedObj = [
+      {
+        id: routerquery.page_id || props.page_id,
+        name: routerquery.destination || props.destination,
+        input_id: initialInputId,
+        type: "Page",
+      },
+    ];
+  } else if (
+    (routerquery.state && !routerquery.city) ||
+    props?.type == "State"
+  ) {
     console.log("PROPS", props);
     selectedObj = [
       {
@@ -218,6 +268,8 @@ const Enquiry = (props) => {
     ];
   }
 
+  console.log("SelectedObj", selectedObj, routerquery);
+
   const _handleHideBlack = () => {
     setShowCities(false);
     setShowSearchStarting(false);
@@ -235,6 +287,7 @@ const Enquiry = (props) => {
     let countryIds = [];
     let continentIds = [];
     let preferences = [];
+    let pageIds = [];
 
     for (var i = 0; i < selectedPreferences.length; i++) {
       for (var j = 0; j < EXPERIENCE_FILTERS_BOX.length; j++) {
@@ -255,7 +308,9 @@ const Enquiry = (props) => {
           selectedCities[i].id
         ) {
           console.log("selected city is:", selectedCities[i]);
-          if (selectedCities[i].type == "State")
+          if (selectedCities[i].type == "Page") {
+            pageIds.push(selectedCities[i].id);
+          } else if (selectedCities[i].type == "State")
             stateIds.push(selectedCities[i].id);
           else if (selectedCities[i].type == "Country")
             countryIds.push(selectedCities[i].id);
@@ -269,6 +324,7 @@ const Enquiry = (props) => {
       }
     } catch {}
 
+let dist=divideTravellers()
     const start_date = format(value_start, "yyyy-MM-dd");
     const end_date = format(value_end, "yyyy-MM-dd");
 
@@ -308,7 +364,7 @@ const Enquiry = (props) => {
           ? startingLocation.place_id
           : "ChIJLbZ-NFv9DDkRzk0gTkm3wlI",
       },
-      room_configuration: roomConfiguration,
+      room_configuration: dist,
       price_range: priceRange,
     };
 
@@ -318,6 +374,7 @@ const Enquiry = (props) => {
     if (continentIds.length) data.destination_id = continentIds;
     if (stateIds.length) data.state_id = stateIds;
     if (countryIds.length) data.country_id = countryIds;
+    if (pageIds.length) data.page_id = pageIds;
     if (cityids.length) data.city_id = cityids;
     if (locations.length) data.locations = locations;
     if (start_date === "1970-01-01") data.start_date = "";
@@ -377,6 +434,8 @@ const Enquiry = (props) => {
     if (!submitSecondSlide) return setShowPopup({ ...showPopup, group: true });
     setShowPopup(popupObj);
     setSlideIndex(slideIndex + 1);
+    let dist = divideTravellers();
+    setRoomConfiguration(dist);
   };
 
   const _SlideThreeSubmitHandler = () => {
@@ -395,6 +454,7 @@ const Enquiry = (props) => {
     let countryIds = [];
     let continentIds = [];
     let preferences = [];
+    let pageIds = [];
 
     for (var i = 0; i < selectedPreferences.length; i++) {
       for (var j = 0; j < EXPERIENCE_FILTERS_BOX.length; j++) {
@@ -414,7 +474,9 @@ const Enquiry = (props) => {
           cityids.indexOf(selectedCities[i].id) == -1 &&
           selectedCities[i].id
         ) {
-          if (selectedCities[i].type == "State")
+          if (selectedCities[i].type == "Page") {
+            pageIds.push(selectedCities[i].id);
+          } else if (selectedCities[i].type == "State")
             stateIds.push(selectedCities[i].id);
           else if (selectedCities[i].type == "Country")
             countryIds.push(selectedCities[i].id);
@@ -442,6 +504,7 @@ const Enquiry = (props) => {
       pages: [], // Page ids (from web customization) to build itinerary - Theme pages and continent itineraries
       states: stateIds, // State ids to build itinerary
       countries: countryIds, // Country ids to build itinerary
+      pages: pageIds,
       end_location: {}, // If empty, it is same as start_location
       start_date: start_date, // YYYY-MM-DD
       end_date: end_date, // YYYY-MM-DD
@@ -500,6 +563,8 @@ const Enquiry = (props) => {
       number_of_children = numberOfChildren;
       number_of_infants = numberOfInfants;
     }
+    let dist = divideTravellers();
+
 
     const data = {
       source: {
@@ -511,7 +576,7 @@ const Enquiry = (props) => {
       number_of_adults: number_of_adults,
       number_of_children: number_of_children,
       number_of_infants: number_of_infants,
-      room_configuration: roomConfiguration,
+      room_configuration: slideIndex==1?dist:roomConfiguration,
       add_hotels: addHotels,
       add_flights: addFlights,
     };
