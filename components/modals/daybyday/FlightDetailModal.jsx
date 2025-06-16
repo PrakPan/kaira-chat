@@ -221,15 +221,6 @@ const FlightDetailModal = ({
           </button>
         </div>
       )}
-      {/* {!isPageWide && (
-        <FloatingView>
-          <TbArrowBack
-            style={{ height: "28px", width: "28px" }}
-            cursor={"pointer"}
-            onClick={() => setShowDetails((prev) => !prev)}
-          />
-        </FloatingView>
-      )} */}
 
       <ToastContainer />
     </div>
