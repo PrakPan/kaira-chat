@@ -861,6 +861,10 @@ const SimpleTabsV2 = (props) => {
                       _GetInTouch={() => _GetInTouch()}
                       setShowLoginModal={setShowLoginModal}
                       loading={loading}
+                      social_title={props?.social_title}
+                      social_description={props?.social_description}
+                      itineraryName={props.itinerary.name}
+                      itineraryImage={props?.itinerary?.images?.[0]}
                     />
                   )
                 ) : (
@@ -1180,6 +1184,10 @@ const SimpleTabsV2 = (props) => {
               itinerary={props.itinerary}
               _GetInTouch={_GetInTouch}
               setShowLoginModal={setShowLoginModal}
+              social_title={props?.social_title}
+              social_description={props?.social_description}
+              itineraryName={props.itinerary.name}
+              itineraryImage={props?.itinerary?.images?.[0]}
             />
           ) : null}
         </SplitScreen>
@@ -1318,112 +1326,109 @@ const SimpleTabsV2 = (props) => {
                   pricing_status === "SUCCESS") &&
                 !props.payment?.paid_user &&
                 // props.payment?.user_allowed_to_pay ? (
-                  (props.payment.total_cost > 0 ||
+                (props.payment.total_cost > 0 ||
                   props?.payment?.discounted_cost > 0) ? (
-                    <div className="">
-                      <Button
-                        color="#111"
-                        fontWeight="600"
-                        fontSize="0.85rem"
-                        borderWidth="1px"
-                        width="10rem"
-                        borderRadius="8px"
-                        bgColor="#f8e000"
-                        onclick={() =>
-                          handleFooterBannerMobile("View Inclusions")
-                        }
-                      >
-                        View Inclusions
-                      </Button>
-                    </div>
-                  )
-                  //  : (
-                  //   <div className="">
-                  //     <Button
-                  //       color="#111"
-                  //       fontWeight="600"
-                  //       fontSize="0.85rem"
-                  //       borderWidth="1px"
-                  //       width="10rem"
-                  //       borderRadius="8px"
-                  //       bgColor="#f8e000"
-                  //       onclick={() => handleButtonClick("Add Hotels")}
-                  //     >
-                  //       Add Hotels
-                  //     </Button>
-                  //   </div>
-                  // )
-                // ) 
-                : !props.payment.paid_user ? (
-                  // props.payment.is_registration_needed ? (
-                    <div className="">
-                      <Button
-                        color="#111"
-                        fontWeight="600"
-                        fontSize="0.85rem"
-                        borderWidth="2px"
-                        width="10rem"
-                        borderRadius="8px"
-                        bgColor="#f8e000"
-                        onclick={() =>
-                          handleFooterBannerMobile("View Inclusions")
-                        }
-                      >
-                        View Inclusions
-                      </Button>
-                    </div>
-                  )
-                   : (
-                    <GetInTouchContainer className="">
-                      <Button
-                        color="#111"
-                        fontWeight="600"
-                        fontSize="0.85rem"
-                        borderWidth="2px"
-                        width="10rem"
-                        borderRadius="8px"
-                        bgColor="#f8e000"
-                        loading={loading}
-                        onclick={handleGetInTouch}
-                      >
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "center",
-                            gap: "0.5rem",
-                            alignItems: "center",
-                          }}
-                        >
-                          <ImageLoader
-                            dimensions={{ height: 50, width: 50 }}
-                            dimensionsMobile={{ height: 50, width: 50 }}
-                            height={"20px"}
-                            width={"20px"}
-                            widthmobile={"20px"}
-                            leftalign
-                            url={"media/icons/login/customer-service-black.png"}
-                          />{" "}
-                          <span>Get in touch!</span>
-                        </div>
-                      </Button>
-                    </GetInTouchContainer>
-                  )
-                ) :
-                //  (
-                //   <Button
-                //     color="#111"
-                //     fontWeight="600"
-                //     fontSize="0.85rem"
-                //     borderWidth="1px"
-                //     width="10rem"
-                //     borderRadius="8px"
-                //     bgColor="#f8e000"
-                //     onclick={() => handleButtonClick("View Bookingstays")}
-                //   >
-                //     View Bookings
-                //   </Button>
+                  <div className="">
+                    <Button
+                      color="#111"
+                      fontWeight="600"
+                      fontSize="0.85rem"
+                      borderWidth="1px"
+                      width="10rem"
+                      borderRadius="8px"
+                      bgColor="#f8e000"
+                      onclick={() =>
+                        handleFooterBannerMobile("View Inclusions")
+                      }
+                    >
+                      View Inclusions
+                    </Button>
+                  </div>
+                ) : //  : (
+                //   <div className="">
+                //     <Button
+                //       color="#111"
+                //       fontWeight="600"
+                //       fontSize="0.85rem"
+                //       borderWidth="1px"
+                //       width="10rem"
+                //       borderRadius="8px"
+                //       bgColor="#f8e000"
+                //       onclick={() => handleButtonClick("Add Hotels")}
+                //     >
+                //       Add Hotels
+                //     </Button>
+                //   </div>
                 // )
-              // ) 
+                // )
+                !props.payment.paid_user ? (
+                  // props.payment.is_registration_needed ? (
+                  <div className="">
+                    <Button
+                      color="#111"
+                      fontWeight="600"
+                      fontSize="0.85rem"
+                      borderWidth="2px"
+                      width="10rem"
+                      borderRadius="8px"
+                      bgColor="#f8e000"
+                      onclick={() =>
+                        handleFooterBannerMobile("View Inclusions")
+                      }
+                    >
+                      View Inclusions
+                    </Button>
+                  </div>
+                ) : (
+                  <GetInTouchContainer className="">
+                    <Button
+                      color="#111"
+                      fontWeight="600"
+                      fontSize="0.85rem"
+                      borderWidth="2px"
+                      width="10rem"
+                      borderRadius="8px"
+                      bgColor="#f8e000"
+                      loading={loading}
+                      onclick={handleGetInTouch}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          gap: "0.5rem",
+                          alignItems: "center",
+                        }}
+                      >
+                        <ImageLoader
+                          dimensions={{ height: 50, width: 50 }}
+                          dimensionsMobile={{ height: 50, width: 50 }}
+                          height={"20px"}
+                          width={"20px"}
+                          widthmobile={"20px"}
+                          leftalign
+                          url={"media/icons/login/customer-service-black.png"}
+                        />{" "}
+                        <span>Get in touch!</span>
+                      </div>
+                    </Button>
+                  </GetInTouchContainer>
+                )
+              ) : //  (
+              //   <Button
+              //     color="#111"
+              //     fontWeight="600"
+              //     fontSize="0.85rem"
+              //     borderWidth="1px"
+              //     width="10rem"
+              //     borderRadius="8px"
+              //     bgColor="#f8e000"
+              //     onclick={() => handleButtonClick("View Bookingstays")}
+              //   >
+              //     View Bookings
+              //   </Button>
+              // )
+              // )
               null}
             </>
           )}
@@ -1454,7 +1459,7 @@ const SimpleTabsV2 = (props) => {
         />
       )}
 
-      <div
+      {/* <div
         onClick={() => setShareMobile((prev) => !prev)}
         className="z-[999] fixed bottom-[160px] right-[22px] md:right-[16px] md:hidden bg-black  p-[18px] w-fit flex items-center justify-center rounded-full cursor-pointer"
       >
@@ -1471,7 +1476,7 @@ const SimpleTabsV2 = (props) => {
             setShare={setShareMobile}
           />
         </div>
-      )}
+      )} */}
 
       {!props.preview ? (
         <PoiEditModal

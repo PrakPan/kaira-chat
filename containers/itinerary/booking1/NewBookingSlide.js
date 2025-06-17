@@ -34,6 +34,9 @@ import Drawer from "../../../components/ui/Drawer";
 import PassengerDetails from "../../../components/modals/passenger-details/PassengerDetails";
 import { IoMdClose } from "react-icons/io";
 import { PulseLoader } from "react-spinners";
+import { SocialShare } from "./SocialShare";
+import media from "../../../components/media";
+import SocialShareMobile from "./SocialShareMobile";
 
 const GetInTouchContainer = styled.div`
   &:hover img {
@@ -42,6 +45,8 @@ const GetInTouchContainer = styled.div`
 `;
 
 const Details = (props) => {
+  let isPageWide = media("(min-width: 768px)");
+
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [Newitinerary, setNewitinerary] = useState(false);
   const [acoordianceOpen, setAcordianOpen] = useState(false);
@@ -60,7 +65,7 @@ const Details = (props) => {
     return formattedDate;
   };
   const [showSetPassenger, setShowSetPassenger] = useState(false);
-  const [getInTouchLoading,setGetInTouchLoading]=useState(false)
+  const [getInTouchLoading, setGetInTouchLoading] = useState(false);
   const { itinerary_status, transfers_status, pricing_status } = useSelector(
     (state) => state.ItineraryStatus
   );
@@ -74,9 +79,9 @@ const Details = (props) => {
     script.async = true;
     document.body.appendChild(script);
   }, []);
-  useEffect(()=>{
-    console.log("loading is:",props.loadpricing)
-  },[props.loadpricing])
+  useEffect(() => {
+    console.log("loading is:", props.loadpricing);
+  }, [props.loadpricing]);
 
   const getCurrentDateIfOlder = (dateString) => {
     const currentDate = startOfDay(new Date()); // Get the current date at the start of the day
@@ -468,7 +473,10 @@ const Details = (props) => {
       },
     });
 
-    window.open(urls.WHATSAPP + "?text=" + encodeURIComponent(message), "_blank");
+    window.open(
+      urls.WHATSAPP + "?text=" + encodeURIComponent(message),
+      "_blank"
+    );
   };
 
   const handleTermsConditions = () => {
@@ -499,7 +507,7 @@ const Details = (props) => {
 
   return (
     <>
-      {(pricing_status === "PENDING" ||props?.loadpricing ) ? (
+      {pricing_status === "PENDING" || props?.loadpricing ? (
         <div className="bg-[#F7E70033] -mt-[1rem] -mx-[1rem] mb-0">
           <PricingSkeleton />
         </div>
@@ -549,23 +557,23 @@ const Details = (props) => {
                 >
                   {props?.payment && <span>₹</span>}
                   {props?.payment && (
-                        <div>
-                          {props?.payment?.pay_only_for_one ||
-                          props?.payment?.show_per_person_cost
-                            ? getIndianPrice(
-                                Math.round(
-                                  Math.round(
-                                    props.payment?.per_person_discounted_cost
-                                  )
-                                )
+                    <div>
+                      {props?.payment?.pay_only_for_one ||
+                      props?.payment?.show_per_person_cost
+                        ? getIndianPrice(
+                            Math.round(
+                              Math.round(
+                                props.payment?.per_person_discounted_cost
                               )
-                            : getIndianPrice(
-                                Math.round(
-                                  Math.round(props.payment?.discounted_cost)
-                                )
-                              )}
-                          {"/-"}
-                        </div>
+                            )
+                          )
+                        : getIndianPrice(
+                            Math.round(
+                              Math.round(props.payment?.discounted_cost)
+                            )
+                          )}
+                      {"/-"}
+                    </div>
                   )}
                 </div>
 
@@ -1105,7 +1113,11 @@ const Details = (props) => {
                     leftalign
                     url={"media/icons/login/customer-service-black.png"}
                   />{" "}
-                  {props?.loading?<PulseLoader/>:<span>Get in touch!</span>}
+                  {props?.loading ? (
+                    <PulseLoader />
+                  ) : (
+                    <span>Get in touch!</span>
+                  )}
                 </div>
               </Button>
             </GetInTouchContainer>
@@ -1153,11 +1165,15 @@ const Details = (props) => {
                       dimensionsMobile={{ height: 50, width: 50 }}
                       height={"20px"}
                       width={"20px"}
-                       widthmobile={"20px"}
+                      widthmobile={"20px"}
                       leftalign
                       url={"media/icons/login/customer-service-black.png"}
                     />{" "}
-                  {props?.loading?<PulseLoader/>:<span>Get in touch!</span>}
+                    {props?.loading ? (
+                      <PulseLoader />
+                    ) : (
+                      <span>Get in touch!</span>
+                    )}
                   </div>
                 </Button>
               </GetInTouchContainer>
@@ -1189,6 +1205,18 @@ const Details = (props) => {
         >
           <div>Terms & Conditions</div>
         </Link>
+      </div>
+      <div className="flex flex-row justify-center items-center text-[#01202B] mt-4">
+
+      {!isPageWide && (
+        <SocialShareMobile
+          social_title={props?.social_title}
+          // social_description={props?.social_description}
+          // itineraryName={"Share This Itinerary"}
+          // itineraryImage={props?.itinerary?.images?.[0]}
+          more
+        />
+      )}
       </div>
 
       <RegistrationModal
