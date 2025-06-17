@@ -177,6 +177,7 @@ const POIDetailsDrawer = (props) => {
           {props?.activityData?.type != "poi" ? (
             <>
               <ActivityDetails
+                version={props?.version}
                 itineraryDrawer={props.itineraryDrawer}
                 data={data}
                 handleCloseDrawer={props.handleCloseDrawer}
@@ -193,6 +194,7 @@ const POIDetailsDrawer = (props) => {
           ) : (
             <>
             <POIDetails
+              version={props?.version}
               itineraryDrawer={props.itineraryDrawer}
               data={data}
               handleCloseDrawer={props.handleCloseDrawer}
