@@ -907,7 +907,7 @@ const SimpleTabsV2 = (props) => {
           classStyle="min-h-[600px]"
           isPageWide
           leftWidth={8}
-          rightWidth={4}
+          rightWidth={0}
         >
           <div>
             <div id={"Itenary"}>
