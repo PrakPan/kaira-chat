@@ -36,6 +36,7 @@ import { IoMdClose } from "react-icons/io";
 import { PulseLoader } from "react-spinners";
 import { SocialShare } from "./SocialShare";
 import media from "../../../components/media";
+import SocialShareMobile from "./SocialShareMobile";
 
 const GetInTouchContainer = styled.div`
   &:hover img {
@@ -1205,14 +1206,18 @@ const Details = (props) => {
           <div>Terms & Conditions</div>
         </Link>
       </div>
+      <div className="flex flex-row justify-center items-center text-[#01202B] mt-4">
+
       {!isPageWide && (
-        <SocialShare
+        <SocialShareMobile
           social_title={props?.social_title}
-          social_description={props?.social_description}
-          itineraryName={props.itinerary.name}
-          itineraryImage={props?.itinerary?.images?.[0]}
+          // social_description={props?.social_description}
+          // itineraryName={"Share This Itinerary"}
+          // itineraryImage={props?.itinerary?.images?.[0]}
+          more
         />
       )}
+      </div>
 
       <RegistrationModal
         number_of_adults={

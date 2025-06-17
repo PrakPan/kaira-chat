@@ -488,13 +488,13 @@ export default function PoiDetails(props) {
               <div className="flex flex-col">
                 <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
                   <div>Not suitable for</div>
-                  {boolDetails?.notSuitableFor ? (
+                  {!boolDetails?.notSuitableFor ? (
                     <IoIosArrowDown
                       className="cursor-pointer"
                       onClick={() =>
                         setBoolDetail((prev) => ({
                           ...prev,
-                          boolDetails: true,
+                          notSuitableFor: true,
                         }))
                       }
                     />
@@ -504,7 +504,7 @@ export default function PoiDetails(props) {
                       onClick={() =>
                         setBoolDetail((prev) => ({
                           ...prev,
-                          boolDetails: false,
+                          notSuitableFor: false,
                         }))
                       }
                     />

@@ -324,7 +324,7 @@ export default function NewActivityBooking(props) {
         pax={props?.pax}
         setShowDrawer={props?.setShowDrawer}
       />
-      {props.data?.is_very_popular && (
+      {props.data?.is_recommended && (
         <div className="absolute top-6 -left-2 z-[1]">
           <RecommendedBadge />
         </div>

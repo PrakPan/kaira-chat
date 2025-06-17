@@ -76,7 +76,8 @@ export default function ActivityDetails(props) {
     });
   };
 
-  const handleAmenityChange = (index, included) => {
+  const handleAmenityChange = async(index, included) => {
+    console.log("included is:",included)
     let amenities = props.data?.amenities.filter(
       (amenity, i) => i !== index && amenity.included
     );
@@ -85,9 +86,10 @@ export default function ActivityDetails(props) {
       amenities.push(props.data?.amenities[index]);
     }
 
-    props.fetchData({
-      amenities: amenities.map((amenity) => amenity?.id).join(","),
+    const res=await props.fetchData({
+      amenities: amenities.map((amenity) => amenity?.id),
     });
+    console.log("res is:",res?.data)
   };
 
   return (
@@ -233,170 +235,147 @@ export default function ActivityDetails(props) {
               </span>
             </div>
           )}
+          {props.data?.tour_type && (
+            <div>
+              <span className="font-bold pr-1 text-[14px] font-semibold text-[#01202B]">
+                Tour Type:
+              </span>{" "}
+              <span className="text-[14px] text-[#01202B]">
+                {props.data?.tour_type}
+              </span>
+            </div>
+          )}
+          {props.data?.guide && (
+            <div>
+              <span className="font-bold pr-1 text-[14px] font-semibold text-[#01202B]">
+                Guide:
+              </span>{" "}
+              <span className="text-[14px] text-[#01202B]">
+                {props.data?.guide}
+              </span>
+            </div>
+          )}
 
           <div>
-            {props.data?.general_guidelines &&
-            props.data?.general_guidelines?.length ? (
+            {props.data?.general_guidelines?.length ? (
               <div className="flex flex-col">
-                <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
+                <div
+                  className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px] cursor-pointer"
+                  onClick={() =>
+                    setBoolDetail((prev) => ({
+                      ...prev,
+                      generalGuidelines: !prev.generalGuidelines,
+                    }))
+                  }
+                >
                   <div>General guidelines</div>
-                  {!boolDetails?.generalGuidelines ? (
-                    <IoIosArrowDown
-                      className="cursor-pointer"
-                      onClick={() =>
-                        setBoolDetail((prev) => ({
-                          ...prev,
-                          generalGuidelines: true,
-                        }))
-                      }
-                    />
+                  {boolDetails?.generalGuidelines ? (
+                    <IoIosArrowUp />
                   ) : (
-                    <IoIosArrowUp
-                      className="cursor-pointer"
-                      onClick={() =>
-                        setBoolDetail((prev) => ({
-                          ...prev,
-                          generalGuidelines: false,
-                        }))
-                      }
-                    />
+                    <IoIosArrowDown />
                   )}
                 </div>
                 {boolDetails?.generalGuidelines && (
                   <div className="text-[14px]">
                     <ul style={{ paddingLeft: "0.5rem" }}>
-                      {props.data.general_guidelines?.map((e, i) => (
+                      {props.data.general_guidelines.map((e, i) => (
                         <li key={i}>- {e}</li>
                       ))}
                     </ul>
                   </div>
                 )}
               </div>
-            ) : (
-              <></>
-            )}
+            ) : null}
 
-            {props.data?.things_to_bring &&
-            props.data?.things_to_bring?.length ? (
+            {props.data?.things_to_bring?.length ? (
               <div className="flex flex-col">
-                <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
+                <div
+                  className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px] cursor-pointer"
+                  onClick={() =>
+                    setBoolDetail((prev) => ({
+                      ...prev,
+                      thingsToBring: !prev.thingsToBring,
+                    }))
+                  }
+                >
                   <div>Things to bring</div>
-                  {!boolDetails?.thingsToBring ? (
-                    <IoIosArrowDown
-                      className="cursor-pointer"
-                      onClick={() =>
-                        setBoolDetail((prev) => ({
-                          ...prev,
-                          thingsToBring: true,
-                        }))
-                      }
-                    />
+                  {boolDetails?.thingsToBring ? (
+                    <IoIosArrowUp />
                   ) : (
-                    <IoIosArrowUp
-                      className="cursor-pointer"
-                      onClick={() =>
-                        setBoolDetail((prev) => ({
-                          ...prev,
-                          thingsToBring: flase,
-                        }))
-                      }
-                    />
+                    <IoIosArrowDown />
                   )}
                 </div>
                 {boolDetails?.thingsToBring && (
                   <div className="text-[14px]">
                     <ul style={{ paddingLeft: "0.5rem" }}>
-                      {props.data.things_to_bring?.map((e, i) => (
+                      {props.data.things_to_bring.map((e, i) => (
                         <li key={i}>- {e}</li>
                       ))}
                     </ul>
                   </div>
                 )}
               </div>
-            ) : (
-              <></>
-            )}
+            ) : null}
 
-            {props.data?.not_suitable_for &&
-            props.data?.not_suitable_for?.length ? (
+            {props.data?.not_suitable_for?.length ? (
               <div className="flex flex-col">
-                <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
+                <div
+                  className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px] cursor-pointer"
+                  onClick={() =>
+                    setBoolDetail((prev) => ({
+                      ...prev,
+                      notSuitableFor: !prev.notSuitableFor,
+                    }))
+                  }
+                >
                   <div>Not suitable for</div>
                   {boolDetails?.notSuitableFor ? (
-                    <IoIosArrowDown
-                      className="cursor-pointer"
-                      onClick={() =>
-                        setBoolDetail((prev) => ({
-                          ...prev,
-                          boolDetails: true,
-                        }))
-                      }
-                    />
+                    <IoIosArrowUp />
                   ) : (
-                    <IoIosArrowUp
-                      className="cursor-pointer"
-                      onClick={() =>
-                        setBoolDetail((prev) => ({
-                          ...prev,
-                          boolDetails: false,
-                        }))
-                      }
-                    />
+                    <IoIosArrowDown />
                   )}
                 </div>
                 {boolDetails?.notSuitableFor && (
                   <div className="text-[14px]">
                     <ul style={{ paddingLeft: "0.5rem" }}>
-                      {props.data.not_suitable_for?.map((e, i) => (
+                      {props.data.not_suitable_for.map((e, i) => (
                         <li key={i}>- {e}</li>
                       ))}
                     </ul>
                   </div>
                 )}
               </div>
-            ) : (
-              <></>
-            )}
+            ) : null}
 
-            {props.data?.tips_tricks && props.data?.tips_tricks?.length ? (
+            {props.data?.tips_tricks?.length ? (
               <div className="flex flex-col">
-                <div className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px]">
+                <div
+                  className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px] cursor-pointer"
+                  onClick={() =>
+                    setBoolDetail((prev) => ({
+                      ...prev,
+                      tipsTricks: !prev.tipsTricks,
+                    }))
+                  }
+                >
                   <div>Tips, Tricks and Cautions</div>
-                  {!boolDetails?.tipsTricks ? (
-                    <IoIosArrowDown
-                      className="cursor-pointer"
-                      onClick={() =>
-                        setBoolDetail((prev) => ({
-                          ...prev,
-                          tipsTricks: true,
-                        }))
-                      }
-                    />
+                  {boolDetails?.tipsTricks ? (
+                    <IoIosArrowUp />
                   ) : (
-                    <IoIosArrowUp
-                      className="cursor-pointer"
-                      onClick={() =>
-                        setBoolDetail((prev) => ({
-                          ...prev,
-                          tipsTricks: false,
-                        }))
-                      }
-                    />
+                    <IoIosArrowDown />
                   )}
                 </div>
                 {boolDetails?.tipsTricks && (
                   <div className="text-[14px]">
                     <ul style={{ paddingLeft: "0.5rem" }}>
-                      {props.data.tips_tricks?.map((e, i) => (
+                      {props.data.tips_tricks.map((e, i) => (
                         <li key={i}>- {e}</li>
                       ))}
                     </ul>
                   </div>
                 )}
               </div>
-            ) : (
-              <></>
-            )}
+            ) : null}
           </div>
 
           {props.data?.amenities && props.data?.amenities?.length ? (
@@ -424,12 +403,12 @@ export default function ActivityDetails(props) {
       >
         <div className="flex justify-between items-center">
           <>
-            {props.data.prices.total_price && (
+            {props.data?.prices?.total_price && (
               <div className="font-bold">
                 <span className="text-[14px] sm:text-[34px]">
                   ₹
-                  {props.data.prices.total_price &&
-                  props.data.prices.total_price > 0
+                  {props.data?.prices?.total_price &&
+                  props.data?.prices?.total_price > 0
                     ? getIndianPrice(Math.round(props.data.prices.total_price))
                     : props.data.prices.total_price}
                   <span className="text-[10px] md:text-[12px] font-normal">
@@ -491,6 +470,7 @@ const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
   };
 
   const handleSelect = () => {
+    console.log("here")
     handleAmenityChange(index, !included);
     setIncluded((prev) => !prev);
   };
