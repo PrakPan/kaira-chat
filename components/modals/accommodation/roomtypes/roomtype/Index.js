@@ -158,7 +158,7 @@ const RoomType = (props) => {
                 </div>
                 <div className="flex justify-end w-full">
                   {room?.images?.length > 0 && (
-                    <div className="flex flex-col items-center justify-center gap-3 md:w-[80%] h-[250px]">
+                    <div className="flex flex-col items-center justify-center gap-3 md:w-[80%] w-full h-[250px]">
                       <ImageCarousel images={room?.images} />
                     </div>
                   )}

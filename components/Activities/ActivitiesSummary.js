@@ -83,7 +83,7 @@ const ActivitiesSummary = (props) => {
       <div
         id={props?.item.id}
         key={props?.index}
-        className="flex gap-1 pt-4  flex-col justify-start w-full"
+        className="flex gap-1 pt-4  flex-col justify-start w-full  md:max-w-[56vw]"
       >
         <div className="font-bold lg:text-2xl text-xl pb-2 text-[#01202B]">
           {props?.city?.city?.name}
