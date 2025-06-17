@@ -174,6 +174,7 @@ export default function ActivityElement(props) {
       </div>
 
       <POIDetailsDrawer
+        version={"v1"}
         itineraryDrawer
         show={showDrawer}
         iconId={data?.activity_data?.id}
