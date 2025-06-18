@@ -10,9 +10,7 @@ import { MERCURY_HOST } from "../../services/constants";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { axiosDeleteBooking } from "../../services/itinerary/bookings";
-import {
-  updateTransferBookings,
-} from "../../store/actions/transferBookingsStore";
+import { updateTransferBookings } from "../../store/actions/transferBookingsStore";
 import { useDispatch, useSelector } from "react-redux";
 import TransferEditDrawer from "../../components/drawers/routeTransfer/TransferEditDrawer";
 import TransferSkeleton from "../../components/itinerary/Skeleton/TransferSkeleton";
@@ -55,6 +53,7 @@ const AirportBookingItem = ({
   const [showDetails, setShowDetails] = useState(false);
   const dropdownRef = useRef(null);
   let isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
+  const tooltipTimeoutRef = useRef(null);
 
   const pickupBookings = booking.filter((book) => book?.is_airport_pickup);
   const dropBookings = booking.filter((book) => book?.is_airport_drop);
@@ -91,6 +90,61 @@ const AirportBookingItem = ({
         return null;
     }
   };
+
+  const handleInfoHover = (show) => {
+    if (!showDetails) {
+      if (show) {
+        if (tooltipTimeoutRef.current) {
+          clearTimeout(tooltipTimeoutRef.current);
+          tooltipTimeoutRef.current = null;
+        }
+        setShowTooltip(true);
+      } else {
+        tooltipTimeoutRef.current = setTimeout(() => {
+          setShowTooltip(false);
+          tooltipTimeoutRef.current = null;
+        }, 2000);
+      }
+    }
+  };
+
+  const handleTooltipMouseEnter = () => {
+    if (tooltipTimeoutRef.current) {
+      clearTimeout(tooltipTimeoutRef.current);
+      tooltipTimeoutRef.current = null;
+    }
+    setShowTooltip(true);
+  };
+
+  const handleTooltipMouseLeave = () => {
+    tooltipTimeoutRef.current = setTimeout(() => {
+      setShowTooltip(false);
+      tooltipTimeoutRef.current = null;
+    }, 2000);
+  };
+
+  const handleTooltipBookingClick = (e, bookingItem, type) => {
+    e.stopPropagation();
+
+    if (tooltipTimeoutRef.current) {
+      clearTimeout(tooltipTimeoutRef.current);
+      tooltipTimeoutRef.current = null;
+    }
+    setShowTooltip(false);
+    setShowDetails(false);
+    handleIntracityBookings(upPresent && downPresent, {
+      ...bookingItem,
+      selectedType: type,
+    });
+  };
+
+  useEffect(() => {
+    return () => {
+      if (tooltipTimeoutRef.current) {
+        clearTimeout(tooltipTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const hasPickup = pickupBookings.length > 0;
   const hasDrop = dropBookings.length > 0;
@@ -222,11 +276,11 @@ const AirportBookingItem = ({
     });
   };
 
-  const handleInfoHover = (show) => {
-    if (!showDetails) {
-      setShowTooltip(show);
-    }
-  };
+  // const handleInfoHover = (show) => {
+  //   if (!showDetails) {
+  //     setShowTooltip(show);
+  //   }
+  // };
 
   const formatDate = (dateString) => {
     try {
@@ -254,122 +308,126 @@ const AirportBookingItem = ({
     }
   };
 
-  const renderTooltipContent = () => (
-    <div className="flex flex-col gap-1">
-      {pickupBookings.map((pickupBooking, index) => (
-        <div key={`pickup-${index}`} className="flex items-center gap-2">
-          <span
-            className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
-            onClick={(e) =>
-              handleBookingClick(e, pickupBooking, "Airport Pickup")
-            }
-          >
-            {pickupBooking?.name}:
-          </span>
-          <span className="text-gray-200">
-            • Date {formatDate(pickupBooking.check_in)} • Time{" "}
-            {formatTime(pickupBooking.check_in)}
-          </span>
-        </div>
-      ))}
+  const renderTooltipContent = () => {
+    const getBookingDate = (booking, isPickup = false) => {
+      const dateStr = isPickup
+        ? booking.check_in
+        : booking.check_out || booking.check_in;
+      return new Date(dateStr);
+    };
 
-      {dropBookings.map((dropBooking, index) => (
-        <div key={`drop-${index}`} className="flex items-center gap-2">
-          <span
-            className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
-            onClick={(e) => handleBookingClick(e, dropBooking, "Airport Drop")}
-          >
-            {dropBooking?.name}:
-          </span>
-          <span className="text-gray-200">
-            • Date {formatDate(dropBooking.check_out || dropBooking.check_in)} •
-            Time {formatTime(dropBooking.check_out || dropBooking.check_in)}
-          </span>
-        </div>
-      ))}
+    const allBookingsWithTypes = [
+      ...pickupBookings.map((booking) => ({
+        ...booking,
+        displayType: "Airport Pickup",
+        sortDate: getBookingDate(booking, true),
+      })),
+      ...dropBookings.map((booking) => ({
+        ...booking,
+        displayType: "Airport Drop",
+        sortDate: getBookingDate(booking, false),
+      })),
+      ...noPickupDropBookings.map((booking) => ({
+        ...booking,
+        displayType: "Airport Transfer",
+        sortDate: getBookingDate(booking, false),
+      })),
+    ].sort((a, b) => a.sortDate - b.sortDate);
 
-      {noPickupDropBookings.map((book, index) => (
-        <div key={`other-${index}`} className="flex items-center gap-2">
-          <span
-            className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
-            onClick={(e) => handleBookingClick(e, book, "Airport Transfer")}
-          >
-            {book?.name}:
-          </span>
-          <span className="text-gray-200">
-            • Date {formatDate(book.check_out || book.check_in)} • Time{" "}
-            {formatTime(book.check_out || book.check_in)}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-
-  const renderDropdownContent = () => (
-    <div className="flex flex-col gap-2">
-      {pickupBookings.map((pickupBooking, index) => (
-        <div
-          key={`dropdown-pickup-${index}`}
-          className="flex items-start gap-2 flex-wrap"
-        >
-          <span
-            className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors whitespace-nowrap"
-            onClick={(e) =>
-              handleBookingClick(e, pickupBooking, "Airport Pickup")
-            }
-          >
-            {pickupBooking?.name}:
-          </span>
-          {isPageWide && (
-            <span className="text-gray-200 flex-1">
-              • Date {formatDate(pickupBooking.check_in)} • Time{" "}
-              {formatTime(pickupBooking.check_in)}
+    return (
+      <div className="flex flex-col gap-1">
+        {allBookingsWithTypes.map((booking, index) => (
+          <div key={`booking-${index}`} className="flex items-center gap-2">
+            <span
+              className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
+              onClick={(e) =>
+                handleTooltipBookingClick(e, booking, booking.displayType)
+              }
+            >
+              {booking?.name}:
             </span>
-          )}
-        </div>
-      ))}
-
-      {dropBookings.map((dropBooking, index) => (
-        <div
-          key={`dropdown-drop-${index}`}
-          className="flex items-start gap-2 flex-wrap"
-        >
-          <span
-            className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors whitespace-nowrap"
-            onClick={(e) => handleBookingClick(e, dropBooking, "Airport Drop")}
-          >
-            {dropBooking?.name}:
-          </span>
-          {isPageWide && (
-            <span className="text-gray-200 flex-1">
-              • Date {formatDate(dropBooking.check_out || dropBooking.check_in)}{" "}
-              • Time {formatTime(dropBooking.check_out || dropBooking.check_in)}
+            <span className="text-gray-200">
+              • Date{" "}
+              {formatDate(
+                booking.displayType === "Airport Pickup"
+                  ? booking.check_in
+                  : booking.check_out || booking.check_in
+              )}{" "}
+              • Time{" "}
+              {formatTime(
+                booking.displayType === "Airport Pickup"
+                  ? booking.check_in
+                  : booking.check_out || booking.check_in
+              )}
             </span>
-          )}
-        </div>
-      ))}
+          </div>
+        ))}
+      </div>
+    );
+  };
 
-      {noPickupDropBookings.map((book, index) => (
-        <div
-          key={`dropdown-other-${index}`}
-          className="flex items-start gap-2 flex-wrap"
-        >
-          <span
-            className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors whitespace-nowrap"
-            onClick={(e) => handleBookingClick(e, book, "Airport Transfer")}
+  const renderDropdownContent = () => {
+    const getBookingDate = (booking, isPickup = false) => {
+      const dateStr = isPickup
+        ? booking.check_in
+        : booking.check_out || booking.check_in;
+      return new Date(dateStr);
+    };
+
+    const allBookingsWithTypes = [
+      ...pickupBookings.map((booking) => ({
+        ...booking,
+        displayType: "Airport Pickup",
+        sortDate: getBookingDate(booking, true),
+      })),
+      ...dropBookings.map((booking) => ({
+        ...booking,
+        displayType: "Airport Drop",
+        sortDate: getBookingDate(booking, false),
+      })),
+      ...noPickupDropBookings.map((booking) => ({
+        ...booking,
+        displayType: "Airport Transfer",
+        sortDate: getBookingDate(booking, false),
+      })),
+    ].sort((a, b) => a.sortDate - b.sortDate);
+
+    return (
+      <div className="flex flex-col gap-2">
+        {allBookingsWithTypes.map((booking, index) => (
+          <div
+            key={`dropdown-booking-${index}`}
+            className="flex items-start gap-2 flex-wrap"
           >
-            {book?.name}:
-          </span>
-          {isPageWide && (
-            <span className="text-gray-200 flex-1">
-              • Date {formatDate(book.check_out || book.check_in)} • Time{" "}
-              {formatTime(book.check_out || book.check_in)}
+            <span
+              className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors whitespace-nowrap"
+              onClick={(e) =>
+                handleBookingClick(e, booking, booking.displayType)
+              }
+            >
+              {booking?.name}:
             </span>
-          )}
-        </div>
-      ))}
-    </div>
-  );
+            {isPageWide && (
+              <span className="text-gray-200 flex-1">
+                • Date{" "}
+                {formatDate(
+                  booking.displayType === "Airport Pickup"
+                    ? booking.check_in
+                    : booking.check_out || booking.check_in
+                )}{" "}
+                • Time{" "}
+                {formatTime(
+                  booking.displayType === "Airport Pickup"
+                    ? booking.check_in
+                    : booking.check_out || booking.check_in
+                )}
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return displayText ? (
     <div key={-3} className="group relative" ref={dropdownRef}>
@@ -397,8 +455,8 @@ const AirportBookingItem = ({
               <div
                 className="absolute left-0 md:left-6 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600 whitespace-nowrap"
                 style={{ zIndex: 10000 }}
-                onMouseEnter={() => handleInfoHover(true)}
-                onMouseLeave={() => handleInfoHover(false)}
+                onMouseEnter={handleTooltipMouseEnter}
+                onMouseLeave={handleTooltipMouseLeave}
               >
                 {renderTooltipContent()}
                 <div className="absolute left-0 top-1/2 transform -translate-x-1 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-900"></div>

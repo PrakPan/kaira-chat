@@ -393,6 +393,47 @@ const TransferBookings = (props) => {
         const airportNextBookings = transferBooking?.airport[destKey] || [];
         const intracityBookings = transferBooking?.intracity[sourceKey] || [];
 
+        if (intracityBookings.length > 0) {
+          const sortedIntracity = sortByCheckIn(intracityBookings);
+
+          sortedIntracity.forEach((booking, idx) => {
+            sections.push(
+              <TransferBooking
+                mercuryItinerary={props?.mercuryItinerary}
+                loadbookings={props?.loadbookings}
+                key={`intracity-${booking.id}-${idx}`}
+                index={index}
+                booking={booking}
+                payment={props?.payment}
+                token={props?.token}
+                setShowLoginModal={props?.setShowLoginModal}
+                _changeTaxiHandler={_changeTaxiHandler}
+                _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
+                getPaymentHandler={props?.getPaymentHandler}
+                _changeFlightHandler={_changeFlightHandler}
+                origin={item.city}
+                destination={booking.transfer_details?.destination || item.city}
+                oCityData={itineraries?.cities?.[index]}
+                dCityData={itineraries?.cities?.[index]}
+                id={item.id}
+                check_in={booking.check_in}
+                selectedBooking={selectedBooking}
+                setSelectedBooking={setSelectedBooking}
+                originCityId={item.id}
+                destinationCityId={item.id}
+                pinColour1={CITY_COLOR_CODES[(index + 1) % 7]}
+                pinColour2={
+                  idx == sortedIntracity?.length - 1
+                    ? CITY_COLOR_CODES[(index + 2) % 7]
+                    : CITY_COLOR_CODES[(index + 1) % 7]
+                }
+                _updateFlightBookingHandler={props._updateFlightBookingHandler}
+                isIntracity={true}
+              />
+            );
+          });
+        }
+
         if (airportBookings.length > 0) {
           const sortedBookings = sortByCheckIn(airportBookings);
 
@@ -479,46 +520,7 @@ const TransferBookings = (props) => {
 
     
 
-        if (intracityBookings.length > 0) {
-          const sortedIntracity = sortByCheckIn(intracityBookings);
-
-          sortedIntracity.forEach((booking, idx) => {
-            sections.push(
-              <TransferBooking
-                mercuryItinerary={props?.mercuryItinerary}
-                loadbookings={props?.loadbookings}
-                key={`intracity-${booking.id}-${idx}`}
-                index={index}
-                booking={booking}
-                payment={props?.payment}
-                token={props?.token}
-                setShowLoginModal={props?.setShowLoginModal}
-                _changeTaxiHandler={_changeTaxiHandler}
-                _updateTaxiBookingHandler={props?._updateTaxiBookingHandler}
-                getPaymentHandler={props?.getPaymentHandler}
-                _changeFlightHandler={_changeFlightHandler}
-                origin={item.city}
-                destination={booking.transfer_details?.destination || item.city}
-                oCityData={itineraries?.cities?.[index]}
-                dCityData={itineraries?.cities?.[index]}
-                id={item.id}
-                check_in={booking.check_in}
-                selectedBooking={selectedBooking}
-                setSelectedBooking={setSelectedBooking}
-                originCityId={item.id}
-                destinationCityId={item.id}
-                pinColour1={CITY_COLOR_CODES[(index + 1) % 7]}
-                pinColour2={
-                  idx == sortedIntracity?.length - 1
-                    ? CITY_COLOR_CODES[(index + 2) % 7]
-                    : CITY_COLOR_CODES[(index + 1) % 7]
-                }
-                _updateFlightBookingHandler={props._updateFlightBookingHandler}
-                isIntracity={true}
-              />
-            );
-          });
-        }
+        
 
            if (airportNextBookings.length > 0) {
           const sortedBookings = sortByCheckIn(airportNextBookings);

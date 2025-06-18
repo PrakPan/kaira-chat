@@ -269,17 +269,17 @@ const DaybyDay = ({
                   itineraryDaybyDay?.cities?.[0]?.id
               ]?.booking_type
             }
-            airportBookings={[
+            airportBookings={sortByCheckIn([
               ...(transferBooking?.airport?.[
                 itineraryDaybyDay?.cities?.[0]?.id
-              ] || []),
+              ]?.filter((book)=> book?.is_airport_pickup) || []),
               ...(transferBooking?.airport?.[startCity?.gmaps_place_id]?.filter(
                 (book) =>
                   book?.is_airport_drop &&
                   book?.check_in?.split(" ")[0] <=
                     itineraryDaybyDay?.cities?.[0]?.start_date
               ) || []),
-            ]}
+            ])}
             transfer_type={
               transferBookings?.intercity?.[
                 startCity?.gmaps_place_id +
@@ -422,9 +422,7 @@ const DaybyDay = ({
             //     ]?.id] ? sortByCheckIn(transferBooking?.airport[itineraryDaybyDay?.cities?.[
             //       itineraryDaybyDay?.cities?.length - 1
             //     ]?.id]) : [] }
-
-            const
-            airportBookings={[
+            airportBookings={sortByCheckIn([
               ...(transferBooking?.airport?.[endCity?.gmaps_place_id]?.filter(
                 (booking) =>
                   booking?.is_airport_pickup &&
@@ -437,8 +435,8 @@ const DaybyDay = ({
                 itineraryDaybyDay?.cities?.[
                   itineraryDaybyDay?.cities?.length - 1
                 ]?.id
-              ] || []),
-            ]}
+              ]?.filter((book)=>book?.is_airport_drop) || []),
+            ])}
             intracityBookings={
               transferBooking?.intracity[
                 itineraryDaybyDay?.cities?.[
