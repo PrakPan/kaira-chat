@@ -795,6 +795,7 @@ const ComboFlight = (props) => {
               // edge={props?.edge}
               itinerary_id={props.itinerary_id}
               data={flight}
+              pax={pax}
               selectedBooking={props.selectedBooking}
               _updateBookingHandler={_newUpdateBookingHandler}
               individual={props?.individual}

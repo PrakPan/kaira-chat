@@ -18,19 +18,41 @@ const ComboSection = (props) => {
 
   const [showPax, setShowPax] = useState(false);
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
+  const [showDateDropdown, setShowDateDropdown] = useState(false);
   const [timeSlots, setTimeSlots] = useState([]);
   const [selectedTime, setSelectedTime] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [dateOptions, setDateOptions] = useState([]);
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   
   useEffect(() => {
     if (preferred_departure_time) {
-      
       const time = dayjs(preferred_departure_time);
-      console.log("There",time);
+      console.log("There", time);
       setSelectedTime(time.format("h:mm A"));
+      setSelectedDate(time.format("DD MMM, YYYY"));
     }
   }, []);
+
+  // Generate date options (2 days before, current, 2 days after)
+  useEffect(() => {
+    if (preferred_departure_time) {
+      const currentDate = dayjs(preferred_departure_time);
+      const dates = [];
+      
+      for (let i = -2; i <= 2; i++) {
+        const date = currentDate.add(i, 'day');
+        dates.push({
+          value: date.format("YYYY-MM-DD"),
+          display: date.format("DD MMM, YYYY"),
+          dayjs: date,
+        });
+      }
+      
+      setDateOptions(dates);
+    }
+  }, [preferred_departure_time]);
 
   useEffect(() => {
     if (preferred_departure_time) {
@@ -93,6 +115,37 @@ const ComboSection = (props) => {
     }, 100);
   };
 
+  const handleDateSelection = (dateOption) => {
+    setIsLoading(true);
+    setSelectedDate(dateOption.display);
+    setShowDateDropdown(false);
+
+    // Get current time or default to preferred time
+    const currentTime = selectedTime 
+      ? dayjs(preferred_departure_time).format("HH:mm:ss")
+      : dayjs(preferred_departure_time).format("HH:mm:ss");
+    
+    // Combine selected date with current time
+    const newDateTime = dayjs(`${dateOption.value}T${currentTime}`);
+    
+    // Reset time-related filters
+    const newFiltersState = {
+      ...filtersState,
+      departure_time_period: null,
+    };
+
+    setFiltersState(newFiltersState);
+
+    if (updatePreferredDepartureTime) {
+      updatePreferredDepartureTime(newDateTime.format("YYYY-MM-DDTHH:mm:ss"));
+    }
+    
+    setTimeout(() => {
+      _FetchFlightsHandler();
+      setIsLoading(false);
+    }, 100);
+  };
+
   const handleTimeSelection = (slot) => {
     setIsLoading(true);
     setSelectedTime(slot.display);
@@ -112,14 +165,11 @@ const ComboSection = (props) => {
 
     setFiltersState(newFiltersState);
     setShowTimeDropdown(false);
-    
-    // Pass the updated time to parent component
+
     if (updatePreferredDepartureTime) {
       updatePreferredDepartureTime(newDateTime.format("YYYY-MM-DDTHH:mm:ss"));
-    //  setSelectedTime(newDateTime.format("h:mm A"));
     }
     
-    // Add a slight delay before triggering flight search
     setTimeout(() => {
       setIsLoading(false);
     }, 100);
@@ -133,8 +183,6 @@ const ComboSection = (props) => {
       order: sortOption.order,
     });
     setShowSortDropdown(false);
-    
-    // Trigger flight search after sort update
     setTimeout(() => {
       _FetchFlightsHandler();
       setIsLoading(false);
@@ -150,6 +198,12 @@ const ComboSection = (props) => {
         setShowTimeDropdown(false);
       }
       if (
+        showDateDropdown &&
+        !event.target.closest(".date-dropdown-container")
+      ) {
+        setShowDateDropdown(false);
+      }
+      if (
         showSortDropdown &&
         !event.target.closest(".sort-dropdown-container")
       ) {
@@ -161,14 +215,12 @@ const ComboSection = (props) => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showTimeDropdown, showSortDropdown]);
+  }, [showTimeDropdown, showDateDropdown, showSortDropdown]);
 
   return (
     <div className="font-sans w-full mx-auto bg-white">
-      {/* Filter Section */}
-      <div className="p-4">
-        {/* Non-Stop Flight Checkbox */}
-        <div className="mb-4 flex items-center justify-between">
+      <div className="p-2">
+        <div className="mb-2 flex items-center justify-between">
           <label className="inline-flex items-center cursor-pointer">
             <input
               type="checkbox"
@@ -190,42 +242,91 @@ const ComboSection = (props) => {
           </div>
         </div>
 
-        {/* Date and Time Selection */}
         <div className="">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
-            {preferred_departure_time && <div className="mb-2 sm:mb-0">
-              <span className="text-sm text-gray-600">Departure Date: </span>
-              <span className="font-semibold">
-                {dayjs(preferred_departure_time)?.format("DD MMM, YYYY")}
-              </span>
-            </div>}
-
-            <div className="time-dropdown-container relative w-full sm:w-auto">
-              {(selectedTime || preferred_departure_time) && <div
-                className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
-                onClick={() => !isLoading && setShowTimeDropdown(!showTimeDropdown)}
-              >
-                <span className="text-sm font-medium">
-                  Departure Time:{" "}
-                  {selectedTime || dayjs(preferred_departure_time)?.format("h:mm A") || "Select Time"}
-                </span>
-                <svg
-                  className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
-                    showTimeDropdown ? "transform rotate-180" : ""
-                  }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2">
+            {/* Date Dropdown */}
+            {preferred_departure_time && (
+              <div className="date-dropdown-container relative w-full sm:w-auto">
+                <div
+                  className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
+                  onClick={() => !isLoading && setShowDateDropdown(!showDateDropdown)}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 9l-7 7-7-7"
-                  ></path>
-                </svg>
-              </div>}
+                  <span className="text-sm font-medium">
+                    Departure Date: {selectedDate || dayjs(preferred_departure_time)?.format("DD MMM, YYYY")}
+                  </span>
+                  <svg
+                    className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
+                      showDateDropdown ? "transform rotate-180" : ""
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    ></path>
+                  </svg>
+                </div>
+
+                {showDateDropdown && (
+                  <div className="absolute z-10 w-full sm:w-64 mt-1 bg-white border rounded-md shadow-lg">
+                    <div className="sticky top-0 bg-gray-100 p-2 border-b">
+                      <span className="font-medium text-sm">Select Date</span>
+                    </div>
+                    <div className="p-1">
+                      {dateOptions.map((dateOption, index) => (
+                        <div
+                          key={index}
+                          className={`p-2 hover:bg-blue-50 cursor-pointer text-sm rounded-md ${
+                            selectedDate === dateOption.display || 
+                            (!selectedDate && dayjs(preferred_departure_time).format("DD MMM, YYYY") === dateOption.display)
+                              ? "bg-blue-100" 
+                              : ""
+                          }`}
+                          onClick={() => !isLoading && handleDateSelection(dateOption)}
+                        >
+                          {dateOption.display}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Time Dropdown */}
+            <div className="time-dropdown-container relative w-full sm:w-auto">
+              {(selectedTime || preferred_departure_time) && (
+                <div
+                  className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
+                  onClick={() => !isLoading && setShowTimeDropdown(!showTimeDropdown)}
+                >
+                  <span className="text-sm font-medium">
+                    Departure Time:{" "}
+                    {selectedTime || dayjs(preferred_departure_time)?.format("h:mm A") || "Select Time"}
+                  </span>
+                  <svg
+                    className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
+                      showTimeDropdown ? "transform rotate-180" : ""
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    ></path>
+                  </svg>
+                </div>
+              )}
 
               {showTimeDropdown && (
                 <div className="absolute z-10 w-full sm:w-64 mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
@@ -305,24 +406,6 @@ const ComboSection = (props) => {
           </div>
         </div>
       </div>
-
-      {/* <div className="flex justify-between p-2 bg-gray-50 border-t">
-        <div className="text-sm">
-          {isLoading ? (
-            <span className="flex items-center">
-              <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Loading flights...
-            </span>
-          ) : (
-            <>
-              Showing <span className="font-semibold">{flightCount} flights</span>
-            </>
-          )}
-        </div>
-      </div> */}
     </div>
   );
 };
