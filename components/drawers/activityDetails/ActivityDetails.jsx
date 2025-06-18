@@ -424,7 +424,7 @@ export default function ActivityDetails(props) {
       >
         <div className="flex justify-between items-center">
           <>
-            {props.data.prices?.total_price && (
+            {props.data.prices.total_price && (
               <div className="font-bold">
                 <span className="text-[14px] sm:text-[34px]">
                   ₹
