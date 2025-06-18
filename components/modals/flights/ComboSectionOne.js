@@ -231,15 +231,6 @@ const ComboSection = (props) => {
             />
             <span className="ml-2 text-sm">Non-stop flights only?</span>
           </label>
-          <div>
-            <Pax
-              setShowPax={setShowPax}
-              pax={pax}
-              setPax={setPax}
-              showPax={showPax}
-              combo={true}
-            />
-          </div>
         </div>
 
         <div className="">
@@ -351,6 +342,7 @@ const ComboSection = (props) => {
             </div>
           </div>
 
+          <div className="flex justify-between flex-col md:flex-row">
           <div className="relative sm:w-auto sort-dropdown-container">
             <div
               className="p-2 border w-full sm:w-64 flex flex-row items-center cursor-pointer rounded-md hover:bg-gray-50"
@@ -403,6 +395,16 @@ const ComboSection = (props) => {
                 ))}
               </div>
             )}
+          </div>
+          <div className=" mt-2 md:mt-0">
+            <Pax
+              setShowPax={setShowPax}
+              pax={pax}
+              setPax={setPax}
+              showPax={showPax}
+              combo={true}
+            />
+          </div>
           </div>
         </div>
       </div>

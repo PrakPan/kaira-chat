@@ -60,7 +60,7 @@ const Flight = (props) => {
           </p>}
         </div>
         <div className="text-lg font-bold flex flex-col">
-                  {props.data?.final_fare ? `₹${getIndianPrice(props.data?.final_fare)} /-` : null}
+                  {props.data?.final_fare ? `₹${getIndianPrice(props.data?.final_fare)}/-` : null}
                   <span className = "font-normal text-sm">for {props?.pax?.adults + props?.pax?.children + props?.pax?.infants} people</span>
         </div>
       </div>
