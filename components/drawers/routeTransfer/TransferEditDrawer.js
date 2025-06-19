@@ -2184,7 +2184,7 @@ const NewMultiModeContainer = ({
       loadTransfers(
         currentTransfer,
         paxData,
-        `${currentModeDepartureDate}T${time}`
+        `${currentModeDepartureDate}T${time}:00`
       );
     }
 
