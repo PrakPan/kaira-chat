@@ -137,7 +137,7 @@ const TaxiDetailModal = ({
             {loading ? (
               <div className="w-64 h-7 bg-gray-300 opacity-50 rounded"></div>
             ) : (
-            !noHeading && (data?.name || `Taxi from ${source_address?.name} to ${destination_address?.name}`)
+            !noHeading && (data?.name || `Taxi from ${data?.transfer_details?.trips[0]?.origin?.address} to ${data?.transfer_details?.trips[0]?.destination?.address}`)
             )}
           </h1>
           {!isEmbedded && !noChange && (
@@ -178,7 +178,7 @@ const TaxiDetailModal = ({
                 {loading ? (
                   <div className="w-24 h-4 bg-gray-300 opacity-50 rounded "></div>
                 ) : (
-                  (data?.transfer_type === "sightseeing" && (source_address && Object.keys(source_address).length === 0  && (destination_address && Object.keys(destination_address).length === 0))) ? `250 km per day | 1 days`: `${distance} | ${duration_text}`
+                  (data?.transfer_type === "sightseeing" && (data?.transfer_details?.trips[0]?.origin?.address  && (data?.transfer_details?.trips[0]?.destination?.address))) ? `${distance} | ${duration_text}` : `${distance} | ${duration_text}`
                 )}
               </div>
 
@@ -203,7 +203,7 @@ const TaxiDetailModal = ({
                   ) : (
                     <>
                       <p className="font-bold text-lg">
-                        { (data?.transfer_type === "sightseeing" && (source_address && Object.keys(source_address).length === 0  && (destination_address && Object.keys(destination_address).length === 0))) ? 'Sightseeing Taxi': source_address?.name }
+                        {data?.transfer_type === "sightseeing" && data?.transfer_details?.trips[0]?.origin?.address && data?.transfer_details?.trips[0]?.destination?.address ? data?.transfer_details?.trips[0]?.origin?.address  : data?.transfer_details?.trips[0]?.origin?.address}
                       </p>
                       <p className="text-gray-600 text-sm flex flex-col sm:flex-row sm:gap-1">
                         <span>{depart.time}</span>
@@ -223,9 +223,9 @@ const TaxiDetailModal = ({
                     </>
                   ) : (
                     <>
-                      {destination_address?.name && (
+                      {data?.transfer_details?.trips[0]?.destination?.address && (
                         <p className="font-bold text-lg">
-                          {destination_address?.name}
+                          {data?.transfer_details?.trips[0]?.destination?.address}
                         </p>
                       )}
                      {arrival.time && arrival.date && <p className="text-gray-600 text-sm flex flex-col sm:flex-row sm:gap-1">

@@ -9,7 +9,7 @@ import axiostailoredinstance, {
 } from "../../services/leads/tailored";
 import LoadingLottie from "../ui/LoadingLottie";
 import { useRouter } from "next/router";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { BiArrowBack } from "react-icons/bi";
 import Flickity from "./Flickity";
 import { EXPERIENCE_FILTERS_BOX } from "../../services/constants";
@@ -94,6 +94,7 @@ const Enquiry = (props) => {
   const router = useRouter();
   const routerquery = router.query;
   const initialInputId = Date.now();
+  const {token} = useSelector(state=>state.auth)
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [flexible, setFlexible] = useState(false);
@@ -587,7 +588,7 @@ let dist=divideTravellers()
     itineraryComplete
       .post("", data, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          Authorization: `Bearer ${token || localStorage.getItem("access_token")}`,
         },
       })
       .then((response) => {
