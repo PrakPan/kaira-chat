@@ -814,8 +814,8 @@ const SimpleTabsV2 = (props) => {
             borderRadius={"12px"}
           >
             {props.payment ? (
-              <div className=" ">
-                <RxCross2
+              <>
+                {/* <RxCross2
                   style={{
                     position: "absolute",
                     top: "15px",
@@ -824,7 +824,7 @@ const SimpleTabsV2 = (props) => {
                     cursor: "pointer",
                   }}
                   onClick={() => setShowFooterBannerMobile(false)}
-                />
+                /> */}
 
                 {!props.payment.is_registration_needed ? (
                   !props?.mercuryItinerary ? (
@@ -900,7 +900,7 @@ const SimpleTabsV2 = (props) => {
                     ></GITSummaryContainer>
                   </div>
                 )}
-              </div>
+              </>
             ) : null}
           </Modal>
         </>
@@ -1194,7 +1194,7 @@ const SimpleTabsV2 = (props) => {
       ) : null}
 
       <div className="z-10 fixed bottom-0 left-0 right-0 shadow-lg bg-white px-4 py-2 md:hidden">
-        <div className="flex flex-row justify-between items-center mx-3">
+        <div className="flex flex-row justify-between items-center">
           <div className="flex flex-col">
             <div className="flex justify-between">
               {pricing_status === "FAILURE" ? (
@@ -1303,24 +1303,9 @@ const SimpleTabsV2 = (props) => {
             </Button>
           ) : (
             <>
-              {!props.token ? (
-                <div className="">
-                  <Button
-                    color="#111"
-                    fontWeight="600"
-                    fontSize="0.85rem"
-                    borderWidth="1px"
-                    width="10rem"
-                    borderRadius="8px"
-                    bgColor="#f8e000"
-                    onclick={handleLoginButton}
-                  >
-                    Log in to proceed
-                  </Button>
-                </div>
-              ) : null}
+              
 
-              {props.payment && props.token ? (
+              {props.payment? (
                 (props.payment?.itinerary_status ===
                   ITINERARY_STATUSES?.itinerary_finalized ||
                   pricing_status === "SUCCESS") &&
@@ -1344,24 +1329,7 @@ const SimpleTabsV2 = (props) => {
                       View Inclusions
                     </Button>
                   </div>
-                ) : //  : (
-                //   <div className="">
-                //     <Button
-                //       color="#111"
-                //       fontWeight="600"
-                //       fontSize="0.85rem"
-                //       borderWidth="1px"
-                //       width="10rem"
-                //       borderRadius="8px"
-                //       bgColor="#f8e000"
-                //       onclick={() => handleButtonClick("Add Hotels")}
-                //     >
-                //       Add Hotels
-                //     </Button>
-                //   </div>
-                // )
-                // )
-                !props.payment.paid_user ? (
+                ) : !props.payment.paid_user ? (
                   // props.payment.is_registration_needed ? (
                   <div className="">
                     <Button
@@ -1414,22 +1382,7 @@ const SimpleTabsV2 = (props) => {
                     </Button>
                   </GetInTouchContainer>
                 )
-              ) : //  (
-              //   <Button
-              //     color="#111"
-              //     fontWeight="600"
-              //     fontSize="0.85rem"
-              //     borderWidth="1px"
-              //     width="10rem"
-              //     borderRadius="8px"
-              //     bgColor="#f8e000"
-              //     onclick={() => handleButtonClick("View Bookingstays")}
-              //   >
-              //     View Bookings
-              //   </Button>
-              // )
-              // )
-              null}
+              ) : null}
             </>
           )}
         </div>

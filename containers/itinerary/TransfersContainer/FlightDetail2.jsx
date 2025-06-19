@@ -252,9 +252,9 @@ const Details = ({
           )}
 
           {type != "combo" && (
-            <div className="w-full flex justify-end">
+            <div className="w-full flex justify-end w-[100%]">
               <button
-                className="right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515] p-2"
+                className="right-0 w-full sm:w-auto  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515] p-2"
                 onClick={handleDelete}
                 disabled={loading}
               >

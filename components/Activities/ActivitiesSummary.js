@@ -3,81 +3,80 @@ import ImageLoader from "../ImageLoader";
 import { BsCalendar2 } from "react-icons/bs";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import FullScreenGallery from "../fullscreengallery/Index";
-import * as ga from "../../services/ga/Index"
-import Button from "../ui/button/Index"
-import {getDate} from "../../helper/ConvertDateFormat"
+import * as ga from "../../services/ga/Index";
+import Button from "../ui/button/Index";
+import { getDate } from "../../helper/ConvertDateFormat";
 import { BiTimeFive } from "react-icons/bi";
 import { IoTicket } from "react-icons/io5";
 import POIDetailsDrawer from "../drawers/poiDetails/POIDetailsDrawer";
 import { connect } from "react-redux";
 
-
 const ActivitiesSummary = (props) => {
-    const [images, setImages] = useState(null);
-    const [viewMoreDiscription, setViewMoreDiscription] = useState(null);
-    const [showMore, setShowMore] = useState(false);
-    const [showDrawer, setShowDrawer] = useState(false);
-    const [activityData, setActivityData] = useState({
-      id: "",
-      type: "",
-    });
-    const handleView = async (poi, type) => {
-      try {
-        setShowDrawer(true);
-        setActivityData(() => ({
-          id: poi,
-          type: type,
-        }));
-      } catch (error) {
-        console.log("error is:", error);
-      }
-    };
-  
-    function Addons(Shorthand) {
-      switch (Shorthand) {
-        case "EP":
-          return "Room Only";
-        case "CP":
-          return "Complementary Breakfast Included";
-        case "MAP":
-          return "Breakfast/Lunch Included";
-        case "AP":
-          return "All Meals Included";
-        case "TBO":
-          return null;
-        default:
-          return null;
-      }
+  const [images, setImages] = useState(null);
+  const [viewMoreDiscription, setViewMoreDiscription] = useState(null);
+  const [showMore, setShowMore] = useState(false);
+  const [showDrawer, setShowDrawer] = useState(false);
+  const [activityData, setActivityData] = useState({
+    id: "",
+    type: "",
+  });
+  const handleView = async (poi, type) => {
+    try {
+      setShowDrawer(true);
+      setActivityData(() => ({
+        id: poi,
+        type: type,
+      }));
+    } catch (error) {
+      console.log("error is:", error);
     }
-  
-    const starRating = (rating) => {
-      var stars = [];
-      for (let i = 0; i < Math.floor(rating); i++) {
-        stars.push(<FaStar />);
-      }
-      if (Math.floor(rating) < rating) stars.push(<FaStarHalfAlt />);
-      return stars;
-    };
-  
-    const handleMoreDiscription = (e) => {
-      setViewMoreDiscription(e.currentTarget.id);
-      // setShowMore(true);
-  
-      ga.logEvent({
-        action: "Details_View",
-        params: {
-          page: "Itinerary Page",
-          event_category: "Click",
-          event_label: "View More Discription",
-          event_action: "Activities",
-        },
-      });
-    };
-  
-    const handleCloseDrawer = (e) => {
-      if (e) e.stopPropagation(e);
-      setShowDrawer(false);
-    };
+  };
+
+  function Addons(Shorthand) {
+    switch (Shorthand) {
+      case "EP":
+        return "Room Only";
+      case "CP":
+        return "Complementary Breakfast Included";
+      case "MAP":
+        return "Breakfast/Lunch Included";
+      case "AP":
+        return "All Meals Included";
+      case "TBO":
+        return null;
+      default:
+        return null;
+    }
+  }
+
+  const starRating = (rating) => {
+    var stars = [];
+    for (let i = 0; i < Math.floor(rating); i++) {
+      stars.push(<FaStar />);
+    }
+    if (Math.floor(rating) < rating) stars.push(<FaStarHalfAlt />);
+    return stars;
+  };
+
+  const handleMoreDiscription = (e) => {
+    setViewMoreDiscription(e.currentTarget.id);
+    // setShowMore(true);
+
+    ga.logEvent({
+      action: "Details_View",
+      params: {
+        page: "Itinerary Page",
+        event_category: "Click",
+        event_label: "View More Discription",
+        event_action: "Activities",
+      },
+    });
+  };
+
+  const handleCloseDrawer = (e) => {
+    if (e) e.stopPropagation(e);
+    setShowDrawer(false);
+  };
   return (
     <>
       <div
@@ -105,7 +104,11 @@ const ActivitiesSummary = (props) => {
                 height="100%"
                 leftalign
                 widthmobile="100%"
-                url={props?.item?.image ? props?.item.image : props?.item.activity?.image}
+                url={
+                  props?.item?.image
+                    ? props?.item.image
+                    : props?.item.activity?.image
+                }
               ></ImageLoader>
               {/* {booking.star_category ? (
                     <div
@@ -122,7 +125,7 @@ const ActivitiesSummary = (props) => {
                 <div className="text-sm font-normal">
                   {props?.item?.activity?.address}
                 </div>
-                {props?.item?.activity?.rating ? (
+                {/* {props?.item?.activity?.rating ? (
                   <div className="gap-1 flex flex-row  items-center">
                     <div className="flex flex-row text-[#FFD201]">
                       {starRating(props?.item?.activity?.rating)}
@@ -137,7 +140,7 @@ const ActivitiesSummary = (props) => {
                 ) : null}
 
                 {props?.item?.points && props?.item?.points.length ? (
-                  booprops?.itemking.points.map((data, i) => (
+                  props?.item.points.map((data, i) => (
                     <div className="flex flex-col gap-0">
                       {data !== "" && (
                         <div className="flex flex-row gap-1 text-sm font-[400] line-clamp-1">
@@ -149,8 +152,11 @@ const ActivitiesSummary = (props) => {
                   ))
                 ) : (
                   <div className="font-light">
-                    { props?.item?.activity?.short_description ? props?.item?.activity?.short_description?.slice(0, 250) : null}
-                    {props?.item?.activity?.short_description && props?.item?.activity?.short_description?.length  ? (
+                    {props?.item?.activity?.short_description
+                      ? props?.item?.activity?.short_description?.slice(0, 250)
+                      : null}
+                    {props?.item?.activity?.short_description &&
+                    props?.item?.activity?.short_description?.length ? (
                       <button
                         id={props?.index}
                         onClick={handleMoreDiscription}
@@ -160,7 +166,7 @@ const ActivitiesSummary = (props) => {
                       </button>
                     ) : null}
                   </div>
-                )}
+                )} */}
               </div>
               <div className="flex gap-2">
                 {props?.item.check_in && (
@@ -208,20 +214,31 @@ const ActivitiesSummary = (props) => {
                 </div>
               </div>
 
-              <div className="flex flex-row gap-3 items-center w-full justify-end">
+
+              <div className="pr-2 w-full">
+                    <button
+                      onClick={() => handleView(props?.item?.id, "activity")}
+                      className=" mt-2 w-full text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                    >
+                      View Details
+                    </button>
+                  </div>
+
+
+              {/* <div className="flex flex-row gap-3 items-center w-full justify-end">
                 <Button
-                color="#111"
-                fontWeight="600"
-                fontSize="0.85rem"
-                borderWidth="2px"
-                width="10rem"
-                borderRadius="8px"
-                bgColor="#f8e000"
+                  color="#111"
+                  fontWeight="600"
+                  fontSize="0.85rem"
+                  borderWidth="2px"
+                  width="10rem"
+                  borderRadius="8px"
+                  bgColor="#f8e000"
                   onclick={() => handleView(props?.item?.id, "activity")}
                 >
-                  <div >View Detail</div>
+                  <div>View Detail</div>
                 </Button>
-              </div>
+              </div> */}
               <POIDetailsDrawer
                 itineraryDrawer
                 show={showDrawer}
@@ -254,19 +271,19 @@ const ActivitiesSummary = (props) => {
 };
 
 const mapStateToPros = (state) => {
-    return {
-      name: state.auth.name,
-      emailFail: state.auth.emailFail,
-      token: state.auth.token,
-      phone: state.auth.phone,
-      email: state.auth.email,
-      authRedirectPath: state.auth.authRedirectPath,
-      loadingsocial: state.auth.loadingsocial,
-      emailfailmessage: state.auth.emailfailmessage,
-      loginmessage: state.auth.loginmessage,
-      hideloginclose: state.auth.hideloginclose,
-      itinerary: state.Itinerary,
-    };
+  return {
+    name: state.auth.name,
+    emailFail: state.auth.emailFail,
+    token: state.auth.token,
+    phone: state.auth.phone,
+    email: state.auth.email,
+    authRedirectPath: state.auth.authRedirectPath,
+    loadingsocial: state.auth.loadingsocial,
+    emailfailmessage: state.auth.emailfailmessage,
+    loginmessage: state.auth.loginmessage,
+    hideloginclose: state.auth.hideloginclose,
+    itinerary: state.Itinerary,
   };
-  
-  export default connect(mapStateToPros)(ActivitiesSummary);
+};
+
+export default connect(mapStateToPros)(ActivitiesSummary);

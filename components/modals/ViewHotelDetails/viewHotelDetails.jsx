@@ -10,13 +10,10 @@ import Skeleton from "./Skeleton";
 import { openNotification } from "../../../store/actions/notification";
 import fetchaccommodations, {
   hotelDetails,
-  bookingDetails,
 } from "../../../services/bookings/FetchAccommodation";
 import { useRouter } from "next/router";
 import HotelBookingDetails from "./Overview/HotelBookingDetails";
 import { updateAccommodationBooking } from "../../../services/bookings/UpdateBookings";
-import { convertDate } from "../../../helper/getDateYYY-MM-DD";
-import { toast } from "react-toastify";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 import BackArrow from "../../ui/BackArrow";
 
