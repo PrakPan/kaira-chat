@@ -210,8 +210,10 @@ const Enquiry = (props) => {
             countryIds.push(selectedCities[i].id);
           else if (selectedCities[i].type == "Continent")
             continentIds.push(selectedCities[i].id);
-          else {
+          else if(selectedCities[i].type == "City"){
             cityids.push(selectedCities[i].id);
+          }else {
+            continentIds.push(selectedCities[i].id);
           }
           locations.push(selectedCities[i].name);
         }
