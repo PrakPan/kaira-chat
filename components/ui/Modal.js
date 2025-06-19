@@ -128,19 +128,21 @@ export default function Modal(props) {
                 centered={props.centered}
                 zIndex={props.zIndex ? props.zIndex : 1600}
               >
-                {props.closeIcon && (
-                  <RxCross2
-                    style={{
-                      position: "absolute",
-                      top: "15px",
-                      right: "15px",
-                      fontSize: "1.5rem",
-                      cursor: "pointer",
-                    }}
-                    onClick={onCLose}
-                  />
-                )}
-                <div>{props.children}</div>
+                <div style={{ position: "relative", height: "100%" }}>
+                  {props.closeIcon && (
+                    <RxCross2
+                      style={{
+                        position: "absolute",
+                        top: "15px",
+                        right: "15px",
+                        fontSize: "1.5rem",
+                        cursor: "pointer",
+                      }}
+                      onClick={onCLose}
+                    />
+                  )}
+                  <div>{props.children}</div>
+                </div>
               </ModalContainer>
             </div>
           )}

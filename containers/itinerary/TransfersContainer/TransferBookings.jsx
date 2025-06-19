@@ -847,7 +847,7 @@ const TransferBookings = (props) => {
   return (
     <div
       id="transfers"
-      className={`mt-16 ${!isPageWide ? "max-w-fit" : "max-w-[54vw]"}`}
+      className={`mt-16 ${!isPageWide ? "w-full" : "max-w-[54vw]"}`}
     >
       <div
         id="Transfer_Container"

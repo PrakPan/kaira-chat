@@ -113,7 +113,7 @@ const SocialShareMobile = ({
   
     return (
       <div className="w-full flex flex-col gap-3 p-0">
-        <div className="text-lg font-bold">Share This Itinerary</div>
+        <div className="text-lg font-bold flex items-center justify-center">Share This Itinerary</div>
         <div className="flex flex-row items-center gap-2">
           {/* <ImageLoader
             url={itineraryImage}
@@ -124,10 +124,10 @@ const SocialShareMobile = ({
             dimensionsMobile={{ width: 100, height: 100 }}
             noPlaceholder={true}
           ></ImageLoader> */}
-          <div className="w-[75%] flex flex-col gap-1">
+          {/* <div className="w-[100%] flex flex-col gap-1">
             <div className="flex text-lg font-bold">{itineraryName}</div>
             <div className="flex text-sm text-gray-600 truncate">{getURL()}</div>
-          </div>
+          </div> */}
         </div>
         <div className="w-[99%] md:w-full flex flex-row justify-center items-center gap-3 px-2 overflow-x-auto hide-scrollbar">
           <div className="flex flex-col gap-1 items-center">
@@ -173,7 +173,7 @@ const SocialShareMobile = ({
           )}
         </div>
   
-        {/* <div className="w-full flex justify-center items-center">
+        <div className="w-full flex justify-center items-center">
           <div
             onClick={copyToClipboard}
             className="w-[70%] p-1 flex flex-row gap-2 items-center justify-center border-2 border-gray-300 cursor-pointer rounded-lg"
@@ -187,7 +187,7 @@ const SocialShareMobile = ({
               </div>
             )}
           </div>
-        </div> */}
+        </div>
       </div>
     );
   };

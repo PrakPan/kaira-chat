@@ -17,9 +17,6 @@ import { useSelector } from "react-redux";
 import { Pax } from "./Pax";
 import BackArrow from "../../ui/BackArrow";
 import Button from "../../../components/ui/button/Index";
-import { PulseLoader } from "react-spinners";
-import { TbArrowBack } from "react-icons/tb";
-import styled from "styled-components";
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
 export default function ActivityDetails(props) {
@@ -76,8 +73,8 @@ export default function ActivityDetails(props) {
     });
   };
 
-  const handleAmenityChange = async(index, included) => {
-    console.log("included is:",included)
+  const handleAmenityChange = async (index, included) => {
+    console.log("included is:", included);
     let amenities = props.data?.amenities.filter(
       (amenity, i) => i !== index && amenity.included
     );
@@ -86,10 +83,10 @@ export default function ActivityDetails(props) {
       amenities.push(props.data?.amenities[index]);
     }
 
-    const res=await props.fetchData({
+    const res = await props.fetchData({
       amenities: amenities.map((amenity) => amenity?.id),
     });
-    console.log("res is:",res?.data)
+    console.log("res is:", res?.data);
   };
 
   return (
@@ -379,11 +376,12 @@ export default function ActivityDetails(props) {
           </div>
 
           {props.data?.amenities && props.data?.amenities?.length ? (
-            <div className="flex flex-col gap-2 relative">
+            <div className="flex flex-col gap-2  mb-[30px]">
               <div className="text-[20px] font-semibold">Add - Ons</div>
               <div className="border-b-[1px]"></div>
               <div className="flex flex-col gap-2">
                 {props.data.amenities.map((amenity, index) => (
+                  <div>
                   <Amenity
                     key={index}
                     index={index}
@@ -391,6 +389,7 @@ export default function ActivityDetails(props) {
                     handleAmenityChange={handleAmenityChange}
                     travelers={props.filterState?.number_of_travelers}
                   />
+                  </div>
                 ))}
               </div>
             </div>
@@ -447,7 +446,7 @@ export default function ActivityDetails(props) {
   );
 }
 
-const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
+export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
   const [included, setIncluded] = useState(amenity?.included);
 
   useEffect(() => {
@@ -470,7 +469,7 @@ const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
   };
 
   const handleSelect = () => {
-    console.log("here")
+    console.log("here");
     handleAmenityChange(index, !included);
     setIncluded((prev) => !prev);
   };
@@ -489,20 +488,24 @@ const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
         </div>
       </div>
 
-      <div className="flex items-center justify-between">
-        <div className="font-semibold text-[24px]">
-          ₹{getIndianPrice(amenity.price)}{" "}
-          <span className="text-[14px] font-normal">per person*</span>
-        </div>
+      {amenity.price == 0 ? (
+        <div className=" text-md font-semibold  text-[#277004] ">Included for free</div>
+      ) : (
+        <div className="flex items-center justify-between">
+          <div className="font-semibold text-[24px]">
+            ₹{getIndianPrice(amenity.price)}{" "}
+            <span className="text-[14px] font-normal">per person*</span>
+          </div>
 
-        <button
-          disabled={amenity.mandatory}
-          onClick={handleSelect}
-          className="flex flex-row items-center gap-1 cursor-pointer"
-        >
-          <CheckboxFormComponent checked={included} />
-        </button>
-      </div>
+          <button
+            disabled={amenity.mandatory}
+            onClick={handleSelect}
+            className="flex flex-row items-center gap-1 cursor-pointer"
+          >
+            <CheckboxFormComponent checked={included} />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

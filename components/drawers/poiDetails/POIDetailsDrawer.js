@@ -35,6 +35,7 @@ const FloatingView = styled.div`
 const POIDetailsDrawer = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [data, setData] = useState(props?.data || []);
+  const [activityData,setActivityData]=useState(null)
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -44,101 +45,84 @@ const POIDetailsDrawer = (props) => {
 
   const fetchData = async () => {
     setLoading(true);
-    if (props?.activityData?.type == "activity") {
-      if (props?.showBookingDetail) {
-        const res = await axios.get(
-          `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/activity/${props?.activityData?.id}/`
-        );
-        setData(res?.data?.activity);
-        setData((prev) => ({
-          ...prev,
-          id: res?.data?.id,
-        }));
-        setLoading(false);
-      } else {
+
+    try {
+      if (props?.activityData?.type == "activity") {
+        if (props?.showBookingDetail) {
+          const res = await axios.get(
+            `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/activity/${props?.activityData?.id}/`
+          );
+          setData(res?.data?.activity);
+          setData((prev) => ({
+            ...prev,
+            id: res?.data?.id,
+          }));
+          setActivityData(res?.data?.activity_data)
+          setLoading(false);
+        } else {
+          const res = await axios.get(
+            `${MERCURY_HOST}/api/v1/geos/poi/${props?.activityData?.id}/?itinerary_city_id=${props?.itinerary_city_id}`
+          );
+          setData(res?.data?.data?.poi);
+          setLoading(false);
+        }
+      } else if (props?.activityData?.type == "poi") {
         const res = await axios.get(
           `${MERCURY_HOST}/api/v1/geos/poi/${props?.activityData?.id}/?itinerary_city_id=${props?.itinerary_city_id}`
         );
         setData(res?.data?.data?.poi);
         setLoading(false);
-      }
-    } else if (props?.activityData?.type == "poi") {
-      const res = await axios.get(
-        `${MERCURY_HOST}/api/v1/geos/poi/${props?.activityData?.id}/?itinerary_city_id=${props?.itinerary_city_id}`
-      );
-      setData(res?.data?.data?.poi);
-      setLoading(false);
-    } else if (props?.activityData?.type == "restaurant") {
-      const res = await axios.get(
-        `${MERCURY_HOST}/api/v1/geos/restaurant/${props?.activityData?.id}/`
-      );
-      setData(res?.data?.data?.restaurant);
-      setLoading(false);
-    } else if (props.ActivityiconId && props.themePage) {
-      activityDetail
-        .post(
-          `${props.ActivityiconId}/`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            },
-          }
-        )
-        .then((res) => {
-          if (res.data.success) setData(res.data.data.activity);
-          else throw new Error(res.data?.message);
-          setLoading(false);
-        })
-        .catch((err) => {
-          if (props.data) {
-            setData(props.data);
-          } else {
-            setData({
-              name: props.name,
-              short_description: props.text,
-              image: props.image,
-            });
-          }
-          setLoading(false);
-        });
-    } else if (props.ActivityiconId) {
-      activityDetail
-        .post(
-          `/${props.ActivityiconId}/`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            },
-          },
-          {
-            start_date: "2025-06-20",
-            number_of_adults: 1,
-          }
-        )
-        .then((res) => {
-          if (res.data?.data?.activity?.name) setData(res.data?.data?.activity);
-          else throw new Error(res.data?.message);
-          setLoading(false);
-        })
-        .catch((err) => {
-          setData({
-            name: props.name,
-            short_description: props.text,
-            image: props.image,
-          });
-          setLoading(false);
-        });
-    } else {
-      if (props.iconId) {
-        axiosPOIdetailsInstance
-          .get(`/${props.iconId}/`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            },
-          })
+      } else if (props?.activityData?.type == "restaurant") {
+        const res = await axios.get(
+          `${MERCURY_HOST}/api/v1/geos/restaurant/${props?.activityData?.id}/`
+        );
+        setData(res?.data?.data?.restaurant);
+        setLoading(false);
+      } else if (props.ActivityiconId && props.themePage) {
+        activityDetail
+          .post(
+            `${props.ActivityiconId}/`,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+              },
+            }
+          )
           .then((res) => {
-            if (res.data.name) setData(res.data);
+            if (res.data.success) setData(res.data.data.activity);
+            else throw new Error(res.data?.message);
+            setLoading(false);
+          })
+          .catch((err) => {
+            if (props.data) {
+              setData(props.data);
+            } else {
+              setData({
+                name: props.name,
+                short_description: props.text,
+                image: props.image,
+              });
+            }
+            setLoading(false);
+          });
+      } else if (props.ActivityiconId) {
+        activityDetail
+          .post(
+            `/${props.ActivityiconId}/`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+              },
+            },
+            {
+              start_date: "2025-06-20",
+              number_of_adults: 1,
+            }
+          )
+          .then((res) => {
+            if (res.data?.data?.activity?.name)
+              setData(res.data?.data?.activity);
             else throw new Error(res.data?.message);
             setLoading(false);
           })
@@ -151,14 +135,36 @@ const POIDetailsDrawer = (props) => {
             setLoading(false);
           });
       } else {
-        setData({
-          name: props.name,
-          short_description: props.text,
-          image: props.image,
-        });
-        setLoading(false);
+        if (props.iconId) {
+          axiosPOIdetailsInstance
+            .get(`/${props.iconId}/`, {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+              },
+            })
+            .then((res) => {
+              if (res.data.name) setData(res.data);
+              else throw new Error(res.data?.message);
+              setLoading(false);
+            })
+            .catch((err) => {
+              setData({
+                name: props.name,
+                short_description: props.text,
+                image: props.image,
+              });
+              setLoading(false);
+            });
+        } else {
+          setData({
+            name: props.name,
+            short_description: props.text,
+            image: props.image,
+          });
+          setLoading(false);
+        }
       }
-    }
+    } catch (error) {}
   };
 
   return (
@@ -187,31 +193,32 @@ const POIDetailsDrawer = (props) => {
                 setShowLoginModal={props?.setShowLoginModal}
                 getPaymentHandler={props?.getPaymentHandler}
                 removeDelete={props?.removeDelete}
+                activityData={activityData}
               >
                 {props?.children}
               </ActivityDetails>
             </>
           ) : (
             <>
-            <POIDetails
-              version={props?.version}
-              itineraryDrawer={props.itineraryDrawer}
-              data={data}
-              handleCloseDrawer={props.handleCloseDrawer}
-              dayIndex={props?.dayIndex}
-              slabIndex={props?.slabIndex}
-              itinerary_city_id={props?.itinerary_city_id}
-              cityID={props?.cityID}
-              setShowLoginModal={props?.setShowLoginModal}
-              getPaymentHandler={props?.getPaymentHandler}
-              removeDelete={props?.removeDelete}
-              date={props?.date}
-              name={props.name}
-              cityName={props?.cityName}
-              removeChange={props?.removeChange}
-            >
-              {props.children}
-            </POIDetails>
+              <POIDetails
+                version={props?.version}
+                itineraryDrawer={props.itineraryDrawer}
+                data={data}
+                handleCloseDrawer={props.handleCloseDrawer}
+                dayIndex={props?.dayIndex}
+                slabIndex={props?.slabIndex}
+                itinerary_city_id={props?.itinerary_city_id}
+                cityID={props?.cityID}
+                setShowLoginModal={props?.setShowLoginModal}
+                getPaymentHandler={props?.getPaymentHandler}
+                removeDelete={props?.removeDelete}
+                date={props?.date}
+                name={props.name}
+                cityName={props?.cityName}
+                removeChange={props?.removeChange}
+              >
+                {props.children}
+              </POIDetails>
             </>
           )}
 
@@ -228,7 +235,7 @@ const POIDetailsDrawer = (props) => {
           )}
         </>
       )}
-       {!isDesktop && (
+      {!isDesktop && (
         <FloatingView>
           <TbArrowBack
             style={{ height: "28px", width: "28px" }}

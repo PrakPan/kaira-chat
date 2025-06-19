@@ -54,9 +54,9 @@ const HotelBooking = ({
   _GetInTouch,
   CityData,
   start_date,
-  setStayBookings
+  setStayBookings,
 }) => {
-  console.log("HB",booking);
+  console.log("HB", booking);
   let isPageWide = media("(min-width: 768px)");
   const [imageFail, setImageFail] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -74,11 +74,11 @@ const HotelBooking = ({
   const [bookingFunData, setBookingFunData] = useState(null);
   const [dates, setDates] = useState({ check_in: "", check_out: "" });
   const [openViewDetails, setOpenViewDetails] = useState(false);
-  const [showBookingModal,setShowBookingModal]=useState(false)
+  const [showBookingModal, setShowBookingModal] = useState(false);
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
     setShowDetails(false);
-    setShowBookingModal(false)
+    setShowBookingModal(false);
   };
 
   function handleClick(i, id, data, city_id, check_in, check_out) {
@@ -235,7 +235,6 @@ const HotelBooking = ({
     setShowBookingModal(true);
   }
 
-
   const _setImagesHandler = (images) => {
     setImages(images);
   };
@@ -292,15 +291,15 @@ const HotelBooking = ({
     setShowBookingModal(true);
   };
 
-  const closeBookingModal=()=>{
-    setShowBookingModal(false)
-    setShowDetails(false)
-  }
+  const closeBookingModal = () => {
+    setShowBookingModal(false);
+    setShowDetails(false);
+  };
 
-  console.log("Show B",showBookingModal);
+  console.log("Show B", showBookingModal);
 
   return (
-    <div className={`${!isPageWide ? "max-w-fit" : "max-w-[54vw]"}`}>
+    <div className={`${!isPageWide ? "w-full" : "max-w-[54vw]"}`}>
       {hotels_status === "PENDING" ? (
         <div className="animate-pulse">
           {/* Skeleton loader for city name */}
@@ -382,7 +381,6 @@ const HotelBooking = ({
               <div
                 className={`relative lg:h-[12rem] lg:w-[30%] w-full  h-[12rem]`}
               >
-                
                 <div style={{ display: imageLoaded ? "initial" : "none" }}>
                   <ImageLoader
                     dimensions={{ width: 400, height: 400 }}
@@ -514,7 +512,10 @@ const HotelBooking = ({
                         <div className="text-sm font-[400] gap-2 flex flex-row items-center">
                           <BsPeopleFill className="text-sm text-[#7A7A7A]" />
                           <div className="text-sm font-[400] min-w-fit">
-                            {booking.number_of_adults} Adults {booking?.number_of_children ? booking?.number_of_children + " Children" : null}
+                            {booking.number_of_adults} Adults{" "}
+                            {booking?.number_of_children
+                              ? booking?.number_of_children + " Children"
+                              : null}
                           </div>
                         </div>
                       ) : (
@@ -576,46 +577,57 @@ const HotelBooking = ({
                   )}
                 </div>
 
-                <div
-                  className={`flex flex-row gap-2 items-end justify-end w-full ${
-                    payment?.paid_user || !payment?.user_allowed_to_pay
-                      ? "lh:mb-0 mb-2"
-                      : "lg:mb-0 mb-0"
-                  }`}
-                >
-                  {isPageWide && (
-                    <Button
-                      padding="0.6rem 2.2rem"
-                      borderRadius="8px"
-                      hoverColor="white"
-                      fontWeight="400"
-                      onclick={() => handleViewDetails(booking.name)}
-                    >
-                      View Detail
-                    </Button>
-                  )}
-
-                  {payment?.is_registration_needed ? null : (
-                    // payment?.paid_user
-                    // || !payment?.user_allowed_to_pay ? null
-                    // :
-                    <div
-                      onClick={(e) =>
-                        handleChangeHotel(e, "Change", booking?.name)
-                      }
-                    >
+                {isPageWide ? (
+                  <div
+                    className={`flex flex-row gap-2 items-end justify-end w-full ${
+                      payment?.paid_user || !payment?.user_allowed_to_pay
+                        ? "lh:mb-0 mb-2"
+                        : "lg:mb-0 mb-0"
+                    }`}
+                  >
+                    {isPageWide && (
                       <Button
                         padding="0.6rem 2.2rem"
-                        bgColor={"#F7E700"}
                         borderRadius="8px"
+                        hoverColor="white"
                         fontWeight="400"
-                        onclick={() => console.log("")}
+                        onclick={() => handleViewDetails(booking.name)}
                       >
-                        Change
+                        View Detail
                       </Button>
-                    </div>
-                  )}
-                </div>
+                    )}
+
+                    {payment?.is_registration_needed ? null : (
+                      // payment?.paid_user
+                      // || !payment?.user_allowed_to_pay ? null
+                      // :
+                      <div
+                        onClick={(e) =>
+                          handleChangeHotel(e, "Change", booking?.name)
+                        }
+                      >
+                        <Button
+                          padding="0.6rem 2.2rem"
+                          bgColor={"#F7E700"}
+                          borderRadius="8px"
+                          fontWeight="400"
+                          onclick={() => console.log("")}
+                        >
+                          Change
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="pr-2 w-full">
+                    <button
+                      onClick={() => handleViewDetails(booking.name)}
+                      className=" mt-2 w-full text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                    >
+                      View Details
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

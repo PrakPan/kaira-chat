@@ -15,16 +15,47 @@ import Head from "next/head";
 import styled from "styled-components";
 import Script from "next/script";
 import restartBot from "../helper/RestartBot";
+import { useDispatch } from "react-redux";
+import { authLogout } from "../store/actions/auth";
 
 function MyApp({ Component, pageProps, store }) {
   const router = useRouter();
   const ref = useRef();
+  const dispatch=useDispatch()
   useEffect(() => {
     const jssStyles = document.querySelector("#jss-server-side");
     if (jssStyles) {
       jssStyles.parentElement.removeChild(jssStyles);
     }
   }, []);
+
+  function setupTokenExpiryWatcher() {
+    const expiry = localStorage.getItem('expirationDate');
+    console.log("expiry is:",expiry)
+    if (!expiry) return;
+  
+    const timeLeft = new Date(expiry).getTime()- Date.now();
+    console.log("time left is:",timeLeft)
+    if (timeLeft <= 0) {
+    } else {
+      setTimeout(() => {
+        dispatch(authLogout());
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("name");
+        localStorage.removeItem("email");
+        localStorage.removeItem("phone");
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("expirationDate");
+        localStorage.removeItem("MyPlans");
+        localStorage.removeItem("user_image");
+        restartBot()
+      }, timeLeft);
+    }
+  }
+  
+  // Run this once on app load
+  setupTokenExpiryWatcher();
+  
 
   // useEffect(() => {
   //   const handleBrowserBack = (event) => {
