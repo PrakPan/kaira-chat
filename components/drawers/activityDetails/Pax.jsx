@@ -15,35 +15,7 @@ export const Pax = ({ pax, setPax, combo }) => {
   const [children, setChildren] = useState(pax.children || 0);
   const [infants, setInfants] = useState(pax.infants || 0);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (refDesktop.current && !refDesktop.current.contains(event.target)) {
-        setShowPax(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (refMobile.current && !refMobile.current.contains(event.target)) {
-        setShowPaxMobile(false);
-      }
-    };
-
-    if (showPaxMobile) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showPaxMobile]);
+ 
 
   const handleMinus = (type) => {
     if (type === "adult" && adults > 1) setAdults((prev) => prev - 1);
@@ -79,19 +51,52 @@ export const Pax = ({ pax, setPax, combo }) => {
     setShowPaxMobile(false);
   };
 
+   useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (refDesktop.current && !refDesktop.current.contains(event.target)) {
+        handleDone();
+        setShowPax(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (refMobile.current && !refMobile.current.contains(event.target)) {
+        handleDone();
+        setShowPaxMobile(false);
+
+      }
+    };
+
+    if (showPaxMobile) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showPaxMobile]);
+
   return (
-    <div className=" relative w-fit h-fit flex flex-row items-center gap-2 rounded-lg cursor-pointer z-[10]">
+    <div className={`relative w-fit h-fit flex flex-row items-center gap-2 rounded-lg cursor-pointer z-[10]`}>
       <div
         onClick={() => {
           setShowPax((prev) => !prev);
         }}
         className="flex items-center bg-[#F5F5F5] px-[16px] py-[8px] rounded-[4px]"
       >
-        <div className="text-[10px] md:text-[14px] font-medium">Travellers Details</div>
+        <div className="text-[10px] md:text-[14px] font-medium">Travellers</div>
         <div className="text-[10px] md:text-[14px] font-medium">&nbsp;|&nbsp;</div>
         <div className="flex">
           <div className="text-[10px] font-medium">
-            {adults} Adults and {children} Children 
+           { combo ? `${adults} A, ${children} C and ${infants} I` :`${adults} Adults and ${children} Children` }
           </div>
           <IoIosArrowDown />
         </div>

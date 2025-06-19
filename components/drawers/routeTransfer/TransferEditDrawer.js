@@ -22,6 +22,7 @@ import media from "../../../components/media";
 import { getDate } from "../../../helper/DateUtils";
 import {
   fetchTransferMode,
+  loadOtherTransfers,
   UpdateTransferMode,
 } from "../../../services/bookings/FetchTaxiRecommendations";
 import { FaClock, FaPlaneDeparture } from "react-icons/fa";
@@ -1737,9 +1738,21 @@ const NewMultiModeContainer = ({
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
   const [transferResults, setTransferResults] = useState([]);
 
+  const [dynamicTransferData, setDynamicTransferData] = useState({});
+  const [loadingTransfers, setLoadingTransfers] = useState({});
+  const [showDateDropdown, setShowDateDropdown] = useState(false);
+  const [transferErrors, setTransferErrors] = useState({});
+
   const [hasAppliedFilters, setHasAppliedFilters] = useState(false);
   const { number_of_adults, number_of_children, number_of_infants } =
     useSelector((state) => state.Itinerary);
+  const [pax, setPax] = useState({
+    adults: number_of_adults,
+    children: number_of_children || 0,
+    infants: number_of_infants || 0,
+  });
+  const [showPax, setShowPax] = useState(false);
+
   const sequencedModes = transfer.map((t) => t.mode);
 
   console.log("Selected Data", selectedData);
@@ -1819,91 +1832,9 @@ const NewMultiModeContainer = ({
     });
   };
 
-  const handleTimeSelect = (time) => {
-    setCurrentModeDepartureTime(time);
-    setComboStartTime(time);
-    setShowTimeDropdown(false);
-
-    if (selectedModeIds[currentStep - 1]) {
-      const currentTransfer = transfer[currentStep - 1];
-      const currentSelectedData = { ...selectedData[currentStep - 1] };
-
-      currentSelectedData.departure_time = `${currentModeDepartureDate}T${time}`;
-
-      if (
-        currentTransfer.mode !== "Flight" &&
-        currentTransfer.mode !== "Taxi"
-      ) {
-        const departureDateTime = dayjs(`${currentModeDepartureDate}T${time}`);
-        const arrivalDateTime = departureDateTime.add(
-          currentSelectedData.duration || 0,
-          "minute"
-        );
-        currentSelectedData.arrival_time =
-          arrivalDateTime.format("YYYY-MM-DDTHH:mm");
-      }
-
-      setSelectedData((prev) => {
-        const newData = [...prev];
-        newData[currentStep - 1] = currentSelectedData;
-
-        for (let i = currentStep; i < transfer.length; i++) {
-          if (newData[i - 1] && newData[i]) {
-            const prevArrivalTime = newData[i - 1].arrival_time;
-
-            if (prevArrivalTime) {
-              let arrivalMoment = dayjs(prevArrivalTime);
-              let newDepartureTime = arrivalMoment.add(1, "hour");
-
-              const newDepartureDate = newDepartureTime.format("YYYY-MM-DD");
-              const newDepartureTimeStr = newDepartureTime.format("HH:mm");
-
-              newData[i] = {
-                ...newData[i],
-                departure_time: `${newDepartureDate}T${newDepartureTimeStr}`,
-              };
-
-              // If this is a non-Flight/non-Taxi mode, calculate its arrival time
-              if (newData[i].mode !== "Flight" && newData[i].mode !== "Taxi") {
-                const newDepartureDateTime = dayjs(
-                  `${newDepartureDate}T${newDepartureTimeStr}`
-                );
-                const newArrivalDateTime = newDepartureDateTime.add(
-                  newData[i].duration || 0,
-                  "minute"
-                );
-                newData[i].arrival_time =
-                  newArrivalDateTime.format("YYYY-MM-DDTHH:mm");
-              }
-            }
-          }
-        }
-
-        return newData;
-      });
-
-      // Handle select for the current step
-      const currentTransferData = transfer[currentStep - 1];
-      handleSelect(
-        currentStep - 1,
-        currentSelectedData,
-        currentTransferData,
-        currentTransferData.mode
-      );
-
-      // Handle select for all subsequent steps
-      selectedData.forEach((data, index) => {
-        if (index >= currentStep && data) {
-          const modeTransfer = transfer[index];
-          handleSelect(
-            index,
-            selectedData[index],
-            modeTransfer,
-            modeTransfer.mode
-          );
-        }
-      });
-    }
+  const getCurrentTransferData = (option) => {
+    const transferKey = `${option.id}-${currentStep}`;
+    return dynamicTransferData[transferKey] || option;
   };
 
   const getCurrentTransfer = () => {
@@ -2030,6 +1961,27 @@ const NewMultiModeContainer = ({
 
   const timeOptions = generateTimeOptions();
 
+  const generateDateOptions = () => {
+    const baseDate = dayjs(currentModeDepartureDate);
+    const options = [];
+
+    for (let i = -2; i <= 2; i++) {
+      const date = baseDate.add(i, "day");
+      const isToday = date.isSame(dayjs(), "day");
+      const isSelected = date.format("YYYY-MM-DD") === currentModeDepartureDate;
+
+      options.push({
+        value: date.format("YYYY-MM-DD"),
+        display: date.format("MMM DD, YYYY"),
+        dayName: date.format("ddd"),
+        isToday,
+        isSelected,
+      });
+    }
+
+    return options;
+  };
+
   const handleModeSelect = (index, id, searchData = null, mode = null) => {
     const isDeselecting = selectedModeIds[index] === id;
 
@@ -2134,6 +2086,172 @@ const NewMultiModeContainer = ({
       taxiData,
       "Taxi"
     );
+  };
+
+  const loadTransfers = async (option, paxData, departureDateTime) => {
+    const transferKey = `${option.id}-${currentStep}`;
+    setLoadingTransfers((prev) => ({ ...prev, [transferKey]: true }));
+
+    try {
+      const requestBody = {
+        edge_id: option?.id,
+        start_datetime: departureDateTime,
+        number_of_travellers:
+          paxData.adults + paxData.children + paxData.infants,
+      };
+
+      const response = await loadOtherTransfers.post(`/search/`, requestBody, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = response.data;
+
+      if (data.success && data.data) {
+        setDynamicTransferData((prev) => ({
+          ...prev,
+          [transferKey]: data.data,
+        }));
+        setTransferErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors[transferKey];
+          return newErrors;
+        });
+      }
+    } catch (error) {
+      setTransferErrors((prev) => ({
+        ...prev,
+        [transferKey]:
+          error.response?.data?.errors[0]?.message[0] ||
+          error.message ||
+          "Failed to load transfer options",
+      }));
+
+      console.error("Error loading transfers:", error);
+    } finally {
+      setLoadingTransfers((prev) => ({ ...prev, [transferKey]: false }));
+    }
+  };
+
+  const handleDateSelect = (date) => {
+    setCurrentModeDepartureDate(date);
+    setComboStartDate(date);
+    setShowDateDropdown(false);
+
+    const currentTransfer = transfer[currentStep - 1];
+    if (
+      currentTransfer &&
+      currentTransfer.mode !== "Flight" &&
+      currentTransfer.mode !== "Taxi"
+    ) {
+      const paxData = {
+        adults: pax.adults,
+        children: pax.children,
+        infants: pax.infants,
+      };
+      const departureDateTime = `${date}T${currentModeDepartureTime}:00`;
+      loadTransfers(currentTransfer, paxData, departureDateTime);
+    }
+  };
+
+  const handleTimeSelect = (time) => {
+    setCurrentModeDepartureTime(time);
+    setComboStartTime(time);
+    setShowTimeDropdown(false);
+
+    const currentTransfer = transfer[currentStep - 1];
+    const currentSelectedData = { ...selectedData[currentStep - 1] };
+
+    currentSelectedData.departure_time = `${currentModeDepartureDate}T${time}`;
+
+    if (currentTransfer.mode !== "Flight" && currentTransfer.mode !== "Taxi") {
+      const departureDateTime = dayjs(`${currentModeDepartureDate}T${time}:00`);
+      const arrivalDateTime = departureDateTime.add(
+        currentSelectedData.duration || 0,
+        "minute"
+      );
+      currentSelectedData.arrival_time =
+        arrivalDateTime.format("YYYY-MM-DDTHH:mm");
+
+      // Load new transfer data for non-flight/non-taxi modes
+      const paxData = {
+        adults: number_of_adults,
+        children: number_of_children || 0,
+        infants: number_of_infants || 0,
+      };
+      loadTransfers(
+        currentTransfer,
+        paxData,
+        `${currentModeDepartureDate}T${time}`
+      );
+    }
+
+    // Rest of your existing handleTimeSelect logic...
+    setSelectedData((prev) => {
+      const newData = [...prev];
+      newData[currentStep - 1] = currentSelectedData;
+
+      for (let i = currentStep; i < transfer.length; i++) {
+        if (newData[i - 1] && newData[i]) {
+          const prevArrivalTime = newData[i - 1].arrival_time;
+
+          if (prevArrivalTime) {
+            let arrivalMoment = dayjs(prevArrivalTime);
+            let newDepartureTime = arrivalMoment.add(1, "hour");
+
+            const newDepartureDate = newDepartureTime.format("YYYY-MM-DD");
+            const newDepartureTimeStr = newDepartureTime.format("HH:mm");
+
+            newData[i] = {
+              ...newData[i],
+              departure_time: `${newDepartureDate}T${newDepartureTimeStr}`,
+            };
+
+            if (newData[i].mode !== "Flight" && newData[i].mode !== "Taxi") {
+              const newDepartureDateTime = dayjs(
+                `${newDepartureDate}T${newDepartureTimeStr}`
+              );
+              const newArrivalDateTime = newDepartureDateTime.add(
+                newData[i].duration || 0,
+                "minute"
+              );
+              newData[i].arrival_time =
+                newArrivalDateTime.format("YYYY-MM-DDTHH:mm");
+            }
+          }
+        }
+      }
+
+      return newData;
+    });
+    const currentTransferData = transfer[currentStep - 1];
+    handleSelect(
+      currentStep - 1,
+      currentSelectedData,
+      currentTransferData,
+      currentTransferData.mode
+    );
+
+    selectedData.forEach((data, index) => {
+      if (index >= currentStep && data) {
+        const modeTransfer = transfer[index];
+        handleSelect(
+          index,
+          selectedData[index],
+          modeTransfer,
+          modeTransfer.mode
+        );
+      }
+    });
+  };
+
+  const handlePaxChange = (newPax, option) => {
+    if (option && option.mode !== "Flight" && option.mode !== "Taxi") {
+      const departureDateTime = `${currentModeDepartureDate}T${currentModeDepartureTime}`;
+      loadTransfers(option, newPax, departureDateTime);
+    }
   };
 
   const handleUpdateTransfer = async () => {
@@ -2285,7 +2403,7 @@ const NewMultiModeContainer = ({
       const prevArrivalTime = prevSelected?.arrival_time;
 
       if (prevArrivalTime) {
-        // If previous step has arrival_time, use it + 1 hour
+        // If previous step has arrival_time + 1 hour
         let arrivalMoment = dayjs(prevArrivalTime);
         calculatedStartTime = arrivalMoment.add(1, "hour");
       } else if (prevSelected?.departure_time && prevSelected?.duration) {
@@ -2394,12 +2512,36 @@ const NewMultiModeContainer = ({
     }
   }, [selectedData, selectedModeIds]);
 
+  //   useEffect(() => {
+  //   if (currentStep >= 1 && currentStep <= transfer.length) {
+  //     const currentTransfer = transfer[currentStep - 1];
+
+  //     if (currentTransfer && currentTransfer.mode !== "Flight" && currentTransfer.mode !== "Taxi") {
+  //       // Only call API if not already selected
+  //       if (!selectedModeIds[currentStep - 1]) {
+  //         const paxData = {
+  //           adults: pax.adults,
+  //           children: pax.children,
+  //           infants: pax.infants,
+  //         };
+  //         const departureDateTime = `${currentModeDepartureDate}T${currentModeDepartureTime}`;
+  //         loadTransfers(currentTransfer, paxData, departureDateTime);
+  //       }
+  //     }
+  //   }
+  // }, [currentModeDepartureDate, currentModeDepartureTime]);
+
   useEffect(() => {
-    if (showTimeDropdown) {
+    if (showTimeDropdown || showDateDropdown) {
       const handleClickOutside = (event) => {
-        const dropdownElement = document.getElementById("time-dropdown");
-        if (dropdownElement && !dropdownElement.contains(event.target)) {
+        const timeDropdown = document.getElementById("time-dropdown");
+        const dateDropdown = document.getElementById("date-dropdown");
+
+        if (timeDropdown && !timeDropdown.contains(event.target)) {
           setShowTimeDropdown(false);
+        }
+        if (dateDropdown && !dateDropdown.contains(event.target)) {
+          setShowDateDropdown(false);
         }
       };
 
@@ -2408,7 +2550,7 @@ const NewMultiModeContainer = ({
         document.removeEventListener("click", handleClickOutside);
       };
     }
-  }, [showTimeDropdown]);
+  }, [showTimeDropdown, showDateDropdown]);
 
   console.log("Transfer Results", transferResults);
 
@@ -2515,6 +2657,8 @@ const NewMultiModeContainer = ({
               <div className="space-y-3 md:space-y-4">
                 {getCurrentTransfer().map((option, index) => {
                   const key = `${currentStep}-${option.id}`;
+                  const transferKey = `${option.id}-${currentStep}`;
+                  const isLoading = loadingTransfers[transferKey];
                   if (option.mode === "Flight") {
                     return (
                       <ComboFlight
@@ -2651,41 +2795,92 @@ const NewMultiModeContainer = ({
                     );
                   }
 
-                  if (option.prices && option.prices.length > 0) {
-                    const formatTimeForDisplay = (timeValue) => {
-                      console.log("Time Value", timeValue);
-                      if (!timeValue) return "";
+                  const currentTransferData = getCurrentTransferData(option);
 
+                  if (
+                    currentTransferData.prices &&
+                    currentTransferData.prices.length > 0
+                  ) {
+                    const formatTimeForDisplay = (timeValue) => {
+                      if (!timeValue) return "";
                       const timeOption = timeOptions.find(
                         (option) => option.value === timeValue
                       );
                       if (timeOption) {
                         return timeOption.display;
                       }
-
                       const [hours, minutes] = timeValue.split(":");
                       const hour = parseInt(hours, 10);
                       const hour12 = hour % 12 || 12;
                       const period = hour < 12 ? "AM" : "PM";
                       return `${hour12}:${minutes} ${period}`;
                     };
+
                     return (
-                      <>
+                      <div key={key}>
                         <div className="p-4">
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
-                            <div className="mb-2 sm:mb-0">
-                              <span className="text-sm text-gray-600">
-                                Departure Date:{" "}
-                              </span>
-                              <span className="font-semibold">
-                                {currentModeDepartureDate}
-                              </span>
+                            <div
+                              className="relative w-full sm:w-auto"
+                              id="date-dropdown"
+                            >
+                              <div
+                                className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setShowDateDropdown(!showDateDropdown);
+                                }}
+                              >
+                                <span className="text-sm font-medium">
+                                  Departure Date:{" "}
+                                  {dayjs(currentModeDepartureDate).format(
+                                    "MMM DD, YYYY"
+                                  )}
+                                </span>
+                                <svg
+                                  className="h-4 w-4 ml-2"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d={
+                                      showDateDropdown
+                                        ? "M5 15l7-7 7 7"
+                                        : "M19 9l-7 7-7-7"
+                                    }
+                                  />
+                                </svg>
+                              </div>
+
+                              {showDateDropdown && (
+                                <div className="absolute left-0 mt-1 bg-white border rounded-md shadow-lg z-50 w-48">
+                                  {generateDateOptions().map(
+                                    (dateOption, idx) => (
+                                      <div
+                                        key={idx}
+                                        className={`p-2 hover:bg-gray-100 cursor-pointer text-sm ${
+                                          dateOption.value ===
+                                          currentModeDepartureDate
+                                            ? "bg-yellow-100 font-medium"
+                                            : ""
+                                        }`}
+                                        onClick={() =>
+                                          handleDateSelect(dateOption.value)
+                                        }
+                                      >
+                                        {dateOption.display}
+                                      </div>
+                                    )
+                                  )}
+                                </div>
+                              )}
                             </div>
 
-                            <div
-                              className="time-dropdown-container relative w-full sm:w-auto"
-                              id="time-dropdown"
-                            >
+                            <div className="flex flex-col md:flex-row gap-2">
                               <div
                                 className="time-dropdown-container relative w-full sm:w-auto"
                                 id="time-dropdown"
@@ -2702,10 +2897,6 @@ const NewMultiModeContainer = ({
                                     {formatTimeForDisplay(
                                       currentModeDepartureTime
                                     )}
-                                    {/* {
-                                    timeOptions.find(t => t.value === currentModeDepartureTime)?.display || 
-                                    currentModeDepartureTime
-                                  } */}
                                   </span>
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -2735,7 +2926,7 @@ const NewMultiModeContainer = ({
                                         className={`p-2 hover:bg-gray-100 cursor-pointer text-sm ${
                                           time.value ===
                                           currentModeDepartureTime
-                                            ? "bg-gray-100 font-medium"
+                                            ? "bg-yellow-100 font-medium"
                                             : ""
                                         }`}
                                         onClick={() =>
@@ -2748,113 +2939,139 @@ const NewMultiModeContainer = ({
                                   </div>
                                 )}
                               </div>
-
-                              {showTimeDropdown && (
-                                <div className="absolute right-0 mt-1 bg-white border rounded-md shadow-lg z-50 w-48 max-h-60 overflow-y-auto">
-                                  {timeOptions.map((time, idx) => (
-                                    <div
-                                      key={idx}
-                                      className={`p-2 hover:bg-gray-100 cursor-pointer text-sm ${
-                                        time.value === currentModeDepartureTime
-                                          ? "bg-gray-100 font-medium"
-                                          : ""
-                                      }`}
-                                      onClick={() =>
-                                        handleTimeSelect(time.value)
-                                      }
-                                    >
-                                      {time.display}
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
                             </div>
+                          </div>
+                          <div className="flex justify-end">
+                            <Pax
+                              setShowPax={setShowPax}
+                              pax={pax}
+                              setPax={(newPax) => {
+                                setPax(newPax);
+                                handlePaxChange(newPax, option);
+                              }}
+                              showPax={showPax}
+                              combo={true}
+                            />
                           </div>
                         </div>
 
-                        {option.prices.map((priceOption, priceIndex) => {
-                          const price = priceOption.price || 0;
-                          const currency =
-                            priceOption.currency === "INR"
-                              ? "₹"
-                              : priceOption.currency;
-                          const priceOptionId = `${option.id}-${priceIndex}`;
+                        {/* Show loading indicator when fetching new data */}
+                        {isLoading && (
+                          <div className="flex justify-center items-center p-4">
+                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                            <span className="ml-2 text-sm text-gray-600">
+                              Loading updated options...
+                            </span>
+                          </div>
+                        )}
 
-                          return (
-                            <div
-                              key={`${option.id}-price-${priceIndex}`}
-                              className="flex flex-col md:flex-row justify-between bg-white p-3 md:p-4 border-b"
-                            >
-                              <div className="flex gap-2 md:gap-3 mb-2 md:mb-0">
-                                <div className="text-gray-500 mt-1">
-                                  {getModeIcon(option.mode)}
-                                </div>
-                                <div>
-                                  <div className="font-semibold text-sm md:text-base">
-                                    {option.text}{" "}
-                                    {priceOption.name
-                                      ? `- ${priceOption.name}`
-                                      : ""}
-                                  </div>
-                                  <div className="text-xs md:text-sm text-gray-600">
-                                    {Math.floor(option?.duration / 60) +
-                                      "-" +
-                                      Math.ceil(option?.duration / 60)}{" "}
-                                    hours | {option.distance} kms
-                                  </div>
-                                  {priceOption?.class && (
-                                    <div className="text-xs md:text-sm">
-                                      <span className="font-semibold">
-                                        Facilities:
-                                      </span>{" "}
-                                      {priceOption?.class}
-                                    </div>
-                                  )}
-                                  {priceOption.description && (
-                                    <div className="text-xs md:text-sm text-gray-700 mt-1">
-                                      {priceOption.description}
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-
-                              <div className="flex flex-col md:flex-col gap-2 items-end md:items-center justify-center">
-                                <div className="font-semibold text-sm md:text-base">
-                                  {currency} {price} {`/-`}
-                                </div>
-                                <div
-                                  className="cursor-pointer"
-                                  onClick={() => {
-                                    const selectedPriceData = {
-                                      ...option,
-                                      selectedPrice: priceOption,
-                                    };
-                                    handleModeSelect(
-                                      currentStep - 1,
-                                      priceOptionId,
-                                      selectedPriceData,
-                                      option.mode
-                                    );
-                                  }}
-                                >
-                                  {selectedModeIds[currentStep - 1] ===
-                                  priceOptionId ? (
-                                    <div className="flex items-center gap-1">
-                                      <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
-                                      <span className="text-sm">Selected</span>
-                                    </div>
-                                  ) : (
-                                    <div className="flex items-center gap-1">
-                                      <ImCheckboxUnchecked className="h-4 w-4 md:h-5 md:w-5" />
-                                      <span className="text-sm">Select</span>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
+                        {transferErrors[transferKey] && (
+                          <div className="p-4">
+                            <div className="flex items-center justify-center">
+                              <span className="text-sm font-normal">
+                                {transferErrors[transferKey]}
+                              </span>
                             </div>
-                          );
-                        })}
-                      </>
+                          </div>
+                        )}
+
+                        {/* Render prices from current transfer data */}
+                        {!isLoading &&
+                          !transferErrors[transferKey] &&
+                          currentTransferData.prices.map(
+                            (priceOption, priceIndex) => {
+                              const price = priceOption.price || 0;
+                              const currency =
+                                priceOption.currency === "INR"
+                                  ? "₹"
+                                  : priceOption.currency;
+                              const priceOptionId = `${currentTransferData.id}-${priceIndex}`;
+
+                              return (
+                                <div
+                                  key={`${currentTransferData.id}-price-${priceIndex}`}
+                                  className="flex flex-col md:flex-row justify-between bg-white p-3 md:p-4 border-b"
+                                >
+                                  <div className="flex gap-2 md:gap-3 mb-2 md:mb-0">
+                                    <div className="text-gray-500 mt-1">
+                                      {getModeIcon(currentTransferData.mode)}
+                                    </div>
+                                    <div>
+                                      <div className="font-semibold text-sm md:text-base">
+                                        {currentTransferData.text}{" "}
+                                        {priceOption.name
+                                          ? `- ${priceOption.name}`
+                                          : ""}
+                                      </div>
+                                      <div className="text-xs md:text-sm text-gray-600">
+                                        {Math.floor(
+                                          currentTransferData?.duration / 60
+                                        ) +
+                                          "-" +
+                                          Math.ceil(
+                                            currentTransferData?.duration / 60
+                                          )}{" "}
+                                        hours | {currentTransferData.distance}{" "}
+                                        kms
+                                      </div>
+                                      {priceOption?.class && (
+                                        <div className="text-xs md:text-sm">
+                                          <span className="font-semibold">
+                                            Facilities:
+                                          </span>{" "}
+                                          {priceOption?.class}
+                                        </div>
+                                      )}
+                                      {priceOption.description && (
+                                        <div className="text-xs md:text-sm text-gray-700 mt-1">
+                                          {priceOption.description}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  <div className="flex flex-col md:flex-col gap-2 items-end md:items-center justify-center">
+                                    <div className="font-semibold text-sm md:text-base">
+                                      {currency} {price} {`/-`}
+                                    </div>
+                                    <div
+                                      className="cursor-pointer"
+                                      onClick={() => {
+                                        const selectedPriceData = {
+                                          ...currentTransferData,
+                                          selectedPrice: priceOption,
+                                        };
+                                        handleModeSelect(
+                                          currentStep - 1,
+                                          priceOptionId,
+                                          selectedPriceData,
+                                          currentTransferData.mode
+                                        );
+                                      }}
+                                    >
+                                      {selectedModeIds[currentStep - 1] ===
+                                      priceOptionId ? (
+                                        <div className="flex items-center gap-1">
+                                          <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
+                                          <span className="text-sm">
+                                            Selected
+                                          </span>
+                                        </div>
+                                      ) : (
+                                        <div className="flex items-center gap-1">
+                                          <ImCheckboxUnchecked className="h-4 w-4 md:h-5 md:w-5" />
+                                          <span className="text-sm">
+                                            Select
+                                          </span>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            }
+                          )}
+                      </div>
                     );
                   } else {
                     return (
@@ -3924,6 +4141,7 @@ const OtherTransfer = ({
   booking_id,
 }) => {
   const ref = useRef(null);
+  const dateRef = useRef(null);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -3932,6 +4150,13 @@ const OtherTransfer = ({
   const [isSelected, setIsSelected] = useState(false);
   const [updateLoading, setUpdateLoading] = useState(false);
   const [loadingOptionId, setLoadingOptionId] = useState(null);
+
+  const [dynamicTransferData, setDynamicTransferData] = useState({});
+  const [loadingTransfers, setLoadingTransfers] = useState({});
+  const [lastPaxState, setLastPaxState] = useState(null);
+  const [lastTimeState, setLastTimeState] = useState(null);
+  const [lastDateState, setLastDateState] = useState(null);
+
   const { number_of_adults, number_of_children, number_of_infants } =
     useSelector((state) => state.Itinerary);
   const [showPax, setShowPax] = useState(false);
@@ -3944,7 +4169,9 @@ const OtherTransfer = ({
   );
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
 
-  // Store the last request data to compare changes
+  const [departureDate, setDepartureDate] = useState(currentModeDepartureDate);
+  const [showDateDropdown, setShowDateDropdown] = useState(false);
+
   const [lastRequestData, setLastRequestData] = useState(null);
 
   const [pax, setPax] = useState({
@@ -3958,6 +4185,7 @@ const OtherTransfer = ({
       ? selectedBooking.pax.number_of_infants
       : number_of_infants,
   });
+
   const generateTimeOptions = () => {
     const options = [];
     for (let hour = 0; hour < 24; hour++) {
@@ -3975,12 +4203,115 @@ const OtherTransfer = ({
     return options;
   };
 
+  // Generate date options (2 days before and after departure date)
+  const generateDateOptions = () => {
+    const baseDate = dayjs(currentModeDepartureDate);
+    const options = [];
+
+    for (let i = -2; i <= 2; i++) {
+      const date = baseDate.add(i, "day");
+      const isToday = date.isSame(dayjs(), "day");
+      const isSelected = date.format("YYYY-MM-DD") === currentModeDepartureDate;
+
+      options.push({
+        value: date.format("YYYY-MM-DD"),
+        display: date.format("MMM DD, YYYY"),
+        dayName: date.format("ddd"),
+        isToday,
+        isSelected,
+      });
+    }
+
+    return options;
+  };
+
   const timeOptions = generateTimeOptions();
+  const dateOptions = generateDateOptions();
+
+  // Function to load dynamic transfers
+  const loadTransfers = async (transferData, paxData, departureDateTime) => {
+    if (!transferData?.id) return;
+
+    const transferKey = `${transferData.id}-${currentStep}`;
+    setLoadingTransfers((prev) => ({ ...prev, [transferKey]: true }));
+    setError(null); // Clear previous errors
+
+    try {
+      const requestBody = {
+        edge_id: transferData.id,
+        start_datetime: departureDateTime,
+        number_of_travellers:
+          paxData.adults + paxData.children + paxData.infants,
+      };
+
+      const response = await loadOtherTransfers.post(`/search/`, requestBody, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = response.data;
+
+      if (data.success && data.data) {
+        // Store the trace_id for later use
+        setTraceId(data.trace_id);
+
+        // Update the dynamic transfer data
+        setDynamicTransferData((prev) => ({
+          ...prev,
+          [transferKey]: data.data,
+        }));
+
+        setOtherTransfer(data.data);
+        setError(null); // Clear error on success
+      } else {
+        setError(
+          data?.errors[0]?.message[0] || "No transfer options available"
+        );
+        setOtherTransfer(null);
+      }
+    } catch (error) {
+      console.error("Error loading transfers:", error);
+      const errorMsg =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
+        "Failed to load transfer options";
+      setError(errorMsg);
+      setOtherTransfer(null);
+    } finally {
+      setLoadingTransfers((prev) => ({ ...prev, [transferKey]: false }));
+    }
+  };
+
+  // Effect to detect pax, time, or date changes and reload transfers
+  useEffect(() => {
+    const currentPaxString = JSON.stringify(pax);
+    const paxChanged = lastPaxState && lastPaxState !== currentPaxString;
+    const timeChanged = lastTimeState && lastTimeState !== departureTime;
+    const dateChanged = lastDateState && lastDateState !== departureDate;
+
+    if ((paxChanged || timeChanged || dateChanged) && otherTransfer) {
+      const departureDateTime = `${departureDate}T${departureTime}:00`;
+
+      // Load new transfer data
+      loadTransfers(otherTransfer, pax, departureDateTime);
+    }
+
+    // Update last states
+    setLastPaxState(currentPaxString);
+    setLastTimeState(departureTime);
+    setLastDateState(departureDate);
+  }, [pax, departureTime, departureDate, otherTransfer]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (ref.current && !ref.current.contains(event.target)) {
         setShowTimeDropdown(false);
+      }
+      if (dateRef.current && !dateRef.current.contains(event.target)) {
+        setShowDateDropdown(false);
       }
     };
 
@@ -3988,7 +4319,7 @@ const OtherTransfer = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [ref]);
+  }, [ref, dateRef]);
 
   useEffect(() => {
     if (setSelectedData && Array.isArray(transfer)) {
@@ -4028,8 +4359,6 @@ const OtherTransfer = ({
       }
     }
   }, [selectedResult]);
-
-  useEffect(() => {}, [pax]);
 
   const isValidUUID = (uuid) => {
     const regex =
@@ -4140,11 +4469,14 @@ const OtherTransfer = ({
   const handleTimeSelect = (time) => {
     setDepartureTime(time.value);
     setShowTimeDropdown(false);
-    // const newTime = time.value;
-    // handleUpdateTransferWithData(localSelectedData, newTime);
   };
 
-  const buildRequestPayload = (updatedData, newTime = null) => {
+  const handleDateSelect = (date) => {
+    setDepartureDate(date.value);
+    setShowDateDropdown(false);
+  };
+
+  const buildRequestPayload = (updatedData, newTime = null, newDate = null) => {
     if (!Array.isArray(transfer) || transfer.length === 0) {
       throw new Error("Transfer data is missing");
     }
@@ -4193,16 +4525,11 @@ const OtherTransfer = ({
       })
       .filter(Boolean);
 
-    if (transfersPayload.length === 0 && !newTime) {
+    if (transfersPayload.length === 0 && !newTime && !newDate) {
       throw new Error("No valid transfer options selected");
     }
 
-    const baseStartDate =
-      dCityData?.start_date ??
-      (oCityData?.start_date && oCityData?.duration != null
-        ? addDaysToDate(oCityData.start_date, oCityData.duration)
-        : dayjs().format("YYYY-MM-DD"));
-
+    const dateToUse = newDate || departureDate;
     const timeToUse = newTime || departureTime;
 
     const requestBody = {
@@ -4215,7 +4542,7 @@ const OtherTransfer = ({
       number_of_adults: pax.adults,
       number_of_children: pax.children,
       number_of_infants: pax.infants,
-      start_datetime: `${baseStartDate}T${timeToUse}:00`,
+      start_datetime: `${dateToUse}T${timeToUse}:00`,
       transfers: transfersPayload,
     };
 
@@ -4226,13 +4553,18 @@ const OtherTransfer = ({
     return requestBody;
   };
 
-  const handleUpdateTransferWithData = async (updatedData, newTime = null) => {
+  const handleUpdateTransferWithData = async (
+    updatedData,
+    newTime = null,
+    newDate = null
+  ) => {
     try {
-      const newRequestBody = buildRequestPayload(updatedData, newTime);
+      const newRequestBody = buildRequestPayload(updatedData, newTime, newDate);
 
       if (
         lastRequestData &&
         newTime === null &&
+        newDate === null &&
         JSON.stringify(lastRequestData.transfers) ===
           JSON.stringify(newRequestBody.transfers) &&
         lastRequestData.start_datetime === newRequestBody.start_datetime &&
@@ -4280,7 +4612,7 @@ const OtherTransfer = ({
       );
       console.log("Transfer updated successfully:", data);
 
-      if (!newTime) {
+      if (!newTime && !newDate) {
         hideDrawer();
 
         dispatch(
@@ -4293,9 +4625,12 @@ const OtherTransfer = ({
           })
         );
       } else {
+        const message = newDate
+          ? "Departure date updated successfully!"
+          : "Departure time updated successfully!";
         dispatch(
           openNotification({
-            text: `Departure time updated successfully!`,
+            text: message,
             heading: "Success!",
             type: "success",
           })
@@ -4304,6 +4639,8 @@ const OtherTransfer = ({
     } catch (error) {
       const errorMsg =
         error?.response?.data?.errors?.[0]?.message?.[0] ||
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
         error.message ||
         "Error updating Transfers!";
 
@@ -4337,28 +4674,98 @@ const OtherTransfer = ({
     return `${hour12}:${minutes} ${period}`;
   };
 
+  const formatDateForDisplay = (dateValue) => {
+    console.log("Other", dateValue);
+    if (!dateValue) return "";
+    const date = dayjs(dateValue);
+    return date.format("MMM DD, YYYY");
+  };
+
   const handlePaxChange = (newPax) => {
     setPax(newPax);
+  };
+
+  const getCurrentTransferKey = () => {
+    return otherTransfer?.id ? `${otherTransfer.id}-${currentStep}` : null;
+  };
+
+  const isCurrentTransferLoading = () => {
+    const transferKey = getCurrentTransferKey();
+    return transferKey ? loadingTransfers[transferKey] : false;
   };
 
   return (
     <Container>
       <div className="w-full">
-        <div className="flex justify-end py-2">
-          <Pax
-            setShowPax={setShowPax}
-            pax={pax}
-            setPax={handlePaxChange}
-            showPax={showPax}
-            combo={true}
-          />
-        </div>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
-          <div className="mb-2 sm:mb-0">
-            <span className="text-sm text-gray-600">Departure Date: </span>
-            <span className="font-semibold">{currentModeDepartureDate}</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
+          {/* Date Dropdown */}
+          <div
+            className="date-dropdown-container relative w-full sm:w-auto"
+            ref={dateRef}
+          >
+            <div
+              className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
+              onClick={() => setShowDateDropdown((prev) => !prev)}
+            >
+              <span className="text-sm font-medium">
+                Departure Date:{" "}
+                {formatDateForDisplay(
+                  departureDate || currentModeDepartureDate
+                )}
+              </span>
+              <svg
+                className={`w-4 h-4 transition-transform ${
+                  showDateDropdown ? "transform rotate-180" : ""
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 9l-7 7-7-7"
+                ></path>
+              </svg>
+            </div>
+
+            {showDateDropdown && (
+              <div className="absolute left-0 z-10 mt-1 w-64 bg-white border rounded-md shadow-lg">
+                {dateOptions.map((date, index) => (
+                  <div
+                    key={index}
+                    className={`p-3 hover:bg-gray-100 cursor-pointer border-b last:border-b-0 
+                     
+                      ${
+                        date.value === currentModeDepartureDate
+                          ? "bg-yellow-100 font-medium"
+                          : ""
+                      }`}
+                    onClick={() => handleDateSelect(date)}
+                  >
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <div
+                          className={`text-sm font-medium ${
+                            date.isSelected ? "text-blue-600" : ""
+                          }`}
+                        >
+                          {date.display}
+                        </div>
+                      </div>
+                      {date.isSelected && (
+                        <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
+          {/* Time Dropdown */}
           <div
             className="time-dropdown-container relative w-full sm:w-auto"
             ref={ref}
@@ -4389,11 +4796,17 @@ const OtherTransfer = ({
             </div>
 
             {showTimeDropdown && (
-              <div className="absolute right-0 z-10 mt-1 w-48 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
+              <div className="absolute right-0 z-[11] mt-1 w-48 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
                 {timeOptions.map((time, index) => (
                   <div
                     key={index}
-                    className="p-2 hover:bg-gray-100 cursor-pointer text-sm"
+                    className={`p-2 hover:bg-gray-100 cursor-pointer text-sm
+                      ${
+                        time.value === departureTime
+                          ? "bg-yellow-100 font-medium"
+                          : ""
+                      }
+                    `}
                     onClick={() => handleTimeSelect(time)}
                   >
                     {time.display}
@@ -4403,10 +4816,47 @@ const OtherTransfer = ({
             )}
           </div>
         </div>
+
+        <div className="flex justify-end py-2">
+          <Pax
+            setShowPax={setShowPax}
+            pax={pax}
+            setPax={handlePaxChange}
+            showPax={showPax}
+            combo={true}
+          />
+        </div>
       </div>
+
+      {/* Loading indicator for dynamic transfer loading */}
+      {isCurrentTransferLoading() && (
+        <div className="flex justify-center items-center py-8">
+          <PulseLoader size={10} speedMultiplier={0.8} color="#3B82F6" />
+          <span className="ml-3 text-sm text-gray-600">
+            Loading transfer options...
+          </span>
+        </div>
+      )}
+
+      {/* Error message display */}
+      {error && !isCurrentTransferLoading() && (
+        <div className="flex justify-center items-center py-8">
+          <div className="text-center">
+            <div className="text-red-500 text-lg mb-2">⚠️</div>
+            <div className="text-red-600 font-medium mb-1">
+              Error Loading Transfers
+            </div>
+            <div className="text-gray-600 text-sm">{error}</div>
+          </div>
+        </div>
+      )}
+
+      {/* Transfer options display */}
       {otherTransfer &&
         otherTransfer.prices &&
         otherTransfer.prices.length > 0 &&
+        !isCurrentTransferLoading() &&
+        !error &&
         otherTransfer.prices.map((priceOption, priceIndex) => {
           const price = priceOption.price || 0;
           const currency =

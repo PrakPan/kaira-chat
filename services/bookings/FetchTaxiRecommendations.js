@@ -13,4 +13,8 @@ export const UpdateTransferMode = axios.create({
   baseURL: MERCURY_HOST + "/api/v1/itinerary/",
 });
 
+export const loadOtherTransfers = axios.create({
+  baseURL: MERCURY_HOST + "/api/v1/transfers/",
+});
+
 export default fetchaccommodations;

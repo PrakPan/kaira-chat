@@ -95,7 +95,6 @@ const FlickityComp = (props) => {
             setPriceRange={props.setPriceRange}
             destination={props.destination}
             defaultPriceRange={props.defaultPriceRange}
-            roomConfiguration={props.roomConfiguration}
           />
         ) : (
           <Login

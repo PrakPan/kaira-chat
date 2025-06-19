@@ -198,7 +198,7 @@ const VehicleDetailModal = ({
                   ) : (
                     <>
                       <p className="font-semibold text-md">
-                        {source_address?.name}
+                        {transfer_details?.source?.city_name}
                       </p>
                       <p className="text-black opacity-50 text-[12px]">
                         {depart?.time}
@@ -239,7 +239,7 @@ const VehicleDetailModal = ({
                   ) : (
                     <>
                       <p className="font-semibold text-md">
-                        {destination_address?.name}
+                        {transfer_details?.destination?.city_name}
                       </p>
                       <p className="text-black opacity-50 text-[12px]">
                         {arrival?.time}
