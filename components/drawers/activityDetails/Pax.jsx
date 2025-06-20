@@ -54,7 +54,6 @@ export const Pax = ({ pax, setPax, combo }) => {
    useEffect(() => {
     const handleClickOutside = (event) => {
       if (refDesktop.current && !refDesktop.current.contains(event.target)) {
-        handleDone();
         setShowPax(false);
       }
     };
@@ -69,7 +68,6 @@ export const Pax = ({ pax, setPax, combo }) => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (refMobile.current && !refMobile.current.contains(event.target)) {
-        handleDone();
         setShowPaxMobile(false);
 
       }
