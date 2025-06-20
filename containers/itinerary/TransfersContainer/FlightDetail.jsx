@@ -72,7 +72,7 @@ const Details = ({
 }) => {
   // console.log("transferbookings is:",transferBookings)
   const router = useRouter();
-  const [fareRules, setFareRules] = useState(fareRule?.[0]?.fareRuleDetail);
+  const [fareRules, setFareRules] = useState(null);
   const [fareRulesLoading, setFareRulesLoading] = useState(false);
   const [fareRUlesError, setFareRulesError] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -98,9 +98,7 @@ const Details = ({
       const res = await axios.get(
         `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/flight/${booking_id}`
       );
-      setFareRules(
-        res?.data?.transfer_details?.items?.[0]?.fare_rule?.[0]?.fareRuleDetail
-      );
+      setFareRules(res?.data?.cancellation_policies);
       setFareRulesLoading(false);
     } else {
       const data = {

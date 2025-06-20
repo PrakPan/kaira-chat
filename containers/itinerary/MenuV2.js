@@ -810,7 +810,7 @@ const SimpleTabsV2 = (props) => {
             backdrop
             closeIcon={true}
             onCLose={() => setShowFooterBannerMobile(false)}
-            onHide={_handleLoginClose}
+            onHide={()=>{}}
             borderRadius={"12px"}
           >
             {props.payment ? (
@@ -1451,6 +1451,7 @@ const SimpleTabsV2 = (props) => {
           show={showLoginModal}
           onhide={_handleLoginClose}
           itinary_id={props.id}
+          zIndex={"3300"}
         ></LogInModal>
       </div>
     </div>

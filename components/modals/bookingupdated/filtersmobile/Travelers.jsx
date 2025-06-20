@@ -209,7 +209,7 @@ const Room = ({ index, data, setRooms, showError ,removeRoom}) => {
       <div className="flex justify-between items-center mb-4">
         <div>
           <div className="font-medium">Adults</div>
-          <div className="text-xs text-gray-500">12+ Years</div>
+          <div className="text-xs text-gray-500">18+ Years</div>
         </div>
         <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
           <button
@@ -235,7 +235,7 @@ const Room = ({ index, data, setRooms, showError ,removeRoom}) => {
       <div className="flex justify-between items-center mb-3">
         <div>
           <div className="font-medium">Children</div>
-          <div className="text-xs text-gray-500">0-12 Years</div>
+          <div className="text-xs text-gray-500">0-18 Years</div>
         </div>
         <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
           <button
@@ -317,7 +317,7 @@ const dropdownRef=useRef(null)
   
     {openAges && (
       <div className="absolute z-50 mt-2 w-full bg-white border border-gray-300 rounded-xl shadow-md max-h-60 overflow-auto text-sm">
-        {Array.from({ length: 13 }, (_, i) => (
+        {Array.from({ length: 19 }, (_, i) => (
           <div
             key={i}
             onClick={() => handleChildAge(i)}

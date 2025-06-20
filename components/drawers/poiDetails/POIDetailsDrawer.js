@@ -56,6 +56,7 @@ const POIDetailsDrawer = (props) => {
           setData((prev) => ({
             ...prev,
             id: res?.data?.id,
+            cancellation_policies:res?.data?.cancellation_policies
           }));
           setActivityData(res?.data?.activity_data)
           setLoading(false);

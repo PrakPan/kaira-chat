@@ -577,9 +577,9 @@ const TransferBooking = ({
                           </div>
                         </div>
                         {!isPageWide && booking?.transfer_details && (
-                          <div className="text-[#01202B] font-normal flex flex-col mt-1 sm:text-sm text-[0.82rem]">
+                          <div className="text-[#01202B] font-normal flex items-center justify-center mt-1 sm:text-sm text-[0.82rem]">
                             <span className="pr-1">Facilities:</span>
-                            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1">
+                            <div className="flex flex-wrap  gap-x-2 gap-y-1 ">
                               {(() => {
                                 const details = [];
 

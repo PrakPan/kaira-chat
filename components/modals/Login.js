@@ -95,6 +95,7 @@ const Enquiry = (props) => {
         onHide={props.hideloginclose ? null : props.onhide}
         borderRadius="20px"
         width={modalWidth + "%"}
+        zIndex={props?.zIndex}
       >
         <div style={{ display: "grid", gridTemplateColumns: "50% 50%" }}>
           <div
@@ -154,6 +155,7 @@ const Enquiry = (props) => {
         borderRadius={"12px"}
         token={props.token}
         itinary_id={props.itinary_id}
+        zIndex={props?.zIndex}
       >
         <div style={{ padding: "20px" }}>
           <Login onhide={props.onhide} itinary_id={props.itinary_id}></Login>
