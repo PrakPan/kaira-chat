@@ -74,11 +74,11 @@ const SlideTwo = (props) => {
         ></GroupType>
       </Section>
 
-      <Section>
+      {!(props?.groupType === "Solo"||props.groupType === "Couple") &&<Section>
         <div className="flex justify-between items-center mb-3">
           <div>
             <div className="font-medium">Adults</div>
-            <div className="text-xs text-gray-500">12+ years</div>
+            <div className="text-xs text-gray-500">18+ years</div>
           </div>
           <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
             <button
@@ -111,7 +111,7 @@ const SlideTwo = (props) => {
         >
           <div>
             <div className="font-medium">Children</div>
-            <div className="text-xs text-gray-500">2-12 years</div>
+            <div className="text-xs text-gray-500">2-18 years</div>
           </div>
           <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
             <button
@@ -168,7 +168,7 @@ const SlideTwo = (props) => {
             </button>
           </div>
         </div>
-      </Section>
+      </Section>}
 
       <Section className="space-y-5">
         <div className="bg-[#FFEFE5] flex items-center gap-2 p-2 rounded-md w-fit">
@@ -192,12 +192,6 @@ const SlideTwo = (props) => {
         </div>
       </Section>
 
-      {/* <Section>
-        <Question>
-          Hotel Type
-        </Question>
-        <HotelType/>
-      </Section> */}
     </Container>
   );
 };

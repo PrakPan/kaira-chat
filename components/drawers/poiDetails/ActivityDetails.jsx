@@ -120,8 +120,7 @@ const ScrollContainer = styled.div`
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
 const ActivityDetails = (props) => {
-
-  console.log("activity data:",props?.activityData)
+  console.log("activity data:", props?.activityData);
 
   let isPageWide = useMediaQuery("(min-width: 768px)");
 
@@ -192,7 +191,7 @@ const ActivityDetails = (props) => {
 
       if (res?.status == 204) {
         const newItinerary = JSON.parse(JSON.stringify(itinerary));
-      
+
         const itineraryCities = newItinerary.cities.map((city) => {
           if (city.id === props?.itinerary_city_id) {
             city.day_by_day.forEach((day, index) => {
@@ -202,21 +201,26 @@ const ActivityDetails = (props) => {
                 );
               }
             });
-      
+
             city.activities = city.activities?.filter(
               (item) => item?.id !== props?.data?.id
             );
           }
-      
+
           return city;
         });
-      
+
         newItinerary.cities = itineraryCities;
-      
+
         props?.handleCloseDrawer(e);
-        console.log("Removed ID:", props.data.id, "Updated itinerary:", newItinerary);
+        console.log(
+          "Removed ID:",
+          props.data.id,
+          "Updated itinerary:",
+          newItinerary
+        );
         dispatch(setItinerary(newItinerary));
-      
+
         dispatch(
           openNotification({
             type: "success",
@@ -225,11 +229,12 @@ const ActivityDetails = (props) => {
           })
         );
       }
-      
     } catch (error) {
       console.log("error is:", error);
       const errorMsg =
-     error?.response?.data?.errors?.[0]?.message?.[0] || error.message || "Something went wrong! Please try after some time.";
+        error?.response?.data?.errors?.[0]?.message?.[0] ||
+        error.message ||
+        "Something went wrong! Please try after some time.";
       dispatch(
         openNotification({
           type: "error",
@@ -535,21 +540,34 @@ const ActivityDetails = (props) => {
             ) : null}
           </div>
 
+          {props?.activityData?.selected_amenities &&
+            props?.activityData?.selected_amenities?.length > 0 && (
+              <div className="flex flex-col gap-2 relative">
+                <div className="text-[20px] font-semibold">Add - Ons</div>
+                <div className="border-b-[1px]"></div>
+                <div className="flex flex-col gap-2">
+                  {props?.activityData?.selected_amenities.map(
+                    (amenity, index) => (
+                      <Amenity key={index} index={index} amenity={amenity} />
+                    )
+                  )}
+                </div>
+              </div>
+            )}
 
-          {props?.activityData?.selected_amenities && props?.activityData?.selected_amenities?.length &&
-          <div className="flex flex-col gap-2 relative">
-          <div className="text-[20px] font-semibold">Add - Ons</div>
-          <div className="border-b-[1px]"></div>
-          <div className="flex flex-col gap-2">
-            {props?.activityData?.selected_amenities.map((amenity, index) => (
-              <Amenity
-                key={index}
-                index={index}
-                amenity={amenity}
-              />
-            ))}
-          </div>
-        </div>}
+          {props?.data?.cancellation_policies && (
+            <>
+              <div className="text-[20px] font-semibold">
+                Cancellation Policies
+              </div>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: props?.data?.cancellation_policies,
+                }}
+                className="flex flex-col gap-1 text-sm ml-4"
+              ></div>
+            </>
+          )}
 
           {props.data?.cost ? (
             <div className="flex flex-row">
@@ -590,7 +608,10 @@ const ActivityDetails = (props) => {
           )}
           {props?.data?.reviews && (
             <div className="flex flex-col gap-[12px]">
-              <div id="reviews-poi" className="flex justify-between items-center">
+              <div
+                id="reviews-poi"
+                className="flex justify-between items-center"
+              >
                 <Heading>Reviews</Heading>
 
                 <Reviews>
@@ -664,33 +685,37 @@ const ActivityDetails = (props) => {
                 </a>
               </div> */}
 
-              {props?.removeDelete || props?.version != "v1" ?<></>:<button
-                className=" right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
-                onClick={handleDelete}
-              >
-                <div style={{ position: "relative" }}>
-                  <div
-                    className="flex gap-1 items-center p-1"
-                    style={loading ? { visibility: "hidden" } : {}}
-                  >
-                    <Image src="/delete.svg" width={"20"} height={"20"} />{" "}
-                    Remove from Itinerary
-                  </div> 
-                  {loading && (
-                    <PulseLoader
-                      style={{
-                        position: "absolute",
-                        top: "55%",
-                        left: "50%",
-                        transform: "translate(-50% , -50%)",
-                      }}
-                      size={12}
-                      speedMultiplier={0.6}
-                      color="#ffffff"
-                    />
-                  )}
-                </div>
-              </button>}
+              {props?.removeDelete || props?.version != "v1" ? (
+                <></>
+              ) : (
+                <button
+                  className=" right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
+                  onClick={handleDelete}
+                >
+                  <div style={{ position: "relative" }}>
+                    <div
+                      className="flex gap-1 items-center p-1"
+                      style={loading ? { visibility: "hidden" } : {}}
+                    >
+                      <Image src="/delete.svg" width={"20"} height={"20"} />{" "}
+                      Remove from Itinerary
+                    </div>
+                    {loading && (
+                      <PulseLoader
+                        style={{
+                          position: "absolute",
+                          top: "55%",
+                          left: "50%",
+                          transform: "translate(-50% , -50%)",
+                        }}
+                        size={12}
+                        speedMultiplier={0.6}
+                        color="#ffffff"
+                      />
+                    )}
+                  </div>
+                </button>
+              )}
             </div>
           </div>
         </Container>
@@ -722,7 +747,7 @@ const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
   };
 
   const handleSelect = () => {
-    console.log("here")
+    console.log("here");
     handleAmenityChange(index, !included);
     setIncluded((prev) => !prev);
   };
@@ -736,10 +761,8 @@ const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
         </div>
         <div className="text-[14px]">{amenity.description}</div>
       </div>
-
     </div>
   );
 };
-
 
 export default ActivityDetails;

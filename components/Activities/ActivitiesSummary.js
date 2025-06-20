@@ -10,11 +10,12 @@ import { BiTimeFive } from "react-icons/bi";
 import { IoTicket } from "react-icons/io5";
 import POIDetailsDrawer from "../drawers/poiDetails/POIDetailsDrawer";
 import { connect } from "react-redux";
+import { getHumanTime } from "../../services/getHumanTime";
 
 const ActivitiesSummary = (props) => {
+  console.log("props are:", props);
   const [images, setImages] = useState(null);
   const [viewMoreDiscription, setViewMoreDiscription] = useState(null);
-  const [showMore, setShowMore] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
   const [activityData, setActivityData] = useState({
     id: "",
@@ -125,50 +126,8 @@ const ActivitiesSummary = (props) => {
                 <div className="text-sm font-normal">
                   {props?.item?.activity?.address}
                 </div>
-                {/* {props?.item?.activity?.rating ? (
-                  <div className="gap-1 flex flex-row  items-center">
-                    <div className="flex flex-row text-[#FFD201]">
-                      {starRating(props?.item?.activity?.rating)}
-                    </div>
-                    <div>{props?.item?.activity?.rating}</div>
-                    {props?.item?.activity?.user_ratings_total && (
-                      <div className="text-sm text-[#7A7A7A] font-medium underline">
-                        {props?.item?.activity?.user_ratings_total} Reviews
-                      </div>
-                    )}
-                  </div>
-                ) : null}
-
-                {props?.item?.points && props?.item?.points.length ? (
-                  props?.item.points.map((data, i) => (
-                    <div className="flex flex-col gap-0">
-                      {data !== "" && (
-                        <div className="flex flex-row gap-1 text-sm font-[400] line-clamp-1">
-                          <div>{i + 1}. </div>
-                          <div>{data}</div>
-                        </div>
-                      )}
-                    </div>
-                  ))
-                ) : (
-                  <div className="font-light">
-                    {props?.item?.activity?.short_description
-                      ? props?.item?.activity?.short_description?.slice(0, 250)
-                      : null}
-                    {props?.item?.activity?.short_description &&
-                    props?.item?.activity?.short_description?.length ? (
-                      <button
-                        id={props?.index}
-                        onClick={handleMoreDiscription}
-                        className="font-semibold text-gray-500 ml-1"
-                      >
-                        {"...more"}
-                      </button>
-                    ) : null}
-                  </div>
-                )} */}
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-col gap-2">
                 {props?.item.check_in && (
                   <div className="flex flex-row gap-2 items-center">
                     <BsCalendar2 className="text-sm font-[400] line-clamp-1 text-[#7A7A7A]" />
@@ -181,6 +140,23 @@ const ActivitiesSummary = (props) => {
                     </div>
                   </div>
                 )}
+
+                <div className="text-sm font-[400] line-clamp-1">
+                <div className="flex gap-1 items-center">
+                  <svg
+                    width="13"
+                    height="13"
+                    viewBox="0 0 13 13"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M6.32734 0.417969C3.01534 0.417969 0.333344 3.10597 0.333344 6.41797C0.333344 9.72997 3.01534 12.418 6.32734 12.418C9.64534 12.418 12.3333 9.72997 12.3333 6.41797C12.3333 3.10597 9.64534 0.417969 6.32734 0.417969ZM6.33334 11.218C3.68134 11.218 1.53334 9.06997 1.53334 6.41797C1.53334 3.76597 3.68134 1.61797 6.33334 1.61797C8.98534 1.61797 11.1333 3.76597 11.1333 6.41797C11.1333 9.06997 8.98534 11.218 6.33334 11.218ZM6.20134 3.41797H6.16534C5.92534 3.41797 5.73334 3.60997 5.73334 3.84997V6.68197C5.73334 6.89197 5.84134 7.08997 6.02734 7.19797L8.51734 8.69197C8.72134 8.81197 8.98534 8.75197 9.10534 8.54797C9.23134 8.34397 9.16534 8.07397 8.95534 7.95397L6.63334 6.57397V3.84997C6.63334 3.60997 6.44134 3.41797 6.20134 3.41797Z"
+                      fill="black"
+                    />
+                  </svg>{props?.item.check_in && getHumanTime(props?.item.check_in.split(" ")[1]) }
+                </div>
+                </div>
                 {props?.item.activity?.ideal_duration_hours_text && (
                   <div className="flex flex-row gap-1 items-center ">
                     <BiTimeFive className="text-md font-[400] line-clamp-1 text-[#7A7A7A]" />
@@ -191,6 +167,7 @@ const ActivitiesSummary = (props) => {
                     </div>
                   </div>
                 )}
+                <div className="flex gap-2">
                 <div className="flex gap-1 items-center">
                   <IoTicket className="text-sm font-[400] line-clamp-1 text-[#7A7A7A]" />
                   <div className="text-sm line-clamp-1">
@@ -212,20 +189,19 @@ const ActivitiesSummary = (props) => {
                   </svg>
                   <div className="text-sm">{props?.item?.duration}</div>
                 </div>
+                </div>
               </div>
 
-
               <div className="pr-2 w-full">
-                    <button
-                      onClick={() => handleView(props?.item?.id, "activity")}
-                      className=" mt-2 w-full text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
-                    >
-                      View Details
-                    </button>
-                  </div>
+                <button
+                  onClick={() => handleView(props?.item?.id, "activity")}
+                  className="lg:hidden mt-2 w-full text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
+                >
+                  View Details
+                </button>
+              </div>
 
-
-              {/* <div className="flex flex-row gap-3 items-center w-full justify-end">
+              <div className="hidden lg:!flex flex-row gap-3 items-center w-full justify-end">
                 <Button
                   color="#111"
                   fontWeight="600"
@@ -238,7 +214,7 @@ const ActivitiesSummary = (props) => {
                 >
                   <div>View Detail</div>
                 </Button>
-              </div> */}
+              </div> 
               <POIDetailsDrawer
                 itineraryDrawer
                 show={showDrawer}

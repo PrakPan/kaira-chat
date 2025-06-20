@@ -135,7 +135,7 @@ const Pax = (props) => {
 const Room = ({ index, data, setRooms, showError, removeRoom }) => {
   const [adults, setAdults] = useState(data.adults);
   const [children, setChildren] = useState(data.children);
-  const [childAges, setChildAges] = useState(data.childAges);
+  const [childAges, setChildAges] = useState(data?.childAges || []);
 
   useEffect(() => {
     setRooms((prev) =>
@@ -186,7 +186,7 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
       <div className="flex justify-between items-center mb-4">
         <div>
           <div className="font-medium">Adults</div>
-          <div className="text-xs text-gray-500">12+ years</div>
+          <div className="text-xs text-gray-500">18+ years</div>
         </div>
         <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
           <button
@@ -212,7 +212,7 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
       <div className="flex justify-between items-center mb-3">
         <div>
           <div className="font-medium">Children</div>
-          <div className="text-xs text-gray-500">1-12 years</div>
+          <div className="text-xs text-gray-500">1-18 years</div>
         </div>
         <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
           <button
@@ -307,7 +307,7 @@ const ChildAge = ({ index, child, age, setChildAges, showError }) => {
 
       {openAges && (
         <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-          {Array.from({ length: 13 }, (_, i) => (
+          {Array.from({ length: 19 }, (_, i) => (
             <>
               {i >= 1 && (
                 <div

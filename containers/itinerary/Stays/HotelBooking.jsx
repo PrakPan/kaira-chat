@@ -577,9 +577,8 @@ const HotelBooking = ({
                   )}
                 </div>
 
-                {isPageWide ? (
                   <div
-                    className={`flex flex-row gap-2 items-end justify-end w-full ${
+                    className={`hidden lg:!flex flex-row gap-2 items-end justify-end w-full ${
                       payment?.paid_user || !payment?.user_allowed_to_pay
                         ? "lh:mb-0 mb-2"
                         : "lg:mb-0 mb-0"
@@ -618,8 +617,7 @@ const HotelBooking = ({
                       </div>
                     )}
                   </div>
-                ) : (
-                  <div className="pr-2 w-full">
+                  <div className="lg:hidden pr-2 w-full">
                     <button
                       onClick={() => handleViewDetails(booking.name)}
                       className=" mt-2 w-full text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
@@ -627,7 +625,6 @@ const HotelBooking = ({
                       View Details
                     </button>
                   </div>
-                )}
               </div>
             </div>
           </div>

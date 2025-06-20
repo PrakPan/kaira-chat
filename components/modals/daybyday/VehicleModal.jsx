@@ -54,6 +54,7 @@ const VehicleDetailModal = ({
     check_in,
     check_out,
     booking_type,
+    cancellation_policies
   } = data;
   console.log("day by day data is:", data, booking_type);
 
@@ -357,6 +358,23 @@ const VehicleDetailModal = ({
           </div>
         )}
       </div>
+      {cancellation_policies && (
+          <>
+            {" "}
+            <div className="flex flex-col">
+              <div className="w-fit py-2 mb-2 text-lg font-bold">
+                Cancellation Policies
+              </div>
+
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: cancellation_policies,
+                }}
+                className="flex flex-col gap-1 text-sm ml-4"
+              ></div>
+            </div>
+          </>
+        )}
     </>
   );
 };

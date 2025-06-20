@@ -165,7 +165,7 @@ const Details = ({
         `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/flight/${booking_id}`
       );
       setFareRules(
-        res?.data?.transfer_details?.items?.[0]?.fare_rule?.[0]?.fareRuleDetail
+        res?.data?.cancellation_policies
       );
       setSegments(res?.data?.transfer_details?.items?.[0]?.segments);
       setFareRulesLoading(false);
