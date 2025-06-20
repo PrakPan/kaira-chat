@@ -49,6 +49,7 @@ import { updateSingleTransferBooking } from "../../../store/actions/transferBook
 import BackArrow from "../../ui/BackArrow";
 import { Pax } from "../activityDetails/Pax";
 import { TbArrowBack } from "react-icons/tb";
+import { DatePicker } from "../../../containers/newitinerary/breif/route/RouteEditSection";
 const FloatingView = styled.div`
   position: sticky;
   bottom: 60px;
@@ -1303,11 +1304,12 @@ const RouteContainer = (props) => {
     const currentTransfer = transfer[currentStep - 1];
 
     const baseStartDate = selectedBooking?.check_in
-      ? dayjs(selectedBooking?.check_in).format("YYYY-MM-DD")
-      : dCityData?.start_date ??
-        (oCityData?.start_date && oCityData?.duration != null
-          ? addDaysToDate(oCityData.start_date, oCityData.duration)
-          : null);
+  ? dayjs(selectedBooking.check_in).format("YYYY-MM-DD")
+  : dCityData?.start_date
+  ?? (oCityData?.start_date && oCityData?.duration != null
+    ? oCityData.start_date
+    : addDaysToDate(oCityData?.start_date, oCityData?.duration));
+
 
     console.log(
       "Start Dtae",
@@ -2136,9 +2138,13 @@ const NewMultiModeContainer = ({
   };
 
   const handleDateSelect = (date) => {
-    setCurrentModeDepartureDate(date);
-    setComboStartDate(date);
-    setShowDateDropdown(false);
+    // Convert date to YYYY-MM-DD format if it's not already
+    const formattedDate =
+      typeof date === "string" ? date : dayjs(date).format("YYYY-MM-DD");
+
+    setCurrentModeDepartureDate(formattedDate);
+    setComboStartDate(formattedDate);
+    setShowDateDropdown(false); // Keep this for consistency
 
     const currentTransfer = transfer[currentStep - 1];
     if (
@@ -2151,7 +2157,7 @@ const NewMultiModeContainer = ({
         children: pax.children,
         infants: pax.infants,
       };
-      const departureDateTime = `${date}T${currentModeDepartureTime}:00`;
+      const departureDateTime = `${formattedDate}T${currentModeDepartureTime}:00`;
       loadTransfers(currentTransfer, paxData, departureDateTime);
     }
   };
@@ -2532,16 +2538,12 @@ const NewMultiModeContainer = ({
   // }, [currentModeDepartureDate, currentModeDepartureTime]);
 
   useEffect(() => {
-    if (showTimeDropdown || showDateDropdown) {
+    if (showTimeDropdown) {
       const handleClickOutside = (event) => {
         const timeDropdown = document.getElementById("time-dropdown");
-        const dateDropdown = document.getElementById("date-dropdown");
 
         if (timeDropdown && !timeDropdown.contains(event.target)) {
           setShowTimeDropdown(false);
-        }
-        if (dateDropdown && !dateDropdown.contains(event.target)) {
-          setShowDateDropdown(false);
         }
       };
 
@@ -2550,7 +2552,7 @@ const NewMultiModeContainer = ({
         document.removeEventListener("click", handleClickOutside);
       };
     }
-  }, [showTimeDropdown, showDateDropdown]);
+  }, [showTimeDropdown]); // Remove showDateDropdown from dependency array
 
   console.log("Transfer Results", transferResults);
 
@@ -2820,64 +2822,21 @@ const NewMultiModeContainer = ({
                       <div key={key}>
                         <div className="p-4">
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
-                            <div
-                              className="relative w-full sm:w-auto"
-                              id="date-dropdown"
-                            >
-                              <div
-                                className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setShowDateDropdown(!showDateDropdown);
+                            <div className="relative w-full sm:w-auto">
+                              <label className="text-sm font-medium mb-2 block">
+                                Departure Date:
+                              </label>
+                              <DatePicker
+                                id="departure-date"
+                                date={currentModeDepartureDate}
+                                onDateChange={(e) => {
+                                  const selectedDate = dayjs(
+                                    e.target.value
+                                  ).format("YYYY-MM-DD");
+                                  handleDateSelect(selectedDate);
                                 }}
-                              >
-                                <span className="text-sm font-medium">
-                                  Departure Date:{" "}
-                                  {dayjs(currentModeDepartureDate).format(
-                                    "MMM DD, YYYY"
-                                  )}
-                                </span>
-                                <svg
-                                  className="h-4 w-4 ml-2"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d={
-                                      showDateDropdown
-                                        ? "M5 15l7-7 7 7"
-                                        : "M19 9l-7 7-7-7"
-                                    }
-                                  />
-                                </svg>
-                              </div>
-
-                              {showDateDropdown && (
-                                <div className="absolute left-0 mt-1 bg-white border rounded-md shadow-lg z-50 w-48">
-                                  {generateDateOptions().map(
-                                    (dateOption, idx) => (
-                                      <div
-                                        key={idx}
-                                        className={`p-2 hover:bg-gray-100 cursor-pointer text-sm ${
-                                          dateOption.value ===
-                                          currentModeDepartureDate
-                                            ? "bg-yellow-100 font-medium"
-                                            : ""
-                                        }`}
-                                        onClick={() =>
-                                          handleDateSelect(dateOption.value)
-                                        }
-                                      >
-                                        {dateOption.display}
-                                      </div>
-                                    )
-                                  )}
-                                </div>
-                              )}
+                                defaultDate={currentModeDepartureDate}
+                              />
                             </div>
 
                             <div className="flex flex-col md:flex-row gap-2">
@@ -4170,7 +4129,6 @@ const OtherTransfer = ({
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
 
   const [departureDate, setDepartureDate] = useState(currentModeDepartureDate);
-  const [showDateDropdown, setShowDateDropdown] = useState(false);
 
   const [lastRequestData, setLastRequestData] = useState(null);
 
@@ -4203,32 +4161,13 @@ const OtherTransfer = ({
     return options;
   };
 
-  // Generate date options (2 days before and after departure date)
-  const generateDateOptions = () => {
-    const baseDate = dayjs(currentModeDepartureDate);
-    const options = [];
-
-    for (let i = -2; i <= 2; i++) {
-      const date = baseDate.add(i, "day");
-      const isToday = date.isSame(dayjs(), "day");
-      const isSelected = date.format("YYYY-MM-DD") === currentModeDepartureDate;
-
-      options.push({
-        value: date.format("YYYY-MM-DD"),
-        display: date.format("MMM DD, YYYY"),
-        dayName: date.format("ddd"),
-        isToday,
-        isSelected,
-      });
-    }
-
-    return options;
+  const handleDateChange = (event) => {
+    const selectedDate = dayjs(event.target.value).format("YYYY-MM-DD");
+    setDepartureDate(selectedDate);
   };
 
   const timeOptions = generateTimeOptions();
-  const dateOptions = generateDateOptions();
 
-  // Function to load dynamic transfers
   const loadTransfers = async (transferData, paxData, departureDateTime) => {
     if (!transferData?.id) return;
 
@@ -4266,52 +4205,81 @@ const OtherTransfer = ({
         setOtherTransfer(data.data);
         setError(null); // Clear error on success
       } else {
-        setError(
-          data?.errors[0]?.message[0] || "No transfer options available"
-        );
-        setOtherTransfer(null);
+        const errorMessage =
+          data?.errors?.[0]?.message?.[0] ||
+          data?.message ||
+          "No transfer options available";
+        setError(errorMessage);
+        // Don't clear otherTransfer here - keep previous data visible
+        // setOtherTransfer(null);
+
+        // Clear dynamic transfer data for this key on error
+        setDynamicTransferData((prev) => {
+          const newData = { ...prev };
+          delete newData[transferKey];
+          return newData;
+        });
       }
     } catch (error) {
       console.error("Error loading transfers:", error);
       const errorMsg =
+        error?.response?.data?.errors?.[0]?.message?.[0] ||
         error?.response?.data?.message ||
         error?.response?.data?.error ||
         error?.message ||
         "Failed to load transfer options";
       setError(errorMsg);
-      setOtherTransfer(null);
+      // Don't clear otherTransfer here - keep previous data visible
+      // setOtherTransfer(null);
+
+      // Clear dynamic transfer data for this key on error
+      setDynamicTransferData((prev) => {
+        const newData = { ...prev };
+        delete newData[transferKey];
+        return newData;
+      });
     } finally {
       setLoadingTransfers((prev) => ({ ...prev, [transferKey]: false }));
     }
   };
 
-  // Effect to detect pax, time, or date changes and reload transfers
   useEffect(() => {
     const currentPaxString = JSON.stringify(pax);
     const paxChanged = lastPaxState && lastPaxState !== currentPaxString;
     const timeChanged = lastTimeState && lastTimeState !== departureTime;
     const dateChanged = lastDateState && lastDateState !== departureDate;
 
-    if ((paxChanged || timeChanged || dateChanged) && otherTransfer) {
+    // Call API if any parameter changed AND we have selectedResult.transfer
+    // Also call if we had an error (to retry)
+    if (
+      (paxChanged || timeChanged || dateChanged) &&
+      selectedResult?.transfer
+    ) {
       const departureDateTime = `${departureDate}T${departureTime}:00`;
 
-      // Load new transfer data
-      loadTransfers(otherTransfer, pax, departureDateTime);
+      // Clear error before making new request but don't clear otherTransfer yet
+      setError(null);
+
+      // Always use selectedResult.transfer as the source of truth
+      loadTransfers(selectedResult.transfer, pax, departureDateTime);
     }
 
     // Update last states
     setLastPaxState(currentPaxString);
     setLastTimeState(departureTime);
     setLastDateState(departureDate);
-  }, [pax, departureTime, departureDate, otherTransfer]);
+  }, [pax, departureTime, departureDate, selectedResult?.transfer, error]);
+
+  useEffect(() => {
+    if (selectedResult?.transfer && !otherTransfer && !error) {
+      setOtherTransfer(selectedResult.transfer);
+    }
+  }, [selectedResult?.transfer]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (ref.current && !ref.current.contains(event.target)) {
         setShowTimeDropdown(false);
-      }
-      if (dateRef.current && !dateRef.current.contains(event.target)) {
-        setShowDateDropdown(false);
       }
     };
 
@@ -4319,7 +4287,7 @@ const OtherTransfer = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [ref, dateRef]);
+  }, [ref]);
 
   useEffect(() => {
     if (setSelectedData && Array.isArray(transfer)) {
@@ -4359,6 +4327,15 @@ const OtherTransfer = ({
       }
     }
   }, [selectedResult]);
+
+  useEffect(() => {
+    if (selectedResult?.transfer) {
+      const departureDateTime = `${
+        departureDate || currentModeDepartureDate
+      }T${departureTime}:00`;
+      loadTransfers(selectedResult.transfer, pax, departureDateTime);
+    }
+  }, [selectedResult?.transfer, token]);
 
   const isValidUUID = (uuid) => {
     const regex =
@@ -4469,11 +4446,6 @@ const OtherTransfer = ({
   const handleTimeSelect = (time) => {
     setDepartureTime(time.value);
     setShowTimeDropdown(false);
-  };
-
-  const handleDateSelect = (date) => {
-    setDepartureDate(date.value);
-    setShowDateDropdown(false);
   };
 
   const buildRequestPayload = (updatedData, newTime = null, newDate = null) => {
@@ -4694,75 +4666,33 @@ const OtherTransfer = ({
     return transferKey ? loadingTransfers[transferKey] : false;
   };
 
+  const retryLoadTransfers = () => {
+    if (otherTransfer || Object.keys(dynamicTransferData).length > 0) {
+      setError(null);
+      const departureDateTime = `${departureDate}T${departureTime}:00`;
+      const transferToUse =
+        otherTransfer || Object.values(dynamicTransferData)[0];
+      loadTransfers(transferToUse, pax, departureDateTime);
+    }
+  };
+
   return (
     <Container>
       <div className="w-full">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
           {/* Date Dropdown */}
-          <div
-            className="date-dropdown-container relative w-full sm:w-auto"
-            ref={dateRef}
-          >
-            <div
-              className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
-              onClick={() => setShowDateDropdown((prev) => !prev)}
-            >
-              <span className="text-sm font-medium">
-                Departure Date:{" "}
-                {formatDateForDisplay(
-                  departureDate || currentModeDepartureDate
-                )}
-              </span>
-              <svg
-                className={`w-4 h-4 transition-transform ${
-                  showDateDropdown ? "transform rotate-180" : ""
-                }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M19 9l-7 7-7-7"
-                ></path>
-              </svg>
-            </div>
-
-            {showDateDropdown && (
-              <div className="absolute left-0 z-10 mt-1 w-64 bg-white border rounded-md shadow-lg">
-                {dateOptions.map((date, index) => (
-                  <div
-                    key={index}
-                    className={`p-3 hover:bg-gray-100 cursor-pointer border-b last:border-b-0 
-                     
-                      ${
-                        date.value === currentModeDepartureDate
-                          ? "bg-yellow-100 font-medium"
-                          : ""
-                      }`}
-                    onClick={() => handleDateSelect(date)}
-                  >
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div
-                          className={`text-sm font-medium ${
-                            date.isSelected ? "text-blue-600" : ""
-                          }`}
-                        >
-                          {date.display}
-                        </div>
-                      </div>
-                      {date.isSelected && (
-                        <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+          <div className="w-full sm:w-auto">
+            <label className="block text-sm font-medium mb-1">
+              Departure Date:
+            </label>
+            <DatePicker
+              id="departureDate"
+              date={departureDate || currentModeDepartureDate}
+              defaultDate={currentModeDepartureDate}
+              onDateChange={handleDateChange}
+              isOutsideRange={() => false}
+              enableOutsideDays={true}
+            />
           </div>
 
           {/* Time Dropdown */}
@@ -4846,7 +4776,13 @@ const OtherTransfer = ({
             <div className="text-red-600 font-medium mb-1">
               Error Loading Transfers
             </div>
-            <div className="text-gray-600 text-sm">{error}</div>
+            <div className="text-gray-600 text-sm mb-3">{error}</div>
+            <button
+              onClick={retryLoadTransfers}
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm"
+            >
+              Retry
+            </button>
           </div>
         </div>
       )}

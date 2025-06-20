@@ -2275,7 +2275,10 @@ export const DatePicker = (props) => {
         placeholder={"DD/MM/YYYY"}
         numberOfMonths={1}
         displayFormat={"DD/MM/YYYY"}
-      />
+        isOutsideRange={() => false} // Allows all dates including past
+        enableOutsideDays={true}
+  
+       />
       <CalenderIcons className="p-2 py-3">
         <Icon>
           <FaCalendarDays />

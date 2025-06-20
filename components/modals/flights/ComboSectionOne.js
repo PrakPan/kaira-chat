@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { MdSort } from "react-icons/md";
 import { Pax } from "../../drawers/activityDetails/Pax";
 import dayjs from "dayjs";
+import { DatePicker } from "../../../containers/newitinerary/breif/route/RouteEditSection";
 
 const ComboSection = (props) => {
   const {
@@ -35,24 +36,6 @@ const ComboSection = (props) => {
     }
   }, []);
 
-  // Generate date options (2 days before, current, 2 days after)
-  useEffect(() => {
-    if (preferred_departure_time) {
-      const currentDate = dayjs(preferred_departure_time);
-      const dates = [];
-      
-      for (let i = -2; i <= 2; i++) {
-        const date = currentDate.add(i, 'day');
-        dates.push({
-          value: date.format("YYYY-MM-DD"),
-          display: date.format("DD MMM, YYYY"),
-          dayjs: date,
-        });
-      }
-      
-      setDateOptions(dates);
-    }
-  }, [preferred_departure_time]);
 
   useEffect(() => {
     if (preferred_departure_time) {
@@ -198,12 +181,6 @@ const ComboSection = (props) => {
         setShowTimeDropdown(false);
       }
       if (
-        showDateDropdown &&
-        !event.target.closest(".date-dropdown-container")
-      ) {
-        setShowDateDropdown(false);
-      }
-      if (
         showSortDropdown &&
         !event.target.closest(".sort-dropdown-container")
       ) {
@@ -215,7 +192,7 @@ const ComboSection = (props) => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showTimeDropdown, showDateDropdown, showSortDropdown]);
+  }, [showTimeDropdown, showSortDropdown]);
 
   return (
     <div className="font-sans w-full mx-auto bg-white">
@@ -235,59 +212,28 @@ const ComboSection = (props) => {
 
         <div className="">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2">
-            {/* Date Dropdown */}
-            {preferred_departure_time && (
-              <div className="date-dropdown-container relative w-full sm:w-auto">
-                <div
-                  className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
-                  onClick={() => !isLoading && setShowDateDropdown(!showDateDropdown)}
-                >
-                  <span className="text-sm font-medium">
-                    Departure Date: {selectedDate || dayjs(preferred_departure_time)?.format("DD MMM, YYYY")}
-                  </span>
-                  <svg
-                    className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
-                      showDateDropdown ? "transform rotate-180" : ""
-                    }`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M19 9l-7 7-7-7"
-                    ></path>
-                  </svg>
-                </div>
 
-                {showDateDropdown && (
-                  <div className="absolute z-10 w-full sm:w-64 mt-1 bg-white border rounded-md shadow-lg">
-                    <div className="sticky top-0 bg-gray-100 p-2 border-b">
-                      <span className="font-medium text-sm">Select Date</span>
-                    </div>
-                    <div className="p-1">
-                      {dateOptions.map((dateOption, index) => (
-                        <div
-                          key={index}
-                          className={`p-2 hover:bg-blue-50 cursor-pointer text-sm rounded-md ${
-                            selectedDate === dateOption.display || 
-                            (!selectedDate && dayjs(preferred_departure_time).format("DD MMM, YYYY") === dateOption.display)
-                              ? "bg-blue-100" 
-                              : ""
-                          }`}
-                          onClick={() => !isLoading && handleDateSelection(dateOption)}
-                        >
-                          {dateOption.display}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
+{preferred_departure_time && (
+  <div className="w-full sm:w-auto">
+    Departure Date
+    <DatePicker
+      id="departure-date"
+      date={selectedDate ? dayjs(selectedDate, "DD MMM, YYYY").format("YYYY-MM-DD") : preferred_departure_time}
+      defaultDate={preferred_departure_time}
+      onDateChange={(event) => {
+        if (!isLoading) {
+          const selectedDateValue = dayjs(event.target.value).format("YYYY-MM-DD");
+          const selectedDateDisplay = dayjs(event.target.value).format("DD MMM, YYYY");
+          
+          handleDateSelection({
+            value: selectedDateValue,
+            display: selectedDateDisplay
+          });
+        }
+      }}
+    />
+  </div>
+)}
 
             {/* Time Dropdown */}
             <div className="time-dropdown-container relative w-full sm:w-auto">

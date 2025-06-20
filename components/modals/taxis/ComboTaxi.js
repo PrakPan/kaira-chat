@@ -15,7 +15,8 @@ import Skeleton from "./Skeleton";
 import TransferEditDrawer from "../../drawers/routeTransfer/TransferEditDrawer";
 import { fetchTransferMode } from "../../../services/bookings/FetchTaxiRecommendations";
 import dayjs from "dayjs";
-import { add, format } from 'date-fns'; // Make sure to import these functions if used
+import { add, format } from "date-fns"; // Make sure to import these functions if used
+import { DatePicker } from "../../../containers/newitinerary/breif/route/RouteEditSection";
 
 const GridContainer = styled.div`
 @media screen and (min-width: 768px) {
@@ -60,19 +61,29 @@ const ComboTaxi = (props) => {
   const [showTransferEditDrawer, setShowTransferEditDrawer] = useState(false);
   const [isMercury, setIsMercury] = useState(false);
   const [selectedTaxiIndex, setSelectedTaxiIndex] = useState(null);
-  const [quotes, setQuotes] = useState(props?.taxiResults ? props?.taxiResults : []);
+  const [quotes, setQuotes] = useState(
+    props?.taxiResults ? props?.taxiResults : []
+  );
   const dispatch = useDispatch();
 
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(
+    props?.comboStartDate || null
+  );
   const [timeSlots, setTimeSlots] = useState([]);
   const [selectedTime, setSelectedTime] = useState(null);
-  const [selectedTimeValue, setSelectedTimeValue] = useState(props?.comboStartTime || null);
-  const {number_of_adults,number_of_children,number_of_infants} = useSelector(state=>state.Itinerary);
+  const [selectedTimeValue, setSelectedTimeValue] = useState(
+    props?.comboStartTime || null
+  );
+  const { number_of_adults, number_of_children, number_of_infants } =
+    useSelector((state) => state.Itinerary);
 
   useEffect(() => {
     if (props?.comboStartTime) {
       const slots = [];
-      let Time = dayjs(props?.comboStartDate + "T" + props?.comboStartTime + ":00");
+      let Time = dayjs(
+        props?.comboStartDate + "T" + props?.comboStartTime + ":00"
+      );
       const date = new Date(Time);
       date.setHours(0, 0, 0, 0);
 
@@ -92,15 +103,17 @@ const ComboTaxi = (props) => {
 
       while (baseTime.isBefore(endTime) || baseTime.isSame(endTime)) {
         slots.push({
-          value: baseTime.format("HH:mm"), 
-          display: baseTime.format("h:mm A"), 
+          value: baseTime.format("HH:mm"),
+          display: baseTime.format("h:mm A"),
         });
         baseTime = baseTime.add(30, "minute");
       }
 
       setTimeSlots(slots);
-      
-      const initialTimeDisplay = dayjs(props?.comboStartDate + "T" + props?.comboStartTime + ":00").format("h:mm A");
+
+      const initialTimeDisplay = dayjs(
+        props?.comboStartDate + "T" + props?.comboStartTime + ":00"
+      ).format("h:mm A");
       setSelectedTime(initialTimeDisplay);
       setSelectedTimeValue(props?.comboStartTime);
     }
@@ -114,25 +127,40 @@ const ComboTaxi = (props) => {
   };
 
   useEffect(() => {
+    if (props?.comboStartDate && props?.comboStartDate !== selectedDate) {
+      setSelectedDate(props?.comboStartDate);
+    }
+  }, [props?.comboStartDate]);
+
+  useEffect(() => {
     if (props.showTaxiModal && !props?.skipTaxiFetch) {
       console.log("Inside fetch data", props.showTaxiModal);
       fetchData();
     }
-  }, [props.alternates, props.budget, props.showTaxiModal, props?.comboStartDate, props?.comboStartTime]);
+  }, [
+    props.alternates,
+    props.budget,
+    props.showTaxiModal,
+    props?.comboStartDate,
+    props?.comboStartTime,
+  ]);
 
   useEffect(() => {
-     console.log("T Resu",props?.taxiResults,props?.selectedData);
-  if (props?.taxiResults?.length && props?.selectedData?.result_index !== undefined) {
-    console.log("T Resu",props?.taxiResults,props?.selectedData);
-    const selectedIndex = props.taxiResults.findIndex(
-      (taxi) => taxi?.result_index === props.selectedData?.result_index
-    );
+    console.log("T Resu", props?.taxiResults, props?.selectedData);
+    if (
+      props?.taxiResults?.length &&
+      props?.selectedData?.result_index !== undefined
+    ) {
+      console.log("T Resu", props?.taxiResults, props?.selectedData);
+      const selectedIndex = props.taxiResults.findIndex(
+        (taxi) => taxi?.result_index === props.selectedData?.result_index
+      );
 
-    if (selectedIndex !== -1) {
-      setSelectedTaxiIndex(selectedIndex);
+      if (selectedIndex !== -1) {
+        setSelectedTaxiIndex(selectedIndex);
+      }
     }
-  }
-}, [props.taxiResults, props.selectedData]);
+  }, [props.taxiResults, props.selectedData]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -154,7 +182,7 @@ const ComboTaxi = (props) => {
     setSelectedTime(slot.display);
     setSelectedTimeValue(slot.value);
     setShowTimeDropdown(false);
-    
+
     if (props.onTimeChange) {
       props.onTimeChange(slot.value);
     } else {
@@ -165,7 +193,7 @@ const ComboTaxi = (props) => {
   const fetchDataWithNewTime = (newTime) => {
     const updatedProps = {
       ...props,
-      comboStartTime: newTime
+      comboStartTime: newTime,
     };
     fetchDataWithProps(updatedProps);
   };
@@ -187,11 +215,11 @@ const ComboTaxi = (props) => {
     setUpdateLoadingState(false);
     setOptionsJSX([]);
     setQuotes([]);
-    props?.setTaxiResults((prev)=>{
-         let newData = {...prev};
-         delete newData[props?.KEY];
-         return newData;
-        })
+    props?.setTaxiResults((prev) => {
+      let newData = { ...prev };
+      delete newData[props?.KEY];
+      return newData;
+    });
 
     {
       propsToUse?.mercury &&
@@ -216,20 +244,22 @@ const ComboTaxi = (props) => {
       trips: [
         {
           start_date:
-            propsToUse?.comboStartDate || propsToUse.selectedBooking.check_in || start_date,
+            propsToUse?.comboStartDate ||
+            propsToUse.selectedBooking.check_in ||
+            start_date,
           start_time: propsToUse?.comboStartTime || start_time,
           number_of_travellers:
             number_of_adults + number_of_children + number_of_infants,
           trip_type: "one-way",
           origin: {
             city_id: props?.sourceRouteCityId ? props?.sourceRouteCityId : null,
-                 
-              // isValidUUID(propsToUse?.originCityId || propsToUse.selectedBooking?.origin?.city_id ||
-              // propsToUse?.oCityData?.gmaps_place_id ||
-              // propsToUse?.oCityData?.city?.id) ? propsToUse?.originCityId || propsToUse.selectedBooking?.origin?.city_id ||
-              // propsToUse?.oCityData?.gmaps_place_id ||
-              // propsToUse?.oCityData?.city?.id  : null,
-            hub_id: props?.sourceHubId ? props?.sourceHubId: null,
+
+            // isValidUUID(propsToUse?.originCityId || propsToUse.selectedBooking?.origin?.city_id ||
+            // propsToUse?.oCityData?.gmaps_place_id ||
+            // propsToUse?.oCityData?.city?.id) ? propsToUse?.originCityId || propsToUse.selectedBooking?.origin?.city_id ||
+            // propsToUse?.oCityData?.gmaps_place_id ||
+            // propsToUse?.oCityData?.city?.id  : null,
+            hub_id: props?.sourceHubId ? props?.sourceHubId : null,
             gmaps_place_id: null,
             // propsToUse?.oCityData?.gmaps_place_id,
             coordinates: {
@@ -246,15 +276,19 @@ const ComboTaxi = (props) => {
             },
           },
           destination: {
-            city_id: props?.destinationRouteCityId ? props?.destinationRouteCityId : null,
-              // isValidUUID(propsToUse?.destinationCityId || propsToUse.selectedBooking?.destination?.city_id ||
-              // propsToUse?.dCityData?.gmaps_place_id ||
-              // propsToUse?.dCityData?.city?.id ||
-              // propsToUse?.destinationCityId) ? propsToUse?.destinationCityId || propsToUse.selectedBooking?.destination?.city_id ||
-              // propsToUse?.dCityData?.gmaps_place_id ||
-              // propsToUse?.dCityData?.city?.id ||
-              // propsToUse?.destinationCityId : null,
-            hub_id: propsToUse?.destinationHubId ? propsToUse?.destinationHubId: null,
+            city_id: props?.destinationRouteCityId
+              ? props?.destinationRouteCityId
+              : null,
+            // isValidUUID(propsToUse?.destinationCityId || propsToUse.selectedBooking?.destination?.city_id ||
+            // propsToUse?.dCityData?.gmaps_place_id ||
+            // propsToUse?.dCityData?.city?.id ||
+            // propsToUse?.destinationCityId) ? propsToUse?.destinationCityId || propsToUse.selectedBooking?.destination?.city_id ||
+            // propsToUse?.dCityData?.gmaps_place_id ||
+            // propsToUse?.dCityData?.city?.id ||
+            // propsToUse?.destinationCityId : null,
+            hub_id: propsToUse?.destinationHubId
+              ? propsToUse?.destinationHubId
+              : null,
             gmaps_place_id: null,
             //  propsToUse?.dCityData?.gmaps_place_id,
             coordinates: {
@@ -263,7 +297,7 @@ const ComboTaxi = (props) => {
               //   ? propsToUse.selectedBooking?.origin?.lat
               //   : propsToUse?.dCityData?.latitude ||
               //     propsToUse?.dCityData?.city?.latitude,
-              longitude: null
+              longitude: null,
               //  propsToUse.selectedBooking?.destination?.lng
               //   ? propsToUse.selectedBooking?.origin?.lng
               //   : propsToUse?.dCityData?.longitude ||
@@ -276,69 +310,71 @@ const ComboTaxi = (props) => {
 
     console.log("API Request Data:", requestData);
 
-    propsToUse?.comboStartDate && axiosTaxiSearch
-      .post("", requestData)
-      .then((res) => {
-        if (res.data.success) {
-          setNoResults(false);
-          setQuotes(
-            res.data.data.quotes.map((q, i) => ({
-              ...q,
-              distance: res.data.data.distance,
-              duration: res.data.data.duration,
-              trace_id: res.data.trace_id,
-              source: res.data.data?.source,
+    propsToUse?.comboStartDate &&
+      axiosTaxiSearch
+        .post("", requestData)
+        .then((res) => {
+          if (res.data.success) {
+            setNoResults(false);
+            setQuotes(
+              res.data.data.quotes.map((q, i) => ({
+                ...q,
+                distance: res.data.data.distance,
+                duration: res.data.data.duration,
+                trace_id: res.data.trace_id,
+                source: res.data.data?.source,
+              }))
+            );
+            props?.setTaxiResults((prev) => {
+              let newData = { ...prev };
 
-            }))
-          );
-           props?.setTaxiResults((prev)=>{
-         let newData = {...prev};
+              newData[props?.KEY] = res.data.data.quotes.map((q, i) => ({
+                ...q,
+                distance: res.data.data.distance,
+                duration: res.data.data.duration,
+                trace_id: res.data.trace_id,
+                source: res.data.data?.source,
+              }));
+              return newData;
+            });
+          } else {
+            setNoResults(true);
+            setViewMoreStatus(false);
+            setQuotes([]);
 
-         newData[props?.KEY] = res.data.data.quotes.map((q, i) => ({
-              ...q,
-              distance: res.data.data.distance,
-              duration: res.data.data.duration,
-              trace_id: res.data.trace_id,
-              source: res.data.data?.source,
-
-            }));
-            return newData
-        })} else {
-          setNoResults(true);
-          setViewMoreStatus(false);
+            props?.setTaxiResults((prev) => {
+              let newData = { ...prev };
+              delete newData[props?.KEY];
+              return newData;
+            });
+          }
+          setLoading(false);
+        })
+        .catch((err) => {
           setQuotes([]);
+          if (props?.setTransferResults) {
+            props?.setTransferResults((prev) => {
+              let newData = [...prev];
+              newData[props?.index] = [];
+              return newData;
+            });
+          }
+          props?.setTaxiResults((prev) => {
+            let newData = { ...prev };
+            delete newData[props?.KEY];
+            return newData;
+          });
+          setLoading(false);
+          setError(true);
 
-          props?.setTaxiResults((prev)=>{
-         let newData = {...prev};
-         delete newData[props?.KEY];
-         return newData;
-        })
-        }
-        setLoading(false);
-      })
-      .catch((err) => {
-        setQuotes([]);
-        if(props?.setTransferResults){
-        props?.setTransferResults((prev)=>{
-      let newData=[...prev];
-      newData[props?.index] = [];
-      return newData;
-    })
-  }
-        props?.setTaxiResults((prev)=>{
-         let newData = {...prev};
-         delete newData[props?.KEY];
-         return newData;
-        })
-        setLoading(false);
-        setError(true);
-
-        dispatch(openNotification({
-          type: "error",
-          text: "There seems to be a problem, please try again later!",
-          heading: "Error!",
-        }));
-      });
+          dispatch(
+            openNotification({
+              type: "error",
+              text: "There seems to be a problem, please try again later!",
+              heading: "Error!",
+            })
+          );
+        });
   };
 
   const _updateSearchedTaxi = ({
@@ -388,19 +424,30 @@ const ComboTaxi = (props) => {
       })
       .catch((err) => {
         setUpdateBookingState(false);
-        console.log("Error updating Taxi",err.message)
+        console.log("Error updating Taxi", err.message);
         const errorMsg =
-            err?.response?.data?.errors?.[0]?.message?.[0] || err.message ;
-        dispatch(openNotification({
-          type: "error",
-          text: errorMsg || "There seems to be a problem, please try again!",
-          heading: "Error!",
-        }));
+          err?.response?.data?.errors?.[0]?.message?.[0] || err.message;
+        dispatch(
+          openNotification({
+            type: "error",
+            text: errorMsg || "There seems to be a problem, please try again!",
+            heading: "Error!",
+          })
+        );
       });
   };
 
   const handleTransferEdit = (e) => {
     setShowTransferEditDrawer(true);
+  };
+
+  const fetchDataWithNewDate = (newDate) => {
+    setSelectedDate(newDate);
+    const updatedProps = {
+      ...props,
+      comboStartDate: newDate,
+    };
+    fetchDataWithProps(updatedProps);
   };
 
   if (props.token)
@@ -411,66 +458,92 @@ const ComboTaxi = (props) => {
             <ContentContainer style={{ position: "relative" }}>
               <div className="p-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
-                 {props?.comboStartDate &&  <div className="mb-2 sm:mb-0">
-                    <span className="text-sm text-gray-600">Departure Date: </span>
-                    <span className="font-semibold">
-                      {dayjs(props?.comboStartDate)?.format("DD MMM, YYYY")}
-                    </span>
-                  </div>}
-        
-                  {(selectedTime || props?.comboStartTime) && 
-                  <div className="time-dropdown-container relative w-full sm:w-auto">
-                    <div
-                      className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
-                      onClick={() => setShowTimeDropdown(!showTimeDropdown)}
-                    >
-                      <span className="text-sm font-medium">
-                        Departure Time:{" "}
-                        {selectedTime || 
-                         (props?.comboStartTime ? 
-                           dayjs(props?.comboStartDate + "T" + props?.comboStartTime + ":00")?.format("h:mm A") : 
-                           "Select Time")}
+                  {(selectedDate || props?.comboStartDate) && (
+                    <div className="mb-2 sm:mb-0">
+                      <span className="text-sm text-gray-600">
+                        Departure Date:{" "}
                       </span>
-                      <svg
-                        className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
-                          showTimeDropdown ? "transform rotate-180" : ""
-                        }`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M19 9l-7 7-7-7"
-                        ></path>
-                      </svg>
+                      <DatePicker
+                        date={selectedDate || props?.comboStartDate}
+                        defaultDate={selectedDate || props?.comboStartDate}
+                        id="departureDate"
+                        onDateChange={(e) => {
+                          const newDate = dayjs(e.target.value).format(
+                            "YYYY-MM-DD"
+                          );
+                          setSelectedDate(newDate);
+                          if (props.onDateChange) {
+                            props.onDateChange(newDate);
+                          } else {
+                            fetchDataWithNewDate(newDate);
+                          }
+                        }}
+                      />
                     </div>
-        
-                    {showTimeDropdown && (
-                      <div className="absolute z-10 w-full sm:w-64 mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
-                        <div className="sticky -top-1 bg-gray-100 p-2 border-b">
-                          <span className="font-medium text-sm">Select Time</span>
-                        </div>
-                        <div className="p-1">
-                          {timeSlots.map((slot, index) => (
-                            <div
-                              key={index}
-                              className={`p-2 hover:bg-blue-50 cursor-pointer text-sm rounded-md ${
-                                selectedTime === slot.display ? "bg-blue-100" : ""
-                              }`}
-                              onClick={() => handleTimeSelection(slot)}
-                            >
-                              {slot.display}
-                            </div>
-                          ))}
-                        </div>
+                  )}
+
+                  {(selectedTime || props?.comboStartTime) && (
+                    <div className="time-dropdown-container relative w-full sm:w-auto">
+                      <div
+                        className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
+                        onClick={() => setShowTimeDropdown(!showTimeDropdown)}
+                      >
+                        <span className="text-sm font-medium">
+                          Departure Time:{" "}
+                          {selectedTime ||
+                            (props?.comboStartTime
+                              ? dayjs(
+                                  props?.comboStartDate +
+                                    "T" +
+                                    props?.comboStartTime +
+                                    ":00"
+                                )?.format("h:mm A")
+                              : "Select Time")}
+                        </span>
+                        <svg
+                          className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
+                            showTimeDropdown ? "transform rotate-180" : ""
+                          }`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M19 9l-7 7-7-7"
+                          ></path>
+                        </svg>
                       </div>
-                    )}
-                  </div>
-                  }
+
+                      {showTimeDropdown && (
+                        <div className="absolute z-10 w-full sm:w-64 mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
+                          <div className="sticky -top-1 bg-gray-100 p-2 border-b">
+                            <span className="font-medium text-sm">
+                              Select Time
+                            </span>
+                          </div>
+                          <div className="p-1">
+                            {timeSlots.map((slot, index) => (
+                              <div
+                                key={index}
+                                className={`p-2 hover:bg-blue-50 cursor-pointer text-sm rounded-md ${
+                                  selectedTime === slot.display
+                                    ? "bg-blue-100"
+                                    : ""
+                                }`}
+                                onClick={() => handleTimeSelection(slot)}
+                              >
+                                {slot.display}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
               {updateBookingState ? (
@@ -487,14 +560,13 @@ const ComboTaxi = (props) => {
                 </div>
               ) : null}
 
-              
               {!noResults && !error && !updateBookingState ? (
                 <OptionsContainer id="options">
                   <div style={{ clear: "right" }}>
                     {quotes.map((quote, index) => (
                       <TaxiSearched
                         key={index}
-                         booking_id={props?.booking_id}
+                        booking_id={props?.booking_id}
                         setHideBookingModal={props.setHideTaxiModal}
                         _updateSearchedTaxi={_updateSearchedTaxi}
                         selectedBooking={props.selectedBooking}
@@ -511,8 +583,12 @@ const ComboTaxi = (props) => {
                         index={index}
                         start_date={props?.comboStartDate}
                         start_time={selectedTimeValue || props?.comboStartTime} // Use the selected time value
-                        origin_itinerary_city_id={props?.origin_itinerary_city_id}
-                        destination_itinerary_city_id={props?.destination_itinerary_city_id}
+                        origin_itinerary_city_id={
+                          props?.origin_itinerary_city_id
+                        }
+                        destination_itinerary_city_id={
+                          props?.destination_itinerary_city_id
+                        }
                         edge={props?.edge}
                       />
                     ))}
@@ -578,7 +654,7 @@ const ComboTaxi = (props) => {
             dCityData={props?.dCityData}
             isMercury={isMercury}
             mercury={props?.mercury}
-             booking_id={props?.booking_id}
+            booking_id={props?.booking_id}
           />
         ) : (
           <TransferEditDrawer
