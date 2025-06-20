@@ -15,10 +15,11 @@ const SummaryContainer = styled.div`
   padding: ${(props) => (props.couponSlide ? "0" : "1rem")};
   margin: 0rem 0;
   @media screen and (min-width: 768px) {
-    margin: 0;
+    margin-top: 2rem;
     width: 27vw;
     position: sticky;
     top: 11vh;
+
   }
 `;
 
