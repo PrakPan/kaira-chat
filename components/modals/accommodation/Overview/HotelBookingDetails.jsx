@@ -1189,7 +1189,7 @@ const HotelBookingDetails = (props) => {
             </div>
 
             <button
-              className=" right-0 text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
+              className="hidden sm:!block right-0 text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
               onClick={handleDelete}
             >
               <div style={{ position: "relative" }}>
@@ -1216,6 +1216,34 @@ const HotelBookingDetails = (props) => {
               </div>
             </button>
           </div>
+
+          <button
+              className="sm:hidden mt-4 w-full right-0 text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
+              onClick={handleDelete}
+            >
+              <div style={{ position: "relative" }}>
+                <div
+                  className="flex gap-1 items-center p-1"
+                  style={loading ? { visibility: "hidden" } : {}}
+                >
+                  <NextImage src="/delete.svg" width={"20"} height={"20"} />{" "}
+                  Delete Booking
+                </div>
+                {loading && (
+                  <PulseLoader
+                    style={{
+                      position: "absolute",
+                      top: "55%",
+                      left: "50%",
+                      transform: "translate(-50% , -50%)",
+                    }}
+                    size={12}
+                    speedMultiplier={0.6}
+                    color="#ffffff"
+                  />
+                )}
+              </div>
+            </button>
         </div>
       ) : (
         <div className="flex justify-end">

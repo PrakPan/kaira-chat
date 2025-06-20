@@ -376,14 +376,6 @@ export default function ChangePoiDetails(props) {
             )}
           </div>
 
-          {/* <div className="flex flex-col gap-3 md:flex-row md:items-center justify-end">
-          <Travelers
-            travelers={props.filterState.pax.number_of_travelers}
-            travelerAges={props.filterState.pax.traveler_ages}
-            setFilterState={props.setFilterState}
-          />
-        </div> */}
-
           <div className="flex flex-col md:flex-row md:items-center gap-2 justify-between">
             {props.data?.prices?.total_price ? (
               <div className="flex flex-col gap-1">
