@@ -331,7 +331,7 @@ const TransferBooking = ({
                   <div className="absolute w-[20px] border border-black ml-4 mt-[27px]"></div>
                   <div className="mt-3 ml-1 md:ml-7 flex flex-col w-full">
                     <div className=" w-full items-center">
-                      <div className="font-medium text-[15px] flex items-center gap-1">
+                      <div className="font-medium text-[15px] flex items-center gap-2">
                         <div className="text-[#C5C1C1]">
                           {getModeIcon(booking?.booking_type, 15)}
                         </div>
@@ -410,18 +410,6 @@ const TransferBooking = ({
                           </>
                         ) : (
                           <>
-                            <svg
-                              width="12"
-                              height="12"
-                              viewBox="0 0 12 12"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
-                                fill="#1F1F1F"
-                              />
-                            </svg>{" "}
                             {booking?.name}
                           </>
                         )}
@@ -872,7 +860,7 @@ const TransferBooking = ({
                     className="mt-3 ml-1 md:ml-7 flex flex-col w-full"
                   >
                     <div className=" w-full items-center">
-                      <div className="font-medium text-[15px]  inline flex items-center gap-1">
+                      <div className="font-medium text-[15px]  inline flex items-center gap-2">
                         <div className="text-[#C5C1C1]">
                           {getModeIcon(book?.booking_type, 15)}
                         </div>
@@ -922,18 +910,7 @@ const TransferBooking = ({
                           </>
                         ) : (
                           <>
-                            <svg
-                              width="12"
-                              height="12"
-                              viewBox="0 0 12 12"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M7 9L6.3 8.275L8.075 6.5H2V5.5H8.075L6.3 3.725L7 3L10 6L7 9Z"
-                                fill="#1F1F1F"
-                              />
-                            </svg>{" "}
+                          
                             {book?.name}
                           </>
                         )}
@@ -1442,9 +1419,9 @@ const FlightBooking = ({
   return (
     <div className="mt-3 ml-1 md:ml-7 flex flex-col w-full items-center justify-center ">
       <div className=" w-full items-center">
-        <div className="font-medium text-[15px]  inline flex items-center gap-1">
-          <FaPlaneDeparture color="#C5C1C1" />
-          {booking?.transfer_details?.source?.name ||
+       {booking?.transfer_details?.items[0]?.segments[0]?.origin?.city_name && booking?.transfer_details?.items[0]?.segments[0]?.destination?.city_name && <> <div className="font-medium text-[15px]  inline flex items-center gap-1">
+          <FaPlaneDeparture color="#C5C1C1" /> &nbsp;
+          {booking?.transfer_details?.items[0]?.segments[0]?.origin?.city_name ||
             booking?.transfer_details?.source?.city_name}{" "}
           <svg
             width="12"
@@ -1458,12 +1435,12 @@ const FlightBooking = ({
               fill="#1F1F1F"
             />
           </svg>{" "}
-          {booking?.transfer_details?.destination?.name ||
+          {booking?.transfer_details?.items[0]?.segments[0]?.destination?.city_name ||
             booking?.transfer_details?.destination?.city_name}
         </div>
         <div className="text-[10px] ml-[20px]">
           Duration: {booking?.duration}
-        </div>
+        </div> </>}
       </div>
 
       <div
