@@ -4,6 +4,7 @@ import RoomType from "./roomtype/Index";
 const Rooms = (props) => {
   const [rooms, setRooms] = useState(null);
   const [selectedRecommendation, setSelectedRecommendation] = useState(null);
+  
   const handleUpdateBooking = (index) => {
     const rates = props.data[index].rates.map((rate) => {
       return {
@@ -18,17 +19,21 @@ const Rooms = (props) => {
 
   useEffect(() => {
     let rooms_arr = [];
+    let roomCounter = 0; 
+    
     if (props.data) {
       for (var i = 0; i < props.data.length; i++) {
         if (props.data[i]?.final_rate) {
+          const currentRooms = getRooms(props.data[i]);
+          
           rooms_arr.push(
             <RoomType
               currentBooking={props?.currentBooking}
               key={i}
-              index={i}
+              index={roomCounter} 
               price={props.data[i].final_rate}
               data={props.data[i]}
-              rooms={getRooms(props.data[i])}
+              rooms={currentRooms}
               handleUpdateBooking={handleUpdateBooking}
               selectedRecommendation={
                 selectedRecommendation && selectedRecommendation === i
@@ -40,6 +45,8 @@ const Rooms = (props) => {
               cancellationPolicy={props?.cancellationPolicy}
             ></RoomType>
           );
+          
+          roomCounter += currentRooms.length;
         }
       }
       setRooms(rooms_arr);

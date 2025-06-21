@@ -252,7 +252,7 @@ const RoomType = (props) => {
                     
                     {rate?.cancellation_policies && (
                       <div className="flex flex-col gap-2">
-                        <div className="text-lg font-bold">Cancellation Policy</div>
+                        {/* <div className="text-lg font-bold">Cancellation Policy</div> */}
                         <div
                           className="text-[14px]"
                           dangerouslySetInnerHTML={{
