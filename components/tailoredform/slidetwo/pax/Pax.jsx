@@ -307,7 +307,7 @@ const ChildAge = ({ index, child, age, setChildAges, showError }) => {
 
       {openAges && (
         <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-          {Array.from({ length: 19 }, (_, i) => (
+          {Array.from({ length: 13 }, (_, i) => (
             <>
               {i >= 1 && (
                 <div
