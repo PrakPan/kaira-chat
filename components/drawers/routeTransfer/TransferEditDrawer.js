@@ -1304,12 +1304,11 @@ const RouteContainer = (props) => {
     const currentTransfer = transfer[currentStep - 1];
 
     const baseStartDate = selectedBooking?.check_in
-  ? dayjs(selectedBooking.check_in).format("YYYY-MM-DD")
-  : dCityData?.start_date
-  ?? (oCityData?.start_date && oCityData?.duration != null
-    ? oCityData.start_date
-    : addDaysToDate(oCityData?.start_date, oCityData?.duration));
-
+      ? dayjs(selectedBooking.check_in).format("YYYY-MM-DD")
+      : dCityData?.start_date ??
+        (oCityData?.start_date && oCityData?.duration != null
+          ? oCityData.start_date
+          : addDaysToDate(oCityData?.start_date, oCityData?.duration));
 
     console.log(
       "Start Dtae",
@@ -2114,7 +2113,10 @@ const NewMultiModeContainer = ({
       if (data.success && data.data) {
         setDynamicTransferData((prev) => ({
           ...prev,
-          [transferKey]: data.data,
+          [transferKey]: {
+            ...data.data,
+            trace_id: data?.trace_id,
+          },
         }));
         setTransferErrors((prev) => {
           const newErrors = { ...prev };
@@ -2289,6 +2291,7 @@ const NewMultiModeContainer = ({
           } else {
             return {
               ...transferObj,
+              trace_id: item.trace_id,
               result_index: item.selectedPrice
                 ? transfer[index].prices.findIndex(
                     (p) =>
@@ -2388,11 +2391,10 @@ const NewMultiModeContainer = ({
   };
 
   const roundUpToNext30Min = (time) => {
-  const minutes = time.minute();
-  const roundedMinutes = minutes <= 30 ? 30 : 60;
-  return time.minute(0).add(roundedMinutes, 'minute');
-};
-
+    const minutes = time.minute();
+    const roundedMinutes = minutes <= 30 ? 30 : 60;
+    return time.minute(0).add(roundedMinutes, "minute");
+  };
 
   useEffect(() => {
     if (currentStep < 1 || currentStep > transfer.length) return;
@@ -2409,34 +2411,42 @@ const NewMultiModeContainer = ({
     let calculatedStartTime;
 
     if (currentStep === 1) {
-  calculatedStartTime = roundUpToNext30Min(dayjs(`${baseStartDate} ${dayjs().format("HH:mm")}`));
-} else {
-  const prevSelected = selectedData[currentStep - 2];
-  const prevArrivalTime = prevSelected?.arrival_time;
+      calculatedStartTime = roundUpToNext30Min(
+        dayjs(`${baseStartDate} ${dayjs().format("HH:mm")}`)
+      );
+    } else {
+      const prevSelected = selectedData[currentStep - 2];
+      const prevArrivalTime = prevSelected?.arrival_time;
 
-  if (prevArrivalTime) {
-    let arrivalMoment = dayjs(prevArrivalTime);
-    calculatedStartTime = roundUpToNext30Min(arrivalMoment.add(1, "hour"));
-  } else if (prevSelected?.departure_time && prevSelected?.duration) {
-    let departureDateTime = dayjs(prevSelected.departure_time);
-    let calculatedArrival = departureDateTime.add(prevSelected.duration, "minute");
-    calculatedStartTime = roundUpToNext30Min(calculatedArrival.add(1, "hour"));
+      if (prevArrivalTime) {
+        let arrivalMoment = dayjs(prevArrivalTime);
+        calculatedStartTime = roundUpToNext30Min(arrivalMoment.add(1, "hour"));
+      } else if (prevSelected?.departure_time && prevSelected?.duration) {
+        let departureDateTime = dayjs(prevSelected.departure_time);
+        let calculatedArrival = departureDateTime.add(
+          prevSelected.duration,
+          "minute"
+        );
+        calculatedStartTime = roundUpToNext30Min(
+          calculatedArrival.add(1, "hour")
+        );
 
-    setSelectedData((prev) => {
-      const newData = [...prev];
-      if (newData[currentStep - 2]) {
-        newData[currentStep - 2] = {
-          ...newData[currentStep - 2],
-          arrival_time: calculatedArrival.format("YYYY-MM-DDTHH:mm"),
-        };
+        setSelectedData((prev) => {
+          const newData = [...prev];
+          if (newData[currentStep - 2]) {
+            newData[currentStep - 2] = {
+              ...newData[currentStep - 2],
+              arrival_time: calculatedArrival.format("YYYY-MM-DDTHH:mm"),
+            };
+          }
+          return newData;
+        });
+      } else {
+        calculatedStartTime = roundUpToNext30Min(
+          dayjs(`${baseStartDate} ${dayjs().format("HH:mm")}`)
+        );
       }
-      return newData;
-    });
-  } else {
-    calculatedStartTime = roundUpToNext30Min(dayjs(`${baseStartDate} ${dayjs().format("HH:mm")}`));
-  }
-}
-
+    }
 
     setCurrentModeDepartureDate(calculatedStartTime.format("YYYY-MM-DD"));
     setComboStartDate(calculatedStartTime.format("YYYY-MM-DD"));
@@ -2463,8 +2473,17 @@ const NewMultiModeContainer = ({
         }
       }
     } else {
+     
       if (!selectedModeIds[currentStep - 1]) {
         handleSelect(currentStep - 1, null, "", currentTransfer.mode);
+        
+        const paxData = {
+          adults: pax.adults,
+          children: pax.children,
+          infants: pax.infants,
+        };
+        const departureDateTime = `${calculatedStartTime.format("YYYY-MM-DD")}T${calculatedStartTime.format("HH:mm")}:00`;
+        loadTransfers(currentTransfer, paxData, departureDateTime);
       }
     }
   }, [currentStep, transfer]);
@@ -2642,7 +2661,7 @@ const NewMultiModeContainer = ({
               <span className="text-[#2AAAFF] font-medium text-sm z-10 sm:pr-3">
                 {transfer[currentStep - 1]?.source?.city_name}
               </span>
- 
+
               <div className="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 flex justify-center items-center pointer-events-none">
                 <div className="border-t border-dotted border-gray-400 w-[50%] mx-8"></div>
               </div>
@@ -2799,6 +2818,8 @@ const NewMultiModeContainer = ({
                   }
 
                   const currentTransferData = getCurrentTransferData(option);
+
+                  
 
                   if (
                     currentTransferData.prices &&
@@ -2992,7 +3013,14 @@ const NewMultiModeContainer = ({
 
                                   <div className="flex gap-2 justify-between mt-3">
                                     <div className="font-semibold text-sm md:text-base">
-                                      {currency} {price} {`/-`} <span className="font-normal">for {pax?.adults + pax?.children + pax?.infants} people </span>
+                                      {currency} {price} {`/-`}{" "}
+                                      <span className="font-normal">
+                                        for{" "}
+                                        {pax?.adults +
+                                          pax?.children +
+                                          pax?.infants}{" "}
+                                        people{" "}
+                                      </span>
                                     </div>
                                     <div
                                       className="cursor-pointer"
@@ -3099,61 +3127,61 @@ const NewMultiModeContainer = ({
 
                 {/* Navigation buttons */}
                 <div className="sticky bottom-0 bg-white border-t z-10">
-    <div className="flex flex-col md:flex-row gap-2 md:gap-0 justify-between items-stretch md:items-center p-3 md:p-4">
-                  {currentStep > 1 ? (
-                    <button
-                      onClick={() => handleBackButton()}
-                      className="bg-gray-200 text-black px-4 md:px-6 py-2 rounded-md font-medium text-sm md:text-base"
-                    >
-                      Back
-                    </button>
-                  ) : (
-                    <div></div> // Empty div for spacing on mobile
-                  )}
+                  <div className="flex flex-col md:flex-row gap-2 md:gap-0 justify-between items-stretch md:items-center p-3 md:p-4">
+                    {currentStep > 1 ? (
+                      <button
+                        onClick={() => handleBackButton()}
+                        className="bg-gray-200 text-black px-4 md:px-6 py-2 rounded-md font-medium text-sm md:text-base"
+                      >
+                        Back
+                      </button>
+                    ) : (
+                      <div></div> // Empty div for spacing on mobile
+                    )}
 
-                  {currentStep < totalSteps ? (
-                    <button
-                      onClick={() => handleNextStep()}
-                      className={`px-6 md:px-8 py-2 rounded-md font-medium text-sm md:text-base w-full md:w-auto
+                    {currentStep < totalSteps ? (
+                      <button
+                        onClick={() => handleNextStep()}
+                        className={`px-6 md:px-8 py-2 rounded-md font-medium text-sm md:text-base w-full md:w-auto
                         ${
                           isCurrentModeSelected()
                             ? "bg-black text-white"
                             : "bg-gray-200 text-gray-500 cursor-not-allowed"
                         }`}
-                      disabled={!isCurrentModeSelected()}
-                    >
-                      Next
-                    </button>
-                  ) : (
-                    <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 w-full md:w-auto">
-                      <button
-                        onClick={handleUpdateTransfer}
-                        className={`px-6 md:px-8 py-2 rounded-md font-medium text-sm md:text-base w-full md:w-auto relative
+                        disabled={!isCurrentModeSelected()}
+                      >
+                        Next
+                      </button>
+                    ) : (
+                      <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 w-full md:w-auto">
+                        <button
+                          onClick={handleUpdateTransfer}
+                          className={`px-6 md:px-8 py-2 rounded-md font-medium text-sm md:text-base w-full md:w-auto relative
   ${
     Object.keys(selectedModeIds).length === totalSteps
       ? "bg-[#f8e000] text-black"
       : "bg-yellow-100 text-black-500 cursor-not-allowed"
   }`}
-                        disabled={
-                          Object.keys(selectedModeIds).length !== totalSteps ||
-                          updateLoading
-                        }
-                      >
-                        <div className="flex items-center justify-center min-w-[140px]">
-                          {updateLoading ? (
-                            <PulseLoader
-                              size={15}
-                              speedMultiplier={0.6}
-                              color="#FFFFFF"
-                            />
-                          ) : (
-                            "Update Transfer"
-                          )}
-                        </div>
-                      </button>
-                    </div>
-                  )}
-                </div>
+                          disabled={
+                            Object.keys(selectedModeIds).length !==
+                              totalSteps || updateLoading
+                          }
+                        >
+                          <div className="flex items-center justify-center min-w-[140px]">
+                            {updateLoading ? (
+                              <PulseLoader
+                                size={15}
+                                speedMultiplier={0.6}
+                                color="#FFFFFF"
+                              />
+                            ) : (
+                              "Update Transfer"
+                            )}
+                          </div>
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
@@ -4176,7 +4204,7 @@ const OtherTransfer = ({
 
     const transferKey = `${transferData.id}-${currentStep}`;
     setLoadingTransfers((prev) => ({ ...prev, [transferKey]: true }));
-    setError(null); // Clear previous errors
+    setError(null); 
 
     try {
       const requestBody = {
@@ -4196,7 +4224,7 @@ const OtherTransfer = ({
       const data = response.data;
 
       if (data.success && data.data) {
-        // Store the trace_id for later use
+        
         setTraceId(data.trace_id);
 
         // Update the dynamic transfer data
@@ -4232,10 +4260,7 @@ const OtherTransfer = ({
         error?.message ||
         "Failed to load transfer options";
       setError(errorMsg);
-      // Don't clear otherTransfer here - keep previous data visible
-      // setOtherTransfer(null);
-
-      // Clear dynamic transfer data for this key on error
+  
       setDynamicTransferData((prev) => {
         const newData = { ...prev };
         delete newData[transferKey];
@@ -4843,13 +4868,13 @@ const OtherTransfer = ({
                   )}
                 </div>
               </div>
-              <div className="flex flex-col md:flex-col gap-2 items-end md:items-end justify-between">
-                <div className="text-md font-bold">
+              <div className="flex flex-row md:flex-col mt-2 gap-2 justify-between">
+                <div className="text-md font-bold flex flex-col">
                   <span
                     className="!font-[lexend]"
                     style={{ fontFamily: "Lexend" }}
                   >
-                    {currency} {price} {`/-`}
+                    {currency} {price} {`/-`} <span className="font-normal"> for {pax?.adults + pax?.children + pax?.infants} people</span>
                   </span>
                 </div>
 
@@ -4886,12 +4911,12 @@ const OtherTransfer = ({
                   ) : isOptionSelected && isResultSelected ? (
                     <div className="flex items-center gap-1">
                       <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
-                      <span className="text-sm">Selected</span>
+                      <span className="text-sm"></span>
                     </div>
                   ) : (
                     <div className="flex items-center gap-1">
                       <ImCheckboxUnchecked className="h-4 w-4 md:h-5 md:w-5" />
-                      <span className="text-sm">Select</span>
+                      <span className="text-sm"></span>
                     </div>
                   )}
                 </div>
