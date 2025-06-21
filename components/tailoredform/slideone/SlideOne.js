@@ -88,7 +88,7 @@ const SlideOne = (props) => {
             </div>
           ) : (
             <>
-              <div onClick={() => props.setFlexible(!props.flexible)}>
+              {/* <div onClick={() => props.setFlexible(!props.flexible)}>
                 <div
                   className="center-div"
                   style={{
@@ -107,14 +107,14 @@ const SlideOne = (props) => {
                 >
                   {props.flexible ? <BsCheck></BsCheck> : null}
                 </div>
-              </div>
-              <div
+              </div> */}
+              {/* <div
                 onClick={() => props.setFlexible(!props.flexible)}
                 className="font-lexend"
                 style={{ fontSize: "0.8rem" }}
               >
                 Not sure? Let us decide best time for your trip.
-              </div>
+              </div> */}
             </>
           )}
         </div>

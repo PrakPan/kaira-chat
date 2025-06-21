@@ -1,21 +1,25 @@
 import React, { useState, useEffect } from "react";
-import RoomType from "./roomtype/Index";
-import { dateFormat } from "../../../../helper/DateUtils";
 
+import { dateFormat } from "../../../../helper/DateUtils";
+import RoomType from "./roomtype/Index";
 
 const Rooms = (props) => {
   const [rooms, setRooms] = useState(null);
   const [selectedRecommendation, setSelectedRecommendation] = useState(null);
+  
   const handleUpdateBooking = (index) => {
-    const rates = props.data[index].rates.map(rate => {
-      return {
+    const recommendation = props.data[index];
+    const rates = recommendation.rates.map(rate => {
+      return rate.rooms.map(room => ({
         rate_id: rate.id,
-        room_id: rate.rooms[0].id,
-        adults: rate.rooms[0].number_of_adults,
-        child_ages: []
-      }
-    })
-    props.updateBooking(props.data[index].id, rates)
+        room_id: room.id,
+        adults: room.number_of_adults,
+        children: room.number_of_children,
+        child_ages: room.child_ages || []
+      }));
+    }).flat(); 
+    
+    props.updateBooking(recommendation.id, rates)
   }
 
   useEffect(() => {
@@ -25,31 +29,35 @@ const Rooms = (props) => {
         if (props.data[i]?.total_rate) {
           rooms_arr.push(
             <RoomType
-            currentBooking={props?.currentBooking}
+              currentBooking={props?.currentBooking}
               key={i}
               index={i}
               price={props.data[i].total_rate}
-              data={props.data[i].rates[0]}
-              rooms={getRooms(props.data[i].rates)}
+              data={props.data[i]} 
+              rates={props.data[i].rates} 
+              rooms={getRooms(props.data[i].rates)} 
               handleUpdateBooking={handleUpdateBooking}
-              selectedRecommendation={selectedRecommendation && selectedRecommendation === i}
+              recommendationId={props.data[i].id} 
+              isSelected={selectedRecommendation === i}
               setSelectedRecommendation={setSelectedRecommendation}
               checkInDate={dateFormat(props.checkInDate)}
               city={props.city}
               duration={props?.duration}
-            ></RoomType>
+            />
           );
         }
       }
       setRooms(rooms_arr);
     }
-  }, []);
+  }, [props.data, selectedRecommendation]); // Added dependencies
 
   const getRooms = (rates) => {
-    if (rates) {
+    if (rates && Array.isArray(rates)) {
       let rooms = [];
       for (const rate of rates) {
-        rooms.push(...rate?.rooms)
+        if (rate?.rooms && Array.isArray(rate.rooms)) {
+          rooms.push(...rate.rooms);
+        }
       }
       return rooms;
     }
