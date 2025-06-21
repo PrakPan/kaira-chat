@@ -15,7 +15,8 @@ const ImageContainer = styled.div`
 
 const RoomType = (props) => {
   let isPageWide = media("(min-width: 768px)");
-  const [open, setOpen] = useState(false);
+ 
+  const [openRooms, setOpenRooms] = useState({});
 
   const getRoomImage = (images) => {
     if (images && images.length) {
@@ -25,38 +26,48 @@ const RoomType = (props) => {
         }
       }
     }
-
     return null;
   };
 
+  const getRoomsByRate = () => {
+    if (!props.rates || !Array.isArray(props.rates)) return [];
+    
+    return props.rates.map((rate, rateIndex) => ({
+      rate,
+      rateIndex,
+      rooms: rate.rooms || []
+    }));
+  };
+
+  
+  const toggleRoomDetails = (rateIndex, roomIndex) => {
+    const roomKey = `${rateIndex}-${roomIndex}`;
+    setOpenRooms(prev => ({
+      ...prev,
+      [roomKey]: !prev[roomKey]
+    }));
+  };
+
+
+  const isRoomOpen = (rateIndex, roomIndex) => {
+    const roomKey = `${rateIndex}-${roomIndex}`;
+    return openRooms[roomKey] || false;
+  };
+
+  const roomsByRate = getRoomsByRate();
+
   return (
-    <div className="bg-[#F4F4F4] flex flex-col gap-3 p-3 rounded-lg cursor-pointer">
+    <div className={`bg-[#F4F4F4] flex flex-col gap-3 p-3 rounded-lg cursor-pointer ${props.isSelected ? 'border-2 border-blue-500' : ''}`}>
       <div className="flex flex-col gap-1">
         <div className="flex flex-row items-center h-fit gap-2">
           <div className="text-md md:text-lg font-bold">
             Recommendation {props.index + 1}
           </div>
-          {/* {props.rooms.length > 1 && (
-            <div className="text-blue">
-              {open ? (
-                <div
-                  className="flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer"
-                  onClick={() => setOpen((prev) => !prev)}
-                >
-                  <div>Hide details</div>
-                  <IoIosArrowUp className="text-xl" />
-                </div>
-              ) : (
-                <div
-                  className="flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer"
-                  onClick={() => setOpen((prev) => !prev)}
-                >
-                  <div>See details</div>
-                  <IoIosArrowDown className="text-xl" />
-                </div>
-              )}
+          {props.isSelected && (
+            <div className="bg-blue-500 text-white px-2 py-1 rounded text-xs">
+              Selected
             </div>
-          )} */}
+          )}
         </div>
 
         <div className="flex flex-row items-center justify-between">
@@ -79,171 +90,184 @@ const RoomType = (props) => {
         </div>
       </div>
 
-      {props.rooms.map((room, index) => (
-        <div
-          key={index}
-          className="flex flex-col gap-3 bg-white p-2 rounded-lg"
-        >
-          <div className="flex flex-row gap-3">
-            {getRoomImage(room?.images) && (
-              <ImageContainer>
-                <ImageLoader
-                  noLazy
-                  height={isPageWide ? "85px" : "75px"}
-                  width={isPageWide ? "85px" : "75px"}
-                  borderRadius="10px"
-                  dimensions={{ height: 200, width: 200 }}
-                  url={getRoomImage(room?.images)}
-                />
-              </ImageContainer>
-            )}
-
-            <div className="w-full">
-              {room.name ? (
-                <div className="w-full text-[14px] font-[400] md:text-lg md:font-semibold">
-                  {room.name}{" "}
-                  <span>
-                    <RxCross2 className="inline" /> 1 room
-                  </span>
-                </div>
-              ) : null}
-
-              {room?.number_of_adults && room?.number_of_adults !== "0" ? (
-                <div className="flex flex-col md:flex-row gap-1 items-start md:items-center">
-                  <div className="flex flex-row gap-2">
-                    <div className="text-md font-semibold">Sleeps</div>
-                    <div>
-                      {room.number_of_adults > 1
-                        ? `${room.number_of_adults} Adults`
-                        : `${room.number_of_adults} Adult`}
-                      {room?.number_of_children &&
-                      room?.number_of_children !== "0"
-                        ? `, ${room.number_of_children} Children`
-                        : null}
-                    </div>
-                  </div>
-                  {props?.data?.board_basis && (
-                    <p className="bg-[#e6f9ec] text-[#3BAF75] px-2 py-2 mb-0 rounded-md text-xs font-medium">
-                      {props?.data?.board_basis?.description}
-                    </p>
-                  )}
-                </div>
-              ) : null}
-
-              {props.rooms.length === 1 && (
-                <div className="text-blue">
-                  {open ? (
-                    <div
-                      className="w-fit flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer"
-                      onClick={() => setOpen((prev) => !prev)}
-                    >
-                      <div>Hide details</div>
-                      <IoIosArrowUp className="text-xl" />
-                    </div>
-                  ) : (
-                    <div
-                      className="w-fit flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer"
-                      onClick={() => setOpen((prev) => !prev)}
-                    >
-                      <div>See details</div>
-                      <IoIosArrowDown className="text-xl" />
-                    </div>
-                  )}
-                </div>
-              )}
+      {roomsByRate.map(({ rate, rateIndex, rooms }) => (
+        <div key={rateIndex} className="flex flex-col gap-2">
+          
+          {roomsByRate.length > 1 && (
+            <div className="text-sm font-semibold text-gray-600 px-2">
+              Rate Option {rateIndex + 1}: ₹{getIndianPrice(Math.round(rate.final_rate))}
+              {rate.refundable ? ' (Refundable)' : ' (Non-Refundable)'}
             </div>
-          </div>
+          )}
+          
+          {rooms.map((room, roomIndex) => {
+            const isCurrentRoomOpen = isRoomOpen(rateIndex, roomIndex);
+            
+            return (
+              <div
+                key={`${rateIndex}-${roomIndex}`}
+                className="flex flex-col gap-3 bg-white p-2 rounded-lg"
+              >
+                <div className="flex flex-row gap-3">
+                  {getRoomImage(room?.images) && (
+                    <ImageContainer>
+                      <ImageLoader
+                        noLazy
+                        height={isPageWide ? "85px" : "75px"}
+                        width={isPageWide ? "85px" : "75px"}
+                        borderRadius="10px"
+                        dimensions={{ height: 200, width: 200 }}
+                        url={getRoomImage(room?.images)}
+                      />
+                    </ImageContainer>
+                  )}
 
-          {open && (
-            <div className="flex flex-col gap-3">
-              {props.rooms.map((room, index) => (
-                <div key={index} className="flex flex-col gap-3">
-                  <div
-                    key={index}
-                    className={`flex flex-col md:flex-row gap-1 ${
-                      room?.description && room?.images?.length > 0
-                        ? "justify-center"
-                        : room?.images?.length > 0
-                        ? "justify-end"
-                        : ""
-                    }`}
-                  >
-                    <div className="flex justify-start w-full">
-                      {room?.description ? (
+                  <div className="w-full">
+                    {room.name ? (
+                      <div className="w-full text-[14px] font-[400] md:text-lg md:font-semibold">
+                        {room.name}{" "}
+                        <span>
+                          <RxCross2 className="inline" /> 1 room
+                        </span>
+                      </div>
+                    ) : null}
+
+                    {room?.number_of_adults && room?.number_of_adults !== "0" ? (
+                      <div className="flex flex-col md:flex-row gap-1 items-start md:items-center">
+                        <div className="flex flex-row gap-2">
+                          <div className="text-md font-semibold">Sleeps</div>
+                          <div>
+                            {room.number_of_adults > 1
+                              ? `${room.number_of_adults} Adults`
+                              : `${room.number_of_adults} Adult`}
+                            {room?.number_of_children &&
+                            room?.number_of_children !== "0"
+                              ? `, ${room.number_of_children} Children`
+                              : null}
+                            {/* {room?.child_ages && room.child_ages.length > 0 && (
+                              <span className="text-xs text-gray-500">
+                                {" "}(Ages: {room.child_ages.join(", ")})
+                              </span>
+                            )} */}
+                          </div>
+                        </div>
+                        {rate?.board_basis && (
+                          <p className="bg-[#e6f9ec] text-[#3BAF75] px-2 py-2 mb-0 rounded-md text-xs font-medium">
+                            {rate.board_basis.description}
+                          </p>
+                        )}
+                      </div>
+                    ) : null}
+
+                  
+                    <div className="text-blue">
+                      {isCurrentRoomOpen ? (
                         <div
-                          dangerouslySetInnerHTML={{
-                            __html: room.description,
-                          }}
-                          className=""
-                        ></div>
-                      ) : null}
-                    </div>
-                    <div className="flex md:justify-end w-full">
-                      {room?.images?.length > 0 && (
-                        <div className="flex flex-col items-center justify-center gap-3 w-[100%] md:w-[80%] h-[250px]">
-                          <ImageCarousel images={room?.images} />
+                          className="w-fit flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer"
+                          onClick={() => toggleRoomDetails(rateIndex, roomIndex)}
+                        >
+                          <div>Hide details</div>
+                          <IoIosArrowUp className="text-xl" />
+                        </div>
+                      ) : (
+                        <div
+                          className="w-fit flex flex-row items-center gap-1 hover:bg-black hover:text-white p-1 rounded-lg cursor-pointer"
+                          onClick={() => toggleRoomDetails(rateIndex, roomIndex)}
+                        >
+                          <div>See details</div>
+                          <IoIosArrowDown className="text-xl" />
                         </div>
                       )}
                     </div>
                   </div>
+                </div>
 
-                  {room?.facilities?.length > 0 ? (
-                    <div className="flex flex-col gap-2">
-                      <div className="text-lg font-semibold">
-                        Room Amenities
+                
+                {isCurrentRoomOpen && (
+                  <div className="flex flex-col gap-3">
+                    <div
+                      className={`flex flex-col md:flex-row gap-1 ${
+                        room?.description && room?.images?.length > 0
+                          ? "justify-center"
+                          : room?.images?.length > 0
+                          ? "justify-end"
+                          : ""
+                      }`}
+                    >
+                      <div className="flex justify-start w-full">
+                        {room?.description ? (
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html: room.description,
+                            }}
+                            className=""
+                          ></div>
+                        ) : null}
                       </div>
-                      <div className="text-[14px]">
-                        <div className="flex flex-wrap gap-2">
-                          {room.facilities.map((item, index) => (
-                            <div key={index}>
-                              <div className="bg-[#FAFAFA] p-[8px] rounded-[10px]">
-                                {item}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
+                      <div className="flex md:justify-end w-full">
+                        {room?.images?.length > 0 && (
+                          <div className="flex flex-col items-center justify-center gap-3 w-[100%] md:w-[80%] h-[250px]">
+                            <ImageCarousel images={room?.images} />
+                          </div>
+                        )}
                       </div>
                     </div>
-                  ) : null}
-                </div>
-              ))}
-            </div>
-          )}
+
+                    {room?.facilities?.length > 0 ? (
+                      <div className="flex flex-col gap-2">
+                        <div className="text-lg font-semibold">
+                          Room Amenities
+                        </div>
+                        <div className="text-[14px]">
+                          <div className="flex flex-wrap gap-2">
+                            {room.facilities.map((item, index) => (
+                              <div key={index}>
+                                <div className="bg-[#FAFAFA] p-[8px] rounded-[10px]">
+                                  {item}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {roomsByRate[rateIndex]?.rate?.polices && roomsByRate[rateIndex].rate.polices.length > 0 ? (
+                      <>
+                        <div className="text-lg font-bold">Policies</div>
+                        {roomsByRate[rateIndex].rate.polices.map((item, index) => (
+                          <div key={index} className="flex flex-col gap-2">
+                            <div className="text-lg font-semibold">{item.type}</div>
+                            <div
+                              className="text-[14px]"
+                              dangerouslySetInnerHTML={{
+                                __html: item.text,
+                              }}
+                            ></div>
+                          </div>
+                        ))}
+                      </>
+                    ) : null}
+
+                    
+                    {rate?.cancellation_policies && (
+                      <div className="flex flex-col gap-2">
+                        <div className="text-lg font-bold">Cancellation Policy</div>
+                        <div
+                          className="text-[14px]"
+                          dangerouslySetInnerHTML={{
+                            __html: rate.cancellation_policies,
+                          }}
+                        ></div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       ))}
-
-      {open && (
-        <div className="flex flex-col gap-3">
-          {props.data?.polices && props?.data?.polices?.length > 0 ? (
-            <>
-              <div className="text-lg font-bold">Policies</div>
-              {props.data.polices.map((item, index) => (
-                <div className="flex flex-col gap-2">
-                  <div className="text-lg font-semibold">{item.type}</div>
-                  <div
-                    className="text-[14px]"
-                    dangerouslySetInnerHTML={{
-                      __html: item.text,
-                    }}
-                  ></div>
-                </div>
-              ))}
-            </>
-          ) : null}
-        </div>
-      )}
-
-      {props?.data?.cancellation_policies && (
-        <>
-
-          <div
-            className="text-[14px]"
-            dangerouslySetInnerHTML={{
-              __html: props?.data?.cancellation_policies,
-            }}
-          ></div>
-        </>
-      )}
     </div>
   );
 };
