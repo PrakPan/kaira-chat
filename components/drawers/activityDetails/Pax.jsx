@@ -83,7 +83,7 @@ export const Pax = ({ pax, setPax, combo }) => {
   }, [showPaxMobile]);
 
   return (
-    <div className={`relative w-fit h-fit flex flex-row items-center gap-2 rounded-lg cursor-pointer z-[10]`}>
+    <div className={`relative w-fit h-fit flex flex-row items-center gap-2 rounded-lg cursor-pointer ${combo ?'' :`z-[10]` }`}>
       <div
         onClick={() => {
           setShowPax((prev) => !prev);

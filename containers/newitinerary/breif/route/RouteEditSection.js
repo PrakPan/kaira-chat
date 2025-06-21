@@ -604,116 +604,115 @@ const RouteEditSection = (props) => {
 
   return (
     <>
-    <div
-      onClick={(e) => handleOutsideClick(e)}
-      className="fixed inset-0 flex flex-col items-center bg-white z-[1025]"
-    >
-      {/* {loading && <Loader />} */}
-      <Header
-        setEdit={props.setEdit}
-        title={props?.itinerary.name}
-        group_type={props?.group_type || props?.itinerary?.group_type}
-        duration_time={props?.duration_time || props?.itinerary?.duration}
-        travellerType={props?.travellerType}
-        start_date={
-          props?.plan ? props?.plan.start_date : props?.itinerary?.start_date
-        }
-        end_date={
-          props?.plan ? props?.plan.end_date : props?.itinerary?.end_date
-        }
-        duration={
-          props?.plan
-            ? props?.plan.duration_number + " " + props?.plan.duration_unit
-            : props?.itinerary?.duration +
-              " " +
-              `${props?.itinerary?.duration > 1 ? "Nights" : "Night"}`
-        }
-        budget={props?.plan ? props?.plan?.budget : props?.itinerary?.budget}
-        number_of_adults={
-          props?.plan
-            ? props?.plan?.number_of_adults
-            : props?.itinerary?.number_of_adults
-        }
-        number_of_children={
-          props?.plan
-            ? props?.plan?.number_of_children
-            : props?.itinerary?.number_of_children
-        }
-        number_of_infants={
-          props?.plan
-            ? props?.plan?.number_of_infants
-            : props?.itinerary?.number_of_infants
-        }
-        setEditDestination={setEditDestination}
-      />
+      <div
+        onClick={(e) => handleOutsideClick(e)}
+        className="fixed inset-0 flex flex-col items-center bg-white z-[1025]"
+      >
+        {/* {loading && <Loader />} */}
+        <Header
+          setEdit={props.setEdit}
+          title={props?.itinerary.name}
+          group_type={props?.group_type || props?.itinerary?.group_type}
+          duration_time={props?.duration_time || props?.itinerary?.duration}
+          travellerType={props?.travellerType}
+          start_date={
+            props?.plan ? props?.plan.start_date : props?.itinerary?.start_date
+          }
+          end_date={
+            props?.plan ? props?.plan.end_date : props?.itinerary?.end_date
+          }
+          duration={
+            props?.plan
+              ? props?.plan.duration_number + " " + props?.plan.duration_unit
+              : props?.itinerary?.duration +
+                " " +
+                `${props?.itinerary?.duration > 1 ? "Nights" : "Night"}`
+          }
+          budget={props?.plan ? props?.plan?.budget : props?.itinerary?.budget}
+          number_of_adults={
+            props?.plan
+              ? props?.plan?.number_of_adults
+              : props?.itinerary?.number_of_adults
+          }
+          number_of_children={
+            props?.plan
+              ? props?.plan?.number_of_children
+              : props?.itinerary?.number_of_children
+          }
+          number_of_infants={
+            props?.plan
+              ? props?.plan?.number_of_infants
+              : props?.itinerary?.number_of_infants
+          }
+          setEditDestination={setEditDestination}
+        />
 
-      {itineraryLoading && <Spinner isEdit={true} />}
+        {itineraryLoading && <Spinner isEdit={true} />}
 
-      <div className="w-full h-fit md:w-[85%] lg:w-[85%] px-3 hide-scrollbar overflow-y-auto py-5">
-        {editDestination && !itineraryLoading ? (
-          <div className="w-full flex flex-row justify-center gap-5">
-            <EditDestinations
-              destinations={destinations}
-              setDestinations={setDestinations}
-              destinationRef={destinationRef}
-              startDate={startDate}
-              setEndDate={setEndDate}
-              setLocationsLatLong={props.setLocationsLatLong}
-              setDestinationChanges={setDestinationChanges}
+        <div className="w-full h-fit md:w-[85%] lg:w-[85%] px-3 hide-scrollbar overflow-y-auto py-5">
+          {editDestination && !itineraryLoading ? (
+            <div className="w-full flex flex-row justify-center gap-5">
+              <EditDestinations
+                destinations={destinations}
+                setDestinations={setDestinations}
+                destinationRef={destinationRef}
+                startDate={startDate}
+                setEndDate={setEndDate}
+                setLocationsLatLong={props.setLocationsLatLong}
+                setDestinationChanges={setDestinationChanges}
+              />
+              {isDesktop && (
+                <div className="sticky top-0 h-[50vh] w-[50%] flex flex-col gap-3 items-center">
+                  {props.children}
+
+                  {destinationChanges && (
+                    <div className="flex flex-row items-center gap-2">
+                      <FaInfoCircle className="text-2xl text-yellow-500" />
+                      <div className="text-sm">Changes to be saved</div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          ) : (
+            // <EditDates
+            //   destinations={destinations}
+            //   setDestinations={setDestinations}
+            //   startDate={startDate}
+            //   setStartDate={setStartDate}
+            //   endDate={endDate}
+            //   setEndDate={setEndDate}
+            //   isValidDates={isValidDates}
+            //   invalidDateError={invalidDateError}
+            // />
+            ""
+          )}
+        </div>
+
+        {!itineraryLoading && (
+          <ActionPanel
+            setEdit={props.setEdit}
+            editDestination={editDestination}
+            setEditDestination={setEditDestination}
+            handleSaveButton={handleSaveButton}
+            itineraryLoading={itineraryLoading}
+          />
+        )}
+
+        {!isDesktop && (
+          <FloatingView>
+            <TbArrowBack
+              style={{ height: "28px", width: "28px" }}
+              cursor={"pointer"}
+              onClick={
+                editDestination
+                  ? () => props.setEdit(false)
+                  : () => setEditDestination(true)
+              }
             />
-            {isDesktop && (
-              <div className="sticky top-0 h-[50vh] w-[50%] flex flex-col gap-3 items-center">
-                {props.children}
-
-                {destinationChanges && (
-                  <div className="flex flex-row items-center gap-2">
-                    <FaInfoCircle className="text-2xl text-yellow-500" />
-                    <div className="text-sm">Changes to be saved</div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        ) : (
-          // <EditDates
-          //   destinations={destinations}
-          //   setDestinations={setDestinations}
-          //   startDate={startDate}
-          //   setStartDate={setStartDate}
-          //   endDate={endDate}
-          //   setEndDate={setEndDate}
-          //   isValidDates={isValidDates}
-          //   invalidDateError={invalidDateError}
-          // />
-          ""
+          </FloatingView>
         )}
       </div>
-
-      {!itineraryLoading && (
-        <ActionPanel
-          setEdit={props.setEdit}
-          editDestination={editDestination}
-          setEditDestination={setEditDestination}
-          handleSaveButton={handleSaveButton}
-          itineraryLoading={itineraryLoading}
-        />
-      )}
-      
-      {!isDesktop && (
-        <FloatingView>
-          <TbArrowBack
-            style={{ height: "28px", width: "28px" }}
-            cursor={"pointer"}
-            onClick={
-              editDestination
-                ? () => props.setEdit(false)
-                : () => setEditDestination(true)
-            }
-          />
-        </FloatingView>
-      )}
-    </div>
-   
     </>
   );
 };
@@ -2229,6 +2228,8 @@ export const Month = ({ firstDay, days, startDate, endDate }) => {
 export const DatePicker = (props) => {
   const [focusedInput, setFocusedInput] = useState(false);
 
+  const { cities } = useSelector((state) => state.Itinerary);
+
   function handleFocus() {
     setFocusedInput(true);
   }
@@ -2239,6 +2240,61 @@ export const DatePicker = (props) => {
     }
     return moment().month(new Date(props.date).getMonth());
   };
+
+  const getMarkedDates = () => {
+    if (!cities || !Array.isArray(cities)) {
+      return [];
+    }
+
+    return cities
+      .filter((city) => city.start_date)
+      .map((city) => moment(city.start_date));
+  };
+
+  const isDayHighlighted = (day) => {
+    const markedDates = getMarkedDates();
+    return markedDates.some((markedDate) => markedDate.isSame(day, "day"));
+  };
+
+  useEffect(() => {
+    const style = document.createElement("style");
+    style.textContent = `
+
+
+
+/* Force calendar to stay in normal document flow */
+.SingleDatePicker_picker,
+.SingleDatePicker_picker__portal {
+  z-index: 15 !important;
+  transform: none !important;
+  top: 100% !important;
+  left: 0 !important;
+  right: auto !important;
+  bottom: auto !important;
+}
+
+/* Remove any full screen overlay */
+body > div[data-react-portal] {
+  display: none !important;
+}
+
+/* Target the portal container specifically */
+div[data-react-portal] .SingleDatePicker_picker {
+  position: fixed !important;
+  z-index: 15 !important;
+}
+
+/* Prevent body scroll lock */
+body.react-dates__block-scroll {
+  overflow: visible !important;
+}
+    `;
+    document.head.appendChild(style);
+
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
 
   return (
     <Container onClick={handleFocus} className="flex flex-col">
@@ -2257,7 +2313,6 @@ export const DatePicker = (props) => {
         focused={focusedInput}
         onFocusChange={({ focused }) => {
           setFocusedInput(false);
-
           if (focused) {
             logEvent({
               action: "Route Edit",
@@ -2275,10 +2330,13 @@ export const DatePicker = (props) => {
         placeholder={"DD/MM/YYYY"}
         numberOfMonths={1}
         displayFormat={"DD/MM/YYYY"}
-        isOutsideRange={() => false} // Allows all dates including past
+        isOutsideRange={() => false}
         enableOutsideDays={true}
-  
-       />
+        isDayHighlighted={isDayHighlighted}
+        renderMonthElement={({ month, onMonthSelect, onYearSelect }) => (
+          <div>{month.format("MMMM YYYY")}</div>
+        )}
+      />
       <CalenderIcons className="p-2 py-3">
         <Icon>
           <FaCalendarDays />

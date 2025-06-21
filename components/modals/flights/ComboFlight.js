@@ -35,8 +35,7 @@ import dayjs from "dayjs";
 //     overflow-y: scroll;
 // `;
 const GridContainer = styled.div`
-min-height: 65vh;
-max-height: 40vh;
+overflow: visible;
 overflow-x: hidden;
 
 @media screen and (min-width: 768px) {
@@ -75,7 +74,7 @@ const Floating = styled.div`
 `;
 
 const OptionsContainer = styled.div`
-  min-height: 40vh;
+  overflow: visible;
   width: 100%;
   position: relative;
 

@@ -14,3 +14,15 @@ export const getHumanTime = (time) => {
     return time.join(""); // return adjusted time or original string
   }
 };
+
+export const  formatToReadableTime = (dateStr) => {
+  const date = new Date(dateStr.replace(' ', 'T'));
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const hour12 = hours % 12 || 12;
+
+  return minutes === 0
+    ? `${hour12} ${ampm}`
+    : `${hour12.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+}

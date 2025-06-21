@@ -8,6 +8,7 @@ import ViewMoreButton from "../../../itinerary/daySummary/ViewMoreButton";
 import Details from "../../../../containers/itinerary/TransfersContainer/FlightDetail";
 import { getIndianPrice } from "../../../../services/getIndianPrice";
 import media from "../../../media";
+import { RiArrowDropDownLine } from "react-icons/ri";
 
 
 const Container = styled.div`
@@ -45,19 +46,20 @@ const Flight = (props) => {
   };
   return (
     <Container
-      className="relative border-b p-2 space-y-2 overflow-x-hidden"
+      className="relative border-b p-2 space-y-2 overflow-x-hidden "
       isSelected={props.isSelected}
     >
 
-      <div className="flex flex-row gap-1 justify-between md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-row gap-1 justify-between md:flex-row md:items-center md:justify-between mt-2 md:mt-0">
         <div className="flex flex-col md:flex-row items-center gap-2 justify-center">
+          
           <div className="flex gap-2">
           <LogoContainer data={props.data} width={32} height={32}/>
           <div className="text-sm font-semibold">
             {props.data?.segments?.[0]?.airline?.name} {isPageWide && <>| <span className="font-normal">{props.data?.segments?.[0]?.airline?.code}-{props.data?.segments?.[0]?.airline?.flight_number}</span></>}
           </div>
           </div>
-          {props.data?.is_refundable && isPageWide && <p className="bg-[#fdeeee] text-[#EF7D7D] px-2 py-1 mb-0 rounded-md text-xs font-medium">
+          {props.data?.is_refundable  && isPageWide && <p className="bg-[#fdeeee] text-[#EF7D7D] px-2 py-1 mb-0 rounded-md text-xs font-medium">
             Refundable
           </p>}
         </div>
@@ -65,27 +67,9 @@ const Flight = (props) => {
                   {props.data?.final_fare ? `₹${getIndianPrice(props.data?.final_fare)}/-` : null}
                   <span className = "font-normal text-sm">for {props?.pax?.adults + props?.pax?.children + props?.pax?.infants} people</span>
         </div>}
-        { !isPageWide ?
-          <PriceContainer
-          data={{
-            resultIndex: props.data?.result_index,
-            finalFare: props.data?.final_fare,
-            isRefundable: props.data?.is_refundable,
-            duration:
-              props.data?.segments[props.data?.segments?.length - 1]
-                ?.destination?.arrival_time,
-          }}
-          isSelected={props.isSelected}
-          selectedBooking={props.selectedBooking}
-          _updateBookingHandler={props._updateBookingHandler}
-          provider={props.provider}
-          onSelect={props?.onSelect}
-          trace_id={props?.trace_id}
-          onFlightSelect={props?.onFlightSelect}
-          edge={props?.edge}
-          booking_id={props?.booking_id}
-        /> : ''
-        }
+        {props.data?.is_refundable  && !isPageWide && <p className="bg-[#fdeeee] text-[#EF7D7D] px-2 py-1 mb-0 rounded-md text-xs font-medium h-fit">
+            Refundable
+          </p>}
       </div>
 
       <div className="flex flex-col w-full gap-1 md:flex-row md:items-center md:justify-between">
@@ -131,19 +115,48 @@ const Flight = (props) => {
 
         
       
-      <div className="flex justify-between items-center">
-        <div className="ml-0">
+      <div className="flex justify-between items-center mb-2 md:mb-0">
+        {isPageWide && <div className="ml-0">
           {!viewMore ? (
             <ViewMoreButton text="View Details" handler={handleView} />
           ) : (
             <ViewMoreButton text="Hide Details" handler={handleView} />
           )}
-        </div>
+        </div>}
 
-        {!isPageWide && <div className="text-lg font-bold flex flex-col mt-2">
-                  {props.data?.final_fare ? `₹${getIndianPrice(props.data?.final_fare)}/-` : null}
+       
+
+        {!isPageWide && <div className="text-lg font-bold flex flex-col mt-2 ">
+                  {props.data?.final_fare ? <div className="flex">{`₹${getIndianPrice(props.data?.final_fare)}/-`} <RiArrowDropDownLine
+                className={` text-2xl  mt-1 transition-all duration-100 ${
+                  viewMore ? "-rotate-180 " : "rotate-180 animate-bounce"
+                }`}
+                onClick={handleView}
+              ></RiArrowDropDownLine></div>: null}
                   <span className = "font-normal text-sm">for {props?.pax?.adults + props?.pax?.children + props?.pax?.infants} people</span>
         </div>}
+
+        {
+          !isPageWide && <PriceContainer
+          data={{
+            resultIndex: props.data?.result_index,
+            finalFare: props.data?.final_fare,
+            isRefundable: props.data?.is_refundable,
+            duration:
+              props.data?.segments[props.data?.segments?.length - 1]
+                ?.destination?.arrival_time,
+          }}
+          isSelected={props.isSelected}
+          selectedBooking={props.selectedBooking}
+          _updateBookingHandler={props._updateBookingHandler}
+          provider={props.provider}
+          onSelect={props?.onSelect}
+          trace_id={props?.trace_id}
+          onFlightSelect={props?.onFlightSelect}
+          edge={props?.edge}
+          booking_id={props?.booking_id}
+        /> 
+        }
       </div>
 
       {viewMore && (
