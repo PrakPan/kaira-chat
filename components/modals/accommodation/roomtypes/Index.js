@@ -23,7 +23,7 @@ const Rooms = (props) => {
     
     if (props.data) {
       for (var i = 0; i < props.data.length; i++) {
-        if (props.data[i]?.final_rate) {
+        // if (props.data[i]?.final_rate) {
           const currentRooms = getRooms(props.data[i]);
           
           rooms_arr.push(
@@ -47,7 +47,7 @@ const Rooms = (props) => {
           );
           
           roomCounter += currentRooms.length;
-        }
+        // }
       }
       setRooms(rooms_arr);
     }

@@ -48,7 +48,7 @@ const RoomType = (props) => {
               </div>
             </div>
 
-            <div className="flex flex-row items-center justify-between">
+            {/* <div className="flex flex-row items-center justify-between">
               <div className="text-xl md:text-2xl font-bold">
                 {"₹" + getIndianPrice(Math.round(props.data?.final_rate)) + "/-"}{" "}
                 <span className="font-normal text-sm">
@@ -58,7 +58,7 @@ const RoomType = (props) => {
                     : props?.duration + " Nights"}{" "}
                 </span>
               </div>
-            </div>
+            </div> */}
           </div>
 
           <div className="flex flex-col gap-3 bg-white p-2 rounded-lg">
