@@ -110,7 +110,6 @@ const ItineraryCity = (props) => {
     setLoading(false);
   };
   const handleStay = (e, label, value, clickType) => {
-    console.log("Props?.city", props?.city);
     e.stopPropagation();
     if (token)
       props?.handleClickAc(

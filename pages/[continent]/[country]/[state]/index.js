@@ -153,7 +153,6 @@ export async function getStaticProps(context) {
         err.message
       );
     });
-  console.log("length of locations:", locations.length);
 
   if (!data) {
     return {

@@ -3,9 +3,7 @@ import Drawer from "../../ui/Drawer";
 import POIDetails from "./POIDetails";
 import { useEffect } from "react";
 import axiosPOIdetailsInstance from "../../../services/poi/poidetails";
-import axiosPOIActivityInstance, {
-  activityDetail,
-} from "../../../services/poi/poiActivities";
+import { activityDetail } from "../../../services/poi/poiActivities";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
 import { useRouter } from "next/router";
@@ -15,6 +13,18 @@ import ActivityDetailsSkeleton from "../activityDetails/ActivityDetailsSkeleton"
 import useMediaQuery from "../../media";
 import { TbArrowBack } from "react-icons/tb";
 import styled from "styled-components";
+
+const OptionsContainer = styled.div`
+  min-height: 40vh;
+  overflow-x: hidden;
+  position: relative;
+
+  @media screen and (min-width: 768px) {
+    min-height: 80vh;
+    width: 95%;
+    margin: auto;
+  }
+`;
 
 const FloatingView = styled.div`
   position: sticky;
@@ -35,8 +45,9 @@ const FloatingView = styled.div`
 const POIDetailsDrawer = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [data, setData] = useState(props?.data || []);
-  const [activityData,setActivityData]=useState(null)
+  const [activityData, setActivityData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -56,9 +67,9 @@ const POIDetailsDrawer = (props) => {
           setData((prev) => ({
             ...prev,
             id: res?.data?.id,
-            cancellation_policies:res?.data?.cancellation_policies
+            cancellation_policies: res?.data?.cancellation_policies,
           }));
-          setActivityData(res?.data?.activity_data)
+          setActivityData(res?.data?.activity_data);
           setLoading(false);
         } else {
           const res = await axios.get(
@@ -165,7 +176,9 @@ const POIDetailsDrawer = (props) => {
           setLoading(false);
         }
       }
-    } catch (error) {}
+    } catch (err) {
+      setError(err?.response?.data?.errors?.[0]?.message?.[0] || err.message);
+    }
   };
 
   return (
@@ -180,53 +193,61 @@ const POIDetailsDrawer = (props) => {
       onHide={props.handleCloseDrawer}
     >
       {!loading ? (
-        <>
-          {props?.activityData?.type != "poi" ? (
-            <>
-              <ActivityDetails
-                version={props?.version}
-                itineraryDrawer={props.itineraryDrawer}
-                data={data}
-                handleCloseDrawer={props.handleCloseDrawer}
-                dayIndex={props?.dayIndex}
-                slabIndex={props?.slabIndex}
-                itinerary_city_id={props?.itinerary_city_id}
-                setShowLoginModal={props?.setShowLoginModal}
-                getPaymentHandler={props?.getPaymentHandler}
-                removeDelete={props?.removeDelete}
-                activityData={activityData}
-              >
-                {props?.children}
-              </ActivityDetails>
-            </>
-          ) : (
-            <>
-              <POIDetails
-                version={props?.version}
-                itineraryDrawer={props.itineraryDrawer}
-                data={data}
-                handleCloseDrawer={props.handleCloseDrawer}
-                dayIndex={props?.dayIndex}
-                slabIndex={props?.slabIndex}
-                itinerary_city_id={props?.itinerary_city_id}
-                cityID={props?.cityID}
-                setShowLoginModal={props?.setShowLoginModal}
-                getPaymentHandler={props?.getPaymentHandler}
-                removeDelete={props?.removeDelete}
-                date={props?.date}
-                name={props.name}
-                cityName={props?.cityName}
-                removeChange={props?.removeChange}
-              >
-                {props.children}
-              </POIDetails>
-            </>
-          )}
+        error == null ? (
+          <>
+            {props?.activityData?.type != "poi" ? (
+              <>
+                <ActivityDetails
+                  version={props?.version}
+                  itineraryDrawer={props.itineraryDrawer}
+                  data={data}
+                  handleCloseDrawer={props.handleCloseDrawer}
+                  dayIndex={props?.dayIndex}
+                  slabIndex={props?.slabIndex}
+                  itinerary_city_id={props?.itinerary_city_id}
+                  setShowLoginModal={props?.setShowLoginModal}
+                  getPaymentHandler={props?.getPaymentHandler}
+                  removeDelete={props?.removeDelete}
+                  activityData={activityData}
+                >
+                  {props?.children}
+                </ActivityDetails>
+              </>
+            ) : (
+              <>
+                <POIDetails
+                  version={props?.version}
+                  itineraryDrawer={props.itineraryDrawer}
+                  data={data}
+                  handleCloseDrawer={props.handleCloseDrawer}
+                  dayIndex={props?.dayIndex}
+                  slabIndex={props?.slabIndex}
+                  itinerary_city_id={props?.itinerary_city_id}
+                  cityID={props?.cityID}
+                  setShowLoginModal={props?.setShowLoginModal}
+                  getPaymentHandler={props?.getPaymentHandler}
+                  removeDelete={props?.removeDelete}
+                  date={props?.date}
+                  name={props.name}
+                  cityName={props?.cityName}
+                  removeChange={props?.removeChange}
+                >
+                  {props.children}
+                </POIDetails>
+              </>
+            )}
 
-          <div className="sticky z-50 bottom-4 w-full flex items-center justify-center">
-            {props.children}
+            <div className="sticky z-50 bottom-4 w-full flex items-center justify-center">
+              {props.children}
+            </div>
+          </>
+        ) : (
+          <div className="h-[100vh]">
+            <OptionsContainer className="px-2 center-div space-y-5">
+              {error}
+            </OptionsContainer>
           </div>
-        </>
+        )
       ) : (
         <>
           {props?.activityData?.type == "activity" ? (

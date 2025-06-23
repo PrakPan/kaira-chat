@@ -16,6 +16,8 @@ import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 import { TbArrowBack } from "react-icons/tb";
 import styled from "styled-components";
 import media from "../../media";
+import BackArrow from "../../ui/BackArrow";
+
 const FloatingView = styled.div`
   position: sticky;
   bottom: 100px;
@@ -33,6 +35,18 @@ const FloatingView = styled.div`
   cursor: pointer;
 `;
 
+const OptionsContainer = styled.div`
+  min-height: 40vh;
+  overflow-x: hidden;
+  position: relative;
+
+  @media screen and (min-width: 768px) {
+    min-height: 80vh;
+    width: 95%;
+    margin: auto;
+  }
+`;
+
 const ActivityDetailsDrawer = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
@@ -46,13 +60,15 @@ const ActivityDetailsDrawer = (props) => {
 
   const num_adults = props?.pax?.adults;
   const num_children = props?.pax?.children;
-  console;
   const [filterState, setFilterState] = useState({
     number_of_travelers: num_adults + num_children,
     traveler_ages: Array(num_adults).fill(null),
     children: num_children,
     adults: num_adults,
   });
+
+  const [error, setError] = useState(null);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -89,11 +105,7 @@ const ActivityDetailsDrawer = (props) => {
         setUpdateAmenities(false);
       })
       .catch((err) => {
-        setData({
-          name: props.name,
-          short_description: props.text,
-          image: props.image,
-        });
+        setError(err.response?.data?.errors[0]?.message[0]);
         setLoading(false);
         setUpdateAmenities(false);
       });
@@ -209,26 +221,39 @@ const ActivityDetailsDrawer = (props) => {
       className="font-lexend"
       onHide={props.handleCloseDrawer}
     >
-      {!loading ? (
-        <ActivityDetails
-          itineraryDrawer={props.itineraryDrawer}
-          data={data}
-          date={props.date}
-          handleCloseDrawer={props.handleCloseDrawer}
-          fetchData={fetchData}
-          updatedActivityBooking={updatedActivityBooking}
-          updateAmenities={updateAmenities}
-          filterState={filterState}
-          setFilterState={setFilterState}
-          setShowLoginModal={props?.setShowLoginModal}
-          itinerary_city_id={props?.itinerary_city_id}
-        />
+      {error == null ? (
+        <>
+          {!loading ? (
+            <ActivityDetails
+              itineraryDrawer={props.itineraryDrawer}
+              data={data}
+              date={props.date}
+              handleCloseDrawer={props.handleCloseDrawer}
+              fetchData={fetchData}
+              updatedActivityBooking={updatedActivityBooking}
+              updateAmenities={updateAmenities}
+              filterState={filterState}
+              setFilterState={setFilterState}
+              setShowLoginModal={props?.setShowLoginModal}
+              itinerary_city_id={props?.itinerary_city_id}
+            />
+          ) : (
+            <ActivityDetailsSkeleton
+              itineraryDrawer={props.itineraryDrawer}
+              name={props.name}
+              handleCloseDrawer={props.handleCloseDrawer}
+            />
+          )}
+        </>
       ) : (
-        <ActivityDetailsSkeleton
-          itineraryDrawer={props.itineraryDrawer}
-          name={props.name}
-          handleCloseDrawer={props.handleCloseDrawer}
-        />
+        <div className="h-[100vh] px-4">
+          <div className="z-1 flex flex-row items-center gap-2 pt-4 bg-white">
+            <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
+          </div>
+          <OptionsContainer className="px-2 center-div space-y-5">
+            {error}
+          </OptionsContainer>
+        </div>
       )}
 
       {!isPageWide && (

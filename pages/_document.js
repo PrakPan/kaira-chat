@@ -184,7 +184,7 @@ export default class MyDocument extends Document {
               margin-bottom: 60px;
               margin-right: 16px;
               height: calc(100% - 60px) !important;
-              min-height: calc(100% - 60px) !important;
+              min-height: auto !important;
               width: calc(100% - 20px) !important;
             }
         
