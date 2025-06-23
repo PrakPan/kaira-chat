@@ -4,11 +4,11 @@ const fs = require("fs");
 const path = require("path");
 
 const generateSitemap = async () => {
-  const BASE_URL = "https://dev.thetarzanway.com";
+  const BASE_URL = "https://dev.mercury.tarzanway.com";
 
   // Fetch continents list
   const continents = await axios.get(
-    `${BASE_URL}/page/list?page_type=Continent&fields=path`
+    `${BASE_URL}/api/v1/website/pages/?page_type=Continent&fields=path`
   );
   const continentsData = continents.data.data.pages;
   let continentsPaths = continentsData.map((object) => {

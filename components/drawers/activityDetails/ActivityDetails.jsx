@@ -382,19 +382,30 @@ export default function ActivityDetails(props) {
               <div className="flex flex-col gap-2">
                 {props.data.amenities.map((amenity, index) => (
                   <div>
-                  <Amenity
-                    key={index}
-                    index={index}
-                    amenity={amenity}
-                    handleAmenityChange={handleAmenityChange}
-                    travelers={props.filterState?.number_of_travelers}
-                  />
+                    <Amenity
+                      key={index}
+                      index={index}
+                      amenity={amenity}
+                      handleAmenityChange={handleAmenityChange}
+                      travelers={props.filterState?.number_of_travelers}
+                    />
                   </div>
                 ))}
               </div>
             </div>
           ) : null}
         </div>
+        {props?.data?.cancellation_policies && (
+        <>
+          <div className="text-[20px] font-semibold">Cancellation Policies</div>
+          <div
+            dangerouslySetInnerHTML={{
+              __html: props?.data?.cancellation_policies,
+            }}
+            className="flex flex-col gap-1 text-sm ml-4"
+          ></div>
+        </>
+      )}
       </div>
       <div
         className={`border-t-2 fixed bottom-0 right-0 left-0  gap-1 py-[12px] px-[20px] bg-white shadow-md z-50 
@@ -489,7 +500,9 @@ export const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
       </div>
 
       {amenity.price == 0 ? (
-        <div className=" text-md font-semibold  text-[#277004] ">Included for free</div>
+        <div className=" text-md font-semibold  text-[#277004] ">
+          Included for free
+        </div>
       ) : (
         <div className="flex items-center justify-between">
           <div className="font-semibold text-[24px]">
