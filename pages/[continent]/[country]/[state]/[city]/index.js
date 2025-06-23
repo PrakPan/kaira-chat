@@ -185,7 +185,7 @@ export async function getStaticProps(context){
     };
   }
 
-  console.log("data is:",data.name)
+  console.log("data :",data.name)
   return {
     props: {
       cityData: data,

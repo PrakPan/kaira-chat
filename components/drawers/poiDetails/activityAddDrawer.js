@@ -61,6 +61,18 @@ const GetInTouchContainer = styled.div`
   }
 `;
 
+const OptionsContainer = styled.div`
+  min-height: 40vh;
+  overflow-x: hidden;
+  position: relative;
+
+  @media screen and (min-width: 768px) {
+    min-height: 80vh;
+    width: 95%;
+    margin: auto;
+  }
+`;
+
 const items = [
   { id: 1, label: "Things To Do", link: "" },
   { id: 2, label: "Places To Visit", link: "" },
@@ -117,6 +129,9 @@ const ActivityAddDrawer = (props) => {
   const [height, setHeight] = useState(0);
 
   const [showSkeleton, setShowSkeleton] = useState(false);
+
+  const [error,setError]=useState(null)
+
   useEffect(() => {
     const updateHeight = () => setHeight(window.innerHeight);
     updateHeight(); // initial run
@@ -358,7 +373,7 @@ const ActivityAddDrawer = (props) => {
             setLoaded(true);
           });
       } catch (error) {
-        console.log("error in activity search:", error);
+        setError(error.response?.data?.errors[0]?.message[0])
       }
     } else {
       setLoadingPoi(true);
@@ -391,7 +406,7 @@ const ActivityAddDrawer = (props) => {
         console.log("next url is:", nextUrl);
         setOptions(result);
       } catch (error) {
-        console.log("loading poi error:", error);
+        setError(error.response?.data?.errors[0]?.message[0])
       }
       setLoadingPoi(false);
     }
@@ -536,7 +551,7 @@ const ActivityAddDrawer = (props) => {
       className={`font-lexend `}
       onHide={() => props.setShowDrawer(false)}
     >
-      <>
+      {error==null?<>
         <div
           className={`px-2  !font-[lexend] overflow-y-scroll`}
           style={{ height: `${height}px` }}
@@ -847,7 +862,13 @@ const ActivityAddDrawer = (props) => {
             })}
           </div>
         )}
-      </>
+      </>:
+       <div className="h-[100vh]">
+       <OptionsContainer className="px-2 center-div space-y-5">
+         {error}
+       </OptionsContainer>
+     </div>
+      }
 
       {!isDesktop && (
         <FloatingView>

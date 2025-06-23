@@ -13,7 +13,6 @@ import { connect } from "react-redux";
 import { getHumanTime } from "../../services/getHumanTime";
 
 const ActivitiesSummary = (props) => {
-  console.log("props are:", props);
   const [images, setImages] = useState(null);
   const [viewMoreDiscription, setViewMoreDiscription] = useState(null);
   const [showDrawer, setShowDrawer] = useState(false);
@@ -32,23 +31,6 @@ const ActivitiesSummary = (props) => {
       console.log("error is:", error);
     }
   };
-
-  function Addons(Shorthand) {
-    switch (Shorthand) {
-      case "EP":
-        return "Room Only";
-      case "CP":
-        return "Complementary Breakfast Included";
-      case "MAP":
-        return "Breakfast/Lunch Included";
-      case "AP":
-        return "All Meals Included";
-      case "TBO":
-        return null;
-      default:
-        return null;
-    }
-  }
 
   const starRating = (rating) => {
     var stars = [];

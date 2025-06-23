@@ -13,6 +13,7 @@ import PoiDetailsSkeleton from "./PoiDetailsSkelton";
 import { TbArrowBack } from "react-icons/tb";
 import useMediaQuery from "../../media";
 import styled from "styled-components";
+import BackArrow from "../../ui/BackArrow";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -30,6 +31,19 @@ const FloatingView = styled.div`
   z-index: 51;
   cursor: pointer;
 `;
+
+const OptionsContainer = styled.div`
+  min-height: 40vh;
+  overflow-x: hidden;
+  position: relative;
+
+  @media screen and (min-width: 768px) {
+    min-height: 80vh;
+    width: 95%;
+    margin: auto;
+  }
+`;
+
 const NewPoiDetailsDrawer = (props) => {
   const isDesktop = useMediaQuery("(min-width:767px)");
   const router = useRouter();
@@ -40,6 +54,8 @@ const NewPoiDetailsDrawer = (props) => {
   useEffect(() => {
     if (props.show) fetchData();
   }, [props.show]);
+
+  const [error, setError] = useState(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -53,6 +69,7 @@ const NewPoiDetailsDrawer = (props) => {
       }
       setLoading(false);
     } catch (error) {
+      setError(error.response?.data?.errors[0]?.message[0]);
       dispatch(
         openNotification({
           type: "error",
@@ -106,13 +123,15 @@ const NewPoiDetailsDrawer = (props) => {
     } catch (error) {
       console.log("error is:", error);
       const errorMsg =
-     error?.response?.data?.errors?.[0]?.message?.[0] || error.message || "Something went wrong! Please try after some time.";
+        error?.response?.data?.errors?.[0]?.message?.[0] ||
+        error.message ||
+        "Something went wrong! Please try after some time.";
       props.openNotification({
         type: "error",
         text: errorMsg,
         heading: "Error!",
       });
-      return 0
+      return 0;
     }
     return 1;
   };
@@ -129,25 +148,38 @@ const NewPoiDetailsDrawer = (props) => {
       onHide={props.handleCloseDrawer}
     >
       <ToastContainer />
-      {!loading ? (
-        <PoiDetails
-          itineraryDrawer={props.itineraryDrawer}
-          data={data}
-          date={props.date}
-          handleCloseDrawer={props.handleCloseDrawer}
-          fetchData={fetchData}
-          updatedActivityBooking={updatedActivityBooking}
-          itinerary_city_id={props?.itinerary_city_id}
-          dayIndex={props?.dayIndex}
-          setShowLoginModal={props.setShowLoginModal}
-          setShowDrawer={props?.setShowDrawer}
-        />
+      {error == null ? (
+        <>
+          {!loading ? (
+            <PoiDetails
+              itineraryDrawer={props.itineraryDrawer}
+              data={data}
+              date={props.date}
+              handleCloseDrawer={props.handleCloseDrawer}
+              fetchData={fetchData}
+              updatedActivityBooking={updatedActivityBooking}
+              itinerary_city_id={props?.itinerary_city_id}
+              dayIndex={props?.dayIndex}
+              setShowLoginModal={props.setShowLoginModal}
+              setShowDrawer={props?.setShowDrawer}
+            />
+          ) : (
+            <PoiDetailsSkeleton
+              itineraryDrawer={props.itineraryDrawer}
+              name={props.name}
+              handleCloseDrawer={props.handleCloseDrawer}
+            />
+          )}
+        </>
       ) : (
-        <PoiDetailsSkeleton
-          itineraryDrawer={props.itineraryDrawer}
-          name={props.name}
-          handleCloseDrawer={props.handleCloseDrawer}
-        />
+        <div className="h-[100vh] px-4">
+          <div className="z-1 flex flex-row items-center gap-2 pt-4 bg-white">
+            <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
+          </div>
+          <OptionsContainer className="px-2 center-div space-y-5">
+            {error}
+          </OptionsContainer>
+        </div>
       )}
       {!isDesktop && (
         <FloatingView>

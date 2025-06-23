@@ -111,7 +111,7 @@ const SlideTwo = (props) => {
         >
           <div>
             <div className="font-medium">Children</div>
-            <div className="text-xs text-gray-500">2-18 years</div>
+            <div className="text-xs text-gray-500">2-12 years</div>
           </div>
           <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
             <button
