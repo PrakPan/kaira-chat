@@ -148,7 +148,7 @@ const Enquiry = (props) => {
         input_id: initialInputId,
       },
     ];
-  } else if (routerquery.country) {
+  } else if (routerquery.country && !routerquery.city) {
     selectedObj = [
       {
         id: routerquery.page_id || props.page_id,
@@ -157,7 +157,17 @@ const Enquiry = (props) => {
         type: "Country",
       },
     ];
-  } else {
+  }else if(routerquery.city){
+      selectedObj = [
+      {
+        id: routerquery.page_id || props.page_id,
+        name: routerquery.destination || props.destination,
+        input_id: initialInputId,
+        type: "City",
+      },
+    ];
+  }
+   else {
     selectedObj = [
       {
         id: routerquery.page_id || props.page_id,
@@ -212,7 +222,8 @@ const Enquiry = (props) => {
             continentIds.push(selectedCities[i].id);
           else if(selectedCities[i].type == "City" || selectedCities[i].type == "Location"){
             cityids.push(selectedCities[i].id);
-          }else {
+          }
+          else {
             continentIds.push(selectedCities[i].id);
           }
           locations.push(selectedCities[i].name);
@@ -325,6 +336,8 @@ const Enquiry = (props) => {
   };
 
   const [selectedCities, setSelectedCities] = useState(selectedObj);
+
+  console.log("SSSS",selectedCities,routerquery);
 
   useEffect(() => {
     setShowPopup(popupObj);
