@@ -24,6 +24,11 @@ import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { FaPlaneDeparture } from "react-icons/fa";
 import VehicleDetailLoader from "../../../components/modals/daybyday/VehicleDetailLoader";
 import { TbArrowBack } from "react-icons/tb";
+import { PulseLoader } from "react-spinners";
+import Image from "next/image";
+import { Generalbuttonstyle } from "../../../components/ui/button/Generallinkbutton";
+import FlightDetailModal from "../../../components/modals/daybyday/FlightDetailModal";
+import { AiOutlineDown, AiOutlineRight } from "react-icons/ai";
 const FloatingView = styled.div`
   position: sticky;
   bottom: 60px;
@@ -251,6 +256,90 @@ const TransferBooking = ({
     }
   };
 
+  const [expandedIndexes, setExpandedIndexes] = useState([]);
+    useEffect(() => {
+      if (booking?.children?.length > 0) {
+        setExpandedIndexes([0]);
+      }
+    }, [booking?.children?.length]);
+  
+    const toggleExpand = (index) => {
+      if (expandedIndexes.includes(index)) {
+        setExpandedIndexes(expandedIndexes.filter((i) => i !== index));
+      } else {
+        setExpandedIndexes([...expandedIndexes, index]);
+      }
+    };
+
+   const renderDetailContent = (transferData, index) => {
+      const type = transferData?.booking_type;
+      const childTitle = `${index + 1}. ${
+        transferData.name || `${transferData.booking_type} Transfer`
+      }`;
+      const isExpanded = expandedIndexes.includes(index);
+  
+      const renderDetailsByType = () => {
+        if (loading) {
+          return <VehicleDetailLoader setHandleShow={null} />;
+        }
+  
+        switch (type) {
+          case "Flight":
+            return (
+              <FlightDetailModal
+                segments={transferData?.transfer_details?.items?.[0]?.segments}
+                fareRule={
+                  transferData?.transfer_details?.items?.[0]?.fare_rule?.[0]
+                }
+                booking_id={transferData?.id}
+                setShowDetails={null}
+                name={transferData?.name}
+                isEmbedded={true}
+                // setShowLoginModal={setShowLoginModal}
+              />
+            );
+          case "Taxi":
+            return (
+              <TaxiDetailModal
+                data={transferData}
+                setHandleShow={null}
+                handleDelete={null}
+                // loading={loading}
+                isEmbedded={true}
+                noHeading={true}
+              />
+            );
+          default:
+            return (
+              <VehicleDetailModal
+                data={transferData}
+                setHandleShow={null}
+                handleDelete={null}
+                // loading={loading}
+                isEmbedded={true}
+                // setShowDrawer={setShowDrawer}
+              />
+            );
+        }
+      };
+  
+      return (
+        <div key={`${transferData.id}-${index}`} className="mb-6">
+          <div
+            className="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-lg cursor-pointer"
+            onClick={() => toggleExpand(index)}
+          >
+            <h3 className="text-lg font-medium">{childTitle}</h3>
+            {isExpanded ? (
+              <AiOutlineDown className="text-gray-600" />
+            ) : (
+              <AiOutlineRight className="text-gray-600" />
+            )}
+          </div>
+          {isExpanded && <div className="mt-3">{renderDetailsByType()}</div>}
+        </div>
+      );
+    };
   console.log("Boooking", booking);
   return (
     <>
@@ -821,6 +910,7 @@ const TransferBooking = ({
           </div>
         )
       ) : (
+       
         <>
           {booking?.children?.map((book, index) => (
             <ComboContainer>
