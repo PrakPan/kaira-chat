@@ -2273,6 +2273,10 @@ export const DatePicker = (props) => {
   bottom: auto !important;
 }
 
+.DayPicker_weekHeader {
+      margin-top: 1rem !important;
+    }
+
 /* Remove any full screen overlay */
 body > div[data-react-portal] {
   display: none !important;
@@ -2333,9 +2337,25 @@ body.react-dates__block-scroll {
         isOutsideRange={() => false}
         enableOutsideDays={true}
         isDayHighlighted={isDayHighlighted}
-        renderMonthElement={({ month, onMonthSelect, onYearSelect }) => (
-          <div>{month.format("MMMM YYYY")}</div>
-        )}
+     renderMonthElement={({ month, onMonthSelect, onYearSelect }) => {
+  const currentMonthMarkedDates = getMarkedDates().filter(date => 
+    date.isSame(month, 'month')
+  );
+  
+  return (
+    <div className="w-full">
+      <div className="text-center mb-2">{month.format("MMMM YYYY")}</div>
+      {currentMonthMarkedDates.length > 0 && (
+        <div className="relative z-15 bg-yellow-50 border-l-2 border-yellow-400 px-2 py-1 mx-1 mb-2">
+          <div className="flex items-center gap-1 text-xs text-gray-700">
+            <div className="w-1.5 h-1.5 bg-[#ffe8bc] rounded-sm flex-shrink-0"></div>
+            <span className="text-[10px] leading-tight">Check-in dates</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}}
       />
       <CalenderIcons className="p-2 py-3">
         <Icon>
