@@ -127,11 +127,11 @@ const Flight = (props) => {
        
 
         {!isPageWide && <div className="text-lg font-bold flex flex-col mt-2 ">
-                  {props.data?.final_fare ? <div className="flex">{`₹${getIndianPrice(props.data?.final_fare)}/-`} <RiArrowDropDownLine
+                  {props.data?.final_fare ? <div className="flex" onClick={handleView}>{`₹${getIndianPrice(props.data?.final_fare)}/-`} <RiArrowDropDownLine
                 className={` text-2xl  mt-1 transition-all duration-100 ${
                   viewMore ? "-rotate-180 " : "rotate-180 animate-bounce"
                 }`}
-                onClick={handleView}
+                
               ></RiArrowDropDownLine></div>: null}
                   <span className = "font-normal text-sm">for {props?.pax?.adults + props?.pax?.children + props?.pax?.infants} people</span>
         </div>}
