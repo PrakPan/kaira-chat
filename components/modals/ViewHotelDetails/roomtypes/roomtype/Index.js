@@ -29,6 +29,17 @@ const RoomType = (props) => {
     return null;
   };
 
+const pax = props?.rates?.reduce((total, rate) => {
+  const roomTotal = rate?.rooms?.reduce((roomSum, room) => {
+    const adults = Number(room?.number_of_adults) || 0;
+    const children = Number(room?.number_of_children) || 0;
+    return roomSum + adults + children;
+  }, 0);
+  return total + roomTotal;
+}, 0);
+
+
+
   const getRoomsByRate = () => {
     if (!props.rates || !Array.isArray(props.rates)) return [];
     
@@ -72,7 +83,7 @@ const RoomType = (props) => {
 
         <div className="flex flex-row items-center justify-between">
           <div className="text-xl md:text-2xl font-bold">
-            {"₹" + getIndianPrice(Math.round(props.price)) + "/-"}
+            {"₹" + getIndianPrice(Math.round(props.price)) + "/-"} <span className="font-normal text-sm">for {pax} people</span> 
           </div>
 
           <div className="flex flex-col gap-1 items-end">
@@ -94,9 +105,9 @@ const RoomType = (props) => {
         <div key={rateIndex} className="flex flex-col gap-2">
           
           {roomsByRate.length > 1 && (
-            <div className="text-sm font-semibold text-gray-600 px-2">
-              Rate Option {rateIndex + 1}: ₹{getIndianPrice(Math.round(rate.final_rate))}
-              {rate.refundable ? ' (Refundable)' : ' (Non-Refundable)'}
+            <div className="text-sm font-semibold text-black px-2">
+              ₹{getIndianPrice(Math.round(rate.final_rate))}
+              <span className="text-[#ef7d7d]">{rate.refundable ? ' Refundable' : ' Non-Refundable'}</span>
             </div>
           )}
           

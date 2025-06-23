@@ -4837,7 +4837,7 @@ const OtherTransfer = ({
           return (
             <div
               key={`${otherTransfer.id}-price-${priceIndex}`}
-              className={`flex w-full flex-col md:flex-row justify-between bg-white p-3 md:p-4 border-b
+              className={`flex w-full flex-col  justify-between bg-white p-3 md:p-4 border-b
                 ${isOptionSelected ? "border-blue-500 bg-blue-50" : ""}`}
             >
               <div className="flex gap-2 md:gap-3 mb-2 md:mb-0">
