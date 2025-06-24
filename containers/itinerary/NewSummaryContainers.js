@@ -17,7 +17,7 @@ const SummaryContainer = styled.div`
   @media screen and (min-width: 768px) {
     margin-top: 2rem;
     width: 27vw;
-    position: sticky;
+    position: sticky !important;
     top: 11vh;
 
   }

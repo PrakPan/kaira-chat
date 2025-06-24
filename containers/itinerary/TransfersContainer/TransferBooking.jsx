@@ -29,6 +29,7 @@ import Image from "next/image";
 import { Generalbuttonstyle } from "../../../components/ui/button/Generallinkbutton";
 import FlightDetailModal from "../../../components/modals/daybyday/FlightDetailModal";
 import { AiOutlineDown, AiOutlineRight } from "react-icons/ai";
+import TransferDrawer from "../TransferDrawer";
 const FloatingView = styled.div`
   position: sticky;
   bottom: 60px;
@@ -174,6 +175,7 @@ const TransferBooking = ({
   const [showDrawer, setShowDrawer] = useState(false);
   const [showVehicleDrawer, setShowVehicleDrawer] = useState(false);
   const [vehicleDetails, setVehicleDetails] = useState(null);
+  const [handleShow,setHandleShow]= useState(false);
   const { itinerary_status, transfers_status, pricing_status } = useSelector(
     (state) => state.ItineraryStatus
   );
@@ -202,7 +204,7 @@ const TransferBooking = ({
       );
 
       setVehicleDetails(res?.data);
-      setShowVehicleDrawer(true);
+      setHandleShow(true);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -256,90 +258,8 @@ const TransferBooking = ({
     }
   };
 
-  const [expandedIndexes, setExpandedIndexes] = useState([]);
-    useEffect(() => {
-      if (booking?.children?.length > 0) {
-        setExpandedIndexes([0]);
-      }
-    }, [booking?.children?.length]);
-  
-    const toggleExpand = (index) => {
-      if (expandedIndexes.includes(index)) {
-        setExpandedIndexes(expandedIndexes.filter((i) => i !== index));
-      } else {
-        setExpandedIndexes([...expandedIndexes, index]);
-      }
-    };
 
-   const renderDetailContent = (transferData, index) => {
-      const type = transferData?.booking_type;
-      const childTitle = `${index + 1}. ${
-        transferData.name || `${transferData.booking_type} Transfer`
-      }`;
-      const isExpanded = expandedIndexes.includes(index);
-  
-      const renderDetailsByType = () => {
-        if (loading) {
-          return <VehicleDetailLoader setHandleShow={null} />;
-        }
-  
-        switch (type) {
-          case "Flight":
-            return (
-              <FlightDetailModal
-                segments={transferData?.transfer_details?.items?.[0]?.segments}
-                fareRule={
-                  transferData?.transfer_details?.items?.[0]?.fare_rule?.[0]
-                }
-                booking_id={transferData?.id}
-                setShowDetails={null}
-                name={transferData?.name}
-                isEmbedded={true}
-                // setShowLoginModal={setShowLoginModal}
-              />
-            );
-          case "Taxi":
-            return (
-              <TaxiDetailModal
-                data={transferData}
-                setHandleShow={null}
-                handleDelete={null}
-                // loading={loading}
-                isEmbedded={true}
-                noHeading={true}
-              />
-            );
-          default:
-            return (
-              <VehicleDetailModal
-                data={transferData}
-                setHandleShow={null}
-                handleDelete={null}
-                // loading={loading}
-                isEmbedded={true}
-                // setShowDrawer={setShowDrawer}
-              />
-            );
-        }
-      };
-  
-      return (
-        <div key={`${transferData.id}-${index}`} className="mb-6">
-          <div
-            className="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-lg cursor-pointer"
-            onClick={() => toggleExpand(index)}
-          >
-            <h3 className="text-lg font-medium">{childTitle}</h3>
-            {isExpanded ? (
-              <AiOutlineDown className="text-gray-600" />
-            ) : (
-              <AiOutlineRight className="text-gray-600" />
-            )}
-          </div>
-          {isExpanded && <div className="mt-3">{renderDetailsByType()}</div>}
-        </div>
-      );
-    };
+
   console.log("Boooking", booking);
   return (
     <>
@@ -747,7 +667,38 @@ const TransferBooking = ({
                       </div>
                     </>
 
-                    <Drawer
+                     {showVehicleDrawer && (
+        <TransferDrawer
+          show={showVehicleDrawer}
+          // error={error}
+          setHandleShow={setShowVehicleDrawer}
+          data={vehicleDetails}
+          booking_type={vehicleDetails?.booking_type}
+          loading={loading}
+          handleDelete={handleDelete}
+          setShowDrawer={setShowDrawer}
+          // city={city}
+          _updateFlightBookingHandler={_updateFlightBookingHandler}
+          _updatePaymentHandler={_updatePaymentHandler}
+          getPaymentHandler={getPaymentHandler}
+          oCityData={oCityData}
+          dCityData={dCityData}
+          setShowLoginModal={setShowLoginModal}
+          // dcity={destination_city_name}
+          selectedBooking={selectedBooking}
+          setSelectedBooking={setSelectedBooking}
+          originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
+          destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
+          origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
+          destination_itinerary_city_id={
+            dCityData?.id || dCityData?.gmaps_place_id
+          }
+          // isIntracity={isIntracity}
+          booking_id={vehicleDetails?.booking_id}
+        />
+      )}
+
+                    {/* <Drawer
                       show={showVehicleDrawer}
                       anchor="right"
                       mobileWidth="100vw"
@@ -794,7 +745,7 @@ const TransferBooking = ({
                             />
                           </FloatingView>
                         )}
-                    </Drawer>
+                    </Drawer> */}
                   </div>
                 </>
               )}
@@ -920,7 +871,7 @@ const TransferBooking = ({
                   <HalfLine Transfers={Transfer} color={"#000000"} />
                 </LineContainer>
               </div>
-              {book?.booking_type === "Flight" ? (
+              {/* {book?.booking_type === "Flight" ? (
                 <>
                   <div className="absolute w-[20px] border border-black ml-4 mt-[27px]"></div>
                   <FlightBooking
@@ -942,7 +893,8 @@ const TransferBooking = ({
                     getPaymentHandler={getPaymentHandler}
                   />
                 </>
-              ) : (
+              ) :  */}
+              
                 <>
                   <div className="absolute w-[20px] border border-black ml-4 mt-[28px]"></div>
                   <div
@@ -1188,7 +1140,7 @@ const TransferBooking = ({
                                           book?.id,
                                           book?.booking_type.toLowerCase()
                                         );
-                                        setShowVehicleDrawer(true);
+                                        // setShowVehicleDrawer(true);
                                       }}
                                       className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                                     >
@@ -1206,7 +1158,8 @@ const TransferBooking = ({
                                         book?.id,
                                         book?.booking_type.toLowerCase()
                                       );
-                                      setShowVehicleDrawer(true);
+                                      
+                                      // setShowVehicleDrawer(true);
                                     }}
                                     className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                                   >
@@ -1285,7 +1238,7 @@ const TransferBooking = ({
                                     book?.id,
                                     book?.booking_type.toLowerCase()
                                   );
-                                  setShowVehicleDrawer(true);
+                                  // setShowVehicleDrawer(true);
                                 }}
                                 className="md:hidden mt-2 w-full text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                               >
@@ -1297,7 +1250,7 @@ const TransferBooking = ({
                       </div>
                     </div>
 
-                    <Drawer
+                    {/* <Drawer
                       show={showVehicleDrawer}
                       anchor="right"
                       mobileWidth="100vw"
@@ -1342,10 +1295,41 @@ const TransferBooking = ({
                           )}
                         </>
                       )}
-                    </Drawer>
+                    </Drawer> */}
+                     {handleShow && (
+                            <TransferDrawer
+                              show={handleShow}
+                              // error={error}
+                              setHandleShow={setHandleShow}
+                              data={vehicleDetails}
+                              booking_type={booking?.booking_type}
+                              loading={loading}
+                              handleDelete={handleDelete}
+                              setShowDrawer={setShowDrawer}
+                              // city={city}
+                              _updateFlightBookingHandler={_updateFlightBookingHandler}
+                              _updatePaymentHandler={_updatePaymentHandler}
+                              getPaymentHandler={getPaymentHandler}
+                              oCityData={oCityData}
+                              dCityData={dCityData}
+                              setShowLoginModal={setShowLoginModal}
+                              // dcity={destination_city_name}
+                              selectedBooking={selectedBooking}
+                              setSelectedBooking={setSelectedBooking}
+                              originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
+                              destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
+                              origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
+                              destination_itinerary_city_id={
+                                dCityData?.id || dCityData?.gmaps_place_id
+                              }
+                              // isIntracity={isIntracity}
+                              booking_id={booking?.booking_id}
+                            />
+                          )}
                   </div>
                 </>
-              )}
+              
+          {/* } */}
             </ComboContainer>
           ))}
           <TransferEditDrawer

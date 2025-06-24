@@ -54,6 +54,7 @@ const TransferDrawer = ({
   isIntracity,
   error,
 }) => {
+  console.log("Taxi Data",data);
   const [expandedIndexes, setExpandedIndexes] = useState([]);
   const isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
   const isCombo = data?.children && data?.children.length > 0;

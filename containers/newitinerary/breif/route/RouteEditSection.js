@@ -2228,7 +2228,7 @@ export const Month = ({ firstDay, days, startDate, endDate }) => {
 export const DatePicker = (props) => {
   const [focusedInput, setFocusedInput] = useState(false);
 
-  const { cities } = useSelector((state) => state.Itinerary);
+  const { start_date, end_date, cities } = useSelector((state) => state.Itinerary);
 
   function handleFocus() {
     setFocusedInput(true);
@@ -2241,27 +2241,44 @@ export const DatePicker = (props) => {
     return moment().month(new Date(props.date).getMonth());
   };
 
-  const getMarkedDates = () => {
-    if (!cities || !Array.isArray(cities)) {
+  const getDateRange = () => {
+    if (!start_date || !end_date) {
       return [];
     }
 
-    return cities
-      .filter((city) => city.start_date)
-      .map((city) => moment(city.start_date));
+    const startMoment = moment(start_date);
+    const endMoment = moment(end_date);
+    const dates = [];
+    
+    // Generate all dates between start_date and end_date (inclusive)
+    let currentDate = startMoment.clone();
+    while (currentDate.isSameOrBefore(endMoment)) {
+      dates.push(currentDate.clone());
+      currentDate.add(1, 'day');
+    }
+    
+    return dates;
   };
 
   const isDayHighlighted = (day) => {
-    const markedDates = getMarkedDates();
-    return markedDates.some((markedDate) => markedDate.isSame(day, "day"));
+    const dateRange = getDateRange();
+    return dateRange.some((date) => date.isSame(day, "day"));
+  };
+
+  const formatDateRange = () => {
+    if (!start_date || !end_date) {
+      return "No dates selected";
+    }
+    
+    const startMoment = moment(start_date);
+    const endMoment = moment(end_date);
+    
+    return `Itinerary Dates - ${startMoment.format("MMM DD")} to ${endMoment.format("MMM DD")}`;
   };
 
   useEffect(() => {
     const style = document.createElement("style");
     style.textContent = `
-
-
-
 /* Force calendar to stay in normal document flow */
 .SingleDatePicker_picker,
 .SingleDatePicker_picker__portal {
@@ -2337,25 +2354,26 @@ body.react-dates__block-scroll {
         isOutsideRange={() => false}
         enableOutsideDays={true}
         isDayHighlighted={isDayHighlighted}
-     renderMonthElement={({ month, onMonthSelect, onYearSelect }) => {
-  const currentMonthMarkedDates = getMarkedDates().filter(date => 
-    date.isSame(month, 'month')
-  );
-  
-  return (
-    <div className="w-full">
-      <div className="text-center mb-2">{month.format("MMMM YYYY")}</div>
-      {currentMonthMarkedDates.length > 0 && (
-        <div className="relative z-15 bg-yellow-50 border-l-2 border-yellow-400 px-2 py-1 mx-1 mb-2">
-          <div className="flex items-center gap-1 text-xs text-gray-700">
-            <div className="w-1.5 h-1.5 bg-[#ffe8bc] rounded-sm flex-shrink-0"></div>
-            <span className="text-[10px] leading-tight">Check-in dates</span>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}}
+        renderMonthElement={({ month, onMonthSelect, onYearSelect }) => {
+          const dateRange = getDateRange();
+          const currentMonthHasDates = dateRange.some(date => 
+            date.isSame(month, 'month')
+          );
+          
+          return (
+            <div className="w-full">
+              <div className="text-center mb-2">{month.format("MMMM YYYY")}</div>
+              {currentMonthHasDates && (
+                <div className="relative z-15 bg-yellow-50 border-l-2 border-yellow-400 px-2 py-1 mx-1 mb-2">
+                  <div className="flex items-center gap-1 text-xs text-gray-700">
+                    <div className="w-1.5 h-1.5 bg-[#ffe8bc] rounded-sm flex-shrink-0"></div>
+                    <span className="text-[10px] leading-tight">{formatDateRange()}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        }}
       />
       <CalenderIcons className="p-2 py-3">
         <Icon>
