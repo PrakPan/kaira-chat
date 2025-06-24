@@ -347,6 +347,14 @@ const TaxiDetailModal = ({
               </div>
             </div>
           </div>
+          {data?.cancellation_policies&&<>
+            <div
+              className="text-[14px]"
+              dangerouslySetInnerHTML={{
+                __html: data?.cancellation_policies,
+              }}
+            ></div>
+          </>}
         </div>
 
         {/* Delete Booking Button (Fixed) */}
