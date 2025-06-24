@@ -258,6 +258,65 @@ const TransferBooking = ({
     }
   };
 
+  const handleComboDelete = async (val) => {
+      if (!localStorage?.getItem("access_token")) {
+        setShowLoginModal(true);
+        return;
+      }
+      const dataPassed = val != null ? val : data;
+      try {
+        setLoading(true);
+        const response = await axiosDeleteBooking.delete(
+          `${router?.query?.id}/bookings/${
+            dataPassed?.booking_type?.includes(",")
+              ? `combo`
+              : dataPassed?.booking_type?.toLowerCase()
+          }/${dataPassed?.id}/`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+          }
+        );
+  
+        if (response.status === 204) {
+          dispatch(updateTransferBookings(dataPassed?.id));
+          setLoading(false);
+          getPaymentHandler();
+  
+          // if (isIntracity) {
+          //   setCurrentAirportBookings((prev) =>
+          //     prev.filter((booking) => booking.id !== dataPassed?.id)
+          //   );
+          // }
+          // } else {
+          //   setVisible(true);
+          // }
+  
+          setHandleShow(false);
+          dispatch(
+            openNotification({
+              type: "success",
+              text: `${city} deleted successfully`,
+              heading: "Success!",
+            })
+          );
+        }
+      } catch (err) {
+        const errorMsg =
+          err?.response?.data?.errors?.[0]?.message?.[0] ||
+          err.response?.data?.errors[0]?.detail ||
+          err.message;
+        dispatch(
+          openNotification({
+            type: "error",
+            text: errorMsg,
+            heading: "Error!",
+          })
+        );
+        setLoading(false);
+      }
+    };
 
 
   console.log("Boooking", booking);
@@ -871,7 +930,7 @@ const TransferBooking = ({
                   <HalfLine Transfers={Transfer} color={"#000000"} />
                 </LineContainer>
               </div>
-              {/* {book?.booking_type === "Flight" ? (
+              {book?.booking_type === "Flight" ? (
                 <>
                   <div className="absolute w-[20px] border border-black ml-4 mt-[27px]"></div>
                   <FlightBooking
@@ -889,11 +948,19 @@ const TransferBooking = ({
                     originCityId={originCityId}
                     destinationCityId={destinationCityId}
                     type={"combo"}
-                    setShowDrawer={setShowDrawer}
+                    setShowDrawer={setHandleShow}
                     getPaymentHandler={getPaymentHandler}
+                    viewComboDetails={() => {
+                                  handleViewDetails(
+                                    router?.query?.id,
+                                    book?.id,
+                                    book?.booking_type.toLowerCase()
+                                  );
+                                  
+                                }}
                   />
                 </>
-              ) :  */}
+              ) : 
               
                 <>
                   <div className="absolute w-[20px] border border-black ml-4 mt-[28px]"></div>
@@ -1304,7 +1371,7 @@ const TransferBooking = ({
                               data={vehicleDetails}
                               booking_type={booking?.booking_type}
                               loading={loading}
-                              handleDelete={handleDelete}
+                              handleDelete={handleComboDelete}
                               setShowDrawer={setShowDrawer}
                               // city={city}
                               _updateFlightBookingHandler={_updateFlightBookingHandler}
@@ -1327,7 +1394,7 @@ const TransferBooking = ({
                             />
                           )}
                   </div>
-                </>
+                </>}
               
           {/* } */}
             </ComboContainer>
@@ -1409,6 +1476,7 @@ const FlightBooking = ({
   setShowDrawer,
   getPaymentHandler,
   booking_id,
+  viewComboDetails
 }) => {
   const [showDetails, setShowDetails] = useState(false);
 
@@ -1544,6 +1612,10 @@ const FlightBooking = ({
               <div>
                 <button
                   onClick={() => {
+                    if(type == "combo"){
+                      setShowDrawer(true);
+                      viewComboDetails();
+                    }else
                     setShowDetails(true);
                   }}
                   className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
@@ -1583,6 +1655,9 @@ const FlightBooking = ({
             <div className="flex justify-end mt-4 pr-2 w-full">
               <button
                 onClick={() => {
+                  if(type=="combo"){
+                   setShowDrawer(true)
+                  }else
                   setShowDetails(true);
                 }}
                 className="w-full md:w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
