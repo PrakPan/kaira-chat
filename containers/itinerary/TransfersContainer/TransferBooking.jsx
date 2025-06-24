@@ -24,6 +24,12 @@ import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { FaPlaneDeparture } from "react-icons/fa";
 import VehicleDetailLoader from "../../../components/modals/daybyday/VehicleDetailLoader";
 import { TbArrowBack } from "react-icons/tb";
+import { PulseLoader } from "react-spinners";
+import Image from "next/image";
+import { Generalbuttonstyle } from "../../../components/ui/button/Generallinkbutton";
+import FlightDetailModal from "../../../components/modals/daybyday/FlightDetailModal";
+import { AiOutlineDown, AiOutlineRight } from "react-icons/ai";
+import TransferDrawer from "../TransferDrawer";
 const FloatingView = styled.div`
   position: sticky;
   bottom: 60px;
@@ -169,6 +175,7 @@ const TransferBooking = ({
   const [showDrawer, setShowDrawer] = useState(false);
   const [showVehicleDrawer, setShowVehicleDrawer] = useState(false);
   const [vehicleDetails, setVehicleDetails] = useState(null);
+  const [handleShow,setHandleShow]= useState(false);
   const { itinerary_status, transfers_status, pricing_status } = useSelector(
     (state) => state.ItineraryStatus
   );
@@ -197,7 +204,7 @@ const TransferBooking = ({
       );
 
       setVehicleDetails(res?.data);
-      setShowVehicleDrawer(true);
+      setHandleShow(true);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -250,6 +257,8 @@ const TransferBooking = ({
       setLoading(false);
     }
   };
+
+
 
   console.log("Boooking", booking);
   return (
@@ -658,7 +667,38 @@ const TransferBooking = ({
                       </div>
                     </>
 
-                    <Drawer
+                     {showVehicleDrawer && (
+        <TransferDrawer
+          show={showVehicleDrawer}
+          // error={error}
+          setHandleShow={setShowVehicleDrawer}
+          data={vehicleDetails}
+          booking_type={vehicleDetails?.booking_type}
+          loading={loading}
+          handleDelete={handleDelete}
+          setShowDrawer={setShowDrawer}
+          // city={city}
+          _updateFlightBookingHandler={_updateFlightBookingHandler}
+          _updatePaymentHandler={_updatePaymentHandler}
+          getPaymentHandler={getPaymentHandler}
+          oCityData={oCityData}
+          dCityData={dCityData}
+          setShowLoginModal={setShowLoginModal}
+          // dcity={destination_city_name}
+          selectedBooking={selectedBooking}
+          setSelectedBooking={setSelectedBooking}
+          originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
+          destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
+          origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
+          destination_itinerary_city_id={
+            dCityData?.id || dCityData?.gmaps_place_id
+          }
+          // isIntracity={isIntracity}
+          booking_id={vehicleDetails?.booking_id}
+        />
+      )}
+
+                    {/* <Drawer
                       show={showVehicleDrawer}
                       anchor="right"
                       mobileWidth="100vw"
@@ -705,7 +745,7 @@ const TransferBooking = ({
                             />
                           </FloatingView>
                         )}
-                    </Drawer>
+                    </Drawer> */}
                   </div>
                 </>
               )}
@@ -821,6 +861,7 @@ const TransferBooking = ({
           </div>
         )
       ) : (
+       
         <>
           {booking?.children?.map((book, index) => (
             <ComboContainer>
@@ -830,7 +871,7 @@ const TransferBooking = ({
                   <HalfLine Transfers={Transfer} color={"#000000"} />
                 </LineContainer>
               </div>
-              {book?.booking_type === "Flight" ? (
+              {/* {book?.booking_type === "Flight" ? (
                 <>
                   <div className="absolute w-[20px] border border-black ml-4 mt-[27px]"></div>
                   <FlightBooking
@@ -852,7 +893,8 @@ const TransferBooking = ({
                     getPaymentHandler={getPaymentHandler}
                   />
                 </>
-              ) : (
+              ) :  */}
+              
                 <>
                   <div className="absolute w-[20px] border border-black ml-4 mt-[28px]"></div>
                   <div
@@ -1098,7 +1140,7 @@ const TransferBooking = ({
                                           book?.id,
                                           book?.booking_type.toLowerCase()
                                         );
-                                        setShowVehicleDrawer(true);
+                                        // setShowVehicleDrawer(true);
                                       }}
                                       className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                                     >
@@ -1116,7 +1158,8 @@ const TransferBooking = ({
                                         book?.id,
                                         book?.booking_type.toLowerCase()
                                       );
-                                      setShowVehicleDrawer(true);
+                                      
+                                      // setShowVehicleDrawer(true);
                                     }}
                                     className=" w-fit text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                                   >
@@ -1195,7 +1238,7 @@ const TransferBooking = ({
                                     book?.id,
                                     book?.booking_type.toLowerCase()
                                   );
-                                  setShowVehicleDrawer(true);
+                                  // setShowVehicleDrawer(true);
                                 }}
                                 className="md:hidden mt-2 w-full text-[12px] font-semibold border-1 border-black hover:bg-black hover:text-white rounded-lg px-3 py-2 text-nowrap"
                               >
@@ -1207,7 +1250,7 @@ const TransferBooking = ({
                       </div>
                     </div>
 
-                    <Drawer
+                    {/* <Drawer
                       show={showVehicleDrawer}
                       anchor="right"
                       mobileWidth="100vw"
@@ -1252,10 +1295,41 @@ const TransferBooking = ({
                           )}
                         </>
                       )}
-                    </Drawer>
+                    </Drawer> */}
+                     {handleShow && (
+                            <TransferDrawer
+                              show={handleShow}
+                              // error={error}
+                              setHandleShow={setHandleShow}
+                              data={vehicleDetails}
+                              booking_type={booking?.booking_type}
+                              loading={loading}
+                              handleDelete={handleDelete}
+                              setShowDrawer={setShowDrawer}
+                              // city={city}
+                              _updateFlightBookingHandler={_updateFlightBookingHandler}
+                              _updatePaymentHandler={_updatePaymentHandler}
+                              getPaymentHandler={getPaymentHandler}
+                              oCityData={oCityData}
+                              dCityData={dCityData}
+                              setShowLoginModal={setShowLoginModal}
+                              // dcity={destination_city_name}
+                              selectedBooking={selectedBooking}
+                              setSelectedBooking={setSelectedBooking}
+                              originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
+                              destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
+                              origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
+                              destination_itinerary_city_id={
+                                dCityData?.id || dCityData?.gmaps_place_id
+                              }
+                              // isIntracity={isIntracity}
+                              booking_id={booking?.booking_id}
+                            />
+                          )}
                   </div>
                 </>
-              )}
+              
+          {/* } */}
             </ComboContainer>
           ))}
           <TransferEditDrawer
