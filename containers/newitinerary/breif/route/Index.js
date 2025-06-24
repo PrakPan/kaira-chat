@@ -327,6 +327,7 @@ if(props?.CityData) {
               _moveUpHandler={_moveUpHandler}
               index={i}
               length={length}
+              findDayIdByCityId={props?.findDayIdByCityId}
             ></PinSection>
           );
           if (i < props?.CityData.length - 1) {

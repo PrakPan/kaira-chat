@@ -8,9 +8,12 @@ import setItineraryId from "../../../store/actions/itineraryId";
 import setHotLocationSearch from "../../../store/actions/hotLocationSearch";
 import axioslocationsinstance from "../../../services/search/search";
 import ItineraryContainer from "../../../containers/itinerary/ItineraryContainer";
+import { useSearchParams } from "next/navigation";
+import CityDetailsDrawer from "../../../components/drawers/cityDetails/CityDetailsDrawer";
 
 const Itinerary = (props) => {
   const router = useRouter();
+  const { drawer, city_id: cityId } = router.query;
 
   useEffect(() => {
     if (router.query.id) {
@@ -48,7 +51,6 @@ const Itinerary = (props) => {
     }
   };
 
-
   return (
     <LayoutV2 newYear staticnav itinerary page={"Itinerary Page"}>
       <Head>
@@ -60,7 +62,13 @@ const Itinerary = (props) => {
       </Head>
 
       {router.query.id && (
-        <ItineraryContainer id={router.query.id} mercuryItinerary></ItineraryContainer>
+        <>
+          <ItineraryContainer
+            id={router.query.id}
+            mercuryItinerary
+          ></ItineraryContainer>
+          {drawer == "showCityDetail" && cityId && <CityDetailsDrawer />}
+        </>
       )}
     </LayoutV2>
   );

@@ -3,6 +3,7 @@ import React from "react";
 import Pin from "./Pin";
 import { MdNavigateNext } from "react-icons/md";
 import BriefPin from "./BriefPin";
+import { useRouter } from "next/router";
 
 const Container = styled.div`
   cursor: pointer;
@@ -34,8 +35,17 @@ const IconContainer = styled.div`
 `;
 
 const PinSection = (props) => {
+  const router=useRouter()
   const handleClick = () => {
-    if (!props.duration || props.duration === "0" || props.transfersPin) return;
+    router.push({
+      pathname: `/itinerary/${router.query.id}`,
+      query: {
+        drawer: 'showCityDetail',
+        city_id: props?.cityId,
+        dayId:props?.findDayIdByCityId(props?.cityId)
+      },
+    });
+        if (!props.duration || props.duration === "0" || props.transfersPin) return;
     props.setShowDrawer(true);
    // console.log("city data is:",props.cityData)
     props.setShowDrawerData(props.cityData);
