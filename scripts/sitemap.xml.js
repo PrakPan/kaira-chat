@@ -4,7 +4,7 @@ const fs = require("fs");
 const path = require("path");
 
 const generateSitemap = async () => {
-  const BASE_URL = "https://dev.mercury.tarzanway.com";
+  const BASE_URL = "https://mercury.tarzanway.com";
 
   // Fetch continents list
   const continents = await axios.get(
