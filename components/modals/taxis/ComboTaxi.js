@@ -484,12 +484,14 @@ const ComboTaxi = (props) => {
 
                   {(selectedTime || props?.comboStartTime) && (
                     <div className="time-dropdown-container relative w-full sm:w-auto">
+                      <div className="text-sm font-medium text-gray-700 mb-2">
+                        Departure Time
+                      </div>
                       <div
                         className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
                         onClick={() => setShowTimeDropdown(!showTimeDropdown)}
                       >
                         <span className="text-sm font-medium">
-                          Departure Time:{" "}
                           {selectedTime ||
                             (props?.comboStartTime
                               ? dayjs(
@@ -500,26 +502,26 @@ const ComboTaxi = (props) => {
                                 )?.format("h:mm A")
                               : "Select Time")}
                         </span>
-                        <svg
-                          className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
-                            showTimeDropdown ? "transform rotate-180" : ""
-                          }`}
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M19 9l-7 7-7-7"
-                          ></path>
-                        </svg>
+                        <button>
+                          <svg
+                            className={`w-5 h-5 text-gray-600 transition-transform`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                        </button>
                       </div>
 
                       {showTimeDropdown && (
-                        <div className="absolute z-10 w-full sm:w-64 mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
+                        <div className="absolute z-[15] w-full sm:w-64 mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
                           <div className="sticky -top-1 bg-gray-100 p-2 border-b">
                             <span className="font-medium text-sm">
                               Select Time

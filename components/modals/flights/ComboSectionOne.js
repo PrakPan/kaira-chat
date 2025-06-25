@@ -26,7 +26,7 @@ const ComboSection = (props) => {
   const [dateOptions, setDateOptions] = useState([]);
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   useEffect(() => {
     if (preferred_departure_time) {
       const time = dayjs(preferred_departure_time);
@@ -35,7 +35,6 @@ const ComboSection = (props) => {
       setSelectedDate(time.format("DD MMM, YYYY"));
     }
   }, []);
-
 
   useEffect(() => {
     if (preferred_departure_time) {
@@ -91,7 +90,7 @@ const ComboSection = (props) => {
       non_stop_flights: !filtersState.non_stop_flights,
     };
     setFiltersState(newFiltersState);
-    
+
     setTimeout(() => {
       _FetchFlightsHandler();
       setIsLoading(false);
@@ -104,13 +103,13 @@ const ComboSection = (props) => {
     setShowDateDropdown(false);
 
     // Get current time or default to preferred time
-    const currentTime = selectedTime 
+    const currentTime = selectedTime
       ? dayjs(preferred_departure_time).format("HH:mm:ss")
       : dayjs(preferred_departure_time).format("HH:mm:ss");
-    
+
     // Combine selected date with current time
     const newDateTime = dayjs(`${dateOption.value}T${currentTime}`);
-    
+
     // Reset time-related filters
     const newFiltersState = {
       ...filtersState,
@@ -122,7 +121,7 @@ const ComboSection = (props) => {
     if (updatePreferredDepartureTime) {
       updatePreferredDepartureTime(newDateTime.format("YYYY-MM-DDTHH:mm:ss"));
     }
-    
+
     setTimeout(() => {
       _FetchFlightsHandler();
       setIsLoading(false);
@@ -134,10 +133,10 @@ const ComboSection = (props) => {
     setSelectedTime(slot.display);
 
     const currentDate = dayjs(preferred_departure_time).format("YYYY-MM-DD");
-    
+
     const [hours, minutes] = slot.value.split(":");
     const newDateTime = dayjs(`${currentDate}T${hours}:${minutes}:00`);
-    
+
     const hour = parseInt(hours, 10);
     const timePeriod = getTimePeriodFromHour(hour);
 
@@ -152,7 +151,7 @@ const ComboSection = (props) => {
     if (updatePreferredDepartureTime) {
       updatePreferredDepartureTime(newDateTime.format("YYYY-MM-DDTHH:mm:ss"));
     }
-    
+
     setTimeout(() => {
       setIsLoading(false);
     }, 100);
@@ -212,61 +211,74 @@ const ComboSection = (props) => {
 
         <div className="">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2">
+            {preferred_departure_time && (
+              <div className="w-full sm:w-auto">
+                Departure Date
+                <DatePicker
+                  id="departure-date"
+                  date={
+                    selectedDate
+                      ? dayjs(selectedDate, "DD MMM, YYYY").format("YYYY-MM-DD")
+                      : preferred_departure_time
+                  }
+                  defaultDate={preferred_departure_time}
+                  onDateChange={(event) => {
+                    if (!isLoading) {
+                      const selectedDateValue = dayjs(
+                        event.target.value
+                      ).format("YYYY-MM-DD");
+                      const selectedDateDisplay = dayjs(
+                        event.target.value
+                      ).format("DD MMM, YYYY");
 
-{preferred_departure_time && (
-  <div className="w-full sm:w-auto">
-    Departure Date
-    <DatePicker
-      id="departure-date"
-      date={selectedDate ? dayjs(selectedDate, "DD MMM, YYYY").format("YYYY-MM-DD") : preferred_departure_time}
-      defaultDate={preferred_departure_time}
-      onDateChange={(event) => {
-        if (!isLoading) {
-          const selectedDateValue = dayjs(event.target.value).format("YYYY-MM-DD");
-          const selectedDateDisplay = dayjs(event.target.value).format("DD MMM, YYYY");
-          
-          handleDateSelection({
-            value: selectedDateValue,
-            display: selectedDateDisplay
-          });
-        }
-      }}
-    />
-  </div>
-)}
+                      handleDateSelection({
+                        value: selectedDateValue,
+                        display: selectedDateDisplay,
+                      });
+                    }
+                  }}
+                />
+              </div>
+            )}
 
             {/* Time Dropdown */}
             <div className="time-dropdown-container relative w-full sm:w-auto">
+              <div className="text-sm font-medium text-gray-700 mb-2">
+                Departure Time
+              </div>
               {(selectedTime || preferred_departure_time) && (
                 <div
                   className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
-                  onClick={() => !isLoading && setShowTimeDropdown(!showTimeDropdown)}
+                  onClick={() =>
+                    !isLoading && setShowTimeDropdown(!showTimeDropdown)
+                  }
                 >
                   <span className="text-sm font-medium">
-                    Departure Time:{" "}
-                    {selectedTime || dayjs(preferred_departure_time)?.format("h:mm A") || "Select Time"}
+                    {selectedTime ||
+                      dayjs(preferred_departure_time)?.format("h:mm A") ||
+                      "Select Time"}
                   </span>
-                  <svg
-                    className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
-                      showTimeDropdown ? "transform rotate-180" : ""
-                    }`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M19 9l-7 7-7-7"
-                    ></path>
-                  </svg>
+                  <button>
+                    <svg
+                      className={`w-5 h-5 text-gray-600 transition-transform`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </button>
                 </div>
               )}
 
               {showTimeDropdown && (
-                <div className="absolute z-10 w-full sm:w-64 mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
+                <div className="absolute z-[15] w-full sm:w-64 mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
                   <div className="sticky top-0 bg-gray-100 p-2 border-b">
                     <span className="font-medium text-sm">Select Time</span>
                   </div>
@@ -289,68 +301,71 @@ const ComboSection = (props) => {
           </div>
 
           <div className="flex justify-between flex-col md:flex-row">
-          <div className="relative sm:w-auto sort-dropdown-container">
-            <div
-              className="p-2 border w-full sm:w-64 flex flex-row items-center cursor-pointer rounded-md hover:bg-gray-50"
-              onClick={() => !isLoading && setShowSortDropdown((prev) => !prev)}
-            >
-              <MdSort className="mr-1" />
-              <span className="text-sm">
-                Sort: {filtersState.sort_by}{" "}
-                {filtersState.order === "asc"
-                  ? "(Low to High)"
-                  : "(High to Low)"}
-              </span>
-            </div>
-
-            {showSortDropdown && (
-              <div className="absolute z-10 bg-white border rounded-md shadow-lg mt-1 w-full sm:w-64">
-                {[
-                  {
-                    label: "Price (Low to High)",
-                    sort_by: "Price",
-                    order: "asc",
-                  },
-                  {
-                    label: "Price (High to Low)",
-                    sort_by: "Price",
-                    order: "desc",
-                  },
-                  {
-                    label: "Duration (Ascending)",
-                    sort_by: "Duration",
-                    order: "asc",
-                  },
-                  {
-                    label: "Duration (Descending)",
-                    sort_by: "Duration",
-                    order: "desc",
-                  },
-                ].map((option, idx) => (
-                  <div
-                    key={idx}
-                    className={`p-2 hover:bg-blue-50 cursor-pointer text-sm ${
-                      filtersState.sort_by === option.sort_by && filtersState.order === option.order
-                        ? "bg-blue-100"
-                        : ""
-                    }`}
-                    onClick={() => !isLoading && handleSortChange(option)}
-                  >
-                    {option.label}
-                  </div>
-                ))}
+            <div className="relative sm:w-auto sort-dropdown-container">
+              <div
+                className="p-2 border w-full sm:w-64 flex flex-row items-center cursor-pointer rounded-md hover:bg-gray-50"
+                onClick={() =>
+                  !isLoading && setShowSortDropdown((prev) => !prev)
+                }
+              >
+                <MdSort className="mr-1" />
+                <span className="text-sm">
+                  Sort: {filtersState.sort_by}{" "}
+                  {filtersState.order === "asc"
+                    ? "(Low to High)"
+                    : "(High to Low)"}
+                </span>
               </div>
-            )}
-          </div>
-          <div className=" mt-2 md:mt-0">
-            <Pax
-              setShowPax={setShowPax}
-              pax={pax}
-              setPax={setPax}
-              showPax={showPax}
-              combo={true}
-            />
-          </div>
+
+              {showSortDropdown && (
+                <div className="absolute z-[15] bg-white border rounded-md shadow-lg mt-1 w-full sm:w-64">
+                  {[
+                    {
+                      label: "Price (Low to High)",
+                      sort_by: "Price",
+                      order: "asc",
+                    },
+                    {
+                      label: "Price (High to Low)",
+                      sort_by: "Price",
+                      order: "desc",
+                    },
+                    {
+                      label: "Duration (Ascending)",
+                      sort_by: "Duration",
+                      order: "asc",
+                    },
+                    {
+                      label: "Duration (Descending)",
+                      sort_by: "Duration",
+                      order: "desc",
+                    },
+                  ].map((option, idx) => (
+                    <div
+                      key={idx}
+                      className={`p-2 hover:bg-blue-50 cursor-pointer text-sm ${
+                        filtersState.sort_by === option.sort_by &&
+                        filtersState.order === option.order
+                          ? "bg-blue-100"
+                          : ""
+                      }`}
+                      onClick={() => !isLoading && handleSortChange(option)}
+                    >
+                      {option.label}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className=" mt-2 md:mt-0">
+              <Pax
+                setShowPax={setShowPax}
+                pax={pax}
+                setPax={setPax}
+                showPax={showPax}
+                combo={true}
+              />
+            </div>
           </div>
         </div>
       </div>
