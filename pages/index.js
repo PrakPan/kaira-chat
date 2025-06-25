@@ -96,7 +96,6 @@ const Home = (props) => {
         locations={props.locations}
         ThemeData={props.ThemeData}
         continetCarousel={props.continetCarousel}
-        Count={props.Count}
       ></HomepageContainer>
     </Layout>
   );
@@ -141,10 +140,9 @@ export async function getStaticProps() {
 
   try {
     const ThemeDataRes = await axiospagelistinstance.get(
-      "/?page_type=Theme&fields=id,page_type,slug,overview_image,tagline,path"
+      "/?page_type=Theme&fields=id,page_type,slug,overview_image,tagline,path,image,name"
     );
     ThemeData = ThemeDataRes.data.data.pages;
-    console.log("theme data is:",ThemeData)
   } catch (err) {
     console.log("[ERROR][Fetch ThemeData]:", err.message);
   }
@@ -187,21 +185,6 @@ export async function getStaticProps() {
     }
   }
 
-  try {
-    const countResponse = await axiosCountInstance.get("");
-    let count = countResponse.data.user.toString().split("");
-
-    if (count.length > 3) {
-      for (let i = 1; i < 4; i++) {
-        count.pop();
-      }
-      Count = count.join("") + "k";
-    } else {
-      Count = +count.join("");
-    }
-  } catch (err) {
-    console.log("[ERROR][Fetch Count]:", err.message);
-  }
 
   
   try {
@@ -220,7 +203,6 @@ export async function getStaticProps() {
       asiaLocations,
       europeLocations,
       continetCarousel,
-      Count,
       hotLocationSearch,
     },
   };

@@ -368,7 +368,6 @@ const Homepage = (props) => {
 
             <PlanAsPerTheme
               ThemeData={props.ThemeData}
-              Count={props.Count}
               page={"Home Page"}
             />
           </>

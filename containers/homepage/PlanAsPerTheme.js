@@ -179,11 +179,13 @@ const PlanAsPerTheme = (props) => {
     <GridItem
       className={order[i]}
       key={i}
-      onClick={() => _handleTripRedirect(e.banner_heading)}
+      onClick={() => _handleTripRedirect(e.path)}
     >
+      {console.log("image is:",e.image)}
       <ImageContainer bg="road-trip.png" href={"/theme/" + e.path}>
         <TextContainer className="AnimateTop">
-          <H5>{e.banner_heading}</H5>
+          <H5>{e.name}</H5>
+          <div>{isPageWide && <div className="tagline">{e.tagline}</div>}</div>
           {isPageWide && <div className="StartNow">Explore!</div>}
         </TextContainer>
         <ImageLoader
@@ -192,7 +194,7 @@ const PlanAsPerTheme = (props) => {
           width="100%"
           height="100%"
           style={{ filter: "brightness(0.9)" }}
-          url={e.overview_image}
+          url={e.image}
         ></ImageLoader>
       </ImageContainer>
     </GridItem>
@@ -203,13 +205,13 @@ const PlanAsPerTheme = (props) => {
       <Container>
         {ThemeContainer}
         <GridItem className="d">
-          <TripsCounter Count={props.Count} />
+          <TripsCounter  />
           <p
             style={
               isPageWide ? {} : { marginTop: "-10px", marginBottom: "0px" }
             }
           >
-            Trips Planned
+            travellers
           </p>
           <p
             style={
@@ -218,7 +220,7 @@ const PlanAsPerTheme = (props) => {
                 : { marginTop: "-5px", marginBottom: "0px" }
             }
           >
-            so far.
+            and counting…
           </p>
         </GridItem>
       </Container>
