@@ -2257,7 +2257,7 @@ const NewMultiModeContainer = ({
 
   const handlePaxChange = (newPax, option) => {
     if (option && option.mode !== "Flight" && option.mode !== "Taxi") {
-      const departureDateTime = `${currentModeDepartureDate}T${currentModeDepartureTime}`;
+      const departureDateTime = `${currentModeDepartureDate}T${currentModeDepartureTime}:00`;
       loadTransfers(option, newPax, departureDateTime);
     }
   };
@@ -2411,10 +2411,11 @@ const NewMultiModeContainer = ({
     let calculatedStartTime;
 
     if (currentStep === 1) {
-      calculatedStartTime = roundUpToNext30Min(
-        dayjs(`${baseStartDate} ${dayjs().format("HH:mm")}`)
-      );
-    } else {
+  calculatedStartTime = 
+    dayjs(`${baseStartDate} 12:00`)
+  ;
+}
+    else {
       const prevSelected = selectedData[currentStep - 2];
       const prevArrivalTime = prevSelected?.arrival_time;
 

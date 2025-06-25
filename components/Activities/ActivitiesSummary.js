@@ -215,6 +215,7 @@ const ActivitiesSummary = (props) => {
                 itinerary_city_id={props?.city?.id}
                 showBookingDetail
                 setShowLoginModal={props?.setShowLoginModal}
+                removeDelete={true}
               />
             </div>
           </div>

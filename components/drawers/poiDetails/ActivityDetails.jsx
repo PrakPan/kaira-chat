@@ -685,9 +685,12 @@ const ActivityDetails = (props) => {
                 </a>
               </div> */}
 
-              {props?.removeDelete || props?.version != "v1" ? (
-                <></>
-              ) : (
+              {
+              // props?.version != "v1" ? (
+              //   <></>
+              // ) : 
+               props?.removeDelete && 
+                
                 <button
                   className=" right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
                   onClick={handleDelete}
@@ -715,7 +718,7 @@ const ActivityDetails = (props) => {
                     )}
                   </div>
                 </button>
-              )}
+              }
             </div>
           </div>
         </Container>

@@ -443,60 +443,68 @@ const ItineraryContainer = (props) => {
       setIsPastTravelerItinerary(true);
     
     const fetchStatus = async () => {
-      try {
-        const res = await axiosGetItineraryStatus.get(`/${props.id}/status/`);
-        const status = res.data?.celery;
-        
-        // Reset error count on successful API call
-        setConsecutiveErrors(0);
+  try {
+    const res = await axiosGetItineraryStatus.get(`/${props.id}/status/`);
+    const status = res.data?.celery;
 
-        if (status?.PRICING === "FAILURE") {
-          dispatch(setItineraryStatus("pricing_status", "FAILURE"));
-        }
-        if (status?.TRANSFERS === "FAILURE") {
-          dispatch(setItineraryStatus("transfers_status", "FAILURE"));
-        }
+    
+    setConsecutiveErrors(0);
 
-        if (status?.HOTELS === "FAILURE") {
-          dispatch(setItineraryStatus("hotels_status", "FAILURE"));
-        }
+   
+    if (status?.PRICING === "FAILURE") {
+      dispatch(setItineraryStatus("pricing_status", "FAILURE"));
+    }
+    if (status?.TRANSFERS === "FAILURE") {
+      dispatch(setItineraryStatus("transfers_status", "FAILURE"));
+    }
+    if (status?.HOTELS === "FAILURE") {
+      dispatch(setItineraryStatus("hotels_status", "FAILURE"));
+    }
 
-        const allStatusesCompleted = [
-          "ITINERARY",
-          "TRANSFERS",
-          "PRICING",
-          "HOTELS",
-        ].every(
-          (key) => status?.[key] === "SUCCESS" || status?.[key] === "FAILURE"
-        );
+    const itineraryFailure = status?.ITINERARY === "FAILURE";
+    const notPrepared = res.data?.status == "Not Prepared";
 
-        if (allStatusesCompleted) {
-          dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
-          setPolling(false);
-        } else {
-          setPolling(true);
-        }
+    if (itineraryFailure || notPrepared) {
+      console.log("Itinerary failure or status not PREPARED. Redirecting to thank-you.");
+      setPolling(false);
+      router.push("/thank-you");
+      return;
+    }
 
-        fetchItinerary(
-          status?.ITINERARY,
-          status?.HOTELS,
-          status?.TRANSFERS,
-          status?.PRICING
-        );
-      } catch (err) {
-        console.error("[ERROR]: axiosGetItineraryStatus: ", err.message, err.response?.status);
-        
-        if (
-            err.response?.data?.errors?.[0]?.message?.[0]?.includes("Itinerary matching query does not exist")) {
-          
-          console.log("Itinerary not found error detected, redirecting to v1 version");
-          setPolling(false);
-          router.push(`/itinerary/v1/${props.id}`);
-          return;
-        }
-        handleApiError();
-      }
-    };
+    const allStatusesCompleted = ["ITINERARY", "TRANSFERS", "PRICING", "HOTELS"].every(
+      (key) => status?.[key] === "SUCCESS" || status?.[key] === "FAILURE"
+    );
+
+    if (allStatusesCompleted) {
+      dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
+      setPolling(false);
+    } else {
+      setPolling(true);
+    }
+
+    fetchItinerary(
+      status?.ITINERARY,
+      status?.HOTELS,
+      status?.TRANSFERS,
+      status?.PRICING
+    );
+  } catch (err) {
+    console.error("[ERROR]: axiosGetItineraryStatus: ", err.message, err.response?.status);
+
+    if (
+      err.response?.data?.errors?.[0]?.message?.[0]?.includes("Itinerary matching query does not exist")
+    ) {
+      console.log("Itinerary not found error detected, redirecting to v1 version");
+      setPolling(false);
+      router.push(`/itinerary/v1/${props.id}`);
+      return;
+    }
+
+    handleApiError();
+  }
+};
+
+
 
     const fetchItinerary = async (itinerary, hotels, transfers, pricing) => {
       try {
@@ -634,36 +642,36 @@ const ItineraryContainer = (props) => {
   }, [props.id]);
 
  
-  useEffect(() => {
-    let interval;
-    
-    console.log("Polling:", polling);
-    
-    if (polling) {
+useEffect(() => {
+  let interval;
+
+  console.log("Polling:", polling);
+
+  if (polling) {
+    fetchData(true);
+
+    interval = setInterval(() => {
+      const isAnyFailure =
+        itinerary_status === "FAILURE" ||
+        transfers_status === "FAILURE" ||
+        pricing_status === "FAILURE" ||
+        hotels_status === "FAILURE";
+
+      if (isAnyFailure) {
+        clearInterval(interval);
+        router.push("/thank-you");
+        return;
+      }
+
       fetchData(true);
-      
-      interval = setInterval(() => {
-        if (
-          (itinerary_status === "FAILURE" &&
-          transfers_status === "FAILURE" &&
-          pricing_status === "FAILURE" &&
-          hotels_status === "FAILURE") || itinerary_status === "SUCCESS" &&
-          transfers_status === "SUCCESS" &&
-          pricing_status === "SUCCESS" &&
-          hotels_status === "SUCCESS"
-        ) {
-          clearInterval(interval); 
-          router.push("/thank-you"); 
-          return; 
-        }
-        fetchData(true);
-      }, 5000);
-    } else {
-      clearInterval(interval);
-    }
-    
-    return () => clearInterval(interval);
-  }, [polling, itinerary_status, transfers_status, pricing_status, hotels_status]);
+    }, 5000);
+  } else {
+    clearInterval(interval);
+  }
+
+  return () => clearInterval(interval);
+}, [polling, itinerary_status, transfers_status, pricing_status, hotels_status]);
+
 
   const _updateTransferBooking = (arr1, arr2) => {
     const combinedArray = [...arr1]; // Copy arr1 to avoid modifying the original array 

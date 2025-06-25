@@ -370,7 +370,7 @@ const TaxiDetailModal = ({
           <div className="p-4 bg-white">
             <button
               className="w-full bg-red-500 text-white py-2 rounded-lg flex items-center justify-center"
-              onClick={() => handleDelete(booking)}
+              onClick={() => handleDelete(booking || data)}
               disabled={loading}
             >
               <div style={{ position: "relative" }}>

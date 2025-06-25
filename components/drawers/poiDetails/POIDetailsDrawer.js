@@ -209,6 +209,7 @@ const POIDetailsDrawer = (props) => {
                   getPaymentHandler={props?.getPaymentHandler}
                   removeDelete={props?.removeDelete}
                   activityData={activityData}
+                  
                 >
                   {props?.children}
                 </ActivityDetails>
