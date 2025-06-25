@@ -186,7 +186,7 @@ const Room = ({ index, data, setRooms, showError, removeRoom }) => {
       <div className="flex justify-between items-center mb-4">
         <div>
           <div className="font-medium">Adults</div>
-          <div className="text-xs text-gray-500">18+ years</div>
+          <div className="text-xs text-gray-500">12+ years</div>
         </div>
         <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
           <button

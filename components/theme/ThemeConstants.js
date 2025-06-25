@@ -1,0 +1,1 @@
+export  const  imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";

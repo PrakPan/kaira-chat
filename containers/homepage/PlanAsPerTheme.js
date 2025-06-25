@@ -192,7 +192,7 @@ const PlanAsPerTheme = (props) => {
           width="100%"
           height="100%"
           style={{ filter: "brightness(0.9)" }}
-          url={e.image}
+          url={e.overview_image}
         ></ImageLoader>
       </ImageContainer>
     </GridItem>
