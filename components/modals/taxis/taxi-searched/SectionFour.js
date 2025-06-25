@@ -5,16 +5,18 @@ import Accordion, {
   AccordionSummary,
   AccordionDetails,
 } from "../../../ui/Accordion";
-import axiosgozotaxiupdateinstance, { axiosTaxiBooking } from "../../../../services/bookings/UpdateTaxiGozo";
+import axiosgozotaxiupdateinstance, {
+  axiosTaxiBooking,
+} from "../../../../services/bookings/UpdateTaxiGozo";
 import { openNotification } from "../../../../store/actions/notification";
 import { connect } from "react-redux";
-
+import { MdLuggage } from "react-icons/md";
 
 const Container = styled.div`
   margin: 0;
   width: 100%;
   @media screen and (min-width: 768px) {
-  width: 100%;
+    width: 100%;
   }
 `;
 
@@ -40,15 +42,27 @@ const Section = (props) => {
   const [loading, setLoading] = useState(false);
 
   let bagCapacity = 0;
-  if (props.data?.taxi_category?.bag_capacity) bagCapacity += props.data.taxi_category.bag_capacity;
+  if (props.data?.taxi_category?.bag_capacity)
+    bagCapacity += props.data.taxi_category.bag_capacity;
 
   return (
     <Container className="font-lexend">
       <div className="flex flex-row gap-2 w-full">
-            <div className="font-bold text-lg p-[0.4rem] w-fit">
-            {props.data?.taxi_category?.seating_capacity + "-seater"}
+        <div className="font-bold text-lg p-[0.4rem] w-fit">
+          {props.data?.taxi_category?.seating_capacity + "-seater"}
+        </div>
+        {bagCapacity && (
+          <div
+            className="flex items-center justify-center font-bold text-lg p-[0.4rem] w-fit"
+          >
+            <MdLuggage />
+            
+            <>
+            {bagCapacity} Luggage bags
+            </>
           </div>
-      <FlexBox>
+        )}
+        {/* <FlexBox>
         <Accordion
           borderRadius="0.5rem"
           open={open}
@@ -84,7 +98,7 @@ const Section = (props) => {
             )}
           </AccordionDetails>
         </Accordion>
-      </FlexBox>
+      </FlexBox> */}
       </div>
     </Container>
   );
