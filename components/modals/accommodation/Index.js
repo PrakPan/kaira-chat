@@ -89,6 +89,8 @@ const ErrorContainer = styled.div`
 `;
 
 const POI = (props) => {
+  console.log("city id 1 is:",props)
+
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -181,10 +183,6 @@ const POI = (props) => {
     props.setUpdateBookingState(true);
     let stayBookings = props.plan;
     const index = stayBookings.findIndex((item) => item.id == props?.bookingId);
-    const itinerary_city = itineraryDaybyDay?.cities?.filter(
-      (item) => item?.city?.id == props.plan[index].city_id
-    );
-    // console.log("Iti City",itinerary_city);
     try {
       const requestData = {
         rates: rates,
@@ -196,7 +194,7 @@ const POI = (props) => {
         hotel_id: data?.id,
         source: props.provider,
         booking_id: props?.bookingId,
-        itinerary_city: itinerary_city[0]?.id,
+        itinerary_city: props?.itineraryId,
         city_id: props.plan[index].city_id,
       };
 

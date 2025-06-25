@@ -70,6 +70,7 @@ const GetInTouchContainer = styled.div`
 `;
 
 const Booking = (props) => {
+  console.log("change props bookinga:",props)
   const [paginationStatus, setPaginationStatus] = useState({
     traceId: null,
     page: 1,
@@ -404,6 +405,7 @@ const Booking = (props) => {
                     setStayBookings={props.setStayBookings}
                     setShowLoginModal={props?.setShowLoginModal}
                     handleClose={handleClose}
+                    itinerary_city_id={props.itinerary_city_id}
                   ></AccommodationSearched>
                 );
             }
@@ -452,7 +454,6 @@ const Booking = (props) => {
       });
   };
 
-  console.log("Show B Inside", props?.showBookingModal);
 
   const fetchHotels = () => {
     setLoading(true);
@@ -913,6 +914,9 @@ const Booking = (props) => {
               occupancies={filters.occupancies}
               setShowLoginModal={props?.setShowLoginModal}
               handleClose={handleClose}
+              cityId={props?.selectedBooking?.cityId}
+              plan={props.plan}
+              itinerary_city_id={props.itinerary_city_id}
             ></ViewHotelDetails>
           </>
         </Drawer>

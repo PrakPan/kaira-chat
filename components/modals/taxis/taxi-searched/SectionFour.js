@@ -1,16 +1,10 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import media from "../../../media";
-import Accordion, {
-  AccordionSummary,
-  AccordionDetails,
-} from "../../../ui/Accordion";
-import axiosgozotaxiupdateinstance, {
-  axiosTaxiBooking,
-} from "../../../../services/bookings/UpdateTaxiGozo";
+import { GiCarSeat } from "react-icons/gi";
 import { openNotification } from "../../../../store/actions/notification";
 import { connect } from "react-redux";
-import { MdLuggage } from "react-icons/md";
+import {  MdLuggage } from "react-icons/md";
 
 const Container = styled.div`
   margin: 0;
@@ -48,8 +42,9 @@ const Section = (props) => {
   return (
     <Container className="font-lexend">
       <div className="flex flex-row gap-2 w-full">
-        <div className="font-bold text-lg p-[0.4rem] w-fit">
-          {props.data?.taxi_category?.seating_capacity + "-seater"}
+        <div className="flex items-center gap-2 font-bold text-lg p-[0.4rem] w-fit">
+          <GiCarSeat />
+          {props.data?.taxi_category?.seating_capacity + `${props.data?.taxi_category?.seating_capacity==1?" seat":" seats"}`}
         </div>
         {bagCapacity && (
           <div

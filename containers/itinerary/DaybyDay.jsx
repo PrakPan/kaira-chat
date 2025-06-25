@@ -61,6 +61,7 @@ const DaybyDay = ({
   const cityRefs = useRef({});
   let startCity = itineraryDaybyDay?.start_city;
   let endCity = itineraryDaybyDay?.end_city;
+  const[itineraryCityId,setItineraryCityId]=useState(null)
 
   useEffect(() => {
     let array = [];
@@ -95,7 +96,8 @@ const DaybyDay = ({
     cost,
     costings_breakdown,
     images,
-    clickType
+    clickType,
+    itinerary_city_id
   ) => {
     {
       process.env.NODE_ENV === "production" &&
@@ -119,7 +121,6 @@ const DaybyDay = ({
       city: city,
       cityId: cityId,
       room_type: room_type,
-
       itinerary_name: itinerary_name,
       cost: Math.round(cost),
       costings_breakdown: costings_breakdown,
@@ -129,8 +130,7 @@ const DaybyDay = ({
     props.setShowBookingModal(true);
   };
 
-  function handleClickAc(i, data, city_id, clickType) {
-    console.log("Inside DayByDay", stayBookings[i]);
+  function handleClickAc(i, data, city_id,itinerary_city_id, clickType) {
     let name = stayBookings[i]?.["name"];
     let itinerary_id = stayBookings[i]?.["itinerary_id"];
     let itinerary_name = stayBookings[i]?.["itinerary_name"];
@@ -150,6 +150,7 @@ const DaybyDay = ({
     let cityId =
       stayBookings[i]?.city?.id || stayBookings[i]?.city_id || city_id;
     let room_type = stayBookings[i]?.["room"];
+    setItineraryCityId(itinerary_city_id)
     _changeBookingHandler(
       name,
       itinerary_id,
@@ -165,7 +166,8 @@ const DaybyDay = ({
       user_rating,
       number_of_reviews,
       itinerary_name,
-      clickType
+      clickType,
+      itinerary_city_id
     );
     data.clickType = clickType;
     setCurrentBooking(data);
@@ -562,6 +564,7 @@ const DaybyDay = ({
         _updatePaymentHandler={_updatePaymentHandler}
         _updateBookingHandler={props?._updateBookingHandler}
         selectedBooking={selectedBooking}
+        itinerary_city_id={itineraryCityId}
         setShowBookingModal={props?.setShowBookingModal}
         currentBooking={currentBooking}
         showBookingModal={props?.showBookingModal}

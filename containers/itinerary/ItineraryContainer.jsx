@@ -244,13 +244,15 @@ const ItineraryContainer = (props) => {
       let data = res.data;
       let stays = [];
       for (let i = 0; i < data?.cities.length; i++) {
+        console.log("itinerary city id2 is:".data?.cities[i])
         let hotels = data?.cities[i]?.hotels;
-        console.log("Hotels", hotels);
         let city_name = data?.cities[i]?.city?.name;
         let city_id = data?.cities[i]?.city?.id;
+        let itinerary_city_id=data?.cities[i]?.id
 
         if (hotels.length === 0) {
           stays.push({
+            itinerary_city_id,
             city_name,
             city_id,
             trace_city_id: data?.cities[i]?.id,
@@ -266,6 +268,7 @@ const ItineraryContainer = (props) => {
           });
         } else {
           for (let hotel of hotels) {
+            hotel.itinerary_city_id=itinerary_city_id,
             hotel.city_name = city_name;
             hotel.city_id = city_id;
             hotel.source = hotel?.images?.[0]?.source;

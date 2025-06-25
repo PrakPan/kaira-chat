@@ -55,8 +55,9 @@ const HotelBooking = ({
   CityData,
   start_date,
   setStayBookings,
+  itinerary_city_id
 }) => {
-  console.log("HB", booking);
+  console.log("itinerary_city_id is:",itinerary_city_id)
   let isPageWide = media("(min-width: 768px)");
   const [imageFail, setImageFail] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -296,7 +297,6 @@ const HotelBooking = ({
     setShowDetails(false);
   };
 
-  console.log("Show B", showBookingModal);
 
   return (
     <div className={`${!isPageWide ? "w-full" : "max-w-[54vw]"}`}>
@@ -778,6 +778,7 @@ const HotelBooking = ({
         setStayBookings={setStayBookings}
         CityData={CityData}
         onHide={() => setOpenViewDetails(false)}
+        itinerary_city_id={itinerary_city_id}
       ></BookingModal>
 
       {images ? (

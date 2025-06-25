@@ -133,7 +133,6 @@ const DescriptionText = styled.div`
 `;
 
 const Overview = (props) => {
-
   const isDesktop = useMediaQuery("(min-width:1148px)");
 
   const [ImagesLoaded, setImagesLoaded] = useState({
@@ -176,7 +175,6 @@ const Overview = (props) => {
       if (props.images[i]) images.push(props.images[i]);
     }
   } catch {}
-
 
   return (
     <Container>
@@ -933,7 +931,7 @@ const Overview = (props) => {
           </Heading>
 
           <Rooms
-          currentBooking={props?.currentBooking}
+            currentBooking={props?.currentBooking}
             data={props.data?.recommendations}
             checkInDate={props.data?.check_in}
             city={props.data?.city}
@@ -983,8 +981,7 @@ const Overview = (props) => {
             </a>
           </div>
         </div>
-      ) : props.data?.latitude &&
-        props.data?.longitude ? (
+      ) : props.data?.latitude && props.data?.longitude ? (
         <div>
           <Heading style={{ marginBlock: "1.5rem 1.25rem" }}>Location</Heading>
           <Address style={{ fontSize: "14px" }}>

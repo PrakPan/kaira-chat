@@ -63,7 +63,7 @@ const BackContainer = styled.div`
 
 const ItineraryCity = (props) => {
   let isPageWide = media("(min-width: 768px)");
-
+  console.log("itineraryciy is:", props);
   const router = useRouter();
   const [viewMore, setViewMore] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
@@ -110,12 +110,15 @@ const ItineraryCity = (props) => {
     setLoading(false);
   };
   const handleStay = (e, label, value, clickType) => {
+    console.log("cityindex5 is:", props?.city);
+
     e.stopPropagation();
     if (token)
       props?.handleClickAc(
         props?.index,
         props?.city,
         props?.city?.city?.id,
+        props?.city?.id,
         clickType
       );
     else props?.setShowLoginModal(true);
@@ -304,9 +307,10 @@ const ItineraryCity = (props) => {
                   return;
                 }
                 props.handleClickAc(
-                  props.index,
-                  stay[props.index],
-                  stay[props?.index]?.city_id
+                  props?.index,
+                  props?.city,
+                  props?.city?.city?.id,
+                  props?.city?.id
                 );
               }}
               images={

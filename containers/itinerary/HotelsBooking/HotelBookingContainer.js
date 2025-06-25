@@ -459,18 +459,6 @@ const HotelBookingContainer = ({
                 </div>
               )}
             </div>
-
-            {/* <Button
-              bgColor={"#F7E700"}
-              borderRadius="8px"
-              fontWeight="400"
-              padding="0.6rem 2.2rem"
-              hoverColor="white"
-              margin={!isPageWide ? "0.75rem 0 0 0" : "0"}
-              onclick={() => handleAddStay(`Add Stay in ${cityName}`, cityName)}
-            >
-              Add Stay in {cityName}
-            </Button> */}
           </div>
         </div>
       )}
