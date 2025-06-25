@@ -2977,7 +2977,7 @@ const NewMultiModeContainer = ({
                                     <div className="text-gray-500 mt-1">
                                       {getModeIcon(currentTransferData.mode)}
                                     </div>
-                                    <div>
+                                    <div className="w-full">
                                       <div className="font-semibold text-sm md:text-base">
                                         {currentTransferData.text}{" "}
                                         {priceOption.name
@@ -3008,10 +3008,7 @@ const NewMultiModeContainer = ({
                                           {priceOption.description}
                                         </div>
                                       )}
-                                    </div>
-                                  </div>
-
-                                  <div className="flex gap-2 justify-between mt-3">
+                                      <div className="flex gap-2 justify-between mt-3">
                                     <div className="font-semibold text-sm md:text-base">
                                       {currency} {price} {`/-`}{" "}
                                       <span className="font-normal">
@@ -3055,6 +3052,10 @@ const NewMultiModeContainer = ({
                                       )}
                                     </div>
                                   </div>
+                                    </div>
+                                  </div>
+
+                                  
                                 </div>
                               );
                             }
@@ -4844,8 +4845,8 @@ const OtherTransfer = ({
                 <div className="text-gray-500 mt-1">
                   {getModeIcon(otherTransfer.mode)}
                 </div>
-                <div>
-                  <div className="font-semibold text-sm md:text-base">
+                <div className="w-full">
+                  <div className="font-semibold text-sm md:text-base w-full">
                     {otherTransfer.text}{" "}
                     {priceOption.name ? `- ${priceOption.name}` : ""}
                   </div>
@@ -4866,9 +4867,8 @@ const OtherTransfer = ({
                       {priceOption.description}
                     </div>
                   )}
-                </div>
-              </div>
-              <div className="flex flex-row md:flex-col mt-2 gap-2 justify-between">
+
+                   <div className="flex flex-row md:flex-col mt-2 gap-2 justify-between w-full">
                 <div className="text-md font-bold flex flex-col">
                   <span
                     className="!font-[lexend]"
@@ -4921,6 +4921,9 @@ const OtherTransfer = ({
                   )}
                 </div>
               </div>
+                </div>
+              </div>
+             
             </div>
           );
         })}
