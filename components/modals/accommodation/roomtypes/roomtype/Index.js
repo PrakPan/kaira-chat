@@ -195,7 +195,7 @@ const RoomType = (props) => {
                     : null}
                 </div>
 
-                <div>
+                {/* <div>
                   {props?.cancellationPolicy && (
                     <div
                       className="text-[14px]"
@@ -204,7 +204,7 @@ const RoomType = (props) => {
                       }}
                     ></div>
                   )}
-                </div>
+                </div> */}
               </div>
             )}
           </div>

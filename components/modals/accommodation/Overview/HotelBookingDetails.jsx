@@ -1011,6 +1011,8 @@ const HotelBookingDetails = (props) => {
             duration={props?.data?.duration}
             cancellationPolicy={props?.data?.cancellation_policies}
           ></Rooms>
+
+          
         </>
       )}
 

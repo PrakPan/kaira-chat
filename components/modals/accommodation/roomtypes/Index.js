@@ -64,7 +64,16 @@ const Rooms = (props) => {
     return [];
   };
 
-  return <div className="flex flex-col gap-3">{rooms}</div>;
+  return (<><div className="flex flex-col gap-3">{rooms} <div>
+                  {props?.cancellationPolicy && (
+                    <div
+                      className="text-[14px]"
+                      dangerouslySetInnerHTML={{
+                        __html: props?.cancellationPolicy,
+                      }}
+                    ></div>
+                  )}
+          </div></div></>)
 };
 
 export default Rooms;

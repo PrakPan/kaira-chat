@@ -345,6 +345,14 @@ const TaxiDetailModal = ({
                   </div>
                 </div>
               </div>
+              {!loading && data?.cancellation_policy  && (
+                    <div
+                      className="text-[14px]"
+                      dangerouslySetInnerHTML={{
+                        __html: data?.cancellation_policy,
+                      }}
+                    ></div>
+              )}
             </div>
           </div>
         </div>
