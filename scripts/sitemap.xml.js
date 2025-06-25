@@ -1,10 +1,14 @@
 // const { default: axios } = require("axios");
 const axios = require("axios");
 const fs = require("fs");
+const { baseApiUrl } = require("mapbox-gl");
 const path = require("path");
+require('dotenv').config();
+
+console.log(process.env.YOUR_ENV_VAR);
 
 const generateSitemap = async () => {
-  const BASE_URL = "https://mercury.tarzanway.com";
+  const BASE_URL = process.env.NEXT_PUBLIC_MERCURY_HOST;
 
   // Fetch continents list
   const continents = await axios.get(
