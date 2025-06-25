@@ -307,63 +307,39 @@ const ComboFlight = (props) => {
   }, [pax]);
 
   useEffect(() => {
-    if (!preferredDepartureTime) return;
+  if (!preferredDepartureTime) return;
 
-    console.log("Flight search conditions:", {
-      showModal: props.showComboFlightModal,
-      hasToken: !!props.token,
-      preferredTime: preferredDepartureTime,
-      isDesktop: isPageWide,
-      flightsCount: flights.length,
-      timeUpdated,
-      pax,
-    });
-
-    const shouldFetchFlights =
-      props.showComboFlightModal &&
-      props.token &&
-      preferredDepartureTime &&
-      (timeUpdated || flights.length === 0);
-
-    console.log(
-      "FFFF",
-      props.showComboFlightModal,
-      props.token,
-      preferredDepartureTime,
-      timeUpdated
-    );
-
-    if (shouldFetchFlights && !isFetching) {
-      console.log("Fetching flights with time:", preferredDepartureTime);
-      _FetchFlightsHandler();
-      setTimeUpdated(false);
-    }
-  }, [
-    props.showComboFlightModal,
-    props.token,
-    preferredDepartureTime,
-    isPageWide,
+  console.log("Flight search conditions:", {
+    showModal: props.showComboFlightModal,
+    hasToken: !!props.token,
+    preferredTime: preferredDepartureTime,
+    isDesktop: isPageWide,
+    flightsCount: flights.length,
     timeUpdated,
-  ]);
+    pax,
+  });
 
-  useEffect(() => {
-    if (!preferredDepartureTime) return;
+  const shouldFetchFlights =
+    props.showComboFlightModal &&
+    props.token &&
+    preferredDepartureTime &&
+    (timeUpdated || flights.length === 0) &&
+    !props?.skipFetch;
 
-    const shouldFetchFlights =
-      props.showComboFlightModal && props.token && preferredDepartureTime;
+  if (shouldFetchFlights && !isFetching) {
+    console.log("Fetching flights with time:", preferredDepartureTime);
+    _FetchFlightsHandler();
+    setTimeUpdated(false);
+  }
+}, [
+  props.showComboFlightModal,
+  props.token,
+  preferredDepartureTime,
+  isPageWide,
+  timeUpdated,
+  props?.skipFetch,
+]);
 
-    console.log(
-      "FFFF",
-      props.showComboFlightModal,
-      props.token,
-      preferredDepartureTime,
-      !flights.length,
-      !props?.skipFetch
-    );
-    if (!props?.skipFetch && shouldFetchFlights) {
-      _FetchFlightsHandler();
-    }
-  }, [props.showComboFlightModal, props.token, props?.skipFetch, isPageWide]);
 
   useEffect(() => {
     console.log("F Resu", props?.flightResults, props?.selectedData);
