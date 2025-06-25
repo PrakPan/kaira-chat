@@ -915,6 +915,7 @@ const Booking = (props) => {
               setShowLoginModal={props?.setShowLoginModal}
               handleClose={handleClose}
               cityId={props?.selectedBooking?.cityId}
+              plan={props.plan}
               itinerary_city_id={props.itinerary_city_id}
             ></ViewHotelDetails>
           </>

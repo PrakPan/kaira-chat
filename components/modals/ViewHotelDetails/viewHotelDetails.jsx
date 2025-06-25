@@ -189,6 +189,8 @@ const ViewHotelDetails = (props) => {
         });
     }
   };
+  const index = props.plan.findIndex((item) => item.itinerary_city_id == props?.itinerary_city_id);
+  console.log("cityid2 is:",props?.itinerary_city_id)
 
   const updateBooking = (recommendation_id, rates) => {
     props.setUpdateBookingState(true);
@@ -234,7 +236,7 @@ const ViewHotelDetails = (props) => {
             city_name: props.plan[index].city_name,
             ...response?.data,
             source: response?.data?.images?.[0]?.source,
-            itinerary_city: props?.itinerary_city_id,
+            itinerary_city_id: props?.itinerary_city_id,
           };
           props.setStayBookings(stayBookings);
           props.openNotification({
