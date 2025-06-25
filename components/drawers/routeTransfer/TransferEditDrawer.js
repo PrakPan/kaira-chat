@@ -2473,16 +2473,17 @@ const NewMultiModeContainer = ({
         }
       }
     } else {
-     
       if (!selectedModeIds[currentStep - 1]) {
         handleSelect(currentStep - 1, null, "", currentTransfer.mode);
-        
+
         const paxData = {
           adults: pax.adults,
           children: pax.children,
           infants: pax.infants,
         };
-        const departureDateTime = `${calculatedStartTime.format("YYYY-MM-DD")}T${calculatedStartTime.format("HH:mm")}:00`;
+        const departureDateTime = `${calculatedStartTime.format(
+          "YYYY-MM-DD"
+        )}T${calculatedStartTime.format("HH:mm")}:00`;
         loadTransfers(currentTransfer, paxData, departureDateTime);
       }
     }
@@ -2819,8 +2820,6 @@ const NewMultiModeContainer = ({
 
                   const currentTransferData = getCurrentTransferData(option);
 
-                  
-
                   if (
                     currentTransferData.prices &&
                     currentTransferData.prices.length > 0
@@ -2866,6 +2865,9 @@ const NewMultiModeContainer = ({
                                 className="time-dropdown-container relative w-full sm:w-auto"
                                 id="time-dropdown"
                               >
+                                <div className="text-sm font-medium text-gray-700 mb-2">
+                                  Departure Time
+                                </div>
                                 <div
                                   className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
                                   onClick={(e) => {
@@ -2874,29 +2876,30 @@ const NewMultiModeContainer = ({
                                   }}
                                 >
                                   <span className="text-sm font-medium">
-                                    Departure Time:{" "}
                                     {formatTimeForDisplay(
                                       currentModeDepartureTime
                                     )}
                                   </span>
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-4 w-4 ml-2"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
+                                  <button
+                                    onClick={() =>
+                                      setShowTimeDropdown(!showTimeDropdown)
+                                    }
                                   >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d={
-                                        showTimeDropdown
-                                          ? "M5 15l7-7 7 7"
-                                          : "M19 9l-7 7-7-7"
-                                      }
-                                    />
-                                  </svg>
+                                    <svg
+                                      className={`w-5 h-5 text-gray-600 transition-transform`}
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                      />
+                                    </svg>
+                                  </button>
                                 </div>
 
                                 {showTimeDropdown && (
@@ -3009,53 +3012,51 @@ const NewMultiModeContainer = ({
                                         </div>
                                       )}
                                       <div className="flex gap-2 justify-between mt-3">
-                                    <div className="font-semibold text-sm md:text-base">
-                                      {currency} {price} {`/-`}{" "}
-                                      <span className="font-normal">
-                                        for{" "}
-                                        {pax?.adults +
-                                          pax?.children +
-                                          pax?.infants}{" "}
-                                        people{" "}
-                                      </span>
-                                    </div>
-                                    <div
-                                      className="cursor-pointer"
-                                      onClick={() => {
-                                        const selectedPriceData = {
-                                          ...currentTransferData,
-                                          selectedPrice: priceOption,
-                                        };
-                                        handleModeSelect(
-                                          currentStep - 1,
-                                          priceOptionId,
-                                          selectedPriceData,
-                                          currentTransferData.mode
-                                        );
-                                      }}
-                                    >
-                                      {selectedModeIds[currentStep - 1] ===
-                                      priceOptionId ? (
-                                        <div className="flex items-center gap-1">
-                                          <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
-                                          <span className="text-sm">
-                                            {/* Selected */}
+                                        <div className="font-semibold text-sm md:text-base">
+                                          {currency} {price} {`/-`}{" "}
+                                          <span className="font-normal">
+                                            for{" "}
+                                            {pax?.adults +
+                                              pax?.children +
+                                              pax?.infants}{" "}
+                                            people{" "}
                                           </span>
                                         </div>
-                                      ) : (
-                                        <div className="flex items-center gap-1">
-                                          <ImCheckboxUnchecked className="h-4 w-4 md:h-5 md:w-5" />
-                                          <span className="text-sm">
-                                            {/* Select */}
-                                          </span>
+                                        <div
+                                          className="cursor-pointer"
+                                          onClick={() => {
+                                            const selectedPriceData = {
+                                              ...currentTransferData,
+                                              selectedPrice: priceOption,
+                                            };
+                                            handleModeSelect(
+                                              currentStep - 1,
+                                              priceOptionId,
+                                              selectedPriceData,
+                                              currentTransferData.mode
+                                            );
+                                          }}
+                                        >
+                                          {selectedModeIds[currentStep - 1] ===
+                                          priceOptionId ? (
+                                            <div className="flex items-center gap-1">
+                                              <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
+                                              <span className="text-sm">
+                                                {/* Selected */}
+                                              </span>
+                                            </div>
+                                          ) : (
+                                            <div className="flex items-center gap-1">
+                                              <ImCheckboxUnchecked className="h-4 w-4 md:h-5 md:w-5" />
+                                              <span className="text-sm">
+                                                {/* Select */}
+                                              </span>
+                                            </div>
+                                          )}
                                         </div>
-                                      )}
+                                      </div>
                                     </div>
                                   </div>
-                                    </div>
-                                  </div>
-
-                                  
                                 </div>
                               );
                             }
@@ -4205,7 +4206,7 @@ const OtherTransfer = ({
 
     const transferKey = `${transferData.id}-${currentStep}`;
     setLoadingTransfers((prev) => ({ ...prev, [transferKey]: true }));
-    setError(null); 
+    setError(null);
 
     try {
       const requestBody = {
@@ -4225,7 +4226,6 @@ const OtherTransfer = ({
       const data = response.data;
 
       if (data.success && data.data) {
-        
         setTraceId(data.trace_id);
 
         // Update the dynamic transfer data
@@ -4261,7 +4261,7 @@ const OtherTransfer = ({
         error?.message ||
         "Failed to load transfer options";
       setError(errorMsg);
-  
+
       setDynamicTransferData((prev) => {
         const newData = { ...prev };
         delete newData[transferKey];
@@ -4729,33 +4729,36 @@ const OtherTransfer = ({
             className="time-dropdown-container relative w-full sm:w-auto"
             ref={ref}
           >
+            <div className="text-sm font-medium text-gray-700 mb-2">
+              Departure Time
+            </div>
             <div
               className="flex items-center justify-between p-2 border rounded-md cursor-pointer bg-white hover:bg-gray-50"
               onClick={() => setShowTimeDropdown((prev) => !prev)}
             >
               <span className="text-sm font-medium">
-                Departure Time: {formatTimeForDisplay(departureTime)}
+                {formatTimeForDisplay(departureTime)}
               </span>
-              <svg
-                className={`w-4 h-4 transition-transform ${
-                  showTimeDropdown ? "transform rotate-180" : ""
-                }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M19 9l-7 7-7-7"
-                ></path>
-              </svg>
+              <button>
+                <svg
+                  className={`w-5 h-5 text-gray-600 transition-transform`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </button>
             </div>
 
             {showTimeDropdown && (
-              <div className="absolute right-0 z-[11] mt-1 w-48 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
+              <div className="absolute right-0 z-[15] mt-1 w-48 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
                 {timeOptions.map((time, index) => (
                   <div
                     key={index}
@@ -4776,7 +4779,7 @@ const OtherTransfer = ({
           </div>
         </div>
 
-        <div className="flex justify-end py-2">
+        <div className="flex justify-end ">
           <Pax
             setShowPax={setShowPax}
             pax={pax}
@@ -4868,62 +4871,67 @@ const OtherTransfer = ({
                     </div>
                   )}
 
-                   <div className="flex flex-row md:flex-col mt-2 gap-2 justify-between w-full">
-                <div className="text-md font-bold flex flex-col">
-                  <span
-                    className="!font-[lexend]"
-                    style={{ fontFamily: "Lexend" }}
-                  >
-                    {currency} {price} {`/-`} <span className="font-normal"> for {pax?.adults + pax?.children + pax?.infants} people</span>
-                  </span>
-                </div>
+                  <div className="flex flex-row md:flex-col mt-2 gap-2 justify-between w-full">
+                    <div className="text-md font-bold flex flex-col">
+                      <span
+                        className="!font-[lexend]"
+                        style={{ fontFamily: "Lexend" }}
+                      >
+                        {currency} {price} {`/-`}{" "}
+                        <span className="font-normal">
+                          {" "}
+                          for {pax?.adults + pax?.children + pax?.infants}{" "}
+                          people
+                        </span>
+                      </span>
+                    </div>
 
-                <div
-                  className={`cursor-pointer ${
-                    updateLoading && !isOptionLoading ? "opacity-50" : ""
-                  }`}
-                  onClick={() => {
-                    if (updateLoading && !isOptionLoading) return;
-                    const selectedPriceData = {
-                      ...otherTransfer,
-                      selectedPrice: {
-                        ...priceOption,
-                        result_index: priceIndex,
-                      },
-                    };
+                    <div
+                      className={`cursor-pointer ${
+                        updateLoading && !isOptionLoading ? "opacity-50" : ""
+                      }`}
+                      onClick={() => {
+                        if (updateLoading && !isOptionLoading) return;
+                        const selectedPriceData = {
+                          ...otherTransfer,
+                          selectedPrice: {
+                            ...priceOption,
+                            result_index: priceIndex,
+                          },
+                        };
 
-                    handleModeSelect(
-                      currentStep - 1,
-                      priceOptionId,
-                      selectedPriceData,
-                      otherTransfer.mode
-                    );
-                  }}
-                >
-                  {isOptionLoading || (updateLoading && isOptionSelected) ? (
-                    <div className="flex items-center gap-1">
-                      <PulseLoader
-                        size={15}
-                        speedMultiplier={0.6}
-                        color="#000000"
-                      />
+                        handleModeSelect(
+                          currentStep - 1,
+                          priceOptionId,
+                          selectedPriceData,
+                          otherTransfer.mode
+                        );
+                      }}
+                    >
+                      {isOptionLoading ||
+                      (updateLoading && isOptionSelected) ? (
+                        <div className="flex items-center gap-1">
+                          <PulseLoader
+                            size={15}
+                            speedMultiplier={0.6}
+                            color="#000000"
+                          />
+                        </div>
+                      ) : isOptionSelected && isResultSelected ? (
+                        <div className="flex items-center gap-1">
+                          <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
+                          <span className="text-sm"></span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1">
+                          <ImCheckboxUnchecked className="h-4 w-4 md:h-5 md:w-5" />
+                          <span className="text-sm"></span>
+                        </div>
+                      )}
                     </div>
-                  ) : isOptionSelected && isResultSelected ? (
-                    <div className="flex items-center gap-1">
-                      <ImCheckboxChecked className="h-4 w-4 md:h-5 md:w-5 text-blue-600" />
-                      <span className="text-sm"></span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-1">
-                      <ImCheckboxUnchecked className="h-4 w-4 md:h-5 md:w-5" />
-                      <span className="text-sm"></span>
-                    </div>
-                  )}
+                  </div>
                 </div>
               </div>
-                </div>
-              </div>
-             
             </div>
           );
         })}
