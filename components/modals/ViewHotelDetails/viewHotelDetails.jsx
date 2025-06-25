@@ -88,7 +88,7 @@ const ErrorContainer = styled.div`
 `;
 
 const ViewHotelDetails = (props) => {
-  console.log("login props are:", props);
+  console.log("login props are2:", props);
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -193,12 +193,7 @@ const ViewHotelDetails = (props) => {
   const updateBooking = (recommendation_id, rates) => {
     props.setUpdateBookingState(true);
     let stayBookings = props.plan;
-    const index = stayBookings.findIndex((item) => item.id == props?.bookingId);
-    const itinerary_city = itineraryDaybyDay?.cities?.filter(
-      (item) => item?.city?.id == props.plan[index].city_id
-    );
-    // console.log("Iti City",itinerary_city);
-    console.log("hotel name:", data?.name);
+    const index = stayBookings.findIndex((item) => item.itinerary_city_id == props?.itinerary_city_id);
     const requestData = {
       rates: rates,
       itinerary_code: data?.itinerary_code,
@@ -209,7 +204,7 @@ const ViewHotelDetails = (props) => {
       hotel_id: data?.id,
       source: props.provider,
       booking_id: props?.bookingId,
-      itinerary_city: itinerary_city[0]?.id,
+      itinerary_city: props?.itinerary_city_id,
       city_id: props.plan[index].city_id,
     };
 
@@ -239,6 +234,7 @@ const ViewHotelDetails = (props) => {
             city_name: props.plan[index].city_name,
             ...response?.data,
             source: response?.data?.images?.[0]?.source,
+            itinerary_city: props?.itinerary_city_id,
           };
           props.setStayBookings(stayBookings);
           props.openNotification({

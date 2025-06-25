@@ -12,7 +12,7 @@ import SkeletonCard from "../../../ui/SkeletonCard";
 import { connect, useDispatch } from "react-redux";
 import Tag from "../../../cards/bookings/activitybooking/imagecontainer/Tag";
 import { PulseLoader } from "react-spinners";
-import { setStays, updateStays } from "../../../../store/actions/StayBookings";
+import { setStays } from "../../../../store/actions/StayBookings";
 import { useRouter } from "next/router";
 import { axiosDeleteBooking } from "../../../../services/itinerary/bookings";
 import { dateFormat } from "../../../../helper/DateUtils";
@@ -159,6 +159,7 @@ const HotelBookingDetails = (props) => {
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
   const itinerary = useSelector((state) => state.Itinerary);
   const stays = useSelector((state) => state.Stays);
+  console.log("stays3 are:",stays)
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -225,19 +226,19 @@ const HotelBookingDetails = (props) => {
       if (response.status === 204) {
         const newItinerary = JSON.parse(JSON.stringify(itinerary));
         var newStays = JSON.parse(JSON.stringify(stays));
-
         newItinerary.cities = newItinerary.cities.map((item) => {
-          console.log("updated booking 1 is:", item?.hotels);
           if (item?.hotels?.[0]?.id == props?.id) {
-            console.log("updated booking  is:", item?.hotels);
             item.hotels = [];
+            item.itinerary_city_id=item?.itinerary_city_id
           }
           return item;
         });
 
         newStays = newStays.map((item) => {
+          console.log('props5:',item)
           if (item?.id === props?.id) {
             return {
+              itinerary_city_id:item?.itinerary_city_id,
               check_in: item?.check_in,
               check_out: item?.check_out,
               city_id: item?.city_id,
@@ -250,7 +251,6 @@ const HotelBookingDetails = (props) => {
         });
 
         dispatch(SetCallPaymentInfo(!CallPaymentInfo));
-        dispatch(updateStays(props?.id));
         dispatch(setStays(newStays));
         dispatch(setItinerary(newItinerary));
         setLoading(false);
