@@ -1,5 +1,5 @@
 export const getIndianPrice = (number) => {
-  var x = number;
+  var x = Math.round(number);
   x = x.toString();
   var lastThree = x.substring(x.length - 3);
   var otherNumbers = x.substring(0, x.length - 3);
