@@ -306,7 +306,7 @@ const ComboFlight = (props) => {
     }
   }, [pax]);
 
-  useEffect(() => {
+useEffect(() => {
   if (!preferredDepartureTime) return;
 
   console.log("Flight search conditions:", {
@@ -317,16 +317,17 @@ const ComboFlight = (props) => {
     flightsCount: flights.length,
     timeUpdated,
     pax,
+    isFetching
   });
 
   const shouldFetchFlights =
     props.showComboFlightModal &&
     props.token &&
     preferredDepartureTime &&
-    (timeUpdated || flights.length === 0) &&
-    !props?.skipFetch;
+    !props?.skipFetch &&
+    !isFetching; 
 
-  if (shouldFetchFlights && !isFetching) {
+  if (shouldFetchFlights) {
     console.log("Fetching flights with time:", preferredDepartureTime);
     _FetchFlightsHandler();
     setTimeUpdated(false);
@@ -334,10 +335,10 @@ const ComboFlight = (props) => {
 }, [
   props.showComboFlightModal,
   props.token,
-  preferredDepartureTime,
+  preferredDepartureTime, 
   isPageWide,
-  timeUpdated,
   props?.skipFetch,
+  
 ]);
 
 
