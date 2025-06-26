@@ -134,16 +134,14 @@ const mapDispatchToProps = (dispatch) => ({
 export default connect(null, mapDispatchToProps)(TravelPlanner);
 
 export async function getStaticPaths() {
-  const paths=[]
   try {
     const response = await axiosPageList.get("?page_type=Theme");
 
     if (response?.data?.success) {
-      response.data.data.pages.map((path) => {
-
-        paths.push(path.slug)
-      });
-      return { paths:paths, fallback: false };
+      const paths = response.data.data.pages.map((path) => ({
+        params: { slug: path.slug },
+      }));
+      return { paths, fallback: false };
     } else {
       console.error("Failed to fetch paths.");
       return { paths: [], fallback: false };
@@ -152,7 +150,6 @@ export async function getStaticPaths() {
     console.error("[ERROR][getStaticPaths]: ", err.message);
     return { paths: [], fallback: false };
   }
-
 }
 
 export async function getStaticProps({ params }) {
