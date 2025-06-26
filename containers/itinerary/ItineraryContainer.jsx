@@ -462,9 +462,9 @@ const ItineraryContainer = (props) => {
     }
 
     const itineraryFailure = status?.ITINERARY === "FAILURE";
-    const notPrepared = res.data?.status == "Not Prepared";
+    // const notPrepared = res.data?.status == "Not Prepared";
 
-    if (itineraryFailure || notPrepared) {
+    if (itineraryFailure) {
       console.log("Itinerary failure or status not PREPARED. Redirecting to thank-you.");
       setPolling(false);
       router.push("/thank-you");
