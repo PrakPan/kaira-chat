@@ -729,6 +729,7 @@ const TransferBooking = ({
                      {showVehicleDrawer && (
         <TransferDrawer
           show={showVehicleDrawer}
+        
           // error={error}
           setHandleShow={setShowVehicleDrawer}
           data={vehicleDetails}
@@ -1561,7 +1562,7 @@ const FlightBooking = ({
   return (
     <div className="mt-3 ml-1 md:ml-7 flex flex-col w-full items-center justify-center ">
       <div className=" w-full items-center">
-       {booking?.transfer_details?.items[0]?.segments[0]?.origin?.city_name && booking?.transfer_details?.items[0]?.segments[0]?.destination?.city_name && <> <div className="font-medium text-[15px]  inline flex items-center gap-1">
+       {booking?.transfer_details?.items[0]?.segments[0]?.origin?.city_name && booking?.transfer_details?.items[0]?.segments[booking?.transfer_details?.items[0]?.segments?.length - 1]?.destination?.city_name && <> <div className="font-medium text-[15px]  inline flex items-center gap-1">
           <FaPlaneDeparture color="#C5C1C1" /> &nbsp;
           {booking?.transfer_details?.items[0]?.segments[0]?.origin?.city_name ||
             booking?.transfer_details?.source?.city_name}{" "}
@@ -1577,7 +1578,7 @@ const FlightBooking = ({
               fill="#1F1F1F"
             />
           </svg>{" "}
-          {booking?.transfer_details?.items[0]?.segments[0]?.destination?.city_name ||
+          {booking?.transfer_details?.items[0]?.segments[booking?.transfer_details?.items[0]?.segments?.length - 1]?.destination?.city_name ||
             booking?.transfer_details?.destination?.city_name}
         </div>
         <div className="text-[10px] ml-[20px]">
