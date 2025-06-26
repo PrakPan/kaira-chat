@@ -297,14 +297,14 @@ const ComboFlight = (props) => {
     }
   }
 
-  useEffect(() => {
-    if (paxChanged) {
-      console.log("Pax changed, setting timeUpdated to trigger new search");
-      setTimeUpdated(true);
-    } else {
-      setPaxChanged(true);
-    }
-  }, [pax]);
+  // useEffect(() => {
+  //   if (paxChanged) {
+  //     console.log("Pax changed, setting timeUpdated to trigger new search");
+  //     setTimeUpdated(true);
+  //   } else {
+  //     setPaxChanged(true);
+  //   }
+  // }, [pax]);
 
 useEffect(() => {
   if (!preferredDepartureTime) return;
@@ -338,7 +338,7 @@ useEffect(() => {
   preferredDepartureTime, 
   isPageWide,
   props?.skipFetch,
-  
+  pax,
 ]);
 
 
