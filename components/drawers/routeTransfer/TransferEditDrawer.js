@@ -4157,11 +4157,10 @@ const OtherTransfer = ({
   const [localSelectedData, setLocalSelectedData] = useState([]);
   const [isResultSelected, setIsResultSelected] = useState(false);
   const itinerary_id = useSelector((state) => state.ItineraryId);
-  const [departureTime, setDepartureTime] = useState(
-    currentModeDepartureTime || "00:00"
-  );
+  
+  // Initialize with props values directly
+  const [departureTime, setDepartureTime] = useState(currentModeDepartureTime);
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
-
   const [departureDate, setDepartureDate] = useState(currentModeDepartureDate);
 
   const [lastRequestData, setLastRequestData] = useState(null);
@@ -4177,6 +4176,19 @@ const OtherTransfer = ({
       ? selectedBooking.pax.number_of_infants
       : number_of_infants,
   });
+
+  // Update state when props change
+  useEffect(() => {
+    if (currentModeDepartureDate && currentModeDepartureDate !== departureDate) {
+      setDepartureDate(currentModeDepartureDate);
+    }
+  }, [currentModeDepartureDate]);
+
+  useEffect(() => {
+    if (currentModeDepartureTime && currentModeDepartureTime !== departureTime) {
+      setDepartureTime(currentModeDepartureTime);
+    }
+  }, [currentModeDepartureTime]);
 
   const generateTimeOptions = () => {
     const options = [];
@@ -4283,22 +4295,28 @@ const OtherTransfer = ({
     // Also call if we had an error (to retry)
     if (
       (paxChanged || timeChanged || dateChanged) &&
-      selectedResult?.transfer
+      selectedResult?.transfer &&  !isResultSelected 
     ) {
-      const departureDateTime = `${departureDate}T${departureTime}:00`;
+      // Use props values as fallback
+      const finalDate = departureDate || currentModeDepartureDate;
+      const finalTime = departureTime || currentModeDepartureTime;
+      
+      if (finalDate && finalTime) {
+        const departureDateTime = `${finalDate}T${finalTime}:00`;
 
-      // Clear error before making new request but don't clear otherTransfer yet
-      setError(null);
+        // Clear error before making new request but don't clear otherTransfer yet
+        setError(null);
 
-      // Always use selectedResult.transfer as the source of truth
-      loadTransfers(selectedResult.transfer, pax, departureDateTime);
+        // Always use selectedResult.transfer as the source of truth
+        loadTransfers(selectedResult.transfer, pax, departureDateTime);
+      }
     }
 
     // Update last states
     setLastPaxState(currentPaxString);
     setLastTimeState(departureTime);
     setLastDateState(departureDate);
-  }, [pax, departureTime, departureDate, selectedResult?.transfer, error]);
+  }, [pax, departureTime, departureDate, selectedResult?.transfer, error, currentModeDepartureDate, currentModeDepartureTime]);
 
   useEffect(() => {
     if (selectedResult?.transfer && !otherTransfer && !error) {
@@ -4359,11 +4377,15 @@ const OtherTransfer = ({
   }, [selectedResult]);
 
   useEffect(() => {
-    if (selectedResult?.transfer) {
-      const departureDateTime = `${
-        departureDate || currentModeDepartureDate
-      }T${departureTime}:00`;
-      loadTransfers(selectedResult.transfer, pax, departureDateTime);
+    if (selectedResult?.transfer && !isResultSelected) {
+      // Use props values as fallback
+      const finalDate = departureDate || currentModeDepartureDate;
+      const finalTime = departureTime || currentModeDepartureTime;
+      
+      if (finalDate && finalTime) {
+        const departureDateTime = `${finalDate}T${finalTime}:00`;
+        loadTransfers(selectedResult.transfer, pax, departureDateTime);
+      }
     }
   }, [selectedResult?.transfer, token]);
 
@@ -4531,8 +4553,9 @@ const OtherTransfer = ({
       throw new Error("No valid transfer options selected");
     }
 
-    const dateToUse = newDate || departureDate;
-    const timeToUse = newTime || departureTime;
+    // Use props values as fallback, ensuring we have valid values
+    const dateToUse = newDate || departureDate || currentModeDepartureDate;
+    const timeToUse = newTime || departureTime || currentModeDepartureTime;
 
     const requestBody = {
       destination_itinerary_city: destination_itinerary_city_id
@@ -4699,11 +4722,17 @@ const OtherTransfer = ({
   const retryLoadTransfers = () => {
     if (otherTransfer || Object.keys(dynamicTransferData).length > 0) {
       setError(null);
-      const departureDateTime = `${departureDate}T${departureTime}:00`;
-      const transferToUse =
-        otherTransfer || Object.values(dynamicTransferData)[0];
-      loadTransfers(transferToUse, pax, departureDateTime);
-    }
+      // Use props values as fallback
+      const finalDate = departureDate || currentModeDepartureDate;
+      const finalTime = departureTime || currentModeDepartureTime;
+      
+      if (finalDate && finalTime) {
+        const departureDateTime = `${finalDate}T${finalTime}:00`;
+        const transferToUse =
+          otherTransfer || Object.values(dynamicTransferData)[0];
+        loadTransfers(transferToUse, pax, departureDateTime);
+      }
+    } 
   };
 
   return (
