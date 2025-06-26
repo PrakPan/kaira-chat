@@ -126,7 +126,7 @@ const SlideOne = (props) => {
           className="w-fit flex"
         >
           <Question hover_pointer>Activity Preferences?</Question>
-          <div style={{ flexGrow: "1", textAlign: "right" }}>
+          <div style={{ flexGrow: "1", textAlign: "right" ,marginTop:"4px"}}>
             <AiFillCaretDown
               style={{ verticalAlign: "initial" }}
               className="hover-pointer"

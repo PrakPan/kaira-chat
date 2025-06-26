@@ -61,6 +61,7 @@ const Container = styled.div`
 const Typography = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: flex-end;
   font-weight: 600;
   font-size: 16px;
   position: absolute;
@@ -68,9 +69,23 @@ const Typography = styled.div`
   left: 16px;
   right: 5px;
   color: white;
-  animation: 0.5s ${LeftSlideOut};
-  animation: 0.5s ${RightSlideOut};
+
+  .text-wrap {
+    max-width: 80%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.2;
+  }
+
+  .AnimateLeft {
+    animation: 0.5s ${LeftSlideOut};
+  }
+
+  .AnimateRight {
+    animation: 0.5s ${RightSlideOut};
+  }
 `;
+
 
 const ImageContainer = styled.div`
   overflow: hidden;
@@ -165,27 +180,25 @@ export default function PoiCard(props) {
       <Overlay />
 
       {props.data.name && (
-        <Typography>
-          <div className="leading-[5px]">
-            <p className="AnimateLeft">{props.data.name}</p>
-
-            {stars && (
-              <div className="text-white flex flex-row items-center gap-1 text-xs AnimateLeft">
-                <span className="flex flex-row gap-1 text-[#FFD201]">
-                  {stars}
-                </span>
-                {props.data.rating} ({props.data?.user_ratings_total})
-              </div>
-            )}
-          </div>
-
-          <div>
-            <MdNavigateNext
-              style={{ fontSize: "1.8rem" }}
-              className="AnimateRight"
-            />
-          </div>
-        </Typography>
+       <Typography>
+       <div className="text-wrap">
+         <p className="AnimateLeft">{props.data.name}</p>
+         {stars && (
+           <div className="text-white flex flex-row items-center gap-1 text-xs AnimateLeft">
+             <span className="flex flex-row gap-1 text-[#FFD201]">{stars}</span>
+             {props.data.rating} ({props.data?.user_ratings_total})
+           </div>
+         )}
+       </div>
+     
+       <div>
+         <MdNavigateNext
+           style={{ fontSize: "1.8rem" }}
+           className="AnimateRight"
+         />
+       </div>
+     </Typography>
+     
       )}
 
       <POIDetailsDrawer

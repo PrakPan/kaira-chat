@@ -4,8 +4,6 @@ import { connect } from "react-redux";
 import { useEffect } from "react";
 import CityPage from "../../../../../containers/city/Index";
 import Layout from "../../../../../components/Layout";
-import axiossearchInstance, { instance1 } from "../../../../../services/search/all";
-import axiosPoiCityInstance from "../../../../../services/poi/city";
 import axiosReccommendedCityInstance from "../../../../../services/poi/reccommededcities";
 import axioslocationsinstance from "../../../../../services/search/search";
 import setHotLocationSearch from "../../../../../store/actions/hotLocationSearch";

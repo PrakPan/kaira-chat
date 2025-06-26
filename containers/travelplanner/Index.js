@@ -391,7 +391,7 @@ const Homepage = (props) => {
         <div>
           <BannerTwo
             page_id={props.experienceData.id}
-            destination={props.experienceData.destination}
+            destination={convertDbNameToCapitalFirst(props.experienceData.slug)}
             cities={props.experienceData.locations}
           ></BannerTwo>
         </div>
@@ -464,12 +464,12 @@ const Homepage = (props) => {
           openTailoredModal(
             router,
             props.experienceData.id,
-            props.experienceData.destination
+            convertDbNameToCapitalFirst(props.experienceData.slug)
           )
         }
         text={`Craft a personalized itinerary${
-          props.experienceData.destination
-            ? " to " + props.experienceData.destination + " now"
+          props.experienceData.slug
+            ? " to " + convertDbNameToCapitalFirst(props.experienceData.slug) + " now"
             : ""
         }!`}
       ></DesktopBanner>
@@ -480,10 +480,10 @@ const Homepage = (props) => {
             openTailoredModal(
               router,
               props.experienceData.id,
-              props.experienceData.destination
+              convertDbNameToCapitalFirst(props.experienceData.slug)
             )
           }
-          city={props.experienceData.destination}
+          city={convertDbNameToCapitalFirst(props.experienceData.slug)}
         />
       </div>
 
@@ -501,7 +501,7 @@ const Homepage = (props) => {
             <OldLocations
               locations={props.locations}
               page_id={props.experienceData.id}
-              destination={props.experienceData.destination}
+              destination={convertDbNameToCapitalFirst(props.experienceData.slug)}
               viewall
               country={country}
               planner
@@ -519,7 +519,7 @@ const Homepage = (props) => {
         </H3>
         <WhyPlanWithUs
           page_id={props.experienceData.id}
-          destination={props.experienceData.destination}
+          destination={convertDbNameToCapitalFirst(props.experienceData.slug)}
           cities={props.experienceData.locations}
         />
 

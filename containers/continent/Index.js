@@ -131,10 +131,10 @@ const Index = (props) => {
       {isPageWide ? (
         <DesktopPersonaliseBanner
           onclick={() =>
-            openTailoredModal(router, props.data.id, props.data.destination)
+            openTailoredModal(router, props.data.id, convertDbNameToCapitalFirst(props.data.slug),props.type)
           }
           text={validateTextSize(
-            `Craft a personalized itinerary to ${props.data.destination} now!`,
+            `Craft a personalized itinerary to ${convertDbNameToCapitalFirst(props.data.slug)} now!`,
             9,
             `Craft a trip to ${props.data.destination} now!`
           )}
@@ -143,7 +143,7 @@ const Index = (props) => {
         <MobileBanner
           cityName={props.data.destination}
           onClick={() =>
-            openTailoredModal(router, props.data.id, props.data.destination)
+            openTailoredModal(router, props.data.id, convertDbNameToCapitalFirst(props.data.slug),props.type)
           }
         />
       )}

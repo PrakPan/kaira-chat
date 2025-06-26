@@ -132,7 +132,7 @@ export async function getStaticProps() {
       `${MERCURY_HOST}/api/v1/geos/country/${pageId}`
     );
 
-    locations = pageListResponse.data.data.country.locations
+    locations = pageListResponse.data.data.country.states
   } catch (err) {
     console.log("[ERROR][PageListResponse:getStaticProps]: ", err.message);
   }
