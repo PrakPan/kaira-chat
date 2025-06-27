@@ -4,7 +4,8 @@ import { MdNavigateNext } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { logEvent } from "../../../services/ga/Index";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
-import NewPOIDetailsDrawer from "../../../components/drawers/poiDetails/NewPOIDetailsDrawer";
+import NewPOIDetailsDrawer from "../../../components/drawers/poiDetails/NewPoiDetailsDrawer";
+
 
 const LeftSlideIn = keyframes`
   from {
@@ -207,14 +208,8 @@ export default function PoiCard(props) {
         ActivityiconId={props.isActivity ? props.data.id : null}
         handleCloseDrawer={handleCloseDrawer}
         name={props.data.name}
-<<<<<<< HEAD
-        removeDelete={props?.removeDelete}
-        activityData={activityData}
-        removeChange={props?.removeChange}
-=======
         activityData={activityData}
         removeDelete
->>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
       />
     </Container>
   );
