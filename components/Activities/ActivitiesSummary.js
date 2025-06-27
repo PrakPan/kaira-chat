@@ -13,6 +13,7 @@ import { connect } from "react-redux";
 import { formatToReadableTime, getHumanTime } from "../../services/getHumanTime";
 
 const ActivitiesSummary = (props) => {
+  console.log("activitiessummary are:",props)
   const [images, setImages] = useState(null);
   const [viewMoreDiscription, setViewMoreDiscription] = useState(null);
   const [showDrawer, setShowDrawer] = useState(false);
@@ -156,7 +157,7 @@ const ActivitiesSummary = (props) => {
                 <div className="flex gap-1 items-center">
                   <IoTicket className="text-sm font-[400] line-clamp-1 text-[#7A7A7A]" />
                   <div className="text-sm line-clamp-1">
-                    {props?.item?.pax} Tickets
+                    {props?.item?.number_of_adults + props?.item?.number_of_children} Tickets
                   </div>
                 </div>
                 <div className="flex gap-1 items-center">
@@ -216,7 +217,7 @@ const ActivitiesSummary = (props) => {
                 itinerary_city_id={props?.city?.id}
                 showBookingDetail
                 setShowLoginModal={props?.setShowLoginModal}
-                removeDelete={true}
+                removeDelete={false}
               />
             </div>
           </div>

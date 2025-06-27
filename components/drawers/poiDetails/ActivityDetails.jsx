@@ -2,11 +2,6 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 import { useState } from "react";
 import { TbArrowBack } from "react-icons/tb";
-<<<<<<< HEAD
-=======
-import { FaStar, FaStarHalfAlt } from "react-icons/fa";
-import { IoMdClose } from "react-icons/io";
->>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
 import { MERCURY_HOST } from "../../../services/constants";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -18,7 +13,6 @@ import setItinerary from "../../../store/actions/itinerary";
 import ReviewPoi from "../../POIDetails/Reviews";
 import useMediaQuery from "../../media";
 import { openNotification } from "../../../store/actions/notification";
-<<<<<<< HEAD
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
 import { FaStar, FaStarHalfAlt, FaClock } from "react-icons/fa";
 import { FaPerson } from "react-icons/fa6";
@@ -29,13 +23,6 @@ import { BiSolidCustomize } from "react-icons/bi";
 import ImageLoader from "../../ImageLoader";
 import SkeletonCard from "../../ui/SkeletonCard";
 import BackArrow from "../../ui/BackArrow";
-=======
-
-import ImageLoader from "../../ImageLoader";
-import SkeletonCard from "../../ui/SkeletonCard";
-import BackArrow from "../../ui/BackArrow";
-import { Pax } from "./Pax";
->>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
 export const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -71,10 +58,7 @@ const Container = styled.div`
   gap: 32px;
   font-family: Lexend;
   padding: ${(props) => (props.itineraryDrawer ? "0 1rem 1rem 1rem" : "1rem")};
-<<<<<<< HEAD
   
-=======
->>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
 `;
 
 const BackContainer = styled.div`
@@ -118,14 +102,8 @@ const Child = styled.div`
 const ScrollContainer = styled.div`
   display: flex;
   gap: 21px;
-<<<<<<< HEAD
   height: auto;
   overflow-x: auto;
-=======
-  height: 210px;
-  overflow-x: auto;
-  overflow-y: hidden;
->>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
   -ms-overflow-style: none;
   scrollbar-width: none;
   &::-webkit-scrollbar {
@@ -142,11 +120,8 @@ const ScrollContainer = styled.div`
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
 const ActivityDetails = (props) => {
-<<<<<<< HEAD
   console.log("activity data:", props?.removeDelete);
 
-=======
->>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
   let isPageWide = useMediaQuery("(min-width: 768px)");
 
   const isSmallScreen = useMediaQuery("(max-width:586px)");
@@ -159,10 +134,6 @@ const ActivityDetails = (props) => {
   const token = useSelector((state) => state.auth.token);
   const [imageLoaded, setImageLoaded] = useState(false);
 
-<<<<<<< HEAD
-=======
-
->>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
   const dispatch = useDispatch();
 
   const CallPaymentInfo = useSelector((state) => state.CallPaymentInfo);
@@ -181,7 +152,6 @@ const ActivityDetails = (props) => {
     3: false,
   });
 
-<<<<<<< HEAD
   const [boolDetails, setBoolDetail] = useState({
     generalGuidelines: false,
     thingsToBring: false,
@@ -190,8 +160,6 @@ const ActivityDetails = (props) => {
     Amenities: false,
   });
 
-=======
->>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
   function OnImageLoad(i) {
     if (!ImagesLoaded[i]) {
       setTimeout(
@@ -216,16 +184,10 @@ const ActivityDetails = (props) => {
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-<<<<<<< HEAD
           },
         }
       );
       dispatch(SetCallPaymentInfo(!CallPaymentInfo));
-=======
-          }
-        }
-      );
->>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
 
       if (res?.status == 204) {
         const newItinerary = JSON.parse(JSON.stringify(itinerary));
@@ -435,17 +397,6 @@ const ActivityDetails = (props) => {
             {props.data?.experience_filters && (
               <Text>{experience_filters}</Text>
             )}
-<<<<<<< HEAD
-=======
-            {props.data?.prices?.total_price && (
-              <div className={"mb-2 flex flex-col gap-1"}>
-                <div >
-                  Cost: ₹ {props.data?.prices?.total_price} /- Per person
-                </div>
-                <Pax pax={props.pax} setPax={props.setPax}/>
-              </div>
-            )}
->>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
             {aboutText != null && aboutText != undefined && (
               <div>
                 <Text
@@ -467,7 +418,6 @@ const ActivityDetails = (props) => {
             )}
           </div>
 
-<<<<<<< HEAD
           <div className="flex flex-col gap-2">
             {props.data?.general_guidelines?.length ? (
               <div className="flex flex-col">
@@ -619,8 +569,6 @@ const ActivityDetails = (props) => {
             </>
           )}
 
-=======
->>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
           {props.data?.cost ? (
             <div className="flex flex-row">
               Cost: <span className="font-semibold px-1">₹</span>
@@ -660,14 +608,10 @@ const ActivityDetails = (props) => {
           )}
           {props?.data?.reviews && (
             <div className="flex flex-col gap-[12px]">
-<<<<<<< HEAD
               <div
                 id="reviews-poi"
                 className="flex justify-between items-center"
               >
-=======
-              <div id="reviews-poi" className="flex justify-between">
->>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
                 <Heading>Reviews</Heading>
 
                 <Reviews>
@@ -694,11 +638,7 @@ const ActivityDetails = (props) => {
               {isSmallScreen ? (
                 <>
                   {props?.data?.reviews?.map((item) => (
-<<<<<<< HEAD
                     <div className="w-full">
-=======
-                    <div className="w-[289px]">
->>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
                       <ReviewPoi review={item} />
                     </div>
                   ))}
@@ -745,7 +685,6 @@ const ActivityDetails = (props) => {
                 </a>
               </div> */}
 
-<<<<<<< HEAD
               {
                 // props?.version != "v1" ? (
                 //   <></>
@@ -783,39 +722,6 @@ const ActivityDetails = (props) => {
                   )}
                 </>
               }
-=======
-              {props?.removeDelete ? (
-                <></>
-              ) : (
-                <button
-                  className=" right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
-                  onClick={handleDelete}
-                >
-                  <div style={{ position: "relative" }}>
-                    <div
-                      className="flex gap-1 items-center p-1"
-                      style={loading ? { visibility: "hidden" } : {}}
-                    >
-                      <Image src="/delete.svg" width={"20"} height={"20"} />{" "}
-                      Remove from Itinerary
-                    </div>
-                    {loading && (
-                      <PulseLoader
-                        style={{
-                          position: "absolute",
-                          top: "55%",
-                          left: "50%",
-                          transform: "translate(-50% , -50%)",
-                        }}
-                        size={12}
-                        speedMultiplier={0.6}
-                        color="#ffffff"
-                      />
-                    )}
-                  </div>
-                </button>
-              )}
->>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
             </div>
           </div>
         </Container>
@@ -824,7 +730,6 @@ const ActivityDetails = (props) => {
   );
 };
 
-<<<<<<< HEAD
 const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
   const [included, setIncluded] = useState(amenity?.included);
 
@@ -866,6 +771,4 @@ const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
   );
 };
 
-=======
->>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
 export default ActivityDetails;
