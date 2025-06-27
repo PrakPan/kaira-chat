@@ -1,152 +1,139 @@
-import React, { useState } from "react";
-import Drawer from "../../ui/Drawer";
-import { useEffect } from "react";
-import axiosPOIdetailsInstance from "../../../services/poi/poidetails";
-import  {
-  activityDetail,
-} from "../../../services/poi/poiActivities";
-import axios from "axios";
-import { MERCURY_HOST } from "../../../services/constants";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import PoiDetailsNew from "./PoiDetailsNew";
-import ActivityDetails from "./ActivityDetails";
-import ActivityDetailsSkeleton from "../activityDetails/ActivityDetailsSkeleton";
-import NewPOIDetails from "./NewPOIDetails";
+import { connect, useDispatch, useSelector } from "react-redux";
+import Drawer from "../../ui/Drawer";
+import { getDate } from "../../../helper/DateUtils";
+import { openNotification } from "../../../store/actions/notification";
+import { toast, ToastContainer } from "react-toastify";
+import PoiDetails from "./NewPoiDetails";
+import { MERCURY_HOST } from "../../../services/constants";
+import axios from "axios";
+import setItinerary from "../../../store/actions/itinerary";
+import PoiDetailsSkeleton from "./PoiDetailsSkelton";
+import { TbArrowBack } from "react-icons/tb";
+import useMediaQuery from "../../media";
+import styled from "styled-components";
+import BackArrow from "../../ui/BackArrow";
 
-const NewPOIDetailsDrawer = (props) => {
-  console.log("props activities summary are:", props);
-  const [data, setData] = useState(props?.data || []);
-  const [loading, setLoading] = useState(false);
-  const [pax,setPax]=useState({
-    adults:1,
-    children:0
-  })
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 100px;
+  left: 100%;
+  background: black;
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  z-index: 51;
+  cursor: pointer;
+`;
+
+const OptionsContainer = styled.div`
+  min-height: 40vh;
+  overflow-x: hidden;
+  position: relative;
+
+  @media screen and (min-width: 768px) {
+    min-height: 80vh;
+    width: 95%;
+    margin: auto;
+  }
+`;
+
+const NewPoiDetailsDrawer = (props) => {
+  const isDesktop = useMediaQuery("(min-width:767px)");
   const router = useRouter();
-
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const itinerary = useSelector((state) => state.Itinerary);
+  const dispatch = useDispatch();
   useEffect(() => {
     if (props.show) fetchData();
-  }, [props.show,pax]);
+  }, [props.show]);
+
+  const [error, setError] = useState(null);
 
   const fetchData = async () => {
     setLoading(true);
-    if (props?.activityData?.type == "activity") {
-      if (props?.showBookingDetail) {
-        const res = await axios.get(
-          `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/activity/${props?.activityData?.id}/`
-        );
-        setData(res?.data?.activity);
-        setData((prev) => ({
-          ...prev,
-          id: res?.data?.id,
-        }));
-        setLoading(false);
-      } else {
-        const res = await axios.get(
-          `${MERCURY_HOST}/api/v1/geos/poi/${props?.activityData?.id}/?itinerary_city_id=${props?.itinerary_city_id}`
-        );
-        setData(res?.data?.data?.poi);
-        setLoading(false);
-      }
-    } else if (props?.activityData?.type == "poi") {
+
+    try {
       const res = await axios.get(
-        `${MERCURY_HOST}/api/v1/geos/poi/${props?.activityData?.id}/?itinerary_city_id=${props?.itinerary_city_id}`
+        `${MERCURY_HOST}/api/v1/geos/poi/${props?.id}/?itinerary_city_id=${props?.itinerary_city_id}`
       );
-      setData(res?.data?.data?.poi);
-      setLoading(false);
-    } else if (props?.activityData?.type == "restaurant") {
-      const res = await axios.get(
-        `${MERCURY_HOST}/api/v1/geos/restaurant/${props?.activityData?.id}/`
-      );
-      setData(res?.data?.data?.restaurant);
-      setLoading(false);
-    } else if (props.ActivityiconId && props.themePage) {
-      activityDetail
-        .post(
-          `${props.ActivityiconId}/`,
-          {
-            number_of_adults:pax.adults,
-            number_of_children:pax.children
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            },
-          }
-        )
-        .then((res) => {
-          if (res.data.success) setData(res.data.data.activity);
-          else throw new Error(res.data?.message);
-          setLoading(false);
-        })
-        .catch((err) => {
-          if (props.data) {
-            setData(props.data);
-          } else {
-            setData({
-              name: props.name,
-              short_description: props.text,
-              image: props.image,
-            });
-          }
-          setLoading(false);
-        });
-    } else if (props.ActivityiconId) {
-      activityDetail
-        .post(
-          `/${props.ActivityiconId}/`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            },
-          },
-          {
-            start_date: "2025-06-20",
-            number_of_adults: 1,
-          }
-        )
-        .then((res) => {
-          if (res.data?.data?.activity?.name) setData(res.data?.data?.activity);
-          else throw new Error(res.data?.message);
-          setLoading(false);
-        })
-        .catch((err) => {
-          setData({
-            name: props.name,
-            short_description: props.text,
-            image: props.image,
-          });
-          setLoading(false);
-        });
-    } else {
-      if (props.iconId) {
-        axiosPOIdetailsInstance
-          .get(`/${props.iconId}/`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            },
-          })
-          .then((res) => {
-            if (res.data.name) setData(res.data);
-            else throw new Error(res.data?.message);
-            setLoading(false);
-          })
-          .catch((err) => {
-            setData({
-              name: props.name,
-              short_description: props.text,
-              image: props.image,
-            });
-            setLoading(false);
-          });
-      } else {
-        setData({
-          name: props.name,
-          short_description: props.text,
-          image: props.image,
-        });
-        setLoading(false);
+      if (res.data?.data?.poi) {
+        setData(res.data?.data?.poi);
       }
+      setLoading(false);
+    } catch (error) {
+      setError(error.response?.data?.errors[0]?.message[0]);
+      dispatch(
+        openNotification({
+          type: "error",
+          text: "Something went wrong! Please try after some time.",
+          heading: "Error!",
+        })
+      );
+      console.log("poi drawer error is:", error);
     }
+  };
+
+  const updatedActivityBooking = async () => {
+    try {
+      const requestData = {
+        itinerary_city_id: props?.itinerary_city_id,
+        poi_id: props?.id,
+        day_by_day_index: props?.dayIndex || 0,
+      };
+      const res = await axios.post(
+        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/poi/add/`,
+        requestData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      );
+      var newItinerary = itinerary;
+      const itineraryCities = newItinerary?.cities?.map((item) => {
+        console.log("city is:", item);
+        const city = item;
+        if (item.id == props?.itinerary_city_id) {
+          const day_by_day = city?.day_by_day;
+          console.log("city1 is:", props?.dayIndex);
+          day_by_day[props?.dayIndex].slab_elements = [
+            ...day_by_day[props?.dayIndex]?.slab_elements,
+            res?.data,
+          ];
+          city.day_by_day = day_by_day;
+          console.log("city2 is:", day_by_day);
+        }
+        return city;
+      });
+      newItinerary.cities = itineraryCities;
+      dispatch(setItinerary(newItinerary));
+      props.openNotification({
+        type: "success",
+        text: `Added ${res?.data?.heading} Successfully`,
+        heading: "Success!",
+      });
+    } catch (error) {
+      console.log("error is:", error);
+      const errorMsg =
+        error?.response?.data?.errors?.[0]?.message?.[0] ||
+        error.message ||
+        "Something went wrong! Please try after some time.";
+      props.openNotification({
+        type: "error",
+        text: errorMsg,
+        heading: "Error!",
+      });
+      return 0;
+    }
+    return 1;
   };
 
   return (
@@ -160,64 +147,64 @@ const NewPOIDetailsDrawer = (props) => {
       className="font-lexend"
       onHide={props.handleCloseDrawer}
     >
-      {!loading ? (
+      <ToastContainer />
+      {error == null ? (
         <>
-          {props?.activityData?.type != "poi" ? (
-            <>
-              <ActivityDetails
-                itineraryDrawer={props.itineraryDrawer}
-                data={data}
-                handleCloseDrawer={props.handleCloseDrawer}
-                dayIndex={props?.dayIndex}
-                slabIndex={props?.slabIndex}
-                itinerary_city_id={props?.itinerary_city_id}
-                setShowLoginModal={props?.setShowLoginModal}
-                getPaymentHandler={props?.getPaymentHandler}
-                removeDelete={props?.removeDelete}
-                pax={pax}
-                setPax={setPax}
-              >
-                {props?.children}
-              </ActivityDetails>
-            </>
-          ) : (
-            <>
-            <NewPOIDetails
+          {!loading ? (
+            <PoiDetails
               itineraryDrawer={props.itineraryDrawer}
               data={data}
+              date={props.date}
               handleCloseDrawer={props.handleCloseDrawer}
-              dayIndex={props?.dayIndex}
-              slabIndex={props?.slabIndex}
+              fetchData={fetchData}
+              updatedActivityBooking={updatedActivityBooking}
               itinerary_city_id={props?.itinerary_city_id}
-              cityID={props?.cityID}
-              setShowLoginModal={props?.setShowLoginModal}
-              getPaymentHandler={props?.getPaymentHandler}
-              removeDelete={props?.removeDelete}
-              date={props?.date}
+              dayIndex={props?.dayIndex}
+              setShowLoginModal={props.setShowLoginModal}
+              setShowDrawer={props?.setShowDrawer}
+            />
+          ) : (
+            <PoiDetailsSkeleton
+              itineraryDrawer={props.itineraryDrawer}
               name={props.name}
-              cityName={props?.cityName}
-              removeChange={props?.removeChange}
-            >
-              {props.children}
-            </NewPOIDetails>
-            </>
+              handleCloseDrawer={props.handleCloseDrawer}
+            />
           )}
-
-          <div className="sticky z-50 bottom-4 w-full flex items-center justify-center">
-            {props.children}
-          </div>
         </>
       ) : (
-        <>
-          {props?.activityData?.type == "activity" ? (
-            <ActivityDetailsSkeleton />
-          ) : (
-            <PoiDetailsNew />
-          )}
-        </>
+        <div className="h-[100vh] px-4">
+          <div className="z-1 flex flex-row items-center gap-2 pt-4 bg-white">
+            <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
+          </div>
+          <OptionsContainer className="px-2 center-div space-y-5">
+            {error}
+          </OptionsContainer>
+        </div>
+      )}
+      {!isDesktop && (
+        <FloatingView>
+          <TbArrowBack
+            style={{ height: "28px", width: "28px" }}
+            cursor={"pointer"}
+            onClick={(e) => props.handleCloseDrawer(e)}
+          />
+        </FloatingView>
       )}
     </Drawer>
   );
 };
 
-export default NewPOIDetailsDrawer;
+const mapStateToPros = (state) => {
+  return {
+    plan: state.Plan,
+    itineraryId: state.itineraryId,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    openNotification: (payload) => dispatch(openNotification(payload)),
+  };
+};
+
+export default connect(mapStateToPros, mapDispatchToProps)(NewPoiDetailsDrawer);
