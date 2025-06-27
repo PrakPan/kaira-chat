@@ -224,7 +224,6 @@ const Enquiry = (props) => {
         type: "Page",
       },
     ];
-<<<<<<< HEAD
   } else if (
     (routerquery.state && !routerquery.city) ||
     props?.type == "State"
@@ -250,9 +249,6 @@ const Enquiry = (props) => {
     ];
   } else if (routerquery.country || props?.type == "Country") {
     console.log("PROPS2", props);
-=======
-  } else if (routerquery.country && !routerquery.city) {
->>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
     selectedObj = [
       {
         id: routerquery.page_id || props.page_id,
@@ -261,22 +257,8 @@ const Enquiry = (props) => {
         type: "Country",
       },
     ];
-<<<<<<< HEAD
   } else {
     console.log("PROPS4", props);
-=======
-  }else if(routerquery.city){
-      selectedObj = [
-      {
-        id: routerquery.page_id || props.page_id,
-        name: routerquery.destination || props.destination,
-        input_id: initialInputId,
-        type: "City",
-      },
-    ];
-  }
-   else {
->>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
     selectedObj = [
       {
         id: routerquery.page_id || props.page_id,
