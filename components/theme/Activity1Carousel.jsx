@@ -7,7 +7,8 @@ import media from "../../components/media";
 import { logEvent } from "../../services/ga/Index";
 import { PlanYourTripButton } from "../../containers/travelplanner/ThemePage.jsx";
 import TertiaryHeading from "../heading/Tertiary.jsx";
-import NewPOIDetailsDrawer from "../drawers/poiDetails/NewPOIDetailsDrawer.js";
+import NewPOIDetailsDrawer from "../drawers/poiDetails/NewPoiDetailsDrawer.js";
+
 
 const Container = styled.div`
   width: 100%;
@@ -106,13 +107,8 @@ const ActivityCard = ({ data, scale, id, image, name, short_description }) => {
         </div>
       </div>
 
-<<<<<<< HEAD
-      <POIDetailsDrawer
-        // themePage
-=======
       <NewPOIDetailsDrawer
         themePage
->>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
         show={show}
         ActivityiconId={id}
         handleCloseDrawer={handleCloseDrawer}
