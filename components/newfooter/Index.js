@@ -183,8 +183,7 @@ const NewFooter = (props) => {
             )}
 
             <CompanyText>
-              The Tarzan Way is a travel based startup with the vision to
-              simplify travel and build immersive travel programs across India.
+              The Tarzan Way is a travel and tech startup that enables you to craft your trips, your way, using an AI Trip Planner. We offer a one-stop solution where you can craft trips, manage bookings, and book it all in one go within minutes.
             </CompanyText>
             <Socials></Socials>
 

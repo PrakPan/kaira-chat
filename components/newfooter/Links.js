@@ -17,10 +17,10 @@ const linksArr = [
     heading: "Travel Styles",
     data: [
       { title: "Personalise", link: "" },
-      { title: "Workcation", link: urls.travel_planner.WORKCATION },
-      { title: "Volunteer", link: urls.travel_planner.VOLUNTEER },
+      { title: "La Tomatina", link: urls.travel_planner.LATOMATINA },
+      { title: "Summer Holidays", link: urls.travel_planner.SUMMER },
       { title: "Road Trips", link: urls.travel_planner.ROADTRIPS },
-      { title: "Unique", link: urls.travel_planner.OFFBEAT },
+      { title: "Europe under 1 Lakh", link: urls.travel_planner.EUROPE_1_LAKH },
     ],
   },
   {

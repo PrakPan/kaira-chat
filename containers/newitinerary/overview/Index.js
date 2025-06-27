@@ -58,9 +58,9 @@ const Overview = (props) => {
         {isDesktop && props.tripsPage && <Ratings />}
       </div>
 
-      {/* <div className="pt-3 pb-1">
+      {isDesktop && <div className="pt-3 pb-1">
         <ImagesMobile images={props.images}></ImagesMobile>
-      </div> */}
+      </div>}
     </div>
   );
 };
