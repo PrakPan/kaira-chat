@@ -45,6 +45,23 @@ const SkeletonContainer = styled.div`
 `;
 
 const NewResults = (props) => {
+  const getParent = (path) => {
+    if (!path) return "";
+
+    const links = path.split("/");
+    links.pop();
+    const parent = links.map((part) => capitalizeFirstLetter(part)).join(" > ");
+
+    return parent;
+  };
+
+  const capitalizeFirstLetter = (string) => {
+    const words = string.split("_");
+    const newString = words
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+    return newString;
+  };
   const skeleton = (
     <div
       style={{
@@ -92,7 +109,7 @@ const NewResults = (props) => {
                 </MarkerContainer>
                 <Text>
                   <div>{e.name}</div>
-                  {e.parent && <p>{e.parent}</p>}
+                  {e.parent ? <p className="text-[#7e7e7e] text-[12px] font-[400] mb-0">{e.parent}</p> : e?.path ? <p className="text-[#7e7e7e] text-[12px] font-[400] mb-0">{getParent(e.path)}</p> : null}
                 </Text>
               </LocationContainer>
             );

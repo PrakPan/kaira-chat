@@ -2,18 +2,37 @@ import React from "react";
 import CityDetails from "./CityDetails";
 import Drawer from "../../ui/Drawer";
 import { TbArrowBack } from "react-icons/tb";
-import axioscitydatainstance from "../../../services/poi/city";
+import axioscitydatainstance, { cityDetail } from "../../../services/poi/city";
 import { useEffect } from "react";
 import { useState } from "react";
 import CityDetailsSkeleton from "./CityDetailsSkeleton";
+import styled from "styled-components";
+import media from "../../../components/media.js";
+
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 60px;
+  left: 100%;
+  background: black;
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  z-index: 901;
+  cursor: pointer;
+`;
 
 const CityDetailsDrawer = (props) => {
+  let isPageWide = media("(min-width: 768px)");
   const [data, setData] = useState(null);
-
   const getCityData = async () => {
     try {
-      const res = await axioscitydatainstance.get("?city_id=" + props.city_id);
-      setData(res.data);
+      const res = await axioscitydatainstance.get("/city/" + props.city_id);
+      setData(res.data?.data?.city);
     } catch (err) {
       console.log("[ERROR][CityDetailsDrawer:getCityData]: ", err.message);
     }
@@ -58,7 +77,17 @@ const CityDetailsDrawer = (props) => {
         ) : (
           <CityDetailsSkeleton></CityDetailsSkeleton>
         )}
-        <div></div>
+        {!isPageWide && (
+        <FloatingView>
+          <TbArrowBack
+            style={{ height: "28px", width: "28px" }}
+            cursor={"pointer"}
+            onClick={() => {
+              props.onHide()
+            }}
+          />
+        </FloatingView>
+      )}
       </div>
     </Drawer>
   );

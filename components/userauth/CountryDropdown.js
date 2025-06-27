@@ -26,66 +26,12 @@ const CountryCodeDropdown = ({
   }, []);
 
   useEffect(() => {
-    const top = ["India", "United Kingdom", "United States"];
-    let options = [];
+    if (CountryCodes) {
+      const top = ["India", "United Kingdom", "United States"];
+      let options = [];
 
-    for (const country of top) {
-      options.push(
-        <div
-          className="flex flex-row gap-3 items-center p-2 cursor-pointer"
-          key={country}
-          value={country}
-          onClick={() => {
-            handleExtensionChangeOption(country),
-              setOpenCountryCodeOption(false);
-          }}
-        >
-          <Image
-            height="30"
-            width="30"
-            objectFit="cover"
-            src={CountryCodes[country].img}
-            onClick={() => handleExtensionChangeOption(country)}
-          ></Image>
-          <p className="m-0">{CountryCodes[country].value}</p>
-          <p className="m-0 text-gray-600">{CountryCodes[country].label}</p>
-        </div>
-      );
-    }
-
-    setTopOptions(options);
-  }, [CountryCodes]);
-
-  useEffect(() => {
-    let ExtensionOptions = [];
-    if (search) {
-      const countries = searchCountries(search);
-      for (const country of countries) {
-        ExtensionOptions.push(
-          <div
-            className="flex flex-row gap-3 items-center p-2 cursor-pointer"
-            key={country.value}
-            value={country.value}
-            onClick={() => {
-              handleExtensionChangeOption(country.value),
-                setOpenCountryCodeOption(false);
-            }}
-          >
-            <Image
-              height="30"
-              width="30"
-              objectFit="cover"
-              src={country.img}
-              onClick={() => handleExtensionChangeOption(country.value)}
-            ></Image>
-            <p className="m-0">{country.value}</p>
-            <p className="m-0 text-gray-600">{country.label}</p>
-          </div>
-        );
-      }
-    } else {
-      for (const country in CountryCodes) {
-        ExtensionOptions.push(
+      for (const country of top) {
+        options.push(
           <div
             className="flex flex-row gap-3 items-center p-2 cursor-pointer"
             key={country}
@@ -96,6 +42,7 @@ const CountryCodeDropdown = ({
             }}
           >
             <Image
+              alt=""
               height="30"
               width="30"
               objectFit="cover"
@@ -106,6 +53,67 @@ const CountryCodeDropdown = ({
             <p className="m-0 text-gray-600">{CountryCodes[country].label}</p>
           </div>
         );
+      }
+
+      setTopOptions(options);
+    }
+  }, [CountryCodes]);
+
+  useEffect(() => {
+    let ExtensionOptions = [];
+
+    if (CountryCodes) {
+      if (search) {
+        const countries = searchCountries(search);
+        for (const country of countries) {
+          ExtensionOptions.push(
+            <div
+              className="flex flex-row gap-3 items-center p-2 cursor-pointer"
+              key={country.value}
+              value={country.value}
+              onClick={() => {
+                handleExtensionChangeOption(country.value),
+                  setOpenCountryCodeOption(false);
+              }}
+            >
+              <Image
+                alt=""
+                height="30"
+                width="30"
+                objectFit="cover"
+                src={country.img}
+                onClick={() => handleExtensionChangeOption(country.value)}
+              ></Image>
+              <p className="m-0">{country.value}</p>
+              <p className="m-0 text-gray-600">{country.label}</p>
+            </div>
+          );
+        }
+      } else {
+        for (const country in CountryCodes) {
+          ExtensionOptions.push(
+            <div
+              className="flex flex-row gap-3 items-center p-2 cursor-pointer"
+              key={country}
+              value={country}
+              onClick={() => {
+                handleExtensionChangeOption(country),
+                  setOpenCountryCodeOption(false);
+              }}
+            >
+              <Image
+                alt=""
+                height="30"
+                width="30"
+                objectFit="cover"
+                src={CountryCodes[country].img}
+                onClick={() => handleExtensionChangeOption(country)}
+              ></Image>
+              <p className="m-0">{CountryCodes[country].value}</p>
+              <p className="m-0 text-gray-600">{CountryCodes[country].label}</p>
+            </div>
+          );
+        }
       }
     }
 

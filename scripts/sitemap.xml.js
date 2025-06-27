@@ -1,37 +1,41 @@
 // const { default: axios } = require("axios");
 const axios = require("axios");
 const fs = require("fs");
+const { baseApiUrl } = require("mapbox-gl");
 const path = require("path");
+require('dotenv').config();
+
+console.log("Hi",process.env.YOUR_ENV_VAR,process.env.NEXT_PUBLIC_MERCURY_HOST);
 
 const generateSitemap = async () => {
-  const BASE_URL = "https://thetarzanway.com";
+  const BASE_URL = process.env.NEXT_PUBLIC_MERCURY_HOST;
 
   // Fetch continents list
   const continents = await axios.get(
-    "https://apis.tarzanway.com/page/list?page_type=Continent&fields=path"
+    `${BASE_URL}/api/v1/website/pages/?page_type=Continent&fields=path`
   );
-  const continentsData = continents.data;
+  const continentsData = continents.data.data.pages;
   let continentsPaths = continentsData.map((object) => {
     return {
       title: "Continent Planner",
-      link: BASE_URL + "/" + object.path,
+      link: BASE_URL + "/" + object.slug,
     };
   });
 
   // Fetch countries list
   const countries = await axios.get(
-    "https://apis.tarzanway.com/poi/country/all?fields=path"
+    `${BASE_URL}/api/v1/geos/country/?fields=path`
   );
-  const countriesData = countries.data;
+  const countriesData = countries.data.data.countries;
   let countriesPaths = countriesData.map((object) => {
     return { title: "Country Planner", link: BASE_URL + "/" + object.path };
   });
 
   // Fetch states list
   const states = await axios.get(
-    "https://apis.tarzanway.com/search/all/?type=State&fields=path"
+    `${BASE_URL}/api/v1/geos/state/?fields=path`
   );
-  const statesData = states.data;
+  const statesData = states.data.data.states;
 
   let statesPaths = statesData.map((object) => {
     return {
@@ -42,13 +46,19 @@ const generateSitemap = async () => {
 
   // Fetch cities list
   const cities = await axios.get(
-    "https://apis.tarzanway.com/search/all/?type=Location&fields=path"
+    `${BASE_URL}/api/v1/geos/city/?fields=path`
   );
-  const citiesData = cities.data;
+  const citiesData = cities.data.data.cities;
 
   let cityPaths = citiesData.map((object) => {
     return { title: "City Planner", link: BASE_URL + "/" + object.path };
   });
+
+  const subRegions=await axios.get(`${BASE_URL}/api/v1/website/pages/?page_type=Subregion&fields=path`)
+  const subRegionsData=subRegions.data.data.pages
+  let subRegionsPaths=subRegionsData.map((object)=>{
+    return {title:"Subregion Planner",link:BASE_URL+"/"+object.path}
+  })
 
   // Fetch trips list
   const response = await axios.get(
@@ -86,6 +96,7 @@ const generateSitemap = async () => {
     ...countriesPaths,
     ...statesPaths,
     ...cityPaths,
+    ...subRegionsPaths,
     ...tripsPaths,
   ];
 
@@ -105,6 +116,14 @@ const generateSitemap = async () => {
         .join("")}
     </urlset>
   `;
+  const PagesToIdJson = await axios.get(
+    `${BASE_URL}/api/v1/geos/pages/all/`
+  );
+  fs.writeFileSync(
+    path.join(process.cwd(),"data", "PagesToIdMapping.json"),
+    JSON.stringify(PagesToIdJson.data, null, 2),
+    "utf8"
+  );
 
   fs.writeFileSync(
     path.join(process.cwd(), "public", "sitemap.xml"),

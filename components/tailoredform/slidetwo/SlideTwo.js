@@ -1,11 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
-import Pax from "./pax/Index";
 import GroupType from "./GroupType";
 import Question from "../Question";
-import Budget from "./Budget";
-import { AiFillCaretDown } from "react-icons/ai";
-import Preferences from "./preferences/Index";
 
 const Container = styled.div`
   color: black;
@@ -19,66 +15,183 @@ const Section = styled.div`
 `;
 
 const SlideTwo = (props) => {
-  const [showPax, setShowPax] = useState(false);
-  const [showPreferences, setShowPreferences] = useState(false);
+  useEffect(() => {
+    if (props.groupType) {
+      props.setSubmitSecondSlide(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    props.setRoomConfiguration([
+      {
+        adults: props.numberOfAdults,
+        children: props.numberOfChildren,
+        infants: props.numberOfInfants,
+        childAges: Array.from({ length: props.numberOfChildren }, (_, i) => 0),
+      },
+    ]);
+  }, [props.numberOfAdults, props.numberOfChildren, props.numberOfInfants]);
 
   const _handleShowPax = (grouptype) => {
+    if (grouptype === "Solo") {
+      props.setNumberOfAdults(1);
+      props.setNumberOfChildren(0);
+      props.setNumberOfInfants(0);
+      props.setRoomConfiguration([
+        {
+          adults: 1,
+          children: 0,
+          infants: 0,
+          childAges: [],
+        },
+      ]);
+    } else {
+      props.setNumberOfAdults(2);
+      props.setNumberOfChildren(0);
+      props.setNumberOfInfants(0);
+
+      props.setRoomConfiguration([
+        {
+          adults: 2,
+          children: 0,
+          infants: 0,
+          childAges: [],
+        },
+      ]);
+    }
     props.setGroupType(grouptype);
     props.setSubmitSecondSlide(true);
-    if (grouptype === "Friends" || grouptype === "Family") {
-      setShowPax(true);
-    }
   };
 
   return (
     <Container>
       <Section style={{ marginBottom: "1.5rem" }}>
         <Question>Your group type?</Question>
-        {showPax ? (
-          <Pax
-            numberOfAdults={props.numberOfAdults}
-            setNumberOfAdults={props.setNumberOfAdults}
-            numberOfChildren={props.numberOfChildren}
-            setNumberOfChildren={props.setNumberOfChildren}
-            numberOfInfants={props.numberOfInfants}
-            setNumberOfInfants={props.setNumberOfInfants}
-          ></Pax>
-        ) : (
-          <GroupType
-            setShowPax={setShowPax}
-            _handleShowPax={_handleShowPax}
-            groupType={props.groupType}
-          ></GroupType>
-        )}
+
+        <GroupType
+          _handleShowPax={_handleShowPax}
+          groupType={props.groupType}
+        ></GroupType>
       </Section>
 
-      <Section>
-        <Question className="font-lexend">Budget per person?</Question>
-        <Budget setShowPax={setShowPax} setBudget={props.setBudget}></Budget>
-      </Section>
-
-      <div
-        style={{ display: "flex" }}
-        onClick={() => setShowPreferences(!showPreferences)}
-      >
-        <Question hover_pointer>Activity Preferences?</Question>
-        <div style={{ flexGrow: "1", textAlign: "right" }}>
-          <AiFillCaretDown
-            style={{ verticalAlign: "initial" }}
-            className="hover-pointer"
-          >
-            {" "}
-          </AiFillCaretDown>
+      {!(props?.groupType === "Solo"||props.groupType === "Couple") &&<Section>
+        <div className="flex justify-between items-center mb-3">
+          <div>
+            <div className="font-medium">Adults</div>
+            <div className="text-xs text-gray-500">12+ years</div>
+          </div>
+          <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
+            <button
+              className={` flex items-center justify-center  ${
+                props.numberOfAdults > 1 ? "text-blue " : "text-gray-300"
+              }`}
+              onClick={() => props.setNumberOfAdults((prev) => prev - 1)}
+              disabled={props.numberOfAdults <= 1}
+            >
+              -
+            </button>
+            <span className="mx-2 w-6 text-center">{props.numberOfAdults}</span>
+            <button
+              className="flex items-center justify-center text-blue"
+              onClick={() => props.setNumberOfAdults((prev) => prev + 1)}
+              disabled={
+                props.numberOfAdults >= 14 || props?.groupType === "Solo"
+              }
+            >
+              +
+            </button>
+          </div>
         </div>
-      </div>
 
-      {showPreferences || props.tailoredFormModal ? (
-        <Preferences
-          tailoredFormModal={props.tailoredFormModal}
-          selectedPreferences={props.selectedPreferences}
-          setSelectedPreferences={props.setSelectedPreferences}
-        ></Preferences>
-      ) : null}
+        <div
+          className={`flex justify-between items-center mb-3 ${
+            (props.groupType === "Solo" || props.groupType === "Couple") &&
+            "opacity-50 pointer-events-none"
+          }`}
+        >
+          <div>
+            <div className="font-medium">Children</div>
+            <div className="text-xs text-gray-500">2-12 years</div>
+          </div>
+          <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
+            <button
+              className={`flex items-center justify-center ${
+                props.numberOfChildren > 0 ? "text-blue" : "text-gray-300"
+              }`}
+              onClick={() => props.setNumberOfChildren((prev) => prev - 1)}
+              disabled={props.numberOfChildren == 0}
+            >
+              -
+            </button>
+            <span className="mx-2 w-6 text-center">
+              {props.numberOfChildren}
+            </span>
+            <button
+              className=" flex items-center justify-center text-blue"
+              onClick={() => props.setNumberOfChildren((prev) => prev + 1)}
+              disabled={props.numberOfChildren > 12}
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        <div
+          className={`flex justify-between items-center mb-3 ${
+            (props.groupType === "Solo" || props.groupType === "Couple") &&
+            "opacity-50 pointer-events-none"
+          }`}
+        >
+          <div>
+            <div className="font-medium">Infants</div>
+            <div className="text-xs text-gray-500"> {`<2 years`}</div>
+          </div>
+          <div className="flex p-1 items-center justify-evenly bg-white w-20 rounded-3xl border border-blue-200">
+            <button
+              className={` flex items-center justify-center  ${
+                props.numberOfInfants > 0 ? "text-blue " : "text-gray-300"
+              }`}
+              onClick={() => props.setNumberOfInfants((prev) => prev - 1)}
+              disabled={props.numberOfInfants <= 0}
+            >
+              -
+            </button>
+            <span className="mx-2 w-6 text-center">
+              {props.numberOfInfants}
+            </span>
+            <button
+              className="flex items-center justify-center text-blue"
+              onClick={() => props.setNumberOfInfants((prev) => prev + 1)}
+              disabled={props.numberOfInfants > 4}
+            >
+              +
+            </button>
+          </div>
+        </div>
+      </Section>}
+
+      <Section className="space-y-5">
+        <div className="bg-[#FFEFE5] flex items-center gap-2 p-2 rounded-md w-fit">
+          <input
+            type="checkbox"
+            checked={props.addFlights}
+            onChange={(e) => props.setAddFlights(e.target.checked)}
+            className="focus:outline-none cursor-pointer"
+          ></input>
+          <div className="text-sm">Add flights to my itinerary?</div>
+        </div>
+
+        <div className="bg-[#FFEFE5] flex items-center gap-2 p-2 rounded-md w-fit">
+          <input
+            type="checkbox"
+            checked={props.addHotels}
+            onChange={(e) => props.setAddHotels(e.target.checked)}
+            className="focus:outline-none cursor-pointer"
+          ></input>
+          <div className="text-sm">Add hotels to my itinerary?</div>
+        </div>
+      </Section>
+
     </Container>
   );
 };

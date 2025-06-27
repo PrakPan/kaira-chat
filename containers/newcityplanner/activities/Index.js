@@ -52,6 +52,7 @@ const Activity = (props) => {
       handleCloseDrawer={handleCloseDrawer}
       page={props?.page}
       city={props?.city}
+      removeDelete={props?.removeDelete}
     />
   ));
 

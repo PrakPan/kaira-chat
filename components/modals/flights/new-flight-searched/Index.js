@@ -1,8 +1,15 @@
 import React from "react";
 import styled from "styled-components";
-import SectionTwo from "./sectiontwo/Index";
-import SectionThree from "./SectionThree";
-import SelectedSectionTwo from "./sectiontwo/SelectedSectionTwo";
+import LogoContainer, { Logo } from "./LogoContainer";
+import FlightDetails from "./FlightDetails";
+import PriceContainer from "./PriceContainer";
+import { useState, useEffect } from "react";
+import ViewMoreButton from "../../../itinerary/daySummary/ViewMoreButton";
+import Details from "../../../../containers/itinerary/TransfersContainer/FlightDetail";
+import { getIndianPrice } from "../../../../services/getIndianPrice";
+import media from "../../../media";
+import { RiArrowDropDownLine } from "react-icons/ri";
+
 
 const Container = styled.div`
   width: 95%;
@@ -11,59 +18,170 @@ const Container = styled.div`
   ${(props) =>
     props.isSelected &&
     "background : #FFFBBB ; border : 1px solid #F7E700!important"};
-  border-radius: 10px;
   height: 100%;
   margin-bottom: 0.5rem;
   @media screen and (min-width: 768px) {
     background: white;
     width: 100%;
-    border-radius: 10px;
     position: relative;
   }
 `;
 
-const GridContainer = styled.div`
-  @media screen and (min-width: 768px) {
-    display: grid;
-    grid-template-columns: 1fr 8.5rem;
-    justify-content: space-between;
-  }
+const ClippathComp = styled.div`
+  clip-path: polygon(100% 0, 100% 100%, 0% 100%, 5% 50%, 0% 0%);
 `;
 
-const Booking = (props) => {
+function convertMinutesToHours(minutes) {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return `${hours}h ${mins}m`;
+}
+
+const Flight = (props) => { 
+  const [showDetails, setShowDetails] = useState(false);
+  const [viewMore, setViewMore] = useState(false);
+  let isPageWide = media("(min-width: 768px)");
+  const handleView = () => {
+    setViewMore((prev) => !prev);
+  };
   return (
-    <>
-      <Container
-        className="border"
-        isSelected={props.isSelected}
-        style={{ borderRadius: "10px" }}
-      >
-        <GridContainer>
-          {props.isSelected ? (
-            <SelectedSectionTwo
-              data={props.data}
-              selectedBooking={props.selectedBooking}
-              isSelected={props.isSelected}
-            ></SelectedSectionTwo>
+    <Container
+      className="relative border-b p-2 space-y-2 overflow-x-hidden "
+      isSelected={props.isSelected}
+    >
+
+      <div className="flex flex-row gap-1 justify-between md:flex-row md:items-center md:justify-between mt-2 md:mt-0">
+        <div className="flex flex-col md:flex-row items-center gap-2 justify-center">
+          
+          <div className="flex gap-2">
+          <LogoContainer data={props.data} width={32} height={32}/>
+          <div className="text-sm font-semibold">
+            {props.data?.segments?.[0]?.airline?.name} {isPageWide && <>| <span className="font-normal">{props.data?.segments?.[0]?.airline?.code}-{props.data?.segments?.[0]?.airline?.flight_number}</span></>}
+          </div>
+          </div>
+          {props.data?.is_refundable  && isPageWide && <p className="bg-[#fdeeee] text-[#EF7D7D] px-2 py-1 mb-0 rounded-md text-xs font-medium">
+            Refundable
+          </p>}
+        </div>
+        {isPageWide && <div className="text-lg font-bold flex flex-col">
+                  {props.data?.final_fare ? `₹${getIndianPrice(props.data?.final_fare)}/-` : null}
+                  <span className = "font-normal text-sm">for {props?.pax?.adults + props?.pax?.children + props?.pax?.infants} people</span>
+        </div>}
+        {props.data?.is_refundable  && !isPageWide && <p className="bg-[#fdeeee] text-[#EF7D7D] px-2 py-1 mb-0 rounded-md text-xs font-medium h-fit">
+            Refundable
+          </p>}
+      </div>
+
+      <div className="flex flex-col w-full gap-1 md:flex-row md:items-center md:justify-between">
+        <div className="w-[99%] md:w-[70%] ">
+        <FlightDetails
+          data={props.data}
+          origin={props.data?.segments[0]?.origin}
+          destination={
+            props.data?.segments[props.data?.segments?.length - 1]?.destination
+          }
+          duration={
+            typeof props.data?.total_duration == "number"
+              ? convertMinutesToHours(props.data?.total_duration)
+              : props.data?.total_duration
+          }
+          isNonStop={props.data?.segments?.length === 1}
+          numStops={props.data?.segments?.length - 1}
+          segments={props.data?.segments}
+          setShowDetails={setShowDetails}
+        />
+        </div>
+        {isPageWide  ? <PriceContainer
+          data={{
+            resultIndex: props.data?.result_index,
+            finalFare: props.data?.final_fare,
+            isRefundable: props.data?.is_refundable,
+            duration:
+              props.data?.segments[props.data?.segments?.length - 1]
+                ?.destination?.arrival_time,
+          }}
+          isSelected={props.isSelected}
+          selectedBooking={props.selectedBooking}
+          _updateBookingHandler={props._updateBookingHandler}
+          provider={props.provider}
+          onSelect={props?.onSelect}
+          trace_id={props?.trace_id}
+          onFlightSelect={props?.onFlightSelect}
+          edge={props?.edge}
+          booking_id={props?.booking_id}
+        /> : ''}
+        
+      </div>
+
+        
+      
+      <div className="flex justify-between items-center mb-2 md:mb-0">
+        {isPageWide && <div className="ml-0">
+          {!viewMore ? (
+            <ViewMoreButton text="View Details" handler={handleView} />
           ) : (
-            <SectionTwo
-              data={props.data}
-              selectedBooking={props.selectedBooking}
-              isSelected={props.isSelected}
-            ></SectionTwo>
+            <ViewMoreButton text="Hide Details" handler={handleView} />
           )}
-          <SectionThree
-            selectedBooking={props.selectedBooking}
-            _deselectBookingHandler={props._deselectBookingHandler}
-            _updateBookingHandler={props._updateBookingHandler}
-            is_selecting={props.is_selecting}
-            isSelected={props.isSelected}
-            data={props.data}
-          ></SectionThree>
-        </GridContainer>
-      </Container>
-    </>
+        </div>}
+
+       
+
+        {!isPageWide && <div className="text-lg font-bold flex flex-col mt-2 ">
+                  {props.data?.final_fare ? <div className="flex" onClick={handleView}>{`₹${getIndianPrice(props.data?.final_fare)}/-`} <RiArrowDropDownLine
+                className={` text-2xl  mt-1 transition-all duration-100 ${
+                  viewMore ? "-rotate-180 " : "rotate-180 animate-bounce"
+                }`}
+                
+              ></RiArrowDropDownLine></div>: null}
+                  <span className = "font-normal text-sm">for {props?.pax?.adults + props?.pax?.children + props?.pax?.infants} people</span>
+        </div>}
+
+        {
+          !isPageWide && <PriceContainer
+          data={{
+            resultIndex: props.data?.result_index,
+            finalFare: props.data?.final_fare,
+            isRefundable: props.data?.is_refundable,
+            duration:
+              props.data?.segments[props.data?.segments?.length - 1]
+                ?.destination?.arrival_time,
+          }}
+          isSelected={props.isSelected}
+          selectedBooking={props.selectedBooking}
+          _updateBookingHandler={props._updateBookingHandler}
+          provider={props.provider}
+          onSelect={props?.onSelect}
+          trace_id={props?.trace_id}
+          onFlightSelect={props?.onFlightSelect}
+          edge={props?.edge}
+          booking_id={props?.booking_id}
+        /> 
+        }
+      </div>
+
+      {viewMore && (
+        <div
+          className={`mt-2 w-full lg:block flex flex-col p-1 md:p-5 cursor-pointer relative shadow-sm rounded-2xl transition-all  hover:shadow-md duration-300 ease-in-out hover:shadow-yellow-300/50 border-[#ECEAEA] border-[1px]  hover:border-[#F7E700]  shadow-[#ECEAEA]`}
+        >
+          <Details
+            segments={props.data?.segments}
+            provider={props.provider}
+            resultIndex={props.data?.result_index}
+            setShowDetails={setShowDetails}
+            individual={props?.individual}
+            originCityId={props.originCityId}
+            destinationCityId={props.destinationCityId}
+            setTransferBookingsIntercity={props.setTransferBookingsIntercity}
+            edge={props?.edge}
+            getPaymentHandler={props.getPaymentHandler}
+            booking_id={props?.selectedBooking?.id}
+            combo={props?.combo}
+            setShowLoginModal={props?.setShowLoginModal}
+          />
+        </div>
+      )}
+    </Container>
   );
 };
 
-export default Booking;
+export default Flight;

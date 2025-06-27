@@ -78,6 +78,8 @@ const TransfersContainer = (props) => {
   const [daySlabIndex, setDaySlabIndex] = useState(null);
   const [elementIndex, setElementIndex] = useState(null);
 
+  console.log("ROUTED",props?.route)
+
   const _changeFlightHandler = (
     name,
     itinerary_id,
@@ -398,7 +400,7 @@ const TransfersContainer = (props) => {
                     <Line pinColour={props?.breif?.city_slabs[i]?.color} />
                   </div>
                   <div className="w-full h-full flex items-center justify-start ml-4">
-                    {props?.routes[i + 1]?.transfers?.id !== "" && (
+                    {/* {props?.routes[i + 1]?.transfers?.id !== "" && (
                       <button
                         id={i + 1}
                         onClick={handleTransferEdit}
@@ -407,7 +409,7 @@ const TransfersContainer = (props) => {
                         + Add Transfer from {props?.routes[i]?.city_name} to{" "}
                         {props?.routes[i + 2]?.city_name}
                       </button>
-                    )}
+                    )} */}
                   </div>
                 </TransContainer>
               )

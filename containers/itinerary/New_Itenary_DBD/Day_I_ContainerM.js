@@ -274,6 +274,7 @@ const Day_I_ContainerM = (props) => {
                 props.getAccommodationAndActivitiesHandler
               }
               _GetInTouch={props._GetInTouch}
+              date={props?.Days?.date}
             ></ItineraryPoiElementM>
           );
           break;
@@ -323,7 +324,7 @@ const Day_I_ContainerM = (props) => {
           <DayContainerStyle>
             {dayIcontainer}
             <div className="flex w-full">
-              {!props.LastElement && (
+              {/* {!props.LastElement && (
                 <button
                   onClick={() =>
                     handleAddActivity(
@@ -341,14 +342,14 @@ const Day_I_ContainerM = (props) => {
                     ? ` on ${convertDateFormat(props?.Days?.slab)}`
                     : ""}
                 </button>
-              )}
+              )} */}
             </div>
           </DayContainerStyle>
         ) : (
           <DaySummaryContainerStyle>
             {summaryIContainer}
             <div className="flex w-full">
-              {!props.LastElement && (
+              {/* {!props.LastElement && (
                 <button
                   onClick={() =>
                     handleAddActivity(
@@ -366,7 +367,7 @@ const Day_I_ContainerM = (props) => {
                     ? ` on ${convertDateFormat(props?.Days?.slab)}`
                     : ""}
                 </button>
-              )}
+              )} */}
             </div>
           </DaySummaryContainerStyle>
         )}

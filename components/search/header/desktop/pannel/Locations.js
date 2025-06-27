@@ -70,6 +70,24 @@ const Text = styled.div`
 const Locations = (props) => {
   let locations = [];
 
+  const getParent = (path) => {
+    if (!path) return "";
+
+    const links = path.split("/");
+    links.pop();
+    const parent = links.map((part) => capitalizeFirstLetter(part)).join(" > ");
+
+    return parent;
+  };
+
+  const capitalizeFirstLetter = (string) => {
+    const words = string.split("_");
+    const newString = words
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+    return newString;
+  };
+
   if (props.hotlocations) {
     for (var i = 0; i < props.hotlocations.length; i++) {
       const data = props.hotlocations[i];
@@ -78,13 +96,14 @@ const Locations = (props) => {
           <MarkerContainer>
             <FaMapMarkerAlt />
           </MarkerContainer>
+      
           <Text>
             <div>{props.hotlocations[i].name}</div>
             {props.hotlocations[i].parent ? (
-              <p>{props.hotlocations[i].parent}</p>
-            ) : (
-              <p>{props.hotlocations[i].state?.name}</p>
-            )}
+              <p className="text-[#7e7e7e] text-[12px] font-[400] mb-0">{props.hotlocations[i].parent}</p>
+            ) : props.hotlocations[i].state?.name ? (
+              <p className="text-[#7e7e7e] text-[12px] font-[400] mb-0">{props.hotlocations[i].state?.name}</p>
+            ) : props.hotlocations[i]?.path ? <p className="text-[#7e7e7e] text-[12px] font-[400] mb-0">{getParent(props.hotlocations[i]?.path)}</p> : null}
           </Text>
         </LocationContainer>
       );

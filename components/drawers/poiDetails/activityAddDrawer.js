@@ -1,16 +1,12 @@
-import { useEffect, useState } from "react";
-import Drawer from "../../ui/Drawer";
-import { IoMdClose } from "react-icons/io";
-import { EXPERIENCE_FILTERS_BOX } from "../../../services/constants";
+import { useEffect, useState, useRef } from "react";
+import { IoIosArrowDown, IoMdClose } from "react-icons/io";
 import styled from "styled-components";
-import { Navigation } from "../../NewNavigation";
-import axiosaxtivitiesinstance from "../../../services/poi/reccommendedactivities";
+import { activtySearch } from "../../../services/poi/reccommendedactivities";
 import axiosaddActivityinstance from "../../../services/poi/addActivities";
-import PoiList from "../../../containers/newitinerary/itineraryelements/PoiList";
 import { BiErrorCircle } from "react-icons/bi";
 import PoiListSkeleton from "../../../containers/newitinerary/itineraryelements/PoiListSkeleton";
 import { getDate } from "../../../helper/DateUtils";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { openNotification } from "../../../store/actions/notification";
 import { IoMdSearch } from "react-icons/io";
 import useMediaQuery from "../../../hooks/useMedia";
@@ -18,13 +14,38 @@ import useDebounce from "../../../hooks/useDebounce";
 import Button from "../../ui/button/Index";
 import ImageLoader from "../../../components/ImageLoader";
 import { logEvent } from "../../../services/ga/Index";
+import NewActivityBooking from "../../../containers/newitinerary/itineraryelements/NewActivityBooking";
+import { FaFilter } from "react-icons/fa";
+import { Pax } from "./Pax";
+import { getHumanDate } from "../../../services/getHumanDate";
+import DyamicFilters from "./filters/DynamicFilters";
+import CheckboxFormComponent from "../../FormComponents/CheckboxFormComponent";
+import Image from "next/image";
+import { setDate } from "date-fns";
+import { Navigation } from "../../NewNavigation";
+import axios from "axios";
+import { MERCURY_HOST } from "../../../services/constants";
+import NewPoiBooking from "../../../containers/newitinerary/itineraryelements/NewPoiBooking";
+import Drawer from "../../ui/Drawer";
+import BackArrow from "../../ui/BackArrow";
+import { TbArrowBack } from "react-icons/tb";
 
-const FiltersContainer = styled.div`
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 60px;
+  left: 100%;
+  background: black;
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  z-index: 1;
+  cursor: pointer;
 `;
-
 const EmptyMsg = styled.div`
   margin-top: 5rem;
   text-align: center;
@@ -40,19 +61,141 @@ const GetInTouchContainer = styled.div`
   }
 `;
 
-const items = [{ id: 1, label: "Things To Do", link: "Activities" }];
+const OptionsContainer = styled.div`
+  min-height: 40vh;
+  overflow-x: hidden;
+  position: relative;
 
+  @media screen and (min-width: 768px) {
+    min-height: 80vh;
+    width: 95%;
+    margin: auto;
+  }
+`;
+
+const items = [
+  { id: 1, label: "Things To Do", link: "" },
+  { id: 2, label: "Places To Visit", link: "" },
+];
 const ActivityAddDrawer = (props) => {
+  const isDesktop = useMediaQuery("(min-width:767px)");
   const [selectedExprience, setSelectedExprience] = useState(-1);
+  const [nextUrl, setNextUrl] = useState(null);
   const [elementType, setElementType] = useState("Activity");
   const [options, setOptions] = useState([]);
   const [totalResults, setTotalResults] = useState(null);
   const [showMoreResults, setShowMoreResults] = useState(false);
-  const [selectSearch, setSelectedSearch] = useState("");
+  const [selectSearch, setSelectedSearch] = useState(null);
   const debouncedSearch = useDebounce(selectSearch);
-  const [fetchingPoi, setFetchingPoi] = useState(true);
+  const [loaded, setLoaded] = useState(false);
+  const [loadingPoi, setLoadingPoi] = useState(true);
   const [offSet, setOffSet] = useState(0);
-  const isDesktop = useMediaQuery("(min-width:767px)");
+  const [showDynamicfilters, setShowDynamicfilters] = useState(false);
+  const itineraryFilters = useSelector((state) => state.ItineraryFilters);
+  const itinerary = useSelector((state) => state.Itinerary);
+  const num_adults = itinerary.number_of_adults;
+  const [filterState, setFilterState] = useState({
+    recommended_only: false,
+    rating: ["All"],
+    category: ["All"],
+    tour_type: ["All"],
+    guide: ["All"],
+    pax: {
+      number_of_travelers: num_adults,
+      traveler_ages: Array(num_adults).fill(null),
+    },
+    experienceFilters: ["All"],
+  });
+  const [filtersObj, setFiltersObj] = useState({
+    ratings: [1, 2, 3, 4, 5],
+    category: [],
+    tour_type: [],
+    guide: [],
+  });
+  const [pax, setPax] = useState({
+    adults: itinerary.number_of_adults,
+    children: itinerary.number_of_children,
+  });
+  const [showPax, setShowPax] = useState(false);
+  const prevPaxRef = useRef(pax);
+  const [selectedRating, setSelectedRating] = useState([]);
+  const [recommended, setRecommended] = useState(false);
+  const [changed, setChanged] = useState(false);
+  const [startDate, setStartDate] = useState(props?.date);
+  const [showCalender, setShowCalender] = useState(false);
+
+  const filtersRef = useRef(null);
+  const calendarRef = useRef(null);
+  const [height, setHeight] = useState(0);
+
+  const [showSkeleton, setShowSkeleton] = useState(false);
+
+  const [error,setError]=useState(null)
+
+  useEffect(() => {
+    const updateHeight = () => setHeight(window.innerHeight);
+    updateHeight(); // initial run
+    window.addEventListener("resize", updateHeight);
+
+    const handleClickOutside = (event) => {
+      if (filtersRef.current && !filtersRef.current.contains(event.target)) {
+        setShowDynamicfilters(false);
+      }
+      if (calendarRef.current && !calendarRef.current.contains(event.target)) {
+        setShowCalender(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("resize", updateHeight);
+    };
+  }, []);
+
+  useEffect(() => {
+    const hasRatingChanged =
+      filterState.rating.length !== selectedRating.length ||
+      filterState.rating.some((rating) => !selectedRating.includes(rating)) ||
+      selectedRating.some((rating) => !filterState.rating.includes(rating)) ||
+      JSON.stringify(prevPaxRef.current) !== JSON.stringify(pax);
+    prevPaxRef.current = pax;
+    let handler;
+    if (hasRatingChanged) {
+      handler = setTimeout(() => {
+        setFilterState((prev) => ({
+          ...prev,
+          rating: selectedRating,
+          num_adults: 4,
+          num_children: pax.children,
+        }));
+      }, 2000);
+    }
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [pax, selectedRating]);
+
+  useEffect(() => {
+    if (props.showDrawer) {
+      fetchData();
+    }
+  }, [
+    elementType,
+    selectedExprience,
+    props.showDrawer,
+    debouncedSearch,
+    filterState,
+    startDate,
+  ]);
+
+  useEffect(() => {
+    setSelectedSearch("");
+    setOptions([]);
+    setOffSet(0);
+  }, [props.showDrawer]);
 
   const setFocus = (dayIndex, elementIndex, activityId) => {
     const element = document.getElementById(
@@ -136,79 +279,232 @@ const ActivityAddDrawer = (props) => {
     });
   };
 
-  function fetchData(showMore = false) {
-    const added_activities = props.itineraryActivities.map((element, index) => {
-      return {
-        id:
-          element.activity?.activity_data?.activity?.id ||
-          element.activity?.activity_data?.poi?.id,
-        date: element.date,
-      };
-    });
-    axiosaxtivitiesinstance
-      .post(`/?limit=30&offset=${offSet}`, {
-        location: props?.cityID,
-        duration: 10,
-        element_type: elementType,
-        experience_filters: EXPERIENCE_FILTERS_BOX[selectedExprience]
-          ? EXPERIENCE_FILTERS_BOX[selectedExprience].actual
-          : [],
-        search_query: debouncedSearch,
-        added_activities,
-      })
-      .then((res) => {
-        if (res.data.results.length) {
-          setTotalResults(res.data.count);
-          let options = [];
+  const setDynamicFilters = (filters) => {
+    setFiltersObj((prev) => ({
+      ...prev,
+      category: filters?.category,
+      tour_type: filters?.tour_type,
+      guide: filters?.guide,
+    }));
+  };
 
-          for (var i = 0; i < res.data.results.length; i++) {
-            options.push(
-              <PoiList
-                key={i}
-                activityAddDrawer
-                _updatePoiHandler={_addActivityHandler}
-                setShowDrawer={props?.setShowDrawer}
-                data={res.data.results[i]}
-                setLoginModal={props.setShowLoginModal}
-              ></PoiList>
-            );
-          }
+  const fetchData = async (showMore = false) => {
+    if (elementType == "Activity" || elementType == "") {
+      setLoaded(false);
+      try {
+        const requestData = {
+          city: props?.cityID,
+          start_date: getDate(startDate),
+          number_of_adults: pax?.adults || 1,
+          number_of_children: pax?.children || 0,
+          traveler_ages: filterState.pax.traveler_ages,
+          filter_by: {
+            name: debouncedSearch,
+            recommended_only: filterState.recommended_only,
+            rating: filterState.rating,
+            category:
+              filterState.category && filterState.category[0] !== "All"
+                ? filterState.category
+                : null,
+            tour_type:
+              filterState.tour_type && filterState.tour_type[0] !== "All"
+                ? filterState.tour_type
+                : null,
+            guide:
+              filterState.guide && filterState.guide[0] !== "All"
+                ? filterState.guide
+                : null,
+          },
+          sort_by: {},
+        };
+        activtySearch
+          .post(`/?limit=30&offset=${offSet}`, requestData)
+          .then((res) => {
+            if (res.data?.data?.activities?.length) {
+              setTotalResults(res.data.results);
+              if (res.data?.data?.filter_by) {
+                setDynamicFilters(res.data.data.filter_by);
+              }
+              let options = [];
 
-          if (showMore) setOptions((prev) => [...prev, ...options]);
-          else setOptions(options);
+              for (var i = 0; i < res.data.data.activities.length; i++) {
+                options.push(
+                  <NewActivityBooking
+                    key={i}
+                    activityAddDrawer
+                    _updatePoiHandler={_addActivityHandler}
+                    setShowDrawer={props?.setShowDrawer}
+                    data={res.data.data.activities[i]}
+                    setLoginModal={props.setShowLoginModal}
+                    date={startDate}
+                    getAccommodationAndActivitiesHandler={
+                      props.getAccommodationAndActivitiesHandler
+                    }
+                    cityId={props?.cityID}
+                    itinerary_city_id={props?.itinerary_city_id}
+                    setActivities={props?.setActivities}
+                    activities={props?.activities}
+                    setItinerary={props?.setItinerary}
+                    activityBookings={props?.activityBookings}
+                    setActivityBookings={props?.setActivityBookings}
+                    pax={pax}
+                  ></NewActivityBooking>
+                );
+              }
 
-          if (res.data.next) {
-            setShowMoreResults(true);
-            setOffSet((prev) => prev + 30);
-          } else {
-            setShowMoreResults(false);
-            setOffSet(0);
-          }
-        } else {
-          setOptions([]);
-          setTotalResults(null);
+              if (showMore) setOptions((prev) => [...prev, ...options]);
+              else setOptions(options);
+              setNextUrl(res?.data?.next);
+
+              if (res.data.next) {
+                setShowMoreResults(true);
+              } else {
+                setShowMoreResults(false);
+                setOffSet(0);
+              }
+            } else {
+              setOptions([]);
+              setTotalResults(null);
+            }
+            setLoaded(true);
+          })
+          .catch((err) => {
+            console.log("error in activity search:", err);
+            setLoaded(true);
+          });
+      } catch (error) {
+        setError(error.response?.data?.errors[0]?.message[0])
+      }
+    } else {
+      setLoadingPoi(true);
+      try {
+        const res = await axios.get(
+          `${MERCURY_HOST}/api/v1/geos/poi/?fields=id,name,city,image,rating,experience_filters,short_description,tags,is_very_popular,tips_tricks,is_hidden_gem,gmaps_place_id,user_ratings_total&city_id=${
+            props?.cityID
+          }&name=${debouncedSearch}&is_very_popular=${
+            filterState?.recommended_only
+          }&filters=${filterState?.experienceFilters.join(",")}`
+        );
+        setTotalResults(res.data.results);
+        const result = [];
+        for (var i = 0; i < res.data.data.pois.length; i++) {
+          result.push(
+            <NewPoiBooking
+              key={i}
+              setShowDrawer={props?.setShowDrawer}
+              data={res.data.data.pois[i]}
+              setLoginModal={props.setShowLoginModal}
+              date={startDate}
+              cityId={props?.cityID}
+              itinerary_city_id={props?.itinerary_city_id}
+              dayIndex={props?.day_slab_index}
+              setShowLoginModal={props.setShowLoginModal}
+            ></NewPoiBooking>
+          );
         }
-        setFetchingPoi(false);
-      })
-      .catch((err) => {
-        setFetchingPoi(false);
-      });
-  }
-
-  useEffect(() => {
-    if (props.showDrawer) {
-      setFetchingPoi(true);
-      fetchData();
+        setNextUrl(res?.data?.next);
+        console.log("next url is:", nextUrl);
+        setOptions(result);
+      } catch (error) {
+        setError(error.response?.data?.errors[0]?.message[0])
+      }
+      setLoadingPoi(false);
     }
-  }, [elementType, selectedExprience, props.showDrawer, debouncedSearch]);
+  };
 
-  useEffect(() => {
-    setSelectedSearch("");
-    setOptions([]);
-  }, [props.showDrawer]);
+  const handleViewMore = async () => {
+    setShowSkeleton(true);
+
+    try {
+      let options = [];
+      if (elementType == "Activity" || elementType == "") {
+        const requestData = {
+          city: props?.cityID,
+          start_date: getDate(startDate),
+          number_of_adults: pax?.adults || 1,
+          number_of_children: pax?.children || 0,
+          traveler_ages: filterState.pax.traveler_ages,
+          filter_by: {
+            name: debouncedSearch,
+            recommended_only: filterState.recommended_only,
+            rating: filterState.rating,
+            category:
+              filterState.category && filterState.category[0] !== "All"
+                ? filterState.category
+                : null,
+            tour_type:
+              filterState.tour_type && filterState.tour_type[0] !== "All"
+                ? filterState.tour_type
+                : null,
+            guide:
+              filterState.guide && filterState.guide[0] !== "All"
+                ? filterState.guide
+                : null,
+          },
+          sort_by: {},
+        };
+        const res = await axios.post(nextUrl, requestData);
+        for (var i = 0; i < res.data.data.activities.length; i++) {
+          options.push(
+            <NewActivityBooking
+              key={i}
+              activityAddDrawer
+              _updatePoiHandler={_addActivityHandler}
+              setShowDrawer={props?.setShowDrawer}
+              data={res.data.data.activities[i]}
+              setLoginModal={props.setShowLoginModal}
+              date={startDate}
+              getAccommodationAndActivitiesHandler={
+                props.getAccommodationAndActivitiesHandler
+              }
+              cityId={props?.cityID}
+              itinerary_city_id={props?.itinerary_city_id}
+              setActivities={props?.setActivities}
+              activities={props?.activities}
+              setItinerary={props?.setItinerary}
+              activityBookings={props?.activityBookings}
+              setActivityBookings={props?.setActivityBookings}
+              pax={pax}
+            ></NewActivityBooking>
+          );
+        }
+        setOptions((prev) => [...prev, ...options]);
+        setNextUrl(res?.data?.next);
+        if (res.data.next) {
+          setShowMoreResults(true);
+        } else {
+          setShowMoreResults(false);
+          setOffSet(0);
+        }
+      } else {
+        const res = await axios.get(nextUrl);
+
+        for (var i = 0; i < res.data.data.pois.length; i++) {
+          options.push(
+            <NewPoiBooking
+              key={i}
+              setShowDrawer={props?.setShowDrawer}
+              data={res.data.data.pois[i]}
+              setLoginModal={props.setShowLoginModal}
+              date={startDate}
+              cityId={props?.cityID}
+              itinerary_city_id={props?.itinerary_city_id}
+              dayIndex={props?.day_slab_index}
+              setShowLoginModal={props.setShowLoginModal}
+            ></NewPoiBooking>
+          );
+        }
+        setOptions((prev) => [...prev, ...options]);
+        setNextUrl(res?.data?.next);
+      }
+    } catch (error) {
+      console.log("error is:", error);
+    }
+    setShowSkeleton(false);
+  };
 
   const searchHandler = (e) => {
-    if (e.target.id === "icon" && selectSearch.trim().length > 0) {
+    if (e.target.id === "icon" && debouncedSearch.trim().length > 0) {
       fetchData();
     } else {
       setSelectedSearch(e.target.value);
@@ -219,208 +515,369 @@ const ActivityAddDrawer = (props) => {
   const handleClearSearch = () => {
     setSelectedSearch("");
   };
+  const handleRecommneded = () => {
+    setRecommended((prev) => !prev);
+    setFilterState((prev) => ({
+      ...prev,
+      recommended_only: !recommended,
+    }));
+  };
 
-  const navigationHandler = (child) => {
-    if (child == "Things To Do") {
+  const convertToISODate = (dateStr) => {
+    if (!dateStr) return;
+    const [day, month, year] = dateStr?.split("/");
+    return `${year}-${month?.padStart(2, "0")}-${day?.padStart(2, "0")}`;
+  };
+
+  const ClickHandler = (child) => {
+    setOffSet(0);
+    if (child === "Things To Do") {
       setElementType("Activity");
     } else {
       setElementType("POI");
     }
+    setLoaded(false);
+    setLoadingPoi(true);
+    setOptions([]);
   };
-
-  const handleScroll = (e) => {
-    const { offsetHeight, scrollTop, scrollHeight } = e.target;
-    if (offsetHeight + scrollTop >= scrollHeight) {
-      if (showMoreResults) fetchData(true);
-    }
-  };
-
   return (
     <Drawer
       show={props.showDrawer}
       anchor={"right"}
       backdrop
+      width={"50%"}
+      mobileWidth={"100%"}
       style={{ zIndex: 1501 }}
-      className="font-lexend"
+      className={`font-lexend `}
       onHide={() => props.setShowDrawer(false)}
-      mobileWidth={"100vw"}
-      width="50vw"
     >
-      <div className="sticky px-2 top-0 bg-white z-[900] flex flex-col gap-3 py-4 pb-1 justify-start items-start mx-auto w-[98%]">
-        <div className="flex flex-row gap-3 my-0 justify-start items-center">
-          <IoMdClose
-            onClick={() => props.setShowDrawer(false)}
-            className="hover-pointer"
-            style={{
-              fontSize: "1.75rem",
-              textAlign: "right",
-            }}
-          ></IoMdClose>
-          <div className="line-clamp-1 text-2xl font-normal ">
-            Adding activity in {props.cityName}
-          </div>
-        </div>
+      {error==null?<>
+        <div
+          className={`px-2  !font-[lexend] overflow-y-scroll`}
+          style={{ height: `${height}px` }}
+        >
+          <div className="py-4 bg-white z-[900] flex flex-col gap-3  pb-1 justify-start items-start mx-auto w-[98%]">
+            <div className="flex flex-row gap-[20px] justify-between w-full items-center">
+              <div className="flex flex-row gap-3 items-center">
+                <BackArrow handleClick={() => props.setShowDrawer(false)} />
+              </div>
+            </div>
+            <div className="flex max-[582px]:flex-col max-[582px]:!items-start justify-between w-full items-center">
+              <div className=" line-clamp-1 text-[24px] font-semibold ">
+                Add {elementType == "POI" ? "Places to visit" : elementType} in{" "}
+                {props.cityName}
+              </div>
+              {elementType == "Activity" && (
+                <Pax
+                  setShowPax={setShowPax}
+                  pax={pax}
+                  setPax={setPax}
+                  showPax={showPax}
+                />
+              )}
+            </div>
+            <div className="grid w-full gap-2 min-[583px]:grid-cols-[3fr_2fr_1fr]">
+              <div className=" flex flex-row items-center relative h-[44px]">
+                <IoMdSearch
+                  id={"icon"}
+                  onClick={searchHandler}
+                  className="absolute cursor-pointer left-4 text-2xl"
+                />
 
-        <div className="flex flex-row justify-between mt-0">
-          <div className="flex flex-col justify-start items-baseline">
-            <div className="mb-2 text-sm font-normal">Experience Types</div>
-            <FiltersContainer>
-              {EXPERIENCE_FILTERS_BOX.map((currentfilter, i) => (
-                <button
-                  onClick={() => {
-                    if (selectedExprience !== i) setSelectedExprience(i);
-                    else setSelectedExprience(-1);
-                  }}
-                  className={`flex font-normal  text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${
-                    selectedExprience == i
-                      ? "text-white border-0 bg-black "
-                      : "border-2 bg-white text-black"
-                  } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
-                  key={i}
+                <input
+                  type="text"
+                  value={selectSearch}
+                  onChange={searchHandler}
+                  placeholder={`Search ${
+                    elementType === "POI" ? "attractions" : "activities"
+                  }`}
+                  className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700] h-[44px]"
+                ></input>
+              </div>
+              <select
+                className="px-[16px] py-[12px] rounded-[8px] bg-white border-1 border-[#979393] h-[44px] text-[14px] font-medium flex items-center justify-between max-[583px]:hidden"
+                onChange={(e) => setStartDate(e.target.value)}
+                defaultValue={props?.date}
+              >
+                {[...Array(props.duration)].map((_, i) => {
+                  const baseDateStr = props?.mercuryItinerary
+                    ? props?.start_date
+                    : convertToISODate(props?.start_date);
+
+                  const baseDate = new Date(baseDateStr);
+                  if (isNaN(baseDate.getTime())) return null;
+
+                  const currentDate = new Date(baseDate);
+                  currentDate.setDate(currentDate.getDate() + i);
+
+                  const pad = (n) => (n < 10 ? `0${n}` : n);
+                  const isoDate = `${currentDate.getFullYear()}-${pad(
+                    currentDate.getMonth() + 1
+                  )}-${pad(currentDate.getDate())}`;
+                  const formattedDate = getHumanDate(isoDate);
+
+                  return (
+                    <option key={i} value={isoDate}>
+                      {formattedDate} | Day {i + 1}
+                    </option>
+                  );
+                })}
+              </select>
+
+              <div className="relative inline-block">
+                <div
+                  className="relative px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2 max-[583px]:hidden cursor-pointer"
+                  onClick={() => setShowDynamicfilters(true)}
                 >
-                  {currentfilter.display}
+                  <Image
+                    src="/filter.svg"
+                    width={20}
+                    height={20}
+                    alt="Filter Icon"
+                  />
+                  <button>Filters</button>
+                  {changed && (
+                    <div className="absolute -right-1 -top-1 h-[20px] w-[20px] rounded-full bg-red-500"></div>
+                  )}
+                </div>
+
+                {showDynamicfilters && (
+                  <div
+                    className={`
+      z-[1091] bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm
+
+      min-[584px]:absolute min-[584px]:top-[calc(100%+8px)] min-[584px]:right-0 min-[584px]:block 
+
+       max-[583px]:fixed max-[583px]:bottom-0 max-[583px]:w-full max-[583px]:left-0 max-[583px]:block
+    `}
+                    ref={filtersRef}
+                  >
+                    <DyamicFilters
+                      filters={filtersObj}
+                      showFilter={showDynamicfilters}
+                      setshowFilter={setShowDynamicfilters}
+                      filterState={filterState}
+                      setFilterState={setFilterState}
+                      FILTERS={filtersObj}
+                      setChanged={setChanged}
+                      elementType={elementType}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="min-[583px]:hidden flex justify-between w-full">
+              <button
+                onClick={handleRecommneded}
+                className="flex flex-row items-center gap-1 cursor-pointer"
+              >
+                <CheckboxFormComponent checked={recommended} />
+                Top Recommended
+              </button>
+              <div className="flex gap-4">
+                <div
+                  className="rounded-[12px] border-2 px-[16px] py-[12px] border-black cursor-pointer"
+                  onClick={() => setShowCalender(true)}
+                >
+                  <Image
+                    src="/calender.svg"
+                    width={"20"}
+                    height={"20"}
+                    color="white"
+                  />
+                </div>
+                <div
+                  className="relative px-[16px] py-[12px] bg-[#1B1B1B] text-white rounded-[8px] h-[44px] flex items-center gap-2  cursor-pointer"
+                  onClick={() => setShowDynamicfilters(true)}
+                >
+                  <Image
+                    src="/filter.svg"
+                    width={"20"}
+                    height={"20"}
+                    color="white"
+                  />
+                  {changed && (
+                    <div className="absolute -right-1 -top-1 h-[20px] w-[20px] rounded-full !bg-red-500"></div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-row items-center justify-between w-full mb-[20px]">
+              <div>
+                Showing {options.length}
+                {elementType === "POI" ? " attractions" : " activities"}
+                {totalResults ? ` out of ${totalResults}` : null}
+                {props?.cityName ? ` in ${props?.cityName}` : null}
+              </div>
+              <div className="max-[583px]:hidden">
+                <button
+                  onClick={handleRecommneded}
+                  className="flex flex-row items-center gap-1 cursor-pointer"
+                >
+                  <CheckboxFormComponent checked={recommended} />
+                  Top Recommended
                 </button>
-              ))}
-            </FiltersContainer>
+              </div>
+            </div>
           </div>
+          {/* <div className="z-[900]"> */}
+          <Navigation
+            items={items}
+            BarName="TabsName"
+            ClickHandler={ClickHandler}
+            selectedItem={
+              elementType === "Activity" ? `${items[0].id}` : `${items[1].id}`
+            }
+          />
+          {/* </div> */}
+
+          <>
+            {(elementType === "Activity" ? loaded : !loadingPoi) ? (
+              options.length ? (
+                <div
+                  // onScroll={handleScroll}
+                  className="z-[99] flex flex-col items-center mb-3 h-[calc(100vh-360px)]"
+                >
+                  {options}
+                  <div className="w-[100%]">
+                    {showSkeleton && <PoiListSkeleton />}
+                  </div>
+                  {nextUrl !== null ? (
+                    <Button
+                      boxShadow
+                      onclickparam={null}
+                      onclick={handleViewMore}
+                      margin="0.25rem auto"
+                      borderWidth="1px"
+                      borderRadius="2rem"
+                      padding="0.25rem 1rem"
+                    >
+                      View more
+                    </Button>
+                  ) : null}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-3">
+                  <EmptyMsg className="flex flex-row items-start px-1">
+                    <BiErrorCircle className="" />
+                    <span className="">
+                      Oops, it looks like there are no{" "}
+                      {elementType === "POI"
+                        ? "places to visit"
+                        : "things to do"}{" "}
+                      available.
+                    </span>
+                  </EmptyMsg>
+                  {debouncedSearch !== "" ? (
+                    <Button
+                      boxShadow
+                      onclickparam={null}
+                      onclick={handleClearSearch}
+                      margin="0.25rem auto"
+                      borderWidth="1px"
+                      borderRadius="2rem"
+                      padding="0.25rem 1rem"
+                    >
+                      Show All
+                    </Button>
+                  ) : (
+                    <GetInTouchContainer className="">
+                      <Button
+                        color="#111"
+                        fontWeight="500"
+                        fontSize="1rem"
+                        borderWidth="2px"
+                        width="100%"
+                        borderRadius="8px"
+                        bgColor="#f8e000"
+                        padding="12px"
+                        onclick={props._GetInTouch}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            gap: "0.5rem",
+                            alignItems: "center",
+                          }}
+                        >
+                          <ImageLoader
+                            dimensions={{ height: 50, width: 50 }}
+                            dimensionsMobile={{ height: 50, width: 50 }}
+                            height={"20px"}
+                            width={"20px"}
+                            leftalign
+                            url={"media/icons/login/customer-service-black.png"}
+                          />{" "}
+                          <span className="">Get in touch!</span>
+                        </div>
+                      </Button>
+                    </GetInTouchContainer>
+                  )}
+                </div>
+              )
+            ) : (
+              <PoiListSkeleton />
+            )}
+          </>
         </div>
+        {showCalender && (
+          <div
+            className="fixed bottom-0 w-full bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm z-[1091]"
+            ref={calendarRef}
+          >
+            <div className="font-medium text-[14px]">Select Days</div>
+            {[...Array(props.duration)].map((_, i) => {
+              const baseDateStr = props?.mercuryItinerary
+                ? props?.date
+                : convertToISODate(props?.date);
 
-        {!isDesktop && (
-          <div className="w-full flex flex-row items-center relative">
-            <IoMdSearch
-              id={"icon"}
-              onClick={searchHandler}
-              className="absolute cursor-pointer left-4 text-2xl"
-            />
+              const baseDate = new Date(baseDateStr);
+              const currentDate = new Date(baseDate);
+              currentDate.setDate(currentDate.getDate() + i);
 
-            <input
-              type="text"
-              value={selectSearch}
-              onChange={searchHandler}
-              placeholder={`Search ${
-                elementType === "POI" ? "attractions" : "activities"
-              }`}
-              className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
-            ></input>
+              // Pad function to ensure two digits
+              const pad = (n) => (n < 10 ? `0${n}` : n);
+
+              const year = currentDate.getFullYear();
+              const month = pad(currentDate.getMonth() + 1); // +1 because months are 0-indexed
+              const day = pad(currentDate.getDate());
+
+              const dateString = `${year}-${month}-${day}`; // "YYYY-MM-DD"
+
+              return (
+                <div
+                  key={i}
+                  className="cursor-pointer"
+                  onClick={() => setStartDate(dateString)}
+                >
+                  <span className="font-bold text-[14px]">
+                    {dateString + " | "}
+                  </span>
+                  <span>Day {i + 1}</span>
+                </div>
+              );
+            })}
           </div>
         )}
+      </>:
+       <div className="h-[100vh]">
+       <OptionsContainer className="px-2 center-div space-y-5">
+         {error}
+       </OptionsContainer>
+     </div>
+      }
 
-        <div className="flex flex-row items-center justify-between w-full">
-          <div>
-            Showing {options.length}
-            {elementType === "POI" ? " attractions" : " activities"}
-            {totalResults ? ` out of ${totalResults}` : null}
-            {props?.cityName ? ` in ${props?.cityName}` : null}
-          </div>
-          {isDesktop && (
-            <div className="lg:w-[50%] md:w-[50%] flex flex-row items-center relative">
-              <IoMdSearch
-                id={"icon"}
-                onClick={searchHandler}
-                className="absolute cursor-pointer left-4 text-2xl"
-              />
-
-              <input
-                type="text"
-                value={selectSearch}
-                onChange={searchHandler}
-                placeholder={`Search ${
-                  elementType === "POI" ? "attractions" : "activities"
-                }`}
-                className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
-              ></input>
-            </div>
-          )}
-        </div>
-
-        <Navigation
-          items={items}
-          BarName="TabsName"
-          ClickHandler={navigationHandler}
-        />
-      </div>
-
-      {!fetchingPoi ? (
-        options.length ? (
-          <div
-            onScroll={handleScroll}
-            className="flex flex-col items-center mb-3 h-[100vh] overflow-y-scroll"
-          >
-            {options}
-            {selectSearch !== "" ? (
-              <Button
-                boxShadow
-                onclickparam={null}
-                onclick={handleClearSearch}
-                margin="0.25rem auto"
-                borderWidth="1px"
-                borderRadius="2rem"
-                padding="0.25rem 1rem"
-              >
-                Show All
-              </Button>
-            ) : null}
-          </div>
-        ) : (
-          <div className="flex flex-col items-center gap-3">
-            <EmptyMsg className="flex flex-row items-start px-1">
-              <BiErrorCircle className="" />
-              <span className="">
-                Oops, it looks like there are no{" "}
-                {elementType === "POI" ? "places to visit" : "things to do"}{" "}
-                available.
-              </span>
-            </EmptyMsg>
-            {debouncedSearch !== "" ? (
-              <Button
-                boxShadow
-                onclickparam={null}
-                onclick={handleClearSearch}
-                margin="0.25rem auto"
-                borderWidth="1px"
-                borderRadius="2rem"
-                padding="0.25rem 1rem"
-              >
-                Show All
-              </Button>
-            ) : (
-              <GetInTouchContainer className="">
-                <Button
-                  color="#111"
-                  fontWeight="500"
-                  fontSize="1rem"
-                  borderWidth="2px"
-                  width="100%"
-                  borderRadius="8px"
-                  bgColor="#f8e000"
-                  padding="12px"
-                  onclick={props._GetInTouch}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      gap: "0.5rem",
-                      alignItems: "center",
-                    }}
-                  >
-                    <ImageLoader
-                      dimensions={{ height: 50, width: 50 }}
-                      dimensionsMobile={{ height: 50, width: 50 }}
-                      height={"20px"}
-                      width={"20px"}
-                      leftalign
-                      url={"media/icons/login/customer-service-black.png"}
-                    />{" "}
-                    <span className="">Get in touch!</span>
-                  </div>
-                </Button>
-              </GetInTouchContainer>
-            )}
-          </div>
-        )
-      ) : (
-        <PoiListSkeleton />
+      {!isDesktop && (
+        <FloatingView>
+          <TbArrowBack
+            style={{ height: "28px", width: "28px" }}
+            cursor={"pointer"}
+            onClick={(e) => props.setShowDrawer(false)}
+          />
+        </FloatingView>
       )}
     </Drawer>
   );
@@ -431,6 +888,7 @@ const mapStateToPros = (state) => {
     notificationText: state.Notification.text,
     itineraryActivities: state.itineraryActivities,
     itinerary_id: state.ItineraryId,
+    plan: state.Plan,
   };
 };
 

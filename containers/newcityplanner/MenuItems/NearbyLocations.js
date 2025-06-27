@@ -11,12 +11,6 @@ import { useRouter } from "next/router";
 import SwiperCarousel from "../../../components/SwiperCarousel";
 import H3 from "../../../components/heading/H3";
 
-const MobileCardsContainer = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.5rem;
-`;
-
 const Heading = styled.p`
   font-weight: 600;
   font-size: 25px;
@@ -36,60 +30,30 @@ const NearbyLocations = (props) => {
   const [cards, setCards] = useState([]);
 
   useEffect(() => {
-    let cardsArr = [];
-    let MobileCardsArr = [];
-    let count = 0;
-    for (let i = 0; i < props.nearbyCities.length; i++) {
-      const mostPopular = props.nearbyCities[i].most_popular_for;
-      if (i % 4 == 0 && i != 0) {
-        let n = cardsArr.length;
-        const el = cardsArr.slice(n - 4, n);
-        MobileCardsArr.push(
-          <MobileCardsContainer>
-            {el.map((e, i) => (
-              <div key={i}>{e}</div>
-            ))}
-          </MobileCardsContainer>
-        );
-        count++;
-      }
-      cardsArr.push(
+    const allCards = props.nearbyCities.map((city, i) => {
+      const mostPopular = city.most_popular_for;
+      return (
         <Card
-          key={props.nearbyCities[i].id}
-          location={props.nearbyCities[i].name}
+          key={city.id}
+          location={city.name}
           heading={
-            mostPopular && mostPopular.length
-              ? mostPopular[mostPopular.length - 1]
-              : ""
+            mostPopular?.length ? mostPopular[mostPopular.length - 1] : ""
           }
-          img={props.nearbyCities[i].image}
-          path={props.nearbyCities[i].path}
-          link={props.nearbyCities[i].slug}
+          img={city.image}
+          path={city.path}
+          link={city.slug}
           city={true}
-          data={props.nearbyCities[i]}
-          tags={
-            props.nearbyCities[i].tags
-              ? props.nearbyCities[i].tags
-              : props.nearbyCities[i].most_popular_for
-          }
+          data={city}
+          tags={city.tags || city.most_popular_for}
           page={props?.page}
           state={props?.state}
-        ></Card>
+        />
       );
-    }
-    if (count % 4 != 0) {
-      const el = cardsArr.slice(count * 4, cardsArr.length);
-      MobileCardsArr.push(
-        <MobileCardsContainer>
-          {el.map((e, i) => (
-            <div key={i}>{e}</div>
-          ))}
-        </MobileCardsContainer>
-      );
-    }
-    setCards(cardsArr);
-    setMobileCardsToShowJSX(MobileCardsArr);
-  }, []);
+    });
+
+    setCards(allCards);
+    setMobileCardsToShowJSX(allCards);
+  }, [props.nearbyCities]);
 
   return (
     <>
@@ -108,7 +72,7 @@ const NearbyLocations = (props) => {
               navigationButtons={true}
               slidesPerView={6}
               cards={cards}
-            ></SwiperCarousel>
+            />
           ) : (
             <DesktopSkeleton />
           )}
@@ -130,11 +94,10 @@ const NearbyLocations = (props) => {
         <div>
           {MobilecardsToShowJSX.length ? (
             <SwiperCarousel
-              slidesPerView={1}
-              pageDots
+              slidesPerView={1.1}
+              centeredSlides
               cards={MobilecardsToShowJSX}
-              noPadding
-            ></SwiperCarousel>
+            />
           ) : (
             <MobileSkeleton />
           )}

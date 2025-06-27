@@ -17,7 +17,6 @@ function renameFile(src, dest) {
       console.log(`${src} does not exist.`);
     }
   } catch (err) {
-    console.error(`Error renaming file: ${err.message}`);
     process.exit(1);
   }
 }

@@ -4,14 +4,18 @@ import { connect } from "react-redux";
 import { useEffect } from "react";
 import CityPage from "../../../../../containers/city/Index";
 import Layout from "../../../../../components/Layout";
-import axiossearchInstance from "../../../../../services/search/all";
-import axiosPoiCityInstance from "../../../../../services/poi/city";
 import axiosReccommendedCityInstance from "../../../../../services/poi/reccommededcities";
 import axioslocationsinstance from "../../../../../services/search/search";
 import setHotLocationSearch from "../../../../../store/actions/hotLocationSearch";
-
+import { CONTENT_SERVER_HOST, MERCURY_HOST } from "../../../../../services/constants";
+import axios from "axios";
+import * as PagesToIdMapping from "../../../../../data/PagesToIdMapping.json"
 const Experience = (props) => {
+  console.log("experience props are:",props)
   const router = useRouter();
+  if (router.isFallback) {
+    return <div>Loading...</div>; // fallback loading UI
+  }
   useEffect(() => {
     props.setHotLocationSearch(props.hotLocationSearch);
   }, []);
@@ -68,6 +72,8 @@ const Experience = (props) => {
         reccomendedCitiesData={props.reccomendedCitiesData}
         cityData={props.cityData}
         id={router.query.city}
+        page_id={props.page_id}
+        type={props?.Type}
       ></CityPage>
     </Layout>
   );
@@ -77,23 +83,24 @@ export async function getStaticPaths() {
   let paths = [];
 
   try {
-    const res = await axiossearchInstance.get(
-      "/?type=Location&fields=path,cta"
+    //mercury api
+    const res = await axios.get(
+      `${MERCURY_HOST}/api/v1/geos/search/all/?type=City`
     );
 
-    const data = res.data;
+    let data = res.data;
 
     for (var i = 0; i < data.length; i++) {
       const pathArr = data[i].path.split("/");
       var [continentSlug, countrySlug, stateSlug, citySlug] = pathArr;
-      if (data[i].cta) {
+      if (data[i]) {
         paths.push({
           params: {
             continent: continentSlug,
             country: countrySlug,
             state: stateSlug,
             city: citySlug,
-          },
+          }
         });
       }
     }
@@ -110,74 +117,169 @@ export async function getStaticPaths() {
   };
 }
 
-export async function getStaticProps(context) {
-  let reccomendedCitiesData = [];
-  let data = null;
-  let hotLocationSearch = [];
+export async function getStaticProps(context){
   const { continent, country, state, city } = context.params;
   const path = `${continent}/${country}/${state}/${city}`;
+  let Id=PagesToIdMapping[path]!=undefined?PagesToIdMapping[path]:""
+  let Type="City"
+  let data
+  let reccomendedCitiesData
+  let hotLocationSearch=[]
 
-  try {
-    const res = await axiosPoiCityInstance.get(`/?slug=${context.params.city}`);
-    data = res.data;
-  } catch (err) {
+  //mercury api
+  await axios.get(`${MERCURY_HOST}/api/v1/geos/city/${Id}/`).then((res)=>{
+    data= res.data.data.city
+  }).catch((err)=>{
     console.error(
       `[ERROR][cityPage:axiosPoiCityInstance][/?slug=${context.params.city}]: `,
       err.message
     );
-  }
+    return null
+  })
+
+ // mercury api
+  await axiosReccommendedCityInstance.get(
+    `/?city_id=${Id}`
+  ).then((res)=>{
+    const reccoData = res.data.data;
+    reccomendedCitiesData= reccoData.map((e) => ({
+      id: e.id,
+      image: e.image,
+      lat: e.latitude,
+      long: e.longitude,
+      most_popular_for: e.most_popular_for,
+      name: e.name,
+      path: e.path,
+      budget: e?.budget,
+    }));
+  }).catch((err)=>{
+    console.error(
+      `[ERROR][cityPage:axiosReccommendedCityInstance][/?city_id=${Id}]: `,
+      err.message
+    );
+    return []
+  })
+
+  //mercury api
+  await axioslocationsinstance.get(
+    `hot_destinations/?state=${state}`
+  ).then((response)=>{
+
+    if (response.data?.length) {
+
+      hotLocationSearch= response.data;
+    }
+  }).catch((err)=>{
+    console.log(
+      `[ERROR][CityPage][axioslocationsinstance:/hot_destinations/?state=${state}/]`
+    );
+    return []
+  })
 
   if (!data) {
+    console.log("here")
     return {
       notFound: true,
     };
   }
 
-  try {
-    const resp = await axiosReccommendedCityInstance.get(
-      `/?slug=${context.params.city}&limit=6`
-    );
-
-    const reccoData = resp.data;
-    reccomendedCitiesData = reccoData.map((e) => ({
-      id: e.id,
-      image: e.image,
-      lat: e.lat,
-      long: e.long,
-      most_popular_for: e.most_popular_for,
-      name: e.name,
-      path: e.path,
-      budget: e.budget,
-    }));
-  } catch (err) {
-    console.error(
-      `[ERROR][cityPage:axiosReccommendedCityInstance][/?slug=${context.params.city}&limit=6]: `,
-      err.message
-    );
-  }
-
-  try {
-    const response = await axioslocationsinstance.get(
-      `hot_destinations/?state=${state}/`
-    );
-    if (response.data?.length) {
-      hotLocationSearch = response.data;
-    }
-  } catch (err) {
-    console.log(
-      `[ERROR][CityPage][axioslocationsinstance:/hot_destinations/?state=${state}/]`
-    );
-  }
-
+  console.log("data :",data.name)
   return {
     props: {
       cityData: data,
       reccomendedCitiesData,
       path,
       hotLocationSearch,
+      page_id:Id,
+      Type
     },
   };
 }
+
+// export async function getStaticProps(context) {
+//   console.log("start:",new Date())
+//   let reccomendedCitiesData = [];
+//   let data = null;
+//   let hotLocationSearch = [];
+//   let Id=""
+//   let Type="Country"
+//   const { continent, country, state, city } = context.params;
+//   const path = `${continent}/${country}/${state}/${city}`;
+
+//   try{
+//     const res=await axios.get(`${MERCURY_HOST}/api/v1/geos/pages/all/?path=${path}`)
+//     if (res?.data?.path){
+//     Id=res?.data?.path?.id
+//     Type=res?.data?.path?.type
+//     }
+//   } catch(err){
+
+//   }
+
+//   try {
+//     const res = await axios.get(`${CONTENT_SERVER_HOST}/poi/city/?slug=${context.params.city}`);
+//     data = res.data;
+//   } catch (err) {
+//     console.error(
+//       `[ERROR][cityPage:axiosPoiCityInstance][/?slug=${context.params.city}]: `,
+//       err.message
+//     );
+//   }
+
+//   if (!data) {
+//     return {
+//       notFound: true,
+//     };
+//   }
+
+//   try {
+//     const resp = await axiosReccommendedCityInstance.get(
+//       `/?slug=${context.params.city}&limit=6`
+//     );
+
+//     const reccoData = resp.data;
+//     reccomendedCitiesData = reccoData.map((e) => ({
+//       id: e.id,
+//       image: e.image,
+//       lat: e.lat,
+//       long: e.long,
+//       most_popular_for: e.most_popular_for,
+//       name: e.name,
+//       path: e.path,
+//       budget: e.budget,
+//     }));
+//   } catch (err) {
+//     console.error(
+//       `[ERROR][cityPage:axiosReccommendedCityInstance][/?slug=${context.params.city}&limit=6]: `,
+//       err.message
+//     );
+//   }
+
+//   try {
+//     const response = await axioslocationsinstance.get(
+//       `hot_destinations/?state=${state}/`
+//     );
+//     if (response.data?.length) {
+//       hotLocationSearch = response.data;
+//     }
+//   } catch (err) {
+//     console.log(
+//       `[ERROR][CityPage][axioslocationsinstance:/hot_destinations/?state=${state}/]`
+//     );
+//   }
+//   console.log("end:",new Date())
+
+//   return {
+//     props: {
+//       cityData: data,
+//       reccomendedCitiesData,
+//       path,
+//       hotLocationSearch,
+//       page_id:Id,
+//       Type
+//     },
+//   };
+// }
 
 const mapDispatchToProps = (dispatch) => {
   return {

@@ -3,6 +3,7 @@ import SlideOne from "./slideone/SlideOne";
 import SlideTwo from "./slidetwo/SlideTwo";
 import { fadeIn } from "react-animations";
 import Login from "../userauth/LogInModal";
+import SlideThree from "./slidethree/SlideThree";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 
@@ -14,7 +15,7 @@ const Card = styled.div`
 
 const FlickityComp = (props) => {
   return (
-    <div style={{ width: "100%" }}>
+    <div style={{ width: "100%" }} className="">
       {!props.slideIndex ? (
         <Card>
           <SlideOne
@@ -41,11 +42,13 @@ const FlickityComp = (props) => {
             setValueStart={props.setValueStart}
             setValueEnd={props.setValueEnd}
             eventDates={props.eventDates}
+            selectedPreferences={props.selectedPreferences}
+            setSelectedPreferences={props.setSelectedPreferences}
           ></SlideOne>
         </Card>
       ) : null}
 
-      {props.slideIndex === 1 ? (
+      {props.slideIndex === 1 && (props.token || props.phone !== "null") ? (
         <Card>
           <SlideTwo
             numberOfAdults={props.numberOfAdults}
@@ -61,12 +64,65 @@ const FlickityComp = (props) => {
             selectedPreferences={props.selectedPreferences}
             setSelectedPreferences={props.setSelectedPreferences}
             setSubmitSecondSlide={props.setSubmitSecondSlide}
+            setRoomConfiguration={props.setRoomConfiguration}
+            priceRange={props.priceRange}
+            setPriceRange={props.setPriceRange}
+            addHotels={props.addHotels}
+            setAddHotels={props.setAddHotels}
+            addFlights={props.addFlights}
+            setAddFlights={props.setAddFlights}
+            destination={props.destination}
+            defaultPriceRange={props.defaultPriceRange}
           ></SlideTwo>
         </Card>
       ) : null}
 
-      {props.slideIndex === 2 && (!props.token || props.phone === "null") ? (
-        <Login nospacing noheading noicons hideloginclose noclose></Login>
+      {props.slideIndex === 2 ? (
+        props.addHotels ? (
+          <SlideThree
+            numberOfAdults={props.numberOfAdults}
+            setNumberOfAdults={props.setNumberOfAdults}
+            numberOfChildren={props.numberOfChildren}
+            setNumberOfChildren={props.setNumberOfChildren}
+            numberOfInfants={props.numberOfInfants}
+            setNumberOfInfants={props.setNumberOfInfants}
+            roomConfiguration={props.roomConfiguration}
+            setRoomConfiguration={props.setRoomConfiguration}
+            addHotels={props.addHotels}
+            setAddHotels={props.setAddHotels}
+            groupType={props.groupType}
+            setBudget={props.setBudget}
+            setPriceRange={props.setPriceRange}
+            destination={props.destination}
+            defaultPriceRange={props.defaultPriceRange}
+          />
+        ) : (
+          <Login
+            nospacing
+            noheading
+            noicons
+            hideloginclose
+            noclose
+            onSuccess={() => {
+              props.setSlideIndex((prev) => prev - 1);
+              props.setLoginComplete(true);
+            }}
+          ></Login>
+        )
+      ) : null}
+
+      {props.slideIndex === 3 && (!props.token || props.phone === "null") ? (
+        <Login
+          nospacing
+          noheading
+          noicons
+          hideloginclose
+          noclose
+          onSuccess={() => {
+            props.setSlideIndex((prev) => prev - 1);
+            props.setLoginComplete(true);
+          }}
+        ></Login>
       ) : null}
     </div>
   );

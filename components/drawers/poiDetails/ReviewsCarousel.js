@@ -1,0 +1,195 @@
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
+import ImageLoader from "../../ImageLoader";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Navigation } from "swiper";
+import "swiper/css";
+import "swiper/swiper-bundle.css";
+import "swiper/css/navigation";
+import "swiper/swiper.min.css";
+import "swiper/swiper-bundle.min.css";
+import styled from "styled-components";
+import media from "../../media";
+import GoogleImageLoader from "./GoogleImageLoader";
+
+const SwiperContainer = styled.div`
+  position: relative;
+  width:100%;
+  .swiper {
+    width: 100%;
+    max-width: 100%; 
+  },
+  .swiper-wrapper {
+    position: initial;
+    height: auto;
+  }
+  .swiper-button-prev {
+    left: -10px;
+    @media screen and (min-width: 768px) {
+      ${(props) =>
+        props.buttonSize ? `left: -${props.buttonSize / 2}px` : "left: -20px"};
+    }
+  }
+  .swiper-button-next {
+    right: -10px;
+    @media screen and (min-width: 768px) {
+      ${(props) =>
+        props.buttonSize
+          ? `right: -${props.buttonSize / 2}px`
+          : "right: -20px"};
+    }
+  }
+  .swiper-button-next,
+  .swiper-button-prev {
+    background: #01202b;
+    color: white;
+    border: none;
+    border-radius: 100%;
+    width: 30px;
+    height: 30px;
+
+    @media screen and (min-width: 768px) {
+      ${(props) =>
+        props.buttonSize ? `width: ${props.buttonSize}px` : "width: 40px"};
+      ${(props) =>
+        props.buttonSize ? `height: ${props.buttonSize}px` : "height: 40px"};
+    }
+  }
+  .swiper-button-next::after {
+    font-size: 0.8rem;
+    font-weight: 900;
+    translate: 1px 0px;
+    @media screen and (min-width: 768px) {
+      font-size: 1rem;
+    }
+  }
+  .swiper-button-prev::after {
+    font-size: 0.8rem;
+    font-weight: 900;
+    translate: -1px 0px;
+    @media screen and (min-width: 768px) {
+      font-size: 1rem;
+    }
+  }
+
+
+  .swiper-slide img {
+    width: 100%;
+    height: 100%;
+  }
+`;
+
+export default function ReviewsCarousel(props) {
+  let isPageWide = media("(min-width: 768px)");
+  const [cards, setCards] = useState([]);
+
+  useEffect(() => {
+    const arr = props.reviews.map((review, index) => (
+      <Review
+        key={index}
+        heading={review?.heading}
+        text={review?.text}
+        name={review?.author_name}
+        image={review?.profile_photo_url}
+        rating={review?.rating}
+      />
+    ));
+
+    setCards(arr);
+  }, []);
+
+  const handlePrevClick = (swiper) => {
+    const currentIndex = swiper.activeIndex + 1;
+    const slidesPerView = swiper.params.slidesPerView;
+    const newIndex = currentIndex - slidesPerView;
+    swiper.slideTo(newIndex);
+  };
+
+  const handleNextClick = (swiper) => {
+    const currentIndex = swiper.activeIndex - 1;
+    const slidesPerView = swiper.params.slidesPerView;
+    const newIndex = currentIndex + slidesPerView;
+    swiper.slideTo(newIndex);
+  };
+
+  return (
+    <SwiperContainer className="relative drop-shadow-xl">
+      <Swiper
+        onInit={(swiper) => {
+          swiper.params.navigation.nextEl.addEventListener("click", () =>
+            handleNextClick(swiper)
+          );
+          swiper.params.navigation.prevEl.addEventListener("click", () =>
+            handlePrevClick(swiper)
+          );
+        }}
+        spaceBetween={25}
+        centeredSlides={false}
+        initialSlide={0}
+        navigation={true}
+        pagination={false}
+        slidesPerView={isPageWide ? 3 : 1}
+        modules={[Navigation, Pagination]}
+        lazy={"true"}
+      >
+        {cards.map((e, i) => (
+          <SwiperSlide key={i} >{e}</SwiperSlide>
+        ))}
+      </Swiper>
+    </SwiperContainer>
+  );
+}
+
+const Review = ({ heading, text, name, image, rating }) => {
+  const [viewMore, setViewMore] = useState(false);
+
+  return (
+    <div className="h-[400px]  border-2 flex flex-col gap-4 bg-white p-4 rounded-lg overflow-y-auto hide-scrollbar">
+      <div className="flex justify-between gap-3">
+        <div className="">
+          <GoogleImageLoader
+            url={image}
+            width={"65px"}
+            height={"65px"}
+            noLazy
+          />
+          <p className="text-[18px] leading-[27px] font-[500] mb-0">{name}</p>
+        </div>
+
+        {/* Text Section */}
+        <div className="flex flex-col h-fit">
+          <div className="text-[#FEB739] text-xl flex">
+            {"★".repeat(rating)}{" "}
+            <span className="text-gray-400">{"☆".repeat(5 - rating)}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col justify-between h-full">
+        <div>
+          <h3 className="text-[16px] leading-[24px] font-[600]">{heading}</h3>
+          <p className="text-[15px] leading-[24px] font-[350] text-[#323232] h-auto">
+            {viewMore ? text : text.substring(0, 300)}
+            {text.length > 300 ? (
+              viewMore ? (
+                <span
+                  onClick={() => setViewMore(false)}
+                  className="text-gray-400 cursor-pointer ml-1"
+                >
+                  less
+                </span>
+              ) : (
+                <span
+                  onClick={() => setViewMore(true)}
+                  className="text-gray-400 cursor-pointer"
+                >
+                  ..more
+                </span>
+              )
+            ) : null}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};

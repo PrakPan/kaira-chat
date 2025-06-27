@@ -602,11 +602,11 @@ const TransferModeContainer = (props) => {
                         ? "lg:bottom-4 hidden"
                         : "lg:bottom-[3.6rem] hidden"
                     } `}
-                    onClick={(e) => {
-                      handleCheckboxChange(e);
-                    }}
+                    // onClick={(e) => {
+                    //   handleCheckboxChange(e);
+                    // }}
                   >
-                    <CheckboxFormComponent checked={addbooking} />{" "}
+                    {/* <CheckboxFormComponent checked={addbooking} />{" "} */}
                   </div>
                   {props.userSelected ? (
                     <div className=" text-md font-semibold  text-[#277004] ">
@@ -841,7 +841,7 @@ const TransferModeContainer = (props) => {
                               )}
                             </div>
 
-                            {!props?.payment?.paid_user && (
+                            {/* {!props?.payment?.paid_user && (
                               <div
                                 onClick={() =>
                                   HandleFlights(props.index, "Change Flight")
@@ -850,24 +850,25 @@ const TransferModeContainer = (props) => {
                               >
                                 Change Flight
                               </div>
-                            )}
+                            )} */}
                           </div>
                         ) : (
-                          !props?.payment?.paid_user && (
-                            <Button
-                              bgColor={"#F7E700"}
-                              borderRadius="8px"
-                              fontWeight="400"
-                              padding="0.6rem 2.2rem"
-                              hoverColor="white"
-                              margin="auto 0px"
-                              onclick={() => {
-                                HandleFlights(props.index, "Add Flight");
-                              }}
-                            >
-                              Add Flight
-                            </Button>
-                          )
+                          <></>
+                          // !props?.payment?.paid_user && (
+                          //   <Button
+                          //     bgColor={"#F7E700"}
+                          //     borderRadius="8px"
+                          //     fontWeight="400"
+                          //     padding="0.6rem 2.2rem"
+                          //     hoverColor="white"
+                          //     margin="auto 0px"
+                          //     onclick={() => {
+                          //       HandleFlights(props.index, "Add Flight");
+                          //     }}
+                          //   >
+                          //     Add Flight
+                          //   </Button>
+                         // )
                         )}
                       </>
                     )}
@@ -1010,7 +1011,7 @@ const TransferModeContainer = (props) => {
                         </FlexBox>
                         {props.userSelected ? (
                           <div>
-                            {!props?.payment?.paid_user && (
+                            {/* {!props?.payment?.paid_user && (
                               <div
                                 onClick={() =>
                                   HandleFlights(props.index, "Change")
@@ -1019,21 +1020,22 @@ const TransferModeContainer = (props) => {
                               >
                                 Change
                               </div>
-                            )}
+                            )} */}
                           </div>
                         ) : (
-                          !props?.payment?.paid_user && (
-                            <div>
-                              <div
-                                onClick={() =>
-                                  HandleFlights(props.index, "Add Flight")
-                                }
-                                className="px-[1.8rem] bg-[#F7E700] py-[8px] inline-block cursor-pointer rounded-lg shadow-sm  border-2 border-black  text-black font-medium text-sm"
-                              >
-                                Add Flight
-                              </div>
-                            </div>
-                          )
+                          <></>
+                          // !props?.payment?.paid_user && (
+                          //   <div>
+                          //     <div
+                          //       onClick={() =>
+                          //         HandleFlights(props.index, "Add Flight")
+                          //       }
+                          //       className="px-[1.8rem] bg-[#F7E700] py-[8px] inline-block cursor-pointer rounded-lg shadow-sm  border-2 border-black  text-black font-medium text-sm"
+                          //     >
+                          //       Add Flight
+                          //     </div>
+                          //   </div>
+                          // )
                         )}
                       </PriceContainer>
                     </InfoContainer>
@@ -1052,14 +1054,14 @@ const TransferModeContainer = (props) => {
                         ? "lg:bottom-4 hidden"
                         : "lg:bottom-[3.6rem] hidden"
                     } `}
-                    onClick={(e) => {
-                      handleCheckboxChange(
-                        e,
-                        `${addbooking ? "Added Booking" : "Add Booking"}`,
-                      );
-                    }}
+                    // onClick={(e) => {
+                    //   handleCheckboxChange(
+                    //     e,
+                    //     `${addbooking ? "Added Booking" : "Add Booking"}`,
+                    //   );
+                    // }}
                   >
-                    <CheckboxFormComponent checked={addbooking} />{" "}
+                    {/* <CheckboxFormComponent checked={addbooking} />{" "} */}
                   </div>
                   {props.userSelected ? (
                     <div className=" text-md font-semibold  text-[#277004] ">
@@ -1173,21 +1175,23 @@ const TransferModeContainer = (props) => {
                 {!props?.payment?.paid_user && props.booking_type === "Taxi" ? (
                   <div className="w-full flex flex-row items-center justify-end cursor-pointer pr-2">
                     {addbooking ? (
-                      <button
-                        onClick={() =>
-                          HandleTransport(props.index, "Change Taxi")
-                        }
-                        className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
-                      >
-                        {isDesktop ? "Change Taxi" : "Change"}
-                      </button>
+                      <></>
+                      // <button
+                      //   onClick={() =>
+                      //     HandleTransport(props.index, "Change Taxi")
+                      //   }
+                      //   className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
+                      // >
+                      //   {isDesktop ? "Change Taxi" : "Change"}
+                      // </button>
                     ) : (
-                      <button
-                        onClick={() => HandleTransport(props.index, "Add Taxi")}
-                        className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
-                      >
-                        Add Taxi
-                      </button>
+                      <></>
+                      // <button
+                      //   onClick={() => HandleTransport(props.index, "Add Taxi")}
+                      //   className="text-sm lg:text-[1rem] md:text[1rem] font-medium lg:font-normal md:font-normal border-2 border-black rounded-lg px-[1.6rem] lg:py-2 md:py-2 py-[6px] bg-[#F7E700] hover:text-white hover:bg-black"
+                      // >
+                      //   Add Taxi
+                      // </button>
                     )}
                   </div>
                 ) : (
@@ -1223,18 +1227,18 @@ const TransferModeContainer = (props) => {
                       )}
 
                       <div
-                        onClick={(e) => {
-                          handleCheckboxChange(
-                            e,
-                            `${addbooking ? "Added Booking" : "Add Booking"}`,
-                          );
-                        }}
+                        // onClick={(e) => {
+                        //   handleCheckboxChange(
+                        //     e,
+                        //     `${addbooking ? "Added Booking" : "Add Booking"}`,
+                        //   );
+                        // }}
                         className="flex flex-row gap-1 items-center cursor-pointer"
                       >
-                        <CheckboxFormComponent checked={addbooking} />
-                        <label className="text-center sm:text-sm text-[0.7rem]">
+                        {/* <CheckboxFormComponent checked={addbooking} /> */}
+                        {/* <label className="text-center sm:text-sm text-[0.7rem]">
                           {addbooking ? "Added Booking" : "Add Booking"}
-                        </label>
+                        </label> */}
                       </div>
                     </div>
                   </div>
@@ -1245,12 +1249,12 @@ const TransferModeContainer = (props) => {
         </>
       ) : (
         <div className="w-full h-full flex items-center justify-start ml-4">
-          <button
+          {/* <button
             onClick={handleTransferEdit}
             className="text-blue hover:underline"
           >
             + Add Transfer
-          </button>
+          </button> */}
         </div>
       )}
 

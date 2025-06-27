@@ -1,8 +1,12 @@
 import axios from 'axios';
-import {CONTENT_SERVER_HOST} from '../constants';
+import {MERCURY_HOST} from '../constants';
 
 const instance = axios.create({
-    baseURL: CONTENT_SERVER_HOST+"/user/login"
+    baseURL: MERCURY_HOST+"/api/v1/user/login/"
 })
 
 export default instance;
+
+export const logoutinstance = axios.create({
+    baseURL: MERCURY_HOST + "/api/v1/user/logout/"
+})

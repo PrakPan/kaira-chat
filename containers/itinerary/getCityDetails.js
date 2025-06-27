@@ -10,11 +10,13 @@ export const getCityDetails = (() => {
       return cache[city_id];
     }
     const res = await axiosPoiCityInstance.get(
-      `/?city_id=${city_id}&fields=lat,long`
+      `/?city_id=${city_id}&fields=lat,long`,
     );
     const data = res.data;
     // Cache the city details for future use
     cache[city_id] = data;
+
+    console.log("CITY DATA",data);
     return data;
   };
 })();

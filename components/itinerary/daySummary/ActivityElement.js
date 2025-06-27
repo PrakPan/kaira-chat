@@ -161,7 +161,8 @@ export default function ActivityElement(props) {
                       Activity added
                     </TransparentButton>
                   ) : (
-                    <TransparentButton>Add Activity</TransparentButton>
+                    <></>
+                    // <TransparentButton>Add Activity</TransparentButton>
                   )}
                 </>
               ) : (
@@ -173,6 +174,7 @@ export default function ActivityElement(props) {
       </div>
 
       <POIDetailsDrawer
+        version={"v1"}
         itineraryDrawer
         show={showDrawer}
         iconId={data?.activity_data?.id}

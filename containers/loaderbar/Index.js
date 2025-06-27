@@ -5,6 +5,30 @@ import LottieAnimation from "./Lottie";
 import ResponsiveProgressBar from "./linecirclecontainer";
 import { useRouter } from "next/router";
 
+
+const newContent = [
+  {
+    heading: "Finding Best Routes",
+    icon: null,
+  },
+  {
+    heading: "Creating Itinerary",
+    icon: null,
+  },
+  {
+    heading: "Fetching Stays, Activities, and Transfers",
+    icon: null,
+  },
+  {
+    heading: "Calculating Trip Cost",
+    icon: null,
+  },
+  {
+    heading: "Please wait while we edit your itinerary…",
+    icon: null,
+  },
+];
+
 const COLORS = {
   black: "#212529",
   gray: "#757D75",
@@ -12,16 +36,25 @@ const COLORS = {
   white: "white",
 };
 
-const Container1 = styled.div`
-  width: 100vw;
-  height: 100vh;
-
-  z-index: 1000;
-  position: fixed;
-  place-items: center;
-  background-size: contain;
-  background-color: ${COLORS.background};
+const FullScreenContainer = styled.div`
+      width: 100vw;
+      height: 100vh;
+      z-index: 1000;
+      position: fixed;
+      place-items: center;
+      background-size: contain;
+      background-color: ${COLORS.background};
 `;
+
+const InlineContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  width:100%;
+`;
+
 
 const Heading2 = styled.div`
   font-size: 1rem;
@@ -37,7 +70,7 @@ const Heading2 = styled.div`
   }
 `;
 
-const Index = () => {
+const Index = (props) => {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   var IntervalTiming;
@@ -45,6 +78,16 @@ const Index = () => {
   if (router.query.t) IntervalTiming = (+router.query.t / 5) * 1000;
 
   useEffect(() => {
+    if(props?.isEdit){
+      for (var i = 0; i < newContent.length; i++) {
+        if (newContent[i].heading) {
+          cards.push(
+            <Heading2 className="font-lexend">{newContent[i].heading}</Heading2>
+          );
+        }
+      }
+    }
+    else{
     for (var i = 0; i < content.length; i++) {
       if (content[i].heading) {
         cards.push(
@@ -52,6 +95,7 @@ const Index = () => {
         );
       }
     }
+  }
   }, []);
 
   useEffect(() => {
@@ -63,16 +107,18 @@ const Index = () => {
     }
   }, [currentStep]);
 
+  const Container = props?.isEdit ? InlineContainer : FullScreenContainer;
+
   return (
-    <Container1 className="center-div">
+    <Container className="center-div" isEdit={props?.isEdit}>
       <LottieAnimation></LottieAnimation>
       <ResponsiveProgressBar progress={currentStep}></ResponsiveProgressBar>
 
       <Heading2 className=" font-lexend font-medium text-lg">
         {" "}
-        {content[currentStep - 1].heading}{" "}
+        {props?.isEdit ? newContent[currentStep - 1].heading : content[currentStep - 1].heading}{" "}
       </Heading2>
-    </Container1>
+    </Container>
   );
 };
 

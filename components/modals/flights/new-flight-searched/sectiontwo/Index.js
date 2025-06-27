@@ -218,6 +218,7 @@ const Booking = (props) => {
             ></Image>
           </div>
         </LogoContainer>
+
         <div>
           <Text>{airLineName}</Text>
           {!isPageWide &&
@@ -277,6 +278,7 @@ const Booking = (props) => {
             ) : null)}
         </div>
       </FlexBox>
+
       <DetailsGridContainer>
         <div style={{ display: "flex", gap: "0.25rem" }}>
           {props.data.Segments ? (
@@ -297,6 +299,7 @@ const Booking = (props) => {
           ) : (
             <div></div>
           )}
+
           {props.data.Segments ? (
             props.data.Segments[0].length ? (
               <div
@@ -312,6 +315,7 @@ const Booking = (props) => {
             ) : null
           ) : null}
         </div>
+
         <div
           style={{
             margin: "0",
@@ -327,6 +331,7 @@ const Booking = (props) => {
             <FaPlane style={{ fontSize: "1.25rem" }} />
           </Plan>
         </div>
+
         <div style={{ display: "flex", gap: "0.25rem" }}>
           {props.data.Segments ? (
             props.data.Segments[0].length ? (

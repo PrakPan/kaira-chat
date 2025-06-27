@@ -3,10 +3,15 @@ import { connect } from "react-redux";
 import { useEffect } from "react";
 import Layout from "../../../components/Layout";
 import CountryPage from "../../../containers/country/Index";
-import axioscountrydetailsinstance from "../../../services/pages/country";
+import axioscountrydetailsinstance, {
+  getCountryPaths,
+} from "../../../services/pages/country";
 import axiospagelistinstance from "../../../services/pages/list";
 import axioslocationsinstance from "../../../services/search/search";
 import setHotLocationSearch from "../../../store/actions/hotLocationSearch";
+import axios from "axios";
+import { MERCURY_HOST } from "../../../services/constants";
+import * as PagesToIdMapping from "../../../data/PagesToIdMapping.json";
 
 const TravelPlanner = (props) => {
   useEffect(() => {
@@ -53,6 +58,8 @@ const TravelPlanner = (props) => {
         continetCarousel={props?.continetCarousel}
         data={props?.Data}
         locations={props?.locations}
+        page_id={props.page_id || ""}
+        type={props?.Type}
       ></CountryPage>
     </Layout>
   );
@@ -61,7 +68,10 @@ const TravelPlanner = (props) => {
 export async function getStaticPaths() {
   let paths = [];
   try {
-    const res = await axioscountrydetailsinstance.get("all/?fields=path");
+    //mercury api
+    const res = await getCountryPaths.get(
+      `${MERCURY_HOST}/api/v1/geos/search/all/?type=Country`
+    );
     const data = res.data;
     for (var i = 0; i < data.length; i++) {
       const pathArr = data[i].path.split("/");
@@ -83,21 +93,25 @@ export async function getStaticPaths() {
   };
 }
 
+
 export async function getStaticProps(context) {
   let data = null;
   let locations = [];
   const continetCarousel = [];
   let hotLocationSearch = [];
+  let Type = "Country";
   const { continent, country } = context.params;
   const path = `${continent}/${country}`;
+  let pageId = PagesToIdMapping[path]!=undefined?PagesToIdMapping[path]:"";
+
 
   try {
-    const res = await axioscountrydetailsinstance.get(
-      `${context.params.country}/`
+    //mercury api
+    const res = await axios.get(
+      `${MERCURY_HOST}/api/v1/geos/country/${pageId}`
     );
-    data = res.data;
-
-    locations = data.see_also;
+    data = res.data.data.country;
+    locations = data?.see_also || [];
 
     if (!data) {
       return {
@@ -105,21 +119,24 @@ export async function getStaticProps(context) {
       };
     }
 
-    const continentData = await axiospagelistinstance(
-      "/?page_type=Continent&fields=destination,tagline,image,path"
+    //mercury api
+    const continentData = await axiospagelistinstance.get(
+      "/?page_type=Continent&fields=id,page_type,slug,overview_image,tagline,path"
     );
-    for (let i = 0; i < continentData.data.length; i++) {
-      const countrydetailsResponse = await axioscountrydetailsinstance(
-        `/all/?continent=${continentData.data[i].destination}&fields=id,name,path,tagline,image,is_hot_location,best_time`
+    for (let i = 0; i < continentData.data.data.pages.length; i++) {
+      let continentSlug=continentData.data.data.pages[i].slug
+      
+      const countrydetailsResponse = await axioscountrydetailsinstance.get(
+        `?limit=100&offset=0&continent=${continentSlug}`
       );
 
-      let hot_data = countrydetailsResponse.data.filter(
+      let hot_data = countrydetailsResponse.data.data.countries.filter(
         (d) => d.is_hot_location
       );
       hot_data = hot_data.slice(0, 6);
 
       continetCarousel.push({
-        ...continentData.data[i],
+        ...continentData.data.data.pages[i],
         hot_destinations: hot_data,
       });
     }
@@ -128,6 +145,7 @@ export async function getStaticProps(context) {
   }
 
   try {
+    //dev api
     const response = await axioslocationsinstance.get(
       `hot_destinations/?country=${country}/`
     );
@@ -147,6 +165,8 @@ export async function getStaticProps(context) {
       continetCarousel,
       path,
       hotLocationSearch,
+      page_id: PagesToIdMapping[path],
+      Type,
     },
   };
 }

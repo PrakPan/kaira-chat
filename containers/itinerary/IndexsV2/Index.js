@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import styled from "styled-components";
-import Menu from "../MenuV2";
+import Menu from "../OldMenuV2";
 import Spinner from "../../../containers/loaderbar/Index";
 import OldSpinner from "../../../components/LoadingPage";
 import axiosdaybydayinstance from "../../../services/itinerary/daybyday/preview";
@@ -765,12 +765,13 @@ const Itinerary = (props) => {
         <OldSpinner></OldSpinner>
       </div>
     );
-  } else
-    return (
-      <div>
-        <Spinner></Spinner>
-      </div>
-    );
+  }
+  //  else
+  //   return (
+  //     <div>
+  //       <Spinner></Spinner>
+  //     </div>
+  //   );
 };
 
 const mapStateToPros = (state) => {

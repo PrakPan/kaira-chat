@@ -31,7 +31,7 @@ const Detail = styled.div`
 `;
 
 const Booking = (props) => {
-  const IndianPrice = getIndianPrice(Math.ceil(props.price / 100));
+  const IndianPrice = getIndianPrice(Math.round(props.price / 100));
   let StarsJSX = [];
   if (props.star_category)
     for (var i = 1; i <= 5; i++) {

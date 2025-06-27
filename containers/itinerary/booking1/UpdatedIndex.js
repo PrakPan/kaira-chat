@@ -1111,6 +1111,8 @@ const Booking = (props) => {
     props.transferBookings,
     props.hasUserPaid,
   ]);
+  console.log("component show modal2 is:",props?.showBookingModal)
+
 
   let message =
     "Hey TTW! I need some help with my tailored experience - https://www.thetarzanway.com" +
@@ -1458,6 +1460,7 @@ const Booking = (props) => {
                 setShowBookingModal={props.setShowBookingModal}
                 showBookingModal={props.showBookingModal}
                 setHideBookingModal={props.setHideBookingModal}
+                onHide={_handleLoginClose}
               ></BookingModal>
 
               {props.traveleritinerary ? (
@@ -1814,6 +1817,7 @@ const Booking = (props) => {
               setShowBookingModal={props.setShowBookingModal}
               showBookingModal={props.showBookingModal}
               setHideBookingModal={props.setHideBookingModal}
+              onHide={_handleLoginClose}
             ></BookingModal>
 
             {props.traveleritinerary ? (

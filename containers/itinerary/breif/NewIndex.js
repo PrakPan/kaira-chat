@@ -39,11 +39,23 @@ const Details = (props) => {
   const [showDrawerData, setShowDrawerData] = useState(false);
   const [currentPopup, setCurrentPopup] = useState(false);
   const [locationsLatLong, setLocationsLatLong] = useState([]);
+  
+  const CITY_COLOR_CODES = [
+    '#359EBF',  //  # shade of blue
+    '#F0C631',  //# shade of yellow
+    '#BF3535',  //# shade of red
+    '#47691e',  //# shade of green
+    '#cc610a',  //# shade of orange
+    '#008080',  //# shade of teal
+    '#7d5e7d',  //# shade of purple
+];
+console.log("Inside routes Dataa",props?.CityData);
+
 
   useEffect(() => {
     const Locationlatlong = [];
 
-    if (props.routesData.length >= 1) {
+     if(props.routesData.length >= 1) {
       for (var i = 0; i < props.routesData.length; i++) {
         var postion = props.breif.city_slabs[i + 1];
         if (
@@ -68,27 +80,33 @@ const Details = (props) => {
           });
         }
       }
-    } else {
+    }
+    else {
       if (props.CityData.length >= 1) {
+        let color;
+      //  console.log("CityData",props.CityData);
         for (var i = 0; i < props.CityData.length; i++) {
+          color = CITY_COLOR_CODES[i%7];
           var postion = props.CityData[i];
           if (
-            !postion.is_departure_only &&
-            !postion.is_trip_terminated &&
-            postion.duration &&
-            postion.duration !== "0"
+            !postion?.is_departure_only &&
+            !postion?.is_trip_terminated &&
+            postion?.duration &&
+            postion?.duration !== "0"
           ) {
             Locationlatlong.push({
-              dayId: getdayId(postion.day_slab_location.start_day_slab_index),
+              // dayId: getdayId(postion?.day_slab_location?.start_day_slab_index || '12'),
+              dayId:'12',
               cityData: postion,
-              id: postion.gmaps_place_id,
-              city_id: postion.city_id,
-              lat: postion.lat,
-              long: postion.long,
-              name: postion.city_name,
+              id: postion?.gmaps_place_id || 'ChIJ78XjhlaF4TgRxgXjwXxLJGY',
+              city_id: postion.city?.id || postion?.gmaps_place_id,
+              lat: postion.city?.latitude,
+              long: postion.city?.longitude,
+              name: postion.city?.name || postion?.city_name,
               duration: postion.duration,
-              color: postion.color,
-              date: getdateId(postion.day_slab_location.start_day_slab_index),
+              color: color,
+              // date: getdateId(postion?.day_slab_location?.start_day_slab_index || '12'),
+              date: postion.start_date
             });
           }
         }
@@ -120,7 +138,7 @@ const Details = (props) => {
   }
 
   return (
-    <div id="brief" className="mt-16">
+    <div id="brief" className="mt-8">
       <DetailsContainer>
         <div
           className="sticky md:top-[70px] lg:w-[50vw] lg:h-[70vh]  w-[88vw] h-fit lg:mt-20 mt-8  rounded-xl"
@@ -141,11 +159,15 @@ const Details = (props) => {
         <RouteComponent>
           <div id="route">
             <Route
+              mercuryItinerary={props?.mercuryItinerary}
+              loadbookings={props?.loadbookings}
               payment={props.payment}
               dayslab={props.itinerary?.day_slabs}
               breif={props.breif}
               routesData={props.routesData}
+              CityData={props?.CityData}
               transfers={props.transfersData}
+              cityTransferBookings={props.cityTransferBookings}
               setPlaceID={setActive}
               active={active}
               setCurrentPopup={setCurrentPopup}
@@ -156,6 +178,16 @@ const Details = (props) => {
               setShowLoginModal={props.setShowLoginModal}
               _GetInTouch={props._GetInTouch}
               setEdit={props.setEditRoute}
+              _updateFlightBookingHandler={props._updateFlightBookingHandler}
+              _updateBookingHandler={props._updateBookingHandler}
+              setHideFlightModal={props.setHideFlightModal}
+              _updatePaymentHandler={props._updatePaymentHandler}
+              setHideBookingModal={props.setHideBookingModal}
+              showFlightModal={props.showFlightModal}
+              setShowFlightModal={props.setShowFlightModal}
+              _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
+              setShowTaxiModal={props.setShowTaxiModal}
+              showTaxiModal={props.showTaxiModal}
             />
           </div>
         </RouteComponent>
@@ -163,14 +195,18 @@ const Details = (props) => {
 
       {props.editRoute && (
         <RouteEditSection
+          mercuryItinerary={props?.mercuryItinerary}
+          routes={props?.CityData}
           editRoute={props.editRoute}
           setEdit={props.setEditRoute}
           group_type={props.group_type}
           duration_time={props.duration_time}
           travellerType={props.travellerType}
+          transferBookings={props?.cityTransferBookings}
           fetchData={props.fetchData}
           setShowLoginModal={props.setShowLoginModal}
           setLocationsLatLong={setLocationsLatLong}
+          resetRef={props?.resetRef}
         >
           <RoutesMap
             locations={locationsLatLong}
@@ -184,8 +220,8 @@ const Details = (props) => {
       <Drawer
         show={showDrawer}
         onHide={() => setShowDrawer(false)}
-        city_id={showDrawerData.city_id}
-        dayId={findDayIdByCityId(showDrawerData.city_id)}
+        city_id={showDrawerData?.city?.id}
+        dayId={findDayIdByCityId(showDrawerData?.city?.id)}
       ></Drawer>
 
       {props.traveleritinerary ? (
@@ -209,4 +245,4 @@ const Details = (props) => {
   );
 };
 
-export default React.memo(Details);
+  export default React.memo(Details);

@@ -29,8 +29,8 @@ const Info = (props) => {
     for (var i = 0; i < props.locations.length; i++) {
       if (i !== props.locations.length - 1)
         LOCATIONS_TO_SHOW =
-          LOCATIONS_TO_SHOW + props.locations[i] + " " + "   •   ";
-      else LOCATIONS_TO_SHOW = LOCATIONS_TO_SHOW + props.locations[i];
+          LOCATIONS_TO_SHOW + (props.locations[i]?.name || props.locations[i]) + " " + "   •   ";
+      else LOCATIONS_TO_SHOW = LOCATIONS_TO_SHOW + (props.locations[i]?.name || props.locations[i]);
     }
   }
 

@@ -10,7 +10,7 @@ import { MdEdit, MdNavigateNext } from "react-icons/md";
 import Drawer from "../../../components/ui/Drawer";
 import { TbArrowBack } from "react-icons/tb";
 import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
-import axiosaxtivitiesinstance from "../../../services/poi/reccommendedactivities";
+import axiosaxtivitiesinstance, { activtySearch } from "../../../services/poi/reccommendedactivities";
 import axiositineraryeditinstance from "../../../services/itinerary/edit";
 import PoiList from "./PoiList";
 import PoiListSkeleton from "./PoiListSkeleton";
@@ -28,6 +28,9 @@ import { IoMdSearch } from "react-icons/io";
 import styled from "styled-components";
 import useDebounce from "../../../hooks/useDebounce";
 import { logEvent } from "../../../services/ga/Index";
+import { getDate } from "../../../helper/DateUtils";
+import Filters from "../../../components/drawers/poiDetails/filters/Filters";
+import NewActivityBooking from "./NewActivityBooking";
 
 const GridContainer = styled.div`
   display: grid;
@@ -54,18 +57,18 @@ const Floating = styled.div`
 `;
 
 const FloatingView = styled.div`
-  position: fixed;
-
-  bottom: 68px;
-  background: #f7e700;
+  position: sticky;
+  bottom: 10px;
+  background: black;
+  color: white;
   border-radius: 50%;
   width: 50px;
   height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
-  right: 10px;
-
+  left: 90%;
+  z-index: 2;
   cursor: pointer;
 `;
 
@@ -108,6 +111,7 @@ const GetInTouchContainer = styled.div`
 `;
 
 const ItineraryPoiElementM = (props) => {
+  const isDesktop = useMediaQuery("(min-width:1148px)");
   const [show, setShow] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
   const [showFilter, setshowFilter] = useState(false);
@@ -122,19 +126,49 @@ const ItineraryPoiElementM = (props) => {
   const [elementType, setElementType] = useState("POI");
   const [offSet, setOffSet] = useState(0);
   const drawerRef = useRef(null);
-  const isDesktop = useMediaQuery("(min-width:1148px)");
   const items = [
     { id: 1, label: "Point of Interest", link: "POIS" },
     { id: 2, label: "Activities", link: "Activitiess" },
   ];
+  const [showDynamicfilters, setShowDynamicfilters] = useState(false);
+  const [filterState, setFilterState] = useState({
+    recommended_only: false,
+    rating: [],
+    category: [],
+    tour_type: [],
+    guide: [],
+    pax: {
+      number_of_travelers: props.plan?.number_of_adults,
+      traveler_ages: Array(props.plan?.number_of_adults).fill(null),
+    }
+  })
+  const [filtersObj, setFiltersObj] = useState({
+    ratings: [1, 2, 3, 4, 5],
+    category: [],
+    tour_type: [],
+    guide: [],
+  });
 
-  const fetchData = (showMore = false) => {
-    const added_activities = props.itineraryActivities?.map((el, index) => {
+  useEffect(() => {
+    if (props.city_id && showDrawer) {
+      setFetchingPoi(true);
+      setShowDrawer(true);
+      fetchData();
+    }
+  }, [showDrawer, elementType, SelectedExprience, debouncedSearch, filterState]);
+
+  useEffect(() => {
+    setSelectedSearch("");
+    setOptionsJSX([]);
+  }, [showDrawer]);
+
+  const fetchPois = (showMore = false) => {
+    const added_activities = props.itineraryActivities?.map((element, index) => {
       return {
         id:
-          el.activity?.activity_data?.activity?.id ||
-          el.activity?.activity_data?.poi?.id,
-        date: el.date,
+          element.activity?.activity_data?.activity?.id ||
+          element.activity?.activity_data?.poi?.id,
+        date: element.date,
       };
     });
     let ticketsCount = 1;
@@ -195,20 +229,90 @@ const ItineraryPoiElementM = (props) => {
       .catch((err) => {
         setFetchingPoi(false);
       });
-  };
+  }
 
-  useEffect(() => {
-    if (props.city_id && showDrawer) {
-      setFetchingPoi(true);
-      if (props.city_id) setShowDrawer(true);
-      fetchData();
+  const setDynamicFilters = (filters) => {
+    setFiltersObj(prev => ({
+      ...prev,
+      category: filters?.category,
+      tour_type: filters?.tour_type,
+      guide: filters?.guide
+    }))
+  }
+
+  const fetchActivities = (showMore = false) => {
+    const requestData = {
+      city: props?.city_id,
+      start_date: getDate(props.date),
+      number_of_travelers: filterState.pax.number_of_travelers,
+      traveler_ages: filterState.pax.traveler_ages,
+      filter_by: {
+        name: debouncedSearch,
+        recommended_only: filterState.recommended_only,
+        rating: filterState.rating,
+        category: filterState.category && filterState.category[0] !== "All" ? filterState.category : null,
+        tour_type: filterState.tour_type && filterState.tour_type[0] !== "All" ? filterState.tour_type : null,
+        guide: filterState.guide && filterState.guide[0] !== "All" ? filterState.guide : null
+      },
+      sort_by: {
+        // no sorting filters added yet.
+      }
     }
-  }, [showDrawer, elementType, SelectedExprience, debouncedSearch]);
+    activtySearch
+      .post(`/?limit=30&offset=${offSet}`, requestData)
+      .then((res) => {
+        if (res.data?.data?.activities?.length) {
+          setTotalResults(res.data.results);
 
-  useEffect(() => {
-    setSelectedSearch("");
-    setOptionsJSX([]);
-  }, [showDrawer]);
+          if (res.data?.data?.filter_by) {
+            setDynamicFilters(res.data.data.filter_by)
+          }
+
+          let options = [];
+
+          for (var i = 0; i < res.data.data.activities.length; i++) {
+            options.push(
+              <NewActivityBooking
+                key={i}
+                activityAddDrawer
+                _updatePoiHandler={_updatePoiHandler}
+                setShowDrawer={setShowDrawer}
+                data={res.data.data.activities[i]}
+                setLoginModal={props.setShowLoginModal}
+                date={props.date}
+                getAccommodationAndActivitiesHandler={props.getAccommodationAndActivitiesHandler}
+              ></NewActivityBooking>
+            );
+          }
+
+          if (showMore) setOptionsJSX((prev) => [...prev, ...options]);
+          else setOptionsJSX(options);
+
+          if (res.data?.next) {
+            setShowMoreResults(true);
+            setOffSet((prev) => prev + 30);
+          } else {
+            setShowMoreResults(false);
+            setOffSet(0);
+          }
+        } else {
+          setOptionsJSX([]);
+          setTotalResults(null);
+        }
+        setFetchingPoi(false);
+      })
+      .catch((err) => {
+        setFetchingPoi(false);
+      });
+  }
+
+  const fetchData = (showMore = false) => {
+    if (elementType === "POI") {
+      fetchPois(showMore);
+    } else {
+      fetchActivities(showMore);
+    }
+  };
 
   const searchHandler = (e) => {
     if (e.target.id === "icon" && selectSearch.trim().length > 0) {
@@ -444,8 +548,8 @@ const ItineraryPoiElementM = (props) => {
           <div className="flex flex-row">
             <div className="font-normal border-2 lg:text-base text-sm border-[#9F9F9F] rounded-md px-1 py-[2px] mt-2    block  bg-white text-[#9F9F9F]">
               {props.activity_data &&
-              props.activity_data.activity &&
-              props.activity_data.activity.id
+                props.activity_data.activity &&
+                props.activity_data.activity.id
                 ? "ACTIVITY"
                 : "Self Exploration"}
             </div>
@@ -514,12 +618,20 @@ const ItineraryPoiElementM = (props) => {
               type="text"
               value={selectSearch}
               onChange={searchHandler}
-              placeholder={`Search ${
-                elementType === "POI" ? "attractions" : "activities"
-              }`}
+              placeholder={`Search ${elementType === "POI" ? "attractions" : "activities"
+                }`}
               className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
             ></input>
           </div>
+
+          {elementType !== "POI" && (
+            <Filters
+              filters={filtersObj}
+              filterState={filterState}
+              showDynamicfilters={showDynamicfilters}
+              setShowDynamicfilters={setShowDynamicfilters}
+              setFilterState={setFilterState} />
+          )}
 
           <div>
             Showing {optionsJSX.length}
@@ -529,6 +641,7 @@ const ItineraryPoiElementM = (props) => {
               ? ` in ${props?.data?.activity_data?.city?.name}`
               : null}
           </div>
+
           <Navigation
             items={items}
             BarName="TabsName"
@@ -538,6 +651,7 @@ const ItineraryPoiElementM = (props) => {
             }
           />
         </div>
+
         {!fetchingPoi ? (
           optionsJSX.length ? (
             <div
@@ -545,6 +659,7 @@ const ItineraryPoiElementM = (props) => {
               className="flex flex-col items-center mb-3 h-[100vh] overflow-y-scroll"
             >
               {optionsJSX}{" "}
+
               {selectSearch !== "" ? (
                 <Button
                   boxShadow
@@ -630,7 +745,7 @@ const ItineraryPoiElementM = (props) => {
         className="font-lexend"
         onHide={() => setshowFilter(false)}
       >
-        <div className="w-[100vw] px-2 h-[95vh]    flex flex-col gap-3 my-4 justify-between items-start mx-auto ">
+        <div className="w-[100vw] px-2 h-[95vh] flex flex-col gap-3 my-4 justify-between items-start mx-auto ">
           <div className="w-[100%]">
             <div className="flex flex-row gap-3 my-0 justify-start items-center">
               <IoMdClose
@@ -656,11 +771,10 @@ const ItineraryPoiElementM = (props) => {
                         if (SelectedExprience !== i) SetSelectedExprience(i);
                         else SetSelectedExprience(-1);
                       }}
-                      className={`flex  font-normal min-w-fit text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${
-                        SelectedExprience == i
-                          ? "text-white border-0 bg-black "
-                          : "border-2 bg-white text-black"
-                      } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
+                      className={`flex  font-normal min-w-fit text-sm cursor-pointer  justify-center items-center hover:bg-gray-100 active:bg-[#111] active:border-0 ${SelectedExprience == i
+                        ? "text-white border-0 bg-black "
+                        : "border-2 bg-white text-black"
+                        } active:text-white  border-[#D0D5DD]  rounded-lg px-2 py-1`}
                       key={i}
                     >
                       {currentfilter.display}
@@ -689,11 +803,13 @@ const ItineraryPoiElementM = (props) => {
             </ButtonYellow>
           </div>
         </div>
+
         <MakeYourPersonalised
           date={props?.payment?.meta_info?.start_date}
           onHide={() => setShowDrawer(false)}
         />
       </Drawer>
+
       {!isDesktop && showDrawer && (
         <div className="absolute bottom-0 right-10 z-[1510]">
           <FloatingView>
@@ -705,6 +821,7 @@ const ItineraryPoiElementM = (props) => {
           </FloatingView>
         </div>
       )}
+
       {!isDesktop && showDrawer && (
         <div className="absolute bottom-0 right-10 z-[1502]">
           <Floating>
@@ -713,7 +830,11 @@ const ItineraryPoiElementM = (props) => {
               style={{ height: "18px", width: "18px" }}
               cursor={"pointer"}
               onClick={(e) => {
-                setshowFilter(true);
+                if (elementType === "POI") {
+                  setshowFilter(true);
+                } else {
+                  setShowDynamicfilters(true);
+                }
               }}
             />
           </Floating>
@@ -727,6 +848,7 @@ const mapStateToPros = (state) => {
   return {
     itineraryActivities: state.itineraryActivities,
     token: state.auth.token,
+    plan: state.Plan,
   };
 };
 

@@ -157,13 +157,13 @@ const MidSection = (props) => {
             props.route?.transfers?.id !== "" &&
             (!props.bookings || props.bookings.length === 0) ? (
               <Text>
-                <button
+                {/* <button
                   id="transferAdd"
-                  onClick={(e) => handleTransferEdit(e, "Add Transfer")}
+                  // onClick={(e) => handleTransferEdit(e, "Add Transfer")}
                   className="text-blue hover:underline"
                 >
                   + Add Transfer
-                </button>
+                </button> */}
               </Text>
             ) : (
               <Text>
@@ -234,7 +234,7 @@ const MidSection = (props) => {
                   <></>
                 )}
 
-                {props?.route?.transfers &&
+                {/* {props?.route?.transfers &&
                   props?.route?.transfers?.id &&
                   props?.route?.transfers?.id !== "" &&
                   !props?.plan?.round_trip_taxi_added &&
@@ -247,7 +247,7 @@ const MidSection = (props) => {
                     >
                       <MdEdit className="transition-transform hover:scale-150 duration-300 hover:text-yellow-500" />
                     </div>
-                  )}
+                  )} */}
               </Text>
             )
           ) : (

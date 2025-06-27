@@ -7,7 +7,7 @@ import { closeNotification } from "../../store/actions/notification";
 
 const Container = styled.div`
   position: fixed;
-  right: 1rem;
+  right: 0px;
   top: ${(props) => (props.show ? "1%" : "-100%")};
   transition: 0.5s top;
   z-index: ${(props) => props.zIndex};
@@ -24,7 +24,6 @@ const PopupContainer = styled.div`
   border-radius: 0.5rem;
   text-align: left;
   width: 94vw;
-  border-left: ${(props) => `10px solid ${props.bg}`};
   @media screen and (min-width: 768px) {
     width: 32rem;
   }
@@ -33,12 +32,14 @@ const PopupContainer = styled.div`
 const Heading = styled.h3`
   margin-block: 0 10px;
   font-size: 1.2rem;
+  width: 284px;
+  word-break: break-word;
+  overflow-wrap: break-word;
 `;
 
 const Text = styled.div`
   margin-top: 0;
   font-size: 14px;
-  margin-top: -6px;
 `;
 
 const CloseIcon = styled(MdClose)`
@@ -113,26 +114,26 @@ function NotificationPopup(props) {
       });
     } else
       setColor({
-        color: "mediumseagreen",
+        color: "#54C11D",
         bg: "darkgreen",
       });
   }, [props.show, props.type]);
 
   return _document
     ? ReactDOM.createPortal(
-        <Container zIndex={props.zIndex || "5000"} show={props.show}>
+        <Container zIndex={props.zIndex || "5000"} show={props.show} className="md:!right-[2rem]">
           <PopupContainer color={color.color} show={props.show} bg={color.bg}>
-            {props.heading && <Heading>{props.heading}</Heading>}
             <Text>{props.text}</Text>
             <div>
               <OuterCircle
-                style={{
-                  background: `conic-gradient(white 0% ${progress}%, ${color.color} ${progress}% 100%)`,
-                }}
+              // style={{
+              //   background: `conic-gradient(white 0% ${progress}%, ${color.color} ${progress}% 100%)`,
+              // }}
               >
-                <InnerCircle color={color.color}>
-                  <CloseIcon onClick={() => props.closeNotification()} />
-                </InnerCircle>
+                {/* >
+                {/* <InnerCircle color={color.color}> */}
+                <CloseIcon onClick={() => props.closeNotification()} />
+                {/* </InnerCircle> */}
               </OuterCircle>
             </div>
           </PopupContainer>

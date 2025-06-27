@@ -34,11 +34,15 @@ const Overview = (props) => {
   return (
     <div>
       <GridContainer className="gap-2">
-        <Heading className="font-lexend">{toTitleCase(props.title)}</Heading>
+        <Heading className="font-lexend">
+          {/* {toTitleCase(props.title)} */}
+          {props.title}
+          </Heading>
         {!isDesktop && props.tripsPage && <Ratings />}
       </GridContainer>
       <div className="flex flex-row justify-between">
         <Details
+          mercuryItinerary={props?.mercuryItinerary}
           group_type={props.group_type}
           duration_time={props.duration_time}
           travellerType={props.travellerType}
@@ -54,9 +58,9 @@ const Overview = (props) => {
         {isDesktop && props.tripsPage && <Ratings />}
       </div>
 
-      <div className="pt-3 pb-1">
+      {isDesktop && <div className="pt-3 pb-1">
         <ImagesMobile images={props.images}></ImagesMobile>
-      </div>
+      </div>}
     </div>
   );
 };

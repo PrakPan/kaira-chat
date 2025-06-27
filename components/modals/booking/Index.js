@@ -109,7 +109,7 @@ const Booking = (props) => {
                 check_out={props.selectedBooking.check_out}
                 _setImagesHandler={props._setImagesHandler}
                 selectedBooking={props.selectedBooking}
-                cost={Math.ceil(res.data.results[i].price_lower_range)}
+                cost={Math.round(res.data.results[i].price_lower_range)}
                 images={res.data.results[i].images}
                 accommodation={res.data.results[i]}
               ></Accommodation>
@@ -252,7 +252,7 @@ const Booking = (props) => {
                     description={res.data.results[i].description}
                     location={res.data.results[i].location}
                     star={res.data.results[i].star_category}
-                    cost={Math.ceil(
+                    cost={Math.round(
                       res.data.results[i].live_data.dailyRate / 100
                     )}
                     images={res.data.results[i].images}
@@ -353,10 +353,12 @@ const Booking = (props) => {
       })
       .catch((err) => {
         setUpdateBookingState(false);
+        const errorMsg =
+            err?.response?.data?.errors?.[0]?.message?.[0] || err.message ;
 
         props.openNotification({
           type: "error",
-          text: "There seems to be a problem, please try again!",
+          text: errorMsg || "There seems to be a problem, please try again!",
           heading: "Error!",
         });
       });
@@ -409,7 +411,7 @@ const Booking = (props) => {
                     description={res.data.results[i].description}
                     location={res.data.results[i].location}
                     star={res.data.results[i].star_category}
-                    cost={Math.ceil(
+                    cost={Math.round(
                       res.data.results[i].live_data.dailyRate / 100
                     )}
                     images={res.data.results[i].images}

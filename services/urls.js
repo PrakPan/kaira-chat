@@ -15,7 +15,7 @@ export default {
   TRAVEL_SUPPORT: "/travel-support/",
   TRAVEL_GUIDE: "/travel-guide",
   EXPERIENCES: "/experiences/",
-  WHATSAPP: "https://wa.me/918076039536",
+  WHATSAPP: "https://wa.me/918448687703",
   //some more
 
   supplier_thetarzanway: {
@@ -53,10 +53,11 @@ export default {
     KASHMIR: "/asia/india/jammu_and_kashmir",
     KERALA: "/asia/india/kerala",
     LADAKH: "/asia/india/ladakh",
-    WORKCATION: "/theme/workcation-in-india",
-    VOLUNTEER: "/theme/volunteer-in-india",
+    LATOMATINA: "/theme/la-tomatina-spain-2025",
+    SUMMER: "/theme/summerholidays-2025",
     TREKS: "",
-    ROADTRIPS: "/theme/road-trips-in-india",
+    ROADTRIPS: "/theme/roadtrips-2025",
     OFFBEAT: "/theme/offbeat-trips-in-india",
+    EUROPE_1_LAKH: "/theme/europe-under-1-lakh-2025"
   },
 };

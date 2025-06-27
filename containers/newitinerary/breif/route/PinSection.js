@@ -2,6 +2,7 @@ import styled from "styled-components";
 import React from "react";
 import Pin from "./Pin";
 import { MdNavigateNext } from "react-icons/md";
+import BriefPin from "./BriefPin";
 
 const Container = styled.div`
   cursor: pointer;
@@ -36,12 +37,15 @@ const PinSection = (props) => {
   const handleClick = () => {
     if (!props.duration || props.duration === "0" || props.transfersPin) return;
     props.setShowDrawer(true);
+   // console.log("city data is:",props.cityData)
     props.setShowDrawerData(props.cityData);
   };
+  
 
   return (
-    <Container className="cursor-pointer w-fit" onClick={() => handleClick()}>
-      <Pin duration={props.duration} pinColour={props.pinColour}></Pin>
+    <Container className="cursor-pointer w-fit" onClick={() => {if(props?.mercury) handleClick();}}>
+      {props?.mercury ?
+       <BriefPin duration={props.duration} pinColour={props.pinColour} index={props?.index} length={props?.length}/> : <Pin duration={props.duration} pinColour={props.pinColour} index={props?.index} length={props?.length}></Pin>}
       <Heading
         pinColour={props.pinColour}
         className={`${
@@ -60,10 +64,10 @@ const PinSection = (props) => {
           <></>
         ) : (
           <IconContainer className="IconContainer">
-            <MdNavigateNext
+           {props?.mercury && <MdNavigateNext
               style={{ fontSize: "1.5rem" }}
               className="AnimateRight"
-            />
+            />}
           </IconContainer>
         )}
       </Heading>

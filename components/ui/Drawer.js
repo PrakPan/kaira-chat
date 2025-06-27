@@ -90,7 +90,7 @@ const DrawerContainer = styled.div`
   background: ${(props) => (props.bgColor ? props.bgColor : "white")};
   ${(props) => props.mobileWidth && `width : ${props.mobileWidth}`};
 
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 984px) {
     top: ${(props) => (props.top ? props.top : "0%")};
     ${(props) => props.width && `width : ${props.width}`};
   }
@@ -167,7 +167,7 @@ export default function Drawer(props) {
                 mobileTop={props.mobileTop}
                 borderRadius={props.borderRadius}
                 width={props.width}
-                mobileWidth={props.mobileWidth || props.width}
+                mobileWidth={(props.mobileWidth!=null && props.mobileWidth!=undefined)?props.mobileWidth:props?.width}
                 height={props.height}
                 bgColor={props.bgColor}
                 centered={props.centered}

@@ -9,6 +9,9 @@ import axiospagelistinstance from "../services/pages/list";
 import axioscountrydetailsinstance from "../services/pages/country";
 import axiosCountInstance from "../services/itinerary/count";
 import axioslocationsinstance from "../services/search/search";
+import axios from "axios";
+import { MERCURY_HOST } from "../services/constants";
+import * as PagesToIdMapping from "../data/PagesToIdMapping.json";
 
 const Home = (props) => {
   useEffect(() => {
@@ -93,7 +96,6 @@ const Home = (props) => {
         locations={props.locations}
         ThemeData={props.ThemeData}
         continetCarousel={props.continetCarousel}
-        Count={props.Count}
       ></HomepageContainer>
     </Layout>
   );
@@ -124,62 +126,67 @@ export async function getStaticProps() {
   var continetCarousel = [];
   let Count = null;
   let hotLocationSearch = [];
+  let pageId = PagesToIdMapping["asia/india"]!=undefined?PagesToIdMapping["asia/india"]:"";
+  try {
+    const pageListResponse = await axios.get(
+      `${MERCURY_HOST}/api/v1/geos/country/${pageId}`
+    );
+
+    locations = pageListResponse.data.data.country.states
+  } catch (err) {
+    console.log("[ERROR][PageListResponse:getStaticProps]: ", err.message);
+  }
+
 
   try {
-    const pageListResponse = await axiospagelistinstance.get(
-      `/?country=india&page_type=Theme,Continent,Destination&fields=id,destination,tagline,image,link,path,banner_heading,page_type,budget`
+    const ThemeDataRes = await axiospagelistinstance.get(
+      "/?page_type=Theme&fields=id,page_type,slug,overview_image,tagline,path,image,name"
     );
+    ThemeData = ThemeDataRes.data.data.pages;
+  } catch (err) {
+    console.log("[ERROR][Fetch ThemeData]:", err.message);
+  }
 
-    ThemeData = pageListResponse.data.filter(
-      (data) => data.page_type === "Theme"
+  let continetCarouselResponse = [];
+  try {
+    const continentData = await axiospagelistinstance.get(
+      "/?page_type=Continent&fields=id,page_type,slug,overview_image,tagline,path"
     );
+    continetCarouselResponse = continentData.data.data.pages;
+  } catch (err) {
+    console.log("[ERROR][Fetch ContinentData]:", err.message);
+  }
 
-    locations = pageListResponse.data.filter(
-      (data) => data.page_type === "Destination"
-    );
-
-    const continetCarouselResponse = pageListResponse.data.filter(
-      (data) => data.page_type === "Continent"
-    );
-
-    for (let i = 0; i < continetCarouselResponse.length; i++) {
-      const countrydetailsResponse = await axioscountrydetailsinstance(
-        `/all/?continent=${continetCarouselResponse[i].destination}&fields=id,name,path,tagline,image,is_hot_location,best_time,budget`
+  for (let i = 0; i < continetCarouselResponse.length; i++) {
+    try {
+      const countrydetailsResponse = await axioscountrydetailsinstance.get(
+        `/?continent=${continetCarouselResponse[i].slug}&fields=id,name,path,tagline,image,is_hot_location,best_time,budget&limit=100`
       );
 
-      if (continetCarouselResponse[i].destination.toLowerCase() === "asia") {
-        asiaLocations = countrydetailsResponse.data;
+      if (continetCarouselResponse[i].slug.toLowerCase() === "asia") {
+        asiaLocations = countrydetailsResponse.data.data.countries;
       }
 
-      if (continetCarouselResponse[i].destination.toLowerCase() === "europe") {
-        europeLocations = countrydetailsResponse.data;
+      if (continetCarouselResponse[i].slug.toLowerCase() === "europe") {
+        europeLocations = countrydetailsResponse.data.data.countries;
       }
 
-      let hot_data = countrydetailsResponse.data.filter(
+      let hot_data =  countrydetailsResponse.data.data.countries.filter(
         (country) => country.is_hot_location
       );
-
       hot_data = hot_data.slice(0, 6);
 
       continetCarousel.push({
         ...continetCarouselResponse[i],
         hot_destinations: hot_data,
       });
+    } catch (err) {
+      console.log(`[ERROR][CountryDetails for ${continetCarouselResponse[i].destination}]:`, err.message);
     }
-
-    const countResponse = await axiosCountInstance.get("");
-    let count = countResponse.data.user.toString().split("");
-
-    if (count.length > 3) {
-      for (let i = 1; i < 4; i++) {
-        count.pop();
-      }
-      Count = count.join("") + "k";
-    } else Count = +count.join("");
-  } catch (err) {
-    console.log("[ERROR][HomePage:getStaticProps]: ", err.message);
   }
 
+
+  
   try {
     const response = await axioslocationsinstance.get("hot_destinations/");
     if (response.data?.length) {
@@ -196,7 +203,6 @@ export async function getStaticProps() {
       asiaLocations,
       europeLocations,
       continetCarousel,
-      Count,
       hotLocationSearch,
     },
   };

@@ -8,9 +8,13 @@ import axiossearchallinstance from "../../../../services/search/all";
 import axiospagelistinstance from "../../../../services/pages/list";
 import axioslocationsinstance from "../../../../services/search/search";
 import setHotLocationSearch from "../../../../store/actions/hotLocationSearch";
+import axios from "axios";
+import { MERCURY_HOST } from "../../../../services/constants";
+import * as PagesToIdMapping from "../../../../data/PagesToIdMapping.json";
 
 const TravelPlanner = (props) => {
   useEffect(() => {
+    console.log("props are:", props);
     props.setHotLocationSearch(props.hotLocationSearch);
   }, []);
 
@@ -56,6 +60,8 @@ const TravelPlanner = (props) => {
       <StatePage
         experienceData={props.Data}
         locations={props.locations}
+        page_id={props.page_id || ""}
+        type={props?.Type}
       ></StatePage>
     </Layout>
   );
@@ -65,7 +71,8 @@ export async function getStaticPaths() {
   let paths = [];
 
   try {
-    const res = await axiossearchallinstance.get("/?type=State&fields=path");
+    // mercury api
+    const res = await axiossearchallinstance.get("/all/?type=State");
     const data = res.data;
 
     const allPaths = [...data];
@@ -95,54 +102,62 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps(context) {
-  var locations = [];
-  let data = null;
-  let hotLocationSearch = [];
   const { continent, country, state } = context.params;
   const path = `${continent}/${country}/${state}`;
 
-  try {
-    const res = await axiosTravelPlannerInstance.get(
-      `/?link=${context.params.state}`
-    );
-    data = res.data;
-  } catch (err) {
-    console.log(
-      `[ERROR][statePage:axiosTravelPlannerInstance][${context.params.state}]: `,
-      err.message
-    );
-  }
+  let data = null;
+  let locations = [];
+  let hotLocationSearch = [];
+  let Type = "State";
+  let Id = PagesToIdMapping[path] != undefined ? PagesToIdMapping[path] : "";
+
+  //mercury api
+  await axios
+    .get(`${MERCURY_HOST}/api/v1/geos/state/${Id}`)
+    .then((res) => {
+      data = res.data.data.state;
+    })
+    .catch((err) => {
+      console.log(
+        `[ERROR][statePage:axiosTravelPlannerInstance][${state}]: `,
+        err.message
+      );
+    });
+
+  //mercury api
+  await axios
+    .get(
+      `${MERCURY_HOST}/api/v1/geos/state/?fields=id,name,budget,tagline&country_name=${country}&limit=100`
+    )
+    .then((res) => {
+      locations = res.data.data.states;
+    })
+    .catch((err) => {
+      console.log(
+        `[ERROR][statePage:axiospagelistinstance][${country}]: `,
+        err.message
+      );
+    });
+
+  //mercury api
+  await axioslocationsinstance
+    .get(`hot_destinations/?state=${state}/`)
+    .then((res) => {
+      if (res.data?.length) {
+        hotLocationSearch = res.data;
+      }
+    })
+    .catch((err) => {
+      console.log(
+        `[ERROR][StatePage][axioslocationsinstance:/hot_destinations/?state=${state}/]`,
+        err.message
+      );
+    });
 
   if (!data) {
     return {
       notFound: true,
     };
-  }
-
-  try {
-    const loc = await axiospagelistinstance.get(
-      `/?country=${context.params.country}&page_type=Destination&fields=id,ancestors,path,destination,name,tagline,image,link,budget`
-    );
-    locations = loc.data;
-  } catch (err) {
-    console.log(
-      `[ERROR][statePage:axiospagelistinstance][${context.params.country}]: `,
-      err.message
-    );
-  }
-
-  try {
-    const response = await axioslocationsinstance.get(
-      `hot_destinations/?state=${state}/`
-    );
-    if (response.data?.length) {
-      hotLocationSearch = response.data;
-    }
-  } catch (err) {
-    console.log(
-      `[ERROR][StatePage][axioslocationsinstance:/hot_destinations/?state=${state}/]`,
-      err.message
-    );
   }
 
   return {
@@ -151,9 +166,90 @@ export async function getStaticProps(context) {
       locations,
       path,
       hotLocationSearch,
+      page_id:
+        PagesToIdMapping[path] != undefined ? PagesToIdMapping[path] : "",
+      Type,
     },
   };
 }
+
+// export async function getStaticProps(context) {
+//   var locations = [];
+//   let data = null;
+//   let hotLocationSearch = [];
+//   let pageId = "";
+//   let Type = "Country";
+//   console.log("start date:",new Date())
+//   const { continent, country, state } = context.params;
+//   const path = `${continent}/${country}/${state}`;
+//   try {
+//     const res = await axios.get(
+//       `${MERCURY_HOST}/api/v1/geos/pages/all/?path=${path}`
+//     );
+//     if (res?.data?.path) {
+//       pageId = res?.data?.path?.id;
+//       Type = res.data.path.type;
+//     }
+//   } catch (err) {
+//     console.error("Path api error:", err);
+//   }
+
+//   try {
+//     const res = await axiosTravelPlannerInstance.get(
+//       `/?link=${context.params.state}`
+//     );
+//     data = res.data;
+//   } catch (err) {
+//     console.log(
+//       `[ERROR][statePage:axiosTravelPlannerInstance][${context.params.state}]: `,
+//       err.message
+//     );
+//   }
+
+//   if (!data) {
+//     return {
+//       notFound: true,
+//     };
+//   }
+
+//   try {
+//     const loc = await axiospagelistinstance.get(
+//       `/?country=${context.params.country}&page_type=Destination&fields=id,ancestors,path,destination,name,tagline,image,link,budget`
+//     );
+//     locations = loc.data;
+//   } catch (err) {
+//     console.log(
+//       `[ERROR][statePage:axiospagelistinstance][${context.params.country}]: `,
+//       err.message
+//     );
+//   }
+
+//   try {
+//     const response = await axioslocationsinstance.get(
+//       `hot_destinations/?state=${state}/`
+//     );
+//     if (response.data?.length) {
+//       hotLocationSearch = response.data;
+//     }
+//   } catch (err) {
+//     console.log(
+//       `[ERROR][StatePage][axioslocationsinstance:/hot_destinations/?state=${state}/]`,
+//       err.message
+//     );
+//   }
+//   console.log("end date:",new Date())
+
+//   return {
+//     props: {
+//       Data: data,
+//       locations,
+//       path,
+//       hotLocationSearch,
+//       page_id: pageId,
+//       Type,
+//     },
+//   };
+// }
 
 const mapDispatchToProps = (dispatch) => {
   return {

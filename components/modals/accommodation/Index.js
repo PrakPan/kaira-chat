@@ -1,14 +1,24 @@
 import React, { useEffect, useState } from "react";
-import Overview from "./Overview/Overview";
+import { connect, useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import axiosaccommodationinstance from "../../../services/bookings/FetchAccommodation";
-import { connect } from "react-redux";
+import { IoMdClose } from "react-icons/io";
 import { TbArrowBack } from "react-icons/tb";
 import media from "../../media";
+import Overview from "./Overview/Overview";
 import Drawer from "../../ui/Drawer";
 import Skeleton from "./Skeleton";
-import { IoMdClose } from "react-icons/io";
 import { openNotification } from "../../../store/actions/notification";
+import fetchaccommodations, {
+  hotelDetails,
+  bookingDetails,
+} from "../../../services/bookings/FetchAccommodation";
+import { useRouter } from "next/router";
+import HotelBookingDetails from "./Overview/HotelBookingDetails";
+import { updateAccommodationBooking } from "../../../services/bookings/UpdateBookings";
+import { convertDate } from "../../../helper/getDateYYY-MM-DD";
+import { toast, ToastContainer } from "react-toastify";
+import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
+import BackArrow from "../../ui/BackArrow";
 
 const Container = styled.div`
   padding: 0 0.75rem 0.75rem 0.75rem;
@@ -37,7 +47,7 @@ const BackText = styled.div`
   line-height: 2rem;
 `;
 
-const FloatingView = styled.div`
+const FloatingVContaineriew = styled.div`
   position: sticky;
   bottom: 10px;
   background: #f7e700;
@@ -51,6 +61,22 @@ const FloatingView = styled.div`
   z-index: 2;
   cursor: pointer;
 `;
+const FloatingView = styled.div`
+  position: sticky;
+  bottom: 10px;
+  background: black;
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  left: 90%;
+  z-index: 2;
+  cursor: pointer;
+`;
+
 
 const ErrorContainer = styled.div`
   display: flex;
@@ -63,12 +89,55 @@ const ErrorContainer = styled.div`
 `;
 
 const POI = (props) => {
+  console.log("city id 1 is:",props)
+
+  let isPageWide = media("(min-width: 768px)");
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
   const [error, setError] = useState(false);
+  const itineraryDaybyDay = useSelector((state) => state.Itinerary);
+  const [drawerWidth, setDrawerWidth] = useState("50%");
+  const dispatch=useDispatch();
+  const CallPaymentInfo=useSelector((state)=>state.CallPaymentInfo)
+  useEffect(() => {
+    const handleResize = () => {
+      setDrawerWidth(window.innerWidth <= 986 ? "100%" : "50%");
+    };
 
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   useEffect(() => {
     if (props.show) {
+      fetchDetails();
+    }
+  }, [props.id, props.show, props.provider]);
+
+  const fetchDetails = () => {
+    setLoading(true);
+    setError(false);
+
+    if (props?.mercury) {
+      bookingDetails
+        .get(`${router?.query?.id}/bookings/accommodation/${props?.id}/`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+          }
+        )
+        .then((res) => {
+          setLoading(false);
+          setData(res.data);
+        })
+        .catch((err) => {
+          setLoading(false);
+          setError(true);
+        });
+    } else {
       setLoading(true);
       setError(false);
       let check_in = props.check_in;
@@ -86,12 +155,14 @@ const POI = (props) => {
         props.currentBooking.source &&
         props.currentBooking.source == "Agoda"
       ) {
-        paramsObj.check_in = check_in;
-        paramsObj.check_out = check_out;
         paramsObj.source = "Agoda";
       }
-      axiosaccommodationinstance
-        .get("", { params: paramsObj })
+      fetchaccommodations
+        .get("", { params: paramsObj,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        })
         .then((res) => {
           setLoading(false);
           setData(res.data);
@@ -106,9 +177,84 @@ const POI = (props) => {
           });
         });
     }
-  }, [props.id, props.show]);
+  };
 
-  let isPageWide = media("(min-width: 768px)");
+  const updateBooking = (recommendation_id, rates) => {
+    props.setUpdateBookingState(true);
+    let stayBookings = props.plan;
+    const index = stayBookings.findIndex((item) => item.id == props?.bookingId);
+    try {
+      const requestData = {
+        rates: rates,
+        itinerary_code: data?.itinerary_code,
+        items: data?.items,
+        recommendation_id: recommendation_id,
+        trace_id: localStorage.getItem("trace_id"),
+        itinerary_id: router?.query?.id,
+        hotel_id: data?.id,
+        source: props.provider,
+        booking_id: props?.bookingId,
+        itinerary_city: props?.itineraryId,
+        city_id: props.plan[index].city_id,
+      };
+
+      updateAccommodationBooking
+        .post(`${router?.query?.id}/bookings/accommodation/`, requestData, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        })
+        .then((response) => {
+          props._updateStayBookingHandler([response.data]);
+          props.setUpdateBookingState(false);
+          dispatch(SetCallPaymentInfo(!CallPaymentInfo))
+          setTimeout(() => {
+            props.getPaymentHandler();
+          }, 1000);
+
+          try {
+            stayBookings[index] = {
+              city_id: props.plan[index].city_id,
+              city_name: props.plan[index].city_name,
+              ...response?.data,
+              source: response?.data?.images?.[0]?.source,
+            };
+            props.setStayBookings(stayBookings);
+            props.openNotification({
+              type: "success",
+              text: "Hotel added successfully.",
+              heading: "Success!",
+            });
+          } catch (error) {
+            const errorMsg =
+            error?.response?.data?.errors?.[0]?.message?.[0] || error.message ;
+            props.openNotification({
+              type: "error",
+              text: errorMsg || "Something went wrong! Please try after some time.",
+              heading: "Error!",
+            });
+            console.error("Error updating stay bookings:", error);
+          }
+        })
+        .catch((err) => {
+          props.setUpdateBookingState(false);
+          const errorMsg =
+            err?.response?.data?.errors?.[0]?.message?.[0] || err.message ;
+          props.openNotification({
+            type: "error",
+            text: errorMsg || "Something went wrong! Please try after some time.",
+            heading: "Error!",
+          });
+        });
+    } catch (error) {
+      
+      props.openNotification({
+        type: "error",
+        text: `${error.response?.data?.errors[0]?.message[0]}`,
+        heading: "Error!",
+      });
+    }
+  };
 
   return (
     <Drawer
@@ -117,37 +263,63 @@ const POI = (props) => {
       backdrop
       className="font-lexend"
       onHide={props.onHide}
-      mobileWidth={"100%"}
-      width="50%"
+      width={"50vw"}
+      mobileWidth={"100vw"}
     >
       {!loading ? (
         <Container>
           <BackContainer className=" font-lexend">
-            <IoMdClose
-              className="hover-pointer"
-              onClick={props.onHide}
-              style={{ fontSize: "2rem" }}
-            ></IoMdClose>
-            <BackText>Back to Itinerary</BackText>
+            <BackArrow  handleClick={props.onHide}/>
           </BackContainer>
           {!error ? (
             <div>
-              <Overview
-                _setImagesHandler={props._setImagesHandler}
-                user_rating={props.user_rating}
-                currentBooking={props.currentBooking}
-                number_of_reviews={props.number_of_reviews}
-                data={data}
-                images={data.images ? data.images : []}
-                experience_filters={
-                  props.poi ? props.poi.experience_filters : null
-                }
-                name={props.poi ? props.poi.name : null}
-                duration={props.poi ? props.poi.ideal_duration_hours : null}
-                BookingButton={props.BookingButton}
-                BookingButtonFun={props.BookingButtonFun}
-                payment={props.payment}
-              ></Overview>
+              {" "}
+              {props.mercury ? (
+                <HotelBookingDetails
+                  _setImagesHandler={props._setImagesHandler}
+                  user_rating={props.user_rating}
+                  currentBooking={props.currentBooking}
+                  number_of_reviews={props.number_of_reviews}
+                  data={data}
+                  images={
+                    data?.hotel_details?.images
+                      ? data?.hotel_details?.images
+                      : []
+                  }
+                  experience_filters={
+                    props.poi ? props.poi.experience_filters : null
+                  }
+                  name={props.poi ? props.poi.name : null}
+                  duration={props.poi ? props.poi.ideal_duration_hours : null}
+                  BookingButton={props.BookingButton}
+                  BookingButtonFun={props.BookingButtonFun}
+                  payment={props.payment}
+                  updateBooking={updateBooking}
+                  handleClick={props?.handleClick}
+                  setShowDetails={props?.setShowDetails}
+                  id={props?.id}
+                  setShowLoginModal={props?.setShowLoginModal}
+                />
+              ) : (
+                <Overview
+                  _setImagesHandler={props._setImagesHandler}
+                  user_rating={props.user_rating}
+                  currentBooking={props.currentBooking}
+                  number_of_reviews={props.number_of_reviews}
+                  data={data}
+                  images={data?.images ? data.images : []}
+                  experience_filters={
+                    props.poi ? props.poi.experience_filters : null
+                  }
+                  name={props.poi ? props.poi.name : null}
+                  duration={props.poi ? props.poi.ideal_duration_hours : null}
+                  BookingButton={props.BookingButton}
+                  BookingButtonFun={props.BookingButtonFun}
+                  payment={props.payment}
+                  updateBooking={updateBooking}
+                  bookingId={props?.bookingId}
+                ></Overview>
+              )}
             </div>
           ) : (
             <ErrorContainer>
@@ -167,6 +339,7 @@ const POI = (props) => {
       ) : (
         <Skeleton onHide={props.onHide} />
       )}
+      <ToastContainer />
     </Drawer>
   );
 };
@@ -174,6 +347,7 @@ const POI = (props) => {
 const mapStateToPros = (state) => {
   return {
     token: state.auth.token,
+    itineraryId: state.ItineraryId,
   };
 };
 

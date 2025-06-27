@@ -23,6 +23,7 @@ const HeroBanner = (props) => {
       >
         <FullImgContent
           page_id={props.page_id}
+          type={props?.type}
           subheading={props.subheading}
           destination={props.destination}
           cities={props.cities}

@@ -85,6 +85,8 @@ const Poi = (props) => {
       handleCloseDrawer={handleCloseDrawer}
       page={props?.page}
       city={props?.city}
+      removeDelete={props?.removeDelete}
+      removeChange={props?.removeChange}
     />
   ));
 
@@ -102,6 +104,8 @@ const Poi = (props) => {
                 setShowDrawer={setShowDrawer}
                 _handleOpen={_handleOpen}
                 handleCloseDrawer={handleCloseDrawer}
+                removeDelete={props?.removeDelete}
+                removeChange={props?.removeChange}
               />
             ))}
         </Items>

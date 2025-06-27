@@ -1,8 +1,11 @@
-import NewDatePicker from "./NewDatePicker";
+import { useState } from "react";
 import styled from "styled-components";
+import { BsCheck } from "react-icons/bs";
+import { AiFillCaretDown } from "react-icons/ai";
+import NewDatePicker from "./NewDatePicker";
 import Destinations from "./destinations/Index";
 import Question from "../Question";
-import { BsCheck } from "react-icons/bs";
+import Preferences from "../slidetwo/preferences/Index";
 
 const Container = styled.div`
   color: black;
@@ -16,6 +19,8 @@ const Section = styled.div`
 `;
 
 const SlideOne = (props) => {
+  const [showPreferences, setShowPreferences] = useState(false);
+
   const getHeading = () => {
     if (props.tailoredFormModal && props.focusedDate) {
       if (props.focusedDate == "startDate") return "Please select start date.";
@@ -78,14 +83,12 @@ const SlideOne = (props) => {
           }}
         >
           {props.eventDates && props.destination ? (
-            <div className="font-lexend"
-              style={{ fontSize: "0.8rem" }}
-            >
+            <div className="font-lexend" style={{ fontSize: "0.8rem" }}>
               The dates for this event are fixed and cannot be changed!
             </div>
           ) : (
             <>
-              <div onClick={() => props.setFlexible(!props.flexible)}>
+              {/* <div onClick={() => props.setFlexible(!props.flexible)}>
                 <div
                   className="center-div"
                   style={{
@@ -104,21 +107,42 @@ const SlideOne = (props) => {
                 >
                   {props.flexible ? <BsCheck></BsCheck> : null}
                 </div>
-              </div>
-              <div
+              </div> */}
+              {/* <div
                 onClick={() => props.setFlexible(!props.flexible)}
                 className="font-lexend"
                 style={{ fontSize: "0.8rem" }}
               >
                 Not sure? Let us decide best time for your trip.
-              </div>
+              </div> */}
             </>
           )}
-
         </div>
-      </Section >
-      <Section style={{ marginBottom: "0.5rem" }}></Section>
-    </Container >
+      </Section>
+
+      <Section>
+        <div
+          onClick={() => setShowPreferences(!showPreferences)}
+          className="w-fit flex"
+        >
+          <Question hover_pointer>Activity Preferences?</Question>
+          <div style={{ flexGrow: "1", textAlign: "right" ,marginTop:"4px"}}>
+            <AiFillCaretDown
+              style={{ verticalAlign: "initial" }}
+              className="hover-pointer"
+            />
+          </div>
+        </div>
+
+        {showPreferences ? (
+          <Preferences
+            tailoredFormModal={props.tailoredFormModal}
+            selectedPreferences={props.selectedPreferences}
+            setSelectedPreferences={props.setSelectedPreferences}
+          ></Preferences>
+        ) : null}
+      </Section>
+    </Container>
   );
 };
 

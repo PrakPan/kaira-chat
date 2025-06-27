@@ -123,10 +123,10 @@ const Details = (props) => {
             </div>
           )}
 
-          {!props.plan?.is_released_for_customer &&
+          {/* {(!props.plan?.is_released_for_customer &&
           props.plan?.itinerary_status !== "ITINERARY_PREPARED" &&
           props?.routes &&
-          props.routes.length > 0 ? (
+          props.routes.length > 0) || props?.mercuryItinerary ? (
             isDesktop ? (
               <button
                 onClick={handleEditDates}
@@ -140,7 +140,7 @@ const Details = (props) => {
                 className="text-lg cursor-pointer hover:text-yellow-400"
               />
             )
-          ) : null}
+          ) : null} */}
         </div>
       ) : null}
     </Container>

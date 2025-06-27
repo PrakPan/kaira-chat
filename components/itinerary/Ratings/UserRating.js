@@ -46,6 +46,11 @@ const UserRatings = ({
       .post("", {
         itinerary_id,
         rating: index + 1,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
       })
       .then((response) => {
         if (response.status === 200) {

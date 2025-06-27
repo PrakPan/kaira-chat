@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { IoMdSearch } from "react-icons/io";
 import { IoMdClose } from "react-icons/io";
+import BackArrow from "../../ui/BackArrow";
 
 const Container = styled.div`
   margin: 0;
@@ -20,38 +21,48 @@ const Text = styled.div`
 const Section = (props) => {
   const searchHandler = (e) => {
     if (props.selectSearch.trim().length > 0) {
-      props._updateOptionsHandlerWithFilter();
+      props.fetchHotels();
     }
   };
 
   return (
-    <Container className="font-lexend flex flex-col gap-3 md:flex-row lg:flex-row md:justify-between lg:justify-between">
-      <div className="flex flex-row">
-        <IoMdClose
-          className="hover-pointer"
-          onClick={props.setHideBookingModal}
-          style={{ fontSize: "2rem" }}
-        ></IoMdClose>
-        <Text>
-          Changing Stays in {props?.booking_city ? props?.booking_city : "City"}
-        </Text>
+    <div>
+      <div className="m-[1rem]">
+      <BackArrow
+        handleClick={() => {
+          try {
+            console.log("Show B Inside Back")
+            props?.handleClose();
+          } catch (error) {
+            console.log("unable to close:", error);
+          }
+        }}
+      />
       </div>
-      <div className="lg:w-[50%] md:w-[50%] flex flex-row items-center relative">
-        <IoMdSearch
-          id={"icon"}
-          onClick={searchHandler}
-          className="absolute cursor-pointer left-4 text-2xl"
-        />
+      <Container className="font-lexend flex flex-col gap-3 md:flex-row lg:flex-row md:justify-between lg:justify-between">
+        <div className="flex flex-row">
+          <Text>
+            {props?.clickType == "Add" ? "Add" : "Changing"} Stays in{" "}
+            {props?.booking_city ? props?.booking_city : "City"}
+          </Text>
+        </div>
+        <div className="lg:w-[50%] md:w-[50%] flex flex-row items-center relative">
+          <IoMdSearch
+            id={"icon"}
+            onClick={searchHandler}
+            className="absolute cursor-pointer left-4 text-2xl"
+          />
 
-        <input
-          type="text"
-          value={props.selectSearch}
-          onChange={(e) => props.setSelectedSearch(e.target.value)}
-          placeholder={`Search stays`}
-          className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
-        ></input>
-      </div>
-    </Container>
+          <input
+            type="text"
+            value={props.selectSearch}
+            onChange={(e) => props.setSelectedSearch(e.target.value)}
+            placeholder={`Search stays`}
+            className="w-full flex items-center text-sm border-2 border-gray-300 rounded-lg px-5 py-2 focus:outline-none focus:border-[#F7E700]"
+          ></input>
+        </div>
+      </Container>
+    </div>
   );
 };
 

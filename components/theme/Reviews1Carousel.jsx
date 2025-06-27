@@ -84,10 +84,10 @@ export default function Reviews1Carousel(props) {
     for (let review of props.reviews) {
       arr.push(
         <Review
-          heading={review.heading}
+          heading={review?.heading}
           text={review.text}
-          name={review.name}
-          image={review.image}
+          name={review?.name ?? review?.author_name}
+          image={review?.image ?? review?.profile_photo_url}
           itinerary_link={review.itinerary_link}
           rating={review.rating}
         />

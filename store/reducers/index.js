@@ -17,7 +17,13 @@ import Breif from "./Breif";
 import TripsPage from "./TripsPage";
 import HotLocationSearch from "./HotLocationSearch";
 import CountryCodes from "./CountryCodes";
-
+import ItineraryDaybyDay from "./ItineraryDaybyDay"
+import  ItineraryFilters  from "./ItineraryFilters";
+import TransferBookings from "./transferBookingsReducer";
+import Stays from "./StayBookings";
+import ItineraryStatus from './itineraryStatus'; 
+import Passengers from "./Passengers"
+import CallPaymentInfo from "./callPaymentInfo"
 const rootReducer = combineReducers({
   auth: authReducer,
   experience: experience,
@@ -37,6 +43,13 @@ const rootReducer = combineReducers({
   TripsPage,
   HotLocationSearch,
   CountryCodes,
+  ItineraryDaybyDay,
+  ItineraryFilters,
+  TransferBookings,
+  Stays,
+  ItineraryStatus,
+  Passengers,
+  CallPaymentInfo
 });
 
 export default rootReducer;

@@ -15,17 +15,9 @@ function TripsCounter(props) {
             : { fontSize: "18px", fontWeight: 700 }
         }
       >
-        {props?.Count}
+        10,000+
       </h2>
-      <h2
-        style={
-          isPageWide
-            ? { fontSize: "45px", fontWeight: 700, marginBottom: "0.7rem" }
-            : { fontSize: "18px", fontWeight: 700, marginBottom: "0.7rem" }
-        }
-      >
-        +
-      </h2>
+     
     </div>
   );
 }

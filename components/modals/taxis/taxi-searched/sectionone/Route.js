@@ -1,14 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import media from "../../../../media";
 import ImageLoader from "../../../../ImageLoader";
 import SectionFour from "../SectionFour";
+import { PulseLoader } from "react-spinners";
+import { getIndianPrice } from "../../../../../services/getIndianPrice";
+import { axiosTaxiBooking } from "../../../../../services/bookings/UpdateTaxiGozo";
+import { useDispatch, useSelector } from "react-redux";
+import { openNotification } from "../../../../../store/actions/notification";
+import { updateSingleTransferBooking } from "../../../../../store/actions/transferBookingsStore";
 
 const Container = styled.div`
-  padding: 0.75rem 0.5rem;
-  display: flex;
-  flex-direction: column;
-  max-width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 `;
 
 const RouteContainer = styled.div`
@@ -53,19 +58,115 @@ const ModelText = styled.div`
   margin: 0 0 0.5rem 0;
 `;
 
+const Cost = styled.p`
+  font-weight: 800;
+  font-size: 1rem;
+  line-height: 1;
+  margin: 0;
+
+  @media screen and (min-width: 768px) {
+    font-size: 1.25rem;
+  }
+`;
+
+const TaxiHeading = styled.p`
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 0.2rem 0;
+  line-height: 1.2;
+`;
+
 const Section = (props) => {
   let isPageWide = media("(min-width: 768px)");
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+  const itineraryId = useSelector((state) => state.ItineraryId);
+
+  const isValidUUID = (uuid) => {
+    const regex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return regex.test(uuid);
+  };
+  const handleUpdate = () => {
+    if (props.handleTaxiSelect) {
+      props.handleTaxiSelect({
+        trace_id: props.data.trace_id,
+        result_index: props.data.result_index,
+      });
+      return;
+    }
+
+    setLoading(true);
+
+
+    const requestData = {
+      booking_id:props?.booking_id,
+      source: props.data.source,
+      trace_id: props.data.trace_id,
+      result_index: props.data.result_index,
+      source_itinerary_city:isValidUUID(props?.origin_itinerary_city_id) ? props?.origin_itinerary_city_id : null,
+      destination_itinerary_city: isValidUUID(props?.destination_itinerary_city_id) ? props?.destination_itinerary_city_id : null,
+      edge: props?.edge,
+    };
+
+    axiosTaxiBooking
+      .post(
+        `${itineraryId || props.selectedBooking.itinerary_id}/bookings/taxi/`,
+        requestData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      )
+      .then((res) => {
+        setLoading(false);
+        dispatch(
+          openNotification({
+            type: "success",
+            text: "Taxi changed successfully.",
+            heading: "Sucess!",
+          })
+        );
+        dispatch(
+                updateSingleTransferBooking(
+                  `${props?.origin_itinerary_city_id}:${props?.destination_itinerary_city_id}`,
+                  res.data
+                )
+              );
+        props._updateTaxiBookingHandler([res.data]);
+        props.getPaymentHandler();
+        props.setHideBookingModal();
+      })
+      .catch((err) => {
+        setLoading(false);
+        console.log("Error Changing Taxi", err.message);
+        const errorMsg =
+            err?.response?.data?.errors?.[0]?.message?.[0] || err.message ;
+        dispatch(
+          openNotification({
+            type: "error",
+            text: errorMsg || "There seems to be a problem, please try again after some time!",
+            heading: "Error!",
+          })
+        );
+        props.setHideBookingModal();
+      });
+  };
 
   if (props.data)
     return (
       <Container>
-        <Heading>
-          {props.data.cab && props.data.cab.category ? (
+        <TaxiHeading>
+        {/* <Heading> */}
+          {props.data?.taxi_category?.type ? (
             <>
-              {props.data.cab.category}{" "}
+              {props.data.taxi_category.type}{" "}
               <>
-                {props.data.cab.fuelType && isPageWide ? (
-                  `(${props.data.cab.fuelType})`
+                {props.data.taxi_category?.fuel_type ? (
+                  `(${props.data.taxi_category.fuel_type})`
                 ) : (
                   <></>
                 )}
@@ -76,9 +177,21 @@ const Section = (props) => {
           ) : (
             "One-way Taxi"
           )}
-        </Heading>
-        {isPageWide && <ModelText>{props.data.cab.model}</ModelText>}
-        <RouteContainer className="font-lexend">
+        {/* </Heading> */}
+
+         <div>
+                  <Cost>{"₹" + getIndianPrice(Math.ceil(props.data.price.total)) + "/-"}</Cost>
+        </div>
+        </TaxiHeading>
+
+        { (
+          <ModelText>{props.data?.taxi_category?.model_name}</ModelText>
+        )}
+
+        
+
+        
+        {/* <RouteContainer className="font-lexend">
           <Location className="font-lexend">
             {props.selectedBooking.city}
           </Location>
@@ -95,17 +208,17 @@ const Section = (props) => {
           <Location className="font-lexend">
             {props.selectedBooking.destination_city}
           </Location>
-        </RouteContainer>
+        </RouteContainer> */}
 
-        <div
+        {/* <div
           style={{
             display: "flex",
             gap: "0.5rem",
             marginBottom: "0.75rem",
             marginTop: "0.75rem",
           }}
-        >
-          <ImageLoader
+        > */}
+          {/* <ImageLoader
             url="media/icons/bookings/distance.png"
             height="1.5rem"
             width="1.5rem"
@@ -114,30 +227,51 @@ const Section = (props) => {
             margin="0"
             leftalign
             noLazy
-          ></ImageLoader>
-          <div style={{ display: "flex", gap: "1rem" }}>
-            {props.data.distance ? (
-              <div>
-                <IconHeading className="font-lexend">
-                  {props.data.distance} kms
-                </IconHeading>
-                <Text className="font-nunito">Included</Text>
-              </div>
-            ) : null}
-            {props.data.estimatedDuration ? (
-              <div>
-                <IconHeading className="font-lexend">
-                  {Math.floor(props.data.estimatedDuration / 60) +
-                    "-" +
-                    (+Math.floor(props.data.estimatedDuration / 60) + 1)}{" "}
-                  Hours
-                </IconHeading>
-                <Text className="font-nunito">Included</Text>
-              </div>
-            ) : null}
-          </div>
-        </div>
+          ></ImageLoader> */}
+
+          {/* <div
+            style={{ display: "flex", gap: "1rem" }}
+            className="flex flex-col md:flex-row justify-between w-full"
+          > */}
+            {/* <div className="flex flex-row gap-[1rem]">
+              {props.data?.distance?.text ? (
+                <div>
+                  <IconHeading className="font-lexend">
+                    {props.data.distance.text}
+                  </IconHeading>
+                  <Text className="font-nunito">Included</Text>
+                </div>
+              ) : null}
+
+              {props.data?.duration?.text ? (
+                <div>
+                  <IconHeading className="font-lexend">
+                    {props.data.duration.text}
+                  </IconHeading>
+                  <Text className="font-nunito">Included</Text>
+                </div>
+              ) : null}
+            </div> */}
+
+            {/* <div className="flex flex-row md:flex-col justify-end md:justify-center gap-2">
+              <div className="md:center-div" style={{ marginRight: "0.5rem" }}>
+                {/* <Cost>
+                  {"₹" +
+                    getIndianPrice(Math.ceil(props.data.price.total)) +
+                    "/-"}
+                </Cost> */}
+              {/* </div>
+
+              
+            </div> 
+          </div> */}
+        {/* </div> */}
+
+       
+       <div className="flex justify-between">
+
         <SectionFour
+          setHideBookingModal={props.setHideBookingModal}
           _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
           getPaymentHandler={props.getPaymentHandler}
           selectedBooking={props.selectedBooking}
@@ -145,6 +279,36 @@ const Section = (props) => {
           data={props.data}
           setShowTaxiModal={props.setShowTaxiModal}
         ></SectionFour>
+
+        <div className="p-[0.4rem] flex items-center justify-center">
+  {!loading ? (
+    <label
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "0.5rem",
+        cursor: "pointer",
+      }}
+    >
+      <input
+        type="checkbox"
+        onChange={(e) => {
+          if (e.target.checked) handleUpdate();
+        }}
+        style={{ width: "1.25rem", height: "1.25rem" }}
+      />
+      {/* <span className="font-lexend" style={{ fontSize: "14px" }}>
+        Select
+      </span> */}
+    </label>
+  ) : (
+    <PulseLoader size={8} speedMultiplier={0.6} color="#111" />
+  )}
+</div>
+
+        </div>
+        <hr/>
       </Container>
     );
   else return null;

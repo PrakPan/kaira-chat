@@ -1,6 +1,7 @@
 import * as actionTypes from "./actionsTypes";
-import axios from "axios";
-import { CONTENT_SERVER_HOST } from "../../services/constants";
+import { CLIENT_ID, CLIENT_SECRET } from "../../services/constants";
+import { logoutinstance } from "../../services/user/auth";
+import restartBot from "../../helper/RestartBot";
 
 export const authLogout = () => {
   return {
@@ -18,14 +19,13 @@ export const logout = () => {
 
   const authData = {
     token: access_token,
-    client_id: "59Fj160UxJ4LJ1fyu20nsxzbyGhpWXHaIqmUMCVJ",
-    client_secret:
-      "5k5E6w6nqaMxwxaJunZq14lzv84CNZ434YIlJlEmOwZzX6UU0DDY3dlgv88qpqTgQjkcVm3fmN38eZNfZ9BsfpEGGJ84g5LKjie8xbDFYvnb3k7Nu02xx8SAxRTvExT2",
+    client_id: CLIENT_ID,
+    client_secret: CLIENT_SECRET,
   };
 
   return (dispatch) => {
-    axios
-      .post(CONTENT_SERVER_HOST + "/user/logout/", authData, {
+    logoutinstance
+      .post("", authData, {
         headers: headers,
       })
       .then((response) => {
@@ -38,6 +38,7 @@ export const logout = () => {
         localStorage.removeItem("MyPlans");
         localStorage.removeItem("user_image");
 
+        restartBot()
         dispatch(authLogout());
       })
       .catch((err) => {});

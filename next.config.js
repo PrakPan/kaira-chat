@@ -11,6 +11,7 @@ const nextConfig = {
 
   images: {
     unoptimized: true,
+    domains:[''],
     remotePatterns: [
       {
         protocol: "https",
@@ -32,6 +33,14 @@ const nextConfig = {
         protocol: "https",
         hostname: "res.cloudinary.com",
       },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
+      {
+        protocol:"https",
+        hostname:"maps.googleapis.com"
+      }
     ],
   },
 
@@ -64,6 +73,10 @@ const nextConfig = {
 module.exports = withSentryConfig(nextConfig, {
   org: "the-tarzan-way",
   project: "front-end",
+  experimental:{
+    workerThreads: true,
+    cpus:3,
+  },
 
   // An auth token is required for uploading source maps.
   authToken: process.env.SENTRY_AUTH_TOKEN,

@@ -8,5 +8,9 @@ const instance = axios.create({
 export default instance;
 
 export const activityDetail = axios.create({
-  baseURL: MERCURY_HOST + "/api/v1/ancillaries/activity/"
-})
+  baseURL: MERCURY_HOST + '/api/v1/ancillaries/activity/',
+});
+
+export const activityBooking = axios.create({
+  baseURL: MERCURY_HOST + '/api/v1/itinerary/',
+});

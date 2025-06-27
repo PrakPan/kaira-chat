@@ -16,7 +16,7 @@ const LocationCard = (props) => {
         noLazy={props.noLazy}
         url={props.img}
         style={{ filter: props.filter }}
-        height={props.height ? props.height : "100%"}
+        height={props.height ? props.height : "45vh"}
         width={props.width ? props.width : "100%"}
         dimensions={props.dimensions}
         dimensionsMobile={props.dimensionsMobile}

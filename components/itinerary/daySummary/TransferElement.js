@@ -55,7 +55,7 @@ export default function TransferElement(props) {
         </div>
 
         {selectedBookings.map((selectedBooking, index) => (
-          <Booking mode={modes[index]} meta={meta} selectedBooking={selectedBooking} data={data} heading={heading} />
+          <Booking key={index} mode={modes[index]} meta={meta} selectedBooking={selectedBooking} data={data} heading={heading} />
         ))}
       </div>
     </Container>
@@ -178,8 +178,8 @@ const Booking = ({ mode, meta, selectedBooking, data, heading }) => {
             offset={-90}
             onClick={handleTransferButtonClick}
           >
-            <TransparentButton>
-              {selectedBooking && selectedBooking.user_selected ? (
+            {selectedBooking && selectedBooking.user_selected && <TransparentButton>
+               
                 <>
                   <MdDoneAll
                     style={{
@@ -189,10 +189,14 @@ const Booking = ({ mode, meta, selectedBooking, data, heading }) => {
                   />{" "}
                   {mode ? `${mode} added` : null}
                 </>
-              ) : (
-                <>{mode ? `Add ${mode}` : null}</>
-              )}
-            </TransparentButton>
+              
+              {/* // : (
+              //   <>
+              //   {mode ? `Add ${mode}` : null}
+              //   </>
+              // ) */}
+              
+            </TransparentButton>}
           </Link>
         ) : null}
       </div>

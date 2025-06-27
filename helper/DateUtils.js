@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { convertDateFormat } from "./ConvertDateFormat";
 
 export const getDate = (dateString) => {
   try {
@@ -13,8 +14,11 @@ export const getDate = (dateString) => {
 
 export const getYear = (dateString) => {
   if (!dateString) return null;
-  const [day, month, year] = dateString.split("/");
-  if (!year) return null;
+  let [day, month, year] = dateString.split("/");
+  if (!year) {
+    [year, month, day] = dateString.split("-");
+    if (!year) return null;
+  }
   return year;
 };
 
@@ -35,10 +39,14 @@ export function dateFormat(dateString) {
     "Dec",
   ];
 
-  const [day, monthIndex, year] = dateString.split("/");
+  let [day, monthIndex, year] = dateString.split("/");
 
   if (!day || !monthIndex || !year) {
-    return dateString;
+    [year, monthIndex, day] = dateString.split("-");
+
+    if (!year || !monthIndex || !day) {
+      return dateString;
+    }
   }
 
   const monthName = months[Number(monthIndex) - 1];
@@ -49,4 +57,13 @@ export function dateFormat(dateString) {
 export const getDateString = (date) => {
   if (!date || isNaN(Date.parse(date))) return date;
   return format(date, "yyyy-MM-dd");
+};
+
+export const getCustomDateString = (date, offset) => {
+  if (!date || isNaN(Date.parse(date))) return date;
+
+  let newDate = new Date(date);
+  newDate.setDate(newDate.getDate() + offset);
+
+  return convertDateFormat(format(newDate, "yyyy-MM-dd"));
 };

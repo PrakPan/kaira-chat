@@ -11,7 +11,7 @@ const Index = (props) => {
     if (props.onclick) {
       setJSX(
         <Generalbutton
-          className="font-lexend"
+          className={`font-lexend ${props?.className} `}
           onclick={() => props.onclick(props.onclickparam)}
           color={props.color}
           borderRadius={props.borderRadius}
@@ -37,6 +37,7 @@ const Index = (props) => {
           textAlign={props.textAlign}
           center={props.center}
           style={props.style}
+          disabled={props.disabled}
         >
           <div style={{ position: "relative" }}>
             <div style={props.loading ? { visibility: "hidden" } : {}}>
@@ -62,7 +63,7 @@ const Index = (props) => {
       setJSX(
         <>
           <Internallinkbutton
-            className="font-lexend"
+            className={`font-lexend `}
             link={props.link}
             color={props.color}
             borderRadius={props.borderRadius}
@@ -112,7 +113,7 @@ const Index = (props) => {
     } else if (props.external_link) {
       setJSX(
         <Externallinkbutton
-          className="font-lexend"
+          className={`font-lexend `}
           external_link={props.external_link}
           color={props.color}
           borderRadius={props.borderRadius}

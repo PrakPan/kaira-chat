@@ -8,10 +8,11 @@ const Container = styled.div`
   width: fit-content;
   position: sticky;
   top: 0;
+  z-index: 2;
 
   display: flex;
   align-items: center;
-  background-color: white;
+  background-color: white !important;
   border-bottom: 1px solid #e5e3de;
   box-sizing: border-box;
 `;

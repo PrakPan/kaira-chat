@@ -6,6 +6,7 @@ import {
   newDayContainerTextpadding,
 } from "../../itinerary/New_Itenary_DBD/New_itenaryStyled";
 import { MdDoneAll } from "react-icons/md";
+import { logEvent } from "../../../services/ga/Index";
 
 const padding = {
   initialLeft: "60px",
@@ -119,7 +120,8 @@ const ItineraryElement = (props) => {
                       Stay added
                     </TransparentButton>
                   ) : (
-                    <TransparentButton>Add Stay</TransparentButton>
+                    <></>
+                    // <TransparentButton>Add Stay</TransparentButton>
                   )}
                 </>
               ) : (

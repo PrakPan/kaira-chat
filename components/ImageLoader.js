@@ -10,7 +10,20 @@ const ImageLoader = (props) => {
   const isPageLoaded = usePageLoaded();
   const [error, setError] = useState(false);
   const [fullLoaded, setFullLoaded] = useState(false);
+<<<<<<< HEAD
+  const [isTransparent, setIsTransparent] = useState(false);
+
+=======
+>>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
   const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
+  const transparentImageUrl = "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png";
+
+  // Check if the current image is transparent
+  const checkIfTransparent = (url) => {
+    return url === transparentImageUrl || 
+           url.includes('transparent.png') || 
+           (props.url && props.url.includes('transparent'));
+  };
 
   let smallImageRequest = JSON.stringify({
     bucket: "thetarzanway-web",
@@ -23,9 +36,16 @@ const ImageLoader = (props) => {
       },
     },
   });
+<<<<<<< HEAD
+  
+  let imageRequest;
+  let imageRequestMobile;
+  
+=======
 
   let imageRequest, imageRequestMobile;
 
+>>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
   if (isPageWide) {
     if (props.dimensions) {
       smallImageRequest = JSON.stringify({
@@ -114,19 +134,38 @@ const ImageLoader = (props) => {
   }
 
   const Container = styled(props.noLazy ? "div" : LazyLoad)`
-    @media screen and (min-width: 768px) {
-      width: ${props.width ? props.width : "100%"};
-    }
-    @media (min-width: 768px) and (max-width: 1024px) {
-      height: ${props.heighttab ? props.heighttab : "auto"};
-      width: ${props.widthtab ? props.widthtab : "100%"};
-    }
-  `;
+  @media screen and (min-width: 768px) {
+    width: ${props.width ? props.width : "100%"};
+    ${props => props.transparent && `
+      aspect-ratio: 2 / 1;
+    `}
+  }
+
+  @media (min-width: 768px) and (max-width: 1024px) {
+    height: ${props.heighttab ? props.heighttab : "auto"};
+    width: ${props.widthtab ? props.widthtab : "100%"};
+  }
+
+  @media screen and (max-width: 767px) {
+    ${props => props.transparent && `
+      aspect-ratio: 1.4315;
+    `}
+  }
+
+  ${props => props.transparent && `
+    position: relative;
+  `}
+`;
 
   const FullImage = styled.img`
     width: 100%;
     object-fit: ${props.resizeMode ? props.resizeMode : "cover"};
     z-index: 0 !important;
+    
+    ${props => props.transparent && `
+      height: 100%;
+      object-fit: contain;
+    `}
 
     &:hover {
       opacity: ${props.hoveropacity ? props.hoveropacity : "1"};
@@ -172,15 +211,38 @@ const ImageLoader = (props) => {
     }
   };
 
+  // Helper function to get the final image URL and check if it's transparent
+  const getFinalImageUrl = (isError, isPageLoaded, imageRequest, originalUrl) => {
+    if (!is_url) {
+      if (isError) {
+        return transparentImageUrl;
+      }
+      if (isPageLoaded) {
+        return getBtoaUrl(imgUrlEndPoint, imageRequest);
+      }
+      return transparentImageUrl;
+    }
+    return originalUrl;
+  };
+
+  // Check transparency when URLs change
+  useEffect(() => {
+    const smallUrl = getFinalImageUrl(false, isPageLoaded, smallImageRequest, props.url);
+    const fullUrl = getFinalImageUrl(error, isPageLoaded, imageRequest || imageRequestMobile, props.url);
+    
+    setIsTransparent(checkIfTransparent(smallUrl) || checkIfTransparent(fullUrl));
+  }, [error, isPageLoaded, props.url]);
+
   if (!props.dimensionsMobile) {
     if (!isPageWide)
       return (
         <Container
           blur={fullLoaded}
+          transparent={isTransparent}
           onClick={props.onclick}
           style={{
             width: props.widthmobile ? props.widthmobile : "100%",
-            height: props.heightmobile ? props.heightmobile : "max-content",
+            height: isTransparent ? 'auto' : (props.heightmobile ? props.heightmobile : "max-content"),
             margin: props.leftalign ? "0" : "0 auto",
             filter: props.blur ? "blur(0.5rem)" : "blur(0)",
             borderRadius: props.borderRadius ? props.borderRadius : "0",
@@ -191,13 +253,14 @@ const ImageLoader = (props) => {
               !is_url
                 ? isPageLoaded
                   ? getBtoaUrl(imgUrlEndPoint, smallImageRequest)
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                  : transparentImageUrl
                 : props.url
             }
             style={{
-              height: props.height ? props.height : "100%",
+              height: isTransparent ? '100%' : (props.height ? props.height : "100%"),
               display: !fullLoaded ? "initial" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
+              objectFit: isTransparent ? 'contain' : 'cover',
               ...props.style,
             }}
           />
@@ -206,17 +269,23 @@ const ImageLoader = (props) => {
             src={
               !is_url
                 ? error
-                  ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                  ? transparentImageUrl
                   : isPageLoaded
+<<<<<<< HEAD
+                    ? getBtoaUrl(imgUrlEndPoint, imageRequest)
+                    : transparentImageUrl
+=======
                   ? getBtoaUrl(imgUrlEndPoint, imageRequest)
                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+>>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
                 : props.url
             }
+            transparent={isTransparent}
             onLoad={fullImageLoadedHandler}
             onError={_handleError}
             resizeMode={props.resizeMode}
             style={{
-              height: props.height ? props.height : "100%",
+              height: isTransparent ? '100%' : (props.height ? props.height : "100%"),
               display: fullLoaded ? "block" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
@@ -230,10 +299,11 @@ const ImageLoader = (props) => {
       return (
         <Container
           blur={fullLoaded}
+          transparent={isTransparent}
           onClick={props.onclick}
           style={{
             width: props.width ? props.width : "100%",
-            height: props.height ? props.height : "max-content",
+            height: isTransparent ? 'auto' : (props.height ? props.height : "max-content"),
             margin: props.leftalign ? "0" : "0 auto",
             filter: props.blur ? "blur(0.5rem)" : "blur(0)",
             borderRadius: props.borderRadius ? props.borderRadius : "0",
@@ -244,13 +314,14 @@ const ImageLoader = (props) => {
               !is_url
                 ? isPageLoaded
                   ? getBtoaUrl(imgUrlEndPoint, smallImageRequest)
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                  : transparentImageUrl
                 : props.url
             }
             style={{
-              height: props.height ? props.height : "100%",
+              height: isTransparent ? '100%' : (props.height ? props.height : "100%"),
               display: !fullLoaded ? "initial" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
+              objectFit: isTransparent ? 'contain' : 'cover',
               ...props.style,
             }}
           />
@@ -259,17 +330,23 @@ const ImageLoader = (props) => {
             src={
               !is_url
                 ? error
-                  ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                  ? transparentImageUrl
                   : isPageLoaded
+<<<<<<< HEAD
+                    ? getBtoaUrl(imgUrlEndPoint, imageRequest)
+                    : transparentImageUrl
+=======
                   ? getBtoaUrl(imgUrlEndPoint, imageRequest)
                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+>>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
                 : props.url
             }
+            transparent={isTransparent}
             onLoad={fullImageLoadedHandler}
             onError={_handleError}
             resizeMode={props.resizeMode}
             style={{
-              height: props.height ? props.height : "100%",
+              height: isTransparent ? '100%' : (props.height ? props.height : "100%"),
               display: fullLoaded ? "block" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
@@ -284,10 +361,11 @@ const ImageLoader = (props) => {
       return (
         <Container
           blur={fullLoaded}
+          transparent={isTransparent}
           onClick={props.onclick}
           style={{
             width: props.widthmobile ? props.widthmobile : "100%",
-            height: props.heightmobile ? props.heightmobile : "100%",
+            height: isTransparent ? 'auto' : (props.heightmobile ? props.heightmobile : "100%"),
             margin: props.leftalign ? "0" : "0 auto",
             filter: props.blur ? "blur(0.5rem)" : "blur(0)",
             borderRadius: props.borderRadius ? props.borderRadius : "0",
@@ -299,13 +377,14 @@ const ImageLoader = (props) => {
               !is_url
                 ? isPageLoaded
                   ? getBtoaUrl(imgUrlEndPoint, smallImageRequest)
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                  : transparentImageUrl
                 : props.url
             }
             style={{
-              height: props.height ? props.height : "100%",
+              height: isTransparent ? '100%' : (props.height ? props.height : "100%"),
               display: !fullLoaded ? "initial" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
+              objectFit: isTransparent ? 'contain' : 'cover',
               ...props.style,
             }}
           />
@@ -314,19 +393,25 @@ const ImageLoader = (props) => {
             src={
               !is_url
                 ? error
-                  ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                  ? transparentImageUrl
                   : isPageLoaded
+<<<<<<< HEAD
+                    ? getBtoaUrl(imgUrlEndPoint, imageRequestMobile)
+                    : transparentImageUrl
+=======
                   ? getBtoaUrl(imgUrlEndPoint, imageRequestMobile)
                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+>>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
                 : props.url
             }
             width={props.dimensionsMobile.width}
             height={props.dimensionsMobile.height}
+            transparent={isTransparent}
             onLoad={fullImageLoadedHandler}
             onError={_handleError}
             resizeMode={props.resizeMode}
             style={{
-              height: props.height ? props.height : "100%",
+              height: isTransparent ? '100%' : (props.height ? props.height : "100%"),
               display: fullLoaded ? "block" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
@@ -340,10 +425,11 @@ const ImageLoader = (props) => {
       return (
         <Container
           blur={fullLoaded}
+          transparent={isTransparent}
           onClick={props.onclick}
           style={{
             width: props.width ? props.width : "100%",
-            height: props.height ? props.height : "max-content",
+            height: isTransparent ? 'auto' : (props.height ? props.height : "max-content"),
             margin: props.leftalign ? "0" : "0 auto",
             filter: props.blur ? "blur(0.5rem)" : "blur(0)",
             borderRadius: props.borderRadius ? props.borderRadius : "0",
@@ -354,13 +440,14 @@ const ImageLoader = (props) => {
               !is_url
                 ? isPageLoaded
                   ? getBtoaUrl(imgUrlEndPoint, smallImageRequest)
-                  : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                  : transparentImageUrl
                 : props.url
             }
             style={{
-              height: props.height ? props.height : "100%",
+              height: isTransparent ? '100%' : (props.height ? props.height : "100%"),
               display: !fullLoaded ? "initial" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
+              objectFit: isTransparent ? 'contain' : 'cover',
               ...props.style,
             }}
           />
@@ -368,17 +455,23 @@ const ImageLoader = (props) => {
             src={
               !is_url
                 ? error
-                  ? "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+                  ? transparentImageUrl
                   : isPageLoaded
+<<<<<<< HEAD
+                    ? getBtoaUrl(imgUrlEndPoint, imageRequest)
+                    : transparentImageUrl
+=======
                   ? getBtoaUrl(imgUrlEndPoint, imageRequest)
                   : "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png"
+>>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
                 : props.url
             }
+            transparent={isTransparent}
             onLoad={fullImageLoadedHandler}
             onError={_handleError}
             resizeMode={props.resizeMode}
             style={{
-              height: props.height ? props.height : "100%",
+              height: isTransparent ? '100%' : (props.height ? props.height : "100%"),
               display: fullLoaded ? "block" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
@@ -404,22 +497,3 @@ const SmallImage = (props) => {
     />
   );
 };
-
-// const FullImage = (props) => {
-//   return (
-//     <Image
-//       alt=""
-//       src={props.src}
-//       width={145}
-//       height={145}
-//       onLoad={props.onLoad}
-//       onError={props.onError}
-//       style={{
-//         width: "100%",
-//         objectFit: `${props.resizeMode ? props.resizeMode : "cover"}`,
-//         zIndex: "0 !important",
-//         ...props.style,
-//       }}
-//     />
-//   );
-// };

@@ -28,6 +28,7 @@ const POIDetailsSkeleton = (props) => {
   `;
   const DetailsSkeleton = styled.div`
     position: relative;
+     flex: 1;
   `;
   const PriceContainer = styled.div`
     height: 1.5rem;

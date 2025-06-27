@@ -55,7 +55,7 @@ export const getotp = (data) => {
     axiosauthinstance
       .post("/initiate/", authData)
       .then((response) => {
-        if (response.data.message == "success") {
+        if (response.data.success) {
           {
             process.env.NODE_ENV === "production" &&
               !CONTENT_SERVER_HOST.includes("dev") &&
@@ -67,22 +67,26 @@ export const getotp = (data) => {
               });
           }
           dispatch(authSendOtp()); //Otp sent
-          if (response.data.is_new_user) dispatch(newUser()); //New user
-          if (response.data.name)
-            dispatch(setUserDetails({ name: response.data.name }));
-          if (response.data.email)
-            dispatch(setUserDetails({ email: response.data.email }));
-        } else dispatch(authMobileFail()); //Invalid mobile
+          if (response.data.data?.user?.is_new_user) dispatch(newUser()); //New user
+          if (response.data.data?.user?.name)
+            dispatch(setUserDetails({ name: response.data.data?.user?.name }));
+          if (response.data.data?.user?.email)
+            dispatch(
+              setUserDetails({ email: response.data.data?.user?.email })
+            );
+        } else {
+          dispatch(authMobileFail());
+        }
       })
       .catch((err) => {
         if (err?.response?.status === 400) {
           if (err.response.data?.message) {
             dispatch(authMobileFail(err.response.data.message));
           } else {
-            dispatch(authMobileFail(err.response.data.username[0])); //Invalid mobile
+            dispatch(authMobileFail(err.response.data.errors[0].username[0])); //Invalid mobile
             Sentry.captureException(
               new Error(
-                `[LogIn Error]: ${err.response.config.url} : ${err.response.config.data} : ${err.response.data.username[0]}`
+                `[LogIn Error]: ${err.response?.config?.url} : ${err.response?.config?.data} : ${err.response?.data?.errors[0]?.username[0]}`
               )
             );
           }

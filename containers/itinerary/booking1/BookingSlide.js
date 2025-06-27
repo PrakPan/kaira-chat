@@ -175,7 +175,7 @@ const Details = (props) => {
                     >
                       {"₹ " +
                         getIndianPrice(
-                          Math.ceil(
+                          Math.round(
                             props.payment.costings_breakdown[booking][
                               "booking_cost"
                             ] / 100
@@ -241,7 +241,7 @@ const Details = (props) => {
                     >
                       {"₹ " +
                         getIndianPrice(
-                          Math.ceil(
+                          Math.round(
                             props.payment.costings_breakdown[booking][
                               "booking_cost"
                             ] / 100
@@ -472,14 +472,14 @@ const Details = (props) => {
     <>
       <div
         className={`${
-          props.payment.paid_user ? "bg-[#98F0AB33]" : "bg-[#F7E70033]"
+          props.payment?.paid_user ? "bg-[#98F0AB33]" : "bg-[#F7E70033]"
         }  -mt-[1rem] -mx-[1rem] mb-0`}
       >
         <div className=" mx-[1rem] mt-[1rem]">
           <div className="flex flex-row justify-between">
             {props.iscouponApplied &&
-            props.payment.discounted_cost != props.payment.total_cost &&
-            props.payment.show_per_person_cost !=
+            props.payment?.discounted_cost != props.payment.total_cost &&
+            props.payment?.show_per_person_cost !=
               props.payment.per_person_discounted_cost ? (
               <div className="flex flex-row items-center text-[#7A7A7A] gap-1 text-base font-light line-through">
                 <span>₹</span>
@@ -509,7 +509,7 @@ const Details = (props) => {
             {props?.payment && (
               <div className="flex flex-row gap-1">
                 <div
-                  show_per_person_cost={props.payment.show_per_person_cost}
+                  show_per_person_cost={props.payment?.show_per_person_cost}
                   className={
                     props.blur
                       ? "font-lexend blurry-text"
@@ -523,14 +523,14 @@ const Details = (props) => {
                       ? getIndianPrice(
                           Math.round(
                             Math.round(
-                              props.payment.per_person_discounted_cost
-                            ) / 100
-                          )
+                              props.payment?.per_person_discounted_cost,
+                            ) / 100,
+                          ),
                         )
                       : getIndianPrice(
                           Math.round(
-                            Math.round(props.payment.discounted_cost) / 100
-                          )
+                            Math.round(props.payment?.discounted_cost) / 100,
+                          ),
                         )}
                     {"/-"}
                   </div>
@@ -571,15 +571,15 @@ const Details = (props) => {
               gridColumnGap: "1rem",
             }}
           >
-            {props.payment.itinerary_status ===
-              ITINERARY_STATUSES.itinerary_finalized ||
+            {props.payment?.itinerary_status ===
+              ITINERARY_STATUSES?.itinerary_finalized ||
             props?.plan?.featured ? null : (
               <div></div>
             )}
 
-            {props.payment.itinerary_status ===
-              ITINERARY_STATUSES.itinerary_finalized ||
-            props.plan.featured ? null : (
+            {props.payment?.itinerary_status ===
+              ITINERARY_STATUSES?.itinerary_finalized ||
+            props?.plan?.featured ? null : (
               <div></div>
             )}
           </div>
@@ -591,7 +591,7 @@ const Details = (props) => {
         >
           <div>
             {acoordianceOpen ? <span>Hide</span> : <span>View</span>}{" "}
-            {!props.payment.are_prices_hidden ? "breakup" : "inclusions"}
+            {!props.payment?.are_prices_hidden ? "breakup" : "inclusions"}
           </div>
 
           <RiArrowDropDownLine
@@ -634,14 +634,13 @@ const Details = (props) => {
                         : "font-lexend text-enter "
                     }
                   >
-                    {"₹ " +
+                    {/* {"₹ " +
                       getIndianPrice(
-                        Math.round(
-                          (props.payment?.gst
-                            ? props.payment.total_service_fee +
-                              props.payment.gst
-                            : props.payment.total_service_fee) / 100
-                        )
+                        Math.round(props.payment.total_service_fee / 100),
+                      )} */}
+                       {"₹ " +
+                      getIndianPrice(
+                        Math.round(props.payment.surcharges_and_taxes / 100),
                       )}
                   </div>
                 </div>
@@ -725,12 +724,12 @@ const Details = (props) => {
                 <div>
                   {props.plan
                     ? props.plan
-                      ? getHumanDateWithYear(
-                          format(new Date(date), "dd-MM-yyyy").replaceAll(
+                      ? date ? getHumanDateWithYear(
+                          format(new Date(date), "dd-mm-yyyy").replaceAll(
                             "-",
-                            "/"
-                          )
-                        )
+                            "/",
+                          ),
+                        ) :null
                       : null
                     : null}
                   {" - "}
@@ -752,7 +751,7 @@ const Details = (props) => {
                 </div>
               )}
 
-              {props.payment.itinerary_status ===
+              {props.payment?.itinerary_status ===
               ITINERARY_STATUSES.itinerary_prepared ? (
                 <>
                   <div className="cursor-pointer w-4 h-4 text-gray-500 transition-transform duration-300 group-hover:text-blue-500 group-hover:scale-110  active:scale-90">
@@ -782,20 +781,20 @@ const Details = (props) => {
             <div>
               {pax} {pluralDetector("Adult", pax)}{" "}
             </div>
-            {props.payment.meta_info.number_of_children ? (
-              <div>, {props.payment.meta_info.number_of_children} Children</div>
+            {/* {props.payment?.meta_info.number_of_children ? (
+              <div>, {props.payment?.meta_info.number_of_children} Children</div>
             ) : null}
-            {props.payment.meta_info.number_of_infants ? (
+            {props.payment?.meta_info.number_of_infants ? (
               <div>
-                , {props.payment.meta_info.number_of_infants}{" "}
+                , {props.payment?.meta_info.number_of_infants}{" "}
                 {pluralDetector(
                   "Infant",
-                  props.payment.meta_info.number_of_infants
+                  props.payment?.meta_info.number_of_infants,
                 )}
               </div>
-            ) : null}
-            {props.payment.itinerary_status ===
-            ITINERARY_STATUSES.itinerary_finalized ? null : (
+            ) : null} */}
+            {props.payment?.itinerary_status ===
+            ITINERARY_STATUSES?.itinerary_finalized ? null : (
               <>
                 <div className="cursor-pointer pl-2 w-4 h-4 text-gray-500 transition-transform duration-300 ase-in-out  group-hover:text-blue-500  group-hover:scale-110 active:scale-90">
                   <MdEdit
@@ -837,11 +836,11 @@ const Details = (props) => {
       ) : (
         <>
           {props.payment && props.token ? (
-            props.payment.itinerary_status ===
-              ITINERARY_STATUSES.itinerary_finalized &&
-            !props.payment.paid_user &&
-            props.payment.user_allowed_to_pay ? (
-              props.payment.total_cost > 0 ? (
+            props.payment?.itinerary_status ===
+              ITINERARY_STATUSES?.itinerary_finalized &&
+            !props.payment?.paid_user &&
+            props.payment?.user_allowed_to_pay ? (
+              props.payment?.total_cost > 0 ? (
                 <Button
                   color="#111"
                   fontWeight="500"

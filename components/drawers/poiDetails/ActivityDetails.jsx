@@ -2,8 +2,6 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 import { useState } from "react";
 import { TbArrowBack } from "react-icons/tb";
-import { FaStar, FaStarHalfAlt } from "react-icons/fa";
-import { IoMdClose } from "react-icons/io";
 import { MERCURY_HOST } from "../../../services/constants";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -15,11 +13,16 @@ import setItinerary from "../../../store/actions/itinerary";
 import ReviewPoi from "../../POIDetails/Reviews";
 import useMediaQuery from "../../media";
 import { openNotification } from "../../../store/actions/notification";
-
+import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
+import { FaStar, FaStarHalfAlt, FaClock } from "react-icons/fa";
+import { FaPerson } from "react-icons/fa6";
+import { IoIosArrowDown, IoIosArrowUp, IoMdClose } from "react-icons/io";
+import { IoFastFood, IoTicket } from "react-icons/io5";
+import { MdTransferWithinAStation } from "react-icons/md";
+import { BiSolidCustomize } from "react-icons/bi";
 import ImageLoader from "../../ImageLoader";
 import SkeletonCard from "../../ui/SkeletonCard";
 import BackArrow from "../../ui/BackArrow";
-import { Pax } from "./Pax";
 export const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -55,6 +58,7 @@ const Container = styled.div`
   gap: 32px;
   font-family: Lexend;
   padding: ${(props) => (props.itineraryDrawer ? "0 1rem 1rem 1rem" : "1rem")};
+  
 `;
 
 const BackContainer = styled.div`
@@ -98,9 +102,8 @@ const Child = styled.div`
 const ScrollContainer = styled.div`
   display: flex;
   gap: 21px;
-  height: 210px;
+  height: auto;
   overflow-x: auto;
-  overflow-y: hidden;
   -ms-overflow-style: none;
   scrollbar-width: none;
   &::-webkit-scrollbar {
@@ -117,6 +120,8 @@ const ScrollContainer = styled.div`
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
 const ActivityDetails = (props) => {
+  console.log("activity data:", props?.removeDelete);
+
   let isPageWide = useMediaQuery("(min-width: 768px)");
 
   const isSmallScreen = useMediaQuery("(max-width:586px)");
@@ -128,7 +133,6 @@ const ActivityDetails = (props) => {
   const itinerary = useSelector((state) => state.Itinerary);
   const token = useSelector((state) => state.auth.token);
   const [imageLoaded, setImageLoaded] = useState(false);
-
 
   const dispatch = useDispatch();
 
@@ -146,6 +150,14 @@ const ActivityDetails = (props) => {
     1: false,
     2: false,
     3: false,
+  });
+
+  const [boolDetails, setBoolDetail] = useState({
+    generalGuidelines: false,
+    thingsToBring: false,
+    notSuitableFor: false,
+    tipsTricks: false,
+    Amenities: false,
   });
 
   function OnImageLoad(i) {
@@ -172,9 +184,10 @@ const ActivityDetails = (props) => {
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          }
+          },
         }
       );
+      dispatch(SetCallPaymentInfo(!CallPaymentInfo));
 
       if (res?.status == 204) {
         const newItinerary = JSON.parse(JSON.stringify(itinerary));
@@ -384,14 +397,6 @@ const ActivityDetails = (props) => {
             {props.data?.experience_filters && (
               <Text>{experience_filters}</Text>
             )}
-            {props.data?.prices?.total_price && (
-              <div className={"mb-2 flex flex-col gap-1"}>
-                <div >
-                  Cost: ₹ {props.data?.prices?.total_price} /- Per person
-                </div>
-                <Pax pax={props.pax} setPax={props.setPax}/>
-              </div>
-            )}
             {aboutText != null && aboutText != undefined && (
               <div>
                 <Text
@@ -412,6 +417,157 @@ const ActivityDetails = (props) => {
               </div>
             )}
           </div>
+
+          <div className="flex flex-col gap-2">
+            {props.data?.general_guidelines?.length ? (
+              <div className="flex flex-col">
+                <div
+                  className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px] cursor-pointer"
+                  onClick={() =>
+                    setBoolDetail((prev) => ({
+                      ...prev,
+                      generalGuidelines: !prev.generalGuidelines,
+                    }))
+                  }
+                >
+                  <div>General guidelines</div>
+                  {boolDetails?.generalGuidelines ? (
+                    <IoIosArrowUp />
+                  ) : (
+                    <IoIosArrowDown />
+                  )}
+                </div>
+                {boolDetails?.generalGuidelines && (
+                  <div className="text-[14px]">
+                    <ul style={{ paddingLeft: "0.5rem" }}>
+                      {props.data.general_guidelines.map((e, i) => (
+                        <li key={i}>- {e}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            ) : null}
+
+            {props.data?.things_to_bring?.length ? (
+              <div className="flex flex-col">
+                <div
+                  className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px] cursor-pointer"
+                  onClick={() =>
+                    setBoolDetail((prev) => ({
+                      ...prev,
+                      thingsToBring: !prev.thingsToBring,
+                    }))
+                  }
+                >
+                  <div>Things to bring</div>
+                  {boolDetails?.thingsToBring ? (
+                    <IoIosArrowUp />
+                  ) : (
+                    <IoIosArrowDown />
+                  )}
+                </div>
+                {boolDetails?.thingsToBring && (
+                  <div className="text-[14px]">
+                    <ul style={{ paddingLeft: "0.5rem" }}>
+                      {props.data.things_to_bring.map((e, i) => (
+                        <li key={i}>- {e}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            ) : null}
+
+            {props.data?.not_suitable_for?.length ? (
+              <div className="flex flex-col">
+                <div
+                  className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px] cursor-pointer"
+                  onClick={() =>
+                    setBoolDetail((prev) => ({
+                      ...prev,
+                      notSuitableFor: !prev.notSuitableFor,
+                    }))
+                  }
+                >
+                  <div>Not suitable for</div>
+                  {boolDetails?.notSuitableFor ? (
+                    <IoIosArrowUp />
+                  ) : (
+                    <IoIosArrowDown />
+                  )}
+                </div>
+                {boolDetails?.notSuitableFor && (
+                  <div className="text-[14px]">
+                    <ul style={{ paddingLeft: "0.5rem" }}>
+                      {props.data.not_suitable_for.map((e, i) => (
+                        <li key={i}>- {e}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            ) : null}
+
+            {props.data?.tips_tricks?.length ? (
+              <div className="flex flex-col">
+                <div
+                  className="text-[14px] font-medium bg-[#FAFAFA] px-[16px] py-[10px] flex justify-between rounded-[3px] cursor-pointer"
+                  onClick={() =>
+                    setBoolDetail((prev) => ({
+                      ...prev,
+                      tipsTricks: !prev.tipsTricks,
+                    }))
+                  }
+                >
+                  <div>Tips, Tricks and Cautions</div>
+                  {boolDetails?.tipsTricks ? (
+                    <IoIosArrowUp />
+                  ) : (
+                    <IoIosArrowDown />
+                  )}
+                </div>
+                {boolDetails?.tipsTricks && (
+                  <div className="text-[14px]">
+                    <ul style={{ paddingLeft: "0.5rem" }}>
+                      {props.data.tips_tricks.map((e, i) => (
+                        <li key={i}>- {e}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            ) : null}
+          </div>
+
+          {props?.activityData?.selected_amenities &&
+            props?.activityData?.selected_amenities?.length > 0 && (
+              <div className="flex flex-col gap-2 relative">
+                <div className="text-[20px] font-semibold">Add - Ons</div>
+                <div className="border-b-[1px]"></div>
+                <div className="flex flex-col gap-2">
+                  {props?.activityData?.selected_amenities.map(
+                    (amenity, index) => (
+                      <Amenity key={index} index={index} amenity={amenity} />
+                    )
+                  )}
+                </div>
+              </div>
+            )}
+
+          {props?.data?.cancellation_policies && (
+            <>
+              <div className="text-[20px] font-semibold">
+                Cancellation Policies
+              </div>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: props?.data?.cancellation_policies,
+                }}
+                className="flex flex-col gap-1 text-sm ml-4"
+              ></div>
+            </>
+          )}
 
           {props.data?.cost ? (
             <div className="flex flex-row">
@@ -452,7 +608,10 @@ const ActivityDetails = (props) => {
           )}
           {props?.data?.reviews && (
             <div className="flex flex-col gap-[12px]">
-              <div id="reviews-poi" className="flex justify-between">
+              <div
+                id="reviews-poi"
+                className="flex justify-between items-center"
+              >
                 <Heading>Reviews</Heading>
 
                 <Reviews>
@@ -479,7 +638,7 @@ const ActivityDetails = (props) => {
               {isSmallScreen ? (
                 <>
                   {props?.data?.reviews?.map((item) => (
-                    <div className="w-[289px]">
+                    <div className="w-full">
                       <ReviewPoi review={item} />
                     </div>
                   ))}
@@ -526,42 +685,89 @@ const ActivityDetails = (props) => {
                 </a>
               </div> */}
 
-              {props?.removeDelete ? (
-                <></>
-              ) : (
-                <button
-                  className=" right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
-                  onClick={handleDelete}
-                >
-                  <div style={{ position: "relative" }}>
-                    <div
-                      className="flex gap-1 items-center p-1"
-                      style={loading ? { visibility: "hidden" } : {}}
+              {
+                // props?.version != "v1" ? (
+                //   <></>
+                // )
+                <>
+                  {" "}
+                  {props?.removeDelete == false && (
+                    <button
+                      className=" right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
+                      onClick={handleDelete}
                     >
-                      <Image src="/delete.svg" width={"20"} height={"20"} />{" "}
-                      Remove from Itinerary
-                    </div>
-                    {loading && (
-                      <PulseLoader
-                        style={{
-                          position: "absolute",
-                          top: "55%",
-                          left: "50%",
-                          transform: "translate(-50% , -50%)",
-                        }}
-                        size={12}
-                        speedMultiplier={0.6}
-                        color="#ffffff"
-                      />
-                    )}
-                  </div>
-                </button>
-              )}
+                      <div style={{ position: "relative" }}>
+                        <div
+                          className="flex gap-1 items-center p-1"
+                          style={loading ? { visibility: "hidden" } : {}}
+                        >
+                          <Image src="/delete.svg" width={"20"} height={"20"} />{" "}
+                          Remove from Itinerary
+                        </div>
+                        {loading && (
+                          <PulseLoader
+                            style={{
+                              position: "absolute",
+                              top: "55%",
+                              left: "50%",
+                              transform: "translate(-50% , -50%)",
+                            }}
+                            size={12}
+                            speedMultiplier={0.6}
+                            color="#ffffff"
+                          />
+                        )}
+                      </div>
+                    </button>
+                  )}
+                </>
+              }
             </div>
           </div>
         </Container>
       ) : null}
     </>
+  );
+};
+
+const Amenity = ({ index, amenity, handleAmenityChange, travelers }) => {
+  const [included, setIncluded] = useState(amenity?.included);
+
+  useEffect(() => {
+    setIncluded(amenity?.included);
+  }, [amenity]);
+
+  const getAmenityIcon = (type) => {
+    switch (type) {
+      case "Guide":
+        return <FaPerson />;
+      case "Transportation":
+        return <MdTransferWithinAStation />;
+      case "Meal":
+        return <IoFastFood />;
+      case "Entry Ticket":
+        return <IoTicket />;
+      default:
+        return <BiSolidCustomize />;
+    }
+  };
+
+  const handleSelect = () => {
+    console.log("here");
+    handleAmenityChange(index, !included);
+    setIncluded((prev) => !prev);
+  };
+
+  return (
+    <div key={index} className=" gap-3  bg-[#FAFAFA] p-[10px] rounded-[4px]">
+      <div className="flex flex-col gap-1">
+        <div className="flex flex-row items-center gap-2 text-[16px] font-medium">
+          {/* {getAmenityIcon(amenity?.type)} */}
+          {amenity.name}
+        </div>
+        <div className="text-[14px]">{amenity.description}</div>
+      </div>
+    </div>
   );
 };
 
