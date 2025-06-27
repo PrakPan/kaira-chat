@@ -211,20 +211,21 @@ async function fetchTripDataById(id) {
 
 async function fetchAllSlugsWithIds() {
   const response = await axiosIndexedItinerary.get("");
-  const trips = response.data.map((trip) => {
-   
-    let group_type = "family"; 
-    
-    if (trip?.group_type) {
-      group_type = trip.group_type.replaceAll(" ", "_").toLowerCase();
-    }
-    
-    return {
-      group_type: group_type,
-      slug: trip.slug,
-      id: trip.id,
-    };
-  });
+  const trips = response.data
+    .filter((trip) => trip?.slug && trip?.id) 
+    .map((trip) => {
+      let group_type = "family";
+      
+      if (trip?.group_type) {
+        group_type = trip.group_type.replaceAll(" ", "_").toLowerCase();
+      }
+      
+      return {
+        group_type: group_type,
+        slug: trip.slug,
+        id: trip.id,
+      };
+    });
 
   return trips;
 }
@@ -282,6 +283,12 @@ export async function getStaticProps(context) {
 
     const trip = TRIPS_CACHE.find((trip) => trip.slug === slug);
 
+    if (!trip || !trip.id) {
+      return {
+        notFound: true,
+      };
+    }
+
     const {
       planResponse,
       daybydayResponse,
@@ -311,6 +318,10 @@ export async function getStaticProps(context) {
     cities = [...new Set(planResponse?.itinerary_locations)];
   } catch (err) {
     console.log("[ERROR][tripsPage:getStaticProps]: ", err.message);
+
+    return {
+      notFound: true,
+    };
   }
 
   return {
