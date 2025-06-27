@@ -9,11 +9,7 @@ import Itinerary2Carousel from "./Itinerary2Carousel";
 import Activity1Carousel from "./Activity1Carousel";
 import Reviews1Carousel from "./Reviews1Carousel";
 import PrimaryHeading from "../heading/PrimaryHeading";
-<<<<<<< HEAD
-import Poi1Carousel from "./Poi1Carousel";
-=======
 import Poi from "../../containers/newcityplanner/pois/Index";
->>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
 
 export default function Navigation({ components, slug }) {
   let isPageWide = media("(min-width: 768px)");
@@ -200,10 +196,6 @@ const ComponentDisplay = ({ component, handlePlanButton, setDestination }) => (
       <Activity1Carousel activities={component.activities} />
     ) : component.carousel === "review-1" ? (
       <Reviews1Carousel reviews={component.reviews} />
-<<<<<<< HEAD
-    ) : component.carousel === "poi-1" ? (
-      <Poi1Carousel activities={component.pois} />
-=======
     ) : component.carousel === "destination-5" ? (
       <Poi
         elevation={component?.elevation}
@@ -212,7 +204,6 @@ const ComponentDisplay = ({ component, handlePlanButton, setDestination }) => (
         pois={component?.pois}
         city={component?.name}
       />
->>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
     ) : null}
   </div>
 );
