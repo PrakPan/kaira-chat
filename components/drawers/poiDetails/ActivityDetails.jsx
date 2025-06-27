@@ -120,7 +120,7 @@ const ScrollContainer = styled.div`
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
 const ActivityDetails = (props) => {
-  console.log("activity data:", props?.activityData);
+  console.log("activity data:", props?.removeDelete);
 
   let isPageWide = useMediaQuery("(min-width: 768px)");
 
@@ -686,38 +686,41 @@ const ActivityDetails = (props) => {
               </div> */}
 
               {
-              // props?.version != "v1" ? (
-              //   <></>
-              // ) : 
-               props?.removeDelete && 
-                
-                <button
-                  className=" right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
-                  onClick={handleDelete}
-                >
-                  <div style={{ position: "relative" }}>
-                    <div
-                      className="flex gap-1 items-center p-1"
-                      style={loading ? { visibility: "hidden" } : {}}
+                // props?.version != "v1" ? (
+                //   <></>
+                // )
+                <>
+                  {" "}
+                  {props?.removeDelete == false && (
+                    <button
+                      className=" right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
+                      onClick={handleDelete}
                     >
-                      <Image src="/delete.svg" width={"20"} height={"20"} />{" "}
-                      Remove from Itinerary
-                    </div>
-                    {loading && (
-                      <PulseLoader
-                        style={{
-                          position: "absolute",
-                          top: "55%",
-                          left: "50%",
-                          transform: "translate(-50% , -50%)",
-                        }}
-                        size={12}
-                        speedMultiplier={0.6}
-                        color="#ffffff"
-                      />
-                    )}
-                  </div>
-                </button>
+                      <div style={{ position: "relative" }}>
+                        <div
+                          className="flex gap-1 items-center p-1"
+                          style={loading ? { visibility: "hidden" } : {}}
+                        >
+                          <Image src="/delete.svg" width={"20"} height={"20"} />{" "}
+                          Remove from Itinerary
+                        </div>
+                        {loading && (
+                          <PulseLoader
+                            style={{
+                              position: "absolute",
+                              top: "55%",
+                              left: "50%",
+                              transform: "translate(-50% , -50%)",
+                            }}
+                            size={12}
+                            speedMultiplier={0.6}
+                            color="#ffffff"
+                          />
+                        )}
+                      </div>
+                    </button>
+                  )}
+                </>
               }
             </div>
           </div>

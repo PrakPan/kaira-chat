@@ -229,7 +229,7 @@ const Index = (props) => {
                 city={props?.data?.name}
                 handlePlanButtonClick={handlePlanButtonClick}
                 page={"Country Page"}
-                removeDelete
+                removeDelete={true}
               />
             </div>
           ) : null}

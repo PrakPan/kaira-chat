@@ -196,7 +196,7 @@ export const checkAuthState = () => {
         localStorage.removeItem("MyPlans");
         localStorage.removeItem("user_image");
 
-        restartBot()
+        restartBot();
         dispatch(authLogout());
         //refresh token
       }
@@ -341,7 +341,7 @@ export const auth = (
             responseData.data.user?.oauth?.access_token
           );
           localStorage.setItem("expirationDate", expirationDate);
-          restartBot()
+          restartBot();
         }
       })
       .catch((err) => {
@@ -493,8 +493,9 @@ export const authResetLogin = () => {
 export const changeUserDetails = (userdetails) => {
   return (dispatch, getState) => {
     const token = getState().auth.token;
+
     axiosuserinstance
-      .get("", {
+      .put("", userdetails, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -507,6 +508,7 @@ export const changeUserDetails = (userdetails) => {
         localStorage.setItem("phone", responseData.data.user?.phone);
         localStorage.setItem("user_id", responseData.data.user?.id);
         localStorage.setItem("user_image", responseData.data.user?.profile_pic);
+        localStorage.setItem("country",responseData.data.user?.country)
         localStorage.setItem(
           "whatsapp_opt_in",
           responseData.data.user?.whatsapp_opt_in
@@ -528,11 +530,10 @@ export const changeUserDetails = (userdetails) => {
         dispatch(authCloseLogin());
       })
       .catch((err) => {
-        //set error
         if (err?.response?.data?.errors[0]?.phone)
           dispatch(authMobileFail(err.response.data.errors[0].phone[0]));
         //Invalid / already taken  mobile
-        else dispatch(authMobileFail()); //Invalid / already taken  mobile
+        else dispatch(authMobileFail());
       });
   };
 };

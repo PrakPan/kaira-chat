@@ -83,356 +83,410 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     setUserDetails: (payload) => dispatch(authaction.setUserDetails(payload)),
+    changeUserDetails: (payload) =>
+      dispatch(authaction.changeUserDetails(payload)),
   };
 };
 
 export const EditInput = connect(
   mapStateToProps,
   mapDispatchToProps
-)(({ token, CountryCodes, type, name, text, closeEdit, setUserDetails }) => {
-  const [value, setValue] = useState(text);
-  const [loading, setLoading] = useState(false);
-  const [optSent, setOptSent] = useState(false);
-  const [phone, setPhone] = useState(text);
-  const [error, setError] = useState(null);
-  const [extension, setExtension] = useState("India");
-  const [openCountryCodeOption, setOpenCountryCodeOption] = useState(false);
-  const [ExtensionOptions, setExtensionOptions] = useState([]);
-  const [openCountryMenu, setOpenCountryMenu] = useState(false);
-  const ref = useRef();
+)(
+  ({
+    token,
+    CountryCodes,
+    type,
+    name,
+    text,
+    closeEdit,
+    setUserDetails,
+    changeUserDetails,
+    userData,
+  }) => {
+    const [value, setValue] = useState(text);
+    const [loading, setLoading] = useState(false);
+    const [optSent, setOptSent] = useState(false);
+    const [phone, setPhone] = useState(text);
+    const [error, setError] = useState(null);
+    const [extension, setExtension] = useState("India");
+    const [openCountryCodeOption, setOpenCountryCodeOption] = useState(false);
+    const [ExtensionOptions, setExtensionOptions] = useState([]);
+    const [openCountryMenu, setOpenCountryMenu] = useState(false);
+    const ref = useRef();
 
-  useEffect(() => {
-    const checkIfClickedOutside = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) {
+    useEffect(() => {
+      const checkIfClickedOutside = (e) => {
+        if (ref.current && !ref.current.contains(e.target)) {
+          closeEdit(false);
+        }
+      };
+      document.addEventListener("mousedown", checkIfClickedOutside);
+
+      return () => {
+        document.removeEventListener("mousedown", checkIfClickedOutside);
+      };
+    }, []);
+
+    useEffect(() => {
+      let Options = [];
+      for (const country in CountryCodes) {
+        Options.push(
+          <div
+            className="flex flex-row gap-3 items-center p-2 cursor-pointer"
+            key={country}
+            value={country}
+            onClick={() => {
+              handleExtensionChangeOption(country),
+                setOpenCountryCodeOption(false);
+            }}
+          >
+            <CountryImg
+              height="29"
+              width="29"
+              objectFit="cover"
+              src={CountryCodes[country].img}
+              onClick={() => handleExtensionChangeOption(country)}
+            ></CountryImg>
+            <p className="m-0">{CountryCodes[country].value}</p>
+            <p className="m-0 text-gray-600">{CountryCodes[country].label}</p>
+          </div>
+        );
+      }
+
+      setExtensionOptions(Options);
+    }, []);
+
+    useEffect(() => {
+      if (name === "phone") {
+        const { countryCode, number } = separateCountryCode(text);
+        if (countryCode && number) {
+          setValue(number);
+          const country = getCountryName(countryCode);
+          if (country) {
+            setExtension(country);
+          } else {
+            setExtension("India");
+          }
+        }
+      }
+    }, []);
+
+    const separateCountryCode = (phoneNumber) => {
+      const pattern = /^(\+\d{1,4})(\d{10})$/;
+      const match = phoneNumber.match(pattern);
+
+      if (match) {
+        const countryCode = match[1];
+        const number = match[2];
+
+        return {
+          countryCode: countryCode,
+          number: number,
+        };
+      } else {
+        return null; // Invalid phone number format
+      }
+    };
+
+    const getCountryName = (code) => {
+      for (const country in CountryCodes) {
+        if (CountryCodes[country].label === code) {
+          return CountryCodes[country].value;
+        }
+      }
+      return null;
+    };
+
+    const onChangeValue = (e) => {
+      if (name === "phone") {
+        const phone = e.target.value;
+        setPhone(phone);
+        const res = separateCountryCode(phone);
+        if (res) {
+          setValue(res.number);
+        } else {
+          setValue(phone);
+        }
+      } else {
+        setValue(e.target.value);
+      }
+    };
+
+    const handleEnterKey = (e) => {
+      if (e.key === "Enter" && e.target.value) {
+        e.preventDefault();
+        handleSave();
+      }
+    };
+
+    const handleSave = () => {
+      if (token) {
+        setLoading(true);
+        let data = {};
+        data[name] = value;
+
+        switch (name) {
+          case "phone":
+            handlePhone({
+              data: { phone: CountryCodes[extension].label + value },
+            });
+            break;
+          case "email":
+            handleEmail({ email: value });
+            break;
+          case "country":
+            handleCountry({data: {country:value}})
+            break;
+          default:
+            handleName({ data });
+            break;
+        }
+      } else {
         closeEdit(false);
       }
     };
-    document.addEventListener("mousedown", checkIfClickedOutside);
 
-    return () => {
-      document.removeEventListener("mousedown", checkIfClickedOutside);
-    };
-  }, []);
 
-  useEffect(() => {
-    let Options = [];
-    for (const country in CountryCodes) {
-      Options.push(
-        <div
-          className="flex flex-row gap-3 items-center p-2 cursor-pointer"
-          key={country}
-          value={country}
-          onClick={() => {
-            handleExtensionChangeOption(country),
-              setOpenCountryCodeOption(false);
-          }}
-        >
-          <CountryImg
-            height="29"
-            width="29"
-            objectFit="cover"
-            src={CountryCodes[country].img}
-            onClick={() => handleExtensionChangeOption(country)}
-          ></CountryImg>
-          <p className="m-0">{CountryCodes[country].value}</p>
-          <p className="m-0 text-gray-600">{CountryCodes[country].label}</p>
-        </div>
-      );
-    }
-
-    setExtensionOptions(Options);
-  }, []);
-
-  useEffect(() => {
-    if (name === "phone") {
-      const { countryCode, number } = separateCountryCode(text);
-      if (countryCode && number) {
-        setValue(number);
-        const country = getCountryName(countryCode);
-        if (country) {
-          setExtension(country);
-        } else {
-          setExtension("India");
-        }
-      }
-    }
-  }, []);
-
-  const separateCountryCode = (phoneNumber) => {
-    const pattern = /^(\+\d{1,4})(\d{10})$/;
-    const match = phoneNumber.match(pattern);
-
-    if (match) {
-      const countryCode = match[1];
-      const number = match[2];
-
-      return {
-        countryCode: countryCode,
-        number: number,
+    const handleCountry = ({ data }) => {
+      console.log("data is:",data)
+      const RequestData = {
+        name: userData.name,
+        whatsapp_opt_in: userData.whatsapp_opt_in,
+        country: data.country,
       };
-    } else {
-      return null; // Invalid phone number format
-    }
-  };
+      axiosuserinstance
+        .put("/", RequestData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          setUserDetails(res.data);
+          setLoading(false);
+          setTimeout(() => {
+            closeEdit(false);
+          }, 500);        })
+        .catch((err) => {
+          setLoading(false);
+          closeEdit(false);
+          if (err?.response?.data?.name) {
+            console.log(err.response.data.name[0]);
+          } else {
+            console.log(err?.response?.data);
+          }
+        });
+    };
 
-  const getCountryName = (code) => {
-    for (const country in CountryCodes) {
-      if (CountryCodes[country].label === code) {
-        return CountryCodes[country].value;
-      }
-    }
-    return null;
-  };
+    const handleName = ({ data }) => {
+      const RequestData = {
+        name: data.name,
+        whatsapp_opt_in: userData.whatsapp_opt_in,
+        country: userData.country,
+      };
+      axiosuserinstance
+        .put("/", RequestData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          setUserDetails(res.data);
+          setLoading(false);
+          closeEdit(false);
+        })
+        .catch((err) => {
+          setLoading(false);
+          closeEdit(false);
+          if (err?.response?.data?.name) {
+            console.log(err.response.data.name[0]);
+          } else {
+            console.log(err?.response?.data);
+          }
+        });
+    };
 
-  const onChangeValue = (e) => {
-    if (name === "phone") {
-      const phone = e.target.value;
-      setPhone(phone);
+    const handlePhone = ({ data }) => {
+      setOptSent(false);
+      setError(null);
+      axiosuserinstance
+        .post("/update_phone/initiate/", data, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          setLoading(false);
+          setOptSent(true);
+        })
+        .catch((err) => {
+          setLoading(false);
+          if (err.response.data.phone) {
+            console.log(err?.response?.data?.phone[0]);
+            setError(err?.response?.data?.phone[0]);
+          } else {
+            closeEdit(false);
+            console.log(err?.response?.data);
+          }
+        });
+    };
+
+    const handleEmail = ({ email }) => {
+      setOptSent(false);
+      setError(null);
+      axiosuserinstance
+        .post("/update_email/initiate/", { email }, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          setLoading(false);
+          setOptSent(true);
+        })
+        .catch((err) => {
+          setLoading(false);
+          if (err.response.data.email) {
+            console.log(err?.response?.data?.email[0]);
+            setError(err?.response?.data?.email[0]);
+          } else {
+            closeEdit(false);
+            console.log(err?.response?.data);
+          }
+        });
+    };
+    
+
+    const handleExtensionChangeOption = (country) => {
       const res = separateCountryCode(phone);
       if (res) {
-        setValue(res.number);
+        setPhone(CountryCodes[country].label + res.number);
       } else {
-        setValue(phone);
-      }
-    } else {
-      setValue(e.target.value);
-    }
-  };
-
-  const handleEnterKey = (e) => {
-    if (e.key === "Enter" && e.target.value) {
-      e.preventDefault();
-      handleSave();
-    }
-  };
-
-  const handleSave = () => {
-    if (token) {
-      setLoading(true);
-      let data = {};
-      data[name] = value;
-
-      switch (name) {
-        case "phone":
-          handlePhone({
-            data: { phone: CountryCodes[extension].label + value },
-          });
-          break;
-        case "email":
-          handleEmail({ email: value });
-          break;
-        default:
-          handleName({ data });
-          break;
-      }
-    } else {
-      closeEdit(false);
-    }
-  };
-
-  const handleName = ({ data }) => {
-    axiosuserinstance
-      .patch("", data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        setUserDetails(res.data);
-        setLoading(false);
-        closeEdit(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-        closeEdit(false);
-        if (err?.response?.data?.name) {
-          console.log(err.response.data.name[0]);
+        if (phone.length === 10) {
+          setPhone(CountryCodes[country].label + phone);
         } else {
-          console.log(err?.response?.data);
+          setPhone(CountryCodes[country].label);
         }
-      });
-  };
-
-  const handlePhone = ({ data }) => {
-    setOptSent(false);
-    setError(null);
-    axiosuserinstance
-      .post("phone_change/initiate/", data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        setLoading(false);
-        setOptSent(true);
-      })
-      .catch((err) => {
-        setLoading(false);
-        if (err.response.data.phone) {
-          console.log(err?.response?.data?.phone[0]);
-          setError(err?.response?.data?.phone[0]);
-        } else {
-          closeEdit(false);
-          console.log(err?.response?.data);
-        }
-      });
-  };
-
-  const handleEmail = ({ email }) => {
-    setOptSent(false);
-    setError(null);
-    userEmailEditInstance
-      .get(`initiate/?email=${email}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        setLoading(false);
-        setOptSent(true);
-      })
-      .catch((err) => {
-        setLoading(false);
-        if (err.response.data.email) {
-          console.log(err?.response?.data?.email[0]);
-          setError(err?.response?.data?.email[0]);
-        } else {
-          closeEdit(false);
-          console.log(err?.response?.data);
-        }
-      });
-  };
-
-  const handleExtensionChangeOption = (country) => {
-    const res = separateCountryCode(phone);
-    if (res) {
-      setPhone(CountryCodes[country].label + res.number);
-    } else {
-      if (phone.length === 10) {
-        setPhone(CountryCodes[country].label + phone);
-      } else {
-        setPhone(CountryCodes[country].label);
       }
-    }
 
-    setExtension(country);
-  };
+      setExtension(country);
+    };
 
-  return (
-    <div
-      ref={ref}
-      className="w-full flex flex-col items-center justify-center gap-2"
-    >
+    return (
       <div
-        className={`w-full flex flex-row justify-start items-center gap-3 ${
-          name === "name" || name === "country"
-            ? "justify-center"
-            : "justify-start"
-        }`}
+        ref={ref}
+        className="w-full flex flex-col items-center justify-center gap-2"
       >
-        {name === "phone" && (
-          <div className="">
-            <div
-              className={`w-fit px-2 py-[0.64rem] flex flex-row gap-3 items-center border-2 border-[#d0d5dd] rounded-md ${
+        <div
+          className={`w-full flex flex-row justify-start items-center gap-3 ${
+            name === "name" || name === "country"
+              ? "justify-center"
+              : "justify-start"
+          }`}
+        >
+          {name === "phone" && (
+            <div className="">
+              <div
+                className={`w-fit px-2 py-[0.64rem] flex flex-row gap-3 items-center border-2 border-[#d0d5dd] rounded-md ${
+                  loading && "opacity-25"
+                }`}
+                onClick={() => setOpenCountryCodeOption(true)}
+              >
+                <CountryImg
+                  height="29"
+                  width="29"
+                  objectFit="cover"
+                  src={CountryCodes ? CountryCodes[extension].img : ""}
+                ></CountryImg>
+
+                <FiChevronDown />
+              </div>
+              {openCountryCodeOption && (
+                <div className="absolute top-[160px]">
+                  <CountryCodeDropdown
+                    onClose={() => setOpenCountryCodeOption(false)}
+                    CountryCodes={CountryCodes}
+                    handleExtensionChangeOption={handleExtensionChangeOption}
+                    setOpenCountryCodeOption={setOpenCountryCodeOption}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="w-[60%] flex flex-col relative">
+            <input
+              autoFocus
+              disabled={loading || name === "country"}
+              name={name}
+              type={type}
+              value={name === "phone" ? phone : value}
+              onChange={(e) => onChangeValue(e)}
+              onKeyDown={(e) => handleEnterKey(e)}
+              className={`w-full border-2 border-[#d0d5dd] rounded-md px-2 py-[0.64rem] focus:outline-none ${
                 loading && "opacity-25"
               }`}
-              onClick={() => setOpenCountryCodeOption(true)}
-            >
-              <CountryImg
-                height="29"
-                width="29"
-                objectFit="cover"
-                src={CountryCodes ? CountryCodes[extension].img : ""}
-              ></CountryImg>
+            ></input>
+            {name === "country" && (
+              <div className="absolute right-4 top-[50%] translate-y-[-50%]">
+                <RiArrowDropDownLine
+                  onClick={() => setOpenCountryMenu((prev) => !prev)}
+                  className="text-[30px] cursor-pointer"
+                />
+              </div>
+            )}
 
-              <FiChevronDown />
-            </div>
-            {openCountryCodeOption && (
-              <div className="absolute top-[160px]">
-                <CountryCodeDropdown
-                  onClose={() => setOpenCountryCodeOption(false)}
+            {error && (
+              <ErrorText className="absolute bottom-[-20px]">
+                <BiError style={{ fontSize: "1rem" }} />
+                <span style={{ marginLeft: "2px", marginTop: "2px" }}>
+                  {error}
+                </span>
+              </ErrorText>
+            )}
+
+            {name === "country" && openCountryMenu && (
+              <div className="absolute z-[1999] top-[110%] w-full h-[46vh]">
+                <CountryMenu
+                  setValue={setValue}
+                  setOpenCountryMenu={setOpenCountryMenu}
                   CountryCodes={CountryCodes}
-                  handleExtensionChangeOption={handleExtensionChangeOption}
-                  setOpenCountryCodeOption={setOpenCountryCodeOption}
                 />
               </div>
             )}
           </div>
-        )}
 
-        <div className="w-[60%] flex flex-col relative">
-          <input
-            autoFocus
-            disabled={loading || name === "country"}
-            name={name}
-            type={type}
-            value={name === "phone" ? phone : value}
-            onChange={(e) => onChangeValue(e)}
-            onKeyDown={(e) => handleEnterKey(e)}
-            className={`w-full border-2 border-[#d0d5dd] rounded-md px-2 py-[0.64rem] focus:outline-none ${
-              loading && "opacity-25"
-            }`}
-          ></input>
-          {name === "country" && (
-            <div className="absolute right-4 top-[50%] translate-y-[-50%]">
-              <RiArrowDropDownLine
-                onClick={() => setOpenCountryMenu((prev) => !prev)}
-                className="text-[30px] cursor-pointer"
-              />
-            </div>
-          )}
-
-          {error && (
-            <ErrorText className="absolute bottom-[-20px]">
-              <BiError style={{ fontSize: "1rem" }} />
-              <span style={{ marginLeft: "2px", marginTop: "2px" }}>
-                {error}
-              </span>
-            </ErrorText>
-          )}
-
-          {name === "country" && openCountryMenu && (
-            <div className="absolute z-[1999] top-[110%] w-full h-[46vh]">
-              <CountryMenu
-                setValue={setValue}
-                setOpenCountryMenu={setOpenCountryMenu}
-                CountryCodes={CountryCodes}
-              />
-            </div>
+          {loading ? (
+            <div className="w-6 h-6 rounded-full animate-spin border-t-2 border-black"></div>
+          ) : optSent ? (
+            <button
+              onClick={handleSave}
+              className="text-sm text-blue cursor-pointer underline"
+            >
+              Resend OTP
+            </button>
+          ) : (
+            <MdDone onClick={handleSave} className="text-2xl cursor-pointer" />
           )}
         </div>
 
-        {loading ? (
-          <div className="w-6 h-6 rounded-full animate-spin border-t-2 border-black"></div>
-        ) : optSent ? (
-          <button
-            onClick={handleSave}
-            className="text-sm text-blue cursor-pointer underline"
-          >
-            Resend OTP
-          </button>
-        ) : (
-          <MdDone onClick={handleSave} className="text-2xl cursor-pointer" />
+        {optSent && (
+          <div className="flex flex-col gap-2">
+            <div className="text-gray-500">OTP has been sent</div>
+
+            <OPTInput
+              name={name}
+              token={token}
+              phone={CountryCodes[extension].label + value}
+              email={value}
+              setUserDetails={setUserDetails}
+              closeEdit={closeEdit}
+            />
+          </div>
         )}
       </div>
-
-      {optSent && (
-        <div className="flex flex-col gap-2">
-          <div className="text-gray-500">OTP has been sent</div>
-
-          <OPTInput
-            name={name}
-            token={token}
-            phone={CountryCodes[extension].label + value}
-            email={value}
-            setUserDetails={setUserDetails}
-            closeEdit={closeEdit}
-          />
-        </div>
-      )}
-    </div>
-  );
-});
+    );
+  }
+);
 
 const OPTInput = ({ name, token, phone, email, setUserDetails, closeEdit }) => {
   const [value, setValue] = useState("");
@@ -457,7 +511,7 @@ const OPTInput = ({ name, token, phone, email, setUserDetails, closeEdit }) => {
   const handlePhoneOPT = ({ data }) => {
     setLoading(true);
     axiosuserinstance
-      .patch("phone_change/complete/", data, {
+      .put("/update_phone/complete/", data, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -480,10 +534,10 @@ const OPTInput = ({ name, token, phone, email, setUserDetails, closeEdit }) => {
 
   const handleEmailOPT = ({ otp }) => {
     setLoading(true);
-    userEmailEditInstance
-      .patch(
-        `complete/`,
-        { opt: otp },
+    axiosuserinstance
+      .put(
+        "/update_email/complete/",
+        { otp, email },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -505,6 +559,7 @@ const OPTInput = ({ name, token, phone, email, setUserDetails, closeEdit }) => {
         }
       });
   };
+  
 
   return (
     <div className="flex flex-col gap-2">
