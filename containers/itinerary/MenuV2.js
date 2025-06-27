@@ -48,6 +48,7 @@ import TransferBookings from "./TransfersContainer/TransferBookings.jsx";
 import NewSummaryContainers from "./NewSummaryContainers.js";
 import { setTransfersBookings } from "../../store/actions/transferBookingsStore.js";
 import { TopicSharp } from "@mui/icons-material";
+import { ItineraryStatusLoader } from "./ItineraryContainer.jsx";
 const useStyles = {
   root: `
     flex-grow-1
@@ -337,9 +338,16 @@ const SimpleTabsV2 = (props) => {
       </div>
 
       {isPageWide && (
+
+         
         <div className="w-full z-[20] sticky flex flex-row top-[2px] justify-end -mt-[55px] ">
           <div className="z-[99] absolute  md:top-[0px] top-[0px] w-[20rem]">
+            {props?.displayText ? <ItineraryStatusLoader 
+                displayText={props?.displayText}
+                isVisible={props?.shouldShowLoader()}
+              /> :
             <div className="flex flex-row justify-between ">
+              
               {pricing_status === "PENDING" ? (
                 <div className="flex flex-col animate-pulse w-full max-w-[120px]">
                   <div className="h-3 w-20 bg-gray-300 rounded mb-1"></div>
@@ -543,7 +551,7 @@ const SimpleTabsV2 = (props) => {
                   ) : null}
                 </>
               )}
-            </div>
+            </div>}
           </div>
         </div>
       )}
@@ -1194,6 +1202,10 @@ const SimpleTabsV2 = (props) => {
       ) : null}
 
       <div className="z-10 fixed bottom-0 left-0 right-0 shadow-lg bg-white px-4 py-2 md:hidden">
+        {props?.displayText ? <ItineraryStatusLoader 
+                displayText={props?.displayText}
+                isVisible={props?.shouldShowLoader()}
+              /> :
         <div className="flex flex-row justify-between items-center">
           <div className="flex flex-col">
             <div className="flex justify-between">
@@ -1385,7 +1397,7 @@ const SimpleTabsV2 = (props) => {
               ) : null}
             </>
           )}
-        </div>
+        </div>}
       </div>
 
       {isPageWide && (

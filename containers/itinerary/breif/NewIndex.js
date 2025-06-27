@@ -138,7 +138,7 @@ console.log("Inside routes Dataa",props?.CityData);
   }
 
   return (
-    <div id="brief" className="mt-16">
+    <div id="brief" className="mt-8">
       <DetailsContainer>
         <div
           className="sticky md:top-[70px] lg:w-[50vw] lg:h-[70vh]  w-[88vw] h-fit lg:mt-20 mt-8  rounded-xl"
