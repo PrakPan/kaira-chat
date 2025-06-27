@@ -7,6 +7,7 @@ import { getHumanDate } from "../../services/getHumanDate";
 import { RiWhatsappFill } from "react-icons/ri";
 import { useRouter } from "next/router";
 import Accordion from "../../containers/itinerary/booking1/Accordion";
+import urls from "../../services/urls";
 
 const BookingContainer = (props) => {
   const [iscouponApplied, setiscouponApplied] = useState(false);
