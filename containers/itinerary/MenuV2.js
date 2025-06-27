@@ -317,7 +317,11 @@ const SimpleTabsV2 = (props) => {
   return (
     <div
       className={classes.root}
-      style={{ paddingTop: "20px", paddingBottom: "20px" }}
+      style={{
+      paddingTop: "20px",
+      paddingBottom:
+      isPageWide <= 768 ? "42px" : "20px"
+  }}
     >
       <div className="z-10 sticky z-2 md:top-[0px] top-[1px]">
         {isPageWide ? (
@@ -1329,7 +1333,7 @@ const SimpleTabsV2 = (props) => {
                     <Button
                       color="#111"
                       fontWeight="600"
-                      fontSize="0.85rem"
+                      fontSize="0.9rem"
                       borderWidth="1px"
                       width="10rem"
                       borderRadius="8px"
@@ -1347,7 +1351,7 @@ const SimpleTabsV2 = (props) => {
                     <Button
                       color="#111"
                       fontWeight="600"
-                      fontSize="0.85rem"
+                      fontSize="0.9rem"
                       borderWidth="2px"
                       width="10rem"
                       borderRadius="8px"
