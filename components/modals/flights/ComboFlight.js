@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import media from "../../media";
 import { updateFlightBooking } from "../../../services/bookings/UpdateBookings";
@@ -24,6 +24,7 @@ import {
 } from "../../../store/actions/transferBookingsStore";
 import ComboSection from "./ComboSectionOne";
 import dayjs from "dayjs";
+import axios from 'axios';
 
 // const GridContainer = styled.div`
 // min-height: 65vh;
@@ -89,6 +90,8 @@ const ContentContainer = styled.div`
     margin: auto;
   }
 `;
+
+
 
 const ComboFlight = (props) => {
   console.log("TIMEE", props?.comboStartTime);
@@ -166,12 +169,39 @@ const ComboFlight = (props) => {
   const [propsReady, setPropsReady] = useState(false);
   const [dateTimeInitialized, setDateTimeInitialized] = useState(false);
   const [paxChanged, setPaxChanged] = useState(false);
+  
+  const abortControllerRef = useRef(null);
+  const cancelTokenSourceRef = useRef(null); 
+
+  const [currentRequestId, setCurrentRequestId] = useState(0);
+
+const generateRequestId = () => {
+  const newId = currentRequestId + 1;
+  setCurrentRequestId(newId);
+  return newId;
+};
 
   console.log(
     "Source Itinerary",
     props?.source_itinerary_city_id,
     props?.destination_itinerary_city_id
   );
+
+ const cancelCurrentRequest = () => {
+  if (cancelTokenSourceRef.current) {
+    console.log("Cancelling current API request");
+    cancelTokenSourceRef.current.cancel('Request cancelled by user');
+    cancelTokenSourceRef.current = null;
+  }
+};
+
+// Cleanup on component unmount
+useEffect(() => {
+  return () => {
+    cancelCurrentRequest();
+  };
+}, []);
+
 
   useEffect(() => {
     if (props?.comboStartTime && props?.comboStartDate) {
@@ -199,7 +229,7 @@ const ComboFlight = (props) => {
         const dateTime = dayjs(input);
         if (!dateTime.isValid()) {
           console.error("Invalid date input:", input);
-          return null; // Don't fallback to current time
+          return null;
         }
 
         const minutes = dateTime.minute();
@@ -209,7 +239,7 @@ const ComboFlight = (props) => {
         return dateTime.add(addMinutes, "minute").second(0).millisecond(0);
       } catch (error) {
         console.error("Error processing date:", error);
-        return null; // Don't fallback to current time
+        return null;
       }
     }
 
@@ -297,40 +327,25 @@ const ComboFlight = (props) => {
     }
   }
 
-  // useEffect(() => {
-  //   if (paxChanged) {
-  //     console.log("Pax changed, setting timeUpdated to trigger new search");
-  //     setTimeUpdated(true);
-  //   } else {
-  //     setPaxChanged(true);
-  //   }
-  // }, [pax]);
-
 useEffect(() => {
   if (!preferredDepartureTime) return;
-
-  console.log("Flight search conditions:", {
-    showModal: props.showComboFlightModal,
-    hasToken: !!props.token,
-    preferredTime: preferredDepartureTime,
-    isDesktop: isPageWide,
-    flightsCount: flights.length,
-    timeUpdated,
-    pax,
-    isFetching
-  });
 
   const shouldFetchFlights =
     props.showComboFlightModal &&
     props.token &&
     preferredDepartureTime &&
-    !props?.skipFetch &&
-    !isFetching; 
+    !props?.skipFetch;
 
   if (shouldFetchFlights) {
-    console.log("Fetching flights with time:", preferredDepartureTime);
-    _FetchFlightsHandler();
-    setTimeUpdated(false);
+    const timeoutId = setTimeout(() => {
+      _FetchFlightsHandler();
+      setTimeUpdated(false);
+    }, 50); 
+
+   
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }
 }, [
   props.showComboFlightModal,
@@ -339,8 +354,8 @@ useEffect(() => {
   isPageWide,
   props?.skipFetch,
   pax,
+  filtersState,
 ]);
-
 
   useEffect(() => {
     console.log("F Resu", props?.flightResults, props?.selectedData);
@@ -361,137 +376,183 @@ useEffect(() => {
     }
   }, [props.flightResults, props.selectedData]);
 
-  const updatePreferredDepartureTime = (newDateTime) => {
-    setPreferredDepartureTime(newDateTime);
-    setTimeUpdated(true);
-  };
 
-  // Update the setPax function to trigger refetching
-  const handlePaxChange = (newPax) => {
-    setPax(newPax);
-    setTimeUpdated(true); // This will trigger a new search
-  };
 
-  const _FetchFlightsHandler = () => {
-    // Prevent multiple API calls
-    if (isFetching) {
-      console.log("Skip fetch - already fetching");
-      return;
-    }
+const updatePreferredDepartureTime = (newDateTime) => {
+  setPreferredDepartureTime(newDateTime);
+ 
+};
 
-    console.log("Starting flight fetch with time:", preferredDepartureTime);
-    console.log("Using pax values:", pax);
+const handlePaxChange = (newPax) => {
+  setPax(newPax);
+};
 
-    setLoading(true);
-    setIsFetching(true);
-    setFlightsCount(0);
-    setFlights([]);
-    if (props?.setFlightResults) {
-      props?.setFlightResults([]);
-    }
-    setUpdateBookingState(false);
-    setUnauthorized(false);
-    setNoResults(false);
-    setFetchingIsError({
-      error: false,
-      errorMsg: ``,
-    });
+const handleFiltersChange = (newFilters) => {
+  setFiltersState(newFilters);
 
-    if (props.token) {
-      const requestData = {
-        adult_count: pax.adults,
-        child_count: pax.children,
-        infant_count: pax.infants || 0,
-        direct_flight: filtersState.non_stop_flights ? "true" : "false",
-        journey_type: "1",
-        origin: props.source_code || props.selectedBooking.origin_iata,
-        destination:
-          props.destination_code || props.selectedBooking.destination_iata,
-        preferred_departure_time: preferredDepartureTime,
-        flight_cabin_class: classType.value,
-      };
+};
 
-      console.log("Flight search request:", requestData);
+const _FetchFlightsHandler = async () => {
+  const requestId = generateRequestId();
+  console.log(`Starting request ${requestId}`);
+  
+ 
+  if (cancelTokenSourceRef.current) {
+    console.log(`Cancelling existing request, starting new request ${requestId}`);
+    cancelTokenSourceRef.current.cancel('Operation cancelled due to new request');
+    
+    await new Promise(resolve => setTimeout(resolve, 10));
+    cancelTokenSourceRef.current = null;
+  }
+  cancelTokenSourceRef.current = axios.CancelToken.source();
+  const currentCancelTokenSource = cancelTokenSourceRef.current;
+ 
+  
+  console.log("Starting flight fetch with time:", preferredDepartureTime);
+  console.log("Using pax values:", pax);
+  console.log("Using filters:", filtersState);
 
-      // Only proceed if we have a valid date
-      axiosFlightSearch
-        .post(
-          `?${filtersState.sort_by}_order=${filtersState.order}${
-            filtersState.departure_time_period
-              ? "&departure_time_period=" + filtersState.departure_time_period
-              : ""
-          }${
-            filtersState.arrival_time_period
-              ? "&arrival_time_period=" + filtersState.arrival_time_period
-              : ""
-          }`,
-          requestData,
-          {
-            headers: {
-              Authorization: `Bearer ${props.token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        )
-        .then((res) => {
-          console.log("Flight search successful");
-          setLoading(false);
-          setMoreLoadingState(false);
-          setIsFetching(false);
+  setLoading(true);
+  setIsFetching(true);
+  setFlightsCount(0);
+  setFlights([]);
+  if (props?.setFlightResults) {
+    props?.setFlightResults([]);
+  }
+  setUpdateBookingState(false);
+  setUnauthorized(false);
+  setNoResults(false);
+  setFetchingIsError({
+    error: false,
+    errorMsg: ``,
+  });
 
-          const provider = res.data.provider;
-          setProvider(provider);
-          localStorage.setItem(`${provider}_trace_id`, res.data.trace_id);
+  if (props.token) {
+    const requestData = {
+      adult_count: pax.adults,
+      child_count: pax.children,
+      infant_count: pax.infants || 0,
+      direct_flight: filtersState.non_stop_flights ? "true" : "false",
+      journey_type: "1",
+      origin: props.source_code || props.selectedBooking.origin_iata,
+      destination:
+        props.destination_code || props.selectedBooking.destination_iata,
+      preferred_departure_time: preferredDepartureTime,
+      flight_cabin_class: classType.value,
+    };
 
-          if (res.data?.results && res.data.results.length) {
-            setFlights(res.data.results);
-            if (props?.setFlightResults)
-              props?.setFlightResults(res.data.results);
-            setFlightsCount(res.data.results.length);
-          } else {
-            setFlights([]);
-            if (props?.setFlightResults) props?.setFlightResults([]);
-            setFlightsCount(0);
-            setNoResults(true);
-          }
-        })
-        .catch((err) => {
-          console.error("Flight search error:", err);
-          setLoading(false);
-          setMoreLoadingState(false);
-          setIsFetching(false);
+    console.log("Flight search request:", requestData);
+
+    axiosFlightSearch
+      .post(
+        `?${filtersState.sort_by}_order=${filtersState.order}${
+          filtersState.departure_time_period
+            ? "&departure_time_period=" + filtersState.departure_time_period
+            : ""
+        }${
+          filtersState.arrival_time_period
+            ? "&arrival_time_period=" + filtersState.arrival_time_period
+            : ""
+        }`,
+        requestData,
+        {
+          headers: {
+            Authorization: `Bearer ${props.token}`,
+            "Content-Type": "application/json",
+          },
+          cancelToken: currentCancelTokenSource.token, 
+        }
+      )
+      .then((res) => {
+        if (currentCancelTokenSource.token.reason) {
+          console.log(`Request ${requestId} was cancelled, ignoring response`);
+          return;
+        }
+
+        console.log("Flight search successful");
+        setLoading(false);
+        setMoreLoadingState(false);
+        setIsFetching(false);
+      
+        if (cancelTokenSourceRef.current === currentCancelTokenSource) {
+          cancelTokenSourceRef.current = null;
+        }
+
+        const provider = res.data.provider;
+        setProvider(provider);
+        localStorage.setItem(`${provider}_trace_id`, res.data.trace_id);
+
+        if (res.data?.results && res.data.results.length) {
+          setFlights(res.data.results);
+          if (props?.setFlightResults)
+            props?.setFlightResults(res.data.results);
+          setFlightsCount(res.data.results.length);
+        } else {
           setFlights([]);
           if (props?.setFlightResults) props?.setFlightResults([]);
           setFlightsCount(0);
-          setFetchingIsError({
-            error: true,
-            errorMsg: `Sorry, we could not find any flights from ${
-              props.source_code || props.selectedBooking?.origin_iata
-            } to ${
-              props.destination_code || props.selectedBooking?.destination_iata
-            } for given dates at the moment. Please contact us to complete this booking`,
-          });
+          setNoResults(true);
+        }
+      })
+      .catch((err) => {
+        if (axios.isCancel(err)) {
+          console.log(`Flight search request ${requestId} was cancelled`);
+          return; 
+        }
+        
+     
+        if (currentCancelTokenSource.token.reason) {
+          console.log(`Request ${requestId} was cancelled during error handling`);
+          return;
+        }
+        
+        console.error("Flight search error:", err);
+        setLoading(false);
+        setMoreLoadingState(false);
+        setIsFetching(false);
+        
+        
+        if (cancelTokenSourceRef.current === currentCancelTokenSource) {
+          cancelTokenSourceRef.current = null;
+        }
+        
+        setFlights([]);
+        if (props?.setFlightResults) props?.setFlightResults([]);
+        setFlightsCount(0);
+        setFetchingIsError({
+          error: true,
+          errorMsg: `Sorry, we could not find any flights from ${
+            props.source_code || props.selectedBooking?.origin_iata
+          } to ${
+            props.destination_code || props.selectedBooking?.destination_iata
+          } for given dates at the moment. Please contact us to complete this booking`,
         });
-    } else {
-      console.log("Missing required data for flight search");
-      setLoading(false);
-      setMoreLoadingState(false);
-      setIsFetching(false);
-      setFlights([]);
-      if (props?.setFlightResults) props?.setFlightResults([]);
-      setFlightsCount(0);
-      setFetchingIsError({
-        error: true,
-        errorMsg: `Sorry, we could not find any flights from ${
-          props.source_code || props.selectedBooking?.origin_iata
-        } to ${
-          props.destination_code || props.selectedBooking?.destination_iata
-        } for given dates at the moment. Please contact us to complete this booking`,
       });
+  } else {
+    console.log("Missing required data for flight search");
+    setLoading(false);
+    setMoreLoadingState(false);
+    setIsFetching(false);
+    
+    if (cancelTokenSourceRef.current === currentCancelTokenSource) {
+      cancelTokenSourceRef.current = null;
     }
-  };
+    
+    setFlights([]);
+    if (props?.setFlightResults) props?.setFlightResults([]);
+    setFlightsCount(0);
+    setFetchingIsError({
+      error: true,
+      errorMsg: `Sorry, we could not find any flights from ${
+        props.source_code || props.selectedBooking?.origin_iata
+      } to ${
+        props.destination_code || props.selectedBooking?.destination_iata
+      } for given dates at the moment. Please contact us to complete this booking`,
+    });
+  }
+};
 
-   const isValidUUID = (uuid) => {
+  const isValidUUID = (uuid) => {
     const regex =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     return regex.test(uuid);
@@ -509,7 +570,6 @@ useEffect(() => {
         trace_id: localStorage.getItem(`${flightProvider}_trace_id`),
         result_index: result_index,
       });
-      // return;
     }
 
     setUpdateBookingState(true);
@@ -535,7 +595,6 @@ useEffect(() => {
       edge: props?.edge || props?.selectedBooking?.edge,
     };
 
-    //  console.log("originCityId + destinationCityId",props?.originCityId + ":" + props?.destinationCityId);
     console.log("Request Data", requestData);
 
     updateFlightBooking
@@ -635,8 +694,6 @@ useEffect(() => {
           heading: "Error!",
         });
         props.setHideFlightModal();
-
-        //   toast.error("An error occurred while updating the flight");
       });
   };
 
@@ -747,28 +804,12 @@ useEffect(() => {
       return <Skeleton />;
     }
 
-    if (noResults) {
-      return (
-        <div
-          style={{
-            textAlign: "center",
-            margin: "auto",
-            height: isPageWide ? "80vh" : "70vh",
-          }}
-          className="center-div"
-        >
-          Oops, it looks like there are no alternate flights available.
-        </div>
-      );
-    }
-
     return (
       <OptionsContainer id="options">
         <div style={{ clear: "right" }}>
           {flights.map((flight, index) => (
             <Flight
               key={index}
-              // edge={props?.edge}
               itinerary_id={props.itinerary_id}
               data={flight}
               pax={pax}
@@ -833,6 +874,7 @@ useEffect(() => {
           mercuryTransfer={props?.mercuryTransfer}
           preferred_departure_time={`${preferredDepartureTime}`}
           updatePreferredDepartureTime={updatePreferredDepartureTime}
+          handleFiltersChange={handleFiltersChange}
         />
 
         <GridContainer style={{ clear: "right" }}>

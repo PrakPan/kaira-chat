@@ -15,6 +15,7 @@ const ComboSection = (props) => {
     flightCount,
     preferred_departure_time,
     updatePreferredDepartureTime,
+    handleFiltersChange
   } = props;
 
   const [showPax, setShowPax] = useState(false);
@@ -27,6 +28,7 @@ const ComboSection = (props) => {
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false); // Add this flag
+  const [debounceTimer, setDebounceTimer] = useState(null);
 
   useEffect(() => {
     if (preferred_departure_time) {
@@ -81,16 +83,20 @@ const ComboSection = (props) => {
       ...filtersState,
       non_stop_flights: !filtersState.non_stop_flights,
     };
-    setFiltersState(newFiltersState);
+    
+
+    if (props.handleFiltersChange) {
+      props.handleFiltersChange(newFiltersState);
+    } else {
+      setFiltersState(newFiltersState);
+    }
 
     setTimeout(() => {
-      _FetchFlightsHandler();
       setIsLoading(false);
     }, 100);
   };
-
-  // Modified useEffect - only sync UI on initial load, not on every preferred_departure_time change
-  useEffect(() => {
+ 
+    useEffect(() => {
     if (preferred_departure_time && !isInitialized) {
       const time = dayjs(preferred_departure_time);
       console.log("Initial sync with preferred time:", time.format("YYYY-MM-DDTHH:mm:ss"));
@@ -101,85 +107,103 @@ const ComboSection = (props) => {
   }, [preferred_departure_time, isInitialized]);
 
   const handleDateSelection = (dateOption) => {
-    setIsLoading(true);
-    setSelectedDate(dateOption.display);
-    setShowDateDropdown(false);
+  setIsLoading(true);
+  setSelectedDate(dateOption.display);
+  setShowDateDropdown(false);
 
-    const currentTimeFromPreferred = dayjs(preferred_departure_time);
-    const currentTimeString = currentTimeFromPreferred.format("HH:mm:ss");
 
-    const newDateTime = dayjs(`${dateOption.value}T${currentTimeString}`);
+  if (debounceTimer) {
+    clearTimeout(debounceTimer);
+  }
 
-    console.log("Date selection:", {
-      selectedDate: dateOption.value,
-      currentTime: currentTimeString,
-      newDateTime: newDateTime.format("YYYY-MM-DDTHH:mm:ss"),
-      oldDateTime: preferred_departure_time
-    });
+  const currentTimeFromPreferred = dayjs(preferred_departure_time);
+  const currentTimeString = currentTimeFromPreferred.format("HH:mm:ss");
+  const newDateTime = dayjs(`${dateOption.value}T${currentTimeString}`);
 
-    const newFiltersState = {
-      ...filtersState,
-      departure_time_period: null,
-    };
-    setFiltersState(newFiltersState);
+  console.log("Date selection:", {
+    selectedDate: dateOption.value,
+    currentTime: currentTimeString,
+    newDateTime: newDateTime.format("YYYY-MM-DDTHH:mm:ss"),
+    oldDateTime: preferred_departure_time
+  });
 
+
+  const timer = setTimeout(() => {
     if (updatePreferredDepartureTime) {
       updatePreferredDepartureTime(newDateTime.format("YYYY-MM-DDTHH:mm:ss"));
     }
+    setIsLoading(false);
+  }, 300); 
 
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 100);
-  };
+  setDebounceTimer(timer);
+};
 
-  const handleTimeSelection = (slot) => {
-    setIsLoading(true);
-    setSelectedTime(slot.display);
 
-    let currentDate;
-    if (selectedDate) {
-      currentDate = dayjs(selectedDate, "DD MMM, YYYY").format("YYYY-MM-DD");
-    } else {
-      currentDate = dayjs(preferred_departure_time).format("YYYY-MM-DD");
-    }
+const handleTimeSelection = (slot) => {
+  setIsLoading(true);
+  setSelectedTime(slot.display);
+  setShowTimeDropdown(false);
 
-    const [hours, minutes] = slot.value.split(":");
-    const newDateTime = dayjs(`${currentDate}T${hours}:${minutes}:00`);
+  if (debounceTimer) {
+    clearTimeout(debounceTimer);
+  }
 
-    console.log("Time selection:", {
-      selectedTime: slot.display,
-      selectedDate: selectedDate,
-      currentDate: currentDate,
-      newDateTime: newDateTime.format("YYYY-MM-DDTHH:mm:ss"),
-      oldDateTime: preferred_departure_time
-    });
+  let currentDate;
+  if (selectedDate) {
+    currentDate = dayjs(selectedDate, "DD MMM, YYYY").format("YYYY-MM-DD");
+  } else {
+    currentDate = dayjs(preferred_departure_time).format("YYYY-MM-DD");
+  }
 
-    const newFiltersState = {
-      ...filtersState,
-      departure_time_period: null,
-    };
-    setFiltersState(newFiltersState);
-    setShowTimeDropdown(false);
+  const [hours, minutes] = slot.value.split(":");
+  const newDateTime = dayjs(`${currentDate}T${hours}:${minutes}:00`);
 
+  console.log("Time selection:", {
+    selectedTime: slot.display,
+    selectedDate: selectedDate,
+    currentDate: currentDate,
+    newDateTime: newDateTime.format("YYYY-MM-DDTHH:mm:ss"),
+    oldDateTime: preferred_departure_time
+  });
+
+  // Debounce the API call
+  const timer = setTimeout(() => {
     if (updatePreferredDepartureTime) {
       updatePreferredDepartureTime(newDateTime.format("YYYY-MM-DDTHH:mm:ss"));
     }
+    setIsLoading(false);
+  }, 300); 
 
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 100);
+  setDebounceTimer(timer);
+};
+
+
+useEffect(() => {
+  return () => {
+    if (debounceTimer) {
+      clearTimeout(debounceTimer);
+    }
   };
+}, [debounceTimer]);
+
 
   const handleSortChange = (sortOption) => {
     setIsLoading(true);
-    setFiltersState({
+    const newFiltersState = {
       ...filtersState,
       sort_by: sortOption.sort_by,
       order: sortOption.order,
-    });
+    };
+    
+    // Use parent's handler
+    if (props.handleFiltersChange) {
+      props.handleFiltersChange(newFiltersState);
+    } else {
+      setFiltersState(newFiltersState);
+    }
     setShowSortDropdown(false);
+    
     setTimeout(() => {
-      _FetchFlightsHandler();
       setIsLoading(false);
     }, 100);
   };
