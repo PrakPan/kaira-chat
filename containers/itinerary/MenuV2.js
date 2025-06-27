@@ -341,7 +341,7 @@ const SimpleTabsV2 = (props) => {
 
          
         <div className="w-full z-[20] sticky flex flex-row top-[2px] justify-end -mt-[55px] ">
-          <div className="z-[99] absolute  md:-top-[20px] top-[0px] w-[20rem]">
+          <div className="z-[99] absolute  md:top-[0px] top-[0px] w-[20rem]">
             {props?.displayText ? <ItineraryStatusLoader 
                 displayText={props?.displayText}
                 isVisible={props?.shouldShowLoader()}
