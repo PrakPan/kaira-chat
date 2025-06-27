@@ -212,9 +212,13 @@ async function fetchTripDataById(id) {
 async function fetchAllSlugsWithIds() {
   const response = await axiosIndexedItinerary.get("");
   const trips = response.data.map((trip) => {
-    let group_type = trip?.group_type
-      ? trip.group_type.replaceAll(" ", "_").toLowerCase()
-      : "group";
+   
+    let group_type = "family"; 
+    
+    if (trip?.group_type) {
+      group_type = trip.group_type.replaceAll(" ", "_").toLowerCase();
+    }
+    
     return {
       group_type: group_type,
       slug: trip.slug,
