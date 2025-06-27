@@ -317,11 +317,8 @@ const Enquiry = (props) => {
             countryIds.push(selectedCities[i].id);
           else if (selectedCities[i].type == "Continent")
             continentIds.push(selectedCities[i].id);
-          else if(selectedCities[i].type == "City" || selectedCities[i].type == "Location"){
-            cityids.push(selectedCities[i].id);
-          }
           else {
-            continentIds.push(selectedCities[i].id);
+            cityids.push(selectedCities[i].id);
           }
           locations.push(selectedCities[i].name);
         }
@@ -396,12 +393,10 @@ let dist=divideTravellers()
     if (props.tailoredFormModal && focusedDate) {
       if (focusedDate == "startDate") return "Please select start date.";
       if (focusedDate == "endDate") return "Please select end date.";
-    } else return "Get Your Free Travel Plan Now!";
+    } else return "Get your free travel plan now";
   };
 
   const [selectedCities, setSelectedCities] = useState(selectedObj);
-
-  console.log("SSSS",selectedCities,routerquery);
 
   useEffect(() => {
     setShowPopup(popupObj);

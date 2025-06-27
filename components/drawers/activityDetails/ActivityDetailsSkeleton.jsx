@@ -116,11 +116,4 @@ const ActivityDetailsSkeleton = (props) => {
   );
 };
 
-<<<<<<< HEAD
 export default ActivityDetailsSkeleton;
-
-
-
-=======
-export default ActivityDetailsSkeleton;
->>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
