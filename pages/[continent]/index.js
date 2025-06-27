@@ -150,6 +150,7 @@ export async function getStaticProps(context) {
         (d) => d.is_hot_location
       );
       hot_data = hot_data.slice(0, 6);
+      console.log("hot_data is:",hot_data)
       continetCarousel.push({
         ...contientTheme[i],
         hot_destinations: hot_data,
