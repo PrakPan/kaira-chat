@@ -60,9 +60,10 @@ const Experiences = (props) => {
                 ? props.experiences[i].duration
                 : props.experiences[i].duration_number &&
                   props.experiences[i].duration_unit
-                ? props.experiences[i].duration_number +
-                  " " +
-                  props.experiences[i].duration_unit
+                ? props.experiences[i].duration_number
+                //  +
+                //   " " +
+                //   props.experiences[i].duration_unit
                 : null
             }
             location={props.experiences[i].locations[0].name}
