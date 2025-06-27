@@ -127,7 +127,7 @@ const Profile = (props) => {
     formData.append("profile_pic", file);
 
     userImageUploadInstance
-      .patch("", formData, {
+      .put("", formData, {
         headers: {
           Authorization: `Bearer ${props.token}`,
           "Content-Type": "multipart/form-data",
