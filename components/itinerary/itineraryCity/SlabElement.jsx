@@ -326,7 +326,7 @@ const Activity = (props) => {
         date={props?.date}
         cityID={props?.cityID}
         cityName={props?.cityName}
-        removeDelete={true}
+        removeDelete={false}
       />
     </>
   );

@@ -474,7 +474,7 @@ const CitySummary = (props) => {
             itinerary_city_id={props.city.id}
             cityID={props.city.city.id}
             cityName={props.city.city.name}
-            removeDelete={true}
+            removeDelete={false}
           />
         </>
       ) : null}

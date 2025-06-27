@@ -120,7 +120,6 @@ const ScrollContainer = styled.div`
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
 const ActivityDetails = (props) => {
-  console.log("activity data:", props?.removeDelete);
 
   let isPageWide = useMediaQuery("(min-width: 768px)");
 
