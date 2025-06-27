@@ -82,7 +82,7 @@ const FullImgContent = (props) => {
       params: {
         page: props.page ? props.page : "",
         event_category: "Button Click",
-        event_label: "Plan Itinerary For Free!", 
+        event_label: "Plan Itinerary For Free!",
         event_action: "Banner",
       },
     });
@@ -95,7 +95,7 @@ const FullImgContent = (props) => {
           <H1
             style={{
               color: "#F7E700",
-              fontSize: !isPageWide ? "25px" : null,
+              fontSize: !isPageWide ? "25px" : "36px",
               fontWeight: !isPageWide && "600",
             }}
             className="text-start ml-3"
@@ -114,7 +114,7 @@ const FullImgContent = (props) => {
               {props.subheading}
             </H7>
           ) : isPageWide ? (
-            props.slug !== "honeymoon-2025" && (
+            props.slug !== "icc-champions-trophy-2025" && (
               <H7
                 style={{
                   lineHeight: isPageWide ? "35px" : "20px",
@@ -127,13 +127,11 @@ const FullImgContent = (props) => {
               </H7>
             )
           ) : (
-            props.slug !== "honeymoon-2025" && (
+            props.slug !== "icc-champions-trophy-2025" && (
               <H7
                 style={{
                   lineHeight: isPageWide ? "35px" : "20px",
                   fontSize: isPageWide ? "25px" : "20px",
-                  textAlign: "left",
-                  marginLeft: "10px"
                 }}
               >
                 Say goodbye to packages.
@@ -155,8 +153,8 @@ const FullImgContent = (props) => {
           onclick={handlePlanButton}
           margin="3vh 0 1vh 1rem"
         >
-          {props.slug === "honeymoon-2025"
-            ? "Plan Your Honeymoon!"
+          {props.slug === "icc-champions-trophy-2025"
+            ? "Book Now!"
             : "Plan Your Trip Now!"}
         </Button>
       </PaddingContianer>

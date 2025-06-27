@@ -35,7 +35,6 @@
     "btoa": "^1.2.1",
     "buffer": "^6.0.3",
     "caniuse-lite": "^1.0.30001608",
-    "cross-env": "^7.0.3",
     "date-fns": "^2.26.0",
     "dayjs": "^1.11.5",
     "eslint-config-next": "^13.4.0",
@@ -87,6 +86,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.14",
+    "cross-env": "^7.0.3",
     "eslint": "^8.39.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jsx-a11y": "^6.7.1",

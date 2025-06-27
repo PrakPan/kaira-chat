@@ -224,6 +224,7 @@ const Enquiry = (props) => {
         type: "Page",
       },
     ];
+<<<<<<< HEAD
   } else if (
     (routerquery.state && !routerquery.city) ||
     props?.type == "State"
@@ -249,6 +250,9 @@ const Enquiry = (props) => {
     ];
   } else if (routerquery.country || props?.type == "Country") {
     console.log("PROPS2", props);
+=======
+  } else if (routerquery.country && !routerquery.city) {
+>>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
     selectedObj = [
       {
         id: routerquery.page_id || props.page_id,
@@ -257,8 +261,22 @@ const Enquiry = (props) => {
         type: "Country",
       },
     ];
+<<<<<<< HEAD
   } else {
     console.log("PROPS4", props);
+=======
+  }else if(routerquery.city){
+      selectedObj = [
+      {
+        id: routerquery.page_id || props.page_id,
+        name: routerquery.destination || props.destination,
+        input_id: initialInputId,
+        type: "City",
+      },
+    ];
+  }
+   else {
+>>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
     selectedObj = [
       {
         id: routerquery.page_id || props.page_id,
@@ -317,8 +335,11 @@ const Enquiry = (props) => {
             countryIds.push(selectedCities[i].id);
           else if (selectedCities[i].type == "Continent")
             continentIds.push(selectedCities[i].id);
-          else {
+          else if(selectedCities[i].type == "City" || selectedCities[i].type == "Location"){
             cityids.push(selectedCities[i].id);
+          }
+          else {
+            continentIds.push(selectedCities[i].id);
           }
           locations.push(selectedCities[i].name);
         }
@@ -393,10 +414,12 @@ let dist=divideTravellers()
     if (props.tailoredFormModal && focusedDate) {
       if (focusedDate == "startDate") return "Please select start date.";
       if (focusedDate == "endDate") return "Please select end date.";
-    } else return "Get your free travel plan now";
+    } else return "Get Your Free Travel Plan Now!";
   };
 
   const [selectedCities, setSelectedCities] = useState(selectedObj);
+
+  console.log("SSSS",selectedCities,routerquery);
 
   useEffect(() => {
     setShowPopup(popupObj);

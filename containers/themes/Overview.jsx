@@ -41,7 +41,7 @@ export default function Overview(props) {
 
   return (
     <div className="relative mt-5 py-5 mx-3 flex flex-col gap-4 md:flex-row md:items-center">
-      {props.slug === "honeymoon-2025" && (
+      {(props.slug === "honeymoon-2025" || props.slug === "perfect-proposals-2025") && (
         <div className="-z-10 absolute -top-[3rem] md:-top-[5rem] -right-3 overflow-hidden">
           <Image
             src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/tilted-heart.png`}
@@ -54,9 +54,21 @@ export default function Overview(props) {
         </div>
       )}
 
+{props.slug === "icc-champions-trophy-2025" && (
+        <div className="-z-10 absolute -top-[3rem] md:-top-[2rem] -left-10 overflow-hidden">
+          <Image
+            src={`https://d31aoa0ehgvjdi.cloudfront.net/media/event/image 19.png`}
+            className="object-fill"
+            alt="Tilted Hearts"
+            height={200}
+            width={200}
+          />
+        </div>
+      )}
+
       <div className="flex flex-col md:flex-row gap-6 justify-between w-full">
         <div className=" md:pt-0  flex flex-col gap-3">
-          <PrimaryHeading className="">{props.heading}</PrimaryHeading>
+          <PrimaryHeading className={`${props?.slug === "icc-champions-trophy-2025" ? "mt-5" : ""}`}>{props.heading}</PrimaryHeading>
           <div className="flex flex-col gap-3 justify-start">
             <SecondaryHeading className="">{props.text}</SecondaryHeading>
 
@@ -73,8 +85,8 @@ export default function Overview(props) {
                 margin="3vh 0 1vh 0"
               >
                 {props.slug === "honeymoon-2025"
-                  ? "Plan Your Honeymoon!"
-                  : "Plan Your Trip Now!"}
+                  ? "Plan Your Honeymoon!" 
+                  : props.slug === "icc-champions-trophy-2025" ?  "Book Now!": "Plan Your Trip Now!"}
               </Button>
             </div>
 

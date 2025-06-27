@@ -4,10 +4,10 @@ import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import ImageLoader from "../../components/ImageLoader";
 import SwiperCarousel from "../../components/SwiperCarousel.js";
 import media from "../../components/media";
-import POIDetailsDrawer from "../../components/drawers/poiDetails/POIDetailsDrawer";
 import { logEvent } from "../../services/ga/Index";
 import { PlanYourTripButton } from "../../containers/travelplanner/ThemePage.jsx";
-import SecondaryHeading from "../heading/Secondary.jsx";
+import TertiaryHeading from "../heading/Tertiary.jsx";
+import NewPOIDetailsDrawer from "../drawers/poiDetails/NewPOIDetailsDrawer.js";
 
 const Container = styled.div`
   width: 100%;
@@ -20,7 +20,7 @@ export default function Activity1Carousel(props) {
   return (
     <SwiperCarousel
       cards={props.activities.map((activity, index) => (
-        <ActivityCard key={index} data={activity} {...activity} />
+        <ActivityCard key={index} scale={props.scale} data={activity} {...activity} />
       ))}
       slidesPerView={isPageWide ? 4 : 1}
       // spaceBetween={25}
@@ -31,7 +31,8 @@ export default function Activity1Carousel(props) {
   );
 }
 
-const ActivityCard = ({ data, id, image, name, short_description }) => {
+const ActivityCard = ({ data, scale, id, image, name, short_description }) => {
+  
   let isPageWide = media("(min-width: 768px)");
   const [show, setShow] = useState(false);
   const [hover, setHover] = useState(false);
@@ -69,13 +70,15 @@ const ActivityCard = ({ data, id, image, name, short_description }) => {
       className="group cursor-pointer py-2"
     >
       <div className="flex flex-col h-full gap-3">
-        <div className="relative group h-full overflow-hidden group-hover:scale-105 transition-all">
+      <div className="relative group h-full overflow-hidden rounded-lg">
+      <div className={`w-full h-full ${scale ? "hover:scale-110" : "group-hover:scale-105"} transition-all`}>
           <ImageLoader
             url={image}
             width={isPageWide ? "282px" : "350px"}
             height={isPageWide ? "282px" : "350px"}
             borderRadius="10px"
           />
+      </div>
 
           {data.rating ? (
             <div
@@ -97,14 +100,19 @@ const ActivityCard = ({ data, id, image, name, short_description }) => {
 
         <div className="">
           <h3 className="text-[16px] leading-[28px] font-[700]">{name}</h3>
-          <SecondaryHeading className="line-clamp-3">
+          <TertiaryHeading className="line-clamp-3">
             {short_description}
-          </SecondaryHeading>
+          </TertiaryHeading>
         </div>
       </div>
 
+<<<<<<< HEAD
       <POIDetailsDrawer
         // themePage
+=======
+      <NewPOIDetailsDrawer
+        themePage
+>>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
         show={show}
         ActivityiconId={id}
         handleCloseDrawer={handleCloseDrawer}
@@ -113,7 +121,7 @@ const ActivityCard = ({ data, id, image, name, short_description }) => {
         removeDelete={true}
       >
         <PlanYourTripButton />
-      </POIDetailsDrawer>
+      </NewPOIDetailsDrawer>
     </Container>
   );
 };

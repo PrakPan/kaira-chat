@@ -80,7 +80,7 @@ export default function Destination1Carousel(props) {
         <div style={{ padding: "1rem 0" }}>
           {MobilecardsToShowJSX.length ? (
             <SwiperCarousel
-              navigationButtons={true}
+              navigationButtons={true} 
               slidesPerView={1}
               cards={MobilecardsToShowJSX}
               pageDots

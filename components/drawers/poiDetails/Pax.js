@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaMinus, FaPlus } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
+<<<<<<< HEAD
 import ButtonYellow from "../../ButtonYellow";
 import Button from "../../ui/button/Index";
 
@@ -11,23 +12,41 @@ export const Pax = ({ pax, setPax }) => {
   const [showPaxDesktop, setShowPaxDesktop] = useState(false);
   const [showPaxMobile, setShowPaxMobile] = useState(false);
 
+=======
+import Button from "../../ui/button/Index";
+
+export const Pax = ({ pax, setPax }) => {
+  const ref = useRef(null);
+
+  const [showPax, setShowPax] = useState(false);
+>>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
   const [adults, setAdults] = useState(pax.adults || 1);
   const [children, setChildren] = useState(pax.children || 0);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
+<<<<<<< HEAD
       if (refDesktop.current && !refDesktop.current.contains(event.target)) {
         setShowPaxDesktop(false);
       }
     };
 
     if (showPaxDesktop) {
+=======
+      if (ref.current && !ref.current.contains(event.target)) {
+        setShowPax(false);
+      }
+    };
+
+    if (showPax) {
+>>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
       document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
+<<<<<<< HEAD
   }, [showPaxDesktop]);
 
   useEffect(() => {
@@ -45,6 +64,9 @@ export const Pax = ({ pax, setPax }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showPaxMobile]);
+=======
+  }, [showPax]);
+>>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
 
   const handleMinus = (type) => {
     if (type === "adult" && adults > 1) setAdults((prev) => prev - 1);
@@ -58,6 +80,7 @@ export const Pax = ({ pax, setPax }) => {
 
   const handleDone = () => {
     setPax({ adults, children });
+<<<<<<< HEAD
     setShowPaxDesktop(false);
     setShowPaxMobile(false);
   };
@@ -79,6 +102,20 @@ export const Pax = ({ pax, setPax }) => {
         <div className="text-[14px] font-medium">Travellers Details</div>
         <div className="text-[14px] font-medium">&nbsp;|&nbsp;</div>
         <div className="flex">
+=======
+    setShowPax(false);
+  };
+
+  return (
+    <div className="relative w-fit h-fit flex flex-row items-center gap-2 rounded-lg cursor-pointer z-[10]">
+      <div
+        onClick={() => setShowPax((prev) => !prev)}
+        className="flex items-center bg-[#F5F5F5] px-[16px] py-[8px] rounded-[4px]"
+      >
+        <div className="text-[10px] md:text-[14px] font-medium">Travellers Details</div>
+        <div className="text-[10px] md:text-[14px] font-medium">&nbsp;|&nbsp;</div>
+        <div className="flex items-center gap-1">
+>>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
           <div className="text-[10px] font-medium">
             {adults} Adults and {children} Children
           </div>
@@ -86,29 +123,59 @@ export const Pax = ({ pax, setPax }) => {
         </div>
       </div>
 
+<<<<<<< HEAD
       {showPaxDesktop && (
         <div
           ref={refDesktop}
           className="absolute top-full left-2 right-2 md:right-5 md:left-auto bg-white shadow-2xl drop-shadow-3xl p-3 rounded-lg space-y-5 text-sm w-[241px] max-[583px]:hidden"
         >
+=======
+      {showPax && (
+        <div
+          ref={ref}
+          className="absolute top-full left-2 right-2 md:right-5 md:left-auto bg-white shadow-2xl drop-shadow-3xl p-3 rounded-lg space-y-5 text-sm w-[241px]"
+        >
+          {/* Adults */}
+>>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
           <div className="flex justify-between gap-1 w-full">
             <div>
               <div className="text-[14px] font-medium">Adults</div>
               <div className="text-[10px]">12+ Years</div>
             </div>
             <div className="flex items-center gap-2 border-2 border-[#E4E4E4] rounded-full px-[10px] py-[5px]">
+<<<<<<< HEAD
               <FaMinus onClick={() => handleMinus("adult")} size={9.33} className="cursor-pointer" color="#0000EE" />
               <div className="text-[12px]">{adults}</div>
               <FaPlus onClick={() => handlePlus("adult")} size={9.33} className="cursor-pointer" color="#0000EE" />
             </div>
           </div>
 
+=======
+              <FaMinus
+                onClick={() => handleMinus("adult")}
+                size={9.33}
+                className="cursor-pointer"
+                color="#0000EE"
+              />
+              <div className="text-[12px]">{adults}</div>
+              <FaPlus
+                onClick={() => handlePlus("adult")}
+                size={9.33}
+                className="cursor-pointer"
+                color="#0000EE"
+              />
+            </div>
+          </div>
+
+          {/* Children */}
+>>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
           <div className="flex justify-between gap-1">
             <div>
               <div className="text-[14px] font-medium">Children</div>
               <div className="text-[10px]">0-12 Years</div>
             </div>
             <div className="flex items-center gap-2 border-2 border-[#E4E4E4] rounded-full px-[10px] py-[5px]">
+<<<<<<< HEAD
               <FaMinus onClick={() => handleMinus("children")} size={9.33} className="cursor-pointer" color="#0000EE" />
               <div className="text-[12px]">{children}</div>
               <FaPlus onClick={() => handlePlus("children")} size={9.33} className="cursor-pointer" color="#0000EE" />
@@ -174,6 +241,39 @@ export const Pax = ({ pax, setPax }) => {
             >
               Submit
             </button>
+=======
+              <FaMinus
+                onClick={() => handleMinus("children")}
+                size={9.33}
+                className="cursor-pointer"
+                color="#0000EE"
+              />
+              <div className="text-[12px]">{children}</div>
+              <FaPlus
+                onClick={() => handlePlus("children")}
+                size={9.33}
+                className="cursor-pointer"
+                color="#0000EE"
+              />
+            </div>
+          </div>
+
+          {/* Apply Button */}
+          <div className="mt-4 flex justify-end">
+            <Button
+              fontSize="1rem"
+              width={"auto"}
+              padding="0.5rem 2rem"
+              fontWeight="500"
+              margin="0"
+              borderRadius="5px"
+              borderWidth="1px"
+              bgColor="#f7e700"
+              onclick={handleDone}
+            >
+              Apply
+            </Button>
+>>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
           </div>
         </div>
       )}

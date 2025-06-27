@@ -2,20 +2,16 @@ import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { IoMenu } from "react-icons/io5";
 import media from "../media";
-import openTailoredModal from "../../services/openTailoredModal";
-import TailoredFormMobileModal from "../modals/TailoredFomrMobile";
-import Destination1Carousel from "./Destination1Carousel";
-import Itinerary2Carousel from "./Itinerary2Carousel";
-import Activity1Carousel from "./Activity1Carousel";
-import Reviews1Carousel from "./Reviews1Carousel";
 import PrimaryHeading from "../heading/PrimaryHeading";
-<<<<<<< HEAD
-import Poi1Carousel from "./Poi1Carousel";
-=======
-import Poi from "../../containers/newcityplanner/pois/Index";
->>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
+import TailoredFormMobileModal from "../modals/TailoredFomrMobile";
+import Destination1Carousel from "../theme/Destination1Carousel";
+import Itinerary2Carousel from "../theme/Itinerary2Carousel";
+import Reviews1Carousel from "../theme/Reviews1Carousel";
+import Activity1Carousel from "../theme/Activity1Carousel";
+import openTailoredModal from "../../services/openTailoredModal";
 
-export default function Navigation({ components, slug }) {
+
+export default function Navigation({ components }) {
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
@@ -52,7 +48,6 @@ export default function Navigation({ components, slug }) {
             navItems={navItems}
             activeTab={activeIndex}
             setActiveTab={setActiveIndex}
-            slug={slug}
           />
 
           <ComponentDisplay
@@ -76,7 +71,7 @@ export default function Navigation({ components, slug }) {
   );
 }
 
-const NavigationMenu = ({ navItems, activeTab, setActiveTab, slug }) => {
+const NavigationMenu = ({ navItems, activeTab, setActiveTab }) => {
   let isPageWide = media("(min-width: 768px)");
   const tabsRef = useRef(null);
   const [showTabs, setShowTabs] = useState(false);
@@ -113,7 +108,7 @@ const NavigationMenu = ({ navItems, activeTab, setActiveTab, slug }) => {
               onClick={() => handleClick(index)}
               className={`text-nowrap cursor-pointer border-1 rounded-full px-3 md:px-5 py-2 md:py-3 font-semibold text-[15px] text-[#7C7C7C] ${
                 activeTab == index ? "border-black bg-[#F7E700] text-black" : ""
-              }  ${slug === "perfect-proposals-2025" ? "mx-auto" : ""}`}
+              }`}
             >
               {tab.heading}
             </div>
@@ -121,19 +116,9 @@ const NavigationMenu = ({ navItems, activeTab, setActiveTab, slug }) => {
         </div>
       )}
 
-      <div
-        className={`flex gap-3 flex-row items-center ${
-          slug === "perfect-proposals-2025" ? "" : "justify-between"
-        } overflow-auto hide-scrollbar`}
-      >
+      <div className="flex gap-3 flex-row items-center justify-between overflow-auto hide-scrollbar">
         {isPageWide ? (
-          <div
-            className={` flex flex-row items-center ${
-              slug === "perfect-proposals-2025"
-                ? "gap-1 w-[60vw] mx-auto"
-                : "gap-3 w-full"
-            }  overflow-x-auto hide-scrollbar`}
-          >
+          <div className="w-full flex flex-row items-center justify-center gap-3 overflow-x-auto hide-scrollbar">
             {navItems.map((tab, index) => (
               <div
                 key={tab.heading}
@@ -142,7 +127,7 @@ const NavigationMenu = ({ navItems, activeTab, setActiveTab, slug }) => {
                   activeTab == index
                     ? "border-black bg-[#F7E700] text-black"
                     : ""
-                } ${slug === "perfect-proposals-2025" ? "mx-auto" : ""} `}
+                }`}
               >
                 {tab.heading}
               </div>
@@ -200,19 +185,6 @@ const ComponentDisplay = ({ component, handlePlanButton, setDestination }) => (
       <Activity1Carousel activities={component.activities} />
     ) : component.carousel === "review-1" ? (
       <Reviews1Carousel reviews={component.reviews} />
-<<<<<<< HEAD
-    ) : component.carousel === "poi-1" ? (
-      <Poi1Carousel activities={component.pois} />
-=======
-    ) : component.carousel === "destination-5" ? (
-      <Poi
-        elevation={component?.elevation}
-        data={component?.data}
-        thingsToDoPage={component?.thingsToDoPage}
-        pois={component?.pois}
-        city={component?.name}
-      />
->>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
     ) : null}
   </div>
 );

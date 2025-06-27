@@ -249,10 +249,13 @@ const LogIn = React.memo((props) => {
   const otpHandler = (token) => {
     const phoneNumber = phone.trim();
     if (phoneNumber.length <= 10) {
-      setPhone(props.CountryCodes[extension].label + phoneNumber);
+      const mobile = props.CountryCodes
+        ? props.CountryCodes[extension].label + phoneNumber
+        : `+91${phoneNumber}`;
+      setPhone(mobile);
       const data = {
         token: token,
-        mobile: props.CountryCodes[extension].label + phoneNumber,
+        mobile: mobile,
         whatsapp: whatsapp,
       };
       props.onOtp(data);
@@ -316,7 +319,6 @@ const LogIn = React.memo((props) => {
   mobileInput = (
     <div>
       <FloatingInput
-        placeholder="Mobile Number"
         required
         error={props.mobileFail ? true : false}
         helperText={props.mobileFail ? props.mobilefailmessage : null}
@@ -499,7 +501,7 @@ const LogIn = React.memo((props) => {
 
           <WhatsappCheckBox onClick={() => setWhatsapp(!whatsapp)}>
             {whatsapp ? <ImCheckboxChecked /> : <ImCheckboxUnchecked />}
-            Receive OTP on WhatsApp
+            Get Booking Updates on WhatsApp
             <IoLogoWhatsapp className="text-lg text-[#4DA750]" />
           </WhatsappCheckBox>
 

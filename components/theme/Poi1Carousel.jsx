@@ -15,6 +15,10 @@ const Container = styled.div`
 `;
 
 export default function Poi1Carousel(props) {
+<<<<<<< HEAD
+=======
+  console.log("pois are:", props);
+>>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
   let isPageWide = media("(min-width: 768px)");
 
   return (
@@ -35,10 +39,17 @@ const PoiCard = ({ data, id, image, name, short_description }) => {
   let isPageWide = media("(min-width: 768px)");
   const [show, setShow] = useState(false);
   const [hover, setHover] = useState(false);
+<<<<<<< HEAD
   const activityData={
     type:"poi",
     id:id
   }
+=======
+  const activityData = {
+    type: "poi",
+    id: id,
+  };
+>>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
 
   const handleCloseDrawer = (e) => {
     if (e) e.stopPropagation(e);
@@ -73,6 +84,7 @@ const PoiCard = ({ data, id, image, name, short_description }) => {
       className="group cursor-pointer py-2"
     >
       <PoiCard
+<<<<<<< HEAD
                 key={id}
                 data={data}
                 showDrawer={show}
@@ -81,6 +93,16 @@ const PoiCard = ({ data, id, image, name, short_description }) => {
                 handleCloseDrawer={handleCloseDrawer}
                 removeDelete={true}
               />
+=======
+        key={id}
+        data={data}
+        showDrawer={show}
+        setShowDrawer={setShow}
+        _handleOpen={() => setShow(true)}
+        handleCloseDrawer={handleCloseDrawer}
+        removeDelete={true}
+      />
+>>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
       {/* <div className="flex flex-col h-full gap-3">
         <div className="relative group h-full overflow-hidden group-hover:scale-105 transition-all">
           <ImageLoader
