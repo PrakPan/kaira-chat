@@ -3159,12 +3159,16 @@ const NewMultiModeContainer = ({
                       <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 w-full md:w-auto">
                         <button
                           onClick={handleUpdateTransfer}
-                          className={`px-6 md:px-8 py-2 rounded-md font-medium text-sm md:text-base w-full md:w-auto relative
-  ${
-    Object.keys(selectedModeIds).length === totalSteps
-      ? "bg-[#f8e000] text-black"
-      : "bg-yellow-100 text-black-500 cursor-not-allowed"
-  }`}
+                          className={`px-6 md:px-8 py-2 rounded-md font-medium text-sm md:text-base w-full md:w-auto relative bg-[#f8e000] text-black ${
+                            (Object.keys(selectedModeIds).length !==
+                              totalSteps || updateLoading) ? "cursor-not-allowed" : "cursor-pointer"
+                          }`}
+  // ${
+  //   Object.keys(selectedModeIds).length === totalSteps
+  //     ?
+  //      "bg-[#f8e000] text-black"
+  //     : "bg-yellow-100 text-black-500 cursor-not-allowed"
+  // }`}
                           disabled={
                             Object.keys(selectedModeIds).length !==
                               totalSteps || updateLoading

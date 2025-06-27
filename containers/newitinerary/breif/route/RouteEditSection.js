@@ -2290,6 +2290,8 @@ export const DatePicker = (props) => {
   bottom: auto !important;
 }
 
+
+
 .DayPicker_weekHeader {
       margin-top: 1rem !important;
     }
@@ -2374,6 +2376,20 @@ body.react-dates__block-scroll {
             </div>
           );
         }}
+
+        renderDayContents={(day) => {
+  const isHighlighted = isDayHighlighted(day);
+  return (
+    <div
+      className={`w-full h-full flex items-center justify-center border-none ${
+        isHighlighted ? "bg-yellow-50" : ""
+      }`}
+    >
+      {day.date()}
+    </div>
+  );
+}}
+
       />
       <CalenderIcons className="p-2 py-3">
         <Icon>
