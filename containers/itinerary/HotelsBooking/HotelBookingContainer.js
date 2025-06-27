@@ -391,7 +391,7 @@ const HotelBookingContainer = ({
                   )}
                 </div>
 
-                <div
+                {/* <div
                   className={`flex flex-row gap-2 items-end justify-end w-full ${
                     payment?.paid_user || !payment?.user_allowed_to_pay
                       ? "lh:mb-0 mb-2"
@@ -428,7 +428,7 @@ const HotelBookingContainer = ({
                       </Button>
                     </div>
                   )}
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

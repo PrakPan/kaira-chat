@@ -355,28 +355,7 @@ const OldSimpleTabsV2 = (props) => {
                 ) : null}
               </div>
 
-              {props?.token && props?.payment?.paid_user && (
-                <div className="border-[1px] flex my-2 justify-center items-center text-[#04AA32] text-center  text-medium border-[#04AA32] px-[2px] py-[1px]">
-                  PAID
-                </div>
-              )}
-
-              {props.tripsPage ? (
-                <Button
-                  color="#111"
-                  fontWeight="400"
-                  fontSize="0.45rem"
-                  borderWidth="2px"
-                  width="12rem"
-                  borderRadius="10px"
-                  bgColor="#F7E700"
-                  onclick={handleCreateTripButton}
-                >
-                  Craft a new trip!
-                </Button>
-              ) : (
-                <>
-                  {!props.token ? (
+               {!props.token ? (
                     <div>
                       <Button
                         color="#111"
@@ -391,63 +370,7 @@ const OldSimpleTabsV2 = (props) => {
                         Log in to proceed
                       </Button>
                     </div>
-                  ) : null}
-
-                  {props.payment && props.token ? (
-                    props.payment.itinerary_status ===
-                      ITINERARY_STATUSES.itinerary_finalized &&
-                    !props.payment.paid_user &&
-                    props.payment.user_allowed_to_pay ? (
-                      props.payment.total_cost > 0 ? (
-                        <div>
-                          <Button
-                            color="#111"
-                            fontWeight="400"
-                            fontSize="0.45rem"
-                            borderWidth="2px"
-                            width="13rem"
-                            borderRadius="10px"
-                            bgColor="#F7E700"
-                            onclick={() => handleButtonClick("View Inclusions")}
-                            onclickparams={null}
-                          >
-                            View Inclusions
-                          </Button>
-                        </div>
-                      ) : (
-                        <div>
-                          <Button
-                            color="#111"
-                            fontWeight="400"
-                            fontSize="0.45rem"
-                            borderWidth="2px"
-                            width="9rem"
-                            borderRadius="10px"
-                            bgColor="#F7E700"
-                            onclick={() => handleButtonClick("Add Hotels")}
-                          >
-                            Add Hotels
-                          </Button>
-                        </div>
-                      )
-                    ) : !props.payment.paid_user ? (
-                      props.payment.is_registration_needed ? (
-                        <div className="">
-                          <Button
-                            color="#111"
-                            fontWeight="600"
-                            fontSize="0.85rem"
-                            borderWidth="2px"
-                            width="11rem"
-                            borderRadius="8px"
-                            bgColor="#f8e000"
-                            onclick={() => handleButtonClick("View Inclusions")}
-                          >
-                            View Inclusions
-                          </Button>
-                        </div>
-                      ) : (
-                        <GetInTouchContainer>
+                  ) : <GetInTouchContainer>
                           <Button
                             color="#111"
                             fontWeight="400"
@@ -480,25 +403,7 @@ const OldSimpleTabsV2 = (props) => {
                               <span>Get in touch!</span>
                             </div>
                           </Button>
-                        </GetInTouchContainer>
-                      )
-                    ) : (
-                      <Button
-                        color="#111"
-                        fontWeight="400"
-                        fontSize="0.45rem"
-                        borderWidth="2px"
-                        width="9rem"
-                        borderRadius="10px"
-                        bgColor="#F7E700"
-                        onclick={() => handleButtonClick("View Bookings")}
-                      >
-                        View Bookings
-                      </Button>
-                    )
-                  ) : null}
-                </>
-              )}
+                        </GetInTouchContainer>}
             </div>
           </div>
         </div>
@@ -931,28 +836,8 @@ const OldSimpleTabsV2 = (props) => {
               </div>
             ) : null}
           </div>
-          {props?.token && props?.payment?.paid_user && (
-            <div className="border-[3px] flex  justify-center items-center text-[#04AA32] text-center font-medium  text-sm border-[#04AA32] px-[9px] py-[0px]">
-              PAID
-            </div>
-          )}
-
-          {props.tripsPage ? (
-            <Button
-              color="#111"
-              fontWeight="600"
-              fontSize="0.85rem"
-              borderWidth="3px"
-              width="10rem"
-              borderRadius="8px"
-              bgColor="#f8e000"
-              onclick={handleCreateTripButton}
-            >
-              Craft a new trip!
-            </Button>
-          ) : (
-            <>
-              {!props.token ? (
+          
+                {!props.token ? (
                 <div className="">
                   <Button
                     color="#111"
@@ -967,66 +852,7 @@ const OldSimpleTabsV2 = (props) => {
                     Log in to proceed
                   </Button>
                 </div>
-              ) : null}
-
-              {props.payment && props.token ? (
-                props.payment.itinerary_status ===
-                  ITINERARY_STATUSES.itinerary_finalized &&
-                !props.payment.paid_user &&
-                props.payment.user_allowed_to_pay ? (
-                  props.payment.total_cost > 0 ? (
-                    <div className="">
-                      <Button
-                        color="#111"
-                        fontWeight="600"
-                        fontSize="0.85rem"
-                        borderWidth="2px"
-                        width="10rem"
-                        borderRadius="8px"
-                        bgColor="#f8e000"
-                        onclick={() =>
-                          handleFooterBannerMobile("View Inclusions")
-                        }
-                      >
-                        View Inclusions
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="">
-                      <Button
-                        color="#111"
-                        fontWeight="600"
-                        fontSize="0.85rem"
-                        borderWidth="2px"
-                        width="10rem"
-                        borderRadius="8px"
-                        bgColor="#f8e000"
-                        onclick={() => handleButtonClick("Add Hotels")}
-                      >
-                        Add Hotels
-                      </Button>
-                    </div>
-                  )
-                ) : !props.payment.paid_user ? (
-                  props.payment.is_registration_needed ? (
-                    <div className="">
-                      <Button
-                        color="#111"
-                        fontWeight="600"
-                        fontSize="0.85rem"
-                        borderWidth="2px"
-                        width="10rem"
-                        borderRadius="8px"
-                        bgColor="#f8e000"
-                        onclick={() =>
-                          handleFooterBannerMobile("View Inclusions")
-                        }
-                      >
-                        View Inclusions
-                      </Button>
-                    </div>
-                  ) : (
-                    <GetInTouchContainer className="">
+              ) : <GetInTouchContainer className="">
                       <Button
                         color="#111"
                         fontWeight="600"
@@ -1058,25 +884,12 @@ const OldSimpleTabsV2 = (props) => {
                           <span>Get in touch!</span>
                         </div>
                       </Button>
-                    </GetInTouchContainer>
-                  )
-                ) : (
-                  <Button
-                    color="#111"
-                    fontWeight="600"
-                    fontSize="0.85rem"
-                    borderWidth="2px"
-                    width="10rem"
-                    borderRadius="8px"
-                    bgColor="#f8e000"
-                    onclick={() => handleButtonClick("View Bookingstays")}
-                  >
-                    View Bookings
-                  </Button>
-                )
-              ) : null}
-            </>
-          )}
+                    </GetInTouchContainer>}
+             
+
+              
+            
+          
         </div>
       </div>
 

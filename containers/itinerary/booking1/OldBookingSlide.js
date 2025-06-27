@@ -822,104 +822,21 @@ const Details = (props) => {
         </div>
       </div>
 
-      {props.tripsPage ? (
-        <Button
-          color="#111"
-          fontWeight="500"
-          fontSize="1rem"
-          borderWidth="2px"
-          width="100%"
-          borderRadius="8px"
-          bgColor="#f8e000"
-          padding="12px"
-          onclick={handleCreateTripButton}
-        >
-          Craft a new trip!
-        </Button>
-      ) : (
-        <>
-          {props.payment && props.token ? (
-            props.payment.itinerary_status ===
-              ITINERARY_STATUSES.itinerary_finalized &&
-            !props.payment.paid_user &&
-            props.payment.user_allowed_to_pay ? (
-              props.payment.total_cost > 0 ? (
-                <Button
-                  color="#111"
-                  fontWeight="500"
-                  fontSize="1rem"
-                  borderWidth="2px"
-                  width="100%"
-                  borderRadius="8px"
-                  bgColor="#f8e000"
-                  padding="12px"
-                  onclick={() => handlePayNow("_saleCreateHandler")}
-                  loading={paymentLoading}
-                >
-                  Pay Now & Book
-                </Button>
-              ) : (
-                <Button
-                  color="#111"
-                  fontWeight="500"
-                  fontSize="1rem"
-                  borderWidth="2px"
-                  width="100%"
-                  borderRadius="8px"
-                  bgColor="#f8e000"
-                  padding="12px"
-                  onclick={() => handleViewBooking("Add Hotels")}
-                >
-                  Add Hotels
-                </Button>
-              )
-            ) : props?.payment?.is_registration_needed ? (
-              props?.payment?.email_reverification_needed ? (
-                <Button
-                  color="#111"
-                  fontWeight="500"
-                  fontSize="1rem"
-                  borderWidth="2px"
-                  width="100%"
-                  borderRadius="8px"
-                  bgColor="#f8e000"
-                  padding="12px"
-                  onclick={() => handlePayNow("setShowVerification")}
-                >
-                  Pay Now & Book
-                </Button>
-              ) : props?.payment?.paid_user ? (
-                <Button
-                  color="#111"
-                  fontWeight="500"
-                  fontSize="1rem"
-                  borderWidth="2px"
-                  width="100%"
-                  borderRadius="8px"
-                  bgColor="#f8e000"
-                  padding="12px"
-                  onclick={() => handleViewBooking("View Bookings")}
-                >
-                  View Bookings
-                </Button>
-              ) : (
-                <Button
-                  color="#111"
-                  fontWeight="500"
-                  fontSize="1rem"
-                  borderWidth="2px"
-                  width="100%"
-                  borderRadius="8px"
-                  bgColor="#f8e000"
-                  padding="12px"
-                  onclick={handleTravellersDetails}
-                >
-                  Add Travellers Details
-                </Button>
-              )
-            ) : (
-              !props.payment.paid_user && (
-                <GetInTouchContainer>
+          {!props.token ? (
+            <Button
+              color="#111"
+              fontWeight="500"
+              fontSize="1rem"
+              borderWidth="2px"
+              width="100%"
+              borderRadius="8px"
+              bgColor="#f8e000"
+              padding="12px"
+              onclick={handleLoginButton}
+            >
+              Log in to proceed
+            </Button>
+          ) : <GetInTouchContainer>
                   <Button
                     color="#111"
                     fontWeight="500"
@@ -950,28 +867,8 @@ const Details = (props) => {
                       <span>Get in touch!</span>
                     </div>
                   </Button>
-                </GetInTouchContainer>
-              )
-            )
-          ) : null}
-
-          {!props.token ? (
-            <Button
-              color="#111"
-              fontWeight="500"
-              fontSize="1rem"
-              borderWidth="2px"
-              width="100%"
-              borderRadius="8px"
-              bgColor="#f8e000"
-              padding="12px"
-              onclick={handleLoginButton}
-            >
-              Log in to proceed
-            </Button>
-          ) : null}
-        </>
-      )}
+                </GetInTouchContainer>}
+      
 
       <Button
         width="100%"
