@@ -189,7 +189,7 @@ const POIDetailsDrawer = (props) => {
       width={"50%"}
       mobileWidth={"100%"}
       style={{ zIndex: props.itineraryDrawer ? 1503 : 1501 }}
-      className="font-lexend"
+      className="font-lexend pb-[20px]"
       onHide={props.handleCloseDrawer}
     >
       {!loading ? (

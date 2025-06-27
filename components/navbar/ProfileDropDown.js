@@ -154,7 +154,7 @@ const ProfileDropDown = (props) => {
         >
           <ProfileList>
             <MdAssignment />
-            <div>My Plans</div>
+            <div>My Trips</div>
           </ProfileList>
         </Link>
         <ProfileList onClick={props.onLogout}>

@@ -151,7 +151,7 @@ const Mobile = (props) => {
     {
       type: "main",
       link: "/dashboard",
-      text: "My Plans",
+      text: "My Trips",
       icon: "media/icons/navigation/clipboard.png",
     },
     {

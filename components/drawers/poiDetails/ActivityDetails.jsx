@@ -58,6 +58,7 @@ const Container = styled.div`
   gap: 32px;
   font-family: Lexend;
   padding: ${(props) => (props.itineraryDrawer ? "0 1rem 1rem 1rem" : "1rem")};
+  
 `;
 
 const BackContainer = styled.div`
