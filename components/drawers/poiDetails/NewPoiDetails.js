@@ -99,7 +99,7 @@ const Child = styled.div`
 const ScrollContainer = styled.div`
   display: flex;
   gap: 21px;
-  height: 210px;
+  height: auto;
   overflow-x: auto;
   overflow-y: hidden;
   -ms-overflow-style: none;

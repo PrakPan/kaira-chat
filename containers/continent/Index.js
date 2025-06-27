@@ -34,6 +34,9 @@ import { convertDbNameToCapitalFirst } from "../../helper/convertDbnameToCapital
 import Poi from "../newcityplanner/pois/Index.js";
 import TailoredFormMobileModal from "../../components/modals/TailoredFomrMobile.js";
 import Overview from "../themes/Overview.jsx";
+import Element from "../newcityplanner/elements/Index.js";
+import LocationsBlog from "../../components/containers/plannerlocations/Index.js";
+import Activity from "../newcityplanner/activities/Index.js";
 const MapBox = dynamic(() => import("../../components/Map.js"), {
   ssr: false,
 });
@@ -77,12 +80,11 @@ const Index = (props) => {
   let isPageWide = media("(min-width: 768px)");
   const [userItineraries, setUserItineraries] = useState([]);
   const [hotLocations, setHotLocations] = useState([]);
-  const [showTailoredModal,setShowTailoredModal]=useState(false)
+  const [showTailoredModal, setShowTailoredModal] = useState(false);
   const [destination, setDestination] = useState(null);
 
-
   const handlePlanButton = (pageId, destination, type) => {
-    handlePlanButtonClick
+    handlePlanButtonClick;
   };
 
   useEffect(() => {
@@ -113,7 +115,12 @@ const Index = (props) => {
   );
 
   const handlePlanButtonClick = (location) => {
-    openTailoredModal(router, props.data.id, convertDbNameToCapitalFirst(props.data.slug),props.type);
+    openTailoredModal(
+      router,
+      props.data.id,
+      convertDbNameToCapitalFirst(props.data.slug),
+      props.type
+    );
 
     logEvent({
       action: "Plan_Itinerary",
@@ -131,10 +138,17 @@ const Index = (props) => {
       {isPageWide ? (
         <DesktopPersonaliseBanner
           onclick={() =>
-            openTailoredModal(router, props.data.id, convertDbNameToCapitalFirst(props.data.slug),props.type)
+            openTailoredModal(
+              router,
+              props.data.id,
+              convertDbNameToCapitalFirst(props.data.slug),
+              props.type
+            )
           }
           text={validateTextSize(
-            `Craft a personalized itinerary to ${convertDbNameToCapitalFirst(props.data.slug)} now!`,
+            `Craft a personalized itinerary to ${convertDbNameToCapitalFirst(
+              props.data.slug
+            )} now!`,
             9,
             `Craft a trip to ${props.data.destination} now!`
           )}
@@ -143,7 +157,12 @@ const Index = (props) => {
         <MobileBanner
           cityName={props.data.destination}
           onClick={() =>
-            openTailoredModal(router, props.data.id, convertDbNameToCapitalFirst(props.data.slug),props.type)
+            openTailoredModal(
+              router,
+              props.data.id,
+              convertDbNameToCapitalFirst(props.data.slug),
+              props.type
+            )
           }
         />
       )}
@@ -202,17 +221,17 @@ const Index = (props) => {
           ) : null}
 
           {/* <MapGridContainer> */}
-            <Overview
-              heading={props.data.overview_heading}
-              text={props.data.overview_text}
-              image={props.data.overview_image}
-              slug={props.data.slug}
-              page_id={props.data.id}
-              type={props.type}
-              destination={convertDbNameToCapitalFirst(props.data.slug)}
-            ></Overview>
+          <Overview
+            heading={props.data.overview_heading}
+            text={props.data.overview_text}
+            image={props.data.overview_image}
+            slug={props.data.slug}
+            page_id={props.data.id}
+            type={props.type}
+            destination={convertDbNameToCapitalFirst(props.data.slug)}
+          ></Overview>
 
-            {/* <MapContainer>
+          {/* <MapContainer>
               {props.data.cities && props.data.cities.length ? (
                 <MapBox
                   InfoWindowContainer={InfoWindowContainer}
@@ -262,14 +281,110 @@ const Index = (props) => {
                           ...component.countries,
                         ]}
                       />
-                      <PlanYourTripButton   page_id={props.data.id} destination={convertDbNameToCapitalFirst(props.data.slug)} type={props?.type}/>
-                      </>
+                      <PlanYourTripButton
+                        page_id={props.data.id}
+                        destination={convertDbNameToCapitalFirst(
+                          props.data.slug
+                        )}
+                        type={props?.type}
+                      />
+                    </>
                   ) : component.carousel === "destination-2" ? (
-                    <></>
+                    <>
+                      <Element
+                        data={component.elements}
+                        elements={component?.elements}
+                        city={component?.name}
+                        // handlePlanButtonClick={()=>{}}
+                        // {handlePlanButtonClick}
+                        slug={props?.slug}
+                        page={"Country Page"}
+                      />
+                      <PlanYourTripButton text={"Plan Itinerary For Free"} />
+                    </>
+                  ) : component.carousel === "destination-3" ? (
+                    <>
+                      <SwiperLocations
+                        locations={component?.countries}
+                        page_id={component?.id}
+                        destination={component?.name}
+                        viewall
+                        country
+                        page={"Country Page"}
+                        continent={component?.countries}
+                      ></SwiperLocations>
+                      <PlanYourTripButton
+                        text={"Create your travel plan now!"}
+                      />
+                    </>
+                  ) : component.carousel === "destination-4" ? (
+                    <>
+                      <div className="space-y-4">
+                        <Locations
+                          locations={component?.cities}
+                          page={"Continent Page"}
+                          viewall
+                        ></Locations>
+                      </div>
+                    </>
+                  ) : component.carousel === "destination-5" ? (
+                    <>
+                      <Poi
+                        elevation={component?.elevation}
+                        data={component?.data}
+                        thingsToDoPage={component?.thingsToDoPage}
+                        pois={component?.pois}
+                        city={component?.name}
+                      />
+                    </>
+                  ) : component.carousel === "destination-6" ? (
+                    <>
+                      <Continentcarousel
+                        data={props.continetCarousel}
+                        page={"Country Page"}
+                      ></Continentcarousel>
+                      <PlanYourTripButton
+                        text={"Create your travel plan now!"}
+                      />
+                    </>
+                  ) : component.carousel === "state-1" ? (
+                    <>
+                      <LocationsBlog
+                        locations={component?.states}
+                        page_id={component?.id}
+                        destination={component?.name}
+                        viewall
+                        country={component?.name}
+                        planner
+                        page={"Country Page"}
+                      ></LocationsBlog>
+                      <PlanYourTripButton
+                        text={"Create your travel plan now!"}
+                      />
+                    </>
+                  ) : component.carousel === "Activity-2" ? (
+                    <>
+                      <Activity
+                        data={component.activities}
+                        activities={component?.activities}
+                        city={component?.name}
+                        // handlePlanButtonClick={()=>{}}
+                        // {handlePlanButtonClick}
+                        slug={props?.slug}
+                        page={"Country Page"}
+                      />
+                      <PlanYourTripButton text={"Plan Itinerary For Free"} />
+                    </>
                   ) : component.carousel === "itinerary-1" ? (
                     <>
                       <Itinerary1Carousel itineraries={component.itineraries} />
-                      <PlanYourTripButton   page_id={props.data.id} destination={convertDbNameToCapitalFirst(props.data.slug)} type={props?.type}/>
+                      <PlanYourTripButton
+                        page_id={props.data.id}
+                        destination={convertDbNameToCapitalFirst(
+                          props.data.slug
+                        )}
+                        type={props?.type}
+                      />
                     </>
                   ) : component.carousel === "itinerary-2" ? (
                     <div className="w-full relative">
@@ -304,7 +419,13 @@ const Index = (props) => {
                   ) : component.carousel === "activity-1" ? (
                     <>
                       <Activity1Carousel activities={component.activities} />{" "}
-                      <PlanYourTripButton   page_id={props.data.id} destination={convertDbNameToCapitalFirst(props.data.slug)} type={props?.type}/>
+                      <PlanYourTripButton
+                        page_id={props.data.id}
+                        destination={convertDbNameToCapitalFirst(
+                          props.data.slug
+                        )}
+                        type={props?.type}
+                      />
                     </>
                   ) : component.carousel === "review-1" ? (
                     <div className="relative">
@@ -322,7 +443,13 @@ const Index = (props) => {
                       )}
 
                       <Reviews1Carousel reviews={component.reviews} />
-                      <PlanYourTripButton   page_id={props.data.id} destination={convertDbNameToCapitalFirst(props.data.slug)} type={props?.type}/>
+                      <PlanYourTripButton
+                        page_id={props.data.id}
+                        destination={convertDbNameToCapitalFirst(
+                          props.data.slug
+                        )}
+                        type={props?.type}
+                      />
                     </div>
                   ) : component.carousel == "poi-1" ? (
                     <>
@@ -336,7 +463,13 @@ const Index = (props) => {
                       />
 
                       {/* <Poi1Carousel pois={component.pois} /> */}
-                      <PlanYourTripButton   page_id={props.data.id} destination={convertDbNameToCapitalFirst(props.data.slug)} type={props?.type}/>
+                      <PlanYourTripButton
+                        page_id={props.data.id}
+                        destination={convertDbNameToCapitalFirst(
+                          props.data.slug
+                        )}
+                        type={props?.type}
+                      />
                     </>
                   ) : null}
                 </div>
