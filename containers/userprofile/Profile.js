@@ -150,7 +150,7 @@ const Profile = (props) => {
   };
 
   const handleSave = () => {
-    props.changeUserDetails({ whatsapp_opt_in: whatsapp });
+    props.changeUserDetails({name:props.name,country:props.country, whatsapp_opt_in: whatsapp });
   };
 
   const Name = styled.p`
@@ -200,6 +200,12 @@ const Profile = (props) => {
       display: inline;
     }
   `;
+
+  const userData={
+    name:props.name,
+    whatsapp_opt_in:props.whatsapp_opt_in,
+    country:props.country
+  }
 
   return (
     <Container className="border-thin">
@@ -268,6 +274,7 @@ const Profile = (props) => {
                 type="text"
                 text={props.name}
                 closeEdit={setEditName}
+                userData={userData}
               />
             </div>
           ) : (
@@ -290,6 +297,7 @@ const Profile = (props) => {
                 type="text"
                 text={props.country ? props.country : ""}
                 closeEdit={setEditCounry}
+                userData={userData}
               />
             </div>
           ) : props.country &&
@@ -349,6 +357,7 @@ const Profile = (props) => {
                 type="text"
                 text={props.phone}
                 closeEdit={setEditPhone}
+                userData={userData}
               />
             </div>
           ) : (
@@ -392,7 +401,34 @@ const Profile = (props) => {
 
           <div className="flex flex-row items-center justify-start gap-3 mb-4">
             <div
-              onClick={() => setWhatsapp((prev) => !prev)}
+              onClick={() => {
+                // const RequestData={
+                //   name:props.name,
+                //   whatsapp_opt_in:!whatsapp,
+                //   country:props.country
+                // }
+                // axiosuserinstance
+                //   .put("/", RequestData, {
+                //     headers: {
+                //       Authorization: `Bearer ${token}`,
+                //     },
+                //   })
+                //   .then((res) => {
+                //     setUserDetails(res.data);
+                //     setLoading(false);
+                //     closeEdit(false);
+                //   })
+                //   .catch((err) => {
+                //     setLoading(false);
+                //     closeEdit(false);
+                //     if (err?.response?.data?.name) {
+                //       console.log(err.response.data.name[0]);
+                //     } else {
+                //       console.log(err?.response?.data);
+                //     }
+                //   });
+                setWhatsapp((prev) => !prev)
+              }}
               className={`w-5 h-5 flex items-center justify-center rounded-md border-2 border-black cursor-pointer ${
                 whatsapp && "bg-black"
               }`}
@@ -419,6 +455,7 @@ const Profile = (props) => {
                 type="email"
                 text={props.email}
                 closeEdit={setEditEmail}
+                userData={userData}
               />
             </div>
           ) : (
