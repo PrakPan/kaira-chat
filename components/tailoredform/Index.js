@@ -344,9 +344,9 @@ let dist=divideTravellers()
     }
 
     const source = {
-      path: router.asPath,
-      ...routerquery,
-    };
+  path: router.pathname, 
+  ...router.query,       
+};
 
     let data = null;
     data = {
