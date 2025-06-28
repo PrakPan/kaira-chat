@@ -15,6 +15,7 @@ import useMediaQuery from "../../media";
 import styled from "styled-components";
 import BackArrow from "../../ui/BackArrow";
 
+
 const FloatingView = styled.div`
   position: sticky;
   bottom: 100px;

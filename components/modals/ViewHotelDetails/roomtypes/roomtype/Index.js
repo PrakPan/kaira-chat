@@ -7,6 +7,7 @@ import { dateFormat } from "../../../../../helper/DateUtils";
 import { useState } from "react";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 import ImageCarousel from "../../../Carousel/ImageCarousel";
+import Image from "next/image";
 
 const ImageContainer = styled.div`
   height: 85px;
@@ -107,7 +108,11 @@ const pax = props?.rates?.reduce((total, rate) => {
           {roomsByRate.length > 1 && (
             <div className="text-sm font-semibold text-black px-2">
               ₹{getIndianPrice(Math.round(rate.final_rate))}
-              <span className="text-[#ef7d7d]">{rate.refundable ? ' Refundable' : ' Non-Refundable'}</span>
+              {rate.refundable ? (
+      <span className="text-[#3BAF75]">Refundable</span>
+    ) : (
+      <span className="text-[#EE724B]">Non-Refundable</span>
+    )}
             </div>
           )}
           
@@ -162,11 +167,27 @@ const pax = props?.rates?.reduce((total, rate) => {
                             )} */}
                           </div>
                         </div>
-                        {rate?.board_basis && (
-                          <p className="bg-[#e6f9ec] text-[#3BAF75] px-2 py-2 mb-0 rounded-md text-xs font-medium">
-                            {rate.board_basis.description}
-                          </p>
-                        )}
+                       {rate?.board_basis && (
+  rate.board_basis.description === "Room Only" ? (
+    <p className="bg-[#FAFAFA] text-[#7A7A7A] px-2 py-2 mb-0 rounded-md text-xs font-medium">
+      {rate.board_basis.description}
+    </p>
+  ) : (
+    <div className="flex flex-row items-center bg-[#FAFAFA] text-[#7A7A7A] text-[12px] px-1 gap-2 rounded-sm">
+      <div className="flex items-center">
+        <Image
+          src="https://d31aoa0ehgvjdi.cloudfront.net/media/themes/restaurant-icon.png"
+          height={12}
+          width={12}
+          className="object-contain"
+          alt="restaurant"
+        />
+      </div>
+      <div>{rate.board_basis.description}</div>
+    </div>
+  )
+)}
+
                       </div>
                     ) : null}
 

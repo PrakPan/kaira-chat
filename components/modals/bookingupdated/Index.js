@@ -18,6 +18,7 @@ import ImageLoader from "../../../components/ImageLoader";
 import { setItineraryFilters } from "../../../store/actions/setItineraryFilters";
 import ViewHotelDetails from "../ViewHotelDetails/viewHotelDetails";
 import { TbArrowBack } from "react-icons/tb";
+import { ItineraryStatusLoader } from "../../../containers/itinerary/ItineraryContainer";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -678,6 +679,8 @@ const Booking = (props) => {
                 }
                 handleClose={handleClose}
               ></SectionOne>
+
+              {loading && <ItineraryStatusLoader displayText={"Finding best hotels for you"} isVisible={loading}/>}
 
               <SectionTwo
                 loading={loading}

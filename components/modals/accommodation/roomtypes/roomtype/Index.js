@@ -7,6 +7,7 @@ import { dateFormat } from "../../../../../helper/DateUtils";
 import { useState } from "react";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 import ImageCarousel from "../../../Carousel/ImageCarousel";
+import Image from "next/image";
 
 const ImageContainer = styled.div`
   height: 85px;
@@ -121,10 +122,30 @@ const RoomType = (props) => {
                         ? `, ${room.number_of_children} Children`
                         : null}
                     </div>
-                    {props?.data?.board_basis && (
+                    {/* {props?.data?.board_basis && (
                       <p className="bg-[#e6f9ec] text-[#3BAF75] px-2 py-2 mb-0 rounded-md text-xs font-medium">
                         {props?.data?.board_basis?.description}
                       </p>
+                    )} */}
+                              {props?.data?.board_basis && (
+                      props?.data?.board_basis?.description === "Room Only" ? (
+                        <p className="bg-[#FAFAFA] text-[#7A7A7A] px-2 py-2 mb-0 rounded-md text-xs font-medium">
+                          {props?.data?.board_basis?.description}
+                        </p>
+                      ) : (
+                        <div className="flex flex-row items-center bg-[#FAFAFA] text-[#7A7A7A] text-[12px] px-1 gap-2 rounded-sm">
+                          <div className="flex items-center">
+                            <Image
+                              src="https://d31aoa0ehgvjdi.cloudfront.net/media/themes/restaurant-icon.png"
+                              height={12}
+                              width={12}
+                              className="object-contain"
+                              alt="restaurant"
+                            />
+                          </div>
+                          <div>{props?.data?.board_basis?.description}</div>
+                        </div>
+                      )
                     )}
                   </div>
                 ) : null}
