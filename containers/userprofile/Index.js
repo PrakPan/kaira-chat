@@ -179,14 +179,14 @@ const UserDashboard = (props) => {
         ) : null}
 
         {loading ? (
-          <div className="grid justify-items-center lg:grid-cols-3 md:grid-cols-3 gap-4 px-3 md:px-0 lg:px-0">
+          <div className="grid grid-cols-1 justify-items-center lg:grid-cols-3 md:grid-cols-3 gap-4 px-3 md:px-0 lg:px-0">
             <ExperienceCardSkeleton />
             <ExperienceCardSkeleton />
             <ExperienceCardSkeleton />
           </div>
         ) : myPlansArr.length ? (
           <div className="flex flex-col items-center gap-3 mb-5">
-            <div className="w-full grid lg:grid-cols-3 md:grid-cols-3 gap-4 px-3 md:px-0 lg:px-0">
+            <div className="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-3 gap-4 px-3 md:px-0 lg:px-0">
               {myPlansArr.map((plan, i) => (
                 <ExperienceCard
                   key={i}
@@ -237,7 +237,7 @@ const UserDashboard = (props) => {
                 Show More
               </button>
             ) : showMoreResults && showMoreLoading ? (
-              <div className="w-full grid justify-items-center lg:grid-cols-3 md:grid-cols-3 gap-4 px-3 md:px-0 lg:px-0">
+              <div className="grid grid-cols-1 justify-items-center lg:grid-cols-3 md:grid-cols-3 gap-4 px-3 md:px-0 lg:px-0">
                 <ExperienceCardSkeleton />
                 <ExperienceCardSkeleton />
                 <ExperienceCardSkeleton />
