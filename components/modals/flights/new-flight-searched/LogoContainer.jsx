@@ -60,7 +60,7 @@ export const Logo = ({ src, wd, ht }) => {
           onError={handleImageError}
           width={finalWidth}
           height={finalHeight}
-          style={{ objectFit: 'contain' }}
+          style={{ objectFit: 'contain',overflow: 'hidden' }}
         />
       </div>
 
