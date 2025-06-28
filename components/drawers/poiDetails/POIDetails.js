@@ -21,7 +21,7 @@ import ImageLoader from "../../ImageLoader";
 import Button from "../../ui/button/Index";
 import Drawer from "../../ui/Drawer";
 import AddPoi from "../AddPoi";
-
+import { imgUrlEndPoint } from "../../theme/ThemeConstants";
 
 export const Title = styled.p`
   font-weight: 800;
@@ -131,6 +131,7 @@ const POIDetails = (props) => {
   const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
   const [showDrawer, setShowDrawer] = useState(false);
+  const [mainImageError, setMainImageError] = useState(false);
 
   const [ImagesLoaded, setImagesLoaded] = useState({
     0: false,
@@ -157,6 +158,18 @@ const POIDetails = (props) => {
       );
     }
   }
+
+  const getImageSrc = (imageData, index) => {
+    if (ImagesError[index]) {
+      return `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
+    }
+
+    if (imageData?.photo_reference) {
+      return `${MERCURY_HOST}/api/v1/geos/photo/${imageData.photo_reference}`;
+    }
+
+    return `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
+  };
 
   const handleDelete = async (e) => {
     if (!token) {
@@ -308,11 +321,7 @@ const POIDetails = (props) => {
               <GridImage>
                 <Child area="1 / 1 / 5 / 4" className="div1">
                   <Image
-                    src={
-                      props?.data?.extra_images?.[0]
-                        ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[0]?.photo_reference}`
-                        : "/media/icons/bookings/notfounds/noroom.png"
-                    }
+                    src={getImageSrc(props?.data?.extra_images?.[0], 0)}
                     alt="Image 0"
                     fill
                     className="object-cover"
@@ -333,18 +342,15 @@ const POIDetails = (props) => {
 
                 <Child area="1 / 8 / 5 / 11" className="div2 rounded-lg">
                   <Image
-                    src={
-                      props?.data?.extra_images?.[1]
-                        ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[1]?.photo_reference}`
-                        : "/media/icons/bookings/notfounds/noroom.png"
-                    }
+                    src={getImageSrc(props?.data?.extra_images?.[1], 1)}
                     alt="Image 1"
                     fill
                     className="object-cover"
                     onLoad={() => OnImageLoad(1)}
                     onError={() => OnImageError(1)}
                     priority
-                  />{" "}
+                  />
+
                   <div
                     style={{
                       display: !ImagesLoaded[1] ? "initial" : "none",
@@ -358,11 +364,7 @@ const POIDetails = (props) => {
 
                 <Child area="1 / 4 / 3 / 8" className="div3">
                   <Image
-                    src={
-                      props?.data?.extra_images?.[2]
-                        ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[2]?.photo_reference}`
-                        : "/media/icons/bookings/notfounds/noroom.png"
-                    }
+                    src={getImageSrc(props?.data?.extra_images?.[2], 2)}
                     alt="Image 2"
                     fill
                     className="object-cover"
@@ -370,6 +372,7 @@ const POIDetails = (props) => {
                     onError={() => OnImageError(2)}
                     priority
                   />
+
                   <div
                     style={{
                       display: !ImagesLoaded[2] ? "initial" : "none",
@@ -383,11 +386,7 @@ const POIDetails = (props) => {
 
                 <Child area="3 / 4 / 5 / 8" className="div4">
                   <Image
-                    src={
-                      props?.data?.extra_images?.[3]
-                        ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[3]?.photo_reference}`
-                        : "/media/icons/bookings/notfounds/noroom.png"
-                    }
+                    src={getImageSrc(props?.data?.extra_images?.[3], 3)}
                     alt="Image 3"
                     fill
                     className="object-cover"
@@ -411,15 +410,16 @@ const POIDetails = (props) => {
                 <ImageLoader
                   fit="cover"
                   url={
-                    props?.data?.image
-                      ? props?.data?.image
-                      : "media/website/grey.png"
+                    mainImageError
+                      ? "media/website/grey.png"
+                      : props?.data?.image || "media/website/grey.png"
                   }
                   dimensions={{ width: 1600, height: 608 }}
                   dimensionsMobile={{ width: 1600, height: 608 }}
                   width="100%"
                   borderRadius="5px"
                   className="rounded-md"
+                  onError={() => setMainImageError(true)}
                 ></ImageLoader>
               </>
             )}
@@ -640,7 +640,7 @@ const POIDetails = (props) => {
                 </a>
               </div>
 
-              {!(props?.removeDelete == true) && props?.version != "v1" &&  (
+              {!(props?.removeDelete == true) && props?.version != "v1" && (
                 <button
                   className=" right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
                   onClick={handleDelete}
