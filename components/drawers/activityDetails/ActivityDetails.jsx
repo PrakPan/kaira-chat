@@ -95,9 +95,9 @@ export default function ActivityDetails(props) {
         <div className="z-1 flex flex-row items-center gap-2 pt-4 bg-white">
           <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
         </div>
-        <div className="flex justify-between">
+        {/* <div className="flex justify-between">
           <div className="text-[24px] font-semibold">Activity Details</div>
-        </div>
+        </div> */}
         {props.updateAmenities && (
           <div className="fixed top-[65%] left-[50%] -translate-x-[50%] z-50 flex flex-row items-center gap-2">
             Updating
@@ -201,7 +201,7 @@ export default function ActivityDetails(props) {
                 </div>
               </div>
             )}
-            {props.data?.experience_filters && (
+            {/* {props.data?.experience_filters && (
               <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
                 {props.data.experience_filters?.map((e, i) => (
                   <span
@@ -213,7 +213,7 @@ export default function ActivityDetails(props) {
                   </span>
                 ))}
               </div>
-            )}
+            )} */}
             {props.data?.short_description && (
               <div className="flex flex-col gap-2">
                 <div className="text-[14px] text-[#01202B]">

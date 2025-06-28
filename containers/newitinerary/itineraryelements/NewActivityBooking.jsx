@@ -124,7 +124,21 @@ export default function NewActivityBooking(props) {
                 )}
               </div>
 
-              <div className="my-2">
+              {props.data?.experience_filters && (
+              <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
+                {props.data.experience_filters?.map((e, i) => (
+                  <span
+                    key={i}
+                    className={`border-2 rounded-full px-2 py-1`}
+                    style={{ backgroundColor: colors[i % colors.length] }}
+                  >
+                    {e}
+                  </span>
+                ))}
+              </div>
+            )}
+
+              {/* <div className="my-2">
                 <div className=" text-sm text-[#01202B] line-clamp-3 text-[14px]">
                   {props.data.short_description
                     .split(" ")
@@ -132,7 +146,7 @@ export default function NewActivityBooking(props) {
                     .join(" ")}
                   <span className="font-bold text-gray-500"> ...more</span>
                 </div>
-              </div>
+              </div> */}
             </div>
             <div className="flex flex-row items-center justify-between">
               {props.data?.pricing?.total_price ? (
@@ -241,12 +255,25 @@ export default function NewActivityBooking(props) {
           </span>
         )}
 
-        <div className="my-2">
+        {props.data?.experience_filters && (
+              <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
+                {props.data.experience_filters?.map((e, i) => (
+                  <span
+                    key={i}
+                    className={`border-2 rounded-full px-2 py-1`}
+                    style={{ backgroundColor: colors[i % colors.length] }}
+                  >
+                    {e}
+                  </span>
+                ))}
+              </div>
+            )}
+        {/* <div className="my-2">
           <div className=" text-sm text-[#01202B] line-clamp-3 text-[14px]">
             {props.data.short_description.split(" ").slice(0, 40).join(" ")}
             <span className="font-bold text-gray-500"> ...more</span>
           </div>
-        </div>
+        </div> */}
         <div className="flex flex-row items-center justify-between">
           {props.data?.pricing?.total_price ? (
             <div className="flex gap-1">

@@ -824,44 +824,51 @@ const ActivityAddDrawer = (props) => {
           </>
         </div>
         {showCalender && (
-          <div
-            className="fixed bottom-0 w-full bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm z-[1091]"
-            ref={calendarRef}
-          >
-            <div className="font-medium text-[14px]">Select Days</div>
-            {[...Array(props.duration)].map((_, i) => {
-              const baseDateStr = props?.mercuryItinerary
-                ? props?.date
-                : convertToISODate(props?.date);
+  <div
+    className="fixed bottom-0 w-full bg-white shadow-2xl drop-shadow-3xl p-[16px] rounded-lg space-y-5 text-sm z-[1091]"
+    ref={calendarRef}
+  >
+    <div className="font-medium text-[14px]">Select Days</div>
+    {[...Array(props.duration)].map((_, i) => {
+      const baseDateStr = props?.mercuryItinerary
+        ? props?.date
+        : convertToISODate(props?.date);
 
-              const baseDate = new Date(baseDateStr);
-              const currentDate = new Date(baseDate);
-              currentDate.setDate(currentDate.getDate() + i);
+      const baseDate = new Date(baseDateStr);
+      const currentDate = new Date(baseDate);
+      currentDate.setDate(currentDate.getDate() + i);
 
-              // Pad function to ensure two digits
-              const pad = (n) => (n < 10 ? `0${n}` : n);
+      // Pad function to ensure two digits
+      const pad = (n) => (n < 10 ? `0${n}` : n);
 
-              const year = currentDate.getFullYear();
-              const month = pad(currentDate.getMonth() + 1); // +1 because months are 0-indexed
-              const day = pad(currentDate.getDate());
+      const year = currentDate.getFullYear();
+      const month = pad(currentDate.getMonth() + 1);
+      const day = pad(currentDate.getDate());
 
-              const dateString = `${year}-${month}-${day}`; // "YYYY-MM-DD"
+      const dateString = `${year}-${month}-${day}`; // Keep for onClick value
 
-              return (
-                <div
-                  key={i}
-                  className="cursor-pointer"
-                  onClick={() => setStartDate(dateString)}
-                >
-                  <span className="font-bold text-[14px]">
-                    {dateString + " | "}
-                  </span>
-                  <span>Day {i + 1}</span>
-                </div>
-              );
-            })}
-          </div>
-        )}
+      // Format date for display as "Aug 7, 2025"
+      const displayDate = currentDate.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+
+      return (
+        <div
+          key={i}
+          className="cursor-pointer"
+          onClick={() => setStartDate(dateString)}
+        >
+          <span className="font-bold text-[14px]">
+            {displayDate + " | "}
+          </span>
+          <span>Day {i + 1}</span>
+        </div>
+      );
+    })}
+  </div>
+)}
       </>:
        <div className="h-[100vh]">
        <OptionsContainer className="px-2 center-div space-y-5">
