@@ -126,6 +126,7 @@ export default function PoiDetails(props) {
     notSuitableFor: false,
     tipsTricks: false,
   });
+  const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
 
   const [loading, setLoading] = useState(false);
 
@@ -154,6 +155,15 @@ export default function PoiDetails(props) {
       );
     }
   }
+
+  function OnImageError(i) {
+    if (!ImagesError[i]) {
+      setImagesError((prev) => {
+        return { ...prev, [i]: true };
+      });
+    }
+  }
+
 
   useEffect(() => {
     if (props.data?.amenities?.length) {
@@ -213,7 +223,7 @@ export default function PoiDetails(props) {
                   src={
                     props?.data?.extra_images?.[0]
                       ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[0]?.photo_reference}`
-                      : "/media/icons/bookings/notfounds/noroom.png"
+                      : `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`
                   }
                   alt="Image 0"
                   fill
@@ -238,7 +248,7 @@ export default function PoiDetails(props) {
                   src={
                     props?.data?.extra_images?.[1]
                       ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[1]?.photo_reference}`
-                      : "/media/icons/bookings/notfounds/noroom.png"
+                      : `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`
                   }
                   alt="Image 1"
                   fill
@@ -263,7 +273,7 @@ export default function PoiDetails(props) {
                   src={
                     props?.data?.extra_images?.[2]
                       ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[2]?.photo_reference}`
-                      : "/media/icons/bookings/notfounds/noroom.png"
+                      : `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`
                   }
                   alt="Image 2"
                   fill
@@ -288,7 +298,7 @@ export default function PoiDetails(props) {
                   src={
                     props?.data?.extra_images?.[3]
                       ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[3]?.photo_reference}`
-                      : "/media/icons/bookings/notfounds/noroom.png"
+                      : `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`
                   }
                   alt="Image 3"
                   fill
