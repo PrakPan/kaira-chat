@@ -165,6 +165,8 @@ export default function PoiDetails(props) {
 
 
 
+  
+
   useEffect(() => {
     if (props.data?.amenities?.length) {
       for (let amenity of props.data.amenities) {
