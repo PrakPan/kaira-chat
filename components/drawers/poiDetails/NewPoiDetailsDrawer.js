@@ -11,7 +11,8 @@ import { useRouter } from "next/router";
 import PoiDetailsNew from "./PoiDetailsNew";
 import ActivityDetails from "./ActivityDetails";
 import ActivityDetailsSkeleton from "../activityDetails/ActivityDetailsSkeleton";
-import NewPOIDetails from "./NewPOIDetails";
+import NewPOIDetails from "./NewPoiDetails";
+
 
 const NewPOIDetailsDrawer = (props) => {
   console.log("props activities summary are:", props);

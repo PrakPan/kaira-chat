@@ -6,6 +6,8 @@ import { logEvent } from "../../../services/ga/Index";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import NewPOIDetailsDrawer from "../../../components/drawers/poiDetails/NewPOIDetailsDrawer";
 
+
+
 const LeftSlideIn = keyframes`
   from {
     transform: translateX(0%);
