@@ -39,10 +39,7 @@ import { imgUrlEndPoint } from "../../components/theme/ThemeConstants.js";
 import BudgetFriendly from "../../components/theme/BudgetFriendly.jsx";
 import ImageCarousel from "./ImageCaraousel.js";
 import Element from "../newcityplanner/elements/Index.js";
-<<<<<<< HEAD
-=======
 import ThemeHeadline from "./ThemeHeadines.js";
->>>>>>> d6698f8bec35d092714a44e3d6350afb31b747de
 
 const SetWidthContainer = styled.div`
   width: 100%;
