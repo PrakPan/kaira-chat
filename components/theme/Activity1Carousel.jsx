@@ -7,7 +7,7 @@ import media from "../../components/media";
 import { logEvent } from "../../services/ga/Index";
 import { PlanYourTripButton } from "../../containers/travelplanner/ThemePage.jsx";
 import TertiaryHeading from "../heading/Tertiary.jsx";
-import NewPOIDetailsDrawer from "../drawers/poiDetails/NewPOIDetailsDrawer.js";
+import NewPOIDetailsDrawer from "../drawers/poiDetails/NewPoiDetailsDrawer.js";
 
 const Container = styled.div`
   width: 100%;
