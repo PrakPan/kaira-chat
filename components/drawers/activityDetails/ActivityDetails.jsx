@@ -220,16 +220,17 @@ export default function ActivityDetails(props) {
               </div>
             )}
           </div>
-          {props.data?.city && (
+          {props.data?.hotel_pickup_included ?(
             <div>
               <span className="font-bold pr-1 text-[14px] font-semibold text-[#01202B]">
-                Address:
+                Hotel pickup Included
               </span>{" "}
-              <span className="text-[14px] text-[#01202B]">
-                {props.data.city}
-              </span>
             </div>
-          )}
+          ):(<div>
+            <span className="font-bold pr-1 text-[14px] font-semibold text-[#01202B]">
+              Hotel pickup Included? No
+            </span>{" "}
+          </div>)}
           {props.data?.tour_type && (
             <div>
               <span className="font-bold pr-1 text-[14px] font-semibold text-[#01202B]">
@@ -394,19 +395,21 @@ export default function ActivityDetails(props) {
           ) : null}
         </div>
         {props?.data?.cancellation_policies && (
-        <>
-          <div className="text-[20px] font-semibold">Cancellation Policies</div>
-          <div
-            dangerouslySetInnerHTML={{
-              __html: props?.data?.cancellation_policies,
-            }}
-            className="flex flex-col gap-1 text-sm ml-4"
-          ></div>
-        </>
-      )}
+          <>
+            <div className="text-[20px] font-semibold">
+              Cancellation Policies
+            </div>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: props?.data?.cancellation_policies,
+              }}
+              className="flex flex-col gap-1 text-sm ml-4"
+            ></div>
+          </>
+        )}
       </div>
       <div
-        className={`border-t-2 fixed bottom-0 right-0 left-0  gap-1 py-[12px] px-[20px] bg-white shadow-md z-50 
+        className={`scroll-none border-t-2 fixed bottom-0 right-0 left-0  gap-1 py-[12px] px-[20px] bg-white shadow-md z-50 
         `}
       >
         <div className="flex justify-between items-center">

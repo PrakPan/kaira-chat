@@ -120,7 +120,6 @@ const ScrollContainer = styled.div`
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
 const POIDetails = (props) => {
-  const isDesktop = useMediaQuery("(min-width:768px)");
   const isSmallScreen = useMediaQuery("(max-width:586px)");
   const router = useRouter();
   const [loading, setLoading] = useState(false);

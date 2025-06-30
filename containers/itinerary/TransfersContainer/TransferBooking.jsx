@@ -17,35 +17,10 @@ import TransferEditDrawer, {
 import Details from "./FlightDetail2";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
-import VehicleDetailModal from "../../../components/modals/daybyday/VehicleModal";
-import TaxiDetailModal from "../../../components/modals/daybyday/TaxiDetailModal";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { FaPlaneDeparture } from "react-icons/fa";
-import VehicleDetailLoader from "../../../components/modals/daybyday/VehicleDetailLoader";
-import { TbArrowBack } from "react-icons/tb";
-import { PulseLoader } from "react-spinners";
-import Image from "next/image";
-import { Generalbuttonstyle } from "../../../components/ui/button/Generallinkbutton";
-import FlightDetailModal from "../../../components/modals/daybyday/FlightDetailModal";
-import { AiOutlineDown, AiOutlineRight } from "react-icons/ai";
 import TransferDrawer from "../TransferDrawer";
-const FloatingView = styled.div`
-  position: sticky;
-  bottom: 60px;
-  left: 100%;
-  background: black;
-  color: white;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 16px;
-  z-index: 2;
-  cursor: pointer;
-`;
 
 const LineContainer = styled.div`
   position: absolute;
@@ -72,31 +47,6 @@ const HalfLine = styled.div`
   background-repeat: repeat-y;
 `;
 
-const Line2 = styled.hr`
-  background-image: linear-gradient(90deg, transparent 50%, #fff 60%, #fff 100%),
-    ${(props) =>
-      props.pinColour
-        ? `linear-gradient(87deg, ${props.pinColour},${props.pinColour}, #000)`
-        : `linear-gradient(87deg,  #f7e700,#0d6efd)`};
-
-  background-size: 8px 3px, 100% 3px;
-  color: #c80000;
-  -webkit-transform: rotate(90deg);
-  position: absolute;
-  height: 1px;
-  border: 2px;
-  width: ${(props) => (props?.Transfers ? `16rem` : `5rem`)};
-  top: ${(props) => (props?.lastend ? `101px` : `23px`)};
-  right: ${(props) => (props?.Transfers ? `-110px` : `-22px`)};
-  opacity: initial;
-  z-index: -1;
-  @media screen and (min-width: 768px) {
-    width: 8.4rem;
-    height: 1px;
-    top: 40px;
-    right: -50px;
-  }
-`;
 
 const Container = styled.div`
   display: grid;
@@ -117,16 +67,6 @@ const ComboContainer = styled.div`
     min-height: 8rem;
   }
 `;
-
-const CITY_COLOR_CODES = [
-  "#359EBF", // shade of blue
-  "#F0C631", // shade of yellow
-  "#BF3535", // shade of red
-  "#47691e", // shade of green
-  "#cc610a", // shade of orange
-  "#008080", // shade of teal
-  "#7d5e7d", // shade of purple
-];
 
 const TransferBooking = ({
   index,
@@ -176,7 +116,7 @@ const TransferBooking = ({
   const [showVehicleDrawer, setShowVehicleDrawer] = useState(false);
   const [vehicleDetails, setVehicleDetails] = useState(null);
   const [handleShow,setHandleShow]= useState(false);
-  const { itinerary_status, transfers_status, pricing_status } = useSelector(
+  const {  transfers_status } = useSelector(
     (state) => state.ItineraryStatus
   );
 

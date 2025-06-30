@@ -161,7 +161,6 @@ export default function Drawer(props) {
               <DrawerContainer
                 fade={fade}
                 anchor={props.anchor}
-                className="drawerContainer"
                 style={{ ...props.style }}
                 top={props.top}
                 mobileTop={props.mobileTop}
@@ -171,6 +170,8 @@ export default function Drawer(props) {
                 height={props.height}
                 bgColor={props.bgColor}
                 centered={props.centered}
+                className={`drawerContainer ${props.className || ""}`}
+
               >
                 <div>{props.children}</div>
               </DrawerContainer>

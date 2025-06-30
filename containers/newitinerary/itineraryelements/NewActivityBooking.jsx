@@ -13,6 +13,8 @@ import { MERCURY_HOST } from "../../../services/constants";
 import Button from "../../../components/ui/button/Index";
 import RecommendedBadge from "./Recommended";
 
+const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
+
 export default function NewActivityBooking(props) {
   const [stars, setStars] = useState(null);
   const [imageLoaded, setImageLoaded] = useState(false);

@@ -164,9 +164,7 @@ const Details = ({
       const res = await axios.get(
         `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/flight/${booking_id}`
       );
-      setFareRules(
-        res?.data?.cancellation_policies
-      );
+      setFareRules(res?.data?.cancellation_policies);
       setSegments(res?.data?.transfer_details?.items?.[0]?.segments);
       setFareRulesLoading(false);
     } else {
@@ -490,6 +488,32 @@ const FlightSegment = ({ segments }) => {
                     <span className=" text[18px] font-semibold text-left pr-2.5">
                       {segment[key]}
                     </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex  items-start justify-between gap-[20px] text-xs mt-4 w-full">
+                {["cabin_class",].map((key) => (
+                  <div
+                    key={key}
+                    className="flex flex-col gap-2 p-[10px] w-[calc(50%_-_10px)] bg-[#6464640C] rounded-[8px]"
+                  >
+                    <>
+                      <span className="font-normal text-left pr-2.5 text-[14px]">
+                        {key
+                          .split("_")
+                          .map(
+                            (word) =>
+                              word.charAt(0).toUpperCase() + word.slice(1)
+                          )
+                          .join(" ")}
+                      </span>
+                      <span className=" text[18px] font-semibold text-left pr-2.5">
+                        {segment?.airline[key]
+                          ? segment?.airline[key]
+                          : segment[key]}
+                      </span>
+                    </>
                   </div>
                 ))}
               </div>

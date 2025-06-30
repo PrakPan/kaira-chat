@@ -97,7 +97,7 @@ export default function NewHotelBooking({
                       </div>
                     )}
 
-                    {booking?.rating_ext ? (
+                    {booking?.rating_ext>0.0 ? (
                       <div className="gap-1 flex flex-row  items-center">
                         <div className="flex flex-row text-[#FFD201]">
                           {starRating(booking?.rating_ext)}
