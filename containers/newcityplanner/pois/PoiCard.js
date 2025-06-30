@@ -7,6 +7,8 @@ import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
 
 
+
+
 const LeftSlideIn = keyframes`
   from {
     transform: translateX(0%);
