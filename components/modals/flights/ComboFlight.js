@@ -116,7 +116,7 @@ const ComboFlight = (props) => {
     departure_time_period: "",
     arrival_time_period: "",
     airline_name: "",
-    sort_by: "Price",
+    sort_by: "price",
   });
   const { number_of_adults, number_of_children, number_of_infants } =
     useSelector((state) => state.Itinerary);

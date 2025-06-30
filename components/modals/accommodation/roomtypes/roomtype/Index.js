@@ -112,15 +112,6 @@ const RoomType = (props) => {
                         </p>
                       ) : (
                         <div className="flex flex-row items-center bg-[#FAFAFA] text-[#7A7A7A] text-[12px] px-1 gap-2 rounded-sm">
-                          <div className="flex items-center">
-                            <Image
-                              src="https://d31aoa0ehgvjdi.cloudfront.net/media/themes/restaurant-icon.png"
-                              height={12}
-                              width={12}
-                              className="object-contain"
-                              alt="restaurant"
-                            />
-                          </div>
                           <div>{props?.data?.board_basis?.description}</div>
                         </div>
                       )

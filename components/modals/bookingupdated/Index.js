@@ -658,7 +658,7 @@ const Booking = (props) => {
               )}
             </div>
 
-            <div className="lg:sticky lg:w-[50vw] w-[100vw] py-2 top-0 bg-white z-[900]">
+            <div className="lg:w-[50vw] w-[100vw] py-2 top-0 bg-white z-[900]">
               <SectionOne
                 booking_city={
                   props?.selectedBooking?.city ||
