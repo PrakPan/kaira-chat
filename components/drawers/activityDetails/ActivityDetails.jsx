@@ -249,7 +249,7 @@ export default function ActivityDetails(props) {
             </div>
           )}
 
-          <div className="flex items-center gap-4 flex-wrap mt-2 text-[14px] text-gray-800">
+          <div className="flex items-center gap-4 flex-wraptext-[14px] text-gray-800">
             {/* Tour Type */}
             {props?.data?.tour_type === "Private Tour" && (
               <div className="flex items-center gap-1">
