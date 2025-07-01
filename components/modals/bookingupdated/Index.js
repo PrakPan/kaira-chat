@@ -680,7 +680,7 @@ const Booking = (props) => {
                 handleClose={handleClose}
               ></SectionOne>
 
-              {loading && <ItineraryStatusLoader displayText={"Finding best hotels for you"} isVisible={loading}/>}
+              
 
               <SectionTwo
                 loading={loading}
@@ -705,6 +705,10 @@ const Booking = (props) => {
                 filters={filters}
                 setFilters={setFilters}
               ></SectionTwo>
+            </div>
+
+            <div className="flex items-center justify-center sticky top-2/3 z-[900]">
+              {loading && <ItineraryStatusLoader displayText={"Finding best hotels for you"} isVisible={loading}/>}
             </div>
 
             <div className="lg:w-[100%] w-[95%] mx-auto">
