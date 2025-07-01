@@ -43,42 +43,6 @@ const OptionsContainer = styled.div`
     margin: auto;
   }
 `;
-import axios from "axios";
-import setItinerary from "../../../store/actions/itinerary";
-import PoiDetailsSkeleton from "./PoiDetailsSkelton";
-import { TbArrowBack } from "react-icons/tb";
-import useMediaQuery from "../../media";
-import styled from "styled-components";
-import BackArrow from "../../ui/BackArrow";
-
-const FloatingView = styled.div`
-  position: sticky;
-  bottom: 100px;
-  left: 100%;
-  background: black;
-  color: white;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 16px;
-  z-index: 51;
-  cursor: pointer;
-`;
-
-const OptionsContainer = styled.div`
-  min-height: 40vh;
-  overflow-x: hidden;
-  position: relative;
-
-  @media screen and (min-width: 768px) {
-    min-height: 80vh;
-    width: 95%;
-    margin: auto;
-  }
-`;
 
 const NewPoiDetailsDrawer = (props) => {
   const isDesktop = useMediaQuery("(min-width:767px)");
