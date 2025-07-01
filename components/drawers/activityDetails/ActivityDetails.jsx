@@ -74,7 +74,6 @@ export default function ActivityDetails(props) {
   };
 
   const handleAmenityChange = async (index, included) => {
-    console.log("included is:", included);
     let amenities = props.data?.amenities.filter(
       (amenity, i) => i !== index && amenity.included
     );
@@ -86,7 +85,6 @@ export default function ActivityDetails(props) {
     const res = await props.fetchData({
       amenities: amenities.map((amenity) => amenity?.id),
     });
-    console.log("res is:", res?.data);
   };
 
   return (

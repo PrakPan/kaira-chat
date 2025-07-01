@@ -21,7 +21,7 @@ import ImageLoader from "../../ImageLoader";
 import Button from "../../ui/button/Index";
 import Drawer from "../../ui/Drawer";
 import AddPoi from "../AddPoi";
-import { imgUrlEndPoint } from "../../theme/ThemeConstants";
+
 
 export const Title = styled.p`
   font-weight: 800;
@@ -98,7 +98,6 @@ const Child = styled.div`
   grid-area: ${(props) => props.area};
   ${(props) => props.className && `class="${props.className}"`};
 `;
-
 const ScrollContainer = styled.div`
   display: flex;
   gap: 21px;
@@ -110,144 +109,15 @@ const ScrollContainer = styled.div`
   &::-webkit-scrollbar {
     display: none;
   }
+
+  // const Heading = styled.div
 `;
-
+// const Heading = styled.div`
+//   font-weight: 600;
+//   font-size: 20px;
+//   margin-block: 1rem 1rem;
+// `;
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
-
-class ImageRequestThrottler {
-  constructor() {
-    this.queue = [];
-    this.processing = false;
-    this.delay = 800; 
-    this.maxRetries = 1; 
-  }
-
-  async processQueue() {
-    if (this.processing || this.queue.length === 0) return;
-    
-    this.processing = true;
-    
-    while (this.queue.length > 0) {
-      const request = this.queue.shift();
-      try {
-        await this.processRequest(request);
-      } catch (error) {
-        console.error('Image request failed:', error);
-
-        request.onError(request.index);
-      }
-      
-      
-      if (this.queue.length > 0) {
-        await new Promise(resolve => setTimeout(resolve, this.delay));
-      }
-    }
-    
-    this.processing = false;
-  }
-
-  async processRequest(request) {
-    const { imageData, index, onSuccess, onError, retryCount = 0 } = request;
-    
-    try {
-      const imageUrl = this.getImageUrl(imageData);
-      
-      if (imageUrl.includes('noroom.png')) {
-        onSuccess(index, imageUrl);
-        return;
-      }
-      
-    
-      if (!this.isValidImageUrl(imageUrl)) {
-        throw new Error('Invalid image URL');
-      }
-      
-      await this.testImageLoad(imageUrl);
-      onSuccess(index, imageUrl);
-      
-    } catch (error) {
-      console.warn(`Image load failed for index ${index}:`, error.message);
-      
-      if (retryCount < this.maxRetries && !error.message.includes('400')) {
-        const retryDelay = Math.pow(2, retryCount) * 1000;
-        setTimeout(() => {
-          this.queue.unshift({ 
-            ...request, 
-            retryCount: retryCount + 1 
-          });
-          this.processQueue();
-        }, retryDelay);
-      } else {
-        onError(index);
-      }
-    }
-  }
-
-  testImageLoad(imageUrl) {
-    return new Promise((resolve, reject) => {
-      const img = new window.Image();
-      const timeout = setTimeout(() => {
-        reject(new Error('Image load timeout'));
-      }, 8000); 
-      
-      img.onload = () => {
-        clearTimeout(timeout);
-        resolve();
-      };
-      
-      img.onerror = (e) => {
-        clearTimeout(timeout);
-        reject(new Error('Image load failed - possibly 400 Bad Request'));
-      };
-      
-      img.src = imageUrl;
-    });
-  }
-
-  isValidImageUrl(url) {
-    try {
-      const urlObj = new URL(url);
-      return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
-    } catch {
-      return false;
-    }
-  }
-
-  getImageUrl(imageData) {
-  
-    if (imageData && 
-        imageData.photo_reference && 
-        typeof imageData.photo_reference === 'string' && 
-        imageData.photo_reference.trim() !== '' &&
-        imageData.photo_reference !== 'null' &&
-        imageData.photo_reference !== 'undefined') {
-      
-
-      const cleanPhotoRef = imageData.photo_reference.trim();
-      return `${MERCURY_HOST}/api/v1/geos/photo/${encodeURIComponent(cleanPhotoRef)}`;
-    }
-    
-  
-    return `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
-  }
-
-  addRequest(imageData, index, onSuccess, onError) {
-    if (!imageData) {
-      onError(index);
-      return;
-    }
-
-    this.queue.push({
-      imageData,
-      index,
-      onSuccess,
-      onError
-    });
-    this.processQueue();
-  }
-}
-
-const imageThrottler = new ImageRequestThrottler();
 
 const POIDetails = (props) => {
   const isDesktop = useMediaQuery("(min-width:768px)");
@@ -261,7 +131,6 @@ const POIDetails = (props) => {
   const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
   const [showDrawer, setShowDrawer] = useState(false);
-  const [mainImageError, setMainImageError] = useState(false);
 
   const [ImagesLoaded, setImagesLoaded] = useState({
     0: false,
@@ -277,63 +146,17 @@ const POIDetails = (props) => {
     3: false,
   });
 
-  const [ImageUrls, setImageUrls] = useState({
-    0: null,
-    1: null,
-    2: null,
-    3: null,
-  });
-
-  useEffect(() => {
-    if (props?.data?.extra_images?.length > 0) {
-      props.data.extra_images.forEach((imageData, index) => {
-        if (index < 4) { 
-          console.log(`Loading image ${index}:`, imageData);
-          imageThrottler.addRequest(
-            imageData,
-            index,
-            handleImageSuccess,
-            handleImageError
-          );
-        }
-      });
-    }
-  }, [props?.data?.extra_images]);
-
-  const handleImageSuccess = (index, imageUrl) => {
-    console.log(`Image ${index} loaded successfully:`, imageUrl);
-    setImageUrls(prev => ({ ...prev, [index]: imageUrl }));
-    setTimeout(() => {
-      setImagesLoaded(prev => ({ ...prev, [index]: true }));
-    }, 100);
-  };
-
-  const handleImageError = (index) => {
-    console.log(`Image ${index} failed, using fallback`);
-    setImagesError(prev => ({ ...prev, [index]: true }));
-    const fallbackUrl = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
-    setImageUrls(prev => ({ 
-      ...prev, 
-      [index]: fallbackUrl
-    }));
-    setTimeout(() => {
-      setImagesLoaded(prev => ({ ...prev, [index]: true }));
-    }, 100);
-  };
-
   function OnImageLoad(i) {
-    
-  }
-
-  const getImageSrc = (imageData, index) => {
-   
-    if (ImageUrls[index]) {
-      return ImageUrls[index];
+    if (!ImagesLoaded[i]) {
+      setTimeout(
+        () =>
+          setImagesLoaded((prev) => {
+            return { ...prev, [i]: true };
+          }),
+        1000
+      );
     }
-    
-   
-    return `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
-  };
+  }
 
   const handleDelete = async (e) => {
     if (!token) {
@@ -376,6 +199,7 @@ const POIDetails = (props) => {
         });
         newItinerary.cities = itineraryCities;
         props?.handleCloseDrawer(e);
+        // props?.getPaymentHandler();
 
         dispatch(setItinerary(newItinerary));
         dispatch(
@@ -404,7 +228,11 @@ const POIDetails = (props) => {
   };
 
   function OnImageError(i) {
-    // This is now handled by the throttler
+    if (!ImagesError[i]) {
+      setImagesError((prev) => {
+        return { ...prev, [i]: true };
+      });
+    }
   }
 
   var experience_filters = (
@@ -431,11 +259,11 @@ const POIDetails = (props) => {
 
   var stars = [];
   for (let i = 0; i < Math.floor(props.data.rating); i++) {
-    stars.push(<FaStar key={`star-${i}`} />);
+    stars.push(<FaStar />);
   }
 
   if (Math.floor(props.data.rating) < props.data.rating)
-    stars.push(<FaStarHalfAlt key="half-star" />);
+    stars.push(<FaStarHalfAlt />);
 
   return (
     <>
@@ -480,7 +308,11 @@ const POIDetails = (props) => {
               <GridImage>
                 <Child area="1 / 1 / 5 / 4" className="div1">
                   <Image
-                    src={getImageSrc(props?.data?.extra_images?.[0], 0)}
+                    src={
+                      props?.data?.extra_images?.[0]
+                        ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[0]?.photo_reference}`
+                        : "/media/icons/bookings/notfounds/noroom.png"
+                    }
                     alt="Image 0"
                     fill
                     className="object-cover"
@@ -501,15 +333,18 @@ const POIDetails = (props) => {
 
                 <Child area="1 / 8 / 5 / 11" className="div2 rounded-lg">
                   <Image
-                    src={getImageSrc(props?.data?.extra_images?.[1], 1)}
+                    src={
+                      props?.data?.extra_images?.[1]
+                        ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[1]?.photo_reference}`
+                        : "/media/icons/bookings/notfounds/noroom.png"
+                    }
                     alt="Image 1"
                     fill
                     className="object-cover"
                     onLoad={() => OnImageLoad(1)}
                     onError={() => OnImageError(1)}
                     priority
-                  />
-
+                  />{" "}
                   <div
                     style={{
                       display: !ImagesLoaded[1] ? "initial" : "none",
@@ -523,7 +358,11 @@ const POIDetails = (props) => {
 
                 <Child area="1 / 4 / 3 / 8" className="div3">
                   <Image
-                    src={getImageSrc(props?.data?.extra_images?.[2], 2)}
+                    src={
+                      props?.data?.extra_images?.[2]
+                        ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[2]?.photo_reference}`
+                        : "/media/icons/bookings/notfounds/noroom.png"
+                    }
                     alt="Image 2"
                     fill
                     className="object-cover"
@@ -531,7 +370,6 @@ const POIDetails = (props) => {
                     onError={() => OnImageError(2)}
                     priority
                   />
-
                   <div
                     style={{
                       display: !ImagesLoaded[2] ? "initial" : "none",
@@ -545,7 +383,11 @@ const POIDetails = (props) => {
 
                 <Child area="3 / 4 / 5 / 8" className="div4">
                   <Image
-                    src={getImageSrc(props?.data?.extra_images?.[3], 3)}
+                    src={
+                      props?.data?.extra_images?.[3]
+                        ? `${MERCURY_HOST}/api/v1/geos/photo/${props?.data?.extra_images?.[3]?.photo_reference}`
+                        : "/media/icons/bookings/notfounds/noroom.png"
+                    }
                     alt="Image 3"
                     fill
                     className="object-cover"
@@ -569,16 +411,15 @@ const POIDetails = (props) => {
                 <ImageLoader
                   fit="cover"
                   url={
-                    mainImageError
-                      ? "media/website/grey.png"
-                      : props?.data?.image || "media/website/grey.png"
+                    props?.data?.image
+                      ? props?.data?.image
+                      : "media/website/grey.png"
                   }
                   dimensions={{ width: 1600, height: 608 }}
                   dimensionsMobile={{ width: 1600, height: 608 }}
                   width="100%"
                   borderRadius="5px"
                   className="rounded-md"
-                  onError={() => setMainImageError(true)}
                 ></ImageLoader>
               </>
             )}
@@ -678,21 +519,25 @@ const POIDetails = (props) => {
                     {props.data?.rating ? (
                       <p className="m-0">{props.data.rating}</p>
                     ) : null}
+
+                    {/* {props.data?.user_ratings_total ? (
+                      <u> {props.data.user_ratings_total} user reviews</u>
+                    ) : null} */}
                   </div>
                 </Reviews>
               </div>
               {isSmallScreen ? (
                 <>
-                  {props?.data?.reviews?.map((item, index) => (
-                    <div key={index} className="w-full">
+                  {props?.data?.reviews?.map((item) => (
+                    <div className="w-full">
                       <ReviewPoi review={item} />
                     </div>
                   ))}
                 </>
               ) : (
                 <ScrollContainer>
-                  {props?.data?.reviews?.map((item, index) => (
-                    <div key={index} className="w-[289px]">
+                  {props?.data?.reviews?.map((item) => (
+                    <div className="w-[289px]">
                       <ReviewPoi review={item} />
                     </div>
                   ))}
@@ -703,8 +548,8 @@ const POIDetails = (props) => {
           {props.data?.tips && props.data?.tips.length > 0 ? (
             <div>
               <Heading>Tips</Heading>
-              {props?.data?.tips.map((item, index) => (
-                <Text key={index}>{item}</Text>
+              {props?.data?.tips.map((item) => (
+                <Text>{item}</Text>
               ))}
             </div>
           ) : (
@@ -720,14 +565,14 @@ const POIDetails = (props) => {
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <g clipPath="url(#clip0_9135_4118)">
+                  <g clip-path="url(#clip0_9135_4118)">
                     <rect
                       y="0.800781"
                       width="22.4"
                       height="22.4"
                       rx="4"
                       fill="#169873"
-                      fillOpacity="0.09"
+                      fill-opacity="0.09"
                     />
                     <path
                       d="M13.2 18L9.20001 16.6L6.10001 17.8C5.87779 17.8889 5.67223 17.8639 5.48335 17.725C5.29446 17.5861 5.20001 17.4 5.20001 17.1667V7.83333C5.20001 7.68889 5.24168 7.56111 5.32501 7.45C5.40835 7.33889 5.52223 7.25556 5.66668 7.2L9.20001 6L13.2 7.4L16.3 6.2C16.5222 6.11111 16.7278 6.13611 16.9167 6.275C17.1056 6.41389 17.2 6.6 17.2 6.83333V16.1667C17.2 16.3111 17.1583 16.4389 17.075 16.55C16.9917 16.6611 16.8778 16.7444 16.7333 16.8L13.2 18ZM12.5333 16.3667V8.56667L9.86668 7.63333V15.4333L12.5333 16.3667ZM13.8667 16.3667L15.8667 15.7V7.8L13.8667 8.56667V16.3667ZM6.53335 16.2L8.53335 15.4333V7.63333L6.53335 8.3V16.2Z"
@@ -735,6 +580,34 @@ const POIDetails = (props) => {
                     />
                   </g>
                   <defs>
+                    <clipPath id="clip0_9135_4118">
+                      <rect
+                        y="0.800781"
+                        width="22.4"
+                        height="22.4"
+                        rx="4"
+                        fill="white"
+                      />
+                    </clipPath>
+                  </defs>
+                  <g
+                    xmlns="http://www.w3.org/2000/svg"
+                    clip-path="url(#clip0_9135_4118)"
+                  >
+                    <rect
+                      y="0.800781"
+                      width="22.4"
+                      height="22.4"
+                      rx="4"
+                      fill="#169873"
+                      fill-opacity="0.09"
+                    />
+                    <path
+                      d="M13.2 18L9.20001 16.6L6.10001 17.8C5.87779 17.8889 5.67223 17.8639 5.48335 17.725C5.29446 17.5861 5.20001 17.4 5.20001 17.1667V7.83333C5.20001 7.68889 5.24168 7.56111 5.32501 7.45C5.40835 7.33889 5.52223 7.25556 5.66668 7.2L9.20001 6L13.2 7.4L16.3 6.2C16.5222 6.11111 16.7278 6.13611 16.9167 6.275C17.1056 6.41389 17.2 6.6 17.2 6.83333V16.1667C17.2 16.3111 17.1583 16.4389 17.075 16.55C16.9917 16.6611 16.8778 16.7444 16.7333 16.8L13.2 18ZM12.5333 16.3667V8.56667L9.86668 7.63333V15.4333L12.5333 16.3667ZM13.8667 16.3667L15.8667 15.7V7.8L13.8667 8.56667V16.3667ZM6.53335 16.2L8.53335 15.4333V7.63333L6.53335 8.3V16.2Z"
+                      fill="#169873"
+                    />
+                  </g>
+                  <defs xmlns="http://www.w3.org/2000/svg">
                     <clipPath id="clip0_9135_4118">
                       <rect
                         y="0.800781"
@@ -761,14 +634,13 @@ const POIDetails = (props) => {
                 <a
                   href={`https://www.google.com/maps/place/?q=place_id:${props?.data?.gmaps_place_id}`}
                   target="_blank"
-                  rel="noopener noreferrer"
                   style={{ color: "#0000EE", fontSize: "14px" }}
                 >
                   View on Google Maps
                 </a>
               </div>
 
-              {!(props?.removeDelete == true) && props?.version != "v1" && (
+              {!(props?.removeDelete == true) && props?.version != "v1" &&  (
                 <button
                   className=" right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
                   onClick={handleDelete}
@@ -778,7 +650,7 @@ const POIDetails = (props) => {
                       className="flex gap-1 items-center p-1"
                       style={loading ? { visibility: "hidden" } : {}}
                     >
-                      <Image src="/delete.svg" width={"20"} height={"20"} alt="Delete" />{" "}
+                      <Image src="/delete.svg" width={"20"} height={"20"} />{" "}
                       Remove from Itinerary
                     </div>
                     {loading && (
