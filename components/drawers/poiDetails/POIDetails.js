@@ -22,7 +22,6 @@ import Button from "../../ui/button/Index";
 import Drawer from "../../ui/Drawer";
 import AddPoi from "../AddPoi";
 
-
 export const Title = styled.p`
   font-weight: 800;
   font-size: 20px;
@@ -130,6 +129,7 @@ const POIDetails = (props) => {
   const token = useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
   const [showDrawer, setShowDrawer] = useState(false);
+  const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
 
   const [ImagesLoaded, setImagesLoaded] = useState({
     0: false,
@@ -316,7 +316,10 @@ const POIDetails = (props) => {
                     fill
                     className="object-cover"
                     onLoad={() => OnImageLoad(0)}
-                    onError={() => OnImageError(0)}
+                    onError={(e) => {
+                      e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
+                      OnImageError(0);
+                    }}
                     priority
                   />
                   <div
@@ -341,7 +344,10 @@ const POIDetails = (props) => {
                     fill
                     className="object-cover"
                     onLoad={() => OnImageLoad(1)}
-                    onError={() => OnImageError(1)}
+                    onError={(e) => {
+                      e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
+                      OnImageError(1);
+                    }}
                     priority
                   />{" "}
                   <div
@@ -366,7 +372,10 @@ const POIDetails = (props) => {
                     fill
                     className="object-cover"
                     onLoad={() => OnImageLoad(2)}
-                    onError={() => OnImageError(2)}
+                    onError={(e) => {
+                      e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
+                      OnImageError(2);
+                    }}
                     priority
                   />
                   <div
@@ -391,7 +400,10 @@ const POIDetails = (props) => {
                     fill
                     className="object-cover"
                     onLoad={() => OnImageLoad(3)}
-                    onError={() => OnImageError(3)}
+                    onError={(e) => {
+                      e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
+                      OnImageError(3);
+                    }}
                     priority
                   />
                   <div
@@ -639,7 +651,7 @@ const POIDetails = (props) => {
                 </a>
               </div>
 
-              {!(props?.removeDelete == true) && props?.version != "v1" &&  (
+              {!(props?.removeDelete == true) && props?.version != "v1" && (
                 <button
                   className=" right-0  text-white p-1 rounded-lg flex items-center justify-center bg-[#ba2121] hover:bg-[#a41515]"
                   onClick={handleDelete}

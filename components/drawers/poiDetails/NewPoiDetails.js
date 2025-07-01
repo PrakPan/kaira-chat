@@ -1,14 +1,13 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import media from "../../media";
-import ImageLoader from "../../ImageLoader";
 import SkeletonCard from "../../ui/SkeletonCard";
 import CheckboxFormComponent from "../../../components/FormComponents/CheckboxFormComponent";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import { dateFormat } from "../../../helper/DateUtils";
-import { FaStar, FaStarHalfAlt, FaClock } from "react-icons/fa";
+import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import { FaPerson } from "react-icons/fa6";
-import { IoIosArrowDown, IoIosArrowUp, IoMdClose } from "react-icons/io";
+import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { IoFastFood, IoTicket } from "react-icons/io5";
 import { MdTransferWithinAStation } from "react-icons/md";
 import { BiSolidCustomize } from "react-icons/bi";
@@ -19,7 +18,6 @@ import styled from "styled-components";
 import ReviewPoi from "../../../components/POIDetails/Reviews";
 import { MERCURY_HOST } from "../../../services/constants";
 import Button from "../../../components/ui/button/Index";
-import { PulseLoader } from "react-spinners";
 
 export const Title = styled.p`
   font-weight: 800;
@@ -47,35 +45,6 @@ export const Text = styled.p`
 export const Heading = styled.p`
   font-size: 18px;
   font-weight: 800;
-`;
-
-const Container = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  font-family: Lexend;
-  padding: ${(props) => (props.itineraryDrawer ? "0 1rem 1rem 1rem" : "1rem")};
-`;
-
-const BackContainer = styled.div`
-  margin: 0;
-  display: flex;
-  gap: 0.5rem;
-  position: sticky;
-  z-index: 1;
-  background: white;
-  top: 0;
-  padding-block: 0.75rem;
-
-  @media screen and (min-width: 768px) {
-    padding-block: 1rem;
-  }
-`;
-
-const BackText = styled.div`
-  font-size: 1.5rem;
-  line-height: 2rem;
 `;
 
 const GridImage = styled.div`
@@ -115,8 +84,7 @@ const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
 export default function PoiDetails(props) {
   const isSmallScreen = media("(max-width:586px)");
-
-  let isPageWide = media("(min-width: 768px)");
+  const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
   const [stars, setStars] = useState([]);
   const [inclusiveCost, setInclusiveCost] = useState([]);
   const token = useSelector((state) => state.auth.token);
@@ -155,18 +123,6 @@ export default function PoiDetails(props) {
     }
   }
 
-  function OnImageError(i) {
-    if (!ImagesError[i]) {
-      setImagesError((prev) => {
-        return { ...prev, [i]: true };
-      });
-    }
-  }
-
-
-
-  
-
   useEffect(() => {
     if (props.data?.amenities?.length) {
       for (let amenity of props.data.amenities) {
@@ -201,14 +157,21 @@ export default function PoiDetails(props) {
       setLoading(false);
       return;
     }
-    props.updatedActivityBooking().then((res)=>{
+    props.updatedActivityBooking().then((res) => {
       setLoading(false);
-      if (res!=0){
-      props?.setShowDrawer(false);
-      props?.handleCloseDrawer(e)
+      if (res != 0) {
+        props?.setShowDrawer(false);
+        props?.handleCloseDrawer(e);
       }
     });
   };
+  function OnImageError(i) {
+    if (!ImagesError[i]) {
+      setImagesError((prev) => {
+        return { ...prev, [i]: true };
+      });
+    }
+  }
 
   return (
     <div className="flex flex-col gap-4 pb-[100px] h-[100vh] overflow-y-auto">
@@ -216,7 +179,6 @@ export default function PoiDetails(props) {
         <div className=" z-1 flex flex-row items-center gap-2 pt-4 bg-white">
           <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
         </div>
-
         <div className={`flex flex-col gap-4 `}>
           {props?.data?.extra_images?.length > 0 && (
             <GridImage>
@@ -231,7 +193,10 @@ export default function PoiDetails(props) {
                   fill
                   className="object-cover"
                   onLoad={() => OnImageLoad(0)}
-                  onError={() => OnImageError(0)}
+                  onError={(e) => {
+                    e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
+                    OnImageError(0);
+                  }}
                   priority
                 />
                 <div
@@ -256,7 +221,10 @@ export default function PoiDetails(props) {
                   fill
                   className="object-cover"
                   onLoad={() => OnImageLoad(1)}
-                  onError={() => OnImageError(1)}
+                  onError={(e) => {
+                    e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
+                    OnImageError(1);
+                  }}
                   priority
                 />{" "}
                 <div
@@ -281,7 +249,10 @@ export default function PoiDetails(props) {
                   fill
                   className="object-cover"
                   onLoad={() => OnImageLoad(2)}
-                  onError={() => OnImageError(2)}
+                  onError={(e) => {
+                    e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
+                    OnImageError(2);
+                  }}
                   priority
                 />
                 <div
@@ -306,7 +277,10 @@ export default function PoiDetails(props) {
                   fill
                   className="object-cover"
                   onLoad={() => OnImageLoad(3)}
-                  onError={() => OnImageError(3)}
+                  onError={(e) => {
+                    e.currentTarget.src = `${imgUrlEndPoint}/media/icons/bookings/notfounds/noroom.png`;
+                    OnImageError(3);
+                  }}
                   priority
                 />
                 <div
@@ -741,23 +715,20 @@ export default function PoiDetails(props) {
         </div>
 
         <div className="border-t-2 fixed bottom-0 right-0 left-0 flex justify-end gap-1 py-[12px] px-[20px] bg-white shadow-md z-50">
-          <div className="flex flex-col gap-1">
-            
-              <Button
-                onclick={handleUpdate}
-                bgColor={"#F7E700"}
-                borderRadius="8px"
-                fontWeight="400"
-                hoverColor="white"
-                height={"full"}
-                padding={"8px 16px"}
-                loading={loading}
-              >
-                
-                  <>{props.data?.city && "Add to Itinerary"}</>
-              </Button>
-
-            {dateFormat(props?.date)}
+          <div className="flex  flex-col gap-1">
+            <Button
+              onclick={handleUpdate}
+              bgColor={"#F7E700"}
+              borderRadius="8px"
+              fontWeight="400"
+              hoverColor="white"
+              height={"full"}
+              padding={"8px 16px"}
+              loading={loading}
+            >
+              <>{props.data?.city && "Add to Itinerary"}</>
+            </Button>
+            <>on {dateFormat(props?.date)}</>
           </div>
         </div>
       </div>

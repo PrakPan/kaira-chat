@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from "react";
 import ImageLoader from "../../../components/ImageLoader";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
-import styled from "styled-components";
 import { getIndianPrice } from "../../../services/getIndianPrice";
 import ActivityDetailsDrawer from "../../../components/drawers/activityDetails/ActivityDetailsDrawer";
 import SkeletonCard from "../../../components/ui/SkeletonCard";
 import { TransparentButton } from "../../../containers/itinerary/New_Itenary_DBD/New_itenaryStyled";
 import { MdDoneAll } from "react-icons/md";
 import { convertDateFormat } from "../../../helper/ConvertDateFormat";
-import axios from "axios";
-import { MERCURY_HOST } from "../../../services/constants";
 import Button from "../../../components/ui/button/Index";
 import RecommendedBadge from "./Recommended";
+import Image from "next/image";
 
 const colors = ["#FFF4BF", "#FFE8DE", "#F5F0FF", "#DDF4C5"];
 
@@ -41,13 +39,13 @@ export default function NewActivityBooking(props) {
     setShowDetails({ show: false, data: {} });
   };
 
-   const handleClick = async (id) => {
-  //   const res = await axios.get(
-  //     `${MERCURY_HOST}/api/v1/ancillaries/activity/${id}`
-  //   );
+  const handleClick = async (id) => {
+    //   const res = await axios.get(
+    //     `${MERCURY_HOST}/api/v1/ancillaries/activity/${id}`
+    //   );
     setShowDetails({
       show: true,
-      data:"" //res?.data?.data?.activity,
+      data: "", //res?.data?.data?.activity,
     });
   };
 
@@ -126,14 +124,110 @@ export default function NewActivityBooking(props) {
                 )}
               </div>
 
-              <div className="my-2">
-                <div className=" text-sm text-[#01202B] line-clamp-3 text-[14px]">
-                  {props.data.short_description
-                    .split(" ")
-                    .slice(0, 40)
-                    .join(" ")}
-                  <span className="font-bold text-gray-500"> ...more</span>
+              {props.data?.experience_filters && (
+                <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
+                  {props.data.experience_filters?.slice(0, 2)?.map((e, i) => (
+                    <span
+                      key={i}
+                      className={`border-2 rounded-full px-2 py-1`}
+                      style={{ backgroundColor: colors[i % colors.length] }}
+                    >
+                      {e}
+                    </span>
+                  ))}
+                  {props?.data?.experience_filters?.length > 2 && (
+                    <span className={`border-2 rounded-full px-2 py-1`}>
+                      +{props?.data?.experience_filters?.length - 2} more
+                    </span>
+                  )}
                 </div>
+              )}
+
+              {props.data?.hotel_pickup_included ? (
+                <div className="flex items-center gap-1 text-[14px] text-[#01202B] font-semibold">
+                  <Image
+                    src="/hotelPickupIncluded.svg"
+                    alt="hotel-pickup-included"
+                    width={20}
+                    height={20}
+                  />
+                  <span className="bg-[#e6f9ec] text-[#3BAF75] px-2 py-1 mb-0 rounded-md text-xs font-medium">
+                    Hotel Pickup Included
+                  </span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-1 text-[14px] text-[#01202B] font-semibold">
+                  <Image
+                    src="/notHotelPickupIncluded.svg"
+                    alt="not-hotel-pickup-included"
+                    width={20}
+                    height={20}
+                  />
+                  <span className="bg-[#ba2121] text-white px-2 py-1 mb-0 rounded-md text-xs font-medium">
+                    Hotel pickup not included
+                  </span>
+                </div>
+              )}
+
+              <div className="flex items-center gap-4 flex-wrap mt-2 text-[14px] text-gray-800">
+                {/* Tour Type */}
+                {props?.data?.tour_type === "Private Tour" && (
+                  <div className="flex items-center gap-1">
+                    <Image
+                      src="/privateTour.svg"
+                      alt="private-tour"
+                      width={20}
+                      height={20}
+                    />
+                    <span>Private Tour</span>
+                  </div>
+                )}
+                {props?.data?.tour_type === "Shared Tour" && (
+                  <div className="flex items-center gap-1">
+                    <Image
+                      src="/sharedTour.svg"
+                      alt="shared-tour"
+                      width={20}
+                      height={20}
+                    />
+                    <span>Shared Tour</span>
+                  </div>
+                )}
+
+                {/* Guide Type */}
+                {props?.data?.guide === "Guided" && (
+                  <div className="flex items-center gap-1">
+                    <Image
+                      src="/guided.svg"
+                      alt="guided"
+                      width={20}
+                      height={20}
+                    />
+                    <span>Guided</span>
+                  </div>
+                )}
+                {props?.data?.guide === "Self Guided" && (
+                  <div className="flex items-center gap-1">
+                    <Image
+                      src="/selfGuided.svg"
+                      alt="self-guided"
+                      width={20}
+                      height={20}
+                    />
+                    <span>Self Guided</span>
+                  </div>
+                )}
+                {props?.data?.guide === "Semi Guided" && (
+                  <div className="flex items-center gap-1">
+                    <Image
+                      src="/semiGuided.svg"
+                      alt="semi-guided"
+                      width={20}
+                      height={20}
+                    />
+                    <span>Semi Guided</span>
+                  </div>
+                )}
               </div>
             </div>
             <div className="flex flex-row items-center justify-between">
@@ -243,12 +337,108 @@ export default function NewActivityBooking(props) {
           </span>
         )}
 
-        <div className="my-2">
-          <div className=" text-sm text-[#01202B] line-clamp-3 text-[14px]">
-            {props.data.short_description.split(" ").slice(0, 40).join(" ")}
-            <span className="font-bold text-gray-500"> ...more</span>
+        {props.data?.experience_filters && (
+          <div className="text-[14px] flex flex-row items-center mt-2  gap-1 flex-wrap">
+            {props.data.experience_filters?.slice(0, 2)?.map((e, i) => (
+              <span
+                key={i}
+                className={`border-2 rounded-full px-2 py-1`}
+                style={{ backgroundColor: colors[i % colors.length] }}
+              >
+                {e}
+              </span>
+            ))}
+            {props?.data?.experience_filters?.length > 2 && (
+              <span className={`border-2 rounded-full px-2 py-1`}>
+                +{props?.data?.experience_filters?.length - 2} more
+              </span>
+            )}
           </div>
+        )}
+        <div className="mt-2 w-max-content">
+          {props.data?.hotel_pickup_included ? (
+            <div className="flex items-center gap-1 text-[14px] bg-[#e6f9ec] text-[#3BAF75] font-semibold rounded-sm w-max px-1">
+              <Image
+                src="/hotelPickupIncluded.svg"
+                alt="hotel-pickup-included"
+                width={20}
+                height={20}
+              />
+              <span className=" px-2 py-1 mb-0 rounded-md text-xs font-medium">
+                Hotel Pickup Included
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1 text-[14px] bg-[#FCE3DB] text-[#EE724B] font-semibold w-max rounded-sm px-1">
+              <Image
+                src="/notHotelPickupIncluded.svg"
+                alt="not-hotel-pickup-included"
+                width={20}
+                height={20}
+              />
+              <span className=" px-2 py-1 mb-0 rounded-md text-xs font-medium">
+                Hotel pickup not included
+              </span>
+            </div>
+          )}
         </div>
+
+        <div className="flex items-center gap-4 flex-wrap mt-2 text-[14px] text-gray-800">
+          {/* Tour Type */}
+          {props?.data?.tour_type === "Private Tour" && (
+            <div className="flex items-center gap-1">
+              <Image
+                src="/privateTour.svg"
+                alt="private-tour"
+                width={20}
+                height={20}
+              />
+              <span>Private Tour</span>
+            </div>
+          )}
+          {props?.data?.tour_type === "Shared Tour" && (
+            <div className="flex items-center gap-1">
+              <Image
+                src="/sharedTour.svg"
+                alt="shared-tour"
+                width={20}
+                height={20}
+              />
+              <span>Shared Tour</span>
+            </div>
+          )}
+
+          {/* Guide Type */}
+          {props?.data?.guide === "Guided" && (
+            <div className="flex items-center gap-1">
+              <Image src="/guided.svg" alt="guided" width={20} height={20} />
+              <span>Guided</span>
+            </div>
+          )}
+          {props?.data?.guide === "Self Guided" && (
+            <div className="flex items-center gap-1">
+              <Image
+                src="/selfGuided.svg"
+                alt="self-guided"
+                width={20}
+                height={20}
+              />
+              <span>Self Guided</span>
+            </div>
+          )}
+          {props?.data?.guide === "Semi Guided" && (
+            <div className="flex items-center gap-1">
+              <Image
+                src="/semiGuided.svg"
+                alt="semi-guided"
+                width={20}
+                height={20}
+              />
+              <span>Semi Guided</span>
+            </div>
+          )}
+        </div>
+
         <div className="flex flex-row items-center justify-between">
           {props.data?.pricing?.total_price ? (
             <div className="flex gap-1">
@@ -282,18 +472,18 @@ export default function NewActivityBooking(props) {
           </div>
         ) : (
           <div className="w-full flex justify-end">
-          <Button
-            bgColor={"#F7E700"}
-            borderRadius="8px"
-            fontWeight="400"
-            hoverColor="white"
-            height={"full"}
-            className="p-[12px] !w-full"
-            width={"100%"}
-            onclick={() => handleClick(props.data?.id)}
-          >
-            View Detail
-          </Button>
+            <Button
+              bgColor={"#F7E700"}
+              borderRadius="8px"
+              fontWeight="400"
+              hoverColor="white"
+              height={"full"}
+              className="p-[12px] !w-full"
+              width={"100%"}
+              onclick={() => handleClick(props.data?.id)}
+            >
+              View Detail
+            </Button>
           </div>
           // <div
           //   className="h-full text-blue underline cursor-pointer"
