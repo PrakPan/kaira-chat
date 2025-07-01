@@ -195,7 +195,7 @@ const ActivitiesSummary = (props) => {
                   borderWidth="2px"
                   width="10rem"
                   borderRadius="8px"
-                  bgColor="#f8e000"
+                  bgColor="#ffffff"
                   onclick={() => handleView(props?.item?.id, "activity")}
                 >
                   <div>View Detail</div>
