@@ -124,53 +124,38 @@ export default function NewActivityBooking(props) {
                 )}
               </div>
 
-              {props.data?.experience_filters?.length>0 && (
+              {props.data?.experience_filters?.length > 0 && (
                 <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
-                  {props.data.experience_filters?.slice(0, 2)?.map((e, i) => (
-                    <span
-                      key={i}
-                      className={`border-2 rounded-full px-2 py-1`}
-                      style={{ backgroundColor: colors[i % colors.length] }}
-                    >
-                      {e}
-                    </span>
-                  ))}
+                  {props?.data?.category && (
+                    <div className="w-max items-center bg-gray-100 text-[14px] text-gray-800  font-medium px-2 py-1 rounded-full border border-gray-300 shadow-sm">
+                      {props.data.category}
+                    </div>
+                  )}
+                  {props.data.experience_filters
+                    ?.slice(0, props?.data?.category ? 1 : 2)
+                    ?.map((e, i) => (
+                      <span
+                        key={i}
+                        className={`border-2 rounded-full px-2 py-1`}
+                        style={{ backgroundColor: colors[i % colors.length] }}
+                      >
+                        {e}
+                      </span>
+                    ))}
                   {props?.data?.experience_filters?.length > 2 && (
                     <span className={`border-2 rounded-full px-2 py-1`}>
-                      +{props?.data?.experience_filters?.length - 2} more
+                      +
+                      {props?.data?.experience_filters?.length -
+                      props?.data?.category
+                        ? 1
+                        : 2}{" "}
+                      more
                     </span>
                   )}
                 </div>
               )}
 
-              {props.data?.hotel_pickup_included ? (
-                <div className="flex items-center gap-1 text-[14px] bg-[#e6f9ec] text-[#3BAF75] font-semibold rounded-sm w-max px-1">
-                  <Image
-                    src="/hotelPickupIncluded.svg"
-                    alt="hotel-pickup-included"
-                    width={20}
-                    height={20}
-                  />
-                  <span className=" px-2 py-1 mb-0 rounded-md text-xs font-medium">
-                    Hotel Pickup Included
-                  </span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-1 text-[14px] bg-[#FCE3DB] text-[#EE724B] font-semibold w-max rounded-sm px-1">
-                  <Image
-                    src="/notHotelPickupIncluded.svg"
-                    alt="not-hotel-pickup-included"
-                    width={20}
-                    height={20}
-                  />
-                  <span className=" px-2 py-1 mb-0 rounded-md text-xs font-medium">
-                    Hotel pickup not included
-                  </span>
-                </div>
-              )}
-
-              <div className="flex items-center gap-4 flex-wrap  text-[14px] text-gray-800">
-                {/* Tour Type */}
+              <div className="flex gap-2 flex-col  text-[14px] text-gray-800">
                 {props?.data?.tour_type === "Private Tour" && (
                   <div className="flex items-center gap-1">
                     <Image
@@ -337,53 +322,37 @@ export default function NewActivityBooking(props) {
           </span>
         )}
 
-        {props.data?.experience_filters?.length>0 && (
-          <div className="text-[14px] flex flex-row items-center mt-2  gap-1 flex-wrap">
-            {props.data.experience_filters?.slice(0, 2)?.map((e, i) => (
-              <span
-                key={i}
-                className={`border-2 rounded-full px-2 py-1`}
-                style={{ backgroundColor: colors[i % colors.length] }}
-              >
-                {e}
-              </span>
-            ))}
+        {props.data?.experience_filters?.length > 0 && (
+          <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
+            {props?.data?.category && (
+              <div className="w-max items-center bg-gray-100 text-[14px] text-gray-800  font-medium px-2 py-1 rounded-full border border-gray-300 shadow-sm">
+                {props.data.category}
+              </div>
+            )}
+            {props.data.experience_filters
+              ?.slice(0, props?.data?.category ? 1 : 2)
+              ?.map((e, i) => (
+                <span
+                  key={i}
+                  className={`border-2 rounded-full px-2 py-1`}
+                  style={{ backgroundColor: colors[i % colors.length] }}
+                >
+                  {e}
+                </span>
+              ))}
             {props?.data?.experience_filters?.length > 2 && (
               <span className={`border-2 rounded-full px-2 py-1`}>
-                +{props?.data?.experience_filters?.length - 2} more
+                +
+                {props?.data?.experience_filters?.length - props?.data?.category
+                  ? 1
+                  : 2}{" "}
+                more
               </span>
             )}
           </div>
         )}
-        <div className="mt-2 w-max-content">
-          {props.data?.hotel_pickup_included ? (
-            <div className="flex items-center gap-1 text-[14px] bg-[#e6f9ec] text-[#3BAF75] font-semibold rounded-sm w-max px-1">
-              <Image
-                src="/hotelPickupIncluded.svg"
-                alt="hotel-pickup-included"
-                width={20}
-                height={20}
-              />
-              <span className=" px-2 py-1 mb-0 rounded-md text-xs font-medium">
-                Hotel Pickup Included
-              </span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1 text-[14px] bg-[#FCE3DB] text-[#EE724B] font-semibold w-max rounded-sm px-1">
-              <Image
-                src="/notHotelPickupIncluded.svg"
-                alt="not-hotel-pickup-included"
-                width={20}
-                height={20}
-              />
-              <span className=" px-2 py-1 mb-0 rounded-md text-xs font-medium">
-                Hotel pickup not included
-              </span>
-            </div>
-          )}
-        </div>
 
-        <div className="flex items-center gap-4 flex-wrap mt-2 text-[14px] text-gray-800">
+        <div className="flex gap-2 flex-col  mt-2 text-[14px] text-gray-800">
           {/* Tour Type */}
           {props?.data?.tour_type === "Private Tour" && (
             <div className="flex items-center gap-1">
