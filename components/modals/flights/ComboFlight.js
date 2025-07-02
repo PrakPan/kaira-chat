@@ -331,9 +331,9 @@ useEffect(() => {
   if (!preferredDepartureTime) return;
 
   const shouldFetchFlights =
-    props.showComboFlightModal &&
+    (props.showComboFlightModal &&
     props.token &&
-    preferredDepartureTime &&
+    preferredDepartureTime) || 
     !props?.skipFetch;
 
   if (shouldFetchFlights) {
