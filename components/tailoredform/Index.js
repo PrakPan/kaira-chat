@@ -325,6 +325,7 @@ const Enquiry = (props) => {
       }
     } catch {}
 
+  
 let dist=divideTravellers()
     const start_date = format(value_start, "yyyy-MM-dd");
     const end_date = format(value_end, "yyyy-MM-dd");
@@ -809,6 +810,7 @@ let dist=divideTravellers()
               bgColor="#f7e700"
               onclick={_SlideOneSubmitHandler}
               loading={isLoading}
+              disabled={isLoading}
             >
               Continue
             </Button>
