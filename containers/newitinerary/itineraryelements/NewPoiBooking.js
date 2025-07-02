@@ -26,6 +26,10 @@ export default function NewPoiBooking(props) {
     show: false,
     data: {},
   });
+  const [activityData,setActivityData]=useState({
+    type:"",
+    id:""
+  })
 
   useEffect(() => {
     if (props?.data && props.data?.rating) {
@@ -46,6 +50,10 @@ export default function NewPoiBooking(props) {
   };
 
   const handleClick = async (id) => {
+    setActivityData({
+      type:"poi",
+      id:id,
+    })
     setShowDetails({
       show: true,
       data: {},
@@ -424,6 +432,7 @@ export default function NewPoiBooking(props) {
           dayIndex={props?.dayIndex | 0}
           setShowLoginModal={props.setShowLoginModal}
           setShowDrawer={props?.setShowDrawer}
+          activityData={activityData}
         />
 
         {props?.data?.added_in_itinerary?.selected ? (

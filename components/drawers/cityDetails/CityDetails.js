@@ -134,7 +134,7 @@ const CityDetails = (props) => {
           <Text text={props.data.short_description} />
         </div>
       )}
-      <Link to={props.data.name} offset={-50}>
+      {/* <Link to={props.data.name} offset={-50}>
         {props.dayId ? (
           <Button
             onclick={() => {
@@ -150,7 +150,7 @@ const CityDetails = (props) => {
         ) : (
           <></>
         )}
-      </Link>
+      </Link> */}
       {props.data.pois && props.data.pois.length ? (
         <div>
           <MapBox

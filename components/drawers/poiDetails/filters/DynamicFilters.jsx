@@ -13,11 +13,19 @@ import ExperienceFilters from "./ExperienceFilters";
 export default function DyamicFilters(props) {
   const [selectedRating, setSelectedRating] = useState([]);
   const [recommended, setRecommended] = useState(false);
-  const [selectedCategories, setSelectedCategories] = useState(props?.filterState?.category);
-  const [selectedTourTypes, setSelectedTourTypes] = useState(props?.filterState?.tour_type);
+  const [selectedCategories, setSelectedCategories] = useState(
+    props?.filterState?.category
+  );
+  const [selectedTourTypes, setSelectedTourTypes] = useState(
+    props?.filterState?.tour_type
+  );
   const [selectedGuide, setSelectedGuide] = useState(props?.filterState?.guide);
-  const [experienceFilters,setExperienceFilters]=useState(props?.filterState?.experienceFilters);
-console.log("selected guide is:",selectedGuide)
+  const [experienceFilters, setExperienceFilters] = useState(
+    props?.filterState?.experienceFilters
+  );
+  const [experienceFiltersActivity, setExperienceFiltersActivity] = useState(
+    props?.filterState?.experienceFiltersActivity
+  );
   const handleApply = () => {
     props.setFilterState((prev) => ({
       ...prev,
@@ -26,11 +34,11 @@ console.log("selected guide is:",selectedGuide)
       category: selectedCategories,
       tour_type: selectedTourTypes,
       guide: selectedGuide,
-      experienceFilters:experienceFilters
+      experienceFilters: experienceFilters,
+      experienceFiltersActivity:experienceFiltersActivity
     }));
     props.setshowFilter(false);
   };
-
 
   return (
     <>
@@ -82,6 +90,11 @@ console.log("selected guide is:",selectedGuide)
                     setChanged={props.setChanged}
                   />
                 ) : null}
+                <ExperienceFilters
+                  experienceFilters={experienceFiltersActivity}
+                  setExperienceFilters={setExperienceFiltersActivity}
+                  setChanged={props.setChanged}
+                />
                 <Rating
                   ratings={props.filters.ratings}
                   selectedRating={selectedRating}
@@ -125,11 +138,11 @@ console.log("selected guide is:",selectedGuide)
                     Reset all
                   </div>
                 </div>
-                  <ExperienceFilters
-                    experienceFilters={experienceFilters}
-                    setExperienceFilters={setExperienceFilters}
-                    setChanged={props.setChanged}
-                  />
+                <ExperienceFilters
+                  experienceFilters={experienceFilters}
+                  setExperienceFilters={setExperienceFilters}
+                  setChanged={props.setChanged}
+                />
               </div>
 
               <div className="w-full flex gap-3 flex-row justify-between mt-0">

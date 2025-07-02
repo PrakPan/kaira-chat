@@ -215,40 +215,15 @@ const Enquiry = (props) => {
 
   var selectedObj;
 
-  if (router?.query?.type == "Page" || props?.type == "Page") {
+  if (routerquery.state && !routerquery.city) {
     selectedObj = [
       {
-        id: routerquery.page_id || props.page_id,
+        destination_id: routerquery.page_id || props.page_id,
         name: routerquery.destination || props.destination,
         input_id: initialInputId,
-        type: "Page",
       },
     ];
-  } else if (
-    (routerquery.state && !routerquery.city) ||
-    props?.type == "State"
-  ) {
-    console.log("PROPS", props);
-    selectedObj = [
-      {
-        id: routerquery.page_id || props.page_id,
-        name: routerquery.destination || props.destination,
-        input_id: initialInputId,
-        type: "State",
-      },
-    ];
-  } else if (props?.type == "City" || router?.query.type == "City") {
-    console.log("PROPS3", props);
-    selectedObj = [
-      {
-        id: routerquery.page_id || props.page_id,
-        name: routerquery.destination || props.destination,
-        input_id: initialInputId,
-        type: "City",
-      },
-    ];
-  } else if (routerquery.country || props?.type == "Country") {
-    console.log("PROPS2", props);
+  } else if (routerquery.country && !routerquery.city) {
     selectedObj = [
       {
         id: routerquery.page_id || props.page_id,
@@ -257,8 +232,17 @@ const Enquiry = (props) => {
         type: "Country",
       },
     ];
-  } else {
-    console.log("PROPS4", props);
+  }else if(routerquery.city){
+      selectedObj = [
+      {
+        id: routerquery.page_id || props.page_id,
+        name: routerquery.destination || props.destination,
+        input_id: initialInputId,
+        type: "City",
+      },
+    ];
+  }
+   else {
     selectedObj = [
       {
         id: routerquery.page_id || props.page_id,
@@ -268,6 +252,60 @@ const Enquiry = (props) => {
       },
     ];
   }
+
+  // if (router?.query?.type == "Page" || props?.type == "Page") {
+  //   selectedObj = [
+  //     {
+  //       id: routerquery.page_id || props.page_id,
+  //       name: routerquery.destination || props.destination,
+  //       input_id: initialInputId,
+  //       type: "Page",
+  //     },
+  //   ];
+  // } else if (
+  //   (routerquery.state && !routerquery.city) ||
+  //   props?.type == "State"
+  // ) {
+  //   console.log("PROPS", props);
+  //   selectedObj = [
+  //     {
+  //       id: routerquery.page_id || props.page_id,
+  //       name: routerquery.destination || props.destination,
+  //       input_id: initialInputId,
+  //       type: "State",
+  //     },
+  //   ];
+  // } else if (props?.type == "City" || router?.query.type == "City") {
+  //   console.log("PROPS3", props);
+  //   selectedObj = [
+  //     {
+  //       id: routerquery.page_id || props.page_id,
+  //       name: routerquery.destination || props.destination,
+  //       input_id: initialInputId,
+  //       type: "City",
+  //     },
+  //   ];
+  // } else if (routerquery.country || props?.type == "Country") {
+  //   console.log("PROPS2", props);
+  //   selectedObj = [
+  //     {
+  //       id: routerquery.page_id || props.page_id,
+  //       name: routerquery.destination || props.destination,
+  //       input_id: initialInputId,
+  //       type: "Country",
+  //     },
+  //   ];
+  // } else {
+  //   console.log("PROPS4", props);
+  //   selectedObj = [
+  //     {
+  //       id: routerquery.page_id || props.page_id,
+  //       name: routerquery.destination || props.destination,
+  //       input_id: initialInputId,
+  //       type: routerquery?.type ? routerquery.type : props?.destinationType,
+  //     },
+  //   ];
+  // }
 
   console.log("SelectedObj", selectedObj, routerquery);
 
@@ -308,10 +346,7 @@ const Enquiry = (props) => {
           cityids.indexOf(selectedCities[i].id) == -1 &&
           selectedCities[i].id
         ) {
-          console.log("selected city is:", selectedCities[i]);
-          if (selectedCities[i].type == "Page") {
-            pageIds.push(selectedCities[i].id);
-          } else if (selectedCities[i].type == "State")
+          if (selectedCities[i].type == "State")
             stateIds.push(selectedCities[i].id);
           else if (selectedCities[i].type == "Country")
             countryIds.push(selectedCities[i].id);
@@ -328,6 +363,7 @@ const Enquiry = (props) => {
       }
     } catch {}
 
+  
 let dist=divideTravellers()
     const start_date = format(value_start, "yyyy-MM-dd");
     const end_date = format(value_end, "yyyy-MM-dd");
@@ -347,9 +383,9 @@ let dist=divideTravellers()
     }
 
     const source = {
-      path: router.asPath,
-      ...routerquery,
-    };
+  path: router.pathname, 
+  ...router.query,       
+};
 
     let data = null;
     data = {
@@ -396,12 +432,10 @@ let dist=divideTravellers()
     if (props.tailoredFormModal && focusedDate) {
       if (focusedDate == "startDate") return "Please select start date.";
       if (focusedDate == "endDate") return "Please select end date.";
-    } else return "Get Your Free Travel Plan Now!";
+    } else return "Get your free travel plan now";
   };
 
   const [selectedCities, setSelectedCities] = useState(selectedObj);
-
-  console.log("SSSS",selectedCities,routerquery);
 
   useEffect(() => {
     setShowPopup(popupObj);
@@ -814,6 +848,7 @@ let dist=divideTravellers()
               bgColor="#f7e700"
               onclick={_SlideOneSubmitHandler}
               loading={isLoading}
+              disabled={isLoading}
             >
               Continue
             </Button>

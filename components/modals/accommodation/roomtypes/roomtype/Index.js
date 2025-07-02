@@ -7,6 +7,7 @@ import { dateFormat } from "../../../../../helper/DateUtils";
 import { useState } from "react";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 import ImageCarousel from "../../../Carousel/ImageCarousel";
+import Image from "next/image";
 
 const ImageContainer = styled.div`
   height: 85px;
@@ -83,7 +84,41 @@ const RoomType = (props) => {
                     <span>
                       <RxCross2 className="inline" /> 1 room
                     </span>
-                    {(room?.description || 
+                    
+                  </div>
+                ) : null}
+
+                {room?.number_of_adults && room?.number_of_adults !== "0" ? (
+                  <div className="flex flex-col md:flex-row gap-1 items-start md:items-center md:justify-start">
+                    <div className="text-md font-semibold">Sleeps {room.number_of_adults > 1
+                        ? ` ${room.number_of_adults} Adults`
+                        : ` ${room.number_of_adults} Adult`}
+                      {room?.number_of_children &&
+                      room?.number_of_children !== "0"
+                        ? `, ${room.number_of_children} Children`
+                        : null}</div>
+                    {/* <div>
+                    
+                    </div> */}
+                    {/* {props?.data?.board_basis && (
+                      <p className="bg-[#e6f9ec] text-[#3BAF75] px-2 py-2 mb-0 rounded-md text-xs font-medium">
+                        {props?.data?.board_basis?.description}
+                      </p>
+                    )} */}
+                              {props?.data?.board_basis && (
+                      props?.data?.board_basis?.description === "Room Only" ? (
+                        <p className="bg-[#FAFAFA] text-[#7A7A7A] px-2 py-2 mb-0 rounded-md text-xs font-medium">
+                          {props?.data?.board_basis?.description}
+                        </p>
+                      ) : (
+                        <div className="flex flex-row items-center bg-[#FAFAFA] text-[#7A7A7A] text-[12px] px-1 gap-2 rounded-sm">
+                          <div>{props?.data?.board_basis?.description}</div>
+                        </div>
+                      )
+                    )}
+                  </div>
+                ) : null}
+                {(room?.description || 
                       room?.images?.length > 0 || 
                       room?.facilities?.length > 0 ||
                       (props.data?.polices && props.data.polices.length > 0) ||
@@ -106,28 +141,6 @@ const RoomType = (props) => {
                         )}
                       </div>
                     )}
-                  </div>
-                ) : null}
-
-                {room?.number_of_adults && room?.number_of_adults !== "0" ? (
-                  <div className="flex flex-col md:flex-row gap-1 items-start md:items-center md:justify-start">
-                    <div className="text-md font-semibold">Sleeps</div>
-                    <div>
-                      {room.number_of_adults > 1
-                        ? `${room.number_of_adults} Adults`
-                        : `${room.number_of_adults} Adult`}
-                      {room?.number_of_children &&
-                      room?.number_of_children !== "0"
-                        ? `, ${room.number_of_children} Children`
-                        : null}
-                    </div>
-                    {props?.data?.board_basis && (
-                      <p className="bg-[#e6f9ec] text-[#3BAF75] px-2 py-2 mb-0 rounded-md text-xs font-medium">
-                        {props?.data?.board_basis?.description}
-                      </p>
-                    )}
-                  </div>
-                ) : null}
               </div>
             </div>
 

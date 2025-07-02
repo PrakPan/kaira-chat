@@ -43,8 +43,6 @@ const FloatingView = styled.div`
   cursor: pointer;
 `;
 const POIDetailsDrawer = (props) => {
-  console.log("activity remove delete is:",props?.removeDelete)
-
   const isDesktop = useMediaQuery("(min-width:768px)");
   const [data, setData] = useState(props?.data || []);
   const [activityData, setActivityData] = useState(null);

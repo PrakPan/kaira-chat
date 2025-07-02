@@ -59,7 +59,7 @@ const Flight = (props) => {
             {props.data?.segments?.[0]?.airline?.name} {isPageWide && <>| <span className="font-normal">{props.data?.segments?.[0]?.airline?.code}-{props.data?.segments?.[0]?.airline?.flight_number}</span></>}
           </div>
           </div>
-          {props.data?.is_refundable  && isPageWide && <p className="bg-[#fdeeee] text-[#EF7D7D] px-2 py-1 mb-0 rounded-md text-xs font-medium">
+          {props.data?.is_refundable  && isPageWide && <p className="bg-[#e6f9ec] text-[#3BAF75] px-2 py-1 mb-0 rounded-md text-xs font-medium">
             Refundable
           </p>}
         </div>
@@ -67,7 +67,7 @@ const Flight = (props) => {
                   {props.data?.final_fare ? `₹${getIndianPrice(props.data?.final_fare)}/-` : null}
                   <span className = "font-normal text-sm">for {props?.pax?.adults + props?.pax?.children + props?.pax?.infants} people</span>
         </div>}
-        {props.data?.is_refundable  && !isPageWide && <p className="bg-[#fdeeee] text-[#EF7D7D] px-2 py-1 mb-0 rounded-md text-xs font-medium h-fit">
+        {props.data?.is_refundable  && !isPageWide && <p className="bg-[#e6f9ec] text-[#3BAF75] px-2 py-1 mb-0 rounded-md text-xs font-medium h-fit">
             Refundable
           </p>}
       </div>

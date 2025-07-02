@@ -74,7 +74,6 @@ export default function ActivityDetails(props) {
   };
 
   const handleAmenityChange = async (index, included) => {
-    console.log("included is:", included);
     let amenities = props.data?.amenities.filter(
       (amenity, i) => i !== index && amenity.included
     );
@@ -86,7 +85,6 @@ export default function ActivityDetails(props) {
     const res = await props.fetchData({
       amenities: amenities.map((amenity) => amenity?.id),
     });
-    console.log("res is:", res?.data);
   };
 
   return (
@@ -95,9 +93,9 @@ export default function ActivityDetails(props) {
         <div className="z-1 flex flex-row items-center gap-2 pt-4 bg-white">
           <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
         </div>
-        <div className="flex justify-between">
+        {/* <div className="flex justify-between">
           <div className="text-[24px] font-semibold">Activity Details</div>
-        </div>
+        </div> */}
         {props.updateAmenities && (
           <div className="fixed top-[65%] left-[50%] -translate-x-[50%] z-50 flex flex-row items-center gap-2">
             Updating
@@ -201,6 +199,7 @@ export default function ActivityDetails(props) {
                 </div>
               </div>
             )}
+
             {props.data?.experience_filters && (
               <div className="text-[14px] flex flex-row items-center gap-1 flex-wrap">
                 {props.data.experience_filters?.map((e, i) => (
@@ -212,8 +211,10 @@ export default function ActivityDetails(props) {
                     {e}
                   </span>
                 ))}
+                
               </div>
             )}
+
             {props.data?.short_description && (
               <div className="flex flex-col gap-2">
                 <div className="text-[14px] text-[#01202B]">
@@ -222,36 +223,87 @@ export default function ActivityDetails(props) {
               </div>
             )}
           </div>
-          {props.data?.city && (
-            <div>
-              <span className="font-bold pr-1 text-[14px] font-semibold text-[#01202B]">
-                Address:
-              </span>{" "}
-              <span className="text-[14px] text-[#01202B]">
-                {props.data.city}
+          {props.data?.hotel_pickup_included ? (
+            <div className="flex items-center gap-1 text-[14px] bg-[#e6f9ec] text-[#3BAF75] font-semibold rounded-sm w-max px-1">
+              <Image
+                src="/hotelPickupIncluded.svg"
+                alt="hotel-pickup-included"
+                width={20}
+                height={20}
+              />
+              <span className=" px-2 py-1 mb-0 rounded-md text-xs font-medium">
+                Hotel Pickup Included
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1 text-[14px] bg-[#FCE3DB] text-[#EE724B] font-semibold w-max rounded-sm px-1">
+              <Image
+                src="/notHotelPickupIncluded.svg"
+                alt="not-hotel-pickup-included"
+                width={20}
+                height={20}
+              />
+              <span className=" px-2 py-1 mb-0 rounded-md text-xs font-medium">
+                Hotel pickup not included
               </span>
             </div>
           )}
-          {props.data?.tour_type && (
-            <div>
-              <span className="font-bold pr-1 text-[14px] font-semibold text-[#01202B]">
-                Tour Type:
-              </span>{" "}
-              <span className="text-[14px] text-[#01202B]">
-                {props.data?.tour_type}
-              </span>
-            </div>
-          )}
-          {props.data?.guide && (
-            <div>
-              <span className="font-bold pr-1 text-[14px] font-semibold text-[#01202B]">
-                Guide:
-              </span>{" "}
-              <span className="text-[14px] text-[#01202B]">
-                {props.data?.guide}
-              </span>
-            </div>
-          )}
+
+          <div className="flex items-center gap-4 flex-wraptext-[14px] text-gray-800">
+            {/* Tour Type */}
+            {props?.data?.tour_type === "Private Tour" && (
+              <div className="flex items-center gap-1">
+                <Image
+                  src="/privateTour.svg"
+                  alt="private-tour"
+                  width={20}
+                  height={20}
+                />
+                <span>Private Tour</span>
+              </div>
+            )}
+            {props?.data?.tour_type === "Shared Tour" && (
+              <div className="flex items-center gap-1">
+                <Image
+                  src="/sharedTour.svg"
+                  alt="shared-tour"
+                  width={20}
+                  height={20}
+                />
+                <span>Shared Tour</span>
+              </div>
+            )}
+
+            {/* Guide Type */}
+            {props?.data?.guide === "Guided" && (
+              <div className="flex items-center gap-1">
+                <Image src="/guided.svg" alt="guided" width={20} height={20} />
+                <span>Guided</span>
+              </div>
+            )}
+            {props?.data?.guide === "Self Guided" && (
+              <div className="flex items-center gap-1">
+                <Image
+                  src="/selfGuided.svg"
+                  alt="self-guided"
+                  width={20}
+                  height={20}
+                />
+                <span>Self Guided</span>
+              </div>
+            )}
+            {props?.data?.guide === "Semi Guided" && (
+              <div className="flex items-center gap-1">
+                <Image
+                  src="/semiGuided.svg"
+                  alt="semi-guided"
+                  width={20}
+                  height={20}
+                />
+                <span>Semi Guided</span>
+              </div>
+            )}
+          </div>
 
           <div>
             {props.data?.general_guidelines?.length ? (
@@ -396,38 +448,33 @@ export default function ActivityDetails(props) {
           ) : null}
         </div>
         {props?.data?.cancellation_policies && (
-        <>
-          <div className="text-[20px] font-semibold">Cancellation Policies</div>
-          <div
-            dangerouslySetInnerHTML={{
-              __html: props?.data?.cancellation_policies,
-            }}
-            className="flex flex-col gap-1 text-sm ml-4"
-          ></div>
-        </>
-      )}
+          <>
+            <div className="text-[20px] font-semibold">
+              Cancellation Policies
+            </div>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: props?.data?.cancellation_policies,
+              }}
+              className="flex flex-col gap-1 text-sm ml-4"
+            ></div>
+          </>
+        )}
       </div>
       <div
-        className={`border-t-2 fixed bottom-0 right-0 left-0  gap-1 py-[12px] px-[20px] bg-white shadow-md z-50 
+        className={`scroll-none border-t-2 fixed bottom-0 right-0 left-0  gap-1 py-[12px] px-[20px] bg-white shadow-md z-50 
         `}
       >
         <div className="flex justify-between items-center">
           <>
             {props.data?.prices?.total_price && (
               <div className="font-bold">
-                <span className="text-[14px] sm:text-[34px]">
+                <span className="text-[34px]">
                   ₹
                   {props.data?.prices?.total_price &&
                   props.data?.prices?.total_price > 0
                     ? getIndianPrice(Math.round(props.data.prices.total_price))
                     : props.data.prices.total_price}
-                  <span className="text-[10px] md:text-[12px] font-normal">
-                    {" "}
-                    for{" "}
-                    {props?.filterState.adults +
-                      props?.filterState?.children}{" "}
-                    people{" "}
-                  </span>
                 </span>
               </div>
             )}
@@ -445,11 +492,13 @@ export default function ActivityDetails(props) {
           </Button>
         </div>
         <div className={`flex justify-between items-center`}>
-          <div className="text-gray-500 font-semiBold text-[#01202B] text-[14px]">
-            Total Cost
-          </div>
+          <span className="text-[12px] font-normal">
+            {" "}
+            for {props?.filterState.adults + props?.filterState?.children}{" "}
+            people{" "}
+          </span>
           <div className="text-[14px] sm:text-[16px]">
-            {dateFormat(props?.date)}
+            on {dateFormat(props?.date)}
           </div>
         </div>
       </div>

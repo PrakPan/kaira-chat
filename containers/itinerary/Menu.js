@@ -467,7 +467,7 @@ const SimpleTabs = (props) => {
               is_stock={props.is_stock}
               setShowPoiModal={_handlePoiEditModalOpen}
               traveleritinerary={props.traveleritinerary}
-              day_slabs={props.itinerary.day_slabs}
+              day_slabs={props.itinerary?.day_slabs}
               hours={hours}
               minutes={minutes}
               seconds={seconds}
@@ -478,10 +478,10 @@ const SimpleTabs = (props) => {
               _hideTimerHandler={_minimiseTimerHandler}
               blur={false}
               location_selected={location}
-              city_slabs={props.breif.city_slabs}
-              itinerary={props.itinerary}
-              newData={props.newData}
-              demoitinerary={props.demoitinerary}
+              city_slabs={props.breif?.city_slabs}
+              itinerary={props?.itinerary}
+              newData={props?.newData}
+              demoitinerary={props?.demoitinerary}
             ></ItineraryContainerMobile>
           </div>
         )}
@@ -495,8 +495,8 @@ const SimpleTabs = (props) => {
             itinerary={props.itinerary}
             _updateStayBookingHandler={props._updateStayBookingHandler}
             _updateFlightBookingHandler={props._updateFlightBookingHandler}
-            hasUserPaid={props.payment ? props.payment.paid_user : false}
-            payment_status={router.query.payment_status}
+            hasUserPaid={props.payment ? props.payment?.paid_user : false}
+            payment_status={router.query?.payment_status}
             plan={props.plan}
             isDatePresent={props.isDatePresent}
             _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
@@ -531,8 +531,8 @@ const SimpleTabs = (props) => {
             setShowFlightModal={_handleFlighModalShow}
             setHideFlightModal={_handleFlightModalClose}
             user_email={props.user_email}
-            no_bookings={props.no_bookings}
-            traveleritinerary={props.traveleritinerary}
+            no_bookings={props?.no_bookings}
+            traveleritinerary={props?.traveleritinerary}
             preview={props.preview}
             id={props.id}
             is_stock={props.is_stock}
@@ -553,7 +553,7 @@ const SimpleTabs = (props) => {
             _handleTimerClose={_minimiseBookingTimerHandler}
             setImagesHandler={props.setImagesHandler}
             payment={props.payment}
-            booking={props.booking}
+            booking={props?.booking}
           ></Booking>
         )}
       </TabPanel>

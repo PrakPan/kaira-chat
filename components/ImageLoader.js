@@ -13,13 +13,18 @@ const ImageLoader = (props) => {
   const [isTransparent, setIsTransparent] = useState(false);
 
   const imgUrlEndPoint = "https://d31aoa0ehgvjdi.cloudfront.net/";
-  const transparentImageUrl = "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png";
+  const transparentImageUrl =
+    "https://d31aoa0ehgvjdi.cloudfront.net/media/website/transparent.png";
 
   // Check if the current image is transparent
   const checkIfTransparent = (url) => {
-    return url === transparentImageUrl || 
-           url.includes('transparent.png') || 
-           (props.url && props.url.includes('transparent'));
+    return (
+      url === transparentImageUrl ||
+      url.includes("transparent.png") ||
+      (props.url &&
+        typeof props.url === "string" &&
+        props.url.includes("transparent"))
+    );
   };
 
   let smallImageRequest = JSON.stringify({
@@ -125,35 +130,43 @@ const ImageLoader = (props) => {
   }
 
   const Container = styled(props.noLazy ? "div" : LazyLoad)`
-  @media screen and (min-width: 768px) {
-    width: ${props.width ? props.width : "100%"};
-    ${props => props.transparent && `
+    @media screen and (min-width: 768px) {
+      width: ${props.width ? props.width : "100%"};
+      ${(props) =>
+        props.transparent &&
+        `
       aspect-ratio: 2 / 1;
     `}
-  }
+    }
 
-  @media (min-width: 768px) and (max-width: 1024px) {
-    height: ${props.heighttab ? props.heighttab : "auto"};
-    width: ${props.widthtab ? props.widthtab : "100%"};
-  }
+    @media (min-width: 768px) and (max-width: 1024px) {
+      height: ${props.heighttab ? props.heighttab : "auto"};
+      width: ${props.widthtab ? props.widthtab : "100%"};
+    }
 
-  @media screen and (max-width: 767px) {
-    ${props => props.transparent && `
+    @media screen and (max-width: 767px) {
+      ${(props) =>
+        props.transparent &&
+        `
       aspect-ratio: 1.4315;
     `}
-  }
+    }
 
-  ${props => props.transparent && `
+    ${(props) =>
+      props.transparent &&
+      `
     position: relative;
   `}
-`;
+  `;
 
   const FullImage = styled.img`
     width: 100%;
     object-fit: ${props.resizeMode ? props.resizeMode : "cover"};
     z-index: 0 !important;
-    
-    ${props => props.transparent && `
+
+    ${(props) =>
+      props.transparent &&
+      `
       height: 100%;
       object-fit: contain;
     `}
@@ -203,7 +216,12 @@ const ImageLoader = (props) => {
   };
 
   // Helper function to get the final image URL and check if it's transparent
-  const getFinalImageUrl = (isError, isPageLoaded, imageRequest, originalUrl) => {
+  const getFinalImageUrl = (
+    isError,
+    isPageLoaded,
+    imageRequest,
+    originalUrl
+  ) => {
     if (!is_url) {
       if (isError) {
         return transparentImageUrl;
@@ -218,10 +236,22 @@ const ImageLoader = (props) => {
 
   // Check transparency when URLs change
   useEffect(() => {
-    const smallUrl = getFinalImageUrl(false, isPageLoaded, smallImageRequest, props.url);
-    const fullUrl = getFinalImageUrl(error, isPageLoaded, imageRequest || imageRequestMobile, props.url);
-    
-    setIsTransparent(checkIfTransparent(smallUrl) || checkIfTransparent(fullUrl));
+    const smallUrl = getFinalImageUrl(
+      false,
+      isPageLoaded,
+      smallImageRequest,
+      props.url
+    );
+    const fullUrl = getFinalImageUrl(
+      error,
+      isPageLoaded,
+      imageRequest || imageRequestMobile,
+      props.url
+    );
+
+    setIsTransparent(
+      checkIfTransparent(smallUrl) || checkIfTransparent(fullUrl)
+    );
   }, [error, isPageLoaded, props.url]);
 
   if (!props.dimensionsMobile) {
@@ -233,7 +263,11 @@ const ImageLoader = (props) => {
           onClick={props.onclick}
           style={{
             width: props.widthmobile ? props.widthmobile : "100%",
-            height: isTransparent ? 'auto' : (props.heightmobile ? props.heightmobile : "max-content"),
+            height: isTransparent
+              ? "auto"
+              : props.heightmobile
+              ? props.heightmobile
+              : "max-content",
             margin: props.leftalign ? "0" : "0 auto",
             filter: props.blur ? "blur(0.5rem)" : "blur(0)",
             borderRadius: props.borderRadius ? props.borderRadius : "0",
@@ -248,10 +282,14 @@ const ImageLoader = (props) => {
                 : props.url
             }
             style={{
-              height: isTransparent ? '100%' : (props.height ? props.height : "100%"),
+              height: isTransparent
+                ? "100%"
+                : props.height
+                ? props.height
+                : "100%",
               display: !fullLoaded ? "initial" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
-              objectFit: isTransparent ? 'contain' : 'cover',
+              objectFit: isTransparent ? "contain" : "cover",
               ...props.style,
             }}
           />
@@ -271,7 +309,11 @@ const ImageLoader = (props) => {
             onError={_handleError}
             resizeMode={props.resizeMode}
             style={{
-              height: isTransparent ? '100%' : (props.height ? props.height : "100%"),
+              height: isTransparent
+                ? "100%"
+                : props.height
+                ? props.height
+                : "100%",
               display: fullLoaded ? "block" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
@@ -289,7 +331,11 @@ const ImageLoader = (props) => {
           onClick={props.onclick}
           style={{
             width: props.width ? props.width : "100%",
-            height: isTransparent ? 'auto' : (props.height ? props.height : "max-content"),
+            height: isTransparent
+              ? "auto"
+              : props.height
+              ? props.height
+              : "max-content",
             margin: props.leftalign ? "0" : "0 auto",
             filter: props.blur ? "blur(0.5rem)" : "blur(0)",
             borderRadius: props.borderRadius ? props.borderRadius : "0",
@@ -304,10 +350,14 @@ const ImageLoader = (props) => {
                 : props.url
             }
             style={{
-              height: isTransparent ? '100%' : (props.height ? props.height : "100%"),
+              height: isTransparent
+                ? "100%"
+                : props.height
+                ? props.height
+                : "100%",
               display: !fullLoaded ? "initial" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
-              objectFit: isTransparent ? 'contain' : 'cover',
+              objectFit: isTransparent ? "contain" : "cover",
               ...props.style,
             }}
           />
@@ -327,7 +377,11 @@ const ImageLoader = (props) => {
             onError={_handleError}
             resizeMode={props.resizeMode}
             style={{
-              height: isTransparent ? '100%' : (props.height ? props.height : "100%"),
+              height: isTransparent
+                ? "100%"
+                : props.height
+                ? props.height
+                : "100%",
               display: fullLoaded ? "block" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
@@ -346,7 +400,11 @@ const ImageLoader = (props) => {
           onClick={props.onclick}
           style={{
             width: props.widthmobile ? props.widthmobile : "100%",
-            height: isTransparent ? 'auto' : (props.heightmobile ? props.heightmobile : "100%"),
+            height: isTransparent
+              ? "auto"
+              : props.heightmobile
+              ? props.heightmobile
+              : "100%",
             margin: props.leftalign ? "0" : "0 auto",
             filter: props.blur ? "blur(0.5rem)" : "blur(0)",
             borderRadius: props.borderRadius ? props.borderRadius : "0",
@@ -362,10 +420,14 @@ const ImageLoader = (props) => {
                 : props.url
             }
             style={{
-              height: isTransparent ? '100%' : (props.height ? props.height : "100%"),
+              height: isTransparent
+                ? "100%"
+                : props.height
+                ? props.height
+                : "100%",
               display: !fullLoaded ? "initial" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
-              objectFit: isTransparent ? 'contain' : 'cover',
+              objectFit: isTransparent ? "contain" : "cover",
               ...props.style,
             }}
           />
@@ -387,7 +449,11 @@ const ImageLoader = (props) => {
             onError={_handleError}
             resizeMode={props.resizeMode}
             style={{
-              height: isTransparent ? '100%' : (props.height ? props.height : "100%"),
+              height: isTransparent
+                ? "100%"
+                : props.height
+                ? props.height
+                : "100%",
               display: fullLoaded ? "block" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",
@@ -405,7 +471,11 @@ const ImageLoader = (props) => {
           onClick={props.onclick}
           style={{
             width: props.width ? props.width : "100%",
-            height: isTransparent ? 'auto' : (props.height ? props.height : "max-content"),
+            height: isTransparent
+              ? "auto"
+              : props.height
+              ? props.height
+              : "max-content",
             margin: props.leftalign ? "0" : "0 auto",
             filter: props.blur ? "blur(0.5rem)" : "blur(0)",
             borderRadius: props.borderRadius ? props.borderRadius : "0",
@@ -420,10 +490,14 @@ const ImageLoader = (props) => {
                 : props.url
             }
             style={{
-              height: isTransparent ? '100%' : (props.height ? props.height : "100%"),
+              height: isTransparent
+                ? "100%"
+                : props.height
+                ? props.height
+                : "100%",
               display: !fullLoaded ? "initial" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "5px",
-              objectFit: isTransparent ? 'contain' : 'cover',
+              objectFit: isTransparent ? "contain" : "cover",
               ...props.style,
             }}
           />
@@ -442,7 +516,11 @@ const ImageLoader = (props) => {
             onError={_handleError}
             resizeMode={props.resizeMode}
             style={{
-              height: isTransparent ? '100%' : (props.height ? props.height : "100%"),
+              height: isTransparent
+                ? "100%"
+                : props.height
+                ? props.height
+                : "100%",
               display: fullLoaded ? "block" : "none",
               borderRadius: props.borderRadius ? props.borderRadius : "0",
               maxWidth: props.maxwidth ? props.maxwidth : "none",

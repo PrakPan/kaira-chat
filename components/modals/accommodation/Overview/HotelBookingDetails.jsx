@@ -693,7 +693,7 @@ const HotelBookingDetails = (props) => {
                 onClick={() => props._setImagesHandler(images)}
                 className="font-lexend bg-black"
               >
-                View Gallery
+                Photos Gallery
               </PhotosButton>
             ) : null
           ) : null}
@@ -936,7 +936,7 @@ const HotelBookingDetails = (props) => {
                 onClick={() => props._setImagesHandler(images)}
                 className="font-lexend bg-black"
               >
-                All Photos
+                Photos Gallery
               </PhotosButton>
             ) : null
           ) : null}

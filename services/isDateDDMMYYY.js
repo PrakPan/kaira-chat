@@ -6,7 +6,7 @@ export const dateIsValid = (dateStr) => {
     return false;
   }
 
-  const [day, month, year] = dateStr?.split("/");
+  const [day, month, year] = dateStr?.split("/") || dateStr?.split("-");
 
   // 👇️ format Date string as `yyyy-mm-dd`
   const isoFormattedStr = `${year}-${month}-${day}`;

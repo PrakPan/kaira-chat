@@ -18,6 +18,7 @@ import ImageLoader from "../../../components/ImageLoader";
 import { setItineraryFilters } from "../../../store/actions/setItineraryFilters";
 import ViewHotelDetails from "../ViewHotelDetails/viewHotelDetails";
 import { TbArrowBack } from "react-icons/tb";
+import { ItineraryStatusLoader } from "../../../containers/itinerary/ItineraryContainer";
 
 const FloatingView = styled.div`
   position: sticky;
@@ -657,7 +658,7 @@ const Booking = (props) => {
               )}
             </div>
 
-            <div className="lg:sticky lg:w-[50vw] w-[100vw] py-2 top-0 bg-white z-[900]">
+            <div className="lg:w-[50vw] w-[100vw] py-2 top-0 bg-white z-[900]">
               <SectionOne
                 booking_city={
                   props?.selectedBooking?.city ||
@@ -678,6 +679,8 @@ const Booking = (props) => {
                 }
                 handleClose={handleClose}
               ></SectionOne>
+
+              
 
               <SectionTwo
                 loading={loading}
@@ -702,6 +705,10 @@ const Booking = (props) => {
                 filters={filters}
                 setFilters={setFilters}
               ></SectionTwo>
+            </div>
+
+            <div className="flex items-center justify-center sticky top-2/3 z-[900]">
+              {loading && <ItineraryStatusLoader displayText={"Finding best hotels for you"} isVisible={loading}/>}
             </div>
 
             <div className="lg:w-[100%] w-[95%] mx-auto">

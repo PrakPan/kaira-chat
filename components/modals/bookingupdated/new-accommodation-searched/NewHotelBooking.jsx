@@ -80,7 +80,7 @@ export default function NewHotelBooking({
                   </div>
                   <div>
                       {booking?.refundable && (
-                        <p className=" bg-[#fdeeee] text-[#EF7D7D] px-2 py-2 mb-0 rounded-md text-xs font-medium">
+                        <p className=" bg-[#e6f9ec] text-[#3BAF75] px-2 py-2 mb-0 rounded-md text-xs font-medium">
                           Refundable
                         </p>
                       )}
@@ -97,7 +97,7 @@ export default function NewHotelBooking({
                       </div>
                     )}
 
-                    {booking?.rating_ext ? (
+                    {booking?.rating_ext>0.0 ? (
                       <div className="gap-1 flex flex-row  items-center">
                         <div className="flex flex-row text-[#FFD201]">
                           {starRating(booking?.rating_ext)}

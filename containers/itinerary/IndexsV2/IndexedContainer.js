@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { connect, useDispatch } from "react-redux";
 import styled from "styled-components";
-import Menu from "../MenuV2";
+import Menu from "../OldMenuV2";
 import Overview from "../../newitinerary/overview/Index";
 import DesktopBanner from "../../../components/containers/Banner";
 import * as authaction from "../../../store/actions/auth";
@@ -162,7 +162,7 @@ const Itinerary = (props) => {
       }
     }
 
-    props.setBookings({
+    setBookings({
       stayBookings: stay_bookings,
       activityBookings: activity_bookings.length ? activity_bookings : null,
       flightBookings: flight_bookings.length ? flight_bookings : null,
@@ -342,7 +342,7 @@ const Itinerary = (props) => {
             }
           }
 
-          props.setBookings({
+          setBookings({
             stayBookings: stay_bookings,
             activityBookings: activity_bookings.length
               ? activity_bookings
@@ -466,7 +466,7 @@ const Itinerary = (props) => {
     setShowBookingModal(false);
     setShowFlightModal(false);
     setStayBookings(_updateTransferBooking(stayBookings, json));
-    props.setBookings({
+    setBookings({
       ...props.bookings,
       stayBookings: _updateTransferBooking(props.bookings.stayBookings, json),
     });

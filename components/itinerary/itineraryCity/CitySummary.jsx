@@ -6,7 +6,6 @@ import ImageLoader from "../../ImageLoader";
 import ActivityAddDrawer from "../../drawers/poiDetails/activityAddDrawer";
 import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
-import { FaTaxi } from "react-icons/fa6";
 import TransferDrawer from "../../../containers/itinerary/TransferDrawer";
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
@@ -14,10 +13,9 @@ import { openNotification } from "../../../store/actions/notification";
 import { BsPeopleFill } from "react-icons/bs";
 import { MERCURY_HOST } from "../../../services/constants";
 import axios from "axios";
-import { FaEdit, FaPen } from "react-icons/fa";
+import { FaPen } from "react-icons/fa";
 
 const CitySummary = (props) => {
-  console.log("city summary props are:",props.city)
   const router = useRouter();
   const [dayByDay, setDayByDay] = useState(null);
   const [showDrawer, setShowDrawer] = useState(false);

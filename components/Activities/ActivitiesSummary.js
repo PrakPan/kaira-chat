@@ -157,7 +157,7 @@ const ActivitiesSummary = (props) => {
                 <div className="flex gap-1 items-center">
                   <IoTicket className="text-sm font-[400] line-clamp-1 text-[#7A7A7A]" />
                   <div className="text-sm line-clamp-1">
-                    {props?.item?.number_of_adults + props?.item?.number_of_children} Tickets
+                    {props?.item?.pax || (props?.item?.number_of_adults + props?.item?.number_of_children)} {(props?.item?.pax || (props?.item?.number_of_adults + props?.item?.number_of_children))>1?"Tickets":"Ticket"} 
                   </div>
                 </div>
                 <div className="flex gap-1 items-center">
@@ -195,7 +195,7 @@ const ActivitiesSummary = (props) => {
                   borderWidth="2px"
                   width="10rem"
                   borderRadius="8px"
-                  bgColor="#f8e000"
+                  bgColor="#ffffff"
                   onclick={() => handleView(props?.item?.id, "activity")}
                 >
                   <div>View Detail</div>

@@ -31,7 +31,7 @@ console.log("type is:",(props?.filters?.type?.length==0 || !props?.filters?.type
       className="font-lexend"
       onHide={() => props.setshowFilter(false)}
     >
-      <div className="w-[25vw] px-2 h-[98vh] flex flex-col gap-3 justify-between items-start mx-auto ">
+      <div className="w-[44vw] md:w-[25vw]  px-2 h-[98vh] flex flex-col gap-3 justify-between items-start mx-auto ">
         <div className="flex flex-col gap-3 justify-between w-[95%] mx-auto mt-4">
           <div className="flex flex-row gap-3 my-0 justify-start items-center">
             <IoMdClose

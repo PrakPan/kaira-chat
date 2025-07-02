@@ -148,7 +148,7 @@ const ItineraryCity = (props) => {
     <div
       data-city-id={stay ? stay[props?.index]?.city_id : props?.city?.id}
       ref={(el) => (props.cityRefs.current[props.city.id] = el)}
-      className="border-2 border-gray-200 rounded-t-lg flex flex-col"
+      className="border-2 border-gray-200 rounded-t-lg flex flex-col w-full"
     >
       <div className="flex items-start justify-between p-3 rounded-t-lg bg-[#FEFAD8] border-b-2">
         <div className="space-y-1">

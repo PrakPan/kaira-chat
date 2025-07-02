@@ -35,6 +35,7 @@ import { setStays } from "../../store/actions/StayBookings";
 import setItineraryStatus from "../../store/actions/itineraryStatus";
 import { toast, ToastContainer } from "react-toastify";
 import SetPassengers from "../../store/actions/passengers";
+import ItineraryContainerOld from "../../containers/itinerary/IndexsV2/Index";
 
 const Container = styled.div`
   width: 90%;
@@ -236,6 +237,7 @@ const ItineraryContainer = (props) => {
   const [polling, setPolling] = useState(true);
   const [consecutiveErrors, setConsecutiveErrors] = useState(0);
   const [displayText, setDisplayText] = useState(null);
+  const [oldOne,setOldOne] = useState(false);
 
   const itinerarySuccessRef = useRef(false);
   const pricingSuccessRef = useRef(false);
@@ -639,7 +641,10 @@ const ItineraryContainer = (props) => {
     ) {
       console.log("Itinerary not found error detected, redirecting to v1 version");
       setPolling(false);
-      router.push(`/itinerary/v1/${props.id}`);
+      setOldOne(true);
+      setItineraryLoading(false);
+      // router.push(`/itinerary/v1/${props.id}`);
+
       return;
     }
 
@@ -659,7 +664,10 @@ const ItineraryContainer = (props) => {
 
           if (data?.version === "v1" || !data) {
             setShowMercuryItinerary(false);
-            router.push(`/itinerary/v1/${props.id}`);
+             setItineraryLoading(false);
+            // router.push(`/itinerary/v1/${props.id}`);
+            setOldOne(true);
+           
             return;
           } else {
             setShowMercuryItinerary(true);
@@ -721,7 +729,9 @@ const ItineraryContainer = (props) => {
           
           console.log("Itinerary not found error detected in fetchItinerary, redirecting to v1 version");
           setPolling(false);
-          router.push(`/itinerary/v1/${props.id}`);
+           setItineraryLoading(false);
+          // router.push(`/itinerary/v1/${props.id}`);
+          setOldOne(true);
           return;
         }
       
@@ -1195,6 +1205,12 @@ useEffect(() => {
   
   // return !allStatusesCompleted;
 };
+
+if(oldOne){
+  return (<>
+         <ItineraryContainerOld id={router.query.id}/>
+      </>)
+}
 
   return (
     <Container>

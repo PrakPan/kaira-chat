@@ -106,8 +106,8 @@ const Section = (props) => {
       source: props.data.source,
       trace_id: props.data.trace_id,
       result_index: props.data.result_index,
-      source_itinerary_city:isValidUUID(props?.origin_itinerary_city_id) ? props?.origin_itinerary_city_id : null,
-      destination_itinerary_city: isValidUUID(props?.destination_itinerary_city_id) ? props?.destination_itinerary_city_id : null,
+      source_itinerary_city:props?.origin_itinerary_city_id,
+      destination_itinerary_city:props?.destination_itinerary_city_id,
       edge: props?.edge,
     };
 

@@ -116,7 +116,7 @@ const ComboFlight = (props) => {
     departure_time_period: "",
     arrival_time_period: "",
     airline_name: "",
-    sort_by: "Price",
+    sort_by: "price",
   });
   const { number_of_adults, number_of_children, number_of_infants } =
     useSelector((state) => state.Itinerary);
@@ -590,8 +590,8 @@ const _FetchFlightsHandler = async () => {
       booking_id,
       trace_id: localStorage.getItem(`${flightProvider}_trace_id`),
       result_indices: [result_index],
-      source_itinerary_city: isValidUUID(props?.source_itinerary_city_id) ? props?.source_itinerary_city_id : null,
-      destination_itinerary_city: isValidUUID(props?.destination_itinerary_city_id) ? props?.destination_itinerary_city_id : null,
+      source_itinerary_city: props?.source_itinerary_city_id,
+      destination_itinerary_city: props?.destination_itinerary_city_id,
       edge: props?.edge || props?.selectedBooking?.edge,
     };
 

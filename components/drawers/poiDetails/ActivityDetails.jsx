@@ -418,6 +418,88 @@ const ActivityDetails = (props) => {
             )}
           </div>
 
+          {props.data?.hotel_pickup_included ? (
+            <div className="flex items-center gap-1 text-[14px] bg-[#e6f9ec] text-[#3BAF75] font-semibold rounded-sm w-max px-1">
+              <Image
+                src="/hotelPickupIncluded.svg"
+                alt="hotel-pickup-included"
+                width={20}
+                height={20}
+              />
+              <span className=" px-2 py-1 mb-0 rounded-md text-xs font-medium">
+                Hotel Pickup Included
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1 text-[14px] bg-[#FCE3DB] text-[#EE724B] font-semibold w-max rounded-sm px-1">
+              <Image
+                src="/notHotelPickupIncluded.svg"
+                alt="not-hotel-pickup-included"
+                width={20}
+                height={20}
+              />
+              <span className=" px-2 py-1 mb-0 rounded-md text-xs font-medium">
+                Hotel pickup not included
+              </span>
+            </div>
+          )}
+
+          <div className="flex items-center gap-4 flex-wrap text-[14px] text-gray-800">
+            {/* Tour Type */}
+            {props?.data?.tour_type === "Private Tour" && (
+              <div className="flex items-center gap-1">
+                <Image
+                  src="/privateTour.svg"
+                  alt="private-tour"
+                  width={20}
+                  height={20}
+                />
+                <span>Private Tour</span>
+              </div>
+            )}
+            {props?.data?.tour_type === "Shared Tour" && (
+              <div className="flex items-center gap-1">
+                <Image
+                  src="/sharedTour.svg"
+                  alt="shared-tour"
+                  width={20}
+                  height={20}
+                />
+                <span>Shared Tour</span>
+              </div>
+            )}
+
+            {/* Guide Type */}
+            {props?.data?.guide === "Guided" && (
+              <div className="flex items-center gap-1">
+                <Image src="/guided.svg" alt="guided" width={20} height={20} />
+                <span>Guided</span>
+              </div>
+            )}
+            {props?.data?.guide === "Self Guided" && (
+              <div className="flex items-center gap-1">
+                <Image
+                  src="/selfGuided.svg"
+                  alt="self-guided"
+                  width={20}
+                  height={20}
+                />
+                <span>Self Guided</span>
+              </div>
+            )}
+            {props?.data?.guide === "Semi Guided" && (
+              <div className="flex items-center gap-1">
+                <Image
+                  src="/semiGuided.svg"
+                  alt="semi-guided"
+                  width={20}
+                  height={20}
+                />
+                <span>Semi Guided</span>
+              </div>
+            )}
+          </div>
+
           <div className="flex flex-col gap-2">
             {props.data?.general_guidelines?.length ? (
               <div className="flex flex-col">

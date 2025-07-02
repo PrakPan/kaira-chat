@@ -12,6 +12,7 @@ import Filters from "./Filters";
 
 const SortContainer = styled.div`
   position: absolute;
+  z-index:20;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   background: white;
   border-radius: 0.5rem;
@@ -223,7 +224,7 @@ export default function TemporaryDrawer(props) {
               </div>
             </div>
 
-            {isPageWide && (
+            {(
               <div className="relative">
                 <button
                   onClick={() => {

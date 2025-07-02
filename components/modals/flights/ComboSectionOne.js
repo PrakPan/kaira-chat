@@ -345,7 +345,7 @@ useEffect(() => {
               >
                 <MdSort className="mr-1" />
                 <span className="text-sm">
-                  Sort: {filtersState.sort_by}{" "}
+                  Sort: {filtersState.sort_by.charAt(0).toUpperCase() + filtersState.sort_by.slice(1)}{" "}
                   {filtersState.order === "asc"
                     ? "(Low to High)"
                     : "(High to Low)"}
@@ -357,22 +357,22 @@ useEffect(() => {
                   {[
                     {
                       label: "Price (Low to High)",
-                      sort_by: "Price",
+                      sort_by: "price",
                       order: "asc",
                     },
                     {
                       label: "Price (High to Low)",
-                      sort_by: "Price",
+                      sort_by: "price",
                       order: "desc",
                     },
                     {
                       label: "Duration (Ascending)",
-                      sort_by: "Duration",
+                      sort_by: "duration",
                       order: "asc",
                     },
                     {
                       label: "Duration (Descending)",
-                      sort_by: "Duration",
+                      sort_by: "duration",
                       order: "desc",
                     },
                   ].map((option, idx) => (
