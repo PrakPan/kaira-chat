@@ -11,6 +11,7 @@ import setHotLocationSearch from "../../../../store/actions/hotLocationSearch";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../../services/constants";
 import * as PagesToIdMapping from "../../../../data/PagesToIdMapping.json";
+import { convertDbNameToCapitalFirst } from "../../../../helper/convertDbnameToCapitalFirst";
 
 const TravelPlanner = (props) => {
   useEffect(() => {
@@ -26,7 +27,7 @@ const TravelPlanner = (props) => {
     >
       <Head>
         <title>
-          Plan Your Trip to {props.Data.destination} | Trip Planner & Itinerary
+          Plan Your Trip to {convertDbNameToCapitalFirst(props.Data.slug)} | Trip Planner & Itinerary
           | The Tarzan Way
         </title>
         <meta
