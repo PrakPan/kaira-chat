@@ -270,13 +270,9 @@ const POIDetails = (props) => {
         <Container itineraryDrawer={props.itineraryDrawer}>
           {!props.itineraryDrawer ? (
             <div>
-              <TbArrowBack
-                style={{ height: "32px", width: "32px" }}
-                cursor={"pointer"}
-                onClick={(e) => {
-                  props.handleCloseDrawer(e);
-                }}
-              />
+             <BackContainer className="flex justify-between font-lexend">
+              <BackArrow handleClick={(e) => props.handleCloseDrawer(e)} />
+            </BackContainer>
             </div>
           ) : (
             <BackContainer className="flex justify-between font-lexend">

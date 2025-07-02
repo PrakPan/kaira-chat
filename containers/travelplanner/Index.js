@@ -59,7 +59,6 @@ const MapContainer = styled.div`
 `;
 
 const Homepage = (props) => {
-  console.log("HeroBanner props:",props)
   const router = useRouter();
   let isPageWide = media("(min-width: 768px)");
   const [userItineraries, setUserItineraries] = useState([]);

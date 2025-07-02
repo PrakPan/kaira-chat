@@ -5,6 +5,7 @@ import { getDate } from "../../../../helper/ConvertDateFormat";
 import { getIndianPrice } from "../../../../services/getIndianPrice";
 import { logEvent } from "../../../../services/ga/Index";
 import ImageCarousel, { Carousel } from "../../Carousel/ImageCarousel";
+import { FaLocationDot } from "react-icons/fa6";
 
 export default function NewHotelBooking({
   currentBooking,
@@ -149,6 +150,8 @@ export default function NewHotelBooking({
                     <div className="text-sm font-[400]">No Meals available</div>
                   </div>
                 )}
+
+                {booking?.distance_from_city_centre&&<div className="text-sm font-[400] flex gap-2"><FaLocationDot className="text-lg text-[#7A7A7A]" /><>{booking?.distance_from_city_centre} kms from city centre</></div>}
               </div>
 
               {booking?.price && (

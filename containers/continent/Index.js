@@ -17,7 +17,6 @@ import Continentcarousel from "../../components/continentcarousel/continentcarou
 import AsSeenIn from "../testimonial/AsSeenIn";
 import PathNavigation from "../travelplanner/PathNavigation";
 import Locations from "../../components/containers/newplannerlocations/Index";
-import dynamic from "next/dynamic";
 import { logEvent } from "../../services/ga/Index.js";
 import H3 from "../../components/heading/H3.js";
 import Navigation from "../../components/theme/Navigation.jsx";
@@ -37,9 +36,6 @@ import Overview from "../themes/Overview.jsx";
 import Element from "../newcityplanner/elements/Index.js";
 import LocationsBlog from "../../components/containers/plannerlocations/Index.js";
 import Activity from "../newcityplanner/activities/Index.js";
-const MapBox = dynamic(() => import("../../components/Map.js"), {
-  ssr: false,
-});
 
 const SetWidthContainer = styled.div`
   width: 100%;
@@ -103,16 +99,6 @@ const Index = (props) => {
     setHotLocations(hot_locations);
   }, [props?.data?.components?.[0]?.itineraries]);
 
-  const InfoWindowContainer = (location) => (
-    <MapInfo>
-      <b>{location.name}</b>
-      <div>
-        {location.most_popular_for?.map((e, i) =>
-          i != 0 ? <span key={i}>{", " + e}</span> : <span key={i}>{e}</span>
-        )}
-      </div>
-    </MapInfo>
-  );
 
   const handlePlanButtonClick = (location) => {
     openTailoredModal(
