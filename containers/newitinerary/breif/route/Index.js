@@ -103,7 +103,7 @@ const Route = (props) => {
 
   let startingcity = null;
   let endingcity = null;
-  if (props?.plan?.version == ITINERARY_VERSION.version_2) {
+  if (props?.plan?.version == ITINERARY_VERSION.version_2 && !props?.mercuryItinerary)  {
     if (props?.routes) {
       for (var i = 0; i < props?.routes.length; i += 2) {
         locationsArr.push(
@@ -236,7 +236,7 @@ const Route = (props) => {
         }
     }
   } else {
-    if (props?.breif)
+    if (props?.breif && !props?.mercuryItinerary)
       if (props?.breif?.city_slabs) {
         for (var i = 0; i < props?.breif?.city_slabs.length; i++) {
           locationsArr.push(
@@ -292,7 +292,7 @@ const Route = (props) => {
       }
   }
 
-if (props?.CityData) {
+if(props?.CityData) {
         let length = props?.CityData.length;    
         for (var i = 0; i < props?.CityData.length; i++) {
           let color = CITY_COLOR_CODES[i%7];
