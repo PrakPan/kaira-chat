@@ -2306,11 +2306,12 @@ const NewMultiModeContainer = ({
           }
         });
 
-        const baseStartDate =
-          dCityData?.start_date ??
-          (oCityData?.start_date && oCityData?.duration != null
-            ? addDaysToDate(oCityData.start_date, oCityData.duration)
-            : dayjs().format("YYYY-MM-DD"));
+      const baseStartDate = selectedBooking?.check_in
+      ? dayjs(selectedBooking.check_in).format("YYYY-MM-DD")
+      : dCityData?.start_date ??
+        (oCityData?.start_date && oCityData?.duration != null
+          ? oCityData.start_date
+          : addDaysToDate(oCityData?.start_date, oCityData?.duration));
         const requestBody = {
           destination_itinerary_city: destination_itinerary_city_id,
           source_itinerary_city: origin_itinerary_city_id
