@@ -57,7 +57,7 @@ const TransferPickupDropButton = ({
     if (!hasPickup) {
       options.push({
         id: 'pickup',
-        label: `Pickup from ${destinationCityName}`,
+        label: `Pickup from ${originCityName}`,
         onClick: () => {
           setHandleShow(true);
           onPickupClick();
@@ -70,7 +70,7 @@ const TransferPickupDropButton = ({
     if (!hasDrop) {
       options.push({
         id: 'drop',
-        label: `Drop in ${originCityName}`,
+        label: `Drop in ${destinationCityName}`,
         onClick: () => {
             setHandleShow(true)
           onDropClick();
