@@ -253,61 +253,67 @@ const Enquiry = (props) => {
   //   ];
   // }
 
-  if (router?.query?.type == "Page" || props?.type == "Page") {
-    selectedObj = [
-      {
-        id: routerquery.page_id || props.page_id,
-        name: routerquery.destination || props.destination,
-        input_id: initialInputId,
-        type: "Page",
-      },
-    ];
-  } else if (
-    (routerquery.state && !routerquery.city) ||
-    props?.type == "State"
-  ) {
-    console.log("PROPS", props);
-    selectedObj = [
-      {
-        id: routerquery.page_id || props.page_id,
-        name: routerquery.destination || props.destination,
-        input_id: initialInputId,
-        type: "State",
-      },
-    ];
-  } else if (props?.type == "City" || router?.query.type == "City") {
-    console.log("PROPS3", props);
-    selectedObj = [
-      {
-        id: routerquery.page_id || props.page_id,
-        name: routerquery.destination || props.destination,
-        input_id: initialInputId,
-        type: "City",
-      },
-    ];
-  } else if (routerquery.country || props?.type == "Country") {
-    console.log("PROPS2", props);
-    selectedObj = [
-      {
-        id: routerquery.page_id || props.page_id,
-        name: routerquery.destination || props.destination,
-        input_id: initialInputId,
-        type: "Country",
-      },
-    ];
-  } else {
-    console.log("PROPS4", props);
-    selectedObj = [
-      {
-        id: routerquery.page_id || props.page_id,
-        name: routerquery.destination || props.destination,
-        input_id: initialInputId,
-        type: routerquery?.type ? routerquery.type : props?.destinationType,
-      },
-    ];
-  }
+const queryType = router?.query?.type?.toLowerCase();
+const propType = props?.type?.toLowerCase();
 
-  console.log("SelectedObj", selectedObj, routerquery);
+if (queryType === "page" || propType === "page") {
+  selectedObj = [
+    {
+      id: routerquery.page_id || props.page_id,
+      name: routerquery.destination || props.destination,
+      input_id: initialInputId,
+      type: "Page",
+    },
+  ];
+} else if ((routerquery.state && !routerquery.city) || propType === "state") {
+  selectedObj = [
+    {
+      id: routerquery.page_id || props.page_id,
+      name: routerquery.destination || props.destination,
+      input_id: initialInputId,
+      type: "State",
+    },
+  ];
+} else if (propType === "city" || queryType === "city") {
+  selectedObj = [
+    {
+      id: routerquery.page_id || props.page_id,
+      name: routerquery.destination || props.destination,
+      input_id: initialInputId,
+      type: "City",
+    },
+  ];
+} else if (routerquery.country || propType === "country") {
+  selectedObj = [
+    {
+      id: routerquery.page_id || props.page_id,
+      name: routerquery.destination || props.destination,
+      input_id: initialInputId,
+      type: "Country",
+    },
+  ];
+} else if (queryType === "continent" || propType === "continent") {
+  selectedObj = [
+    {
+      id: routerquery.page_id || props.page_id,
+      name: routerquery.destination || props.destination,
+      input_id: initialInputId,
+      type: "Continent",
+    },
+  ];
+} else {
+  selectedObj = [
+    {
+      id: routerquery.page_id || props.page_id,
+      name: routerquery.destination || props.destination,
+      input_id: initialInputId,
+      type: routerquery?.type || props?.destinationType,
+    },
+  ];
+}
+
+
+ 
 
   const _handleHideBlack = () => {
     setShowCities(false);
@@ -341,18 +347,18 @@ const Enquiry = (props) => {
 
     try {
       for (var i = 0; i < selectedCities.length; i++) {
-        // console.log("Selected Cities",selectedCities);
+        console.log("Selected ",selectedCities);
         if (
           cityids.indexOf(selectedCities[i].id) == -1 &&
           selectedCities[i].id
         ) {
-          if (selectedCities[i].type == "State")
+          if (selectedCities[i].type?.toLowerCase() == "state")
             stateIds.push(selectedCities[i].id);
-          else if (selectedCities[i].type == "Country")
+          else if (selectedCities[i].type?.toLowerCase() == "country")
             countryIds.push(selectedCities[i].id);
-          else if (selectedCities[i].type == "Continent")
+          else if (selectedCities[i].type?.toLowerCase() == "continent")
             continentIds.push(selectedCities[i].id);
-          else if(selectedCities[i].type == "City" || selectedCities[i].type == "Location"){
+          else if(selectedCities[i].type?.toLowerCase() == "city" || selectedCities[i].type?.toLowerCase() == "location"){
             cityids.push(selectedCities[i].id);
           }
           else {
@@ -436,6 +442,9 @@ let dist=divideTravellers()
   };
 
   const [selectedCities, setSelectedCities] = useState(selectedObj);
+   console.log("SelectedObj", selectedObj, selectedCities, routerquery);
+
+ 
 
   useEffect(() => {
     setShowPopup(popupObj);
@@ -452,6 +461,7 @@ let dist=divideTravellers()
   ]);
 
   const _SlideOneSubmitHandler = () => {
+    console.log("Selected Cities",selectedCities)
     if (!selectedCities[0].destination_id && !selectedCities[0].id) {
       return setShowPopup({ ...showPopup, InputOne: true });
     }
@@ -509,18 +519,18 @@ let dist=divideTravellers()
 
     try {
       for (var i = 0; i < selectedCities.length; i++) {
-        // console.log("Selected Cities",selectedCities);
+        console.log("Selected Cities",selectedCities);
         if (
           cityids.indexOf(selectedCities[i].id) == -1 &&
           selectedCities[i].id
         ) {
-          if (selectedCities[i].type == "Page") {
+          if (selectedCities[i].type?.toLowerCase() == "page") {
             pageIds.push(selectedCities[i].id);
-          } else if (selectedCities[i].type == "State")
+          } else if (selectedCities[i].type?.toLowerCase() == "state")
             stateIds.push(selectedCities[i].id);
-          else if (selectedCities[i].type == "Country")
+          else if (selectedCities[i].type?.toLowerCase() == "country")
             countryIds.push(selectedCities[i].id);
-          else if (selectedCities[i].type == "Continent")
+          else if (selectedCities[i].type?.toLowerCase() == "continent")
             continentIds.push(selectedCities[i].id);
           else {
             cityids.push(selectedCities[i].id);
