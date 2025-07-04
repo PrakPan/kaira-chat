@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import styled, { keyframes } from "styled-components";
 import Button from "../ui/button/Index";
 import { format } from "date-fns";
@@ -18,6 +18,7 @@ import Popup from "../ErrorPopup";
 import { RxCross2 } from "react-icons/rx";
 import usePageLoaded from "../custom hooks/usePageLoaded";
 import { logEvent } from "../../services/ga/Index";
+import { usePathname, useSearchParams } from "next/navigation";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 
@@ -88,6 +89,29 @@ const LoadingText = styled.div`
   opacity: 0.8;
 `;
 
+const useSourceParams = () => {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const source = useMemo(() => {
+    const queryObj = {};
+    for (const [key, value] of searchParams.entries()) {
+      if (value === 'true') queryObj[key] = true;
+      else if (value === 'false') queryObj[key] = false;
+      else if (!isNaN(value)) queryObj[key] = Number(value);
+      else queryObj[key] = value;
+    }
+
+    return {
+      path: router.asPath?.split("?")[0],
+      ...queryObj,
+    };
+  }, [pathname, searchParams]);
+
+  return source;
+};
+
 const Enquiry = (props) => {
   console.log("Enquiry Props:", props);
   console.log("Enquiry Props:", props);
@@ -146,6 +170,7 @@ const Enquiry = (props) => {
     max_price: 3000,
   });
   let isPageWide = media("(min-width: 768px)");
+  const source = useSourceParams();
 
   const divideTravellers = () => {
     let distribution = [];
@@ -388,10 +413,10 @@ let dist=divideTravellers()
       number_of_infants = numberOfInfants;
     }
 
-    const source = {
-  path: router.pathname, 
-  ...router.query,       
-};
+//     const source = {
+//   path: router.pathname, 
+//   ...router.query,       
+// };
 
     let data = null;
     data = {
@@ -618,9 +643,10 @@ let dist=divideTravellers()
 
 
     const data = {
-      source: {
-        path: router.asPath,
-      },
+      source,
+      // : {
+      //   path: router.asPath,
+      // },
       itinerary_id: itineraryId,
       group_type: groupType || "Solo",
       price_range: priceRange,
