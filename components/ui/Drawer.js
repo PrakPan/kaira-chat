@@ -173,7 +173,7 @@ export default function Drawer(props) {
                 className={`drawerContainer ${props.className || ""}`}
 
               >
-                <div>{props.children}</div>
+                <div className="h-full">{props.children}</div>
               </DrawerContainer>
             </div>
           )}
