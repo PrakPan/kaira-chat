@@ -18,6 +18,8 @@ import { openNotification } from "../../store/actions/notification";
 import { RiArrowDropRightLine } from "react-icons/ri";
 import TransferDrawer from "./TransferDrawer";
 import { LuInfo } from "react-icons/lu";
+import TransferPickupDropButton from "./TransferPickupDropButton";
+import PickupDropDrawer from "./PickupDropDrawer";
 
 const Container = styled.div`
   display: flex;
@@ -516,7 +518,24 @@ const CityItem = ({
 }) => {
   const { transfers_status } = useSelector((state) => state.ItineraryStatus);
 
-  console.log("Booking data:", airportBookings);
+   const [isTransferDrawerOpen, setIsTransferDrawerOpen] = useState(false);
+  const [transferDrawerType, setTransferDrawerType] = useState(null); // 'pickup' or 'drop'
+  const [selectedTransferBooking, setSelectedTransferBooking] = useState(null);
+
+  const handlePickupClick = () => {
+    setTransferDrawerType('pickup');
+    setSelectedTransferBooking(null);
+    setIsTransferDrawerOpen(true);
+  };
+
+  const handleDropClick = () => {
+    setTransferDrawerType('drop');
+    setSelectedTransferBooking(null);
+    setIsTransferDrawerOpen(true);
+  };
+
+
+  console.log("Booking data:", airportBookings,upPresent,downPresent);
 
   const correctIcon = (TransportMode) => {
     switch (TransportMode?.toLowerCase()) {
@@ -560,6 +579,7 @@ const CityItem = ({
   const [currentAirportBookings, setCurrentAirportBookings] = useState(
     airportBookings || []
   );
+  const [pickupDropShow,setPickupDropShow]= useState(false)
 
   console.log("Selected Booking", selectedBooking);
   const router = useRouter();
@@ -723,6 +743,89 @@ const CityItem = ({
       hour12: true,
     });
 
+    const handleTransferSubmit = async (transferData) => {
+    try {
+      setLoading(true);
+      console.log("TransferDD",transferData);
+      
+      // Create the transfer booking
+      const bookingPayload = {
+        transfer_type: transferData.transferType,
+        booking_mode: transferData.bookingMode || extractMode(booking_type),
+        source_address: transferData.sourceAddress,
+        destination_address: transferData.destinationAddress,
+        // transfer_date: transferData.transferDate,
+        // transfer_time: transferData.transferTime,
+        passengers: transferData.passengers,
+        // notes: transferData.notes,
+        origin_itinerary_city: origin_city_id,
+        destination_itinerary_city: destination_city_id,
+        // is_airport_pickup: transferData.transferType === 'pickup',
+        // is_airport_drop: transferData.transferType === 'drop',
+        source: transferData?.source,
+        trace_id: transferData?.traceId,
+        result_index: transferData?.selectedQuote?.result_index
+      };
+
+      const response = await axios.post(
+        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/taxi/`,
+        bookingPayload,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      );
+
+      if (response.status === 201) {
+        // Update the airport bookings state
+        setCurrentAirportBookings(prev => [...prev, response.data]);
+        
+        // Trigger any necessary updates
+        if (_updatePaymentHandler) _updatePaymentHandler();
+        if (getPaymentHandler) getPaymentHandler();
+        if (loadbookings) loadbookings();
+        
+        dispatch(
+          openNotification({
+            type: "success",
+            text: `${transferData.transferType === 'pickup' ? 'Pickup' : 'Drop'} transfer added successfully`,
+            heading: "Success!",
+          })
+        );
+      }
+    } catch (error) {
+      const errorMsg =
+        error?.response?.data?.errors?.[0]?.message?.[0] || 
+        error?.response?.data?.message || 
+        error.message;
+      dispatch(
+        openNotification({
+          text: errorMsg,
+          heading: "Error!",
+          type: "error",
+        })
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+    const supportsTransfers = (mode,index) => {
+      console.log("MOOde",mode,index)
+    return ['flight', 'train', 'ferry'].includes(mode?.toLowerCase());
+  };
+
+  const existingPickupBookings = currentAirportBookings?.filter(
+    booking => booking.is_airport_pickup
+  ) || [];
+  
+  const existingDropBookings = currentAirportBookings?.filter(
+    booking => booking.is_airport_drop
+  ) || [];
+
+
   console.log("Redux DBD", booking_id, city, visible);
 
   return (
@@ -866,8 +969,43 @@ const CityItem = ({
               />
             </div>
           )}
+
+           {supportsTransfers(booking_type,duration) && ( 
+                  <div className="ml-6">
+                    <TransferPickupDropButton
+                      bookingMode={booking_type}
+                      originCityName={origin_city_name}
+                      destinationCityName={destination_city_name}
+                      existingPickupBookings={existingPickupBookings}
+                      existingDropBookings={existingDropBookings}
+                      onPickupClick={handlePickupClick}
+                      onDropClick={handleDropClick}
+                      setHandleShow={setPickupDropShow}
+                      show={pickupDropShow}
+                    />
+                  </div>
+                 )} 
+
+          
         </div>
       </div>
+
+      <PickupDropDrawer
+        isOpen={isTransferDrawerOpen}
+        onClose={() => {
+          setIsTransferDrawerOpen(false);
+          setTransferDrawerType(null);
+          setSelectedTransferBooking(null);
+        }}
+        transferType={transferDrawerType}
+        bookingMode={booking_type}
+        originCityName={origin_city_name}
+        destinationCityName={destination_city_name}
+        onSubmit={handleTransferSubmit}
+        existingBooking={selectedTransferBooking}
+        // show={pickupDropShow}
+        // setHandleShow={setPickupDropShow}
+      />
 
       <TransferEditDrawer
         mercury
