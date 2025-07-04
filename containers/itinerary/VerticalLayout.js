@@ -21,6 +21,10 @@ import { openNotification } from "../../store/actions/notification";
 import { RiArrowDropRightLine } from "react-icons/ri";
 import TransferDrawer from "./TransferDrawer";
 import { LuInfo } from "react-icons/lu";
+import TransferPickupDropButton from "./TransferPickupDropButton";
+import PickupDropDrawer from "./PickupDropDrawer";
+import TransferPickupDropButton from "./TransferPickupDropButton";
+import PickupDropDrawer from "./PickupDropDrawer";
 
 const Container = styled.div`
   display: flex;
@@ -959,18 +963,25 @@ const CityItem = ({
       hour12: true,
     });
 
-    
     const handleTransferSubmit = async (transferData) => {
     try {
-      // setLoading(true);
+      setLoading(true);
       console.log("TransferDD",transferData);
-
+      
+      // Create the transfer booking
       const bookingPayload = {
-        transfer_type: "airport",
-        source_itinerary_city: transferData.transferType === 'pickup' ? (dCityData?.id || dCityData?.gmaps_place_id) : transferData?.sourceGmapsId,
-        destination_itinerary_city: transferData.transferType === 'pickup' ? transferData?.destinationGmapsId : (oCityData?.id || oCityData?.gmaps_place_id),
-        is_pickup: transferData.transferType === 'pickup',
-        is_drop: transferData.transferType === 'drop',
+        transfer_type: transferData.transferType,
+        booking_mode: transferData.bookingMode || extractMode(booking_type),
+        source_address: transferData.sourceAddress,
+        destination_address: transferData.destinationAddress,
+        // transfer_date: transferData.transferDate,
+        // transfer_time: transferData.transferTime,
+        passengers: transferData.passengers,
+        // notes: transferData.notes,
+        origin_itinerary_city: origin_city_id,
+        destination_itinerary_city: destination_city_id,
+        // is_airport_pickup: transferData.transferType === 'pickup',
+        // is_airport_drop: transferData.transferType === 'drop',
         source: transferData?.source,
         trace_id: transferData?.traceId,
         result_index: transferData?.selectedQuote?.result_index
@@ -986,17 +997,14 @@ const CityItem = ({
         }
       );
 
-      if (response.status === 200) {
-        dispatch(
-                        updateAirportTransferBooking(
-                          `${transferData.transferType === 'pickup' ?  (dCityData?.id || dCityData?.gmaps_place_id) : (oCityData?.id || oCityData?.gmaps_place_id)
-                          }`,
-                          response.data
-                        )
-                      );
+      if (response.status === 201) {
+        // Update the airport bookings state
+        setCurrentAirportBookings(prev => [...prev, response.data]);
         
+        // Trigger any necessary updates
         if (_updatePaymentHandler) _updatePaymentHandler();
         if (getPaymentHandler) getPaymentHandler();
+        if (loadbookings) loadbookings();
         
         dispatch(
           openNotification({
@@ -1006,9 +1014,6 @@ const CityItem = ({
           })
         );
       }
-     setIsTransferDrawerOpen(false);
-     setTransferDrawerType(null);
-     setSelectedTransferBooking(null);
     } catch (error) {
       const errorMsg =
         error?.response?.data?.errors?.[0]?.message?.[0] || 
@@ -1041,104 +1046,8 @@ const CityItem = ({
   ) || [];
 
 
-  const handleTransferSubmit = async (transferData) => {
-    if (!localStorage?.getItem("access_token")) {
-      setShowLoginModal(true);
-      return;
-    }
-    try {
-      // setLoading(true);
-      console.log("TransferDD", transferData);
-
-      const bookingPayload = {
-        
-        transfer_type: "airport",
-        source_itinerary_city:
-          transferData.transferType === "pickup"
-            ? dCityData?.id || dCityData?.gmaps_place_id
-            : oCityData?.id || oCityData?.gmaps_place_id,
-        destination_itinerary_city:
-          transferData.transferType === "pickup"
-            ? dCityData?.id || dCityData?.gmaps_place_id
-            : oCityData?.id || oCityData?.gmaps_place_id,
-        is_pickup: transferData.transferType === "pickup",
-        is_drop: transferData.transferType === "drop",
-        source: transferData?.source,
-        trace_id: transferData?.traceId,
-        result_index: transferData?.selectedQuote?.result_index,
-        booking_id: transferData?.booking_id,
-      };
-
-      console.log("Payload",bookingPayload);
-      const response = await axios.post(
-        `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/taxi/`,
-        bookingPayload,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        dispatch(
-          updateAirportTransferBooking(
-            `${
-              transferData.transferType === "pickup"
-                ? dCityData?.id || dCityData?.gmaps_place_id
-                : oCityData?.id || oCityData?.gmaps_place_id
-            }`,
-            response.data
-          )
-        );
-
-        if (_updatePaymentHandler) _updatePaymentHandler();
-        if (getPaymentHandler) getPaymentHandler();
-
-        dispatch(
-          openNotification({
-            type: "success",
-            text: `${
-              transferData.transferType === "pickup" ? "Pickup" : "Drop"
-            } transfer added successfully`,
-            heading: "Success!",
-          })
-        );
-      }
-      setIsTransferDrawerOpen(false);
-      setTransferDrawerType(null);
-      setSelectedTransferBooking(null);
-    } catch (error) {
-      const errorMsg =
-        error?.response?.data?.errors?.[0]?.message?.[0] ||
-        error?.response?.data?.message ||
-        error?.response?.data?.errors?.[0]?.detail
-          ? error?.response?.data?.errors?.[0]?.detail?.[0]
-          : null || error.message;
-      dispatch(
-        openNotification({
-          text: errorMsg,
-          heading: "Error!",
-          type: "error",
-        })
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const supportsTransfers = (mode, index) => {
-    console.log("MOOde", mode, index);
-    return ["flight", "train", "ferry"].includes(mode?.toLowerCase());
-  };
-
-  const existingPickupBookings =
-    currentAirportBookings?.filter((booking) => booking.is_airport_pickup) ||
-    [];
-
-  const existingDropBookings =
-    currentAirportBookings?.filter((booking) => booking.is_airport_drop) || [];
-
+    
+  
   console.log("Redux DBD", booking_id, city, visible);
 
   return (
