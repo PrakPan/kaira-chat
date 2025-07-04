@@ -181,10 +181,10 @@ const ComponentDisplay = ({ component, handlePlanButton, setDestination }) => (
         handlePlanButton={handlePlanButton}
         setDestination={setDestination}
         packages={[
-          ...component.cities,
-          ...component.states,
-          ...component.countries,
-        ]}
+    ...component.cities.map(item => ({ ...item, type: "City" })),
+    ...component.states.map(item => ({ ...item, type: "State" })),
+    ...component.countries.map(item => ({ ...item, type: "Country" })),
+  ]}
       />
     ) : component.carousel === "destination-2" ? (
       <></>
