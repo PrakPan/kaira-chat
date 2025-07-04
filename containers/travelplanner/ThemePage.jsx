@@ -196,6 +196,15 @@ export default function ThemePage(props) {
             slug={props.slug}
           />
         ) : null}
+        {props.experienceData.overview_heading &&
+        props.experienceData.overview_text ? (
+          <Overview
+            heading={props.experienceData.overview_heading}
+            text={props.experienceData.overview_text}
+            image={props.experienceData.overview_image}
+            slug={props.slug}
+          />
+        ) : null}
 
         <div className="mt-5">
           {components &&
@@ -517,7 +526,7 @@ export default function ThemePage(props) {
                       </>
                     ) : component.carousel === "Image Caraousel" ? (
                       <>
-                        <ImageCarousel slug={props.slug} />
+                        <ImageCarousel />
                         <PlanYourTripButton
                           text={"Create your travel plan now!"}
                         />
