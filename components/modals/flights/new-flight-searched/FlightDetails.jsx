@@ -72,6 +72,25 @@ export default function FlightDetails({
     return totalMinutes;
   }
 
+function getDayOffset(duration) {
+  if (typeof duration === "number") {
+    const days = Math.floor(duration / 1440); // for minutes
+    return days >= 1 ? `+${days}D` : null;
+  }
+
+  if (typeof duration === "string") {
+    const match = duration.match(/(\d+)/); // get first number from "46-47 hours"
+    if (match && match[1]) {
+      const hours = parseInt(match[1], 10);
+      const days = Math.floor(hours / 24);
+      return days >= 1 ? `+${days}D` : null;
+    }
+  }
+
+  return null;
+}
+
+
   return (
     <div className=" w-full lg:w-[100%]  flex flex-col  gap-2  mt-2 md:mt-4">
       <div className="flex flex-col items-center gap-2 text-[#C5C1C1]">
@@ -116,11 +135,11 @@ export default function FlightDetails({
           <div className="text-sm text-gray-600 text-[#C5C1C1]">Non-stop</div>
         ) : (
           <div
-            // onMouseEnter={() => setIsHovered(true)}
-            // onMouseLeave={() => setIsHovered(false)}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
             onClick={() => {
               setShowDetails((prev) => !prev);
-              // setIsHovered(false);
+              setIsHovered(false);
             }}
             className="relative"
           >
@@ -148,8 +167,8 @@ export default function FlightDetails({
                 if (index == 0) return null;
                 return (
                   <div className="mb-2 relative">
-                    <span className="absolute -top-5 left-1/2 -translate-x-1/2 w-0 h-0 border-[10px] border-solid border-transparent border-b-red"></span>
-                    <span className="absolute -top-[34px] left-1/2 -translate-x-1/2 w-0 h-0 border-[10px] border-solid border-transparent border-b-[#2B2A2A]"></span>
+                    {index== 1 && <span className="absolute -top-5 left-1/2 -translate-x-1/2 w-0 h-0 border-[10px] border-solid border-transparent border-b-red"></span>}
+                    {index==1 && <span className="absolute -top-[34px] left-1/2 -translate-x-1/2 w-0 h-0 border-[10px] border-solid border-transparent border-b-[#2B2A2A]"></span>}
                     <div className="text-nowrap text-white">
                       Plane change ({segment?.airline.name},{" "}
                       {segment?.airline?.code}-{segment?.airline?.flight_number}
@@ -168,21 +187,41 @@ export default function FlightDetails({
         )}
 
         <div className="flex flex-col items-center text-nowrap">
-          <div className="text-[14px] font-semibold">
-            {destination?.arrival_time
-              ? `${new Date(destination?.arrival_time)
-                  .getHours()
-                  .toString()
-                  .padStart(2, "0")}: ${new Date(destination?.arrival_time)
-                  .getMinutes()
-                  .toString()
-                  .padStart(2, "0")}`
-              : ""}
-          </div>
-
-          <div className="w-full text-[12px] text-gray-600 truncate text-center">
+          <div className="text-[14px] font-semibold flex items-start gap-1">
+            <div className="flex flex-col items-center">
+  <span>
+    {destination?.arrival_time
+      ? `${new Date(destination?.arrival_time)
+          .getHours()
+          .toString()
+          .padStart(2, "0")}:${new Date(destination?.arrival_time)
+          .getMinutes()
+          .toString()
+          .padStart(2, "0")}`
+      : ""}
+  </span>
+  <div className="w-full text-[12px] text-gray-600 truncate text-center">
             ({destination?.city_code})
           </div>
+  </div>
+  {getDayOffset(data?.total_duration || duration) && (
+    <sup
+      style={{
+        fontSize: "0.8rem",
+        verticalAlign: "super",
+        marginLeft: "1px",
+        color: "#555",
+        marginTop: "0.7rem"
+      }}
+    >
+      {getDayOffset(data?.total_duration || duration)}
+    </sup>
+  )}
+</div>
+
+
+
+          
         </div>
       </div>
     </div>

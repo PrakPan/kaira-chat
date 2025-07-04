@@ -161,6 +161,7 @@ const ComboFlight = (props) => {
   const [flights, setFlights] = useState(
     props?.flightResults ? props?.flightResults : []
   );
+  const [airlineCodes, setAirlineCodes] = useState([]);
   const [selectedFlightIndex, setSelectedFlightIndex] = useState(null);
   const [flightProvider, setProvider] = useState(null);
   const [preferredDepartureTime, setPreferredDepartureTime] = useState("");
@@ -169,7 +170,9 @@ const ComboFlight = (props) => {
   const [propsReady, setPropsReady] = useState(false);
   const [dateTimeInitialized, setDateTimeInitialized] = useState(false);
   const [paxChanged, setPaxChanged] = useState(false);
-  
+  const [hasFetchedOnce, setHasFetchedOnce] = useState(false);
+  const [selectedAirlines,setSelectedAirlines] = useState([]);
+
   const abortControllerRef = useRef(null);
   const cancelTokenSourceRef = useRef(null); 
 
@@ -443,17 +446,15 @@ const _FetchFlightsHandler = async () => {
 
     console.log("Flight search request:", requestData);
 
+    const selectedAirlines = filtersState?.airlines;
+
+   const url = selectedAirlines
+  ? `?airlines=${encodeURIComponent(selectedAirlines)}`
+  : ``;
+
     axiosFlightSearch
       .post(
-        `?${filtersState.sort_by}_order=${filtersState.order}${
-          filtersState.departure_time_period
-            ? "&departure_time_period=" + filtersState.departure_time_period
-            : ""
-        }${
-          filtersState.arrival_time_period
-            ? "&arrival_time_period=" + filtersState.arrival_time_period
-            : ""
-        }`,
+        url,
         requestData,
         {
           headers: {
@@ -484,6 +485,11 @@ const _FetchFlightsHandler = async () => {
 
         if (res.data?.results && res.data.results.length) {
           setFlights(res.data.results);
+          if (!hasFetchedOnce) {
+     setAirlineCodes(res.data.airlines);
+    setHasFetchedOnce(true); 
+  }
+          setAirlineCodes(res.data.airlines);
           if (props?.setFlightResults)
             props?.setFlightResults(res.data.results);
           setFlightsCount(res.data.results.length);
@@ -517,6 +523,7 @@ const _FetchFlightsHandler = async () => {
         }
         
         setFlights([]);
+        
         if (props?.setFlightResults) props?.setFlightResults([]);
         setFlightsCount(0);
         setFetchingIsError({
@@ -827,6 +834,7 @@ const _FetchFlightsHandler = async () => {
               getPaymentHandler={props.getPaymentHandler}
               combo={props?.combo}
               booking_id={props?.booking_id}
+
             />
           ))}
 
@@ -861,8 +869,13 @@ const _FetchFlightsHandler = async () => {
           showFilter={showFilter}
           setShowFilter={setShowFilter}
           filtersState={filtersState}
+          flights={flights}
+          airlineCodes={airlineCodes}
+          setAirlineCodes={setAirlineCodes}
           setFiltersState={setFiltersState}
           flightCount={flightCount}
+          selectedAirlines={selectedAirlines}
+          setSelectedAirlines={setSelectedAirlines}
           setHideFlightModal={props.setHideFlightModal}
           text={props.selectedBooking?.name}
           selectedBooking={props.selectedBooking}

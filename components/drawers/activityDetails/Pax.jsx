@@ -4,7 +4,7 @@ import { IoIosArrowDown } from "react-icons/io";
 import ButtonYellow from "../../ButtonYellow";
 import Button from "../../ui/button/Index";
 
-export const Pax = ({ pax, setPax, combo }) => {
+export const Pax = ({ pax, setPax, combo,limit=null }) => {
   const refDesktop = useRef(null);
   const refMobile = useRef(null);
 
@@ -24,7 +24,11 @@ export const Pax = ({ pax, setPax, combo }) => {
   };
 
   const handlePlus = (type) => {
-    if (type === "adult") setAdults((prev) => prev + 1);
+    if (type === "adult") {
+    if (!limit || adults < limit) {
+      setAdults((prev) => prev + 1);
+    }
+  }
     if (type === "children") setChildren((prev) => prev + 1);
     if (type === "infants") setInfants((prev) => prev + 1);
   };

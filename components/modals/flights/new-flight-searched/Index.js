@@ -46,14 +46,14 @@ const Flight = (props) => {
   };
   return (
     <Container
-      className="relative border-b p-2 space-y-2 overflow-x-hidden "
+      className="relative border-b p-2 space-y-2 overflow-visible"
       isSelected={props.isSelected}
     >
 
       <div className="flex flex-row gap-1 justify-between md:flex-row md:items-center md:justify-between mt-2 md:mt-0">
         <div className="flex flex-col md:flex-row items-center gap-2 justify-center">
           
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center justify-center">
           <LogoContainer data={props.data} width={32} height={32}/>
           <div className="text-sm font-semibold">
             {props.data?.segments?.[0]?.airline?.name} {isPageWide && <>| <span className="font-normal">{props.data?.segments?.[0]?.airline?.code}-{props.data?.segments?.[0]?.airline?.flight_number}</span></>}

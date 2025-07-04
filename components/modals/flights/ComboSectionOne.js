@@ -15,7 +15,12 @@ const ComboSection = (props) => {
     flightCount,
     preferred_departure_time,
     updatePreferredDepartureTime,
-    handleFiltersChange
+    handleFiltersChange,
+    flights,
+    airlineCodes,
+    setAirlineCodes,
+    selectedAirlines,
+    setSelectedAirlines,
   } = props;
 
   const [showPax, setShowPax] = useState(false);
@@ -83,7 +88,6 @@ const ComboSection = (props) => {
       ...filtersState,
       non_stop_flights: !filtersState.non_stop_flights,
     };
-    
 
     if (props.handleFiltersChange) {
       props.handleFiltersChange(newFiltersState);
@@ -95,11 +99,14 @@ const ComboSection = (props) => {
       setIsLoading(false);
     }, 100);
   };
- 
-    useEffect(() => {
+
+  useEffect(() => {
     if (preferred_departure_time && !isInitialized) {
       const time = dayjs(preferred_departure_time);
-      console.log("Initial sync with preferred time:", time.format("YYYY-MM-DDTHH:mm:ss"));
+      console.log(
+        "Initial sync with preferred time:",
+        time.format("YYYY-MM-DDTHH:mm:ss")
+      );
       setSelectedTime(time.format("h:mm A"));
       setSelectedDate(time.format("DD MMM, YYYY"));
       setIsInitialized(true);
@@ -107,94 +114,107 @@ const ComboSection = (props) => {
   }, [preferred_departure_time, isInitialized]);
 
   const handleDateSelection = (dateOption) => {
-  setIsLoading(true);
-  setSelectedDate(dateOption.display);
-  setShowDateDropdown(false);
+    setIsLoading(true);
+    setSelectedDate(dateOption.display);
+    setShowDateDropdown(false);
 
-
-  if (debounceTimer) {
-    clearTimeout(debounceTimer);
-  }
-
-  const currentTimeFromPreferred = dayjs(preferred_departure_time);
-  const currentTimeString = currentTimeFromPreferred.format("HH:mm:ss");
-  const newDateTime = dayjs(`${dateOption.value}T${currentTimeString}`);
-
-  console.log("Date selection:", {
-    selectedDate: dateOption.value,
-    currentTime: currentTimeString,
-    newDateTime: newDateTime.format("YYYY-MM-DDTHH:mm:ss"),
-    oldDateTime: preferred_departure_time
-  });
-
-
-  const timer = setTimeout(() => {
-    if (updatePreferredDepartureTime) {
-      updatePreferredDepartureTime(newDateTime.format("YYYY-MM-DDTHH:mm:ss"));
-    }
-    setIsLoading(false);
-  }, 300); 
-
-  setDebounceTimer(timer);
-};
-
-
-const handleTimeSelection = (slot) => {
-  setIsLoading(true);
-  setSelectedTime(slot.display);
-  setShowTimeDropdown(false);
-
-  if (debounceTimer) {
-    clearTimeout(debounceTimer);
-  }
-
-  let currentDate;
-  if (selectedDate) {
-    currentDate = dayjs(selectedDate, "DD MMM, YYYY").format("YYYY-MM-DD");
-  } else {
-    currentDate = dayjs(preferred_departure_time).format("YYYY-MM-DD");
-  }
-
-  const [hours, minutes] = slot.value.split(":");
-  const newDateTime = dayjs(`${currentDate}T${hours}:${minutes}:00`);
-
-  console.log("Time selection:", {
-    selectedTime: slot.display,
-    selectedDate: selectedDate,
-    currentDate: currentDate,
-    newDateTime: newDateTime.format("YYYY-MM-DDTHH:mm:ss"),
-    oldDateTime: preferred_departure_time
-  });
-
-  // Debounce the API call
-  const timer = setTimeout(() => {
-    if (updatePreferredDepartureTime) {
-      updatePreferredDepartureTime(newDateTime.format("YYYY-MM-DDTHH:mm:ss"));
-    }
-    setIsLoading(false);
-  }, 300); 
-
-  setDebounceTimer(timer);
-};
-
-
-useEffect(() => {
-  return () => {
     if (debounceTimer) {
       clearTimeout(debounceTimer);
     }
-  };
-}, [debounceTimer]);
 
+    const currentTimeFromPreferred = dayjs(preferred_departure_time);
+    const currentTimeString = currentTimeFromPreferred.format("HH:mm:ss");
+    const newDateTime = dayjs(`${dateOption.value}T${currentTimeString}`);
+
+    console.log("Date selection:", {
+      selectedDate: dateOption.value,
+      currentTime: currentTimeString,
+      newDateTime: newDateTime.format("YYYY-MM-DDTHH:mm:ss"),
+      oldDateTime: preferred_departure_time,
+    });
+
+    const timer = setTimeout(() => {
+      if (updatePreferredDepartureTime) {
+        updatePreferredDepartureTime(newDateTime.format("YYYY-MM-DDTHH:mm:ss"));
+      }
+      setIsLoading(false);
+    }, 300);
+
+    setDebounceTimer(timer);
+  };
+
+  const handleTimeSelection = (slot) => {
+    setIsLoading(true);
+    setSelectedTime(slot.display);
+    setShowTimeDropdown(false);
+
+    if (debounceTimer) {
+      clearTimeout(debounceTimer);
+    }
+
+    let currentDate;
+    if (selectedDate) {
+      currentDate = dayjs(selectedDate, "DD MMM, YYYY").format("YYYY-MM-DD");
+    } else {
+      currentDate = dayjs(preferred_departure_time).format("YYYY-MM-DD");
+    }
+
+    const [hours, minutes] = slot.value.split(":");
+    const newDateTime = dayjs(`${currentDate}T${hours}:${minutes}:00`);
+
+    console.log("Time selection:", {
+      selectedTime: slot.display,
+      selectedDate: selectedDate,
+      currentDate: currentDate,
+      newDateTime: newDateTime.format("YYYY-MM-DDTHH:mm:ss"),
+      oldDateTime: preferred_departure_time,
+    });
+
+    // Debounce the API call
+    const timer = setTimeout(() => {
+      if (updatePreferredDepartureTime) {
+        updatePreferredDepartureTime(newDateTime.format("YYYY-MM-DDTHH:mm:ss"));
+      }
+      setIsLoading(false);
+    }, 300);
+
+    setDebounceTimer(timer);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
+      }
+    };
+  }, [debounceTimer]);
+
+  const handleAirlineMultiSelect = (code) => {
+    const updatedSelection = selectedAirlines.includes(code)
+      ? selectedAirlines.filter((c) => c !== code)
+      : [...selectedAirlines, code];
+
+    setSelectedAirlines(updatedSelection);
+
+    // Only pass airlines param, remove other filters
+    const newFiltersState = {
+      airlines: updatedSelection.join(","),
+    };
+
+    if (props.handleFiltersChange) {
+      props.handleFiltersChange(newFiltersState);
+    } else {
+      setFiltersState(newFiltersState);
+    }
+  };
 
   const handleSortChange = (sortOption) => {
     setIsLoading(true);
     const newFiltersState = {
       ...filtersState,
-      sort_by: sortOption.sort_by,
-      order: sortOption.order,
+      airlines,
     };
-    
+
     // Use parent's handler
     if (props.handleFiltersChange) {
       props.handleFiltersChange(newFiltersState);
@@ -202,7 +222,7 @@ useEffect(() => {
       setFiltersState(newFiltersState);
     }
     setShowSortDropdown(false);
-    
+
     setTimeout(() => {
       setIsLoading(false);
     }, 100);
@@ -233,7 +253,9 @@ useEffect(() => {
   const handleDatePickerChange = (event) => {
     if (!isLoading) {
       const selectedDateValue = dayjs(event.target.value).format("YYYY-MM-DD");
-      const selectedDateDisplay = dayjs(event.target.value).format("DD MMM, YYYY");
+      const selectedDateDisplay = dayjs(event.target.value).format(
+        "DD MMM, YYYY"
+      );
 
       handleDateSelection({
         value: selectedDateValue,
@@ -335,70 +357,55 @@ useEffect(() => {
             </div>
           </div>
 
-          <div className="flex justify-between flex-col md:flex-row">
+          <div className="flex justify-between flex-col md:flex-row gap-2">
             <div className="relative sm:w-auto sort-dropdown-container">
-              <div
-                className="p-2 border w-full sm:w-64 flex flex-row items-center cursor-pointer rounded-md hover:bg-gray-50"
-                onClick={() =>
-                  !isLoading && setShowSortDropdown((prev) => !prev)
-                }
-              >
-                <MdSort className="mr-1" />
-                <span className="text-sm">
-                  Sort: {filtersState.sort_by.charAt(0).toUpperCase() + filtersState.sort_by.slice(1)}{" "}
-                  {filtersState.order === "asc"
-                    ? "(Low to High)"
-                    : "(High to Low)"}
-                </span>
-              </div>
+              {airlineCodes && airlineCodes.length > 0 && (
+                <>
+                  <div
+                    className="p-2 border w-full sm:w-64 flex flex-row items-center cursor-pointer rounded-md hover:bg-gray-50"
+                    onClick={() =>
+                      !isLoading && setShowSortDropdown((prev) => !prev)
+                    }
+                  >
+                    <MdSort className="mr-1" />
+                    <span className="text-sm">Select Airlines</span>
+                  </div>
 
-              {showSortDropdown && (
-                <div className="absolute z-[15] bg-white border rounded-md shadow-lg mt-1 w-full sm:w-64">
-                  {[
-                    {
-                      label: "Price (Low to High)",
-                      sort_by: "price",
-                      order: "asc",
-                    },
-                    {
-                      label: "Price (High to Low)",
-                      sort_by: "price",
-                      order: "desc",
-                    },
-                    {
-                      label: "Duration (Ascending)",
-                      sort_by: "duration",
-                      order: "asc",
-                    },
-                    {
-                      label: "Duration (Descending)",
-                      sort_by: "duration",
-                      order: "desc",
-                    },
-                  ].map((option, idx) => (
-                    <div
-                      key={idx}
-                      className={`p-2 hover:bg-blue-50 cursor-pointer text-sm ${
-                        filtersState.sort_by === option.sort_by &&
-                        filtersState.order === option.order
-                          ? "bg-blue-100"
-                          : ""
-                      }`}
-                      onClick={() => !isLoading && handleSortChange(option)}
-                    >
-                      {option.label}
+                  {showSortDropdown && (
+                    <div className="absolute z-[15] bg-white border rounded-md shadow-lg mt-1 w-full sm:w-64 max-h-60 overflow-y-auto">
+                      {airlineCodes.map((option, idx) => (
+                        <div
+                          key={idx}
+                          className="p-2 flex justify-between items-center hover:bg-blue-50 cursor-pointer text-sm"
+                          onClick={() =>
+                            !isLoading && handleAirlineMultiSelect(option.code)
+                          }
+                        >
+                          <span>
+                            {option.name} ({option.code})
+                          </span>
+                          <input
+                            type="checkbox"
+                            checked={selectedAirlines.includes(option.code)}
+                            readOnly
+                          />
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  )}
+                </>
               )}
             </div>
-            <div className=" mt-2 md:mt-0">
+
+            {/* Pax block — always second */}
+            <div className="mt-2 md:mt-0">
               <Pax
                 setShowPax={setShowPax}
                 pax={pax}
                 setPax={setPax}
                 showPax={showPax}
                 combo={true}
+                limit={9}
               />
             </div>
           </div>
