@@ -542,7 +542,8 @@ let dist=divideTravellers()
 
     const data = {
       source: {
-        path: router.asPath,
+        path: router.pathname, 
+        ...router.query, 
       },
       experience_filters_selected: preferences,
       start_location: {
