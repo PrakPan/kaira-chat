@@ -344,6 +344,11 @@ const LogIn = React.memo((props) => {
         required
         error={props.emailFail ? true : false}
         helperText={props.emailFail ? props.emailfailmessage : null}
+        onKeyDown={(e) => {
+        if (e.key === "Enter") {
+        e.preventDefault(); 
+       }
+       }}
         key="email"
         name="email"
         label="Email Address"
