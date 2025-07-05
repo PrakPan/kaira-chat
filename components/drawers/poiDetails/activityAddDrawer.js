@@ -93,7 +93,7 @@ const ActivityAddDrawer = (props) => {
   const num_adults = itinerary.number_of_adults;
   const [filterState, setFilterState] = useState({
     recommended_only: false,
-    rating: ["All"],
+    rating: [],
     category: ["All"],
     tour_type: ["All"],
     guide: ["All"],
