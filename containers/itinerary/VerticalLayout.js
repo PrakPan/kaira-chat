@@ -10,7 +10,7 @@ import { MERCURY_HOST } from "../../services/constants";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { axiosDeleteBooking } from "../../services/itinerary/bookings";
-import { updateTransferBookings } from "../../store/actions/transferBookingsStore";
+import { updateAirportTransferBooking, updateTransferBookings } from "../../store/actions/transferBookingsStore";
 import { useDispatch, useSelector } from "react-redux";
 import TransferEditDrawer from "../../components/drawers/routeTransfer/TransferEditDrawer";
 import TransferSkeleton from "../../components/itinerary/Skeleton/TransferSkeleton";
@@ -745,7 +745,7 @@ const CityItem = ({
 
     const handleTransferSubmit = async (transferData) => {
     try {
-      setLoading(true);
+      // setLoading(true);
       console.log("TransferDD",transferData);
       
       // Create the transfer booking
@@ -777,14 +777,19 @@ const CityItem = ({
         }
       );
 
-      if (response.status === 201) {
+      if (response.status === 200) {
         // Update the airport bookings state
-        setCurrentAirportBookings(prev => [...prev, response.data]);
+        dispatch(
+                        updateAirportTransferBooking(
+                          `${transferData.transferType === 'pickup' ?  (dCityData?.id || dCityData?.gmaps_place_id) : (oCityData?.id || oCityData?.gmaps_place_id)
+                          }`,
+                          response.data
+                        )
+                      );
         
         // Trigger any necessary updates
         if (_updatePaymentHandler) _updatePaymentHandler();
         if (getPaymentHandler) getPaymentHandler();
-        if (loadbookings) loadbookings();
         
         dispatch(
           openNotification({
@@ -959,7 +964,7 @@ const CityItem = ({
             )
           )}
           {currentAirportBookings && currentAirportBookings.length > 0 && (
-            <div className="flex flex-col gap-1 mt-1 mb-[1.5rem]">
+            <div className="flex flex-col gap-1 mt-1">
               <AirportBookingItem
                 key={`airport-${booking_id || "no-main"}`}
                 booking={currentAirportBookings}
@@ -971,7 +976,7 @@ const CityItem = ({
           )}
 
            {supportsTransfers(booking_type,duration) && ( 
-                  <div className="ml-6">
+                  <div className={`-mt-2 ${currentAirportBookings && currentAirportBookings.length > 0 ?"mb-2":"mb-0 mt-0"  }`}>
                     <TransferPickupDropButton
                       bookingMode={booking_type}
                       originCityName={origin_city_name}
@@ -1005,6 +1010,21 @@ const CityItem = ({
         existingBooking={selectedTransferBooking}
         // show={pickupDropShow}
         // setHandleShow={setPickupDropShow}
+        _updateFlightBookingHandler={_updateFlightBookingHandler}
+        _updatePaymentHandler={_updatePaymentHandler}
+        getPaymentHandler={getPaymentHandler}
+        setShowLoginModal={setShowLoginModal}
+        city={origin_city_name}
+        dcity={destination_city_name}
+        _updateTaxiBookingHandler={_updateTaxiBookingHandler}
+        selectedBooking={selectedBooking}
+        setSelectedBooking={setSelectedBooking}
+        originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
+        destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
+        origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
+        destination_itinerary_city_id={
+          dCityData?.id || dCityData?.gmaps_place_id
+        }
       />
 
       <TransferEditDrawer

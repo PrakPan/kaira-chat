@@ -18,6 +18,7 @@ import Generalbutton from "../../components/ui/button/Generallinkbutton";
 import TaxiSearched from "../../components/modals/taxis/taxi-searched/Index";
 import { PulseLoader } from "react-spinners";
 import SingleDateInput from "./SingleDateInput";
+import { useSelector } from "react-redux";
 
 const PickupDropDrawer = ({
   isOpen,
@@ -28,14 +29,26 @@ const PickupDropDrawer = ({
   destinationCityName,
   onSubmit,
   existingBooking = null,
-  HOST = "https://mercury.tarzanway.com",
+   _updateFlightBookingHandler,
+  _updatePaymentHandler,
+        getPaymentHandler,
+        setShowLoginModal,
+  _updateTaxiBookingHandler,
+        selectedBooking,
+        setSelectedBooking,
+        originCityId,
+        destinationCityId,
+        origin_itinerary_city_id,
+        destination_itinerary_city_id,
+  HOST = "https://dev.mercury.tarzanway.com",
 }) => {
+  const {number_of_adults , number_of_children, number_of_infants} = useSelector(state=>state.Itinerary)
   const initialFormState = {
     sourceAddress: "",
     destinationAddress: "",
     transferDate: "",
-    transferTime: "",
-    passengers: 1,
+    transferTime: "12:00",
+    passengers: number_of_adults + number_of_children + number_of_infants,
     notes: "",
     sourceGmapsId: "",
     destinationGmapsId: "",
@@ -133,6 +146,7 @@ const PickupDropDrawer = ({
 
   useEffect(() => {
     if (isOpen) {
+      setIsLoadingQuotes(false);
       setFormData(initialFormState);
       setSourceSuggestions([]);
       setDestinationSuggestions([]);
@@ -151,16 +165,16 @@ const PickupDropDrawer = ({
     switch (bookingMode?.toLowerCase()) {
       case "flight":
         return transferType === "pickup"
-          ? `${originCityName} Airport`
-          : `${destinationCityName} Airport`;
+          ? `${destinationCityName} Airport`
+          : `${originCityName} Airport`;
       case "train":
         return transferType === "pickup"
-          ? `${originCityName} Railway Station`
-          : `${destinationCityName} Railway Station`;
+          ? `${destinationCityName} Railway Station`
+          : `${originCityName} Railway Station`;
       case "ferry":
         return transferType === "pickup"
-          ? `${originCityName} Ferry Terminal`
-          : `${destinationCityName} Ferry Terminal`;
+          ? `${destinationCityName} Ferry Terminal`
+          : `${originCityName} Ferry Terminal`;
       default:
         return "";
     }
@@ -419,7 +433,7 @@ const PickupDropDrawer = ({
     };
 
     onSubmit(submissionData);
-    onClose();
+  
   };
 
   const handleInputChange = (field, value) => {
@@ -549,7 +563,7 @@ const PickupDropDrawer = ({
   useEffect(() => {
     if (isOpen && bookingMode) {
       const cityName =
-        transferType === "pickup" ? originCityName : destinationCityName;
+        transferType === "pickup" ? destinationCityName : originCityName;
       if (cityName) {
         searchHubs(cityName);
       }
@@ -559,7 +573,7 @@ const PickupDropDrawer = ({
   const getTitle = () => {
     const action = transferType === "pickup" ? "Pickup" : "Drop";
     const location =
-      transferType === "pickup" ? originCityName : destinationCityName;
+      transferType === "pickup" ? destinationCityName : originCityName;
     return `Add ${action} in ${location}`;
   };
 
@@ -886,11 +900,24 @@ const PickupDropDrawer = ({
             <div className="space-y-3">
               {transferQuotes.map((quote, index) => (
                 <TaxiSearched
+                  airportBooking
+                  cityId={transferType === "pickup" ? destination_itinerary_city_id : origin_itinerary_city_id}
                   key={index}
                   data={quote}
-                  handleTaxiSelect={handleSubmit}
+                  handleAirportTaxiSelect={handleSubmit}
                   combo={false}
-                  onSelect={handleSubmit}
+                  selectedBooking={selectedBooking}
+                  getPaymentHandler={getPaymentHandler}
+                  _updateTaxiBookingHandler={
+                        _updateTaxiBookingHandler
+                        }
+                  origin_itinerary_city_id={
+                          origin_itinerary_city_id
+                        }
+                        destination_itinerary_city_id={
+                          destination_itinerary_city_id
+                        }
+                  setHideBookingModal={onClose}
                 />
               ))}
             </div>

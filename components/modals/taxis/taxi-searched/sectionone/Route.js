@@ -8,7 +8,7 @@ import { getIndianPrice } from "../../../../../services/getIndianPrice";
 import { axiosTaxiBooking } from "../../../../../services/bookings/UpdateTaxiGozo";
 import { useDispatch, useSelector } from "react-redux";
 import { openNotification } from "../../../../../store/actions/notification";
-import { updateSingleTransferBooking } from "../../../../../store/actions/transferBookingsStore";
+import { updateAirportTransferBooking, updateSingleTransferBooking } from "../../../../../store/actions/transferBookingsStore";
 
 const Container = styled.div`
     flex: 1;
@@ -89,7 +89,7 @@ const Section = (props) => {
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     return regex.test(uuid);
   };
-  const handleUpdate = () => {
+  const handleUpdate = async () => {
     if (props.handleTaxiSelect) {
       props.handleTaxiSelect({
         trace_id: props.data.trace_id,
@@ -97,6 +97,26 @@ const Section = (props) => {
       });
       return;
     }
+
+    if (props?.handleAirportTaxiSelect) {
+    try {
+      setLoading(true);
+      const promise = props?.handleAirportTaxiSelect(props?.data);
+
+
+      if (promise?.then) {
+        await promise;
+      }
+
+      setLoading(false);
+      props.setHideBookingModal();
+    } catch (err) {
+      console.error("Airport select error:", err);
+      setLoading(false);
+    }
+    return;
+  }
+
 
     setLoading(true);
 
@@ -130,12 +150,21 @@ const Section = (props) => {
             heading: "Sucess!",
           })
         );
+        if(!props?.airportBooking){
         dispatch(
                 updateSingleTransferBooking(
                   `${props?.origin_itinerary_city_id}:${props?.destination_itinerary_city_id}`,
                   res.data
                 )
               );
+            }else {
+              dispatch(
+                updateAirportTransferBooking(
+                  `${props?.cityId}`,
+                  res.data
+                )
+              );
+            }
         props._updateTaxiBookingHandler([res.data]);
         props.getPaymentHandler();
         props.setHideBookingModal();
