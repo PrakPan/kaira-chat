@@ -50,6 +50,11 @@ const AirportBookingItem = ({
   upPresent,
   downPresent,
   onBookingDelete,
+  bookingMode, // Add this prop
+  originCityName, // Add this prop
+  destinationCityName, // Add this prop
+  onPickupClick, // Add this prop
+  onDropClick, // Add this prop
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
@@ -140,6 +145,23 @@ const AirportBookingItem = ({
     });
   };
 
+  const handleTooltipAddClick = (e, type) => {
+    e.stopPropagation();
+    
+    if (tooltipTimeoutRef.current) {
+      clearTimeout(tooltipTimeoutRef.current);
+      tooltipTimeoutRef.current = null;
+    }
+    setShowTooltip(false);
+    setShowDetails(false);
+    
+    if (type === 'pickup') {
+      onPickupClick();
+    } else if (type === 'drop') {
+      onDropClick();
+    }
+  };
+
   useEffect(() => {
     return () => {
       if (tooltipTimeoutRef.current) {
@@ -150,6 +172,23 @@ const AirportBookingItem = ({
 
   const hasPickup = pickupBookings.length > 0;
   const hasDrop = dropBookings.length > 0;
+
+  // Check if booking mode supports transfers
+  const supportsTransfers = (mode) => {
+    return ['flight', 'train', 'ferry'].includes(mode?.toLowerCase());
+  };
+
+  const getTransferLocationText = (mode, type) => {
+    const isPickup = type === 'pickup';
+    const cityName = isPickup ? destinationCityName : originCityName;
+    
+    if (mode?.toLowerCase() === 'flight') {
+      return `+ Add Airport ${isPickup ? 'Pickup' : 'Drop'} in ${cityName}`;
+    } else if (['train', 'ferry'].includes(mode?.toLowerCase())) {
+      return `+ Add Station ${isPickup ? 'Pickup' : 'Drop'} in ${cityName}`;
+    }
+    return `+ Add ${isPickup ? 'Pickup' : 'Drop'} in ${cityName}`;
+  };
 
   const getDisplayText = () => {
     const currentPickupBookings = booking.filter(
@@ -162,6 +201,15 @@ const AirportBookingItem = ({
 
     const hasCurrentPickup = currentPickupBookings.length > 0;
     const hasCurrentDrop = currentDropBookings.length > 0;
+
+    // If no bookings and supports transfers, show add pickup/drop text
+    if (!hasCurrentPickup && !hasCurrentDrop && currentNoPickupDropBookings.length === 0 && supportsTransfers(bookingMode)) {
+      return (
+        <div className="flex items-center gap-1">
+          <span>+ Add Pickup and Drop</span>
+        </div>
+      );
+    }
 
     if (hasCurrentPickup && hasCurrentDrop) {
       const allTypes = [
@@ -232,6 +280,11 @@ const AirportBookingItem = ({
   }, [showDetails]);
 
   const handleClick = () => {
+    // If no bookings and supports transfers, don't do anything (let tooltip handle it)
+    if (!hasPickup && !hasDrop && noPickupDropBookings.length === 0 && supportsTransfers(bookingMode)) {
+      return;
+    }
+
     if (hasPickup && hasDrop) {
       setShowDetails(!showDetails);
       setShowTooltip(false);
@@ -278,12 +331,6 @@ const AirportBookingItem = ({
     });
   };
 
-  // const handleInfoHover = (show) => {
-  //   if (!showDetails) {
-  //     setShowTooltip(show);
-  //   }
-  // };
-
   const formatDate = (dateString) => {
     try {
       const date = new Date(dateString);
@@ -318,50 +365,118 @@ const AirportBookingItem = ({
       return new Date(dateStr);
     };
 
-    const allBookingsWithTypes = [
+    // If no bookings and supports transfers, show add options
+    if (!hasPickup && !hasDrop && noPickupDropBookings.length === 0 && supportsTransfers(bookingMode)) {
+      return (
+        <div className="flex flex-col gap-1">
+          {/* Show Drop first */}
+          <div className="flex items-center gap-2">
+            <span
+              className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
+              onClick={(e) => handleTooltipAddClick(e, 'drop')}
+            >
+              {getTransferLocationText(bookingMode, 'drop')}
+            </span>
+          </div>
+          {/* Then Pickup */}
+          <div className="flex items-center gap-2">
+            <span
+              className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
+              onClick={(e) => handleTooltipAddClick(e, 'pickup')}
+            >
+              {getTransferLocationText(bookingMode, 'pickup')}
+            </span>
+          </div>
+        </div>
+      );
+    }
+
+    // If bookings exist, show them with add options for missing ones
+    const allBookingsWithTypes = [];
+    
+    // Add existing bookings
+    const existingBookings = [
       ...pickupBookings.map((booking) => ({
         ...booking,
         displayType: "Airport Pickup",
         sortDate: getBookingDate(booking, true),
+        isExisting: true,
       })),
       ...dropBookings.map((booking) => ({
         ...booking,
         displayType: "Airport Drop",
         sortDate: getBookingDate(booking, false),
+        isExisting: true,
       })),
       ...noPickupDropBookings.map((booking) => ({
         ...booking,
         displayType: "Airport Transfer",
         sortDate: getBookingDate(booking, false),
+        isExisting: true,
       })),
     ].sort((a, b) => a.sortDate - b.sortDate);
 
+    // Add "Add" options for missing pickup/drop if supports transfers
+    if (supportsTransfers(bookingMode)) {
+      if (!hasDrop) {
+        allBookingsWithTypes.push({
+          displayType: "Add Drop",
+          isAdd: true,
+          addType: 'drop',
+        });
+      }
+      if (!hasPickup) {
+        allBookingsWithTypes.push({
+          displayType: "Add Pickup",
+          isAdd: true,
+          addType: 'pickup',
+        });
+      }
+    }
+
+    // Sort to show existing bookings first, then add options
+    const sortedBookings = [
+      ...existingBookings,
+      ...allBookingsWithTypes.filter(b => b.isAdd),
+    ];
+
     return (
       <div className="flex flex-col gap-1">
-        {allBookingsWithTypes.map((booking, index) => (
+        {sortedBookings.map((booking, index) => (
           <div key={`booking-${index}`} className="flex items-center gap-2">
-            <span
-              className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
-              onClick={(e) =>
-                handleTooltipBookingClick(e, booking, booking.displayType)
-              }
-            >
-              {booking?.name}:
-            </span>
-            <span className="text-gray-200">
-              • Date{" "}
-              {formatDate(
-                booking.displayType === "Airport Pickup"
-                  ? booking.check_in
-                  : booking.check_out || booking.check_in
-              )}{" "}
-              • Time{" "}
-              {formatTime(
-                booking.displayType === "Airport Pickup"
-                  ? booking.check_in
-                  : booking.check_out || booking.check_in
-              )}
-            </span>
+            {booking.isAdd ? (
+              <span
+                className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
+                onClick={(e) => handleTooltipAddClick(e, booking.addType)}
+              >
+                {getTransferLocationText(bookingMode, booking.addType)}
+              </span>
+            ) : (
+              <>
+                <span
+                  className="font-semibold text-yellow-300 cursor-pointer hover:text-yellow-100 underline transition-colors"
+                  onClick={(e) =>
+                    handleTooltipBookingClick(e, booking, booking.displayType)
+                  }
+                >
+                  {booking?.name}:
+                </span>
+                <span className="text-gray-200">
+                  • Date{" "}
+                  {formatDate(
+                    booking.displayType === "Airport Pickup"
+                      ? booking.check_in
+                      : booking.check_out || booking.check_in
+                  )}{" "}
+                  • Time{" "}
+                  {formatTime(
+                    booking.displayType === "Airport Pickup"
+                      ? booking.check_in
+                      : booking.check_out || booking.check_in
+                  )}
+                </span>
+              </>
+            )}
           </div>
         ))}
       </div>
@@ -483,7 +598,44 @@ const AirportBookingItem = ({
           </div>
         )}
     </div>
-  ) : null;
+  ) : (
+    // Show the add pickup/drop text even when no bookings if supports transfers
+    supportsTransfers(bookingMode) && (
+      <div key={-3} className="group relative" ref={dropdownRef}>
+        <div className="flex items-center gap-2">
+          <span
+            className="text-blue font-[500] text-[14px] hover:underline cursor-pointer"
+          >
+            + Add Pickup and Drop
+          </span>
+
+          {isPageWide && (
+            <div className="relative">
+              <div
+                className="w-4 h-4 rounded-full bg-white text-gray-400 flex items-center justify-center text-[14px] font-bold hover:bg-blue-700 transition-colors cursor-pointer"
+                onMouseEnter={() => handleInfoHover(true)}
+                onMouseLeave={() => handleInfoHover(false)}
+              >
+                <LuInfo size={16} strokeWidth={2.5} />
+              </div>
+
+              {showTooltip && !showDetails && (
+                <div
+                  className="absolute left-0 md:left-6 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-xs rounded-md px-3 py-2 shadow-xl border border-gray-600 whitespace-nowrap"
+                  style={{ zIndex: 10000 }}
+                  onMouseEnter={handleTooltipMouseEnter}
+                  onMouseLeave={handleTooltipMouseLeave}
+                >
+                  {renderTooltipContent()}
+                  <div className="absolute left-0 top-1/2 transform -translate-x-1 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-900"></div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    )
+  );
 };
 
 const CityItem = ({
@@ -963,7 +1115,7 @@ const CityItem = ({
               </div>
             )
           )}
-          {currentAirportBookings && currentAirportBookings.length > 0 && (
+          {/* {currentAirportBookings && currentAirportBookings.length > 0 && ( */}
             <div className="flex flex-col gap-1 mt-1">
               <AirportBookingItem
                 key={`airport-${booking_id || "no-main"}`}
@@ -971,11 +1123,20 @@ const CityItem = ({
                 handleIntracityBookings={handleIntracityBookings}
                 upPresent={upPresent}
                 downPresent={downPresent}
+                 bookingMode={booking_type}
+                      originCityName={origin_city_name}
+                      destinationCityName={destination_city_name}
+                      existingPickupBookings={existingPickupBookings}
+                      existingDropBookings={existingDropBookings}
+                      onPickupClick={handlePickupClick}
+                      onDropClick={handleDropClick}
+                      setHandleShow={setPickupDropShow}
+                      show={pickupDropShow}
               />
             </div>
-          )}
+          {/* )} */}
 
-           {supportsTransfers(booking_type,duration) && ( 
+           {/* {supportsTransfers(booking_type,duration) && ( 
                   <div className={`-mt-2 ${currentAirportBookings && currentAirportBookings.length > 0 ?"mb-2":"mb-0 mt-0"  }`}>
                     <TransferPickupDropButton
                       bookingMode={booking_type}
@@ -989,7 +1150,7 @@ const CityItem = ({
                       show={pickupDropShow}
                     />
                   </div>
-                 )} 
+                 )}  */}
 
           
         </div>
