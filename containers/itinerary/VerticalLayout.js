@@ -967,21 +967,13 @@ const CityItem = ({
     try {
       setLoading(true);
       console.log("TransferDD",transferData);
-      
-      // Create the transfer booking
+
       const bookingPayload = {
-        transfer_type: transferData.transferType,
-        booking_mode: transferData.bookingMode || extractMode(booking_type),
-        source_address: transferData.sourceAddress,
-        destination_address: transferData.destinationAddress,
-        // transfer_date: transferData.transferDate,
-        // transfer_time: transferData.transferTime,
-        passengers: transferData.passengers,
-        // notes: transferData.notes,
-        origin_itinerary_city: origin_city_id,
-        destination_itinerary_city: destination_city_id,
-        // is_airport_pickup: transferData.transferType === 'pickup',
-        // is_airport_drop: transferData.transferType === 'drop',
+        transfer_type: "airport",
+        source_itinerary_city: transferData.transferType === 'pickup' ? (dCityData?.id || dCityData?.gmaps_place_id) : transferData?.sourceGmapsId,
+        destination_itinerary_city: transferData.transferType === 'pickup' ? transferData?.destinationGmapsId : (oCityData?.id || oCityData?.gmaps_place_id),
+        is_pickup: transferData.transferType === 'pickup',
+        is_drop: transferData.transferType === 'drop',
         source: transferData?.source,
         trace_id: transferData?.traceId,
         result_index: transferData?.selectedQuote?.result_index
@@ -997,11 +989,15 @@ const CityItem = ({
         }
       );
 
-      if (response.status === 201) {
-        // Update the airport bookings state
-        setCurrentAirportBookings(prev => [...prev, response.data]);
+      if (response.status === 200) {
+        dispatch(
+                        updateAirportTransferBooking(
+                          `${transferData.transferType === 'pickup' ?  (dCityData?.id || dCityData?.gmaps_place_id) : (oCityData?.id || oCityData?.gmaps_place_id)
+                          }`,
+                          response.data
+                        )
+                      );
         
-        // Trigger any necessary updates
         if (_updatePaymentHandler) _updatePaymentHandler();
         if (getPaymentHandler) getPaymentHandler();
         if (loadbookings) loadbookings();
@@ -1014,6 +1010,9 @@ const CityItem = ({
           })
         );
       }
+     setIsTransferDrawerOpen(false);
+     setTransferDrawerType(null);
+     setSelectedTransferBooking(null);
     } catch (error) {
       const errorMsg =
         error?.response?.data?.errors?.[0]?.message?.[0] || 
