@@ -13,7 +13,19 @@ import {
   FiArrowRight,
 } from "react-icons/fi";
 import Drawer from "../../components/ui/Drawer";
-import { FaCar, FaSearch } from "react-icons/fa";
+import { FaCar } from "react-icons/fa";
+import BackArrow from "../../components/ui/BackArrow";
+import Generalbutton from "../../components/ui/button/Generallinkbutton";
+import TaxiSearched from "../../components/modals/taxis/taxi-searched/Index";
+import { PulseLoader } from "react-spinners";
+import SingleDateInput from "./SingleDateInput";
+import { useSelector } from "react-redux";
+import axiossearchinstance, {
+  axiosHubsAutocomplete,
+  gmapsAutocomplete,
+} from "../../services/search/searchsuggest";
+import axiosTaxiSearch from "../../services/bookings/TaxiSearch";
+import Skeleton from "../../components/modals/taxis/Skeleton";
 
 const PickupDropDrawer = ({
   isOpen,
@@ -779,6 +791,7 @@ const searchAutocomplete = async (query, field) => {
   }
 
     setIsLoadingQuotes(true);
+    setTransferQuotes([]);
     setSearchError("");
 
     const requestBody = {
@@ -803,33 +816,24 @@ const searchAutocomplete = async (query, field) => {
       ],
     };
 
-      const response = await fetch(`${HOST}/api/v1/transfers/taxi/search/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
+    axiosTaxiSearch
+      .post("", requestBody)
+      .then((res) => {
+        if (res.data.data && res.data.data?.quotes) {
+          setSource(res?.data.data?.source);
+          setTraceId(res.data?.trace_id);
+          setTransferQuotes(res.data.data.quotes);
+        } else {
+          setIsLoadingQuotes(false);
+          setSearchError("No transfer options found for the selected route");
+        }
+        setIsLoadingQuotes(false);
+      })
+      .catch((error) => {
+        setIsLoadingQuotes(false);
+        console.error("Transfer search error:", error);
+        setSearchError("Failed to search transfers. Please try again.");
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      if (data.success && data.data?.quotes) {
-        setSource(data?.data?.source)
-        setTraceId(data?.trace_id);
-        setTransferQuotes(data.data.quotes);
-      } else {
-        setSearchError("No transfer options found for the selected route");
-      }
-    } catch (error) {
-      console.error("Transfer search error:", error);
-      setSearchError("Failed to search transfers. Please try again.");
-    } finally {
-      setIsLoadingQuotes(false);
-    }
   };
 
   const validateForm = () => {
@@ -876,7 +880,6 @@ const searchAutocomplete = async (query, field) => {
     };
 
     onSubmit(submissionData);
-    onClose();
   };
 
 
@@ -1239,27 +1242,27 @@ useEffect(() => {
                   </div>
                 </div>
 
-                {/* Date, Time, and Passengers - Desktop Layout */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <FiCalendar size={16} className="inline mr-2 text-blue-600" />
-                      Date
-                    </label>
-                    <input
-                      type="date"
-                      value={formData.transferDate}
-                      onChange={(e) => handleInputChange("transferDate", e.target.value)}
-                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                        errors.transferDate ? "border-red-500" : "border-gray-300"
-                      }`}
-                    />
-                    {errors.transferDate && (
-                      <p className="text-red-500 text-sm mt-1">
-                        {errors.transferDate}
-                      </p>
-                    )}
-                  </div>
+            {/* Date, Time, and Passengers */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div ref={calendarRef}>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <FiCalendar size={14} className="inline mr-1 text-blue-600" />
+                  Date
+                </label>
+                <SingleDateInput
+                  value={formData.transferDate}
+                  onChange={(date) => handleInputChange("transferDate", date)}
+                  onFocus={() =>
+                    setErrors((prev) => ({ ...prev, transferDate: "" }))
+                  }
+                />
+
+                {errors.transferDate && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.transferDate}
+                  </p>
+                )}
+              </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -1303,27 +1306,40 @@ useEffect(() => {
                   </div>
                 </div>
 
-                {/* Search Button */}
-                <button
-                  onClick={() => {
-    if (validateForm()) searchTransfers();
-  }}
-                  disabled={isLoadingQuotes}
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-black py-3 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+            {/* Search Button */}
+            <div className="flex justify-center">
+              <Generalbutton
+                fontSize="0.8rem"
+                width="auto"
+                padding="0.5rem 1.5rem"
+                fontWeight="500"
+                margin="0"
+                borderRadius="6px"
+                borderWidth="1px"
+                bgColor="#f7e700"
+                loading={isLoadingQuotes}
+                onclick={() => {
+                  if (validateForm()) searchTransfers();
+                }}
+                disabled={isLoadingQuotes}
+                className="relative flex items-center justify-center min-w-[120px] h-[30px]"
+              >
+                <span
+                  className={`transition-opacity duration-200 ${
+                    isLoadingQuotes ? "hidden" : "opacity-100"
+                  }`}
                 >
-                  {isLoadingQuotes ? (
-                    <>
-                      <FiLoader className="animate-spin" size={20} />
-                      <span>Searching...</span>
-                    </>
-                  ) : (
-                    <>
-                      <FiSearch size={20} />
-                      <span>Search Transfers</span>
-                    </>
-                  )}
-                </button>
-              </div>
+                  Search
+                </span>
+
+                {isLoadingQuotes && (
+                  <span className="">
+                    <PulseLoader size={8} speedMultiplier={0.6} color="#000" />
+                  </span>
+                )}
+              </Generalbutton>
+            </div>
+          </div>
 
               {/* Error Message */}
               {searchError && (
