@@ -4,7 +4,7 @@ import { MdNavigateNext } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { logEvent } from "../../../services/ga/Index";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
-import NewPOIDetailsDrawer from "../../../components/drawers/poiDetails/NewPoiDetailsDrawer";
+import POIDetailsDrawer from "../../../components/drawers/poiDetails/POIDetailsDrawer";
 
 
 const LeftSlideIn = keyframes`
@@ -128,6 +128,8 @@ const Overlay = styled.div`
 
 export default function PoiCard(props) {
   const [show, setShow] = useState(false);
+
+  console.log("poi ids are:",props.data.id)
   const [stars, setStars] = useState(null);
   const activityData={
     type:"poi",
@@ -202,14 +204,16 @@ export default function PoiCard(props) {
      
       )}
 
-      <NewPOIDetailsDrawer
+      <POIDetailsDrawer
         show={show}
         iconId={props.data.id}
         ActivityiconId={props.isActivity ? props.data.id : null}
         handleCloseDrawer={handleCloseDrawer}
         name={props.data.name}
         activityData={activityData}
+        id={props.data.id}
         removeDelete
+        removeChange
       />
     </Container>
   );

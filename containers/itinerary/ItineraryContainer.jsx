@@ -641,8 +641,9 @@ const ItineraryContainer = (props) => {
     ) {
       console.log("Itinerary not found error detected, redirecting to v1 version");
       setPolling(false);
-      setOldOne(true);
       setItineraryLoading(false);
+      setOldOne(true);
+     
       // router.push(`/itinerary/v1/${props.id}`);
 
       return;

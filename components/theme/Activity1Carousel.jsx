@@ -8,6 +8,7 @@ import { logEvent } from "../../services/ga/Index";
 import { PlanYourTripButton } from "../../containers/travelplanner/ThemePage.jsx";
 import TertiaryHeading from "../heading/Tertiary.jsx";
 import NewPOIDetailsDrawer from "../drawers/poiDetails/NewPoiDetailsDrawer.js";
+import POIDetailsDrawer from "../drawers/poiDetails/POIDetailsDrawer.js";
 
 const Container = styled.div`
   width: 100%;
@@ -106,7 +107,7 @@ const ActivityCard = ({ data, scale, id, image, name, short_description }) => {
         </div>
       </div>
 
-      <NewPOIDetailsDrawer
+      <POIDetailsDrawer
         themePage
         show={show}
         ActivityiconId={id}
@@ -114,9 +115,10 @@ const ActivityCard = ({ data, scale, id, image, name, short_description }) => {
         name={name}
         data={data}
         removeDelete={true}
+        removeChange
       >
         <PlanYourTripButton />
-      </NewPOIDetailsDrawer>
+      </POIDetailsDrawer>
     </Container>
   );
 };

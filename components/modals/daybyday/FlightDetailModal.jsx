@@ -50,6 +50,7 @@ const FlightDetailModal = ({
   setShowDrawer,
   setHandleShow,
   error,
+  setShowLoginModal
 }) => {
   const router = useRouter();
   const fareRules = fareRule?.fareRuleDetail;
@@ -61,7 +62,7 @@ const FlightDetailModal = ({
 
   const handleDelete = async () => {
     if (!localStorage.getItem("access_token")) {
-      props?.setShowLoginModal(true);
+      setShowLoginModal(true);
       return;
     }
     try {

@@ -84,3 +84,34 @@ export const updateSingleTransferBooking = (keyPath, data) => {
   };
 };
 
+export const updateAirportTransferBooking = (keyPath, data) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const currentTransferBookings = state.TransferBookings?.transferBookings;
+
+    if (!currentTransferBookings) {
+      console.error("Transfer bookings not found in state");
+      return;
+    }
+
+    const updatedData = JSON.parse(JSON.stringify(currentTransferBookings));
+
+    if (!updatedData.airport) {
+      updatedData.airport = {};
+    }
+
+    if (updatedData.airport[keyPath]) {
+      updatedData.airport[keyPath].push(data);
+    } else {
+      updatedData.airport[keyPath] = [data];
+    }
+
+    console.log("Redux DBD - updatedData:", updatedData);
+
+    dispatch({
+      type: actionTypes.UPDATE_AIRPORT_TRANSFER,
+      payload: updatedData,
+    });
+  };
+};
+
