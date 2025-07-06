@@ -1303,12 +1303,11 @@ const RouteContainer = (props) => {
 
     const currentTransfer = transfer[currentStep - 1];
 
-    const baseStartDate = selectedBooking?.check_in
-      ? dayjs(selectedBooking.check_in).format("YYYY-MM-DD")
-      : dCityData?.start_date ??
-        (oCityData?.start_date && oCityData?.duration != null
-          ? oCityData.start_date
-          : addDaysToDate(oCityData?.start_date, oCityData?.duration));
+    const baseStartDate =
+          dCityData?.start_date ??
+          (oCityData?.start_date && oCityData?.duration != null
+            ? addDaysToDate(oCityData.start_date, oCityData.duration)
+            : dayjs(selectedBooking.check_in).format("YYYY-MM-DD"));
 
     console.log(
       "Start Dtae",
