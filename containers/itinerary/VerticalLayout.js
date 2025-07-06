@@ -1109,7 +1109,7 @@ const CityItem = ({
             )
           )}
           {/* {currentAirportBookings && currentAirportBookings.length > 0 && ( */}
-            <div className={`flex flex-col gap-1 mb-3 ${(!(upPresent && downPresent) || (!booking_id && !(currentAirportBookings && currentAirportBookings.length > 0))) ? "hidden": ''}`}>
+            <div className={`flex flex-col gap-1 mb-3 ${(!(upPresent && downPresent) || (!((booking_id || city)) && !(currentAirportBookings && currentAirportBookings.length > 0))) ? "hidden": ''}`}>
               <AirportBookingItem
                 key={`airport-${booking_id || "no-main"}`}
                 booking={currentAirportBookings}
