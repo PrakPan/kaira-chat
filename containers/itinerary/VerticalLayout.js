@@ -899,21 +899,13 @@ const CityItem = ({
     try {
       // setLoading(true);
       console.log("TransferDD",transferData);
-      
-      // Create the transfer booking
+
       const bookingPayload = {
-        transfer_type: transferData.transferType,
-        booking_mode: transferData.bookingMode || extractMode(booking_type),
-        source_address: transferData.sourceAddress,
-        destination_address: transferData.destinationAddress,
-        // transfer_date: transferData.transferDate,
-        // transfer_time: transferData.transferTime,
-        passengers: transferData.passengers,
-        // notes: transferData.notes,
-        origin_itinerary_city: origin_city_id,
-        destination_itinerary_city: destination_city_id,
-        // is_airport_pickup: transferData.transferType === 'pickup',
-        // is_airport_drop: transferData.transferType === 'drop',
+        transfer_type: "airport",
+        source_itinerary_city: transferData.transferType === 'pickup' ? (dCityData?.id || dCityData?.gmaps_place_id) : transferData?.sourceGmapsId,
+        destination_itinerary_city: transferData.transferType === 'pickup' ? transferData?.destinationGmapsId : (oCityData?.id || oCityData?.gmaps_place_id),
+        is_pickup: transferData.transferType === 'pickup',
+        is_drop: transferData.transferType === 'drop',
         source: transferData?.source,
         trace_id: transferData?.traceId,
         result_index: transferData?.selectedQuote?.result_index
@@ -930,7 +922,6 @@ const CityItem = ({
       );
 
       if (response.status === 200) {
-        // Update the airport bookings state
         dispatch(
                         updateAirportTransferBooking(
                           `${transferData.transferType === 'pickup' ?  (dCityData?.id || dCityData?.gmaps_place_id) : (oCityData?.id || oCityData?.gmaps_place_id)
@@ -939,7 +930,6 @@ const CityItem = ({
                         )
                       );
         
-        // Trigger any necessary updates
         if (_updatePaymentHandler) _updatePaymentHandler();
         if (getPaymentHandler) getPaymentHandler();
         
@@ -951,6 +941,9 @@ const CityItem = ({
           })
         );
       }
+     setIsTransferDrawerOpen(false);
+     setTransferDrawerType(null);
+     setSelectedTransferBooking(null);
     } catch (error) {
       const errorMsg =
         error?.response?.data?.errors?.[0]?.message?.[0] || 
@@ -1021,7 +1014,7 @@ const CityItem = ({
         } ${!upPresent && downPresent && "mb-[41px]"}`}
       >
         {/* City and Duration Section - Aligned with Pin */}
-        <div className="flex flex-col  gap-3">
+        <div className={`flex flex-col gap-3 ${!(upPresent && downPresent) ? "itmes-center justify-center": ''}`}>
           {!(upPresent && downPresent) && <div className="">{city}</div>}
 
           {transfers_status === "PENDING" ? (
@@ -1035,9 +1028,9 @@ const CityItem = ({
             downPresent && (
               <div
                 className={`text-[16px] font-[500] flex gap-1 ${
-                  currentAirportBookings && currentAirportBookings.length > 0
+                  (currentAirportBookings && (currentAirportBookings.length > 0)) || ["flight", "train", "ferry"].includes(booking_type?.toLowerCase())
                     ? "mt-5"
-                    : null
+                    : "mt-0"
                 }`}
               >
                 {(booking_id || city) && !visible ? (
@@ -1116,7 +1109,7 @@ const CityItem = ({
             )
           )}
           {/* {currentAirportBookings && currentAirportBookings.length > 0 && ( */}
-            <div className="flex flex-col gap-1 mt-1">
+            <div className={`flex flex-col gap-1 mb-3 ${(!(upPresent && downPresent) || (!booking_id && !(currentAirportBookings && currentAirportBookings.length > 0))) ? "hidden": ''}`}>
               <AirportBookingItem
                 key={`airport-${booking_id || "no-main"}`}
                 booking={currentAirportBookings}
@@ -1164,7 +1157,7 @@ const CityItem = ({
           setSelectedTransferBooking(null);
         }}
         transferType={transferDrawerType}
-        bookingMode={booking_type}
+        bookingMode={booking_type?.toLowerCase()}
         originCityName={origin_city_name}
         destinationCityName={destination_city_name}
         onSubmit={handleTransferSubmit}

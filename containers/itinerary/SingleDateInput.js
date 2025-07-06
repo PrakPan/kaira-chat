@@ -5,6 +5,7 @@ import { BiCalendarAlt } from "react-icons/bi";
 import moment from "moment";
 import styled from "styled-components";
 import { SingleDatePicker } from "react-dates";
+import media from "../../components/media";
 
 const Container = styled.div`
   position: relative;
@@ -95,8 +96,17 @@ const SingleDateInput = ({
   onChange,
   id = "single_date_input",
   placeholder = "Select date",
+  onFocus,
 }) => {
   const [focused, setFocused] = useState(false);
+  let isPageWide = media("(min-width: 768px)");
+
+   const handleFocusChange = ({ focused }) => {
+    setFocused(focused);
+    if (focused && onFocus) {
+      onFocus();
+    }
+  };
 
   return (
     <Container>
@@ -106,8 +116,9 @@ const SingleDateInput = ({
         onDateChange={(date) =>
           onChange(date ? date.format("YYYY-MM-DD") : "")
         }
+        onFocus={onFocus}
         focused={focused}
-        onFocusChange={({ focused }) => setFocused(focused)}
+        onFocusChange={handleFocusChange}
         displayFormat="DD/MM/YYYY"
         placeholder={placeholder}
         numberOfMonths={1}
@@ -118,9 +129,9 @@ const SingleDateInput = ({
         noBorder
         small
       />
-      <CalenderIcon>
+      {isPageWide && <CalenderIcon>
         <BiCalendarAlt size={20} />
-      </CalenderIcon>
+      </CalenderIcon>}
     </Container>
   );
 };

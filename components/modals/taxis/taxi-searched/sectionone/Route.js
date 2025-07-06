@@ -90,32 +90,36 @@ const Section = (props) => {
     return regex.test(uuid);
   };
   const handleUpdate = async () => {
-    if (props.handleTaxiSelect) {
-      props.handleTaxiSelect({
-        trace_id: props.data.trace_id,
-        result_index: props.data.result_index,
-      });
-      return;
-    }
+  if (props.handleTaxiSelect) {
+    props.handleTaxiSelect({
+      trace_id: props.data.trace_id,
+      result_index: props.data.result_index,
+    });
+    return;
+  }
 
-    if (props?.handleAirportTaxiSelect) {
+  if (props?.handleAirportTaxiSelect) {
     try {
       setLoading(true);
-      const promise = props?.handleAirportTaxiSelect(props?.data);
-
-
-      if (promise?.then) {
-        await promise;
-      }
+      
+      await props.handleAirportTaxiSelect(props.data);
 
       setLoading(false);
-      props.setHideBookingModal();
+      // props.setHideBookingModal();
     } catch (err) {
-      console.error("Airport select error:", err);
+      console.error("Error:", err);
       setLoading(false);
+      dispatch(
+        openNotification({
+          type: "error",
+          text: err?.response?.data?.errors?.[0]?.message?.[0] || err.message || "There seems to be a problem, please try again after some time!",
+          heading: "Error!",
+        })
+      );
     }
     return;
   }
+
 
 
     setLoading(true);

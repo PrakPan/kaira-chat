@@ -19,6 +19,12 @@ import TaxiSearched from "../../components/modals/taxis/taxi-searched/Index";
 import { PulseLoader } from "react-spinners";
 import SingleDateInput from "./SingleDateInput";
 import { useSelector } from "react-redux";
+import axiossearchinstance, {
+  axiosHubsAutocomplete,
+  gmapsAutocomplete,
+} from "../../services/search/searchsuggest";
+import axiosTaxiSearch from "../../services/bookings/TaxiSearch";
+import Skeleton from "../../components/modals/taxis/Skeleton";
 
 const PickupDropDrawer = ({
   isOpen,
@@ -29,20 +35,20 @@ const PickupDropDrawer = ({
   destinationCityName,
   onSubmit,
   existingBooking = null,
-   _updateFlightBookingHandler,
+  _updateFlightBookingHandler,
   _updatePaymentHandler,
-        getPaymentHandler,
-        setShowLoginModal,
+  getPaymentHandler,
+  setShowLoginModal,
   _updateTaxiBookingHandler,
-        selectedBooking,
-        setSelectedBooking,
-        originCityId,
-        destinationCityId,
-        origin_itinerary_city_id,
-        destination_itinerary_city_id,
-  HOST = "https://dev.mercury.tarzanway.com",
+  selectedBooking,
+  setSelectedBooking,
+  originCityId,
+  destinationCityId,
+  origin_itinerary_city_id,
+  destination_itinerary_city_id,
 }) => {
-  const {number_of_adults , number_of_children, number_of_infants} = useSelector(state=>state.Itinerary)
+  const { number_of_adults, number_of_children, number_of_infants } =
+    useSelector((state) => state.Itinerary);
   const initialFormState = {
     sourceAddress: "",
     destinationAddress: "",
@@ -199,24 +205,19 @@ const PickupDropDrawer = ({
     }
 
     setIsLoadingHubs(true);
-    try {
-      const endpoint = getHubEndpoint();
-      const response = await fetch(
-        `${HOST}/api/v1/geos/search/${endpoint}?q=${encodeURIComponent(query)}`
-      );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setHubSuggestions(data.results || []);
-    } catch (error) {
-      console.error("Hub search error:", error);
-      setHubSuggestions([]);
-    } finally {
-      setIsLoadingHubs(false);
-    }
+    const endpoint = getHubEndpoint();
+    axiosHubsAutocomplete
+      .get(`/${endpoint}?q=${encodeURIComponent(query)}`)
+      .then((res) => {
+        setHubSuggestions(res.data.results || []);
+        setIsLoadingHubs(false);
+      })
+      .catch((err) => {
+        console.error("Hub search error:", err);
+        setIsLoadingHubs(false);
+        setHubSuggestions([]);
+      });
   };
 
   const searchAutocomplete = async (query, field) => {
@@ -231,36 +232,27 @@ const PickupDropDrawer = ({
       return;
     }
 
-    try {
-      const response = await fetch(
-        `${HOST}/api/v1/geos/gmaps_address/autocomplete/?q=${encodeURIComponent(
-          query
-        )}`
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (field === "source") {
-        setSourceSuggestions(data.results || []);
-        setShowSourceSuggestions(true);
-      } else {
-        setDestinationSuggestions(data.results || []);
-        setShowDestinationSuggestions(true);
-      }
-    } catch (error) {
-      console.error("Autocomplete search error:", error);
-      if (field === "source") {
-        setSourceSuggestions([]);
-        setShowSourceSuggestions(false);
-      } else {
-        setDestinationSuggestions([]);
-        setShowDestinationSuggestions(false);
-      }
-    }
+    gmapsAutocomplete
+      .get(`/?q=${encodeURIComponent(query)}`)
+      .then((res) => {
+        if (field === "source") {
+          setSourceSuggestions(res.data.results || []);
+          setShowSourceSuggestions(true);
+        } else {
+          setDestinationSuggestions(res.data.results || []);
+          setShowDestinationSuggestions(true);
+        }
+      })
+      .catch((error) => {
+        console.error("Autocomplete search error:", error);
+        if (field === "source") {
+          setSourceSuggestions([]);
+          setShowSourceSuggestions(false);
+        } else {
+          setDestinationSuggestions([]);
+          setShowDestinationSuggestions(false);
+        }
+      });
   };
 
   const handleLocationSearch = useCallback(
@@ -340,54 +332,45 @@ const PickupDropDrawer = ({
     }
 
     setIsLoadingQuotes(true);
+    setTransferQuotes([]);
     setSearchError("");
 
-    try {
-      const requestBody = {
-        source: null,
-        trips: [
-          {
-            trip_type: "airport",
-            origin: formData.sourceHubId
-              ? { hub_id: formData.sourceHubId }
-              : { gmaps_place_id: formData.sourceGmapsId },
-            destination: formData.destinationHubId
-              ? { hub_id: formData.destinationHubId }
-              : { gmaps_place_id: formData.destinationGmapsId },
-            start_date: formData.transferDate,
-            start_time: formData.transferTime,
-            number_of_travellers: formData.passengers,
-          },
-        ],
-      };
-
-      const response = await fetch(`${HOST}/api/v1/transfers/taxi/search/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+    const requestBody = {
+      source: null,
+      trips: [
+        {
+          trip_type: "airport",
+          origin: formData.sourceHubId
+            ? { hub_id: formData.sourceHubId }
+            : { gmaps_place_id: formData.sourceGmapsId },
+          destination: formData.destinationHubId
+            ? { hub_id: formData.destinationHubId }
+            : { gmaps_place_id: formData.destinationGmapsId },
+          start_date: formData.transferDate,
+          start_time: formData.transferTime,
+          number_of_travellers: formData.passengers,
         },
-        body: JSON.stringify(requestBody),
+      ],
+    };
+
+    axiosTaxiSearch
+      .post("", requestBody)
+      .then((res) => {
+        if (res.data.data && res.data.data?.quotes) {
+          setSource(res?.data.data?.source);
+          setTraceId(res.data?.trace_id);
+          setTransferQuotes(res.data.data.quotes);
+        } else {
+          setIsLoadingQuotes(false);
+          setSearchError("No transfer options found for the selected route");
+        }
+        setIsLoadingQuotes(false);
+      })
+      .catch((error) => {
+        setIsLoadingQuotes(false);
+        console.error("Transfer search error:", error);
+        setSearchError("Failed to search transfers. Please try again.");
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data.success && data.data?.quotes) {
-        setSource(data?.data?.source);
-        setTraceId(data?.trace_id);
-        setTransferQuotes(data.data.quotes);
-      } else {
-        setSearchError("No transfer options found for the selected route");
-      }
-    } catch (error) {
-      console.error("Transfer search error:", error);
-      setSearchError("Failed to search transfers. Please try again.");
-    } finally {
-      setIsLoadingQuotes(false);
-    }
   };
 
   const validateForm = () => {
@@ -433,7 +416,6 @@ const PickupDropDrawer = ({
     };
 
     onSubmit(submissionData);
-  
   };
 
   const handleInputChange = (field, value) => {
@@ -572,9 +554,15 @@ const PickupDropDrawer = ({
 
   const getTitle = () => {
     const action = transferType === "pickup" ? "Pickup" : "Drop";
+    const hubType =
+      bookingMode === "flight"
+        ? "Airport"
+        : bookingMode === "Train"
+        ? "Station"
+        : "Terminal";
     const location =
       transferType === "pickup" ? destinationCityName : originCityName;
-    return `Add ${action} in ${location}`;
+    return `${hubType} ${action} in ${location}`;
   };
 
   if (!isOpen) return null;
@@ -608,8 +596,8 @@ const PickupDropDrawer = ({
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
               {/* Source Field */}
               <div className="relative">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {getFieldLabel("source")}
+                <label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+                  {getFieldLabel("source")} <FiNavigation color="red" />
                 </label>
                 <div className="relative">
                   <input
@@ -628,7 +616,10 @@ const PickupDropDrawer = ({
                         sourceHubId: "",
                       }));
                     }}
-                    onFocus={() => setShowSourceSuggestions(true)}
+                    onFocus={() => {
+                      setShowSourceSuggestions(true);
+                      setErrors((prev) => ({ ...prev, sourceAddress: "" }));
+                    }}
                     placeholder={getFieldPlaceholder("source")}
                     className={`w-full px-3 py-2 pl-8 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm ${
                       errors.sourceAddress
@@ -681,8 +672,8 @@ const PickupDropDrawer = ({
 
               {/* Destination Field */}
               <div className="relative">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {getFieldLabel("destination")}
+                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+                  {getFieldLabel("destination")} <FiMapPin color="green" />
                 </label>
                 <div className="relative">
                   <input
@@ -700,7 +691,13 @@ const PickupDropDrawer = ({
                         destinationHubId: "",
                       }));
                     }}
-                    onFocus={() => setShowDestinationSuggestions(true)}
+                    onFocus={() => {
+                      setShowDestinationSuggestions(true);
+                      setErrors((prev) => ({
+                        ...prev,
+                        destinationAddress: "",
+                      }));
+                    }}
                     placeholder={getFieldPlaceholder("destination")}
                     className={`w-full px-3 py-2 pl-8 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm ${
                       errors.destinationAddress
@@ -763,6 +760,9 @@ const PickupDropDrawer = ({
                 <SingleDateInput
                   value={formData.transferDate}
                   onChange={(date) => handleInputChange("transferDate", date)}
+                  onFocus={() =>
+                    setErrors((prev) => ({ ...prev, transferDate: "" }))
+                  }
                 />
 
                 {errors.transferDate && (
@@ -853,7 +853,7 @@ const PickupDropDrawer = ({
             {/* Search Button */}
             <div className="flex justify-center">
               <Generalbutton
-                fontSize="0.5rem"
+                fontSize="0.8rem"
                 width="auto"
                 padding="0.5rem 1.5rem"
                 fontWeight="500"
@@ -866,7 +866,7 @@ const PickupDropDrawer = ({
                   if (validateForm()) searchTransfers();
                 }}
                 disabled={isLoadingQuotes}
-                className="relative flex items-center justify-center min-w-[100px] h-[30px]"
+                className="relative flex items-center justify-center min-w-[120px] h-[30px]"
               >
                 <span
                   className={`transition-opacity duration-200 ${
@@ -896,27 +896,31 @@ const PickupDropDrawer = ({
           )}
 
           {/* Transfer Results */}
+          {!transferQuotes?.length && isLoadingQuotes ? (
+            <div className="space-y-3">
+              <Skeleton />
+            </div>
+          ) : null}
+
           {transferQuotes.length > 0 && (
             <div className="space-y-3">
               {transferQuotes.map((quote, index) => (
                 <TaxiSearched
                   airportBooking
-                  cityId={transferType === "pickup" ? destination_itinerary_city_id : origin_itinerary_city_id}
+                  cityId={
+                    transferType === "pickup"
+                      ? destination_itinerary_city_id
+                      : origin_itinerary_city_id
+                  }
                   key={index}
                   data={quote}
                   handleAirportTaxiSelect={handleSubmit}
                   combo={false}
                   selectedBooking={selectedBooking}
                   getPaymentHandler={getPaymentHandler}
-                  _updateTaxiBookingHandler={
-                        _updateTaxiBookingHandler
-                        }
-                  origin_itinerary_city_id={
-                          origin_itinerary_city_id
-                        }
-                        destination_itinerary_city_id={
-                          destination_itinerary_city_id
-                        }
+                  _updateTaxiBookingHandler={_updateTaxiBookingHandler}
+                  origin_itinerary_city_id={origin_itinerary_city_id}
+                  destination_itinerary_city_id={destination_itinerary_city_id}
                   setHideBookingModal={onClose}
                 />
               ))}
