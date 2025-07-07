@@ -132,6 +132,7 @@ const ViewHotelDetails = (props) => {
         }),
         source: props?.source,
         currency: "INR",
+        city_id:props?.city_id
       };
       hotelDetails
         .post("", requestData, {

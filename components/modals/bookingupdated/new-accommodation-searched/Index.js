@@ -58,6 +58,7 @@ const Accommodation = (props) => {
         setShowLoginModal={props?.setShowLoginModal}
         handleClose={props?.handleClose}              
         itinerary_city_id={props.itinerary_city_id}
+        city_id={props?.city_id}
       ></ViewHotelDetails>
     </div>
   );
