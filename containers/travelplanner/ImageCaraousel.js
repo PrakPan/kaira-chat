@@ -4,7 +4,7 @@ import { imgUrlEndPoint } from '../../components/theme/ThemeConstants';
 
 
 
-const ImageCarousel = ({ images = [], title = "The Gallery Section" }) => {
+const ImageCarousel = ({ slug, images = [], title = "The Gallery Section" }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDesktop, setIsDesktop] = useState(false);
 
@@ -18,7 +18,10 @@ const ImageCarousel = ({ images = [], title = "The Gallery Section" }) => {
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  const sampleImages = [
+  let sampleImages = [];
+
+  if(slug == "la-tomatina-spain-2025"){
+   sampleImages.push(
     `${imgUrlEndPoint}media/themes/la tomatina festival/1.jpg`,
     `${imgUrlEndPoint}media/themes/la tomatina festival/2.jpg`,
     `${imgUrlEndPoint}media/themes/la tomatina festival/2126.jpg`,
@@ -27,7 +30,21 @@ const ImageCarousel = ({ images = [], title = "The Gallery Section" }) => {
     `${imgUrlEndPoint}media/themes/la tomatina festival/la.jpg`,
     `${imgUrlEndPoint}media/themes/la tomatina festival/ll.jpg`,
     `${imgUrlEndPoint}media/themes/la tomatina festival/gg.jpg`,
-  ];
+   );
+  }
+
+   if(slug == "japan-in-autumn-2025"){
+    sampleImages.push(
+    `${imgUrlEndPoint}media/themes/Yukata or kimono rental + cultural photo walk web.png`,
+    `${imgUrlEndPoint}media/themes/Traditional tea ceremony under maple trees web.png`,
+    `${imgUrlEndPoint}media/themes/Guided foliage walks with a local web.png`,
+    `${imgUrlEndPoint}media/themes/fuji five lakes web.png`,
+    `${imgUrlEndPoint}media/themes/kanazawa web.png`,
+    `${imgUrlEndPoint}media/themes/Onsen stays in fall mountain towns web.png`,
+    `${imgUrlEndPoint}media/themes/nikko web.png`,
+    `${imgUrlEndPoint}media/themes/kyoto web.png`,
+    );
+   }
 
   const displayImages = images.length > 0 ? images : sampleImages;
   const slidesToShow = 4; 

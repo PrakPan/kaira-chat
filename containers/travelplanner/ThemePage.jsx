@@ -517,7 +517,7 @@ export default function ThemePage(props) {
                       </>
                     ) : component.carousel === "Image Caraousel" ? (
                       <>
-                        <ImageCarousel />
+                        <ImageCarousel slug={props.slug} />
                         <PlanYourTripButton
                           text={"Create your travel plan now!"}
                         />
