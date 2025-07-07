@@ -31,10 +31,10 @@ const FloatingView = styled.div`
 const CityDetailsDrawer = () => {
   let isPageWide = media("(min-width: 768px)");
   const [data, setData] = useState(null);
-  const router=useRouter()
+  const router = useRouter();
   const searchParams = useSearchParams();
   const cityId = searchParams.get("city_id");
-  const dayId=searchParams.get("dayId")
+  const dayId = searchParams.get("dayId");
   const getCityData = async () => {
     try {
       const res = await axioscitydatainstance.get("/city/" + cityId);
@@ -57,16 +57,27 @@ const CityDetailsDrawer = () => {
       backdrop
       style={{ zIndex: 1501 }}
       className="font-lexend"
-      onHide={()=>{router.push({
-      pathname: `/itinerary/${router.query.id}`
-    });
+      onHide={() => {
+        router.push(
+          {
+            pathname: `/itinerary/${router.query.id}`,
+          },
+          undefined,
+          { scroll: false }
+        );
       }}
     >
       <div>
         <TbArrowBack
-          onClick={() => router.push({
-      pathname: `/itinerary/${router.query.id}`
-    })}
+          onClick={() =>
+            router.push(
+              {
+                pathname: `/itinerary/${router.query.id}`,
+              },
+              undefined,
+              { scroll: false }
+            )
+          }
           className="hover-pointer"
           style={{
             margin: "0.5rem",
@@ -82,27 +93,33 @@ const CityDetailsDrawer = () => {
               data.elevation[0]?.elevation
             }
             data={data}
-            onHide={()=>router.push({
-      pathname: `/itinerary/${router.query.id}`
-    })}
+            onHide={() =>
+              router.push({
+                pathname: `/itinerary/${router.query.id}`,
+              })
+            }
             dayId={dayId}
           ></CityDetails>
         ) : (
           <CityDetailsSkeleton></CityDetailsSkeleton>
         )}
         {!isPageWide && (
-        <FloatingView>
-          <TbArrowBack
-            style={{ height: "28px", width: "28px" }}
-            cursor={"pointer"}
-            onClick={() => {
-              router.push({
-      pathname: `/itinerary/${router.query.id}`
-    });
-            }}
-          />
-        </FloatingView>
-      )}
+          <FloatingView>
+            <TbArrowBack
+              style={{ height: "28px", width: "28px" }}
+              cursor={"pointer"}
+              onClick={() => {
+                router.push(
+                  {
+                    pathname: `/itinerary/${router.query.id}`,
+                  },
+                  undefined,
+                  { scroll: false }
+                );
+              }}
+            />
+          </FloatingView>
+        )}
       </div>
     </Drawer>
   );
