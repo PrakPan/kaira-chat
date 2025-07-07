@@ -1131,12 +1131,10 @@ const isTraceIdValid = () => {
           itinerary_id={props?.itinerary_id}
           showDrawer={showTransferEditDrawer}
           setShowDrawer={setShowTransferEditDrawer}
-          selectedTransferHeading={props.selectedTransferHeading}
           origin={props.selectedBooking?.city}
           destination={props.selectedBooking?.destination_city}
           day_slab_index={props.daySlabIndex}
           element_index={props.elementIndex}
-          fetchData={props?.fetchData}
           setShowLoginModal={props?.setShowLoginModal}
           check_in={props?.check_in}
           _GetInTouch={props._GetInTouch}

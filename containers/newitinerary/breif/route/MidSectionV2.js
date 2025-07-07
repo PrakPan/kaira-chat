@@ -102,13 +102,10 @@ const MidSectionV2 = (props) => {
   );
   const [showFlightModal, setShowFlightModal] = useState(false);
   const [showTaxiModal, setShowTaxiModal] = useState(false);
-  const { itinerary_status, transfers_status, pricing_status } = useSelector(
+  const {  transfers_status } = useSelector(
     (state) => state.ItineraryStatus
   );
   const isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
-  console.log("Destination City Data",props?.dcityData)
-
-  console.log("All Book",selectedBooking )
 
   useEffect(() => {
     if (props.cityTransferBookings && props.flightBookings) {
@@ -155,20 +152,6 @@ const MidSectionV2 = (props) => {
       }
     }
   }, [props.flightBookings, props.cityTransferBookings]);
-
-  const getBooking = (bookingId) => {
-    let booking = null;
-    if (props.flightBookings) {
-      booking = props.flightBookings.find((book) => book.id === bookingId);
-    }
-
-    if (booking) return booking;
-
-    if (props.transferBookings) {
-      booking = props.transferBookings.find((book) => book.id === bookingId);
-    }
-    return booking;
-  };
 
   let hidemidsection = props.hidemidsection;
   if (props?.route && props?.route?.modes && props?.route?.modes.length)
@@ -300,18 +283,16 @@ const MidSectionV2 = (props) => {
         _updatePaymentHandler={props._updatePaymentHandler}
         _updateFlightBookingHandler={props._updateFlightBookingHandler}
         _updateBookingHandler={props._updateBookingHandler}
-        alternates={selectedBooking?.id}
-        tailored_id={selectedBooking["tailored_itinerary"]}
-        // _updateFlightHandler={props._updateFlightHandler}
-        selectedBooking={props?.cityTransferBookings || selectedBooking}
-        itinerary_id={props?.itinerary_id}
-        selectedTransferHeading={props?.route?.heading}
-        fetchData={props?.fetchData}
-        setShowLoginModal={props?.setShowLoginModal}
+        // alternates={selectedBooking?.id}
+        // tailored_id={selectedBooking["tailored_itinerary"]}
+        selectedBooking={props?.cityTransferBookings || selectedBooking} // required for origin destination and edge id
+        // selectedTransferHeading={props?.route?.heading}
+        // fetchData={props?.fetchData}
+        setShowLoginModal={props?.setShowLoginModal} //move to redux
         check_in={props?.route?.check_in}
         _GetInTouch={props._GetInTouch}
         daySlabIndex={props?.route?.element_location?.day_slab_index}
-        elementIndex={props?.route?.element_index}
+        // elementIndex={props?.route?.element_index}
         routeId={props?.route?.transfers?.id}
         city={props?.city}
         dcity={props?.dcity}

@@ -58,113 +58,109 @@ export const ItineraryStatusLoader = ({ displayText, isVisible }) => {
           {/* Rotating Hourglass Timer Icon */}
           <div className="flex-shrink-0">
             <div className="w-5 h-5 animate-spin">
-              <svg 
-                viewBox="0 0 24 24" 
-                fill="none" 
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
                 xmlns="http://www.w3.org/2000/svg"
                 className="w-full h-full"
               >
                 {/* Hourglass outline */}
-                <path 
-                  d="M6 2V6.5L10.5 12L6 17.5V22H18V17.5L13.5 12L18 6.5V2H6Z" 
-                  stroke="#000000" 
-                  strokeWidth="1.5" 
+                <path
+                  d="M6 2V6.5L10.5 12L6 17.5V22H18V17.5L13.5 12L18 6.5V2H6Z"
+                  stroke="#000000"
+                  strokeWidth="1.5"
                   fill="none"
                 />
-                
-                {/* Top sand */}
-                <path 
-  d="M8 4H16V6L12 10L8 6V4Z" 
-  fill="#000000"
->
-  <animate 
-    attributeName="opacity" 
-    values="1;0.7;1" 
-    dur="2s" 
-    repeatCount="indefinite"
-  />
-</path>
 
-                
-                {/* Bottom sand */}
-                <path 
-                  d="M8 20H16V18L12 14L8 18V20Z" 
-                  fill="#ffffff"
-                  className="animate-pulse"
-                >
-                  <animate 
-                    attributeName="opacity" 
-                    values="0.3;1;0.3" 
-                    dur="2s" 
+                {/* Top sand */}
+                <path d="M8 4H16V6L12 10L8 6V4Z" fill="#000000">
+                  <animate
+                    attributeName="opacity"
+                    values="1;0.7;1"
+                    dur="2s"
                     repeatCount="indefinite"
                   />
                 </path>
-                
+
+                {/* Bottom sand */}
+                <path
+                  d="M8 20H16V18L12 14L8 18V20Z"
+                  fill="#ffffff"
+                  className="animate-pulse"
+                >
+                  <animate
+                    attributeName="opacity"
+                    values="0.3;1;0.3"
+                    dur="2s"
+                    repeatCount="indefinite"
+                  />
+                </path>
+
                 {/* Falling sand particles */}
                 <circle r="0.5" fill="#F59E0B">
-                  <animate 
-                    attributeName="cy" 
-                    values="10;14" 
-                    dur="1s" 
+                  <animate
+                    attributeName="cy"
+                    values="10;14"
+                    dur="1s"
                     repeatCount="indefinite"
                   />
-                  <animate 
-                    attributeName="cx" 
-                    values="12;12" 
-                    dur="1s" 
+                  <animate
+                    attributeName="cx"
+                    values="12;12"
+                    dur="1s"
                     repeatCount="indefinite"
                   />
-                  <animate 
-                    attributeName="opacity" 
-                    values="1;0" 
-                    dur="1s" 
+                  <animate
+                    attributeName="opacity"
+                    values="1;0"
+                    dur="1s"
                     repeatCount="indefinite"
                   />
                 </circle>
-                
+
                 <circle r="0.3" fill="#F59E0B">
-                  <animate 
-                    attributeName="cy" 
-                    values="9;13" 
-                    dur="1.2s" 
+                  <animate
+                    attributeName="cy"
+                    values="9;13"
+                    dur="1.2s"
                     repeatCount="indefinite"
                     begin="0.3s"
                   />
-                  <animate 
-                    attributeName="cx" 
-                    values="11.5;11.5" 
-                    dur="1.2s" 
+                  <animate
+                    attributeName="cx"
+                    values="11.5;11.5"
+                    dur="1.2s"
                     repeatCount="indefinite"
                     begin="0.3s"
                   />
-                  <animate 
-                    attributeName="opacity" 
-                    values="1;0" 
-                    dur="1.2s" 
+                  <animate
+                    attributeName="opacity"
+                    values="1;0"
+                    dur="1.2s"
                     repeatCount="indefinite"
                     begin="0.3s"
                   />
                 </circle>
-                
+
                 <circle r="0.4" fill="#F59E0B">
-                  <animate 
-                    attributeName="cy" 
-                    values="10.5;14.5" 
-                    dur="1.1s" 
+                  <animate
+                    attributeName="cy"
+                    values="10.5;14.5"
+                    dur="1.1s"
                     repeatCount="indefinite"
                     begin="0.6s"
                   />
-                  <animate 
-                    attributeName="cx" 
-                    values="12.5;12.5" 
-                    dur="1.1s" 
+                  <animate
+                    attributeName="cx"
+                    values="12.5;12.5"
+                    dur="1.1s"
                     repeatCount="indefinite"
                     begin="0.6s"
                   />
-                  <animate 
-                    attributeName="opacity" 
-                    values="1;0" 
-                    dur="1.1s" 
+                  <animate
+                    attributeName="opacity"
+                    values="1;0"
+                    dur="1.1s"
                     repeatCount="indefinite"
                     begin="0.6s"
                   />
@@ -172,7 +168,7 @@ export const ItineraryStatusLoader = ({ displayText, isVisible }) => {
               </svg>
             </div>
           </div>
-          
+
           {/* Content */}
           <div className="flex-1 min-w-0">
             <div className="text-sm font-medium text-black leading-tight">
@@ -237,7 +233,7 @@ const ItineraryContainer = (props) => {
   const [polling, setPolling] = useState(true);
   const [consecutiveErrors, setConsecutiveErrors] = useState(0);
   const [displayText, setDisplayText] = useState(null);
-  const [oldOne,setOldOne] = useState(false);
+  const [oldOne, setOldOne] = useState(false);
 
   const itinerarySuccessRef = useRef(false);
   const pricingSuccessRef = useRef(false);
@@ -389,11 +385,11 @@ const ItineraryContainer = (props) => {
       let data = res.data;
       let stays = [];
       for (let i = 0; i < data?.cities.length; i++) {
-        console.log("itinerary city id2 is:".data?.cities[i])
+        console.log("itinerary city id2 is:".data?.cities[i]);
         let hotels = data?.cities[i]?.hotels;
         let city_name = data?.cities[i]?.city?.name;
         let city_id = data?.cities[i]?.city?.id;
-        let itinerary_city_id=data?.cities[i]?.id
+        let itinerary_city_id = data?.cities[i]?.id;
 
         if (hotels.length === 0) {
           stays.push({
@@ -589,74 +585,86 @@ const ItineraryContainer = (props) => {
   async function fetchData(poll) {
     if (TRAVELER_ITINERARIES.includes(props.id))
       setIsPastTravelerItinerary(true);
-    
+
     const fetchStatus = async () => {
-  try {
-    const res = await axiosGetItineraryStatus.get(`/${props.id}/status/`);
-    const status = res.data?.celery;
+      try {
+        const res = await axiosGetItineraryStatus.get(`/${props.id}/status/`);
+        const status = res.data?.celery;
 
-    setDisplayText(status?.display_text || null);
-    setConsecutiveErrors(0);
+        setDisplayText(status?.display_text || null);
+        setConsecutiveErrors(0);
 
-   
-    if (status?.PRICING === "FAILURE") {
-      dispatch(setItineraryStatus("pricing_status", "FAILURE"));
-    }
-    if (status?.TRANSFERS === "FAILURE") {
-      dispatch(setItineraryStatus("transfers_status", "FAILURE"));
-    }
-    if (status?.HOTELS === "FAILURE") {
-      dispatch(setItineraryStatus("hotels_status", "FAILURE"));
-    }
+        if (status?.PRICING === "FAILURE") {
+          dispatch(setItineraryStatus("pricing_status", "FAILURE"));
+        }
+        if (status?.TRANSFERS === "FAILURE") {
+          dispatch(setItineraryStatus("transfers_status", "FAILURE"));
+        }
+        if (status?.HOTELS === "FAILURE") {
+          dispatch(setItineraryStatus("hotels_status", "FAILURE"));
+        }
 
-    const itineraryFailure = status?.ITINERARY === "FAILURE";
-    // const notPrepared = res.data?.status == "Not Prepared";
+        const itineraryFailure = status?.ITINERARY === "FAILURE";
+        // const notPrepared = res.data?.status == "Not Prepared";
 
-    if (itineraryFailure) {
-      console.log("Itinerary failure or status not PREPARED. Redirecting to thank-you.");
-      setPolling(false);
-      router.push("/thank-you");
-      return;
-    }
+        if (itineraryFailure) {
+          console.log(
+            "Itinerary failure or status not PREPARED. Redirecting to thank-you."
+          );
+          setPolling(false);
+          router.push("/thank-you");
+          return;
+        }
 
-    const allStatusesCompleted = ["ITINERARY", "TRANSFERS", "PRICING", "HOTELS"].every(
-      (key) => status?.[key] === "SUCCESS" || status?.[key] === "FAILURE"
-    );
+        const allStatusesCompleted = [
+          "ITINERARY",
+          "TRANSFERS",
+          "PRICING",
+          "HOTELS",
+        ].every(
+          (key) => status?.[key] === "SUCCESS" || status?.[key] === "FAILURE"
+        );
 
-    if (allStatusesCompleted) {
-      dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
-      setPolling(false);
-    } else {
-      setPolling(true);
-    }
+        if (allStatusesCompleted) {
+          dispatch(setItineraryStatus("finalized_status", "SUCCESS"));
+          setPolling(false);
+        } else {
+          setPolling(true);
+        }
 
-    fetchItinerary(
-      status?.ITINERARY,
-      status?.HOTELS,
-      status?.TRANSFERS,
-      status?.PRICING
-    );
-  } catch (err) {
-    console.error("[ERROR]: axiosGetItineraryStatus: ", err.message, err.response?.status);
+        fetchItinerary(
+          status?.ITINERARY,
+          status?.HOTELS,
+          status?.TRANSFERS,
+          status?.PRICING
+        );
+      } catch (err) {
+        console.error(
+          "[ERROR]: axiosGetItineraryStatus: ",
+          err.message,
+          err.response?.status
+        );
 
-    if (
-      err.response?.data?.errors?.[0]?.message?.[0]?.includes("Itinerary matching query does not exist")
-    ) {
-      console.log("Itinerary not found error detected, redirecting to v1 version");
-      setPolling(false);
-      setItineraryLoading(false);
-      setOldOne(true);
-     
-      // router.push(`/itinerary/v1/${props.id}`);
+        if (
+          err.response?.data?.errors?.[0]?.message?.[0]?.includes(
+            "Itinerary matching query does not exist"
+          )
+        ) {
+          console.log(
+            "Itinerary not found error detected, redirecting to v1 version"
+          );
+          setPolling(false);
+          setItineraryLoading(false);
+          setOldOne(true);
 
-      return;
-    }
+          // router.push(`/itinerary/v1/${props.id}`);
 
-    handleApiError();
-  }
-};
+          return;
+        }
 
-
+        handleApiError();
+      }
+    };
 
     const fetchItinerary = async (itinerary, hotels, transfers, pricing) => {
       try {
@@ -668,10 +676,10 @@ const ItineraryContainer = (props) => {
 
           if (data?.version === "v1" || !data) {
             setShowMercuryItinerary(false);
-             setItineraryLoading(false);
+            setItineraryLoading(false);
             // router.push(`/itinerary/v1/${props.id}`);
             setOldOne(true);
-           
+
             return;
           } else {
             setShowMercuryItinerary(true);
@@ -726,44 +734,54 @@ const ItineraryContainer = (props) => {
           getPaymentInfo();
         }
       } catch (err) {
-        console.error("[ERROR]: axiosGetItinerary: ", err.message, err.response?.status);
-      
+        console.error(
+          "[ERROR]: axiosGetItinerary: ",
+          err.message,
+          err.response?.status
+        );
+
         if (
-            err.response?.data?.errors?.[0]?.message?.[0]?.includes("Itinerary matching query does not exist")) {
-          
-          console.log("Itinerary not found error detected in fetchItinerary, redirecting to v1 version");
+          err.response?.data?.errors?.[0]?.message?.[0]?.includes(
+            "Itinerary matching query does not exist"
+          )
+        ) {
+          console.log(
+            "Itinerary not found error detected in fetchItinerary, redirecting to v1 version"
+          );
           setPolling(false);
-           setItineraryLoading(false);
+          setItineraryLoading(false);
           // router.push(`/itinerary/v1/${props.id}`);
           setOldOne(true);
           return;
         }
-      
+
         handleApiError();
         setItineraryLoading(false);
       }
     };
     const handleApiError = () => {
-      setConsecutiveErrors(prev => {
+      setConsecutiveErrors((prev) => {
         const newCount = prev + 1;
         console.log(`API error occurred. Consecutive errors: ${newCount}`);
-        
+
         if (newCount >= 2) {
-          console.log("Two consecutive API errors detected, redirecting to thank you page");
+          console.log(
+            "Two consecutive API errors detected, redirecting to thank you page"
+          );
           setPolling(false);
           router.push("/thank-you");
         }
-        
+
         return newCount;
       });
     };
-    
+
     if (poll) {
       fetchStatus();
     }
   }
   useEffect(() => {
-    const start=Date.now()
+    const start = Date.now();
     const fetchPaymentInfo = async () => {
       setLoadPricing(false);
       try {
@@ -774,7 +792,7 @@ const ItineraryContainer = (props) => {
       } catch (error) {
       } finally {
         const end = Date.now(); // End time
-      console.log("finally called after", (end - start), "ms");
+        console.log("finally called after", end - start, "ms");
         setLoadPricing(true);
       }
     };
@@ -798,40 +816,44 @@ const ItineraryContainer = (props) => {
     fetchData(true);
   }, [props.id]);
 
- 
-useEffect(() => {
-  let interval;
+  useEffect(() => {
+    let interval;
 
-  console.log("Polling:", polling);
+    console.log("Polling:", polling);
 
-  if (polling) {
-    fetchData(true);
-
-    interval = setInterval(() => {
-      const isAnyFailure =
-        itinerary_status === "FAILURE" ||
-        transfers_status === "FAILURE" ||
-        pricing_status === "FAILURE" ||
-        hotels_status === "FAILURE";
-
-      if (isAnyFailure) {
-        clearInterval(interval);
-        router.push("/thank-you");
-        return;
-      }
-
+    if (polling) {
       fetchData(true);
-    }, 5000);
-  } else {
-    clearInterval(interval);
-  }
 
-  return () => clearInterval(interval);
-}, [polling, itinerary_status, transfers_status, pricing_status, hotels_status]);
+      interval = setInterval(() => {
+        const isAnyFailure =
+          itinerary_status === "FAILURE" ||
+          transfers_status === "FAILURE" ||
+          pricing_status === "FAILURE" ||
+          hotels_status === "FAILURE";
 
+        if (isAnyFailure) {
+          clearInterval(interval);
+          router.push("/thank-you");
+          return;
+        }
+
+        fetchData(true);
+      }, 5000);
+    } else {
+      clearInterval(interval);
+    }
+
+    return () => clearInterval(interval);
+  }, [
+    polling,
+    itinerary_status,
+    transfers_status,
+    pricing_status,
+    hotels_status,
+  ]);
 
   const _updateTransferBooking = (arr1, arr2) => {
-    const combinedArray = [...arr1]; // Copy arr1 to avoid modifying the original array 
+    const combinedArray = [...arr1]; // Copy arr1 to avoid modifying the original array
 
     arr2.forEach((element) => {
       const newId = element.id;
@@ -1195,26 +1217,27 @@ useEffect(() => {
     return <Spinner></Spinner>;
   }
 
-
   const shouldShowLoader = () => {
-  if (!displayText) return false;
-  return true;
-  
-  // const allStatusesCompleted = ["ITINERARY", "TRANSFERS", "PRICING", "HOTELS"].every(
-  //   (key) => itinerary_status === "SUCCESS" || itinerary_status === "FAILURE" ||
-  //            transfers_status === "PEN" || transfers_status === "FAILURE" ||
-  //            pricing_status === "SUCCESS" || pricing_status === "FAILURE" ||
-  //            hotels_status === "SUCCESS" || hotels_status === "FAILURE"
-  // );
-  
-  // return !allStatusesCompleted;
-};
+    if (!displayText) return false;
+    return true;
 
-if(oldOne){
-  return (<>
-         <ItineraryContainerOld id={router.query.id}/>
-      </>)
-}
+    // const allStatusesCompleted = ["ITINERARY", "TRANSFERS", "PRICING", "HOTELS"].every(
+    //   (key) => itinerary_status === "SUCCESS" || itinerary_status === "FAILURE" ||
+    //            transfers_status === "PEN" || transfers_status === "FAILURE" ||
+    //            pricing_status === "SUCCESS" || pricing_status === "FAILURE" ||
+    //            hotels_status === "SUCCESS" || hotels_status === "FAILURE"
+    // );
+
+    // return !allStatusesCompleted;
+  };
+
+  if (oldOne) {
+    return (
+      <>
+        <ItineraryContainerOld id={router.query.id} />
+      </>
+    );
+  }
 
   return (
     <Container>
@@ -1366,7 +1389,6 @@ if(oldOne){
         ></Menu>
       </div>
       <ToastContainer />
-      
     </Container>
   );
 };

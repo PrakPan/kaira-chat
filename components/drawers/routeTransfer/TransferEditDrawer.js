@@ -97,13 +97,10 @@ const TransferEditDrawer = (props) => {
     ItineraryId,
     showDrawer,
     setShowDrawer,
-    selectedTransferHeading,
     origin,
     destination,
     day_slab_index,
-    element_index,
     openNotification,
-    fetchData,
     setShowLoginModal,
     check_in,
     routeId,
@@ -404,7 +401,7 @@ const TransferEditDrawer = (props) => {
         })
         .then((response) => {
           if (response.status === 201) {
-            fetchData((scroll = false));
+            // fetchData((scroll = false));
             openNotification({
               text: "Your Transfer updated successfully!",
               heading: "Success!",
@@ -787,13 +784,10 @@ const TransferEditDrawer = (props) => {
                           tailored_id={selectedBooking?.tailored_itinerary}
                           selectedBooking={selectedBooking}
                           itinerary_id={ItineraryId}
-                          selectedTransferHeading={selectedTransferHeading}
-                          fetchData={fetchData}
                           setShowLoginModal={setShowLoginModal}
                           check_in={check_in}
                           _GetInTouch={props._GetInTouch}
                           daySlabIndex={day_slab_index}
-                          elementIndex={element_index}
                           routeId={routeId}
                           mercuryTransfer={selectedMercuryTransfer}
                           mercury={mercuryTransfer}
@@ -878,13 +872,10 @@ const TransferEditDrawer = (props) => {
                           tailored_id={selectedBooking?.tailored_itinerary}
                           selectedBooking={selectedBooking}
                           itinerary_id={ItineraryId}
-                          selectedTransferHeading={selectedTransferHeading}
-                          fetchData={fetchData}
                           setShowLoginModal={setShowLoginModal}
                           check_in={check_in}
                           _GetInTouch={props._GetInTouch}
                           daySlabIndex={day_slab_index}
-                          elementIndex={element_index}
                           routeId={routeId}
                           mercuryTransfer={selectedMercuryTransfer}
                           individual={props?.individual}
@@ -948,13 +939,10 @@ const TransferEditDrawer = (props) => {
                         tailored_id={selectedBooking?.tailored_itinerary}
                         selectedBooking={selectedBooking}
                         itinerary_id={ItineraryId}
-                        selectedTransferHeading={selectedTransferHeading}
-                        fetchData={fetchData}
                         setShowLoginModal={setShowLoginModal}
                         check_in={check_in}
                         _GetInTouch={props._GetInTouch}
                         daySlabIndex={day_slab_index}
-                        elementIndex={element_index}
                         routeId={routeId}
                         mercuryTransfer={selectedMercuryTransfer}
                         mercury={mercuryTransfer}
@@ -1037,13 +1025,10 @@ const TransferEditDrawer = (props) => {
                         tailored_id={selectedBooking?.tailored_itinerary}
                         selectedBooking={selectedBooking}
                         itinerary_id={ItineraryId}
-                        selectedTransferHeading={selectedTransferHeading}
-                        fetchData={fetchData}
                         setShowLoginModal={setShowLoginModal}
                         check_in={check_in}
                         _GetInTouch={props._GetInTouch}
                         daySlabIndex={day_slab_index}
-                        elementIndex={element_index}
                         routeId={routeId}
                         mercuryTransfer={selectedMercuryTransfer}
                         individual={props?.individual}
@@ -1106,48 +1091,16 @@ const TransferEditDrawer = (props) => {
         // _updateFlightHandler={props._updateFlightHandler}
         selectedBooking={selectedBooking}
         itinerary_id={ItineraryId}
-        selectedTransferHeading={selectedTransferHeading}
-        fetchData={fetchData}
         setShowLoginModal={setShowLoginModal}
         check_in={check_in}
         _GetInTouch={props._GetInTouch}
         daySlabIndex={day_slab_index}
-        elementIndex={element_index}
         routeId={routeId}
         mercuryTransfer={selectedMercuryTransfer}
         individual={props?.individual}
         originCityId={props?.originCityId}
         destinationCityId={props?.destinationCityId}
       ></FlightModal>
-
-      {/* <ComboFlight
-        handleFlightSelect={handleSelectResult}
-        showFlightModal={showComboFlightModal}
-        setShowFlightModal={setShowComboFlightModal}
-        setHideFlightModal={() => setShowComboFlightModal(false)}
-        setHideBookingModal={() => setShowComboFlightModal(false)}
-        getPaymentHandler={props.getPaymentHandler}
-        _updatePaymentHandler={props._updatePaymentHandler}
-        _updateFlightBookingHandler={props._updateFlightBookingHandler}
-        _updateBookingHandler={props._updateBookingHandler}
-        alternates={selectedBooking?.id}
-        tailored_id={selectedBooking?.tailored_itinerary}
-        // _updateFlightHandler={props._updateFlightHandler}
-        selectedBooking={selectedBooking}
-        itinerary_id={ItineraryId}
-        selectedTransferHeading={selectedTransferHeading}
-        fetchData={fetchData}
-        setShowLoginModal={setShowLoginModal}
-        check_in={check_in}
-        _GetInTouch={props._GetInTouch}
-        daySlabIndex={day_slab_index}
-        elementIndex={element_index}
-        routeId={routeId}
-        mercuryTransfer={selectedMercuryTransfer}
-        individual={props?.individual}
-        originCityId={props?.originCityId}
-        destinationCityId={props?.destinationCityId}
-      ></ComboFlight> */}
 
       <TaxiModal
         handleTaxiSelect={handleSelectResult}
@@ -1159,13 +1112,10 @@ const TransferEditDrawer = (props) => {
         _updateTaxiBookingHandler={props._updateTaxiBookingHandler}
         selectedBooking={selectedBooking}
         itinerary_id={ItineraryId}
-        selectedTransferHeading={selectedTransferHeading}
-        fetchData={fetchData}
         setShowLoginModal={setShowLoginModal}
         check_in={check_in}
         _GetInTouch={props._GetInTouch}
         daySlabIndex={day_slab_index}
-        elementIndex={element_index}
         routeId={routeId}
         oCityData={oCityData}
         dCityData={dCityData}
@@ -1244,8 +1194,6 @@ const RouteContainer = (props) => {
     tailored_id,
     selectedBooking,
     itinerary_id,
-    selectedTransferHeading,
-    fetchData,
     setShowLoginModal,
     check_in,
     _GetInTouch,
@@ -1459,8 +1407,6 @@ const RouteContainer = (props) => {
                   tailored_id={tailored_id}
                   selectedBooking={selectedBooking}
                   itinerary_id={itinerary_id}
-                  selectedTransferHeading={selectedTransferHeading}
-                  fetchData={fetchData}
                   setShowLoginModal={setShowLoginModal}
                   check_in={check_in}
                   _GetInTouch={_GetInTouch}
@@ -1501,8 +1447,6 @@ const RouteContainer = (props) => {
                   selectedBooking={selectedBooking}
                   itinerary_id={itinerary_id}
                   edge={singleTransfer?.id}
-                  selectedTransferHeading={selectedTransferHeading}
-                  fetchData={fetchData}
                   setShowLoginModal={setShowLoginModal}
                   check_in={check_in}
                   _GetInTouch={_GetInTouch}
@@ -1561,40 +1505,6 @@ const RouteContainer = (props) => {
             ) : (
               ""
             )}
-            {/* <div className="flex flex-row gap-2 w-full">
-          <div
-            className={`w-[80px] h-[70px] px-2 bg-gray-100 rounded-xl flex items-center justify-center`}
-          >
-            <TransfersIcon
-              TransportMode={singleTransfer?.mode}
-              Instyle={{
-                fontSize: singleTransfer?.mode === "Bus" ? "2.5rem" : "3rem",
-                color: "black",
-              }}
-              classname={{ width: 80, height: 75 }}
-            />
-          </div>
-
-          <div className="w-full flex flex-col gap-2 justify-center">
-            <div className="flex flex-row items-center justify-between">
-              <TransferItem transfer={singleTransfer} />
-              <div className="flex flex-col gap-2 items-end">
-                <EstimatedCost cost={singleTransfer?.prices[0]?.price} /> */}
-            {/* {
-                singleTransfer?.mode === "Bus" || singleTransfer?.mode === "Train" || singleTransfer?.mode === "Ferry" || singleTransfer?.mode === "Car" ? <MercurySelectButton transfer={singleTransfer} setShowMercuryTransfer={props?.setShowMercuryTransfer} setSelectedMercuryTransfer={props?.setSelectedMercuryTransfer}/>: */}
-            {/* <SelectButton
-                  transfer={singleTransfer}
-                  transferIndex={transferIndex}
-                  handleSelect={handleSelect}
-                  setSelectedMercuryTransfer={setSelectedMercuryTransfer}
-                  isRouteSelected={isRouteSelected}
-                  setIsRouteSelected={setIsRouteSelected}
-                /> */}
-            {/* } */}
-            {/* </div>
-            </div>
-          </div>
-        </div> */}
           </>
         )}
       </div>
@@ -1692,8 +1602,6 @@ const NewMultiModeContainer = ({
   tailored_id,
   selectedBooking,
   itinerary_id,
-  selectedTransferHeading,
-  fetchData,
   setShowLoginModal,
   check_in,
   _GetInTouch,
@@ -1758,33 +1666,8 @@ const NewMultiModeContainer = ({
 
   console.log("Selected Data", selectedData);
 
-  const toggleExpanded = () => {
-    setExpanded(!expanded);
-  };
 
   const totalDistance = transfer.reduce((sum, t) => sum + (t.distance || 0), 0);
-
-  const sourceCity = transfer.length > 0 ? transfer[0].source.city_name : "";
-  const destinationCity =
-    transfer.length > 0
-      ? transfer[transfer.length - 1].destination.city_name
-      : "";
-
-  const calculateTotalPrice = () => {
-    let total = 0;
-
-    Object.keys(selectedModeIds).forEach((stepIndex) => {
-      const selectedId = selectedModeIds[stepIndex];
-      const selectedOption = transfer.find((t) => t.id === selectedId);
-
-      if (selectedOption && selectedOption.prices && selectedOption.prices[0]) {
-        total += selectedOption.prices[0].price;
-      }
-    });
-
-    return total > 0 ? `₹${total}` : "";
-  };
-
   const getCurrentMode = () => {
     return currentStep > 0 && currentStep <= sequencedModes.length
       ? sequencedModes[currentStep - 1]
@@ -1961,27 +1844,6 @@ const NewMultiModeContainer = ({
   };
 
   const timeOptions = generateTimeOptions();
-
-  const generateDateOptions = () => {
-    const baseDate = dayjs(currentModeDepartureDate);
-    const options = [];
-
-    for (let i = -2; i <= 2; i++) {
-      const date = baseDate.add(i, "day");
-      const isToday = date.isSame(dayjs(), "day");
-      const isSelected = date.format("YYYY-MM-DD") === currentModeDepartureDate;
-
-      options.push({
-        value: date.format("YYYY-MM-DD"),
-        display: date.format("MMM DD, YYYY"),
-        dayName: date.format("ddd"),
-        isToday,
-        isSelected,
-      });
-    }
-
-    return options;
-  };
 
   const handleModeSelect = (index, id, searchData = null, mode = null) => {
     const isDeselecting = selectedModeIds[index] === id;
@@ -2539,25 +2401,6 @@ const NewMultiModeContainer = ({
     }
   }, [selectedData, selectedModeIds]);
 
-  //   useEffect(() => {
-  //   if (currentStep >= 1 && currentStep <= transfer.length) {
-  //     const currentTransfer = transfer[currentStep - 1];
-
-  //     if (currentTransfer && currentTransfer.mode !== "Flight" && currentTransfer.mode !== "Taxi") {
-  //       // Only call API if not already selected
-  //       if (!selectedModeIds[currentStep - 1]) {
-  //         const paxData = {
-  //           adults: pax.adults,
-  //           children: pax.children,
-  //           infants: pax.infants,
-  //         };
-  //         const departureDateTime = `${currentModeDepartureDate}T${currentModeDepartureTime}`;
-  //         loadTransfers(currentTransfer, paxData, departureDateTime);
-  //       }
-  //     }
-  //   }
-  // }, [currentModeDepartureDate, currentModeDepartureTime]);
-
   useEffect(() => {
     if (showTimeDropdown) {
       const handleClickOutside = (event) => {
@@ -2704,8 +2547,6 @@ const NewMultiModeContainer = ({
                         tailored_id={tailored_id}
                         selectedBooking={selectedBooking}
                         itinerary_id={itinerary_id}
-                        selectedTransferHeading={selectedTransferHeading}
-                        fetchData={fetchData}
                         setShowLoginModal={setShowLoginModal}
                         check_in={check_in}
                         _GetInTouch={_GetInTouch}
@@ -2772,8 +2613,6 @@ const NewMultiModeContainer = ({
                         tailored_id={tailored_id}
                         selectedBooking={selectedBooking}
                         itinerary_id={itinerary_id}
-                        selectedTransferHeading={selectedTransferHeading}
-                        fetchData={fetchData}
                         setShowLoginModal={setShowLoginModal}
                         check_in={check_in}
                         _GetInTouch={_GetInTouch}
@@ -3163,12 +3002,6 @@ const NewMultiModeContainer = ({
                             (Object.keys(selectedModeIds).length !==
                               totalSteps || updateLoading) ? "cursor-not-allowed" : "cursor-pointer"
                           }`}
-  // ${
-  //   Object.keys(selectedModeIds).length === totalSteps
-  //     ?
-  //      "bg-[#f8e000] text-black"
-  //     : "bg-yellow-100 text-black-500 cursor-not-allowed"
-  // }`}
                           disabled={
                             Object.keys(selectedModeIds).length !==
                               totalSteps || updateLoading

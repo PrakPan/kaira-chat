@@ -327,7 +327,6 @@ const Booking = (props) => {
           itinerary_id={props?.itinerary_id}
           showDrawer={showTransferEditDrawer}
           setShowDrawer={setShowTransferEditDrawer}
-          selectedTransferHeading={props.selectedTransferHeading}
           origin={props.selectedBooking?.origin?.shortName || props?.oCityData?.gmaps_place_id || props?.oCityData?.city?.id}
           destination={props.selectedBooking?.destination?.shortName || props?.dCityData?.gmaps_place_id || props?.dCityData?.city?.id}
           day_slab_index={props.daySlabIndex}
@@ -350,7 +349,6 @@ const Booking = (props) => {
           itinerary_id={props?.itinerary_id}
           showDrawer={showTransferEditDrawer}
           setShowDrawer={setShowTransferEditDrawer}
-          selectedTransferHeading={props.selectedTransferHeading}
           origin={props.selectedBooking?.origin?.shortName}
           destination={props.selectedBooking?.destination?.shortName}
           day_slab_index={props.daySlabIndex}

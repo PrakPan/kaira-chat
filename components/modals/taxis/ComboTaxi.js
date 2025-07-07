@@ -631,7 +631,6 @@ const ComboTaxi = (props) => {
             itinerary_id={props?.itinerary_id}
             showDrawer={showTransferEditDrawer}
             setShowDrawer={setShowTransferEditDrawer}
-            selectedTransferHeading={props.selectedTransferHeading}
             origin={
               props.selectedBooking?.origin?.shortName ||
               props?.oCityData?.gmaps_place_id ||
@@ -644,7 +643,6 @@ const ComboTaxi = (props) => {
             }
             day_slab_index={props.daySlabIndex}
             element_index={props.elementIndex}
-            fetchData={props?.fetchData}
             setShowLoginModal={props?.setShowLoginModal}
             check_in={props?.check_in}
             _GetInTouch={props._GetInTouch}
@@ -663,12 +661,10 @@ const ComboTaxi = (props) => {
             itinerary_id={props?.itinerary_id}
             showDrawer={showTransferEditDrawer}
             setShowDrawer={setShowTransferEditDrawer}
-            selectedTransferHeading={props.selectedTransferHeading}
             origin={props.selectedBooking?.origin?.shortName}
             destination={props.selectedBooking?.destination?.shortName}
             day_slab_index={props.daySlabIndex}
             element_index={props.elementIndex}
-            fetchData={props?.fetchData}
             setShowLoginModal={props?.setShowLoginModal}
             check_in={props?.check_in}
             _GetInTouch={props._GetInTouch}
