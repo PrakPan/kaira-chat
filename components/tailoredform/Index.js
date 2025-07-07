@@ -18,7 +18,7 @@ import Popup from "../ErrorPopup";
 import { RxCross2 } from "react-icons/rx";
 import usePageLoaded from "../custom hooks/usePageLoaded";
 import { logEvent } from "../../services/ga/Index";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useParams, usePathname, useSearchParams } from "next/navigation";
 
 const fadeInAnimation = keyframes`${fadeIn}`;
 
@@ -92,29 +92,32 @@ const LoadingText = styled.div`
 const useSourceParams = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const router = useRouter();
+  const params = useParams(); 
 
   const source = useMemo(() => {
     const queryObj = {};
     for (const [key, value] of searchParams.entries()) {
-      if (value === 'true') queryObj[key] = true;
-      else if (value === 'false') queryObj[key] = false;
+      if (value === "true") queryObj[key] = true;
+      else if (value === "false") queryObj[key] = false;
       else if (!isNaN(value)) queryObj[key] = Number(value);
       else queryObj[key] = value;
     }
 
+    let resolvedPath = pathname;
+    for (const [key, val] of Object.entries(params)) {
+      resolvedPath = resolvedPath.replace(`[${key}]`, val);
+    }
+
     return {
-      path: router.asPath?.split("?")[0],
+      path: resolvedPath,
       ...queryObj,
     };
-  }, [pathname, searchParams]);
+  }, [pathname, searchParams, params]);
 
   return source;
 };
 
 const Enquiry = (props) => {
-  console.log("Enquiry Props:", props);
-  console.log("Enquiry Props:", props);
   const router = useRouter();
   const routerquery = router.query;
   const initialInputId = Date.now();
@@ -137,6 +140,8 @@ const Enquiry = (props) => {
       childAges: [],
     },
   ]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [priceRange, setPriceRange] = useState({
     min_price: 0,
     max_price: 3000,
@@ -169,6 +174,7 @@ const Enquiry = (props) => {
     min_price: 0,
     max_price: 3000,
   });
+  
   let isPageWide = media("(min-width: 768px)");
   const source = useSourceParams();
 
@@ -299,7 +305,7 @@ if (queryType === "page" || propType === "page") {
       type: "State",
     },
   ];
-} else if (propType === "city" || queryType === "city") {
+} else if ((routerquery.city) || propType === "city" || queryType === "city") {
   selectedObj = [
     {
       id: routerquery.page_id || props.page_id,
@@ -349,7 +355,12 @@ if (queryType === "page" || propType === "page") {
     const value_start = new Date(valueStart);
     const value_end = new Date(valueEnd);
 
+    if (isSubmitting) {
+    return;
+  }
+
     setLoading(true);
+    setIsSubmitting(true);
 
     let cityids = [];
     let locations = [];
@@ -565,11 +576,10 @@ let dist=divideTravellers()
       }
     } catch {}
 
+    console.log("SOurce",source);
+
     const data = {
-      source: {
-        path: router.pathname, 
-        ...router.query, 
-      },
+      source,
       experience_filters_selected: preferences,
       start_location: {
         gmaps_place_id: startingLocation
@@ -659,6 +669,7 @@ let dist=divideTravellers()
     };
 
     setLoading(true);
+    setIsSubmitting(true);
     localStorage.removeItem("MyPlans");
 
     itineraryComplete
@@ -683,6 +694,7 @@ let dist=divideTravellers()
       .catch((err) => {
         console.log("ERROR >>>", err);
         setLoading(false);
+        setIsSubmitting(false);
         setError(err.message);
         router.push("/thank-you");
       });
@@ -940,8 +952,8 @@ let dist=divideTravellers()
                   borderRadius="5px"
                   borderWidth="1px"
                   bgColor="#f7e700"
-                  loading={loading}
-                  disabled={loading}
+                  loading={isSubmitting}
+                  disabled={isSubmitting}
                   onclick={_submitDataHandler}
                 >
                   Get Itinerary!
