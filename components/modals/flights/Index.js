@@ -81,11 +81,9 @@ const ContentContainer = styled.div`
 `;
 
 const Booking = (props) => {
-  console.log(
-    "Flight Selected Booking",
-    props?.originCityId,
-    props?.destinationCityId
-  );
+  console.log("booking props are:",props)
+  const router=useRouter()
+  const itinerary_id=router.query.id
   let isPageWide = media("(min-width: 768px)");
   const dispatch = useDispatch();
   const transferBookings = useSelector((state) => state.TransferBookings);
