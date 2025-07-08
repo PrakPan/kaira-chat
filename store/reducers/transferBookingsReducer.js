@@ -31,6 +31,13 @@ const reducer = (state = initialState, action) => {
          ...state,
          transferBookings: action.payload
         }
+      
+      case actionTypes.UPDATE_AIRPORT_TRANSFER:
+        console.log("Reducer: updating transferBookings", action.payload);
+        return {
+         ...state,
+         transferBookings: action.payload
+        }
 
     default:
       return state;

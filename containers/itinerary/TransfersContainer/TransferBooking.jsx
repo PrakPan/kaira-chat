@@ -793,7 +793,7 @@ const TransferBooking = ({
             </>
           </Container>
         ) : (
-          <div className="grid w-full grid-cols-[30px_120px] min-h-[5rem] md:min-h-[8rem]">
+          <div className={`grid w-full grid-cols-[30px_120px] min-h-[5rem] md:min-h-[8rem] ${isAirport ? "hidden" : ""}`}>
             <div className="relative">
               <LineContainer>
                 <HalfLine Transfers={Transfer} color={pinColour1} flex={8} />

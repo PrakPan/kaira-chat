@@ -42,18 +42,18 @@ const Section = (props) => {
   return (
     <Container className="font-lexend">
       <div className="flex flex-row gap-2 w-full">
-        <div className="flex items-center gap-2 font-semibold text-lg p-[0.4rem] w-fit">
-          <GiCarSeat />
+        <div className="flex items-center gap-2 font-normal text-lg p-[0.4rem] w-fit">
+          <GiCarSeat fontWeight={500}/>
           {props.data?.taxi_category?.seating_capacity + `${props.data?.taxi_category?.seating_capacity==1?" seat":" seats"}`}
         </div>
         {bagCapacity && (
           <div
-            className="flex items-center justify-center font-semibold text-lg p-[0.4rem] w-fit"
+            className="flex items-center justify-center font-normal text-lg p-[0.4rem] w-fit"
           >
-            <MdLuggage />
+            <MdLuggage fontWeight={500}/>
             
             <>
-            {bagCapacity} Luggage bags
+            {bagCapacity > 1 ? bagCapacity + " Luggage bags" : bagCapacity + " Luggage bag" } 
             </>
           </div>
         )}

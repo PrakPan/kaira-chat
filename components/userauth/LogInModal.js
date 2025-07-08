@@ -328,6 +328,11 @@ const LogIn = React.memo((props) => {
         label="Mobile Number"
         type="mobile"
         id="mobile"
+        onKeyDown={(e) => {
+        if (e.key === "Enter") {
+        e.preventDefault(); 
+       }
+       }}
         value={phone}
         onChange={handleMobileChange}
         onBlur={handleMobileBlur}
