@@ -231,7 +231,7 @@ const TransferBookings = (props) => {
               _updateFlightBookingHandler={props._updateFlightBookingHandler}
               _updatePaymentHandler={props._updatePaymentHandler}
               isAirport={true}
-              AirportTransferType={"Drop"}
+              AirportTransferType={"drop"}
             />
           );
         }
@@ -361,7 +361,7 @@ const TransferBookings = (props) => {
               _updateFlightBookingHandler={props._updateFlightBookingHandler}
               _updatePaymentHandler={props._updatePaymentHandler}
               isAirport={true}
-              AirportTransferType={"Pickup"}
+              AirportTransferType={"pickup"}
             />
           );
         }
@@ -477,7 +477,7 @@ const TransferBookings = (props) => {
                 _updateFlightBookingHandler={props._updateFlightBookingHandler}
                 _updatePaymentHandler={props._updatePaymentHandler}
                 isAirport={true}
-                AirportTransferType={"Drop"}
+                AirportTransferType={"drop"}
               />
             );
           }
@@ -565,7 +565,7 @@ const TransferBookings = (props) => {
                 _updateFlightBookingHandler={props._updateFlightBookingHandler}
                 _updatePaymentHandler={props._updatePaymentHandler}
                 isAirport={true}
-                AirportTransferType={"Pickup"}
+                AirportTransferType={"pickup"}
               />
             );
           }
@@ -694,7 +694,7 @@ const TransferBookings = (props) => {
               _updateFlightBookingHandler={props._updateFlightBookingHandler}
               _updatePaymentHandler={props._updatePaymentHandler}
               isAirport={true}
-              AirportTransferType={"Drop"}
+              AirportTransferType={"drop"}
             />
           );
         }
@@ -780,7 +780,7 @@ const TransferBookings = (props) => {
             _updateFlightBookingHandler={props._updateFlightBookingHandler}
             _updatePaymentHandler={props._updatePaymentHandler}
             isAirport={true}
-            AirportTransferType={"Pickup"}
+            AirportTransferType={"pickup"}
           />
         );
       }
@@ -823,7 +823,7 @@ const TransferBookings = (props) => {
             _updateFlightBookingHandler={props._updateFlightBookingHandler}
             _updatePaymentHandler={props._updatePaymentHandler}
             isAirport={true}
-            AirportTransferType={"Drop"}
+            AirportTransferType={"drop"}
           />
         );
       }

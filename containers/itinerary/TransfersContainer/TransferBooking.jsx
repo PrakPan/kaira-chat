@@ -17,10 +17,11 @@ import TransferEditDrawer, {
 import Details from "./FlightDetail2";
 import axios from "axios";
 import { MERCURY_HOST } from "../../../services/constants";
-import { updateTransferBookings } from "../../../store/actions/transferBookingsStore";
+import { updateAirportTransferBooking, updateTransferBookings } from "../../../store/actions/transferBookingsStore";
 import { axiosDeleteBooking } from "../../../services/itinerary/bookings";
 import { FaPlaneDeparture } from "react-icons/fa";
 import TransferDrawer from "../TransferDrawer";
+import PickupDropDrawer from "../PickupDropDrawer";
 
 const LineContainer = styled.div`
   position: absolute;
@@ -119,6 +120,7 @@ const TransferBooking = ({
   const {  transfers_status } = useSelector(
     (state) => state.ItineraryStatus
   );
+  const [isTransferDrawerOpen,setIsTransferDrawerOpen] = useState(false)
 
   useEffect(() => {
     setaddboking(booking?.user_selected);
@@ -258,6 +260,70 @@ const TransferBooking = ({
       }
     };
 
+
+    const handleTransferSubmit = async (transferData) => {
+        try {
+          // setLoading(true);
+          console.log("TransferDD",transferData);
+    
+          const bookingPayload = {
+            transfer_type: "airport",
+            source_itinerary_city: transferData.transferType === 'pickup' ? (dCityData?.id || dCityData?.gmaps_place_id) : transferData?.sourceGmapsId,
+            destination_itinerary_city: transferData.transferType === 'pickup' ? transferData?.destinationGmapsId : (oCityData?.id || oCityData?.gmaps_place_id),
+            is_pickup: transferData.transferType === 'pickup',
+            is_drop: transferData.transferType === 'drop',
+            source: transferData?.source,
+            trace_id: transferData?.traceId,
+            result_index: transferData?.selectedQuote?.result_index
+          };
+    
+          const response = await axios.post(
+            `${MERCURY_HOST}/api/v1/itinerary/${router?.query?.id}/bookings/taxi/`,
+            bookingPayload,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+              },
+            }
+          );
+    
+          if (response.status === 200) {
+            dispatch(
+                            updateAirportTransferBooking(
+                              `${transferData.transferType === 'pickup' ?  (dCityData?.id || dCityData?.gmaps_place_id) : (oCityData?.id || oCityData?.gmaps_place_id)
+                              }`,
+                              response.data
+                            )
+                          );
+            
+            if (_updatePaymentHandler) _updatePaymentHandler();
+            if (getPaymentHandler) getPaymentHandler();
+            
+            dispatch(
+              openNotification({
+                type: "success",
+                text: `${transferData.transferType === 'pickup' ? 'Pickup' : 'Drop'} transfer added successfully`,
+                heading: "Success!",
+              })
+            );
+          }
+         setIsTransferDrawerOpen(false);
+        } catch (error) {
+          const errorMsg =
+            error?.response?.data?.errors?.[0]?.message?.[0] || 
+            error?.response?.data?.message || error?.response?.data?.errors?.[0]?.detail ? error?.response?.data?.errors?.[0]?.detail?.[0] : null || 
+            error.message;
+          dispatch(
+            openNotification({
+              text: errorMsg,
+              heading: "Error!",
+              type: "error",
+            })
+          );
+        } finally {
+          setLoading(false);
+        }
+      };
 
   console.log("Boooking", booking);
   return (
@@ -666,9 +732,43 @@ const TransferBooking = ({
                       </div>
                     </>
 
+                    <PickupDropDrawer
+                            isOpen={isTransferDrawerOpen}
+                            // hotelName={hotelName}
+                            // destinationHotelName={destinationHotelName}
+                            booking={vehicleDetails}
+                            onClose={() => {
+                              setIsTransferDrawerOpen(false);
+                            }}
+                            transferType={AirportTransferType}
+                            bookingMode={vehicleDetails?.booking_type?.toLowerCase()}
+                            // originCityName={origin_city_name}
+                            // destinationCityName={destination_city_name}
+                            onSubmit={handleTransferSubmit}
+                            // existingBooking={selectedTransferBooking}
+                            // show={pickupDropShow}
+                            // setHandleShow={setPickupDropShow}
+                            _updateFlightBookingHandler={_updateFlightBookingHandler}
+                            _updatePaymentHandler={_updatePaymentHandler}
+                            getPaymentHandler={getPaymentHandler}
+                            setShowLoginModal={setShowLoginModal}
+                            // city={origin_city_name}
+                            // dcity={destination_city_name}
+                            _updateTaxiBookingHandler={_updateTaxiBookingHandler}
+                            selectedBooking={selectedBooking}
+                            setSelectedBooking={setSelectedBooking}
+                            originCityId={oCityData?.city?.id || oCityData?.gmaps_place_id}
+                            destinationCityId={dCityData?.city?.id || dCityData?.gmaps_place_id}
+                            origin_itinerary_city_id={oCityData?.id || oCityData?.gmaps_place_id}
+                            destination_itinerary_city_id={
+                              dCityData?.id || dCityData?.gmaps_place_id
+                            }
+                          />
+
                      {showVehicleDrawer && (
         <TransferDrawer
           show={showVehicleDrawer}
+          setIsTransferDrawerOpen={setIsTransferDrawerOpen}
         
           // error={error}
           setHandleShow={setShowVehicleDrawer}
@@ -695,6 +795,8 @@ const TransferBooking = ({
           }
           // isIntracity={isIntracity}
           booking_id={vehicleDetails?.booking_id}
+          isAirport={isAirport}
+          AirportTransferType={AirportTransferType}
         />
       )}
 

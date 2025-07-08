@@ -56,6 +56,8 @@ const TransferDrawer = ({
   isIntracity,
   error,
   isAirport,
+ AirportTransferType,
+ setIsTransferDrawerOpen
 }) => {
   const [expandedIndexes, setExpandedIndexes] = useState([]);
   const isPageWide = window.matchMedia("(min-width: 768px)")?.matches;
@@ -487,6 +489,7 @@ const TransferDrawer = ({
               noChange={isIntracity}
               error={error}
               isAirport={isAirport}
+              setIsTransferDrawerOpen={setIsTransferDrawerOpen}
             />
           ) : (
             <VehicleDetailModal

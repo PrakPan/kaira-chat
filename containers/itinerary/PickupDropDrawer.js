@@ -47,7 +47,7 @@ const PickupDropDrawer = ({
   destination_itinerary_city_id,
   hotelName,
   destinationHotelName,
-  booking
+  booking,
 }) => {
   console.log("HotelN", hotelName, destinationHotelName);
 
@@ -83,384 +83,446 @@ const PickupDropDrawer = ({
 
   // Replace the initial form state calculation
   const initialFormState = {
-  sourceAddress: "",
-  destinationAddress: "",
-  transferDate: "",
-  transferTime: "12:00",
-  passengers: number_of_adults + number_of_children + number_of_infants,
-  notes: "",
-  sourceGmapsId: "",
-  destinationGmapsId: "",
-  sourceHubId: "",
-  destinationHubId: "",
-};
-
-useEffect(() => {
-  if (isOpen) {
-    // Reset all state first
-    setIsLoadingQuotes(false);
-    setSourceSuggestions([]);
-    setDestinationSuggestions([]);
-    setShowSourceSuggestions(false);
-    setShowDestinationSuggestions(false);
-    setHubSuggestions([]);
-    setErrors({});
-    setSearchError("");
-    setTransferQuotes([]);
-    setTraceId(null);
-    setSource(null);
-    setIsAutoFilled(false);
-    
-    // Only reset inputs if no existing booking
-    if (!booking) {
-      setSourceInput("");
-      setDestinationInput("");
-      setFormData({
-        ...initialFormState,
-        passengers: number_of_adults + number_of_children + number_of_infants,
-      });
-    }
-  }
-}, [isOpen, number_of_adults, number_of_children, number_of_infants, booking]);
-
-const getInitialFormState = () => {
-  if (!booking) {
-
-    return {
-      ...initialFormState,
-      passengers: number_of_adults + number_of_children + number_of_infants,
-    };
-  }
-
-  // Calculate date and time
-  let newDate = "";
-  let newTime = "12:00";
-  
-  if (transferType === "pickup") {
-    newDate = formatDate(booking.check_out);
-    newTime = calculateTimeWithOffset(booking.check_out, 30);
-  } else {
-    newDate = formatDate(booking.check_in);
-    newTime = calculateTimeWithOffset(booking.check_in, 30);
-  }
-  
-  // Set hotel addresses
-  let newSourceAddress = "";
-  let newDestinationAddress = "";
-  
-  if (transferType === "pickup") {
-    newDestinationAddress = destinationHotelName || "";
-  } else {
-    newSourceAddress = hotelName || "";
-  }
-  console.log("InitialFF",booking,{
-    ...initialFormState,
+    sourceAddress: "",
+    destinationAddress: "",
+    transferDate: "",
+    transferTime: "12:00",
     passengers: number_of_adults + number_of_children + number_of_infants,
-    transferDate: newDate,
-    transferTime: newTime,
-    sourceAddress: newSourceAddress,
-    destinationAddress: newDestinationAddress,
-  })
-  return {
-    ...initialFormState,
-    passengers: number_of_adults + number_of_children + number_of_infants,
-    transferDate: newDate,
-    transferTime: newTime,
-    sourceAddress: newSourceAddress,
-    destinationAddress: newDestinationAddress,
+    notes: "",
+    sourceGmapsId: "",
+    destinationGmapsId: "",
+    sourceHubId: "",
+    destinationHubId: "",
   };
-};
 
-// Initialize with basic state
-const [formData, setFormData] = useState(initialFormState);
+  useEffect(() => {
+    if (isOpen) {
+      // Reset all state first
+      setIsLoadingQuotes(false);
+      setSourceSuggestions([]);
+      setDestinationSuggestions([]);
+      setShowSourceSuggestions(false);
+      setShowDestinationSuggestions(false);
+      setHubSuggestions([]);
+      setErrors({});
+      setSearchError("");
+      setTransferQuotes([]);
+      setTraceId(null);
+      setSource(null);
+      setIsAutoFilled(false);
 
-// Fix the date formatting function
-const formatDate = (dateTimeString) => {
-  if (!dateTimeString) return "";
-
-  // Make the datetime ISO-compliant
-  const safeString = dateTimeString.replace(" ", "T");
-
-  const date = new Date(safeString);
-  if (isNaN(date.getTime())) return "";
-
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = date.getFullYear();
-
-  return `${year}-${month}-${day}`; 
-};
-
-
-// Fix the time calculation function
-const calculateTimeWithOffset = (dateTimeString, offsetMinutes) => {
-  if (!dateTimeString) return { value: "12:00", display: "12:00 PM" };
-
-  let date = new Date(dateTimeString);
-  if (isNaN(date.getTime())) return { value: "12:00", display: "12:00 PM" };
-
-  // Apply offset
-  date.setMinutes(date.getMinutes() + offsetMinutes);
-
-  // Round to nearest 30 minutes
-  let minutes = date.getMinutes();
-  if (minutes < 15) {
-    date.setMinutes(0);
-  } else if (minutes < 45) {
-    date.setMinutes(30);
-  } else {
-    date.setHours(date.getHours() + 1);
-    date.setMinutes(0);
-  }
-
-  // 24-hour value for API
-  const value = date.toTimeString().slice(0, 5); // "22:00"
-
-  // 12-hour display for UI
-  let hours = date.getHours();
-  const mins = date.getMinutes().toString().padStart(2, '0');
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  const displayHour = hours % 12 || 12;
-  const display = `${displayHour}:${mins} ${ampm}`;
-
-  return { value, display };
-};
-
-
-
-// Fix the getHubId function
-const getHubId = (booking, transferType, field) => {
-  if (!booking) return null;
-  
-  if (bookingMode === "train" || bookingMode === "ferry") {
-    // For flight: use source/destination directly
-    if(!booking?.transfer_details) return null;
-    return transferType === "pickup" && field === "source" 
-      ? booking?.transfer_details?.source?.id
-      : transferType === "drop" && field === "destination"
-      ? booking?.transfer_details?.destination?.id
-      : null;
-  } else {
-    // For train/ferry: use transfer_details
-    const transferDetails = booking.transfer_details;
-    if (!transferDetails) return null;
-    
-    if (transferType === "pickup" && field === "source") {
-      // For pickup source, get destination hub from booking
-      return transferDetails.items?.[0]?.segments?.[0]?.destination?.hub_id ||  null;
-    } else if (transferType === "drop" && field === "destination") {
-      // For drop destination, get destination hub from booking  
-      return transferDetails.items?.[0]?.segments?.[0]?.origin?.hub_id || 
-             transferDetails.destination?.id || null;
-    }
-    return null;
-  }
-};
-
-
-
-// 2. SECOND - Initialize form data and trigger gmaps API calls
-useEffect(() => {
-  if (isOpen && booking) {
-    const initialData = getInitialFormState();
-    setFormData(initialData);
-    
-    // Set input display values
-    setSourceInput(initialData.sourceAddress);
-    setDestinationInput(initialData.destinationAddress);
-    
-    // Trigger gmaps API calls for hotel names
-    if (transferType === "pickup" && destinationHotelName) {
-      searchAutocomplete(destinationHotelName, "destination");
-    } else if (transferType === "drop" && hotelName) {
-      searchAutocomplete(hotelName, "source");
-    }
-    
-    setIsAutoFilled(true);
-  }
-}, [isOpen, booking, transferType, hotelName, destinationHotelName, number_of_adults, number_of_children, number_of_infants]);
-
-// Update the hub auto-fill useEffect
-useEffect(() => {
-  if (hubSuggestions.length > 0 && booking && isAutoFilled) {
-    let targetHubId = null;
-    let fieldToUpdate = null;
-
-    if (transferType === "pickup") {
-      // For pickup: source should be hub
-      targetHubId = getHubId(booking, "pickup", "source");
-      fieldToUpdate = "source";
-    } else {
-      // For drop: destination should be hub
-      targetHubId = getHubId(booking, "drop", "destination");
-      fieldToUpdate = "destination";
-    }
-
-    console.log("Target",targetHubId,fieldToUpdate,hubSuggestions)
-
-    if (targetHubId && fieldToUpdate) {
-      const matchedHub = hubSuggestions.find(hub => hub.id === targetHubId);
-      
-      if (matchedHub) {
-        setFormData(prev => ({
-          ...prev,
-          ...(fieldToUpdate === "source" 
-            ? {
-                sourceAddress: matchedHub.name,
-                sourceHubId: matchedHub.id,
-                sourceGmapsId: ""
-              }
-            : {
-                destinationAddress: matchedHub.name,
-                destinationHubId: matchedHub.id,
-                destinationGmapsId: ""
-              }
-          )
-        }));
-
-        // Update input display
-        if (fieldToUpdate === "source") {
-          setSourceInput(matchedHub.name);
-        } else {
-          setDestinationInput(matchedHub.name);
-        }
+      // Only reset inputs if no existing booking
+      if (!booking) {
+        setSourceInput("");
+        setDestinationInput("");
+        setFormData({
+          ...initialFormState,
+          passengers: number_of_adults + number_of_children + number_of_infants,
+        });
       }
     }
-  }
-}, [hubSuggestions, booking, transferType, isAutoFilled, bookingMode]);
+  }, [
+    isOpen,
+    number_of_adults,
+    number_of_children,
+    number_of_infants,
+    booking,
+  ]);
 
-// 1. FIRST - Reset everything when drawer opens/closes
+  const getInitialFormState = () => {
+    if (!booking) {
+      return {
+        ...initialFormState,
+        passengers: number_of_adults + number_of_children + number_of_infants,
+      };
+    }
 
-
-// 2. SECOND - Initialize form data and trigger gmaps API calls
-useEffect(() => {
-  if (isOpen && booking) {
-    console.log("Autofilling form with existing booking:", booking);
-    console.log("Transfer type:", transferType);
-    console.log("Hotel names:", hotelName, destinationHotelName);
-    
     // Calculate date and time
     let newDate = "";
-    let newTime = { value: "12:00", display: "12:00 PM" };
-    
-    if (transferType === "pickup") {
-  newDate = formatDate(booking.check_out); 
-  newTime = calculateTimeWithOffset(booking.check_out, 30); 
-} else {
-  newDate = formatDate(booking.check_in);
-  newTime = calculateTimeWithOffset(booking.check_in, -30);
-}
+    let newTime = "12:00";
 
-    
-    console.log("Calculated date:", newDate, "time:", newTime);
-    
+    if (transferType === "pickup") {
+      newDate = formatDate(booking.check_out);
+      newTime = calculateTimeWithOffset(booking.check_out, 30);
+    } else {
+      newDate = formatDate(booking.check_in);
+      newTime = calculateTimeWithOffset(booking.check_in, 30);
+    }
+
     // Set hotel addresses
     let newSourceAddress = "";
     let newDestinationAddress = "";
-    
+
     if (transferType === "pickup") {
-      // For pickup: destination is hotel
       newDestinationAddress = destinationHotelName || "";
     } else {
-      // For drop: source is hotel
       newSourceAddress = hotelName || "";
     }
-    
-    console.log("Hotel addresses - Source:", newSourceAddress, "Destination:", newDestinationAddress);
-    
-    // Update form data
-    setFormData(prev => ({
-      ...prev,
+    console.log("InitialFF", booking, {
+      ...initialFormState,
+      passengers: number_of_adults + number_of_children + number_of_infants,
       transferDate: newDate,
-      transferTime: newTime?.value,
+      transferTime: newTime,
       sourceAddress: newSourceAddress,
       destinationAddress: newDestinationAddress,
-    }));
-    
-    // Set input display values
-    setSourceInput(newSourceAddress);
-    setDestinationInput(newDestinationAddress);
-    
-    // Trigger gmaps API calls for hotel names
-    if (transferType === "pickup" && destinationHotelName) {
-      console.log("Searching gmaps for destination hotel:", destinationHotelName);
-      searchAutocomplete(destinationHotelName, "destination");
-    } else if (transferType === "drop" && hotelName) {
-      console.log("Searching gmaps for source hotel:", hotelName);
-      searchAutocomplete(hotelName, "source");
-    }
-    
-    setIsAutoFilled(true);
-  }
-}, [isOpen, booking, transferType, hotelName, destinationHotelName]);
+    });
+    return {
+      ...initialFormState,
+      passengers: number_of_adults + number_of_children + number_of_infants,
+      transferDate: newDate,
+      transferTime: newTime,
+      sourceAddress: newSourceAddress,
+      destinationAddress: newDestinationAddress,
+    };
+  };
 
-// 3. THIRD - Search for hubs when drawer opens
-useEffect(() => {
-  if (isOpen && bookingMode && booking) {
-    // Search hubs for the city where the hub should be located
-    const searchCityName = transferType === "pickup" ? destinationCityName : originCityName;
-    
-    console.log("Searching hubs for city:", searchCityName);
-    
-    if (searchCityName) {
-      searchHubs(searchCityName);
-    }
-  }
-}, [isOpen, bookingMode, transferType, originCityName, destinationCityName, booking]);
+  // Initialize with basic state
+  const [formData, setFormData] = useState(initialFormState);
 
-// 4. FOURTH - Auto-fill hub data when suggestions become available
-useEffect(() => {
-  if (hubSuggestions.length > 0 && booking && isAutoFilled) {
-    console.log("Hub suggestions available:", hubSuggestions);
-    
-    let targetHubId = null;
-    let fieldToUpdate = null;
+  // Fix the date formatting function
+  const formatDate = (dateTimeString) => {
+    if (!dateTimeString) return "";
 
-    if (transferType === "pickup") {
-      // For pickup: source should be hub
-      targetHubId = getHubId(booking, "pickup", "source");
-      fieldToUpdate = "source";
+    // Make the datetime ISO-compliant
+    const safeString = dateTimeString.replace(" ", "T");
+
+    const date = new Date(safeString);
+    if (isNaN(date.getTime())) return "";
+
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+
+    return `${year}-${month}-${day}`;
+  };
+
+  // Fix the time calculation function
+  const calculateTimeWithOffset = (dateTimeString, offsetMinutes) => {
+    if (!dateTimeString) return { value: "12:00", display: "12:00 PM" };
+
+    let date = new Date(dateTimeString);
+    if (isNaN(date.getTime())) return { value: "12:00", display: "12:00 PM" };
+
+    // Apply offset
+    date.setMinutes(date.getMinutes() + offsetMinutes);
+
+    // Round to nearest 30 minutes
+    let minutes = date.getMinutes();
+    if (minutes < 15) {
+      date.setMinutes(0);
+    } else if (minutes < 45) {
+      date.setMinutes(30);
     } else {
-      // For drop: destination should be hub
-      targetHubId = getHubId(booking, "drop", "destination");
-      fieldToUpdate = "destination";
+      date.setHours(date.getHours() + 1);
+      date.setMinutes(0);
     }
 
-    console.log("Looking for hub ID:", targetHubId, "for field:", fieldToUpdate);
+    // 24-hour value for API
+    const value = date.toTimeString().slice(0, 5); // "22:00"
 
-    if (targetHubId && fieldToUpdate) {
-      const matchedHub = hubSuggestions.find(hub => hub.id === targetHubId);
-      
-      console.log("Matched hub:", matchedHub);
-      
-      if (matchedHub) {
-        setFormData(prev => ({
-          ...prev,
-          ...(fieldToUpdate === "source" 
-            ? {
-                sourceAddress: matchedHub.name,
-                sourceHubId: matchedHub.id,
-                sourceGmapsId: ""
-              }
-            : {
-                destinationAddress: matchedHub.name,
-                destinationHubId: matchedHub.id,
-                destinationGmapsId: ""
-              }
-          )
-        }));
+    // 12-hour display for UI
+    let hours = date.getHours();
+    const mins = date.getMinutes().toString().padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const displayHour = hours % 12 || 12;
+    const display = `${displayHour}:${mins} ${ampm}`;
 
-        // Update input display
-        if (fieldToUpdate === "source") {
-          setSourceInput(matchedHub.name);
-        } else {
-          setDestinationInput(matchedHub.name);
+    return { value, display };
+  };
+
+  // Fix the getHubId function
+  const getHubId = (booking, transferType, field) => {
+    if (!booking) return null;
+
+    if (bookingMode === "train" || bookingMode === "ferry") {
+      // For flight: use source/destination directly
+      if (!booking?.transfer_details) return null;
+      return transferType === "pickup" && field === "source"
+        ? booking?.transfer_details?.source?.id
+        : transferType === "drop" && field === "destination"
+        ? booking?.transfer_details?.destination?.id
+        : null;
+    } else {
+      // For train/ferry: use transfer_details
+      const transferDetails = booking.transfer_details;
+      if (!transferDetails) return null;
+
+      if (transferType === "pickup" && field === "source") {
+        // For pickup source, get destination hub from booking
+        return (
+          transferDetails.items?.[0]?.segments?.[0]?.destination?.hub_id || null
+        );
+      } else if (transferType === "drop" && field === "destination") {
+        // For drop destination, get destination hub from booking
+        return (
+          transferDetails.items?.[0]?.segments?.[0]?.origin?.hub_id ||
+          transferDetails.destination?.id ||
+          null
+        );
+      }
+      return null;
+    }
+  };
+
+  // 2. SECOND - Initialize form data and trigger gmaps API calls
+  useEffect(() => {
+    if (isOpen && booking) {
+      const initialData = getInitialFormState();
+      setFormData(initialData);
+
+      // Set input display values
+      setSourceInput(initialData.sourceAddress);
+      setDestinationInput(initialData.destinationAddress);
+
+      // Trigger gmaps API calls for hotel names
+      if (transferType === "pickup" && destinationHotelName) {
+        searchAutocomplete(destinationHotelName, "destination");
+      } else if (transferType === "drop" && hotelName) {
+        searchAutocomplete(hotelName, "source");
+      }
+
+      setIsAutoFilled(true);
+    }
+  }, [
+    isOpen,
+    booking,
+    transferType,
+    hotelName,
+    destinationHotelName,
+    number_of_adults,
+    number_of_children,
+    number_of_infants,
+  ]);
+
+  // Update the hub auto-fill useEffect
+  useEffect(() => {
+    if (hubSuggestions.length > 0 && booking && isAutoFilled) {
+      let targetHubId = null;
+      let fieldToUpdate = null;
+
+      if (transferType === "pickup") {
+        // For pickup: source should be hub
+        targetHubId = getHubId(booking, "pickup", "source");
+        fieldToUpdate = "source";
+      } else {
+        // For drop: destination should be hub
+        targetHubId = getHubId(booking, "drop", "destination");
+        fieldToUpdate = "destination";
+      }
+
+      console.log("Target", targetHubId, fieldToUpdate, hubSuggestions);
+
+      if (targetHubId && fieldToUpdate) {
+        const matchedHub = hubSuggestions.find((hub) => hub.id === targetHubId);
+
+        if (matchedHub) {
+          setFormData((prev) => ({
+            ...prev,
+            ...(fieldToUpdate === "source"
+              ? {
+                  sourceAddress: matchedHub.name,
+                  sourceHubId: matchedHub.id,
+                  sourceGmapsId: "",
+                }
+              : {
+                  destinationAddress: matchedHub.name,
+                  destinationHubId: matchedHub.id,
+                  destinationGmapsId: "",
+                }),
+          }));
+
+          // Update input display
+          if (fieldToUpdate === "source") {
+            setSourceInput(matchedHub.name);
+          } else {
+            setDestinationInput(matchedHub.name);
+          }
         }
       }
     }
-  }
-}, [hubSuggestions, booking, transferType, isAutoFilled, bookingMode]);
-  
+  }, [hubSuggestions, booking, transferType, isAutoFilled, bookingMode]);
+
+  // 1. FIRST - Reset everything when drawer opens/closes
+
+  // 2. SECOND - Initialize form data and trigger gmaps API calls
+  useEffect(() => {
+    if (isOpen && booking) {
+      console.log("Autofilling form with existing booking:", booking);
+      console.log("Transfer type:", transferType);
+      console.log("Hotel names:", hotelName, destinationHotelName);
+
+      // Calculate date and time
+      let newDate = "";
+      let newTime = { value: "12:00", display: "12:00 PM" };
+
+      if (transferType === "pickup") {
+        newDate = formatDate(booking.check_out);
+        newTime = calculateTimeWithOffset(booking.check_out, 30);
+      } else {
+        newDate = formatDate(booking.check_in);
+        newTime = calculateTimeWithOffset(booking.check_in, -30);
+      }
+
+      console.log("Calculated date:", newDate, "time:", newTime);
+
+      // Set hotel addresses
+      let newSourceAddress = "";
+      let newDestinationAddress = "";
+
+      if (transferType === "pickup") {
+        // For pickup: destination is hotel
+        newDestinationAddress = destinationHotelName || "";
+      } else {
+        // For drop: source is hotel
+        newSourceAddress = hotelName || "";
+      }
+
+      console.log(
+        "Hotel addresses - Source:",
+        newSourceAddress,
+        "Destination:",
+        newDestinationAddress
+      );
+
+      // Update form data
+      setFormData((prev) => ({
+        ...prev,
+        transferDate: newDate,
+        transferTime: newTime?.value,
+        sourceAddress: newSourceAddress,
+        destinationAddress: newDestinationAddress,
+      }));
+
+      // Set input display values
+      setSourceInput(newSourceAddress);
+      setDestinationInput(newDestinationAddress);
+
+      // Trigger gmaps API calls for hotel names
+      if (transferType === "pickup" && destinationHotelName) {
+        console.log(
+          "Searching gmaps for destination hotel:",
+          destinationHotelName
+        );
+        searchAutocomplete(destinationHotelName, "destination");
+      } else if (transferType === "drop" && hotelName) {
+        console.log("Searching gmaps for source hotel:", hotelName);
+        searchAutocomplete(hotelName, "source");
+      }
+
+      setIsAutoFilled(true);
+    }
+  }, [isOpen, booking, transferType, hotelName, destinationHotelName]);
+
+  // 3. THIRD - Search for hubs when drawer opens
+  useEffect(() => {
+    if (isOpen && bookingMode && booking) {
+      // Search hubs for the city where the hub should be located
+      const searchCityName =
+        transferType === "pickup" ? destinationCityName : originCityName;
+
+      console.log("Searching hubs for city:", searchCityName);
+
+      if (searchCityName) {
+        searchHubs(searchCityName);
+      }
+    }
+  }, [
+    isOpen,
+    bookingMode,
+    transferType,
+    originCityName,
+    destinationCityName,
+    booking,
+  ]);
+
+  // 4. FOURTH - Auto-fill hub data when suggestions become available
+
+  useEffect(() => {
+    if (transferType === "pickup") {
+      if (destinationSuggestions.length > 0 && booking && isAutoFilled) {
+        setFormData((prev) => ({
+          ...prev,
+          destinationAddress: destinationSuggestions[0]?.text,
+          destinationGmapsId: destinationSuggestions[0]?.id,
+          destinationHubId: "",
+        }));
+      }
+    }
+  }, [
+    destinationSuggestions,
+    booking,
+    transferType,
+    isAutoFilled,
+    bookingMode,
+  ]);
+
+  useEffect(() => {
+    if (transferType === "drop") {
+      if (sourceSuggestions.length > 0 && booking && isAutoFilled) {
+        setFormData((prev) => ({
+          ...prev,
+          sourceAddress: sourceSuggestions[0]?.text,
+          sourceGmapsId: sourceSuggestions[0]?.id,
+          sourceHubId: "",
+        }));
+      }
+    }
+  }, [sourceSuggestions, booking, transferType, isAutoFilled, bookingMode]);
+  useEffect(() => {
+    if (hubSuggestions.length > 0 && booking && isAutoFilled) {
+      console.log("Hub suggestions available:", hubSuggestions);
+
+      let targetHubId = null;
+      let fieldToUpdate = null;
+
+      if (transferType === "pickup") {
+        // For pickup: source should be hub
+        targetHubId = getHubId(booking, "pickup", "source");
+        fieldToUpdate = "source";
+      } else {
+        // For drop: destination should be hub
+        targetHubId = getHubId(booking, "drop", "destination");
+        fieldToUpdate = "destination";
+      }
+
+      console.log(
+        "Looking for hub ID:",
+        targetHubId,
+        "for field:",
+        fieldToUpdate
+      );
+
+      if (targetHubId && fieldToUpdate) {
+        const matchedHub = hubSuggestions.find((hub) => hub.id === targetHubId);
+
+        console.log("Matched hub:", matchedHub);
+
+        if (matchedHub) {
+          setFormData((prev) => ({
+            ...prev,
+            ...(fieldToUpdate === "source"
+              ? {
+                  sourceAddress: matchedHub.name,
+                  sourceHubId: matchedHub.id,
+                  sourceGmapsId: "",
+                }
+              : {
+                  destinationAddress: matchedHub.name,
+                  destinationHubId: matchedHub.id,
+                  destinationGmapsId: "",
+                }),
+          }));
+
+          // Update input display
+          if (fieldToUpdate === "source") {
+            setSourceInput(matchedHub.name);
+          } else {
+            setDestinationInput(matchedHub.name);
+          }
+        }
+      }
+    }
+  }, [hubSuggestions, booking, transferType, isAutoFilled, bookingMode]);
 
   console.log("formData", formData);
 
@@ -478,27 +540,6 @@ useEffect(() => {
 
     const hotelSuggestions = [];
 
-    // Add hotel suggestions based on transfer type and field
-    // if (
-    //   transferType === "pickup" &&
-    //   field === "destination" &&
-    //   destinationHotelName
-    // ) {
-    //   hotelSuggestions.push({
-    //     id: "hotel_destination",
-    //     text: destinationHotelName,
-    //     isHotel: true,
-    //   });
-    // }
-
-    if (transferType === "drop" && field === "source" && hotelName) {
-      hotelSuggestions.push({
-        id: "hotel_source",
-        text: hotelName,
-        isHotel: true,
-      });
-    }
-
     try {
       const res = await gmapsAutocomplete.get(
         `/?q=${encodeURIComponent(query)}`
@@ -508,20 +549,20 @@ useEffect(() => {
 
       if (field === "source") {
         setSourceSuggestions(combinedResults);
-        setShowSourceSuggestions(true);
+        // setShowSourceSuggestions(true);
       } else {
         setDestinationSuggestions(combinedResults);
-        setShowDestinationSuggestions(true);
+        // setShowDestinationSuggestions(true);
       }
     } catch (error) {
       console.error("Autocomplete search error:", error);
       // Show hotel suggestions even if gmaps fails
       if (field === "source") {
         setSourceSuggestions(hotelSuggestions);
-        setShowSourceSuggestions(hotelSuggestions.length > 0);
+        // setShowSourceSuggestions(hotelSuggestions.length > 0);
       } else {
         setDestinationSuggestions(hotelSuggestions);
-        setShowDestinationSuggestions(hotelSuggestions.length > 0);
+        // setShowDestinationSuggestions(hotelSuggestions.length > 0);
       }
     }
   };

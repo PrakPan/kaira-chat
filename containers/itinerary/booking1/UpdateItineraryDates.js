@@ -5,6 +5,7 @@ import { FaX } from "react-icons/fa6";
 import { axiosUpdateItineraryDates } from "../../../services/itinerary/daybyday/preview";
 import { useRouter } from "next/router";
 import setItinerary from "../../../store/actions/itinerary";
+import SingleDateInput from "../SingleDateInput";
 
 const UpdateItineraryDates = ({
   itinerary,
@@ -92,7 +93,8 @@ const UpdateItineraryDates = ({
   return (
     <div className="border-y border-[#F0F0F0] mb-3 mt-2 ml-1">
       <div className="group flex flex-row gap-3 items-center py-[1rem]">
-        <BsCalendar2 className="text-md text-[#7A7A7A]" />
+                {!isEditing ? 
+<BsCalendar2 className="text-md text-[#7A7A7A]" /> :""}
 
         {!isEditing ? (
           // Display mode
@@ -119,60 +121,58 @@ const UpdateItineraryDates = ({
         ) : (
           // Edit mode
           <div className="flex flex-col gap-3 w-full">
-            <div className="flex flex-row gap-2 items-center">
-              <div className="flex flex-col gap-1">
-                <label className="text-xs text-gray-600">Start Date</label>
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  min={new Date().toISOString().split("T")[0]}
-                />
-              </div>
+      <div className="flex flex-row gap-2 items-center">
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-gray-600">Start Date</label>
+          <SingleDateInput
+            value={startDate}
+            onChange={setStartDate}
+            id="start_date_picker"
+            placeholder="Select start date"
+          />
+        </div>
 
-              <div className="flex flex-col gap-1">
-                <label className="text-xs text-gray-600">End Date</label>
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  min={startDate || new Date().toISOString().split("T")[0]}
-                />
-              </div>
-            </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-gray-600">End Date</label>
+          <SingleDateInput
+            value={endDate}
+            onChange={setEndDate}
+            id="end_date_picker"
+            placeholder="Select end date"
+          />
+        </div>
+      </div>
 
-            {startDate && endDate && (
-              <div className="text-sm text-gray-600">
-                Duration: {calculateDuration(startDate, endDate)} nights
-              </div>
-            )}
+      {startDate && endDate && (
+        <div className="text-sm text-gray-600">
+          Duration: {calculateDuration(startDate, endDate)} nights
+        </div>
+      )}
 
-            <div className="flex flex-row gap-2">
-              <button
-                onClick={handleUpdateDates}
-                disabled={isLoading || !validateDates()}
-                className="flex items-center gap-1 px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? (
-                  <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
-                ) : (
-                  <FaCheck size={14} />
-                )}
-                Confirm
-              </button>
+      <div className="flex flex-row gap-2">
+        <button
+          onClick={handleUpdateDates}
+          disabled={isLoading || !validateDates()}
+          className="flex items-center gap-1 px-3 py-1 bg-green-500 text-white rounded text-sm hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isLoading ? (
+            <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
+          ) : (
+            <FaCheck size={14} />
+          )}
+          Confirm
+        </button>
 
-              <button
-                onClick={handleCancel}
-                disabled={isLoading}
-                className="flex items-center gap-1 px-3 py-1 bg-gray-500 text-white rounded text-sm hover:bg-gray-600 disabled:opacity-50"
-              >
-                <FaX size={14} />
-                Cancel
-              </button>
-            </div>
-          </div>
+        <button
+          onClick={handleCancel}
+          disabled={isLoading}
+          className="flex items-center gap-1 px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 disabled:opacity-50"
+        >
+          <FaX size={14} />
+          Cancel
+        </button>
+      </div>
+    </div>
         )}
       </div>
     </div>

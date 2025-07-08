@@ -1191,137 +1191,105 @@ const SearchSection = ({
     <div className="mb-4">
       <div className="flex items-center justify-between">
         {/* Source Input */}
-        <div className="flex  w-[70%] md:w-[85%]">
-          <div className="relative">
-            <label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-              From <FiNavigation color="red" />
-            </label>
-            <div className="relative">
-              <input
-                ref={sourceInputRef}
-                type="text"
-                value={sourceInput.city_name}
-                onChange={(e) => {
-                  handleSourceInputChange(e.target.value);
-                  setShowSourceSuggestions(true);
-                }}
-                placeholder="Select source airport"
-                className={`w-full px-3 py-2 pl-8 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm ${
-                  sourceError ? "border-red-500" : "border-gray-300"
-                }`}
-              />
-
-              {sourceInput.code && (
-                <FiCheckCircle
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-green-500"
-                  size={16}
-                />
-              )}
-            </div>
-
-            {/* Error message */}
-            {sourceError && (
-              <div className="text-red-500 text-xs mt-1">{sourceError}</div>
-            )}
-
-            {/* Source Suggestions */}
-            {showSourceSuggestions && sourceSuggestions.length > 0 && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto">
-                {sourceSuggestions.map((suggestion) => (
-                  <div
-                    key={suggestion.id}
-                    onClick={() => handleSourceSelect(suggestion)}
-                    className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
-                  >
-                    <div className="text-xs text-gray-900">
-                      {suggestion.name}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+        <div className="flex flex-wrap md:flex-nowrap items-end gap-2 w-full">
+  {/* From Input */}
+  <div className="relative flex-1 min-w-[200px]">
+    <label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+      From <FiNavigation color="red" />
+    </label>
+    <div className="relative">
+      <input
+        ref={sourceInputRef}
+        type="text"
+        value={sourceInput.city_name}
+        onChange={(e) => {
+          handleSourceInputChange(e.target.value);
+          setShowSourceSuggestions(true);
+        }}
+        placeholder="Select source airport"
+        className={`w-full px-3 py-2 pl-8 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm ${
+          sourceError ? "border-red-500" : "border-gray-300"
+        }`}
+      />
+      {sourceInput.code && (
+        <FiCheckCircle
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 text-green-500"
+          size={16}
+        />
+      )}
+    </div>
+    {sourceError && (
+      <div className="text-red-500 text-xs mt-1">{sourceError}</div>
+    )}
+    {showSourceSuggestions && sourceSuggestions.length > 0 && (
+      <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto">
+        {sourceSuggestions.map((suggestion) => (
+          <div
+            key={suggestion.id}
+            onClick={() => handleSourceSelect(suggestion)}
+            className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+          >
+            <div className="text-xs text-gray-900">{suggestion.name}</div>
           </div>
+        ))}
+      </div>
+    )}
+  </div>
 
-          <div className="flex items-center justify-center cursor-pointer">
-            <FaExchangeAlt onClick={handleLocationChange} />
+  {/* Swap Icon */}
+  <div className="flex items-center justify-center px-2">
+    <FaExchangeAlt
+      onClick={handleLocationChange}
+      className="text-gray-600 cursor-pointer"
+    />
+  </div>
+
+  {/* To Input */}
+  <div className="relative flex-1 min-w-[200px]">
+    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+      To <FiMapPin color="green" />
+    </label>
+    <div className="relative">
+      <input
+        ref={destinationInputRef}
+        type="text"
+        value={destinationInput.city_name}
+        onChange={(e) => {
+          handleDestinationInputChange(e.target.value);
+          setShowDestinationSuggestions(true);
+        }}
+        placeholder="Select destination airport"
+        className={`w-full px-3 py-2 pl-8 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm ${
+          destinationError ? "border-red-500" : "border-gray-300"
+        }`}
+      />
+      {destinationInput.code && (
+        <FiCheckCircle
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 text-green-500"
+          size={16}
+        />
+      )}
+    </div>
+    {destinationError && (
+      <div className="text-red-500 text-xs mt-1">{destinationError}</div>
+    )}
+    {showDestinationSuggestions && destinationSuggestions.length > 0 && (
+      <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto">
+        {destinationSuggestions.map((suggestion) => (
+          <div
+            key={suggestion.id}
+            onClick={() => handleDestinationSelect(suggestion)}
+            className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+          >
+            <div className="text-xs text-gray-900">{suggestion.name}</div>
           </div>
+        ))}
+      </div>
+    )}
+  </div>
 
-          {/* Destination Input */}
-          <div className="relative">
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-              To <FiMapPin color="green" />
-            </label>
-            <div className="relative">
-              <input
-                ref={destinationInputRef}
-                type="text"
-                value={destinationInput.city_name}
-                onChange={(e) => {
-                  handleDestinationInputChange(e.target.value);
-                  setShowDestinationSuggestions(true);
-                }}
-                placeholder="Select destination airport"
-                className={`w-full px-3 py-2 pl-8 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm ${
-                  destinationError ? "border-red-500" : "border-gray-300"
-                }`}
-              />
-
-              {destinationInput.code && (
-                <FiCheckCircle
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-green-500"
-                  size={16}
-                />
-              )}
-            </div>
-
-            {/* Error message */}
-            {destinationError && (
-              <div className="text-red-500 text-xs mt-1">
-                {destinationError}
-              </div>
-            )}
-
-            {/* Destination Suggestions */}
-            {showDestinationSuggestions &&
-              destinationSuggestions.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto">
-                  {destinationSuggestions.map((suggestion) => (
-                    <div
-                      key={suggestion.id}
-                      onClick={() => handleDestinationSelect(suggestion)}
-                      className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
-                    >
-                      {/* <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-900">
-                      {suggestion.city_name}
-                    </span>
-                    {suggestion.code && (
-                      <span className="text-xs text-gray-500 ml-auto">
-                        {suggestion.code}
-                      </span>
-                    )}
-                    <span className="text-xs text-blue-500 ml-auto">
-                      {suggestion.kind}
-                    </span>
-                  </div> */}
-                      <div className="text-xs text-gray-900">
-                        {suggestion.name}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-          </div>
-        </div>
-
-        {/* Search Button */}
-        <div
-          className={`flex items-center ${
-            destinationError || sourceError
-              ? "-mt-2 md:mt-0"
-              : "mt-[0.7rem] md:mt-4"
-          }`}
-        >
+  {/* Search Button */}
+  <div className="mt-6 md:mt-0 ml-auto">
           <Generalbutton
             fontSize="0.8rem"
             width="auto"
@@ -1356,7 +1324,12 @@ const SearchSection = ({
               </span>
             )}
           </Generalbutton>
-        </div>
+  </div>
+</div>
+
+
+        {/* Search Button */}
+        
       </div>
     </div>
   );
