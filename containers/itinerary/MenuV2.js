@@ -877,6 +877,8 @@ if (hasActivities) {
                       itineraryDate={props?.itineraryDate}
                       mercuryItinerary={props?.mercuryItinerary}
                       itinerary={props.itinerary}
+                      fetchData={props.fetchData}
+                      resetRef={props?.resetRef}
                       _GetInTouch={() => _GetInTouch()}
                       setShowLoginModal={setShowLoginModal}
                       loading={loading}
@@ -1201,6 +1203,8 @@ if (hasActivities) {
               itineraryDate={props?.itineraryDate}
               mercuryItinerary={props?.mercuryItinerary}
               itinerary={props.itinerary}
+              fetchData={props.fetchData}
+              resetRef={props?.resetRef}
               _GetInTouch={_GetInTouch}
               setShowLoginModal={setShowLoginModal}
               social_title={props?.social_title}

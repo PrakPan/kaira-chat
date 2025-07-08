@@ -80,13 +80,13 @@ const ItineraryCity = (props) => {
     setImages(images);
   };
 
-  const fetchDetails = async () => {
+  const fetchDetails = async (id=null) => {
     setShowDetails(true);
     setLoading(true);
     await bookingDetails
       .get(
         `/${router?.query?.id}/bookings/accommodation/${
-          stay[props?.index].id
+          id || stay[props?.index].id
         }/`,
         {
           headers: {
@@ -142,7 +142,17 @@ const ItineraryCity = (props) => {
     }
   }, []);
 
-  //  console.log("STTTT",stay);
+
+  const multiHotelStays = stay?.filter((hotel)=>{
+return (hotel?.city == props?.city?.city?.name) || (hotel?.city_name == props?.city?.city?.name)
+  }) || [];
+
+  const multiHotelDuration = multiHotelStays?.reduce(
+  (accumulator, currentValue) => accumulator + currentValue?.duration,
+  0,
+) || 0; 
+
+   console.log("STTTT",multiHotelStays,multiHotelDuration,props?.city);
 
   return (
     <div
@@ -159,17 +169,17 @@ const ItineraryCity = (props) => {
                 props?.city?.city?.name
               : props?.city?.city?.name}
             {" - "}
-            {stay && stay?.length
+            {!(multiHotelStays?.length > 1) ? (stay && stay?.length 
               ? stay[props?.index]?.duration || props?.city?.duration
-              : props?.city?.duration}{" "}
-            {stay && stay?.length
+              : props?.city?.duration) : multiHotelDuration}{" "}
+            {!(multiHotelStays?.length > 1) ? (stay && stay?.length 
               ? stay[props?.index]?.duration === 1 ||
                 props?.city?.duration === 1
                 ? "Night"
                 : "Nights"
               : props?.city?.duration === 1
               ? "Night"
-              : "Nights"}
+              : "Nights") :  "Nights"}
           </div>
 
           {hotels_status === "PENDING" ? (
@@ -186,9 +196,9 @@ const ItineraryCity = (props) => {
                 </div>
               </div>
             </div>
-          ) : stay &&
+          ) :  stay &&
             stay[props?.index]?.name &&
-            hotels_status === "SUCCESS" ? (
+            hotels_status === "SUCCESS" ? !(multiHotelStays?.length > 1) ? 
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
                 <Image
@@ -225,8 +235,35 @@ const ItineraryCity = (props) => {
                   </div>
                 ) : null}
               </div>
+            </div> :
+             <div className="flex flex-col gap-1">
+              {multiHotelStays?.map((hotel,index) => { 
+              return (
+              <div key ={index} className="flex items-center gap-2 ">
+                <Image
+                  src={`https://d31aoa0ehgvjdi.cloudfront.net/media/themes/Vector.png`}
+                  height={22}
+                  width={22}
+                  className="object-contain"
+                  alt="Hotel Icon"
+                />
+
+                
+                   <div className="flex flex-col">
+                  <div
+                  className="text-[14px] font-medium leading-0 underline  cursor-pointer hover:text-blue flex gap-2"
+                  onClick={() => fetchDetails(hotel?.id)}
+                >
+                  {hotel?.name} <span className="flex gap-0"> {hotel?.star_category ? getStars(hotel?.star_category) : ""}</span>
+                </div> 
+
+                  </div>
+                
+              </div>)})}
             </div>
-          ) : (
+          
+          
+          : (
             <div
               className="text-blue cursor-pointer text-[14px] font-medium hover:underline"
               onClick={(e) =>

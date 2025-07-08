@@ -45,7 +45,8 @@ const TaxiDetailModal = ({
   setShowDrawer,
   noChange,
   noHeading,
-  error
+  error,
+  isAirport
 }) => {
   if (!data) return null;
 
