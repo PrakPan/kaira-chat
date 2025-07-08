@@ -21,8 +21,6 @@ import { openNotification } from "../../store/actions/notification";
 import { RiArrowDropRightLine } from "react-icons/ri";
 import TransferDrawer from "./TransferDrawer";
 import { LuInfo } from "react-icons/lu";
-import TransferPickupDropButton from "./TransferPickupDropButton";
-import PickupDropDrawer from "./PickupDropDrawer";
 
 const Container = styled.div`
   display: flex;

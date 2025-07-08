@@ -852,8 +852,8 @@ const Details = (props) => {
                     ></SelectDate>
                   </div>
                 </>  */}
-              {/* </div>
-          </div>      */}
+              </div>
+          </div>    
         </div>
 
         <div className="group text-md font-medium gap-3 flex flex-row items-center mb-2 ml-1">
