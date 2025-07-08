@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { RiArrowDropDownLine, RiWhatsappFill } from "react-icons/ri";
 import Button from "../../../components/ui/button/Index";
 import { connect, useDispatch, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import * as orderaction from "../../../store/actions/order";
 import { MdEdit } from "react-icons/md";
 import { useRouter } from "next/router";
