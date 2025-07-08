@@ -283,7 +283,7 @@ const ComboSection = (props) => {
         <div className="">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2">
             {preferred_departure_time && (
-              <div className="w-full sm:w-auto">
+              <div className="w-full sm:w-auto text-sm ">
                 Departure Date
                 <DatePicker
                   id="departure-date"
@@ -368,7 +368,7 @@ const ComboSection = (props) => {
                     }
                   >
                     <MdSort className="mr-1" />
-                    <span className="text-sm">Select Airlines</span>
+                    <span className="text-sm">Selected Airlines ({(selectedAirlines?.length)})</span>
                   </div>
 
                   {showSortDropdown && (

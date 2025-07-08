@@ -52,6 +52,7 @@ import useDebounce from "../../../../hooks/useDebounce";
 
 const Container = styled.div`
   position: relative;
+  
 
   .SingleDatePicker {
     width: 100%;
