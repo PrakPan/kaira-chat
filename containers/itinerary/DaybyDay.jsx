@@ -38,6 +38,7 @@ const DaybyDay = ({
 }) => {
   console.log("transfer bookings is:", transferBookings);
   const itineraryDaybyDay = useSelector((state) => state.Itinerary);
+  const stay = useSelector((state) => state.Stays);
   const stayBookings = useSelector((state) => state.Stays);
   const [selectedBooking, setSelectedBooking] = useState({
     id: null,
@@ -366,6 +367,8 @@ const DaybyDay = ({
                     <CityItem
                       setShowLoginModal={setShowLoginModal}
                       mercury
+                      hotelName={stay?.[index] ? stay[index]?.name : null}
+                      destinationHotelName={stay?.[index+ 1] ? stay[index+1]?.name : null}
                       loadbookings={loadbookings}
                       bookingIdToDelete={idMapping}
                       key={city.id}
@@ -424,6 +427,8 @@ const DaybyDay = ({
             //     ]?.id] ? sortByCheckIn(transferBooking?.airport[itineraryDaybyDay?.cities?.[
             //       itineraryDaybyDay?.cities?.length - 1
             //     ]?.id]) : [] }
+            hotelName={stay?.[itineraryDaybyDay?.cities?.length - 1] ? stay[itineraryDaybyDay?.cities?.length - 1]?.name : null}
+            destinationHotelName={endCity?.city_name}
             airportBookings={sortByCheckIn([
               ...(transferBooking?.airport?.[endCity?.gmaps_place_id]?.filter(
                 (booking) =>
@@ -463,6 +468,13 @@ const DaybyDay = ({
                   endCity?.gmaps_place_id
               ]?.name
             }
+            booking={transferBookings?.intercity?.[
+                itineraryDaybyDay?.cities?.[
+                  itineraryDaybyDay?.cities?.length - 1
+                ]?.id +
+                  ":" +
+                  endCity?.gmaps_place_id
+              ]}
             booking_type={
               transferBookings?.intercity?.[
                 itineraryDaybyDay?.cities?.[

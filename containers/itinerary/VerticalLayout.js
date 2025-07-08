@@ -68,6 +68,8 @@ const AirportBookingItem = ({
     (book) => !book?.is_airport_drop && !book?.is_airport_pickup
   );
 
+  console.log("BookingAir",booking)
+
   const correctIcon = (TransportMode) => {
     switch (TransportMode) {
       case "Flight":
@@ -667,6 +669,8 @@ const CityItem = ({
   airportBookings,
   intracityBookings,
   booking,
+  hotelName,
+  destinationHotelName,
 }) => {
   const { transfers_status } = useSelector((state) => state.ItineraryStatus);
 
@@ -947,7 +951,7 @@ const CityItem = ({
     } catch (error) {
       const errorMsg =
         error?.response?.data?.errors?.[0]?.message?.[0] || 
-        error?.response?.data?.message || 
+        error?.response?.data?.message || error?.response?.data?.errors?.[0]?.detail ? error?.response?.data?.errors?.[0]?.detail?.[0] : null || 
         error.message;
       dispatch(
         openNotification({
@@ -1151,6 +1155,9 @@ const CityItem = ({
 
       <PickupDropDrawer
         isOpen={isTransferDrawerOpen}
+        hotelName={hotelName}
+        destinationHotelName={destinationHotelName}
+        booking={booking}
         onClose={() => {
           setIsTransferDrawerOpen(false);
           setTransferDrawerType(null);
@@ -1214,6 +1221,7 @@ const CityItem = ({
           setHandleShow={setHandleShow}
           data={data}
           booking_type={transferType || booking_type}
+
           loading={loading}
           handleDelete={handleDelete}
           setShowDrawer={setShowDrawer}
