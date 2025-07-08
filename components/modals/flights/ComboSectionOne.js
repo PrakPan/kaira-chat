@@ -283,8 +283,11 @@ const ComboSection = (props) => {
         <div className="">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2 gap-2">
             {preferred_departure_time && (
-              <div className="w-full sm:w-auto text-sm ">
+              <div className="w-full sm:w-auto text-sm">
+
+                <div className="text-sm font-medium text-gray-700 mb-2">
                 Departure Date
+              </div>
                 <DatePicker
                   id="departure-date"
                   date={

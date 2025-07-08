@@ -1188,149 +1188,146 @@ const SearchSection = ({
   console.log("Sourceee", sourceInput, destinationInput);
   return (
     // Your existing SearchSection JSX here
-    <div className="mb-4">
-      <div className="flex items-center justify-between">
-        {/* Source Input */}
-        <div className="flex flex-wrap md:flex-nowrap items-end gap-2 w-full">
-  {/* From Input */}
-  <div className="relative flex-1 min-w-[200px]">
-    <label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
-      From <FiNavigation color="red" />
-    </label>
-    <div className="relative">
-      <input
-        ref={sourceInputRef}
-        type="text"
-        value={sourceInput.city_name}
-        onChange={(e) => {
-          handleSourceInputChange(e.target.value);
-          setShowSourceSuggestions(true);
-        }}
-        placeholder="Select source airport"
-        className={`w-full px-3 py-2 pl-8 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm ${
-          sourceError ? "border-red-500" : "border-gray-300"
-        }`}
-      />
-      {sourceInput.code && (
-        <FiCheckCircle
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 text-green-500"
-          size={16}
-        />
-      )}
-    </div>
-    {sourceError && (
-      <div className="text-red-500 text-xs mt-1">{sourceError}</div>
-    )}
-    {showSourceSuggestions && sourceSuggestions.length > 0 && (
-      <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto">
-        {sourceSuggestions.map((suggestion) => (
-          <div
-            key={suggestion.id}
-            onClick={() => handleSourceSelect(suggestion)}
-            className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
-          >
-            <div className="text-xs text-gray-900">{suggestion.name}</div>
-          </div>
-        ))}
-      </div>
-    )}
-  </div>
-
-  {/* Swap Icon */}
-  <div className="flex items-center justify-center px-2">
-    <FaExchangeAlt
-      onClick={handleLocationChange}
-      className="text-gray-600 cursor-pointer"
-    />
-  </div>
-
-  {/* To Input */}
-  <div className="relative flex-1 min-w-[200px]">
-    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-      To <FiMapPin color="green" />
-    </label>
-    <div className="relative">
-      <input
-        ref={destinationInputRef}
-        type="text"
-        value={destinationInput.city_name}
-        onChange={(e) => {
-          handleDestinationInputChange(e.target.value);
-          setShowDestinationSuggestions(true);
-        }}
-        placeholder="Select destination airport"
-        className={`w-full px-3 py-2 pl-8 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm ${
-          destinationError ? "border-red-500" : "border-gray-300"
-        }`}
-      />
-      {destinationInput.code && (
-        <FiCheckCircle
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 text-green-500"
-          size={16}
-        />
-      )}
-    </div>
-    {destinationError && (
-      <div className="text-red-500 text-xs mt-1">{destinationError}</div>
-    )}
-    {showDestinationSuggestions && destinationSuggestions.length > 0 && (
-      <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto">
-        {destinationSuggestions.map((suggestion) => (
-          <div
-            key={suggestion.id}
-            onClick={() => handleDestinationSelect(suggestion)}
-            className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
-          >
-            <div className="text-xs text-gray-900">{suggestion.name}</div>
-          </div>
-        ))}
-      </div>
-    )}
-  </div>
-
-  {/* Search Button */}
-  <div className="mt-6 md:mt-0 ml-auto">
-          <Generalbutton
-            fontSize="0.8rem"
-            width="auto"
-            padding="0.5rem 1.5rem"
-            fontWeight="500"
-            margin="0"
-            borderRadius="6px"
-            borderWidth="1px"
-            bgColor="#f7e700"
-            loading={loading}
-            onclick={() => {
-              if (validateInputs()) {
-                setShowSourceSuggestions(false);
-                setShowDestinationSuggestions(false);
-                _FetchFlightsHandler();
-              }
+  <div className="mb-4">
+  <div className="flex items-center justify-between">
+    {/* Source Input */}
+    <div className="flex items-center gap-2 w-full">
+      {/* From Input */}
+      <div className="relative flex-1 min-w-0">
+        <label className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2">
+          From <FiNavigation color="red" />
+        </label>
+        <div className="relative overflow-hidden">
+          <input
+            ref={sourceInputRef}
+            type="text"
+            value={`${sourceInput.city_name || ''}${sourceInput.code ? ` (${sourceInput.code})` : ''}`}
+            onChange={(e) => {
+              handleSourceInputChange(e.target.value);
+              setShowSourceSuggestions(true);
             }}
-            disabled={loading}
-            className="relative flex items-center justify-center min-w-[120px] h-[30px]"
-          >
-            <span
-              className={`transition-opacity duration-200 ${
-                loading ? "hidden" : "opacity-100"
-              }`}
-            >
-              Search
-            </span>
+            placeholder="Select source airport"
+            className={`w-full px-3 py-2 pl-8 ${sourceInput.code ? 'pr-8' : 'pr-3'} border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm truncate ${
+              sourceError ? "border-red-500" : "border-gray-300"
+            }`}
+            style={{ textOverflow: 'ellipsis' }}
+          />
+          {sourceInput.code && (
+            <FiCheckCircle
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-green-500"
+              size={16}
+            />
+          )}
+        </div>
+        {/* Error positioned absolutely to not affect layout */}
+        {sourceError && (
+          <div className="absolute top-full left-0 text-red-500 text-xs mt-1 whitespace-nowrap z-30 max-w-[200px] truncate">
+            {sourceError}
+          </div>
+        )}
+        {showSourceSuggestions && sourceSuggestions.length > 0 && (
+          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto">
+            {sourceSuggestions.map((suggestion) => (
+              <div
+                key={suggestion.id}
+                onClick={() => handleSourceSelect(suggestion)}
+                className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+              >
+                <div className="text-xs text-gray-900">{suggestion.name}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
-            {loading && (
-              <span className="">
-                <PulseLoader size={8} speedMultiplier={0.6} color="#000" />
-              </span>
-            )}
-          </Generalbutton>
+      {/* Swap Icon - Centered and aligned */}
+      <div className="flex items-center justify-center px-2 sm:px-3 mt-6 flex-shrink-0">
+        <FaExchangeAlt
+          onClick={handleLocationChange}
+          className="text-gray-600 cursor-pointer hover:text-gray-800 transition-colors"
+          size={14}
+        />
+      </div>
+
+      {/* To Input */}
+      <div className="relative flex-1 min-w-0">
+        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+          To <FiMapPin color="green" />
+        </label>
+        <div className="relative overflow-hidden">
+          <input
+            ref={destinationInputRef}
+            type="text"
+            value={`${destinationInput.city_name || ''}${destinationInput.code ? ` (${destinationInput.code})` : ''}`}
+            onChange={(e) => {
+              handleDestinationInputChange(e.target.value);
+              setShowDestinationSuggestions(true);
+            }}
+            placeholder="Select destination airport"
+            className={`w-full px-3 py-2 pl-8 ${destinationInput.code ? 'pr-8' : 'pr-3'} border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm truncate ${
+              destinationError ? "border-red-500" : "border-gray-300"
+            }`}
+            style={{ textOverflow: 'ellipsis' }}
+          />
+          {destinationInput.code && (
+            <FiCheckCircle
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-green-500"
+              size={16}
+            />
+          )}
+        </div>
+        {/* Error positioned absolutely to not affect layout */}
+        {destinationError && (
+          <div className="absolute top-full left-0 text-red-500 text-xs mt-1 whitespace-nowrap z-30 max-w-[200px] truncate">
+            {destinationError}
+          </div>
+        )}
+        {showDestinationSuggestions && destinationSuggestions.length > 0 && (
+          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto">
+            {destinationSuggestions.map((suggestion) => (
+              <div
+                key={suggestion.id}
+                onClick={() => handleDestinationSelect(suggestion)}
+                className="px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+              >
+                <div className="text-xs text-gray-900">{suggestion.name}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Search Button - Fixed height and alignment */}
+      <div className="flex items-center ml-2 sm:ml-4 mt-6 flex-shrink-0">
+        <Generalbutton
+          fontSize="0.8rem"
+          width="auto"
+          padding="0.4rem 1rem"
+          fontWeight="500"
+          margin="0"
+          borderRadius="6px"
+          borderWidth="1px"
+          bgColor="#f7e700"
+          loading={loading}
+          onclick={() => {
+            if (validateInputs()) {
+              setShowSourceSuggestions(false);
+              setShowDestinationSuggestions(false);
+              _FetchFlightsHandler();
+            }
+          }}
+          disabled={loading}
+          className="relative flex items-center justify-center min-w-[80px] sm:min-w-[120px] h-[38px] whitespace-nowrap text-xs sm:text-sm"
+        >
+          {loading ? (
+            <PulseLoader size={6} speedMultiplier={0.6} color="#000" />
+          ) : (
+            <span>Search</span>
+          )}
+        </Generalbutton>
+      </div>
+    </div>
   </div>
 </div>
-
-
-        {/* Search Button */}
-        
-      </div>
-    </div>
   );
 };

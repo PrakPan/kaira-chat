@@ -9,6 +9,7 @@ console.log("Hi",process.env.YOUR_ENV_VAR,process.env.NEXT_PUBLIC_MERCURY_HOST);
 
 const generateSitemap = async () => {
   const BASE_URL = process.env.NEXT_PUBLIC_MERCURY_HOST;
+  const PROD_BASE_URL = "https://thetarzanway.com";
 
   // Fetch continents list
   const continents = await axios.get(
@@ -18,7 +19,7 @@ const generateSitemap = async () => {
   let continentsPaths = continentsData.map((object) => {
     return {
       title: "Continent Planner",
-      link: BASE_URL + "/" + object.slug,
+      link: PROD_BASE_URL + "/" + object.slug,
     };
   });
 
@@ -28,7 +29,7 @@ const generateSitemap = async () => {
   );
   const countriesData = countries.data.data.countries;
   let countriesPaths = countriesData.map((object) => {
-    return { title: "Country Planner", link: BASE_URL + "/" + object.path };
+    return { title: "Country Planner", link: PROD_BASE_URL + "/" + object.path };
   });
 
   // Fetch states list
@@ -40,7 +41,7 @@ const generateSitemap = async () => {
   let statesPaths = statesData.map((object) => {
     return {
       title: "State Planner",
-      link: BASE_URL + "/" + object.path.replaceAll(" ", "_").toLowerCase(),
+      link: PROD_BASE_URL + "/" + object.path.replaceAll(" ", "_").toLowerCase(),
     };
   });
 
@@ -51,13 +52,13 @@ const generateSitemap = async () => {
   const citiesData = cities.data.data.cities;
 
   let cityPaths = citiesData.map((object) => {
-    return { title: "City Planner", link: BASE_URL + "/" + object.path };
+    return { title: "City Planner", link: PROD_BASE_URL + "/" + object.path };
   });
 
   const subRegions=await axios.get(`${BASE_URL}/api/v1/website/pages/?page_type=Subregion&fields=path`)
   const subRegionsData=subRegions.data.data.pages
   let subRegionsPaths=subRegionsData.map((object)=>{
-    return {title:"Subregion Planner",link:BASE_URL+"/"+object.path}
+    return {title:"Subregion Planner",link:PROD_BASE_URL +"/"+object.path}
   })
 
   // Fetch trips list
@@ -76,18 +77,18 @@ const generateSitemap = async () => {
   let tripsPaths = trips.map((trip) => {
     return {
       title: "Trip",
-      link: BASE_URL + "/trips/" + trip.path,
+      link: PROD_BASE_URL + "/trips/" + trip.path,
     };
   });
 
   const StaticPaths = [
-    { title: "Home Page", link: BASE_URL },
+    { title: "Home Page", link: PROD_BASE_URL},
     {
       title: "COVID-19 Safe Travel India",
-      link: BASE_URL + "/covid-19-safe-travel-india",
+      link: PROD_BASE_URL + "/covid-19-safe-travel-india",
     },
-    { title: "All Destinations", link: BASE_URL + "/destinations" },
-    { title: "Corporates", link: BASE_URL + "/corporates" },
+    { title: "All Destinations", link: PROD_BASE_URL + "/destinations" },
+    { title: "Corporates", link: PROD_BASE_URL + "/corporates" },
   ];
 
   const allPaths = [

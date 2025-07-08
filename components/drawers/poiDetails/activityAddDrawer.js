@@ -555,7 +555,7 @@ const ActivityAddDrawer = (props) => {
       {error == null ? (
         <>
           <div
-            className={`px-2  !font-[lexend] overflow-y-scroll`}
+            className={`!font-[lexend] overflow-y-scroll`}
             style={{ height: `${height}px` }}
           >
             <div className="py-4 bg-white z-[900] flex flex-col gap-3  pb-1 justify-start items-start mx-auto w-[98%]">
