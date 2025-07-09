@@ -323,7 +323,7 @@ if (queryType === "page" || propType === "page") {
       type: "Country",
     },
   ];
-} else if (queryType === "continent" || propType === "continent") {
+} else if (routerquery.continent || queryType === "continent" || propType === "continent") {
   selectedObj = [
     {
       id: routerquery.page_id || props.page_id,
@@ -478,7 +478,6 @@ let dist=divideTravellers()
   };
 
   const [selectedCities, setSelectedCities] = useState(selectedObj);
-   console.log("SelectedObj", selectedObj, selectedCities, routerquery);
 
  
 
@@ -555,7 +554,6 @@ let dist=divideTravellers()
 
     try {
       for (var i = 0; i < selectedCities.length; i++) {
-        console.log("Selected Cities",selectedCities);
         if (
           cityids.indexOf(selectedCities[i].id) == -1 &&
           selectedCities[i].id
@@ -566,8 +564,10 @@ let dist=divideTravellers()
             stateIds.push(selectedCities[i].id);
           else if (selectedCities[i].type?.toLowerCase() == "country")
             countryIds.push(selectedCities[i].id);
-          else if (selectedCities[i].type?.toLowerCase() == "continent")
+          else if (selectedCities[i].type?.toLowerCase() == "continent"){
             continentIds.push(selectedCities[i].id);
+            pageIds.push(selectedCities[i].id);
+          }
           else {
             cityids.push(selectedCities[i].id);
           }
@@ -576,7 +576,7 @@ let dist=divideTravellers()
       }
     } catch {}
 
-    console.log("SOurce",source);
+    
 
     const data = {
       source,
@@ -597,6 +597,7 @@ let dist=divideTravellers()
       flexible_dates: flexible, //  If this is true, then start and end dates are decided automatically
     };
 
+    console.log("Selected",data);
     setIsLoading(true);
     itineraryInitiate
       .post("", data)

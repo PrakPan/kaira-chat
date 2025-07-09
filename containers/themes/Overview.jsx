@@ -24,7 +24,7 @@ export default function Overview(props) {
         openTailoredModal(router, props.page_id, props.destination,props.type);
       }
       else{
-        openTailoredModal(router, props.page_id, props.destination);
+        openTailoredModal(router, props.page_id, props.destination,props.type);
       }
     }
 
