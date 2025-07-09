@@ -2071,7 +2071,6 @@ const NewMultiModeContainer = ({
   };
 
   const handleFlightSelection = (flightData) => {
-    console.log("Flight Data", flightData);
     handleModeSelect(
       currentStep - 1,
       flightData?.id || flightData?.resultIndex,
@@ -3160,7 +3159,7 @@ const NewMultiModeContainer = ({
                       <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 w-full md:w-auto">
                         <button
                           onClick={handleUpdateTransfer}
-                          className={`px-6 md:px-8 py-2 rounded-md font-medium text-sm md:text-base w-full md:w-auto relative bg-[#f8e000] text-black ${
+                          className={`px-6 md:px-8 py-2 rounded-md font-medium text-sm md:text-base w-full md:w-auto relative bg-[#f8e000] text-black border border-black ${
                             (Object.keys(selectedModeIds).length !==
                               totalSteps || updateLoading) ? "cursor-not-allowed" : "cursor-pointer"
                           }`}

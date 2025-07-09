@@ -470,7 +470,6 @@ const ComboFlight = (props) => {
         flight_cabin_class: classType.value,
       };
 
-      console.log("Flight search request:", requestData);
 
       const selectedAirlines = filtersState?.airlines;
 
@@ -494,7 +493,6 @@ const ComboFlight = (props) => {
             return;
           }
 
-          console.log("Flight search successful");
           setLoading(false);
           setMoreLoadingState(false);
           setIsFetching(false);

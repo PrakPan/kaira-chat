@@ -88,7 +88,6 @@ const ErrorContainer = styled.div`
 `;
 
 const ViewHotelDetails = (props) => {
-  console.log("login props are2:", props);
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [loading, setLoading] = useState(true);

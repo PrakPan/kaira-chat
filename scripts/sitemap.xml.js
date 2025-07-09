@@ -16,7 +16,9 @@ const generateSitemap = async () => {
     `${BASE_URL}/api/v1/website/pages/?page_type=Continent&fields=path`
   );
   const continentsData = continents.data.data.pages;
-  let continentsPaths = continentsData.map((object) => {
+  let continentsPaths = continentsData
+  .filter((object) => object.slug !== undefined)
+  .map((object) => {
     return {
       title: "Continent Planner",
       link: PROD_BASE_URL + "/" + object.slug,
@@ -28,7 +30,9 @@ const generateSitemap = async () => {
     `${BASE_URL}/api/v1/geos/country/?fields=path`
   );
   const countriesData = countries.data.data.countries;
-  let countriesPaths = countriesData.map((object) => {
+  let countriesPaths = countriesData
+  .filter((object) => object.path !== undefined)
+  .map((object) => {
     return { title: "Country Planner", link: PROD_BASE_URL + "/" + object.path };
   });
 
@@ -38,7 +42,9 @@ const generateSitemap = async () => {
   );
   const statesData = states.data.data.states;
 
-  let statesPaths = statesData.map((object) => {
+  let statesPaths = statesData
+  .filter((object) => object.path !== undefined)
+  .map((object) => {
     return {
       title: "State Planner",
       link: PROD_BASE_URL + "/" + object.path.replaceAll(" ", "_").toLowerCase(),
@@ -51,7 +57,9 @@ const generateSitemap = async () => {
   );
   const citiesData = cities.data.data.cities;
 
-  let cityPaths = citiesData.map((object) => {
+  let cityPaths = citiesData
+  .filter((object) => object.path !== undefined)
+  .map((object) => {
     return { title: "City Planner", link: PROD_BASE_URL + "/" + object.path };
   });
 

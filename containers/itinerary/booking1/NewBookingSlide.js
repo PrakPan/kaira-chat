@@ -804,14 +804,14 @@ const Details = (props) => {
       <div className="px-0 pb-4">
         {props.couponJSX}
         <div className=" border-y border-[#F0F0F0] mb-3 mt-2 ml-1">
-          <UpdateItineraryDates
+          {/* <UpdateItineraryDates
            itinerary={props?.itinerary}
   token={props.token}
   onUpdateSuccess={fetchItineraryStatus}
   convertDFormat={convertDFormat}
   tripsPage={props.tripsPage}
-/>
-          {/* <div className=" group flex flex-row gap-3 items-center py-[1rem]">
+/> */}
+          <div className=" group flex flex-row gap-3 items-center py-[1rem]">
             <BsCalendar2 className="text-md text-[#7A7A7A]" />
             <div className="text-md font-medium text-black flex flex-row items-center gap-2">
               {props.tripsPage ? (
@@ -850,8 +850,8 @@ const Details = (props) => {
                     ></SelectDate>
                   </div>
                 </> */}
-            {/* </div>
-          </div>  */} 
+            </div>
+          </div>  
         </div>
 
         <div className="group text-md font-medium gap-3 flex flex-row items-center mb-2 ml-1">

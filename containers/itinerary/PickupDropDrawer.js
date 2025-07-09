@@ -436,38 +436,6 @@ const PickupDropDrawer = ({
   ]);
 
   // 4. FOURTH - Auto-fill hub data when suggestions become available
-
-  useEffect(() => {
-    if (transferType === "pickup") {
-      if (destinationSuggestions.length > 0 && booking && isAutoFilled) {
-        setFormData((prev) => ({
-          ...prev,
-          destinationAddress: destinationSuggestions[0]?.text,
-          destinationGmapsId: destinationSuggestions[0]?.id,
-          destinationHubId: "",
-        }));
-      }
-    }
-  }, [
-    destinationSuggestions,
-    booking,
-    transferType,
-    isAutoFilled,
-    bookingMode,
-  ]);
-
-  useEffect(() => {
-    if (transferType === "drop") {
-      if (sourceSuggestions.length > 0 && booking && isAutoFilled) {
-        setFormData((prev) => ({
-          ...prev,
-          sourceAddress: sourceSuggestions[0]?.text,
-          sourceGmapsId: sourceSuggestions[0]?.id,
-          sourceHubId: "",
-        }));
-      }
-    }
-  }, [sourceSuggestions, booking, transferType, isAutoFilled, bookingMode]);
   useEffect(() => {
     if (hubSuggestions.length > 0 && booking && isAutoFilled) {
       console.log("Hub suggestions available:", hubSuggestions);
@@ -549,20 +517,20 @@ const PickupDropDrawer = ({
 
       if (field === "source") {
         setSourceSuggestions(combinedResults);
-        // setShowSourceSuggestions(true);
+        setShowSourceSuggestions(true);
       } else {
         setDestinationSuggestions(combinedResults);
-        // setShowDestinationSuggestions(true);
+        setShowDestinationSuggestions(true);
       }
     } catch (error) {
       console.error("Autocomplete search error:", error);
       // Show hotel suggestions even if gmaps fails
       if (field === "source") {
         setSourceSuggestions(hotelSuggestions);
-        // setShowSourceSuggestions(hotelSuggestions.length > 0);
+        setShowSourceSuggestions(hotelSuggestions.length > 0);
       } else {
         setDestinationSuggestions(hotelSuggestions);
-        // setShowDestinationSuggestions(hotelSuggestions.length > 0);
+        setShowDestinationSuggestions(hotelSuggestions.length > 0);
       }
     }
   };

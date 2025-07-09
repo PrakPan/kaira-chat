@@ -80,7 +80,6 @@ const ContentContainer = styled.div`
 `;
 
 const Booking = (props) => {
-  console.log("Flight Selected Booking", props?.selectedBooking);
   console.log(
     "Flight Selected Booking",
     props?.originCityId,
