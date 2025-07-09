@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import ImageLoader from "../../../ImageLoader";
 import Image from "../../../ImageLoader";
@@ -21,6 +22,11 @@ import SetCallPaymentInfo from "../../../../store/actions/callPaymentInfo";
 import { openNotification } from "../../../../store/actions/notification";
 import { getStars } from "../../../itinerary/itineraryCity/SlabElement";
 import setItinerary from "../../../../store/actions/itinerary";
+import FullScreenGallery from "../../../fullscreengallery/Index";
+import { bookingDetails } from "../../../../services/bookings/FetchAccommodation";
+import POIDetailsSkeleton from "../../ViewHotelDetails/Skeleton";
+import BackArrow from "../../../ui/BackArrow";
+import Drawer from "../../../ui/Drawer";
 import FullScreenGallery from "../../../fullscreengallery/Index";
 import { bookingDetails } from "../../../../services/bookings/FetchAccommodation";
 import POIDetailsSkeleton from "../../ViewHotelDetails/Skeleton";
@@ -328,8 +334,7 @@ const HotelBookingDetails = (props) => {
   };
 
   const handleCloseDrawer = () => {
-    const { id, drawer } = router.query;
-    if (!drawer || !props?.showDetails) return;
+    const { id } = router.query;
     router.push(
       {
         pathname: `/itinerary/${id}`,
@@ -341,6 +346,27 @@ const HotelBookingDetails = (props) => {
   };
 
   return (
+    <Drawer
+      show={props?.showDetails}
+      anchor={"right"}
+      backdrop
+      className="font-lexend"
+      onHide={handleCloseDrawer}
+      width={"50%"}
+      mobileWidth={"100%"}
+    >
+      <Container>
+        <BackContainer className=" font-lexend">
+          <BackArrow handleClick={handleCloseDrawer} />
+        </BackContainer>
+        {loadingDetails ? (
+          <POIDetailsSkeleton />
+        ) : (
+          <Container>
+            <FlexBox>
+              <div>
+                <Name>{data?.hotel_details?.name}</Name>
+              </div>
     <Drawer
       show={props?.showDetails}
       anchor={"right"}
@@ -377,6 +403,20 @@ const HotelBookingDetails = (props) => {
                 Change
               </Button>
             </FlexBox>
+              <Button
+                padding="7px 25px"
+                borderRadius="7px"
+                onclick={() => {
+                  if (!localStorage.getItem("access_token")) {
+                    props?.setShowLoginModal(true);
+                    return;
+                  }
+                  props.BookingButtonFun();
+                }}
+              >
+                Change
+              </Button>
+            </FlexBox>
 
             {data?.hotel_details?.rating && (
               <div className="gap-1 flex flex-row  items-center">
@@ -394,7 +434,47 @@ const HotelBookingDetails = (props) => {
                 )}
               </div>
             )}
+            {data?.hotel_details?.rating && (
+              <div className="gap-1 flex flex-row  items-center">
+                <div className="flex flex-row text-[#FFD201]">
+                  {starRating(data?.hotel_details?.rating)}
+                </div>
+                <div>
+                  {data?.hotel_details?.rating}
+                  {" . "}
+                </div>
+                {data?.hotel_details?.user_ratings_total && (
+                  <div className="text-sm text-[#7A7A7A] font-[400] underline">
+                    {data?.hotel_details?.user_ratings_total} reviews
+                  </div>
+                )}
+              </div>
+            )}
 
+            {isDesktop ? (
+              <ImageContainer>
+                {images.length > 3 ? (
+                  <>
+                    <GridImage>
+                      <Child area="1 / 1 / 5 / 4" className="div1 ">
+                        <div
+                          className="relative"
+                          style={{
+                            display: ImagesLoaded[0] ? "initial" : "none",
+                          }}
+                        >
+                          <ImageLoader
+                            url={
+                              ImagesError[0]
+                                ? "media/icons/bookings/notfounds/noroom.png"
+                                : images[0]?.image
+                            }
+                            width="100%"
+                            height="100%"
+                            onload={() => OnImageLoad(0)}
+                            onfail={() => OnImageError(0)}
+                            noLazy
+                          />
             {isDesktop ? (
               <ImageContainer>
                 {images.length > 3 ? (

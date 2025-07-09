@@ -11,7 +11,10 @@ import { useRouter } from "next/router";
 import HotelBookingDetails from "./Overview/HotelBookingDetails";
 import { updateAccommodationBooking } from "../../../services/bookings/UpdateBookings";
 import { ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import SetCallPaymentInfo from "../../../store/actions/callPaymentInfo";
+import OverviewParam from "./Overview/OverviewParam";
+import { setShowHotelDrawer } from "../../../store/actions/ui";
 import OverviewParam from "./Overview/OverviewParam";
 import { setShowHotelDrawer } from "../../../store/actions/ui";
 const Container = styled.div`
@@ -38,7 +41,7 @@ const FloatingView = styled.div`
 `;
 
 const POI = (props) => {
-  console.log("poi hotel props are:", props);
+  console.log("poi hotel props are:",props)
   let isPageWide = media("(min-width: 768px)");
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -192,6 +195,11 @@ const POI = (props) => {
     }
   };
 
+  // ) : (
+  //   <ErrorContainer>
+  //     Oops! There seems to be a problem, please try again later!
+  //   </ErrorContainer>
+  // )}
   return (
     <>
       <Container>

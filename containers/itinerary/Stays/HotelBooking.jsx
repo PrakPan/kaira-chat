@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import ImageLoader from "../../../components/ImageLoader";
 import { BsCalendar2, BsPeopleFill, BsPlus } from "react-icons/bs";
 import { BiBed } from "react-icons/bi";
@@ -131,9 +131,24 @@ const HotelBooking = ({
     }
   }
 
-  console.log("Bkm", stayBookings);
+  console.log("Bkm",stayBookings)
 
   const handleViewDetails = (value) => {
+    router.push(
+      {
+        pathname: `/itinerary/${router.query.id}`,
+        query: {
+          drawer: "showHotelDetail",
+          idx: index,
+          booking_id: booking.id,
+          city_id: booking.city_id,
+        },
+      },
+      undefined,
+      {
+        scroll: false,
+      }
+    );
     router.push(
       {
         pathname: `/itinerary/${router.query.id}`,
